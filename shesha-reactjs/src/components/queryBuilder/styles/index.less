@@ -1,0 +1,46 @@
+@import './qb-styles.less';
+@import './qb-styles-compact.less';
+
+.sha-query-builder {
+  background-image: white !important;
+  padding: @padding-lg;
+
+  .query-builder-container {
+    padding: unset !important;
+
+    .query-builder {
+      margin: @padding-lg 0 @padding-lg * 2 0 !important;
+    }
+
+    .ant-btn-group {
+      button {
+        margin-left: @padding-sm;
+      }
+    }
+  }
+
+  .sha-query-builder-btns {
+    display: flex;
+    justify-content: flex-end;
+
+    button {
+      margin-left: @padding-lg;
+    }
+  }
+
+  .rule--value {
+    .rule--widget {
+      &.rule--widget--REFLISTDROPDOWN {
+        .ant-select {
+          min-width: 150px;
+        }
+      }
+
+      &.rule--widget--DATETIMEDYNAMIC {
+        position: absolute;
+        top: 5px;
+        margin-left: @padding-lg;
+      }
+    }
+  }
+}

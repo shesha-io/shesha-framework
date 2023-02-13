@@ -1,0 +1,39 @@
+.sha-wizard {
+  .sha-wizard-container {
+    margin: unset;
+
+    .sha-steps-content {
+      margin: 20px 0;
+    }
+
+    &.vertical {
+      display: flex;
+      flex-direction: row;
+      margin-bottom: 20px;
+
+      .ant-steps-vertical {
+        width: 150px;
+      }
+
+      .sha-steps-content {
+        flex: 1;
+        margin: unset;
+      }
+    }
+  }
+
+  .sha-steps-buttons-container {
+    display: flex;
+    &.split {
+      justify-content: space-between;
+    }
+
+    &.left {
+      justify-content: flex-start;
+    }
+
+    &.right {
+      justify-content: flex-end;
+    }
+  }
+}

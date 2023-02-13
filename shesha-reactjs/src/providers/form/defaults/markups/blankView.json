@@ -1,0 +1,15 @@
+{
+  "components": [
+    {
+      "id": "WQ0GdH2NL_cgSt0KJd2mX",
+      "type": "blankViewDefault",
+      "name": "blankView1",
+      "label": "Blank View Default",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "components": []
+    }
+  ]
+}

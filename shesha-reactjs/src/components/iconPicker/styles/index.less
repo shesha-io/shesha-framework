@@ -1,0 +1,62 @@
+.sha-icon-picker {
+  .sha-icon-picker-selected-icon {
+    &:not(.sha-readonly){
+      cursor: pointer;
+    }
+
+    .anticon {
+      margin-right: @padding-lg;
+    }
+  }
+}
+
+.sha-icon-picker-modal {
+  .sha-icon-picker-search {
+    display: flex;
+    margin-bottom: @padding-lg;
+
+    .sha-icon-picker-search-input-container {
+      margin-left: @padding-lg;
+      flex: 1;
+    }
+  }
+
+  .sha-icon-picker-icon-list {
+    max-height: 600px;
+    overflow-y: auto;
+    .sha-icon-picker-icon-list-group {
+      .sha-icon-picker-icon-list-group-header {
+        font-size: 16px;
+        font-weight: 500;
+        margin: @padding-lg 0;
+      }
+
+      .sha-icon-picker-icon-list-group-body {
+        display: grid;
+        grid-template-columns: auto auto auto auto;
+        .sha-icon-picker-icon-list-icon {
+          &:hover {
+            background: lighten(@primary-color, 35);
+            border-radius: 4px;
+
+            .anticon,
+            .sha-icon-picker-icon-list-icon-name {
+              transform: scale(1.25);
+            }
+          }
+          padding: 12px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          cursor: pointer;
+          .anticon {
+          }
+          .sha-icon-picker-icon-list-icon-name {
+            margin-top: 12px;
+          }
+        }
+      }
+    }
+  }
+}

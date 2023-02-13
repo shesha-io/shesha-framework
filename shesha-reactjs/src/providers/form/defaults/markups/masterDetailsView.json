@@ -1,0 +1,15 @@
+{
+  "components": [
+    {
+      "id": "2nE8XGy6RYxxdhu4UoZ2d",
+      "type": "masterDetailsView",
+      "name": "masterDetailsViewDefault",
+      "label": "Master Details View Default",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "components": []
+    }
+  ]
+}

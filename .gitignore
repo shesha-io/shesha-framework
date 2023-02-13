@@ -266,3 +266,34 @@ paket-files/
 outputs
 Logs
 Upload
+
+# dependencies
+**/node_modules/*
+
+# builds
+/shesha-reactjs/build
+/shesha-reactjs/dist
+/shesha-reactjs/.out-storybook/*
+/shesha-reactjs/.next
+/shesha-reactjs/package-lock.json
+
+# Ide
+.vscode/*
+vscode/
+.idea/*
+
+# misc
+.DS_Store
+/shesha-reactjs/.env
+/shesha-reactjs/.env.local
+/shesha-reactjs/.env.development.local
+/shesha-reactjs/.env.test.local
+/shesha-reactjs/.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+boilerplate
+preview-head.html
+storybook-static
+*.tgz

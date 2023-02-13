@@ -1,0 +1,220 @@
+{
+    "components": [
+      {
+        "id": "XfBj2SDuEkTf-SbtWciWo",
+        "type": "container",
+        "name": "container6",
+        "label": "Container6",
+        "labelAlign": "right",
+        "parentId": "root",
+        "hidden": false,
+        "customVisibility": null,
+        "isDynamic": false,
+        "direction": "vertical",
+        "justifyContent": "left",
+        "components": [
+          {
+            "textType": "text",
+            "id": "U4jgpgbofzzQW3_njc5wZ",
+            "type": "textField",
+            "name": "dependency",
+            "label": "Depends on",
+            "labelAlign": "right",
+            "hidden": false,
+            "customVisibility": null,
+            "isDynamic": false,
+            "maxLength": null,
+            "parentId": "XfBj2SDuEkTf-SbtWciWo",
+            "placeholder": "",
+            "description": "",
+            "prefix": "",
+            "suffix": "",
+            "initialValue": "",
+            "disabled": true,
+            "readOnly": true,
+            "validate": {
+              "minLength": "",
+              "maxLength": "",
+              "message": ""
+            },
+            "quickviewWidth": "",
+            "settingsValidationErrors": []
+          },
+          {
+            "textType": "text",
+            "id": "C-F9oF99z_LKSfSG4-TdG",
+            "type": "textField",
+            "name": "category",
+            "label": "Category",
+            "labelAlign": "right",
+            "hidden": true,
+            "customVisibility": "return !data.parent",
+            "isDynamic": false,
+            "maxLength": null,
+            "parentId": "XfBj2SDuEkTf-SbtWciWo",
+            "placeholder": "",
+            "description": "",
+            "prefix": "",
+            "suffix": "",
+            "initialValue": "",
+            "validate": {
+              "minLength": "",
+              "maxLength": "",
+              "message": ""
+            },
+            "quickviewWidth": "",
+            "settingsValidationErrors": []
+          },
+          {
+            "id": "j0EAgLiqqB7QdHW-QUJqI",
+            "type": "dropdown",
+            "name": "access",
+            "label": "Access",
+            "labelAlign": "right",
+            "parentId": "XfBj2SDuEkTf-SbtWciWo",
+            "hidden": false,
+            "customVisibility": null,
+            "isDynamic": false,
+            "dataSourceType": "values",
+            "useRawValues": false,
+            "placeholder": "",
+            "description": "",
+            "defaultValue": null,
+            "entityTypeShortAlias": "",
+            "dataSourceUrl": "",
+            "validate": {},
+            "values": [
+              {
+                "id": "EVQV8Kf_dyUYwd56cb_b8",
+                "label": "Disabled",
+                "value": "1"
+              },
+              {
+                "id": "jbKpqNqiNIKXme_m2Yt4s",
+                "label": "Inherited",
+                "value": "2"
+              },
+              {
+                "id": "EwBWTiQ1biRoO0_MVzq1z",
+                "label": "Any authenticated",
+                "value": "3"
+              },
+              {
+                "id": "w0euzBU5EpNSzFGzXm568",
+                "label": "Requires permissions",
+                "value": "4"
+              },
+              {
+                "id": "TOLZuIjSNfnaruUeeY9AM",
+                "label": "Allow anonymous",
+                "value": "5"
+              }
+            ],
+            "settingsValidationErrors": []
+          },
+          {
+            "id": "WXaDzSHBAKzkbO18zDotx",
+            "type": "autocompleteTagGroup",
+            "name": "permissions",
+            "label": "Permissions",
+            "labelAlign": "right",
+            "parentId": "XfBj2SDuEkTf-SbtWciWo",
+            "hidden": false,
+            "customVisibility": "return data.access == 4",
+            "isDynamic": false,
+            "autocompleteUrl": "/api/services/app/permission/autocomplete",
+            "placeholder": "",
+            "validate": {},
+            "settingsValidationErrors": []
+          },
+          {
+            "id": "V4ZLolRl8UZK1HHiNvYO_",
+            "type": "autocompleteTagGroup",
+            "name": "actualPermissions",
+            "label": "Actual permissions",
+            "labelAlign": "right",
+            "parentId": "XfBj2SDuEkTf-SbtWciWo",
+            "hidden": false,
+            "customVisibility": "return data.access == 2 && data.actualAccess == 4",
+            "isDynamic": false,
+            "disabled": true,
+            "validate": {},
+            "autocompleteUrl": "",
+            "placeholder": "",
+            "settingsValidationErrors": []
+          },
+          {
+            "id": "8YKNrq6D42G1Lzrgoizyn",
+            "type": "dropdown",
+            "name": "actualAccess",
+            "label": "Actual access",
+            "labelAlign": "right",
+            "parentId": "XfBj2SDuEkTf-SbtWciWo",
+            "hidden": false,
+            "customVisibility": "return data.access == 2 && data.actualAccess != 2 && data.actualAccess != 4",
+            "isDynamic": false,
+            "dataSourceType": "values",
+            "useRawValues": false,
+            "placeholder": "",
+            "description": "",
+            "disabled": true,
+            "readOnly": true,
+            "defaultValue": "",
+            "entityTypeShortAlias": "",
+            "dataSourceUrl": "",
+            "validate": {},
+            "values": [
+              {
+                "id": "-R48wPdyuhwtHUuqXA9GZ",
+                "label": "Disable",
+                "value": "1"
+              },
+              {
+                "id": "epifkpaKzi1ph2miyO4bV",
+                "label": "Inherited",
+                "value": "2"
+              },
+              {
+                "id": "Yf-hXzCAaQZw2j-EepLl_",
+                "label": "Any authenticated",
+                "value": "3"
+              },
+              {
+                "id": "bd3Z_Pig0ARstcxdt3cKc",
+                "label": "Requires permissions",
+                "value": "4"
+              },
+              {
+                "id": "poxaZGdF6-RgAKqNBRGJG",
+                "label": "Allow anonymous",
+                "value": "5"
+              }
+            ],
+            "settingsValidationErrors": []
+          }
+        ]
+      }
+    ],
+    "formSettings": {
+      "_formFields": [ "modelType", "postUrl", "putUrl", "deleteUrl", "getUrl", "layout", "size", "colon", "labelCol.span", "wrapperCol.span", "showModeToggler", "excludeFormFieldsInPayload", "formKeysToPersist", "uniqueFormId", "preparedValues", "onDataLoaded", "onUpdate", "initialValues" ],
+      "layout": "horizontal",
+      "colon": true,
+      "labelCol": { "span": 5 },
+      "wrapperCol": { "span": 13 },
+      "modelType": "Shesha.Permissions.PermissionedObjectDto",
+      "postUrl": "",
+      "putUrl": "",
+      "deleteUrl": "",
+      "getUrl": "",
+      "uniqueFormId": "1",
+      "onInitialize": "formMode = 'readonly';",
+      "displayName": "DEFAULT_FORM_SETTINGS",
+      "__docgenInfo": {
+        "description": "Default form settings",
+        "displayName": "DEFAULT_FORM_SETTINGS",
+        "props": {}
+      },
+      "fieldsToFetch": [],
+      "formKeysToPersist": []
+    }
+  }

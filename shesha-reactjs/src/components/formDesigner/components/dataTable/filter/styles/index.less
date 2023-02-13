@@ -1,0 +1,78 @@
+.sha-toolbar-configurator {
+  .sha-action-buttons {
+    .ant-btn {
+      margin-right: 8px;
+    }
+  }
+  .sidebar-container-main-area {
+    background-color: white !important;
+
+    .sha-toolbar-item {
+      position: relative;
+      height: auto;
+      width: 100%;
+      //padding: 5px;
+      //border: 1px dashed #ddd;
+      border: 1px solid #ddd;
+      border-radius: 2px;
+      margin-bottom: 4px;
+
+      &.selected {
+        border: #61affe 1px dashed;
+        border-radius: 4px;
+        background-color: #ebf3fb;
+      }
+
+      .sha-toolbar-item-drag-handle {
+        border-radius: 2px;
+        background-color: #ddd;
+        width: 14px;
+        height: 100%;
+        display: inline-block;
+        cursor: grab;
+        margin-right: 5px;
+      }
+
+      .sha-toolbar-item-controls {
+        text-align: right;
+        position: absolute;
+        right: 5px;
+        top: 5px;
+        display: block;
+        min-height: 20px;
+        z-index: 1000;
+      }
+      &:not(:hover) {
+        .sha-toolbar-item-controls {
+          display: none;
+        }
+      }
+
+      .sha-toolbar-item-header {
+        padding: 5px;
+      }
+
+      .sha-toolbar-group-header {
+        padding: 5px;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .sha-toolbar-group-container {
+        min-height: 30px;
+        padding: 5px 5px 0px 20px;
+      }
+    }
+
+    .sha-toolbar-item-ghost {
+      border: 1px dashed #4099ff;
+      border-radius: 2px;
+      opacity: 0.7;
+    }
+  }
+
+  .sha-tooltip-icon {
+    color: darkgray !important;
+    margin-left: 5px;
+    margin-right: 5px;
+  }
+}

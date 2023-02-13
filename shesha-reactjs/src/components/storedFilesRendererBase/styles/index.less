@@ -1,0 +1,26 @@
+.sha-stored-files-renderer {
+  .ant-upload {
+    &.ant-upload-btn {
+      padding: 8px 0;
+
+      .ant-upload-drag-icon {
+        margin: unset;
+      }
+
+      .stored-files-renderer-no-files {
+        margin-bottom: 6px;
+      }
+    }
+  }
+
+  .stored-files-renderer-btn-container {
+    display: flex;
+    margin-top: 4px;
+    justify-content: flex-end;
+  }
+
+  .ant-upload-list {
+    overflow-y: auto;
+    height: @sha-upload-list-max-height;
+  }
+}

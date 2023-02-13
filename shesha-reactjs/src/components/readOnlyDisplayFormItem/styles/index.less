@@ -1,0 +1,14 @@
+.read-only-display-form-item {
+  &.ant-form-item {
+    margin-bottom: unset;
+  }
+
+  .read-only-mode-toggler {
+    margin-left: @padding-lg;
+
+    &:not(.disabled) {
+      cursor: pointer;
+      .textHoverEffect();
+    }
+  }
+}

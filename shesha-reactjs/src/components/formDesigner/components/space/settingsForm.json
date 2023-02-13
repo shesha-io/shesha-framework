@@ -1,0 +1,143 @@
+{
+  "components": [
+    {
+      "id": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
+      "type": "sectionSeparator",
+      "name": "separator1",
+      "parentId": "root",
+      "label": "Display"
+    },
+    {
+      "id": "5da0ce15-0170-447d-8ca6-b34415a2d05a",
+      "type": "textField",
+      "name": "name",
+      "parentId": "root",
+      "label": "Name",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "id": "bb6040c8-9071-43c2-828c-50f6446c4c6e",
+      "type": "dropdown",
+      "name": "align",
+      "parentId": "root",
+      "label": "Align",
+      "values": [
+        {
+          "label": "Start",
+          "value": "start",
+          "id": "6506a88d-af9a-494a-b65f-cc3682e356e2"
+        },
+        {
+          "label": "End",
+          "value": "end",
+          "id": "a176edea-450f-4bec-91a0-e398e6529664"
+        },
+        {
+          "label": "Center",
+          "value": "center",
+          "id": "7f6a4e63-7095-43d4-9a18-a0a53d187d08"
+        },
+        {
+          "label": "Baseline",
+          "value": "baseline",
+          "id": "7f6a4e63-7095-43d4-9a18-a0a53d187d08"
+        }
+      ],
+      "dataSourceType": "values",
+      "defaultValue": ["small"]
+    },
+    {
+      "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
+      "type": "dropdown",
+      "name": "size",
+      "parentId": "root",
+      "label": "The space size",
+      "allowClear": true,
+      "values": [
+        {
+          "label": "Small",
+          "value": "small",
+          "id": "4f11403c-95fd-4e49-bb60-cb8c25f0f3c3"
+        },
+        {
+          "label": "Middle",
+          "value": "middle",
+          "id": "8f85c476-e632-4fa7-89ad-2be6cfb7f1f1"
+        },
+        {
+          "label": "Large",
+          "value": "large",
+          "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
+        }
+      ],
+      "dataSourceType": "values"
+    },
+    {
+      "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
+      "type": "numberField",
+      "name": "sizeNumber",
+      "parentId": "root",
+      "label": "Size Number"
+    },
+    {
+      "id": "320d036b-c715-4676-a6cd-8b990950ddb9",
+      "type": "numberField",
+      "name": "marginLeft",
+      "parentId": "root",
+      "label": "Margin Left"
+    },
+    {
+      "id": "b2fcd9e5-e0a0-4b01-a7f1-ab85ff92d8c7",
+      "type": "numberField",
+      "name": "marginRight",
+      "parentId": "root",
+      "label": "Margin Right"
+    },
+    {
+      "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
+      "type": "dropdown",
+      "name": "direction",
+      "parentId": "root",
+      "label": "Space",
+      "values": [
+        {
+          "label": "Vertical",
+          "value": "vertical",
+          "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
+        },
+        {
+          "label": "Horizontal",
+          "value": "horizontal",
+          "id": "b920ef96-ae27-4a01-bfad-b5b7d07218da"
+        }
+      ],
+      "dataSourceType": "values",
+      "defaultValue": ["horizontal"]
+    },
+    {
+      "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
+      "type": "checkbox",
+      "name": "wrap",
+      "parentId": "root",
+      "label": "Wrap"
+    }
+  ],
+  "formSettings": {
+    "layout": "horizontal",
+    "colon": true,
+    "labelCol": {
+      "span": 5
+    },
+    "wrapperCol": {
+      "span": 13
+    },
+    "displayName": "DEFAULT_FORM_SETTINGS",
+    "__docgenInfo": {
+      "description": "Default form settings",
+      "displayName": "DEFAULT_FORM_SETTINGS",
+      "props": {}
+    }
+  }
+}

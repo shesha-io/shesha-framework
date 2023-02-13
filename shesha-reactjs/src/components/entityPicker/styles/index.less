@@ -1,0 +1,48 @@
+@picker-ellipsis-btn-width: 45px;
+
+.entity-picker-container {
+  .picker-input-group {
+    .picker-input-group-input {
+      width: calc(100% - @picker-ellipsis-btn-width);
+    }
+
+    .picker-input-group-ellipsis {
+      width: @picker-ellipsis-btn-width;
+    }
+  }
+
+  .global-tablefilter {
+    padding-right: unset !important;
+  }
+}
+
+.entity-picker-modal {
+  .sha-global-table-filter {
+    margin: unset !important;
+    width: 100%;
+    padding: unset;
+  }
+
+  .sha-react-table {
+    margin: unset;
+  }
+
+  .entity-picker-modal-pager-container {
+    display: flex;
+    justify-content: flex-end;
+    margin: @padding-lg 0;
+
+    .ant-pagination-options-size-changer {
+      margin-right: 0 !important;
+    }
+  }
+
+  .ant-modal-footer {
+    padding: 24px;
+    padding-top: 12px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    column-gap: 12px;
+  }
+}

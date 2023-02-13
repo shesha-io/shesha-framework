@@ -1,0 +1,34 @@
+@big-font: 45;
+@primary-font: 26;
+@secondary-font: 18;
+
+.custom-error-boundary {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  justify-items: center;
+  align-content: center;
+
+  .oops {
+    font-size: @big-font;
+  }
+
+  .error-icon {
+    margin-top: 15px;
+    font-size: @big-font;
+  }
+
+  .primary-message {
+    font-size: @primary-font;
+  }
+
+  .secondary-message {
+    font-size: @secondary-font;
+  }
+
+  .take-me-home {
+    margin-bottom: @big-font;
+  }
+}

@@ -1,0 +1,27 @@
+.columns-filter-select {
+  display: flex;
+  align-items: center;
+
+  .label {
+    margin-right: @padding-lg;
+    font-weight: 600;
+  }
+
+  .ant-select {
+    flex: 1;
+    margin-right: @padding-sm;
+
+
+    ul {
+      li {
+        &.ant-select-selection__choice {
+          display: none;
+        }
+      }
+    }
+
+    .ant-select-dropdown-menu-item-selected {
+      // display: none;
+    }
+  }
+}

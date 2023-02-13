@@ -1,0 +1,1 @@
+export type ViewConfigurationTypes = 'Table' | 'Create' | 'Edit' | 'Details' | 'Quickview' | 'ListItem' | 'Picker';

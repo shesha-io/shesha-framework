@@ -1,0 +1,122 @@
+{
+  "components": [
+    {
+      "id": "5d4d56fb-d7f8-4835-a529-c4fa93f3596d",
+      "type": "textField",
+      "name": "name",
+      "label": "Title",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "autoSize": false,
+      "showCount": false,
+      "allowClear": false,
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "id": "9b671866-072e-4688-8b48-ddf5e12d70d4",
+      "type": "textArea",
+      "name": "tooltip",
+      "label": "Tooltip",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "autoSize": false,
+      "showCount": false,
+      "allowClear": false,
+      "validate": {}
+    },
+    {
+      "id": "26c68b22-3211-475d-91e1-0745a4447329",
+      "type": "textField",
+      "name": "permissions",
+      "label": "Permissions",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "validate": {}
+    },
+    {
+      "id": "0593740e-1bcf-470b-b096-5cdac5f35e65",
+      "type": "dropdown",
+      "name": "expressionType",
+      "label": "Expression Type",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": true,
+      "customVisibility": null,
+      "dataSourceType": "values",
+      "values": [
+        {
+          "id": "b0045543-74eb-45b8-aa75-cf688ab57d37",
+          "label": "Json Logic",
+          "value": "jsonLogic"
+        },
+        {
+          "id": "b5b69b98-3eb2-4cf1-a955-399fab735404",
+          "label": "HQL",
+          "value": "hql"
+        }
+      ],
+      "validate": {}
+    },
+    {
+      "id": "7e4876d8-1ed4-4576-9f5b-46cfd77d8643",
+      "type": "checkbox",
+      "name": "useExpression",
+      "label": "Use Expression",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "validate": {}
+    },
+    {
+      "id": "318927a4-3d05-4002-8a88-db2b616cba67",
+      "type": "queryBuilder",
+      "name": "expression",
+      "label": "Expression",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": "",
+      "hideLabel": true,
+      "validate": {},
+      "dataSourceType": "values",
+      "values": [
+        {
+          "id": "b0045543-74eb-45b8-aa75-cf688ab57d37",
+          "label": "Json Logic",
+          "value": "jsonLogic"
+        },
+        {
+          "id": "b5b69b98-3eb2-4cf1-a955-399fab735404",
+          "label": "HQL",
+          "value": "hql"
+        }
+      ],
+      "jsonExpanded": true,
+      "settingsValidationErrors": []
+    }
+  ],
+  "formSettings": {
+    "layout": "vertical",
+    "colon": true,
+    "labelCol": {
+      "span": 5
+    },
+    "wrapperCol": {
+      "span": 13
+    },
+    "displayName": "DEFAULT_FORM_SETTINGS",
+    "__docgenInfo": {
+      "description": "Default form settings",
+      "displayName": "DEFAULT_FORM_SETTINGS",
+      "props": {}
+    }
+  }
+}

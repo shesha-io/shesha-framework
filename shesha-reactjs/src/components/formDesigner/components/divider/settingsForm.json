@@ -1,0 +1,100 @@
+{
+  "components": [
+    {
+      "id": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
+      "type": "sectionSeparator",
+      "name": "separator1",
+      "parentId": "root",
+      "label": "Display"
+    },
+    {
+      "id": "1a3bfee6-3cde-41f0-b371-f743e801bef3",
+      "type": "checkbox",
+      "name": "container",
+      "parentId": "root",
+      "label": "Container?"
+    },
+    {
+      "id": "6d29cf2c-96fe-40ce-be97-32e9f5d0fe40",
+      "type": "dropdown",
+      "name": "dividerType",
+      "parentId": "root",
+      "label": "Divider Type",
+      "values": [
+        {
+          "label": "Horizontal",
+          "value": "horizontal",
+          "id": "03a48d1c-ad8a-4070-8d63-3bc7da9a61e3"
+        },
+        {
+          "label": "Vertical",
+          "value": "vertical",
+          "id": "896d291e-93f9-42c6-b5f6-7ad0dfb6d0e9"
+        }
+      ],
+      "dataSourceType": "values"
+    },
+    {
+      "id": "3496cef5-a86f-4839-b70a-1f9871f96f45",
+      "type": "dropdown",
+      "name": "contentType",
+      "parentId": "root",
+      "label": "Content type",
+      "values": [
+        {
+          "label": "Left",
+          "value": "left",
+          "id": "03a48d1c-ad8a-4070-8d63-3bc7da9a61e3"
+        },
+        {
+          "label": "Right",
+          "value": "right",
+          "id": "896d291e-93f9-42c6-b5f6-7ad0dfb6d0e9"
+        },
+        {
+          "label": "Center",
+          "value": "center",
+          "id": "3496cef5-a86f-4839-b70a-1f9871f96f45"
+        }
+      ],
+      "dataSourceType": "values"
+    },
+    {
+      "id": "006dcd8f-690c-4caa-89d2-bf9f701b50fd",
+      "type": "textField",
+      "name": "orientationMargin",
+      "parentId": "root",
+      "label": "Orientation Margin"
+    },
+    {
+      "id": "89c6096e-c351-4185-ab49-9d98e1b638a5",
+      "type": "checkbox",
+      "name": "dashed",
+      "parentId": "root",
+      "label": "Dashed"
+    },
+    {
+      "id": "00d60630-64b1-4a2e-b3b2-71f4c6021bf1",
+      "type": "checkbox",
+      "name": "plain",
+      "parentId": "root",
+      "label": "Plain"
+    }
+  ],
+  "formSettings": {
+    "layout": "horizontal",
+    "colon": true,
+    "labelCol": {
+      "span": 5
+    },
+    "wrapperCol": {
+      "span": 13
+    },
+    "displayName": "DEFAULT_FORM_SETTINGS",
+    "__docgenInfo": {
+      "description": "Default form settings",
+      "displayName": "DEFAULT_FORM_SETTINGS",
+      "props": {}
+    }
+  }
+}

@@ -1,0 +1,47 @@
+.sha-notes {
+  .notes-textarea {
+    margin-bottom: @padding-lg;
+  }
+
+  .comment-list-card {
+    border: unset;
+    .ant-card-body {
+      padding: unset;
+      .comment-list {
+        max-height: 500px;
+        overflow-y: auto;
+      }
+    }
+  }
+
+  .comment-item-body {
+    position: relative;
+
+    &:hover {
+      .anticon-delete {
+        display: inline;
+      }
+    }
+
+    .ant-comment-inner {
+      padding: @padding-md 0;
+    }
+
+    .anticon-delete {
+      .textHoverEffect();
+      position: absolute;
+      right: 5px;
+      top: @padding-lg;
+      display: none;
+      cursor: pointer;
+      z-index: 1000;
+    }
+  }
+
+  .ant-divider {
+    margin: unset;
+    &.divider-without-margin {
+      margin: unset;
+    }
+  }
+}

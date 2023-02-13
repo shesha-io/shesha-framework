@@ -1,0 +1,112 @@
+{
+  "components": [
+    {
+      "id": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
+      "type": "sectionSeparator",
+      "name": "separator1",
+      "parentId": "root",
+      "label": "Display"
+    },
+    {
+      "id": "22d07439-4c18-468c-89e1-60c002ce96c5",
+      "type": "textField",
+      "name": "name",
+      "parentId": "root",
+      "label": "Name"
+    },
+    {
+      "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
+      "type": "textField",
+      "name": "label",
+      "parentId": "root",
+      "label": "Label"
+    },
+    {
+      "id": "24a8ae33-98eb-40f7-99ea-ebb602693e9c",
+      "type": "dropdown",
+      "name": "mode",
+      "parentId": "root",
+      "label": "Mode",
+      "values": [
+        {"label": "Edit", "value": "Edit"},
+        {"label": "Select", "value": "Select"},
+        {"label": "View", "value": "View"}
+      ]
+    },
+    {
+      "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
+      "type": "checkbox",
+      "name": "hidden",
+      "parentId": "root",
+      "label": "Hidden"
+    },
+    {
+      "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
+      "type": "checkbox",
+      "name": "hideLabel",
+      "parentId": "root",
+      "label": "Hide Label"
+    },
+    {
+      "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
+      "type": "checkbox",
+      "name": "disabled",
+      "parentId": "root",
+      "label": "Disabled"
+    },
+    {
+      "id": "24a8ae15-98eb-40f7-99ea-ebb602693e9c",
+      "type": "checkbox",
+      "name": "readOnly",
+      "parentId": "root",
+      "label": "Readonly"
+    },
+    {
+      "id": "24a8ae22-98eb-40f7-99ea-ebb602693e9c",
+      "type": "numberField",
+      "name": "height",
+      "parentId": "root",
+      "label": "Height"
+    },
+    {
+      "id": "6befdd49-41aa-41d6-a29e-76fa00590b74",
+      "type": "sectionSeparator",
+      "name": "sectionVisibility",
+      "parentId": "root",
+      "label": "Visibility"
+    },
+    {
+      "id": "2ded909b-4fd3-4c79-84a8-89fa8f5fc4fe",
+      "type": "codeEditor",
+      "name": "customVisibility",
+      "label": "Custom Visibility",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
+      "validate": {},
+      "settingsValidationErrors": [],
+      "exposedVariables": [
+        { "name": "value", "description": "Component current value", "type": "string | any" },
+        { "name": "data", "description": "Selected form values", "type": "object" }
+      ]
+    }
+  ],
+  "formSettings": {
+    "layout": "horizontal",
+    "colon": true,
+    "labelCol": {
+      "span": 5
+    },
+    "wrapperCol": {
+      "span": 13
+    },
+    "displayName": "DEFAULT_FORM_SETTINGS",
+    "__docgenInfo": {
+      "description": "Default form settings",
+      "displayName": "DEFAULT_FORM_SETTINGS",
+      "props": {}
+    }
+  }
+}

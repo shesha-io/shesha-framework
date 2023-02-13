@@ -1,0 +1,157 @@
+{
+  "components": [
+    {
+      "id": "14817287-cfa6-4f8f-a998-4eb6cc7cb818",
+      "type": "textField",
+      "name": "name",
+      "label": "Name",
+      "labelAlign": "right",
+      "parentId": "root"
+    },
+    {
+      "id": "02deeaa2-1dc7-439f-8f1a-1f8bec6e8425",
+      "type": "textField",
+      "name": "title",
+      "label": "Title",
+      "labelAlign": "right",
+      "parentId": "root"
+    },
+
+    {
+      "id": "4bb6cdc7-0657-4e41-8c50-effe14d0dc96",
+      "type": "textField",
+      "name": "key",
+      "label": "Key",
+      "labelAlign": "right",
+      "parentId": "root"
+    },
+    {
+      "id": "29be3a6a-129a-4004-a627-2b257ecb78b4",
+      "type": "textField",
+      "name": "className",
+      "label": "Class Name",
+      "labelAlign": "right",
+      "parentId": "root"
+    },
+    {
+      "id": "caed91a6-3e9e-4f04-9800-7d9c7a3ffb80",
+      "type": "checkbox",
+      "name": "animated",
+      "label": "Animated",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "validate": {}
+    },
+    {
+      "id": "4595a895-5078-4986-934b-c5013bf315ad",
+      "type": "iconPicker",
+      "name": "icon",
+      "label": "Icon",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "settingsValidationErrors": []
+    },
+    {
+      "id": "81da0da4-00db-4d6b-9f16-b364a6f9d9e1",
+      "type": "checkbox",
+      "name": "forceRender",
+      "label": "Force Render",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "validate": {}
+    },
+    {
+      "id": "d1e06550-826c-4db9-9b9f-ce05e565f64f",
+      "type": "checkbox",
+      "name": "disabled",
+      "label": "Disabled",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "validate": {}
+    },
+    {
+      "id": "a8b12318-65a5-4b98-bcce-834b6a40b2fd",
+      "type": "checkbox",
+      "name": "destroyInactiveTabPane",
+      "label": "Destroy Inactive Tab Pane",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "validate": {}
+    },
+    {
+      "id": "d2f01684-31e5-41a3-b32a-c23abc20e700",
+      "type": "codeEditor",
+      "name": "style",
+      "label": "Style",
+      "parentId": "root",
+      "validate": {},
+      "settingsValidationErrors": [],
+      "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
+      "exposedVariables": [{ "name": "data", "description": "Form values", "type": "object" }]
+    },
+    {
+      "id": "78f2f5ee-9826-4567-a938-d7bc03ba90ac",
+      "type": "codeEditor",
+      "name": "customVisibility",
+      "label": "Custom Visibility",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
+      "validate": {},
+      "settingsValidationErrors": [],
+      "exposedVariables": [
+        { "name": "globalState", "description": "The Global state", "type": "object" },
+        { "name": "data", "description": "Selected form values", "type": "object" }
+      ]
+    },
+    {
+      "id": "377bbbee-d7f6-42bf-8f08-fc9303424518",
+      "type": "codeEditor",
+      "name": "customEnabled",
+      "label": "Custom Enabled",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customEnabled": null,
+      "description": "Enter custom enabled code.  You must return true to enable the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
+      "validate": {},
+      "settingsValidationErrors": [],
+      "exposedVariables": [
+        { "name": "globalState", "description": "The Global state", "type": "object" },
+        { "name": "data", "description": "Selected form values", "type": "object" }
+      ]
+    },
+    {
+      "id": "3d24cc31-a797-40b8-b178-1e77eabb69c4",
+      "type": "editableTagGroup",
+      "name": "permissions",
+      "label": "Permissions",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "validate": {}
+    }
+  ],
+  "formSettings": {
+    "layout": "horizontal",
+    "colon": true,
+    "labelCol": {
+      "span": 5
+    },
+    "wrapperCol": {
+      "span": 13
+    }
+  }
+}

@@ -1,0 +1,546 @@
+{
+  "components": [
+    {
+      "id": "ee6a9269-0e8e-41db-b6e0-069036accb19",
+      "type": "autocomplete",
+      "name": "modelType",
+      "label": "Entity",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "dataSourceType": "url",
+      "dataSourceUrl": "/api/services/app/Metadata/TypeAutocomplete",
+      "validate": {},
+      "useRawValues": true
+    },
+    {
+      "id": "077f5a0d-d59e-44b8-bc5b-a06e18438f4d",
+      "type": "dropdown",
+      "name": "layout",
+      "label": "Layout",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "validate": {
+        "required": true
+      },
+      "dataSourceType": "values",
+      "values": [
+        {
+          "id": "3f7bd074-37e6-450c-8106-95e8d8164ada",
+          "label": "horizontal",
+          "value": "horizontal"
+        },
+        {
+          "id": "5709e098-7c1d-4a27-92e5-f25e998c26fd",
+          "label": "vertical",
+          "value": "vertical"
+        }
+      ],
+      "version": 1,
+      "useRawValues": false,
+      "referenceListId": null
+    },
+    {
+      "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
+      "type": "dropdown",
+      "name": "size",
+      "parentId": "root",
+      "label": "Size",
+      "allowClear": true,
+      "values": [
+        {
+          "label": "Small",
+          "value": "small",
+          "id": "4f11403c-95fd-4e49-bb60-cb8c25f0f3c3"
+        },
+        {
+          "label": "Middle",
+          "value": "middle",
+          "id": "8f85c476-e632-4fa7-89ad-2be6cfb7f1f1"
+        },
+        {
+          "label": "Large",
+          "value": "large",
+          "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
+        }
+      ],
+      "dataSourceType": "values",
+      "version": 1,
+      "useRawValues": false,
+      "referenceListId": null
+    },
+    {
+      "id": "b6bdf196-769f-4bce-b488-9ca50ad16176",
+      "type": "checkbox",
+      "name": "colon",
+      "label": "Colon",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "description": "Configure the default value of colon for Form.Item. Indicates whether the colon after the label is displayed (only effective when prop layout is horizontal)",
+      "validate": {}
+    },
+    {
+      "id": "493e12cd-d4ab-4f2a-8c08-3a20ce0f617e",
+      "type": "numberField",
+      "name": "labelCol.span",
+      "label": "Label span",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "validate": {},
+      "description": "Raster number of cells to occupy, 0 corresponds to display: none"
+    },
+    {
+      "id": "99c93c99-0005-429e-8f71-e899230f1c6e",
+      "type": "numberField",
+      "name": "wrapperCol.span",
+      "label": "Component span",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "validate": {},
+      "description": "Raster number of cells to occupy, 0 corresponds to display: none"
+    },
+    {
+      "id": "87d37542-d98a-453c-a689-9930babe9b8e",
+      "type": "checkbox",
+      "name": "showModeToggler",
+      "label": "Show Mode Toggler",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "description": "Whether the form should show mode toddler when in read mode or not. If set, clicking the pencil icon while in read-only mode, will change the form mode to editable",
+      "validate": {}
+    },
+    {
+      "id": "0e3231f1-e158-427a-b32b-00ff9da941bb",
+      "type": "checkbox",
+      "name": "excludeFormFieldsInPayload",
+      "label": "Exclude '_formFields' in the payload?",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "description": "Whether or not _formFields should be included in the payload. By default it is included.",
+      "validate": {}
+    },
+    {
+      "id": "63f3360d-1e54-4a79-a888-8cd23b0bedd5",
+      "type": "propertyAutocomplete",
+      "name": "fieldsToFetch",
+      "label": "Additional fields for fetch",
+      "mode": "multiple",
+      "labelAlign": "right",
+      "hidden": false,
+      "customVisibility": null,
+      "validate": {},
+      "settingsValidationErrors": [],
+      "description": "A list of fields you want to fetch",
+      "parentId": "root"
+    },
+    {
+      "id": "52f4460d-2e64-4d79-a900-7cd28b0bebd3",
+      "type": "propertyAutocomplete",
+      "name": "formKeysToPersist",
+      "label": "Persisted properties",
+      "mode": "tags",
+      "labelAlign": "right",
+      "hidden": false,
+      "customVisibility": null,
+      "validate": {},
+      "settingsValidationErrors": [],
+      "description": "A list of form properties you want persisted",
+      "parentId": "root"
+    },
+    {
+      "id": "ad28d795-92d8-4470-a87e-603822368cc8",
+      "type": "textField",
+      "name": "uniqueFormId",
+      "label": "Unique Form Id",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": "return !!data.formKeysToPersist?.length",
+      "validate": {
+        "required": true
+      },
+      "description": "This is very important since some form are rendered using the markup, in which case they wouldn't have the path or id that could be used as a unique id of the form",
+      "version": 0,
+      "textType": "text"
+    },
+    {
+      "id": "6c121baa-57e3-4965-a429-0632dadc2a99",
+      "type": "labelValueEditor",
+      "name": "initialValues",
+      "parentId": "root",
+      "label": "Initial Values",
+      "labelTitle": "Key",
+      "labelName": "key",
+      "valueTitle": "Value",
+      "valueName": "value",
+      "ignorePrefixesOnNewItems": true,
+      "exposedVariables": [
+        {
+          "name": "data",
+          "description": "The form data",
+          "type": "object"
+        },
+        {
+          "name": "parentFormValues",
+          "description": "Parent form values. The values of the form rendering the dialog.",
+          "type": "object"
+        },
+        {
+          "name": "globalState",
+          "description": "The global state of the application",
+          "type": "object"
+        },
+        {
+          "name": "query",
+          "description": "Query parameters from the address bar",
+          "type": "object"
+        }
+      ],
+      "description": "Enter values that you would like passed to the server as payload. Note that you can also use Mustache expression as in {{parent.id}}. Also you can use dot notation such as query.name"
+    },
+    {
+      "id": "fcfccb85-8fc3-436b-9f87-17e189bc3cdc",
+      "type": "codeEditor",
+      "name": "preparedValues",
+      "label": "Prepared Values",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": "",
+      "autoSize": false,
+      "showCount": false,
+      "allowClear": false,
+      "validate": {},
+      "exposedVariables": [
+        {
+          "name": "data",
+          "description": "The form data",
+          "type": "object"
+        },
+        {
+          "name": "moment",
+          "description": "The moment.js object",
+          "type": "object"
+        },
+        {
+          "name": "parentFormValues",
+          "description": "Parent form values. The values of the form rendering the dialog.",
+          "type": "object"
+        },
+        {
+          "name": "globalState",
+          "description": "The global state of the application",
+          "type": "object"
+        },
+        {
+          "name": "initialValues",
+          "description": "Initial values",
+          "type": "object"
+        }
+      ],
+      "description": "Write a code that allows you to return an object whose values will be merged with the form state before submit. Check the variables tab for exposed variables"
+    },
+    {
+      "id": "055f85e2-f2f1-4a88-95ad-0d1afb81cae7",
+      "type": "codeEditor",
+      "name": "onInitialized",
+      "label": "On Initialized",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": "",
+      "autoSize": false,
+      "showCount": false,
+      "allowClear": false,
+      "validate": {},
+      "exposedVariables": [
+        {
+          "name": "moment",
+          "description": "The moment.js object",
+          "type": "object"
+        },
+        {
+          "name": "parentFormValues",
+          "description": "Parent form values. The values of the form rendering the dialog.",
+          "type": "object"
+        },
+        {
+          "name": "globalState",
+          "description": "The global state of the application",
+          "type": "object"
+        },
+        {
+          "name": "initialValues",
+          "description": "Initial values",
+          "type": "object"
+        },
+        {
+          "name": "http",
+          "description": "axios instance used to make http requests",
+          "type": "object"
+        },
+        {
+          "name": "message",
+          "description": "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
+          "type": "object"
+        },
+        {
+          "name": "form",
+          "description": "The form instance",
+          "type": "object"
+        }
+      ],
+      "description": "This action will be executed the first time the form loads. Just before any API call has been made. At this stage, the form has no data except for initialValues if passed"
+    },
+    {
+      "id": "087a4e7d-ff28-4175-9221-61bef0bbaea2",
+      "type": "codeEditor",
+      "name": "onDataLoaded",
+      "label": "On Data Loaded",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": "",
+      "autoSize": false,
+      "showCount": false,
+      "allowClear": false,
+      "validate": {},
+      "exposedVariables": [
+        {
+          "name": "data",
+          "description": "Fetched data from the server",
+          "type": "object"
+        },
+        {
+          "name": "moment",
+          "description": "The moment.js object",
+          "type": "object"
+        },
+        {
+          "name": "parentFormValues",
+          "description": "Parent form values. The values of the form rendering the dialog.",
+          "type": "object"
+        },
+        {
+          "name": "globalState",
+          "description": "The global state of the application",
+          "type": "object"
+        },
+        {
+          "name": "initialValues",
+          "description": "Initial values",
+          "type": "object"
+        },
+        {
+          "name": "http",
+          "description": "axios instance used to make http requests",
+          "type": "object"
+        },
+        {
+          "name": "initialValues",
+          "description": "Initial values passsed to the form. In most cases, it's the selected row in a case where an action column is the one triggering the form displaying on the dialog",
+          "type": "object"
+        },
+        {
+          "name": "message",
+          "description": "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
+          "type": "object"
+        },
+        {
+          "name": "form",
+          "description": "The form instance",
+          "type": "object"
+        }
+      ],
+      "description": "This action will be executed immediately after the data has been loaded (Fetched from the API)"
+    },
+    {
+      "id": "5092dd2b-c514-4b06-bfb5-546ce94fab97",
+      "type": "codeEditor",
+      "name": "onUpdate",
+      "label": "On Update",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": "",
+      "autoSize": false,
+      "showCount": false,
+      "allowClear": false,
+      "validate": {},
+      "exposedVariables": [
+        {
+          "name": "data",
+          "description": "The form data",
+          "type": "object"
+        },
+        {
+          "name": "moment",
+          "description": "The moment.js object",
+          "type": "object"
+        },
+        {
+          "name": "parentFormValues",
+          "description": "Parent form values. The values of the form rendering the dialog.",
+          "type": "object"
+        },
+        {
+          "name": "globalState",
+          "description": "The global state of the application",
+          "type": "object"
+        },
+        {
+          "name": "initialValues",
+          "description": "Initial values",
+          "type": "object"
+        },
+        {
+          "name": "http",
+          "description": "axios instance used to make http requests",
+          "type": "object"
+        },
+        {
+          "name": "message",
+          "description": "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
+          "type": "object"
+        }
+      ],
+      "description": "This action will be executed whenever the form updates"
+    },
+    {
+      "id": "Q6s-GKx4El9BhcH9MQ8bj",
+      "type": "collapsiblePanel",
+      "name": "collapsiblePanel1",
+      "label": "Advanced Settings...",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "visibility": "Yes",
+      "customVisibility": null,
+      "isDynamic": false,
+      "expandIconPosition": "right",
+      "settingsValidationErrors": [],
+      "components": [
+        {
+          "id": "y3d0ny6_gznxiEEHFa1ZG",
+          "type": "endpointsAutocomplete",
+          "name": "postUrl",
+          "label": "Custom Create Url",
+          "labelAlign": "right",
+          "parentId": "Q6s-GKx4El9BhcH9MQ8bj",
+          "hidden": false,
+          "visibility": "Yes",
+          "customVisibility": null,
+          "isDynamic": false,
+          "placeholder": "",
+          "description": "Check the 'URL variables' tab for the exposed variables. Live empty to use default endpoint.",
+          "validate": {
+            "minLength": "",
+            "maxLength": "",
+            "message": ""
+          },
+          "quickviewWidth": "",
+          "prefix": "POST",
+          "suffix": "",
+          "initialValue": "",
+          "settingsValidationErrors": []
+        },
+        {
+          "id": "oamRBlEs6O2Jlc2FGL_gY",
+          "type": "endpointsAutocomplete",
+          "name": "getUrl",
+          "label": "Custom Read Url",
+          "labelAlign": "right",
+          "parentId": "Q6s-GKx4El9BhcH9MQ8bj",
+          "hidden": false,
+          "visibility": "Yes",
+          "customVisibility": null,
+          "isDynamic": false,
+          "placeholder": "",
+          "description": "Check the 'URL variables' tab for the exposed variables. Live empty to use default endpoint.",
+          "validate": {
+            "minLength": "",
+            "maxLength": "",
+            "message": ""
+          },
+          "quickviewWidth": "",
+          "prefix": "GET",
+          "suffix": "",
+          "initialValue": "",
+          "settingsValidationErrors": []
+        },
+        {
+          "id": "pooSZYaENGyIjZFy6gH9G",
+          "type": "endpointsAutocomplete",
+          "name": "putUrl",
+          "label": "Custom Update Url",
+          "labelAlign": "right",
+          "parentId": "Q6s-GKx4El9BhcH9MQ8bj",
+          "hidden": false,
+          "visibility": "Yes",
+          "customVisibility": null,
+          "isDynamic": false,
+          "placeholder": "",
+          "description": "Check the 'URL variables' tab for the exposed variables. Live empty to use default endpoint.",
+          "validate": {
+            "minLength": "",
+            "maxLength": "",
+            "message": ""
+          },
+          "quickviewWidth": "",
+          "prefix": "PUT",
+          "suffix": "",
+          "initialValue": "",
+          "settingsValidationErrors": []
+        },
+        {
+          "id": "Qlyg6-hRbU8Q287-P_Fr7",
+          "type": "endpointsAutocomplete",
+          "name": "deleteUrl",
+          "label": "Custom Delete Url",
+          "labelAlign": "right",
+          "parentId": "Q6s-GKx4El9BhcH9MQ8bj",
+          "hidden": false,
+          "visibility": "Yes",
+          "customVisibility": null,
+          "isDynamic": false,
+          "placeholder": "",
+          "description": "Check the 'URL variables' tab for the exposed variables. Live empty to use default endpoint.",
+          "validate": {
+            "minLength": "",
+            "maxLength": "",
+            "message": ""
+          },
+          "quickviewWidth": "",
+          "prefix": "DELETE",
+          "suffix": "",
+          "initialValue": "",
+          "settingsValidationErrors": []
+        }
+      ],
+      "collapsedByDefault": true
+    }
+  ],
+  "formSettings": {
+    "layout": "horizontal",
+    "colon": true,
+    "labelCol": {
+      "span": 5
+    },
+    "wrapperCol": {
+      "span": 19
+    }
+  }
+}

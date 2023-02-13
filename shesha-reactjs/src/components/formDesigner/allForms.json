@@ -1,0 +1,217 @@
+[
+  {
+    "name": "address",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\address\\settingsForm.json",
+    "id": "454f3b70-e039-4f7d-989b-ac1ea532393a"
+  },
+  {
+    "name": "alert",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\alert\\settingsForm.json",
+    "id": "1ebbf6c8-92ce-4fc5-9774-eb0621a77998"
+  },
+  {
+    "name": "attachmentsEditor",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\attachmentsEditor\\settingsForm.json",
+    "id": "a3054f61-c2ee-4569-9d7d-71ac11f429f0"
+  },
+  {
+    "name": "autocomplete",
+    "path": "D:\\Boxfusion\\_HIS\\shesha-reactjs\\src\\components\\formDesigner\\components\\autocomplete\\settingsForm.json",
+    "id": "33DC2988-D77F-4BFD-8CBD-D35896BBE136"
+  },
+  {
+    "name": "basicDisplayFormItem",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\basicDisplayFormItem\\settingsForm.json",
+    "id": "9e9d13dc-53c6-475a-866b-7d9ed0e2da03"
+  },
+  {
+    "name": "button",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\button\\settingsForm.json",
+    "id": "239d582e-46fa-4f8c-90a9-4eeba69722c1"
+  },
+  {
+    "name": "checkbox",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\checkbox\\settingsForm.json",
+    "id": "fff7d724-a062-4132-9c93-fe414cf24476"
+  },
+  {
+    "name": "checkboxGroup",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\checkboxGroup\\settingsForm.json",
+    "id": "30414f52-c60c-4711-ac6f-85f8cb87e602"
+  },
+  {
+    "name": "childDataTable",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\childDataTable\\settingsForm.json",
+    "id": "31018d81-1fe0-41bc-8b72-fb996f784fb7"
+  },
+  {
+    "name": "codeEditor",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\codeEditor\\settingsForm.json",
+    "id": "6158612f-fbdf-4285-837a-8b0396d60200"
+  },
+  {
+    "name": "collapsiblePanel",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\collapsiblePanel\\settingsForm.json",
+    "id": "4d43b46f-aa37-4ddb-a518-8cfc25cf5fab"
+  },
+  {
+    "name": "container",
+    "path": "D:\\Boxfusion\\Shesha3\\opensource\\etalon\\shesha-reactjs\\src\\components\\formDesigner\\components\\container\\settingsForm.json",
+    "id": "64d320ee-9946-4907-a526-849e0e55f547"
+  },
+  {
+    "name": "dateField",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\dateField\\settingsForm.json",
+    "id": "38ead17f-10da-4f1b-bc06-dbbf475c3473"
+  },
+  {
+    "name": "dropdown",
+    "path": "D:\\Boxfusion\\_HIS\\shesha-reactjs\\src\\components\\formDesigner\\components\\dropdown\\settingsForm.json",
+    "id": "6ca2c692-cd40-4941-86e8-3ccdab4916ff"
+  },
+  {
+    "name": "entityPicker",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\entityPicker\\settingsForm.json",
+    "id": "7e6e2e5b-92ee-456e-9eec-51bf03df245f"
+  },
+  {
+    "name": "fileUpload",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\fileUpload\\settingsForm.json",
+    "id": "6ca25131-e743-42de-94bb-e08fbab3335d"
+  },
+  {
+    "name": "hierarchicalChecklist",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\hierarchicalChecklist\\settingsForm.json",
+    "id": "a09bf279-d8fa-4397-b933-90746a4e6dcf"
+  },
+  {
+    "name": "iconPicker",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\iconPicker\\settingsForm.json",
+    "id": "35d9e60f-4fc5-47e3-aec3-41514963744b"
+  },
+  {
+    "name": "labelValueEditor",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\labelValueEditor\\settingsForm.json",
+    "id": "b38a6a3e-7fbe-4a44-9ee3-e408a268fa2d"
+  },
+  {
+    "name": "notes",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\notes\\settingsForm.json",
+    "id": "9be955b6-2968-48aa-bef1-b5d266952aa6"
+  },
+  {
+    "name": "numberField",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\numberField\\settingsForm.json",
+    "id": "3c8cdf02-efcd-4cb5-a05a-446b6457d1bb"
+  },
+  {
+    "name": "propertyAutocomplete",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\propertyAutocomplete\\settingsForm.json",
+    "id": "4731d0f2-e90a-421e-9470-6db895a0e51e"
+  },
+  {
+    "name": "queryBuilder",
+    "path": "D:\\Boxfusion\\_HIS\\shesha-reactjs\\src\\components\\formDesigner\\components\\queryBuilder\\settingsForm.json",
+    "id": "5f29ee6e-4959-4739-83f7-7030197715bd"
+  },
+  {
+    "name": "radio",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\radio\\settingsForm.json",
+    "id": "ac72f735-c935-43f9-b715-2a2f9c0dca4c"
+  },
+  {
+    "name": "section",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\section\\settingsForm.json",
+    "id": "397341c8-8ac2-4fed-9ab9-03d535a59c82"
+  },
+  {
+    "name": "sectionSeprator",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\sectionSeprator\\settingsForm.json",
+    "id": "459b9897-6516-4e92-b6d5-e9f87388cf7a"
+  },
+  {
+    "name": "statistic",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\statistic\\settingsForm.json",
+    "id": "a3ac3253-7815-42ac-ac1b-7b4dcae11f1f"
+  },
+  {
+    "name": "switch",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\switch\\settingsForm.json",
+    "id": "b075adf6-6689-42ba-acb9-dd4ef5f9bdd2"
+  },
+  {
+    "name": "tabs",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\tabs\\settingsForm.json",
+    "id": "6a7bf988-c7da-47e6-8522-9284d76fe59f"
+  },
+  {
+    "name": "textArea",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\textArea\\settingsForm.json",
+    "id": "09ab5ead-891b-405b-bdc2-ae4d58f47b8b"
+  },
+  {
+    "name": "textField",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\textField\\settingsForm.json",
+    "id": "58cf57c5-b165-44d0-b039-7a5ea7d883a7"
+  },
+  {
+    "name": "timeField",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\timeField\\settingsForm.json",
+    "id": "c845c350-4433-4b03-bef5-d2fb6fa3243c"
+  },
+  {
+    "name": "validationErrors",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\validationErrors\\settingsForm.json",
+    "id": "40b12be4-0115-48d9-bdfc-aad75ca610d1"
+  },
+  {
+    "name": "dataTable\\advancedFilterButton",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\dataTable\\advancedFilterButton\\settingsForm.json",
+    "id": "cf776bb6-28d8-48e0-94e1-6bdbabcd9a30"
+  },
+  {
+    "name": "dataTable\\pager",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\dataTable\\pager\\settingsForm.json",
+    "id": "dbca3cb4-6006-435f-afa7-a72e2dceedf6"
+  },
+  {
+    "name": "dataTable\\quickSearch",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\dataTable\\quickSearch\\settingsForm.json",
+    "id": "d142680d-9e63-4275-8950-9f882a2e9ebc"
+  },
+  {
+    "name": "dataTable\\selectColumnsButton",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\dataTable\\selectColumnsButton\\settingsForm.json",
+    "id": "53668224-3e35-4e6a-9d6a-4585c7586b14"
+  },
+  {
+    "name": "dataTable\\table",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\dataTable\\table\\settingsForm.json",
+    "id": "a992a900-6ad1-415a-876f-b5d93df5401c"
+  },
+  {
+    "name": "dataTable\\tableContext",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\dataTable\\tableContext\\settingsForm.json",
+    "id": "961228a5-0677-449d-882d-600e2d152c4c"
+  },
+  {
+    "name": "dataTable\\tableViewSelector",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\dataTable\\tableViewSelector\\tableViewSettings.json",
+    "id": "6f0f3e5c-c173-46c2-bb52-5b8d584068c5"
+  },
+  {
+    "name": "dataTable\\toolbar\\itemGroup",
+    "path": "D:\\Boxfusion\\Shesha3\\opensource\\etalon\\shesha-reactjs\\src\\components\\formDesigner\\components\\dataTable\\toolbar\\itemGroupSettings.json",
+    "id": "12ab2c3f-6da0-4600-a41b-1bbec6ec5532"
+  },
+  {
+    "name": "dataTable\\toolbar\\item",
+    "path": "D:\\Boxfusion\\Shesha3\\opensource\\etalon\\shesha-reactjs\\src\\components\\formDesigner\\components\\dataTable\\toolbar\\itemSettings.json",
+    "id": "20ea3f19-ab93-41b8-b992-3bae6c16b844"
+  },
+  {
+    "name": "dataTable\\table\\columnsEditor",
+    "path": "d:\\Boxfusion\\Shesha3\\opensource\\metadata\\shesha-reactjs_etalon\\src\\components\\formDesigner\\components\\dataTable\\table\\columnsEditor\\columnSettings.json",
+    "id": "70d82b7e-73ad-4eb1-a445-f569cec771e0"
+  }
+]

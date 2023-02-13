@@ -1,0 +1,22 @@
+site_name: shesha-reactjs
+repo_url: https://github.com/boxfusion/shesha-reactjs
+repo_name: boxfusion/shesha-reactjs
+edit_uri: edit/main/docs/
+copyright: Copyright &copy; Boxfusion
+extra:
+  generator: false
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/
+    - icon: fontawesome/brands/linkedin
+      link: https://linkedin.com/in/
+theme:
+  logo: assets/logo.png
+  homepage: https://shesha.io
+  name: material
+  palette:
+    primary: deep orange
+  features:
+    - navigation.sections

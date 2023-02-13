@@ -1,0 +1,164 @@
+@import '../variables';
+
+.react-calendar-timeline {
+  * {
+    box-sizing: border-box;
+  }
+
+  .rct-outer {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .rct-scroll {
+    display: inline-block;
+    white-space: normal;
+    vertical-align: top;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    -ms-touch-action: none;
+    touch-action: none;
+  }
+
+  .rct-item {
+    &:hover {
+      z-index: 88;
+    }
+
+    .rct-item-content {
+      position: sticky;
+      position: -webkit-sticky;
+      left: 0px;
+      overflow: hidden;
+      display: inline-block;
+      border-radius: 2px;
+      padding: 0 6px;
+      height: 100%;
+    }
+  }
+
+  .rct-sidebar {
+    overflow: hidden;
+    white-space: normal;
+    display: inline-block;
+    vertical-align: top;
+    position: relative;
+    box-sizing: border-box;
+    border-right: 1px solid #bbb;
+
+    &.rct-sidebar-right {
+      border-right: 0;
+      border-left: 1px solid #bbb;
+    }
+
+    .rct-sidebar-row {
+      padding: 0 4px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      box-sizing: content-box;
+      margin: 0;
+      border-bottom: 1px solid #bbb;
+
+      &.rct-sidebar-row-odd {
+        background: rgba(0, 0, 0, 0.05);
+      }
+
+      &.rct-sidebar-row-even {
+        background: transparent;
+
+        &:hover {
+          background: lighten($primary-color, 15%)
+        }
+      }
+    }
+  }
+
+  .rct-vertical-lines .rct-vl {
+    position: absolute;
+    border-left: 1px solid #bbb;
+    z-index: 30;
+
+    &.rct-vl-first {
+      border-left-width: 2px;
+    }
+
+    &.rct-day-6,
+    &.rct-day-0 {
+      background: rgba(250, 246, 225, 0.5);
+    }
+  }
+
+  .rct-horizontal-lines {
+
+    .rct-hl-even,
+    .rct-hl-odd {
+      border-bottom: 1px solid #bbb;
+      box-sizing: content-box;
+      z-index: 40;
+
+      &:hover {
+        background: lighten($primary-color, 15%)
+      }
+    }
+
+    .rct-hl-even {
+
+      background: transparent;
+    }
+
+    .rct-hl-odd {
+
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+  }
+
+  .rct-cursor-line {
+    position: absolute;
+    width: 2px;
+    background: #2196f3;
+    z-index: 51;
+  }
+
+  .rct-infolabel {
+    position: fixed;
+    left: 100px;
+    bottom: 50px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 10px;
+    font-size: 20px;
+    border-radius: 5px;
+    z-index: 85;
+  }
+
+  .rct-dateHeader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    border-bottom: 1px solid #bbb;
+    cursor: pointer;
+    font-size: 14px;
+    background-color: #f0f0f0;
+    border-left: 2px solid #bbb;
+  }
+
+  .rct-dateHeader-primary {
+    background-color: initial;
+    border-left: 1px solid #bbb;
+    border-right: 1px solid #bbb;
+    color: #fff;
+  }
+
+  .rct-header-root {
+    background: orange;
+    border-bottom: 1px solid #bbb;
+  }
+
+  .rct-calendar-header {
+    border: 1px solid #bbb;
+  }
+}

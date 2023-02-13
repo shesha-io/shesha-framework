@@ -1,0 +1,141 @@
+{
+  "components": [
+    {
+      "id": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
+      "type": "sectionSeparator",
+      "name": "separator1",
+      "parentId": "root",
+      "label": "Override settings"
+    },
+    {
+      "id": "33b16438-9563-438b-a375-8c5f4ccdd727",
+      "type": "textField",
+      "name": "override",
+      "parentId": "root",
+      "label": "Override",
+      "validate": {}
+    },
+    {
+      "id": "93053321-71c5-4d96-9832-d860cac70761",
+      "type": "codeEditor",
+      "name": "overrideCodeEvaluator",
+      "parentId": "root",
+      "label": "Override Expression",
+      "language": "typescript",
+      "description": "Enter the code that, when evaluated, will return a string representation of a value. Objects that have been exposed to you are 'data', which is the form and 'formMode', which is the mode the form is currently in.",
+      "validate": {},
+      "exposedVariables": [
+        { "name": "data", "description": "Selected form values", "type": "object" },
+        { "name": "formMode", "description": "Editable state of form", "type": "'designer' | 'edit' | 'readonly'" }
+      ]
+    },
+    {
+      "id": "a4e0bc19-b081-4b38-bc9f-d8352ba2205d",
+      "type": "sectionSeparator",
+      "name": "separator1",
+      "parentId": "root",
+      "label": "Value settings"
+    },
+    {
+      "id": "43f91890-9728-47f3-9694-3d893d820c86",
+      "type": "textField",
+      "name": "value",
+      "parentId": "root",
+      "label": "Value",
+      "validate": {}
+    },
+    {
+      "id": "96f7b3bf-f3b0-42c8-ab24-305482e0853e",
+      "type": "codeEditor",
+      "name": "valueCodeEvaluator",
+      "parentId": "root",
+      "label": "Value Expression",
+      "language": "typescript",
+      "description": "Enter the code that, when evaluated, will return a string representation of a value. Objects that have been exposed to you are 'data', which is the form and 'formMode', which is the mode the form is currently in.",
+      "validate": {},
+      "exposedVariables": [
+        { "name": "data", "description": "Selected form values", "type": "object" },
+        { "name": "formMode", "description": "Editable state of form", "type": "'designer' | 'edit' | 'readonly'" }
+      ]
+    },
+    {
+      "id": "b8954bf6-f76d-4139-a850-c99bf06c8b66",
+      "type": "sectionSeparator",
+      "name": "separator1",
+      "parentId": "root",
+      "label": "Color settings"
+    },
+    {
+      "id": "821d3a6c-abdb-4f11-b659-e562c75bada9",
+      "type": "textField",
+      "name": "color",
+      "parentId": "root",
+      "label": "Color",
+      "validate": {}
+    },
+    {
+      "id": "4d732742-715b-42a3-9663-e90a3caba458",
+      "type": "codeEditor",
+      "name": "colorCodeEvaluator",
+      "parentId": "root",
+      "label": "Color Expression",
+      "language": "typescript",
+      "description": "Enter the code that, when evaluated, will return a string representation of a color. Objects that have been exposed to you are 'data', which is the form and 'formMode', which is the mode the form is currently in.",
+      "validate": {},
+      "exposedVariables": [
+        { "name": "data", "description": "Selected form values", "type": "object" },
+        { "name": "formMode", "description": "Editable state of form", "type": "'designer' | 'edit' | 'readonly'" }
+      ]
+    },
+    {
+      "id": "d5278346-8b05-482f-b1e6-7bedf5bf7712",
+      "type": "sectionSeparator",
+      "name": "separator1",
+      "parentId": "root",
+      "label": "Validations"
+    },
+    {
+      "id": "12b8a36a-3aec-414c-942f-a57e37f00901",
+      "type": "codeEditor",
+      "name": "mappings",
+      "parentId": "root",
+      "language": "json",
+      "label": "Default Mappings",
+      "description": "Enter the JSON object that should match the structure of the default one provided",
+      "validate": {}
+    },
+    {
+      "id": "6cb29c17-5b6a-40c1-b5a4-373c7a2c9e8f",
+      "type": "codeEditor",
+      "name": "customVisibility",
+      "label": "Custom Visibility",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
+      "validate": {},
+      "settingsValidationErrors": [],
+      "exposedVariables": [
+        { "name": "value", "description": "Component current value", "type": "string | any" },
+        { "name": "data", "description": "Selected form values", "type": "object" }
+      ]
+    }
+  ],
+  "formSettings": {
+    "layout": "horizontal",
+    "colon": true,
+    "labelCol": {
+      "span": 5
+    },
+    "wrapperCol": {
+      "span": 13
+    },
+    "displayName": "DEFAULT_FORM_SETTINGS",
+    "__docgenInfo": {
+      "description": "Default form settings",
+      "displayName": "DEFAULT_FORM_SETTINGS",
+      "props": {}
+    }
+  }
+}

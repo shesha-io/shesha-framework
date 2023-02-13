@@ -1,0 +1,301 @@
+[
+  {
+    "id": "{{NEW_KEY}}",
+    "type": "datatableContext",
+    "name": "dataTable1",
+    "label": "Table",
+    "labelAlign": "right",
+    "parentId": "root",
+    "hidden": false,
+    "customVisibility": null,
+    "items": [],
+    "components": [
+      {
+        "id": "fwQ-yyXEThNSF4Bt4msUH",
+        "type": "container",
+        "name": "horizontalContainer5",
+        "label": "Horizontal Container7",
+        "labelAlign": "right",
+        "parentId": "{{NEW_KEY}}",
+        "hidden": false,
+        "customVisibility": null,
+        "justifyContent": "space-between",
+        "items": [],
+        "components": [
+          {
+            "id": "CTI0XKjHMiwet4AuHx__4",
+            "type": "container",
+            "name": "horizontalContainer6",
+            "label": "Horizontal Container7",
+            "labelAlign": "right",
+            "parentId": "fwQ-yyXEThNSF4Bt4msUH",
+            "hidden": false,
+            "customVisibility": null,
+            "justifyContent": "left",
+            "items": [],
+            "components": [
+              {
+                "id": "i4jUdZQIeFyj3kYX0EE4Y",
+                "type": "tableViewSelector",
+                "name": "tableViewSelector1",
+                "label": "Table view selector1",
+                "labelAlign": "right",
+                "parentId": "CTI0XKjHMiwet4AuHx__4",
+                "hidden": false,
+                "customVisibility": null,
+                "filters": []
+              }
+            ],
+            "direction": "horizontal"
+          },
+          {
+            "id": "O-ieWwy7eZB-jepFIUeiO",
+            "type": "container",
+            "name": "horizontalContainer7",
+            "label": "Horizontal Container7",
+            "labelAlign": "right",
+            "parentId": "fwQ-yyXEThNSF4Bt4msUH",
+            "hidden": false,
+            "customVisibility": null,
+            "components": [
+              {
+                "id": "ItrB5cnWA8ej79HX-eok5",
+                "type": "datatable.quickSearch",
+                "name": "quickSearch1",
+                "label": "Quick Search1",
+                "labelAlign": "right",
+                "parentId": "O-ieWwy7eZB-jepFIUeiO",
+                "hidden": false,
+                "customVisibility": null,
+                "items": []
+              },
+              {
+                "id": "rxYPsJCcRyIGsVhDExg-n",
+                "type": "datatable.pager",
+                "name": "tablePager1",
+                "label": "Table Pager1",
+                "labelAlign": "right",
+                "parentId": "O-ieWwy7eZB-jepFIUeiO",
+                "hidden": false,
+                "customVisibility": null,
+                "items": []
+              }
+            ],
+            "direction": "horizontal",
+            "justifyContent": "right"
+          }
+        ],
+        "direction": "horizontal"
+      },
+      {
+        "id": "g38qlSIIoUYVnzqVaaNEy",
+        "type": "container",
+        "name": "horizontalContainer2",
+        "label": "Horizontal Container7",
+        "labelAlign": "right",
+        "parentId": "{{NEW_KEY}}",
+        "hidden": false,
+        "customVisibility": null,
+        "components": [
+          {
+            "id": "46jNfZhuX5Qf-6cmtqWrO",
+            "type": "container",
+            "name": "horizontalContainer4",
+            "label": "Horizontal Container7",
+            "labelAlign": "right",
+            "parentId": "g38qlSIIoUYVnzqVaaNEy",
+            "hidden": false,
+            "customVisibility": null,
+            "components": [
+              {
+                "id": "r_K43R86pKL4mbwRVynvE",
+                "type": "toolbar",
+                "name": "toolbar2",
+                "label": "Toolbar2",
+                "labelAlign": "right",
+                "parentId": "46jNfZhuX5Qf-6cmtqWrO",
+                "hidden": false,
+                "customVisibility": null,
+                "items": [
+                  {
+                    "id": "udkemPOwpE4itKlDsYpL4",
+                    "itemType": "item",
+                    "sortOrder": 0,
+                    "name": "Add",
+                    "itemSubType": "button",
+                    "icon": "PlusOutlined",
+                    "buttonType": "link",
+                    "buttonAction": "dialogue",
+                    "modalTitle": "Add New",
+                    "selected": false
+                  },
+                  {
+                    "id": "GhFkay6EZ8BoMYr88mWW1",
+                    "itemType": "item",
+                    "sortOrder": 5,
+                    "name": "separator",
+                    "itemSubType": "separator",
+                    "selected": false
+                  },
+                  {
+                    "id": "nvnj0Q1wivGgkrCcfl9Jc",
+                    "itemType": "item",
+                    "sortOrder": 4,
+                    "name": "Open",
+                    "itemSubType": "button",
+                    "buttonAction": "navigate",
+                    "buttonType": "link",
+                    "customVisibility": "return context.selectedRow && context.selectedRow.id",
+                    "targetUrl": "/page/details?id={{selectedRow.id}}",
+                    "selected": false
+                  },
+                  {
+                    "id": "cWvZyb0P456Ndcpyb7vrz",
+                    "itemType": "item",
+                    "sortOrder": 5,
+                    "name": "Edit",
+                    "itemSubType": "button",
+                    "buttonType": "link",
+                    "buttonAction": "navigate",
+                    "targetUrl": "/page/edit?id={{selectedRow.id}}",
+                    "customVisibility": "return context.selectedRow && context.selectedRow.id",
+                    "selected": false
+                  },
+                  {
+                    "id": "D0xNVk62p9GFliocBS9jA",
+                    "itemType": "item",
+                    "sortOrder": 3,
+                    "name": "separator",
+                    "itemSubType": "separator",
+                    "selected": false
+                  },
+                  {
+                    "id": "RjL_C607edu-_k4r5Oj_g",
+                    "itemType": "item",
+                    "sortOrder": 2,
+                    "name": "Export",
+                    "itemSubType": "button",
+                    "icon": "DownloadOutlined",
+                    "buttonType": "link",
+                    "buttonAction": "executeFormAction",
+                    "formAction": "exportToExcel",
+                    "selected": false                    
+                  }
+                ]
+              }
+            ],
+            "direction": "horizontal",
+            "justifyContent": "flex-start"
+          },
+          {
+            "id": "m9o4pOhm-t4mb4JKH-1It",
+            "type": "container",
+            "name": "horizontalContainer3",
+            "label": "Horizontal Container7",
+            "labelAlign": "right",
+            "parentId": "g38qlSIIoUYVnzqVaaNEy",
+            "hidden": false,
+            "customVisibility": null,
+            "components": [
+              {
+                "id": "BZZMhqzXrNLISIR67oHar",
+                "type": "button",
+                "name": "btnSelectColumns",
+                "label": "",
+                "labelAlign": "right",
+                "parentId": "m9o4pOhm-t4mb4JKH-1It",
+                "hidden": false,
+                "customVisibility": null,
+                "actionType": "custom",
+                "buttonType": "link",
+                "settingsValidationErrors": [],
+                "icon": "SlidersOutlined",
+                "customAction": "toggleColumnsSelector"
+              },
+              {
+                "id": "x5FW_I0G8O_H2YFPY93JS",
+                "type": "button",
+                "name": "btnAdvancedFilter",
+                "label": "",
+                "labelAlign": "right",
+                "parentId": "m9o4pOhm-t4mb4JKH-1It",
+                "hidden": false,
+                "customVisibility": null,
+                "actionType": "custom",
+                "buttonType": "link",
+                "settingsValidationErrors": [],
+                "icon": "FilterOutlined",
+                "customAction": "toggleAdvancedFilter"
+              },
+              {
+                "id": "Mqo5WrsmmXm8JL8S05RCR",
+                "type": "button",
+                "name": "btnRefresh",
+                "label": "",
+                "labelAlign": "right",
+                "parentId": "m9o4pOhm-t4mb4JKH-1It",
+                "hidden": false,
+                "customVisibility": null,
+                "actionType": "custom",
+                "buttonType": "link",
+                "settingsValidationErrors": [],
+                "customAction": "refresh",
+                "icon": "RedoOutlined"
+              }
+            ],
+            "direction": "horizontal",
+            "justifyContent": "right"
+          }
+        ],
+        "justifyContent": "space-between",
+        "items": [],
+        "direction": "horizontal"
+      },
+      {
+        "id": "4C7ToUgt7-dmrecAH66df",
+        "type": "datatable",
+        "name": "dataTable1",
+        "label": "DataTable1",
+        "labelAlign": "right",
+        "parentId": "{{NEW_KEY}}",
+        "hidden": false,
+        "customVisibility": null,
+        "items": [
+          {
+            "id": "2c717c38-30a0-4a51-b7a8-ae2b025636ed",
+            "itemType": "item",
+            "sortOrder": 6,
+            "caption": "",
+            "columnType": "action",
+            "isVisible": true,
+            "buttonAction": "navigate",
+            "targetUrl": "/administration/user-management/details?id={{selectedRow.Id}}",
+            "minWidth": 30,
+            "maxWidth": 30,
+            "icon": "SearchOutlined",
+            "action": "navigate"
+          },
+          {
+            "id": "c46bf767-de34-4d81-8c90-e610f95e4b6b",
+            "itemType": "item",
+            "sortOrder": 7,
+            "caption": "",
+            "columnType": "action",
+            "isVisible": true,
+            "buttonAction": "navigate",
+            "targetUrl": "/administration/user-management/edit?id={{selectedRow.Id}}",
+            "minWidth": 30,
+            "maxWidth": 30,
+            "icon": "EditOutlined",
+            "action": "navigate"
+          }
+        ],
+        "allowViewDetails": true,
+        "allowEdit": true,
+        "allowDelete": false
+      }
+    ],
+    "description": "",
+    "settingsValidationErrors": []
+  }
+]

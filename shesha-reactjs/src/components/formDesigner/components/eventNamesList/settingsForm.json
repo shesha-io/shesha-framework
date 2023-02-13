@@ -1,0 +1,182 @@
+{
+  "components": [
+    {
+      "id": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
+      "type": "sectionSeparator",
+      "name": "separator1",
+      "parentId": "root",
+      "label": "Display"
+    },
+    {
+      "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
+      "type": "propertyAutocomplete",
+      "name": "name",
+      "parentId": "root",
+      "label": "Name",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "id": "f6c3d710-8d98-47fc-9fe2-7c6312e9a03c",
+      "type": "dropdown",
+      "name": "alertType",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "label": "Type",
+      "dataSourceType": "values",
+      "values": [
+        {
+          "id": "17a865b3-8e28-41de-ab40-1fc49a56b31d",
+          "label": "Success",
+          "value": "success"
+        },
+        {
+          "id": "edeb7d32-f942-41cc-a941-07b8882d8faa",
+          "label": "Info",
+          "value": "info"
+        },
+        {
+          "id": "df342c95-4dae-49a5-beff-259d0f2ebcb3",
+          "label": "Warning",
+          "value": "warning"
+        },
+        {
+          "id": "21fc57e5-5e5d-4ae8-83c4-080a15b55176",
+          "label": "Error",
+          "value": "error"
+        }
+      ],
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "id": "277b7ffe-d023-4543-a4b4-ff7f76052867",
+      "type": "textArea",
+      "name": "text",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "label": "Text",
+      "autoSize": false,
+      "showCount": false,
+      "allowClear": false,
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "id": "8340f638-c466-448e-99cd-fb8c544fe02a",
+      "type": "textArea",
+      "name": "description",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "label": "Description",
+      "autoSize": false,
+      "showCount": false,
+      "allowClear": true
+    },
+    {
+      "id": "65aef83a-ea37-480a-9d77-ee4f4e229a70",
+      "type": "checkbox",
+      "name": "showIcon",
+      "parentId": "root",
+      "label": "Show Icon"
+    },
+    {
+      "id": "148e12c0-41a0-4fa2-8c64-8f6dd5213a3e",
+      "type": "checkbox",
+      "name": "closable",
+      "parentId": "root",
+      "label": "Closable"
+    },
+    {
+      "id": "89fb54b3-c7ca-4f93-87a6-82c173b4c172",
+      "type": "iconPicker",
+      "name": "icon",
+      "label": "Icon",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": "",
+      "settingsValidationErrors": []
+    },
+    {
+      "id": "df8a8f35-a50b-42f9-9642-73d390ceddbf",
+      "type": "dropdown",
+      "name": "visibility",
+      "parentId": "root",
+      "label": "Visibility",
+      "description": "This property will eventually replace the 'hidden' property and other properties that toggle visibility on the UI and payload",
+      "allowClear": true,
+      "values": [
+        {
+          "label": "Yes (Display in UI and include in payload)",
+          "value": "Yes",
+          "id": "53cd10ce-26af-474b-af75-8e7b1f19e51d"
+        },
+        {
+          "label": "No (Only include in payload)",
+          "value": "No",
+          "id": "f07a228c-cb9c-4da7-a8bc-bc2be518a058"
+        },
+        {
+          "label": "Removed (Remove from UI and exlude from payload)",
+          "value": "Removed",
+          "id": "3b6282ee-2eee-47ec-bab9-4cba52b970a0"
+        }
+      ],
+      "dataSourceType": "values"
+    },
+    {
+      "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
+      "type": "checkbox",
+      "name": "hidden",
+      "parentId": "root",
+      "label": "Hidden"
+    },
+    {
+      "id": "bc67960e-77e3-40f2-89cc-f18f94678cce",
+      "type": "sectionSeparator",
+      "name": "separatorVisibility",
+      "parentId": "root",
+      "label": "Visibility"
+    },
+    {
+      "id": "4b9a0517-a5df-4517-8459-94d9c860703c",
+      "type": "codeEditor",
+      "name": "customVisibility",
+      "label": "Custom Visibility",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
+      "validate": {},
+      "settingsValidationErrors": [],
+      "exposedVariables": [
+        { "name": "value", "description": "Component current value", "type": "string | any" },
+        { "name": "data", "description": "Selected form values", "type": "object" }
+      ]
+    }
+  ],
+  "formSettings": {
+    "layout": "horizontal",
+    "colon": true,
+    "labelCol": {
+      "span": 5
+    },
+    "wrapperCol": {
+      "span": 13
+    },
+    "displayName": "DEFAULT_FORM_SETTINGS",
+    "__docgenInfo": {
+      "description": "Default form settings",
+      "displayName": "DEFAULT_FORM_SETTINGS",
+      "props": {}
+    }
+  }
+}

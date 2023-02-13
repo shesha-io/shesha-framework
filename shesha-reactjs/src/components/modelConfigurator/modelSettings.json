@@ -1,0 +1,510 @@
+{
+  "components": [
+    {
+      "id": "s1GhkdPW0u1GUZOZs6MOG",
+      "type": "alert",
+      "name": "alert1",
+      "label": "Alert1",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "visibility": "Yes",
+      "customVisibility": "return data?.notImplemented;",
+      "isDynamic": false,
+      "alertType": "error",
+      "text": "Entity configuration has 'Application Code' source type but is not implemented. Please note that you will not be able to use it.",
+      "description": "",
+      "showIcon": true,
+      "icon": "CloseCircleFilled"
+    },
+    {
+      "id": "11GhkdPW0u1GUZOZs6MOG",
+      "type": "alert",
+      "name": "alert2",
+      "label": "Alert2",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "visibility": "Yes",
+      "customVisibility": "return data?.suppress;",
+      "isDynamic": false,
+      "alertType": "warning",
+      "text": "Entity configuration is suppressed and can not be used for other purposes.",
+      "description": "",
+      "showIcon": true,
+      "icon": "WarningFilled"
+    },
+    {
+      "id": "21GhkdPW0u1GUZOZs6MOG",
+      "type": "alert",
+      "name": "alert3",
+      "label": "Alert3",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "visibility": "Yes",
+      "customVisibility": "return data?.entityConfigType === 2;",
+      "isDynamic": false,
+      "alertType": "warning",
+      "text": "Entity configuration is a Json Entity and can be used only as a type of Json properties. Application services is not available for this entity type",
+      "description": "",
+      "showIcon": true,
+      "icon": "WarningFilled"
+    },
+    {
+      "id": "B33BFC-6613TjXmCG6jdG",
+      "type": "tabs",
+      "name": "mainTab",
+      "label": "Tabs1",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "visibility": "Yes",
+      "isDynamic": false,
+      "tabs": [
+        {
+          "id": "X932kk2zE7XZCt3PB8aeq",
+          "label": "Details",
+          "title": "Details",
+          "key": "details",
+          "components": [
+            {
+              "id": "DDq9J9lhmoaWWl8WFQ8c4",
+              "type": "entityPicker",
+              "name": "moduleId",
+              "label": "Module",
+              "labelAlign": "right",
+              "parentId": "X932kk2zE7XZCt3PB8aeq",
+              "hidden": false,
+              "visibility": "Yes",
+              "customVisibility": null,
+              "isDynamic": false,
+              "description": "",
+              "validate": {},
+              "displayEntityKey": "name",
+              "entityType": "Shesha.Domain.ConfigurationItems.Module",
+              "items": [
+                {
+                  "id": "xHcU15Ih3ABACfYTGQyBe",
+                  "itemType": "item",
+                  "sortOrder": 0,
+                  "caption": "Name",
+                  "columnType": "data",
+                  "isVisible": true,
+                  "minWidth": 300,
+                  "propertyName": "name"
+                }
+              ],
+              "settingsValidationErrors": []
+            },
+            {
+              "textType": "text",
+              "id": "-X1emhZPx1rM7w22GOc22",
+              "type": "textField",
+              "name": "name",
+              "label": "Name",
+              "labelAlign": "right",
+              "parentId": "X932kk2zE7XZCt3PB8aeq",
+              "hidden": false,
+              "customVisibility": null,
+              "description": null,
+              "validate": {},
+              "settingsValidationErrors": [],
+              "maxLength": null
+            },
+            {
+              "textType": "text",
+              "id": "-ZC0vVnQrD0YEgFsOFc8m",
+              "type": "textField",
+              "name": "label",
+              "label": "Label",
+              "labelAlign": "right",
+              "hidden": false,
+              "visibility": "Yes",
+              "customVisibility": null,
+              "isDynamic": false,
+              "maxLength": null,
+              "parentId": "X932kk2zE7XZCt3PB8aeq"
+            },
+            {
+              "textType": "text",
+              "id": "H-lASg-AAd-BAD34Lraku",
+              "type": "textField",
+              "name": "description",
+              "label": "Description",
+              "labelAlign": "right",
+              "hidden": false,
+              "visibility": "Yes",
+              "customVisibility": null,
+              "isDynamic": false,
+              "maxLength": null,
+              "parentId": "X932kk2zE7XZCt3PB8aeq"
+            },
+            {
+              "textType": "text",
+              "id": "-X1emhZPx1rM7w22GOc11",
+              "type": "checkbox",
+              "name": "suppress",
+              "label": "Suppress",
+              "labelAlign": "right",
+              "parentId": "X932kk2zE7XZCt3PB8aeq",
+              "hidden": false,
+              "customVisibility": null,
+              "description": null,
+              "validate": {},
+              "settingsValidationErrors": [],
+              "maxLength": null
+            }
+          ],
+          "itemType": "item",
+          "chosen": false,
+          "selected": false
+        },
+        {
+          "id": "1vUF3pPcFNkvvKn6q3O59",
+          "itemType": "item",
+          "sortOrder": 6,
+          "name": "",
+          "key": "properties",
+          "title": "Properties",
+          "components": [
+            {
+              "id": "dIECbRhuwwxW23ZZEC5Kr",
+              "type": "section",
+              "name": "properties",
+              "label": "Section1",
+              "labelAlign": "right",
+              "parentId": "1vUF3pPcFNkvvKn6q3O59",
+              "hidden": false,
+              "customVisibility": null,
+              "settingsValidationErrors": []
+            }
+          ],
+          "chosen": false,
+          "label": "Properties"
+        },
+        {
+          "id": "1p3PpY7RbUyx1NMV3e5PA",
+          "itemType": "item",
+          "sortOrder": 5,
+          "name": "",
+          "key": "appService",
+          "customVisibility": "return data?.entityConfigType === 1;",
+          "title": "Application Service",
+          "components": [
+            {
+              "id": "dNzhkcchpcbIupEVK4vjq",
+              "type": "checkbox",
+              "name": "generateAppService",
+              "label": "Generate Application Service",
+              "labelAlign": "right",
+              "parentId": "1p3PpY7RbUyx1NMV3e5PA",
+              "hidden": false,
+              "visibility": "Yes",
+              "customVisibility": null,
+              "isDynamic": false,
+              "description": "",
+              "validate": {},
+              "settingsValidationErrors": []
+            },
+            {
+              "id": "Ak0H5UUnfskW9Dtj7GKjM",
+              "type": "tabs",
+              "name": "appService",
+              "label": "Tabs2",
+              "labelAlign": "right",
+              "parentId": "1p3PpY7RbUyx1NMV3e5PA",
+              "hidden": false,
+              "visibility": "Yes",
+              "isDynamic": false,
+              "tabs": [
+                {
+                  "id": "hcBv9ySji5XEWPJNLjNOz",
+                  "itemType": "item",
+                  "sortOrder": 4,
+                  "name": "",
+                  "key": "permission",
+                  "title": "Permission",
+                  "components": [
+                    {
+                      "id": "xqWeADxctxJJKvGQYeQd4",
+                      "type": "section",
+                      "name": "permission",
+                      "label": "Section2",
+                      "labelAlign": "right",
+                      "parentId": "hcBv9ySji5XEWPJNLjNOz",
+                      "hidden": false,
+                      "visibility": "Yes",
+                      "customVisibility": null,
+                      "isDynamic": false,
+                      "settingsValidationErrors": []
+                    }
+                  ],
+                  "label": "Permission"
+                },
+                {
+                  "id": "479TB2pkRysWCIxabiw-j",
+                  "itemType": "item",
+                  "sortOrder": 3,
+                  "name": "",
+                  "key": "getPermission",
+                  "title": "Get",
+                  "components": [
+                    {
+                      "id": "yOEiaVpn3jN5W4DeOXs9r",
+                      "type": "section",
+                      "name": "permissionGet",
+                      "label": "Section3",
+                      "labelAlign": "right",
+                      "parentId": "479TB2pkRysWCIxabiw-j",
+                      "hidden": false,
+                      "visibility": "Yes",
+                      "customVisibility": null,
+                      "isDynamic": false,
+                      "settingsValidationErrors": []
+                    }
+                  ],
+                  "label": "Get",
+                  "chosen": false
+                },
+                {
+                  "id": "puDwy9ITCklFSVGyvrsEW",
+                  "itemType": "item",
+                  "sortOrder": 2,
+                  "name": "",
+                  "key": "createPermission",
+                  "title": "Create",
+                  "components": [
+                    {
+                      "id": "Xz1oMGB2DniV2Q-_bBbEF",
+                      "type": "section",
+                      "name": "permissionCreate",
+                      "label": "Section4",
+                      "labelAlign": "right",
+                      "parentId": "puDwy9ITCklFSVGyvrsEW",
+                      "hidden": false,
+                      "visibility": "Yes",
+                      "customVisibility": null,
+                      "isDynamic": false,
+                      "settingsValidationErrors": []
+                    }
+                  ],
+                  "label": "Create",
+                  "chosen": false
+                },
+                {
+                  "id": "fjUPjNWgHmBwuFVaSMF6z",
+                  "itemType": "item",
+                  "sortOrder": 1,
+                  "name": "",
+                  "key": "updatePermission",
+                  "title": "Update",
+                  "components": [
+                    {
+                      "id": "aKMfCJHhnTI9a06-IDyTN",
+                      "type": "section",
+                      "name": "permissionUpdate",
+                      "label": "Section5",
+                      "labelAlign": "right",
+                      "parentId": "fjUPjNWgHmBwuFVaSMF6z",
+                      "hidden": false,
+                      "visibility": "Yes",
+                      "customVisibility": null,
+                      "isDynamic": false,
+                      "settingsValidationErrors": []
+                    }
+                  ],
+                  "label": "Update",
+                  "chosen": false
+                },
+                {
+                  "id": "FrhlkvrUWn9FRyk6LQ-OH",
+                  "label": "Delete",
+                  "title": "Delete",
+                  "key": "deletePermission",
+                  "components": [
+                    {
+                      "id": "bhsj5d9zq8N4p6sglCvE1",
+                      "type": "section",
+                      "name": "permissionDelete",
+                      "label": "Section6",
+                      "labelAlign": "right",
+                      "parentId": "FrhlkvrUWn9FRyk6LQ-OH",
+                      "hidden": false,
+                      "visibility": "Yes",
+                      "customVisibility": null,
+                      "isDynamic": false,
+                      "settingsValidationErrors": []
+                    }
+                  ],
+                  "itemType": "item",
+                  "chosen": false,
+                  "selected": false
+                }
+              ],
+              "defaultActiveKey": "permission",
+              "tabType": "line",
+              "settingsValidationErrors": [],
+              "components": [
+                {
+                  "name": "",
+                  "type": "",
+                  "isDynamic": false,
+                  "id": "hcBv9ySji5XEWPJNLjNOz",
+                  "components": [
+                    {
+                      "id": "xqWeADxctxJJKvGQYeQd4",
+                      "type": "section",
+                      "name": "permission",
+                      "label": "Section2",
+                      "labelAlign": "right",
+                      "parentId": "hcBv9ySji5XEWPJNLjNOz",
+                      "hidden": false,
+                      "visibility": "Yes",
+                      "customVisibility": null,
+                      "isDynamic": false,
+                      "settingsValidationErrors": []
+                    }
+                  ],
+                  "parentId": "Ak0H5UUnfskW9Dtj7GKjM"
+                },
+                {
+                  "name": "",
+                  "type": "",
+                  "isDynamic": false,
+                  "id": "479TB2pkRysWCIxabiw-j",
+                  "components": [
+                    {
+                      "id": "yOEiaVpn3jN5W4DeOXs9r",
+                      "type": "section",
+                      "name": "permissionGet",
+                      "label": "Section3",
+                      "labelAlign": "right",
+                      "parentId": "479TB2pkRysWCIxabiw-j",
+                      "hidden": false,
+                      "visibility": "Yes",
+                      "customVisibility": null,
+                      "isDynamic": false,
+                      "settingsValidationErrors": []
+                    }
+                  ],
+                  "parentId": "Ak0H5UUnfskW9Dtj7GKjM"
+                },
+                {
+                  "name": "",
+                  "type": "",
+                  "isDynamic": false,
+                  "id": "puDwy9ITCklFSVGyvrsEW",
+                  "parentId": "Ak0H5UUnfskW9Dtj7GKjM",
+                  "components": [
+                    {
+                      "id": "Xz1oMGB2DniV2Q-_bBbEF",
+                      "type": "section",
+                      "name": "permissionCreate",
+                      "label": "Section4",
+                      "labelAlign": "right",
+                      "parentId": "puDwy9ITCklFSVGyvrsEW",
+                      "hidden": false,
+                      "visibility": "Yes",
+                      "customVisibility": null,
+                      "isDynamic": false,
+                      "settingsValidationErrors": []
+                    }
+                  ]
+                },
+                {
+                  "name": "",
+                  "type": "",
+                  "isDynamic": false,
+                  "id": "fjUPjNWgHmBwuFVaSMF6z",
+                  "parentId": "Ak0H5UUnfskW9Dtj7GKjM",
+                  "components": [
+                    {
+                      "id": "aKMfCJHhnTI9a06-IDyTN",
+                      "type": "section",
+                      "name": "permissionUpdate",
+                      "label": "Section5",
+                      "labelAlign": "right",
+                      "parentId": "fjUPjNWgHmBwuFVaSMF6z",
+                      "hidden": false,
+                      "visibility": "Yes",
+                      "customVisibility": null,
+                      "isDynamic": false,
+                      "settingsValidationErrors": []
+                    }
+                  ]
+                },
+                {
+                  "id": "FrhlkvrUWn9FRyk6LQ-OH",
+                  "label": "Tab 1",
+                  "title": "Tab 1",
+                  "key": "tab1",
+                  "components": [
+                    {
+                      "id": "bhsj5d9zq8N4p6sglCvE1",
+                      "type": "section",
+                      "name": "permissionDelete",
+                      "label": "Section6",
+                      "labelAlign": "right",
+                      "parentId": "FrhlkvrUWn9FRyk6LQ-OH",
+                      "hidden": false,
+                      "visibility": "Yes",
+                      "customVisibility": null,
+                      "isDynamic": false,
+                      "settingsValidationErrors": []
+                    }
+                  ],
+                  "itemType": "item",
+                  "parentId": "Ak0H5UUnfskW9Dtj7GKjM"
+                }
+              ],
+              "customVisibility": "return data.generateAppService;"
+            }
+          ],
+          "label": "Application Service",
+          "chosen": false
+        },
+        {
+          "id": "1132kk2zE7XZCt3PB8ae1",
+          "label": "Views",
+          "title": "Views",
+          "key": "views",
+          "components": [
+            {
+              "id": "111j5d9zq8N4p6sglCvE1",
+              "type": "section",
+              "name": "viewConfigurations",
+              "label": "ViewsEditor",
+              "labelAlign": "right",
+              "parentId": "1132kk2zE7XZCt3PB8ae1",
+              "hidden": false,
+              "visibility": "Yes",
+              "customVisibility": null,
+              "isDynamic": false,
+              "settingsValidationErrors": []
+            }
+          ],
+          "itemType": "item",
+          "chosen": false,
+          "selected": false
+        }        
+      ],
+      "defaultActiveKey": "details",
+      "tabType": "line",
+      "settingsValidationErrors": []
+    }
+  ],
+  "formSettings": {
+    "_formFields": [ "modelType", "postUrl", "putUrl", "deleteUrl", "getUrl", "layout", "size", "colon", "labelCol.span", "wrapperCol.span", "showModeToggler", "excludeFormFieldsInPayload", "fieldsToFetch", "formKeysToPersist", "uniqueFormId", "preparedValues", "onDataLoaded", "onUpdate", "initialValues" ],
+    "layout": "horizontal",
+    "colon": true,
+    "labelCol": { "span": 5 },
+    "wrapperCol": { "span": 13 },
+    "modelType": "Shesha.DynamicEntities.Dtos.ModelConfigurationDto",
+    "postUrl": "",
+    "putUrl": "",
+    "deleteUrl": "",
+    "getUrl": "",
+    "uniqueFormId": ""
+  }
+}

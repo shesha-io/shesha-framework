@@ -1,0 +1,34 @@
+@line-height: 27px;
+
+.display-form-item {
+  .ant-form-item-label {
+    line-height: @line-height;
+  }
+
+  .ant-form-item-control-wrapper {
+    .ant-form-item-control {
+      line-height: @line-height;
+
+      .ant-input {
+        border-radius: 0;
+        border: none;
+        border-bottom: 1px solid #d9d9d9;
+      }
+
+      .ant-save-btn {
+        border-radius: 4px !important;
+      }
+    }
+  }
+
+  &.autocomplete-form-item {
+    .ant-form-item-control-input-content {
+      display: flex;
+      align-items: center;
+
+      .dsd-auto-complete-places {
+        margin-right: 5px;
+      }
+    }
+  }
+}

@@ -1,0 +1,83 @@
+.sha-sidebar-configurator {
+  .sha-action-buttons {
+    .ant-btn {
+      margin-right: 8px;
+    }
+  }
+  .sidebar-container-main-area {
+    background-color: white !important;
+
+    .sha-sidebar-item {
+      position: relative;
+      height: auto;
+      width: 100%;
+      //padding: 5px;
+      //border: 1px dashed #ddd;
+      border: 1px solid #ddd;
+      border-radius: 2px;
+      margin-bottom: 4px;
+
+      .sha-sidebar-item-name {
+        margin-left: 10px;
+        margin-right: 10px;
+      }
+      
+      .sha-help-icon {
+        cursor: help;
+        font-size: 14px;
+        color: #aaa;
+      }
+
+      &.selected {
+        border: #61affe 1px dashed;
+        border-radius: 4px;
+        background-color: #ebf3fb;
+      }
+
+      .sha-sidebar-item-drag-handle {
+        border-radius: 2px;
+        background-color: #ddd;
+        width: 14px;
+        height: 100%;
+        display: inline-block;
+        cursor: grab;
+        margin-right: 5px;
+      }
+
+      .sha-sidebar-item-controls {
+        text-align: right;
+        position: absolute;
+        right: 5px;
+        top: 5px;
+        display: block;
+        min-height: 20px;
+        z-index: 1000;
+      }
+      &:not(:hover) {
+        .sha-sidebar-item-controls {
+          display: none;
+        }
+      }
+
+      .sha-sidebar-item-header {
+        padding: 5px;
+      }
+
+      .sha-sidebar-group-header {
+        padding: 5px;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .sha-sidebar-group-container {
+        min-height: 30px;
+        padding: 5px 5px 0px 20px;
+      }
+    }
+
+    .sha-sidebar-item-ghost {
+      border: 1px dashed #4099ff;
+      border-radius: 2px;
+      opacity: 0.7;
+    }
+  }
+}

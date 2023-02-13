@@ -1,0 +1,54 @@
+{
+  "components": [{
+    "id": "mp1U3TnvSLgDFSj9EeA9Y",
+    "type": "sectionSeparator",
+    "name": "separator1",
+    "label": "Settings",
+    "labelAlign": "right",
+    "parentId": "root",
+    "hidden": false,
+    "customVisibility": null,
+    "isDynamic": false,
+    "description": "",
+    "settingsValidationErrors": []
+  }, {
+    "textType": "text",
+    "id": "j4y44LJNbfCstHIIJ9fwY",
+    "type": "textField",
+    "name": "objectsType",
+    "label": "Type of permissioned objects",
+    "labelAlign": "right",
+    "parentId": "root",
+    "hidden": false,
+    "customVisibility": null,
+    "isDynamic": false,
+    "placeholder": "",
+    "description": "",
+    "prefix": "",
+    "suffix": "",
+    "initialValue": "",
+    "validate": {
+      "minLength": "",
+      "maxLength": "",
+      "message": ""
+    },
+    "quickviewWidth": "",
+    "settingsValidationErrors": []
+  }],
+  "formSettings": {
+    "layout": "horizontal",
+    "colon": true,
+    "labelCol": {
+      "span": 5
+    },
+    "wrapperCol": {
+      "span": 13
+    },
+    "displayName": "DEFAULT_FORM_SETTINGS",
+    "__docgenInfo": {
+      "description": "Default form settings",
+      "displayName": "DEFAULT_FORM_SETTINGS",
+      "props": {}
+    }
+  }
+}

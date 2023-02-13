@@ -1,0 +1,25 @@
+{
+  "presets": [
+    "@babel/preset-env",
+    "@babel/preset-react"
+  ],
+  "plugins": [
+    [
+      "@babel/plugin-proposal-class-properties"
+    ],
+    [
+      "module-resolver",
+      {
+        "root": [
+          "./src"
+        ],
+        "alias": {
+          "components": "./src/components",
+          "models": "./src/models",
+          "utils": "./src/utils",
+          "providers": "./src/providers"
+        }
+      }
+    ]
+  ]
+}

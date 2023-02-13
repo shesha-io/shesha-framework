@@ -1,0 +1,652 @@
+{
+  "components": [
+    {
+      "id": "-X1emhZPx1rM7w22GOc11",
+      "type": "checkbox",
+      "name": "suppress",
+      "label": "Suppress",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "customEnabled": "return !data.suppressHardcoded;",
+      "description": null,
+      "validate": {},
+      "settingsValidationErrors": [],
+      "maxLength": null
+    },
+    {
+      "id": "UIUv_8sUeAdK_JQqdFm1e",
+      "type": "sectionSeparator",
+      "name": "sectionSeparator1",
+      "label": "Display",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "visibility": "Yes",
+      "customVisibility": null,
+      "isDynamic": false
+    },
+    {
+      "id": "aYeIfcjqrSZpmuKd6Fijn",
+      "type": "textField",
+      "name": "name",
+      "label": "Name",
+      "labelAlign": "right",
+      "hidden": false,
+      "customVisibility": null,
+      "autoSize": false,
+      "showCount": false,
+      "allowClear": false,
+      "description": null,
+      "maxLength": null,
+      "parentId": "root",
+      "validate": {
+        "required": true
+      },
+      "settingsValidationErrors": [],
+      "textType": "text"
+    },
+    {
+      "id": "0XFvEV-W_E2LzxEHjLiGm",
+      "type": "textField",
+      "name": "label",
+      "label": "Label",
+      "labelAlign": "right",
+      "hidden": false,
+      "customVisibility": null,
+      "autoSize": false,
+      "showCount": false,
+      "allowClear": false,
+      "description": null,
+      "maxLength": null,
+      "parentId": "root",
+      "validate": {
+        "required": true
+      },
+      "settingsValidationErrors": []
+    },
+    {
+      "id": "4SvCStsfdAUCwndFWVxi_",
+      "type": "textArea",
+      "name": "description",
+      "label": "Description",
+      "labelAlign": "right",
+      "hidden": false,
+      "customVisibility": null,
+      "autoSize": false,
+      "showCount": false,
+      "allowClear": false,
+      "description": null,
+      "maxLength": null,
+      "parentId": "root"
+    },
+    {
+      "id": "UIUv_8sUeAdK_JQqdFm11",
+      "type": "sectionSeparator",
+      "name": "sectionSeparator1",
+      "label": "Data type and format",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "visibility": "Yes",
+      "customVisibility": null,
+      "isDynamic": false
+    },
+    {
+      "id": "F7W3qRl8P_Jdv_R2Q-f3u",
+      "type": "dropdown",
+      "name": "dataType",
+      "label": "Data Type",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customEnabled": "return data.source != 1;",
+      "customVisibility": null,
+      "mode": ["single"],
+      "dataSourceType": "values",
+      "validate": {
+        "required": true
+      },
+      "settingsValidationErrors": [],
+      "values": [
+        {
+          "id": "R8Et3awUms5zQgj2ZlCT-",
+          "label": "string",
+          "value": "string"
+        },
+        {
+          "id": "1vazc9Yx6zJBMlfJxfZsM",
+          "label": "date",
+          "value": "date"
+        },
+        {
+          "id": "mqPLuVfEKgjMvaqqO_ouJ",
+          "label": "time",
+          "value": "time"
+        },
+        {
+          "id": "8skNr05iNJvcT8cftTsE9",
+          "label": "date time",
+          "value": "date-time"
+        },
+        {
+          "id": "Z3TqNTKkc1tjlw-j6PmAD",
+          "label": "entity",
+          "value": "entity"
+        },
+        {
+          "id": "Q0kAdFB4WlsU5Yml32khM",
+          "label": "file",
+          "value": "file"
+        },
+        {
+          "id": "ZGr5SDOzlttoGVm5LOgen",
+          "label": "number",
+          "value": "number"
+        },
+        {
+          "id": "qSKpsp4vwL4QRsfbs6k2Q",
+          "label": "reference list item",
+          "value": "reference-list-item"
+        },
+        {
+          "id": "EQ6Qc_8JnVBaLRsGJIqqQ",
+          "label": "boolean",
+          "value": "boolean"
+        },
+        {
+          "id": "ePVI2HM5PX0ntN1hgmMWJ",
+          "label": "array",
+          "value": "array"
+        },
+        {
+          "id": "Ylqiy3ABfkJvNndXAKB8A",
+          "label": "object",
+          "value": "object"
+        }
+      ]
+    },
+    {
+      "id": "7cYicDJe6G4QZySqcHoIN",
+      "type": "textField",
+      "name": "dataFormat",
+      "label": "Date format",
+      "customVisibility": "return data.dataType == 'date' || data.dataType == 'date-time'",
+      "description": "Enter the format for this property. Also, note that you can use moment display options. See https://momentjscom.readthedocs.io/en/latest/moment/04-displaying/01-format/"
+    },
+    {
+      "id": "7cYicDJe6G4QZySqcHoIM",
+      "type": "container",
+      "name": "string-config",
+      "label": "Container1",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": "return data.dataType == 'string'",
+      "direction": "vertical",
+      "justifyContent": "left",
+      "settingsValidationErrors": [],
+      "components": [
+        {
+          "id": "2ZMc7dhCaBX00rMMK1H3n",
+          "type": "dropdown",
+          "name": "dataFormat",
+          "label": "String format",
+          "labelAlign": "right",
+          "parentId": "7cYicDJe6G4QZySqcHoIM",
+          "hidden": false,
+          "customVisibility": null,
+          "description": null,
+          "mode": "single",
+          "dataSourceType": "values",
+          "referenceListNamespace": null,
+          "referenceListName": null,
+          "validate": {},
+          "settingsValidationErrors": [],
+          "values": [
+            {
+              "id": "rwi4vhiLvAT9K23e_Ksgj",
+              "label": "single line",
+              "value": "singleline"
+            },
+            {
+              "id": "x-TvGzV2iRDO2i6YV9j3X",
+              "label": "multiline",
+              "value": "multiline"
+            },
+            {
+              "id": "--5BYr5Bdo5iypUL7CqIx",
+              "label": "html",
+              "value": "html"
+            },
+            {
+              "id": "D-c1l644RII3Lb3k3rQAt",
+              "label": "json",
+              "value": "json"
+            },
+            {
+              "id": "BOmZUc1tVLECruteER2lw",
+              "label": "javascript",
+              "value": "javascript"
+            },
+            {
+              "id": "6bdzeIQhcc81pDS2QJU4J",
+              "label": "password",
+              "value": "password"
+            },
+            {
+              "id": "xmJyjeobf5hRpr5uBDhJw",
+              "label": "email",
+              "value": "email"
+            },
+            {
+              "id": "5ksY0OlNdBo2jdlgWsbtD",
+              "label": "phone",
+              "value": "phone"
+            }
+          ]
+        },
+        {
+          "id": "XEyIWE4U614Ip_x0FqViL",
+          "type": "numberField",
+          "name": "minLength",
+          "label": "Min Length",
+          "labelAlign": "right",
+          "parentId": "7cYicDJe6G4QZySqcHoIM",
+          "hidden": false,
+          "visibility": "Yes",
+          "customVisibility": null,
+          "customEnabled": "return !data.sizeHardcoded;",
+          "isDynamic": false,
+          "placeholder": "",
+          "description": "",
+          "highPrecision": false,
+          "stepNumeric": 1,
+          "stepString": "1",
+          "defaultValue": "",
+          "validate": {
+            "minValue": "",
+            "maxValue": ""
+          },
+          "settingsValidationErrors": []
+        },
+        {
+          "id": "XEyIWE4U614Ip_x0FqVi1",
+          "type": "numberField",
+          "name": "maxLength",
+          "label": "Max Length",
+          "labelAlign": "right",
+          "parentId": "7cYicDJe6G4QZySqcHoIM",
+          "hidden": false,
+          "visibility": "Yes",
+          "customVisibility": null,
+          "customEnabled": "return !data.sizeHardcoded;",
+          "isDynamic": false,
+          "placeholder": "",
+          "description": "",
+          "highPrecision": false,
+          "stepNumeric": 1,
+          "stepString": "1",
+          "defaultValue": "",
+          "validate": {
+            "minValue": "",
+            "maxValue": ""
+          },
+          "settingsValidationErrors": []
+        },
+        {
+          "id": "aYeIfcjqrSZpmuKd6Fij1",
+          "type": "textField",
+          "name": "regExp",
+          "label": "Regular Expression",
+          "labelAlign": "right",
+          "hidden": false,
+          "customVisibility": null,
+          "customEnabled": "return !data.regExpHardcoded;",
+          "autoSize": false,
+          "showCount": false,
+          "allowClear": false,
+          "description": null,
+          "maxLength": null,
+          "parentId": "7cYicDJe6G4QZySqcHoIM",
+          "validate": {
+            "required": false
+          },
+          "settingsValidationErrors": [],
+          "textType": "text"
+        }
+      ]
+    },
+    {
+      "id": "ipxZABhhFbnZBrO1iijxF",
+      "type": "container",
+      "name": "container2",
+      "label": "Container2",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": "return data.dataType === 'number'",
+      "direction": "vertical",
+      "justifyContent": "left",
+      "settingsValidationErrors": [],
+      "components": [
+        {
+          "id": "V6PekH9pFf_Qu-vmaKxfz",
+          "type": "dropdown",
+          "name": "dataFormat",
+          "label": "Number format",
+          "labelAlign": "right",
+          "parentId": "ipxZABhhFbnZBrO1iijxF",
+          "hidden": false,
+          "customVisibility": null,
+          "mode": ["single"],
+          "dataSourceType": "values",
+          "validate": {},
+          "settingsValidationErrors": [],
+          "values": [
+            {
+              "id": "h0LdMbbQrqIvARnQmeKGZ",
+              "label": "currency",
+              "value": "currency"
+            },
+            {
+              "id": "nUxe-TK4m6R9JVenT-v3m",
+              "label": "double",
+              "value": "double"
+            },
+            {
+              "id": "4GuxqgahDOQeGhCPcIMYV",
+              "label": "round",
+              "value": "round"
+            },
+            {
+              "id": "8voeOvZX7oxeb_sB0yb3K",
+              "label": "thousand separator",
+              "value": "thousandSeparator"
+            }
+          ]
+        },
+        {
+          "id": "XEyIWE4U614Ip_x0FqV11",
+          "type": "numberField",
+          "name": "min",
+          "label": "Min",
+          "labelAlign": "right",
+          "parentId": "ipxZABhhFbnZBrO1iijxF",
+          "hidden": false,
+          "visibility": "Yes",
+          "customVisibility": null,
+          "customEnabled": "return !data.sizeHardcoded;",
+          "isDynamic": false,
+          "placeholder": "",
+          "description": "",
+          "highPrecision": false,
+          "stepNumeric": 1,
+          "stepString": "0.1",
+          "defaultValue": "",
+          "validate": {
+            "minValue": "",
+            "maxValue": ""
+          },
+          "settingsValidationErrors": []
+        },
+        {
+          "id": "XEyIWE4U614Ip_x0FqV12",
+          "type": "numberField",
+          "name": "max",
+          "label": "Max",
+          "labelAlign": "right",
+          "parentId": "ipxZABhhFbnZBrO1iijxF",
+          "hidden": false,
+          "visibility": "Yes",
+          "customVisibility": null,
+          "customEnabled": "return !data.sizeHardcoded;",
+          "isDynamic": false,
+          "placeholder": "",
+          "description": "",
+          "highPrecision": false,
+          "stepNumeric": 1,
+          "stepString": "0.1",
+          "defaultValue": "",
+          "validate": {
+            "minValue": "",
+            "maxValue": ""
+          },
+          "settingsValidationErrors": []
+        }
+      ]
+    },
+    {
+      "id": "gTpIAiV940w7puAHNwu5H",
+      "type": "container",
+      "name": "container3",
+      "label": "Data Type",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customEnabled": "return data.source != 1;",
+      "customVisibility": "return data.dataType === 'reference-list-item'",
+      "direction": "vertical",
+      "justifyContent": "left",
+      "settingsValidationErrors": [],
+      "mode": ["single"],
+      "dataSourceType": "values",
+      "validate": {
+        "required": false
+      },
+      "values": [
+        {
+          "id": "R8Et3awUms5zQgj2ZlCT-",
+          "label": "string",
+          "value": "string"
+        },
+        {
+          "id": "1vazc9Yx6zJBMlfJxfZsM",
+          "label": "date",
+          "value": "date"
+        },
+        {
+          "id": "mqPLuVfEKgjMvaqqO_ouJ",
+          "label": "time",
+          "value": "time"
+        },
+        {
+          "id": "8skNr05iNJvcT8cftTsE9",
+          "label": "date time",
+          "value": "date-time"
+        },
+        {
+          "id": "Z3TqNTKkc1tjlw-j6PmAD",
+          "label": "entity",
+          "value": "entity"
+        },
+        {
+          "id": "Q0kAdFB4WlsU5Yml32khM",
+          "label": "file",
+          "value": "file"
+        },
+        {
+          "id": "ZGr5SDOzlttoGVm5LOgen",
+          "label": "number",
+          "value": "number"
+        },
+        {
+          "id": "qSKpsp4vwL4QRsfbs6k2Q",
+          "label": "reference list item",
+          "value": "reference-list-item"
+        },
+        {
+          "id": "EQ6Qc_8JnVBaLRsGJIqqQ",
+          "label": "boolean",
+          "value": "boolean"
+        },
+        {
+          "id": "ePVI2HM5PX0ntN1hgmMWJ",
+          "label": "list",
+          "value": "list"
+        }
+      ],
+      "components": [
+        {
+          "id": "4bT3OMjJ9ssaBvfBkvNIl",
+          "type": "textField",
+          "name": "referenceListName",
+          "label": "Reference List name",
+          "labelAlign": "right",
+          "hidden": false,
+          "customEnabled": "return data.source != 1;",
+          "customVisibility": null,
+          "autoSize": false,
+          "showCount": false,
+          "allowClear": false,
+          "description": null,
+          "maxLength": null,
+          "parentId": "gTpIAiV940w7puAHNwu5H",
+          "validate": {},
+          "settingsValidationErrors": []
+        },
+        {
+          "id": "dsiSpDTinQZxtfTlJW4AE",
+          "type": "textField",
+          "name": "referenceListNamespace",
+          "label": "Reference List namespace",
+          "labelAlign": "right",
+          "hidden": false,
+          "customEnabled": "return data.source != 1;",
+          "customVisibility": null,
+          "autoSize": false,
+          "showCount": false,
+          "allowClear": false,
+          "description": null,
+          "maxLength": null,
+          "parentId": "gTpIAiV940w7puAHNwu5H",
+          "validate": {},
+          "settingsValidationErrors": []
+        }
+      ]
+    },
+    {
+      "id": "MwjxidwaPufFS-PixP6_j",
+      "type": "container",
+      "name": "container4",
+      "label": "Container4",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": "return data.dataType === 'entity'",
+      "direction": "vertical",
+      "justifyContent": "left",
+      "settingsValidationErrors": [],
+      "components": [
+        {
+          "id": "t9Ii1vy0dOVj1S2hSnaJD",
+          "type": "autocomplete",
+          "name": "entityType",
+          "label": "Entity Type",
+          "labelAlign": "right",
+          "parentId": "MwjxidwaPufFS-PixP6_j",
+          "hidden": false,
+          "customEnabled": "return data.source != 1;",
+          "customVisibility": null,
+          "dataSourceType": "url",
+          "useRawValues": true,
+          "description": null,
+          "validate": {},
+          "dataSourceUrl": "/api/services/app/Metadata/EntityTypeAutocomplete",
+          "settingsValidationErrors": [],
+          "maxLength": null,
+          "textType": "text"
+        }
+      ]
+    },
+    {
+      "id": "aYeIfcjqrSZpmuKd6Fij2",
+      "type": "textField",
+      "name": "validationMessage",
+      "label": "Validation Message",
+      "labelAlign": "right",
+      "hidden": false,
+      "customVisibility": null,
+      "autoSize": false,
+      "showCount": false,
+      "allowClear": false,
+      "description": null,
+      "maxLength": null,
+      "parentId": "root",
+      "validate": {
+        "required": false
+      },
+      "settingsValidationErrors": [],
+      "textType": "text"
+    },
+    {
+      "id": "UIUv_8sUeAdK_JQqdFm12",
+      "type": "sectionSeparator",
+      "name": "sectionSeparator1",
+      "label": "Attributes",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "visibility": "Yes",
+      "customVisibility": null,
+      "isDynamic": false
+    },
+    {
+      "id": "-X1emhZPx1rM7w22GOc12",
+      "type": "checkbox",
+      "name": "audited",
+      "label": "Audited",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "customEnabled": "return !data.auditedHardcoded;",
+      "description": null,
+      "validate": {},
+      "settingsValidationErrors": [],
+      "maxLength": null
+    },
+    {
+      "id": "-X1emhZPx1rM7w22GOc13",
+      "type": "checkbox",
+      "name": "required",
+      "label": "Required",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "customEnabled": "return !data.requiredHardcoded;",
+      "description": null,
+      "validate": {},
+      "settingsValidationErrors": [],
+      "maxLength": null
+    },
+    {
+      "id": "-X1emhZPx1rM7w22GOc14",
+      "type": "checkbox",
+      "name": "readOnly",
+      "label": "ReadOnly",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "customEnabled": "return !data.readOnlyHardcoded;",
+      "description": null,
+      "validate": {},
+      "settingsValidationErrors": [],
+      "maxLength": null
+    }
+  ],
+  "formSettings": {
+    "layout": "horizontal",
+    "colon": true,
+    "labelCol": {
+      "span": 5
+    },
+    "wrapperCol": {
+      "span": 13
+    },
+    "modelType": "Shesha.Framework.EntityProperty"
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "components": [
+    {
+      "id": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
+      "type": "sectionSeparator",
+      "name": "separator1",
+      "parentId": "root",
+      "label": "Display"
+    },
+    {
+      "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
+      "type": "textField",
+      "name": "title",
+      "parentId": "root",
+      "label": "Title"
+    },
+    {
+      "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bb4",
+      "type": "textField",
+      "name": "path",
+      "parentId": "root",
+      "label": "Path",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bb5",
+      "type": "textField",
+      "name": "backUrl",
+      "parentId": "root",
+      "label": "Back Url"
+    },
+    {
+      "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
+      "type": "textField",
+      "name": "label",
+      "parentId": "root",
+      "label": "Label"
+    },
+    {
+      "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
+      "type": "textField",
+      "name": "statusName",
+      "parentId": "root",
+      "label": "Status name property"
+    },
+    {
+      "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
+      "type": "textField",
+      "name": "statusColor",
+      "parentId": "root",
+      "label": "Status name property"
+    },
+    {
+      "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
+      "type": "textField",
+      "name": "status",
+      "parentId": "root",
+      "label": "Status name property"
+    }
+  ],
+  "formSettings": {
+    "layout": "horizontal",
+    "colon": true,
+    "labelCol": {
+      "span": 5
+    },
+    "wrapperCol": {
+      "span": 13
+    },
+    "displayName": "DEFAULT_FORM_SETTINGS",
+    "__docgenInfo": {
+      "description": "Default form settings",
+      "displayName": "DEFAULT_FORM_SETTINGS",
+      "props": {}
+    }
+  }
+}

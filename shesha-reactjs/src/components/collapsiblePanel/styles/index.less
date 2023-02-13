@@ -1,0 +1,73 @@
+@extra-margin: 28px;
+
+.sha-collapsible-panel {
+  // ant-collapse
+  &.ant-collapse-icon-position-left {
+    .ant-collapse-header-text {
+      margin-left: @extra-margin;
+    }
+  }
+
+  &.ant-collapse-icon-position-right {
+    .ant-collapse-extra {
+      margin-right: @extra-margin;
+    }
+  }
+
+  &.no-content-padding {
+    .ant-collapse-content-box {
+      padding: unset;
+      // padding-top: 16px; // Remove the padding all together
+    }
+  }
+
+  .ant-collapse-item {
+    &.ant-collapse-item-active {
+    }
+
+    .ant-collapse-header {
+      // border-top: 3px solid @primary-color;
+      border-top: 3px solid var(--ant-primary-color);
+      padding: 0 8px;
+      min-height: 25px;
+      font-size: 15px;
+      font-weight: 500;
+
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+
+      .ant-collapse-extra {
+        float: unset;
+        margin: 5px @extra-margin 5px;
+      }
+
+      .ant-collapse-header-text {
+        flex-grow: 1;
+      }
+    }
+
+    .ant-collapse-content {
+      border-top: unset;
+      background: white;
+
+      &.no-content-padding {
+        padding: unset;
+        padding-top: unset;
+      }
+
+      &.ant-collapse-content-active {
+      }
+    }
+  }
+
+  .ant-blend-btn {
+    border: none;
+    height: 24px;
+  }
+
+  .ant-collapse-arrow {
+    padding-top: 3px !important;
+    margin-top: -3px !important;
+  }
+}

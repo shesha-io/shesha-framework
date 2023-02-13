@@ -1,0 +1,85 @@
+{
+  "components": [
+    {
+      "id": "f061d971-8b38-4b82-b192-563259afc159",
+      "type": "textField",
+      "name": "name",
+      "label": "Group Name",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "id": "uuIhAV7hqfVvjC4vLYUKo",
+      "type": "textArea",
+      "name": "tooltip",
+      "label": "Group Tooltip",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "autoSize": false,
+      "showCount": false,
+      "allowClear": false,
+      "validate": {},
+      "settingsValidationErrors": []
+    },
+    {
+      "id": "4lmhhHM0xpvA0ERbkfkVS",
+      "type": "iconPicker",
+      "name": "icon",
+      "label": "Icon",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "settingsValidationErrors": []
+    },
+    {
+      "id": "WddtQisTgpi7GMg2qMASD",
+      "type": "dropdown",
+      "name": "buttonType",
+      "label": "Button Type",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "dataSourceType": "values",
+      "useRawValues": false,
+      "validate": {},
+      "values": [
+        {
+          "id": "jXrt8KEcHsdEIyQfHBML2",
+          "label": "primary",
+          "value": "primary"
+        },
+        {
+          "id": "koMn2kfxndn8im_30g0da",
+          "label": "default",
+          "value": "default"
+        }
+      ],
+      "settingsValidationErrors": []
+    }
+  ],
+  "formSettings": {
+    "layout": "horizontal",
+    "colon": true,
+    "labelCol": {
+      "span": 5
+    },
+    "wrapperCol": {
+      "span": 13
+    },
+    "displayName": "DEFAULT_FORM_SETTINGS",
+    "__docgenInfo": {
+      "description": "Default form settings",
+      "displayName": "DEFAULT_FORM_SETTINGS",
+      "props": {}
+    }
+  }
+}

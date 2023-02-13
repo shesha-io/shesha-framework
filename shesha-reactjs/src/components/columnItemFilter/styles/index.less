@@ -1,0 +1,60 @@
+.sha-column-item-filter {
+  margin-bottom: @padding-lg;
+
+  .filter-heading {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: @padding-sm;
+
+    .label {
+      font-weight: 600;
+      margin-right: @padding-lg;
+    }
+
+    .anticon {
+      .textHoverEffect();
+      .transition();
+
+      &.anticon-delete {
+        display: none;
+      }
+
+      padding-left: @padding-sm;
+      // display: none;
+    }
+  }
+
+  .filter-input {
+    display: flex;
+    justify-content: space-between;
+
+    .ant-calendar-picker,
+    .ant-checkbox-wrapper {
+      flex: 1; // Make sure the DatePicker spans the whole width. Same applies to the label for the checkbox
+    }
+
+    .ant-input-number {
+      flex: 1;
+
+      &:first-child {
+        margin-right: @padding-lg / 2;
+      }
+
+      &:last-child {
+        margin-left: @padding-lg / 2;
+      }
+
+      &.ant-input-number-no-margin {
+        margin: unset;
+      }
+    }
+  }
+
+  &:hover {
+    .anticon {
+      &.anticon-delete {
+        display: inline-block;
+      }
+    }
+  }
+}

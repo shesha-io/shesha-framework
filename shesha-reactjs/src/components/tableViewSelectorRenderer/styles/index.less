@@ -1,0 +1,29 @@
+.table-view-selector {
+  .title {
+    font-size: 16px;
+    margin: unset;
+    font-weight: 600;
+    cursor: pointer;
+
+    .anticon {
+      .textHoverEffect();
+    }
+  }
+
+  .index-view-selector-bulb {
+    .anticon {
+      .warningHoverEffect();
+    }
+  }
+}
+
+// This has to come outside because the dropdown will not be placed inside the div
+.custom-filter-container {
+  display: flex;
+  justify-items: center;
+  align-items: center;
+
+  .is-applied-filter {
+    padding-left: 8px;
+  }
+}

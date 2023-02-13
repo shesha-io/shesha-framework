@@ -1,0 +1,314 @@
+@import '../../../../node_modules/antd/lib/style/themes/default.less';
+
+.sha-form-designer {
+  .sha-help-icon {
+    cursor: help;
+    font-size: 14px;
+    color: #aaa;
+  }
+
+  &.sha-dragging {
+    .sha-form {
+      .sha-component-drag-handle {
+        visibility: hidden;
+      }
+    }
+  }
+
+  .sha-component-drag-handle {
+    top: 0px;
+    left: 0px;
+
+    &:hover {
+      background-color: #ddd;
+    }
+  }
+
+  .sidebar-container-main-area-body {
+    .content-heading {
+      .sha-designer-header {
+        background: white;
+        margin: unset;
+        border-top: 1px solid lightgrey;
+        padding: @padding-md;
+      }
+    }
+  }
+
+  .sha-designer-toolbar {
+    background: white;
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
+
+    .sha-designer-toolbar-left {
+      float: left;
+
+      .ant-btn {
+        margin-right: 2px;
+      }
+    }
+
+    .sha-designer-toolbar-right {
+      float: right;
+
+      .ant-btn {
+        margin-left: 2px;
+      }
+    }
+  }
+
+  .sha-designer-toolbox {
+    .sha-datasource-tree {
+      .ant-tree-switcher-noop {
+        display: none;
+      }
+
+      .sha-toolbox-component {
+        margin: 0;
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        max-width: 225px;
+        text-overflow: ellipsis;
+
+        .sha-component-title {
+
+          margin-right: 10px;
+
+
+        }
+      }
+
+      .site-tree-search-value {
+        background-color: chartreuse;
+        color: #f50;
+        // font-weight: bold;
+      }
+    }
+
+    .ant-collapse-item {
+      .ant-collapse-header {
+        padding: 4px 8px;
+
+        &:hover {
+          color: var(--ant-primary-color);
+          background-color: var(--ant-primary-3);
+          // color: @primary-color;
+          // background-color: @primary-3;
+        }
+      }
+    }
+
+    .sha-component-search {
+      margin-bottom: 4px;
+    }
+
+    .sha-toolbox-panel {
+      .ant-collapse-header-text {
+        white-space: nowrap;
+        overflow: hidden;
+        width: 300px;
+        text-overflow: ellipsis;
+      }
+
+      &.active {
+        // border: #61affe 1px dashed;
+        // border-radius: 4px;
+        background-color: #ebf3fb;
+      }
+    }
+
+    .sha-toolbox-component {
+      display: flex;
+      user-select: none;
+      padding: 2px;
+      align-items: flex-start;
+      align-content: flex-start;
+      line-height: 1.5;
+      border-radius: 3px;
+      background: #fff;
+      margin: 4px 0;
+      border: 1px solid #ddd;
+
+      .anticon {
+        // margin-right: 5px;
+        margin: 5px 10px 5px 10px;
+      }
+
+      &:hover {
+        border-radius: 5px;
+        color: var(--ant-primary-color);
+        background-color: var(--ant-primary-3);
+        // color: @primary-color;
+        // background-color: @primary-3;
+        cursor: grab;
+      }
+    }
+  }
+
+  .sidebar-header-title {
+    .component-properties-actions {
+      width: 100%;
+
+      .action-buttons {
+        float: right;
+
+        .ant-btn {
+          margin-left: 2px;
+        }
+
+        .ant-btn-dangerous {
+          margin-left: 10px;
+        }
+      }
+    }
+  }
+
+  .sha-designer-header {
+    display: flex;
+    justify-content: space-between;
+
+    .sha-designer-header-right {
+      .ant-btn-link {
+        &:hover {
+          border-radius: 5px;
+          color: var(--ant-primary-color);
+          background-color: var(--ant-primary-3);
+          // color: @primary-color;
+          // background-color: @primary-3;
+        }
+      }
+    }
+  }
+
+  .sha-form-designer {
+    background-color: white;
+
+    .sha-components-container {
+      border: 1px dashed #ddd;
+      border-radius: 2px;
+
+      .sha-drop-hint {
+        margin: 0;
+        text-align: center;
+        color: darkgray;
+        padding: 10px;
+      }
+
+      .sha-component {
+        min-height: 30px;
+      }
+    }
+  }
+
+  .sha-component-ghost {
+    //background-color: lightgray;
+    border: 1px dashed #4099ff;
+    border-radius: 2px;
+    opacity: 0.7;
+  }
+
+  .sha-component {
+    position: relative;
+    margin: 4px;
+    margin-left: 10px;
+    // flex: 1; flex causes wrong formatting
+    // padding: 4px;
+    // padding-left: 10px;
+
+    .ant-alert.sha-designer-warning {
+      margin-bottom: 0;
+    }
+
+    &.selected {
+      border: #61affe 1px dashed;
+      border-radius: 4px;
+      background-color: #ebf3fb;
+    }
+
+    &.has-config-errors {
+      border: @red-3 1px solid;
+      border-radius: 4px;
+
+      .sha-component-indicator {
+        display: none;
+      }
+
+      .sha-component-validation-icon {
+        display: inline-flex;
+        align-items: center;
+        color: @red-3;
+        font-size: 12px !important;
+        left: 15px;
+        height: 100%;
+        position: absolute;
+        z-index: 1000;
+      }
+    }
+
+    .sha-component-drag-handle {
+      visibility: visible;
+      border-radius: 2px;
+      background-color: #ddd;
+      width: 10px;
+      height: 100%;
+      position: absolute;
+      z-index: 1000;
+      cursor: grab;
+    }
+
+    .sha-component-indicator {
+      display: inline-block;
+      align-items: center;
+      color: darkgray;
+      left: 15px;
+      height: 100%;
+      position: absolute;
+      z-index: 1000;
+
+      .anticon {
+        margin-right: @padding-md;
+      }
+    }
+
+    .sha-component-controls {
+      text-align: right;
+      position: absolute;
+      right: 5px;
+      top: 5px;
+      display: block;
+      min-height: 20px;
+      z-index: 1000;
+    }
+
+    &:not(:hover) {
+      .sha-component-controls {
+        display: none;
+      }
+
+      .sha-component-drag-handle {
+        background-color: transparent;
+        border: none;
+      }
+    }
+  }
+}
+
+.sha-form {
+  .sha-components-container {
+    min-height: 32px;
+
+    &.horizontal {
+      .sha-components-container-inner {
+        display: flex;
+        //justify-content: space-between;
+      }
+    }
+  }
+
+  .sha-form-live,
+  .sha-form-preview {
+    background-color: white;
+  }
+}

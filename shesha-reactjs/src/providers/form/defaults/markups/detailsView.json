@@ -1,0 +1,15 @@
+{
+  "components": [
+    {
+      "id": "69lyj0MyCIpKqjuAD0jJO",
+      "type": "detailsView",
+      "name": "detailsViewDefault",
+      "label": "Details View Default",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "components": []
+    }
+  ]
+}
