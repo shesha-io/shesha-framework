@@ -1,0 +1,89 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\common.props" />
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <AssemblyName>Shesha.Tests</AssemblyName>
+    <PackageId>Shesha.Tests</PackageId>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Email\**" />
+    <Compile Remove="StoredFiles\**" />
+    <EmbeddedResource Remove="Email\**" />
+    <EmbeddedResource Remove="StoredFiles\**" />
+    <None Remove="Email\**" />
+    <None Remove="StoredFiles\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Audit\Audit_Tests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="DynamicEntities\Resources\entityReference_DtoMode.json" />
+    <None Remove="DynamicEntities\Resources\entityReference_DtoMode.metadata.json" />
+    <None Remove="DynamicEntities\Resources\flatModel.json" />
+    <None Remove="DynamicEntities\Resources\flatModel.metadata.json" />
+    <None Remove="DynamicEntities\Resources\nested2Levels.json" />
+    <None Remove="DynamicEntities\Resources\nested2Levels.metadata.json" />
+    <None Remove="DynamicEntities\Resources\nested3Levels.json" />
+    <None Remove="DynamicEntities\Resources\nested3Levels.metadata.json" />
+    <None Remove="log4net.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="log4net.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="DynamicEntities\Resources\flatModel.json" />
+    <EmbeddedResource Include="DynamicEntities\Resources\flatModel.metadata.json" />
+    <EmbeddedResource Include="DynamicEntities\Resources\entityReference_DtoMode.json" />
+    <EmbeddedResource Include="DynamicEntities\Resources\entityReference_DtoMode.metadata.json" />
+    <EmbeddedResource Include="DynamicEntities\Resources\nested3Levels.metadata.json" />
+    <EmbeddedResource Include="DynamicEntities\Resources\nested2Levels.metadata.json" />
+    <EmbeddedResource Include="DynamicEntities\Resources\nested3Levels.json" />
+    <EmbeddedResource Include="DynamicEntities\Resources\nested2Levels.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Shesha.Application\Shesha.Application.csproj" />
+    <ProjectReference Include="..\..\src\Shesha.AzureAD\Shesha.AzureAD.csproj" />
+    <ProjectReference Include="..\..\src\Shesha.NHibernate\Shesha.NHibernate.csproj" />
+    <ProjectReference Include="..\..\src\Shesha.Scheduler\Shesha.Scheduler.csproj" />
+    <ProjectReference Include="..\..\src\Shesha.Web.FormsDesigner\Shesha.Web.FormsDesigner.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Abp.Castle.Log4Net" Version="6.6.2" />
+    <PackageReference Include="Abp.MemoryDb" Version="6.6.2" />
+    <PackageReference Include="FluentAssertions" Version="6.7.0" />
+    <PackageReference Include="GraphQL" Version="5.3.0" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.9.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
+    <PackageReference Include="Moq" Version="4.14.1" />
+    <PackageReference Include="NSubstitute" Version="4.2.1" />
+    <PackageReference Include="Shouldly" Version="4.1.0" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.112" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.extensibility.execution" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Abp.TestBase" Version="6.6.2" />
+    <PackageReference Include="Castle.Core" Version="4.4.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Audit\" />
+  </ItemGroup>
+</Project>

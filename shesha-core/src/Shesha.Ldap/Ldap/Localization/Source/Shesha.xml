@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<localizationDictionary culture="en">
+  <texts>
+    <text name="Ldap_IsEnabled" value="Enabled" />
+    <text name="Ldap_Server" value="Server" />
+    <text name="Ldap_Port" value="Port" />
+    <text name="Ldap_UseSsl" value="Use SSL" />
+    <text name="Ldap_Domain" value="Domain" />
+  </texts>
+</localizationDictionary>

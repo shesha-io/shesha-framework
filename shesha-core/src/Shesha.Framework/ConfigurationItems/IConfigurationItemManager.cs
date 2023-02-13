@@ -1,0 +1,64 @@
+﻿using Shesha.ConfigurationItems.Models;
+using Shesha.Domain;
+using Shesha.Domain.ConfigurationItems;
+using Shesha.Dto.Interfaces;
+using System.Threading.Tasks;
+
+namespace Shesha.ConfigurationItems
+{
+    /// <summary>
+    /// Interface of the Configuration Item Manager
+    /// </summary>
+    public interface IConfigurationItemManager<TItem>: IConfigurationItemManager where TItem : IConfigurationItem
+    {
+    }
+
+    public interface IConfigurationItemManager 
+    {
+        /// <summary>
+        /// Configurable Item type supported by the current manager
+        /// </summary>
+        string ItemType { get; }
+
+        /// <summary>
+        /// Update version status
+        /// </summary>
+        /// <param name="item">Configuration item</param>
+        /// <param name="status">New status</param>
+        /// <returns></returns>
+        Task UpdateStatusAsync(ConfigurationItemBase item, ConfigurationItemVersionStatus status);
+
+        /// <summary>
+        /// Copy configuration item
+        /// </summary>
+        /// <param name="item">Source item to copy</param>
+        /// <param name="input">Copy arguments</param>
+        /// <returns></returns>
+        Task<ConfigurationItemBase> CopyAsync(ConfigurationItemBase item, CopyItemInput input);
+
+        /// <summary>
+        /// Cancel version
+        /// </summary>
+        Task CancelVersoinAsync(ConfigurationItemBase item);
+
+        /// <summary>
+        /// Move item to another module
+        /// </summary>
+        Task MoveToModuleAsync(ConfigurationItemBase item, MoveItemToModuleInput input);
+
+        /// <summary>
+        /// Create new version of the item
+        /// </summary>
+        Task<ConfigurationItemBase> CreateNewVersionAsync(ConfigurationItemBase item);
+
+        /// <summary>
+        /// Delete all versions of item specified <paramref name="item"/>
+        /// </summary>
+        Task DeleteAllVersionsAsync(ConfigurationItemBase item);
+
+        /// <summary>
+        /// Map item to details DTO
+        /// </summary>
+        Task<IConfigurationItemDto> MapToDtoAsync(ConfigurationItemBase item);
+    }
+}

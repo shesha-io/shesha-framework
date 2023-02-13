@@ -1,0 +1,655 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Shesha.NHibernate</name>
+    </assembly>
+    <members>
+        <member name="M:Shesha.NHibernate.CodeGeneration.MigrationGenerator.ProcessFrameworkColumns(System.Text.StringBuilder,System.Collections.Generic.List{System.Reflection.PropertyInfo},Shesha.NHibernate.CodeGeneration.DdlStatement)">
+            <summary>
+            Process framework helpers and return list of unprocessed properties
+            </summary>
+            <param name="sb"></param>
+            <param name="properties"></param>
+            <param name="statement"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Shesha.NHibernate.FluentMigrator.FkInfo">
+            <summary>
+            Foreign key info
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.FkInfo.GenerateIndexNameForColumn(System.String,System.String)">
+            <summary>
+            Generates standard name for the index of the foreign key column
+            </summary>
+        </member>
+        <member name="T:Shesha.NHibernate.FluentMigrator.FkInfos">
+            <summary>
+            List of foreign keys
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.FkInfos.Add(System.String,System.String,System.String)">
+            <summary>
+            Adds new foreign key info to the list
+            </summary>
+            <param name="foreignTable"></param>
+            <param name="foreignColumn"></param>
+            <param name="masterTable"></param>
+        </member>
+        <member name="T:Shesha.NHibernate.FluentMigrator.RegisterStoredFilterFluent">
+            <summary>
+            Saved filter registration helper interface
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.RegisterStoredFilterFluent.#ctor(FluentMigrator.Migration,System.String,System.String)">
+            <summary>
+            Basic filters only need name and HQL expression. The rest can be added with Fluent helpers when needed
+            </summary>
+            <param name="migration"></param>
+            <param name="filterName">Filter name to display to user</param>
+            <param name="hqlExpression">HQL expression. Example for My Items filter: `ent.CreatorUserId={userId}`</param>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.RegisterStoredFilterFluent.#ctor(FluentMigrator.Migration,System.String,System.String,System.Boolean)">
+            <summary>
+            Basic filters only need name and HQL expression. The rest can be added with Fluent helpers when needed
+            </summary>
+            <param name="migration"></param>
+            <param name="filterName">Filter name to display to user</param>
+            <param name="hqlExpression">HQL expression. Example for My Items filter: `ent.CreatorUserId={userId}`</param>
+            <param name="isExclusive">It's true by default. Only set it to false if the filter selection dropdown must support multi-selection</param>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.RegisterStoredFilterFluent.#ctor(FluentMigrator.Migration,System.String,System.String,System.Boolean,System.Nullable{System.Int32})">
+            <summary>
+            Basic filters only need name and HQL expression. The rest can be added with Fluent helpers when needed
+            </summary>
+            <param name="migration"></param>
+            <param name="filterName">Filter name to display to user</param>
+            <param name="hqlExpression">HQL expression. Example for My Items filter: `ent.CreatorUserId={userId}`</param>
+            <param name="isExclusive">It's true by default. Only set it to false if the filter selection dropdown must support multi-selection</param>
+            <param name="orderIndex">Order index within a container. Please use it when alphabetical ordering is not what you need</param>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.RegisterStoredFilterFluent.WithExplicitId(System.Guid)">
+            <summary>
+            Only use when the filter ID must be set explicitly rather than generated e.g. when using code filters (see ICustomStoredFilterRegistration)
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.RegisterStoredFilterFluent.WithNamespace(System.String)">
+            <summary>
+            Only use when ID must be set explicitly rather than generated
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.RegisterStoredFilterFluent.OnDataTables(System.String[])">
+            <summary>
+            Links current filter to one or more data tables
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.RegisterStoredFilterFluent.OnReports(System.Guid[])">
+            <summary>
+            Links current filter to report(s)
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.RegisterStoredFilterFluent.OnEntities(System.ValueTuple{System.String,System.String}[])">
+            <summary>
+            Links current filter to other entity(ies)
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.RegisterStoredFilterFluent.VisibleToPersons(System.String[])">
+            <summary>
+            Makes the filter visible to given role(s)
+            Note: ExecuteScalar is missing yet so we require person ID not username for now
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.RegisterStoredFilterFluent.VisibleToRoles(System.ValueTuple{System.String,System.String}[])">
+            <summary>
+            Makes the filter visible to given role(s).
+            Note: ExecuteScalar is missing yet so we require role ID not name for now
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.RegisterStoredFilterFluent.VisibleToEntities(System.ValueTuple{System.String,System.String}[])">
+            <summary>
+            List of entities that the filter should be visible to.
+            </summary>
+        </member>
+        <member name="T:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions">
+            <summary>
+            This class is an extension for migration system to make easier to some common tasks.
+            Uses Shesha's standard naming conventions
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.WithForeignKeyColumn(FluentMigrator.Builders.Create.Table.ICreateTableWithColumnSyntax,System.String,System.String)">
+            <summary>
+            Adds foreign key column (Guid) to the table
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.WithForeignKeyColumnInt64(FluentMigrator.Builders.Create.Table.ICreateTableWithColumnSyntax,System.String,System.String)">
+            <summary>
+            Adds foreign key column (Int64) to the table
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.WithMultipleOwnerColumns(FluentMigrator.Builders.Create.Table.ICreateTableWithColumnSyntax,System.Int32)">
+            <summary>
+            Adds columns for <see cref="T:Shesha.Domain.IHasOwningEntityLink"/>
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.WithEntityLinkColumns(FluentMigrator.Builders.Create.Table.ICreateTableWithColumnSyntax)">
+            <summary>
+            Adds columns for <see cref="T:Shesha.Domain.IHasEntityLink"/>
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.WithFullAuditColumns(FluentMigrator.Builders.Create.Table.ICreateTableWithColumnSyntax)">
+            <summary>
+            Adds full auditing fields to a table. See <see cref="T:Abp.Domain.Entities.Auditing.IFullAudited"/>.
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.WithFullPowerEntityColumns(FluentMigrator.Builders.Create.Table.ICreateTableWithColumnSyntax,System.Boolean)">
+            <summary>
+            Adds full auditing fields and tenant ID to a table. See <see cref="T:Shesha.Domain.FullPowerEntity"/>.
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.WithFullPowerChildEntityColumns(FluentMigrator.Builders.Create.Table.ICreateTableWithColumnSyntax,System.Boolean,System.Int32)">
+            <summary>
+            Adds owner entity link, full auditing fields and tenant ID to a table. See <see cref="T:Shesha.Domain.FullPowerChildEntity"/>.
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.WithFullPowerManyToManyColumns(FluentMigrator.Builders.Create.Table.ICreateTableWithColumnSyntax,System.Boolean)">
+            <summary>
+            Adds entity link, owner entity link, full auditing fields and tenant ID to a table. See <see cref="T:Shesha.Domain.FullPowerEntity"/>.
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.WithAuditColumns(FluentMigrator.Builders.Create.Table.ICreateTableWithColumnSyntax,System.Boolean)">
+            <summary>
+            Adds auditing fields to a table. See <see cref="T:Abp.Domain.Entities.Auditing.IAudited"/>.
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.WithCreatorUserIdColumn(FluentMigrator.Builders.Create.Table.ICreateTableWithColumnSyntax,System.Boolean)">
+            <summary>
+            Adds CreatorUserId field to a table. See <see cref="T:Abp.Domain.Entities.Auditing.ICreationAudited"/>.
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.WithCreationAuditColumns(FluentMigrator.Builders.Create.Table.ICreateTableWithColumnSyntax,System.Boolean)">
+            <summary>
+            Adds creation auditing fields to a table. See <see cref="T:Abp.Domain.Entities.Auditing.ICreationAudited"/>.
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.WithLastModifierUserIdColumn(FluentMigrator.Builders.Create.Table.ICreateTableWithColumnSyntax)">
+            <summary>
+            Adds LastModifierUserId field to a table. See <see cref="T:Abp.Domain.Entities.Auditing.IModificationAudited"/>.
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.WithModificationAuditColumns(FluentMigrator.Builders.Create.Table.ICreateTableWithColumnSyntax)">
+            <summary>
+            Adds modification auditing fields to a table. See <see cref="T:Abp.Domain.Entities.Auditing.IModificationAudited"/>.
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.WithDeleterUserIdColumn(FluentMigrator.Builders.Create.Table.ICreateTableWithColumnSyntax)">
+            <summary>
+            Adds DeleterUserId field to a table. See <see cref="T:Abp.Domain.Entities.Auditing.IDeletionAudited"/>.
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.WithDeletionAuditColumns(FluentMigrator.Builders.Create.Table.ICreateTableWithColumnSyntax)">
+            <summary>
+            Adds deletion auditing columns to a table. See <see cref="T:Abp.Domain.Entities.Auditing.IModificationAudited"/>.
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.WithTenantIdAsRequired(FluentMigrator.Builders.Create.Table.ICreateTableWithColumnSyntax)">
+            <summary>
+            Adds TenantId column to a table as not nullable. See <see cref="T:Abp.MultiTenancy.AbpTenant`1"/>.
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.WithTenantIdAsNullable(FluentMigrator.Builders.Create.Table.ICreateTableWithColumnSyntax)">
+            <summary>
+            Adds TenantId column to a table as nullable. See <see cref="T:Abp.MultiTenancy.AbpTenant`1"/>.
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.WithIdAsInt32(FluentMigrator.Builders.Create.Table.ICreateTableWithColumnSyntax)">
+            <summary>
+            Adds an auto increment <see cref="T:System.Int32"/> primary key to the table.
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.WithIdAsInt64(FluentMigrator.Builders.Create.Table.ICreateTableWithColumnSyntax)">
+            <summary>
+            Adds an auto increment <see cref="T:System.Int64"/> primary key to the table.
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.WithIdAsGuid(FluentMigrator.Builders.Create.Table.ICreateTableWithColumnSyntax)">
+            <summary>
+            Adds an <see cref="T:System.Guid"/> primary key to the table.
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.WithIsDeletedColumn(FluentMigrator.Builders.Create.Table.ICreateTableWithColumnSyntax)">
+            <summary>
+            Adds IsDeleted column to the table. See <see cref="T:Abp.Domain.Entities.ISoftDelete"/>.
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.AddIsDeletedColumn(FluentMigrator.Builders.Alter.Table.IAlterTableAddColumnOrAlterColumnSyntax)">
+            <summary>
+            Adds IsDeleted column to the table. See <see cref="T:Abp.Domain.Entities.ISoftDelete"/>.
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.WithDeletionTimeColumn(FluentMigrator.Builders.Create.Table.ICreateTableWithColumnSyntax)">
+            <summary>
+            Adds DeletionTime column to a table. See <see cref="T:Abp.Domain.Entities.Auditing.IDeletionAudited"/>.
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.AddDeletionTimeColumn(FluentMigrator.Builders.Alter.Table.IAlterTableAddColumnOrAlterColumnSyntax)">
+            <summary>
+            Adds DeletionTime column to a table. See <see cref="T:Abp.Domain.Entities.Auditing.IDeletionAudited"/>.
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.WithCreationTimeColumn(FluentMigrator.Builders.Create.Table.ICreateTableWithColumnSyntax)">
+            <summary>
+            Ads CreationTime field to the table for <see cref="T:Abp.Domain.Entities.Auditing.IHasCreationTime"/> interface.
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.AddCreationTimeColumn(FluentMigrator.Builders.Alter.Table.IAlterTableAddColumnOrAlterColumnSyntax)">
+            <summary>
+            Adds CreationTime field to a table. See <see cref="T:Abp.Domain.Entities.Auditing.IHasCreationTime"/>.
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.AddLastModificationTimeColumn(FluentMigrator.Builders.Alter.Table.IAlterTableAddColumnOrAlterColumnSyntax)">
+            <summary>
+            Adds LastModificationTime field to a table. See <see cref="T:Abp.Domain.Entities.Auditing.IModificationAudited"/>.
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.WithLastModificationTimeColumn(FluentMigrator.Builders.Create.Table.ICreateTableWithColumnSyntax,System.Boolean)">
+            <summary>
+            Adds LastModificationTime field to a table. See <see cref="T:Abp.Domain.Entities.Auditing.IModificationAudited"/>.
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.WithIsActiveColumn(FluentMigrator.Builders.Create.Table.ICreateTableWithColumnSyntax,System.Boolean)">
+            <summary>
+            Adds IsDeleted column to the table. See <see cref="T:Abp.Domain.Entities.IPassivable"/>.
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.AddIsActiveColumn(FluentMigrator.Builders.Alter.Table.IAlterTableAddColumnOrAlterColumnSyntax,System.Boolean)">
+            <summary>
+            Adds IsDeleted column to the table. See <see cref="T:Abp.Domain.Entities.IPassivable"/>.
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.AsStringMax``1(FluentMigrator.Builders.IColumnTypeSyntax{``0})">
+            <summary>
+            Defines the column type as unicode string of max size
+            </summary>
+            <typeparam name="TNext"></typeparam>
+            <param name="columnSyntax"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.WithDiscriminator(FluentMigrator.Builders.Create.Table.ICreateTableWithColumnSyntax)">
+            <summary>
+            Adds discriminator field to a table.
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.GenerateIndexNameForColumn(System.String,System.String)">
+            <summary>
+            Generates standard name for the column index
+            </summary>
+            <param name="table"></param>
+            <param name="column"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.RegisterStoredFilter(FluentMigrator.Migration,System.String,System.String,System.Nullable{System.Int32})">
+            <summary>
+            Registers an exclusive (not for multi-selection) stored filter. Please use fluent methods to provide more details when needed
+            </summary>
+            <param name="filterName">Filter name to display to user</param>
+            <param name="hqlExpression">HQL expression. Example for My Items filter: `ent.CreatorUserId={userId}`</param>
+            <param name="orderIndex">Order index within a container. Please use it when alphabetical ordering is not what you need</param>
+        </member>
+        <member name="M:Shesha.NHibernate.FluentMigrator.SheshaFluentMigratorExtensions.RegisterNonExclusiveStoredFilter(FluentMigrator.Migration,System.String,System.String,System.Nullable{System.Int32})">
+            <summary>
+            Registers a stored filter that can be multi-selected with other filters. Please use fluent methods to provide more details when needed
+            </summary>
+            <param name="filterName">Filter name to display to user</param>
+            <param name="hqlExpression">HQL expression. Example for My Items filter: `ent.CreatorUserId={userId}`</param>
+            <param name="orderIndex">Order index within a container. Please use it when alphabetical ordering is not what you need</param>
+        </member>
+        <member name="T:Shesha.NHibernate.Migrations.M20200623162800">
+            <summary>
+            Saved Filters
+            </summary>
+        </member>
+        <member name="T:Shesha.NHibernate.NHibernate.DbPerTenantConnectionStringResolver">
+            <summary>
+            Implements <see cref="T:Abp.MultiTenancy.IDbPerTenantConnectionStringResolver"/> to dynamically resolve
+            connection string for a multi tenant application.
+            </summary>
+        </member>
+        <member name="P:Shesha.NHibernate.NHibernate.DbPerTenantConnectionStringResolver.AbpSession">
+            <summary>
+            Reference to the session.
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.DbPerTenantConnectionStringResolver.#ctor(Abp.Configuration.Startup.IAbpStartupConfiguration,Abp.Domain.Uow.ICurrentUnitOfWorkProvider,Abp.MultiTenancy.ITenantCache)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shesha.NHibernate.NHibernate.DbPerTenantConnectionStringResolver"/> class.
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.EntityHistory.EntityHistoryExtension.AddPropertyChangeDescription``2(``0,System.String,System.Linq.Expressions.Expression{System.Func{``0,``1}})">
+            <summary>
+            Add property change description (replace default description)
+            </summary>
+            <param name="entity">Changed entity</param>
+            <param name="description">Description of changes</param>
+            <param name="property">Changed property</param>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.EntityHistory.EntityHistoryExtension.AddPropertyChangeComment``2(``0,System.String,System.Linq.Expressions.Expression{System.Func{``0,``1}})">
+            <summary>
+            Add property change comment (will be added after default description)
+            </summary>
+            <param name="entity">Changed entity</param>
+            <param name="description">Comment of changes</param>
+            <param name="property">Changed property</param>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.EntityHistory.EntityHistoryExtension.AddPropertyChangeComment(System.Object,System.String,System.String)">
+            <summary>
+            Add property change comment (will be added after default description)
+            </summary>
+            <param name="entity">Changed entity</param>
+            <param name="description">Comment of changes</param>
+            <param name="propertyName">Changed property</param>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.EntityHistory.EntityHistoryExtension.AddPropertyChangeDescription(System.Object,System.String,System.String)">
+            <summary>
+            Add property change description (replace default description)
+            </summary>
+            <param name="entity">Changed entity</param>
+            <param name="description">Description of changes</param>
+            <param name="propertyName">Name of changed property</param>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.EntityHistory.EntityHistoryExtension.AddHistoryEvent(System.Object,System.String)">
+            <summary>
+             Add entity event
+            </summary>
+            <param name="entity">The entity with which the event occurred</param>
+            <param name="description">Event description</param>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.EntityHistory.EntityHistoryExtension.AddHistoryEvent(System.Object,System.String,System.String)">
+            <summary>
+             Add custom entity event
+            </summary>
+            <param name="entity">The entity with which the event occurred</param>
+            <param name="eventType">Event type</param>
+            <param name="eventName">Event name</param>
+            <param name="description">Event description</param>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.EntityHistory.EntityHistoryExtension.AddHistoryEvent(System.Object,System.String,System.String,System.String)">
+            <summary>
+             Add custom entity event
+            </summary>
+            <param name="entity">The entity with which the event occurred</param>
+            <param name="eventType">Event type</param>
+            <param name="eventName">Event name</param>
+            <param name="description">Event description</param>
+        </member>
+        <member name="T:Shesha.NHibernate.NHibernate.EntityHistory.EntityHistoryHelper">
+            <summary>
+            Entity history helper. Creates and stores changes of entities
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.EntityHistory.EntityHistoryHelper.GetPropertyChanges(System.Boolean,Abp.EntityHistory.EntityChange,System.Type,System.Object,System.Collections.Generic.IList{Shesha.NHibernate.NHibernate.Session.SessionExtensions.DirtyPropertyInfo})">
+            <summary>
+            Gets the property changes for this entry.
+            </summary>
+        </member>
+        <member name="P:Shesha.NHibernate.NHibernate.EntityHistory.IEntityHistoryHelper.EntityChangeSet">
+            <summary>
+            Set of entity changes
+            </summary>
+        </member>
+        <member name="P:Shesha.NHibernate.NHibernate.EntityHistory.IEntityHistoryHelper.EntityChanges">
+            <summary>
+            List of entity changes
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.EntityHistory.IEntityHistoryHelper.AddEntityChange(System.Object)">
+            <summary>
+            Add changes of Entity to the EntityChanges list
+            </summary>
+            <param name="entity">Entity</param>
+            <returns>EntityChange object</returns>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.EntityHistory.IEntityHistoryHelper.CreateEntityChange(System.Object)">
+            <summary>
+            Create EntityChange item for the Entity
+            </summary>
+            <param name="entity">Entity</param>
+            <returns>EntityChange object</returns>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.EntityHistory.IEntityHistoryHelper.CreateEntityChangeSet">
+            <summary>
+            Create entity changes set
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.EntityHistory.NHibernateEntityHistoryStore.#ctor(Abp.Domain.Repositories.IRepository{Abp.EntityHistory.EntityChangeSet,System.Int64},Abp.Domain.Repositories.IRepository{Abp.EntityHistory.EntityChange,System.Int64},Abp.Domain.Repositories.IRepository{Abp.EntityHistory.EntityPropertyChange,System.Int64})">
+            <summary>
+            Creates a new <see cref="T:Shesha.NHibernate.NHibernate.EntityHistory.NHibernateEntityHistoryStore"/>.
+            </summary>
+        </member>
+        <member name="T:Shesha.NHibernate.NHibernate.EntityMappings.AbpRoleMap`2">
+            <summary>
+            Base class for role mapping.
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.EntityMappings.AbpRoleMap`2.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="T:Shesha.NHibernate.NHibernate.EntityMappings.AbpTenantMap`2">
+            <summary>
+            Base class to map classes derived from <see cref="!:AbpTenant&lt;TTenant,TUser&gt;"/>
+            </summary>
+            <typeparam name="TTenant">Tenant type</typeparam>
+            <typeparam name="TUser">User type</typeparam>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.EntityMappings.AbpTenantMap`2.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.EntityMappings.RoleClaimMap.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="T:Shesha.NHibernate.NHibernate.EntityMappings.RoleMap">
+            <summary>
+            Base class for role mapping.
+            </summary>
+        </member>
+        <member name="T:Shesha.NHibernate.NHibernate.Maps.Conventions">
+            <summary>
+            Applies global common conventions to the mapped entities. 
+            For clarity configurations set here can be overriden in 
+            an entity's specific mapping file.  For example; The Id 
+            convention here is set to Id but if the Id column 
+            was mapped in the entity's mapping file then the entity's 
+            mapping file configuration will take precedence.
+            </summary>
+        </member>
+        <member name="P:Shesha.NHibernate.NHibernate.Maps.Conventions.LastCompiledXml">
+            <summary>
+            Last compiled conventions in the xml format
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.Maps.MappingHelper.SortEntityTypesByInheritance(System.Collections.Generic.List{System.Type})">
+            <summary>
+            Sorts entity types by inheritance (base classes first).
+            NH doesn't sort entities itself and throws an exception when you try to map more than 2 levels hierarchy (using TPH)
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.Maps.MappingHelper.GetTableName(System.Type)">
+            <summary>
+            Returns table name for the specified entity type
+            </summary>
+            <param name="entityType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.Maps.MappingHelper.GetColumnName(System.Reflection.MemberInfo)">
+            <summary>
+            Returns column name for the specified property
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.Maps.MappingHelper.GetColumnPrefix(System.Type)">
+            <summary>
+            Returns prefix for the table columns of the specified type of entity
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.Maps.MappingHelper.GetTablePrefix(System.Type)">
+            <summary>
+            Returns prefix for the table of the specified type of entity
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.Maps.MappingHelper.GetRootEntity(System.Type)">
+            <summary>
+            Returns root entity type for the specified entity type
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.Maps.MappingHelper.IsRootEntity(System.Type)">
+            <summary>
+            Returns tru if the specified type is a root entity type
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.Maps.MappingHelper.IsEntity(System.Type)">
+            <summary>
+            Returns true if the specified type is an entity type
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.Maps.MappingHelper.GetForeignKeyColumn(System.Reflection.PropertyInfo)">
+            <summary>
+            Returns name of the foreign key column for the specified Entity reference
+            </summary>
+            <param name="prop"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.Maps.MappingHelper.IsPersistentProperty(System.Reflection.MemberInfo)">
+            <summary>
+            Returns true if the property is persisted to the DB
+            </summary>
+            <param name="prop"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.Maps.MappingHelper.GetDiscriminatorValue(System.Type)">
+            <summary>
+            Returns discriminator value for the specified entity type
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.Maps.MappingHelper.GetDiscriminatorColumn(System.Type)">
+            <summary>
+            Returns name of the discriminator column
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.Middlewares.NHibernateSessionPerRequestMiddleware.BeginSession(NHibernate.ISessionFactory,Castle.Core.Logging.ILogger)">
+            <summary>
+            Bind lazy NHibernate sessions for all session factories
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.Middlewares.NHibernateSessionPerRequestMiddleware.UnbindLazySessions">
+            <summary>
+            Unbind all lazy NHibernate sessions
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.Middlewares.NHibernateSessionPerRequestMiddleware.GetSessionFactories">
+            <summary>
+            Retrieves all ISessionFactory instances via IoC
+            </summary>
+        </member>
+        <member name="T:Shesha.NHibernate.NHibernate.Session.LazySessionContext">
+            <summary>
+            Taken from http://nhforge.org/blogs/nhibernate/archive/2011/03/03/effective-nhibernate-session-management-for-web-apps.aspx
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.Session.LazySessionContext.CurrentSession">
+            <summary>
+            Retrieve the current session for the session factory.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.Session.LazySessionContext.Bind(System.Lazy{NHibernate.ISession},NHibernate.ISessionFactory)">
+            <summary>
+            Bind a new sessionInitializer to the context of the sessionFactory.
+            </summary>
+            <param name="sessionInitializer"></param>
+            <param name="sessionFactory"></param>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.Session.LazySessionContext.UnBind(NHibernate.ISessionFactory)">
+            <summary>
+            Unbind the current session of the session factory.
+            </summary>
+            <param name="sessionFactory"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.Session.LazySessionContext.GetCurrentFactoryMap">
+            <summary>
+            Provides the CurrentMap of SessionFactories.
+            If there is no map create/store and return a new one.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Shesha.NHibernate.NHibernate.Session.SessionExtensions">
+            <summary>
+            Provides extension methods to easily find dirty properties for NHibernate.
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.Session.SessionExtensions.EndSession(NHibernate.ISession,System.Boolean)">
+            <summary>
+            Ends session and commit transaction if active
+            </summary>
+            <param name="session"></param>
+            <param name="commitTransaction"></param>
+        </member>
+        <member name="T:Shesha.NHibernate.NHibernate.Session.SessionStartException">
+            <summary>
+            Session start exception
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.SheshaDbMigrator.CreateServices(System.String)">
+            <summary>
+            Configure the dependency injection services
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.SheshaDbMigrator.CreateOrMigrate(Abp.MultiTenancy.AbpTenantBase,System.Action)">
+            <summary>
+            Update the database
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.UoW.SheshaNhUnitOfWork.#ctor(NHibernate.ISessionFactory,Abp.Domain.Uow.IConnectionStringResolver,Abp.Domain.Uow.IUnitOfWorkDefaultOptions,Abp.Domain.Uow.IUnitOfWorkFilterExecuter,Abp.NHibernate.AbpNHibernateModule)">
+            <summary>
+            Creates a new instance of <see cref="T:Shesha.NHibernate.NHibernate.UoW.SheshaNhUnitOfWork"/>.
+            </summary>
+        </member>
+        <member name="P:Shesha.NHibernate.NHibernate.Utilites.NHibernateUtilities.ConnectionString">
+            <summary>
+            Connection string with password
+            </summary>
+        </member>
+        <member name="M:Shesha.NHibernate.NHibernate.Utilites.NHibernateUtilities.GetConnectionString(System.String)">
+            <summary>
+            Returns connection string. Note: for the Azure environment - uses standard environment variable
+            </summary>
+        </member>
+        <member name="P:Shesha.NHibernate.SheshaDatabaseConsts.EntityIdColumn">
+            <summary>
+            Entity link columns (for many-to-many link tables). ID
+            </summary>
+        </member>
+        <member name="P:Shesha.NHibernate.SheshaDatabaseConsts.EntityTypeColumn">
+            <summary>
+            Entity link columns (for many-to-many link tables). Type alias
+            </summary>
+        </member>
+    </members>
+</doc>

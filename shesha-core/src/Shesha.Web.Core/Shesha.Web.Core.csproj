@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\common.props" />
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <AssemblyName>Shesha.Web.Core</AssemblyName>
+    <PackageId>Shesha.Web.Core</PackageId>
+    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <RootNamespace>Shesha</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Application\PublicHolidays\**" />
+    <Compile Remove="Authentication\**" />
+    <EmbeddedResource Remove="Application\PublicHolidays\**" />
+    <EmbeddedResource Remove="Authentication\**" />
+    <None Remove="Application\PublicHolidays\**" />
+    <None Remove="Authentication\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Shesha.Application\Shesha.Application.csproj" />
+    <ProjectReference Include="..\Shesha.Core\Shesha.Core.csproj" />
+    <ProjectReference Include="..\Shesha.Elmah\Shesha.Elmah.csproj" />
+    <ProjectReference Include="..\Shesha.Framework\Shesha.Framework.csproj" />
+    <ProjectReference Include="..\Shesha.GraphQL\Shesha.GraphQL.csproj" />
+    <ProjectReference Include="..\Shesha.NHibernate\Shesha.NHibernate.csproj" />
+    <ProjectReference Include="..\Shesha.Scheduler\Shesha.Scheduler.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Abp.AspNetCore" Version="6.6.2" />
+    <PackageReference Include="Abp.AspNetCore.SignalR" Version="6.6.2" />
+    <PackageReference Include="Abp.ZeroCore" Version="6.6.2" />
+    <PackageReference Include="GraphQL" Version="5.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.4" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Application\Gql\" />
+  </ItemGroup>
+</Project>

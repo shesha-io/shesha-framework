@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <RootNamespace>Shesha</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="GraphQL\Json\**" />
+    <EmbeddedResource Remove="GraphQL\Json\**" />
+    <None Remove="GraphQL\Json\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GraphQL" Version="5.3.0" />
+    <PackageReference Include="GraphQL.MicrosoftDI" Version="5.3.0" />
+    <PackageReference Include="GraphQL.NewtonsoftJson" Version="5.3.0" />
+    <PackageReference Include="GraphQL.SystemTextJson" Version="5.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Shesha.Framework\Shesha.Framework.csproj" />
+  </ItemGroup>
+
+</Project>

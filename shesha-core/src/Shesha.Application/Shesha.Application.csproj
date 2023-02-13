@@ -1,0 +1,51 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\common.props" />
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <AssemblyName>Shesha.Application</AssemblyName>
+    <PackageId>Shesha.Application</PackageId>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <RootNamespace>Shesha</RootNamespace>
+    <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
+    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>.\Shesha.Application.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>.\Shesha.Application.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Dtos\**" />
+    <Compile Remove="ObjectMapper\**" />
+    <EmbeddedResource Remove="Dtos\**" />
+    <EmbeddedResource Remove="ObjectMapper\**" />
+    <None Remove="Dtos\**" />
+    <None Remove="ObjectMapper\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Excel\template.xlsx" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Excel\template.xlsx" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="DocumentFormat.OpenXml" Version="2.10.1" />
+    <PackageReference Include="Hangfire.Core" Version="1.7.25" />
+    <PackageReference Include="MediaTypeMap.Core" Version="2.3.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
+    <PackageReference Include="NETStandard.Library" Version="2.0.3" />
+    <PackageReference Include="NHibernate" Version="5.3.12" />
+    <PackageReference Include="Stubble.Core" Version="1.9.3" />
+    <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Shesha.Core\Shesha.Core.csproj" />
+    <ProjectReference Include="..\Shesha.Elmah\Shesha.Elmah.csproj" />
+    <ProjectReference Include="..\Shesha.Framework\Shesha.Framework.csproj" />
+    <ProjectReference Include="..\Shesha.GraphQL\Shesha.GraphQL.csproj" />
+    <ProjectReference Include="..\Shesha.NHibernate\Shesha.NHibernate.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,82 @@
+[
+  {
+    "Name": "NestedLevel1",
+    "Label": "Nested Level 1",
+    "Description": null,
+    "DataType": "object",
+    "DataFormat": null,
+    "EntityType": null,
+    "ReferenceListName": null,
+    "ReferenceListNamespace": null,
+    "Source": 2,
+    "Properties": [
+      {
+        "Name": "NestedLevel1_Prop1",
+        "Label": "Nested Level1 Prop1",
+        "Description": null,
+        "DataType": "string",
+        "DataFormat": "singleline",
+        "EntityType": null,
+        "ReferenceListName": null,
+        "ReferenceListNamespace": null,
+        "Source": 2,
+        "Properties": [],
+        "Id": "b80219b0-6c52-4e9a-9e96-24cc3ae4afeb"
+      },
+      {
+        "Name": "NestedLevel2",
+        "Label": "Nested Level 2",
+        "Description": null,
+        "DataType": "object",
+        "DataFormat": null,
+        "EntityType": null,
+        "ReferenceListName": null,
+        "ReferenceListNamespace": null,
+        "Source": 2,
+        "Properties": [
+          {
+            "Name": "NestedLevel2_Prop1",
+            "Label": "Nested Level2 Prop1",
+            "Description": null,
+            "DataType": "string",
+            "DataFormat": null,
+            "EntityType": null,
+            "ReferenceListName": null,
+            "ReferenceListNamespace": null,
+            "Source": 2,
+            "Properties": [],
+            "Id": "9ec0722f-0508-40c6-99a0-f3cecfc66650"
+          }
+        ],
+        "Id": "45a515fb-d175-45d1-8574-6431e9c1bc2c"
+      },
+      {
+        "Name": "PostCode",
+        "Label": "Post Code",
+        "Description": null,
+        "DataType": "string",
+        "DataFormat": "singleline",
+        "EntityType": null,
+        "ReferenceListName": null,
+        "ReferenceListNamespace": null,
+        "Source": 2,
+        "Properties": [],
+        "Id": "f21d1e7b-4fd2-4261-a122-b507ac8f8bc3"
+      },
+      {
+        "Name": "Line1",
+        "Label": "Line 1",
+        "Description": null,
+        "DataType": "string",
+        "DataFormat": "singleline",
+        "EntityType": null,
+        "ReferenceListName": null,
+        "ReferenceListNamespace": null,
+        "Source": 2,
+        "Properties": [],
+        "Id": "bbcbf9a7-a09a-414a-8b14-f5923bf97bdf"
+      }
+    ],
+    "Id": "ef30d4a2-49f6-4f94-aa39-4cad92e90877"
+  }
+]

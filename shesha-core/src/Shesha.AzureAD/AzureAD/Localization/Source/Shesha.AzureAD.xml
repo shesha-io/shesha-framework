@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<localizationDictionary culture="en">
+  <texts>
+    <text name="AzureAD_IsEnabled" value="Enabled" />
+    <text name="AzureAD_InstanceUrl" value="Instance Url" />
+    <text name="AzureAD_Tenant" value="Tenant" />
+    <text name="AzureAD_AppIdUri" value="App Id Uri" />
+    <text name="AzureAD_ClientApplicationId" value="Client Application Id" />
+  </texts>
+</localizationDictionary>

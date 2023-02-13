@@ -1,0 +1,112 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Shesha.MongoRepository</name>
+    </assembly>
+    <members>
+        <member name="P:Shesha.MongoRepository.Mongo.MongoRepository`1.Context">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Shesha.MongoRepository.Mongo.MongoRepository`1.Table">
+            <summary>
+            Get type of IMongoQueryable document
+            If you want an IEnumerable list make 'Table.ToList()'
+            </summary>
+        </member>
+        <member name="P:Shesha.MongoRepository.Mongo.MongoRepository`1.Count">
+            <summary>
+            Get all document count
+            </summary>
+        </member>
+        <member name="M:Shesha.MongoRepository.Mongo.MongoRepository`1.Insert(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Add new document range
+            </summary>
+            <param name="entities"></param>
+        </member>
+        <member name="M:Shesha.MongoRepository.Mongo.MongoRepository`1.Insert(`0)">
+            <summary>
+            Add new document
+            </summary>
+            <param name="entity"></param>
+        </member>
+        <member name="M:Shesha.MongoRepository.Mongo.MongoRepository`1.Update(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Update document range
+            </summary>
+            <param name="entities"></param>
+        </member>
+        <member name="M:Shesha.MongoRepository.Mongo.MongoRepository`1.Update(`0)">
+            <summary>
+            Update document
+            </summary>
+            <param name="entity"></param>
+        </member>
+        <member name="M:Shesha.MongoRepository.Mongo.MongoRepository`1.Delete(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Delete document range
+            </summary>
+            <param name="documents"></param>
+        </member>
+        <member name="M:Shesha.MongoRepository.Mongo.MongoRepository`1.Delete(`0)">
+            <summary>
+            Delete document
+            </summary>
+            <param name="document"></param>
+        </member>
+        <member name="M:Shesha.MongoRepository.Mongo.MongoRepository`1.Find(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
+            <summary>
+            Get single document by expression
+            </summary>
+            <param name="filter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shesha.MongoRepository.Mongo.MongoRepository`1.Find(System.Object)">
+            <summary>
+            Get single document by object id
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shesha.MongoRepository.Mongo.MongoRepository`1.Get(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
+            <summary>
+            Get document list by expression
+            </summary>
+            <param name="filter"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Shesha.MongoRepository.Mongo.SheshaMongoModule">
+            <summary>
+            This module extends module zero to add LDAP authentication.
+            </summary>
+        </member>
+        <member name="P:Shesha.MongoRepository.Utils.MongoUtil.ConnectionString">
+            <summary>
+            Connection string with password
+            </summary>
+        </member>
+        <member name="M:Shesha.MongoRepository.Utils.MongoUtil.GetConnectionString(System.String)">
+            <summary>
+            Returns connection string. Note: for the Azure environment - uses standard environment variable
+            </summary>
+        </member>
+        <member name="P:MongoDbRepository.MongoDbContext.ConnectionString">
+            <summary>
+            Get connection string from Mongo Client
+            </summary>
+        </member>
+        <member name="P:MongoDbRepository.MongoDbContext.DatabaseName">
+            <summary>
+            Get database name from Mongo Client
+            </summary>
+        </member>
+        <member name="P:MongoDbRepository.MongoDbContext.PluralizeDocumentName">
+            <summary>
+            Pluralize document name on server
+            Default value = false
+            </summary>
+        </member>
+    </members>
+</doc>
