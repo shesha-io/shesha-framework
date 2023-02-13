@@ -1,0 +1,63 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+
+		<IsPackable>false</IsPackable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Remove="BookingSlots\**" />
+		<Compile Remove="HisWards\**" />
+		<Compile Remove="Hospitals\**" />
+		<Compile Remove="Managers\**" />
+		<EmbeddedResource Remove="BookingSlots\**" />
+		<EmbeddedResource Remove="HisWards\**" />
+		<EmbeddedResource Remove="Hospitals\**" />
+		<EmbeddedResource Remove="Managers\**" />
+		<None Remove="BookingSlots\**" />
+		<None Remove="HisWards\**" />
+		<None Remove="Hospitals\**" />
+		<None Remove="Managers\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Abp.Castle.Log4Net" Version="6.6.2" />
+		<PackageReference Include="Bogus" Version="29.0.2" />
+		<PackageReference Include="Hangfire.SqlServer" Version="1.7.25" />
+		<PackageReference Include="nunit" Version="3.12.0" />
+		<PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
+		<PackageReference Include="Shesha.Application" Version="3.5.39" />
+		<PackageReference Include="Shesha.Core" Version="3.5.39" />
+		<PackageReference Include="Shesha.Framework" Version="3.5.39" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Identity.Client" Version="4.9.0" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
+		<PackageReference Include="Moq" Version="4.14.1" />
+		<PackageReference Include="NSubstitute" Version="4.2.1" />
+		<PackageReference Include="Shouldly" Version="3.0.2" />
+		<PackageReference Include="System.Data.SQLite.Core" Version="1.0.115.5" />
+		<PackageReference Include="xunit" Version="2.4.1" />
+		<PackageReference Include="xunit.extensibility.execution" Version="2.4.1" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Abp.TestBase" Version="6.6.2" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.2" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\..\src\Module\ShaCompanyName.ShaProjectName.Common.Application\ShaCompanyName.ShaProjectName.Common.Application.csproj" />
+	</ItemGroup>
+
+  <ItemGroup>
+		<None Update="appsettings.Test.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="log4net.config">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+</Project>

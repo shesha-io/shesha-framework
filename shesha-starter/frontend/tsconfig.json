@@ -1,0 +1,112 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "experimentalDecorators": true,
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "api": [
+        "src/api"
+      ],
+      "api/*": [
+        "src/api/*"
+      ],
+      "app-constants": [
+        "src/app-constants"
+      ],
+      "components": [
+        "src/components"
+      ],
+      "definitions": [
+        "src/definitions"
+      ],
+      "enums": [
+        "src/enums"
+      ],
+      "hocs": [
+        "src/hocs"
+      ],
+      "hooks": [
+        "src/hooks"
+      ],
+      "interfaces": [
+        "src/interfaces"
+      ],
+      "i18n": [
+        "./i18n.json"
+      ],
+      "models": [
+        "src/models"
+      ],
+      "models/*": [
+        "src/models/*"
+      ],
+      "providers": [
+        "src/providers"
+      ],
+      "providers/*": [
+        "src/providers/*"
+      ],
+      "public": [
+        "public"
+      ],
+      "roots": [
+        "src/roots"
+      ],
+      "routes": [
+        "src/routes"
+      ],
+      "routes/settingsRoutes": [
+        "src/routes/settingsRoutes"
+      ],
+      "routes/*": [
+        "src/routes/*"
+      ],
+      "styles": [
+        "src/styles"
+      ],
+      "test": [
+        "test"
+      ],
+      "theme": [
+        "src/theme"
+      ],
+      "theme/*": [
+        "src/theme/*"
+      ],
+      "utils": [
+        "src/utils"
+      ]
+    },
+    "typeRoots": [
+      "typings",
+      "node_modules/@types"
+    ],
+    "incremental": true
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "test/*",
+    "src/api/**"
+  ]
+}

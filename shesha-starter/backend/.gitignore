@@ -1,0 +1,16 @@
+/.vs/*
+**/*.suo
+**/*.user
+**/*.bak
+**/*.orig
+**/UpgradeLog.htm
+**/bin/*
+**/obj/*
+**/App_Data/Logs/*
+**/ElmahLogs/*
+Logs
+/src/ShaCompanyName.ShaProjectName.Web.Host/web.config
+/src/ShaCompanyName.ShaProjectName.Web.Host/ShaCompanyName.ShaProjectName.Web.Core.xml
+/sh.exe.stackdump
+
+

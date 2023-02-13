@@ -251,6 +251,37 @@ paket-files/
 .idea/
 *.sln.iml
 
+# Back-end logs and uploads
+**/ElmahLogs/**
+outputs
+Logs
+Upload
+
+# Node dependencies
+**/node_modules/*
+
+# Ide
+.vscode/*
+vscode/
+.idea/*
+
+# Front-end env files
+.DS_Store
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+preview-head.html
+storybook-static
+
+# shesha-core
 /shesha-core/src/Shesha.Application/Shesha.Application.xml
 /shesha-core/src/Shesha.AzureAD/Shesha.AzureAD.xml
 /shesha-core/src/Shesha.Web.FormsDesigner/Shesha.Web.FormsDesigner.xml
@@ -262,38 +293,15 @@ paket-files/
 /shesha-core/src/Shesha.Import/Shesha.Import.xml
 /shesha-core/src/Shesha.Scheduler/Shesha.Scheduler.xml
 /shesha-core/src/Shesha.Firebase/Shesha.Firebase.xml
-**/ElmahLogs/**
-outputs
-Logs
-Upload
 
-# dependencies
-**/node_modules/*
-
-# builds
+# shesha-reactjs
 /shesha-reactjs/build
 /shesha-reactjs/dist
 /shesha-reactjs/.out-storybook/*
 /shesha-reactjs/.next
 /shesha-reactjs/package-lock.json
 
-# Ide
-.vscode/*
-vscode/
-.idea/*
-
-# misc
-.DS_Store
-/shesha-reactjs/.env
-/shesha-reactjs/.env.local
-/shesha-reactjs/.env.development.local
-/shesha-reactjs/.env.test.local
-/shesha-reactjs/.env.production.local
-
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-boilerplate
-preview-head.html
-storybook-static
-*.tgz
+# shesha-starter
+/shesha-starter/backend/src/ShaCompanyName.ShaProjectName.Common.Domain/Boxfusion.Health.His.Domain.xml
+/shesha-starter/backend/src/ShaCompanyName.ShaProjectName.Web.Core/ShaCompanyName.ShaProjectName.Web.Core.xml
+/shesha-starter/backend/src/ShaCompanyName.ShaProjectName.Common.Domain/ShaCompanyName.ShaProjectName.Domain.xml

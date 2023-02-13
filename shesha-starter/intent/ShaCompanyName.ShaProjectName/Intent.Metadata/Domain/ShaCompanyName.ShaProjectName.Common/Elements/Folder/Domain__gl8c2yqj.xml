@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class id="106618d3-9ac1-4e03-bcb5-c4b507f2eef1" type="Folder" typeId="4d95d53a-8855-4f35-aa82-e312643f5c5f">
+  <name>Domain</name>
+  <display>Domain</display>
+  <isAbstract>false</isAbstract>
+  <sort-children>by-type-then-by-name</sort-children>
+  <genericTypes />
+  <isMapped>false</isMapped>
+  <parentFolderId>b2e5535c-846b-4538-b595-ddbe1eed089d</parentFolderId>
+  <packageId>b2e5535c-846b-4538-b595-ddbe1eed089d</packageId>
+  <packageName>ShaCompanyName.ShaProjectName.Common</packageName>
+  <stereotypes />
+  <metadata />
+  <childElements />
+</class>
