@@ -1,0 +1,135 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Boxfusion.SheshaFunctionalTests.Web.Core</name>
+    </assembly>
+    <members>
+        <member name="T:Boxfusion.SheshaFunctionalTests.Common.Authorization.CommonRoles">
+            <summary>
+            SheshaFunctionalTests Role Names
+            </summary>
+        </member>
+        <member name="F:Boxfusion.SheshaFunctionalTests.Common.Authorization.CommonRoles.DataAdministrator">
+            <summary>
+            Data Administrator
+            </summary>
+        </member>
+        <member name="F:Boxfusion.SheshaFunctionalTests.Common.Authorization.CommonRoles.SystemAdministrator">
+            <summary>
+            System Administrator
+            </summary>
+        </member>
+        <member name="F:Boxfusion.SheshaFunctionalTests.Common.Authorization.CommonRoles.GlobalAdmin">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Boxfusion.SheshaFunctionalTests.Common.Authorization.ISheshaFunctionalTestsPermissionChecker">
+            <summary>
+            SheshaFunctionalTests Permission checker
+            </summary>
+        </member>
+        <member name="M:Boxfusion.SheshaFunctionalTests.Common.Authorization.ISheshaFunctionalTestsPermissionChecker.IsDataAdministrator(Shesha.Domain.Person)">
+            <summary>
+            
+            </summary>
+            <param name="person"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Boxfusion.SheshaFunctionalTests.Common.Authorization.ISheshaFunctionalTestsPermissionChecker.IsGlobalAdmin(Shesha.Domain.Person)">
+            <summary>
+            
+            </summary>
+            <param name="person"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Boxfusion.SheshaFunctionalTests.Common.Authorization.ISheshaFunctionalTestsPermissionChecker.IsAdmin(Shesha.Domain.Person)">
+            <summary>
+            
+            </summary>
+            <param name="person"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Boxfusion.SheshaFunctionalTests.Common.Authorization.SheshaFunctionalTestsPermissionChecker">
+            <summary>
+            SheshaFunctionalTests Permission checker
+            </summary>
+        </member>
+        <member name="M:Boxfusion.SheshaFunctionalTests.Common.Authorization.SheshaFunctionalTestsPermissionChecker.#ctor(Abp.Domain.Repositories.IRepository{Shesha.Domain.Person,System.Guid},Abp.Domain.Repositories.IRepository{Shesha.Domain.ShaRoleAppointedPerson,System.Guid},Abp.Domain.Repositories.IRepository{Shesha.Domain.ShaRoleAppointmentEntity,System.Guid})">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:Boxfusion.SheshaFunctionalTests.Common.Authorization.SheshaFunctionalTestsPermissionChecker.IsGrantedAsync(System.Int64,System.String)">
+            <summary>
+            inheritedDoc
+            </summary>
+            <param name="userId"></param>
+            <param name="permissionName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Boxfusion.SheshaFunctionalTests.Common.Authorization.SheshaFunctionalTestsPermissionChecker.IsGranted(System.Int64,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="userId"></param>
+            <param name="permissionName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Boxfusion.SheshaFunctionalTests.Common.Authorization.SheshaFunctionalTestsPermissionChecker.IsInAnyOfRoles(Shesha.Domain.Person,System.String[])">
+            <summary>
+            inheritedDoc
+            </summary>
+            <param name="person"></param>
+            <param name="roles"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Boxfusion.SheshaFunctionalTests.Common.Authorization.SheshaFunctionalTestsPermissionChecker.IsDataAdministrator(Shesha.Domain.Person)">
+            <summary>
+            
+            </summary>
+            <param name="person"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Boxfusion.SheshaFunctionalTests.Common.Authorization.SheshaFunctionalTestsPermissionChecker.IsAdmin(Shesha.Domain.Person)">
+            <summary>
+            
+            </summary>
+            <param name="person"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Boxfusion.SheshaFunctionalTests.Common.Authorization.SheshaFunctionalTestsPermissionChecker.IsGlobalAdmin(Shesha.Domain.Person)">
+            <summary>
+            
+            </summary>
+            <param name="person"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Boxfusion.SheshaFunctionalTests.Hangfire.HangfireAuthorizationFilter">
+            <summary>
+            Hangfire authorization filter
+            </summary>
+        </member>
+        <member name="T:Boxfusion.SheshaFunctionalTests.SheshaFunctionalTestsWebCoreModule">
+            <summary>
+            ReSharper disable once InconsistentNaming
+            </summary>
+        </member>
+        <member name="M:Boxfusion.SheshaFunctionalTests.SheshaFunctionalTestsWebCoreModule.#ctor(Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
+            <summary>
+            
+            </summary>
+            <param name="env"></param>
+        </member>
+        <member name="M:Boxfusion.SheshaFunctionalTests.SheshaFunctionalTestsWebCoreModule.PreInitialize">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Boxfusion.SheshaFunctionalTests.SheshaFunctionalTestsWebCoreModule.Initialize">
+            <summary>
+            
+            </summary>
+        </member>
+    </members>
+</doc>

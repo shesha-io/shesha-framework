@@ -1,0 +1,69 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32630.192
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9695FC1C-6D7C-4FE8-A47B-0D35F0A6649D}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{244B7A5A-6740-4EE8-BCA3-5484C9DDF56A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Boxfusion.SheshaFunctionalTests.Web.Host", "src\Boxfusion.SheshaFunctionalTests.Web.Host\Boxfusion.SheshaFunctionalTests.Web.Host.csproj", "{AE6EA4DF-D39B-45C9-90AB-DE4BD9C0665B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Boxfusion.SheshaFunctionalTests.Web.Core", "src\Boxfusion.SheshaFunctionalTests.Web.Core\Boxfusion.SheshaFunctionalTests.Web.Core.csproj", "{3AC22D01-68A6-48DC-8A71-F0EB8A253DF2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Boxfusion.SheshaFunctionalTests.Common.Domain.Tests", "test\Boxfusion.SheshaFunctionalTests.Common.Domain.Tests\Boxfusion.SheshaFunctionalTests.Common.Domain.Tests.csproj", "{1E3B0FB7-94E8-48AD-83AC-17EABA2EA5D1}"
+EndProject
+Project("{52B49DB5-3EA9-4095-B1A7-DF1AC22D7DAE}") = "Boxfusion.SheshaFunctionalTests.Common.Application", "src\Module\Boxfusion.SheshaFunctionalTests.Common.Application\Boxfusion.SheshaFunctionalTests.Common.Application.csproj", "{4E12DE3A-1824-48AE-A202-825B26859F9C}"
+EndProject
+Project("{52B49DB5-3EA9-4095-B1A7-DF1AC22D7DAE}") = "Boxfusion.SheshaFunctionalTests.Common.Domain", "src\Module\Boxfusion.SheshaFunctionalTests.Common.Domain\Boxfusion.SheshaFunctionalTests.Common.Domain.csproj", "{3ACD8E57-C6DA-483E-BC14-1FE0934BFC35}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		DebugLocalShesha|Any CPU = DebugLocalShesha|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AE6EA4DF-D39B-45C9-90AB-DE4BD9C0665B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE6EA4DF-D39B-45C9-90AB-DE4BD9C0665B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE6EA4DF-D39B-45C9-90AB-DE4BD9C0665B}.DebugLocalShesha|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE6EA4DF-D39B-45C9-90AB-DE4BD9C0665B}.DebugLocalShesha|Any CPU.Build.0 = Debug|Any CPU
+		{AE6EA4DF-D39B-45C9-90AB-DE4BD9C0665B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE6EA4DF-D39B-45C9-90AB-DE4BD9C0665B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3AC22D01-68A6-48DC-8A71-F0EB8A253DF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AC22D01-68A6-48DC-8A71-F0EB8A253DF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AC22D01-68A6-48DC-8A71-F0EB8A253DF2}.DebugLocalShesha|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AC22D01-68A6-48DC-8A71-F0EB8A253DF2}.DebugLocalShesha|Any CPU.Build.0 = Debug|Any CPU
+		{3AC22D01-68A6-48DC-8A71-F0EB8A253DF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AC22D01-68A6-48DC-8A71-F0EB8A253DF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E3B0FB7-94E8-48AD-83AC-17EABA2EA5D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E3B0FB7-94E8-48AD-83AC-17EABA2EA5D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E3B0FB7-94E8-48AD-83AC-17EABA2EA5D1}.DebugLocalShesha|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E3B0FB7-94E8-48AD-83AC-17EABA2EA5D1}.DebugLocalShesha|Any CPU.Build.0 = Debug|Any CPU
+		{1E3B0FB7-94E8-48AD-83AC-17EABA2EA5D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E3B0FB7-94E8-48AD-83AC-17EABA2EA5D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E12DE3A-1824-48AE-A202-825B26859F9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E12DE3A-1824-48AE-A202-825B26859F9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E12DE3A-1824-48AE-A202-825B26859F9C}.DebugLocalShesha|Any CPU.ActiveCfg = DebugLocalShesha|Any CPU
+		{4E12DE3A-1824-48AE-A202-825B26859F9C}.DebugLocalShesha|Any CPU.Build.0 = DebugLocalShesha|Any CPU
+		{4E12DE3A-1824-48AE-A202-825B26859F9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E12DE3A-1824-48AE-A202-825B26859F9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3ACD8E57-C6DA-483E-BC14-1FE0934BFC35}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3ACD8E57-C6DA-483E-BC14-1FE0934BFC35}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3ACD8E57-C6DA-483E-BC14-1FE0934BFC35}.DebugLocalShesha|Any CPU.ActiveCfg = DebugLocalShesha|Any CPU
+		{3ACD8E57-C6DA-483E-BC14-1FE0934BFC35}.DebugLocalShesha|Any CPU.Build.0 = DebugLocalShesha|Any CPU
+		{3ACD8E57-C6DA-483E-BC14-1FE0934BFC35}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3ACD8E57-C6DA-483E-BC14-1FE0934BFC35}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1E3B0FB7-94E8-48AD-83AC-17EABA2EA5D1} = {244B7A5A-6740-4EE8-BCA3-5484C9DDF56A}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {95ED23F3-8DEA-456E-A44B-87A161CB696A}
+	EndGlobalSection
+EndGlobal
