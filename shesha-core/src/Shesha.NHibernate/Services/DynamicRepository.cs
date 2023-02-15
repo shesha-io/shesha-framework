@@ -7,6 +7,8 @@ using Abp.Domain.Uow;
 using NHibernate;
 using NHibernate.Context;
 using NHibernate.Criterion;
+using NHibernate.Multi;
+using NHibernate.Persister.Entity;
 using NHibernate.Util;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;

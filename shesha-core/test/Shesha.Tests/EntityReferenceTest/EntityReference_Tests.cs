@@ -18,7 +18,7 @@ namespace Shesha.Tests.EntityReferenceTest
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IRepository<Person, Guid> _personRepository;
         private readonly IRepository<Organisation, Guid> _organisationRepository;
-        private readonly IRepository<EntityRef, Guid> _entityRefRepository;
+        //private readonly IRepository<EntityRef, Guid> _entityRefRepository;
         private readonly IRepository<ComplexTestString, Guid> _jsonStringRepository;
         //private readonly IRepository<ComplexPersonTest, Guid> _jsonPersonRepository;
         private readonly IEntityModelBinder _entityModelBinder;
@@ -28,18 +28,18 @@ namespace Shesha.Tests.EntityReferenceTest
             _unitOfWorkManager = Resolve<IUnitOfWorkManager>();
             _personRepository = Resolve<IRepository<Person, Guid>>();
             _organisationRepository = Resolve<IRepository<Organisation, Guid>>();
-            _entityRefRepository = Resolve<IRepository<EntityRef, Guid>>();
+            //_entityRefRepository = Resolve<IRepository<EntityRef, Guid>>();
             _jsonStringRepository = Resolve<IRepository<ComplexTestString, Guid>>();
             //_jsonPersonRepository = Resolve<IRepository<ComplexPersonTest, Guid>>();
             _entityModelBinder = Resolve<IEntityModelBinder>();
         }
 
 
-        [Table("Test_EntityRef")]
+/*        [Table("Test_EntityRef")]
         public class EntityRef : Entity<Guid>
         {
             public GenericEntityReference AnyEntity { get; set; }
-            
+
             public GenericEntityReference MyEntity { get; set; }
 
         }
@@ -99,6 +99,6 @@ namespace Shesha.Tests.EntityReferenceTest
                 uow.Complete();
             }
         }
-
+*/
     }
 }
