@@ -1,36 +1,46 @@
 import React, { FC, useReducer, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { useGet, useMutate } from 'restful-react';
+import { GetDataError, useMutate } from 'restful-react';
 import { useForm } from '../form';
 import { SubFormActionsContext, SubFormContext, SUB_FORM_CONTEXT_INITIAL_STATE } from './contexts';
-import { usePubSub } from '../../hooks';
-import { uiReducer } from './reducer';
+import { useDeepCompareMemoKeepReference, usePubSub } from '../../hooks';
+import { subFormReducer } from './reducer';
 import { getQueryParams } from '../../utils/url';
 import { DEFAULT_FORM_SETTINGS, FormMarkupWithSettings } from '../form/models';
-import { setMarkupWithSettingsAction } from './actions';
+import { setMarkupWithSettingsAction, fetchDataRequestAction, fetchDataSuccessAction, fetchDataErrorAction } from './actions';
 import { ISubFormProps } from './interfaces';
 import { ColProps, message, notification } from 'antd';
 import { useGlobalState } from '../globalState';
-import { EntitiesGetQueryParams, useEntitiesGet } from '../../apis/entities';
+import { EntitiesGetQueryParams } from '../../apis/entities';
 import { useDebouncedCallback } from 'use-debounce';
-import { useDeepCompareEffect, usePrevious } from 'react-use';
-import { IEntity } from '../../pages/dynamic/interfaces';
+import { useDeepCompareEffect } from 'react-use';
+import { EntityAjaxResponse } from '../../pages/dynamic/interfaces';
 import { UseFormConfigurationArgs } from '../form/api';
 import { useConfigurableAction } from '../configurableActionsDispatcher';
 import { useConfigurationItemsLoader } from '../configurationItemsLoader';
-import { useAppConfigurator } from '../..';
+import { executeScript, IAnyObject, QueryStringParams, useAppConfigurator, useSheshaApplication } from '../..';
+import * as RestfulShesha from '../../utils/fetchers';
+import { useModelApiHelper } from '../../components/configurableForm/useActionEndpoint';
+import { StandardEntityActions } from '../../interfaces/metadata';
 
 export interface SubFormProviderProps extends Omit<ISubFormProps, 'name' | 'value'> {
   actionsOwnerId?: string;
   actionOwnerName?: string;
   name?: string;
   markup?: FormMarkupWithSettings;
-  value?: string | { id: string; [key: string]: any };
+  value?: string | { id: string;[key: string]: any };
 }
 
 interface IFormLoadingState {
   isLoading: boolean;
   error: any;
 }
+
+interface QueryParamsEvaluatorArguments {
+  data: any,
+  query: QueryStringParams,
+  globalState: IAnyObject,
+}
+type QueryParamsEvaluator = (args: QueryParamsEvaluatorArguments) => object;
 
 const SubFormProvider: FC<SubFormProviderProps> = ({
   formSelectionMode,
@@ -41,7 +51,6 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
   getUrl,
   postUrl,
   putUrl,
-  beforeGet,
   onCreated,
   onUpdated,
   actionsOwnerId,
@@ -57,42 +66,66 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
   onChange,
   defaultValue,
 }) => {
-  const [state, dispatch] = useReducer(uiReducer, SUB_FORM_CONTEXT_INITIAL_STATE);
+  const [state, dispatch] = useReducer(subFormReducer, SUB_FORM_CONTEXT_INITIAL_STATE);
   const { publish } = usePubSub();
   const { formData = {}, formMode } = useForm();
   const { globalState, setState: setGlobalState } = useGlobalState();
   const [formConfig, setFormConfig] = useState<UseFormConfigurationArgs>({ formId, lazy: true });
 
-  const getEvaluatedUrl = (url: string): string => {
-    if (!url) return '';
+  const { backendUrl, httpHeaders } = useSheshaApplication();
+
+  /**
+   * Evaluate url using js expression
+   * @urlExpression - javascript expression that returns an url
+   */
+  const evaluateUrlFromJsExpression = (urlExpression: string): string => {
+    if (!urlExpression) return '';
     return (() => {
       // tslint:disable-next-line:function-constructor
-      return new Function('data, query, globalState', url)(formData, getQueryParams(), globalState); // Pass data, query, globalState
+      return new Function('data, query, globalState', urlExpression)(formData, getQueryParams(), globalState); // Pass data, query, globalState
     })();
   };
 
-  const queryParamPayload = useMemo<IEntity>(() => {
-    const getQueryParamPayload = () => {
-      try {
-        // tslint:disable-next-line:function-constructor
-        return new Function('data, query, globalState', queryParams)(formData, getQueryParams(), globalState); // Pass data, query, globalState
-      } catch (error) {
-        console.warn('queryParamPayload error: ', error);
-        return {};
-      }
-    };
+  const evaluateUrl = (urlExpression: string): Promise<string> => {
+    if (!urlExpression)
+      return Promise.resolve('');
 
-    return getQueryParamPayload();
-  }, [queryParams, formData, globalState]);
+    return executeScript<string>(urlExpression, {
+      data: formData,
+      query: getQueryParams(),
+      globalState: globalState,
+    });
+  }
 
+  // update global state on value change
   useDeepCompareEffect(() => {
     if (name) {
+      // Note: don't write undefined if subform value is missing in the globalState. It doesn't make any sense but initiates a re-rendering
+      const existsInGlobalState = Boolean(globalState) && globalState.hasOwnProperty(name);
+      if (value === undefined && !existsInGlobalState)
+        return;
+
       setGlobalState({
         key: name,
         data: value,
       });
     }
   }, [value, name]);
+
+  const urlHelper = useModelApiHelper();
+  const getReadUrl = (): Promise<string> => {
+    if (dataSource !== 'api')
+      return Promise.reject('`getUrl` is available only when `dataSource` = `api`');
+
+    return getUrl
+      // if getUrl is specified - evaluate value using JS
+      ? evaluateUrl(getUrl)
+      : entityType
+        // if entityType is specified - get default url for the entity
+        ? urlHelper.getDefaultActionUrl({ modelType: entityType, actionName: StandardEntityActions.read }).then(endpoint => endpoint.url)
+        // return empty string
+        : Promise.resolve('');
+  }
 
   const [formLoadingState, setFormLoadingState] = useState<IFormLoadingState>({ isLoading: false, error: null });
 
@@ -102,7 +135,8 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
   const { getEntityFormId } = useConfigurationItemsLoader();
 
   useEffect(() => {
-    setFormConfig({ formId, lazy: true });
+    if (formConfig?.formId !== formId)
+      setFormConfig({ formId, lazy: true });
   }, [formId]);
 
   // show form based on the entity type
@@ -116,42 +150,47 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
     }
   }, [formData]);
 
-  const {
-    refetch: fetchEntity,
-    data: fetchEntityResponse,
-    loading: isFetchingEntity,
-    error: fetchEntityError,
-  } = useEntitiesGet({ lazy: true });
-
-  const { initialValues } = useSubForm();
-
-  const {
-    refetch: fetchDataByUrlHttp,
-    data: fetchDataByUrl,
-    loading: isFetchingDataByUrl,
-    error: errorFetchingData,
-  } = useGet({
-    path: getEvaluatedUrl(getUrl) ?? '',
-    queryParams: queryParamPayload,
-    lazy: true,
+  const { mutate: postHttp, loading: isPosting, error: postError } = useMutate({
+    path: evaluateUrlFromJsExpression(postUrl),
+    verb: 'POST',
   });
 
-  const previousValue = useRef(value);
+  const { mutate: putHttp, loading: isUpdating, error: updateError } = useMutate({
+    path: evaluateUrlFromJsExpression(putUrl),
+    verb: 'PUT',
+  });
 
-  useDeepCompareEffect(() => {
-    if (typeof value === 'string' && typeof previousValue === 'string' && previousValue !== value) {
-      handleFetchData(value);
-    }
-  }, [value, globalState, formData]);
 
-  useDeepCompareEffect(() => {
-    if (!isFetchingDataByUrl && fetchDataByUrl && typeof onChange === 'function') {
-      onChange(fetchDataByUrl?.result);
-    }
-  }, [isFetchingDataByUrl, fetchDataByUrl]);
+  /**
+   *  Memoized query params evaluator. It executes `queryParams` (javascript defined on the component settings) to get query params
+   */
+  const queryParamsEvaluator = useMemo<QueryParamsEvaluator>(() => {
+    // tslint:disable-next-line:function-constructor
+    const func = new Function('data, query, globalState', queryParams);
 
-  const evaluatedQueryParams = useMemo(() => {
-    if (formMode === 'designer') return {};
+    return (args) => {
+      try {
+        const result = func(args?.data, args?.query, args?.globalState);
+        
+        // note: delete id if it's undefined/null, missing id should be handled on the top level
+        if (result.hasOwnProperty('id') && !Boolean(result.id)) {
+          delete result.id;
+        }
+
+        return result;
+      } catch (error) {
+        console.warn('queryParamPayload error: ', error);
+        return {};
+      }
+    };
+  }, [queryParams]);
+
+  /**
+   * Get final query params taking into account all settings
+   */
+  const getFinalQueryParams = () => {
+    if (formMode === 'designer' || dataSource !== 'api')
+      return {};
 
     let params: EntitiesGetQueryParams = {
       entityType,
@@ -160,83 +199,81 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
     params.properties =
       typeof properties === 'string' ? `id ${properties}` : ['id', ...Array.from(new Set(properties || []))].join(' '); // Always include the `id` property/. Useful for deleting
 
+    const queryParamsFromJs = queryParamsEvaluator({ 
+      data: formData ?? {},
+      globalState: globalState,
+      query: getQueryParams(),
+    });
     if (queryParams) {
-      params = { ...params, ...(typeof queryParamPayload === 'object' ? queryParamPayload : {}) };
+      params = { ...params, ...(typeof queryParamsFromJs === 'object' ? queryParamsFromJs : {}) };
     }
 
     return params;
-  }, [queryParams, formMode, globalState]);
+  }
 
-  const handleFetchData = (id?: string) => {
-    if (id || evaluatedQueryParams?.id) {
-      fetchEntity({ queryParams: id ? { ...evaluatedQueryParams, id } : evaluatedQueryParams });
+  const finalQueryParams = useDeepCompareMemoKeepReference(() => {
+    const result = getFinalQueryParams();
+    return result;
+  }, [queryParams, formMode, globalState, formData]);
+
+  // abort controller, is used to cancel out of date data requests
+  const dataRequestAbortController = useRef<AbortController>(null);
+
+  const fetchData = () => {
+    if (dataSource !== 'api') {
+      return;
     }
-  };
 
-  useDeepCompareEffect(() => {
-    if (queryParams && formMode !== 'designer' && dataSource === 'api') {
-      if (evaluatedQueryParams?.id || getUrl) {
-        // Only fetch when there's an `Id`. Ideally an API that is used to fetch data should have an id
-        handleFetchData();
-      } else {
-        onChange({});
-      }
+    if (dataRequestAbortController.current)
+      dataRequestAbortController.current.abort('out of date');
+
+    // Skip loading if we work with entity and the `id` is not specified
+    if (entityType && !finalQueryParams?.id) {
+      onChange({});
+      return;
     }
-  }, [queryParams, evaluatedQueryParams]);
 
-  const previousGetUrl = usePrevious(getUrl);
+    dataRequestAbortController.current = new AbortController();
 
-  useDeepCompareEffect(() => {
-    if (
-      dataSource === 'api' &&
-      getUrl &&
-      previousGetUrl !== getUrl &&
-      !getEvaluatedUrl(getUrl)?.includes('undefined')
-    ) {
-      if (Object.hasOwn(queryParamPayload, 'id') && (!queryParamPayload?.id || queryParamPayload?.id === 'undefined')) {
-        return;
-      }
-      // TODO: when the string returned by the function has undefined , this causes the call to be made and this causes server-side error
-      // TODO: Find a cleaner way to check if new Function evaluated to a string that has undefined
-      fetchDataByUrlHttp();
-    }
-  }, [properties, getUrl, dataSource]);
+    dispatch(fetchDataRequestAction());
+    getReadUrl().then(getUrl => {
+      RestfulShesha.get<EntityAjaxResponse, any, any, any>(
+        getUrl,
+        finalQueryParams,
+        { base: backendUrl, headers: httpHeaders },
+        dataRequestAbortController.current.signal
+      ).then(dataResponse => {
+        if (dataRequestAbortController.current?.signal?.aborted)
+          return;
 
-  const { mutate: postHttp, loading: isPosting, error: postError } = useMutate({
-    path: getEvaluatedUrl(postUrl),
-    verb: 'POST',
-  });
+        dataRequestAbortController.current = null;
 
-  const { mutate: putHttp, loading: isUpdating, error: updateError } = useMutate({
-    path: getEvaluatedUrl(putUrl),
-    verb: 'PUT',
-  });
+        if (dataResponse.success) {
+          if (typeof onChange === 'function') {
+            onChange(dataResponse?.result);
+            dispatch(fetchDataSuccessAction());
+          }
+        } else {
+          dispatch(fetchDataErrorAction({ error: dataResponse.error as GetDataError<unknown> }));
+        }
+      })
+        .catch(e => {
+          dispatch(fetchDataErrorAction({ error: e }));
+        });
+    });
+  }
 
-  //#region get data
-  useDeepCompareEffect(() => {
-    if (!isFetchingEntity && fetchEntityResponse) {
-      onChange(fetchEntityResponse?.result);
-    }
-  }, [isFetchingEntity, fetchEntityResponse]);
-  //#endregion
-
-  //#region CRUD functions
-  const getData = useDebouncedCallback(() => {
-    if (dataSource === 'api') {
-      if (beforeGet) {
-        const evaluateBeforeGet = () => {
-          // tslint:disable-next-line:function-constructor
-          return new Function('data, initialValues, globalState', beforeGet)(formData, initialValues, globalState);
-        };
-
-        const evaluatedData = evaluateBeforeGet();
-
-        onChange(evaluatedData);
-      }
-
-      handleFetchData();
-    }
+  const debouncedFetchData = useDebouncedCallback(() => {
+    fetchData();
   }, 300);
+
+  // fetch data on first rendering and on change of some properties
+  useEffect(() => {
+    if (dataSource !== 'api')
+      return;
+
+    fetchData();
+  }, [dataSource, finalQueryParams]); // todo: memoize final getUrl and add as a dependency
 
   const postData = useDebouncedCallback(() => {
     if (!postUrl) {
@@ -328,12 +365,6 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
       dispatch(setMarkupWithSettingsAction({ components: [], formSettings: DEFAULT_FORM_SETTINGS }));
     }
   }, [formConfig.formId, markup]);
-
-  useDeepCompareEffect(() => {
-    if (markup) {
-      dispatch(setMarkupWithSettingsAction(markup));
-    }
-  }, [markup]);
   //#endregion
 
   const actionDependencies = [actionsOwnerId];
@@ -344,7 +375,7 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
       ownerUid: actionsOwnerId,
       hasArguments: false,
       executer: () => {
-        getData(); // todo: return real promise
+        debouncedFetchData(); // todo: return real promise
         return Promise.resolve();
       },
     },
@@ -390,17 +421,18 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
   return (
     <SubFormContext.Provider
       value={{
+        ...state,
         initialValues: value,
         errors: {
+          ...state.errors,
           getForm: formLoadingState.error,
           postData: postError,
-          getData: fetchEntityError || errorFetchingData,
           putData: updateError,
         },
         loading: {
+          ...state.loading,
           getForm: formLoadingState.isLoading,
           postData: isPosting,
-          getData: isFetchingEntity || isFetchingDataByUrl,
           putData: isUpdating,
         },
         components: state?.components,
@@ -415,7 +447,7 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
     >
       <SubFormActionsContext.Provider
         value={{
-          getData,
+          getData: debouncedFetchData,
           postData,
           putData,
         }}
@@ -426,28 +458,36 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
   );
 };
 
-function useSubFormState() {
+function useSubFormState(require: boolean) {
   const context = useContext(SubFormContext);
 
-  // if (context === undefined) {
-  //   throw new Error('useSubFormState must be used within a SubFormProvider');
-  // }
+  if (context === undefined && require) {
+    throw new Error('useSubFormState must be used within a SubFormProvider');
+  }
 
   return context;
 }
 
-function useSubFormActions() {
+function useSubFormActions(require: boolean) {
   const context = useContext(SubFormActionsContext);
 
-  // if (context === undefined) {
-  //   throw new Error('useSubFormActions must be used within a SubFormProvider');
-  // }
+  if (context === undefined && require) {
+    throw new Error('useSubFormActions must be used within a SubFormProvider');
+  }
 
   return context;
 }
 
-function useSubForm() {
-  return { ...useSubFormState(), ...useSubFormActions() };
+function useSubForm(require: boolean = true) {
+  const actionsContext = useSubFormActions(require);
+  const stateContext = useSubFormState(require);
+
+  // useContext() returns initial state when provider is missing
+  // initial context state is useless especially when require == true
+  // so we must return value only when both context are available
+  return actionsContext !== undefined && stateContext !== undefined
+    ? { ...actionsContext, ...stateContext }
+    : undefined;
 }
 
 export { SubFormProvider, useSubFormState, useSubFormActions, useSubForm };

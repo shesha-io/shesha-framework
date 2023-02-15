@@ -52,12 +52,16 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
     return name;
   };
 
+  const propNameMemo = useMemo(() => {
+    return getPropName();
+  }, [model.name, namePrefix]);
+
   const { hideLabel } = model;
 
   return (
     <Form.Item
       className={classNames(className, { 'form-item-hidden': hideLabel })}
-      name={getPropName()}
+      name={propNameMemo}
       // name={getFieldNameFromExpression(model.name)}
       label={hideLabel ? null : model.label}
       labelAlign={model.labelAlign}

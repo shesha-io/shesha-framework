@@ -35,6 +35,11 @@ export interface IFormStateContext extends IFlatComponentsStructure /*IFormProps
   validationErrors?: IFormValidationErrors;
   visibleComponentIds?: string[];
   enabledComponentIds?: string[];
+
+  /**
+   * If true, indicates that list of visible components are calculated
+   */
+  visibleComponentIdsIsSet: boolean; 
 }
 
 export interface ISetVisibleComponentsPayload {
@@ -84,6 +89,7 @@ export interface IFormActionsContext {
 export const FORM_CONTEXT_INITIAL_STATE: IFormStateContext = {
   allComponents: {},
   visibleComponentIds: [],
+  visibleComponentIdsIsSet: false,
   enabledComponentIds: [],
   componentRelations: { [ROOT_COMPONENT_KEY]: [] },
   formMode: 'designer',

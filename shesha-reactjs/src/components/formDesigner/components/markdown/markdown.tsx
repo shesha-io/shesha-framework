@@ -28,10 +28,11 @@ const ReactMarkdown = lazy(async () => {
 
 const Markdown: FC<IMarkdownProps> = model => {
   const { formData, formMode } = useForm();
-  const { value } = useSubForm();
+  // NOTE: to be replaced with a generic context implementation
+  const { value: subFormData } = useSubForm(false) ?? {}; 
   const { globalState } = useGlobalState();
 
-  const data = value || formData;
+  const data = subFormData || formData;
 
   const content = evaluateString(model?.content, { data, globalState });
 

@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { Modal, Form } from 'antd';
 import { useDynamicModals } from '../../providers';
-import { ConfigurableForm } from '../';
+import { ConfigurableForm, IConfigurableFormProps } from '../';
 import { IModalWithConfigurableFormProps, IModalWithContentProps } from '../../providers/dynamicModal/models';
 import { evaluateString, MODAL_DATA, useGlobalState, useShaRouting } from '../..';
 import _ from 'lodash';
@@ -97,6 +97,24 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = props => {
     }
   };
 
+  const formProps: IConfigurableFormProps = {
+    formId: formId,
+    submitAction: submitHttpVerb === 'POST' || !submitHttpVerb ? StandardEntityActions.create : StandardEntityActions.update,
+    form: form,
+    mode: mode,
+    actions: {
+      close: handleCancel,
+    },
+    onFinish: onSubmitted,
+    prepareInitialValues: prepareInitialValues,
+    onFinishFailed: onFailed,
+    beforeSubmit: beforeSubmit,
+    httpVerb: submitHttpVerb,
+    initialValues: initialValues,
+    parentFormValues: parentFormValues,
+    skipFetchData: skipFetchData
+  };
+
   return (
     <DynamicModalWithContent
       key={id}
@@ -108,25 +126,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = props => {
       onCancel={closeModal}
       footer={showModalFooter ? undefined : null}
       content={
-        <ConfigurableForm
-          formId={formId}
-          submitAction={
-            submitHttpVerb === 'POST' || !submitHttpVerb ? StandardEntityActions.create : StandardEntityActions.update
-          }
-          form={form}
-          mode={mode}
-          actions={{
-            close: handleCancel,
-          }}
-          onFinish={onSubmitted}
-          prepareInitialValues={prepareInitialValues}
-          onFinishFailed={onFailed}
-          beforeSubmit={beforeSubmit}
-          httpVerb={submitHttpVerb}
-          initialValues={initialValues}
-          parentFormValues={parentFormValues}
-          skipFetchData={skipFetchData}
-        />
+        <ConfigurableForm {...formProps}/>
       }
     />
   );

@@ -24,7 +24,6 @@ export interface ISubFormProps extends IValuable, IChangeable {
   queryParams?: string;
 
   //#region Actions
-  beforeGet?: string;
   onCreated?: string;
   onUpdated?: string;
   //#endregion

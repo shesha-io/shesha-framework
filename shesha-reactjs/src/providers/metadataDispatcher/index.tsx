@@ -192,7 +192,6 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
       return Promise.resolve(false);
 
     return getMetadata({ modelType: modelType }).then(m => {
-      console.log('resolve');
       return m.dataType === DataTypes.entityReference;
     });
   }

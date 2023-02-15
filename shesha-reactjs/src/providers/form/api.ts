@@ -1,11 +1,11 @@
 import { nanoid } from "nanoid";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { GetDataError, useGet } from "restful-react";
-import { componentsTreeToFlatStructure, IToolboxComponents, useAppConfigurator, useMetadataDispatcher, useSheshaApplication } from "../..";
+import { componentsTreeToFlatStructure, IMatchData, IToolboxComponents, useAppConfigurator, useMetadataDispatcher, useSheshaApplication } from "../..";
 import { IAjaxResponseBase } from "../../interfaces/ajaxResponse";
 import { IErrorInfo } from "../../interfaces/errorInfo";
 import { IAbpWrappedGetEntityResponse } from "../../interfaces/gql";
-import { IPropertyMetadata, StandardEntityActions } from "../../interfaces/metadata";
+import { IApiEndpoint, IPropertyMetadata, StandardEntityActions } from "../../interfaces/metadata";
 import { EntityAjaxResponse, IEntity } from "../../pages/dynamic/interfaces";
 import { useConfigurationItemsLoader } from "../configurationItemsLoader";
 import { IMetadataDispatcherActionsContext } from "../metadataDispatcher/contexts";
@@ -13,7 +13,8 @@ import { FormIdentifier, FormMarkupWithSettings, FormRawMarkup, IFormDto, IFormS
 import { asFormFullName, asFormRawId, getComponentsFromMarkup, useFormDesignerComponents } from "./utils";
 import * as RestfulShesha from '../../utils/fetchers';
 import { ConfigurationItemsViewMode } from "../appConfigurator/models";
-import { useModelApiHelper } from "../../components/configurableForm/useActionEndpoint";
+import { useModelApiEndpoint, useModelApiHelper } from "../../components/configurableForm/useActionEndpoint";
+import { getQueryParams, joinUrlAndPath } from "../../utils/url";
 
 /**
  * Form configuration DTO
@@ -232,17 +233,12 @@ export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse
                 // apply loaded form
                 setState(prev => ({ ...prev, form: form }));
 
-                //console.log('LOG: resolve get data url');
-
                 isEntityType(form.settings?.modelType).then(modelIsEntity => {
-                    //console.log('LOG: isEntityType', modelIsEntity);
                     if (dataId || !modelIsEntity) {
                         endpointsHelper.getFormActionUrl({ actionName: StandardEntityActions.read, formSettings: form.settings, mappings: [] }).then(getDataEndpoint => {
                             const getDataUrl = getDataEndpoint && getDataEndpoint.httpVerb?.toLowerCase() === 'get' // note: support get only here
                                 ? getDataEndpoint.url
                                 : null;
-
-                    //console.log('LOG: resolved get data url', getDataUrl, getDataEndpoint);
 
                             if (Boolean(getDataUrl)) {
                                 setState(prev => ({ ...prev, loaderHint: 'Fetching metadata...' }));
@@ -255,8 +251,6 @@ export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse
                                     getContainerProperties,
                                     getMetadata,
                                 }).then(gqlFieldsList => {
-                            //console.log('LOG:gqlFieldsList', gqlFieldsList);
-
                                     if (formRequestRef.current !== requestId)
                                         return;
 
@@ -482,3 +476,150 @@ export const getGqlFields = (payload: GetGqlFieldsPayload): Promise<IFieldData[]
         });
     });
 };
+
+export interface UseFormDataArguments {
+    formSettings: IFormSettings;
+    formMarkup: FormRawMarkup;
+    urlEvaluationData: IMatchData[];
+    lazy: boolean;
+}
+export type EntityFetcher = () => Promise<EntityAjaxResponse>;
+export interface UseFormDataResult {
+    //form?: IFormDto;
+    fetchedData?: IEntity;
+    loadingState: LoadingState;
+    loaderHint?: string;
+    error?: IErrorInfo;
+    dataFetcher?: EntityFetcher;
+}
+export interface UseFormDataState {
+    data: IEntity;
+    error: IErrorInfo;
+    loadingState: LoadingState;
+    loaderHint?: string;
+    dataFetcher?: EntityFetcher;
+}
+export const useFormData = (args: UseFormDataArguments): UseFormDataResult => {
+    // evaluate url (default or specified in the formSettings)
+    // prepare a list of GQL fields
+    // call fetcher
+    const { formSettings, formMarkup, urlEvaluationData, lazy } = args;
+
+    const [state, setState] = useState<UseFormDataState>({ 
+        data: null, 
+        error: null, 
+        loadingState: 'waiting',
+    });
+
+    const readEndpoint = useModelApiEndpoint({
+        actionName: StandardEntityActions.read,
+        formSettings: formSettings,
+        mappings: urlEvaluationData,
+        /*
+        [
+            //{ match: 'data', data: formData }, NOTE: form data must not be used here!
+            { match: 'parentFormValues', data: parentFormValues },
+            { match: 'globalState', data: globalState },
+            { match: 'query', data: queryParamsFromAddressBar },
+        ]        
+        */
+    });
+
+    const { getMetadata, getContainerProperties } = useMetadataDispatcher();
+    const toolboxComponents = useFormDesignerComponents();
+    const { backendUrl, httpHeaders } = useSheshaApplication();
+
+    const getUrl = getCorrectGetUrl(readEndpoint);
+
+    const requestUidRef = useRef<string>();
+
+    const fetcherPromise = useMemo<Promise<EntityFetcher>>(() => {
+        if (!getUrl)
+            return Promise.resolve(() => new Promise((_resolve, reject) => {
+                reject('Get data url is not defined');
+            }));
+
+        const requestId = nanoid();
+        requestUidRef.current = requestId;
+
+        const fullUrl = joinUrlAndPath(backendUrl, getUrl);
+        const urlObj = new URL(decodeURIComponent(fullUrl));
+        let queryParams = getQueryParams(fullUrl);
+
+        const getDataUrl = urlObj.pathname;
+
+        // todo: check ?
+        // Boolean(queryParams?.id)
+        const fetcher = getGqlFields({
+            formMarkup: formMarkup,
+            formSettings: formSettings,
+            toolboxComponents,
+            getContainerProperties,
+            getMetadata,
+        }).then(gqlFieldsList => {
+            var gqlFields = gqlFieldsToString(gqlFieldsList);
+
+            // fetch data and resolve
+            queryParams = { ...queryParams, properties: gqlFields };
+
+            const dataFetcher = () => RestfulShesha.get<EntityAjaxResponse, any, any, any>(
+                getDataUrl,
+                queryParams,
+                { base: backendUrl, headers: httpHeaders }
+            ).then(dataResponse => {
+                if (requestUidRef.current !== requestId)
+                    return null; // todo: cancel data request
+
+                if (dataResponse.success) {
+                    setState(prev => ({
+                        ...prev,
+                        loadingState: 'ready',
+                        loaderHint: null,
+                        data: dataResponse.result,
+                    }));
+                } else {
+                    setState(prev => ({
+                        ...prev,
+                        loadingState: 'failed',
+                        loaderHint: null,
+                        data: null,
+                        error: dataResponse.error
+                    }));
+                }
+                return dataResponse;
+            })
+                .catch(e => {
+                    const error = (e as IAjaxResponseBase)?.error;
+                    setState(prev => ({ ...prev, loadingState: 'failed', loaderHint: null, error: error }));
+                    return null;
+                });
+
+            if (!lazy){
+                setState(prev => ({ ...prev, loaderHint: 'Fetching data...', dataFetcher: dataFetcher }));
+                dataFetcher();
+            }
+
+            return dataFetcher;
+        });
+
+        return fetcher;
+    }, [getUrl]);
+
+    const unevaluatedFetcher = () => fetcherPromise.then(f => f());
+    const result: UseFormDataResult = {
+        fetchedData: state.data,
+        error: state.error,
+        loadingState: state.loadingState,
+        loaderHint: state.loaderHint,
+        dataFetcher: state.dataFetcher ?? unevaluatedFetcher,
+    };
+
+    return result;
+}
+
+
+const getCorrectGetUrl = (endpoint: IApiEndpoint): string => {
+    return endpoint && endpoint.httpVerb?.toLowerCase() === 'get'
+        ? endpoint.url
+        : null;
+}

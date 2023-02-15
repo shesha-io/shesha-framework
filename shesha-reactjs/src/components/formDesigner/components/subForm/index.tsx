@@ -27,9 +27,9 @@ const SubFormComponent: IToolboxComponent<ISubFormProps> = {
 
     const isVisibleByCondition = executeCustomExpression(model?.customVisibility, true, formData, globalState);
 
-    if (!isVisibleByCondition && formMode !== 'designer') return null;
-
     const { namePrefix } = useFormItem();
+
+    if (!isVisibleByCondition && formMode !== 'designer') return null;
 
     const name = namePrefix ? [namePrefix, model?.name]?.join('.') : model?.name;
 
@@ -74,7 +74,7 @@ interface ISubFormWrapperProps extends Omit<ISubFormProps, 'id' | 'type' | 'styl
 const SubFormWrapper: FC<ISubFormWrapperProps> = ({ style, readOnly, ...props }) => {
   const actionOwnerName = `Subform (${props.name})`;
   return (
-    <SubFormProvider {...props} actionsOwnerId={props.id} actionOwnerName={actionOwnerName}>
+    <SubFormProvider {...props} actionsOwnerId={props.id} actionOwnerName={actionOwnerName} key={props.id}>
       <SubForm style={style} readOnly={readOnly} />
     </SubFormProvider>
   );

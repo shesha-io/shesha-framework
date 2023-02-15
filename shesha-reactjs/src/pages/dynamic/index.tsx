@@ -246,6 +246,13 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
 
   //console.log('PERF: render form', formWithData)
 
+  const finalMarkup = useMemo(() => {
+    if (!formWithData)
+      return null;
+    return { components: formWithData.form?.markup, formSettings: { ...formWithData.form?.settings, onInitialized: null } }
+  }, [formWithData.form?.markup, formWithData.form?.settings]);
+
+
   if (markupErrorCode === 404) {
     return (
       <Result
@@ -278,7 +285,7 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
             <MetadataProvider id="dynamic" modelType={formSettings?.modelType}>
               {formWithData.loadingState === 'ready' && (
                 <ConfigurableForm
-                  markup={{ components: formWithData.form?.markup, formSettings: { ...formWithData.form?.settings, onInitialized: null } }} // pass empty markup to prevent unneeded form fetching
+                  markup={finalMarkup}
                   formId={formId}
                   formProps={formWithData.form}
                   formRef={formRef}

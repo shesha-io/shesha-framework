@@ -32,10 +32,41 @@ const Template: Story<IDynamicPageProps> = args => (
 // Reuse that template for creating different stories
 export const Basic = Template.bind({});
 
+export const TestSubform = addStory(Template, {
+  formId: { name: 'test-subform', module: 'test' },
+  mode: 'edit'
+});
+
+export const BugFix = addStory(Template, {
+  formId: { name: 'facility-patient-flattened-table', module: 'Boxfusion.His.Clients.Houghton' }  
+});
+
+export const BugFix2 = addStory(Template, {
+  formId: { name: 'test-loading', module: 'test' }  
+});
+
+export const FormLoadingRefactoring_Table = addStory(Template, {
+  formId: { name: 'cash-coverage-table', module: 'Boxfusion.His.Clients.Houghton' }  
+});
+
+export const FormLoadingRefactoring_Details = addStory(Template, {
+  formId: { name: 'cash-coverage-details', module: 'Boxfusion.His.Clients.Houghton' },
+  id: 'c121972b-072f-4834-a4cd-019dff0a43a8'
+});
+
+export const FormsTest = addStory(Template, {
+  formId: { name: 'form-details', module: 'shesha' },
+  id: '439c337b-c2e3-4421-95c3-d9a2999e0b98'
+});
+
 export const TestUrls = addStory(Template, {
   formId: { module: 'Boxfusion.His.Clients.Houghton', name: 'cash-coverage-details' },
   //formId: '8621377c-b1de-43c6-819c-06bdfd555ddd',
   id: '598b83ab-808b-465b-9146-0736343faf84'
+});
+
+export const TestIndexPage = addStory(Template, {
+  formId: { module: 'Boxfusion.His.Clients.Houghton', name: 'cash-coverage-table' },
 });
 
 export const WardDetailsPage = addStory(Template, {

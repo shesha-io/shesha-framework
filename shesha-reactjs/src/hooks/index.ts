@@ -10,6 +10,7 @@ export { useToggle } from './useToggle';
 export { useWebStorage } from './useWebStorage';
 export { useDeepCompareMemo } from './useDeepCompareMemo';
 export { useDeepCompareMemoize } from './useDeepCompareMemoize';
+export { useDeepCompareMemoKeepReference } from './useDeepCompareMemo';
 export { usePubSub, useSubscribe, useSubscribedValue, usePublish } from './usePubSub';
 export { useDataTableFluentColumns } from './useDataTableFluentColumns';
 export { useDelete } from './useDelete';

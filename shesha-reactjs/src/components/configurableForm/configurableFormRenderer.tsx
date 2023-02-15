@@ -4,10 +4,10 @@ import ComponentsContainer from '../formDesigner/componentsContainer';
 import { ROOT_COMPONENT_KEY } from '../../providers/form/models';
 import { useForm } from '../../providers/form';
 import { IConfigurableFormRendererProps, IDataSourceComponent } from './models';
-import { useGet, useMutate } from 'restful-react';
+import { useMutate } from 'restful-react';
 import { IAnyObject, ValidateErrorEntity } from '../../interfaces';
 import { addFormFieldsList, hasFiles, jsonToFormData } from '../../utils/form';
-import { useGlobalState, useMetadataDispatcher, useSheshaApplication } from '../../providers';
+import { useGlobalState, useSheshaApplication } from '../../providers';
 import moment from 'moment';
 import {
   evaluateComplexString,
@@ -16,16 +16,15 @@ import {
   evaluateValue,
   getComponentNames,
   getObjectWithOnlyIncludedKeys,
-  useFormDesignerComponents,
+  IMatchData,
 } from '../../providers/form/utils';
 import cleanDeep from 'clean-deep';
-import { getQueryParams, joinUrlAndPath } from '../../utils/url';
+import { getQueryParams } from '../../utils/url';
 import _ from 'lodash';
-import { usePrevious } from 'react-use';
 import { axiosHttp } from '../../apis/axios';
 import qs from 'qs';
 import axios, { AxiosResponse } from 'axios';
-import { FormConfigurationDto, getGqlFields, gqlFieldsToString } from '../../providers/form/api';
+import { FormConfigurationDto, useFormData } from '../../providers/form/api';
 import { IAbpWrappedGetEntityResponse } from '../../interfaces/gql';
 import { nanoid } from 'nanoid/non-secure';
 import { useFormDesigner } from '../../providers/formDesigner';
@@ -53,6 +52,7 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
     formMarkup,
     setValidationErrors,
     setFormDataAndInstance,
+    visibleComponentIdsIsSet,
   } = useForm();
   const { isDragging = false } = useFormDesigner(false) ?? {};
   const {
@@ -64,23 +64,29 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
     uniqueFormId,
   } = formSettings;
   const { globalState } = useGlobalState();
-  
-  const submitEndpoint = useModelApiEndpoint({ 
+
+  const urlEvaluationData: IMatchData[] = [
+    { match: 'query', data: getQueryParams() },
+    { match: 'data', data: formData },
+    { match: 'parentFormValues', data: parentFormValues },
+    { match: 'globalState', data: globalState },
+  ];
+
+  const submitEndpoint = useModelApiEndpoint({
     actionName: submitAction,
     formSettings: formSettings,
-    mappings: [
-      { match: 'query', data: getQueryParams() },
-      { match: 'data', data: formData },
-      { match: 'parentFormValues', data: parentFormValues },
-      { match: 'globalState', data: globalState },
-    ]
-   });
+    mappings: urlEvaluationData
+  });
 
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const [lastTruthyPersistedValue, setLastTruthyPersistedValue] = useState<IAnyObject>(null);
-  const { refetch: fetchEntity, data: fetchedEntity } = useGet({
-    path: formSettings?.getUrl || '',
-    lazy: true,
+
+  const dataFetcher = useFormData({
+    formMarkup: formMarkup,
+    formSettings: formSettings,
+    lazy: skipFetchData,
+    urlEvaluationData: urlEvaluationData,
+    // data: formData, NOTE: form data must not be used here!
   });
 
   const queryParamsFromAddressBar = useMemo(() => getQueryParams(), []);
@@ -89,7 +95,7 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
   useEffect(() => {
     if (onInitialized) {
       try {
-        getExpressionExecutor(onInitialized);
+        executeExpression(onInitialized);
       } catch (error) {
         console.warn('onInitialized error', error);
       }
@@ -134,106 +140,38 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
     formSettings?.initialValues?.forEach(({ key, value }) => {
       const evaluatedValue = value?.includes('{{')
         ? evaluateComplexString(value, [
-            { match: 'data', data: formData },
-            { match: 'parentFormValues', data: parentFormValues },
-            { match: 'globalState', data: globalState },
-            { match: 'query', data: queryParamsFromAddressBar },
-            { match: 'initialValues', data: initialValues },
-          ])
+          { match: 'data', data: formData },
+          { match: 'parentFormValues', data: parentFormValues },
+          { match: 'globalState', data: globalState },
+          { match: 'query', data: queryParamsFromAddressBar },
+          { match: 'initialValues', data: initialValues },
+        ])
         : value?.includes('{')
-        ? evaluateValue(value, {
+          ? evaluateValue(value, {
             data: formData,
             parentFormValues: parentFormValues,
             globalState: globalState,
             query: queryParamsFromAddressBar,
             initialValues: initialValues,
           })
-        : value;
+          : value;
       _.set(computedInitialValues, key, evaluatedValue);
     });
 
     return computedInitialValues;
   }, [formSettings?.initialValues]);
 
-  const readEndpoint = useModelApiEndpoint({ 
-    actionName: StandardEntityActions.read,
-    formSettings: formSettings,
-    mappings: []
-  });
-  //console.log('LOG: read endpoint', readEndpoint);
-
-  const getUrl = readEndpoint?.url;
-  const previousUrl = usePrevious(getUrl);
-
-  const { getMetadata, getContainerProperties } = useMetadataDispatcher();
-  const toolboxComponents = useFormDesignerComponents();
-
-  const fetchFormData = () => {
-    if (
-      _.isEqual(previousUrl, getUrl)
-      // !_.isEqual(previousFormData, formData) ||
-      // !_.isEqual(previousGlobalState, globalState) ||
-      // !_.isEqual(previousParentFormValues, parentFormValues)
-    ) {
-      return;
-    }
-
-    if (getUrl) {
-      const evaluatedGetUrl = getUrl?.includes('{{')
-        ? evaluateComplexString(getUrl, [
-            { match: 'data', data: formData },
-            { match: 'parentFormValues', data: parentFormValues },
-            { match: 'globalState', data: globalState },
-            { match: 'query', data: queryParamsFromAddressBar },
-          ])
-        : getUrl;
-
-      const fullUrl = joinUrlAndPath(backendUrl, evaluatedGetUrl);
-      const urlObj = new URL(decodeURIComponent(fullUrl));
-      let queryParams = getQueryParams(fullUrl);
-
-      getGqlFields({
-        formMarkup: formMarkup,
-        formSettings: formSettings,
-        toolboxComponents,
-        getContainerProperties,
-        getMetadata,
-      }).then(gqlFieldsList => {
-        var gqlFields = gqlFieldsToString(gqlFieldsList);
-
-        // fetch data and resolve
-        queryParams = {...queryParams, properties: gqlFields };
-
-        if (!_.isEmpty(queryParams)) {
-          if (Object.hasOwn(queryParams, 'id') && !Boolean(queryParams['id'])) {
-            console.error('id cannot be null');
-            return;
-          }
-  
-          fetchEntity({
-            queryParams,
-            path: urlObj?.pathname,
-          });
-        }
-      });
-    }
-  };
-
-  useEffect(() => {
-    if (!skipFetchData) fetchFormData();
-  }, [getUrl, formData, globalState, parentFormValues, skipFetchData]);
-
-  const fetchedFormEntity = fetchedEntity?.result as object;
+  const fetchedFormEntity = dataFetcher.fetchedData as object;
 
   useEffect(() => {
     if (fetchedFormEntity && onDataLoaded) {
-      getExpressionExecutor(onDataLoaded, true, true, true, true, fetchedFormEntity); // On Initialize
+      executeExpression(onDataLoaded, true, true, true, true, fetchedFormEntity); // On Initialize
     }
   }, [onDataLoaded, fetchedFormEntity]);
 
   useEffect(() => {
     if (onUpdate) {
-      getExpressionExecutor(onUpdate); // On Update
+      executeExpression(onUpdate); // On Update
     }
   }, [formData, onUpdate]);
 
@@ -313,7 +251,7 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
     },
   };
 
-  const getExpressionExecutor = (
+  const executeExpression = (
     expression: string,
     includeInitialValues = true,
     includeMoment = true,
@@ -346,7 +284,7 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
   const getDynamicPreparedValues = (): Promise<object> => {
     const { preparedValues } = formSettings;
 
-    return Promise.resolve(preparedValues ? getExpressionExecutor(preparedValues) : {});
+    return Promise.resolve(preparedValues ? executeExpression(preparedValues) : {});
   };
 
   const getInitialValuesFromFormSettings = () => {
@@ -470,6 +408,11 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
     wrapperCol: props.wrapperCol ?? formSettings.wrapperCol,
     colon: formSettings.colon,
   };
+
+  // Note: render form only after calculation of visible components to prevent re-creation of components
+  // Looks like the code that re-creates components are deep inside the antd form
+  if (!visibleComponentIdsIsSet)
+    return null;
 
   return (
     <Spin spinning={submitting}>

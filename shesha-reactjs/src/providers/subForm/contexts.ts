@@ -5,7 +5,11 @@ import { IFormSettings } from '../form/models';
 import { IPersistedFormProps } from '../formPersisterProvider/models';
 
 export interface IPersistedFormPayload
-  extends Pick<IPersistedFormProps, 'id' | 'versionNo' | 'versionStatus' | 'description' | 'module'> {}
+  extends Pick<IPersistedFormProps, 'id' | 'versionNo' | 'versionStatus' | 'description' | 'module'> { }
+
+export interface IFetchDataErrorPayload {
+  error: GetDataError<unknown>;
+}
 
 export interface ISubFormStateContext extends IPersistedFormPayload {
   /** True only if the config was fetched from the server using formId
@@ -41,6 +45,8 @@ export interface ISubFormActionsContext {
 export const SUB_FORM_CONTEXT_INITIAL_STATE: ISubFormStateContext = {
   components: [],
   formSettings: null,
+  loading: {},
+  errors: {},
 };
 
 export const SubFormContext = createContext<ISubFormStateContext>(SUB_FORM_CONTEXT_INITIAL_STATE);

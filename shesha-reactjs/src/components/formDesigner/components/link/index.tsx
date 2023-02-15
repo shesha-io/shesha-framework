@@ -36,9 +36,10 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
   icon: <LinkOutlined />,
   factory: (model: ILinkProps) => {
     const { isComponentHidden, formData, formMode } = useForm();
-    const { value } = useSubForm();
+    // NOTE: to be replaced with a generic context implementation
+    const { value: subFormData } = useSubForm(false) ?? {}; 
 
-    const data = value || formData;
+    const data = subFormData || formData;
 
     const {
       name,

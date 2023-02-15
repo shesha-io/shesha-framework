@@ -60,6 +60,7 @@ const reducer = handleActions<IFormStateContext, any>(
       return {
         ...state,
         visibleComponentIds: payload.componentIds,
+        visibleComponentIdsIsSet: true,
       };
     },
 
