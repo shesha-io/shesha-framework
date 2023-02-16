@@ -1,0 +1,78 @@
+name: shesha-reactjs-3.x.x
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  NODE_VERSION: '14.x'
+
+jobs:
+
+  # build the project
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # checkout latest code
+      - name: Get Sources
+        uses: actions/checkout@v2
+        with:
+          clean: true
+          ref: main
+      # setup node
+      - name: Setup Node ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: 'https://registry.npmjs.org'
+      # install dependencies
+      - name: Install Dependencies
+        run: npm install
+      # prepare shesha-reactjs for pipeline
+      - name: Prepare shesha-reactjs for Pipeline
+        run: npm run prepare
+      # # build storybook
+      # - name: Build Storybook
+        # run: npm run build-storybook
+        # env:
+          # STORYBOOK_BASE_URL: https://shesha-mmsample-backend-dev.azurewebsites.net
+      # # deploy storybook
+      # - name: Deploy Storybook
+        # uses: JamesIves/github-pages-deploy-action@3.6.2
+        # with:
+          # github_token: ${{ secrets.GITHUB_TOKEN }}
+          # branch: gh-pages # The branch the action should deploy to.
+          # folder: storybook-static # The folder that the build-storybook script generates files.
+          # clean: true # Automatically remove deleted files from the deploy branch
+          # target_folder: docs # The folder that we serve our Storybook files from 
+      # tag shesha-reactjs
+      - name: Tag shesha-reactjs
+        id: tag_version
+        uses: iilyichev/github-tag-action@v6.3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          release_branches: main
+          tag_prefix: ""
+          tag_filter: "^3."
+      # update package.json tag
+      - name: Update package.json
+        uses: reedyuk/npm-version@1.1.1
+        with:
+          version: ${{ steps.tag_version.outputs.new_tag }}
+          # package: 'subproject-directory/'
+          # git-tag-version: 'true'
+      # build shesha-reactjs for production
+      - name: Build shesha-reactjs for Production
+        run: npm run build
+      # create github release
+      - name: Create Github Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.tag_version.outputs.new_tag }}
+          name: ${{ steps.tag_version.outputs.new_tag }}
+          body: ${{ steps.tag_version.outputs.changelog }}
+      # publish shesha-reactjs to npmjs
+      - name: Publish shesha-reactjs to npmjs
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPMJS_API_KEY }}
