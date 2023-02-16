@@ -52,6 +52,13 @@
       "label": "Placeholder"
     },
     {
+      "id": "fbdb6bb1-5994-4205-83b4-236ca61ae54e",
+      "type": "textField",
+      "name": "prefix",
+      "parentId": "root",
+      "label": "Prefix"
+    },
+    {
       "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
       "type": "textArea",
       "name": "description",
