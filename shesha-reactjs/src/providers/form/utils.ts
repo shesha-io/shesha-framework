@@ -420,8 +420,6 @@ export const evaluateComplexStringWithResult = (
 
   let success = true;
 
-  let complexResults;
-
   const unevaluatedExpressions = [];
 
   Array.from(matches).forEach(template => {
@@ -431,52 +429,19 @@ export const evaluateComplexStringWithResult = (
         // This is useful for backward compatibility
         // Initially expression would simply be {{expression}} and they wou be evaluated against formData
         // But dynamic expression now can use formData and globalState, so as a result the expressions need to use dot notation
-
-        const evaluatedValue = evaluateString(template, match ? { [match]: data } : { data });
+        const evaluatedValue = evaluateString(template, match ? { [match]: data } : data);
 
         if (!evaluatedValue?.trim()) {
           success = false;
           unevaluatedExpressions?.push(template);
         } else {
-          let sterilizedResult: string;
-          let filterHolder;
-          let ruleJoin = typeof result === 'string' ? Object.keys(JSON.parse(result))[0] : Object.keys(result)[0];
-          sterilizedResult = typeof result === 'string' ? JSON.parse(result) : result;
-
-          filterHolder = sterilizedResult[ruleJoin]?.map(flt => {
-            let operator = Object.keys(flt)[0];
-            let mutated = flt[operator]?.map((vr, index) => {
-              if (index) {
-                const isExpression = vr.indexOf('{') == 0;
-                let filtered;
-                filtered = isExpression ? evaluateString(vr, match ? { [match]: data } : { data }) : vr;
-                if (hasBoolean(vr)) {
-                  return getBoolean(vr);
-                } else {
-                  return isNaN(filtered) ? filtered?.replace(/("|')/g, '') : parseInt(filtered);
-                }
-              } else {
-                return vr;
-              }
-            });
-            return {
-              [operator]: mutated,
-            };
-          });
-
-          complexResults = !!filterHolder ? JSON.stringify({ [ruleJoin]: filterHolder }) : '';
-
           result = result.replaceAll(template, evaluatedValue);
         }
       }
     });
   });
 
-  return {
-    result: complexResults || result,
-    success,
-    unevaluatedExpressions: Array.from(new Set(unevaluatedExpressions)),
-  };
+  return { result, success, unevaluatedExpressions: Array.from(new Set(unevaluatedExpressions)) };
 };
 
 export const getVisibilityFunc2 = (expression, name) => {
