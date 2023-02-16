@@ -34,11 +34,11 @@ namespace Shesha.Metadata
     {
         private readonly IEntityConfigurationStore _entityConfigurationStore;
         private readonly IMetadataProvider _metadataProvider;
-        private readonly IModelConfigurationProvider _modelConfigurationProvider;
+        private readonly IModelConfigurationManager _modelConfigurationProvider;
         private readonly IEnumerable<IModelProvider> _modelProviders;
         private readonly ISpecificationsFinder _specificationsFinder;
 
-        public MetadataAppService(IEntityConfigurationStore entityConfigurationStore, IMetadataProvider metadataProvider, IModelConfigurationProvider modelConfigurationProvider, IEnumerable<IModelProvider> modelProviders, ISpecificationsFinder specificationsFinder)
+        public MetadataAppService(IEntityConfigurationStore entityConfigurationStore, IMetadataProvider metadataProvider, IModelConfigurationManager modelConfigurationProvider, IEnumerable<IModelProvider> modelProviders, ISpecificationsFinder specificationsFinder)
         {
             _entityConfigurationStore = entityConfigurationStore;
             _metadataProvider = metadataProvider;
@@ -121,7 +121,8 @@ namespace Shesha.Metadata
 
             var allProps = containerType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
-            var allPropsMetadata = allProps.Select(p => _metadataProvider.GetPropertyMetadata(p)).ToList();
+            var metadataContext = new MetadataContext(containerType);
+            var allPropsMetadata = allProps.Select(p => _metadataProvider.GetPropertyMetadata(p, metadataContext)).ToList();
 
             var result = allPropsMetadata
                 .Where(e => string.IsNullOrWhiteSpace(term) || e.Path.Contains(term, StringComparison.InvariantCultureIgnoreCase))
@@ -240,10 +241,11 @@ namespace Shesha.Metadata
 
         private async Task<List<PropertyMetadataDto>> GetPropertiesInternalAsync(Type containerType, string containerName) 
         {
+            var metadataContext = new MetadataContext(containerType);
             var hardCodedProps = containerType == null
                 ? new List<PropertyMetadataDto>()
                 : containerType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                    .Select(p => _metadataProvider.GetPropertyMetadata(p))
+                    .Select(p => _metadataProvider.GetPropertyMetadata(p, metadataContext))
                     .OrderBy(e => e.Path)
                     .ToList();
 

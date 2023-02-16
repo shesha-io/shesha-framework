@@ -37,8 +37,10 @@ namespace Shesha.Metadata
         }
 
         /// inheritedDoc
-        public List<PropertyMetadataDto> GetProperties(Type containerType)
+        public List<PropertyMetadataDto> GetProperties(Type containerType, MetadataContext context = null)
         {
+            context ??= new MetadataContext(containerType);
+
             var flags = BindingFlags.Public | BindingFlags.Instance;
 
             var allProps = containerType.GetProperties(flags).OrderBy(p => p.Name).ToList();
@@ -49,7 +51,7 @@ namespace Shesha.Metadata
                 var allPropsOld = allProps.Where(p => MappingHelper.IsPersistentProperty(p)).ToList();
             }                
 
-            var allPropsMetadata = allProps.Select(p => GetPropertyMetadata(p)).ToList();
+            var allPropsMetadata = allProps.Select(p => GetPropertyMetadata(p, context)).ToList();
 
             var result = allPropsMetadata
                 .OrderBy(e => e.Path)
@@ -75,7 +77,7 @@ namespace Shesha.Metadata
         }
 
         /// inheritedDoc
-        public PropertyMetadataDto GetPropertyMetadata(PropertyInfo property)
+        public PropertyMetadataDto GetPropertyMetadata(PropertyInfo property, MetadataContext context)
         {
             var entityPropAttr = property.GetCustomAttribute<EntityPropertyAttribute>();
             var path = string.IsNullOrEmpty(entityPropAttr?.Name) ? property.Name : entityPropAttr.Name;
@@ -125,19 +127,21 @@ namespace Shesha.Metadata
                 //ConfigurableByUser = property.GetAttribute<BindableAttribute>()?.Bindable ?? true,
                 //GroupName = ReflectionHelper.get(declaredProperty ?? property),
             };
-            if (property.PropertyType.IsNotAnyEntityAndSystemType())
+            if (!context.ProcessedTypes.Contains(property.PropertyType) && property.PropertyType.IsNotAnyEntityAndSystemType())
             {
-                result.Properties = GetProperties(property.PropertyType);
+                result.Properties = GetProperties(property.PropertyType, context);
             }
             if (dataType.DataType == DataTypes.Array)
             {
-                result.ItemsType = GetItemsType(property);
+                result.ItemsType = GetItemsType(property, context);
             }
+
+            context.ProcessedTypes.Add(property.PropertyType);
 
             return result;
         }
 
-        private PropertyMetadataDto GetItemsType(PropertyInfo property)
+        private PropertyMetadataDto GetItemsType(PropertyInfo property, MetadataContext context)
         {
             if (property.IsMultiValueReferenceListProperty()) 
             {
@@ -155,7 +159,7 @@ namespace Shesha.Metadata
                 {
                     Path = property.Name,
                     DataType = DataTypes.Object,
-                    Properties = GetProperties(property.PropertyType)
+                    Properties = GetProperties(property.PropertyType, context)
                 };
             }
 

@@ -35,7 +35,7 @@ namespace Shesha.DynamicEntities
         private readonly IRepository<ConfigurationItem, Guid> _configurationItemRepository;
         private readonly IRepository<Module, Guid> _moduleRepository;
         private readonly IRepository<EntityProperty, Guid> _entityPropertyRepository;
-        private readonly IModelConfigurationProvider _modelConfigurationProvider;
+        private readonly IModelConfigurationManager _modelConfigurationManager;
         private readonly IPermissionedObjectManager _permissionedObjectManager;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly ISwaggerProvider _swaggerProvider;
@@ -47,7 +47,7 @@ namespace Shesha.DynamicEntities
             IRepository<ConfigurationItem, Guid> configurationItemRepository,
             IRepository<Module, Guid> moduleRepository,
             IRepository<EntityProperty, Guid> entityPropertyRepository,
-            IModelConfigurationProvider modelConfigurationProvider,
+            IModelConfigurationManager modelConfigurationProvider,
             IPermissionedObjectManager permissionedObjectManager,
             IUnitOfWorkManager unitOfWorkManager,
             ISwaggerProvider swaggerProvider,
@@ -57,7 +57,7 @@ namespace Shesha.DynamicEntities
             _configurationItemRepository = configurationItemRepository;
             _moduleRepository = moduleRepository;
             _entityPropertyRepository = entityPropertyRepository;
-            _modelConfigurationProvider = modelConfigurationProvider;
+            _modelConfigurationManager = modelConfigurationProvider;
             _permissionedObjectManager = permissionedObjectManager;
             _unitOfWorkManager = unitOfWorkManager;
             _swaggerProvider = swaggerProvider;
@@ -67,7 +67,7 @@ namespace Shesha.DynamicEntities
         [HttpGet, Route("")]
         public async Task<ModelConfigurationDto> GetByNameAsync(string name, string @namespace)
         {
-            var dto = await _modelConfigurationProvider.GetModelConfigurationOrNullAsync(@namespace, name);
+            var dto = await _modelConfigurationManager.GetModelConfigurationOrNullAsync(@namespace, name);
             if (dto == null)
             {
                 var exception = new EntityNotFoundException("Model configuration not found");
@@ -89,7 +89,7 @@ namespace Shesha.DynamicEntities
                 throw exception;
             }
 
-            return await _modelConfigurationProvider.GetModelConfigurationAsync(modelConfig);
+            return await _modelConfigurationManager.GetModelConfigurationAsync(modelConfig);
         }
 
         [HttpPut, Route("")]
@@ -122,134 +122,14 @@ namespace Shesha.DynamicEntities
 
             using (var uow = UnitOfWorkManager.Begin())
             {
-                // Copy main data
+                await _modelConfigurationManager.MergeConfigurationsAsync(source, destination, input.DeleteAfterMerge,
+                    // use deep update if merge from not implemented to implemented application entity
+                    source.Source == MetadataSourceType.ApplicationCode
+                    && destination.Source == MetadataSourceType.ApplicationCode
+                    && _entityConfigurationStore.GetOrNull(source.FullClassName) == null
+                    && _entityConfigurationStore.GetOrNull(destination.FullClassName) != null);
 
-                destination.Configuration.Label = source.Configuration.Label;
-                destination.GenerateAppService = source.GenerateAppService;
-
-                // update only empty ViewConfigurations
-                if (source.ViewConfigurations != null)
-                {
-                    if (destination.ViewConfigurations == null)
-                        destination.ViewConfigurations = new List<EntityViewConfigurationDto>();
-
-                    foreach (var configuration in source.ViewConfigurations)
-                    {
-                        var vconfig = destination.ViewConfigurations?.FirstOrDefault(x => x.Type == configuration.Type);
-                        if (vconfig == null)
-                        {
-                            destination.ViewConfigurations.Add(
-                                new EntityViewConfigurationDto() { 
-                                    Type = configuration.Type,
-                                    FormId = new FormIdFullNameDto()
-                                    {
-                                        Name = configuration.FormId?.Name,
-                                        Module = configuration.FormId?.Module
-                                    },
-                                    IsStandard= configuration.IsStandard,
-                                });
-                        } 
-                        else if (vconfig.FormId.IsEmpty())
-                        {
-                            vconfig.FormId = new FormIdFullNameDto()
-                            {
-                                Name = configuration.FormId.Name,
-                                Module = configuration.FormId.Module
-                            };
-                        }
-                    }
-                }
-
-                // Copy properties
-
-                var destProps = await AsyncQueryableExecuter.ToListAsync(_entityPropertyRepository.GetAll().Where(x => x.EntityConfig.Id == destination.Id));
-                var sourceProps = await AsyncQueryableExecuter.ToListAsync(_entityPropertyRepository.GetAll().Where(x => x.EntityConfig.Id == source.Id));
-
-                Func<List<EntityProperty>, List<EntityProperty>, EntityProperty, Task> copyProps = null;
-                copyProps = async (List<EntityProperty> destPs, List<EntityProperty> sourcePs, EntityProperty parent) =>
-                {
-                    foreach (var prop in sourcePs)
-                    {
-                        var destProp = destPs.FirstOrDefault(x => x.Name == prop.Name);
-                        if (destProp == null && prop.Source == MetadataSourceType.UserDefined)
-                        {
-                            destProp = new EntityProperty()
-                            {
-                                Name = prop.Name,
-                                EntityConfig = destination,
-                                DataType = prop.DataType,
-                                DataFormat = prop.DataFormat,
-                                EntityType = prop.EntityType,
-                                IsFrameworkRelated = prop.IsFrameworkRelated,
-                                ItemsType = prop.ItemsType,
-                                ReferenceListName = prop.ReferenceListName,
-                                ReferenceListModule = prop.ReferenceListModule,
-                                Source = destination.Source == MetadataSourceType.ApplicationCode ? prop.Source : MetadataSourceType.UserDefined,
-                                Suppress = prop.Suppress,
-                                ParentProperty = parent
-                            };
-                        }
-
-                        destProp.Audited = prop.Audited;
-                        destProp.Description = prop.Description;
-                        destProp.Label = prop.Label;
-                        destProp.Max = prop.Max;
-                        destProp.Min = prop.Min;
-                        destProp.Required = prop.Required;
-                        destProp.MaxLength = prop.MaxLength;
-                        destProp.MinLength = prop.MinLength;
-                        destProp.ReadOnly = prop.ReadOnly;
-                        destProp.RegExp = prop.RegExp;
-
-                        await _entityPropertyRepository.InsertOrUpdateAsync(destProp);
-
-                        if (prop.Properties?.Any() ?? false)
-                            await copyProps(destProp.Properties.ToList(), prop.Properties.ToList(), destProp);
-                    }
-                };
-
-                await copyProps(destProps, sourceProps, null);
-
-                // Copy permissions
-
-                var copyPermission = async (string method) =>
-                {
-                    var sourcePermission = await _permissionedObjectManager.GetOrCreateAsync($"{source.FullClassName}{method}", "entity");
-                    var destinationPermission = await _permissionedObjectManager.GetOrCreateAsync($"{destination.FullClassName}{method}", "entity");
-                    destinationPermission.Access = sourcePermission.Access;
-                    destinationPermission.Permissions = sourcePermission.Permissions;
-                    await _permissionedObjectManager.SetAsync(destinationPermission);
-                };
-
-                await copyPermission("");
-                await copyPermission("@Get");
-                await copyPermission("@Create");
-                await copyPermission("@Update");
-                await copyPermission("@Delete");
-
-                if (input.DeleteAfterMerge)
-                {
-                    await _entityPropertyRepository.DeleteAsync(x => x.EntityConfig.Id == source.Id);
-                    await _configurationItemRepository.DeleteAsync(source.Id);
-                }
-                
                 await uow.CompleteAsync();
-            }
-
-            // update all properties namespaces if merge not implemented to implemented application entities
-            if (source.Source == MetadataSourceType.ApplicationCode 
-                && destination.Source == MetadataSourceType.ApplicationCode
-                && _entityConfigurationStore.GetOrNull(source.FullClassName) == null
-                && _entityConfigurationStore.GetOrNull(destination.FullClassName) != null)
-            {
-                var toUpdate = _entityPropertyRepository.GetAll().Where(x => x.EntityType == source.FullClassName);
-                foreach(var entity in toUpdate)
-                {
-                    entity.EntityType= destination.FullClassName;
-                    _entityPropertyRepository.Update(entity);
-
-                    // ToDo: update JsonEntities and GenericEntities 
-                }
             }
 
             // Notify change
@@ -262,7 +142,7 @@ namespace Shesha.DynamicEntities
                 (_swaggerProvider as CachingSwaggerProvider)?.ClearCache();
             }
 
-            return await _modelConfigurationProvider.GetModelConfigurationAsync(destination);
+            return await _modelConfigurationManager.GetModelConfigurationAsync(destination);
         }
 
         [HttpPost, Route("")]
@@ -379,7 +259,7 @@ namespace Shesha.DynamicEntities
                 (_swaggerProvider as CachingSwaggerProvider)?.ClearCache();
             }
 
-            return await _modelConfigurationProvider.GetModelConfigurationAsync(modelConfig);
+            return await _modelConfigurationManager.GetModelConfigurationAsync(modelConfig);
         }
 
         private void ActionPropertiesRecursive(List<ModelPropertyDto> properties, Action<ModelPropertyDto> action)

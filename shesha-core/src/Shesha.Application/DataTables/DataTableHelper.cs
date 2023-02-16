@@ -30,7 +30,7 @@ namespace Shesha.DataTables
         private readonly IEntityConfigurationStore _entityConfigurationStore;
         private readonly IMetadataProvider _metadataProvider;
         private readonly IEntityConfigCache _entityConfigCache;
-        private readonly IModelConfigurationProvider _modelConfigurationProvider;
+        private readonly IModelConfigurationManager _modelConfigurationProvider;
 
         /// <summary>
         /// Default constructor
@@ -39,7 +39,7 @@ namespace Shesha.DataTables
         /// <param name="metadataProvider"></param>
         /// <param name="entityConfigCache"></param>
         /// <param name="modelConfigurationProvider"></param>
-        public DataTableHelper(IEntityConfigurationStore entityConfigurationStore, IMetadataProvider metadataProvider, IEntityConfigCache entityConfigCache, IModelConfigurationProvider modelConfigurationProvider)
+        public DataTableHelper(IEntityConfigurationStore entityConfigurationStore, IMetadataProvider metadataProvider, IEntityConfigCache entityConfigCache, IModelConfigurationManager modelConfigurationProvider)
         {
             _entityConfigurationStore = entityConfigurationStore;
             _metadataProvider = metadataProvider;

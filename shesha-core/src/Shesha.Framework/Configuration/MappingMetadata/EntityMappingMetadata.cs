@@ -1,4 +1,4 @@
-﻿namespace Shesha.Configuration.Runtime
+﻿namespace Shesha.Configuration.MappingMetadata
 {
     /// <summary>
     /// Stores information about mapping of entity to the database

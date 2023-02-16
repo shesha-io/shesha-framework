@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using NHibernate;
-using NHibernate.Persister.Entity;
-using Shesha.Application.Services;
-using Shesha.Application.Services.Dto;
+﻿using Shesha.Configuration.MappingMetadata;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.Extensions;
@@ -13,7 +9,6 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace Shesha.Configuration.Runtime
 {
@@ -96,20 +91,7 @@ namespace Shesha.Configuration.Runtime
                     if (_mappingMetadata != null)
                         return _mappingMetadata;
 
-                    var sessionFactory = StaticContext.IocManager.Resolve<ISessionFactory>();
-                    var persister = sessionFactory.GetClassMetadata(EntityType) as SingleTableEntityPersister;
-
-                    var mappingMetadata = new EntityMappingMetadata()
-                    {
-                        TableName = persister?.TableName,
-                        DiscriminatorValue = persister?.DiscriminatorSQLValue,
-                        IsMultiTable = persister?.IsMultiTable ?? false,
-                    };
-                    mappingMetadata.SubclassTableName = mappingMetadata.IsMultiTable
-                        ? persister?.GetSubclassTableName(1)
-                        : null;
-
-                    return _mappingMetadata = mappingMetadata;
+                    return _mappingMetadata = StaticContext.IocManager.Resolve<IMappingMetadataProvider>().GetEntityMappingMetadata(EntityType);
                 }
             }
         }
