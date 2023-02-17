@@ -17,14 +17,14 @@ namespace Shesha.Metadata
         /// </summary>
         /// <param name="property"></param>
         /// <returns></returns>
-        PropertyMetadataDto GetPropertyMetadata(PropertyInfo property);
+        PropertyMetadataDto GetPropertyMetadata(PropertyInfo property, MetadataContext context);
 
         /// <summary>
         /// Get properties metadata of the specified <paramref name="type"/>
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        List<PropertyMetadataDto> GetProperties(Type type);
+        List<PropertyMetadataDto> GetProperties(Type type, MetadataContext context = null);
 
         /// <summary>
         /// Get data type of the specified property

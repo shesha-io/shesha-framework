@@ -281,7 +281,7 @@ const ReactTable: FC<IReactTableProps> = ({
     >
       <div className="sha-react-table" style={containerStyle}>
         <table {...getTableProps()} className="sha-table" style={tableStyle}>
-          {columns?.length > 1 &&
+          {columns?.length > 0 &&
             headerGroups.map(headerGroup => (
               <span
                 {...headerGroup.getHeaderGroupProps({

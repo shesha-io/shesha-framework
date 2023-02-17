@@ -1,20 +1,19 @@
 ﻿using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
+using Abp.Reflection;
 using Castle.DynamicProxy;
-using DocumentFormat.OpenXml.Spreadsheet;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NHibernate.Linq;
 using Shesha.AutoMapper.Dto;
+using Shesha.Configuration.MappingMetadata;
 using Shesha.Domain;
-using Shesha.Domain.Attributes;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Binder;
 using Shesha.DynamicEntities.Dtos;
+using Shesha.EntityReferences;
 using Shesha.Extensions;
-using Shesha.JsonEntities;
-using Shesha.JsonEntities.Converters;
 using Shesha.JsonEntities.Proxy;
 using Shesha.NHibernate.UoW;
 using Shesha.Services;
@@ -25,12 +24,8 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Linq.Dynamic.Core;
-using System.Linq.Expressions;
-using System.Reflection;
 using System.Threading.Tasks;
 using Xunit;
-using Xunit.Sdk;
-using static Shesha.Tests.JsonEntity.JsonEntity_Tests;
 
 namespace Shesha.Tests.JsonEntity
 {
@@ -43,6 +38,8 @@ namespace Shesha.Tests.JsonEntity
         private readonly IRepository<ComplexTestString, Guid> _jsonStringRepository;
         //private readonly IRepository<ComplexPersonTest, Guid> _jsonPersonRepository;
         private readonly IEntityModelBinder _entityModelBinder;
+        private readonly ITypeFinder _typeFinder;
+        private readonly IDynamicRepository _dynamicRepository;
 
         public JsonEntity_Tests()
         {
@@ -53,6 +50,8 @@ namespace Shesha.Tests.JsonEntity
             _jsonStringRepository = Resolve<IRepository<ComplexTestString, Guid>>();
             //_jsonPersonRepository = Resolve<IRepository<ComplexPersonTest, Guid>>();
             _entityModelBinder = Resolve<IEntityModelBinder>();
+            _typeFinder = Resolve<ITypeFinder>();
+            _dynamicRepository = Resolve<IDynamicRepository>();
         }
 
         public class Shurik
@@ -88,6 +87,39 @@ namespace Shesha.Tests.JsonEntity
         }
 
         [Fact]
+        public async Task GetAllJsonProperties()
+        {
+            LoginAsHostAdmin();
+
+            using var uow = (NhUnitOfWork)_unitOfWorkManager.Begin();
+
+            var session = uow.GetSession();
+
+            var oldValue = "Shesha.Test.JsonPerson1";
+            var newValue = "Shesha.Test.JsonPerson";
+
+            var entityTypes = _typeFinder.FindAll().Where(t => t.IsEntityType()).ToList();
+
+            var mapProvider = Resolve<IMappingMetadataProvider>();
+
+            foreach (var entityType in entityTypes)
+            {
+                try
+                {
+                    var jsonProps = entityType.GetProperties().Where(x => x.PropertyType.IsJsonEntityType()).ToList();
+                    var genericProps = entityType.GetProperties().Where(x => x.PropertyType == typeof(GenericEntityReference)).ToList();
+                    if (jsonProps.Any())
+                        await mapProvider.UpdateClassNames(entityType, jsonProps, oldValue, newValue, true);
+                    if (genericProps.Any())
+                        await mapProvider.UpdateClassNames(entityType, genericProps, oldValue, newValue, false);
+                }
+                catch (Exception ex)
+                {
+                }
+            }
+        }
+
+        [Fact]
         public async Task GetJsonEntity()
         {
             var i = new TestInt();
@@ -102,7 +134,7 @@ namespace Shesha.Tests.JsonEntity
 
             pii.SetValue(i, Convert.ToInt64(pi.GetValue(i)));
             pii.SetValue(i, Convert.ChangeType(pi.GetValue(i), typeof(Int64?)));
-            pii.SetValue(i,pi.GetValue(i));
+            pii.SetValue(i, pi.GetValue(i));
 
 
             var p = pii.PropertyType == typeof(Int64?);
@@ -202,7 +234,7 @@ namespace Shesha.Tests.JsonEntity
                 var tc = (complex.JsonPerson as IJsonEntityProxy)._isThisChanged;
 
                 var fn = complex.JsonPerson.FirstName;
-                
+
                 b = JsonEntityProxy.IsChanged(complex.JsonPerson as IJsonEntityProxy);
                 i = (complex.JsonPerson as IJsonEntityProxy)._isInitialized;
                 tc = (complex.JsonPerson as IJsonEntityProxy)._isThisChanged;
@@ -354,9 +386,9 @@ namespace Shesha.Tests.JsonEntity
                 var complex = JsonConvert.DeserializeObject<ComplexTest>(json);
 
                 var json2 = JsonConvert.SerializeObject(complex);
-                
+
                 var name = complex.JsonPerson?.FirstName;
-                
+
                 var pp = complex.JsonPerson.Person;
 
                 var json3 = JsonConvert.SerializeObject(complex);
