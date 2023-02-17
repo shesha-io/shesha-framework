@@ -555,20 +555,19 @@ export function executeScript<TResult = any>(
   });
 }
 
-export function executeScriptSync<TResult = any>(
-  expression: string,
-  expressionArgs: IExpressionExecuterArguments
-): TResult {
+export function executeScriptSync<TResult = any>(expression: string, context: IExpressionExecuterArguments): TResult {
   if (!expression) throw new Error('Expression must be defined');
 
   try {
-    return new Function(Object.keys(expressionArgs)?.join(', '), expression)?.apply(
-      null,
-      Object.values(expressionArgs)
-    );
+    const functionBody = `
+    with(context) {
+      ${expression}
+    }
+  `;
+    const dynamicFunction = new Function('context', functionBody);
+    return dynamicFunction(context);
   } catch (error) {
     console.error(`executeScriptSync error`, error);
-
     return null;
   }
 }
