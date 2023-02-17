@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, ReactNode } from 'react';
+import React, { CSSProperties, FC, ReactNode, useCallback } from 'react';
 import ConfigurableFormComponent from './configurableFormComponent';
 import { useForm } from '../../providers/form';
 import {
@@ -22,6 +22,8 @@ import {
   TextJustify,
 } from './components/container/model';
 import ConditionalWrap from '../conditionalWrapper';
+import { useGlobalState } from '../../providers';
+import { executeScriptSync } from '../../utils/publicUtils';
 
 export type Direction = 'horizontal' | 'vertical';
 
@@ -53,17 +55,33 @@ export interface IComponentsContainerProps extends ICommonContainerProps {
 }
 
 const ComponentsContainer: FC<IComponentsContainerProps> = props => {
-  const { formMode } = useForm();
+  const { formMode, formData } = useForm();
   const designer = useFormDesigner(false);
+  const { globalState } = useGlobalState();
+
+  const executeExpression = useCallback(
+    (expression: string) => {
+      if (!expression) return true;
+      const evaluated = executeScriptSync(expression, { data: formData, globalState });
+      return typeof evaluated === 'boolean' ? evaluated : true;
+    },
+    [formData, globalState]
+  );
 
   // containers with dynamic components is not configurable, draw them as is
   if (props.dynamicComponents?.length) {
     const style = getAlignmentStyle(props);
     return (
       <div style={style} className={props?.className}>
-        {props.dynamicComponents?.map((m, idx) => (
-          <DynamicComponent model={{ ...m, isDynamic: true }} key={idx} />
-        ))}
+        {props.dynamicComponents
+          ?.filter(({ customVisibility }) => {
+            return executeExpression(customVisibility);
+          })
+          ?.map(({ customEnabled, disabled: _disabled, ...model }, idx) => {
+            const disabled = !executeExpression(customEnabled) || _disabled;
+
+            return <DynamicComponent model={{ ...model, isDynamic: true, disabled }} key={idx} />;
+          })}
       </div>
     );
   }
