@@ -10,7 +10,6 @@ env:
   NODE_VERSION: '14.x'
 
 jobs:
-
   # build the project
   build:
     runs-on: ubuntu-latest
