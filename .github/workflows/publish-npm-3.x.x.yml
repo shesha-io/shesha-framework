@@ -35,6 +35,11 @@ jobs:
         with:
           node-version: 16
           registry-url: 'https://registry.npmjs.org'
+      # Setup Python
+      # Solution currently needs python2 to run
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '2.7.0' 
       # install dependencies
       - name: Install Dependencies
         run: npm install --legacy-peer-deps
