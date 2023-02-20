@@ -40,8 +40,10 @@ const DropdownComponent: IToolboxComponent<IDropdownProps> = {
       setFormData: setFormDataAndInstance,
     };
 
+    const initialValue = model?.defaultValue ? { initialValue: model.defaultValue } : {};
+
     return (
-      <ConfigurableFormItem model={model}>
+      <ConfigurableFormItem model={model} {...initialValue}>
         <Dropdown {...model} {...customDropDownEventHandler(eventProps)} />
       </ConfigurableFormItem>
     );
