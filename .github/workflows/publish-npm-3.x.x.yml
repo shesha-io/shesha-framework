@@ -37,7 +37,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       # install dependencies
       - name: Install Dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
         working-directory: ./shesha-reactjs
       # prepare shesha-reactjs for pipeline
       - name: Prepare shesha-reactjs for Pipeline
