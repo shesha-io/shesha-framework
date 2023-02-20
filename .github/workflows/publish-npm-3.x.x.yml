@@ -21,6 +21,7 @@ env:
 jobs:
   # build the project
   build:
+    permissions: write-all
     runs-on: ubuntu-latest
     steps:
       # checkout latest code
@@ -92,7 +93,7 @@ jobs:
           name: ${{ steps.tag_version.outputs.new_tag }}
           body: ${{ steps.tag_version.outputs.changelog }}
       # publish shesha-reactjs to npmjs
-      - name: Publish shesha-reactjs to npmjs
-        uses: JS-DevTools/npm-publish@v1
-        with:
-          token: ${{ secrets.NPMJS_API_KEY }}
+      # - name: Publish shesha-reactjs to npmjs
+      #   uses: JS-DevTools/npm-publish@v1
+      #   with:
+      #     token: ${{ secrets.NPMJS_API_KEY }}
