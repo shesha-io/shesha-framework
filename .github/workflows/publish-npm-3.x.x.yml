@@ -25,15 +25,15 @@ jobs:
     steps:
       # checkout latest code
       - name: Get Sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           clean: true
           ref: main
       # setup node
-      - name: Setup Node ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v2
+      - name: Setup Node 16
+        uses: actions/setup-node@v3
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: 16
           registry-url: 'https://registry.npmjs.org'
       # install dependencies
       - name: Install Dependencies
