@@ -67,6 +67,7 @@ const AutoCompletePlacesField: FC<IAutoCompletePlacesFieldProps> = props => {
     <AutoCompletePlaces
       className="search-input text-center"
       value={props.value}
+      prefix={props?.prefix as any}
       onChange={props.onChange}
       {...inputProps}
     />

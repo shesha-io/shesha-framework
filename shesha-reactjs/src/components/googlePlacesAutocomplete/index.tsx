@@ -32,7 +32,7 @@ export interface IGooglePlacesAutocompleteProps {
   selectedValue?: string;
   help?: string;
   placeholder?: string;
-  prefixText?: string;
+  prefix?: string;
   label?: string;
   disabled?: boolean;
   ignoreText?: string;
@@ -47,7 +47,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
   value,
   selectedValue,
   placeholder = 'Search places',
-  prefixText,
+  prefix,
   onGeocodeChange,
   disabled,
   ignoreText,
@@ -171,11 +171,10 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
   };
 
   const onBlur = () => setShowSuggestionsDropdownContainer(false);
-
   return (
     // @ts-ignore
     <PlacesAutocomplete
-      value={(prefixText ? `${prefixText} ${displayValue}` : displayValue) ?? ''}
+      value={(prefix ? `${prefix} ${displayValue}` : displayValue) ?? ''}
       onChange={handleChange}
       onSelect={handleSelect}
 
