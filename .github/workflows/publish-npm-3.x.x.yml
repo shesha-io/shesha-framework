@@ -47,14 +47,17 @@ jobs:
       # prepare shesha-reactjs for pipeline
       - name: Prepare shesha-reactjs for Pipeline
         run: npm run prepare
+        working-directory: ./shesha-reactjs
       # # build storybook
       # - name: Build Storybook
         # run: npm run build-storybook
+        # working-directory: ./shesha-reactjs
         # env:
           # STORYBOOK_BASE_URL: https://shesha-mmsample-backend-dev.azurewebsites.net
       # # deploy storybook
       # - name: Deploy Storybook
         # uses: JamesIves/github-pages-deploy-action@3.6.2
+        # working-directory: ./shesha-reactjs
         # with:
           # github_token: ${{ secrets.GITHUB_TOKEN }}
           # branch: gh-pages # The branch the action should deploy to.
@@ -80,6 +83,7 @@ jobs:
       # build shesha-reactjs for production
       - name: Build shesha-reactjs for Production
         run: npm run build
+        working-directory: ./shesha-reactjs
       # create github release
       - name: Create Github Release
         uses: ncipollo/release-action@v1
