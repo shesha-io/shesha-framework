@@ -39,7 +39,7 @@ jobs:
       # Solution currently needs python2 to run
       - uses: actions/setup-python@v4
         with:
-          python-version: '2.7.0' 
+          python-version: '2.7.18' 
       # install dependencies
       - name: Install Dependencies
         run: npm install --legacy-peer-deps
