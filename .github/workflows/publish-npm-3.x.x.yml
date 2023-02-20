@@ -21,6 +21,7 @@ env:
 jobs:
   # build the project
   build:
+    permissions: write-all
     runs-on: ubuntu-latest
     steps:
       # checkout latest code
