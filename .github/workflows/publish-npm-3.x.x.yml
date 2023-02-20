@@ -71,6 +71,7 @@ jobs:
         uses: iilyichev/github-tag-action@v6.3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          fetch_all_tags: true
           release_branches: main
           tag_prefix: ""
           tag_filter: "^3."
