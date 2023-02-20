@@ -1,7 +1,7 @@
 import { nanoid } from "nanoid";
 import { DesignerToolbarSettings } from "../../../interfaces/toolbarSettings";
 
-export interface IShowConfigrmationArguments {
+export interface IShowConfirmationArguments {
   title: string;
   content: string;
   okText?: string;

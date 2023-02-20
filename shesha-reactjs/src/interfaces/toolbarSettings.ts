@@ -21,6 +21,7 @@ import { IColorPickerComponentProps } from '../components/formDesigner/component
 import { IColumnsEditorComponentProps } from '../components/formDesigner/components/dataTable/table/columnsEditor/columnsEditorComponent';
 import { ICollapsiblePanelProps } from '../components/formDesigner/components/collapsiblePanel/collapsiblePanelComponent';
 import { IPropertyAutocompleteComponentProps } from '../components/formDesigner/components/propertyAutocomplete';
+import { ISwitchProps } from '../components/formDesigner/components/switch/switch';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'type'> {}
 
@@ -43,6 +44,8 @@ type EndpointsAutocompleteType = ToolbarSettingsProp & Omit<IEndpointsAutocomple
 type FormAutocompleteType = ToolbarSettingsProp & Omit<IFormAutocompleteProps, 'type'>;
 
 type CheckboxType = ToolbarSettingsProp & Omit<ICheckboxProps, 'type'>;
+
+type SwitchType = ToolbarSettingsProp & Omit<ISwitchProps, 'type'>;
 
 type NumberFieldType = ToolbarSettingsProp & Omit<INumberFieldProps, 'type'>;
 
@@ -137,6 +140,10 @@ export class DesignerToolbarSettings<T> {
 
   public addCheckbox(props: CheckboxType | ((data: T) => CheckboxType)) {
     return this.addProperty(props, 'checkbox');
+  }
+
+  public addSwitch(props: SwitchType | ((data: T) => SwitchType)) {
+    return this.addProperty(props, 'switch');
   }
 
   public addCodeEditor(props: CodeEditorType | ((data: T) => CodeEditorType)) {

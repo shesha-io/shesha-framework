@@ -66,6 +66,7 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
   const { globalState } = useGlobalState();
 
   const urlEvaluationData: IMatchData[] = [
+    { match: 'initialValues', data: initialValues },
     { match: 'query', data: getQueryParams() },
     { match: 'data', data: formData },
     { match: 'parentFormValues', data: parentFormValues },

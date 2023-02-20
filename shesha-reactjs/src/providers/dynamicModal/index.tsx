@@ -18,7 +18,7 @@ import { DynamicModal } from '../../components/dynamicModal';
 import { useConfigurableAction } from '../configurableActionsDispatcher';
 import { dialogArgumentsForm, IShowModalActionArguments } from './configurable-actions/show-dialog-arguments';
 import {
-  IShowConfigrmationArguments,
+  IShowConfirmationArguments,
   showConfirmationArgumentsForm,
 } from './configurable-actions/show-confirmation-arguments';
 import { nanoid } from 'nanoid/non-secure';
@@ -34,7 +34,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
   });
 
   const actionDependencies = [state];
-  useConfigurableAction<IShowConfigrmationArguments>(
+  useConfigurableAction<IShowConfirmationArguments>(
     {
       name: 'Show Confirmation Dialog',
       owner: 'Common',

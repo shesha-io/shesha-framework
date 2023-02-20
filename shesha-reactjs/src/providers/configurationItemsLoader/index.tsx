@@ -402,7 +402,7 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
   }
 
   const getEntityFormId = (className: string, formType: string, action: (formId: FormFullName) => void) => {
-    entityConfigGetEntityConfigForm({ entityConfigName: className, typeName: formType }, { base: backendUrl })
+    entityConfigGetEntityConfigForm({ entityConfigName: className, typeName: formType }, { base: backendUrl, headers: httpHeaders })
       .then(response => {
         if (response.success)
           action({ name: response.result.name, module: response.result.module });

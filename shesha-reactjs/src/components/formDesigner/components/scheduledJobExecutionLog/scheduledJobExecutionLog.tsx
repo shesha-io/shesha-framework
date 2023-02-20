@@ -9,11 +9,11 @@ import ConfigurableFormItem from '../formItem';
 import ScheduledJobExecution from './scheduledJobExecution';
 import settingsFormJson from './settingsForm.json';
 
-export interface ISwitchProps extends IConfigurableFormComponent {}
+export interface IScheduledJobExecutionLogProps extends IConfigurableFormComponent {}
 
 const settingsForm = settingsFormJson as FormMarkup;
 
-const ScheduledJobExecutionLog: IToolboxComponent<ISwitchProps> = {
+const ScheduledJobExecutionLog: IToolboxComponent<IScheduledJobExecutionLogProps> = {
   type: 'scheduledJobExecutionLog',
   name: 'ScheduledJobExecutionLog',
   icon: <SmallDashOutlined />,

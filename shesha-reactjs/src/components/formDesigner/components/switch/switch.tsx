@@ -30,7 +30,7 @@ const SwitchComponent: IToolboxComponent<ISwitchProps> = {
     const style = getStyle(model?.style, formData);
 
     return (
-      <ConfigurableFormItem model={model}>
+      <ConfigurableFormItem model={model} valuePropName="checked" initialValue={model?.defaultValue}>
         {isReadOnly ? (
           <ReadOnlyDisplayFormItem type="switch" disabled={disabled} />
         ) : (

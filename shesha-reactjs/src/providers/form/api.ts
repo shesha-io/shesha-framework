@@ -140,7 +140,7 @@ export const useFormConfiguration = (args: UseFormConfigurationArgs): IFormMarku
     const canFetch = Boolean(requestParams && requestParams.url);
     const fetcher = useGet<IAbpWrappedGetEntityResponse<FormConfigurationDto>, IAjaxResponseBase, IGetFormByIdPayload | IGetFormByNamePayload>(
         requestParams?.url ?? '',
-        { queryParams: requestParams?.queryParams, lazy: !args.lazy || !canFetch }
+        { queryParams: requestParams?.queryParams, lazy: args.lazy || !canFetch }
     );
 
     useEffect(() => {

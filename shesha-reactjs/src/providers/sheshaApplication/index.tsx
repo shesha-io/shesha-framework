@@ -19,7 +19,7 @@ import { AppConfiguratorProvider } from '../appConfigurator';
 import { DynamicModalProvider } from '../dynamicModal';
 import { UiProvider } from '../ui';
 import { MetadataDispatcherProvider } from '../metadataDispatcher';
-import { IAuthProviderRefProps, IToolboxComponentGroup, ThemeProvider, ThemeProviderProps } from '../..';
+import { FormIdentifier, IAuthProviderRefProps, IToolboxComponentGroup, ThemeProvider, ThemeProviderProps } from '../..';
 import { ReferenceListDispatcherProvider } from '../referenceListDispatcher';
 import { StackedNavigationProvider } from '../../pages/dynamic/navigation/stakedNavigation';
 import ConditionalWrap from '../../components/conditionalWrapper';
@@ -44,6 +44,7 @@ export interface IShaApplicationProviderProps {
    * Unique identifier (key) of the front-end application, is used to separate some settings and application parts when use multiple front-ends
    */
   applicationKey?: string;
+  getFormUrlFunc?: (formId: FormIdentifier) => string;
 }
 
 const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>> = props => {
@@ -60,6 +61,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
     whitelistUrls,
     themeProps,
     routes,
+    getFormUrlFunc
   } = props;
   const initialHeaders = applicationKey ? { [FRONT_END_APP_HEADER_NAME]: applicationKey } : {};
   const [state, dispatch] = useReducer(appConfiguratorReducer, {
@@ -107,7 +109,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
         >
           <ConfigurableActionDispatcherProvider>
             <UiProvider>
-              <ShaRoutingProvider router={router}>
+              <ShaRoutingProvider getFormUrlFunc={getFormUrlFunc} router={router} >
                 <ConditionalWrap
                   condition={!props?.noAuth}
                   wrap={authChildren => (

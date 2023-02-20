@@ -4,6 +4,7 @@ import { Meta } from '@storybook/react/types-6-0';
 import { Story } from '@storybook/react';
 import { Button } from 'antd';
 import StoryApp from '../storyBookApp';
+import { GenericQuickView } from '.';
 
 // #region Storybook Metadata & Configuration
 
@@ -19,33 +20,37 @@ export default {
 const BaseTemplate: Story<IQuickViewProps> = props => {
   return (
     <StoryApp>
-      <QuickView {...props}>
+      <GenericQuickView {...props}>
         <Button type="link">Hello</Button>
-      </QuickView>
+      </GenericQuickView>
     </StoryApp>
   );
 };
 
 const baseProps: IQuickViewProps = {
-  entityId: '0cdad6b0-a3b2-4cf6-9b7d-238d753f0657',
-  formIdentifier: { name: 'quickview-his-health-facilities-details'},
-  getEntityUrl: '/api/services/Common/HisHealthFacility/Get',
-  displayProperty: null,
+  entityId: 'B3B60F2E-5B88-4F44-B8EB-D3987A8483D9',
+  className: 'Shesha.Domain.Person',
+  displayName: 'Александр Степанцов',
+  //formIdentifier: { name: 'person-details' },
+  //getEntityUrl: '/api/dynamic/shesha/person/Get',
+  displayProperty: "fullName",
+  width: 800
 };
 
 export const Base = BaseTemplate.bind({});
 Base.args = { ...baseProps };
 
-const personProps: IQuickViewProps = {
-  entityId: 'B3B60F2E-5B88-4F44-B8EB-D3987A8483D9',
-  formIdentifier: { name: '/persons/edit', version: 2, },
-  getEntityUrl: '/api/services/app/person/Get',
+const initialProps: IQuickViewProps = {
+  initialFormData: { firstName: "Alex", lastName: "Stephens", fullName: "Full name" },
+  className: 'Shesha.Domain.Person',
+  displayName: 'Configured initial values',
+  //formIdentifier: { name: 'person-details' },
+  //getEntityUrl: '/api/dynamic/shesha/person/Get',
   displayProperty: "fullName",
   width: 800
 };
 
-export const Person = BaseTemplate.bind({});
-Base.args = { ...personProps };
-
+export const Initial = BaseTemplate.bind({});
+Initial.args = { ...initialProps };
 
 // #endregion
