@@ -16,7 +16,7 @@ on:
     paths:
       - '/shesha-reactjs/**'
 env:
-  NODE_VERSION: '16'
+  NODE_VERSION: '15'
 
 jobs:
   # build the project
