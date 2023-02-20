@@ -66,15 +66,11 @@ jobs:
           # clean: true # Automatically remove deleted files from the deploy branch
           # target_folder: docs # The folder that we serve our Storybook files from 
       # tag shesha-reactjs
-      - name: Tag shesha-reactjs
+      - name: Bump version and push tag
         id: tag_version
-        uses: iilyichev/github-tag-action@v6.3
+        uses: mathieudutour/github-tag-action@v6.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          fetch_all_tags: true
-          release_branches: main
-          tag_prefix: ""
-          tag_filter: "^3."
       # update package.json tag
       - name: Update package.json
         uses: reedyuk/npm-version@1.1.1
