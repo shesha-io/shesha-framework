@@ -25,13 +25,13 @@ jobs:
     steps:
       # checkout latest code
       - name: Get Sources
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
         with:
           clean: true
           ref: main
       # setup node
       - name: Setup Node 16
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v2
         with:
           node-version: 16
           registry-url: 'https://registry.npmjs.org'
