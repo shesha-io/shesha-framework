@@ -38,6 +38,7 @@ jobs:
       # install dependencies
       - name: Install Dependencies
         run: npm install
+        working-directory: ./shesha-reactjs
       # prepare shesha-reactjs for pipeline
       - name: Prepare shesha-reactjs for Pipeline
         run: npm run prepare
