@@ -92,6 +92,7 @@ jobs:
       # publish shesha-reactjs to Github registry
       - name: Publish shesha-reactjs to Github registry
         run: npm publish
+        working-directory: ./shesha-reactjs
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # publish shesha-reactjs to npmjs
