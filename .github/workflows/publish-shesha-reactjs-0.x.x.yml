@@ -68,12 +68,11 @@ jobs:
       # tag shesha-reactjs
       - name: Bump version and push tag
         id: tag_version
-        uses: iilyichev/github-tag-action@v6.3
+        uses: mathieudutour/github-tag-action@v6.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          release_branches: main
-          tag_prefix: ""
-          tag_filter: "^4."
+          tag_prefix: ''
+          default_bump: major
       # update package.json tag
       - name: Update package.json
         uses: reedyuk/npm-version@1.1.1
