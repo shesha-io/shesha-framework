@@ -76,6 +76,7 @@ jobs:
         with:
           version: ${{ steps.tag_version.outputs.new_tag }}
           package: 'shesha-reactjs/'
+          tag_prefix: ''
           # git-tag-version: 'true'
       # build shesha-reactjs for production
       - name: Build shesha-reactjs for Production
