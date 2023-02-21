@@ -1,10 +1,13 @@
 {
-  "name": "@shesha/reactjs",
+  "name": "@shesha-io/shesha-reactjs",
   "version": "3.0.67-canary",
   "description": "The reactjs frontend application and ui for the shesha framework.",
   "license": "GPL-3.0",
-  "homepage": "https://Boxfusion.github.io/shesha-reactjs",
-  "repository": "https://github.com/Boxfusion/shesha-reactjs",
+  "homepage": "https://shesha-io.github.io/shesha-framework",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shesha-io/shesha-framework"
+  },
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "jsnext:main": "dist/index.es.js",

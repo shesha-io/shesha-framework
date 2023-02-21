@@ -12,7 +12,7 @@ on:
         # Input has to be provided for the workflow to run
         required: true    
   push:
-    branches: [ main ]
+    branches: [ release/0.x.x ]
     paths:
       - shesha-reactjs/**
 env:
