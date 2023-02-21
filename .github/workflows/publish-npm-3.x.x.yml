@@ -12,9 +12,10 @@ on:
         # Input has to be provided for the workflow to run
         required: true    
   push:
-    branches: [ main ]
+    branches: 
+      - main
     paths:
-      - '/shesha-reactjs/**'
+      - /shesha-reactjs/**
 env:
   NODE_VERSION: '15'
 
@@ -31,11 +32,11 @@ jobs:
           clean: true
           ref: main
       # setup node
-      - name: Setup Node 15
+      - name: Setup Node ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v3
         with:
-          node-version: 15
-          registry-url: 'https://registry.npmjs.org'
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: 'https://npm.pkg.github.com'
       # Setup Python
       # Solution currently needs python2 to run
       - uses: actions/setup-python@v4
@@ -87,8 +88,13 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ steps.tag_version.outputs.new_tag }}
-          name: ${{ steps.tag_version.outputs.new_tag }}
+          name: shesha-reactjs-${{ steps.tag_version.outputs.new_tag }}
           body: ${{ steps.tag_version.outputs.changelog }}
+      # publish shesha-reactjs to Github registry
+      - name: Publish shesha-reactjs to Github registry
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # publish shesha-reactjs to npmjs
       # - name: Publish shesha-reactjs to npmjs
       #   uses: JS-DevTools/npm-publish@v1
