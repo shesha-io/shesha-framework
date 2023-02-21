@@ -14,16 +14,17 @@ export interface ISubFormContainerProps {
 }
 
 export const SubFormContainer: FC<ISubFormContainerProps> = ({ components, readOnly }) => {
-  const { value } = useSubForm();
+  //alias added for readability and avoiding names clashes
+  const { value: subFormData } = useSubForm();
   const { globalState } = useGlobalState();
 
   const executeExpression = useCallback(
     (expression: string) => {
       if (!expression) return true;
-      const evaluated = executeScriptSync(expression, { data: value, globalState });
+      const evaluated = executeScriptSync(expression, { data: subFormData, globalState });
       return typeof evaluated === 'boolean' ? evaluated : true;
     },
-    [value, globalState]
+    [subFormData, globalState]
   );
 
   const getReadOnlyState = (isReadOnly: boolean) => (typeof readOnly === 'boolean' ? readOnly : isReadOnly);
