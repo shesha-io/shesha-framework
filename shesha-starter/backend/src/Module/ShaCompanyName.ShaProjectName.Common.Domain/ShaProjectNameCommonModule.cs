@@ -1,11 +1,9 @@
-using System.Reflection;
 using Abp.AspNetCore.Configuration;
 using Abp.AutoMapper;
 using Abp.Modules;
-using Castle.MicroKernel.Registration;
 using Intent.RoslynWeaver.Attributes;
 using Shesha;
-using Shesha.Authorization;
+using System.Reflection;
 
 [assembly: DefaultIntentManaged(Mode.Fully)]
 [assembly: IntentTemplate("Boxfusion.Modules.Domain.Module", Version = "1.0")]

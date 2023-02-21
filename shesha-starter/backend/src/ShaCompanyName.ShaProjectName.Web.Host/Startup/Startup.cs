@@ -3,7 +3,6 @@ using Abp.AspNetCore.SignalR.Hubs;
 using Abp.Castle.Logging.Log4Net;
 using Abp.Extensions;
 using Abp.PlugIns;
-using ShaCompanyName.ShaProjectName.Configuration;
 using ShaCompanyName.ShaProjectName.Web.Host.Startup;
 using Castle.Facilities.Logging;
 using ElmahCore;
@@ -23,6 +22,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using ShaCompanyName.ShaProjectName.Hangfire;
+using ShaCompanyName.ShaProjectName.Configuration;
 using Shesha.Authorization;
 using Shesha.Configuration;
 using Shesha.DynamicEntities;
@@ -64,7 +64,6 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
 			services.AddElmah<XmlFileErrorLog>(options =>
 			{
 				options.Path = @"elmah";
-				//options.LogPath = "~/App_Data/ElmahLogs";
 				options.LogPath = Path.Combine(_hostEnvironment.ContentRootPath, "App_Data", "ElmahLogs");
 				//options.CheckPermissionAction = context => context.User.Identity.IsAuthenticated; //note: looks like we have to use cookies for it
 				options.Filters.Add(new ElmahFilter());
