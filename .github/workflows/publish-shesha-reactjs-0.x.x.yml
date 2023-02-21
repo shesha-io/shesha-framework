@@ -87,7 +87,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ steps.tag_version.outputs.new_tag }}
-          name: shesha-reactjs-${{ steps.tag_version.outputs.new_tag }}
+          name: shesha-reactjs@${{ steps.tag_version.outputs.new_tag }}
           body: ${{ steps.tag_version.outputs.changelog }}
       # publish shesha-reactjs to Github registry
       - name: Publish shesha-reactjs to Github registry
