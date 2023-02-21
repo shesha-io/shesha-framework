@@ -35,7 +35,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
-          registry-url: 'https://npm.pkg.github.com'
       # Setup Python
       # Solution currently needs python2 to run
       - uses: actions/setup-python@v4
