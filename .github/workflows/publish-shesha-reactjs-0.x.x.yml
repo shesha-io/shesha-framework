@@ -1,4 +1,4 @@
-name: shesha-reactjs-3.x.x
+name: shesha-reactjs-0.x.x
 
 on:
   workflow_dispatch:
