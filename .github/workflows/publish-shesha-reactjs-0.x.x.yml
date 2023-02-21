@@ -12,7 +12,7 @@ on:
         # Input has to be provided for the workflow to run
         required: true    
   push:
-    branches: [ release/0.x.x ]
+    branches: [ main ]
     paths:
       - shesha-reactjs/**
 env:
@@ -29,7 +29,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           clean: true
-          ref: release/0.x.x
+          ref: main
       # setup node
       - name: Setup Node ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v3
