@@ -35,6 +35,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
+          registry-url: 'https://registry.npmjs.org'
       # Setup Python
       # Solution currently needs python2 to run
       - uses: actions/setup-python@v4
@@ -89,9 +90,9 @@ jobs:
           tag: ${{ steps.tag_version.outputs.new_tag }}
           name: shesha-reactjs@${{ steps.tag_version.outputs.new_tag }}
           body: ${{ steps.tag_version.outputs.changelog }}
-      # publish shesha-reactjs to Github registry
-      - name: Publish shesha-reactjs to Github registry
-        run: npm publish
+      # publish shesha-reactjs to npmjs registry
+      - name: Publish shesha-reactjs to npmjs registry
+        run: npm publish --access public
         working-directory: ./shesha-reactjs
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
