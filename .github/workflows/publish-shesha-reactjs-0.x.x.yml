@@ -17,6 +17,8 @@ on:
     paths:
       - shesha-reactjs/**
   pull_request:
+    types:
+      - closed
     branches: 
       - main
     paths:
