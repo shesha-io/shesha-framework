@@ -109,8 +109,8 @@ namespace Shesha.DynamicEntities
                     {
                         vconfig.FormId = new FormIdFullNameDto()
                         {
-                            Name = configuration.FormId.Name,
-                            Module = configuration.FormId.Module
+                            Name = configuration.FormId?.Name,
+                            Module = configuration.FormId?.Module
                         };
                     }
                 }
