@@ -12,8 +12,15 @@ on:
         # Input has to be provided for the workflow to run
         required: true    
   push:
+    branches: 
+      - main
+    paths:
+      - shesha-reactjs/**
   pull_request:
-    branches: [ main ]
+    types:
+      - closed
+    branches: 
+      - main
     paths:
       - shesha-reactjs/**
 env:
