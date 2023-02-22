@@ -3,8 +3,8 @@ import { ParagraphProps } from 'antd/lib/typography/Paragraph';
 import { TextProps } from 'antd/lib/typography/Text';
 import { TitleProps } from 'antd/lib/typography/Title';
 import React, { FC } from 'react';
-import { useForm, useSubForm } from '../../../../providers';
-import { evaluateString, getStyle } from '../../../../providers/form/utils';
+import { useForm, useGlobalState, useSubForm } from '../../../../providers';
+import { evaluateString, executeCustomExpression, getStyle } from '../../../../providers/form/utils';
 import { ITextTypographyProps, ITypographyProps } from './models';
 import {
   DEFAULT_CONTENT_DISPLAY,
@@ -36,9 +36,10 @@ const TypographyComponent: FC<ITextTypographyProps> = ({
   ...model
 }) => {
   const { formData, formMode } = useForm();
-  
+  const { globalState } = useGlobalState();
+
   // NOTE: to be replaced with a generic context implementation
-  const { value: subFormData } = useSubForm(false) ?? {}; 
+  const { value: subFormData } = useSubForm(false) ?? {};
 
   const data = subFormData || formData;
 
@@ -84,6 +85,12 @@ const TypographyComponent: FC<ITextTypographyProps> = ({
 
   const contentEvaluation = contentDisplay === 'name' ? formData?.[name] : evaluateString(model?.content, data);
   const content = getContent(contentEvaluation, { dataType, dateFormat, numberFormat });
+
+  const isVisibleByCondition = executeCustomExpression(model.customVisibility, true, formData, globalState);
+
+  if (!isVisibleByCondition && formMode !== 'designer') {
+    return null;
+  }
 
   if (!content && formMode === 'designer') {
     return <Alert type="warning" message="Please make sure you enter the content to be displayed here!" />;
