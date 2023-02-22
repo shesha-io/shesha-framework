@@ -27,10 +27,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Boxfusion.Health.His.Web.Core.xml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Abp.AspNetCore.SignalR" Version="6.6.2" />
     <PackageReference Include="Abp.HangFire.AspNetCore" Version="6.6.2" />
     <PackageReference Include="Abp.AspNetCore" Version="6.6.2" />
