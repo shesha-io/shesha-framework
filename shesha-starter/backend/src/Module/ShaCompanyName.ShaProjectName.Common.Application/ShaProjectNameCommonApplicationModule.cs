@@ -4,9 +4,11 @@ using Abp.AutoMapper;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
 using Shesha;
+using Shesha.Modules;
 using Shesha.Startup;
 using Shesha.Web.FormsDesigner;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace ShaCompanyName.ShaProjectName.Common
 {
@@ -18,8 +20,12 @@ namespace ShaCompanyName.ShaProjectName.Common
         typeof(SheshaCoreModule),
         typeof(AbpAspNetCoreModule)
     )]
-    public class ShaProjectNameCommonApplicationModule : AbpModule
+    public class ShaProjectNameCommonApplicationModule : SheshaSubModule<ShaProjectNameCommonModule>
     {
+        public override async Task<bool> InitializeConfigurationAsync()
+        {
+            return await ImportConfigurationAsync();
+        }
         /// inheritedDoc
         public override void Initialize()
         {
@@ -39,19 +45,39 @@ namespace ShaCompanyName.ShaProjectName.Common
         {
             base.PreInitialize();
 
-            Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(
-                typeof(ShaProjectNameCommonModule).Assembly,
-                moduleName: "Common",
-                useConventionalHttpVerbs: true);
+            Configuration.Modules.AbpAspNetCore()
+                .CreateControllersForAppServices(
+                    typeof(SheshaCoreModule).GetAssembly()
+                );
 
-            Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(
-                assembly: typeof(ShaProjectNameCommonApplicationModule).Assembly,
-                moduleName: "Common",
-                useConventionalHttpVerbs: true);
+            Configuration.Modules.AbpAspNetCore()
+                 .CreateControllersForAppServices(
+                     typeof(SheshaApplicationModule).GetAssembly()
+                 );
 
             Configuration.Modules.AbpAspNetCore()
                  .CreateControllersForAppServices(
                      typeof(SheshaFormsDesignerModule).GetAssembly()
+                 );
+
+            Configuration.Modules.AbpAspNetCore()
+                 .CreateControllersForAppServices(
+                     typeof(SheshaFrameworkModule).GetAssembly()
+                 );
+
+            Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(
+               typeof(ShaProjectNameCommonApplicationModule).Assembly,
+               moduleName: "ShaProjectNameCommon",
+                useConventionalHttpVerbs: true);
+
+            Configuration.Modules.AbpAspNetCore()
+                 .CreateControllersForAppServices(
+                     typeof(ShaProjectNameCommonModule).GetAssembly()
+                 );
+
+            Configuration.Modules.AbpAspNetCore()
+                 .CreateControllersForAppServices(
+                     typeof(ShaProjectNameCommonApplicationModule).GetAssembly()
                  );
         }
     }
