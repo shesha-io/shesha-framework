@@ -261,6 +261,7 @@ Upload
 **/node_modules/*
 
 # Ide
+/**/.vscode/settings.json
 .vscode/*
 vscode/
 .idea/*
@@ -300,6 +301,7 @@ storybook-static
 /shesha-reactjs/.out-storybook/*
 /shesha-reactjs/.next
 /shesha-reactjs/package-lock.json
+/shesha-reactjs/**/*.playground.stories.tsx
 
 # shesha-starter
 /shesha-starter/backend/src/ShaCompanyName.ShaProjectName.Common.Domain/Boxfusion.Health.His.Domain.xml
