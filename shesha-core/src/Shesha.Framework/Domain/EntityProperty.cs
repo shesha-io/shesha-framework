@@ -1,15 +1,11 @@
 ﻿using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
-using Microsoft.VisualBasic;
-using NHibernate.Mapping;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Configuration;
-using System.Text;
 
 namespace Shesha.Domain
 {
@@ -143,11 +139,11 @@ namespace Shesha.Domain
         /// <summary>
         /// Validation min length
         /// </summary>
-        public int? MinLength { get; set; }
+        public virtual int? MinLength { get; set; }
         /// <summary>
         /// Validation max length
         /// </summary>
-        public int? MaxLength { get; set; }
+        public virtual int? MaxLength { get; set; }
 
         /// <summary>
         /// Validation RegularExpression 
@@ -159,5 +155,19 @@ namespace Shesha.Domain
         /// </summary>
         public virtual string ValidationMessage { get; set; }
 
+        /// <summary>
+        /// Allows to create child/nested entity
+        /// </summary>
+        public virtual bool CascadeCreate { get; set; }
+
+        /// <summary>
+        /// Allows to update child/nested entity
+        /// </summary>
+        public virtual bool CascadeUpdate { get; set; }
+
+        /// <summary>
+        /// Delete child/nested entity if reference was removed and the child/nested entity doesn't have nother references
+        /// </summary>
+        public virtual bool CascadeDeleteUnreferenced { get; set; }
     }
 }

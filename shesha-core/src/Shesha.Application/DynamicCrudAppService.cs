@@ -118,7 +118,7 @@ namespace Shesha
         {
             CheckUpdatePermission();
             var entity = await InternalUpdateAsync(input);
-            return await QueryAsync(new GetDynamicEntityInput<TPrimaryKey>() { Id = input.Id, Properties = properties });
+            return await QueryAsync(new GetDynamicEntityInput<TPrimaryKey>() { Id = entity.Id, Properties = properties });
         }
 
         [EntityAction(StandardEntityActions.Update)]
@@ -223,7 +223,7 @@ namespace Shesha
         {
             CheckUpdatePermission();
             var entity = await InternalCreateAsync(input);
-            return await QueryAsync(new GetDynamicEntityInput<TPrimaryKey>() { Id = input.Id, Properties = properties });
+            return await QueryAsync(new GetDynamicEntityInput<TPrimaryKey>() { Id = entity.Id, Properties = properties });
         }
 
         [EntityAction(StandardEntityActions.Create)]

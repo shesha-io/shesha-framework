@@ -47,7 +47,7 @@ export interface EntityConfigDto {
   namespace?: string | null;
   discriminatorValue?: string | null;
   source?: MetadataSourceType;
-  entityConfigType?: EntityConfigType;
+  entityConfigType?: EntityConfigTypes;
   generateAppService?: boolean;
   suppress?: boolean;
   module?: string | null;
@@ -84,30 +84,22 @@ export interface EntityConfigDtoPagedResultDtoAjaxResponse {
 }
 
 export interface EntityConfigGraphQLDataResult {
-  viewConfigurations?: {};
   configuration?: string | null;
   generateAppService?: boolean | null;
-  lastModificationTime?: string | null;
   typeShortAlias?: string;
   itemType?: string;
   source?: number | null;
   tableName?: string;
-  creatorUserId?: number | null;
   discriminatorValue?: string;
   friendlyName?: string;
   propertiesMD5?: string;
   namespace?: string;
   parent?: string | null;
-  isDeleted?: boolean | null;
   entityConfigType?: number | null;
-  deletionTime?: string | null;
   fullClassName?: string;
-  creationTime?: string | null;
-  lastModifierUserId?: number | null;
   className?: string;
-  deleterUserId?: number | null;
-  _meta?: MetaDto;
-  jObject?: {
+  _className?: string;
+  _jObject?: {
     [key: string]: JToken;
   };
   id?: string;
@@ -142,7 +134,7 @@ export interface EntityConfigPagedResultDtoGraphQLDataResultAjaxResponse {
 /**
  * Indicate the type of the entity metadata
  */
-export type EntityConfigType = 1 | 2;
+export type EntityConfigTypes = 1 | 2;
 
 export interface ErrorInfo {
   code?: number;
@@ -167,10 +159,6 @@ export interface FormIdFullNameDtoAjaxResponse {
 
 export type JToken = JToken[];
 
-export interface MetaDto {
-  className?: string | null;
-}
-
 /**
  * Indicate the source of the entity/property metadata
  */
@@ -178,32 +166,24 @@ export type MetadataSourceType = 1 | 2;
 
 export interface ProxyDynamicDtoEntityConfigGuid {
   id?: string;
-  jObject?: {
+  _jObject?: {
     [key: string]: JToken;
   } | null;
-  viewConfigurations?: {} | null;
   configuration?: string | null;
   generateAppService?: boolean | null;
-  lastModificationTime?: string | null;
   typeShortAlias?: string | null;
   itemType?: string | null;
   source?: number | null;
   tableName?: string | null;
-  creatorUserId?: number | null;
   discriminatorValue?: string | null;
   friendlyName?: string | null;
   propertiesMD5?: string | null;
   namespace?: string | null;
   parent?: string | null;
-  isDeleted?: boolean | null;
   entityConfigType?: number | null;
-  deletionTime?: string | null;
   fullClassName?: string | null;
-  creationTime?: string | null;
-  lastModifierUserId?: number | null;
   className?: string | null;
-  deleterUserId?: number | null;
-  _meta?: MetaDto;
+  _className?: string | null;
 }
 
 export interface ValidationErrorInfo {
@@ -271,6 +251,10 @@ export interface EntityConfigGetMainDataListQueryParams {
    * Quick search string. Is used to search entities by text
    */
   quickSearch?: string;
+  /**
+   * List of specifications to apply on top of query
+   */
+  specifications?: string[];
   sorting?: string;
   skipCount?: number;
   maxResultCount?: number;
@@ -329,6 +313,7 @@ export const entityConfigGetMainDataList = (
   >(`/api/services/app/EntityConfig/GetMainDataList`, queryParams, props);
 
 export interface EntityConfigEntityConfigAutocompleteQueryParams {
+  implemented?: boolean;
   term?: string;
   selectedValue?: string;
   /**
@@ -390,6 +375,245 @@ export const entityConfigEntityConfigAutocomplete = (
     void
   >(`/api/services/app/EntityConfig/EntityConfigAutocomplete`, queryParams, props);
 
+export interface EntityConfigDeleteQueryParams {
+  id?: string;
+  /**
+   * The requested API version
+   */
+  'api-version'?: string;
+}
+
+export type EntityConfigDeleteProps = Omit<
+  MutateProps<void, unknown, EntityConfigDeleteQueryParams, void, void>,
+  'path' | 'verb'
+>;
+
+export const EntityConfigDelete = (props: EntityConfigDeleteProps) => (
+  <Mutate<void, unknown, EntityConfigDeleteQueryParams, void, void>
+    verb="DELETE"
+    path={`/api/services/app/EntityConfig/Delete`}
+    {...props}
+  />
+);
+
+export type UseEntityConfigDeleteProps = Omit<
+  UseMutateProps<void, unknown, EntityConfigDeleteQueryParams, void, void>,
+  'path' | 'verb'
+>;
+
+export const useEntityConfigDelete = (props: UseEntityConfigDeleteProps) =>
+  useMutate<void, unknown, EntityConfigDeleteQueryParams, void, void>(
+    'DELETE',
+    `/api/services/app/EntityConfig/Delete`,
+    { ...props }
+  );
+
+export type entityConfigDeleteProps = Omit<
+  RestfulShesha.MutateProps<void, unknown, EntityConfigDeleteQueryParams, void, void>,
+  'data'
+>;
+export const entityConfigDelete = (props: entityConfigDeleteProps) =>
+  RestfulShesha.mutate<void, unknown, EntityConfigDeleteQueryParams, void, void>(
+    'DELETE',
+    `/api/services/app/EntityConfig/Delete`,
+    undefined,
+    props
+  );
+
+export interface EntityConfigRemoveConfigurationsOfMissingClassesQueryParams {
+  /**
+   * The requested API version
+   */
+  'api-version'?: string;
+}
+
+export type EntityConfigRemoveConfigurationsOfMissingClassesProps = Omit<
+  MutateProps<void, unknown, EntityConfigRemoveConfigurationsOfMissingClassesQueryParams, void, void>,
+  'path' | 'verb'
+>;
+
+export const EntityConfigRemoveConfigurationsOfMissingClasses = (
+  props: EntityConfigRemoveConfigurationsOfMissingClassesProps
+) => (
+  <Mutate<void, unknown, EntityConfigRemoveConfigurationsOfMissingClassesQueryParams, void, void>
+    verb="DELETE"
+    path={`/api/services/app/EntityConfig/RemoveConfigurationsOfMissingClasses`}
+    {...props}
+  />
+);
+
+export type UseEntityConfigRemoveConfigurationsOfMissingClassesProps = Omit<
+  UseMutateProps<void, unknown, EntityConfigRemoveConfigurationsOfMissingClassesQueryParams, void, void>,
+  'path' | 'verb'
+>;
+
+export const useEntityConfigRemoveConfigurationsOfMissingClasses = (
+  props: UseEntityConfigRemoveConfigurationsOfMissingClassesProps
+) =>
+  useMutate<void, unknown, EntityConfigRemoveConfigurationsOfMissingClassesQueryParams, void, void>(
+    'DELETE',
+    `/api/services/app/EntityConfig/RemoveConfigurationsOfMissingClasses`,
+    { ...props }
+  );
+
+export type entityConfigRemoveConfigurationsOfMissingClassesProps = Omit<
+  RestfulShesha.MutateProps<void, unknown, EntityConfigRemoveConfigurationsOfMissingClassesQueryParams, void, void>,
+  'data'
+>;
+export const entityConfigRemoveConfigurationsOfMissingClasses = (
+  props: entityConfigRemoveConfigurationsOfMissingClassesProps
+) =>
+  RestfulShesha.mutate<void, unknown, EntityConfigRemoveConfigurationsOfMissingClassesQueryParams, void, void>(
+    'DELETE',
+    `/api/services/app/EntityConfig/RemoveConfigurationsOfMissingClasses`,
+    undefined,
+    props
+  );
+
+export interface EntityConfigCreateQueryParams {
+  /**
+   * The requested API version
+   */
+  'api-version'?: string;
+}
+
+export type EntityConfigCreateProps = Omit<
+  MutateProps<EntityConfigDtoAjaxResponse, AjaxResponseBase, EntityConfigCreateQueryParams, EntityConfigDto, void>,
+  'path' | 'verb'
+>;
+
+export const EntityConfigCreate = (props: EntityConfigCreateProps) => (
+  <Mutate<EntityConfigDtoAjaxResponse, AjaxResponseBase, EntityConfigCreateQueryParams, EntityConfigDto, void>
+    verb="POST"
+    path={`/api/services/app/EntityConfig/Create`}
+    {...props}
+  />
+);
+
+export type UseEntityConfigCreateProps = Omit<
+  UseMutateProps<EntityConfigDtoAjaxResponse, AjaxResponseBase, EntityConfigCreateQueryParams, EntityConfigDto, void>,
+  'path' | 'verb'
+>;
+
+export const useEntityConfigCreate = (props: UseEntityConfigCreateProps) =>
+  useMutate<EntityConfigDtoAjaxResponse, AjaxResponseBase, EntityConfigCreateQueryParams, EntityConfigDto, void>(
+    'POST',
+    `/api/services/app/EntityConfig/Create`,
+    props
+  );
+
+export type entityConfigCreateProps = Omit<
+  RestfulShesha.MutateProps<
+    EntityConfigDtoAjaxResponse,
+    AjaxResponseBase,
+    EntityConfigCreateQueryParams,
+    EntityConfigDto,
+    void
+  >,
+  'data'
+>;
+export const entityConfigCreate = (data: EntityConfigDto, props: entityConfigCreateProps) =>
+  RestfulShesha.mutate<
+    EntityConfigDtoAjaxResponse,
+    AjaxResponseBase,
+    EntityConfigCreateQueryParams,
+    EntityConfigDto,
+    void
+  >('POST', `/api/services/app/EntityConfig/Create`, data, props);
+
+export interface EntityConfigGetQueryParams {
+  id?: string;
+  /**
+   * The requested API version
+   */
+  'api-version'?: string;
+}
+
+export type EntityConfigGetProps = Omit<
+  GetProps<EntityConfigDtoAjaxResponse, AjaxResponseBase, EntityConfigGetQueryParams, void>,
+  'path'
+>;
+
+export const EntityConfigGet = (props: EntityConfigGetProps) => (
+  <Get<EntityConfigDtoAjaxResponse, AjaxResponseBase, EntityConfigGetQueryParams, void>
+    path={`/api/services/app/EntityConfig/Get`}
+    {...props}
+  />
+);
+
+export type UseEntityConfigGetProps = Omit<
+  UseGetProps<EntityConfigDtoAjaxResponse, AjaxResponseBase, EntityConfigGetQueryParams, void>,
+  'path'
+>;
+
+export const useEntityConfigGet = (props: UseEntityConfigGetProps) =>
+  useGet<EntityConfigDtoAjaxResponse, AjaxResponseBase, EntityConfigGetQueryParams, void>(
+    `/api/services/app/EntityConfig/Get`,
+    props
+  );
+
+export type entityConfigGetProps = Omit<
+  RestfulShesha.GetProps<EntityConfigDtoAjaxResponse, AjaxResponseBase, EntityConfigGetQueryParams, void>,
+  'queryParams'
+>;
+export const entityConfigGet = (queryParams: EntityConfigGetQueryParams, props: entityConfigGetProps) =>
+  RestfulShesha.get<EntityConfigDtoAjaxResponse, AjaxResponseBase, EntityConfigGetQueryParams, void>(
+    `/api/services/app/EntityConfig/Get`,
+    queryParams,
+    props
+  );
+
+export interface EntityConfigUpdateQueryParams {
+  /**
+   * The requested API version
+   */
+  'api-version'?: string;
+}
+
+export type EntityConfigUpdateProps = Omit<
+  MutateProps<EntityConfigDtoAjaxResponse, AjaxResponseBase, EntityConfigUpdateQueryParams, EntityConfigDto, void>,
+  'path' | 'verb'
+>;
+
+export const EntityConfigUpdate = (props: EntityConfigUpdateProps) => (
+  <Mutate<EntityConfigDtoAjaxResponse, AjaxResponseBase, EntityConfigUpdateQueryParams, EntityConfigDto, void>
+    verb="PUT"
+    path={`/api/services/app/EntityConfig/Update`}
+    {...props}
+  />
+);
+
+export type UseEntityConfigUpdateProps = Omit<
+  UseMutateProps<EntityConfigDtoAjaxResponse, AjaxResponseBase, EntityConfigUpdateQueryParams, EntityConfigDto, void>,
+  'path' | 'verb'
+>;
+
+export const useEntityConfigUpdate = (props: UseEntityConfigUpdateProps) =>
+  useMutate<EntityConfigDtoAjaxResponse, AjaxResponseBase, EntityConfigUpdateQueryParams, EntityConfigDto, void>(
+    'PUT',
+    `/api/services/app/EntityConfig/Update`,
+    props
+  );
+
+export type entityConfigUpdateProps = Omit<
+  RestfulShesha.MutateProps<
+    EntityConfigDtoAjaxResponse,
+    AjaxResponseBase,
+    EntityConfigUpdateQueryParams,
+    EntityConfigDto,
+    void
+  >,
+  'data'
+>;
+export const entityConfigUpdate = (data: EntityConfigDto, props: entityConfigUpdateProps) =>
+  RestfulShesha.mutate<
+    EntityConfigDtoAjaxResponse,
+    AjaxResponseBase,
+    EntityConfigUpdateQueryParams,
+    EntityConfigDto,
+    void
+  >('PUT', `/api/services/app/EntityConfig/Update`, data, props);
+
 export interface EntityConfigGetAllQueryParams {
   /**
    * Filter string in JsonLogic format
@@ -399,6 +623,10 @@ export interface EntityConfigGetAllQueryParams {
    * Quick search string. Is used to search entities by text
    */
   quickSearch?: string;
+  /**
+   * List of specifications to apply on top of query
+   */
+  specifications?: string[];
   sorting?: string;
   skipCount?: number;
   maxResultCount?: number;
@@ -523,6 +751,10 @@ export interface EntityConfigQueryAllQueryParams {
    * Quick search string. Is used to search entities by text
    */
   quickSearch?: string;
+  /**
+   * List of specifications to apply on top of query
+   */
+  specifications?: string[];
   sorting?: string;
   skipCount?: number;
   maxResultCount?: number;
@@ -595,192 +827,3 @@ export const entityConfigQueryAll = (queryParams: EntityConfigQueryAllQueryParam
     EntityConfigQueryAllQueryParams,
     void
   >(`/api/services/app/EntityConfig/QueryAll`, queryParams, props);
-
-export interface EntityConfigGetQueryParams {
-  id?: string;
-  /**
-   * The requested API version
-   */
-  'api-version'?: string;
-}
-
-export type EntityConfigGetProps = Omit<
-  GetProps<EntityConfigDtoAjaxResponse, AjaxResponseBase, EntityConfigGetQueryParams, void>,
-  'path'
->;
-
-export const EntityConfigGet = (props: EntityConfigGetProps) => (
-  <Get<EntityConfigDtoAjaxResponse, AjaxResponseBase, EntityConfigGetQueryParams, void>
-    path={`/api/services/app/EntityConfig/Get`}
-    {...props}
-  />
-);
-
-export type UseEntityConfigGetProps = Omit<
-  UseGetProps<EntityConfigDtoAjaxResponse, AjaxResponseBase, EntityConfigGetQueryParams, void>,
-  'path'
->;
-
-export const useEntityConfigGet = (props: UseEntityConfigGetProps) =>
-  useGet<EntityConfigDtoAjaxResponse, AjaxResponseBase, EntityConfigGetQueryParams, void>(
-    `/api/services/app/EntityConfig/Get`,
-    props
-  );
-
-export type entityConfigGetProps = Omit<
-  RestfulShesha.GetProps<EntityConfigDtoAjaxResponse, AjaxResponseBase, EntityConfigGetQueryParams, void>,
-  'queryParams'
->;
-export const entityConfigGet = (queryParams: EntityConfigGetQueryParams, props: entityConfigGetProps) =>
-  RestfulShesha.get<EntityConfigDtoAjaxResponse, AjaxResponseBase, EntityConfigGetQueryParams, void>(
-    `/api/services/app/EntityConfig/Get`,
-    queryParams,
-    props
-  );
-
-export interface EntityConfigCreateQueryParams {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string;
-}
-
-export type EntityConfigCreateProps = Omit<
-  MutateProps<EntityConfigDtoAjaxResponse, AjaxResponseBase, EntityConfigCreateQueryParams, EntityConfigDto, void>,
-  'path' | 'verb'
->;
-
-export const EntityConfigCreate = (props: EntityConfigCreateProps) => (
-  <Mutate<EntityConfigDtoAjaxResponse, AjaxResponseBase, EntityConfigCreateQueryParams, EntityConfigDto, void>
-    verb="POST"
-    path={`/api/services/app/EntityConfig/Create`}
-    {...props}
-  />
-);
-
-export type UseEntityConfigCreateProps = Omit<
-  UseMutateProps<EntityConfigDtoAjaxResponse, AjaxResponseBase, EntityConfigCreateQueryParams, EntityConfigDto, void>,
-  'path' | 'verb'
->;
-
-export const useEntityConfigCreate = (props: UseEntityConfigCreateProps) =>
-  useMutate<EntityConfigDtoAjaxResponse, AjaxResponseBase, EntityConfigCreateQueryParams, EntityConfigDto, void>(
-    'POST',
-    `/api/services/app/EntityConfig/Create`,
-    props
-  );
-
-export type entityConfigCreateProps = Omit<
-  RestfulShesha.MutateProps<
-    EntityConfigDtoAjaxResponse,
-    AjaxResponseBase,
-    EntityConfigCreateQueryParams,
-    EntityConfigDto,
-    void
-  >,
-  'data'
->;
-export const entityConfigCreate = (data: EntityConfigDto, props: entityConfigCreateProps) =>
-  RestfulShesha.mutate<
-    EntityConfigDtoAjaxResponse,
-    AjaxResponseBase,
-    EntityConfigCreateQueryParams,
-    EntityConfigDto,
-    void
-  >('POST', `/api/services/app/EntityConfig/Create`, data, props);
-
-export interface EntityConfigUpdateQueryParams {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string;
-}
-
-export type EntityConfigUpdateProps = Omit<
-  MutateProps<EntityConfigDtoAjaxResponse, AjaxResponseBase, EntityConfigUpdateQueryParams, EntityConfigDto, void>,
-  'path' | 'verb'
->;
-
-export const EntityConfigUpdate = (props: EntityConfigUpdateProps) => (
-  <Mutate<EntityConfigDtoAjaxResponse, AjaxResponseBase, EntityConfigUpdateQueryParams, EntityConfigDto, void>
-    verb="PUT"
-    path={`/api/services/app/EntityConfig/Update`}
-    {...props}
-  />
-);
-
-export type UseEntityConfigUpdateProps = Omit<
-  UseMutateProps<EntityConfigDtoAjaxResponse, AjaxResponseBase, EntityConfigUpdateQueryParams, EntityConfigDto, void>,
-  'path' | 'verb'
->;
-
-export const useEntityConfigUpdate = (props: UseEntityConfigUpdateProps) =>
-  useMutate<EntityConfigDtoAjaxResponse, AjaxResponseBase, EntityConfigUpdateQueryParams, EntityConfigDto, void>(
-    'PUT',
-    `/api/services/app/EntityConfig/Update`,
-    props
-  );
-
-export type entityConfigUpdateProps = Omit<
-  RestfulShesha.MutateProps<
-    EntityConfigDtoAjaxResponse,
-    AjaxResponseBase,
-    EntityConfigUpdateQueryParams,
-    EntityConfigDto,
-    void
-  >,
-  'data'
->;
-export const entityConfigUpdate = (data: EntityConfigDto, props: entityConfigUpdateProps) =>
-  RestfulShesha.mutate<
-    EntityConfigDtoAjaxResponse,
-    AjaxResponseBase,
-    EntityConfigUpdateQueryParams,
-    EntityConfigDto,
-    void
-  >('PUT', `/api/services/app/EntityConfig/Update`, data, props);
-
-export interface EntityConfigDeleteQueryParams {
-  id?: string;
-  /**
-   * The requested API version
-   */
-  'api-version'?: string;
-}
-
-export type EntityConfigDeleteProps = Omit<
-  MutateProps<void, unknown, EntityConfigDeleteQueryParams, void, void>,
-  'path' | 'verb'
->;
-
-export const EntityConfigDelete = (props: EntityConfigDeleteProps) => (
-  <Mutate<void, unknown, EntityConfigDeleteQueryParams, void, void>
-    verb="DELETE"
-    path={`/api/services/app/EntityConfig/Delete`}
-    {...props}
-  />
-);
-
-export type UseEntityConfigDeleteProps = Omit<
-  UseMutateProps<void, unknown, EntityConfigDeleteQueryParams, void, void>,
-  'path' | 'verb'
->;
-
-export const useEntityConfigDelete = (props: UseEntityConfigDeleteProps) =>
-  useMutate<void, unknown, EntityConfigDeleteQueryParams, void, void>(
-    'DELETE',
-    `/api/services/app/EntityConfig/Delete`,
-    { ...props }
-  );
-
-export type entityConfigDeleteProps = Omit<
-  RestfulShesha.MutateProps<void, unknown, EntityConfigDeleteQueryParams, void, void>,
-  'data'
->;
-export const entityConfigDelete = (props: entityConfigDeleteProps) =>
-  RestfulShesha.mutate<void, unknown, EntityConfigDeleteQueryParams, void, void>(
-    'DELETE',
-    `/api/services/app/EntityConfig/Delete`,
-    undefined,
-    props
-  );

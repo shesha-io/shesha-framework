@@ -34,7 +34,7 @@ namespace Shesha.DynamicEntities
 
         public Type CascadeEntityCreator { get; set; }
 
-        public CascadeUpdateRulesAttribute(bool canUpdate = false, bool canCreate = false , bool deleteUnreferenced = false, Type cascadeEntityCreator = null)
+        public CascadeUpdateRulesAttribute(bool canCreate = false, bool canUpdate = false,  bool deleteUnreferenced = false, Type cascadeEntityCreator = null)
         {
             CanUpdate = canUpdate;
             CanCreate = canCreate;

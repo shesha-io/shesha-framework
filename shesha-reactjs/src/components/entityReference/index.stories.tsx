@@ -30,12 +30,13 @@ const quickViewProps: IEntityReferenceProps = {
     formSelectionMode: 'name',
     placeholder: "Test entity reference",
     entityReferenceType: 'Quickview',
-    formIdentifier: { name: 'person-edit', module: 'Test Module', version: 1 },
-    //formType: 'quickview',
+    //formIdentifier: { name: 'person-edit', module: 'Test Module', version: 1 },
+    formType: 'quickview',
+    entityType: 'Shesha.Core.Person',
     displayProperty: 'fullName',
-    //getEntityUrl: '/api/dynamic/Shesha/Person/Get',
+    getEntityUrl: '/api/dynamic/Shesha/Person/Get',
     //value: "B3B60F2E-5B88-4F44-B8EB-D3987A8483D9",
-    value: {"_displayName": "Jason Mondy", "_className": "Shesha.Domain.Person", "id": "192c2957-76a1-4760-8a35-3ed28067e78f"},
+    value: {"_displayName": "Shurik", "_className": "Shesha.Domain.Person", "id": "192c2957-76a1-4760-8a35-3ed28067e78f"},
     handleSuccess: false,
     handleFail: false
 };

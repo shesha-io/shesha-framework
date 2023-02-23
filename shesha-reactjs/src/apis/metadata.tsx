@@ -92,6 +92,9 @@ export interface MetadataDtoAjaxResponse {
 export type MetadataSourceType = 1 | 2;
 
 export interface PropertyMetadataDto {
+  cascadeCreate?: boolean;
+  cascadeUpdate?: boolean;
+  cascadeDeleteUnreferenced?: boolean;
   isVisible?: boolean;
   required?: boolean;
   readonly?: boolean;
