@@ -411,6 +411,12 @@ namespace Shesha.DynamicEntities.Binder
                                             // if Id is not specified
                                             if (jEntity.Properties().ToList().Where(x => x.Name != "id").Any())
                                             {
+                                                if (!(cascadeAttr?.CanCreate ?? false))
+                                                {
+                                                    context.LocalValidationResult.Add(new ValidationResult($"`{property.Name}` is not allowed to be created."));
+                                                    break;
+                                                }
+
                                                 var childEntity = Activator.CreateInstance(childEntityType);
                                                 // create a new object
                                                 if (!await BindPropertiesAsync(jEntity, childEntity, context, null, childFormFields))
@@ -436,12 +442,6 @@ namespace Shesha.DynamicEntities.Binder
                                                             break;
                                                         }
                                                     }
-                                                }
-
-                                                if (!(cascadeAttr?.CanCreate ?? false))
-                                                {
-                                                    context.LocalValidationResult.Add(new ValidationResult($"`{property.Name}` is not allowed to be created."));
-                                                    break;
                                                 }
 
                                                 property.SetValue(entity, childEntity);

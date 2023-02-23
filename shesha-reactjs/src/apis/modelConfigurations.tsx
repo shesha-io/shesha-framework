@@ -124,9 +124,9 @@ export interface ModelPropertyDto {
    */
   referenceListName?: string | null;
   /**
-   * Reference list namespace
+   * Reference list module
    */
-  referenceListNamespace?: string | null;
+  referenceListModule?: string | null;
   source?: MetadataSourceType;
   /**
    * Default sort order

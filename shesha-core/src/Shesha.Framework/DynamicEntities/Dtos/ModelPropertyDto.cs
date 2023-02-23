@@ -45,9 +45,9 @@ namespace Shesha.DynamicEntities.Dtos
         public string ReferenceListName { get; set; }
 
         /// <summary>
-        /// Reference list namespace
+        /// Reference list module
         /// </summary>
-        public string ReferenceListNamespace { get; set; }
+        public string ReferenceListModule { get; set; }
 
         /// <summary>
         /// Source type (ApplicationCode = 1, UserDefined = 2)
