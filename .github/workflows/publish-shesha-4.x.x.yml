@@ -20,6 +20,7 @@ on:
       - shesha-core/**
 env:
   NODE_VERSION: '15'
+  PYTHON_VERSOIN: '2.7.18'
   DOTNET_VERSION: '6.x'
 
 jobs:
@@ -45,18 +46,19 @@ jobs:
       # Setup Python for for shesha-reactjs (solution currently needs python2 to run)
       - uses: actions/setup-python@v4
         with:
-          python-version: '2.7.18'
+          python-version: ${{ env.PYTHON_VERSOIN }}
       # Setup DOTNET for shesha-core
       - name: Use .NET Core SDK ${{ env.DOTNET_VERSION }}
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-
       
-      # install dependencies
+      # ============ RESOLVE DEPENDENCIES ===============
+      # Install dependencies for shesha-reactjs
       - name: Install Dependencies
         run: npm install --legacy-peer-deps
         working-directory: ./shesha-reactjs
+
       # prepare shesha-reactjs for pipeline
       - name: Prepare shesha-reactjs for Pipeline
         run: npm run prepare
