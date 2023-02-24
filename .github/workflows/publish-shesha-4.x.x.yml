@@ -63,44 +63,40 @@ jobs:
         run: npm install --legacy-peer-deps
         working-directory: ./shesha-reactjs
 
-      # prepare shesha-reactjs for pipeline
+      # ============ PREPARE ===============
+
+      # Prepare shesha-reactjs for pipeline
       - name: Prepare shesha-reactjs for Pipeline
         run: npm run prepare
         working-directory: ./shesha-reactjs
-      # # build storybook
-      # - name: Build Storybook
-        # run: npm run build-storybook
-        # working-directory: ./shesha-reactjs
-        # env:
-          # STORYBOOK_BASE_URL: https://shesha-mmsample-backend-dev.azurewebsites.net
-      # # deploy storybook
-      # - name: Deploy Storybook
-        # uses: JamesIves/github-pages-deploy-action@3.6.2
-        # working-directory: ./shesha-reactjs
-        # with:
-          # github_token: ${{ secrets.GITHUB_TOKEN }}
-          # branch: gh-pages # The branch the action should deploy to.
-          # folder: storybook-static # The folder that the build-storybook script generates files.
-          # clean: true # Automatically remove deleted files from the deploy branch
-          # target_folder: docs # The folder that we serve our Storybook files from 
-      # tag shesha-reactjs
+
+      # ============ METADATA ===============
+
+      # Create Tag
       - name: Bump version and push tag
         id: tag_version
         uses: mathieudutour/github-tag-action@v6.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           tag_prefix: ''
-      # update package.json tag
+      # Update package.json tag
       - name: Update package.json
         uses: reedyuk/npm-version@1.1.1
         with:
           version: ${{ steps.tag_version.outputs.new_tag }}
           package: 'shesha-reactjs/'
-          # git-tag-version: 'true'
-      # build shesha-reactjs for production
+      
+      # ============ BUILD ===============
+
+      # Build shesha-core (Solution) for production
+      - name: Dotnet Build
+        run: dotnet build --configuration Release
+        working-directory: ./shesha-core
+      # Build shesha-reactjs for production
       - name: Build shesha-reactjs for Production
         run: npm run build
         working-directory: ./shesha-reactjs
+
       # create github release
       - name: Create Github Release
         uses: ncipollo/release-action@v1
