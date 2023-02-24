@@ -54,6 +54,10 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
       
       # ============ RESOLVE DEPENDENCIES ===============
+      # DOTNET restore for shesha-core
+      - name: Dotnet Restore
+        run: dotnet restore --configfile .nuget/NuGet.Config --verbosity detailed
+        working-directory: ./shesha-core
       # Install dependencies for shesha-reactjs
       - name: Install Dependencies
         run: npm install --legacy-peer-deps
