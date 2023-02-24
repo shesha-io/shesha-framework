@@ -20,7 +20,7 @@ using Shesha.Utilities;
 
 namespace Shesha.Bootstrappers
 {
-    public class ReferenceListBootstrapper: IBootstrapper, ITransientDependency
+    public class ReferenceListBootstrapper : IBootstrapper, ITransientDependency
     {
         private readonly ITypeFinder _typeFinder;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
@@ -30,10 +30,10 @@ namespace Shesha.Bootstrappers
         private readonly IModuleManager _moduleManager;
 
         public ReferenceListBootstrapper(
-            ITypeFinder typeFinder, 
-            IUnitOfWorkManager unitOfWorkManager, 
-            IRepository<ReferenceList, Guid> listRepo, 
-            IRepository<ReferenceListItem, Guid> listItemRepo, 
+            ITypeFinder typeFinder,
+            IUnitOfWorkManager unitOfWorkManager,
+            IRepository<ReferenceList, Guid> listRepo,
+            IRepository<ReferenceListItem, Guid> listItemRepo,
             IRepository<ConfigurationItem, Guid> configItemRepository,
             IModuleManager moduleManager
         )
@@ -48,9 +48,13 @@ namespace Shesha.Bootstrappers
 
         public async Task Process()
         {
-            using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
+            using (var unitOfWork = _unitOfWorkManager.Begin())
             {
-                await DoProcess();
+                using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
+                {
+                    await DoProcess();
+                }
+                await unitOfWork.CompleteAsync();
             }
         }
 
@@ -64,8 +68,8 @@ namespace Shesha.Bootstrappers
                     Attribute = e.GetAttribute<ReferenceListAttribute>(),
                     Assembly = e.Assembly
                 })
-                .GroupBy(e => e.Assembly, (assembly, lists) => new 
-                { 
+                .GroupBy(e => e.Assembly, (assembly, lists) => new
+                {
                     Assembly = assembly,
                     Lists = lists
                 })
@@ -78,7 +82,7 @@ namespace Shesha.Bootstrappers
             {
                 var module = await _moduleManager.GetOrCreateModuleAsync(assemblyWithList.Assembly);
 
-                foreach (var list in assemblyWithList.Lists) 
+                foreach (var list in assemblyWithList.Lists)
                 {
                     try
                     {
@@ -144,7 +148,7 @@ namespace Shesha.Bootstrappers
                             // ToDo: AS - Get Module, Description and Suppress
                             listInDb.Configuration.Module = module;
                             listInDb.Configuration.Name = list.Attribute.FullName;
-                            
+
                             listInDb.Configuration.Label = list.Enum.GetDisplayName();
                             listInDb.Configuration.Description = list.Enum.GetDescription();
                             listInDb.Configuration.Suppress = false;
@@ -158,7 +162,8 @@ namespace Shesha.Bootstrappers
                             await _configItemRepository.InsertAsync(listInDb.Configuration);
                             await _listRepo.InsertAsync(listInDb);
                         }
-                        else {
+                        else
+                        {
                             // update list if required
                             if (module != null && listInDb.Configuration.Module != module || !listInDb.HardLinkToApplication)
                             {

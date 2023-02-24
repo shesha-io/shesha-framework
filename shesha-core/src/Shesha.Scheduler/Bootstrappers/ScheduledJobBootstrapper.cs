@@ -38,7 +38,11 @@ namespace Shesha.Scheduler.Bootstrappers
 
         public async Task Process()
         {
-            await DoProcess();
+            using (var unitOfWork = _unitOfWorkManager.Begin())
+            {
+                await DoProcess();
+                await unitOfWork.CompleteAsync();
+            }
         }
 
         private async Task DoProcess()

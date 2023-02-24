@@ -34,9 +34,13 @@ namespace Shesha.ConfigurationItems
 
         public async Task Process()
         {
-            using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
+            using (var unitOfWork = _unitOfWorkManager.Begin())
             {
-                await DoProcess();
+                using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
+                {
+                    await DoProcess();
+                }
+                await unitOfWork.CompleteAsync();
             }
         }
 

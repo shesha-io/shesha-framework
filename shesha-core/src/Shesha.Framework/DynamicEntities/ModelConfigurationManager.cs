@@ -158,6 +158,9 @@ namespace Shesha.DynamicEntities
                         destProp.MinLength = prop.MinLength;
                         destProp.ReadOnly = prop.ReadOnly;
                         destProp.RegExp = prop.RegExp;
+                        destProp.CascadeCreate = destProp.CascadeCreate || prop.CascadeCreate;
+                        destProp.CascadeUpdate = destProp.CascadeUpdate || prop.CascadeUpdate;
+                        destProp.CascadeDeleteUnreferenced = destProp.CascadeDeleteUnreferenced || prop.CascadeDeleteUnreferenced;
 
                         await _entityPropertyRepository.InsertOrUpdateAsync(destProp);
 

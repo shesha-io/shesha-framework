@@ -1,21 +1,15 @@
-name: shesha-reactjs-0.x.x
+name: shesha-4.x.x
+
+# This workflow is designed to build the shesha-core and shesha-reactjs applications 
+# and then publish them to their respective repositories i.e. nuget and npmjs
 
 on:
-  workflow_dispatch:
-    # Inputs the workflow accepts.
-    inputs:
-      name:
-        # Friendly description to be shown in the UI instead of 'name'
-        description: 'Person to greet'
-        # Default value if no value is explicitly provided
-        default: 'World'
-        # Input has to be provided for the workflow to run
-        required: true    
   push:
     branches: 
       - main
     paths:
       - shesha-reactjs/**
+      - shesha-core/**
   pull_request:
     types:
       - closed
@@ -23,8 +17,11 @@ on:
       - main
     paths:
       - shesha-reactjs/**
+      - shesha-core/**
 env:
   NODE_VERSION: '15'
+  PYTHON_VERSION: '2.7.18'
+  DOTNET_VERSION: '6.x'
 
 jobs:
   # build the project
@@ -38,41 +35,42 @@ jobs:
         with:
           clean: true
           ref: main
-      # setup node
+
+      # ============ SETUP ENVIRONMENTS ===============
+
+      # Setup Node for shesha-reactjs
       - name: Setup Node ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
           registry-url: 'https://registry.npmjs.org'
-      # Setup Python
-      # Solution currently needs python2 to run
+      # Setup Python for for shesha-reactjs (solution currently needs python2 to run)
+      - name: Setup Python ${{ env.PYTHON_VERSION }}
       - uses: actions/setup-python@v4
         with:
-          python-version: '2.7.18' 
-      # install dependencies
+          python-version: ${{ env.PYTHON_VERSION }}
+      # Setup DOTNET for shesha-core
+      - name: Setup .NET Core SDK ${{ env.DOTNET_VERSION }}
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      # ============ RESOLVE DEPENDENCIES ===============
+
+      # Dotnet restore for shesha-core
+      - name: Dotnet Restore
+        run: dotnet restore --configfile .nuget/NuGet.Config --verbosity detailed
+        working-directory: ./shesha-core
+      # Install dependencies for shesha-reactjs
       - name: Install Dependencies
         run: npm install --legacy-peer-deps
         working-directory: ./shesha-reactjs
+      
+
       # prepare shesha-reactjs for pipeline
       - name: Prepare shesha-reactjs for Pipeline
         run: npm run prepare
         working-directory: ./shesha-reactjs
-      # # build storybook
-      # - name: Build Storybook
-        # run: npm run build-storybook
-        # working-directory: ./shesha-reactjs
-        # env:
-          # STORYBOOK_BASE_URL: https://shesha-mmsample-backend-dev.azurewebsites.net
-      # # deploy storybook
-      # - name: Deploy Storybook
-        # uses: JamesIves/github-pages-deploy-action@3.6.2
-        # working-directory: ./shesha-reactjs
-        # with:
-          # github_token: ${{ secrets.GITHUB_TOKEN }}
-          # branch: gh-pages # The branch the action should deploy to.
-          # folder: storybook-static # The folder that the build-storybook script generates files.
-          # clean: true # Automatically remove deleted files from the deploy branch
-          # target_folder: docs # The folder that we serve our Storybook files from 
       # tag shesha-reactjs
       - name: Bump version and push tag
         id: tag_version
