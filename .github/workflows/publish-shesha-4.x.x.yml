@@ -106,6 +106,8 @@ jobs:
         run: dotnet pack -o ../dist -p:PackageVersion=${{ steps.tag_version.outputs.new_tag }} -p:Version=${{ steps.tag_version.outputs.new_tag }} --include-symbols --include-source
         working-directory: ./shesha-core
 
+      # ============ RELEASE ===============
+
       # create github release
       - name: Create Github Release
         uses: ncipollo/release-action@v1
@@ -113,6 +115,10 @@ jobs:
           tag: ${{ steps.tag_version.outputs.new_tag }}
           name: shesha-reactjs@${{ steps.tag_version.outputs.new_tag }}
           body: ${{ steps.tag_version.outputs.changelog }}
+      # push nuget packages
+      - name: Dotnet Nuget Push
+        run: dotnet nuget push "../dist/*.nupkg" --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }} --skip-duplicate
+        working-directory: ./shesha-core
       # publish shesha-reactjs to npmjs registry
       - name: Publish shesha-reactjs to npmjs registry
         run: npm publish --access public
