@@ -20,6 +20,7 @@ on:
       - shesha-core/**
 env:
   NODE_VERSION: '15'
+  DOTNET_VERSION: '6.x'
 
 jobs:
   # build the project
