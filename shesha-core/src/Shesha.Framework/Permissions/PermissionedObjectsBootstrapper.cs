@@ -42,6 +42,7 @@ namespace Shesha.Permission
 
         public async Task Process()
         {
+            // ToDo: use UOW!!!!!!!!!
             return;
             var providers = IocManager.Instance.ResolveAll<IPermissionedObjectProvider>();
             foreach (var permissionedObjectProvider in providers)

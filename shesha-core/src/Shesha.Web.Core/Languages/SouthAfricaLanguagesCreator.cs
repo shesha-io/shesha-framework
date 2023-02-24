@@ -45,12 +45,16 @@ namespace Shesha.Languages
 
         public async Task Process()
         {
-            using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
+            using (var unitOfWork = _unitOfWorkManager.Begin())
             {
-                foreach (var language in InitialLanguages)
+                using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
                 {
-                    await AddLanguageIfNotExistsAsync(language);
+                    foreach (var language in InitialLanguages)
+                    {
+                        await AddLanguageIfNotExistsAsync(language);
+                    }
                 }
+                await unitOfWork.CompleteAsync();
             }
         }
         private async Task AddLanguageIfNotExistsAsync(ApplicationLanguage language)

@@ -59,18 +59,22 @@ namespace Shesha.DynamicEntities
 
         public async Task Process()
         {
-            using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete)) 
-            {
-                var assemblies = _assembleFinder.GetAllAssemblies()
-                    .Distinct(new AssemblyFullNameComparer())
-                    .Where(a => !a.IsDynamic &&
-                                a.GetTypes().Any(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t) && t != typeof(JsonEntity))
-                    )
-                    .ToList();
+            var assemblies = _assembleFinder.GetAllAssemblies()
+                .Distinct(new AssemblyFullNameComparer())
+                .Where(a => !a.IsDynamic &&
+                            a.GetTypes().Any(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t) && t != typeof(JsonEntity))
+                )
+                .ToList();
 
-                foreach (var assembly in assemblies)
+            foreach (var assembly in assemblies)
+            {
+                using (var unitOfWork = _unitOfWorkManager.Begin())
                 {
-                    await ProcessAssemblyAsync(assembly);
+                    using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
+                    {
+                        await ProcessAssemblyAsync(assembly);
+                        await unitOfWork.CompleteAsync();
+                    }
                 }
             }
 
@@ -110,6 +114,7 @@ namespace Shesha.DynamicEntities
 
             var entityTypes = assembly.GetTypes().Where(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t) && t != typeof(JsonEntity))
                 .ToList();
+
             // todo: remove usage of IEntityConfigurationStore
             var entitiesConfigs = entityTypes.Select(t =>
             {
@@ -156,16 +161,13 @@ namespace Shesha.DynamicEntities
                         c.db.DiscriminatorValue != c.code.Config.DiscriminatorValue ||
                         c.db.PropertiesMD5 != c.code.PropertiesMD5 ||
                         c.db.Configuration.Module != module ||
-                        c.attr != null 
+                        c.attr != null
                             && c.attr.GenerateApplicationService != GenerateApplicationServiceState.UseConfiguration
                             && c.attr.GenerateApplicationService == GenerateApplicationServiceState.AlwaysGenerateApplicationService ^ c.db.GenerateAppService
                         ))
                 .ToList();
             foreach (var config in toUpdate)
             {
-
-                // ToDo: AS - update ConfiguraionItem
-
                 config.db.FriendlyName = config.code.Config.FriendlyName;
                 config.db.TableName = config.code.Config.TableName;
                 config.db.TypeShortAlias = config.code.Config.SafeTypeShortAlias;
@@ -174,7 +176,7 @@ namespace Shesha.DynamicEntities
                 if (config.attr != null && config.attr.GenerateApplicationService != GenerateApplicationServiceState.UseConfiguration)
                     config.db.GenerateAppService = config.attr.GenerateApplicationService == GenerateApplicationServiceState.AlwaysGenerateApplicationService;
 
-                if (config.db.Configuration.Module != module) 
+                if (config.db.Configuration.Module != module)
                 {
                     config.db.Configuration.Module = module;
 
@@ -185,6 +187,7 @@ namespace Shesha.DynamicEntities
 
                 if (config.db.PropertiesMD5 != config.code.PropertiesMD5)
                     await UpdatePropertiesAsync(config.db, config.code.Config.EntityType, config.code.Properties, config.code.PropertiesMD5);
+
             }
 
             // Add news configs
@@ -292,11 +295,12 @@ namespace Shesha.DynamicEntities
                     }
                     else
                     {
-                        // update hardcoded part
-                        dbp.Source = Domain.Enums.MetadataSourceType.ApplicationCode;
-                        MapProperty(cp, dbp, true);
-
-                        await _entityPropertyRepository.UpdateAsync(dbp);
+                        if (MapProperty(cp, dbp, true) || dbp.Source != Domain.Enums.MetadataSourceType.ApplicationCode)
+                        {
+                            // update hardcoded part
+                            dbp.Source = Domain.Enums.MetadataSourceType.ApplicationCode;
+                            await _entityPropertyRepository.UpdateAsync(dbp);
+                        }
                     }
 
                     await UpdateItemsTypeAsync(dbp, cp);
@@ -382,41 +386,73 @@ namespace Shesha.DynamicEntities
             }
         }
 
-        private void MapProperty(PropertyMetadataDto src, EntityProperty dst, bool skipConfigurable)
+        private bool MapProperty(PropertyMetadataDto src, EntityProperty dst, bool skipConfigurable)
         {
-            dst.Name = src.Path;
-            dst.DataType = src.DataType;
-            dst.DataFormat = src.DataFormat;
-            dst.EntityType = src.EntityTypeShortAlias;
-            dst.ReferenceListName = src.ReferenceListName;
-            dst.ReferenceListModule = src.ReferenceListModule;
-            dst.IsFrameworkRelated = src.IsFrameworkRelated;
-            dst.Min = src.Min;
-            dst.Max = src.Max;
-            dst.MinLength = src.MinLength;
-            dst.MaxLength = src.MaxLength;
-            dst.Suppress = !src.IsVisible;
-            dst.Audited = src.Audited;
-            dst.Required = src.Required;
-            dst.ReadOnly = src.Readonly;
-            dst.RegExp = src.RegExp;
-            dst.ValidationMessage = src.ValidationMessage;
-            dst.CascadeCreate = src.CascadeCreate;
-            dst.CascadeUpdate = src.CascadeUpdate;
-            dst.CascadeDeleteUnreferenced = src.CascadeDeleteUnreferenced;
+            var res = false;
+            if (
+                dst.Name != src.Path ||
+                dst.DataType != src.DataType ||
+                dst.DataFormat != src.DataFormat ||
+                dst.EntityType != src.EntityTypeShortAlias ||
+                dst.ReferenceListName != src.ReferenceListName ||
+                dst.ReferenceListModule != src.ReferenceListModule ||
+                dst.IsFrameworkRelated != src.IsFrameworkRelated ||
+                dst.Min != src.Min ||
+                dst.Max != src.Max ||
+                dst.MinLength != src.MinLength ||
+                dst.MaxLength != src.MaxLength ||
+                dst.Suppress == src.IsVisible ||
+                dst.Audited != src.Audited ||
+                dst.Required != src.Required ||
+                dst.ReadOnly != src.Readonly ||
+                dst.RegExp != src.RegExp ||
+                dst.ValidationMessage != src.ValidationMessage ||
+                dst.CascadeCreate != src.CascadeCreate ||
+                dst.CascadeUpdate != src.CascadeUpdate ||
+                dst.CascadeDeleteUnreferenced != src.CascadeDeleteUnreferenced
+            )
+            {
+                dst.Name = src.Path;
+                dst.DataType = src.DataType;
+                dst.DataFormat = src.DataFormat;
+                dst.EntityType = src.EntityTypeShortAlias;
+                dst.ReferenceListName = src.ReferenceListName;
+                dst.ReferenceListModule = src.ReferenceListModule;
+                dst.IsFrameworkRelated = src.IsFrameworkRelated;
+                dst.Min = src.Min;
+                dst.Max = src.Max;
+                dst.MinLength = src.MinLength;
+                dst.MaxLength = src.MaxLength;
+                dst.Suppress = !src.IsVisible;
+                dst.Audited = src.Audited;
+                dst.Required = src.Required;
+                dst.ReadOnly = src.Readonly;
+                dst.RegExp = src.RegExp;
+                dst.ValidationMessage = src.ValidationMessage;
+                dst.CascadeCreate = src.CascadeCreate;
+                dst.CascadeUpdate = src.CascadeUpdate;
+                dst.CascadeDeleteUnreferenced = src.CascadeDeleteUnreferenced;
+                res = true;
+            }
 
             if (!skipConfigurable)
             {
                 dst.Label = src.Label;
                 dst.Description = src.Description;
+                res = true;
             }
             else
             {
                 // ensure that Label is not empty even when we should skip configurable properties
                 // the Entity Configurator shouldn't allow empty labels
                 if (string.IsNullOrWhiteSpace(dst.Label))
+                {
                     dst.Label = src.Label;
+                    res = true;
+                }
             }
+
+            return res;
         }
     }
 }

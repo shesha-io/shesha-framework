@@ -28,16 +28,25 @@ namespace Shesha.Permission
     {
         private readonly IShaPermissionManager _permissionManager;
         private readonly IRepository<PermissionDefinition, Guid> _permissionDefinitionRepository;
+        private readonly IUnitOfWorkManager _unitOfWorkManager;
 
-        public PermissionDefinitionsBootstrapper(IShaPermissionManager permissionManager, IRepository<PermissionDefinition, Guid> permissionDefinitionRepository)
+        public PermissionDefinitionsBootstrapper(
+            IShaPermissionManager permissionManager,
+            IRepository<PermissionDefinition, Guid> permissionDefinitionRepository,
+            IUnitOfWorkManager unitOfWorkManager)
         {
             _permissionManager = permissionManager;
             _permissionDefinitionRepository = permissionDefinitionRepository;
+            _unitOfWorkManager = unitOfWorkManager;
         }
 
         public async Task Process()
         {
-            await SetPermissionsAsync();
+            using (var unitOfWork = _unitOfWorkManager.Begin())
+            {
+                await SetPermissionsAsync();
+                await unitOfWork.CompleteAsync();
+            }
             // todo: write changelog
         }
 
