@@ -1,4 +1,7 @@
-name: shesha-reactjs-0.x.x
+name: shesha-4.x.x
+
+# This workflow is designed to build the shesha-core and shesha-reactjs applications 
+# and then publish them to their respective repositories i.e. nuget and npmjs
 
 on:
   workflow_dispatch:
