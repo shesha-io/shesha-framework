@@ -20,7 +20,6 @@ on:
       - shesha-core/**
 env:
   NODE_VERSION: '15'
-  PYTHON_VERSION: '2.7.18'
   DOTNET_VERSION: '6.x'
 
 jobs:
@@ -37,7 +36,6 @@ jobs:
           ref: main
 
       # ============ SETUP ENVIRONMENTS ===============
-
       # Setup Node for shesha-reactjs
       - name: Setup Node ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v3
@@ -45,28 +43,40 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           registry-url: 'https://registry.npmjs.org'
       # Setup Python for for shesha-reactjs (solution currently needs python2 to run)
-      - name: Setup Python ${{ env.PYTHON_VERSION }}
       - uses: actions/setup-python@v4
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
+          python-version: '2.7.18'
       # Setup DOTNET for shesha-core
-      - name: Setup .NET Core SDK ${{ env.DOTNET_VERSION }}
+      - name: Use .NET Core SDK ${{ env.DOTNET_VERSION }}
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      # ============ RESOLVE DEPENDENCIES ===============
-
-      # Install dependencies for shesha-reactjs
+      
+      # install dependencies
       - name: Install Dependencies
         run: npm install --legacy-peer-deps
         working-directory: ./shesha-reactjs
-      
-
       # prepare shesha-reactjs for pipeline
       - name: Prepare shesha-reactjs for Pipeline
         run: npm run prepare
         working-directory: ./shesha-reactjs
+      # # build storybook
+      # - name: Build Storybook
+        # run: npm run build-storybook
+        # working-directory: ./shesha-reactjs
+        # env:
+          # STORYBOOK_BASE_URL: https://shesha-mmsample-backend-dev.azurewebsites.net
+      # # deploy storybook
+      # - name: Deploy Storybook
+        # uses: JamesIves/github-pages-deploy-action@3.6.2
+        # working-directory: ./shesha-reactjs
+        # with:
+          # github_token: ${{ secrets.GITHUB_TOKEN }}
+          # branch: gh-pages # The branch the action should deploy to.
+          # folder: storybook-static # The folder that the build-storybook script generates files.
+          # clean: true # Automatically remove deleted files from the deploy branch
+          # target_folder: docs # The folder that we serve our Storybook files from 
       # tag shesha-reactjs
       - name: Bump version and push tag
         id: tag_version
