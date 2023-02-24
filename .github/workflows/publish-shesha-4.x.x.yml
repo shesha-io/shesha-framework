@@ -34,17 +34,25 @@ jobs:
         with:
           clean: true
           ref: main
-      # setup node
+
+      # ============ SETUP ENVIRONMENTS ===============
+      # Setup Node for shesha-reactjs
       - name: Setup Node ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
           registry-url: 'https://registry.npmjs.org'
-      # Setup Python
-      # Solution currently needs python2 to run
+      # Setup Python for for shesha-reactjs (solution currently needs python2 to run)
       - uses: actions/setup-python@v4
         with:
-          python-version: '2.7.18' 
+          python-version: '2.7.18'
+      # Setup DOTNET for shesha-core
+      - name: Use .NET Core SDK ${{ env.DOTNET_VERSION }}
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      
       # install dependencies
       - name: Install Dependencies
         run: npm install --legacy-peer-deps
