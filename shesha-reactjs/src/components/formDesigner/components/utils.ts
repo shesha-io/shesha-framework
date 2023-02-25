@@ -5,9 +5,11 @@ import { DOMAttributes } from 'react';
 import { IAnyObject, IConfigurableFormComponent } from '../../..';
 import { ISetFormDataPayload } from '../../../providers/form/contexts';
 import { FormMode } from '../../../providers/form/models';
+import { ISetStatePayload } from '../../../providers/globalState/contexts';
 import { CustomLabeledValue } from '../../autocomplete';
 
 type SetFormDataFunc = (payload: ISetFormDataPayload) => void;
+type SetGlobalStateFunc = (payload: ISetStatePayload) => void;
 
 export interface ICustomEventHandler {
   model: IConfigurableFormComponent;
@@ -19,6 +21,7 @@ export interface ICustomEventHandler {
   message: MessageApi;
   moment: object;
   setFormData: (payload: ISetFormDataPayload) => void;
+  setGlobalState: (payload: ISetStatePayload) => void;
 }
 
 export const onCustomEventsHandler = <FormCustomEvent = any>(
@@ -31,7 +34,8 @@ export const onCustomEventsHandler = <FormCustomEvent = any>(
   http: AxiosInstance,
   message: MessageApi,
   moment: object,
-  setFormData: SetFormDataFunc
+  setFormData: SetFormDataFunc,
+  setGlobalState: SetGlobalStateFunc
 ) => {
   /* tslint:disable:function-constructor */
   const eventFunc = new Function(
@@ -44,10 +48,11 @@ export const onCustomEventsHandler = <FormCustomEvent = any>(
     'message',
     'moment',
     'setFormData',
+    'setGlobalState',
     customEventAction
   );
 
-  return eventFunc(formData, event, form, formMode, globalState, http, message, moment, setFormData);
+  return eventFunc(formData, event, form, formMode, globalState, http, message, moment, setFormData, setGlobalState);
 };
 
 export const customEventHandler = <T = any>({
@@ -60,6 +65,7 @@ export const customEventHandler = <T = any>({
   message,
   moment,
   setFormData,
+  setGlobalState
 }: ICustomEventHandler): DOMAttributes<T> => {
   const onCustomEvent = (event: any, key: string) =>
     onCustomEventsHandler(
@@ -72,7 +78,8 @@ export const customEventHandler = <T = any>({
       http,
       message,
       moment,
-      setFormData
+      setFormData,
+      setGlobalState
     );
 
   return {
@@ -92,13 +99,14 @@ export const customDateEventHandler = ({
   message,
   moment,
   setFormData,
+  setGlobalState
 }: ICustomEventHandler) => ({
   onChange: (value: any | null, dateString: string | [string, string]) => {
     const eventFunc = new Function(
-      'data, dateString, form, formMode, globalState, http, message, moment, value, setFormData',
+      'data, dateString, form, formMode, globalState, http, message, moment, value, setFormData,setGlobalState',
       model?.onChangeCustom
     );
-    return eventFunc(formData, dateString, form, formMode, globalState, http, message, moment, value, setFormData);
+    return eventFunc(formData, dateString, form, formMode, globalState, http, message, moment, value, setFormData, setGlobalState);
   },
 });
 
@@ -112,14 +120,15 @@ export const customDropDownEventHandler = <T = any>({
   message,
   moment,
   setFormData,
+  setGlobalState
 }: ICustomEventHandler) => ({
   onChange: (value: CustomLabeledValue<T>, option: any) => {
     const eventFunc = new Function(
-      'data, form, formMode, globalState, http, message, moment, option, value, setFormData',
+      'data, form, formMode, globalState, http, message, moment, option, value, setFormData,setGlobalState',
       model?.onChangeCustom
     );
 
-    return eventFunc(formData, form, formMode, globalState, http, message, moment, option, value, setFormData);
+    return eventFunc(formData, form, formMode, globalState, http, message, moment, option, value, setFormData, setGlobalState);
   },
 });
 
@@ -133,14 +142,15 @@ export const customInputNumberEventHandler = ({
   message,
   moment,
   setFormData,
+  setGlobalState
 }: ICustomEventHandler) => ({
   onChange: (value: any) => {
     const eventFunc = new Function(
-      'data, form, formMode, globalState, http, message, moment, value, setFormData',
+      'data, form, formMode, globalState, http, message, moment, value, setFormData,setGlobalState',
       model?.onChangeCustom
     );
 
-    return eventFunc(formData, form, formMode, globalState, http, message, moment, value, setFormData);
+    return eventFunc(formData, form, formMode, globalState, http, message, moment, value, setFormData, setGlobalState);
   },
 });
 
@@ -154,13 +164,14 @@ export const customRateEventHandler = ({
   message,
   moment,
   setFormData,
+  setGlobalState
 }: ICustomEventHandler) => ({
   onChange: (value: number) => {
     const eventFunc = new Function(
-      'data, form, formMode, globalState, http, message, moment, value, setFormData',
+      'data, form, formMode, globalState, http, message, moment, value, setFormData,setGlobalState',
       model?.onChangeCustom
     );
 
-    return eventFunc(formData, form, formMode, globalState, http, message, moment, value, setFormData);
+    return eventFunc(formData, form, formMode, globalState, http, message, moment, value, setFormData, setGlobalState);
   },
 });

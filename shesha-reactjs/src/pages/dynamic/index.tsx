@@ -35,7 +35,7 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
   const { backendUrl } = useSheshaApplication();
   const [state, setState] = useState<IDynamicPageState>({});
   const formRef = useRef<ConfigurableFormInstance>();
-  const { globalState } = useGlobalState();
+  const { globalState, setState: setGlobalState } = useGlobalState();
   const { router } = useShaRouting();
   const { configurationItemMode } = useAppConfigurator();
 
@@ -45,9 +45,8 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
 
   const formWithData = useFormWithData({ formId: formId, dataId: id, configurationItemMode: configurationItemMode });
   //console.log('PERF: hook', formWithData)
-  const formSettings = formWithData.loadingState === 'ready'
-    ? formWithData.form?.settings ?? DEFAULT_FORM_SETTINGS
-    : null;
+  const formSettings =
+    formWithData.loadingState === 'ready' ? formWithData.form?.settings ?? DEFAULT_FORM_SETTINGS : null;
 
   const [form] = Form.useForm();
 
@@ -55,20 +54,20 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
     return id || Boolean(formWithData.fetchedData) ? StandardEntityActions.update : StandardEntityActions.create;
   }, [id, formWithData.fetchedData]);
 
-  const submitEndpoint = useModelApiEndpoint({ 
-    actionName: submitAction, 
+  const submitEndpoint = useModelApiEndpoint({
+    actionName: submitAction,
     formSettings: formSettings,
     mappings: [
       { match: 'query', data: getQueryParams() },
       { match: 'globalState', data: globalState },
-    ]
+    ],
   });
 
   //console.log('LOG: dynamic submitEndpoint', submitEndpoint);
 
   const { mutate: postData, loading: isPostingData } = useMutate({
     path: submitEndpoint?.url,
-    verb: submitEndpoint?.httpVerb as ("POST" | "PUT"),
+    verb: submitEndpoint?.httpVerb as 'POST' | 'PUT',
   });
 
   //#region routing
@@ -124,8 +123,8 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
           ? props.path.length === 1
             ? [null, props.path[0]]
             : props.path.length === 2
-              ? [props.path[0], props.path[1]]
-              : [null, null]
+            ? [props.path[0], props.path[1]]
+            : [null, null]
           : [null, null];
 
       setNavigationState({
@@ -209,9 +208,10 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
     }
 
     // tslint:disable-next-line:function-constructor
-    return new Function('data, globalState, moment, http, message', expression)(
+    return new Function('data, globalState, moment, http, message,setGlobalState', expression)(
       data,
       globalState,
+      setGlobalState,
       moment,
       axiosHttp(backendUrl),
       message
@@ -240,18 +240,17 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
 
   //#endregion
 
-  const markupErrorCode = formWithData.loadingState === 'failed'
-    ? formWithData.error?.code
-    : null;
+  const markupErrorCode = formWithData.loadingState === 'failed' ? formWithData.error?.code : null;
 
   //console.log('PERF: render form', formWithData)
 
   const finalMarkup = useMemo(() => {
-    if (!formWithData)
-      return null;
-    return { components: formWithData.form?.markup, formSettings: { ...formWithData.form?.settings, onInitialized: null } }
+    if (!formWithData) return null;
+    return {
+      components: formWithData.form?.markup,
+      formSettings: { ...formWithData.form?.settings, onInitialized: null },
+    };
   }, [formWithData.form?.markup, formWithData.form?.settings]);
-
 
   if (markupErrorCode === 404) {
     return (
@@ -272,16 +271,22 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
   }
 
   const refetchFormData = () => {
-    return formWithData.dataFetcher
-      ? formWithData.dataFetcher()
-      : Promise.reject('Data fetcher is not available');
-  }
+    return formWithData.dataFetcher ? formWithData.dataFetcher() : Promise.reject('Data fetcher is not available');
+  };
 
   return (
     <Fragment>
       <div id="modalContainerId" className={classNames('sha-dynamic-page', { 'has-dialog': hasDialog })}>
-        <Spin spinning={isPostingData} tip="Saving data..." indicator={<LoadingOutlined style={{ fontSize: 40 }} spin />}>
-          <Spin spinning={formWithData.loadingState === 'loading'} tip={formWithData.loaderHint} indicator={<LoadingOutlined style={{ fontSize: 40 }} spin />}>
+        <Spin
+          spinning={isPostingData}
+          tip="Saving data..."
+          indicator={<LoadingOutlined style={{ fontSize: 40 }} spin />}
+        >
+          <Spin
+            spinning={formWithData.loadingState === 'loading'}
+            tip={formWithData.loaderHint}
+            indicator={<LoadingOutlined style={{ fontSize: 40 }} spin />}
+          >
             <MetadataProvider id="dynamic" modelType={formSettings?.modelType}>
               {formWithData.loadingState === 'ready' && (
                 <ConfigurableForm
@@ -300,11 +305,9 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
                   className="sha-dynamic-page"
                   isActionsOwner={true}
                 />
-              )
-              }
+              )}
             </MetadataProvider>
           </Spin>
-
         </Spin>
       </div>
 

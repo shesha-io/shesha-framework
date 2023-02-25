@@ -209,6 +209,11 @@
           "name": "setFormData",
           "description": "A function used to update the form data",
           "type": "({ values: object, mergeValues: boolean}) => void"
+        },
+        {
+          "name": "setGlobalState",
+          "description": "Setting the global state of the application",
+          "type": "(payload: { key: string, data: any } ) => void"
         }
       ]
     },

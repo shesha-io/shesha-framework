@@ -358,6 +358,12 @@ export const getSettings = (_data?: IWizardStepProps) =>
           description: 'A function used to update the form data',
           type: '({ values: object, mergeValues: boolean}) => void',
         },
+        {
+          id: 'b6afda9c-d9aa-410b-a35d-f9585ae248d5',
+          name: 'setGlobalState',
+          description: 'A function used to update the globalState data',
+          type: '({ values: object, mergeValues: boolean}) => void',
+        },
       ],
     })
     .addCodeEditor({

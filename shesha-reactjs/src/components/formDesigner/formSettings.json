@@ -301,6 +301,11 @@
           "name": "form",
           "description": "The form instance",
           "type": "object"
+        },
+        {
+          "name": "setGlobalState",
+          "description": "Setting the global state of the application",
+          "type": "(payload: { key: string, data: any } ) => void"
         }
       ],
       "description": "This action will be executed the first time the form loads. Just before any API call has been made. At this stage, the form has no data except for initialValues if passed"
@@ -363,6 +368,11 @@
           "name": "form",
           "description": "The form instance",
           "type": "object"
+        },
+        {
+          "name": "setGlobalState",
+          "description": "Setting the global state of the application",
+          "type": "(payload: { key: string, data: any } ) => void"
         }
       ],
       "description": "This action will be executed immediately after the data has been loaded (Fetched from the API)"
@@ -415,6 +425,16 @@
           "name": "message",
           "description": "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
           "type": "object"
+        },
+        {
+          "name": "setFormData",
+          "description": "A function used to update the form data",
+          "type": "({ values: object, mergeValues: boolean}) => void"
+        },
+        {
+          "name": "setGlobalState",
+          "description": "Setting the global state of the application",
+          "type": "(payload: { key: string, data: any } ) => void"
         }
       ],
       "description": "This action will be executed whenever the form updates"

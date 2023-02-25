@@ -190,6 +190,12 @@ export const getSettings = (data: any) =>
           description: 'A function used to update the form data',
           type: '({ values: object, mergeValues: boolean}) => void',
         },
+        {
+          id: '8d1541db-2151-4568-b925-d8777cea7f0f',
+          "name": "setGlobalState",
+          "description": "Setting the global state of the application",
+          "type": "(payload: { key: string, data: any } ) => void"
+        }
       ],
     })
     .addSectionSeparator({

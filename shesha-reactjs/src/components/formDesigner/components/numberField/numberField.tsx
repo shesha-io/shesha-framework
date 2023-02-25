@@ -24,7 +24,7 @@ const NumberField: IToolboxComponent<INumberFieldProps> = {
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.number,
   factory: (model: INumberFieldProps, _c, form) => {
     const { formMode, isComponentDisabled, formData, setFormDataAndInstance } = useForm();
-    const { globalState } = useGlobalState();
+    const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
 
     const isReadOnly = model?.readOnly || formMode === 'readonly';
@@ -41,6 +41,7 @@ const NumberField: IToolboxComponent<INumberFieldProps> = {
       message,
       moment,
       setFormData: setFormDataAndInstance,
+      setGlobalState,
     };
 
     const renderInputNumber = () => {

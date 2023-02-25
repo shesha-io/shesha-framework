@@ -69,7 +69,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteProps> = {
   factory: (model: IAutocompleteProps, _c, form) => {
     const { queryParams, filter } = model;
     const { formData, formMode, isComponentDisabled, setFormDataAndInstance } = useForm();
-    const { globalState } = useGlobalState();
+    const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
 
     const dataSourceUrl = model.dataSourceUrl
@@ -166,6 +166,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteProps> = {
       message,
       moment,
       setFormData: setFormDataAndInstance,
+      setGlobalState,
     };
 
     const autocompleteProps = {
