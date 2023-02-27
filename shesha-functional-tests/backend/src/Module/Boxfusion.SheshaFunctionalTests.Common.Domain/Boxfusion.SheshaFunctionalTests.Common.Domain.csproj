@@ -24,11 +24,6 @@
     <PackageReference Include="Shesha.Web.FormsDesigner" Version="3.5.43" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.19.0" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Domain\" />
-    <Folder Include="Migrations\" />
-  </ItemGroup>
 	
 
 </Project>
