@@ -50,7 +50,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'children' | 'formType'>> = ({
     displayProperty,
     displayName,
     initialFormData,
-    width = 450
+    width = 600
 }) => {
     const [ formData, setFormData ] = useState(initialFormData);
     const [ formTitle, setFormTitle ] = useState(displayName);

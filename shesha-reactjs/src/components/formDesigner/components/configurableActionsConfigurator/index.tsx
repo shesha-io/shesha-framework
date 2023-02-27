@@ -68,7 +68,7 @@ const parseActionFullName = (fullName: string): IActionIdentifier => {
     : null;
 }
 
-const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorProps> = props => {
+export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorProps> = props => {
   const [form] = Form.useForm();
   const { formSettings } = useForm();
   const { value, onChange, readOnly = false } = props;

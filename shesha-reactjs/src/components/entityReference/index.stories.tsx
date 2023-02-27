@@ -30,9 +30,9 @@ const quickViewProps: IEntityReferenceProps = {
     formSelectionMode: 'name',
     placeholder: "Test entity reference",
     entityReferenceType: 'Quickview',
-    //formIdentifier: { name: 'person-edit', module: 'Test Module', version: 1 },
+    formIdentifier: { name: 'person-edit', module: 'Test Module', version: 1 },
     formType: 'quickview',
-    entityType: 'Shesha.Core.Person',
+    //entityType: 'Shesha.Core.Person',
     displayProperty: 'fullName',
     getEntityUrl: '/api/dynamic/Shesha/Person/Get',
     //value: "B3B60F2E-5B88-4F44-B8EB-D3987A8483D9",
@@ -49,7 +49,7 @@ const navigateProps: IEntityReferenceProps = {
     placeholder: "Test entity reference",
     entityReferenceType: 'NavigateLink',
     //formIdentifier: { name: 'person-edit', module: 'Test Module', version: 1 },
-    //formType: 'quickview',
+    formType: 'Details',
     displayProperty: 'fullName',
     //getEntityUrl: '/api/dynamic/Shesha/Person/Get',
     //value: "B3B60F2E-5B88-4F44-B8EB-D3987A8483D9"
@@ -62,10 +62,10 @@ export const Navigate = BaseTemplate.bind({});
 Navigate.args = { ...navigateProps };
 
 const dialogProps: IEntityReferenceProps = {
-    formSelectionMode: 'dynamic',
+    formSelectionMode: 'name',
     placeholder: "Test entity reference",
     entityReferenceType: 'Dialog',
-    //formIdentifier: { name: 'person-edit', module: 'Test Module', version: 1 },
+    formIdentifier: { name: 'person-edit', module: 'Test Module', version: 1 },
     //formType: 'quickview',
     displayProperty: 'fullName',
     //getEntityUrl: '/api/dynamic/Shesha/Person/Get',

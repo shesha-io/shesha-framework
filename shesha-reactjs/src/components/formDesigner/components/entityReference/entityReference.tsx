@@ -2,11 +2,10 @@ import React from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
 import { IConfigurableFormComponent } from '../../../../providers/form/models';
 import ConfigurableFormItem from '../formItem';
-import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import { useForm } from '../../../..';
 import { EntityReference, IEntityReferenceProps } from '../../../entityReference';
 import { LinkExternalOutlined } from '../../../../icons/linkExternalOutlined';
-import { getSettings } from './settings';
+import { EntityReferenceSettings } from './settings';
 
 export type IActionParameters = [{ key: string; value: string }];
 
@@ -22,7 +21,7 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
     const { id, isDynamic, hidden, disabled } = model;
 
     const isHidden = isComponentHidden({ id, isDynamic, hidden });
-    const isDisabled = isComponentDisabled({ id, isDynamic, disabled });
+    const isDisabled = isComponentDisabled({ id, isDynamic, disabled }) || model.readOnly;
 
     return (
       <ConfigurableFormItem model={model}>
@@ -35,8 +34,17 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: data => getSettings(data),
-  validateSettings: model => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
+    return (
+      <EntityReferenceSettings
+        readOnly={readOnly}
+        model={model as any}
+        onSave={onSave as any}
+        onCancel={onCancel}
+        onValuesChange={onValuesChange as any}
+      />
+    );
+  },
   initModel: model => {
     const buttonModel: IEntityReferenceControlProps = {
       ...model,

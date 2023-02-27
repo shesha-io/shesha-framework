@@ -73,7 +73,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
     const entityId = props.value?.id ?? props.value;
     const entityType = props.entityType ?? props.value?._className;
-    const formtype = props.formType ?? props.entityReferenceType == 'Quickview' ? 'quickview' : 'details';
+    const formtype = props.formType ?? (props.entityReferenceType == 'Quickview' ? 'quickview' : 'details');
 
     useEffect(() => {
         if (!formIdentifier && props.formSelectionMode == 'dynamic' && entityType && formtype && props.entityReferenceType != 'Quickview') {
@@ -144,9 +144,13 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
         });
     };
 
-    return !props.value
-        ? <Button type="link" disabled>{displayText}</Button>
-        : !(formIdentifier && displayText && entityId || props.entityReferenceType == 'Quickview')
+    if (props.formSelectionMode == 'name' && !formIdentifier)
+        return <Button type="link" disabled>Form identifier is not configured</Button>;
+    
+    if (!props.value)
+        return <Button type="link" disabled>{displayText}</Button>;
+
+    return !(formIdentifier && displayText && entityId || props.entityReferenceType == 'Quickview')
             ? <Button type="link"><span><Spin size="small" /> Loading...</span></Button>
             : props.disabled
                 ? <Button disabled type="link">{displayText}</Button>
