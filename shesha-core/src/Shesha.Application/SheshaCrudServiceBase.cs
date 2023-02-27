@@ -324,12 +324,14 @@ namespace Shesha
                         sb.Append(prop);
                         // skip Json properties because only whole Json data is allowed to be retrieved
                         if (propConfig.DataType != DataTypes.ObjectReference
-                            || propConfig.DataType != DataTypes.Object)
+                            && propConfig.DataType != DataTypes.Object)
                         {
                             sb.Append(" { ");
                             await AppendPropertiesAsync(sb, propConfig.EntityType, innerProps.Where(x => !x.IsNullOrWhiteSpace()).ToList());
                             sb.Append(" } ");
                         }
+                        else
+                            sb.Append(" ");
                     }
                     continue;
                 }
