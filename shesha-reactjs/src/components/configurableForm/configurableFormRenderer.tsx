@@ -162,7 +162,7 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
     return computedInitialValues;
   }, [formSettings?.initialValues]);
 
-  const fetchedFormEntity = (dataFetcher.fetchedData as object) ?? {};
+  const fetchedFormEntity = dataFetcher.fetchedData as object;
 
   useEffect(() => {
     if (fetchedFormEntity && onDataLoaded) {
