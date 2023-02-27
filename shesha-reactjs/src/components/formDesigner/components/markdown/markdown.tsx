@@ -1,6 +1,6 @@
 import { Alert, Skeleton } from 'antd';
 import React, { FC, lazy } from 'react';
-import { useGlobalState, useSubForm } from '../../../../providers';
+import { useFormData, useGlobalState, useSubForm } from '../../../../providers';
 import { useForm } from '../../../../providers/form';
 import { evaluateString, getStyle } from '../../../../providers/form/utils';
 import { IMarkdownProps } from './interfaces';
@@ -27,9 +27,10 @@ const ReactMarkdown = lazy(async () => {
 });
 
 const Markdown: FC<IMarkdownProps> = model => {
-  const { formData, formMode } = useForm();
+  const { formMode } = useForm();
   // NOTE: to be replaced with a generic context implementation
-  const { value: subFormData } = useSubForm(false) ?? {}; 
+  const { value: subFormData } = useSubForm(false) ?? {};
+  const { data: formData } = useFormData();
   const { globalState } = useGlobalState();
 
   const data = subFormData || formData;

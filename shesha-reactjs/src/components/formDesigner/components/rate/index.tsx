@@ -8,6 +8,7 @@ import {
   IToolboxComponent,
   ShaIcon,
   useForm,
+  useFormData,
   useGlobalState,
   useSheshaApplication,
   validateConfigurableComponentSettings,
@@ -37,7 +38,8 @@ const RateComponent: IToolboxComponent<IRateProps> = {
   name: 'Rate',
   icon: <LikeOutlined />,
   factory: (model: IRateProps, _c, form) => {
-    const { isComponentHidden, formData, formMode, setFormDataAndInstance } = useForm();
+    const { isComponentHidden, formMode, setFormDataAndInstance } = useForm();
+    const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
 

@@ -5,7 +5,7 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import settingsFormJson from './settingsForm.json';
 import { evaluateValue, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import { Tag } from 'antd';
-import { useForm } from '../../../../providers';
+import { useFormData } from '../../../../providers';
 
 export type IActionParameters = [{ key: string; value: string }];
 
@@ -21,7 +21,7 @@ const StatusField: IToolboxComponent<IStatusFieldProps> = {
   name: 'Status',
   icon: <InfoCircleOutlined />,
   factory: (model: IStatusFieldProps) => {
-    const { formData } = useForm();
+    const { data: formData } = useFormData();
 
     const value = evaluateValue(model?.name, { data: formData });
 

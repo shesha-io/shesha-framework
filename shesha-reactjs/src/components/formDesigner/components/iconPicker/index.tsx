@@ -5,7 +5,7 @@ import { HeartOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '../formItem';
 import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import IconPicker, { ShaIconTypes } from '../../../iconPicker';
-import { executeScriptSync, useForm, useGlobalState } from '../../../..';
+import { executeScriptSync, useForm, useFormData, useGlobalState } from '../../../..';
 import { iconPickerFormSettings } from './settings';
 import { ColorResult } from 'react-color';
 
@@ -45,7 +45,8 @@ export const IconPickerWrapper: FC<IIconPickerWrapperProps> = ({
   color,
   ...props
 }) => {
-  const { formMode, formData } = useForm();
+  const { formMode } = useForm();
+  const { data: formData } = useFormData();
   const { globalState } = useGlobalState();
 
   const expressionArgs = { data: formData, globalState };

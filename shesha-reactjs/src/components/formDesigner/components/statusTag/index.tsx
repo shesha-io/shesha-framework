@@ -1,14 +1,12 @@
 import { ArrowsAltOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
 import React from 'react';
-import { useGlobalState, useSubForm } from '../../../..';
+import { useGlobalState, useFormData } from '../../../../providers';
 import { evaluateString, validateConfigurableComponentSettings } from '../../../../formDesignerUtils';
 import { IConfigurableFormComponent, IToolboxComponent } from '../../../../interfaces/formDesigner';
 import { useForm } from '../../../../providers/form';
 import { FormMarkup } from '../../../../providers/form/models';
 import { executeCustomExpression } from '../../../../providers/form/utils';
-import { useFormData } from '../../../../providers/formContext';
-// import { useFormState } from '../../../../providers/formContext';
 import StatusTag, { DEFAULT_STATUS_TAG_MAPPINGS, IStatusTagProps as ITagProps } from '../../../statusTag';
 import settingsFormJson from './settingsForm.json';
 
@@ -26,16 +24,9 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
   name: 'Status Tag',
   icon: <ArrowsAltOutlined />,
   factory: (model: IStatusTagProps) => {
-    const { formData = {}, formMode } = useForm();
+    const { formMode } = useForm();
     const { globalState } = useGlobalState();
-    // const { value: formContextState } = useFormState();
-    const subForm = useSubForm(false);
-
-    const formState = useFormData();
-
-    console.log('LOGS::: StatusTagComponent subForm', subForm);
-    console.log('LOGS::: StatusTagComponent formState', formState);
-    // console.log('LOGS::: formContextState, formData, subForm', formContextState, formData, subForm);
+    const { data } = useFormData();
 
     const getExpressionExecutor = (expression: string) => {
       if (!expression) {
@@ -45,7 +36,7 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
       // tslint:disable-next-line:function-constructor
       const func = new Function('data', 'formMode', expression);
 
-      return func(formData, formMode);
+      return func(data, formMode);
     };
 
     const { colorCodeEvaluator, overrideCodeEvaluator, valueCodeEvaluator, override, value, color } = model;
@@ -55,7 +46,7 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
         ?.length === 0;
 
     const getValueByExpression = (expression: string = '') => {
-      return expression?.includes('{{') ? evaluateString(expression, formData) : expression;
+      return expression?.includes('{{') ? evaluateString(expression, data) : expression;
     };
 
     if (allEmpty) {
@@ -96,7 +87,7 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
       mappings: getParsedMappings(),
     };
 
-    const isVisibleByCondition = executeCustomExpression(model.customVisibility, true, formData, globalState);
+    const isVisibleByCondition = executeCustomExpression(model.customVisibility, true, data, globalState);
 
     if (!isVisibleByCondition && formMode !== 'designer') return null;
 
