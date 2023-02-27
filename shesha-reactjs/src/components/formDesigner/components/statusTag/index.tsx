@@ -1,12 +1,14 @@
 import { ArrowsAltOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
 import React from 'react';
-import { useGlobalState } from '../../../..';
+import { useGlobalState, useSubForm } from '../../../..';
 import { evaluateString, validateConfigurableComponentSettings } from '../../../../formDesignerUtils';
 import { IConfigurableFormComponent, IToolboxComponent } from '../../../../interfaces/formDesigner';
 import { useForm } from '../../../../providers/form';
 import { FormMarkup } from '../../../../providers/form/models';
 import { executeCustomExpression } from '../../../../providers/form/utils';
+import { useFormData } from '../../../../providers/formContext';
+// import { useFormState } from '../../../../providers/formContext';
 import StatusTag, { DEFAULT_STATUS_TAG_MAPPINGS, IStatusTagProps as ITagProps } from '../../../statusTag';
 import settingsFormJson from './settingsForm.json';
 
@@ -26,6 +28,14 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
   factory: (model: IStatusTagProps) => {
     const { formData = {}, formMode } = useForm();
     const { globalState } = useGlobalState();
+    // const { value: formContextState } = useFormState();
+    const subForm = useSubForm(false);
+
+    const formState = useFormData();
+
+    console.log('LOGS::: StatusTagComponent subForm', subForm);
+    console.log('LOGS::: StatusTagComponent formState', formState);
+    // console.log('LOGS::: formContextState, formData, subForm', formContextState, formData, subForm);
 
     const getExpressionExecutor = (expression: string) => {
       if (!expression) {
