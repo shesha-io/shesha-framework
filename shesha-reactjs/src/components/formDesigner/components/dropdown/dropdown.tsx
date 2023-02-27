@@ -25,7 +25,7 @@ const DropdownComponent: IToolboxComponent<IDropdownProps> = {
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.referenceListItem,
   factory: (model: IDropdownProps, _c, form) => {
     const { formData, formMode, setFormDataAndInstance } = useForm();
-    const { globalState } = useGlobalState();
+    const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
 
     const eventProps = {
@@ -38,6 +38,7 @@ const DropdownComponent: IToolboxComponent<IDropdownProps> = {
       message,
       moment,
       setFormData: setFormDataAndInstance,
+      setGlobalState,
     };
 
     const initialValue = model?.defaultValue ? { initialValue: model.defaultValue } : {};

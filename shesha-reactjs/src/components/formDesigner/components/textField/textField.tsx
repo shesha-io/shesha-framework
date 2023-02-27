@@ -50,7 +50,7 @@ const TextField: IToolboxComponent<ITextFieldProps> = {
       dataFormat === StringFormats.password),
   factory: (model: ITextFieldProps, _c, form) => {
     const { formMode, isComponentDisabled, formData, setFormDataAndInstance } = useForm();
-    const { globalState } = useGlobalState();
+    const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
 
     const disabled = isComponentDisabled(model);
@@ -83,6 +83,7 @@ const TextField: IToolboxComponent<ITextFieldProps> = {
       message,
       moment,
       setFormData: setFormDataAndInstance,
+      setGlobalState,
     };
 
     return (

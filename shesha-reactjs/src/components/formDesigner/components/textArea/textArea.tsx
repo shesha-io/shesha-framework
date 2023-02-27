@@ -46,7 +46,7 @@ const TextField: IToolboxComponent<ITextAreaProps> = {
     dataType === DataTypes.string && dataFormat === StringFormats.multiline,
   factory: (model: ITextAreaProps, _c, form) => {
     const { formData, formMode, isComponentDisabled, setFormDataAndInstance } = useForm();
-    const { globalState } = useGlobalState();
+    const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
 
     const textAreaProps: TextAreaProps = {
@@ -75,6 +75,7 @@ const TextField: IToolboxComponent<ITextAreaProps> = {
       message,
       moment,
       setFormData: setFormDataAndInstance,
+      setGlobalState,
     };
 
     const isObjectData = typeof form?.getFieldValue(model.name) === 'object';

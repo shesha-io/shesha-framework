@@ -505,9 +505,9 @@ export const useFormData = (args: UseFormDataArguments): UseFormDataResult => {
     // call fetcher
     const { formSettings, formMarkup, urlEvaluationData, lazy } = args;
 
-    const [state, setState] = useState<UseFormDataState>({ 
-        data: null, 
-        error: null, 
+    const [state, setState] = useState<UseFormDataState>({
+        data: null,
+        error: null,
         loadingState: 'waiting',
     });
 
@@ -594,7 +594,7 @@ export const useFormData = (args: UseFormDataArguments): UseFormDataResult => {
                     return null;
                 });
 
-            if (!lazy){
+            if (!lazy) {
                 setState(prev => ({ ...prev, loaderHint: 'Fetching data...', dataFetcher: dataFetcher }));
                 dataFetcher();
             }

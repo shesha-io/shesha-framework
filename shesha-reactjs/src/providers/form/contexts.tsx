@@ -39,7 +39,7 @@ export interface IFormStateContext extends IFlatComponentsStructure /*IFormProps
   /**
    * If true, indicates that list of visible components are calculated
    */
-  visibleComponentIdsIsSet: boolean; 
+  visibleComponentIdsIsSet: boolean;
 }
 
 export interface ISetVisibleComponentsPayload {

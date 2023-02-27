@@ -73,7 +73,7 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.date || dataType === DataTypes.dateTime,
   factory: (model: IDateFieldProps, _c, form) => {
     const { formMode, formData, setFormDataAndInstance } = useForm();
-    const { globalState } = useGlobalState();
+    const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
 
     const eventProps = {
@@ -86,6 +86,7 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
       message,
       moment,
       setFormData: setFormDataAndInstance,
+      setGlobalState,
     };
 
     return (

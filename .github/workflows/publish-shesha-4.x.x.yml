@@ -20,7 +20,7 @@ on:
       - shesha-core/**
 env:
   NODE_VERSION: '15'
-  PYTHON_VERSION: '2.7.18'
+  PYTHON_VERSOIN: '2.7.18'
   DOTNET_VERSION: '6.x'
 
 jobs:
@@ -36,6 +36,16 @@ jobs:
           clean: true
           ref: main
 
+      # ============ TAG BRANCH ===============
+
+      # Create Tag
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tag_prefix: ''
+
       # ============ SETUP ENVIRONMENTS ===============
 
       # Setup Node for shesha-reactjs
@@ -45,19 +55,18 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           registry-url: 'https://registry.npmjs.org'
       # Setup Python for for shesha-reactjs (solution currently needs python2 to run)
-      - name: Setup Python ${{ env.PYTHON_VERSION }}
       - uses: actions/setup-python@v4
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
+          python-version: ${{ env.PYTHON_VERSOIN }}
       # Setup DOTNET for shesha-core
-      - name: Setup .NET Core SDK ${{ env.DOTNET_VERSION }}
+      - name: Use .NET Core SDK ${{ env.DOTNET_VERSION }}
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-
+      
       # ============ RESOLVE DEPENDENCIES ===============
 
-      # Dotnet restore for shesha-core
+      # DOTNET restore for shesha-core
       - name: Dotnet Restore
         run: dotnet restore --configfile .nuget/NuGet.Config --verbosity detailed
         working-directory: ./shesha-core
@@ -65,30 +74,43 @@ jobs:
       - name: Install Dependencies
         run: npm install --legacy-peer-deps
         working-directory: ./shesha-reactjs
-      
 
-      # prepare shesha-reactjs for pipeline
+      # ============ PREPARE ===============
+
+      # Prepare shesha-reactjs for pipeline
       - name: Prepare shesha-reactjs for Pipeline
         run: npm run prepare
         working-directory: ./shesha-reactjs
-      # tag shesha-reactjs
-      - name: Bump version and push tag
-        id: tag_version
-        uses: mathieudutour/github-tag-action@v6.1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          tag_prefix: ''
-      # update package.json tag
+
+      # ============ METADATA ===============
+
+      # Update package.json tag
       - name: Update package.json
         uses: reedyuk/npm-version@1.1.1
         with:
           version: ${{ steps.tag_version.outputs.new_tag }}
           package: 'shesha-reactjs/'
-          # git-tag-version: 'true'
-      # build shesha-reactjs for production
+      
+      # ============ BUILD ===============
+
+      # Build shesha-core (Solution) for production
+      - name: Dotnet Build
+        run: dotnet build --configuration Release
+        working-directory: ./shesha-core
+      # Build shesha-reactjs for production
       - name: Build shesha-reactjs for Production
         run: npm run build
         working-directory: ./shesha-reactjs
+
+      # ============ PACK ===============
+
+      # Pack shesha-core (Solution)
+      - name: Dotnet Pack shesha-core
+        run: dotnet pack -o ../dist -p:PackageVersion=${{ steps.tag_version.outputs.new_tag }} -p:Version=${{ steps.tag_version.outputs.new_tag }} --include-symbols --include-source
+        working-directory: ./shesha-core
+
+      # ============ RELEASE ===============
+
       # create github release
       - name: Create Github Release
         uses: ncipollo/release-action@v1
@@ -96,6 +118,10 @@ jobs:
           tag: ${{ steps.tag_version.outputs.new_tag }}
           name: shesha-reactjs@${{ steps.tag_version.outputs.new_tag }}
           body: ${{ steps.tag_version.outputs.changelog }}
+      # push nuget packages
+      - name: Dotnet Nuget Push
+        run: dotnet nuget push "../dist/*.nupkg" --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }} --skip-duplicate
+        working-directory: ./shesha-core
       # publish shesha-reactjs to npmjs registry
       - name: Publish shesha-reactjs to npmjs registry
         run: npm publish --access public
