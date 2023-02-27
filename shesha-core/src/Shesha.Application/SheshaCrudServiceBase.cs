@@ -227,14 +227,15 @@ namespace Shesha
             var properties = string.IsNullOrWhiteSpace(input.Properties)
                 ? await GetGqlTopLevelPropertiesAsync()
                 : await CleanupPropertiesAsync(input.Properties);
+
             var query = $@"query getAll($filter: String, $quickSearch: String, $quickSearchProperties: [String], $sorting: String, $skipCount: Int, $maxResultCount: Int, $specifications: [String]){{
-  {schemaName}List(input: {{ filter: $filter, quickSearch: $quickSearch, quickSearchProperties: $quickSearchProperties, sorting: $sorting, skipCount: $skipCount, maxResultCount: $maxResultCount, specifications: $specifications }}){{
-    totalCount
-    items {{
-        {properties}
-    }}
-  }}
-}}";
+              {schemaName}List(input: {{ filter: $filter, quickSearch: $quickSearch, quickSearchProperties: $quickSearchProperties, sorting: $sorting, skipCount: $skipCount, maxResultCount: $maxResultCount, specifications: $specifications }}){{
+                totalCount
+                items {{
+                    {properties}
+                }}
+              }}
+            }}";
 
             var result = await DocumentExecuter.ExecuteAsync(async s =>
             {
@@ -321,9 +322,14 @@ namespace Shesha
                     else
                     {
                         sb.Append(prop);
-                        sb.Append(" { ");
-                        await AppendPropertiesAsync(sb, propConfig.EntityType, innerProps.Where(x => !x.IsNullOrWhiteSpace()).ToList());
-                        sb.Append(" } ");
+                        // skip Json properties because only whole Json data is allowed to be retrieved
+                        if (propConfig.DataType != DataTypes.ObjectReference
+                            || propConfig.DataType != DataTypes.Object)
+                        {
+                            sb.Append(" { ");
+                            await AppendPropertiesAsync(sb, propConfig.EntityType, innerProps.Where(x => !x.IsNullOrWhiteSpace()).ToList());
+                            sb.Append(" } ");
+                        }
                     }
                     continue;
                 }
