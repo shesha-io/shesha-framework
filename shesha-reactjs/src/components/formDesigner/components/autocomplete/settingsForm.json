@@ -184,7 +184,7 @@
       "parentId": "root",
       "hidden": false,
       "visibility": "Yes",
-      "customVisibility": "return data.dataSourceType === 'url'",
+      "customVisibility": "return !! data.dataSourceType",
       "isDynamic": false,
       "direction": "vertical",
       "justifyContent": "left",
