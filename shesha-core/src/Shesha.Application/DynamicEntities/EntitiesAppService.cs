@@ -159,9 +159,11 @@ namespace Shesha.DynamicEntities
 
                 var typeName = entityConfig.EntityType.FullName;
 
+                /* we MUST NOT disable it here
                 var config = _entityConfigRepository.GetAll().FirstOrDefault(x => (x.Namespace + "." + x.ClassName) == typeName || x.TypeShortAlias == typeName);
                 if (!(config?.GenerateAppService ?? true))
                     throw new NotSupportedException($"Application service is not configured for entity of type {typeName}");
+                */
 
                 var appServiceType = entityConfig.ApplicationServiceType;
 
