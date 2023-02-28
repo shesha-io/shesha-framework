@@ -5,7 +5,7 @@ import { TableOutlined } from '@ant-design/icons';
 import settingsFormJson from './settingsForm.json';
 import { Alert } from 'antd';
 import { ChildTable, IChildTableProps } from '../../../../';
-import { useForm } from '../../../../providers/form';
+import { useForm, useFormData } from '../../../../providers';
 import { DataTableFullInstance } from '../../../../providers/dataTable/contexts';
 import { useDataTableState } from '../../../../providers';
 import DataTableProvider from '../../../../providers/dataTable';
@@ -23,13 +23,9 @@ const ChildDataTableComponent: IToolboxComponent<IChildDataTableProps> = {
   name: 'Child DataTable',
   icon: <TableOutlined />,
   factory: (model: IChildDataTableProps) => {
-    const {
-      entityType,
-      parentEntityId,
-      label,
-    } = model;
-    
-    const { isComponentHidden, formData } = useForm();
+    const { entityType, parentEntityId, label } = model;
+    const { data: formData } = useFormData();
+    const { isComponentHidden } = useForm();
 
     const tableRef = useRef<DataTableFullInstance>(null);
     const { registerActions } = useForm();
@@ -57,10 +53,7 @@ const ChildDataTableComponent: IToolboxComponent<IChildDataTableProps> = {
     if (isComponentHidden(model)) return null;
 
     return (
-      <DataTableProvider 
-        entityType={entityType}
-        parentEntityId={currentParentEntityId || evaluatedParentEntityId}
-      >
+      <DataTableProvider entityType={entityType} parentEntityId={currentParentEntityId || evaluatedParentEntityId}>
         <ChildTable {...tableProps} tableRef={tableRef} />
       </DataTableProvider>
     );

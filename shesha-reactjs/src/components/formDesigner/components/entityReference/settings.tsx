@@ -148,7 +148,7 @@ export const EntityReferenceSettings: FC<IEntityReferenceSettingsProps> = ({ rea
         </>
       )}
       {(state?.formSelectionMode == 'name') && (
-          <FormItem name="formId" label="Form">
+          <FormItem name="formIdentifier" label="Form">
             <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
           </FormItem>
       )}

@@ -5,7 +5,7 @@ import ConfigurableFormItem from '../formItem';
 import settingsFormJson from './settingsForm.json';
 import React from 'react';
 import { evaluateValue, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import { useForm } from '../../../../providers';
+import { useForm, useFormData } from '../../../../providers';
 import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
 import { EndpointsAutocomplete } from '../../../endpointsAutocomplete/endpointsAutocomplete';
 
@@ -21,19 +21,16 @@ const EndpointsAutocompleteComponent: IToolboxComponent<IEndpointsAutocompleteCo
   icon: <ApiOutlined />,
   isHidden: true,
   factory: (model: IEndpointsAutocompleteComponentProps, _c, _form) => {
-    const { formData, formMode, isComponentDisabled } = useForm();
+    const { formMode, isComponentDisabled } = useForm();
+    const { data: formData } = useFormData();
 
     const disabled = isComponentDisabled(model);
 
     const readOnly = model?.readOnly || formMode === 'readonly';
-    const verb = model.httpVerb
-      ? evaluateValue(model.httpVerb, { data: formData })
-      : model.httpVerb;
+    const verb = model.httpVerb ? evaluateValue(model.httpVerb, { data: formData }) : model.httpVerb;
 
     return (
-      <ConfigurableFormItem
-        model={model}
-      >
+      <ConfigurableFormItem model={model}>
         {readOnly ? (
           <ReadOnlyDisplayFormItem disabled={disabled} />
         ) : (

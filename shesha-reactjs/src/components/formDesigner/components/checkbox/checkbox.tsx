@@ -8,7 +8,7 @@ import settingsFormJson from './settingsForm.json';
 import { getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 
 import { DataTypes } from '../../../../interfaces/dataTypes';
-import { useForm } from '../../../../providers';
+import { useForm, useFormData } from '../../../../providers';
 import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
 
 export interface ICheckboxProps extends IConfigurableFormComponent {}
@@ -21,7 +21,8 @@ const CheckboxComponent: IToolboxComponent<ICheckboxProps> = {
   icon: <CheckSquareOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
   factory: (model: ICheckboxProps) => {
-    const { formMode, isComponentDisabled, formData } = useForm();
+    const { formMode, isComponentDisabled } = useForm();
+    const { data } = useFormData();
     const isReadOnly = model?.readOnly || formMode === 'readonly';
 
     const disabled = isComponentDisabled(model);
@@ -31,7 +32,7 @@ const CheckboxComponent: IToolboxComponent<ICheckboxProps> = {
         {isReadOnly ? (
           <ReadOnlyDisplayFormItem type="checkbox" disabled={disabled} />
         ) : (
-          <Checkbox disabled={disabled} style={getStyle(model?.style, formData)} />
+          <Checkbox disabled={disabled} style={getStyle(model?.style, data)} />
         )}
       </ConfigurableFormItem>
     );

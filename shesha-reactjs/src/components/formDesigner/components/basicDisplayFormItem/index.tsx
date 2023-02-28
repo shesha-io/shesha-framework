@@ -5,30 +5,31 @@ import ConfigurableFormItem from '../formItem';
 import settingsFormJson from './settingsForm.json';
 import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import { FileOutlined } from '@ant-design/icons';
-import { useForm } from '../../../../providers';
+import { useFormData } from '../../../../providers';
 import _ from 'lodash';
 
 export interface IBasicDisplayFormItemProps extends IConfigurableFormComponent {}
 
 const settingsForm = settingsFormJson as FormMarkup;
 
+// TODO:: Remove this component. No longer needed
 const BasicDisplayFormItemComponent: IToolboxComponent<IBasicDisplayFormItemProps> = {
   type: 'displayFormItem',
   name: 'Display Form Item',
   icon: <FileOutlined />,
   isHidden: true,
   factory: (model: IBasicDisplayFormItemProps) => {
-    const { formData } = useForm();
+    const { data } = useFormData();
 
     const getDisplayValue = () => {
-      const value = _.get(formData, model?.name);
+      const value = _.get(data, model?.name);
 
-      return typeof value === 'object' ? null : _.get(formData, model?.name);
+      return typeof value === 'object' ? null : _.get(data, model?.name);
     };
 
     return (
       <ConfigurableFormItem model={model} className="display-form-item">
-        <span>{formData ? getDisplayValue() : ''}</span>
+        <span>{data ? getDisplayValue() : ''}</span>
       </ConfigurableFormItem>
     );
   },

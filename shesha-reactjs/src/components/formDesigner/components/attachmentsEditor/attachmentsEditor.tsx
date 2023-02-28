@@ -6,8 +6,12 @@ import ConfigurableFormItem from '../formItem';
 import settingsFormJson from './settingsForm.json';
 import StoredFilesProvider from '../../../../providers/storedFiles';
 import { CustomFile } from '../../../';
-import { useForm, useGlobalState, useSheshaApplication } from '../../../../providers';
-import { evaluateValue, executeCustomExpression, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
+import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../../../../providers';
+import {
+  evaluateValue,
+  executeCustomExpression,
+  validateConfigurableComponentSettings,
+} from '../../../../providers/form/utils';
 
 export interface IAttachmentsEditorProps extends IConfigurableFormComponent {
   ownerId: string;
@@ -27,12 +31,12 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
   icon: <FolderAddOutlined />,
   factory: (model: IAttachmentsEditorProps) => {
     const { backendUrl } = useSheshaApplication();
-
-    const { formData, formMode } = useForm();
+    const { formMode } = useForm();
+    const { data } = useFormData();
     const { globalState } = useGlobalState();
-    const ownerId = evaluateValue(model.ownerId, { data: formData, globalState });
+    const ownerId = evaluateValue(model.ownerId, { data: data, globalState });
 
-    const isEnabledByCondition = executeCustomExpression(model.customEnabled, true, formData, globalState);
+    const isEnabledByCondition = executeCustomExpression(model.customEnabled, true, data, globalState);
 
     return (
       <ConfigurableFormItem model={model}>

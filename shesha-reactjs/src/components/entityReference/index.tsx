@@ -73,15 +73,15 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
     const entityId = props.value?.id ?? props.value;
     const entityType = props.entityType ?? props.value?._className;
-    const formtype = props.formType ?? (props.entityReferenceType == 'Quickview' ? 'quickview' : 'details');
+    const formType = props.formType ?? (props.entityReferenceType == 'Quickview' ? 'quickview' : 'details');
 
     useEffect(() => {
-        if (!formIdentifier && props.formSelectionMode == 'dynamic' && entityType && formtype && props.entityReferenceType != 'Quickview') {
-            getEntityFormId(props.value?._className, formtype, (formid) => {
+        if (!Boolean(formIdentifier) && props.formSelectionMode == 'dynamic' && Boolean(entityType) && Boolean(formType) && props.entityReferenceType != 'Quickview') {
+            getEntityFormId(props.value?._className, formType, (formid) => {
                 setFormIdentifier({name: formid.name, module: formid.module})
             });
         }
-    }, [formIdentifier]);
+    }, [formIdentifier, entityType, formType]);
 
     useEffect(() => {
         // fetch data only for NavigateLink and Dialog mode. Quickview will fetch data later
@@ -144,7 +144,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
         });
     };
 
-    if (props.formSelectionMode == 'name' && !formIdentifier)
+    if (props.formSelectionMode == 'name' && !Boolean(formIdentifier))
         return <Button type="link" disabled>Form identifier is not configured</Button>;
     
     if (!props.value)

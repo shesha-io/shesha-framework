@@ -7,7 +7,7 @@ import settingsFormJson from './settingsForm.json';
 import { getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import ConfigurableButton from './configurableButton';
 import { IButtonGroupButton } from '../../../../providers/buttonGroupConfigurator/models';
-import { useSheshaApplication, useForm } from '../../../..';
+import { useSheshaApplication, useForm, useFormData } from '../../../../providers';
 import { IButtonGroupItemBaseV0, migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
 
@@ -22,7 +22,9 @@ const ButtonField: IToolboxComponent<IButtonProps> = {
   name: 'Button',
   icon: <BorderOutlined />,
   factory: ({ style, ...model }: IButtonProps) => {
-    const { isComponentDisabled, isComponentHidden, formMode, formData } = useForm();
+    const { isComponentDisabled, isComponentHidden, formMode } = useForm();
+    const { data } = useFormData();
+
     const { anyOfPermissionsGranted } = useSheshaApplication();
 
     const { id, isDynamic, hidden, disabled } = model;
@@ -50,7 +52,7 @@ const ButtonField: IToolboxComponent<IButtonProps> = {
           {...model}
           disabled={isDisabled}
           hidden={isHidden}
-          style={getStyle(style, formData)}
+          style={getStyle(style, data)}
         />
       </ConfigurableFormItem>
     );
