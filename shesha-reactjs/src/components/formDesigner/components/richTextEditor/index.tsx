@@ -6,7 +6,7 @@ import { IToolboxComponent } from '../../../../interfaces/formDesigner';
 import { FormMarkup } from '../../../../providers/form/models';
 import settingsFormJson from './settingsForm.json';
 import RichTextEditor from '../../../richTextEditor';
-import { useForm } from '../../../..';
+import { useForm, useFormData } from '../../../..';
 import { IRichTextEditorProps } from './interfaces';
 import { getStyle } from '../../../../providers/form/utils';
 import { IJoditEditorProps } from '../../../richTextEditor/joditEditor';
@@ -18,7 +18,8 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
   name: 'Rich Text Editor',
   icon: <EditOutlined />,
   factory: ({ ...model }: IRichTextEditorProps) => {
-    const { formMode, isComponentDisabled, formData } = useForm();
+    const { formMode, isComponentDisabled } = useForm();
+    const { data: formData } = useFormData();
 
     const disabled = isComponentDisabled(model);
 

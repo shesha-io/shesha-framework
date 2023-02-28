@@ -1,14 +1,15 @@
 import { Radio, Space } from 'antd';
 import React, { FC, useEffect, useMemo } from 'react';
 import { useGet } from 'restful-react';
-import { useGlobalState } from '../../../../providers';
+import { useFormData, useGlobalState } from '../../../../providers';
 import { useForm } from '../../../../providers/form';
 import { useReferenceList } from '../../../../providers/referenceListDispatcher';
 import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
 import { getDataSourceList, IRadioProps } from './utils';
 
 const RadioGroup: FC<IRadioProps> = model => {
-  const { formMode, formData, isComponentDisabled } = useForm();
+  const { formMode, isComponentDisabled } = useForm();
+  const { data: formData } = useFormData();
   const { globalState } = useGlobalState();
   const { referenceListId, items = [], value, onChange } = model;
   const { data: refListItems } = useReferenceList(referenceListId);

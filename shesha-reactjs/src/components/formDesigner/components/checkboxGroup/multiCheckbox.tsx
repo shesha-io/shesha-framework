@@ -1,13 +1,14 @@
 import { Checkbox, Col, Row } from 'antd';
 import React, { FC, useEffect, useMemo } from 'react';
 import { useGet } from 'restful-react';
-import { useForm, useGlobalState } from '../../../../providers';
+import { useForm, useFormData, useGlobalState } from '../../../../providers';
 import { useReferenceList } from '../../../../providers/referenceListDispatcher';
 import { getDataSourceList } from '../radio/utils';
 import { getSpan, ICheckboxGroupProps } from './utils';
 
 const MultiCheckbox: FC<ICheckboxGroupProps> = model => {
-  const { formMode, formData } = useForm();
+  const { formMode } = useForm();
+  const { data: formData } = useFormData();
   const { globalState } = useGlobalState();
   const { items, referenceListId, direction, value, onChange } = model;
 

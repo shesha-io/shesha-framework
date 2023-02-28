@@ -8,7 +8,7 @@ import settingsFormJson from './settingsForm.json';
 import moment, { isMoment, Moment } from 'moment';
 import { getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import { HiddenFormItem } from '../../../hiddenFormItem';
-import { useForm, useGlobalState, useMetadata, useSheshaApplication } from '../../../../providers';
+import { useForm, useFormData, useGlobalState, useMetadata, useSheshaApplication } from '../../../../providers';
 import { DataTypes } from '../../../../interfaces/dataTypes';
 import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
 import { getPropertyMetadata, getMoment } from '../../../../utils/date';
@@ -72,7 +72,8 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
   icon: <CalendarOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.date || dataType === DataTypes.dateTime,
   factory: (model: IDateFieldProps, _c, form) => {
-    const { formMode, formData, setFormDataAndInstance } = useForm();
+    const { formMode, setFormDataAndInstance } = useForm();
+    const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
 

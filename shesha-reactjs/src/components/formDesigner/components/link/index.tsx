@@ -3,7 +3,7 @@ import { IToolboxComponent } from '../../../../interfaces';
 import { FormMarkup, IConfigurableFormComponent } from '../../../../providers/form/models';
 import { LinkOutlined } from '@ant-design/icons';
 import { evaluateString, getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import { useForm, useSubForm } from '../../../../providers';
+import { useForm, useFormData } from '../../../../providers';
 import settingsFormJson from './settingsForm.json';
 import ComponentsContainer, { Direction } from '../../componentsContainer';
 import { AlignItems, JustifyContent, JustifyItems } from '../container/model';
@@ -35,11 +35,9 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
   name: 'link',
   icon: <LinkOutlined />,
   factory: (model: ILinkProps) => {
-    const { isComponentHidden, formData, formMode } = useForm();
-    // NOTE: to be replaced with a generic context implementation
-    const { value: subFormData } = useSubForm(false) ?? {}; 
+    const { isComponentHidden, formMode } = useForm();
 
-    const data = subFormData || formData;
+    const { data } = useFormData();
 
     const {
       name,
@@ -93,7 +91,7 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
       return containerHolder();
     }
     return (
-      <a href={href} target="_self" style={getStyle(style, formData)}>
+      <a href={href} target="_self" style={getStyle(style, data)}>
         {containerHolder()}
       </a>
     );
