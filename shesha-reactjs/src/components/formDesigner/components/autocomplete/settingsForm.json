@@ -260,7 +260,7 @@
         {
           "id": "b395c0e9-dbc1-44f1-8fef-c18a49442871",
           "type": "labelValueEditor",
-          "name": ", +*-+",
+          "name": "queryParams",
           "parentId": "Xp6zDosEy-IrSeDfHHwh-",
           "label": "Query Param",
           "labelTitle": "Param",
@@ -270,7 +270,7 @@
           "ignorePrefixesOnNewItems": true,
           "validate": {},
           "description": "",
-          "customVisibility": "return true",
+          "customVisibility": "",
           "settingsValidationErrors": []
         }
       ]
