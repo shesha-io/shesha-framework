@@ -1,4 +1,7 @@
-@import '../../../../node_modules/antd/lib/style/themes/default.less';
+@import '../../../../node_modules/antd/lib/style/color/colors.less'; // @red-3 seems to be the only variable needed
+
+// Remove the theme because we're now using dynamic theme
+// @import '../../../../node_modules/antd/lib/style/themes/default.less';
 
 .sha-form-designer {
   .sha-help-icon {
@@ -73,10 +76,7 @@
         text-overflow: ellipsis;
 
         .sha-component-title {
-
           margin-right: 10px;
-
-
         }
       }
 
