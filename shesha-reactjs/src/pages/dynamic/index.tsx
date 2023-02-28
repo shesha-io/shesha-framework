@@ -236,7 +236,7 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
         executeExpression(onInitialized, formWithData.fetchedData);
       }
     }
-  }, [formWithData.loadingState]);
+  }, [formWithData.loadingState, formWithData.form]);
 
   //#endregion
 
