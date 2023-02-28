@@ -1,6 +1,12 @@
 import React, { FC } from 'react';
 import { Button, message } from 'antd';
-import { useDataTableSelection, useForm, useGlobalState, useSheshaApplication } from '../../../../../providers';
+import {
+  useDataTableSelection,
+  useForm,
+  useFormData,
+  useGlobalState,
+  useSheshaApplication,
+} from '../../../../../providers';
 import ShaIcon, { IconType } from '../../../../shaIcon';
 import classNames from 'classnames';
 import moment from 'moment';
@@ -18,7 +24,8 @@ export interface IConfigurableButtonProps extends Omit<IButtonGroupButton, 'styl
 
 export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
   const { backendUrl } = useSheshaApplication();
-  const { form, formData, formMode } = useForm();
+  const { form, formMode } = useForm();
+  const { data } = useFormData();
   const { globalState } = useGlobalState();
   const { selectedRow } = useDataTableSelection(false) ?? {}; // todo: move to a generic context provider
 
@@ -31,7 +38,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
       // todo: implement generic context collector
       const evaluationContext = {
         selectedRow: selectedRow,
-        data: formData,
+        data,
         moment: moment,
         form: form,
         formMode: formMode,

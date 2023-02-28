@@ -5,7 +5,7 @@ import ConfigurableFormItem from '../formItem';
 import settingsFormJson from './settingsForm.json';
 import { getString, getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import React from 'react';
-import { useForm } from '../../../../providers';
+import { useFormData } from '../../../../providers';
 
 export interface IImageProps extends IConfigurableFormComponent, IFormItem {
   height: number | string;
@@ -21,8 +21,10 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
   icon: <FileImageOutlined />,
 
   factory: (model: IImageProps) => {
-    const { formData } = useForm();
+    const { data: formData } = useFormData();
 
+    // TODO:: Update the settings such that an option in the settings is added so allow the form to pass url through value.
+    // TODO:: Add ImgWrapper component
     const url: string = getString(model?.url, formData) || formData?.[model.name];
 
     return (

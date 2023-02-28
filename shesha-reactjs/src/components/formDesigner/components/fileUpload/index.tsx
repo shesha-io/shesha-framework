@@ -4,9 +4,13 @@ import { FileAddOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '../formItem';
 import settingsFormJson from './settingsForm.json';
 import { FileUpload } from '../../..';
-import { StoredFileProvider, useGlobalState, useSheshaApplication } from '../../../../providers';
+import { StoredFileProvider, useFormData, useGlobalState, useSheshaApplication } from '../../../../providers';
 import { useForm } from '../../../../providers/form';
-import { evaluateValue, executeCustomExpression, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
+import {
+  evaluateValue,
+  executeCustomExpression,
+  validateConfigurableComponentSettings,
+} from '../../../../providers/form/utils';
 import React from 'react';
 
 export interface IFileUploadProps extends IConfigurableFormComponent, IFormItem {
@@ -29,7 +33,8 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
     const { backendUrl } = useSheshaApplication();
 
     // todo: refactor and implement a generic way for values evaluation
-    const { formData, formMode } = useForm();
+    const { data: formData } = useFormData();
+    const { formMode } = useForm();
     const { globalState } = useGlobalState();
     const ownerId = evaluateValue(model.ownerId, { data: formData, globalState });
 

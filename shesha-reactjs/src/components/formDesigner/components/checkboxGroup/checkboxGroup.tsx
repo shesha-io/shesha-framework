@@ -1,6 +1,6 @@
 import { ProfileOutlined } from '@ant-design/icons';
 import React from 'react';
-import { useForm } from '../../../..';
+import { useFormData } from '../../../../providers';
 import { IToolboxComponent } from '../../../../interfaces';
 import { DataTypes } from '../../../../interfaces/dataTypes';
 import { FormMarkup } from '../../../../providers/form/models';
@@ -24,11 +24,11 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGoupProps> = {
   icon: <ProfileOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.referenceListItem,
   factory: (model: IEnhancedICheckboxGoupProps) => {
-    const { formData } = useForm();
+    const { data } = useFormData();
 
     return (
       <ConfigurableFormItem model={model}>
-        <RefListCheckboxGroup {...model} style={getStyle(model?.style, formData)} />
+        <RefListCheckboxGroup {...model} style={getStyle(model?.style, data)} />
       </ConfigurableFormItem>
     );
   },
@@ -43,16 +43,20 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGoupProps> = {
     };
     return customProps;
   },
-  migrator: m => m.add<IEnhancedICheckboxGoupProps>(0, prev => (
-    {
-      ...prev,
-      dataSourceType: prev['dataSourceType'] ?? 'values',
-      direction: prev['direction'] ?? 'horizontal',
-      mode: prev['mode'] ?? 'single',
-    }
-  )).add<IEnhancedICheckboxGoupProps>(1, prev => {
-    return {...prev, referenceListId: getLegacyReferenceListIdentifier(prev.referenceListNamespace, prev.referenceListName) };
-  }),
+  migrator: m =>
+    m
+      .add<IEnhancedICheckboxGoupProps>(0, prev => ({
+        ...prev,
+        dataSourceType: prev['dataSourceType'] ?? 'values',
+        direction: prev['direction'] ?? 'horizontal',
+        mode: prev['mode'] ?? 'single',
+      }))
+      .add<IEnhancedICheckboxGoupProps>(1, prev => {
+        return {
+          ...prev,
+          referenceListId: getLegacyReferenceListIdentifier(prev.referenceListNamespace, prev.referenceListName),
+        };
+      }),
   linkToModelMetadata: (model, metadata): IEnhancedICheckboxGoupProps => {
     const refListId: IReferenceListIdentifier = metadata.referenceListName
       ? { module: metadata.referenceListModule, name: metadata.referenceListName }

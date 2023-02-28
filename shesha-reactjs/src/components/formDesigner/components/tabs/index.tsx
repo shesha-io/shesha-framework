@@ -6,7 +6,7 @@ import ComponentsContainer from '../../componentsContainer';
 import settingsFormJson from './settingsForm.json';
 import React, { Fragment } from 'react';
 import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import { useForm, useGlobalState, useSheshaApplication } from '../../../../providers';
+import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../../../../providers';
 import { nanoid } from 'nanoid/non-secure';
 import TabSettings from './settings';
 import { ITabsComponentProps } from './models';
@@ -23,8 +23,9 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
   icon: <FolderOutlined />,
   factory: model => {
     const { anyOfPermissionsGranted } = useSheshaApplication();
-    const { isComponentHidden, formMode, formData } = useForm();
+    const { isComponentHidden, formMode } = useForm();
     const { globalState } = useGlobalState();
+    const { data: formData } = useFormData();
 
     const { tabs, defaultActiveKey, tabType = 'card', size, position = 'top' } = model as ITabsComponentProps;
 

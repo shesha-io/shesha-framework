@@ -6,6 +6,7 @@ import ComponentsContainer, { ICommonContainerProps } from '../../componentsCont
 import { useForm } from '../../../../providers/form';
 import { getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import { getSettings } from './settingsForm';
+import { useFormData } from '../../../../providers';
 
 export type ContainerDirection = 'horizontal' | 'vertical';
 
@@ -20,7 +21,8 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   name: 'Container',
   icon: <GroupOutlined />,
   factory: (model: IContainerComponentProps) => {
-    const { isComponentHidden, formData } = useForm();
+    const { isComponentHidden } = useForm();
+    const { data: formData } = useFormData();
 
     if (isComponentHidden(model)) return null;
 
