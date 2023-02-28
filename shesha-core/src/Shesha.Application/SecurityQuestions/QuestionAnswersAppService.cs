@@ -1,4 +1,5 @@
-﻿using Abp.Configuration;
+﻿using Abp.Authorization;
+using Abp.Configuration;
 using Abp.Domain.Repositories;
 using Abp.UI;
 using Shesha.Authorization.Users;
@@ -26,14 +27,17 @@ namespace Shesha.SecurityQuestions
             _settingManager = settingManager;
         }
 
+        [AbpAuthorize()]
         public override async Task<UserAnswerDto> CreateAsync(UserAnswerDto input)
         {
-            if (input.User == null || input.User.Id == 0)
+            var currentUserId = AbpSession.UserId;
+
+            if (!currentUserId.HasValue)
             {
-                throw new UserFriendlyException("User is required");
+                throw new UserFriendlyException("Please log in to submit your answers to the security questions.");
             }
 
-            var user = await _userRepository.GetAsync(input.User.Id);
+            var user = await _userRepository.GetAsync(currentUserId.Value);
 
 
             var numberOfQuestionsAllowed = _settingManager.GetSettingValue<int>(SheshaSettingNames.Security.ResetPasswordWithSecurityQuestionsNumQuestionsAllowed);
@@ -54,6 +58,7 @@ namespace Shesha.SecurityQuestions
             var entity = await SaveOrUpdateEntityAsync<QuestionAssignment>(null, async item =>
             {
                 ObjectMapper.Map(input, item);
+                item.User = user;
             });
 
             if (numberOfQuestionsSelected == numberOfQuestionsAllowed - 1)
