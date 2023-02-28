@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Domain
 {
-    [Entity(TypeShortAlias = "Shesha.Core.QuestionAssignment")]
+    [Entity(TypeShortAlias = "Shesha.Core.QuestionAssignment", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
     public class QuestionAssignment: FullAuditedEntity<Guid>
     {
         /// <summary>

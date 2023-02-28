@@ -36,9 +36,6 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Migrations
                     .WithForeignKeyColumn("CompanyId", "Core_Organisations").Nullable();
             }
 
-
-
-
         }
     }
 }
