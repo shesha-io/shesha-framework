@@ -34,8 +34,8 @@ namespace Shesha.Extensions
 
             var displayNamePropInfo = entity.GetType().GetEntityConfiguration()?.DisplayNamePropertyInfo;
 
-            return displayNamePropInfo == null 
-                ? "" 
+            return displayNamePropInfo == null
+                ? ""
                 : entity.GetPropertyDisplayText(displayNamePropInfo.Name);
         }
 
@@ -86,7 +86,7 @@ namespace Shesha.Extensions
             }
         }
 
-        public static string GetReferenceListDisplayText<T, TValue>(this T owner, Expression<Func<T, TValue?>> expression) where TValue: struct, IConvertible
+        public static string GetReferenceListDisplayText<T, TValue>(this T owner, Expression<Func<T, TValue?>> expression) where TValue : struct, IConvertible
         {
             if (owner == null)
                 return null;
@@ -130,9 +130,13 @@ namespace Shesha.Extensions
                 ? guidEntity.GetId()
                 : entity is IEntity<Int64> int64Entity
                     ? int64Entity.GetId()
-                    : entity is IEntity<string> stringEntity
-                        ? stringEntity.GetId()
-                        : null;
+                    : entity is IEntity<Int32> int32Entity
+                        ? int32Entity.GetId()
+                        : entity is IEntity<Int16> int16Entity
+                            ? int16Entity.GetId()
+                            : entity is IEntity<string> stringEntity
+                                ? stringEntity.GetId()
+                                : entity.GetType().GetProperty("Id")?.GetValue(entity);
         }
 
         [Obsolete("To be reviewed")]
@@ -156,16 +160,16 @@ namespace Shesha.Extensions
                         var itemValue = Convert.ToInt32(val);
                         return ReflectionHelper.GetEnumDescription(propConfig.EnumType, itemValue);
                     case GeneralDataType.ReferenceList:
-                    {
-                        var refListHelper = StaticContext.IocManager.Resolve<IReferenceListHelper>();
-                        return refListHelper.GetItemDisplayText(new ReferenceListIdentifier(propConfig.ReferenceListModule, propConfig.ReferenceListName), (int)val);
-                    }
+                        {
+                            var refListHelper = StaticContext.IocManager.Resolve<IReferenceListHelper>();
+                            return refListHelper.GetItemDisplayText(new ReferenceListIdentifier(propConfig.ReferenceListModule, propConfig.ReferenceListName), (int)val);
+                        }
                     case GeneralDataType.EntityReference:
-                    {
-                        var displayProperty = val.GetType().GetEntityConfiguration().DisplayNamePropertyInfo;
-                        return displayProperty != null
-                            ? displayProperty.GetValue(val)?.ToString()
-                            : val.ToString();
+                        {
+                            var displayProperty = val.GetType().GetEntityConfiguration().DisplayNamePropertyInfo;
+                            return displayProperty != null
+                                ? displayProperty.GetValue(val)?.ToString()
+                                : val.ToString();
                         }
                     default:
                         return GetPrimitiveTypePropertyDisplayText(val, propInfo, defaultValue);
@@ -408,7 +412,7 @@ namespace Shesha.Extensions
         /// </summary>
         /// <param name="entity">Entity for which a fully qualified identifier is required.</param>
         /// <returns>Returns a string that represents a fully qualified entity Identifier.</returns>
-        public static string FullyQualifiedEntityId<TEntity, TId>(this TEntity entity) where TEntity: IEntity<TId>
+        public static string FullyQualifiedEntityId<TEntity, TId>(this TEntity entity) where TEntity : IEntity<TId>
         {
             var entityType = entity.GetType().StripCastleProxyType();
             return entityType.AssemblyQualifiedName + "|" + entity.GetId().ToString();
