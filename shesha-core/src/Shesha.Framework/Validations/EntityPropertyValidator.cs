@@ -117,6 +117,9 @@ namespace Shesha.Validations
             var parts = propertyName.Split('.').Select(x => x.ToCamelCase()).ToArray();
 
             var propConfig = props.FirstOrDefault(x => x.Name.ToCamelCase() == parts[0]);
+            if (propConfig == null)
+                return true;
+
             var propInfo = obj.GetType().GetProperties().FirstOrDefault(x => x.Name.ToCamelCase() == parts[0]);
             var innerObj = propInfo.GetValue(obj, null);
 
