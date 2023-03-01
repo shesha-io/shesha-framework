@@ -23,8 +23,5 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
 
         [EntityReference(true)]
         public virtual GenericEntityReference SomeGenericProp { get; set; }
-
-        public virtual JsonAddress SomeJsonAddressProp { get; set; }
-
     }
 }
