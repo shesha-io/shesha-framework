@@ -1,19 +1,11 @@
 const withPlugins = require('next-compose-plugins');
 const withAntdLess = require('next-plugin-antd-less');
-const fs = require('fs');
-const path = require('path');
-const lessToJS = require('less-vars-to-js');
 
 require('dotenv').config();
 
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
-
-// Where your antd-custom.less file lives
-const modifyVars = lessToJS(fs.readFileSync(path.resolve(__dirname, './src/styles/variables.less'), 'utf8'));
-
-// Pass in file contents
 
 module.exports = withPlugins(
   [
@@ -23,7 +15,7 @@ module.exports = withPlugins(
       {
         lessVarsFilePathAppendToEndOfContent: false,
         cssLoaderOptions: {},
-        lessLoaderOptions: { javascriptEnabled: true, modifyVars },
+        lessLoaderOptions: { javascriptEnabled: true },
       },
     ],
   ],

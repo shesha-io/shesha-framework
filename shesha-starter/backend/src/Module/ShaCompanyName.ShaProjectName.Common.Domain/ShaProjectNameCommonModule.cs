@@ -3,6 +3,7 @@ using Abp.AutoMapper;
 using Abp.Modules;
 using Intent.RoslynWeaver.Attributes;
 using Shesha;
+using Shesha.Modules;
 using System.Reflection;
 
 [assembly: DefaultIntentManaged(Mode.Fully)]
@@ -17,8 +18,13 @@ namespace ShaCompanyName.ShaProjectName.Common
         typeof(SheshaCoreModule),
         typeof(SheshaApplicationModule)
     )]
-    public class ShaProjectNameCommonModule : AbpModule
+    public class ShaProjectNameCommonModule : SheshaModule
     {
+        public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo("ShaCompanyName.ShaProjectName")
+        {
+            FriendlyName = "ShaProjectName",
+            Publisher = "ShaCompanyName",
+        };
         /// inheritedDoc
         public override void Initialize()
         {

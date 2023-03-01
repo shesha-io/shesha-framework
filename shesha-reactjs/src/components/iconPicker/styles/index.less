@@ -1,6 +1,6 @@
 .sha-icon-picker {
   .sha-icon-picker-selected-icon {
-    &:not(.sha-readonly){
+    &:not(.sha-readonly) {
       cursor: pointer;
     }
 
@@ -36,7 +36,8 @@
         grid-template-columns: auto auto auto auto;
         .sha-icon-picker-icon-list-icon {
           &:hover {
-            background: lighten(@primary-color, 35);
+            background: var(--ant-primary-3);
+            // background: lighten(@primary-color, 35);
             border-radius: 4px;
 
             .anticon,
