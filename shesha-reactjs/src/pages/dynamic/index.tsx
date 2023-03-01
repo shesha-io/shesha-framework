@@ -30,6 +30,7 @@ import { axiosHttp } from '../../apis/axios';
 import { DEFAULT_FORM_SETTINGS } from '../../providers/form/models';
 import { useModelApiEndpoint } from '../../components/configurableForm/useActionEndpoint';
 import { StandardEntityActions } from '../../interfaces/metadata';
+import { getInitialValues } from '../../components/configurableForm/useInitialValues';
 
 const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
   const { backendUrl } = useSheshaApplication();
@@ -62,8 +63,6 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
       { match: 'globalState', data: globalState },
     ],
   });
-
-  //console.log('LOG: dynamic submitEndpoint', submitEndpoint);
 
   const { mutate: postData, loading: isPostingData } = useMutate({
     path: submitEndpoint?.url,
@@ -201,39 +200,51 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
   //#endregion
 
   //#region On Data Loaded handler
-
-  const executeExpression = (expression: string, data: any) => {
+  const executeExpression = (expression: string, context: any = {}) => {
     if (!expression) {
       return null;
     }
 
-    // tslint:disable-next-line:function-constructor
-    return new Function('data, globalState, moment, http, message,setGlobalState', expression)(
-      data,
+    const localContext = {
+      data: formWithData?.fetchedData,
       globalState,
       moment,
-      axiosHttp(backendUrl),
       message,
-      setGlobalState
-    );
+      setGlobalState,
+      http: axiosHttp(backendUrl),
+      query: getQueryParams(),
+      form,
+      ...context,
+    };
+
+    // tslint:disable-next-line:function-constructor
+    return new Function(...Object.keys(localContext), expression)(...Object.values(localContext));
   };
 
   // effect that executes onDataLoaded handler
   useEffect(() => {
     if (formWithData.loadingState === 'ready') {
       const onDataLoaded = formWithData.form?.settings?.onDataLoaded;
-      if (onDataLoaded) {
-        executeExpression(onDataLoaded, formWithData.fetchedData);
+      const initialValues = formWithData.form?.settings?.initialValues;
+      if (onDataLoaded && formWithData.fetchedData) {
+        executeExpression(onDataLoaded, {
+          data: formWithData.fetchedData,
+          initialValues: getInitialValues(initialValues, globalState),
+        }); // On Data loaded needs the fetched data
       }
     }
-  }, [formWithData.loadingState]);
+  }, [formWithData.loadingState, formWithData.fetchedData]);
 
   useEffect(() => {
     // call onInitialized (if specified) if the form already loaded but loading of other parts are still in progress
     if (formWithData.loadingState === 'loading') {
       const onInitialized = formWithData.form?.settings?.onInitialized;
+      const initialValues = formWithData.form?.settings?.initialValues;
+
       if (onInitialized) {
-        executeExpression(onInitialized, formWithData.fetchedData);
+        executeExpression(onInitialized, {
+          initialValues: getInitialValues(initialValues, globalState),
+        });
       }
     }
   }, [formWithData.loadingState, formWithData.form]);
