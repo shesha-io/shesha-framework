@@ -211,10 +211,10 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
     return new Function('data, globalState, moment, http, message,setGlobalState', expression)(
       data,
       globalState,
-      setGlobalState,
       moment,
       axiosHttp(backendUrl),
-      message
+      message,
+      setGlobalState
     );
   };
 

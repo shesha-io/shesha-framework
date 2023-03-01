@@ -15,6 +15,7 @@ import * as RestfulShesha from '../../utils/fetchers';
 import { ConfigurationItemsViewMode } from "../appConfigurator/models";
 import { useModelApiEndpoint, useModelApiHelper } from "../../components/configurableForm/useActionEndpoint";
 import { getQueryParams, joinUrlAndPath } from "../../utils/url";
+import { removeNullUndefined } from "../utils";
 
 /**
  * Form configuration DTO
@@ -120,7 +121,7 @@ export const useFormConfiguration = (args: UseFormConfigurationArgs): IFormMarku
 
     const requestParams = useMemo(() => {
         const formRawId = asFormRawId(args.formId);
-        const formFullName = asFormFullName(args.formId);
+        const formFullName = removeNullUndefined(asFormFullName(args.formId));
 
         if (formRawId)
             return {

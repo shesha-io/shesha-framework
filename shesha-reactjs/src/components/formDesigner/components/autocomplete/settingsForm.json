@@ -184,7 +184,7 @@
       "parentId": "root",
       "hidden": false,
       "visibility": "Yes",
-      "customVisibility": "return !! data.dataSourceType",
+      "customVisibility": "return data.dataSourceType === 'url'",
       "isDynamic": false,
       "direction": "vertical",
       "justifyContent": "left",
@@ -522,7 +522,7 @@
     },
     {
       "id": "49c6712b-7e91-4dab-9f11-4e7c5e6b6c74",
-      "type": "textField",
+      "type": "formAutocomplete",
       "name": "quickviewFormPath",
       "parentId": "root",
       "label": "Form Path",

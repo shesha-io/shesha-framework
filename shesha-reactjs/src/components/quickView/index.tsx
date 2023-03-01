@@ -58,7 +58,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'children' | 'formType'>> = ({
     const { backendUrl, httpHeaders } = useSheshaApplication();
     const [ form ] = Form.useForm();
     const { formItemLayout } = useUi();
-    const { refetch: fetchForm } = useFormConfiguration({ formId: formIdentifier, lazy: true});
+    const { refetch: fetchForm } = useFormConfiguration({ formId: formIdentifier,  lazy: true});
     
     useEffect(() => {
         if (formIdentifier) {

@@ -4,7 +4,7 @@ import React, { Key, useMemo } from 'react';
 import { axiosHttp } from '../../../../apis/axios';
 import { IToolboxComponent } from '../../../../interfaces';
 import { DataTypes } from '../../../../interfaces/dataTypes';
-import { useFormData, useGlobalState, useSheshaApplication } from '../../../../providers';
+import { FormIdentifier, useFormData, useGlobalState, useSheshaApplication } from '../../../../providers';
 import { useForm } from '../../../../providers/form';
 import { FormMarkup, IConfigurableFormComponent } from '../../../../providers/form/models';
 import {
@@ -49,8 +49,7 @@ export interface IAutocompleteProps extends IConfigurableFormComponent {
   disableSearch?: boolean;
   placeholder?: string;
   quickviewEnabled?: boolean;
-  quickviewFormPath?: string;
-  quickviewModule?:string;
+  quickviewFormPath?: FormIdentifier;
   quickviewDisplayPropertyName?: string;
   quickviewGetEntityUrl?: string;
   quickviewWidth?: number;

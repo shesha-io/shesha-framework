@@ -63,13 +63,16 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
 
   const extractProperty = (item: object, propertyName: string): string => {
     const propName = propertyName || '_displayName';
-    var path = propName.split('.')
-    var result = path.reduce((val, name) => val ? val[name] : null, item);
+    var path = propName.split('.');
+    var result = path.reduce((val, name) => (val ? val[name] : null), item);
     return result;
-  }
+  };
 
   const getFetchedItems = (): AutocompleteItemDto[] => {
-    return fetchedData.map<AutocompleteItemDto>(e => ({ value: e.id.toString(), displayText: extractProperty(e, entityDisplayProperty) }));
+    return fetchedData.map<AutocompleteItemDto>(e => ({
+      value: e.id.toString(),
+      displayText: extractProperty(e, entityDisplayProperty),
+    }));
   };
 
   const handleSelect = () => {
@@ -166,7 +169,6 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
   const autocompleteValue = value || dataLoaded || fetchError ? wrapValue(value) : undefined;
   const selectPlaceholder = value && !dataLoaded && loading ? 'Loading...' : placeholder ?? '';
 
-
   if (readOnly || disabled) {
     return (
       <ReadOnlyDisplayFormItem
@@ -174,7 +176,7 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
         type={mode === 'multiple' || mode === 'tags' ? 'dropdownMultiple' : 'dropdown'}
         disabled={disabled}
         quickviewEnabled={quickviewEnabled}
-        quickviewFormPath={{name: quickviewFormPath}}
+        quickviewFormPath={quickviewFormPath}
         quickviewDisplayPropertyName={quickviewDisplayPropertyName}
         quickviewGetEntityUrl={quickviewGetEntityUrl}
         quickviewWidth={quickviewWidth ? Number(quickviewWidth) : null} // quick fix string value of quickviewWidth (from configurator)

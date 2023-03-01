@@ -2,6 +2,7 @@ import React, { ReactNode, Key } from 'react';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { LabeledValue } from 'antd/lib/select';
 import { IReadOnly } from '../../interfaces/readOnly';
+import { FormIdentifier } from '../../providers';
 
 export type AutocompleteDataSourceType = 'entitiesList' | 'url';
 
@@ -50,7 +51,7 @@ export interface ICommonAutocompleteProps<TValue = any> extends IReadOnly {
   /**
    * The placeholder to display on the autocomplete
    */
-   placeholder?: string;
+  placeholder?: string;
 
   /**
    * A callback for when the value of this component changes
@@ -119,7 +120,7 @@ export interface IEntityAutocompleteProps<TValue = any> extends ICommonAutocompl
    * The short alias if this is a reference list
    */
   typeShortAlias?: string;
-  
+
   /**
    * Name of the property to display. Live empty to use default display name property defined on the back-end
    */
@@ -138,8 +139,12 @@ export interface IEntityAutocompleteProps<TValue = any> extends ICommonAutocompl
   /**
    * Specifies the form to use when quickview is enabled
    */
-  quickviewFormPath?: string;
+  quickviewFormPath?: FormIdentifier;
 
+  /**
+   * Specifies the form to use a specific module
+   */
+  module?: string;
   /**
    * Specifies which property to display for the quickview
    */
