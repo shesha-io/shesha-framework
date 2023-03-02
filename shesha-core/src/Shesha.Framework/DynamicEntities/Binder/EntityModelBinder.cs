@@ -193,7 +193,7 @@ namespace Shesha.DynamicEntities.Binder
                                                      //case DataTypes.Enum: // Enum binded as integer
                                     object parsedValue = null;
                                     result = Parser.TryParseToValueType(jproperty.Value.ToString(), property.PropertyType, out parsedValue, isDateOnly: propType.DataType == DataTypes.Date);
-                                    if (dbValue.ToString() != parsedValue.ToString())
+                                    if (dbValue?.ToString() != parsedValue.ToString())
                                         if (result && (await Validate(entity, jFullName, parsedValue, context)))
                                             property.SetValue(entity, parsedValue);
                                     break;
@@ -201,7 +201,7 @@ namespace Shesha.DynamicEntities.Binder
                                 case DataTypes.Date:
                                     var value = jproperty.Value.To<DateTime>();
                                     value = propType.DataType == DataTypes.Date ? value.Date : value;
-                                    if (dbValue.ToString() != value.ToString())
+                                    if (dbValue?.ToString() != value.ToString())
                                         if (await Validate(entity, jFullName, value, context))
                                             property.SetValue(entity, value);
                                     break;
@@ -369,7 +369,7 @@ namespace Shesha.DynamicEntities.Binder
                                         if (!string.IsNullOrEmpty(jchildId))
                                         {
                                             var newChildEntity = dbValue;
-                                            var childId = dbValue?.GetType().GetId().ToString();
+                                            var childId = dbValue?.GetId().ToString();
 
                                             // if child entity is specified
                                             if (childId?.ToLower() != jchildId?.ToLower()
