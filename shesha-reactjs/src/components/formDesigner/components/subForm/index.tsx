@@ -56,6 +56,7 @@ const SubFormComponent: IToolboxComponent<ISubFormProps> = {
     );
   },
   // settingsFormMarkup: alertSettingsForm,
+  migrator: m => m.add<ISubFormProps>(0, prev => ({ ...prev, apiMode: 'entityName' })),
   settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
     return (
       <SubFormSettings
@@ -71,6 +72,7 @@ const SubFormComponent: IToolboxComponent<ISubFormProps> = {
     const customProps: ISubFormProps = {
       ...model,
       dataSource: 'form',
+      apiMode: 'entityName',
       labelCol: 5,
       wrapperCol: 13,
     };

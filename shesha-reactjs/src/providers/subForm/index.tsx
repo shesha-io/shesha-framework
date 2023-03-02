@@ -233,6 +233,8 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
       return;
     }
 
+    if (!getUrl) return;
+
     dataRequestAbortController.current = new AbortController();
 
     dispatch(fetchDataRequestAction());
@@ -268,7 +270,7 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
   }, 300);
 
   // fetch data on first rendering and on change of some properties
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     if (dataSource !== 'api') return;
 
     fetchData();

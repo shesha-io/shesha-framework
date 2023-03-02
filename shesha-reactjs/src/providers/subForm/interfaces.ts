@@ -18,9 +18,10 @@ export interface ISubFormProps extends IValuable, IChangeable {
   labelCol?: ColProps;
   wrapperCol?: ColProps;
   dataSource?: 'form' | 'api';
+  apiMode?: 'entityName' | 'url';
   entityType?: string;
   useExpression?: boolean;
-  properties: string | string[];
+  properties?: string | string[];
   queryParams?: string;
 
   //#region Actions
