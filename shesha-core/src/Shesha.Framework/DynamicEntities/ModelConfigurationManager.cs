@@ -214,10 +214,18 @@ namespace Shesha.DynamicEntities
                 var genericProps = entityType.GetProperties().Where(x => x.PropertyType == typeof(GenericEntityReference)).ToList();
 
                 if (jsonProps.Any())
-                    await _mappingMetadataProvider.UpdateClassNames(entityType, jsonProps, source.FullClassName, destination.FullClassName, true);
+                    try
+                    {
+                        await _mappingMetadataProvider.UpdateClassNames(entityType, jsonProps, source.FullClassName, destination.FullClassName, true);
+                    }
+                    catch { /* hide exception for entities without tables */ }
 
                 if (genericProps.Any())
-                    await _mappingMetadataProvider.UpdateClassNames(entityType, genericProps, source.FullClassName, destination.FullClassName, false);
+                    try
+                    {
+                        await _mappingMetadataProvider.UpdateClassNames(entityType, genericProps, source.FullClassName, destination.FullClassName, false);
+                    }
+                    catch { /* hide exception for entities without tables */ }
             }
         }
 

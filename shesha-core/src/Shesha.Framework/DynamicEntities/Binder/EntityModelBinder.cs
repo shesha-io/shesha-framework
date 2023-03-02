@@ -24,6 +24,7 @@ using Shesha.Validations;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Dynamic.Core;
@@ -158,17 +159,21 @@ namespace Shesha.DynamicEntities.Binder
 
                         var propType = _metadataProvider.GetDataType(property);
 
+                        var dbValue = property.GetValue(entity);
+                        var isReadOnly = property.GetCustomAttribute<ReadonlyPropertyAttribute>() != null
+                            || property.GetCustomAttribute<ReadOnlyAttribute>() != null;
+
                         var result = true;
-                        if (jproperty.Value.IsNullOrEmpty())
+                        if (jproperty.Value.IsNull())
                         {
                             if (property.PropertyType.IsEntity())
                             {
                                 var cascadeAttr = property.GetCustomAttribute<CascadeUpdateRulesAttribute>()
                                     ?? property.PropertyType.GetCustomAttribute<CascadeUpdateRulesAttribute>();
-                                var childEntity = property.GetValue(entity);
-                                if (childEntity != null && (cascadeAttr?.DeleteUnreferenced ?? false))
+                                
+                                if (dbValue != null && (cascadeAttr?.DeleteUnreferenced ?? false))
                                 {
-                                    await DeleteUnreferencedEntityAsync(childEntity, entity);
+                                    await DeleteUnreferencedEntityAsync(dbValue, entity);
                                 }
                             }
                             else
@@ -188,15 +193,17 @@ namespace Shesha.DynamicEntities.Binder
                                                      //case DataTypes.Enum: // Enum binded as integer
                                     object parsedValue = null;
                                     result = Parser.TryParseToValueType(jproperty.Value.ToString(), property.PropertyType, out parsedValue, isDateOnly: propType.DataType == DataTypes.Date);
-                                    if (result && (await Validate(entity, jFullName, parsedValue, context)))
-                                        property.SetValue(entity, parsedValue);
+                                    if (dbValue.ToString() != parsedValue.ToString())
+                                        if (result && (await Validate(entity, jFullName, parsedValue, context)))
+                                            property.SetValue(entity, parsedValue);
                                     break;
                                 case DataTypes.DateTime:
                                 case DataTypes.Date:
                                     var value = jproperty.Value.To<DateTime>();
                                     value = propType.DataType == DataTypes.Date ? value.Date : value;
-                                    if (await Validate(entity, jFullName, value, context))
-                                        property.SetValue(entity, value);
+                                    if (dbValue.ToString() != value.ToString())
+                                        if (await Validate(entity, jFullName, value, context))
+                                            property.SetValue(entity, value);
                                     break;
                                 case DataTypes.Array:
                                     switch (propType.DataFormat)
@@ -303,6 +310,8 @@ namespace Shesha.DynamicEntities.Binder
                                     break;
                                 case DataTypes.Object:
                                 case DataTypes.ObjectReference:
+                                    if (isReadOnly)
+                                        break;
                                     if (jproperty.Value is JObject jObject)
                                     {
                                         var r = true;
@@ -359,9 +368,8 @@ namespace Shesha.DynamicEntities.Binder
 
                                         if (!string.IsNullOrEmpty(jchildId))
                                         {
-                                            var childEntity = property.GetValue(entity);
-                                            var newChildEntity = childEntity;
-                                            var childId = childEntity?.GetType().GetProperty("Id")?.GetValue(childEntity)?.ToString();
+                                            var newChildEntity = dbValue;
+                                            var childId = dbValue?.GetType().GetId().ToString();
 
                                             // if child entity is specified
                                             if (childId?.ToLower() != jchildId?.ToLower()
@@ -390,7 +398,7 @@ namespace Shesha.DynamicEntities.Binder
                                                 r = r && await _objectValidatorManager.ValidateObject(newChildEntity, context.LocalValidationResult);
                                             }
 
-                                            if (childEntity != newChildEntity)
+                                            if (dbValue != newChildEntity)
                                             {
                                                 if (r)
                                                 {
@@ -400,9 +408,9 @@ namespace Shesha.DynamicEntities.Binder
                                                         property.SetValue(entity, newChildEntity);
 
                                                 }
-                                                if (childEntity != null && (cascadeAttr?.DeleteUnreferenced ?? false))
+                                                if (dbValue != null && (cascadeAttr?.DeleteUnreferenced ?? false))
                                                 {
-                                                    await DeleteUnreferencedEntityAsync(childEntity, entity);
+                                                    await DeleteUnreferencedEntityAsync(dbValue, entity);
                                                 }
                                             }
                                         }
@@ -448,14 +456,12 @@ namespace Shesha.DynamicEntities.Binder
                                             }
                                             else
                                             {
-                                                var childEntity = property.GetValue(entity);
-
                                                 // remove referenced object
-                                                property.SetValue(entity, null);
-
-                                                if (childEntity != null && (cascadeAttr?.DeleteUnreferenced ?? false))
+                                                if (dbValue != null)
                                                 {
-                                                    await DeleteUnreferencedEntityAsync(childEntity, entity);
+                                                    property.SetValue(entity, null);
+                                                    if (cascadeAttr?.DeleteUnreferenced ?? false)
+                                                        await DeleteUnreferencedEntityAsync(dbValue, entity);
                                                 }
                                             }
                                         }
@@ -465,9 +471,8 @@ namespace Shesha.DynamicEntities.Binder
                                         var jchildId = jproperty.Value.ToString();
                                         if (!string.IsNullOrEmpty(jchildId))
                                         {
-                                            var childEntity = property.GetValue(entity);
-                                            var newChildEntity = childEntity;
-                                            var childId = childEntity?.GetType().GetProperty("Id")?.GetValue(childEntity)?.ToString();
+                                            var newChildEntity = dbValue;
+                                            var childId = dbValue?.GetType().GetProperty("Id")?.GetValue(dbValue)?.ToString();
 
                                             // if child entity is specified
                                             if (childId?.ToLower() != jchildId?.ToLower())
@@ -482,13 +487,11 @@ namespace Shesha.DynamicEntities.Binder
                                                 }
                                             }
 
-                                            if (childEntity != newChildEntity)
+                                            if (dbValue != newChildEntity)
                                             {
                                                 property.SetValue(entity, newChildEntity);
-                                                if (childEntity != null && (cascadeAttr?.DeleteUnreferenced ?? false))
-                                                {
-                                                    await DeleteUnreferencedEntityAsync(childEntity, entity);
-                                                }
+                                                if (dbValue != null && (cascadeAttr?.DeleteUnreferenced ?? false))
+                                                    await DeleteUnreferencedEntityAsync(dbValue, entity);
                                             }
                                         }
                                     }

@@ -21,5 +21,18 @@ namespace Shesha.JsonLogic
                    (token.Type == JTokenType.String && token.ToString() == String.Empty) ||
                    (token.Type == JTokenType.Null);
         }
+
+        /// <summary>
+        /// Returns true if <paramref name="token"/> is null
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static bool IsNull(this JToken token)
+        {
+            return (token == null) ||
+                   (token.Type == JTokenType.Array && !token.HasValues) ||
+                   (token.Type == JTokenType.Object && !token.HasValues) ||
+                   (token.Type == JTokenType.Null);
+        }
     }
 }
