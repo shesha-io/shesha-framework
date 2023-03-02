@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
 
 namespace Shesha.Domain
 {
@@ -22,5 +23,8 @@ namespace Shesha.Domain
         public virtual string NoteText { get; set; }
 
         public virtual Person Author { get; set; }
+        public virtual bool HasAttachment { get; set; }
+
+        public virtual RefListVisibilityType VisibilityType { get; set; }
     }
 }
