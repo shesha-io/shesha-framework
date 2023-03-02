@@ -127,6 +127,7 @@ export {
 } from './autocomplete';
 
 export { default as GenericCreatePageDefault } from './crudViews/plainCreatePage';
+
 export { default as GenericDetailsPageDefault } from './crudViews/plainDetailsPage';
 export { default as GenericEditPageDefault } from './crudViews/plainEditPage';
 export { default as GenericIndexPageDefault } from './crudViews/plainIndexPage';
