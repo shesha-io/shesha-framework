@@ -89,7 +89,9 @@ namespace Shesha.Sms.Clickatell
 
         public async Task<string> DownloadUrlAsync(string url)
         {
-            var request = WebRequest.Create(url);
+            #pragma warning disable SYSLIB0014
+            var request = WebRequest.Create(url); // todo: replace with HttpClient
+            #pragma warning restore SYSLIB0014
 
             var useProxy = await SettingManager.GetSettingValueForApplicationAsync(ClickatellSettingNames.UseProxy) == true.ToString();
 

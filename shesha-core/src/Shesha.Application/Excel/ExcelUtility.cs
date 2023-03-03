@@ -257,7 +257,7 @@ namespace Shesha.Excel
                 };
             }).ToList();
 
-            var result = await DataToExcelStreamAsync(async writer =>
+            var result = await DataToExcelStreamAsync(writer =>
             {
                 var r = new Row();
                 var c = new Cell(new CellValue());
@@ -279,6 +279,8 @@ namespace Shesha.Excel
 
                     writer.WriteEndElement();
                 }
+
+                return Task.CompletedTask;
             }, headers, sheetName);
 
             return result;

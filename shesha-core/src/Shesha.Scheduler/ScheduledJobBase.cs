@@ -126,17 +126,12 @@ namespace Shesha.Scheduler
         /// <summary>
         /// Reference to the logger to write logs.
         /// </summary>
-        protected ILogger Logger => _instanceLogger ?? (_defaultLogger ??= IocManager.Resolve<ILogger>());
+        protected ILogger Logger => _defaultLogger ??= IocManager.Resolve<ILogger>();
 
         /// <summary>
         /// Default logger, it used when instance logger is not set
         /// </summary>
         private ILogger _defaultLogger;
-
-        /// <summary>
-        /// Instance logger
-        /// </summary>
-        private ILogger _instanceLogger;
 
         private void SaveJobExecutionIdForLogging()
         {
@@ -361,7 +356,7 @@ namespace Shesha.Scheduler
 
                     // todo: implement notifications
 
-                    uow.Complete();
+                    await uow.CompleteAsync();
                 }
             }
             catch (Exception e)
@@ -382,7 +377,7 @@ namespace Shesha.Scheduler
 
                     // todo: implement notifications
 
-                    uow.Complete();
+                    await uow.CompleteAsync();
                 }
             }
             catch (Exception e)
@@ -504,7 +499,7 @@ namespace Shesha.Scheduler
             CancellationToken.ThrowIfCancellationRequested();
         }
 
-        public virtual async Task DoExecuteAsync(CancellationToken cancellationToken)
+        public virtual Task DoExecuteAsync(CancellationToken cancellationToken)
         {
             throw new Exception($"Method '{nameof(DoExecuteAsync)}' must be overridden in the scheduled job");
         }

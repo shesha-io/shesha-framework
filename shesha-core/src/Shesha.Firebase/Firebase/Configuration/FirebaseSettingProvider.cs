@@ -1,33 +1,26 @@
-﻿using System.Collections.Generic;
-using Abp.Configuration;
-using Abp.Localization;
-using Abp.Zero;
+﻿using Abp.Dependency;
+using Shesha.Settings;
 
 namespace Shesha.Firebase.Configuration
 {
     /// <summary>
     /// Defines Firebase settings.
     /// </summary>
-    public class FirebaseSettingProvider : SettingProvider
+    public class FirebaseSettingProvider : SettingDefinitionProvider, ITransientDependency
     {
-        protected string LocalizationSourceName { get; set; }
-
-        public FirebaseSettingProvider()
+        public override void Define(ISettingDefinitionContext context)
         {
-            LocalizationSourceName = AbpZeroConsts.LocalizationSourceName;
-        }
+            context.Add(
+                new SettingDefinition<string>(
+                    FirebaseSettingNames.ServiceAccountJson,
+                    ""
+                )
+                { 
+                    DisplayName = "Service Account JSON",
+                    Category = "Firebase"
 
-        public override IEnumerable<SettingDefinition> GetSettingDefinitions(SettingDefinitionProviderContext context)
-        {
-            return new[]
-            {
-                new SettingDefinition(FirebaseSettingNames.ServiceAccountJson, "", L("Firebase_ServiceAccountJson"), scopes: SettingScopes.Application | SettingScopes.Tenant, isInherited: false),
-            };
-        }
-
-        protected virtual ILocalizableString L(string name)
-        {
-            return new LocalizableString(name, LocalizationSourceName);
+                }
+            );
         }
     }
 }

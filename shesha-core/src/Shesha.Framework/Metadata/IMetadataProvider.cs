@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shesha.Metadata
 {
@@ -15,14 +13,16 @@ namespace Shesha.Metadata
         /// <summary>
         /// Get metadata of specified property
         /// </summary>
-        /// <param name="property"></param>
+        /// <param name="property">Property to get metadata for</param>
+        /// <param name="context">Metadata context</param>
         /// <returns></returns>
         PropertyMetadataDto GetPropertyMetadata(PropertyInfo property, MetadataContext context);
 
         /// <summary>
         /// Get properties metadata of the specified <paramref name="type"/>
         /// </summary>
-        /// <param name="type"></param>
+        /// <param name="type">Type</param>
+        /// <param name="context">Metadata context</param>
         /// <returns></returns>
         List<PropertyMetadataDto> GetProperties(Type type, MetadataContext context = null);
 

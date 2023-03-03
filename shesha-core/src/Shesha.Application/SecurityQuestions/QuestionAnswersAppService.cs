@@ -51,9 +51,10 @@ namespace Shesha.SecurityQuestions
                 throw new UserFriendlyException("You have already answered this question");
             }
 
-            var entity = await SaveOrUpdateEntityAsync<QuestionAssignment>(null, async item =>
+            var entity = await SaveOrUpdateEntityAsync<QuestionAssignment>(null, item =>
             {
                 ObjectMapper.Map(input, item);
+                return Task.CompletedTask;
             });
 
             if (numberOfQuestionsSelected == numberOfQuestionsAllowed - 1)

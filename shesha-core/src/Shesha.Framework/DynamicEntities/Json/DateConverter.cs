@@ -16,7 +16,7 @@ namespace Shesha.DynamicEntities.Json
     {
         private const string DefaultDateFormat = "yyyy'-'MM'-'dd";
 
-        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer) 
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) 
         {
             string text;
 

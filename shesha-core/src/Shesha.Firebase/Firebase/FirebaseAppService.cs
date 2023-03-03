@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using Abp.Application.Services;
+﻿using Abp.Application.Services;
 using Abp.Domain.Repositories;
 using Abp.Runtime.Validation;
 using FirebaseAdmin.Messaging;
@@ -14,6 +8,12 @@ using Shesha.Attributes;
 using Shesha.Domain;
 using Shesha.Firebase.Dtos;
 using Shesha.Push.Dtos;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Shesha.Firebase
 {
@@ -120,18 +120,11 @@ namespace Shesha.Firebase
 
                     await messaging.SendAsync(message);
                 }
-                catch (FirebaseMessagingException e)
+                catch (FirebaseMessagingException)
                 {
                     // 
                 }
             }
         }
-
-        /*
-        public Task SendNotificationToPersonAsync(ISendNotificationToPersonDto input)
-        {
-            throw new NotImplementedException();
-        }
-        */
     }
 }

@@ -1,13 +1,11 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Abp.Dependency;
-using Abp.Domain.Uow;
+﻿using Abp.Dependency;
 using Hangfire;
-using Newtonsoft.Json;
 using Shesha.Scheduler.Attributes;
 using Shesha.Scheduler.Domain.Enums;
 using Shesha.Scheduler.Logging;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Shesha.Scheduler
 {
@@ -16,7 +14,7 @@ namespace Shesha.Scheduler
     public class TestJob: ScheduledJobBase<TestJobStats>, ITransientDependency
     {
         //[UnitOfWork(IsDisabled = true)]
-        public override async Task DoExecuteAsync(CancellationToken cancellationToken)
+        public override Task DoExecuteAsync(CancellationToken cancellationToken)
         {
             Log.Info("Started...");
             
@@ -45,16 +43,20 @@ namespace Shesha.Scheduler
             //Log.Info($"TestJob.JobStatistics {JsonConvert.SerializeObject(JobStatistics)}");
             Log.Info($"TestJob.JobStatistics {JobStatistics.GetJson()}");
             Log.Info("Finished...");
+
+            return Task.CompletedTask;
         }
 
-        public override async Task OnSuccess()
+        public override Task OnSuccess()
         {
             Log.Info("TestJob.OnSuccess executed.");
+            return Task.CompletedTask;
         }
 
-        public override async Task OnFail(Exception ex)
+        public override Task OnFail(Exception ex)
         {
             Log.Info("TestJob.OnFail executed");
+            return Task.CompletedTask;
         }
 
         public override void OnLog(object sender, ScheduledJobOnLogEventArgs e)

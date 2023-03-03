@@ -11,7 +11,7 @@ namespace Shesha.Sms.Clickatell
     {
         public override void PreInitialize()
         {
-            Configuration.Settings.Providers.Add<ClickatellSettingProvider>();
+            //Configuration.Settings.Providers.Add<ClickatellSettingProvider>();
 
             Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(
                 this.GetType().Assembly,

@@ -35,7 +35,7 @@ const AlertComponent: IToolboxComponent<IAlertProps> = {
         type={alertType}
         description={description}
         showIcon={showIcon}
-        style={getStyle(style, formData)} // Temporary. Make it configurable
+        style={getStyle(style, formData, {}, { marginBottom: '5px' })} // Temporary. Make it configurable
         closable={closable}
         icon={icon ? <ShaIcon iconName={icon as any} /> : null}
       />

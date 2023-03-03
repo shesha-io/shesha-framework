@@ -1,9 +1,7 @@
-﻿using System.Reflection;
-using Abp.Localization.Dictionaries.Xml;
-using Abp.Localization.Sources;
-using Abp.Modules;
+﻿using Abp.Modules;
 using Abp.Zero;
 using Shesha.AzureAD.Configuration;
+using System.Reflection;
 
 namespace Shesha.AzureAD
 {
@@ -17,16 +15,7 @@ namespace Shesha.AzureAD
         {
             IocManager.Register<ISheshaAzureADModuleConfig, SheshaAzureADModuleConfig>();
 
-            Configuration.Localization.Sources.Extensions.Add(
-                new LocalizationSourceExtensionInfo(
-                    AbpZeroConsts.LocalizationSourceName,
-                    new XmlEmbeddedFileLocalizationDictionaryProvider(
-                        Assembly.GetExecutingAssembly(),
-                        "Shesha.AzureAD.Localization.Source")
-                )
-            );
-
-            Configuration.Settings.Providers.Add<AzureADSettingProvider>();
+            //Configuration.Settings.Providers.Add<AzureADSettingProvider>();
         }
 
         public override void Initialize()

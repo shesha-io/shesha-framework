@@ -14,6 +14,7 @@ namespace Shesha.Configuration
         /// <summary>
         /// Changes setting for tenant with fallback to application
         /// </summary>
+        /// <param name="manager">Settings manager</param>
         /// <param name="name">Setting name</param>
         /// <param name="value">Setting value</param>
         public static async Task ChangeSettingAsync(this ISettingManager manager, string name, string value)
@@ -32,6 +33,7 @@ namespace Shesha.Configuration
         /// <summary>
         /// Changes setting for tenant with fallback to application
         /// </summary>
+        /// <param name="manager">Settings manager</param>
         /// <param name="name">Setting name</param>
         /// <param name="value">Setting value</param>
         public static void ChangeSetting(this ISettingManager manager, string name, string value)

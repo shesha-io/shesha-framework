@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using Abp.Configuration;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using Abp.Domain.Repositories;
@@ -15,7 +9,6 @@ using Abp.Extensions;
 using Abp.Json;
 using Abp.Reflection;
 using Abp.Timing;
-using Castle.Core.Logging;
 using NHibernate;
 using NHibernate.Engine;
 using NHibernate.Intercept;
@@ -27,6 +20,11 @@ using Shesha.NHibernate.Session;
 using Shesha.NHibernate.UoW;
 using Shesha.Reflection;
 using Shesha.Services;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
 using SessionExtensions = Shesha.NHibernate.Session.SessionExtensions;
 
 namespace Shesha.NHibernate.EntityHistory
@@ -36,7 +34,6 @@ namespace Shesha.NHibernate.EntityHistory
     /// </summary>
     public class EntityHistoryHelper : EntityHistoryHelperBase, IEntityHistoryHelper, ITransientDependency
     {
-        public ILogger Logger = new NullLogger();
         private ITypeFinder _typeFinder;
 
         [DebuggerStepThrough]

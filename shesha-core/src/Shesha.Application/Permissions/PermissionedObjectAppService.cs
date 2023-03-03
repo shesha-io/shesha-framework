@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Abp.Application.Services.Dto;
+﻿using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
-using Microsoft.AspNetCore.Mvc;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Shesha.Permissions
 {
@@ -70,7 +69,7 @@ namespace Shesha.Permissions
         /// Set required permissions for protected object by name
         /// </summary>
         /// <param name="objectName"></param>
-        /// <param name="inherited"></param>
+        /// <param name="access"></param>
         /// <param name="permissions"></param>
         /// <returns></returns>
         public async Task<PermissionedObjectDto> SetPermissionsAsync(string objectName, RefListPermissionedAccess access, List<string> permissions)
@@ -113,7 +112,7 @@ namespace Shesha.Permissions
         /// </summary>
         /// <param name="serviceName"></param>
         /// <param name="actionName"></param>
-        /// <param name="inherited"></param>
+        /// <param name="access"></param>
         /// <param name="permissions"></param>
         /// <returns></returns>
         public async Task<PermissionedObjectDto> SetApiPermissionsAsync(string serviceName, string actionName, RefListPermissionedAccess access, List<string> permissions)

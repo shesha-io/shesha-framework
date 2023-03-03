@@ -11,7 +11,7 @@ namespace Shesha.Sms.Xml2Sms
     {
         public override void PreInitialize()
         {
-            Configuration.Settings.Providers.Add<Xml2SmsSettingProvider>();
+            //Configuration.Settings.Providers.Add<Xml2SmsSettingProvider>();
 
             Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(
                 this.GetType().Assembly,

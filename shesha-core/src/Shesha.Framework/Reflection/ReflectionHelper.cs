@@ -92,7 +92,7 @@ namespace Shesha.Reflection
         /// <param name="parent">Returns the parent object the last property in the hierarchy. 
         /// Returns null if did not manage to reach the end of the hierarchy because of null values
         /// along the way.</param>
-        /// <param name="propInfo">Returns the <typeparamref name="PropertyInfo"/> of
+        /// <param name="propInfo">Returns the <see cref="PropertyInfo"/> of
         /// the last property in the property hierachy.</param>
         /// <returns></returns>
         public static object GetPropertyValue(object obj, string propertyName, out object parent,
@@ -260,10 +260,12 @@ namespace Shesha.Reflection
         /// <returns>Returns <paramref name="type"/> if type is not a proxy class, else returns the BaseType of type.</returns>
         public static Type StripCastleProxyType(this Type type)
         {
+            #pragma warning disable 612, 618
             if (type.GetInterfaces().Any(i => i == typeof(INHibernateProxy) || i == typeof(IProxy) || i == typeof(IProxyTargetAccessor)))
             {
                 return type.BaseType;
             }
+            #pragma warning restore 612, 618
             return type;
         }
 
@@ -310,9 +312,9 @@ namespace Shesha.Reflection
         /// </summary>
         /// <param name="type">Type whose properties to look through.</param>
         /// <param name="attributeType">The custom attribute to look for.</param>
-        /// <returns>Returns the <typeparamref name="PropertyInfo"/> of property marked with the 
+        /// <returns>Returns the <see cref="PropertyInfo"/> of property marked with the 
         /// specified attribute. Returns Null if no property was marked with the specified attribute.
-        /// If more than one property is marked with the attribute a <typeparamref name="ConfigurationException"/> is thrown.</returns>
+        /// If more than one property is marked with the attribute a <see cref="ConfigurationException"/> is thrown.</returns>
         public static PropertyInfo FindPropertyWithUniqueAttribute(Type type, Type attributeType)
         {
             return FindPropertyWithUniqueAttribute(type, attributeType, null);
@@ -400,7 +402,7 @@ namespace Shesha.Reflection
         }
 
         /// <summary>
-        /// Returns underlying type `T` if the type is Nullable<`T`>
+        /// Returns underlying type `T` if the type is Nullable{T}
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
@@ -413,7 +415,7 @@ namespace Shesha.Reflection
         /// Checks if an object is an instance of a particular generic type.
         /// ACKNOWLEDGEMENT: code taken from http://stackoverflow.com/questions/982487/testing-if-object-is-of-generic-type-in-c
         /// </summary>
-        /// <param name="genericType">The generic type e.g. 'typeof(List<>)'</param>
+        /// <param name="genericType">The generic type e.g. 'typeof(List{})'</param>
         /// <param name="instance">Object to check.</param>
         /// <returns>Returns true if object is an instance of the generic type or subtype, else returns false.</returns>
         public static bool IsInstanceOfGenericType(Type genericType, object instance)

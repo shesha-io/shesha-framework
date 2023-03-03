@@ -277,7 +277,7 @@ namespace Shesha.DynamicEntities.Binder
                                                             {
                                                                 enumVal = Enum.Parse(type, valComponents[i], true);
                                                             }
-                                                            catch (Exception e)
+                                                            catch (Exception)
                                                             {
                                                                 context.LocalValidationResult.Add(new ValidationResult($"Value of '{jproperty.Path}' is not valid."));
                                                                 break;
@@ -508,7 +508,7 @@ namespace Shesha.DynamicEntities.Binder
                 {
                     context.LocalValidationResult.Add(new ValidationResult($"{ex.Message} for '{jproperty.Path}'"));
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     context.LocalValidationResult.Add(new ValidationResult($"Value of '{jproperty.Path}' is not valid."));
                 }
@@ -519,15 +519,16 @@ namespace Shesha.DynamicEntities.Binder
             return !context.LocalValidationResult.Any();
         }
 
-        private async Task<object> GetEntityById(Type entityType, string id, string displayName, string propertyPath, EntityModelBindingContext context)
+        private Task<object> GetEntityById(Type entityType, string id, string displayName, string propertyPath, EntityModelBindingContext context)
         {
             if (context.GetEntityById != null)
-                return context.GetEntityById(entityType, id, displayName, propertyPath, context);
+                return Task.FromResult(context.GetEntityById(entityType, id, displayName, propertyPath, context));
 
             var newChildEntity = _dynamicRepository.Get(entityType, id);
             if (newChildEntity == null)
                 context.LocalValidationResult.Add(new ValidationResult($"Entity with Id='{id}' not found for `{propertyPath}`."));
-            return newChildEntity;
+            
+            return Task.FromResult(newChildEntity);
         }
 
         private async Task<object> GetObjectOrObjectReference(Type objectType, JObject jobject, EntityModelBindingContext context, List<string> formFields = null)

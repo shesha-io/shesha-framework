@@ -14,10 +14,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="AzureAD\Localization\Source\Shesha.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="AzureAD\Localization\Source\Shesha.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Abp" Version="6.6.2" />
     <PackageReference Include="Abp.Zero.Common" Version="6.6.2" />
     <PackageReference Include="Microsoft.Identity.Client" Version="4.9.0" />
     <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Shesha.Framework\Shesha.Framework.csproj" />
   </ItemGroup>
 
 </Project>

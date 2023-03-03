@@ -3,9 +3,7 @@ using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Shesha.Api.Dto;
-using Shesha.Application.Services.Dto;
 using Shesha.AutoMapper.Dto;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +23,7 @@ namespace Shesha.Api
         }
 
         [HttpGet]
-        public async Task<List<AutocompleteItemDto>> EndpointsAsync(string term, string verb, int maxResultCount = 10)
+        public Task<List<AutocompleteItemDto>> EndpointsAsync(string term, string verb, int maxResultCount = 10)
         {
             var actionDescriptors = _apiDescriptionsProvider.ApiDescriptionGroups.Items.SelectMany(g => g.Items.Select(gi => gi.ActionDescriptor)).ToList();
 
@@ -51,7 +49,7 @@ namespace Shesha.Api
                 .Take(maxResultCount)
                 .ToList();
 
-            return endpoints;
+            return Task.FromResult(endpoints);
         }
     }
 }

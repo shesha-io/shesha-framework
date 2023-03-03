@@ -372,7 +372,7 @@ namespace Shesha.NHibernate.Maps
                         {
                         }
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         throw;
                     }
@@ -529,7 +529,7 @@ namespace Shesha.NHibernate.Maps
                                 _entitiesToMap.Add(entityType);
                         }
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         throw;
                     }

@@ -34,7 +34,7 @@ namespace Shesha.Maintenance
             .UniqueResult<string>());
 
         [HttpGet]
-        public async Task<List<string>> GetBackupsList()
+        public List<string> GetBackupsList()
         {
             var query = CurrentSession
                 .CreateSQLQuery("EXEC xp_DirTree :path, 1, 1")
@@ -50,7 +50,7 @@ namespace Shesha.Maintenance
         }
 
         [HttpGet]
-        public async Task<BackupDataDto> DeleteBackup(string fileName)
+        public BackupDataDto DeleteBackup(string fileName)
         {
             try
             {
@@ -91,7 +91,7 @@ namespace Shesha.Maintenance
 
 
         [HttpGet]
-        public async Task<BackupDataDto> GetBackupData()
+        public BackupDataDto GetBackupData()
         {
             return new BackupDataDto()
             {
@@ -105,7 +105,7 @@ namespace Shesha.Maintenance
         /// <param name="fileName">Filename of DB backup</param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<BackupDataDto> BackupDB(string fileName)
+        public BackupDataDto BackupDB(string fileName)
         {
             try
             {
@@ -136,7 +136,9 @@ namespace Shesha.Maintenance
                     backupCommand.ExecuteNonQuery();
                 }
 
-                return new BackupDataDto() { BackupPath = "Backup has successfully created" };
+                var dto = new BackupDataDto() { BackupPath = "Backup has successfully created" };
+                
+                return dto;
             }
             catch (Exception e)
             {
@@ -146,7 +148,7 @@ namespace Shesha.Maintenance
         }
 
         [HttpGet]
-        public async Task<BackupDataDto> RestoreDb(string fileName)
+        public BackupDataDto RestoreDb(string fileName)
         {
             try
             {
@@ -188,7 +190,8 @@ namespace Shesha.Maintenance
             var dbName = DbName.Value;
 
             //Commit transaction to close all unsaved data and connections before restore
-            StaticContext.IocManager.Resolve<ISessionFactory>().GetCurrentSession().Transaction.Commit();
+            var transaction = StaticContext.IocManager.Resolve<ISessionFactory>().GetCurrentSession()?.GetCurrentTransaction();
+            transaction?.Commit();
             using (var con = new SqlConnection(connectionString))
             {
                 con.Open();

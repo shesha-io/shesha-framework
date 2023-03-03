@@ -163,6 +163,21 @@ namespace Shesha
         /// Saves or update entity with the specified id
         /// </summary>
         /// <typeparam name="T">Type of entity</typeparam>
+        /// <param name="id">Id of the existing entity or null for a new one</param>
+        /// <param name="action">Update action</param>
+        protected async Task<T> SaveOrUpdateEntityAsync<T>(Guid? id, Action<T> action)
+            where T : class, IEntity<Guid>
+        {
+            return await SaveOrUpdateEntityAsync<T, Guid>(id, a => { 
+                action.Invoke(a);
+                return Task.CompletedTask;
+            });
+        }
+
+        /// <summary>
+        /// Saves or update entity with the specified id
+        /// </summary>
+        /// <typeparam name="T">Type of entity</typeparam>
         /// <typeparam name="TId">Id type</typeparam>
         /// <param name="id">Id of the existing entity or null for a new one</param>
         /// <param name="action">Update action</param>
@@ -243,10 +258,9 @@ namespace Shesha
         }
 
         /// <summary>
-        /// Changes setting for tenant with fallback to application
+        /// Get setting value for tenant with fallback to application
         /// </summary>
         /// <param name="name">Setting name</param>
-        /// <param name="value">Setting value</param>
         protected async Task<string> GetSettingValueAsync(string name)
         {
             if (AbpSession.TenantId.HasValue)

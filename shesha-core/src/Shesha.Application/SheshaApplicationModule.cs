@@ -42,9 +42,10 @@ namespace Shesha
         {
             IocManager.Register<IShaApplicationModuleConfiguration, ShaApplicationModuleConfiguration>();
 
-            Configuration.Settings.Providers.Add<SmsSettingProvider>();
-            Configuration.Settings.Providers.Add<PushSettingProvider>();
-            Configuration.Settings.Providers.Add<EmailSettingProvider>();
+            //Configuration.Settings.Providers.Add<SmsSettingProvider>();
+            //Configuration.Settings.Providers.Add<PushSettingProvider>();
+            //Configuration.Settings.Providers.Add<EmailSettingProvider>();
+
             Configuration.Notifications.Providers.Add<ShaNotificationProvider>();
             Configuration.Notifications.Notifiers.Add<EmailRealTimeNotifier>();
             Configuration.Notifications.Notifiers.Add<SmsRealTimeNotifier>();
@@ -56,7 +57,7 @@ namespace Shesha
             // replace email sender
             Configuration.ReplaceService<ISmtpEmailSenderConfiguration, SmtpEmailSenderSettings>(DependencyLifeStyle.Transient);
 
-            Configuration.Settings.Providers.Add<OtpSettingProvider>();
+            //Configuration.Settings.Providers.Add<OtpSettingProvider>();
 
             // ToDo: migrate Notification to ABP 6.6.2
             //Configuration.Notifications.Distributers.Clear();

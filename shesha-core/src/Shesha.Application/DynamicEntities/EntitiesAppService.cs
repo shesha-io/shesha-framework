@@ -1,5 +1,4 @@
 ﻿using Abp.Application.Services.Dto;
-using Abp.Authorization;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.ObjectMapping;
@@ -105,7 +104,7 @@ namespace Shesha.DynamicEntities
 
                 return data;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw;
             }
@@ -140,7 +139,7 @@ namespace Shesha.DynamicEntities
 
                 return await appService.QueryAllAsync(input);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw;
             }
@@ -177,7 +176,7 @@ namespace Shesha.DynamicEntities
 
                 return new FileStreamResult(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw;
             }

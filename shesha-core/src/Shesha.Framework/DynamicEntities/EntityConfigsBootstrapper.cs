@@ -324,7 +324,7 @@ namespace Shesha.DynamicEntities
                     await _entityPropertyRepository.DeleteAsync(deletedProperty);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw;
             }
@@ -348,7 +348,7 @@ namespace Shesha.DynamicEntities
                 entityConfig.PropertiesMD5 = propertiesMD5;
                 await _entityConfigRepository.UpdateAsync(entityConfig);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw;
             }

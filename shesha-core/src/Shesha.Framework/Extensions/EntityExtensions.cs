@@ -135,7 +135,7 @@ namespace Shesha.Extensions
                         : null;
         }
 
-        [Obsolete("To be reviewed")]
+        //[Obsolete("To be reviewed")]
         public static string GetPropertyDisplayText(this object entity, string propertyName, string defaultValue = "")
         {
             try
@@ -208,7 +208,7 @@ namespace Shesha.Extensions
             }
         }
 
-        [Obsolete("Should use native MVC functionality and related DataAnnotations e.g. Display")]
+        //[Obsolete("Should use native MVC functionality and related DataAnnotations e.g. Display")]
         public static string GetPrimitiveTypePropertyDisplayText(object val, PropertyInfo propInfo, string defaultValue)
         {
             if (val == null || val.ToString().Length == 0)
@@ -419,8 +419,10 @@ namespace Shesha.Extensions
         /// <summary>
         /// Returns a comma separated list of Reference List Item referenced by the property.
         /// </summary>
+        /// <param name="entity"></param>
         /// <param name="propertyName">Name of the Reference List Item property.</param>
         /// <param name="defaultValue">Value to return if reference list item value is null or empty.</param>
+        /// <param name="separator"></param>
         /// <returns>If property value is null returns the <paramref name="defaultValue"/>, else
         /// returns a comma separated list of the Rerefence List Items.</returns>
         [Obsolete("Should use native MVC functionality and related DataAnnotations e.g. Display")]
@@ -488,7 +490,7 @@ namespace Shesha.Extensions
             }
             catch
             {
-                throw new ConfigurationException($"Property '{propertyName}' on type '{entity.GetType().FullName}' is marked as MultiValueReferenceList but it's type cannot be cast to 'int'.");
+                throw new ConfigurationErrorsException($"Property '{propertyName}' on type '{entity.GetType().FullName}' is marked as MultiValueReferenceList but it's type cannot be cast to 'int'.");
             }
 
             if (refListName == "" && refListModule == "")

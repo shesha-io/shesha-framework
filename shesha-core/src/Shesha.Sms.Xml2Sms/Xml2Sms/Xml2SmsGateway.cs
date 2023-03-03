@@ -106,7 +106,9 @@ namespace Shesha.Sms.Xml2Sms
 
         public async Task<string> DownloadUrlAsync(string url)
         {
-            var request = WebRequest.Create(url);
+            #pragma warning disable SYSLIB0014
+            var request = WebRequest.Create(url); // todo: replace with HttpClient
+            #pragma warning restore SYSLIB0014
 
             var useProxy = await SettingManager.GetSettingValueForApplicationAsync(Xml2SmsSettingNames.UseProxy) == true.ToString();
 

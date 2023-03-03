@@ -32,25 +32,6 @@ namespace Shesha.Scheduler.Domain
         /// </summary>
         public virtual TriggerStatus Status { get; set; }
 
-        #region Notifications
-
-        /// <summary>
-        /// Notification to trigger upon successful completion of the job.
-        /// </summary>
-        //public virtual Notification NotificationOnSuccess { get; set; }
-
-        /// <summary>
-        /// Notification to trigger upon a warning being reported by the scheduled job. 
-        /// </summary>
-        //public virtual Notification NotificationOnWarning { get; set; }
-
-        /// <summary>
-        /// Notification to trigger upon failure of the job.
-        /// </summary>
-        //public virtual Notification NotificationOnFailure { get; set; }
-
-        #endregion
-
         public ScheduledJobTrigger()
         {
             Status = TriggerStatus.Enabled;

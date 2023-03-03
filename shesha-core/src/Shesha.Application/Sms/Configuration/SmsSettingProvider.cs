@@ -1,28 +1,34 @@
-﻿using System.Collections.Generic;
-using Abp.Configuration;
+﻿using Abp.Dependency;
 using Shesha.Configuration;
+using Shesha.Settings;
 
 namespace Shesha.Sms.Configuration
 {
     /// <summary>
     /// Sms notifications setting provider
     /// </summary>
-    public class SmsSettingProvider : SettingProvider
+    public class SmsSettingProvider : SettingDefinitionProvider, ITransientDependency
     {
-        /// inheritedDoc
-        public override IEnumerable<SettingDefinition> GetSettingDefinitions(SettingDefinitionProviderContext context)
+        private const string CategorySms = "SMS";
+
+        public override void Define(ISettingDefinitionContext context)
         {
-            return new[]
-            {
-                new SettingDefinition(
+            context.Add(
+                new SettingDefinition<string>(
                     SheshaSettingNames.Sms.SmsGateway,
-                    NullSmsGateway.Uid
-                ),
-                new SettingDefinition(
-                    SheshaSettingNames.Sms.RedirectAllMessagesTo,
-                    ""
+                    NullSmsGateway.Uid,
+                    "SMS Gateway"
                 )
-            };
+                { Category = CategorySms },
+                new SettingDefinition<string>(
+                    SheshaSettingNames.Sms.RedirectAllMessagesTo,
+                    "Redirect all messages to"
+                )
+                { 
+                    Category = CategorySms,
+                    Description = "Is used for testing purposes only"
+                }
+            );
         }
     }
 }

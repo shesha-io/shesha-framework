@@ -1,39 +1,60 @@
-﻿using System.Collections.Generic;
-using Abp.Configuration;
-using Abp.Localization;
+﻿using Abp.Dependency;
+using Shesha.Settings;
 
 namespace Shesha.Sms.BulkSms
 {
     /// <summary>
     /// Defines BulkSMS gateway settings.
     /// </summary>
-    public class BulkSmsSettingProvider : SettingProvider
+    public class BulkSmsSettingProvider : SettingDefinitionProvider, ITransientDependency
     {
-        protected string LocalizationSourceName { get; set; }
+        private const string CategoryName = "Bulk SMS";
 
-        public BulkSmsSettingProvider()
+        public override void Define(ISettingDefinitionContext context)
         {
-            LocalizationSourceName = "Shesha";
-        }
+            context.Add(
+                new SettingDefinition<string>(
+                    BulkSmsSettingNames.ApiUrl,
+                    "http://bulksms.2way.co.za:5567/eapi/submission/send_sms/2/2.0",
+                    "Api Url")
+                { Category = CategoryName },
 
-        public override IEnumerable<SettingDefinition> GetSettingDefinitions(SettingDefinitionProviderContext context)
-        {
-            return new[]
-            {
-                new SettingDefinition(BulkSmsSettingNames.ApiUrl, "http://bulksms.2way.co.za:5567/eapi/submission/send_sms/2/2.0", L("BulkSms_ApiUrl"), scopes: SettingScopes.Application | SettingScopes.Tenant, isInherited: false),
-                new SettingDefinition(BulkSmsSettingNames.ApiUsername, null, L("BulkSms_ApiUsername"), scopes: SettingScopes.Application | SettingScopes.Tenant, isInherited: false),
-                new SettingDefinition(BulkSmsSettingNames.ApiPassword, null, L("BulkSms_ApiPassword"), scopes: SettingScopes.Application | SettingScopes.Tenant, isInherited: false),
-                new SettingDefinition(BulkSmsSettingNames.UseProxy, false.ToString(), L("BulkSms_UseProxy"), scopes: SettingScopes.Application | SettingScopes.Tenant, isInherited: false),
-                new SettingDefinition(BulkSmsSettingNames.UseDefaultProxyCredentials, true.ToString(), L("BulkSms_UseDefaultProxyCredentials"), scopes: SettingScopes.Application | SettingScopes.Tenant, isInherited: false),
-                new SettingDefinition(BulkSmsSettingNames.WebProxyAddress, null, L("BulkSms_WebProxyAddress"), scopes: SettingScopes.Application | SettingScopes.Tenant, isInherited: false),
-                new SettingDefinition(BulkSmsSettingNames.WebProxyUsername, null, L("BulkSms_WebProxyUsername"), scopes: SettingScopes.Application | SettingScopes.Tenant, isInherited: false),
-                new SettingDefinition(BulkSmsSettingNames.WebProxyPassword, null, L("BulkSms_WebProxyPassword"), scopes: SettingScopes.Application | SettingScopes.Tenant, isInherited: false),
-            };
-        }
-
-        protected virtual ILocalizableString L(string name)
-        {
-            return new LocalizableString(name, LocalizationSourceName);
+                new SettingDefinition<string>(
+                    BulkSmsSettingNames.ApiUsername,
+                    null,
+                    "Login")
+                { Category = CategoryName },
+                new SettingDefinition<string>(
+                    BulkSmsSettingNames.ApiPassword,
+                    null,
+                    "Password")
+                { Category = CategoryName },
+                new SettingDefinition<bool>(
+                    BulkSmsSettingNames.UseProxy,
+                    false,
+                    "Use Proxy")
+                { Category = CategoryName },
+                new SettingDefinition<bool>(
+                    BulkSmsSettingNames.UseDefaultProxyCredentials,
+                    true,
+                    "Use default proxy credentials")
+                { Category = CategoryName }, 
+                new SettingDefinition<string>(
+                    BulkSmsSettingNames.WebProxyAddress,
+                    null,
+                    "Web Proxy Address")
+                { Category = CategoryName },
+                new SettingDefinition<string>(
+                    BulkSmsSettingNames.WebProxyUsername,
+                    null,
+                    "Proxy Login")
+                { Category = CategoryName },
+                new SettingDefinition<string>(
+                    BulkSmsSettingNames.WebProxyPassword,
+                    null,
+                    "Proxy Password")
+                { Category = CategoryName }
+            );
         }
     }
 }

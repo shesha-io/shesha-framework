@@ -15,7 +15,6 @@ using Shesha.Scheduler.Services.ScheduledJobs;
 using Shesha.Scheduler.Utilities;
 using System;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -72,7 +71,7 @@ namespace Shesha.Scheduler
                     RecurringJob.AddOrUpdate<ScheduledJobAppService>(trigger.Id.ToString(), s => s.RunTriggerAsync(trigger.Id, CancellationToken.None, trigger.Job.JobName), trigger.CronString);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw;
             }
@@ -121,7 +120,7 @@ namespace Shesha.Scheduler
             await ExecuteJobMethodAsync(jobId, jobType, "ExecuteAsync", new object[] { executionId, startedById, cancellationToken });
         }
 
-        public async Task ExecuteJobMethodAsync(Guid jobId, string jobType, string methodName, object?[]? methodArgs)
+        public async Task ExecuteJobMethodAsync(Guid jobId, string jobType, string methodName, object[] methodArgs)
         {
             var recordedType = !string.IsNullOrEmpty(jobType) ? Type.GetType(jobType) : GetJobTypeById(jobId).BaseType;
 

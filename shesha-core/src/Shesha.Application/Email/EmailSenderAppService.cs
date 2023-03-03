@@ -1,12 +1,11 @@
-﻿using System.Threading.Tasks;
-using Abp.Configuration;
+﻿using Abp.Configuration;
 using Abp.Net.Mail;
-using Abp.Runtime.Session;
 using Abp.Runtime.Validation;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Configuration;
 using Shesha.Email.Dtos;
 using Shesha.Utilities;
+using System.Threading.Tasks;
 
 namespace Shesha.Email
 {
@@ -15,12 +14,6 @@ namespace Shesha.Email
     /// </summary>
     public class EmailSenderAppService : SheshaAppServiceBase, IEmailSenderAppService
     {
-
-        /// <summary>
-        /// Reference to the current Session.
-        /// </summary>
-        public IAbpSession AbpSession { get; set; }
-
         private readonly ISettingManager _settingManager;
         private readonly IEmailSender _emailSender;
 
@@ -33,8 +26,6 @@ namespace Shesha.Email
         {
             _settingManager = settingManager;
             _emailSender = emailSender;
-
-            AbpSession = NullAbpSession.Instance;
         }
 
         /// inheritDoc

@@ -165,31 +165,25 @@ namespace Shesha.Reflection
         /// <returns>The XML document</returns>
         private static XmlDocument XMLFromAssemblyNonCached(Assembly assembly)
         {
-            string assemblyFilename = assembly.CodeBase;
+            var assemblyFilename = assembly.Location;
 
-            const string prefix = "file:///";
-
-            if (assemblyFilename.StartsWith(prefix))
+            try
             {
-                StreamReader streamReader;
-
-                try
-                {
-                    streamReader = new StreamReader(Path.ChangeExtension(assemblyFilename.Substring(prefix.Length), ".xml"));
-                }
-                catch (FileNotFoundException exception)
-                {
+                var xmlFilePath = Path.ChangeExtension(assemblyFilename, ".xml");
+                if (!File.Exists(xmlFilePath))
                     return null;
-                    //throw new DocsByReflectionException("XML documentation not present (make sure it is turned on in project properties when building)", exception);
-                }
 
-                XmlDocument xmlDocument = new XmlDocument();
-                xmlDocument.Load(streamReader);
-                return xmlDocument;
+                using (var streamReader = new StreamReader(xmlFilePath)) 
+                {
+                    var xmlDocument = new XmlDocument();
+                    xmlDocument.Load(streamReader);
+                    return xmlDocument;
+                }
             }
-            else
+            catch (FileNotFoundException)
             {
-                throw new DocsByReflectionException("Could not ascertain assembly filename", null);
+                return null;
+                //throw new DocsByReflectionException("XML documentation not present (make sure it is turned on in project properties when building)", exception);
             }
         }
     }

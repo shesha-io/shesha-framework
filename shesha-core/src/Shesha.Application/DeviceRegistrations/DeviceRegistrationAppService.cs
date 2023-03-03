@@ -1,9 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
-using Abp.Authorization;
+﻿using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Shesha.DeviceRegistrations.Dto;
 using Shesha.Domain;
+using System;
+using System.Threading.Tasks;
 
 namespace Shesha.DeviceRegistrations
 {
@@ -23,7 +23,7 @@ namespace Shesha.DeviceRegistrations
 
             if (deviceRegistration == null)
             {
-                var deviceReg = await SaveOrUpdateEntityAsync<DeviceRegistration>(null, async item =>
+                var deviceReg = await SaveOrUpdateEntityAsync<DeviceRegistration>(null, item =>
                 {
                     ObjectMapper.Map(input, item);
                     item.Person = currentPerson;
@@ -32,7 +32,7 @@ namespace Shesha.DeviceRegistrations
                 return ObjectMapper.Map<DeviceRegistrationDto>(deviceReg);
             }
 
-            var entity = await SaveOrUpdateEntityAsync<DeviceRegistration>(deviceRegistration?.Id, async item =>
+            var entity = await SaveOrUpdateEntityAsync<DeviceRegistration>(deviceRegistration?.Id, item =>
             {
                 ObjectMapper.Map(input, item);
                 item.Person = currentPerson;
@@ -46,10 +46,12 @@ namespace Shesha.DeviceRegistrations
             var currentPerson = await GetCurrentPersonAsync();
             var deviceRegistration = await _repository.FirstOrDefaultAsync(r => r.Person == currentPerson);
 
-            var deviceReg = await SaveOrUpdateEntityAsync<DeviceRegistration>(deviceRegistration?.Id, async item =>
+            var deviceReg = await SaveOrUpdateEntityAsync<DeviceRegistration>(deviceRegistration?.Id, item =>
             {
                 ObjectMapper.Map(input, item);
                 item.Person = currentPerson;
+                
+                return Task.CompletedTask;
             });
 
             return ObjectMapper.Map<DeviceRegistrationDto>(deviceReg);

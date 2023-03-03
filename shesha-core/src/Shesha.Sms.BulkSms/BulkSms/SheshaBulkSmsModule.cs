@@ -11,7 +11,7 @@ namespace Shesha.Sms.BulkSms
     {
         public override void PreInitialize()
         {
-            Configuration.Settings.Providers.Add<BulkSmsSettingProvider>();
+            //Configuration.Settings.Providers.Add<BulkSmsSettingProvider>();
 
             Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(
                 this.GetType().Assembly,

@@ -85,10 +85,12 @@ namespace Shesha.Utilities
         /// <summary>
         /// Tries to convert from a string value to the specified Property's type.
         /// </summary>
-        /// <param name="propInfo">PropertyInfo of the target property. The property's type must be a Value type.</param>
         /// <param name="value">Value as a string to convert.</param>
+        /// <param name="targetType"></param>
         /// <param name="parsedValue">The converted value if successful.</param>
         /// <param name="format">A format string, describing the format of the <paramref name="value"/> parameter</param>
+        /// <param name="isDateOnly"></param>
+        /// <param name="returnNullEvenIfNonNullable"></param>
         /// <returns>Returns true if the value could be converted successfully to the target property's type.</returns>
         public static bool TryParseToValueType(string value, Type targetType, out object parsedValue, string format = null, bool isDateOnly = false, bool returnNullEvenIfNonNullable = false)
         {
@@ -337,6 +339,7 @@ namespace Shesha.Utilities
         /// <param name="hasNewEntityIndicator">The returned value only has meaning in cases where the entity property is an entity references.
         /// If so this will be set to true if the parsed value indicates that the entity reference should be for a new entity.</param>
         /// <param name="format">A format string to help with the parsing.</param>
+        /// <param name="returnNullEvenIfNonNullable"></param>
         /// <returns>Returns the parsed value in the appropriate type.</returns>
         public static object ParseToTargetPropertyType(string value, PropertyInfo propInfo, out bool hasNewEntityIndicator, string format = null, bool returnNullEvenIfNonNullable = false)
         {

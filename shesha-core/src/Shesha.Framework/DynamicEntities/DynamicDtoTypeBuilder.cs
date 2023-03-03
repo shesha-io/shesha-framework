@@ -409,7 +409,7 @@ namespace Shesha.DynamicEntities
             return type;
         }
 
-        private async Task<Type> CompileResultTypeAsync(Type baseType,
+        private Task<Type> CompileResultTypeAsync(Type baseType,
             string proxyClassName,
             List<Type> interfaces,
             List<DynamicProperty> properties,
@@ -427,7 +427,7 @@ namespace Shesha.DynamicEntities
 
             context.ClassCreated(objectType);
 
-            return objectType;
+            return Task.FromResult(objectType);
         }
 
 

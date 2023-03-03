@@ -1,38 +1,48 @@
-﻿using System.Collections.Generic;
-using System.DirectoryServices.AccountManagement;
-using Abp.Configuration;
-using Abp.Localization;
-using Abp.Zero;
+﻿using Abp.Dependency;
+using Shesha.Settings;
 
 namespace Shesha.Ldap.Configuration
 {
     /// <summary>
     /// Defines LDAP settings.
     /// </summary>
-    public class LdapSettingProvider : SettingProvider
+    public class LdapSettingProvider : SettingDefinitionProvider, ITransientDependency
     {
-        protected string LocalizationSourceName { get; set; }
+        private const string CategoryName = "LDAP";
 
-        public LdapSettingProvider()
+        public override void Define(ISettingDefinitionContext context)
         {
-            LocalizationSourceName = AbpZeroConsts.LocalizationSourceName;
-        }
-
-        public override IEnumerable<SettingDefinition> GetSettingDefinitions(SettingDefinitionProviderContext context)
-        {
-            return new[]
-                   {
-                       new SettingDefinition(LdapSettingNames.IsEnabled, "false", L("Ldap_IsEnabled"), scopes: SettingScopes.Application | SettingScopes.Tenant, isInherited: false),
-                       new SettingDefinition(LdapSettingNames.Server, ContextType.Domain.ToString(), L("Ldap_Server"), scopes: SettingScopes.Application | SettingScopes.Tenant, isInherited: false),
-                       new SettingDefinition(LdapSettingNames.Port, null, L("Ldap_Port"), scopes: SettingScopes.Application | SettingScopes.Tenant, isInherited: false),
-                       new SettingDefinition(LdapSettingNames.UseSsl, null, L("Ldap_UseSsl"), scopes: SettingScopes.Application | SettingScopes.Tenant, isInherited: false),
-                       new SettingDefinition(LdapSettingNames.Domain, null, L("Ldap_Domain"), scopes: SettingScopes.Application | SettingScopes.Tenant, isInherited: false)
-                   };
-        }
-
-        protected virtual ILocalizableString L(string name)
-        {
-            return new LocalizableString(name, LocalizationSourceName);
+            context.Add(
+                new SettingDefinition<bool>(
+                    LdapSettingNames.IsEnabled,
+                    false,
+                    "Is Enabled"
+                )
+                { Category = CategoryName },
+                new SettingDefinition<string>(
+                    LdapSettingNames.Server,
+                    null,
+                    "LDAP Server"
+                )
+                { Category = CategoryName },
+                new SettingDefinition<int>(
+                    LdapSettingNames.Port,
+                    389,
+                    "Port"
+                )
+                { Category = CategoryName },
+                new SettingDefinition<bool>(
+                    LdapSettingNames.UseSsl,
+                    false,
+                    "Use SSL")
+                { Category = CategoryName },
+                new SettingDefinition<string>(
+                    LdapSettingNames.Domain,
+                    null,
+                    "Domain"
+                )
+                { Category = CategoryName }
+            );
         }
     }
 }

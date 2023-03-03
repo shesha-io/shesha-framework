@@ -15,6 +15,7 @@ using Shesha.QuickSearch;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Shesha.Api
 {
@@ -31,7 +32,7 @@ namespace Shesha.Api
                 arguments: new QueryArguments(
                     new QueryArgument<GraphQLInputGenericType<FilteredPagedAndSortedResultRequestDto>> { Name = "input", DefaultValue = new FilteredPagedAndSortedResultRequestDto() }
                 ),
-                resolve: async context => {
+                resolve: context => {
                     var input = context.GetArgument<FilteredPagedAndSortedResultRequestDto>("input");
 
                     var apiDescriptionsProvider = serviceProvider.GetService<IApiDescriptionGroupCollectionProvider>();
@@ -80,7 +81,7 @@ namespace Shesha.Api
                         TotalCount = allEndpoints.Count()
                     };
 
-                    return result;
+                    return Task.FromResult<object>(result);
                 }
             );
         }

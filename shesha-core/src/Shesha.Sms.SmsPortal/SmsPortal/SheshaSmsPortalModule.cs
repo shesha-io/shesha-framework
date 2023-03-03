@@ -11,7 +11,7 @@ namespace Shesha.Sms.SmsPortal
     {
         public override void PreInitialize()
         {
-            Configuration.Settings.Providers.Add<SmsPortalSettingProvider>();
+            //Configuration.Settings.Providers.Add<SmsPortalSettingProvider>();
 
             Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(
                 this.GetType().Assembly,

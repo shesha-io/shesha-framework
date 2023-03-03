@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -98,12 +99,11 @@ namespace Shesha.Sms.SmsPortal
             Logger.InfoFormat("SMS successfully sent, response: {0}", response);
         }
 
-        public async Task<string> DownloadUrlAsync(string url)
+        private async Task<HttpClient> GetHttpClient() 
         {
-            var request = WebRequest.Create(url);
             var useProxy = await SettingManager.GetSettingValueForApplicationAsync(SmsPortalSettingNames.UseProxy) == true.ToString();
 
-            if (useProxy)
+            if (useProxy) 
             {
                 var proxyAddress = await SettingManager.GetSettingValueForApplicationAsync(SmsPortalSettingNames.WebProxyAddress);
 
@@ -111,7 +111,6 @@ namespace Shesha.Sms.SmsPortal
                 {
                     Address = new Uri(proxyAddress)
                 };
-                request.Proxy = proxy;
 
                 var useDefaultCredentials = await SettingManager.GetSettingValueForApplicationAsync(SmsPortalSettingNames.UseDefaultProxyCredentials) == true.ToString();
                 if (useDefaultCredentials)
@@ -126,11 +125,18 @@ namespace Shesha.Sms.SmsPortal
 
                     proxy.Credentials = new NetworkCredential(username, password);
                 }
-            }
 
-            using (var response = await request.GetResponseAsync())
+                return new HttpClient(new HttpClientHandler { Proxy = proxy }, disposeHandler: true);                
+            }
+            else
+                return new HttpClient();
+        }
+
+        public async Task<string> DownloadUrlAsync(string url)
+        {
+            using (var httpClient = await GetHttpClient())
             {
-                await using (var receiveStream = response.GetResponseStream())
+                using (var receiveStream = await httpClient.GetStreamAsync(url))
                 {
                     if (receiveStream == null)
                         return null;

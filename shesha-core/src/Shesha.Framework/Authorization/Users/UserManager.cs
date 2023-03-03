@@ -1,30 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Abp.Authorization;
+﻿using Abp.Authorization;
 using Abp.Authorization.Users;
 using Abp.Configuration;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.IdentityFramework;
+using Abp.Json;
 using Abp.Organizations;
 using Abp.Runtime.Caching;
 using Abp.Runtime.Validation;
 using Abp.UI;
+using Abp.Zero.Configuration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using NHibernate.Linq;
 using Shesha.Authorization.Roles;
+using Shesha.Configuration;
+using Shesha.Settings;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Shesha.Authorization.Users
 {
     public class UserManager : AbpUserManager<Role, User>
     {
-        public Guid Id { get; set; }
+        private readonly IShaSettingManager _settingProvider;
+        private readonly IOptions<IdentityOptions> _optionsAccessor;
+        
+        private readonly IPasswordComplexitySettings _passwordComplexitySettings;
+        private readonly IAuthenticationSettings _authenticationSettings;
 
         public UserManager(
             RoleManager roleManager,
@@ -43,7 +51,10 @@ namespace Shesha.Authorization.Users
             IRepository<OrganizationUnit, long> organizationUnitRepository, 
             IRepository<UserOrganizationUnit, long> userOrganizationUnitRepository, 
             IOrganizationUnitSettings organizationUnitSettings, 
-            ISettingManager settingManager)
+            ISettingManager settingManager,
+            IShaSettingManager settingProvider,
+            IPasswordComplexitySettings passwordComplexitySettings,
+            IAuthenticationSettings authenticationSettings)
             : base(
                 roleManager, 
                 store, 
@@ -63,15 +74,14 @@ namespace Shesha.Authorization.Users
                 organizationUnitSettings, 
                 settingManager)
         {
-            Id = Guid.NewGuid();
-            //System.Diagnostics.StackTrace t = new System.Diagnostics.StackTrace();
-            //Debug.WriteLine($"UserManager Create: {Id}\n{t.ToString()}");
+            _optionsAccessor = optionsAccessor;
+            _settingProvider = settingProvider;
+            _passwordComplexitySettings = passwordComplexitySettings;
+            _authenticationSettings = authenticationSettings;
         }
 
         protected override void Dispose(bool disposing)
         {
-            //System.Diagnostics.StackTrace t = new System.Diagnostics.StackTrace();
-            //Debug.WriteLine($"UserManager Dispose: {Id}\n{t.ToString()}");
             base.Dispose(disposing);
         }
 
@@ -266,6 +276,42 @@ namespace Shesha.Authorization.Users
 
             var normalizedUsername = NormalizeName(username);
             return await Users.AnyAsync(u => u.NormalizedUserName == normalizedUsername);
+        }
+
+        public override void InitializeOptions(int? tenantId)
+        {
+            Options = JsonConvert.DeserializeObject<IdentityOptions>(_optionsAccessor.Value.ToJsonString());
+
+            //Lockout
+            Options.Lockout.AllowedForNewUsers = _authenticationSettings.UserLockOutEnabled.GetValue();
+            var lockoutSecs = _authenticationSettings.DefaultAccountLockoutSeconds.GetValue();
+            Options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromSeconds(lockoutSecs);
+            Options.Lockout.MaxFailedAccessAttempts = _authenticationSettings.MaxFailedAccessAttemptsBeforeLockout.GetValue();
+
+            //Password complexity
+            Options.Password.RequireDigit = _passwordComplexitySettings.RequireDigit.GetValue();
+            Options.Password.RequireLowercase = _passwordComplexitySettings.RequireLowercase.GetValue();
+            Options.Password.RequireNonAlphanumeric = _passwordComplexitySettings.RequireNonAlphanumeric.GetValue();
+            Options.Password.RequireUppercase = _passwordComplexitySettings.RequireUppercase.GetValue();
+            Options.Password.RequiredLength = _passwordComplexitySettings.RequiredLength.GetValue();
+        }
+
+        public override async Task InitializeOptionsAsync(int? tenantId)
+        {
+            Options = JsonConvert.DeserializeObject<IdentityOptions>(_optionsAccessor.Value.ToJsonString());
+
+            //Lockout
+            Options.Lockout.AllowedForNewUsers = await _authenticationSettings.UserLockOutEnabled.GetValueAsync();
+            var lockoutSecs = await _authenticationSettings.DefaultAccountLockoutSeconds.GetValueAsync();
+            Options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromSeconds(lockoutSecs);
+            Options.Lockout.MaxFailedAccessAttempts = await _authenticationSettings.MaxFailedAccessAttemptsBeforeLockout.GetValueAsync();
+
+            //Password complexity
+            Options.Password.RequireDigit = await _passwordComplexitySettings.RequireDigit.GetValueAsync();
+            Options.Password.RequireLowercase = await _passwordComplexitySettings.RequireLowercase.GetValueAsync();
+            Options.Password.RequireNonAlphanumeric = await _passwordComplexitySettings.RequireNonAlphanumeric.GetValueAsync();
+            Options.Password.RequireUppercase = await _passwordComplexitySettings.RequireUppercase.GetValueAsync();
+            Options.Password.RequiredLength = await _passwordComplexitySettings.RequiredLength.GetValueAsync();
         }
     }
 }

@@ -30,7 +30,6 @@ namespace Shesha.Otp
         /// </summary>
         /// <param name="operationId"></param>
         /// <returns></returns>
-        [Obsolete("Added as a temporary solution, to be removed later")]
         Task<OtpDto> GetAsync(Guid operationId);
     }
 }

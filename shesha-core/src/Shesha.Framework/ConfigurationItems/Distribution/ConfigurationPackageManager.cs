@@ -63,7 +63,7 @@ namespace Shesha.ConfigurationItems.Distribution
         }
 
         /// inheritedDoc
-        public async Task<ConfigurationItemsPackage> ReadPackageAsync(Stream stream, ReadPackageContext context)
+        public Task<ConfigurationItemsPackage> ReadPackageAsync(Stream stream, ReadPackageContext context)
         {
             var zip = new ZipArchive(stream, ZipArchiveMode.Read);
             var pack = new ConfigurationItemsPackage(zip);
@@ -96,7 +96,7 @@ namespace Shesha.ConfigurationItems.Distribution
                 }
             }
 
-            return pack;
+            return Task.FromResult(pack);
         }
 
         private async Task ProcessItemExportAsync(ConfigurationItemBase item, ConfigurationItemsExportResult exportResult, PreparePackageContext context)

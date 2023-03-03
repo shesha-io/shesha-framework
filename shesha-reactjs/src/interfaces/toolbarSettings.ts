@@ -21,6 +21,7 @@ import { IColorPickerComponentProps } from '../components/formDesigner/component
 import { IColumnsEditorComponentProps } from '../components/formDesigner/components/dataTable/table/columnsEditor/columnsEditorComponent';
 import { ICollapsiblePanelProps } from '../components/formDesigner/components/collapsiblePanel/collapsiblePanelComponent';
 import { IPropertyAutocompleteComponentProps } from '../components/formDesigner/components/propertyAutocomplete';
+import AlertComponent, { IAlertProps } from '../components/formDesigner/components/alert';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'type'> {}
 
@@ -68,6 +69,8 @@ type EntityPickerColumnsEditorType = ToolbarSettingsProp & Omit<IColumnsEditorCo
 
 type ICollapsiblePanelPropsEditorType = ToolbarSettingsProp & Omit<ICollapsiblePanelProps, 'type'>;
 
+type AlertType = ToolbarSettingsProp & Omit<IAlertProps, 'type'>;
+
 export class DesignerToolbarSettings<T> {
   protected readonly form: IConfigurableFormComponent[];
   protected readonly data?: T;
@@ -78,6 +81,10 @@ export class DesignerToolbarSettings<T> {
     this.data = model;
     this.form = [];
   }
+
+  public addAlert(props: AlertType | ((data: T) => AlertType)) {
+    return this.addProperty(props, AlertComponent.type);
+  }  
 
   public addButtons(props: ButtonGroupType | ((data: T) => ButtonGroupType)) {
     return this.addProperty(props, 'buttons');

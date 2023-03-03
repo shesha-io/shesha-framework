@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using RedLockNet.SERedis;
+﻿using RedLockNet.SERedis;
 using RedLockNet.SERedis.Configuration;
 using StackExchange.Redis;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Shesha.Locks
 {
@@ -25,6 +25,8 @@ namespace Shesha.Locks
         /// </summary>
         /// <param name="resource">Name of the resource to lock</param>
         /// <param name="expiryTime">Lock expiration time</param>
+        /// <param name="waitTime"></param>
+        /// <param name="retryTime"></param>
         /// <param name="action">Action to perform</param>
         /// <returns></returns>
         public async Task<bool> DoExclusiveAsync(string resource, TimeSpan expiryTime, TimeSpan waitTime, TimeSpan retryTime, Func<Task> action)
@@ -46,6 +48,8 @@ namespace Shesha.Locks
         /// </summary>
         /// <param name="resource">Name of the resource to lock</param>
         /// <param name="expiryTime">Lock expiration time</param>
+        /// <param name="waitTime"></param>
+        /// <param name="retryTime"></param>
         /// <param name="action">Action to perform</param>
         /// <returns></returns>
         public bool DoExclusive(string resource, TimeSpan expiryTime, TimeSpan waitTime, TimeSpan retryTime, Action action)

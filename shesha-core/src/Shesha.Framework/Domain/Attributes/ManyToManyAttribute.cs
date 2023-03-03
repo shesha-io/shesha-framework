@@ -4,7 +4,7 @@ namespace Shesha.Domain.Attributes
 {
     /// <summary>
     /// Attribute for identification many-to-many relations. 
-    /// It's hard to identify many-to-many by conventions for legacy projects. And ClassMapping<> 
+    /// It's hard to identify many-to-many by conventions for legacy projects. And ClassMapping{} 
     /// doesn't override other types of relations(if it has been set to one-to-many or any other by conventions) to many-to-many. 
     /// Looks like a NHibernate bug, so easiest way for now use this attribute.
     /// </summary>

@@ -43,7 +43,7 @@ namespace Shesha.CodeGeneration
                     if (!string.IsNullOrWhiteSpace(migration))
                         sb.AppendLine(migration);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
 
                 }

@@ -77,11 +77,6 @@ namespace Shesha.ConfigurationItems.Distribution.Models
     public class ConfigurationItemsExportItem 
     { 
         /// <summary>
-        /// Id of the item
-        /// </summary>
-        //public Guid Id { get; set; }
-
-        /// <summary>
         /// Item data
         /// </summary>
         public DistributedConfigurableItemBase ItemData { get; set; }

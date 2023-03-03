@@ -1164,8 +1164,8 @@ export const getObjectWithOnlyIncludedKeys = (obj: IAnyObject, includedProps: st
   return response;
 };
 
-export const getStyle = (style: string, formData: any = {}, globalState: any = {}): CSSProperties => {
-  if (!style) return {};
+export const getStyle = (style: string, formData: any = {}, globalState: any = {}, defaultStyle: object = {}): CSSProperties => {
+  if (!style) return defaultStyle;
   // tslint:disable-next-line:function-constructor
   return new Function('data, globalState', style)(formData, globalState);
 };

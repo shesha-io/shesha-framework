@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Abp.Application.Services.Dto;
+﻿using Abp.Application.Services.Dto;
 using Shesha.AutoMapper.Dto;
 using Shesha.Notifications.Dto;
+using System;
+using System.Collections.Generic;
 
 namespace Shesha.NotificationMessages.Dto
 {
@@ -21,7 +21,7 @@ namespace Shesha.NotificationMessages.Dto
         /// <summary>
         /// Send type (email/sms/push etc)
         /// </summary>
-        public ReferenceListItemValueDto? SendType { get; set; }
+        public ReferenceListItemValueDto SendType { get; set; }
 
         /// <summary>
         /// Recipient text (email address/mobile number etc)
@@ -66,7 +66,7 @@ namespace Shesha.NotificationMessages.Dto
         /// <summary>
         /// Status (outgoing/sent/failed etc)
         /// </summary>
-        public ReferenceListItemValueDto? Status { get; set; }
+        public ReferenceListItemValueDto Status { get; set; }
 
         /// <summary>
         /// Error message

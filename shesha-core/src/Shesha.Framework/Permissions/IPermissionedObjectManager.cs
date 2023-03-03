@@ -19,31 +19,30 @@ namespace Shesha.Permissions
         /// <summary>
         /// Get list of protected objects
         /// </summary>
-        /// <param name="category">Filter by Category</param>
-        /// <param name="showHidden">Show hidden protected objects</param>
+        /// <param name="type"></param>
+        /// <param name="withNested"></param>
+        /// <param name="withHidden">Show hidden protected objects</param>
         /// <returns></returns>
         Task<List<PermissionedObjectDto>> GetAllFlatAsync(string type = null, bool withNested = true, bool withHidden = false);
 
         /// <summary>
         /// Get hierarchical list of protected objects
         /// </summary>
-        /// <param name="category">Filter by Category</param>
-        /// <param name="showHidden">Show hidden protected objects</param>
+        /// <param name="type"></param>
+        /// <param name="withHidden">Show hidden protected objects</param>
         /// <returns></returns>
         Task<List<PermissionedObjectDto>> GetAllTreeAsync(string type, bool withHidden);
 
         /// <summary>
         /// Get Protected Object by object name with children
         /// </summary>
-        /// <param name="objectName"></param>
-        /// <param name="showHidden"></param>
-        /// <returns></returns>
         Task<PermissionedObjectDto> GetObjectWithChild(string type, bool withHidden);
 
         /// <summary>
         /// Get Protected Object by object name
         /// </summary>
         /// <param name="objectName">Object name for search Protected Object (usually it has format "type@action")</param>
+        /// <param name="objectType"></param>
         /// <param name="inheritedFromName">Name of parent object </param>
         /// <param name="dependentFromName">Name of dependent object</param>
         /// <param name="useInherited">Get permission data from parent if inherited</param>

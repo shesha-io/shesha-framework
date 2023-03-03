@@ -181,7 +181,7 @@ namespace Shesha
   }}
 }}";
 
-            var result = await DocumentExecuter.ExecuteAsync(async s =>
+            var result = await DocumentExecuter.ExecuteAsync(s =>
             {
                 s.Schema = schema;
 
@@ -236,7 +236,7 @@ namespace Shesha
   }}
 }}";
 
-            var result = await DocumentExecuter.ExecuteAsync(async s =>
+            var result = await DocumentExecuter.ExecuteAsync(s =>
             {
                 s.Schema = schema;
 

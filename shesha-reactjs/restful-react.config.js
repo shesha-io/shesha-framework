@@ -28,7 +28,7 @@ const API_LIST = [
   'User',
   'Metadata',
   */
- 'Metadata'
+ 'Settings'
   //'EntityConfig',
   // 'EntityProperty',
   //'ModelConfigurations',

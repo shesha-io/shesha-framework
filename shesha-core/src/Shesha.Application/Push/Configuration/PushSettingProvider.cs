@@ -1,24 +1,26 @@
-﻿using System.Collections.Generic;
-using Abp.Configuration;
+﻿using Abp.Dependency;
 using Shesha.Configuration;
+using Shesha.Settings;
 
 namespace Shesha.Push.Configuration
 {
     /// <summary>
     /// Push notifications setting provider
     /// </summary>
-    public class PushSettingProvider: SettingProvider
+    public class PushSettingProvider: SettingDefinitionProvider, ITransientDependency
     {
-        /// inheritedDoc
-        public override IEnumerable<SettingDefinition> GetSettingDefinitions(SettingDefinitionProviderContext context)
+        private const string CategoryPush = "Push";
+
+        public override void Define(ISettingDefinitionContext context)
         {
-            return new[]
-            {
-                new SettingDefinition(
+            context.Add(
+                new SettingDefinition<string>(
                     SheshaSettingNames.Push.PushNotifier,
-                    NullPushNotifier.Uid
+                    NullPushNotifier.Uid,
+                    "Push Notifier"
                 )
-            };
+                { Category = CategoryPush }
+            );
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Abp.AspNetCore;
+﻿using Abp.AspNetCore;
 using Abp.AspNetCore.Configuration;
 using Abp.Dependency;
 using Abp.Localization.Dictionaries.Xml;
@@ -7,7 +6,7 @@ using Abp.Localization.Sources;
 using Abp.Modules;
 using Abp.Zero;
 using Shesha.Firebase;
-using Shesha.Firebase.Configuration;
+using System.Reflection;
 
 namespace Shesha
 {
@@ -28,7 +27,7 @@ namespace Shesha
                 )
             );
 
-            Configuration.Settings.Providers.Add<FirebaseSettingProvider>();
+            //Configuration.Settings.Providers.Add<FirebaseSettingProvider>();
 
             Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(
                 this.GetType().Assembly,

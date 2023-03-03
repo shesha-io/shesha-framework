@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
-        <!-- <Version>0.0.21</Version> -->
-        <NoWarn>$(NoWarn);CS1591</NoWarn>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <NoWarn>$(NoWarn);CS1591;612;618;809</NoWarn>
         <PackageIconUrl>http://shesha.boxfusion.co.za/images/shesha-nupkg.png</PackageIconUrl>
         <PackageProjectUrl>https://github.com/Boxfusion/shesha-core</PackageProjectUrl>
         <PackageLicenseUrl>https://raw.githubusercontent.com/Boxfusion/shesha-core/main/LICENSE</PackageLicenseUrl>

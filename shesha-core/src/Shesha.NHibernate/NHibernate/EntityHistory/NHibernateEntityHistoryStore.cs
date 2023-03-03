@@ -1,13 +1,11 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.EntityHistory;
 using Castle.Core.Logging;
 using NUglify.Helpers;
-using Shesha.Domain;
+using System;
+using System.Threading.Tasks;
 
 namespace Shesha.NHibernate.EntityHistory
 {
@@ -16,7 +14,6 @@ namespace Shesha.NHibernate.EntityHistory
         private readonly IRepository<EntityChangeSet, long> _changeSetRepository;
         private readonly IRepository<EntityChange, long> _changesRepository;
         private readonly IRepository<EntityPropertyChange, long> _propChangesRepository;
-        private readonly IRepository<EntityHistoryEvent, Guid> _historyEventRepository;
         public ILogger Logger { get; set; } = new NullLogger();
 
         /// <summary>

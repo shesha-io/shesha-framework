@@ -33,7 +33,7 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
         }
 
         /// inheritedDoc
-        public async Task<DistributedConfigurableItemBase> ExportItemAsync(ConfigurationItemBase item) 
+        public Task<DistributedConfigurableItemBase> ExportItemAsync(ConfigurationItemBase item) 
         {
             if (!(item is FormConfiguration form))
                 throw new ArgumentException($"Wrong type of argument {item}. Expected {nameof(FormConfiguration)}, actual: {item.GetType().FullName}");
@@ -63,8 +63,7 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
                 TemplateId = form.Template?.Id,
             };
 
-            return result;
-
+            return Task.FromResult<DistributedConfigurableItemBase>(result);
         }
 
         /// inheritedDoc

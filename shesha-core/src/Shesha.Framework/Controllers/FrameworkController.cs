@@ -1,5 +1,6 @@
 ﻿using Abp.Configuration;
 using Abp.Dependency;
+using Abp.Domain.Entities;
 using Abp.Reflection;
 using Abp.Web.Models;
 using Castle.Core.Logging;
@@ -8,10 +9,13 @@ using NHibernate;
 using Shesha.Bootstrappers;
 using Shesha.Controllers.Dtos;
 using Shesha.Domain.Attributes;
+using Shesha.DynamicEntities;
 using Shesha.Extensions;
 using Shesha.Migrations;
 using Shesha.Reflection;
 using Shesha.Services;
+using Shesha.Settings;
+using Shesha.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -20,9 +24,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using Shesha.Utilities;
-using Abp.Domain.Entities;
-using Shesha.DynamicEntities;
 
 namespace Shesha.Controllers
 {
@@ -92,7 +93,7 @@ namespace Shesha.Controllers
 
                 return migration;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw;
             }
@@ -105,6 +106,15 @@ namespace Shesha.Controllers
             await bootstrapper.Process();
             return "Bootstrapped successfully";
         }
+
+        [HttpPost]
+        public async Task<string> BootstrapSettings()
+        {
+            var bootstrapper = StaticContext.IocManager.Resolve<SettingsBootstrapper>();
+            await bootstrapper.Process();
+            return "Bootstrapped successfully";
+        }
+
 
         [HttpGet]
         [DontWrapResult]

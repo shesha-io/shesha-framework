@@ -1,46 +1,81 @@
-﻿using System.Collections.Generic;
-using Abp.Configuration;
-using Abp.Localization;
+﻿using Abp.Dependency;
+using Shesha.Settings;
 
 namespace Shesha.Sms.Clickatell
 {
     /// <summary>
     /// Defines Clickatell gateway settings.
     /// </summary>
-    public class ClickatellSettingProvider : SettingProvider
+    public class ClickatellSettingProvider : SettingDefinitionProvider, ITransientDependency
     {
+        private const string CategoryName = "Clickatell";
+
         public const int DefaultSingleMessageMaxLength = 160;
         public const int DefaultMessagePartLength = 153;
 
-        protected string LocalizationSourceName { get; set; }
-
-        public ClickatellSettingProvider()
+        public override void Define(ISettingDefinitionContext context)
         {
-            LocalizationSourceName = "Shesha";
-        }
+            context.Add(
+                new SettingDefinition<string>(
+                    ClickatellSettingNames.Host,
+                    "api.clickatell.com",
+                    "Clickatell Host")
+                { Category = CategoryName },
+                new SettingDefinition<string>(
+                    ClickatellSettingNames.ApiId,
+                    null,
+                    "API Id")
+                { Category = CategoryName },
+                new SettingDefinition<string>(
+                    ClickatellSettingNames.ApiUsername,
+                    null,
+                    "API Username")
+                { Category = CategoryName },
 
-        public override IEnumerable<SettingDefinition> GetSettingDefinitions(SettingDefinitionProviderContext context)
-        {
-            return new[]
-            {
-                new SettingDefinition(ClickatellSettingNames.Host, "api.clickatell.com", L("Clickatell_Host"), scopes: SettingScopes.Application | SettingScopes.Tenant, isInherited: false),
-                new SettingDefinition(ClickatellSettingNames.ApiId, null, L("Clickatell_ApiId"), scopes: SettingScopes.Application | SettingScopes.Tenant, isInherited: false),
-                new SettingDefinition(ClickatellSettingNames.ApiUsername, null, L("Clickatell_ApiUsername"), scopes: SettingScopes.Application | SettingScopes.Tenant, isInherited: false),
-                new SettingDefinition(ClickatellSettingNames.ApiPassword, null, L("Clickatell_ApiPassword"), scopes: SettingScopes.Application | SettingScopes.Tenant, isInherited: false),
-                new SettingDefinition(ClickatellSettingNames.UseProxy, false.ToString(), L("Clickatell_UseProxy"), scopes: SettingScopes.Application | SettingScopes.Tenant, isInherited: false),
-                new SettingDefinition(ClickatellSettingNames.UseDefaultProxyCredentials, true.ToString(), L("Clickatell_UseDefaultProxyCredentials"), scopes: SettingScopes.Application | SettingScopes.Tenant, isInherited: false),
-                new SettingDefinition(ClickatellSettingNames.WebProxyAddress, null, L("Clickatell_WebProxyAddress"), scopes: SettingScopes.Application | SettingScopes.Tenant, isInherited: false),
-                new SettingDefinition(ClickatellSettingNames.WebProxyUsername, null, L("Clickatell_WebProxyUsername"), scopes: SettingScopes.Application | SettingScopes.Tenant, isInherited: false),
-                new SettingDefinition(ClickatellSettingNames.WebProxyPassword, null, L("Clickatell_WebProxyPassword"), scopes: SettingScopes.Application | SettingScopes.Tenant, isInherited: false),
+                new SettingDefinition<string>(
+                    ClickatellSettingNames.ApiPassword,
+                    null,
+                    "API Password")
+                { Category = CategoryName },
 
-                new SettingDefinition(ClickatellSettingNames.SingleMessageMaxLength, DefaultSingleMessageMaxLength.ToString(), L("Clickatell_SingleMessageMaxLength"), scopes: SettingScopes.Application | SettingScopes.Tenant, isInherited: false),
-                new SettingDefinition(ClickatellSettingNames.MessagePartLength, DefaultMessagePartLength.ToString(), L("Clickatell_MessagePartLength"), scopes: SettingScopes.Application | SettingScopes.Tenant, isInherited: false),
-            };
-        }
+                new SettingDefinition<bool>(
+                    ClickatellSettingNames.UseProxy,
+                    false,
+                    "Use Proxy")
+                { Category = CategoryName },
+                new SettingDefinition<bool>(
+                    ClickatellSettingNames.UseDefaultProxyCredentials,
+                    true,
+                    "Use default proxy credentials")
+                { Category = CategoryName },
+                new SettingDefinition<string>(
+                    ClickatellSettingNames.WebProxyAddress,
+                    null,
+                    "Web Proxy Address")
+                { Category = CategoryName },
+                new SettingDefinition<string>(
+                    ClickatellSettingNames.WebProxyUsername,
+                    null,
+                    "Proxy Login")
+                { Category = CategoryName },
+                new SettingDefinition<string>(
+                    ClickatellSettingNames.WebProxyPassword,
+                    null,
+                    "Proxy Password")
+                { Category = CategoryName },
 
-        protected virtual ILocalizableString L(string name)
-        {
-            return new LocalizableString(name, LocalizationSourceName);
+                new SettingDefinition<int>(
+                    ClickatellSettingNames.SingleMessageMaxLength,
+                    DefaultSingleMessageMaxLength,
+                    "Single message max length")
+                { Category = CategoryName },
+
+                new SettingDefinition<int>(
+                    ClickatellSettingNames.MessagePartLength,
+                    DefaultMessagePartLength,
+                    "Message part length")
+                { Category = CategoryName }
+            );
         }
     }
 }

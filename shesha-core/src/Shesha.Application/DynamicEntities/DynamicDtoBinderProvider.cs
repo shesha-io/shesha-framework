@@ -16,7 +16,7 @@ namespace Shesha.DynamicEntities
         private readonly IList<IInputFormatter> _formatters;
         private readonly IHttpRequestStreamReaderFactory _readerFactory;
         private readonly ILoggerFactory _loggerFactory;
-        private readonly MvcOptions? _options;
+        private readonly MvcOptions _options;
         private readonly IDynamicDtoTypeBuilder _dtoBuilder;
 
         /// <summary>
@@ -26,11 +26,12 @@ namespace Shesha.DynamicEntities
         /// <param name="readerFactory">The <see cref="IHttpRequestStreamReaderFactory"/>.</param>
         /// <param name="loggerFactory">The <see cref="ILoggerFactory"/>.</param>
         /// <param name="options">The <see cref="MvcOptions"/>.</param>
+        /// <param name="dtoBuilder"></param>
         public DynamicDtoBinderProvider(
             IList<IInputFormatter> formatters,
             IHttpRequestStreamReaderFactory readerFactory,
             ILoggerFactory loggerFactory,
-            MvcOptions? options,
+            MvcOptions options,
             IDynamicDtoTypeBuilder dtoBuilder)
         {
             if (formatters == null)
@@ -51,7 +52,7 @@ namespace Shesha.DynamicEntities
         }
 
         /// <inheritdoc />
-        public IModelBinder? GetBinder(ModelBinderProviderContext context)
+        public IModelBinder GetBinder(ModelBinderProviderContext context)
         {
             if (context == null)
             {
@@ -78,7 +79,7 @@ namespace Shesha.DynamicEntities
             return null;
         }
 
-        internal static bool CalculateAllowEmptyBody(EmptyBodyBehavior emptyBodyBehavior, MvcOptions? options)
+        internal static bool CalculateAllowEmptyBody(EmptyBodyBehavior emptyBodyBehavior, MvcOptions options)
         {
             if (emptyBodyBehavior == EmptyBodyBehavior.Default)
             {

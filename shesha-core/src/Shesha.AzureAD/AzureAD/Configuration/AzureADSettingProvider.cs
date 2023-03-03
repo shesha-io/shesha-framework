@@ -1,37 +1,49 @@
-﻿using System.Collections.Generic;
-using Abp.Configuration;
-using Abp.Localization;
-using Abp.Zero;
+﻿using Abp.Dependency;
+using Shesha.Settings;
 
 namespace Shesha.AzureAD.Configuration
 {
     /// <summary>
     /// Defines AzureAD settings.
     /// </summary>
-    public class AzureADSettingProvider : SettingProvider
+    public class AzureADSettingProvider : SettingDefinitionProvider, ITransientDependency
     {
-        protected string LocalizationSourceName { get; set; }
+        private const string CategoryName = "Azure AD";
 
-        public AzureADSettingProvider()
+        public override void Define(ISettingDefinitionContext context)
         {
-            LocalizationSourceName = "Shesha.AzureAD";
-        }
-
-        public override IEnumerable<SettingDefinition> GetSettingDefinitions(SettingDefinitionProviderContext context)
-        {
-            return new[]
-                   {
-                       new SettingDefinition(AzureADSettingNames.IsEnabled, "false", L("AzureAD_IsEnabled"), scopes: SettingScopes.Application | SettingScopes.Tenant, isInherited: false),
-                       new SettingDefinition(AzureADSettingNames.InstanceUrl, null, L("AzureAD_InstanceUrl"), scopes: SettingScopes.Application | SettingScopes.Tenant, isInherited: false),
-                       new SettingDefinition(AzureADSettingNames.Tenant, null, L("AzureAD_Tenant"), scopes: SettingScopes.Application | SettingScopes.Tenant, isInherited: false),
-                       new SettingDefinition(AzureADSettingNames.AppIdUri, null, L("AzureAD_AppIdUri"), scopes: SettingScopes.Application | SettingScopes.Tenant, isInherited: false),
-                       new SettingDefinition(AzureADSettingNames.ClientApplicationId, null, L("AzureAD_ClientApplicationId"), scopes: SettingScopes.Application | SettingScopes.Tenant, isInherited: false)
-                   };
-        }
-
-        protected virtual ILocalizableString L(string name)
-        {
-            return new LocalizableString(name, LocalizationSourceName);
+            context.Add(
+                new SettingDefinition<bool>(
+                    AzureADSettingNames.IsEnabled,
+                    false,
+                    "Is Enabled"
+                )
+                { Category = CategoryName },
+                new SettingDefinition<string>(
+                    AzureADSettingNames.InstanceUrl,
+                    null,
+                    "Instance Url"
+                )
+                { Category = CategoryName },
+                new SettingDefinition<string>(
+                    AzureADSettingNames.Tenant,
+                    null,
+                    "Tenant"
+                )
+                { Category = CategoryName },
+                new SettingDefinition<string>(
+                    AzureADSettingNames.AppIdUri,
+                    null,
+                    "App Id Uri"
+                )
+                { Category = CategoryName },
+                new SettingDefinition<string>(
+                    AzureADSettingNames.ClientApplicationId,
+                    null,
+                    "Client Application Id"
+                )
+                { Category = CategoryName }
+            );
         }
     }
 }

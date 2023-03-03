@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Abp.Data;
 using Abp.Dependency;
 using Abp.Extensions;
+using NHibernate;
 using NHibernate.Transaction;
 
 namespace Shesha.NHibernate
@@ -25,7 +26,10 @@ namespace Shesha.NHibernate
 
         public IDbTransaction GetActiveTransaction(ActiveTransactionProviderArgs args)
         {
-            var adoTransaction = _sessionProvider.Session.Transaction.As<AdoTransaction>();
+            var adoTransaction = _sessionProvider.Session.GetCurrentTransaction()?.As<AdoTransaction>();
+            if (adoTransaction == null)
+                return null;
+
             var dbTransaction = GetFieldValue(typeof(AdoTransaction), adoTransaction, "trans").As<IDbTransaction>();
             return dbTransaction;
         }

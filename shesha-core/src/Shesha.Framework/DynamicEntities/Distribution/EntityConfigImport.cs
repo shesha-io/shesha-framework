@@ -25,7 +25,7 @@ namespace Shesha.DynamicEntities.Distribution
             return await ImportEntityConfigAsync(distributedEntityConfig, context);
         }
 
-        protected async Task<ConfigurationItemBase> ImportEntityConfigAsync(DistributedEntityConfig item, IConfigurationItemsImportContext context) 
+        protected Task<ConfigurationItemBase> ImportEntityConfigAsync(DistributedEntityConfig item, IConfigurationItemsImportContext context) 
         {
             throw new NotImplementedException();
         }

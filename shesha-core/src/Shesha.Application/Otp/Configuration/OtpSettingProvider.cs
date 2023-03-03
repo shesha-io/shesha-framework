@@ -1,70 +1,78 @@
-﻿using System.Collections.Generic;
-using Abp.Configuration;
+﻿using Abp.Dependency;
+using Shesha.Settings;
 
 namespace Shesha.Otp.Configuration
 {
-    public class OtpSettingProvider : SettingProvider
+    public class OtpSettingProvider : SettingDefinitionProvider, ITransientDependency
     {
+        public const string CategoryOtp = "One Time Pins";
         public const int DefaultPasswordLength = 6;
         public const string DefaultAlphabet = "0123456789";
         public const int DefaultLifetime = 3*60;
         public const string DefaultSubjectTemplate = "One-Time-Pin";
         public const string DefaultBodyTemplate = "Your One-Time-Pin is {{password}}";
         public const string DefaultEmailSubjectTemplate = "Reset Password";
-        public const string DefaultEmailBodyTemplate = @"Please click on this link to reset your password: https://pd-his-adminportal-test.azurewebsites.net/dynamic/verify-email?token={{token}}&identifier={{userid}}";
+        public const string DefaultEmailBodyTemplate = @"Please click on this link to reset your password: https://localhost/dynamic/verify-email?token={{token}}&identifier={{userid}}";
 
-        public override IEnumerable<SettingDefinition> GetSettingDefinitions(SettingDefinitionProviderContext context)
+        public override void Define(ISettingDefinitionContext context)
         {
-            return new[]
-            {
-                new SettingDefinition(
+            context.Add(
+                new SettingDefinition<int>(
                     OtpSettingsNames.PasswordLength,
-                    DefaultPasswordLength.ToString(),
-                    scopes: SettingScopes.Application | SettingScopes.Tenant
-                ),
+                    DefaultPasswordLength,
+                    "Password length"
+                )
+                { Category = CategoryOtp },
 
-                new SettingDefinition(
+                new SettingDefinition<string>(
                     OtpSettingsNames.Alphabet,
                     DefaultAlphabet,
-                    scopes: SettingScopes.Application | SettingScopes.Tenant
-                ),
+                    "Alphabet"
+                )
+                { Category = CategoryOtp },
 
-                new SettingDefinition(
+                new SettingDefinition<int>(
                     OtpSettingsNames.DefaultLifetime,
-                    DefaultLifetime.ToString(),
-                    scopes: SettingScopes.Application | SettingScopes.Tenant
-                ),
+                    DefaultLifetime,
+                    "Pin lifetime"
+                )
+                { Category = CategoryOtp },
 
-                new SettingDefinition(
+                new SettingDefinition<bool>(
                     OtpSettingsNames.IgnoreOtpValidation,
-                    false.ToString(),
-                    scopes: SettingScopes.Application | SettingScopes.Tenant
-                ),
+                    false,
+                    "Ignore OTP validation"
+                )
+                { Category = CategoryOtp },
 
-                new SettingDefinition(
+                new SettingDefinition<string>(
                     OtpSettingsNames.DefaultSubjectTemplate,
                     DefaultSubjectTemplate,
-                    scopes: SettingScopes.Application | SettingScopes.Tenant
-                ),
+                    "Subject template"
+                )
+                { Category = CategoryOtp },
 
-                new SettingDefinition(
+                new SettingDefinition<string>(
                     OtpSettingsNames.DefaultBodyTemplate,
                     DefaultBodyTemplate,
-                    scopes: SettingScopes.Application | SettingScopes.Tenant
-                ),
+                    "Body template"
+                )
+                { Category = CategoryOtp },
 
-                new SettingDefinition(
+                new SettingDefinition<string>(
                     OtpSettingsNames.DefaultEmailSubjectTemplate,
                     DefaultEmailSubjectTemplate,
-                    scopes: SettingScopes.Application | SettingScopes.Tenant
-                ),
+                    "Email link subject template"
+                )
+                { Category = CategoryOtp },
 
-                new SettingDefinition(
+                new SettingDefinition<string>(
                     OtpSettingsNames.DefaultEmailBodyTemplate,
                     DefaultEmailBodyTemplate,
-                    scopes: SettingScopes.Application | SettingScopes.Tenant
+                    "Email link body template"
                 )
-            };
+                { Category = CategoryOtp }
+            );
         }
     }
 }

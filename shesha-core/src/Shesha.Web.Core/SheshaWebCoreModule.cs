@@ -43,10 +43,10 @@ namespace Shesha
      )]
     public class SheshaWebCoreModule : AbpModule
     {
-        private readonly IHostingEnvironment _env;
+        private readonly IWebHostEnvironment _env;
         private readonly IConfigurationRoot _appConfiguration;
 
-        public SheshaWebCoreModule(IHostingEnvironment env)
+        public SheshaWebCoreModule(IWebHostEnvironment env)
         {
             _env = env;
             _appConfiguration = env.GetAppConfiguration();

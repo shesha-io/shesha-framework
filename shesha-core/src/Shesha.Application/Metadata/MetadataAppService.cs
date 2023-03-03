@@ -167,15 +167,15 @@ namespace Shesha.Metadata
             return dto;
         }
 
-        private async Task<Dictionary<string, ApiEndpointDto>> GetApiEndpoints(Type containerType)
+        private Task<Dictionary<string, ApiEndpointDto>> GetApiEndpoints(Type containerType)
         {
             var result = new Dictionary<string, ApiEndpointDto>();
             if (containerType == null || !containerType.IsEntityType())
-                return result;
+                return Task.FromResult(result);
 
             var entityConfig = _entityConfigurationStore.Get(containerType);
             if (entityConfig.ApplicationServiceType == null)
-                return result;
+                return Task.FromResult(result);
 
             var provider = IocManager.Resolve<IActionDescriptorCollectionProvider>();
             var actionDescriptors = provider.ActionDescriptors
@@ -202,7 +202,7 @@ namespace Shesha.Metadata
                 }
             }
 
-            return result;
+            return Task.FromResult(result);
         }
 
         /// <summary>

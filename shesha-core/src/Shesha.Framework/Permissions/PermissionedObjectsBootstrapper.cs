@@ -1,30 +1,19 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
-using Abp.Reflection;
+using Abp.ObjectMapping;
 using NHibernate.Linq;
 using Shesha.Bootstrappers;
-using Shesha.Configuration.Runtime;
 using Shesha.Domain;
-using Shesha.Metadata;
-using Shesha.Metadata.Dtos;
-using Shesha.Reflection;
-using Shesha.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Abp.Domain.Uow;
-using Abp.ObjectMapping;
 using Shesha.Extensions;
 using Shesha.Permissions;
 using Shesha.Services.VersionedFields;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Shesha.Permission
 {
-    public class PermissionedObjectsBootstrapper : IBootstrapper, ITransientDependency
+    public class PermissionedObjectsBootstrapper : /*IBootstrapper, */ITransientDependency
     {
         private readonly IRepository<PermissionedObject, Guid> _permissionedObjectRepository;
         private readonly IObjectMapper _objectMapper;
@@ -42,7 +31,6 @@ namespace Shesha.Permission
 
         public async Task Process()
         {
-            return;
             var providers = IocManager.Instance.ResolveAll<IPermissionedObjectProvider>();
             foreach (var permissionedObjectProvider in providers)
             {

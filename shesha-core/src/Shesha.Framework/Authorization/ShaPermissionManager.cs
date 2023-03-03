@@ -67,7 +67,7 @@ namespace Shesha.Authorization
             return newPermission;
         }
 
-        private async Task<Abp.Authorization.Permission> _CreatePermissionAsync(PermissionDefinition permission)
+        private Task<Abp.Authorization.Permission> _CreatePermissionAsync(PermissionDefinition permission)
         {
             Abp.Authorization.Permission newPermission = null;
             if (!string.IsNullOrEmpty(permission.Parent))
@@ -92,7 +92,7 @@ namespace Shesha.Authorization
                     properties: new Dictionary<string, object>() { { "IsDbPermission", true } });
             }
 
-            return newPermission;
+            return Task.FromResult(newPermission);
         }
 
         public async Task<Abp.Authorization.Permission> EditPermissionAsync(string oldName, PermissionDefinition permission)

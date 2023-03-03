@@ -66,9 +66,9 @@ namespace Shesha.Domain
             };
         }
 
-        public override async Task<IList<ConfigurationItemBase>> GetDependenciesAsync()
+        public override Task<IList<ConfigurationItemBase>> GetDependenciesAsync()
         {
-            return new List<ConfigurationItemBase>();
+            return Task.FromResult<IList<ConfigurationItemBase>>(new List<ConfigurationItemBase>());
         }
 
         [NotMapped]

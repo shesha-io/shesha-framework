@@ -85,23 +85,24 @@ namespace Shesha.NHibernate.Session
         {
             try
             {
-                if (session.Transaction != null && session.Transaction.IsActive)
+                var transaction = session.GetCurrentTransaction();
+                if (transaction != null && transaction.IsActive)
                 {
                     if (commitTransaction)
                     {
                         try
                         {
-                            session.Transaction.Commit();
+                            transaction.Commit();
                         }
                         catch
                         {
-                            session.Transaction.Rollback();
+                            transaction.Rollback();
                             throw;
                         }
                     }
                     else
                     {
-                        session.Transaction.Rollback();
+                        transaction.Rollback();
                     }
                 }
             }
@@ -191,7 +192,7 @@ namespace Shesha.NHibernate.Session
                     if (param.Value != null && param.Value is IList)
                     {
                         var list = param.Value as IList;
-                        if (list.Any())
+                        if (Enumerable.Any(list.Cast<object>()))
                             q.SetParameterList(param.Key, (IEnumerable)param.Value);
                         else
                             q.SetParameter(param.Key, null);

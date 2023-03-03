@@ -12,43 +12,6 @@ namespace Shesha.Utilities
     public class SerializationHelper
     {
         /// <summary>
-        /// Serializes specified <paramref name="obj"/> to Base64
-        /// </summary>
-        public static string SerializeBase64(object obj)
-        {
-            // Serialize to a base 64 string
-            byte[] bytes;
-            
-            using (var ws = new MemoryStream())
-            {
-                var sf = new BinaryFormatter();
-                sf.Serialize(ws, obj);
-                
-                bytes = ws.GetBuffer();
-                return bytes.Length + ":" + Convert.ToBase64String(bytes, 0, bytes.Length, Base64FormattingOptions.None);
-            }
-        }
-
-        /// <summary>
-        /// Deserializes object from Base64
-        /// </summary>
-        public static object DeserializeBase64(string s)
-        {
-            // We need to know the exact length of the string - Base64 can sometimes pad us by a byte or two
-            int p = s.IndexOf(':');
-            int length = Convert.ToInt32(s.Substring(0, p));
-
-            // Extract data from the base 64 string!
-            byte[] memoryData = Convert.FromBase64String(s.Substring(p + 1));
-
-            using (var rs = new MemoryStream(memoryData, 0, length))
-            {
-                var sf = new BinaryFormatter();
-                return sf.Deserialize(rs);
-            }
-        }
-
-        /// <summary>
         /// Deserializes specified <paramref name="xml"/> to an object of type <typeparamref name="T"/>
         /// </summary>
         public static T DeserializeXml<T>(string xml)
