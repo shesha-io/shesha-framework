@@ -12,6 +12,11 @@ namespace Shesha.Users.Dto
                 .ForMember(x => x.Roles, opt => opt.Ignore())
                 .ForMember(x => x.CreationTime, opt => opt.Ignore());
 
+            CreateMap<UpdateUserDto, User>()
+                .ForMember(x => x.SupportedPasswordResetMethods, opt => opt.Ignore())
+                .ForMember(x => x.Roles, opt => opt.Ignore())
+                .ForMember(x => x.CreationTime, opt => opt.Ignore());
+
             CreateMap<CreateUserDto, User>();
             CreateMap<CreateUserDto, User>()
                 .ForMember(x => x.Roles, opt => opt.Ignore())
