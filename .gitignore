@@ -261,9 +261,8 @@ Upload
 **/node_modules/*
 
 # Ide
-.vscode/*
-vscode/
-.idea/*
+**/.vscode/**
+**/.idea/**
 
 # Front-end env files
 .DS_Store
