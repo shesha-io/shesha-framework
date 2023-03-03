@@ -101,10 +101,10 @@ export interface IConfigurableFormComponent extends IFormComponentContainer, IHa
   defaultValue?: any;
 
   //#region runtime properties
-  visibilityFunc?: (data: any) => boolean;
+  visibilityFunc?: (data: any, globalState: any, formMode: FormMode) => boolean;
 
   //#region runtime properties
-  enabledFunc?: (data: any) => boolean;
+  enabledFunc?: (data: any, globalState: any, formMode: FormMode) => boolean;
   /**/
   settingsValidationErrors?: IAsyncValidationError[];
 

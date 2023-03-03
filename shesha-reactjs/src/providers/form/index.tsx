@@ -11,7 +11,14 @@ import {
   IFormActionsContext,
   ISetEnabledComponentsPayload,
 } from './contexts';
-import { IFormActions, IFormSections, FormMode, IFlatComponentsStructure, IFormSettings, FormRawMarkup } from './models';
+import {
+  IFormActions,
+  IFormSections,
+  FormMode,
+  IFlatComponentsStructure,
+  IFormSettings,
+  FormRawMarkup,
+} from './models';
 import { getFlagSetters } from '../utils/flagsSetters';
 import {
   setFlatComponentsAction,
@@ -36,6 +43,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { IConfigurableFormComponent, IFormValidationErrors } from '../../interfaces';
 import { useConfigurableAction } from '../configurableActionsDispatcher';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
+import { useGlobalState } from '../globalState';
 
 export interface IFormProviderProps {
   name: string;
@@ -250,8 +258,15 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     dispatch(setVisibleComponentsAction(payload));
   };
 
+  const { globalState } = useGlobalState();
+
   const updateVisibleComponents = (formContext: IFormStateContext) => {
-    const visibleComponents = getVisibleComponentIds(formContext.allComponents, formContext.formData);
+    const visibleComponents = getVisibleComponentIds(
+      formContext.allComponents,
+      formContext.formData,
+      globalState,
+      formContext?.formMode
+    );
     setVisibleComponents({ componentIds: visibleComponents });
   };
 
@@ -270,7 +285,12 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   };
 
   const updateEnabledComponents = (formContext: IFormStateContext) => {
-    const enabledComponents = getEnabledComponentIds(formContext.allComponents, formContext.formData);
+    const enabledComponents = getEnabledComponentIds(
+      formContext.allComponents,
+      formContext.formData,
+      globalState,
+      formContext?.formMode
+    );
 
     setEnabledComponents({ componentIds: enabledComponents });
   };
