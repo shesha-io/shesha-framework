@@ -10,5 +10,12 @@ namespace Shesha.DynamicEntities
     {
         Task<bool> BindPropertiesAsync(JObject jobject, object entity, EntityModelBindingContext context,
             string propertyName = null, List<string> formFields = null);
+
+        /// <summary>
+        /// Deletes nested entities from properties that configured as CascadeDeleteUnreferenced (Attributte or PropertyConfig)
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        Task<bool> DeleteCascadeAsync(object entity);
     }
 }
