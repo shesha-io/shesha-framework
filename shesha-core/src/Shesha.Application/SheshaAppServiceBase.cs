@@ -448,6 +448,12 @@ namespace Shesha
             return true;
         }
 
+        protected async Task<bool> DeleteCascadeAsync<TEntity>(TEntity entity)
+        {
+            await EntityModelBinder.DeleteCascadeAsync(entity);
+            return true;
+        }
+
         #endregion
     }
 }

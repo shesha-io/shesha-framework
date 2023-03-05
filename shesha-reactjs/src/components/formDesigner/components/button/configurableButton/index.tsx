@@ -24,9 +24,9 @@ export interface IConfigurableButtonProps extends Omit<IButtonGroupButton, 'styl
 
 export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
   const { backendUrl } = useSheshaApplication();
-  const { form, formMode } = useForm();
+  const { form, formMode, setFormDataAndInstance } = useForm();
   const { data } = useFormData();
-  const { globalState } = useGlobalState();
+  const { globalState, setState: setGlobalState } = useGlobalState();
   const { selectedRow } = useDataTableSelection(false) ?? {}; // todo: move to a generic context provider
 
   const { executeAction } = useConfigurableActionDispatcher();
@@ -37,14 +37,16 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
     if (props.actionConfiguration) {
       // todo: implement generic context collector
       const evaluationContext = {
-        selectedRow: selectedRow,
+        selectedRow,
         data,
-        moment: moment,
-        form: form,
-        formMode: formMode,
+        moment,
+        form,
+        formMode,
         http: axiosHttp(backendUrl),
-        message: message,
-        globalState: globalState,
+        message,
+        globalState,
+        setFormData: setFormDataAndInstance,
+        setGlobalState,
       };
       executeAction({
         actionConfiguration: props.actionConfiguration,
