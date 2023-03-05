@@ -16,7 +16,7 @@ const columns = [
     title: 'Datatype',
     key: 'type',
     dataIndex: 'type',
-    render: tag => <Tag key={tag}>{tag?.toUpperCase()}</Tag>,
+    render: tag => <Tag key={tag}>{tag}</Tag>,
   },
 ];
 
