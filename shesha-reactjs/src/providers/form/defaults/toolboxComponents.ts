@@ -37,13 +37,13 @@ import DynamicView from '../../../components/formDesigner/components/dynamicView
 import EditableTagGroup from '../../../components/formDesigner/components/editableTagGroup';
 import EndpointsAutocompleteComponent from '../../../components/formDesigner/components/endpointsAutocomplete/endpointsAutocomplete';
 import EntityPickerComponent from '../../../components/formDesigner/components/entityPicker';
-import EntityReferenceComponent from '../../../components/formDesigner/components/entityReference/entityReference';
 import EventNames from '../../../components/formDesigner/components/eventNamesList';
 import FileUpload from '../../../components/formDesigner/components/fileUpload';
 import FormAutocompleteComponent from '../../../components/formDesigner/components/formAutocomplete';
 import HierarchicalChecklistComponent from '../../../components/formDesigner/components/hierarchicalChecklist/hierarchicalChecklistComponent';
 import IconPicker from '../../../components/formDesigner/components/iconPicker';
 import Image from '../../../components/formDesigner/components/image';
+import JsonEntity from '../../../components/formDesigner/components/jsonEntity';
 import KeyValueEditor from '../../../components/formDesigner/components/labelValueEditor/labelValueEditorComponent';
 import Paragraph from '../../../components/formDesigner/components/legacy/paragraph';
 import Title from '../../../components/formDesigner/components/legacy/title';
@@ -95,7 +95,6 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
       DynamicView,
       EditableTagGroup,
       EndpointsAutocompleteComponent,
-      EntityReferenceComponent,
       EntityPickerComponent,
       EventNames,
       FileUpload,
@@ -103,6 +102,7 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
       FormAutocompleteComponent,
       IconPicker,
       Image,
+      JsonEntity,
       HierarchicalChecklistComponent,
       KeyValueEditor,
       List,
