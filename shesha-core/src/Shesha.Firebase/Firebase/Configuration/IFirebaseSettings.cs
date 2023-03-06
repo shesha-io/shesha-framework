@@ -1,13 +1,21 @@
-﻿using System.Threading.Tasks;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using Shesha.Settings;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Firebase.Configuration
 {
     /// <summary>
     /// Firebase settings
     /// </summary>
-    public interface IFirebaseSettings
+    [Category("Firebase")]
+    public interface IFirebaseSettings : ISettingAccessors
     {
-        Task<string> GetServiceAccountJson(int? tenantId);
-        Task SetServiceAccountJson(string value, int? tenantId);
+        /// <summary>
+        /// Service Account JSON
+        /// </summary>
+        [Display(Name = "Service Account JSON")]
+        [Setting(FirebaseSettingNames.ServiceAccountJson)]
+        ISettingAccessor<string> ServiceAccountJson { get; }
     }
 }

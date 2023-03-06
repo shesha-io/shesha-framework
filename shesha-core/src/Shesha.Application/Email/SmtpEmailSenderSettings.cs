@@ -5,9 +5,11 @@ using Abp.Dependency;
 using Abp.Net.Mail;
 using Abp.Net.Mail.Smtp;
 using Abp.Runtime.Session;
+using Shesha.Configuration;
 
 namespace Shesha.Email
 {
+    [Obsolete("To be removed")]
     public class SmtpEmailSenderSettings: ISmtpEmailSenderConfiguration, ITransientDependency
     {
         /// <summary>
@@ -15,23 +17,21 @@ namespace Shesha.Email
         /// </summary>
         public IAbpSession AbpSession { get; set; }
 
-        protected readonly ISettingManager SettingManager;
-        public SmtpEmailSenderSettings(ISettingManager settingManager)
+        protected readonly IEmailSettings _emailSettings;
+        public SmtpEmailSenderSettings(IEmailSettings emailSettings)
         {
-            SettingManager = settingManager;
+            _emailSettings = emailSettings;
             AbpSession = NullAbpSession.Instance;
         }
 
         public virtual string DefaultFromAddress
         {
-            get => SettingManager.GetSettingValue(EmailSettingNames.DefaultFromAddress);
-            set => ChangeSetting(EmailSettingNames.DefaultFromAddress, value);
+            get => _emailSettings.SmtpSettings.GetValue()?.DefaultFromAddress;
         }
 
         public virtual string DefaultFromDisplayName
         {
-            get => SettingManager.GetSettingValue(EmailSettingNames.DefaultFromDisplayName);
-            set => ChangeSetting(EmailSettingNames.DefaultFromDisplayName, value);
+            get => _emailSettings.SmtpSettings.GetValue()?.DefaultFromDisplayName;
         }
 
         /// <summary>
@@ -39,8 +39,7 @@ namespace Shesha.Email
         /// </summary>
         public virtual string Host
         {
-            get => SettingManager.GetSettingValue(EmailSettingNames.Smtp.Host);
-            set => ChangeSetting(EmailSettingNames.Smtp.Host, value);
+            get => _emailSettings.SmtpSettings.GetValue()?.Host;
         }
 
         /// <summary>
@@ -48,8 +47,7 @@ namespace Shesha.Email
         /// </summary>
         public virtual int Port
         {
-            get => SettingManager.GetSettingValue<int>(EmailSettingNames.Smtp.Port);
-            set => ChangeSetting<int>(EmailSettingNames.Smtp.Port, value);
+            get => _emailSettings.SmtpSettings.GetValue()?.Port ?? 0;
         }
 
         /// <summary>
@@ -57,8 +55,7 @@ namespace Shesha.Email
         /// </summary>
         public virtual string UserName
         {
-            get => SettingManager.GetSettingValue(EmailSettingNames.Smtp.UserName);
-            set => ChangeSetting(EmailSettingNames.Smtp.UserName, value);
+            get => _emailSettings.SmtpSettings.GetValue()?.UserName;
         }
 
         /// <summary>
@@ -66,8 +63,7 @@ namespace Shesha.Email
         /// </summary>
         public virtual string Password
         {
-            get => SettingManager.GetSettingValue(EmailSettingNames.Smtp.Password);
-            set => ChangeSetting(EmailSettingNames.Smtp.Password, value);
+            get => _emailSettings.SmtpSettings.GetValue()?.Password;
         }
 
         /// <summary>
@@ -75,8 +71,7 @@ namespace Shesha.Email
         /// </summary>
         public virtual string Domain
         {
-            get => SettingManager.GetSettingValue(EmailSettingNames.Smtp.Domain);
-            set => ChangeSetting(EmailSettingNames.Smtp.Domain, value);
+            get => _emailSettings.SmtpSettings.GetValue()?.Domain;
         }
 
         /// <summary>
@@ -84,8 +79,7 @@ namespace Shesha.Email
         /// </summary>
         public virtual bool EnableSsl
         {
-            get => SettingManager.GetSettingValue<bool>(EmailSettingNames.Smtp.EnableSsl);
-            set => ChangeSetting(EmailSettingNames.Smtp.EnableSsl, value);
+            get => _emailSettings.SmtpSettings.GetValue()?.EnableSsl ?? false;
         }
 
         /// <summary>
@@ -93,26 +87,7 @@ namespace Shesha.Email
         /// </summary>
         public virtual bool UseDefaultCredentials
         {
-            get => SettingManager.GetSettingValue<bool>(EmailSettingNames.Smtp.UseDefaultCredentials);
-            set => ChangeSetting(EmailSettingNames.Smtp.UseDefaultCredentials, value);
-        }
-
-        /// <summary>
-        /// Changes setting for tenant with fallback to application
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="value"></param>
-        protected void ChangeSetting(string name, string value)
-        {
-            if (AbpSession.TenantId.HasValue)
-                SettingManager.ChangeSettingForTenant(AbpSession.TenantId.Value, EmailSettingNames.Smtp.Host, value);
-            else
-                SettingManager.ChangeSettingForApplication(EmailSettingNames.Smtp.Host, value);
-        }
-
-        protected void ChangeSetting<T>(string name, T value) where T : struct, IConvertible
-        {
-            ChangeSetting(name, value.ToString(CultureInfo.InvariantCulture));
+            get => false;
         }
     }
 }

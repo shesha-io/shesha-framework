@@ -106,11 +106,30 @@ namespace Shesha
                 Component.For(typeof(ISettingAccessor<>)).ImplementedBy(typeof(SettingAccessor<>)).LifestyleTransient()
             );
             
-            IocManager.RegisterSettingAccessor<IAuthenticationSettings>();
-            IocManager.RegisterSettingAccessor<IPasswordComplexitySettings>();
-            IocManager.RegisterSettingAccessor<ISheshaSettings>();
+            IocManager.RegisterSettingAccessor<IAuthenticationSettings>(s => {
+                s.UserLockOutEnabled.WithDefaultValue(true);
+                s.MaxFailedAccessAttemptsBeforeLockout.WithDefaultValue(5);
+                s.DefaultAccountLockoutSeconds.WithDefaultValue(300 /* 5 minutes */);
 
-            IocManager.RegisterSettingAccessor<IEmailSettings>();
+                s.AutoLogoffTimeout.WithDefaultValue(0);
+                s.ResetPasswordViaSecurityQuestionsNumQuestionsAllowed.WithDefaultValue(3);
+            });
+            IocManager.RegisterSettingAccessor<IPasswordComplexitySettings>(s => {
+                s.RequiredLength.WithDefaultValue(3);
+            });
+            IocManager.RegisterSettingAccessor<ISheshaSettings>(s => {
+                s.UploadFolder.WithDefaultValue("~/App_Data/Upload");
+            });
+
+            IocManager.RegisterSettingAccessor<IEmailSettings>(s => {
+                s.RedirectAllMessagesTo.WithDefaultValue("default!");
+                s.SmtpSettings.WithDefaultValue(new SmtpSettings
+                {
+                    Port = 25,
+                    UseSmtpRelay = false,
+                    EnableSsl = false,
+                });
+            });
         }
 
         public override void PostInitialize()

@@ -13,35 +13,22 @@ namespace Shesha.Configuration
         /// <summary>
         /// Emails enabled
         /// </summary>
-        [Display(Name = "Emails enabled")]
+        [Display(Name = "Emails enabled", Description = "If true, all emails are enabled")]
         [SettingAttribute(SheshaSettingNames.Email.EmailsEnabled)]
         ISettingAccessor<bool> EmailsEnabled { get; }
 
         /// <summary>
-        /// Support SMTP relay
+        /// Redirect all emails to
         /// </summary>
-        [Display(Name = "Support SMTP relay")]
-        [SettingAttribute(SheshaSettingNames.Email.SupportSmtpRelay)]
-        ISettingAccessor<bool> SupportSmtpRelay { get; }
-
-        /// <summary>
-        /// Redirect all messages to
-        /// </summary>
-        [Display(Name = "Redirect all messages to")]
+        [Display(Name = "Redirect all emails to", Description = "If not null or empty the all outgoing emails will be sent to this email address, is used for testing only")]
         [SettingAttribute(SheshaSettingNames.Email.RedirectAllMessagesTo)]
         ISettingAccessor<string> RedirectAllMessagesTo { get; }
 
-        /*
-                new SettingDefinition<EmailSettings>(
-                    SheshaSettingNames.Email.CustomEmailSettings,
-                    new EmailSettings() { SmtpServer = "smtp.mail.com", Username = "myaccount@maill.com", Port = 25 },
-                    "Email"
-                )
-                { 
-                    Category = CategoryEmail,
-                    EditForm = new ConfigurationItems.ConfigurationItemIdentifier { Name = "email-settings", Module = "Shesha" }
-                }
-            );         
-         */
-    }
+        /// <summary>
+        /// SMTP Settings
+        /// </summary>
+        [Display(Name = "SMTP Settings")]
+        [SettingAttribute(SheshaSettingNames.Email.SmtpSettings, EditorFormName = "smtp-settings")]
+        ISettingAccessor<SmtpSettings> SmtpSettings { get; }
+    }    
 }

@@ -1,36 +1,47 @@
-﻿using System;
+﻿using Abp.Dependency;
+using Abp.Net.Mail.Smtp;
+using Castle.Core.Logging;
+using Shesha.Configuration;
+using Shesha.Email.Dtos;
+using Shesha.Utilities;
+using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Abp.Dependency;
-using Abp.Net.Mail.Smtp;
-using Castle.Core.Logging;
-using Shesha.Email.Dtos;
-using Shesha.Utilities;
 
 namespace Shesha.Email
 {
     public class SheshaEmailSender: SmtpEmailSender, ISheshaEmailSender, ITransientDependency
     {
         public ILogger Logger { get; set; } = NullLogger.Instance;
-        private readonly ISmtpSettings _smtpSettings;
+        private readonly IEmailSettings _emailSettings;
         private readonly IEmailImagesHelper _imagesHelper;
 
-        public SheshaEmailSender(ISmtpEmailSenderConfiguration configuration, ISmtpSettings smtpSettings, IEmailImagesHelper imagesHelper) : base(configuration)
+        public SheshaEmailSender(ISmtpEmailSenderConfiguration configuration, IEmailSettings emailSettings, IEmailImagesHelper imagesHelper) : base(configuration)
         {
-            _smtpSettings = smtpSettings;
+            _emailSettings = emailSettings;
             _imagesHelper = imagesHelper;
         }
-        
+
+        private bool EmailsEnabled() 
+        {
+            var enabled = _emailSettings.EmailsEnabled.GetValue();
+            if (!enabled)
+                Logger.Warn("Emails are disabled");
+
+            return enabled;
+        }
 
         public bool SendMail(string fromAddress, string toAddress, string subject, string body, bool isBodyHtml, List<EmailAttachment> attachments = null,
             string cc = "", bool throwException = false)
         {
+            if (!EmailsEnabled())
+                return false;
+
             using (var mail = BuildMessageWith(fromAddress, toAddress, subject, body, cc))
             {
                 mail.IsBodyHtml = isBodyHtml;
@@ -41,48 +52,69 @@ namespace Shesha.Email
                         mail.Attachments.Add(new Attachment(attachment.Stream, attachment.FileName));
                     }
                 }
-                return SendMail(mail, throwException);
+                try
+                {
+                    SendEmail(mail);
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    // Log the exception
+                    Logger.Error("Failed to send email", e);
+                    if (throwException)
+                        throw;
+                    return false;
+                }
             }
-        }
-
-        /// <summary>
-        /// Returns SmtpClient configured according to the current application settings
-        /// </summary>
-        public SmtpClient GetSmtpClient()
-        {
-            var client = new SmtpClient(_smtpSettings.Host, _smtpSettings.Port)
-            {
-                EnableSsl = _smtpSettings.EnableSsl,
-                Credentials = string.IsNullOrWhiteSpace(_smtpSettings.Domain)
-                    ? new NetworkCredential(_smtpSettings.UserName, _smtpSettings.Password)
-                    : new NetworkCredential(_smtpSettings.UserName, _smtpSettings.Password, _smtpSettings.Domain)
-            };
-
-            return client;
         }
 
         protected override async Task SendEmailAsync(MailMessage mail)
         {
-            if (!_smtpSettings.EmailsEnabled)
+            if (!EmailsEnabled())
                 return;
+
+            var smtpSettings = await _emailSettings.SmtpSettings.GetValueAsync();
 
             // change recipient if the redirect is configured (is used for testing)
-            if (!PrepareAndCheckMail(mail))
+            if (!PrepareAndCheckMail(mail, smtpSettings))
                 return;
 
-            using (var smtpClient = GetSmtpClient())
+            using (var smtpClient = GetSmtpClient(smtpSettings))
             {
                 await smtpClient.SendMailAsync(mail);
             }
         }
 
+        protected override void SendEmail(MailMessage mail)
+        {
+            if (!EmailsEnabled())
+                return;
+
+            var smtpSettings = _emailSettings.SmtpSettings.GetValue();
+
+            // change recipient if the redirect is configured (is used for testing)
+            if (!PrepareAndCheckMail(mail, smtpSettings))
+                return;
+
+            using (var smtpClient = GetSmtpClient(smtpSettings))
+            {
+                smtpClient.Send(mail);
+            }
+        }
+
+        #region private methods
+
         /// <summary>
         /// Prepare mail and return true if it should be sent, otherwise - false
         /// </summary>
         /// <param name="mail">Mail to prepare</param>
+        /// <param name="smtpSettings">SMPT settings</param>
         /// <returns></returns>
-        private bool PrepareAndCheckMail(MailMessage mail)
+        private bool PrepareAndCheckMail(MailMessage mail, SmtpSettings smtpSettings)
         {
+            NormalizeMail(mail);
+            NormalizeMailSender(mail, smtpSettings);
+
             // check recipient before redirect
             if (!mail.To.Any() || mail.To[0].Address == "")
             {
@@ -90,10 +122,11 @@ namespace Shesha.Email
                 return false;
             }
 
-            if (!string.IsNullOrWhiteSpace(_smtpSettings.RedirectAllMessagesTo))
+            var redirectTo = _emailSettings.RedirectAllMessagesTo.GetValue();
+            if (!string.IsNullOrWhiteSpace(redirectTo))
             {
                 mail.To.Clear();
-                mail.To.Add(_smtpSettings.RedirectAllMessagesTo);
+                mail.To.Add(redirectTo);
                 mail.CC.Clear();
                 mail.Bcc.Clear();
             }
@@ -101,52 +134,7 @@ namespace Shesha.Email
             return true;
         }
 
-        protected override void SendEmail(MailMessage mail)
-        {
-            if (!_smtpSettings.EmailsEnabled)
-                return;
-
-            // change recipient if the redirect is configured (is used for testing)
-            if (!PrepareAndCheckMail(mail))
-                return;
-
-            using (var smtpClient = GetSmtpClient())
-            {
-                smtpClient.Send(mail);
-            }
-        }
-
-
-        private bool SendMail(MailMessage mail, bool throwException = false)
-        {
-            try
-            {
-                if (!_smtpSettings.EmailsEnabled)
-                {
-                    Logger.Warn("Emails are disabled");
-                    return false;
-                }
-
-                using var smtp = GetSmtpClient();
-
-                // change recipient if the redirect is configured (is used for testing)
-                if (!PrepareAndCheckMail(mail))
-                    return false;
-
-                smtp.Send(mail);
-                return true;
-            }
-            catch (Exception e)
-            {
-                // Log the exception
-                Logger.Error("Failed to send email", e);
-                if (throwException)
-                    throw;
-                return false;
-            }
-        }
-
-        private MailMessage BuildMessageWith(string fromAddress, string toAddress, string subject, string body, string cc = "")
+        private MailMessage BuildMessageWith(string fromAddress, string toAddress, string subject, string body, string cc)
         {
             var message = new MailMessage
             {
@@ -156,8 +144,6 @@ namespace Shesha.Email
             };
             if (!string.IsNullOrWhiteSpace(fromAddress))
                 message.From = new MailAddress(fromAddress);
-
-            NormalizeMail(message);
 
             _imagesHelper.PrepareImages(message);
 
@@ -181,37 +167,45 @@ namespace Shesha.Email
             return message;
         }
 
-        /// <summary>
-        /// Normalizes given email.
-        /// Fills <see cref="MailMessage.From"/> if it's not filled before.
-        /// Sets encodings to UTF8 if they are not set before.
-        /// </summary>
-        /// <param name="mail">Mail to be normalized</param>
-        protected override void NormalizeMail(MailMessage mail)
+        private void NormalizeMailSender(MailMessage mail, SmtpSettings smtpSettings)
         {
             if (mail.From == null || string.IsNullOrWhiteSpace(mail.From.Address))
             {
-                if (_smtpSettings.SupportSmtpRelay && !string.IsNullOrWhiteSpace(_smtpSettings.DefaultFromAddress))
+                if (smtpSettings.UseSmtpRelay && !string.IsNullOrWhiteSpace(smtpSettings.DefaultFromAddress))
                 {
                     mail.From = new MailAddress(
-                        _smtpSettings.DefaultFromAddress,
-                        _smtpSettings.DefaultFromDisplayName,
+                        smtpSettings.DefaultFromAddress,
+                        smtpSettings.DefaultFromDisplayName,
                         Encoding.UTF8
                     );
                 }
                 else
                 {
                     mail.From = new MailAddress(
-                        _smtpSettings.UserName,
+                        smtpSettings.UserName,
                         null,
                         Encoding.UTF8
                     );
                 }
             }
-
-            mail.HeadersEncoding ??= Encoding.UTF8;
-            mail.SubjectEncoding ??= Encoding.UTF8;
-            mail.BodyEncoding ??= Encoding.UTF8;
         }
+
+        /// <summary>
+        /// Returns SmtpClient configured according to the current application settings
+        /// </summary>
+        private SmtpClient GetSmtpClient(SmtpSettings smtpSettings)
+        {
+            var client = new SmtpClient(smtpSettings.Host, smtpSettings.Port)
+            {
+                EnableSsl = smtpSettings.EnableSsl,
+                Credentials = string.IsNullOrWhiteSpace(smtpSettings.Domain)
+                    ? new NetworkCredential(smtpSettings.UserName, smtpSettings.Password)
+                    : new NetworkCredential(smtpSettings.UserName, smtpSettings.Password, smtpSettings.Domain)
+            };
+
+            return client;
+        }
+
+        #endregion
     }
 }

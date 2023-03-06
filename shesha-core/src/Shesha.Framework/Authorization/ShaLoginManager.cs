@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using System.Transactions;
-using Abp;
+﻿using Abp;
 using Abp.Auditing;
 using Abp.Authorization;
 using Abp.Authorization.Roles;
 using Abp.Authorization.Users;
-using Abp.Configuration;
 using Abp.Configuration.Startup;
 using Abp.Dependency;
 using Abp.Domain.Repositories;
@@ -22,6 +15,12 @@ using Microsoft.AspNetCore.Identity;
 using NHibernate.Linq;
 using Shesha.Domain;
 using Shesha.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using System.Transactions;
 
 namespace Shesha.Authorization
 {
@@ -36,7 +35,6 @@ namespace Shesha.Authorization
         protected IRepository<TTenant> TenantRepository { get; }
         protected IUnitOfWorkManager UnitOfWorkManager { get; }
         protected AbpUserManager<TRole, TUser> UserManager { get; }
-        protected ISettingManager SettingManager { get; }
         protected IUserManagementConfig UserManagementConfig { get; }
         protected IIocResolver IocResolver { get; }
         protected AbpRoleManager<TRole, TUser> RoleManager { get; }
@@ -53,7 +51,6 @@ namespace Shesha.Authorization
             IMultiTenancyConfig multiTenancyConfig,
             IRepository<TTenant> tenantRepository,
             IUnitOfWorkManager unitOfWorkManager,
-            ISettingManager settingManager,
             IUserManagementConfig userManagementConfig,
             IIocResolver iocResolver,
             IPasswordHasher<TUser> passwordHasher,
@@ -67,7 +64,6 @@ namespace Shesha.Authorization
             MultiTenancyConfig = multiTenancyConfig;
             TenantRepository = tenantRepository;
             UnitOfWorkManager = unitOfWorkManager;
-            SettingManager = settingManager;
             UserManagementConfig = userManagementConfig;
             IocResolver = iocResolver;
             RoleManager = roleManager;
@@ -249,16 +245,6 @@ namespace Shesha.Authorization
             if (!user.IsActive)
             {
                 return new ShaLoginResult<TTenant, TUser>(ShaLoginResultType.UserIsNotActive);
-            }
-
-            if (await IsEmailConfirmationRequiredForLoginAsync(user.TenantId) && !user.IsEmailConfirmed)
-            {
-                return new ShaLoginResult<TTenant, TUser>(ShaLoginResultType.UserEmailIsNotConfirmed);
-            }
-
-            if (await IsPhoneConfirmationRequiredForLoginAsync(user.TenantId) && !user.IsPhoneNumberConfirmed)
-            {
-                return new ShaLoginResult<TTenant, TUser>(ShaLoginResultType.UserPhoneNumberIsNotConfirmed);
             }
 
             var principal = await _claimsPrincipalFactory.CreateAsync(user);
@@ -445,36 +431,6 @@ namespace Shesha.Authorization
             }
 
             return tenant;
-        }
-
-        protected virtual async Task<bool> IsEmailConfirmationRequiredForLoginAsync(int? tenantId)
-        {
-            if (tenantId.HasValue)
-            {
-                return await SettingManager.GetSettingValueForTenantAsync<bool>(AbpZeroSettingNames.UserManagement.IsEmailConfirmationRequiredForLogin, tenantId.Value);
-            }
-
-            return await SettingManager.GetSettingValueForApplicationAsync<bool>(AbpZeroSettingNames.UserManagement.IsEmailConfirmationRequiredForLogin);
-        }
-
-        protected virtual bool IsEmailConfirmationRequiredForLogin(int? tenantId)
-        {
-            if (tenantId.HasValue)
-            {
-                return SettingManager.GetSettingValueForTenant<bool>(AbpZeroSettingNames.UserManagement.IsEmailConfirmationRequiredForLogin, tenantId.Value);
-            }
-
-            return SettingManager.GetSettingValueForApplication<bool>(AbpZeroSettingNames.UserManagement.IsEmailConfirmationRequiredForLogin);
-        }
-
-        protected virtual Task<bool> IsPhoneConfirmationRequiredForLoginAsync(int? tenantId)
-        {
-            return Task.FromResult(false);
-        }
-
-        protected virtual bool IsPhoneConfirmationRequiredForLogin(int? tenantId)
-        {
-            return false;
         }
     }
 }

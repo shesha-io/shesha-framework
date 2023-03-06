@@ -16,7 +16,7 @@ namespace Shesha.Users
 
         Task<ResetPasswordSendOtpResponse> ResetPasswordSendOtp(string mobileNo);
 
-        Task<bool> SendSMSOTP(string username);
+        Task<bool> SendSmsOtp(string username);
 
         Task<List<SecurityQuestionDto>> GetSecurityQuestions(string username);
 

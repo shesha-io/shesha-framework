@@ -1,18 +1,14 @@
-﻿using System;
-using System.Threading.Tasks;
-using Abp.Configuration;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Net.Mail;
 using Abp.UI;
 using Microsoft.AspNetCore.Mvc;
-using Shesha.Configuration;
 using Shesha.Domain.Enums;
 using Shesha.Exceptions;
 using Shesha.Otp.Configuration;
 using Shesha.Otp.Dto;
-using Shesha.Services;
 using Shesha.Sms;
-using Shesha.Utilities;
+using System;
+using System.Threading.Tasks;
 
 namespace Shesha.Otp
 {
@@ -22,16 +18,14 @@ namespace Shesha.Otp
         private readonly IEmailSender _emailSender;
         private readonly IOtpStorage _otpStorage;
         private readonly IOtpGenerator _otpGenerator;
-        private readonly ISettingManager _settingManager;
         private readonly IOtpSettings _otpSettings;
 
-        public OtpAppService(ISmsGateway smsGateway, IEmailSender emailSender, IOtpStorage otpStorage, IOtpGenerator passwordGenerator, ISettingManager settingManager, IOtpSettings otpSettings)
+        public OtpAppService(ISmsGateway smsGateway, IEmailSender emailSender, IOtpStorage otpStorage, IOtpGenerator passwordGenerator, IOtpSettings otpSettings)
         {
             _smsGateway = smsGateway;
             _emailSender = emailSender;
             _otpStorage = otpStorage;
             _otpGenerator = passwordGenerator;
-            _settingManager = settingManager;
             _otpSettings = otpSettings;
         }
 
@@ -69,7 +63,7 @@ namespace Shesha.Otp
             };
 
             // send otp
-            if (_otpSettings.IgnoreOtpValidation)
+            if (!await _otpSettings.IgnoreOtpValidation.GetValueAsync())
             {
                 otp.SendStatus = OtpSendStatus.Ignored;
             } else
@@ -90,9 +84,9 @@ namespace Shesha.Otp
             }
 
             // set expiration and save
-            var lifeTime = input.Lifetime ?? _otpSettings.DefaultLifetime;
-            if (lifeTime == 0)
-                lifeTime = OtpSettingProvider.DefaultLifetime;
+            var lifeTime = input.Lifetime.HasValue && input.Lifetime.Value != 0 
+                ? input.Lifetime .Value
+                : await _otpSettings.DefaultLifetime.GetValueAsync();
 
             otp.ExpiresOn = DateTime.Now.AddSeconds(lifeTime);
 
@@ -140,7 +134,7 @@ namespace Shesha.Otp
             }
             
             // extend lifetime
-            var lifeTime = input.Lifetime ?? _otpSettings.DefaultLifetime;
+            var lifeTime = input.Lifetime ?? await _otpSettings.DefaultLifetime.GetValueAsync();
             var newExpiresOn = DateTime.Now.AddSeconds(lifeTime);
 
             await _otpStorage.UpdateAsync(input.OperationId, newOtp =>
@@ -167,9 +161,9 @@ namespace Shesha.Otp
             {
                 case OtpSendType.Sms:
                 {
-                    var bodyTemplate = await _settingManager.GetSettingValueAsync(OtpSettingsNames.DefaultBodyTemplate);
+                    var bodyTemplate = await _otpSettings.DefaultBodyTemplate.GetValueAsync();
                     if (string.IsNullOrWhiteSpace(bodyTemplate))
-                        bodyTemplate = OtpSettingProvider.DefaultBodyTemplate;
+                        bodyTemplate = OtpDefaults.DefaultBodyTemplate;
 
                     // todo: use mustache
                     var messageBody = bodyTemplate.Replace("{{password}}", otp.Pin);
@@ -178,8 +172,8 @@ namespace Shesha.Otp
                 }
                 case OtpSendType.Email:
                 {
-                    var bodyTemplate = await _settingManager.GetSettingValueAsync(OtpSettingsNames.DefaultBodyTemplate);
-                    var subjectTemplate = await _settingManager.GetSettingValueAsync(OtpSettingsNames.DefaultSubjectTemplate);
+                    var bodyTemplate = await _otpSettings.DefaultBodyTemplate.GetValueAsync();
+                    var subjectTemplate = await _otpSettings.DefaultSubjectTemplate.GetValueAsync();
 
                     var body = bodyTemplate.Replace("{{password}}", otp.Pin);
                     var subject= subjectTemplate.Replace("{{password}}", otp.Pin);
@@ -189,8 +183,8 @@ namespace Shesha.Otp
                 }
                 case OtpSendType.EmailLink:
                 {
-                    var bodyTemplate = await _settingManager.GetSettingValueAsync(OtpSettingsNames.DefaultEmailBodyTemplate);
-                    var subjectTemplate = await _settingManager.GetSettingValueAsync(OtpSettingsNames.DefaultEmailSubjectTemplate);
+                    var bodyTemplate = await _otpSettings.DefaultEmailSubjectTemplate.GetValueAsync();
+                    var subjectTemplate = await _otpSettings.DefaultEmailBodyTemplate.GetValueAsync();
 
                     var body = bodyTemplate.Replace("{{token}}", otp.Pin);
                     body = body.Replace("{{userid}}", otp.RecipientId);
@@ -207,7 +201,7 @@ namespace Shesha.Otp
         /// </summary>
         public async Task<VerifyPinResponse> VerifyPinAsync(VerifyPinInput input)
         {
-            if (!_otpSettings.IgnoreOtpValidation)
+            if (!await _otpSettings.IgnoreOtpValidation.GetValueAsync())
             {
                 var pinDto = await _otpStorage.GetAsync(input.OperationId);
                 if (pinDto == null || pinDto.Pin != input.Pin)
@@ -236,12 +230,13 @@ namespace Shesha.Otp
         [HttpPost]
         public async Task<bool> UpdateSettingsAsync(OtpSettingsDto input)
         {
-            await _settingManager.ChangeSettingForApplicationAsync(OtpSettingsNames.PasswordLength, input.PasswordLength.ToString());
-            await _settingManager.ChangeSettingForApplicationAsync(OtpSettingsNames.Alphabet, input.Alphabet);
-            await _settingManager.ChangeSettingForApplicationAsync(OtpSettingsNames.DefaultLifetime, input.DefaultLifetime.ToString());
-            await _settingManager.ChangeSettingForApplicationAsync(OtpSettingsNames.IgnoreOtpValidation, input.IgnoreOtpValidation.ToString());
-            await _settingManager.ChangeSettingForApplicationAsync(OtpSettingsNames.DefaultEmailSubjectTemplate, input.EmailSubject);
-            await _settingManager.ChangeSettingForApplicationAsync(OtpSettingsNames.DefaultEmailBodyTemplate, input.EmailBodyTemplate);
+            await _otpSettings.PasswordLength.SetValueAsync(input.PasswordLength);
+            await _otpSettings.Alphabet.SetValueAsync(input.Alphabet);
+            await _otpSettings.DefaultLifetime.SetValueAsync(input.DefaultLifetime);
+            await _otpSettings.IgnoreOtpValidation.SetValueAsync(input.IgnoreOtpValidation);
+
+            await _otpSettings.DefaultEmailSubjectTemplate.SetValueAsync(input.EmailSubject);
+            await _otpSettings.DefaultEmailBodyTemplate.SetValueAsync(input.EmailBodyTemplate);
 
             return true;
         }
@@ -252,12 +247,12 @@ namespace Shesha.Otp
         {
             var settings = new OtpSettingsDto
             {
-                PasswordLength = (await _settingManager.GetSettingValueForApplicationAsync(OtpSettingsNames.PasswordLength)).ToInt(OtpSettingProvider.DefaultPasswordLength),
-                Alphabet = await _settingManager.GetSettingValueForApplicationAsync(OtpSettingsNames.Alphabet),
-                DefaultLifetime = (await _settingManager.GetSettingValueForApplicationAsync(OtpSettingsNames.DefaultLifetime)).ToInt(OtpSettingProvider.DefaultLifetime),
-                IgnoreOtpValidation = await _settingManager.GetSettingValueForApplicationAsync(OtpSettingsNames.IgnoreOtpValidation) == true.ToString(),
-                EmailSubject = await _settingManager.GetSettingValueForApplicationAsync(OtpSettingsNames.DefaultEmailSubjectTemplate),
-                EmailBodyTemplate = await _settingManager.GetSettingValueForApplicationAsync(OtpSettingsNames.DefaultEmailBodyTemplate)
+                PasswordLength = await _otpSettings.PasswordLength.GetValueAsync(),
+                Alphabet = await _otpSettings.Alphabet.GetValueAsync(),
+                DefaultLifetime = await _otpSettings.DefaultLifetime.GetValueAsync(),
+                IgnoreOtpValidation = await _otpSettings.IgnoreOtpValidation.GetValueAsync(),
+                EmailSubject = await _otpSettings.DefaultEmailSubjectTemplate.GetValueAsync(),
+                EmailBodyTemplate = await _otpSettings.DefaultEmailBodyTemplate.GetValueAsync(),
             };
             
             return settings;

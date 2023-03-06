@@ -1,7 +1,5 @@
 ﻿using Castle.Core.Logging;
 using Shesha.Attributes;
-using Shesha.Configuration;
-using Shesha.Utilities;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
@@ -19,10 +17,12 @@ namespace Shesha.Sms.Clickatell
         // https://archive.clickatell.com/developers/api-docs/http-sending-messages/
 
         public ILogger Logger { get; set; }
+        private readonly IClickatellSettings _settings;
 
-        public ClickatellSmsGateway()
+        public ClickatellSmsGateway(IClickatellSettings settings)
         {
             Logger = NullLogger.Instance;
+            _settings = settings;
         }
 
         /// <summary>
@@ -42,13 +42,13 @@ namespace Shesha.Sms.Clickatell
             // Removing any spaces and any other common characters in a phone number.
             mobileNumber = MobileHelper.CleanupmobileNo(mobileNumber);
 
-            var clickatellHost = await SettingManager.GetSettingValueForApplicationAsync(ClickatellSettingNames.Host);
-            var clickatellUsername = await SettingManager.GetSettingValueForApplicationAsync(ClickatellSettingNames.ApiUsername);
-            var clickatellPassword = await SettingManager.GetSettingValueForApplicationAsync(ClickatellSettingNames.ApiPassword);
-            var clickatellApiId = await SettingManager.GetSettingValueForApplicationAsync(ClickatellSettingNames.ApiId);
+            var clickatellHost = await _settings.Host.GetValueAsync();
+            var clickatellUsername = await _settings.ApiUsername.GetValueAsync();
+            var clickatellPassword = await _settings.ApiPassword.GetValueAsync();
+            var clickatellApiId = await _settings.ApiId.GetValueAsync();
 
-            var singleMessageMaxLength = (await SettingManager.GetSettingValueForApplicationAsync(ClickatellSettingNames.SingleMessageMaxLength)).ToInt(ClickatellSettingProvider.DefaultSingleMessageMaxLength);
-            var messagePartLength = (await SettingManager.GetSettingValueForApplicationAsync(ClickatellSettingNames.MessagePartLength)).ToInt(ClickatellSettingProvider.DefaultMessagePartLength);
+            var singleMessageMaxLength = await _settings.SingleMessageMaxLength.GetValueAsync();
+            var messagePartLength = await _settings.MessagePartLength.GetValueAsync();
 
             var sb = new StringBuilder();
             sb.Append("https://" + clickatellHost + "/http/sendmsg?api_id=");
@@ -93,11 +93,11 @@ namespace Shesha.Sms.Clickatell
             var request = WebRequest.Create(url); // todo: replace with HttpClient
             #pragma warning restore SYSLIB0014
 
-            var useProxy = await SettingManager.GetSettingValueForApplicationAsync(ClickatellSettingNames.UseProxy) == true.ToString();
+            var useProxy = await _settings.UseProxy.GetValueAsync();
 
             if (useProxy)
             {
-                var proxyAddress = await SettingManager.GetSettingValueForApplicationAsync(ClickatellSettingNames.WebProxyAddress);
+                var proxyAddress = await _settings.WebProxyAddress.GetValueAsync();
 
                 var proxy = new WebProxy
                 {
@@ -105,7 +105,7 @@ namespace Shesha.Sms.Clickatell
                 };
                 request.Proxy = proxy;
 
-                var useDefaultCredentials = await SettingManager.GetSettingValueForApplicationAsync(ClickatellSettingNames.UseDefaultProxyCredentials) == true.ToString();
+                var useDefaultCredentials = await _settings.UseDefaultProxyCredentials.GetValueAsync();
                 if (useDefaultCredentials)
                 {
                     proxy.Credentials = CredentialCache.DefaultCredentials;
@@ -113,8 +113,8 @@ namespace Shesha.Sms.Clickatell
                 }
                 else
                 {
-                    var username = await SettingManager.GetSettingValueForApplicationAsync(ClickatellSettingNames.WebProxyUsername);
-                    var password = await SettingManager.GetSettingValueForApplicationAsync(ClickatellSettingNames.WebProxyPassword);
+                    var username = await _settings.WebProxyUsername.GetValueAsync();
+                    var password = await _settings.WebProxyPassword.GetValueAsync();
 
                     proxy.Credentials = new NetworkCredential(username, password);
                 }
@@ -139,18 +139,18 @@ namespace Shesha.Sms.Clickatell
         {
             var settings = new ClickatellSettingDto
             {
-                ClickatellHost = await SettingManager.GetSettingValueAsync(ClickatellSettingNames.Host),
-                ClickatellApiId = await SettingManager.GetSettingValueAsync(ClickatellSettingNames.ApiId),
-                ClickatellApiUsername = await SettingManager.GetSettingValueAsync(ClickatellSettingNames.ApiUsername),
-                ClickatellApiPassword = await SettingManager.GetSettingValueAsync(ClickatellSettingNames.ApiPassword),
-                UseProxy = Boolean.Parse((ReadOnlySpan<char>)await SettingManager.GetSettingValueAsync(ClickatellSettingNames.UseProxy)),
-                WebProxyAddress = await SettingManager.GetSettingValueAsync(ClickatellSettingNames.WebProxyAddress),
-                UseDefaultProxyCredentials = Boolean.Parse((ReadOnlySpan<char>)await SettingManager.GetSettingValueAsync(ClickatellSettingNames.UseDefaultProxyCredentials)),
-                WebProxyUsername = await SettingManager.GetSettingValueAsync(ClickatellSettingNames.WebProxyUsername),
-                WebProxyPassword = await SettingManager.GetSettingValueAsync(ClickatellSettingNames.WebProxyPassword),
+                ClickatellHost = await _settings.Host.GetValueAsync(),
+                ClickatellApiId = await _settings.ApiId.GetValueAsync(),
+                ClickatellApiUsername = await _settings.ApiUsername.GetValueAsync(),
+                ClickatellApiPassword = await _settings.ApiPassword.GetValueAsync(),
+                UseProxy = await _settings.UseProxy.GetValueAsync(),
+                WebProxyAddress = await _settings.WebProxyAddress.GetValueAsync(),
+                UseDefaultProxyCredentials = await _settings.UseDefaultProxyCredentials.GetValueAsync(),
+                WebProxyUsername = await _settings.WebProxyUsername.GetValueAsync(),
+                WebProxyPassword = await _settings.WebProxyPassword.GetValueAsync(),
 
-                SingleMessageMaxLength = (await SettingManager.GetSettingValueAsync(ClickatellSettingNames.SingleMessageMaxLength)).ToInt(ClickatellSettingProvider.DefaultSingleMessageMaxLength),
-                MessagePartLength = (await SettingManager.GetSettingValueAsync(ClickatellSettingNames.MessagePartLength)).ToInt(ClickatellSettingProvider.DefaultMessagePartLength)
+                SingleMessageMaxLength = await _settings.SingleMessageMaxLength.GetValueAsync(),
+                MessagePartLength = await _settings.MessagePartLength.GetValueAsync(),
             };
 
             return settings;
@@ -158,18 +158,18 @@ namespace Shesha.Sms.Clickatell
 
         public override async Task SetTypedSettingsAsync(ClickatellSettingDto settings)
         {
-            await SettingManager.ChangeSettingAsync(ClickatellSettingNames.Host, settings.ClickatellHost);
-            await SettingManager.ChangeSettingAsync(ClickatellSettingNames.ApiId, settings.ClickatellApiId);
-            await SettingManager.ChangeSettingAsync(ClickatellSettingNames.ApiUsername, settings.ClickatellApiUsername);
-            await SettingManager.ChangeSettingAsync(ClickatellSettingNames.ApiPassword, settings.ClickatellApiPassword);
-            await SettingManager.ChangeSettingAsync(ClickatellSettingNames.SingleMessageMaxLength, settings.SingleMessageMaxLength.ToString());
-            await SettingManager.ChangeSettingAsync(ClickatellSettingNames.MessagePartLength, settings.MessagePartLength.ToString());
+            await _settings.Host.SetValueAsync(settings.ClickatellHost);
+            await _settings.ApiId.SetValueAsync(settings.ClickatellApiId);
+            await _settings.ApiUsername.SetValueAsync(settings.ClickatellApiUsername);
+            await _settings.ApiPassword.SetValueAsync(settings.ClickatellApiPassword);
+            await _settings.SingleMessageMaxLength.SetValueAsync(settings.SingleMessageMaxLength);
+            await _settings.MessagePartLength.SetValueAsync(settings.MessagePartLength);
 
-            await SettingManager.ChangeSettingAsync(ClickatellSettingNames.UseProxy, settings.UseProxy.ToString());
-            await SettingManager.ChangeSettingAsync(ClickatellSettingNames.WebProxyAddress, settings.WebProxyAddress);
-            await SettingManager.ChangeSettingAsync(ClickatellSettingNames.UseDefaultProxyCredentials, settings.UseDefaultProxyCredentials.ToString());
-            await SettingManager.ChangeSettingAsync(ClickatellSettingNames.WebProxyUsername, settings.WebProxyUsername);
-            await SettingManager.ChangeSettingAsync(ClickatellSettingNames.WebProxyPassword, settings.WebProxyPassword);
+            await _settings.UseProxy.SetValueAsync(settings.UseProxy);
+            await _settings.WebProxyAddress.SetValueAsync(settings.WebProxyAddress);
+            await _settings.UseDefaultProxyCredentials.SetValueAsync(settings.UseDefaultProxyCredentials);
+            await _settings.WebProxyUsername.SetValueAsync(settings.WebProxyUsername);
+            await _settings.WebProxyPassword.SetValueAsync(settings.WebProxyPassword);
         }
     }
 }

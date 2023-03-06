@@ -16,6 +16,7 @@ namespace Shesha.Settings
 
         public string Name { get; private set; }
         public string Module { get; private set; }
+        public TValue DefaultValue { get; private set; }
 
         public SettingAccessor(PropertyInfo property, IShaSettingManager settingManager)
         {
@@ -52,5 +53,14 @@ namespace Shesha.Settings
         {
             await _settingManager.SetAsync<TValue>(Module, Name, value);
         }
+
+        /// inheritedDoc
+        public void WithDefaultValue(TValue value)
+        {
+            DefaultValue = value;
+        }
+
+        /// inheritedDoc
+        public object GetDefaultValue() => DefaultValue;
     }
 }

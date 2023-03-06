@@ -3,6 +3,7 @@ using Abp.AspNetCore.Configuration;
 using Abp.Modules;
 using Abp.Zero;
 using Shesha.Ldap.Configuration;
+using Shesha.Settings.Ioc;
 using System.Reflection;
 
 namespace Shesha.Ldap
@@ -27,6 +28,10 @@ namespace Shesha.Ldap
 
         public override void Initialize()
         {
+            IocManager.RegisterSettingAccessor<ILdapSettings>(s => {
+                s.Port.WithDefaultValue(389);
+            });
+
             IocManager.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
         }
     }

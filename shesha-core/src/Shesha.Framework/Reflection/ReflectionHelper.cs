@@ -464,6 +464,21 @@ namespace Shesha.Reflection
         }
 
         /// <summary>
+        /// Return category name of the specified <paramref name="member"/>. 
+        /// If the member is decorated with <see cref="CategoryAttribute"/> - returns <see cref="CategoryAttribute.Category"/>
+        /// If the member is decorated with <see cref="DisplayAttribute"/> - returns <see cref="DisplayAttribute.GroupName"/>
+        /// </summary>
+        public static string GetCategory(this MemberInfo member)
+        {
+            var categoryAttribute = member.GetAttribute<CategoryAttribute>();
+            if (categoryAttribute != null)
+                return categoryAttribute.Category;
+
+            var displayAttribute = member.GetAttribute<DisplayAttribute>();
+            return displayAttribute?.GetGroupName();
+        }
+
+        /// <summary>
         /// Return display name of the specified property
         /// </summary>
         public static string GetDisplayName(PropertyInfo property)

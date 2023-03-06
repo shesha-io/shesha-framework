@@ -6,8 +6,6 @@ using Abp.IdentityFramework;
 using Abp.Linq;
 using Abp.Runtime.Session;
 using Abp.UI;
-using AutoMapper;
-using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -20,15 +18,11 @@ using Shesha.DynamicEntities.Binder;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.DynamicEntities.Mapper;
 using Shesha.Extensions;
-using Shesha.JsonEntities;
 using Shesha.MultiTenancy;
 using Shesha.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Globalization;
-using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Shesha
@@ -227,53 +221,6 @@ namespace Shesha
 
             return null;
         }
-
-        #region Settings
-
-        /// <summary>
-        /// Changes setting for tenant with fallback to application
-        /// </summary>
-        /// <param name="name">Setting name</param>
-        /// <param name="value">Setting value</param>
-        protected async Task ChangeSettingAsync(string name, string value)
-        {
-            if (AbpSession.TenantId.HasValue)
-            {
-                await SettingManager.ChangeSettingForTenantAsync(AbpSession.TenantId.Value, name, value);
-            }
-            else
-            {
-                await SettingManager.ChangeSettingForApplicationAsync(name, value);
-            }
-        }
-
-        /// <summary>
-        /// Changes setting for tenant with fallback to application
-        /// </summary>
-        /// <param name="name">Setting name</param>
-        /// <param name="value">Setting value</param>
-        protected async Task ChangeSettingAsync<T>(string name, T value) where T : struct, IConvertible
-        {
-            await ChangeSettingAsync(name, value.ToString(CultureInfo.InvariantCulture));
-        }
-
-        /// <summary>
-        /// Get setting value for tenant with fallback to application
-        /// </summary>
-        /// <param name="name">Setting name</param>
-        protected async Task<string> GetSettingValueAsync(string name)
-        {
-            if (AbpSession.TenantId.HasValue)
-            {
-                return await SettingManager.GetSettingValueForTenantAsync(name, AbpSession.TenantId.Value);
-            }
-            else
-            {
-                return await SettingManager.GetSettingValueForApplicationAsync(name);
-            }
-        }
-
-        #endregion
 
         #region Dynamic DTOs
 

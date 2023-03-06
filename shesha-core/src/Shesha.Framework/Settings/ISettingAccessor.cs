@@ -7,6 +7,11 @@ namespace Shesha.Settings
     /// </summary>
     public interface ISettingAccessor
     {
+        /// <summary>
+        /// Get default value
+        /// </summary>
+        /// <returns></returns>
+        object GetDefaultValue();
     }
 
     /// <summary>
@@ -28,5 +33,11 @@ namespace Shesha.Settings
         /// Set setting value
         /// </summary>
         Task SetValueAsync(TValue value);
+
+        /// <summary>
+        /// Sets default value of the setting
+        /// </summary>
+        /// <param name="value"></param>
+        void WithDefaultValue(TValue value);
     }
 }

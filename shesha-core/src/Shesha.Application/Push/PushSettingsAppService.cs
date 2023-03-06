@@ -1,19 +1,28 @@
-﻿using System.Threading.Tasks;
-using Abp.Authorization;
+﻿using Abp.Authorization;
 using Abp.Dependency;
 using Microsoft.AspNetCore.Mvc;
-using Shesha.Configuration;
+using Shesha.Push.Configuration;
 using Shesha.Push.Dtos;
+using System;
+using System.Threading.Tasks;
 
 namespace Shesha.Push
 {
     /// <summary>
     /// Push settings application service
     /// </summary>
+    [Obsolete("Use generic SettingsAppService instead")]
     [AbpAuthorize()]
     [Route("api/Push/Settings")]
     public class PushSettingsAppService: SheshaAppServiceBase, ITransientDependency
     {
+        private readonly IPushSettings _settings;
+
+        public PushSettingsAppService(IPushSettings settings)
+        {
+            _settings = settings;
+        }
+
         /// <summary>
         /// Get push notifications settings
         /// </summary>
@@ -23,7 +32,7 @@ namespace Shesha.Push
         {
             var settings = new PushSettingsDto
             {
-                PushNotifier = await GetSettingValueAsync(SheshaSettingNames.Push.PushNotifier),
+                PushNotifier = await _settings.PushNotifier.GetValueAsync(),
             };
             
             return settings;
@@ -37,7 +46,7 @@ namespace Shesha.Push
         [HttpPut, Route("")]
         public async Task UpdateSettings(PushSettingsDto input)
         {
-            await ChangeSettingAsync(SheshaSettingNames.Push.PushNotifier, input.PushNotifier);
+            await _settings.PushNotifier.SetValueAsync(input.PushNotifier);            
         }
     }
 }

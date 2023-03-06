@@ -36,11 +36,10 @@
 
         public static class Email
         {
-            public const string SupportSmtpRelay = "Shesha.Email.SupportSmtpRelay";
+            //public const string SupportSmtpRelay = "Shesha.Email.SupportSmtpRelay";
             public const string RedirectAllMessagesTo = "Shesha.Email.RedirectAllMessagesTo";
             public const string EmailsEnabled = "Shesha.Email.EmailsEnabled";
-
-            public const string CustomEmailSettings = "Shesha.EmailSettings";
+            public const string SmtpSettings = "Shesha.SmtpSettings";
         }
     }
 }

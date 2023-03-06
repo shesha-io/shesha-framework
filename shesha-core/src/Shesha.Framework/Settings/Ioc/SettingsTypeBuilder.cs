@@ -1,10 +1,12 @@
 ﻿using Abp.Extensions;
 using Shesha.Configuration;
+using Shesha.DynamicEntities.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Security.Cryptography.Xml;
 
 namespace Shesha.Settings.Ioc
 {
@@ -27,6 +29,13 @@ namespace Shesha.Settings.Ioc
             foreach (var property in properties) 
             {
                 AddProperty(tb, property);
+            }
+
+            // copy attributes
+            var attributeBuilders = GetAttributeBuilders(settingsInterface);
+            foreach (var attributeBuilder in attributeBuilders)
+            {
+                tb.SetCustomAttribute(attributeBuilder);
             }
 
             var objectType = tb.CreateType();
@@ -77,6 +86,13 @@ namespace Shesha.Settings.Ioc
 
             propertyBuilder.SetGetMethod(getPropMthdBldr);
             propertyBuilder.SetSetMethod(setPropMthdBldr);
+
+            // copy attributes
+            var attributeBuilders = GetAttributeBuilders(pi);
+            foreach (var attributeBuilder in attributeBuilders) 
+            {
+                propertyBuilder.SetCustomAttribute(attributeBuilder);                
+            }   
         }
 
         private TypeBuilder GetTypeBuilder(Type baseType, string typeName, IEnumerable<Type> interfaces)
@@ -98,5 +114,108 @@ namespace Shesha.Settings.Ioc
             return tb;
         }
 
+        
+        private static CustomAttributeBuilder ToAttributeBuilder(CustomAttributeData data)
+        {
+            if (data == null)
+            {
+                throw new ArgumentNullException("data");
+            }
+
+            var constructorArguments = new List<object>();
+            foreach (var ctorArg in data.ConstructorArguments)
+            {
+                constructorArguments.Add(ctorArg.Value);
+            }
+
+            var propertyArguments = new List<PropertyInfo>();
+            var propertyArgumentValues = new List<object>();
+            var fieldArguments = new List<FieldInfo>();
+            var fieldArgumentValues = new List<object>();
+            foreach (var namedArg in data.NamedArguments)
+            {
+                var fi = namedArg.MemberInfo as FieldInfo;
+                var pi = namedArg.MemberInfo as PropertyInfo;
+
+                if (fi != null)
+                {
+                    fieldArguments.Add(fi);
+                    fieldArgumentValues.Add(namedArg.TypedValue.Value);
+                }
+                else if (pi != null)
+                {
+                    propertyArguments.Add(pi);
+                    propertyArgumentValues.Add(namedArg.TypedValue.Value);
+                }
+            }
+            return new CustomAttributeBuilder(
+              data.Constructor,
+              constructorArguments.ToArray(),
+              propertyArguments.ToArray(),
+              propertyArgumentValues.ToArray(),
+              fieldArguments.ToArray(),
+              fieldArgumentValues.ToArray());
+        }
+
+        private static List<CustomAttributeBuilder> GetAttributeBuilders(MemberInfo oldMember) 
+        {
+            var result = new List<CustomAttributeBuilder>();
+            
+            var customMethodAttributes = CustomAttributeData.GetCustomAttributes(oldMember);
+            foreach (var att in customMethodAttributes) 
+            {
+                var builder = ToAttributeBuilder(att);
+                result.Add(builder);
+            }
+
+            return result;
+        }
+        /*
+        private static CustomAttributeBuilder AddAttributesToMemberInfo(MemberInfo oldMember)
+        {
+            CustomAttributeBuilder ct = null;
+            IList<CustomAttributeData> customMethodAttributes = CustomAttributeData.GetCustomAttributes(oldMember);
+            foreach (CustomAttributeData att in customMethodAttributes)
+            {
+                List<object> namedFieldValues = new List<object>();
+                List<FieldInfo> fields = new List<FieldInfo>();
+                List<object> constructorArguments = new List<object>();
+                foreach (CustomAttributeTypedArgument cata in att.ConstructorArguments)
+                {
+                    constructorArguments.Add(cata.Value);
+                }
+                if (att.NamedArguments.Count > 0)
+                {
+                    FieldInfo[] possibleFields = att.GetType().GetFields();
+
+                    foreach (CustomAttributeNamedArgument cana in att.NamedArguments)
+                    {
+                        for (int x = 0; x < possibleFields.Length; x++)
+                        {
+                            if (possibleFields[x].Name.CompareTo(cana.MemberInfo.Name) == 0)
+                            {
+                                fields.Add(possibleFields[x]);
+                                namedFieldValues.Add(cana.TypedValue.Value);
+                            }
+                        }
+
+
+                    }
+                }
+
+                if (namedFieldValues.Count > 0)
+                {
+                    ct = new CustomAttributeBuilder(att.Constructor, constructorArguments.ToArray(), fields.ToArray(), namedFieldValues.ToArray());
+                }
+                else
+                {
+                    ct = new CustomAttributeBuilder(att.Constructor, constructorArguments.ToArray());
+                }
+
+
+            }
+            return ct;
+        }
+        */
     }
 }

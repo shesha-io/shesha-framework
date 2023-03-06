@@ -1,5 +1,4 @@
-﻿using Abp.Configuration;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Reflection;
 using Abp.Web.Models;
@@ -31,14 +30,8 @@ namespace Shesha.Controllers
     [ApiController]
     public class FrameworkController: ControllerBase, ITransientDependency
     {
-        private readonly ISettingManager _settingManager;
         public ILogger Logger { get; set; } = new NullLogger();
         public IIocManager IocManager { get; set; }
-
-        public FrameworkController(ISettingManager settingManager)
-        {
-            _settingManager = settingManager;
-        }
 
         [HttpPost]
         [Consumes("multipart/form-data")]

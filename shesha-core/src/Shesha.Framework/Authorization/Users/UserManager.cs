@@ -9,7 +9,6 @@ using Abp.Organizations;
 using Abp.Runtime.Caching;
 using Abp.Runtime.Validation;
 using Abp.UI;
-using Abp.Zero.Configuration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -28,7 +27,6 @@ namespace Shesha.Authorization.Users
 {
     public class UserManager : AbpUserManager<Role, User>
     {
-        private readonly IShaSettingManager _settingProvider;
         private readonly IOptions<IdentityOptions> _optionsAccessor;
         
         private readonly IPasswordComplexitySettings _passwordComplexitySettings;
@@ -75,7 +73,6 @@ namespace Shesha.Authorization.Users
                 settingManager)
         {
             _optionsAccessor = optionsAccessor;
-            _settingProvider = settingProvider;
             _passwordComplexitySettings = passwordComplexitySettings;
             _authenticationSettings = authenticationSettings;
         }

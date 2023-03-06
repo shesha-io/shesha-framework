@@ -1,10 +1,9 @@
-﻿using Abp.Configuration;
-using Abp.Net.Mail;
+﻿using Abp.Net.Mail;
 using Abp.Runtime.Validation;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Configuration;
 using Shesha.Email.Dtos;
-using Shesha.Utilities;
+using System;
 using System.Threading.Tasks;
 
 namespace Shesha.Email
@@ -14,60 +13,60 @@ namespace Shesha.Email
     /// </summary>
     public class EmailSenderAppService : SheshaAppServiceBase, IEmailSenderAppService
     {
-        private readonly ISettingManager _settingManager;
         private readonly IEmailSender _emailSender;
+        private readonly IEmailSettings _emailSettings;
 
         /// <summary>
         /// Default constructor
         /// </summary>
-        /// <param name="settingManager"></param>
-        /// <param name="emailSender"></param>
-        public EmailSenderAppService(ISettingManager settingManager, IEmailSender emailSender)
+        public EmailSenderAppService(IEmailSettings emailSettings, IEmailSender emailSender)
         {
-            _settingManager = settingManager;
+            _emailSettings = emailSettings;
             _emailSender = emailSender;
         }
 
         /// inheritDoc
+        [Obsolete]
         [HttpPost]
         public async Task<bool> UpdateSmtpSettingsAsync(SmtpSettingsDto input)
         {
-            await ChangeSettingAsync(EmailSettingNames.Smtp.Host, input.Host);
-            await ChangeSettingAsync(EmailSettingNames.Smtp.Port, input.Port);
-            await ChangeSettingAsync(EmailSettingNames.Smtp.Domain, input.Domain);
-            await ChangeSettingAsync(EmailSettingNames.Smtp.UserName, input.UserName);
-            await ChangeSettingAsync(EmailSettingNames.Smtp.Password, input.Password);
-            await ChangeSettingAsync(EmailSettingNames.Smtp.EnableSsl, input.EnableSsl);
-            await ChangeSettingAsync(EmailSettingNames.Smtp.UseDefaultCredentials, input.UseDefaultCredentials);
-
-            await ChangeSettingAsync(EmailSettingNames.DefaultFromAddress, input.DefaultFromAddress);
-            await ChangeSettingAsync(EmailSettingNames.DefaultFromDisplayName, input.DefaultFromDisplayName);
-            await ChangeSettingAsync(SheshaSettingNames.Email.SupportSmtpRelay, input.SupportSmtpRelay);
-            await ChangeSettingAsync(SheshaSettingNames.Email.RedirectAllMessagesTo, input.RedirectAllMessagesTo);
-            await ChangeSettingAsync(SheshaSettingNames.Email.EmailsEnabled, input.EmailsEnabled);
+            await _emailSettings.EmailsEnabled.SetValueAsync(input.EmailsEnabled);
+            await _emailSettings.RedirectAllMessagesTo.SetValueAsync(input.RedirectAllMessagesTo);
+            await _emailSettings.SmtpSettings.SetValueAsync(new SmtpSettings { 
+                Host = input.Host,
+                Port = input.Port,
+                Domain = input.Domain,
+                UserName = input.UserName,
+                Password = input.Password,
+                EnableSsl = input.EnableSsl,
+                DefaultFromAddress = input.DefaultFromAddress,
+                DefaultFromDisplayName = input.DefaultFromDisplayName,
+            });
 
             return true;
         }
 
         /// inheritDoc
+        [Obsolete]
         [HttpGet]
         public async Task<SmtpSettingsDto> GetSmtpSettingsAsync()
         {
+            var smtpSettings = await _emailSettings.SmtpSettings.GetValueAsync();
+
             var settings = new SmtpSettingsDto
             {
-                Host = await GetSettingValueAsync(EmailSettingNames.Smtp.Host),
-                Port = (await GetSettingValueAsync(EmailSettingNames.Smtp.Port)).ToInt(0),
-                Domain = await GetSettingValueAsync(EmailSettingNames.Smtp.Domain),
-                UserName = await GetSettingValueAsync(EmailSettingNames.Smtp.UserName),
-                Password = await GetSettingValueAsync(EmailSettingNames.Smtp.Password),
-                EnableSsl = (await GetSettingValueAsync(EmailSettingNames.Smtp.EnableSsl)) == true.ToString(),
-                UseDefaultCredentials = (await GetSettingValueAsync(EmailSettingNames.Smtp.UseDefaultCredentials)) == true.ToString(),
+                Host = smtpSettings.Host,
+                Port = smtpSettings.Port,
+                Domain = smtpSettings.Domain,
+                UserName = smtpSettings.UserName,
+                Password = smtpSettings.Password,
+                EnableSsl = smtpSettings.EnableSsl,
+                DefaultFromAddress = smtpSettings.DefaultFromAddress,
+                DefaultFromDisplayName = smtpSettings.DefaultFromDisplayName,
+                SupportSmtpRelay = smtpSettings.UseSmtpRelay,
 
-                DefaultFromAddress = await GetSettingValueAsync(EmailSettingNames.DefaultFromAddress),
-                DefaultFromDisplayName = await GetSettingValueAsync(EmailSettingNames.DefaultFromDisplayName),
-                SupportSmtpRelay = (await GetSettingValueAsync(SheshaSettingNames.Email.SupportSmtpRelay)) == true.ToString(),
-                RedirectAllMessagesTo = await GetSettingValueAsync(SheshaSettingNames.Email.RedirectAllMessagesTo),
-                EmailsEnabled = (await GetSettingValueAsync(SheshaSettingNames.Email.EmailsEnabled)) == true.ToString()
+                RedirectAllMessagesTo = await _emailSettings.RedirectAllMessagesTo.GetValueAsync(),
+                EmailsEnabled = await _emailSettings.EmailsEnabled.GetValueAsync(),
             };
             
             return settings;

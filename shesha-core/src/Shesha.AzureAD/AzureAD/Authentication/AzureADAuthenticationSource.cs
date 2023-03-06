@@ -1,12 +1,12 @@
-﻿using System.Linq;
-using System.Security;
-using System.Threading.Tasks;
-using Abp;
+﻿using Abp;
 using Abp.Authorization.Users;
 using Abp.Dependency;
 using Abp.MultiTenancy;
 using Microsoft.Identity.Client;
 using Shesha.AzureAD.Configuration;
+using System.Linq;
+using System.Security;
+using System.Threading.Tasks;
 
 namespace Shesha.AzureAD.Authentication
 {
@@ -40,15 +40,15 @@ namespace Shesha.AzureAD.Authentication
         /// <inheritdoc/>
         public override async Task<bool> TryAuthenticateAsync(string userNameOrEmailAddress, string plainPassword, TTenant tenant)
         {
-            if (!_ldapModuleConfig.IsEnabled || !(await _settings.GetIsEnabled(tenant?.Id)))
+            if (!_ldapModuleConfig.IsEnabled || !(await _settings.IsEnabled.GetValueAsync()))
             {
                 return false;
             }
             
-            var instanceUrl = await _settings.GetInstanceUrl(tenant?.Id);
-            var azureTenant = await _settings.GetTenant(tenant?.Id);
-            var appIdUri = await _settings.GetAppIdUri(tenant?.Id);
-            var clientApplicationId = await _settings.GetClientApplicationId(tenant?.Id);
+            var instanceUrl = await _settings.InstanceUrl.GetValueAsync();
+            var azureTenant = await _settings.Tenant.GetValueAsync();
+            var appIdUri = await _settings.AppIdUri.GetValueAsync();
+            var clientApplicationId = await _settings.ClientApplicationId.GetValueAsync();
 
             if (string.IsNullOrWhiteSpace(instanceUrl) 
                 || string.IsNullOrWhiteSpace(azureTenant)
@@ -100,12 +100,16 @@ namespace Shesha.AzureAD.Authentication
                 throw new AbpException("Ldap Authentication module is disabled globally!");                
             }
 
+            if (!await _settings.IsEnabled.GetValueAsync())
+                throw new AbpException("Azure AD Authentication is disabled! You can enable it by setting '" + AzureADSettingNames.IsEnabled + "' to true");
+
+            /* todo: implement tenants support
             var tenantId = tenant?.Id;
-            if (!await _settings.GetIsEnabled(tenantId))
+            if (!await _settings.IsEnabled.GetValueAsync())
             {
                 throw new AbpException("Ldap Authentication is disabled for given tenant (id:" + tenantId + ")! You can enable it by setting '" + AzureADSettingNames.IsEnabled + "' to true");
             }
+            */
         }
-
     }
 }

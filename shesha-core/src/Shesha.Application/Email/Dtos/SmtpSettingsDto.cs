@@ -33,11 +33,6 @@
         public bool EnableSsl { get; set; }
 
         /// <summary>
-        /// Use default credentials?
-        /// </summary>
-        public bool UseDefaultCredentials { get; set; }
-
-        /// <summary>
         /// Default from address.
         /// </summary>
         public string DefaultFromAddress { get; set; }

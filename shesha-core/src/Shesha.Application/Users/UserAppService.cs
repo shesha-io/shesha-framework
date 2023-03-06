@@ -1,7 +1,6 @@
 ﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
-using Abp.Configuration;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Extensions;
@@ -11,7 +10,6 @@ using Abp.Localization;
 using Abp.Runtime.Session;
 using Abp.UI;
 using Abp.Web.Models.AbpUserConfiguration;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NHibernate.Linq;
@@ -22,10 +20,8 @@ using Shesha.Authorization.Users;
 using Shesha.Configuration;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
-using Shesha.Email;
 using Shesha.Extensions;
 using Shesha.NHibernate.EntityHistory;
-using Shesha.Notifications;
 using Shesha.Otp;
 using Shesha.Otp.Dto;
 using Shesha.Roles.Dto;
@@ -37,7 +33,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Text.Unicode;
 using System.Threading.Tasks;
 using EntityExtensions = Shesha.Extensions.EntityExtensions;
 
@@ -56,7 +51,7 @@ namespace Shesha.Users
         private readonly LogInManager _logInManager;
         private readonly IOtpAppService _otpService;
         private readonly IRepository<User, long> _userRepository;
-        private readonly ISettingManager _settingManager;
+        private readonly IAuthenticationSettings _authSettings;
         private readonly IRepository<QuestionAssignment, Guid> _questionRepository;
 
         public UserAppService(
@@ -65,11 +60,11 @@ namespace Shesha.Users
             RoleManager roleManager,
             IRepository<Role> roleRepository,
             IRepository<Person, Guid> personRepository,
-        IPasswordHasher<User> passwordHasher,
+            IPasswordHasher<User> passwordHasher,
             IAbpSession abpSession,
             LogInManager logInManager,
             IOtpAppService otpService,
-            ISettingManager settingManager,
+            IAuthenticationSettings authSettings,
             IRepository<User, long> userRepository,
             IRepository<QuestionAssignment, Guid> questionRepository)
             : base(repository)
@@ -83,7 +78,7 @@ namespace Shesha.Users
             _logInManager = logInManager;
             _otpService = otpService;
             _userRepository = userRepository;
-            _settingManager = settingManager;
+            _authSettings = authSettings;
             _questionRepository = questionRepository;
         }
 
@@ -299,9 +294,9 @@ namespace Shesha.Users
             var result = new List<ResetPasswordOptionDto>();
 
             var supportedResetOptions = EntityExtensions.DecomposeIntoBitFlagComponents(resetOptions);
-            var isEmailLinkEnabled = _settingManager.GetSettingValue<bool>(SheshaSettingNames.Security.ResetPasswordWithEmailLinkIsSupported);
-            var isSMSOTPEnabled = _settingManager.GetSettingValue<bool>(SheshaSettingNames.Security.ResetPasswordWithSmsOtpIsSupported);
-            var isSecurityQuestionsEnabled = _settingManager.GetSettingValue<bool>(SheshaSettingNames.Security.ResetPasswordWithSecurityQuestionsIsSupported);
+            var isEmailLinkEnabled = await _authSettings.UseResetPasswordViaEmailLink.GetValueAsync();
+            var isSMSOTPEnabled = await _authSettings.UseResetPasswordViaSmsOtp.GetValueAsync();
+            var isSecurityQuestionsEnabled = await _authSettings.UseResetPasswordViaSecurityQuestions.GetValueAsync();
 
             if (supportedResetOptions.Length > 0)
             {
@@ -312,7 +307,7 @@ namespace Shesha.Users
                     methodOption.Method = reflistItem;
                     var isAllowed = false;
 
-                    if (reflistItem == RefListPasswordResetMethods.SMSOtp && isSMSOTPEnabled)
+                    if (reflistItem == RefListPasswordResetMethods.SmsOtp && isSMSOTPEnabled)
                     {
                         var maskedPhoneNumber = person.PhoneNumber.MaskMobileNo();
                         methodOption.Prompt = $"SMS an OTP to {maskedPhoneNumber}";
@@ -349,13 +344,13 @@ namespace Shesha.Users
         /// <exception cref="UserFriendlyException"></exception>
         [AbpAllowAnonymous]
         [HttpPost]
-        public async Task<bool> SendSMSOTP(string username)
+        public async Task<bool> SendSmsOtp(string username)
         {
             var user = await _userRepository.GetAll().Where(u => u.UserName == username).FirstOrDefaultAsync();
 
-            ValidateUserPasswordResetMethod(user, (long)RefListPasswordResetMethods.SMSOtp);
+            ValidateUserPasswordResetMethod(user, (long)RefListPasswordResetMethods.SmsOtp);
 
-            var lifetime = _settingManager.GetSettingValue<int>(SheshaSettingNames.Security.ResetPasswordWithSmsOtpExpiryDelay);
+            var lifetime = await _authSettings.ResetPasswordSmsOtpLifetime.GetValueAsync();
 
             var response = await _otpService.SendPinAsync(new SendPinInput() { SendTo = user.PhoneNumber, SendType = OtpSendType.Sms, Lifetime = lifetime });
 
@@ -405,7 +400,7 @@ namespace Shesha.Users
 
             if (String.IsNullOrEmpty(user.PasswordResetCode) || String.IsNullOrWhiteSpace(user.PasswordResetCode))
             {
-                var message = (RefListPasswordResetMethods)input.Method == RefListPasswordResetMethods.SMSOtp ? "OTP Verification failed" : "Email link verification failed";
+                var message = (RefListPasswordResetMethods)input.Method == RefListPasswordResetMethods.SmsOtp ? "OTP Verification failed" : "Email link verification failed";
                 throw new UserFriendlyException(message);
             }
 
@@ -500,7 +495,7 @@ namespace Shesha.Users
 
             ValidateUserPasswordResetMethod(user, (long)RefListPasswordResetMethods.EmailLink);
 
-            var lifetime = _settingManager.GetSettingValue<int>(SheshaSettingNames.Security.ResetPasswordWithEmailLinkExpiryDelay);
+            var lifetime = await _authSettings.ResetPasswordEmailLinkLifetime.GetValueAsync();
 
             var encodedUserName = Convert.ToBase64String(Encoding.UTF8.GetBytes(username));
 
@@ -585,9 +580,9 @@ namespace Shesha.Users
         /// <exception cref="UserFriendlyException"></exception>
         private void ValidateUserPasswordResetMethod(User user, long resetMethod)
         {
-            var isEmailLinkEnabled = _settingManager.GetSettingValue<bool>(SheshaSettingNames.Security.ResetPasswordWithEmailLinkIsSupported);
-            var isSMSOTPEnabled = _settingManager.GetSettingValue<bool>(SheshaSettingNames.Security.ResetPasswordWithSmsOtpIsSupported);
-            var isSecurityQuestionsEnabled = _settingManager.GetSettingValue<bool>(SheshaSettingNames.Security.ResetPasswordWithSecurityQuestionsIsSupported);
+            var isEmailLinkEnabled = _authSettings.UseResetPasswordViaEmailLink.GetValue();
+            var isSmsOtpEnabled = _authSettings.UseResetPasswordViaSmsOtp.GetValue();
+            var isSecurityQuestionsEnabled = _authSettings.UseResetPasswordViaSecurityQuestions.GetValue();
 
             if (user == null)
                 throw new UserFriendlyException("Your username is not recognised");
@@ -603,7 +598,7 @@ namespace Shesha.Users
             if ((RefListPasswordResetMethods)resetMethod == RefListPasswordResetMethods.EmailLink && !isEmailLinkEnabled)
                 throw new UserFriendlyException("Resetting password through email link is not allowed");
 
-            if ((RefListPasswordResetMethods)resetMethod == RefListPasswordResetMethods.SMSOtp && !isSMSOTPEnabled)
+            if ((RefListPasswordResetMethods)resetMethod == RefListPasswordResetMethods.SmsOtp && !isSmsOtpEnabled)
                 throw new UserFriendlyException("Resetting password through SMS one time passwords is not allowed");
 
             if ((RefListPasswordResetMethods)resetMethod == RefListPasswordResetMethods.SecurityQuestions && !isSecurityQuestionsEnabled)
