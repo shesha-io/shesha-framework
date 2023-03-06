@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Abp.Configuration;
-using Abp.Net.Mail;
-using Abp.Web.Settings;
+﻿using Abp.Net.Mail;
 using Moq;
 using Shesha.Domain.Enums;
 using Shesha.Otp;
 using Shesha.Otp.Configuration;
 using Shesha.Otp.Dto;
-using Shesha.Services;
 using Shesha.Sms;
 using Shouldly;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Shesha.Tests.Otp
@@ -49,9 +46,12 @@ namespace Shesha.Tests.Otp
         private async Task<VerifyPinResponse> CheckOtpCommon(Action<VerifyPinInput> transformAction)
         {
             // todo: implement settings and register using normal way
+            /*
             var settings = new Mock<IOtpSettings>();
             settings.SetupGet(s => s.PasswordLength).Returns(6);
             settings.SetupGet(s => s.Alphabet).Returns("0123456789");
+            */
+            var settings = LocalIocManager.Resolve<IOtpSettings>();
 
             var currentPin = string.Empty;
             var storage = new Dictionary<Guid, string>();
@@ -74,9 +74,8 @@ namespace Shesha.Tests.Otp
                 new NullSmsGateway(),
                 LocalIocManager.Resolve<IEmailSender>(),
                 otpStorage.Object,
-                new OtpGenerator(settings.Object),
-                LocalIocManager.Resolve<ISettingManager>(),
-                settings.Object
+                new OtpGenerator(settings),
+                settings
             );
 
             var sendResponse = await otp.SendPinAsync(new SendPinInput()
@@ -98,9 +97,7 @@ namespace Shesha.Tests.Otp
     
         private async Task<VerifyPinResponse> CheckEmailLink(Action<VerifyPinInput> action)
         {
-            var settings = new Mock<IOtpSettings>();
-            settings.SetupGet(s => s.PasswordLength).Returns(6);
-            settings.SetupGet(s => s.Alphabet).Returns("0123456789");
+            var settings = LocalIocManager.Resolve<IOtpSettings>();
 
             var currentEmailToken = string.Empty;
             var storage = new Dictionary<Guid, string>();
@@ -124,9 +121,8 @@ namespace Shesha.Tests.Otp
                 new NullSmsGateway(),
                 LocalIocManager.Resolve<IEmailSender>(),
                 otpStorage.Object,
-                new OtpGenerator(settings.Object),
-                LocalIocManager.Resolve<ISettingManager>(),
-                settings.Object
+                new OtpGenerator(settings),
+                settings
             );
 
             var sendResponse = await otp.SendPinAsync(new SendPinInput()

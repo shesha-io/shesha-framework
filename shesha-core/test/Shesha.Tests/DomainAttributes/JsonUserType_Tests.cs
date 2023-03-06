@@ -1,16 +1,12 @@
-﻿using Moq;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using NHibernate.Dialect;
 using NHibernate.Driver;
-using Shesha.DynamicEntities.Cache;
 using Shesha.NHibernate.Filters;
 using Shesha.NHibernate.Maps;
 using Shesha.NHibernate.Session;
 using Shesha.NHibernate.UserTypes;
 using Shouldly;
 using System;
-using System.Dynamic;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Shesha.Tests.DomainAttributes
@@ -18,7 +14,7 @@ namespace Shesha.Tests.DomainAttributes
     public class JsonUserType_Tests: SheshaNhTestBase
     {
         [Fact]
-        public async Task Should_Assemble()
+        public void Should_Assemble()
         {
             var person = new PersonEntity
             {
@@ -43,7 +39,7 @@ namespace Shesha.Tests.DomainAttributes
         }
 
         [Fact]
-        public async Task Should_Disassemble()
+        public void Should_Disassemble()
         {
             var person = new PersonEntity
             {
@@ -65,7 +61,7 @@ namespace Shesha.Tests.DomainAttributes
         }
 
         [Fact]
-        public async Task Should_SavePropertyAsJSON()
+        public void Should_SavePropertyAsJSON()
         {
             var person = new PersonEntity
             {
@@ -147,7 +143,7 @@ namespace Shesha.Tests.DomainAttributes
 
                 // Checking the get method to see if it's deserializing correctly
                 var entityItem = session.Get<PersonEntity>(person.Id);
-                Assert.NotNull(entityItem.Id);
+                Assert.NotEqual(default, entityItem.Id);
 
                 Assert.Equal(person.HomeAddress, entityItem.HomeAddress);
                 Assert.Equal(person.OfficeAddress, entityItem.OfficeAddress);

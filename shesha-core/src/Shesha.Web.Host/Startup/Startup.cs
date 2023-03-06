@@ -12,40 +12,36 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Shesha.Authorization;
 using Shesha.Configuration;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Swagger;
+using Shesha.Exceptions;
+using Shesha.Extensions;
 using Shesha.GraphQL;
+using Shesha.GraphQL.Middleware;
+using Shesha.GraphQL.Swagger;
 using Shesha.Identity;
 using Shesha.Scheduler.Extensions;
+using Shesha.Scheduler.Hangfire;
+using Shesha.Specifications;
 using Shesha.Swagger;
+using Swashbuckle.AspNetCore.Swagger;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.IO;
-using System.Reflection;
-using Shesha.GraphQL.Middleware;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Swashbuckle.AspNetCore.SwaggerGen;
-using Microsoft.Extensions.Options;
-using Swashbuckle.AspNetCore.Swagger;
-using Shesha.Specifications;
-using Shesha.GraphQL.Swagger;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Shesha.Application;
 using System.Linq;
-using Shesha.Extensions;
-using Shesha.Exceptions;
-using Shesha.Scheduler.Hangfire;
-using Swashbuckle.AspNetCore.SwaggerUI;
-using System.Collections.Generic;
-using System.Collections;
+using System.Reflection;
 
 namespace Shesha.Web.Host.Startup
 {
@@ -54,9 +50,9 @@ namespace Shesha.Web.Host.Startup
         private readonly IConfigurationRoot _appConfiguration;
         private readonly IWebHostEnvironment _hostEnvironment;
 
-        public Startup(IWebHostEnvironment hostEnvironment, IHostingEnvironment env)
+        public Startup(IWebHostEnvironment hostEnvironment)
         {
-            _appConfiguration = env.GetAppConfiguration();
+            _appConfiguration = hostEnvironment.GetAppConfiguration();
             _hostEnvironment = hostEnvironment;
         }
 
@@ -96,8 +92,7 @@ namespace Shesha.Web.Host.Startup
                 {
                     options.UseCamelCasing(true);
                     options.SerializerSettings.DateParseHandling = DateParseHandling.DateTimeOffset;
-                })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+                });
 
             IdentityRegistrar.Register(services);
             AuthConfigurer.Configure(services, _appConfiguration);

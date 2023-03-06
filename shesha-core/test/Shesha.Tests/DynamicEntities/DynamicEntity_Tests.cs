@@ -1,6 +1,5 @@
 ﻿using Abp.Domain.Entities;
 using Abp.TestBase;
-using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using Shesha.DynamicEntities;
@@ -11,15 +10,13 @@ using Shesha.NHibernate.Session;
 using Shouldly;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace Shesha.Tests.DynamicEntities
 {
     public class DynamicEntity_Tests : AbpIntegratedTestBase<SheshaTestModule>//SheshaNhTestBase
     {
         //[Fact]
-        public async Task ConstructDynamicEntity_Test()
+        public void ConstructDynamicEntity_Test()
         {
             try 
             {
@@ -97,7 +94,7 @@ namespace Shesha.Tests.DynamicEntities
                     fetchedPerson.Id.ShouldBe(person.Id);
                 }
             }
-            catch (Exception e) 
+            catch (Exception) 
             {
                 throw;
             }

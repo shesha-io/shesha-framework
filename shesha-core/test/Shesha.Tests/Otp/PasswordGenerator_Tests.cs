@@ -1,8 +1,8 @@
-﻿using System.Linq;
-using Moq;
-using Shesha.Otp;
+﻿using Moq;
 using Shesha.Otp.Configuration;
+using Shesha.Settings;
 using Shouldly;
+using System.Linq;
 using Xunit;
 
 namespace Shesha.Tests.Otp
@@ -16,8 +16,15 @@ namespace Shesha.Tests.Otp
         {
             var settings = new Mock<IOtpSettings>();
 
-            settings.SetupGet(s => s.PasswordLength).Returns(length);
-            settings.SetupGet(s => s.Alphabet).Returns(alphabet);
+            var passwordLengthAccessor = new Mock<ISettingAccessor<int>>();
+            passwordLengthAccessor.Setup(s => s.GetValue()).Returns(length);
+
+            settings.SetupGet(s => s.PasswordLength).Returns(passwordLengthAccessor.Object);
+
+            var alphabetAccessor = new Mock<ISettingAccessor<string>>();
+            alphabetAccessor.Setup(s => s.GetValue()).Returns(alphabet);
+            settings.SetupGet(s => s.Alphabet).Returns(alphabetAccessor.Object);
+
 
             var generator = new Shesha.Otp.OtpGenerator(settings.Object);
 

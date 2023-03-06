@@ -228,7 +228,7 @@ namespace Shesha.Tests.DynamicEntities
             return bindingContext;
         }
 
-        private async Task<IDynamicDtoTypeBuilder> GetDtoBuilderAsync(string schemaResourceName)
+        private Task<IDynamicDtoTypeBuilder> GetDtoBuilderAsync(string schemaResourceName)
         {
             var entityConfigCacheMock = new Mock<IEntityConfigCache>();
 
@@ -241,7 +241,9 @@ namespace Shesha.Tests.DynamicEntities
 
             var entityConfigStore = LocalIocManager.Resolve<IEntityConfigurationStore>();
             var cacheManager = LocalIocManager.Resolve<ICacheManager>();
-            return new DynamicDtoTypeBuilder(entityConfigCacheMock.Object, entityConfigStore, cacheManager);
+            var builder = new DynamicDtoTypeBuilder(entityConfigCacheMock.Object, entityConfigStore, cacheManager);
+
+            return Task.FromResult<IDynamicDtoTypeBuilder>(builder);
         }
 
         #endregion

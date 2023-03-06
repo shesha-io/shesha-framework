@@ -2,7 +2,6 @@
 using Shesha.Configuration.Runtime;
 using Shesha.Metadata;
 using System.Linq;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Shesha.Tests.Metadata
@@ -10,7 +9,7 @@ namespace Shesha.Tests.Metadata
     public class MetadataProvider_Tests: AbpIntegratedTestBase<SheshaTestModule>
     {
         [Fact]
-        public async Task ShouldInclude_NotMappedProperties_Test() 
+        public void ShouldInclude_NotMappedProperties_Test() 
         {
             var entityConfigStore = Resolve<IEntityConfigurationStore>();
             var metadataProvider = new MetadataProvider(entityConfigStore);

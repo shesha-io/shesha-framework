@@ -1,15 +1,11 @@
-using System;
-using System.Threading.Tasks;
 using Abp;
-using Abp.Authorization.Users;
 using Abp.Dependency;
-using Abp.Domain.Repositories;
 using Abp.Extensions;
 using Abp.Notifications;
 using Abp.Timing;
 using Microsoft.AspNetCore.Mvc;
-using NHibernate;
 using Shesha.Controllers;
+using System.Threading.Tasks;
 
 namespace Shesha.Web.Host.Controllers
 {
@@ -27,34 +23,6 @@ namespace Shesha.Web.Host.Controllers
         public IActionResult Index()
         {
             return Redirect("/swagger");
-        }
-
-        public IActionResult TestNh()
-        {
-            try
-            {
-                var userClaimRepository = _iocResolver.Resolve<IRepository<UserClaim, long>>();
-                var userClaims = userClaimRepository.GetAllListAsync(uc => uc.UserId == 1);
-                userClaims.Wait();
-                var r = userClaims.Result;
-
-
-
-                var factory = _iocResolver.Resolve<ISessionFactory>();
-                var currentSession = factory.GetCurrentSession();
-
-                var user = currentSession.Get<Authorization.Users.User>((Int64)1);
-                var tenant = currentSession.Get<MultiTenancy.Tenant>((int)1);
-                var role = currentSession.Get<Authorization.Roles.Role>((int)1);
-
-                user.DeleterUser = user;
-            }
-            catch (Exception e)
-            {
-
-            }
-
-            return Content("Test successful");
         }
 
         /// <summary>

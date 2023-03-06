@@ -113,7 +113,7 @@ namespace Shesha.Tests.JsonEntity
                     if (genericProps.Any())
                         await mapProvider.UpdateClassNames(entityType, genericProps, oldValue, newValue, false);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                 }
             }
@@ -170,42 +170,12 @@ namespace Shesha.Tests.JsonEntity
             using (var uow = _unitOfWorkManager.Begin())
             {
                 var obj = _jsonRepository.Get(Guid.Parse("FB57A090-6FDC-452C-8945-9356377271B9"));
-                _jsonRepository.InsertOrUpdate(obj);
+                await _jsonRepository.InsertOrUpdateAsync(obj);
             }
         }
 
         [Fact]
-        public async Task JsonEntityProxy_Test()
-        {
-            LoginAsHostAdmin();
-
-            using (var uow = _unitOfWorkManager.Begin())
-            {
-                var interceptor = new JsonEntityInterceptor(StaticContext.IocManager.Resolve<IDynamicRepository>());
-
-                /*var obj = new MyJsonEntity() { Name = "Shurik" };
-                var mixin = new JsonEntityProxy(JObject.FromObject(obj));
-                mixin._references.Add(
-                    nameof(MyJsonEntity.Person),
-                    new JsonReference() { Id = Guid.Parse("B3B60F2E-5B88-4F44-B8EB-D3987A8483D9"), _displayName = "Entity Name" }
-                );
-
-                var p = new ProxyGenerationOptions();
-                p.AddMixinInstance(mixin);
-                var model = (MyJsonEntity)new ProxyGenerator().CreateClassProxyWithTarget(obj.GetType(), obj, p, interceptor);
-                var eref = (model as IJsonEntityProxy)._getEntityReference<MyJsonEntity>(x => x.Person);
-                var n = model.Name;
-                var person1 = model.Person;
-
-                model.Person = _personRepository.GetAll().FirstOrDefault();
-                eref = (model as IJsonEntityProxy)._getEntityReference<MyJsonEntity>(x => x.Person);
-
-                var person2 = model.Person;*/
-            }
-        }
-
-        [Fact]
-        public async Task CheckEmptyJsonEntity()
+        public void CheckEmptyJsonEntity()
         {
             using (var uow = _unitOfWorkManager.Begin())
             {
@@ -323,7 +293,7 @@ namespace Shesha.Tests.JsonEntity
         }
 
         [Fact]
-        public async Task Proxy()
+        public void Proxy()
         {
             var obj = new Shurik() { Name = "Shurik", Test = "+++" };
             var mixin = new JsonReference() { _displayName = "Test" };
@@ -353,7 +323,6 @@ namespace Shesha.Tests.JsonEntity
             (model2 as IJsonReference)._displayName = "222";
 
             var s = (model1 as IJsonReference)._displayName;
-
         }
 
         [Fact]
@@ -401,7 +370,7 @@ namespace Shesha.Tests.JsonEntity
         }
 
         [Fact]
-        public async Task DeserializeAny()
+        public void DeserializeAny()
         {
             var json = "{\"person\":null,\"firstName\":\"AnyJson first name\",\"lastName\":\"AnyJson last name\",\"_meta\":{\"className\":\"Shesha.Test.JsonPerson\"}}";
             var obj = JsonConvert.DeserializeObject<Shesha.JsonEntities.IJsonEntity>(json);
@@ -410,7 +379,7 @@ namespace Shesha.Tests.JsonEntity
         }
 
         [Fact]
-        public async Task DeserializeAnyFailed()
+        public void DeserializeAnyFailed()
         {
             try
             {
@@ -526,7 +495,7 @@ namespace Shesha.Tests.JsonEntity
         }
 
         [Fact]
-        public async Task SerializeJsonEntity()
+        public void SerializeJsonEntity()
         {
             try
             {
@@ -570,7 +539,7 @@ namespace Shesha.Tests.JsonEntity
                     var cs = JsonConvert.DeserializeObject<ComplexTestDto>(s);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
 
             }
