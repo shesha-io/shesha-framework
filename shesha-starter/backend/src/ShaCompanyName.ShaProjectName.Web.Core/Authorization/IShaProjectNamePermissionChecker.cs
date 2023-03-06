@@ -71,11 +71,7 @@ namespace ShaCompanyName.ShaProjectName.Common.Authorization
         /// <returns></returns>
         Task<bool> IsAdmin(Person person);
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="person"></param>
-        /// <returns></returns>
+       
         //Task<bool> IsScheduleManager(Person person);
 
         ///// <summary>

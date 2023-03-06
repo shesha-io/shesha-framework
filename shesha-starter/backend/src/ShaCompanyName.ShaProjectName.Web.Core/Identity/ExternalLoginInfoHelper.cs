@@ -5,8 +5,16 @@ using Abp.Extensions;
 
 namespace Shesha.Identity
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class ExternalLoginInfoHelper
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="claims"></param>
+        /// <returns></returns>
         public static (string name, string surname) GetNameAndSurnameFromClaims(List<Claim> claims)
         {
             string name = null;

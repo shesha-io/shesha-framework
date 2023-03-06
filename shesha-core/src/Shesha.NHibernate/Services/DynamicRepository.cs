@@ -1,21 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Abp.Dependency;
+﻿using Abp.Dependency;
+using Abp.Domain.Entities;
 using Abp.Domain.Uow;
 using NHibernate;
 using NHibernate.Context;
-using NHibernate.Criterion;
-using NHibernate.Multi;
-using NHibernate.Persister.Entity;
-using NHibernate.Util;
 using Shesha.Configuration.Runtime;
-using Shesha.Domain;
 using Shesha.Domain.Attributes;
-using Shesha.NHibernate.Session;
-using Shesha.NHibernate.UoW;
+using Shesha.NHibernate.Repositories;
 using Shesha.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Shesha.Services
 {
@@ -36,6 +31,11 @@ namespace Shesha.Services
             _entityConfigurationStore = entityConfigurationStore;
             _currentSessionContext = currentSessionContext;
         }
+
+        /// <summary>
+        /// Reference to the current UOW provider.
+        /// </summary>
+        public ICurrentUnitOfWorkProvider CurrentUnitOfWorkProvider { get; set; }
 
         /// <inheritdoc/>
         public async Task<object> GetAsync(string entityTypeShortAlias, string id)
@@ -82,7 +82,50 @@ namespace Shesha.Services
         public async Task DeleteAsync(object entity)
         {
             var session = CurrentSession;
-            await session.DeleteAsync(entity);
+            var isHardDelete = IsHardDeleteEntity(entity);
+
+            if (!isHardDelete && entity is ISoftDelete softDeleteEntity)
+            {
+                softDeleteEntity.IsDeleted = true;
+                await SaveOrUpdateAsync(entity);
+            }
+            else
+            {
+                await session.DeleteAsync(entity);
+            }
+        }
+
+        protected virtual int? GetCurrentTenantIdOrNull()
+        {
+            if (CurrentUnitOfWorkProvider?.Current != null)
+            {
+                return CurrentUnitOfWorkProvider.Current.GetTenantId();
+            }
+
+            return null;
+        }
+
+        protected virtual bool IsHardDeleteEntity(object entity)
+        {
+            if (CurrentUnitOfWorkProvider?.Current?.Items == null)
+            {
+                return false;
+            }
+
+            if (!CurrentUnitOfWorkProvider.Current.Items.ContainsKey(UnitOfWorkExtensionDataTypes.HardDelete))
+            {
+                return false;
+            }
+
+            var hardDeleteItems = CurrentUnitOfWorkProvider.Current.Items[UnitOfWorkExtensionDataTypes.HardDelete];
+            if (!(hardDeleteItems is HashSet<string> objects))
+            {
+                return false;
+            }
+
+            var currentTenantId = GetCurrentTenantIdOrNull();
+            var hardDeleteKey = Abp.Domain.Entities.EntityHelper.GetHardDeleteKey(entity, currentTenantId);
+            return objects.Contains(hardDeleteKey);
         }
 
         /// <inheritdoc/>

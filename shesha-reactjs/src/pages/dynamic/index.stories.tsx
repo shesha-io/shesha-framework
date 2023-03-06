@@ -142,14 +142,14 @@ export const WizardDebugForm = addStory(Template, {
 });
 
 export const PersonForm = addStory(Template, {
-  formId: { name: '/persons/edit', module: 'Test Module', version: 3 },
+  formId: { name: 'person-edit', module: 'Test Module', version: 3 },
   mode: 'edit',
-  id: '732B8A86-C5C1-42C8-B525-9FFBAFC15D8C',
+  id: '192C2957-76A1-4760-8A35-3ED28067E78F',
 });
 
 export const OrganisationEdit = addStory(Template, {
-  formId: { name: '/organisations/edit', version: 3 },
-  id: '4e6cd7e7-fb62-4553-a48e-f40c0bfc947f',
+  formId: { name: 'organisation-edit' },
+  id: '0CA1A087-D0DD-4780-82B1-CD29F474E29D',
   mode: 'edit',
 });
 

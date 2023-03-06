@@ -1,3 +1,4 @@
+import { FormMode } from './../../pages/dynamic/interfaces';
 import { IAnyObject } from './../../interfaces/anyObject';
 import {
   IFlatComponentsStructure,
@@ -220,11 +221,11 @@ export const getCustomVisibilityFunc = ({ customVisibility, name }: IConfigurabl
     try {
       /* tslint:disable:function-constructor */
 
-      const customVisibilityExecutor = new Function('value, data', customVisibility);
+      const customVisibilityExecutor = new Function('value, data, globalState, formMode', customVisibility);
 
-      const getIsVisible = (data = {}) => {
+      const getIsVisible = (data = {}, globalState = {}, formMode) => {
         try {
-          return customVisibilityExecutor(data?.[name], data);
+          return customVisibilityExecutor(data?.[name], data, globalState, formMode);
         } catch (e) {
           console.warn(`Custom Visibility of field ${name} throws exception: ${e}`);
           return true;
@@ -243,11 +244,11 @@ export const getCustomVisibilityFunc = ({ customVisibility, name }: IConfigurabl
 export const getCustomEnabledFunc = ({ customEnabled, name }: IConfigurableFormComponent) => {
   if (customEnabled) {
     try {
-      const customEnabledExecutor = new Function('value, data', customEnabled);
+      const customEnabledExecutor = new Function('value, data, globalState, formMode', customEnabled);
 
-      const getIsEnabled = (data = {}) => {
+      const getIsEnabled = (data = {}, globalState = {}, formMode) => {
         try {
-          return customEnabledExecutor(data?.[name], data);
+          return customEnabledExecutor(data?.[name], data, globalState, formMode);
         } catch (e) {
           console.error(`Custom Enabled of field ${name} throws exception: ${e}`);
           return true;
@@ -420,8 +421,6 @@ export const evaluateComplexStringWithResult = (
 
   let success = true;
 
-  let complexResults;
-
   const unevaluatedExpressions = [];
 
   Array.from(matches).forEach(template => {
@@ -431,52 +430,19 @@ export const evaluateComplexStringWithResult = (
         // This is useful for backward compatibility
         // Initially expression would simply be {{expression}} and they wou be evaluated against formData
         // But dynamic expression now can use formData and globalState, so as a result the expressions need to use dot notation
-
-        const evaluatedValue = evaluateString(template, match ? { [match]: data } : { data });
+        const evaluatedValue = evaluateString(template, match ? { [match]: data } : data);
 
         if (!evaluatedValue?.trim()) {
           success = false;
           unevaluatedExpressions?.push(template);
         } else {
-          let sterilizedResult: string;
-          let filterHolder;
-          let ruleJoin = typeof result === 'string' ? Object.keys(JSON.parse(result))[0] : Object.keys(result)[0];
-          sterilizedResult = typeof result === 'string' ? JSON.parse(result) : result;
-
-          filterHolder = sterilizedResult[ruleJoin]?.map(flt => {
-            let operator = Object.keys(flt)[0];
-            let mutated = flt[operator]?.map((vr, index) => {
-              if (index) {
-                const isExpression = vr.indexOf('{') == 0;
-                let filtered;
-                filtered = isExpression ? evaluateString(vr, match ? { [match]: data } : { data }) : vr;
-                if (hasBoolean(vr)) {
-                  return getBoolean(vr);
-                } else {
-                  return isNaN(filtered) ? filtered?.replace(/("|')/g, '') : parseInt(filtered);
-                }
-              } else {
-                return vr;
-              }
-            });
-            return {
-              [operator]: mutated,
-            };
-          });
-
-          complexResults = !!filterHolder ? JSON.stringify({ [ruleJoin]: filterHolder }) : '';
-
           result = result.replaceAll(template, evaluatedValue);
         }
       }
     });
   });
 
-  return {
-    result: complexResults || result,
-    success,
-    unevaluatedExpressions: Array.from(new Set(unevaluatedExpressions)),
-  };
+  return { result, success, unevaluatedExpressions: Array.from(new Set(unevaluatedExpressions)) };
 };
 
 export const getVisibilityFunc2 = (expression, name) => {
@@ -555,20 +521,19 @@ export function executeScript<TResult = any>(
   });
 }
 
-export function executeScriptSync<TResult = any>(
-  expression: string,
-  expressionArgs: IExpressionExecuterArguments
-): TResult {
+export function executeScriptSync<TResult = any>(expression: string, context: IExpressionExecuterArguments): TResult {
   if (!expression) throw new Error('Expression must be defined');
 
   try {
-    return new Function(Object.keys(expressionArgs)?.join(', '), expression)?.apply(
-      null,
-      Object.values(expressionArgs)
-    );
+    const functionBody = `
+    with(context) {
+      ${expression}
+    }
+  `;
+    const dynamicFunction = new Function('context', functionBody);
+    return dynamicFunction(context);
   } catch (error) {
     console.error(`executeScriptSync error`, error);
-
     return null;
   }
 }
@@ -576,7 +541,12 @@ export function executeScriptSync<TResult = any>(
 /**
  * Return ids of visible components according to the custom visibility
  */
-export const getVisibleComponentIds = (components: IComponentsDictionary, values: any): string[] => {
+export const getVisibleComponentIds = (
+  components: IComponentsDictionary,
+  values: any,
+  globalState: any,
+  formMode: FormMode
+): string[] => {
   const visibleComponents: string[] = [];
   for (const key in components) {
     if (components.hasOwnProperty(key)) {
@@ -585,7 +555,7 @@ export const getVisibleComponentIds = (components: IComponentsDictionary, values
       if (!component || component.hidden || component.visibility === 'No' || component.visibility === 'Removed')
         continue;
 
-      const isVisible = component.visibilityFunc == null || component.visibilityFunc(values);
+      const isVisible = component.visibilityFunc == null || component.visibilityFunc(values, globalState, formMode);
       if (isVisible) visibleComponents.push(key);
     }
   }
@@ -595,7 +565,12 @@ export const getVisibleComponentIds = (components: IComponentsDictionary, values
 /**
  * Return ids of visible components according to the custom enabled
  */
-export const getEnabledComponentIds = (components: IComponentsDictionary, values: any): string[] => {
+export const getEnabledComponentIds = (
+  components: IComponentsDictionary,
+  values: any,
+  globalState: any,
+  formMode: FormMode
+): string[] => {
   const enabledComponents: string[] = [];
   for (const key in components) {
     if (components.hasOwnProperty(key)) {
@@ -604,7 +579,7 @@ export const getEnabledComponentIds = (components: IComponentsDictionary, values
 
       const isEnabled =
         !Boolean(component?.enabledFunc) ||
-        (typeof component?.enabledFunc === 'function' && component?.enabledFunc(values));
+        (typeof component?.enabledFunc === 'function' && component?.enabledFunc(values, globalState, formMode));
 
       if (isEnabled) enabledComponents.push(key);
     }

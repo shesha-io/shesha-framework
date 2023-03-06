@@ -89,6 +89,8 @@ namespace Shesha.Metadata
 
 
             var dataType = GetDataType(property);
+            var cascadeAttribute = property.GetAttribute<CascadeUpdateRulesAttribute>()
+                ?? property.PropertyType.GetCustomAttribute<CascadeUpdateRulesAttribute>();
             var result = new PropertyMetadataDto
             {
                 Path = path,
@@ -108,6 +110,9 @@ namespace Shesha.Metadata
                 ValidationMessage = property.GetAttribute<RangeAttribute>()?.ErrorMessage 
                     ?? property.GetAttribute<StringLengthAttribute>()?.ErrorMessage
                     ?? property.GetAttribute<RegularExpressionAttribute>()?.ErrorMessage,
+                CascadeCreate = cascadeAttribute?.CanCreate ?? false,
+                CascadeUpdate = cascadeAttribute?.CanUpdate ?? false,
+                CascadeDeleteUnreferenced = cascadeAttribute?.DeleteUnreferenced ?? false,
 
                 DataType = dataType.DataType,
                 DataFormat = dataType.DataFormat,

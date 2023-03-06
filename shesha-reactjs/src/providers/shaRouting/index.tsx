@@ -6,6 +6,7 @@ import { Router } from 'next/router';
 import { useConfigurableAction } from '../configurableActionsDispatcher';
 import { navigateArgumentsForm } from './actions/navigate-arguments';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
+import { asFormFullName, FormIdentifier } from '../..';
 
 export interface IRoutingProviderProvider {
   router: Router;
@@ -15,12 +16,25 @@ interface INavigateActoinArguments {
   target: string;
 }
 
-const ShaRoutingProvider: FC<PropsWithChildren<any>> = ({ children, router }) => {
-  const [state, dispatch] = useReducer(shaRoutingReducer, { ...SHA_ROUTING_CONTEXT_INITIAL_STATE, router });
+interface ShaRoutingProviderProps {
+  router: Router;
+  getFormUrlFunc?: (formId: FormIdentifier) => string;
+}
+
+const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ children, router, getFormUrlFunc }) => {
+  const [state, dispatch] = useReducer(shaRoutingReducer, { ...SHA_ROUTING_CONTEXT_INITIAL_STATE, router, getFormUrlFunc });
   
   /* NEW_ACTION_DECLARATION_GOES_HERE */
   const goingToRoute = (route: string) => {
     state?.router?.push(route);
+  };
+
+  const getFormUrl = (formId: FormIdentifier) => {
+    if (state.getFormUrlFunc)
+      return state.getFormUrlFunc(formId);
+    
+    var form = asFormFullName(formId);
+    return form ? `/dynamic${form.module ? `/${form.module}`: ''}/${form.name}` : "";
   };
 
   const actionDependencies = [state, state?.router];
@@ -46,6 +60,7 @@ const ShaRoutingProvider: FC<PropsWithChildren<any>> = ({ children, router }) =>
         value={{
           ...getFlagSetters(dispatch),
           goingToRoute,
+          getFormUrl,
         }}
       >
         {children}

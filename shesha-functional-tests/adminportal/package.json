@@ -21,7 +21,7 @@
     "@microsoft/applicationinsights-web": "^2.6.2",
     "@microsoft/signalr": "^5.0.6",
     "@next/bundle-analyzer": "^10.0.5",
-    "@shesha/reactjs": "^3.29.5",
+    "@shesha/reactjs": "^4.1.11",
     "@use-it/interval": "^1.0.0",
     "@zeit/next-less": "^1.0.1",
     "antd": "^4.24.0",

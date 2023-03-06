@@ -364,24 +364,12 @@ const ListControl: FC<IListControlProps> = props => {
               ? `return '${DEFAULT_CONFIRM_MESSAGE}'`
               : deleteConfirmMessage;
 
-          // console.log(
-          //   'LOGS:: ',
-          //   typeof deleteConfirmMessage,
-          //   '|',
-          //   deleteConfirmMessage === DEFAULT_CONFIRM_MESSAGE,
-          //   deleteConfirmMessage
-          // );
-
-          console.log('LOGS:: confirmMessage', confirmMessage);
-
           if (confirmMessage) {
             // tslint:disable-next-line:function-constructor
             confirmMessage = new Function('data, item, globalState', confirmMessage)(formData, item, globalState);
           }
 
           const evaluatedDeleteUrl = new Function('data, item, globalState', deleteUrl)(formData, item, globalState);
-
-          console.log('LOGS:: formData, item, globalState', formData, item, globalState);
 
           const doDelete = () => {
             deleteHttp(evaluatedDeleteUrl).then(() => {
@@ -494,6 +482,14 @@ const ListControl: FC<IListControlProps> = props => {
   }, [value]);
 
   const renderSubForm = (localName?: string | number, localLabelCol?: ColProps, localWrapperCol?: ColProps) => {
+    let values: { [key: string]: any } = {
+      defaultValue: typeof localName === 'number' && Array.isArray(value) ? value[localName] : null,
+    };
+
+    // TODO:: Remove renderStrategy = `dragAndDrop`
+    if (renderStrategy === 'externalForm' && Array.isArray(value)) {
+      values = { value: value[localName] };
+    }
     return (
       <SubFormProvider
         name={`${localName}`}
@@ -501,7 +497,8 @@ const ListControl: FC<IListControlProps> = props => {
         properties={[]}
         labelCol={localLabelCol}
         wrapperCol={localWrapperCol}
-        defaultValue={typeof localName === 'number' && Array.isArray(value) ? value[localName] : null}
+        // defaultValue={typeof localName === 'number' && Array.isArray(value) ? value[localName] : null}
+        {...values}
       >
         <SubForm readOnly={readOnly} />
       </SubFormProvider>

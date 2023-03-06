@@ -23,14 +23,12 @@ namespace Shesha.Configuration.Runtime
 
         public void HandleEvent(EntityUpdatingEventData<EntityConfig> eventData)
         {
-            /* todo: review and restore
-            if (eventData.Entity.Configuration != null)
+            /*if (eventData.Entity.Configuration != null)
             {
                 eventData.Entity.Configuration.LastModificationTime = Clock.Now;
                 eventData.Entity.Configuration.LastModifierUserId = AbpSession?.UserId;
                 _configurationItemRepository.InsertOrUpdate(eventData.Entity.Configuration);
-            }
-            */
+            }*/
         }
     }
 }

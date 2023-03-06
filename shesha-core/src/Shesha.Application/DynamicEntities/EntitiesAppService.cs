@@ -63,14 +63,16 @@ namespace Shesha.DynamicEntities
                 if (entityConfig == null)
                     throw new EntityTypeNotFoundException(entityType);
 
-                var config = _entityConfigRepository.GetAll().FirstOrDefault(x => (x.Namespace + "." + x.ClassName) == entityConfig.EntityType.FullName);
+                var typeName = entityConfig.EntityType.FullName;
+
+                var config = _entityConfigRepository.GetAll().FirstOrDefault(x => (x.Namespace + "." + x.ClassName) == typeName || x.TypeShortAlias == typeName);
                 if (!(config?.GenerateAppService ?? true))
-                    throw new NotSupportedException($"Application service is not configured for entity of type {entityConfig.EntityType.FullName}");
+                    throw new NotSupportedException($"Application service is not configured for entity of type {typeName}");
 
                 var appServiceType = entityConfig.ApplicationServiceType;
 
                 if (entityConfig.ApplicationServiceType == null)
-                    throw new NotSupportedException($"{nameof(entityConfig.ApplicationServiceType)} is not set for entity of type {entityConfig.EntityType.FullName}");
+                    throw new NotSupportedException($"{nameof(entityConfig.ApplicationServiceType)} is not set for entity of type {typeName}");
 
                 var appService = IocManager.Resolve(appServiceType) as IEntityAppService;
                 if (appService == null)
@@ -82,7 +84,7 @@ namespace Shesha.DynamicEntities
                 var methodName = nameof(IEntityAppService<Entity<Int64>, Int64>.QueryAsync);
                 var method = appService.GetType().GetMethod(methodName);
                 if (method == null)
-                    throw new NotSupportedException($"{methodName} is missing in the {entityConfig.EntityType.FullName}");
+                    throw new NotSupportedException($"{methodName} is missing in the {typeName}");
 
                 await CheckPermissionAsync(entityConfig, methodName);
 
@@ -154,14 +156,18 @@ namespace Shesha.DynamicEntities
                 if (entityConfig == null)
                     throw new EntityTypeNotFoundException(input.EntityType);
 
-                var config = _entityConfigRepository.GetAll().FirstOrDefault(x => (x.Namespace + "." + x.ClassName) == entityConfig.EntityType.FullName);
+                var typeName = entityConfig.EntityType.FullName;
+
+                /* we MUST NOT disable it here
+                var config = _entityConfigRepository.GetAll().FirstOrDefault(x => (x.Namespace + "." + x.ClassName) == typeName || x.TypeShortAlias == typeName);
                 if (!(config?.GenerateAppService ?? true))
-                    throw new NotSupportedException($"Application service is not configured for entity of type {entityConfig.EntityType.FullName}");
+                    throw new NotSupportedException($"Application service is not configured for entity of type {typeName}");
+                */
 
                 var appServiceType = entityConfig.ApplicationServiceType;
 
                 if (entityConfig.ApplicationServiceType == null)
-                    throw new NotSupportedException($"{nameof(GetAllAsync)} is not implemented for entity of type {entityConfig.EntityType.FullName}");
+                    throw new NotSupportedException($"{nameof(GetAllAsync)} is not implemented for entity of type {typeName}");
 
                 var appService = IocManager.Resolve(appServiceType) as IEntityAppService;
                 if (appService == null)

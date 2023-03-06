@@ -2,7 +2,7 @@ import { ApartmentOutlined } from '@ant-design/icons';
 import { Skeleton } from 'antd';
 import React, { MutableRefObject } from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
-import { useForm } from '../../../../providers';
+import { useForm, useFormData } from '../../../../providers';
 import { FormMarkup, IConfigurableFormComponent } from '../../../../providers/form/models';
 import { evaluateValue, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import { IHierarchicalCheckListProps } from '../../../hierarchicalCheckList';
@@ -33,19 +33,16 @@ const HierarchicalChecklistComponent: IToolboxComponent<IHierarchicalChecklistPr
   factory: (model: IHierarchicalChecklistProps, _componentRef: MutableRefObject<any>) => {
     const { isComponentHidden } = useForm();
 
-    const { formData } = useForm();
+    const { data: formData } = useFormData();
 
+    // TODO:: Review - formData?.ownerType, formData?.ownerId and formData?.checklistId need to be removed
     const ownerType = evaluateValue(formData?.ownerType || model?.ownerType, { data: formData });
     const ownerId = evaluateValue(formData?.ownerId || model?.ownerId, { data: formData });
     const checklistId = evaluateValue(formData?.checklistId || model?.checklistId, { data: formData });
 
     const renderChecklist = () => {
       if (!isUuid(checklistId)) {
-        return model?.dropdown ? (
-          <Skeleton.Input style={{ width: 250 }} active={false} size="default" />
-        ) : (
-          <Skeleton />
-        );
+        return model?.dropdown ? <Skeleton.Input style={{ width: 250 }} active={false} size="default" /> : <Skeleton />;
       }
 
       return (
@@ -63,10 +60,14 @@ const HierarchicalChecklistComponent: IToolboxComponent<IHierarchicalChecklistPr
 
     if (isComponentHidden(model)) return null;
 
-    const wrapperColProps: Omit<IConfigurableFormItemProps, 'model'> = model?.dropdown ? {} : { wrapperCol: { span: 24 } };
+    const wrapperColProps: Omit<IConfigurableFormItemProps, 'model'> = model?.dropdown
+      ? {}
+      : { wrapperCol: { span: 24 } };
 
     return (
-      <ConfigurableFormItem {...wrapperColProps } model={model?.dropdown ? model : { ...model, hideLabel: true }}>{renderChecklist()}</ConfigurableFormItem>
+      <ConfigurableFormItem {...wrapperColProps} model={model?.dropdown ? model : { ...model, hideLabel: true }}>
+        {renderChecklist()}
+      </ConfigurableFormItem>
     );
   },
   settingsFormMarkup: settingsForm,

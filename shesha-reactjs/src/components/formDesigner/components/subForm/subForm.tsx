@@ -34,7 +34,7 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
 
   const formStatusInfo = versionStatus ? ConfigurationItemVersionStatusMap[versionStatus] : null;
 
-  const showFormInfo = hasFetchedConfig && formInfoBlockVisible && formStatusInfo;
+  const showFormInfo = hasFetchedConfig && formInfoBlockVisible && Boolean(formStatusInfo && id && name);
 
   const isLoading = useMemo(() => {
     return Object.values(loading).find(l => Boolean(l));

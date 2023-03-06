@@ -43,4 +43,5 @@ export interface ITextTypographyProps extends IConfigurableFormComponent {
   underline?: boolean;
   keyboard?: boolean;
   strong?: boolean;
+  value?: string;
 }

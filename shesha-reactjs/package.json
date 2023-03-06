@@ -1,10 +1,13 @@
 {
   "name": "@shesha/reactjs",
-  "version": "3.1.102-canary",
-  "description": "The reactjs frontend application and ui for the shesha framework.",
+  "version": "3.0.67-canary",
+  "description": "The reactjs frontend application and ui for the shesha framework",
   "license": "GPL-3.0",
-  "homepage": "https://Boxfusion.github.io/shesha-reactjs",
-  "repository": "https://github.com/Boxfusion/shesha-reactjs",
+  "homepage": "https://shesha-io.github.io/shesha-framework",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shesha-io/shesha-framework"
+  },
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "jsnext:main": "dist/index.es.js",
@@ -76,6 +79,7 @@
     "@storybook/addon-actions": "^6.4.19",
     "@storybook/addon-essentials": "^6.4.19",
     "@storybook/addon-links": "^6.4.19",
+    "@storybook/addon-queryparams": "^6.2.9",
     "@storybook/react": "^6.4.19",
     "@svgr/rollup": "4.3.1",
     "@testing-library/dom": "^7.31.0",

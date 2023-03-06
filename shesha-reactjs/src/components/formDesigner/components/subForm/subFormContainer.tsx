@@ -1,6 +1,7 @@
 import React, { FC, Fragment, useCallback } from 'react';
 import { useGlobalState, useSubForm } from '../../../../providers';
 import { IConfigurableFormComponent } from '../../../../providers/form/models';
+import { executeScriptSync } from '../../../../utils/publicUtils';
 import DynamicComponent from '../dynamicView/dynamicComponent';
 
 interface IDynamicConfigurableFormComponent extends IConfigurableFormComponent {
@@ -13,27 +14,17 @@ export interface ISubFormContainerProps {
 }
 
 export const SubFormContainer: FC<ISubFormContainerProps> = ({ components, readOnly }) => {
-  const { value } = useSubForm();
+  //alias added for readability and avoiding names clashes
+  const { value: subFormData } = useSubForm();
   const { globalState } = useGlobalState();
 
   const executeExpression = useCallback(
-    (expression: string, returnBoolean = false) => {
-      if (!expression) {
-        if (returnBoolean) {
-          return true;
-        } else {
-          console.error('Expected expression to be defined but it was found to be empty.');
-
-          return false;
-        }
-      }
-
-      /* tslint:disable:function-constructor */
-      const evaluated = new Function('data, globalState', expression)(value || {}, globalState || {});
-      // tslint:disable-next-line:function-constructor
+    (expression: string) => {
+      if (!expression) return true;
+      const evaluated = executeScriptSync(expression, { data: subFormData, globalState });
       return typeof evaluated === 'boolean' ? evaluated : true;
     },
-    [value, globalState]
+    [subFormData, globalState]
   );
 
   const getReadOnlyState = (isReadOnly: boolean) => (typeof readOnly === 'boolean' ? readOnly : isReadOnly);
@@ -42,10 +33,10 @@ export const SubFormContainer: FC<ISubFormContainerProps> = ({ components, readO
     <Fragment>
       {components
         ?.filter(({ customVisibility }) => {
-          return executeExpression(customVisibility, true);
+          return executeExpression(customVisibility);
         })
         .map(({ customEnabled, disabled: notabled, ...model }) => {
-          const disabled = !executeExpression(customEnabled, true) || notabled;
+          const disabled = !executeExpression(customEnabled) || notabled;
 
           return (
             <DynamicComponent

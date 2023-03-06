@@ -2,6 +2,8 @@ import { LineHeightOutlined } from '@ant-design/icons';
 import React from 'react';
 import { validateConfigurableComponentSettings } from '../../../../formDesignerUtils';
 import { IToolboxComponent } from '../../../../interfaces/formDesigner';
+import ConditionalWrap from '../../../conditionalWrapper';
+import ConfigurableFormItem from '../formItem';
 import { ITextTypographyProps } from './models';
 import { settingsFormMarkup } from './settings';
 import TypographyComponent from './typography';
@@ -11,7 +13,14 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
   name: 'Text',
   icon: <LineHeightOutlined />,
   tooltip: 'Complete Typography component that combines Text, Paragraph and Title',
-  factory: model => <TypographyComponent {...model} />,
+  factory: model => (
+    <ConditionalWrap
+      condition={model?.contentDisplay === 'name'}
+      wrap={children => <ConfigurableFormItem model={{ ...model, hideLabel: true }}>{children}</ConfigurableFormItem>}
+    >
+      <TypographyComponent {...model} />
+    </ConditionalWrap>
+  ),
   settingsFormMarkup,
   validateSettings: model => validateConfigurableComponentSettings(settingsFormMarkup, model),
   initModel: model => ({

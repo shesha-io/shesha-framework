@@ -60,6 +60,7 @@ export interface ModelConfigurationDto {
   className?: string | null;
   namespace?: string | null;
   generateAppService?: boolean;
+  allowConfigureAppService?: boolean;
   properties?: ModelPropertyDto[] | null;
   moduleId?: string | null;
   module?: string | null;
@@ -182,12 +183,36 @@ export interface ModelPropertyDto {
    * Validation message
    */
   validationMessage?: string | null;
+  /**
+   * Allows to create child/nested entity
+   */
+  cascadeCreate?: boolean;
+  /**
+   * Allows to update child/nested entity
+   */
+  cascadeUpdate?: boolean;
+  /**
+   * Delete child/nested entity if reference was removed and the child/nested entity doesn't have nother references
+   */
+  cascadeDeleteUnreferenced?: boolean;
   suppressHardcoded?: boolean;
   requiredHardcoded?: boolean;
   readOnlyHardcoded?: boolean;
   auditedHardcoded?: boolean;
   sizeHardcoded?: boolean;
   regExpHardcoded?: boolean;
+  /**
+   * Allows to create child/nested entity
+   */
+  cascadeCreateHardcoded?: boolean;
+  /**
+   * Allows to update child/nested entity
+   */
+  cascadeUpdateHardcoded?: boolean;
+  /**
+   * Delete child/nested entity if reference was removed and the child/nested entity doesn't have nother references
+   */
+  cascadeDeleteUnreferencedHardcoded?: boolean;
 }
 
 export interface PermissionedObjectDto {

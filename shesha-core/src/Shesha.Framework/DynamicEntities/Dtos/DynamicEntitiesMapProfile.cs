@@ -1,15 +1,12 @@
-﻿using Abp.Dependency;
-using AutoMapper;
-using Shesha.AutoMapper;
+﻿using Shesha.AutoMapper;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using Shesha.Metadata.Dtos;
-using Shesha.Services;
 using Shesha.Reflection;
+using Shesha.Services;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Shesha.DynamicEntities.Dtos

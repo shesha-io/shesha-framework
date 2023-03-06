@@ -1,7 +1,6 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import { Pagination } from 'antd';
 import { useMedia } from 'react-use';
-import { useDeepCompareEffect } from 'use-deep-compare';
 
 export interface ITablePagerBaseProps {
   /** Whether this component */
@@ -63,11 +62,11 @@ export const TablePagerBase: FC<ITablePagerBaseProps> = ({
     return null;
   };
 
-  if (!isWider) return null;
-
-  useDeepCompareEffect(() => {
+  useEffect(() => {
     if (!isNaN(selectedPageSize)) onShowSizeChange(1, selectedPageSize);
   }, [selectedPageSize]);
+
+  if (!isWider) return null;
 
   return (
     <Pagination

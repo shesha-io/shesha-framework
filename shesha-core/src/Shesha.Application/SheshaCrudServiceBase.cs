@@ -5,7 +5,6 @@ using Abp.Extensions;
 using Abp.Runtime.Validation;
 using GraphQL;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using Shesha.Application.Services;
 using Shesha.Application.Services.Dto;
 using Shesha.Attributes;
@@ -22,7 +21,6 @@ using Shesha.QuickSearch;
 using Shesha.Specifications;
 using Shesha.Utilities;
 using Shesha.Web;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -94,9 +92,10 @@ namespace Shesha
         }
 
         [EntityAction(StandardEntityActions.Delete)]
-        public override Task DeleteAsync(EntityDto<TPrimaryKey> input)
+        public override async Task DeleteAsync(EntityDto<TPrimaryKey> input)
         {
-            return base.DeleteAsync(input);
+            await DeleteCascadeAsync(Repository.Get(input.Id));
+            await base.DeleteAsync(input);
         }
 
         /// <summary>
@@ -227,14 +226,15 @@ namespace Shesha
             var properties = string.IsNullOrWhiteSpace(input.Properties)
                 ? await GetGqlTopLevelPropertiesAsync()
                 : await CleanupPropertiesAsync(input.Properties);
+
             var query = $@"query getAll($filter: String, $quickSearch: String, $quickSearchProperties: [String], $sorting: String, $skipCount: Int, $maxResultCount: Int, $specifications: [String]){{
-  {schemaName}List(input: {{ filter: $filter, quickSearch: $quickSearch, quickSearchProperties: $quickSearchProperties, sorting: $sorting, skipCount: $skipCount, maxResultCount: $maxResultCount, specifications: $specifications }}){{
-    totalCount
-    items {{
-        {properties}
-    }}
-  }}
-}}";
+              {schemaName}List(input: {{ filter: $filter, quickSearch: $quickSearch, quickSearchProperties: $quickSearchProperties, sorting: $sorting, skipCount: $skipCount, maxResultCount: $maxResultCount, specifications: $specifications }}){{
+                totalCount
+                items {{
+                    {properties}
+                }}
+              }}
+            }}";
 
             var result = await DocumentExecuter.ExecuteAsync(s =>
             {
@@ -321,9 +321,16 @@ namespace Shesha
                     else
                     {
                         sb.Append(prop);
-                        sb.Append(" { ");
-                        await AppendPropertiesAsync(sb, propConfig.EntityType, innerProps.Where(x => !x.IsNullOrWhiteSpace()).ToList());
-                        sb.Append(" } ");
+                        // skip Json properties because only whole Json data is allowed to be retrieved
+                        if (propConfig.DataType != DataTypes.ObjectReference
+                            && propConfig.DataType != DataTypes.Object)
+                        {
+                            sb.Append(" { ");
+                            await AppendPropertiesAsync(sb, propConfig.EntityType, innerProps.Where(x => !x.IsNullOrWhiteSpace()).ToList());
+                            sb.Append(" } ");
+                        }
+                        else
+                            sb.Append(" ");
                     }
                     continue;
                 }

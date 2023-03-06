@@ -6,7 +6,7 @@ import React from 'react';
 import { getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import ShaStatistic, { IShaStatisticProps } from '../../../statistic';
 import ShaIcon from '../../../shaIcon';
-import { useForm } from '../../../../providers';
+import { useFormData } from '../../../../providers';
 import _ from 'lodash';
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -23,7 +23,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
   icon: <BarChartOutlined />,
   factory: ({ style, valueStyle, ...model }: IStatisticComponentProps) => {
     const { prefix, suffix, name } = model;
-    const { formData } = useForm();
+    const { data: formData } = useFormData();
 
     const getDisplayValue = (prop: string) => {
       if (!formData || !prop) return undefined;

@@ -1,11 +1,6 @@
 ﻿using Abp.Application.Services.Dto;
-using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
-using Abp.Linq;
 using Abp.Reflection;
-using DocumentFormat.OpenXml.Drawing;
-using DocumentFormat.OpenXml.Office2010.Excel;
-using GraphQL;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Application.Services.Dto;
 using Shesha.AutoMapper.Dto;
@@ -15,12 +10,10 @@ using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
-using Shesha.GraphQL.Mvc;
 using Shesha.JsonEntities;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -50,7 +43,7 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
 
     public async Task<FormIdFullNameDto> GetEntityConfigForm(string entityConfigName, string typeName)
     {
-        var entityConfig = await AsyncQueryableExecuter.FirstOrDefaultAsync(Repository.GetAll().Where(x => x.Configuration.Name == entityConfigName));
+        var entityConfig = await AsyncQueryableExecuter.FirstOrDefaultAsync(Repository.GetAll().Where(x => x.Configuration.Name == entityConfigName || x.TypeShortAlias == entityConfigName));
         if (entityConfig == null)
             return null;
 

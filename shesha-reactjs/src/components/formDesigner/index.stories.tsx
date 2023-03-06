@@ -244,9 +244,9 @@ export const UselessForm = addStory(DesignerTemplate, {
 
 export const PersonEdit = addStory(DesignerTemplate, {
   formId: {
-    name: '/persons/edit',
+    name: 'person-edit',
     module: 'Test Module',
-    version: 3,
+    version: 3
   },
 });
 

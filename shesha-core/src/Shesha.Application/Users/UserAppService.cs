@@ -40,7 +40,7 @@ namespace Shesha.Users
 {
     [AbpAuthorize(PermissionNames.Pages_Users)]
 
-    public class UserAppService : AsyncCrudAppService<User, UserDto, long, PagedUserResultRequestDto, CreateUserDto, UserDto>, IUserAppService
+    public class UserAppService : AsyncCrudAppService<User, UserDto, long, PagedUserResultRequestDto, CreateUserDto, UpdateUserDto>, IUserAppService
     {
         private readonly UserManager _userManager;
         private readonly RoleManager _roleManager;
@@ -106,7 +106,7 @@ namespace Shesha.Users
             return MapToEntityDto(user);
         }
 
-        public override async Task<UserDto> UpdateAsync(UserDto input)
+        public override async Task<UserDto> UpdateAsync(UpdateUserDto input)
         {
             CheckUpdatePermission();
 
@@ -186,9 +186,10 @@ namespace Shesha.Users
             return user;
         }
 
-        protected override void MapToEntity(UserDto input, User user)
+        protected override void MapToEntity(UpdateUserDto updateInput, User user)
         {
-            ObjectMapper.Map(input, user);
+            ObjectMapper.Map(updateInput, user);
+            user.SupportedPasswordResetMethods = updateInput.SupportedPasswordResetMethods.Sum();
             user.SetNormalizedNames();
         }
 

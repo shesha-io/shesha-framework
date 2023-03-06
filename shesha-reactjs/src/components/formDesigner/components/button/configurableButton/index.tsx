@@ -1,6 +1,12 @@
 import React, { FC } from 'react';
 import { Button, message } from 'antd';
-import { useDataTableSelection, useForm, useGlobalState, useSheshaApplication } from '../../../../../providers';
+import {
+  useDataTableSelection,
+  useForm,
+  useFormData,
+  useGlobalState,
+  useSheshaApplication,
+} from '../../../../../providers';
 import ShaIcon, { IconType } from '../../../../shaIcon';
 import classNames from 'classnames';
 import moment from 'moment';
@@ -18,8 +24,9 @@ export interface IConfigurableButtonProps extends Omit<IButtonGroupButton, 'styl
 
 export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
   const { backendUrl } = useSheshaApplication();
-  const { form, formData, formMode } = useForm();
-  const { globalState } = useGlobalState();
+  const { form, formMode, setFormDataAndInstance } = useForm();
+  const { data } = useFormData();
+  const { globalState, setState: setGlobalState } = useGlobalState();
   const { selectedRow } = useDataTableSelection(false) ?? {}; // todo: move to a generic context provider
 
   const { executeAction } = useConfigurableActionDispatcher();
@@ -30,14 +37,16 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
     if (props.actionConfiguration) {
       // todo: implement generic context collector
       const evaluationContext = {
-        selectedRow: selectedRow,
-        data: formData,
-        moment: moment,
-        form: form,
-        formMode: formMode,
+        selectedRow,
+        data,
+        moment,
+        form,
+        formMode,
         http: axiosHttp(backendUrl),
-        message: message,
-        globalState: globalState,
+        message,
+        globalState,
+        setFormData: setFormDataAndInstance,
+        setGlobalState,
       };
       executeAction({
         actionConfiguration: props.actionConfiguration,

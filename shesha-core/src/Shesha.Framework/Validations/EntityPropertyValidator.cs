@@ -117,6 +117,9 @@ namespace Shesha.Validations
             var parts = propertyName.Split('.').Select(x => x.ToCamelCase()).ToArray();
 
             var propConfig = props.FirstOrDefault(x => x.Name.ToCamelCase() == parts[0]);
+            if (propConfig == null)
+                return true;
+
             var propInfo = obj.GetType().GetProperties().FirstOrDefault(x => x.Name.ToCamelCase() == parts[0]);
             var innerObj = propInfo.GetValue(obj, null);
 
@@ -171,21 +174,21 @@ namespace Shesha.Validations
             switch (propConfig.DataType)
             {
                 case DataTypes.String:
-                    if (propConfig.MinLength.HasValue && value.ToString().Length < propConfig.MinLength)
+                    if (propConfig.MinLength.HasValue && (value == null || value.ToString().Length < propConfig.MinLength))
                     {
                         validationResult.Add(new ValidationResult(hasMessage
                             ? propConfig.ValidationMessage
                             : $"Property '{friendlyName}' should have value length more then {propConfig.MinLength - 1} symbols"));
                         return false;
                     }
-                    if (propConfig.MaxLength.HasValue && value.ToString().Length > propConfig.MaxLength)
+                    if (propConfig.MaxLength.HasValue && value?.ToString().Length > propConfig.MaxLength)
                     {
                         validationResult.Add(new ValidationResult(hasMessage
                             ? propConfig.ValidationMessage
                             : $"Property '{friendlyName}' should have value length less then {propConfig.MaxLength + 1} symbols"));
                         return false;
                     }
-                    if (!string.IsNullOrWhiteSpace(propConfig.RegExp) && !(new Regex(propConfig.RegExp)).IsMatch(value.ToString()))
+                    if (!string.IsNullOrWhiteSpace(propConfig.RegExp) && !(new Regex(propConfig.RegExp)).IsMatch(value?.ToString()))
                     {
                         validationResult.Add(new ValidationResult(hasMessage
                             ? propConfig.ValidationMessage

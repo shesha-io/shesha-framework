@@ -6,7 +6,12 @@ import { useDeepCompareMemoKeepReference, usePubSub } from '../../hooks';
 import { subFormReducer } from './reducer';
 import { getQueryParams } from '../../utils/url';
 import { DEFAULT_FORM_SETTINGS, FormMarkupWithSettings } from '../form/models';
-import { setMarkupWithSettingsAction, fetchDataRequestAction, fetchDataSuccessAction, fetchDataErrorAction } from './actions';
+import {
+  setMarkupWithSettingsAction,
+  fetchDataRequestAction,
+  fetchDataSuccessAction,
+  fetchDataErrorAction,
+} from './actions';
 import { ISubFormProps } from './interfaces';
 import { ColProps, message, notification } from 'antd';
 import { useGlobalState } from '../globalState';
@@ -27,7 +32,7 @@ export interface SubFormProviderProps extends Omit<ISubFormProps, 'name' | 'valu
   actionOwnerName?: string;
   name?: string;
   markup?: FormMarkupWithSettings;
-  value?: string | { id: string;[key: string]: any };
+  value?: string | { id: string; [key: string]: any };
 }
 
 interface IFormLoadingState {
@@ -36,9 +41,9 @@ interface IFormLoadingState {
 }
 
 interface QueryParamsEvaluatorArguments {
-  data: any,
-  query: QueryStringParams,
-  globalState: IAnyObject,
+  data: any;
+  query: QueryStringParams;
+  globalState: IAnyObject;
 }
 type QueryParamsEvaluator = (args: QueryParamsEvaluatorArguments) => object;
 
@@ -87,23 +92,21 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
   };
 
   const evaluateUrl = (urlExpression: string): Promise<string> => {
-    if (!urlExpression)
-      return Promise.resolve('');
+    if (!urlExpression) return Promise.resolve('');
 
     return executeScript<string>(urlExpression, {
       data: formData,
       query: getQueryParams(),
       globalState: globalState,
     });
-  }
+  };
 
   // update global state on value change
   useDeepCompareEffect(() => {
     if (name) {
       // Note: don't write undefined if subform value is missing in the globalState. It doesn't make any sense but initiates a re-rendering
       const existsInGlobalState = Boolean(globalState) && globalState.hasOwnProperty(name);
-      if (value === undefined && !existsInGlobalState)
-        return;
+      if (value === undefined && !existsInGlobalState) return;
 
       setGlobalState({
         key: name,
@@ -114,18 +117,19 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
 
   const urlHelper = useModelApiHelper();
   const getReadUrl = (): Promise<string> => {
-    if (dataSource !== 'api')
-      return Promise.reject('`getUrl` is available only when `dataSource` = `api`');
+    if (dataSource !== 'api') return Promise.reject('`getUrl` is available only when `dataSource` = `api`');
 
     return getUrl
-      // if getUrl is specified - evaluate value using JS
-      ? evaluateUrl(getUrl)
+      ? // if getUrl is specified - evaluate value using JS
+        evaluateUrl(getUrl)
       : entityType
-        // if entityType is specified - get default url for the entity
-        ? urlHelper.getDefaultActionUrl({ modelType: entityType, actionName: StandardEntityActions.read }).then(endpoint => endpoint.url)
-        // return empty string
-        : Promise.resolve('');
-  }
+      ? // if entityType is specified - get default url for the entity
+        urlHelper
+          .getDefaultActionUrl({ modelType: entityType, actionName: StandardEntityActions.read })
+          .then(endpoint => endpoint.url)
+      : // return empty string
+        Promise.resolve('');
+  };
 
   const [formLoadingState, setFormLoadingState] = useState<IFormLoadingState>({ isLoading: false, error: null });
 
@@ -135,8 +139,7 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
   const { getEntityFormId } = useConfigurationItemsLoader();
 
   useEffect(() => {
-    if (formConfig?.formId !== formId)
-      setFormConfig({ formId, lazy: true });
+    if (formConfig?.formId !== formId) setFormConfig({ formId, lazy: true });
   }, [formId]);
 
   // show form based on the entity type
@@ -160,7 +163,6 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
     verb: 'PUT',
   });
 
-
   /**
    *  Memoized query params evaluator. It executes `queryParams` (javascript defined on the component settings) to get query params
    */
@@ -168,10 +170,10 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
     // tslint:disable-next-line:function-constructor
     const func = new Function('data, query, globalState', queryParams);
 
-    return (args) => {
+    return args => {
       try {
         const result = func(args?.data, args?.query, args?.globalState);
-        
+
         // note: delete id if it's undefined/null, missing id should be handled on the top level
         if (result.hasOwnProperty('id') && !Boolean(result.id)) {
           delete result.id;
@@ -189,8 +191,7 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
    * Get final query params taking into account all settings
    */
   const getFinalQueryParams = () => {
-    if (formMode === 'designer' || dataSource !== 'api')
-      return {};
+    if (formMode === 'designer' || dataSource !== 'api') return {};
 
     let params: EntitiesGetQueryParams = {
       entityType,
@@ -199,7 +200,7 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
     params.properties =
       typeof properties === 'string' ? `id ${properties}` : ['id', ...Array.from(new Set(properties || []))].join(' '); // Always include the `id` property/. Useful for deleting
 
-    const queryParamsFromJs = queryParamsEvaluator({ 
+    const queryParamsFromJs = queryParamsEvaluator({
       data: formData ?? {},
       globalState: globalState,
       query: getQueryParams(),
@@ -209,7 +210,7 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
     }
 
     return params;
-  }
+  };
 
   const finalQueryParams = useDeepCompareMemoKeepReference(() => {
     const result = getFinalQueryParams();
@@ -224,14 +225,15 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
       return;
     }
 
-    if (dataRequestAbortController.current)
-      dataRequestAbortController.current.abort('out of date');
+    if (dataRequestAbortController.current) dataRequestAbortController.current.abort('out of date');
 
     // Skip loading if we work with entity and the `id` is not specified
     if (entityType && !finalQueryParams?.id) {
       onChange({});
       return;
     }
+
+    if (!getUrl) return;
 
     dataRequestAbortController.current = new AbortController();
 
@@ -242,35 +244,34 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
         finalQueryParams,
         { base: backendUrl, headers: httpHeaders },
         dataRequestAbortController.current.signal
-      ).then(dataResponse => {
-        if (dataRequestAbortController.current?.signal?.aborted)
-          return;
+      )
+        .then(dataResponse => {
+          if (dataRequestAbortController.current?.signal?.aborted) return;
 
-        dataRequestAbortController.current = null;
+          dataRequestAbortController.current = null;
 
-        if (dataResponse.success) {
-          if (typeof onChange === 'function') {
-            onChange(dataResponse?.result);
-            dispatch(fetchDataSuccessAction());
+          if (dataResponse.success) {
+            if (typeof onChange === 'function') {
+              onChange(dataResponse?.result);
+              dispatch(fetchDataSuccessAction());
+            }
+          } else {
+            dispatch(fetchDataErrorAction({ error: dataResponse.error as GetDataError<unknown> }));
           }
-        } else {
-          dispatch(fetchDataErrorAction({ error: dataResponse.error as GetDataError<unknown> }));
-        }
-      })
+        })
         .catch(e => {
           dispatch(fetchDataErrorAction({ error: e }));
         });
     });
-  }
+  };
 
   const debouncedFetchData = useDebouncedCallback(() => {
     fetchData();
   }, 300);
 
   // fetch data on first rendering and on change of some properties
-  useEffect(() => {
-    if (dataSource !== 'api')
-      return;
+  useDeepCompareEffect(() => {
+    if (dataSource !== 'api') return;
 
     fetchData();
   }, [dataSource, finalQueryParams]); // todo: memoize final getUrl and add as a dependency
@@ -344,6 +345,8 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
           dispatch(
             setMarkupWithSettingsAction({
               hasFetchedConfig: true,
+              id: response?.id,
+              module: response?.module,
               components: response.markup,
               formSettings: response.settings,
               versionNo: response?.versionNo,

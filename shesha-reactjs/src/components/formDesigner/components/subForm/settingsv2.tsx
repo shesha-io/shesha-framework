@@ -39,13 +39,23 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
       form={form}
       onFinish={onSave}
       layout="vertical"
-      onValuesChange={(changedValues, values: ISubFormProps) => {
+      onValuesChange={(changedValues: ISubFormProps, values: ISubFormProps) => {
         const incomingState = { ...values };
 
         if (Object.hasOwn(changedValues, 'entityType')) {
           incomingState.properties = null;
 
           form?.setFieldsValue({ properties: null });
+        }
+
+        if (Object.hasOwn(changedValues, 'apiMode')) {
+          if (changedValues?.apiMode === 'entityName') {
+            incomingState.getUrl = null;
+            form?.setFieldsValue({ getUrl: null });
+          } else {
+            incomingState.entityType = null;
+            form?.setFieldsValue({ entityType: null });
+          }
         }
 
         setState(prev => ({ ...prev, ...incomingState }));
@@ -131,13 +141,27 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
           </FormItem>
 
           <Show when={state?.dataSource === 'api'}>
-            <FormItem name="entityType" label="Entity type">
-              <AutocompleteRaw
-                dataSourceType="url"
-                dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete"
-                readOnly={readOnly}
-              />
+            <FormItem
+              name="apiMode"
+              initialValue={'entityType'}
+              label="API Mode"
+              tooltip="The API mode to use to fetch data"
+            >
+              <Select disabled={readOnly}>
+                <Option value="entityName">entityName</Option>
+                <Option value="url">url</Option>
+              </Select>
             </FormItem>
+
+            <Show when={state?.apiMode === 'entityName'}>
+              <FormItem name="entityType" label="Entity type">
+                <AutocompleteRaw
+                  dataSourceType="url"
+                  dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete"
+                  readOnly={readOnly}
+                />
+              </FormItem>
+            </Show>
 
             <Show when={Boolean(state?.entityType)}>
               <FormItem name="properties" label="Properties">
@@ -203,42 +227,44 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
               tooltip="These settings are not mandatory except if you do not want to use the default URL, which is dependent on the Entity"
             />
 
-            <FormItem
-              label="GET Url"
-              name="getUrl"
-              tooltip="The API url that will be used to fetch the data. Write the code that returns the string"
-            >
-              <CodeEditor
-                readOnly={readOnly}
-                mode="dialog"
-                setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-                name="getUrl"
-                type={''}
-                id={''}
+            <Show when={state?.apiMode === 'url'}>
+              <FormItem
                 label="GET Url"
-                description="The API url that will be used to fetch the data. Write the code that returns the string"
-                exposedVariables={[
-                  {
-                    id: '788673a5-5eb9-4a9a-a34b-d8cea9cacb3c',
-                    name: 'data',
-                    description: 'Form data',
-                    type: 'object',
-                  },
-                  {
-                    id: '65b71112-d412-401f-af15-1d3080f85319',
-                    name: 'globalState',
-                    description: 'The global state',
-                    type: 'object',
-                  },
-                  {
-                    id: '3633b881-43f4-4779-9f8c-da3de9ecf9b8',
-                    name: 'queryParams',
-                    description: 'Query parameters',
-                    type: 'object',
-                  },
-                ]}
-              />
-            </FormItem>
+                name="getUrl"
+                tooltip="The API url that will be used to fetch the data. Write the code that returns the string"
+              >
+                <CodeEditor
+                  readOnly={readOnly}
+                  mode="dialog"
+                  setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
+                  name="getUrl"
+                  type={''}
+                  id={''}
+                  label="GET Url"
+                  description="The API url that will be used to fetch the data. Write the code that returns the string"
+                  exposedVariables={[
+                    {
+                      id: '788673a5-5eb9-4a9a-a34b-d8cea9cacb3c',
+                      name: 'data',
+                      description: 'Form data',
+                      type: 'object',
+                    },
+                    {
+                      id: '65b71112-d412-401f-af15-1d3080f85319',
+                      name: 'globalState',
+                      description: 'The global state',
+                      type: 'object',
+                    },
+                    {
+                      id: '3633b881-43f4-4779-9f8c-da3de9ecf9b8',
+                      name: 'queryParams',
+                      description: 'Query parameters',
+                      type: 'object',
+                    },
+                  ]}
+                />
+              </FormItem>
+            </Show>
 
             <FormItem
               label="POST Url"

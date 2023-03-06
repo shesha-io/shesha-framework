@@ -6,7 +6,7 @@ import { useForm } from '../../providers/form';
 import { IConfigurableFormRendererProps, IDataSourceComponent } from './models';
 import { useMutate } from 'restful-react';
 import { IAnyObject, ValidateErrorEntity } from '../../interfaces';
-import { addFormFieldsList, hasFiles, jsonToFormData } from '../../utils/form';
+import { addFormFieldsList, hasFiles, jsonToFormData, removeGhostKeys } from '../../utils/form';
 import { useGlobalState, useSheshaApplication } from '../../providers';
 import moment from 'moment';
 import {
@@ -63,9 +63,10 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
     formKeysToPersist,
     uniqueFormId,
   } = formSettings;
-  const { globalState } = useGlobalState();
+  const { globalState, setState: setGlobalState } = useGlobalState();
 
   const urlEvaluationData: IMatchData[] = [
+    { match: 'initialValues', data: initialValues },
     { match: 'query', data: getQueryParams() },
     { match: 'data', data: formData },
     { match: 'parentFormValues', data: parentFormValues },
@@ -75,7 +76,7 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
   const submitEndpoint = useModelApiEndpoint({
     actionName: submitAction,
     formSettings: formSettings,
-    mappings: urlEvaluationData
+    mappings: urlEvaluationData,
   });
 
   const { backendUrl, httpHeaders } = useSheshaApplication();
@@ -140,21 +141,21 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
     formSettings?.initialValues?.forEach(({ key, value }) => {
       const evaluatedValue = value?.includes('{{')
         ? evaluateComplexString(value, [
-          { match: 'data', data: formData },
-          { match: 'parentFormValues', data: parentFormValues },
-          { match: 'globalState', data: globalState },
-          { match: 'query', data: queryParamsFromAddressBar },
-          { match: 'initialValues', data: initialValues },
-        ])
+            { match: 'data', data: formData },
+            { match: 'parentFormValues', data: parentFormValues },
+            { match: 'globalState', data: globalState },
+            { match: 'query', data: queryParamsFromAddressBar },
+            { match: 'initialValues', data: initialValues },
+          ])
         : value?.includes('{')
-          ? evaluateValue(value, {
+        ? evaluateValue(value, {
             data: formData,
             parentFormValues: parentFormValues,
             globalState: globalState,
             query: queryParamsFromAddressBar,
             initialValues: initialValues,
           })
-          : value;
+        : value;
       _.set(computedInitialValues, key, evaluatedValue);
     });
 
@@ -165,7 +166,7 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
 
   useEffect(() => {
     if (fetchedFormEntity && onDataLoaded) {
-      executeExpression(onDataLoaded, true, true, true, true, fetchedFormEntity); // On Initialize
+      executeExpression(onDataLoaded); // On Initialize
     }
   }, [onDataLoaded, fetchedFormEntity]);
 
@@ -224,7 +225,7 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
   }, [fetchedFormEntity, lastTruthyPersistedValue, initialValuesFromSettings, uniqueFormId]);
 
   const { mutate: doSubmit, loading: submitting } = useMutate({
-    verb: submitEndpoint?.httpVerb?.toUpperCase() as ("POST" | "PUT" | "PATCH" | "DELETE"),
+    verb: submitEndpoint?.httpVerb?.toUpperCase() as 'POST' | 'PUT' | 'PATCH' | 'DELETE',
     path: submitEndpoint?.url,
   });
 
@@ -237,17 +238,19 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
         properties: 'markup',
       };
       const url = `${backendUrl}/api/services/Shesha/FormConfiguration/Query?${qs.stringify(payload)}`;
-      return axios.get<any, AxiosResponse<IAbpWrappedGetEntityResponse<FormConfigurationDto>>>(url, { headers: httpHeaders }).then(response => {
-        const markup = response.data.result.markup;
+      return axios
+        .get<any, AxiosResponse<IAbpWrappedGetEntityResponse<FormConfigurationDto>>>(url, { headers: httpHeaders })
+        .then(response => {
+          const markup = response.data.result.markup;
 
-        const preparedMarkup = evaluateString(markup, {
-          NEW_KEY: nanoid(),
-          GEN_KEY: nanoid(),
-          ...(replacements ?? {}),
+          const preparedMarkup = evaluateString(markup, {
+            NEW_KEY: nanoid(),
+            GEN_KEY: nanoid(),
+            ...(replacements ?? {}),
+          });
+
+          return preparedMarkup;
         });
-
-        return preparedMarkup;
-      });
     },
   };
 
@@ -262,10 +265,9 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
     if (!expression) {
       return null;
     }
-
     // tslint:disable-next-line:function-constructor
     return new Function(
-      'data, parentFormValues, initialValues, globalState, moment, http, message, shesha, form, setFormData',
+      'data, parentFormValues, initialValues, globalState, moment, http, message, shesha, form, setFormData,setGlobalState',
       expression
     )(
       exposedData || formData,
@@ -277,7 +279,8 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
       includeMessage ? message : undefined,
       sheshaUtils,
       form,
-      setFormDataAndInstance
+      setFormDataAndInstance,
+      setGlobalState
     );
   };
 
@@ -323,8 +326,8 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
         const nonFormValues = { ...dynamicValues, ...initialValues };
 
         const postData = excludeFormFieldsInPayload
-          ? { ...formData, ...nonFormValues }
-          : addFormFieldsList(formData, nonFormValues, form);
+          ? removeGhostKeys({ ...formData, ...nonFormValues })
+          : removeGhostKeys(addFormFieldsList(formData, nonFormValues, form));
 
         const subFormNamesToIgnore = getComponentNames(
           allComponents,
@@ -411,8 +414,7 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
 
   // Note: render form only after calculation of visible components to prevent re-creation of components
   // Looks like the code that re-creates components are deep inside the antd form
-  if (!visibleComponentIdsIsSet)
-    return null;
+  if (!visibleComponentIdsIsSet) return null;
 
   return (
     <Spin spinning={submitting}>

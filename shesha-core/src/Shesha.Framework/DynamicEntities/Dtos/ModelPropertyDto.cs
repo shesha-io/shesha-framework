@@ -2,9 +2,7 @@
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using Shesha.Domain.Enums;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Shesha.DynamicEntities.Dtos
 {
@@ -49,9 +47,9 @@ namespace Shesha.DynamicEntities.Dtos
         public string ReferenceListName { get; set; }
 
         /// <summary>
-        /// Reference list namespace
+        /// Reference list module
         /// </summary>
-        public string ReferenceListNamespace { get; set; }
+        public string ReferenceListModule { get; set; }
 
         /// <summary>
         /// Source type (ApplicationCode = 1, UserDefined = 2)
@@ -61,7 +59,7 @@ namespace Shesha.DynamicEntities.Dtos
         /// <summary>
         /// Default sort order
         /// </summary>
-        public virtual int? SortOrder { get; set; }
+        public int? SortOrder { get; set; }
 
         /// <summary>
         /// Child properties, applicable for complex data types (e.g. object, array)
@@ -77,33 +75,33 @@ namespace Shesha.DynamicEntities.Dtos
         /// If true, the property is not returned from Get end-points and is ignored if submitted on Create/Update end-points
         /// The property should also not be listed on the form configurator property list
         /// </summary>
-        public virtual bool Suppress { get; set; }
+        public bool Suppress { get; set; }
 
         /// <summary>
         /// Indicates if a property value is required in order to save
         /// </summary>
-        public virtual bool Required { get; set; }
+        public bool Required { get; set; }
 
         /// <summary>
         /// If true, the property cannot be edited via the dynamically generated create/update end-points:
         /// - property should not be listed on create/update end-points
         /// - should be set to 'True' and not editable for read-only properties of domain classes
         /// </summary>
-        public virtual bool ReadOnly { get; set; }
+        public bool ReadOnly { get; set; }
 
         /// <summary>
         /// Equivalent to Audited attribute on the property
         /// </summary>
-        public virtual bool Audited { get; set; }
+        public bool Audited { get; set; }
 
         /// <summary>
         /// Validation min
         /// </summary>
-        public virtual double? Min { get; set; }
+        public double? Min { get; set; }
         /// <summary>
         /// Validation max
         /// </summary>
-        public virtual double? Max { get; set; }
+        public double? Max { get; set; }
 
         /// <summary>
         /// Validation min length
@@ -117,24 +115,53 @@ namespace Shesha.DynamicEntities.Dtos
         /// <summary>
         /// Validation RegularExpression 
         /// </summary>
-        public virtual string RegExp { get; set; }
+        public string RegExp { get; set; }
 
         /// <summary>
         /// Validation message
         /// </summary>
-        public virtual string ValidationMessage { get; set; }
+        public string ValidationMessage { get; set; }
 
-        public virtual bool SuppressHardcoded { get; set; }
+        /// <summary>
+        /// Allows to create child/nested entity
+        /// </summary>
+        public bool CascadeCreate { get; set; }
 
-        public virtual bool RequiredHardcoded { get; set; }
+        /// <summary>
+        /// Allows to update child/nested entity
+        /// </summary>
+        public bool CascadeUpdate { get; set; }
 
-        public virtual bool ReadOnlyHardcoded { get; set; }
+        /// <summary>
+        /// Delete child/nested entity if reference was removed and the child/nested entity doesn't have nother references
+        /// </summary>
+        public bool CascadeDeleteUnreferenced { get; set; }
 
-        public virtual bool AuditedHardcoded { get; set; }
+        public bool SuppressHardcoded { get; set; }
 
-        public virtual bool SizeHardcoded { get; set; }
+        public bool RequiredHardcoded { get; set; }
 
-        public virtual bool RegExpHardcoded { get; set; }
+        public bool ReadOnlyHardcoded { get; set; }
 
+        public bool AuditedHardcoded { get; set; }
+
+        public bool SizeHardcoded { get; set; }
+
+        public bool RegExpHardcoded { get; set; }
+
+        /// <summary>
+        /// Allows to create child/nested entity
+        /// </summary>
+        public bool CascadeCreateHardcoded { get; set; }
+
+        /// <summary>
+        /// Allows to update child/nested entity
+        /// </summary>
+        public bool CascadeUpdateHardcoded { get; set; }
+
+        /// <summary>
+        /// Delete child/nested entity if reference was removed and the child/nested entity doesn't have nother references
+        /// </summary>
+        public bool CascadeDeleteUnreferencedHardcoded { get; set; }
     }
 }

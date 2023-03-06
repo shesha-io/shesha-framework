@@ -7,7 +7,7 @@ import ConfigurableFormItem from '../formItem';
 import settingsFormJson from './settingsForm.json';
 import { AutoCompletePlaces } from '../../../';
 import { getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import { useForm } from '../../../..';
+import { useForm, useFormData } from '../../../../providers';
 import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
 
 export interface IAddressCompomentProps extends IConfigurableFormComponent {
@@ -44,7 +44,8 @@ interface IAutoCompletePlacesFieldProps extends IAddressCompomentProps {
 }
 
 const AutoCompletePlacesField: FC<IAutoCompletePlacesFieldProps> = props => {
-  const { formMode, formData } = useForm();
+  const { formMode } = useForm();
+  const { data } = useFormData();
 
   const completeModel = { ...(props || {}) };
 
@@ -59,7 +60,7 @@ const AutoCompletePlacesField: FC<IAutoCompletePlacesFieldProps> = props => {
     disabled: props?.disabled,
     bordered: !props?.hideBorder,
     readOnly: props?.readOnly,
-    style: getStyle(props?.style, formData),
+    style: getStyle(props?.style, data),
     size: props?.size,
   };
 
@@ -67,6 +68,7 @@ const AutoCompletePlacesField: FC<IAutoCompletePlacesFieldProps> = props => {
     <AutoCompletePlaces
       className="search-input text-center"
       value={props.value}
+      prefix={props?.prefix as any}
       onChange={props.onChange}
       {...inputProps}
     />

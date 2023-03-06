@@ -4,7 +4,7 @@ import React, { Key, useMemo } from 'react';
 import { axiosHttp } from '../../../../apis/axios';
 import { IToolboxComponent } from '../../../../interfaces';
 import { DataTypes } from '../../../../interfaces/dataTypes';
-import { useGlobalState, useSheshaApplication } from '../../../../providers';
+import { FormIdentifier, useFormData, useGlobalState, useSheshaApplication } from '../../../../providers';
 import { useForm } from '../../../../providers/form';
 import { FormMarkup, IConfigurableFormComponent } from '../../../../providers/form/models';
 import {
@@ -49,7 +49,7 @@ export interface IAutocompleteProps extends IConfigurableFormComponent {
   disableSearch?: boolean;
   placeholder?: string;
   quickviewEnabled?: boolean;
-  quickviewFormPath?: string;
+  quickviewFormPath?: FormIdentifier;
   quickviewDisplayPropertyName?: string;
   quickviewGetEntityUrl?: string;
   quickviewWidth?: number;
@@ -68,20 +68,19 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteProps> = {
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
   factory: (model: IAutocompleteProps, _c, form) => {
     const { queryParams, filter } = model;
-    const { formData, formMode, isComponentDisabled, setFormDataAndInstance } = useForm();
-    const { globalState } = useGlobalState();
+    const { formMode, isComponentDisabled, setFormDataAndInstance } = useForm();
+    const { data } = useFormData();
+    const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
 
-    const dataSourceUrl = model.dataSourceUrl
-      ? replaceTags(model.dataSourceUrl, { data: formData })
-      : model.dataSourceUrl;
+    const dataSourceUrl = model.dataSourceUrl ? replaceTags(model.dataSourceUrl, { data: data }) : model.dataSourceUrl;
 
     const disabled = isComponentDisabled(model);
 
     const evaluatedFilters = useMemo(() => {
       if (!filter) return '';
 
-      const localFormData = !isEmpty(formData) ? camelCaseKeys(formData, { deep: true, pascalCase: true }) : formData;
+      const localFormData = !isEmpty(data) ? camelCaseKeys(data, { deep: true, pascalCase: true }) : data;
 
       const _response = evaluateDynamicFilters(
         [{ expression: filter } as any],
@@ -100,7 +99,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteProps> = {
       if (_response.find(f => f?.unevaluatedExpressions?.length)) return '';
 
       return JSON.stringify(_response[0]?.expression) || '';
-    }, [filter, formData, globalState]);
+    }, [filter, data, globalState]);
 
     const getQueryParams = (): IQueryParams => {
       const queryParamObj: IQueryParams = {};
@@ -109,9 +108,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteProps> = {
         queryParams?.forEach(({ param, value }) => {
           const valueAsString = value as string;
           if (param?.length && valueAsString.length) {
-            queryParamObj[param] = /{.*}/i.test(valueAsString)
-              ? evaluateValue(valueAsString, { data: formData })
-              : value;
+            queryParamObj[param] = /{.*}/i.test(valueAsString) ? evaluateValue(valueAsString, { data }) : value;
           }
         });
       }
@@ -159,13 +156,14 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteProps> = {
     const eventProps = {
       model,
       form,
-      formData,
+      formData: data,
       formMode,
       globalState,
       http: axiosHttp(backendUrl),
       message,
       moment,
       setFormData: setFormDataAndInstance,
+      setGlobalState,
     };
 
     const autocompleteProps = {
@@ -180,7 +178,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteProps> = {
       placeholder: model.placeholder,
       queryParams: getQueryParams(),
       readOnly: model.readOnly || formMode === 'readonly',
-      defaultValue: evaluateString(model.defaultValue, { formData, formMode, globalState }) as any,
+      defaultValue: evaluateString(model.defaultValue, { data, formMode, globalState }) as any,
       getOptionFromFetchedItem,
       disableSearch: model.disableSearch,
       filter: evaluatedFilters,
@@ -190,7 +188,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteProps> = {
       quickviewGetEntityUrl: model.quickviewGetEntityUrl,
       quickviewWidth: model.quickviewWidth,
       subscribedEventNames: model.subscribedEventNames,
-      style: getStyle(model.style, formData),
+      style: getStyle(model.style, data),
       size: model.size,
       allowFreeText: model.allowFreeText,
     };

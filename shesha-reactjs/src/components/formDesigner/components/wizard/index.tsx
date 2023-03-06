@@ -5,7 +5,7 @@ import { Steps, Button, Space, message } from 'antd';
 import ComponentsContainer from '../../componentsContainer';
 import React, { useMemo, useState } from 'react';
 import { useForm, useGlobalState } from '../../../../providers';
-import { IConfigurableFormComponent, useSheshaApplication } from '../../../../';
+import { IConfigurableFormComponent, useFormData, useSheshaApplication } from '../../../../';
 import { nanoid } from 'nanoid/non-secure';
 import WizardSettings from './settings';
 import { IStepProps, IWizardComponentProps } from './models';
@@ -30,7 +30,8 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   icon: <DoubleRightOutlined />,
   factory: model => {
     const { anyOfPermissionsGranted } = useSheshaApplication();
-    const { isComponentHidden, formMode, formData } = useForm();
+    const { isComponentHidden, formMode } = useForm();
+    const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
     const { executeAction } = useConfigurableActionDispatcher();

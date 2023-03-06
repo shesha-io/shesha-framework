@@ -16,7 +16,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Shesha.DynamicEntities
@@ -109,8 +108,8 @@ namespace Shesha.DynamicEntities
                     {
                         vconfig.FormId = new FormIdFullNameDto()
                         {
-                            Name = configuration.FormId.Name,
-                            Module = configuration.FormId.Module
+                            Name = configuration.FormId?.Name,
+                            Module = configuration.FormId?.Module
                         };
                     }
                 }
@@ -127,7 +126,7 @@ namespace Shesha.DynamicEntities
             {
                 foreach (var prop in sourcePs)
                 {
-                    var destProp = destPs.FirstOrDefault(x => x.Name == prop.Name);
+                    var destProp = destPs?.FirstOrDefault(x => x.Name == prop.Name);
                     if (destProp == null && prop.Source == MetadataSourceType.UserDefined)
                     {
                         destProp = new EntityProperty()
@@ -147,21 +146,27 @@ namespace Shesha.DynamicEntities
                         };
                     }
 
-                    destProp.Audited = prop.Audited;
-                    destProp.Description = prop.Description;
-                    destProp.Label = prop.Label;
-                    destProp.Max = prop.Max;
-                    destProp.Min = prop.Min;
-                    destProp.Required = prop.Required;
-                    destProp.MaxLength = prop.MaxLength;
-                    destProp.MinLength = prop.MinLength;
-                    destProp.ReadOnly = prop.ReadOnly;
-                    destProp.RegExp = prop.RegExp;
+                    if (destProp != null)
+                    {
+                        destProp.Audited = prop.Audited;
+                        destProp.Description = prop.Description;
+                        destProp.Label = prop.Label;
+                        destProp.Max = prop.Max;
+                        destProp.Min = prop.Min;
+                        destProp.Required = prop.Required;
+                        destProp.MaxLength = prop.MaxLength;
+                        destProp.MinLength = prop.MinLength;
+                        destProp.ReadOnly = prop.ReadOnly;
+                        destProp.RegExp = prop.RegExp;
+                        destProp.CascadeCreate = destProp.CascadeCreate || prop.CascadeCreate;
+                        destProp.CascadeUpdate = destProp.CascadeUpdate || prop.CascadeUpdate;
+                        destProp.CascadeDeleteUnreferenced = destProp.CascadeDeleteUnreferenced || prop.CascadeDeleteUnreferenced;
 
-                    await _entityPropertyRepository.InsertOrUpdateAsync(destProp);
+                        await _entityPropertyRepository.InsertOrUpdateAsync(destProp);
 
-                    if (prop.Properties?.Any() ?? false)
-                        await copyProps(destProp.Properties.ToList(), prop.Properties.ToList(), destProp);
+                        if (prop.Properties?.Any() ?? false)
+                            await copyProps(destProp.Properties?.ToList(), prop.Properties.ToList(), destProp);
+                    }
                 }
             };
 
@@ -209,10 +214,18 @@ namespace Shesha.DynamicEntities
                 var genericProps = entityType.GetProperties().Where(x => x.PropertyType == typeof(GenericEntityReference)).ToList();
 
                 if (jsonProps.Any())
-                    await _mappingMetadataProvider.UpdateClassNames(entityType, jsonProps, source.FullClassName, destination.FullClassName, true);
+                    try
+                    {
+                        await _mappingMetadataProvider.UpdateClassNames(entityType, jsonProps, source.FullClassName, destination.FullClassName, true);
+                    }
+                    catch { /* hide exception for entities without tables */ }
 
                 if (genericProps.Any())
-                    await _mappingMetadataProvider.UpdateClassNames(entityType, genericProps, source.FullClassName, destination.FullClassName, false);
+                    try
+                    {
+                        await _mappingMetadataProvider.UpdateClassNames(entityType, genericProps, source.FullClassName, destination.FullClassName, false);
+                    }
+                    catch { /* hide exception for entities without tables */ }
             }
         }
 
@@ -260,6 +273,9 @@ namespace Shesha.DynamicEntities
                             || hardCodedProp.MinLength.HasValue
                             || hardCodedProp.MaxLength.HasValue;
                         prop.RegExpHardcoded = !string.IsNullOrWhiteSpace(hardCodedProp.RegExp);
+                        prop.CascadeCreateHardcoded = hardCodedProp.CascadeCreate;
+                        prop.CascadeUpdateHardcoded = hardCodedProp.CascadeUpdate;
+                        prop.CascadeDeleteUnreferencedHardcoded = hardCodedProp.CascadeDeleteUnreferenced;
                     }
                 }
             }

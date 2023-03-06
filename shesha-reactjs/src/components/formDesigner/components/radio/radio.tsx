@@ -1,6 +1,6 @@
 import { CheckCircleOutlined } from '@ant-design/icons';
 import React from 'react';
-import { useForm } from '../../../..';
+import { useFormData } from '../../../..';
 import { IToolboxComponent } from '../../../../interfaces';
 import { DataTypes } from '../../../../interfaces/dataTypes';
 import { FormMarkup } from '../../../../providers/form/models';
@@ -23,7 +23,7 @@ const Radio: IToolboxComponent<IEnhancedRadioProps> = {
   icon: <CheckCircleOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.array,
   factory: ({ style, ...model }: IEnhancedRadioProps) => {
-    const { formData } = useForm();
+    const { data: formData } = useFormData();
 
     return (
       <ConfigurableFormItem model={model}>
@@ -34,15 +34,19 @@ const Radio: IToolboxComponent<IEnhancedRadioProps> = {
 
   settingsFormMarkup: settingsForm,
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
-  migrator: m => m.add<IEnhancedRadioProps>(0, prev => (
-    {
-      ...prev,
-      dataSourceType: prev['dataSourceType'] ?? 'values',
-      direction: prev['direction'] ?? 'horizontal'
-    }
-  )).add<IEnhancedRadioProps>(1, prev => {
-    return {...prev, referenceListId: getLegacyReferenceListIdentifier(prev.referenceListNamespace, prev.referenceListName) };
-  }),
+  migrator: m =>
+    m
+      .add<IEnhancedRadioProps>(0, prev => ({
+        ...prev,
+        dataSourceType: prev['dataSourceType'] ?? 'values',
+        direction: prev['direction'] ?? 'horizontal',
+      }))
+      .add<IEnhancedRadioProps>(1, prev => {
+        return {
+          ...prev,
+          referenceListId: getLegacyReferenceListIdentifier(prev.referenceListNamespace, prev.referenceListName),
+        };
+      }),
 };
 
 export default Radio;

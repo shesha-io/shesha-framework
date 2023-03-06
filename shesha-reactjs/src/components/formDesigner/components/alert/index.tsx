@@ -4,7 +4,7 @@ import { IConfigurableFormComponent } from '../../../../providers/form/models';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
 import { getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import { useForm } from '../../../../providers';
+import { useForm, useFormData } from '../../../../providers';
 import { getSettings } from './settings';
 import ShaIcon from '../../../shaIcon';
 
@@ -22,7 +22,8 @@ const AlertComponent: IToolboxComponent<IAlertProps> = {
   name: 'Alert',
   icon: <ExclamationCircleOutlined />,
   factory: (model: IAlertProps) => {
-    const { isComponentHidden, formData } = useForm();
+    const { isComponentHidden } = useForm();
+    const { data } = useFormData();
     const { text, alertType, description, showIcon, closable, icon, style } = model;
 
     const isHidden = isComponentHidden(model);
@@ -35,7 +36,7 @@ const AlertComponent: IToolboxComponent<IAlertProps> = {
         type={alertType}
         description={description}
         showIcon={showIcon}
-        style={getStyle(style, formData, {}, { marginBottom: '5px' })} // Temporary. Make it configurable
+        style={getStyle(style, data)} // Temporary. Make it configurable
         closable={closable}
         icon={icon ? <ShaIcon iconName={icon as any} /> : null}
       />

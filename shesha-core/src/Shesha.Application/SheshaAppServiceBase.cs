@@ -6,6 +6,7 @@ using Abp.IdentityFramework;
 using Abp.Linq;
 using Abp.Runtime.Session;
 using Abp.UI;
+using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -20,10 +21,13 @@ using Shesha.DynamicEntities.Mapper;
 using Shesha.Extensions;
 using Shesha.MultiTenancy;
 using Shesha.Services;
+using Shesha.Validations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
+using FluentValidationResult = FluentValidation.Results.ValidationResult;
 
 namespace Shesha
 {
@@ -33,9 +37,13 @@ namespace Shesha
     public abstract class SheshaAppServiceBase : ApplicationService
     {
 
+        protected readonly IObjectValidatorManager _objectValidatorManager;
+
         public SheshaAppServiceBase()
         {
             AsyncQueryableExecuter = NullAsyncQueryableExecuter.Instance;
+        
+            _objectValidatorManager = StaticContext.IocManager.Resolve<IObjectValidatorManager>(StaticContext.IocManager);
         }
 
         public IAsyncQueryableExecuter AsyncQueryableExecuter { get; set; }
@@ -222,6 +230,45 @@ namespace Shesha
             return null;
         }
 
+        /// <summary>
+        /// Runs validation
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="validationResults"></param>
+        /// <returns></returns>
+        protected async Task<bool> ValidateEntityAsync<TEntity>(TEntity entity, List<ValidationResult> validationResults)
+        {
+            await FluentValidationsOnEntityAsync(entity, validationResults);
+            var result = !validationResults.Any();
+            result = result && await _objectValidatorManager.ValidateObject(entity, validationResults);
+            return result && Validator.TryValidateObject(entity, new ValidationContext(entity), validationResults);
+        }
+
+        /// <summary>
+        /// Runs validation defined on entity through fluentValidation
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="validationResults"></param>
+        /// <returns></returns>
+        protected async Task FluentValidationsOnEntityAsync<TEntity>(TEntity entity, List<ValidationResult> validationResults)
+        {
+            if (StaticContext.IocManager.IsRegistered(typeof(IValidator<TEntity>)))
+            {
+                var validator = Abp.Dependency.IocManager.Instance.Resolve<IValidator<TEntity>>();
+                FluentValidationResult fluentValidationResults = await validator.ValidateAsync(entity);
+
+                //Map FluentValidationResult to normal System.ComponentModel.DataAnnotations.ValidationResult,
+                //so to throw one same Validations Exceptions on AbpValidationException
+                if (!fluentValidationResults.IsValid)
+                    fluentValidationResults.Errors.ForEach(err =>
+                    {
+                        var memberNames = new List<string>() { err.PropertyName };
+                        var valResult = new ValidationResult(err.ErrorMessage, memberNames);
+                        validationResults.Add(valResult);
+                    });
+            }
+        }
+
         #region Dynamic DTOs
 
         /// <summary>
@@ -305,6 +352,29 @@ namespace Shesha
         }
 
         /// <summary>
+        /// Map properties of JObject to a specified entity
+        /// </summary>
+        /// <typeparam name="TEntity">Type of entity</typeparam>
+        /// <typeparam name="TPrimaryKey">Type of primary key</typeparam>
+        /// <param name="jObject">Data</param>
+        /// <param name="entity">Destination entity</param>
+        /// <param name="validationResult">Validation result</param>
+        /// <returns></returns>
+        protected async Task<bool> MapJObjectToEntityAsync<TEntity, TPrimaryKey>(
+            JObject jObject,
+            TEntity entity,
+            List<ValidationResult> validationResult)
+            where TEntity : class, IEntity<TPrimaryKey>
+        {
+            var result = await MapJObjectToStaticPropertiesEntityAsync<TEntity, TPrimaryKey>(jObject, entity, validationResult);
+            result = result && await ValidateEntityAsync<TEntity>(entity, validationResult);
+
+            if (!result) return false;
+
+            return await MapJObjectToDynamicPropertiesEntityAsync<TEntity, TPrimaryKey>(jObject, entity, validationResult);
+        }
+
+        /// <summary>
         /// Map static properties of JObject to a specified entity
         /// </summary>
         /// <typeparam name="TEntity">Type of entity</typeparam>
@@ -340,6 +410,12 @@ namespace Shesha
             await DynamicPropertyManager.MapJObjectToEntityAsync<TEntity, TPrimaryKey>(jObject, entity);
 
             // ToDo: Add validations
+            return true;
+        }
+
+        protected async Task<bool> DeleteCascadeAsync<TEntity>(TEntity entity)
+        {
+            await EntityModelBinder.DeleteCascadeAsync(entity);
             return true;
         }
 

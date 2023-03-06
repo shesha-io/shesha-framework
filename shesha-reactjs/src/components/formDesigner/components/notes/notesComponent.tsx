@@ -2,7 +2,7 @@ import { IToolboxComponent } from '../../../../interfaces';
 import { FormMarkup, IConfigurableFormComponent } from '../../../../providers/form/models';
 import { FormOutlined } from '@ant-design/icons';
 import settingsFormJson from './settingsForm.json';
-import { NotesRenderer } from '../../../../';
+import { NotesRenderer, useFormData } from '../../../../';
 import { useForm } from '../../../../providers/form';
 import { evaluateValue, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import React from 'react';
@@ -22,7 +22,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
   factory: (model: INotesProps) => {
     const { isComponentHidden } = useForm();
 
-    const { formData } = useForm();
+    const { data: formData } = useFormData();
     const ownerId = evaluateValue(model.ownerId, { data: formData });
 
     if (isComponentHidden(model)) return null;

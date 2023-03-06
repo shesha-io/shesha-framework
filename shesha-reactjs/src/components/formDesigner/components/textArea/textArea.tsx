@@ -7,7 +7,7 @@ import { TextAreaProps } from 'antd/lib/input';
 import settingsFormJson from './settingsForm.json';
 import React from 'react';
 import { evaluateString, getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import { useForm, useGlobalState, useSheshaApplication } from '../../../../providers';
+import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../../../../providers';
 import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
 import { DataTypes, StringFormats } from '../../../../interfaces/dataTypes';
 import { customEventHandler } from '../utils';
@@ -45,8 +45,9 @@ const TextField: IToolboxComponent<ITextAreaProps> = {
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string && dataFormat === StringFormats.multiline,
   factory: (model: ITextAreaProps, _c, form) => {
-    const { formData, formMode, isComponentDisabled, setFormDataAndInstance } = useForm();
-    const { globalState } = useGlobalState();
+    const { formMode, isComponentDisabled, setFormDataAndInstance } = useForm();
+    const { data: formData } = useFormData();
+    const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
 
     const textAreaProps: TextAreaProps = {
@@ -75,6 +76,7 @@ const TextField: IToolboxComponent<ITextAreaProps> = {
       message,
       moment,
       setFormData: setFormDataAndInstance,
+      setGlobalState,
     };
 
     const isObjectData = typeof form?.getFieldValue(model.name) === 'object';

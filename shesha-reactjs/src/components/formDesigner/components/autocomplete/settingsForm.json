@@ -472,6 +472,11 @@
           "name": "setFormData",
           "description": "A function used to update the form data",
           "type": "({ values: object, mergeValues: boolean}) => void"
+        },
+        {
+          "name": "setGlobalState",
+          "description": "Setting the global state of the application",
+          "type": "(payload: { key: string, data: any } ) => void"
         }
       ]
     },
@@ -517,7 +522,7 @@
     },
     {
       "id": "49c6712b-7e91-4dab-9f11-4e7c5e6b6c74",
-      "type": "textField",
+      "type": "formAutocomplete",
       "name": "quickviewFormPath",
       "parentId": "root",
       "label": "Form Path",

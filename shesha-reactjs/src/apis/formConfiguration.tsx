@@ -48,7 +48,7 @@ export type ConfigurationItemVersionStatus = 1 | 2 | 3 | 4 | 5;
 /**
  * Copy for input
  */
-export interface CopyInput {
+export interface CopyItemInput {
   /**
    * Item id
    */
@@ -77,7 +77,7 @@ export interface CopyInput {
 export interface CreateFormConfigurationDto {
   id?: string;
   /**
-   * Form path/id is used to identify a form
+   * Module id
    */
   moduleId?: string | null;
   /**
@@ -217,10 +217,19 @@ export interface FormConfigurationDtoPagedResultDtoAjaxResponse {
 }
 
 export interface FormConfigurationGraphQLDataResult {
-  contentType?: string | null;
-  serializerSettings?: {} | null;
-  statusCode?: number | null;
-  value?: {} | null;
+  type?: string;
+  itemType?: string;
+  fullName?: string;
+  template?: string | null;
+  modelType?: string;
+  isTemplate?: boolean | null;
+  markup?: string;
+  configuration?: string | null;
+  _className?: string;
+  _jObject?: {
+    [key: string]: JToken;
+  };
+  id?: string;
 }
 
 export interface FormConfigurationGraphQLDataResultAjaxResponse {
@@ -232,11 +241,12 @@ export interface FormConfigurationGraphQLDataResultAjaxResponse {
   result?: FormConfigurationGraphQLDataResult;
 }
 
+/**
+ * NOTE: shape of the response depends on the `properties` argument
+ */
 export interface FormConfigurationPagedResultDtoGraphQLDataResult {
-  contentType?: string | null;
-  serializerSettings?: {} | null;
-  statusCode?: number | null;
-  value?: {} | null;
+  totalCount?: number;
+  items?: ProxyDynamicDtoFormConfigurationGuid[];
 }
 
 export interface FormConfigurationPagedResultDtoGraphQLDataResultAjaxResponse {
@@ -259,6 +269,8 @@ export interface FormUpdateMarkupInput {
   markup?: string | null;
 }
 
+export type JToken = JToken[];
+
 /**
  * Move item to module input
  */
@@ -271,6 +283,22 @@ export interface MoveToModuleInput {
    * Module Id
    */
   moduleId?: string;
+}
+
+export interface ProxyDynamicDtoFormConfigurationGuid {
+  id?: string;
+  _jObject?: {
+    [key: string]: JToken;
+  } | null;
+  type?: string | null;
+  itemType?: string | null;
+  fullName?: string | null;
+  template?: string | null;
+  modelType?: string | null;
+  isTemplate?: boolean | null;
+  markup?: string | null;
+  configuration?: string | null;
+  _className?: string | null;
 }
 
 /**
@@ -326,7 +354,7 @@ export interface FormConfigurationGetByNameQueryParams {
    */
   version?: number;
   /**
-   * MD5 of the form configuration. Is used for the client side caching.
+   * MD5 of the item. Is used for the client side caching.
    * If specified, the application should compare the value received from the client with a local cache and return http response with code 304 (not changed)
    */
   md5?: string;
@@ -393,7 +421,7 @@ export interface FormConfigurationGetQueryParams {
    */
   id?: string;
   /**
-   * MD5 of the form configuration. Is used for the client side caching.
+   * MD5 of the item. Is used for the client side caching.
    * If specified, the application should compare the value received from the client with a local cache and return http response with code 304 (not changed)
    */
   md5?: string;
@@ -503,7 +531,7 @@ export type FormConfigurationUpdateStatusProps = Omit<
 >;
 
 /**
- * Update form markup
+ * Update form status
  */
 export const FormConfigurationUpdateStatus = (props: FormConfigurationUpdateStatusProps) => (
   <Mutate<void, unknown, FormConfigurationUpdateStatusQueryParams, UpdateConfigurationStatusInput, void>
@@ -519,7 +547,7 @@ export type UseFormConfigurationUpdateStatusProps = Omit<
 >;
 
 /**
- * Update form markup
+ * Update form status
  */
 export const useFormConfigurationUpdateStatus = (props: UseFormConfigurationUpdateStatusProps) =>
   useMutate<void, unknown, FormConfigurationUpdateStatusQueryParams, UpdateConfigurationStatusInput, void>(
@@ -539,7 +567,7 @@ export type formConfigurationUpdateStatusProps = Omit<
   'data'
 >;
 /**
- * Update form markup
+ * Update form status
  */
 export const formConfigurationUpdateStatus = (
   data: UpdateConfigurationStatusInput,
@@ -849,6 +877,72 @@ export const formConfigurationGetJson = (
     props
   );
 
+export interface FormConfigurationImportJsonQueryParams {
+  /**
+   * The requested API version
+   */
+  'api-version'?: string;
+}
+
+export type FormConfigurationImportJsonProps = Omit<
+  MutateProps<FormConfigurationDtoAjaxResponse, AjaxResponseBase, FormConfigurationImportJsonQueryParams, void, void>,
+  'path' | 'verb'
+>;
+
+/**
+ * Import JSON
+ */
+export const FormConfigurationImportJson = (props: FormConfigurationImportJsonProps) => (
+  <Mutate<FormConfigurationDtoAjaxResponse, AjaxResponseBase, FormConfigurationImportJsonQueryParams, void, void>
+    verb="POST"
+    path={`/api/services/Shesha/FormConfiguration/ImportJson`}
+    {...props}
+  />
+);
+
+export type UseFormConfigurationImportJsonProps = Omit<
+  UseMutateProps<
+    FormConfigurationDtoAjaxResponse,
+    AjaxResponseBase,
+    FormConfigurationImportJsonQueryParams,
+    void,
+    void
+  >,
+  'path' | 'verb'
+>;
+
+/**
+ * Import JSON
+ */
+export const useFormConfigurationImportJson = (props: UseFormConfigurationImportJsonProps) =>
+  useMutate<FormConfigurationDtoAjaxResponse, AjaxResponseBase, FormConfigurationImportJsonQueryParams, void, void>(
+    'POST',
+    `/api/services/Shesha/FormConfiguration/ImportJson`,
+    props
+  );
+
+export type formConfigurationImportJsonProps = Omit<
+  RestfulShesha.MutateProps<
+    FormConfigurationDtoAjaxResponse,
+    AjaxResponseBase,
+    FormConfigurationImportJsonQueryParams,
+    void,
+    void
+  >,
+  'data'
+>;
+/**
+ * Import JSON
+ */
+export const formConfigurationImportJson = (props: formConfigurationImportJsonProps) =>
+  RestfulShesha.mutate<
+    FormConfigurationDtoAjaxResponse,
+    AjaxResponseBase,
+    FormConfigurationImportJsonQueryParams,
+    void,
+    void
+  >('POST', `/api/services/Shesha/FormConfiguration/ImportJson`, undefined, props);
+
 export interface FormConfigurationUpdateQueryParams {
   /**
    * The requested API version
@@ -1044,7 +1138,13 @@ export interface FormConfigurationCopyQueryParams {
 }
 
 export type FormConfigurationCopyProps = Omit<
-  MutateProps<FormConfigurationDtoAjaxResponse, AjaxResponseBase, FormConfigurationCopyQueryParams, CopyInput, void>,
+  MutateProps<
+    FormConfigurationDtoAjaxResponse,
+    AjaxResponseBase,
+    FormConfigurationCopyQueryParams,
+    CopyItemInput,
+    void
+  >,
   'path' | 'verb'
 >;
 
@@ -1052,7 +1152,7 @@ export type FormConfigurationCopyProps = Omit<
  * Copy form
  */
 export const FormConfigurationCopy = (props: FormConfigurationCopyProps) => (
-  <Mutate<FormConfigurationDtoAjaxResponse, AjaxResponseBase, FormConfigurationCopyQueryParams, CopyInput, void>
+  <Mutate<FormConfigurationDtoAjaxResponse, AjaxResponseBase, FormConfigurationCopyQueryParams, CopyItemInput, void>
     verb="POST"
     path={`/api/services/Shesha/FormConfiguration/Copy`}
     {...props}
@@ -1060,7 +1160,13 @@ export const FormConfigurationCopy = (props: FormConfigurationCopyProps) => (
 );
 
 export type UseFormConfigurationCopyProps = Omit<
-  UseMutateProps<FormConfigurationDtoAjaxResponse, AjaxResponseBase, FormConfigurationCopyQueryParams, CopyInput, void>,
+  UseMutateProps<
+    FormConfigurationDtoAjaxResponse,
+    AjaxResponseBase,
+    FormConfigurationCopyQueryParams,
+    CopyItemInput,
+    void
+  >,
   'path' | 'verb'
 >;
 
@@ -1068,7 +1174,7 @@ export type UseFormConfigurationCopyProps = Omit<
  * Copy form
  */
 export const useFormConfigurationCopy = (props: UseFormConfigurationCopyProps) =>
-  useMutate<FormConfigurationDtoAjaxResponse, AjaxResponseBase, FormConfigurationCopyQueryParams, CopyInput, void>(
+  useMutate<FormConfigurationDtoAjaxResponse, AjaxResponseBase, FormConfigurationCopyQueryParams, CopyItemInput, void>(
     'POST',
     `/api/services/Shesha/FormConfiguration/Copy`,
     props
@@ -1079,7 +1185,7 @@ export type formConfigurationCopyProps = Omit<
     FormConfigurationDtoAjaxResponse,
     AjaxResponseBase,
     FormConfigurationCopyQueryParams,
-    CopyInput,
+    CopyItemInput,
     void
   >,
   'data'
@@ -1087,12 +1193,12 @@ export type formConfigurationCopyProps = Omit<
 /**
  * Copy form
  */
-export const formConfigurationCopy = (data: CopyInput, props: formConfigurationCopyProps) =>
+export const formConfigurationCopy = (data: CopyItemInput, props: formConfigurationCopyProps) =>
   RestfulShesha.mutate<
     FormConfigurationDtoAjaxResponse,
     AjaxResponseBase,
     FormConfigurationCopyQueryParams,
-    CopyInput,
+    CopyItemInput,
     void
   >('POST', `/api/services/Shesha/FormConfiguration/Copy`, data, props);
 
@@ -1157,6 +1263,10 @@ export interface FormConfigurationGetAllQueryParams {
    * Quick search string. Is used to search entities by text
    */
   quickSearch?: string;
+  /**
+   * List of specifications to apply on top of query
+   */
+  specifications?: string[];
   sorting?: string;
   skipCount?: number;
   maxResultCount?: number;
@@ -1299,6 +1409,10 @@ export interface FormConfigurationQueryAllQueryParams {
    * Quick search string. Is used to search entities by text
    */
   quickSearch?: string;
+  /**
+   * List of specifications to apply on top of query
+   */
+  specifications?: string[];
   sorting?: string;
   skipCount?: number;
   maxResultCount?: number;

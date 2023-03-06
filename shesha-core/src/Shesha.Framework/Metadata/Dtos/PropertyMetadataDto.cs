@@ -10,6 +10,10 @@ namespace Shesha.Metadata.Dtos
 {
     public class PropertyMetadataDto
     {
+        public bool CascadeCreate { get; set; }
+        public bool CascadeUpdate { get; set; }
+        public bool CascadeDeleteUnreferenced { get; set; }
+
         public bool IsVisible { get; set; }
         public bool Required { get; set; }
         public bool Readonly { get; set; }
@@ -22,12 +26,12 @@ namespace Shesha.Metadata.Dtos
         /// <summary>
         /// Equivalent to Audited attribute on the property
         /// </summary>
-        public virtual bool Audited { get; set; }
+        public bool Audited { get; set; }
 
         /// <summary>
         /// Validation RegularExpression 
         /// </summary>
-        public virtual string RegExp { get; set; }
+        public string RegExp { get; set; }
 
         /// <summary>
         /// Validation message

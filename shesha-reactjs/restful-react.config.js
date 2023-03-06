@@ -6,31 +6,28 @@ const STORYBOOK_BASE_URL = 'http://localhost:21021';
 const ROOT_PATH = './src/apis';
 
 const API_LIST = [
-  //'FormConfiguration'
+  //'FormConfiguration',
   //'Form',
   //'DataTable',
   //'PermissionedObject'
-  /*
   //'Applications',
-  'Area',
-  'AuthorizationSettings',
-  'Autocomplete',
-  'CheckList',
-  'CheckListItem',
-  'ConfigurableComponent',
-  'Note',
-  'Person',
-  'ReferenceList',
-  'ScheduledJobExecution',
-  'Session',
-  'StoredFile',
-  'TokenAuth',
-  'User',
-  'Metadata',
-  */
- 'Settings'
+  //'Area',
+  //'AuthorizationSettings',
+  //'Autocomplete',
+  //'CheckList',
+  //'CheckListItem',
+  //'ConfigurableComponent',
+  //'Note',
+  //'Person',
+  //'ReferenceList',
+  //'ScheduledJobExecution',
+  //'Session',
+  //'StoredFile',
+  //'TokenAuth',
+  //'User',
+  //'Metadata',
   //'EntityConfig',
-  // 'EntityProperty',
+  //'EntityProperty',
   //'ModelConfigurations',
   // 'PersonTest',
   // 'ImportResult',

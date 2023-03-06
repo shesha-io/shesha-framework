@@ -1,32 +1,18 @@
 ﻿using Abp.Application.Services.Dto;
-using Abp.Authorization;
 using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Runtime.Validation;
-using DocumentFormat.OpenXml.Vml.Office;
-using FluentValidation;
-using NHibernate.Engine;
-using NHibernate.Util;
-using Nito.AsyncEx.Synchronous;
 using Shesha.Application.Services.Dto;
 using Shesha.Attributes;
-using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;
-using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.GraphQL.Mvc;
-using Shesha.Permissions;
-using Shesha.Services;
-using Shesha.Utilities;
-using Shesha.Validations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using FluentValidationResult = FluentValidation.Results.ValidationResult;
 
 namespace Shesha
 {
@@ -37,15 +23,10 @@ namespace Shesha
         where TDynamicDto : class, IDynamicDto<TEntity, TPrimaryKey>
     {
 
-        private readonly IObjectValidatorManager _objectValidatorManager;
-
         public DynamicCrudAppService(
             IRepository<TEntity, TPrimaryKey> repository
-            // ToDo: AS - temporary
-            //IPropertyValidatorManager propertyValidator
             ) : base(repository)
         {
-            _objectValidatorManager = Abp.Dependency.IocManager.Instance.Resolve<IObjectValidatorManager>();// propertyValidator;
         }
 
         [EntityAction(StandardEntityActions.Read)]
@@ -70,20 +51,12 @@ namespace Shesha
 
             if (jObject != null)
             {
-
                 // Update the Jobject from the input because it might have changed
                 ObjectToJsonExtension.ObjectToJObject(input, jObject);
 
                 var validationResults = new List<ValidationResult>();
-                var result = await MapJObjectToStaticPropertiesEntityAsync<TEntity, TPrimaryKey>(jObject, entity, validationResults);
-
-                await _objectValidatorManager.ValidateObject(entity, validationResults);
-                await FluentValidationsOnEntityAsync(entity, validationResults);
-                Validator.TryValidateObject(entity, new ValidationContext(entity), validationResults);
-
-                await MapJObjectToDynamicPropertiesEntityAsync<TEntity, TPrimaryKey>(jObject, entity, validationResults);
-
-                if (validationResults.Any())
+                var result = await MapJObjectToEntityAsync<TEntity, TPrimaryKey>(jObject, entity, validationResults);
+                if (!result)
                     throw new AbpValidationException("Please correct the errors and try again", validationResults);
             }
             else
@@ -118,7 +91,7 @@ namespace Shesha
         {
             CheckUpdatePermission();
             var entity = await InternalUpdateAsync(input);
-            return await QueryAsync(new GetDynamicEntityInput<TPrimaryKey>() { Id = input.Id, Properties = properties });
+            return await QueryAsync(new GetDynamicEntityInput<TPrimaryKey>() { Id = entity.Id, Properties = properties });
         }
 
         [EntityAction(StandardEntityActions.Update)]
@@ -140,14 +113,12 @@ namespace Shesha
 
             if (jObject != null)
             {
+                // Update the Jobject from the input because it might have changed
+                ObjectToJsonExtension.ObjectToJObject(input, jObject);
+
                 var validationResults = new List<ValidationResult>();
-                var result = await MapJObjectToStaticPropertiesEntityAsync<TEntity, TPrimaryKey>(jObject, entity, validationResults);
-
-                await _objectValidatorManager.ValidateObject(entity, validationResults);
-                await FluentValidationsOnEntityAsync(entity, validationResults);
-                Validator.TryValidateObject(entity, new ValidationContext(entity), validationResults);
-
-                if (validationResults.Any<ValidationResult>())
+                var result = await MapJObjectToEntityAsync<TEntity, TPrimaryKey>(jObject, entity, validationResults);
+                if (!result)
                     throw new AbpValidationException("Please correct the errors and try again", validationResults);
             }
             else
@@ -187,31 +158,6 @@ namespace Shesha
         }
 
         /// <summary>
-        /// Runs validation defined on entity through fluentValidation
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <param name="validationResults"></param>
-        /// <returns></returns>
-        private async Task FluentValidationsOnEntityAsync(TEntity entity, List<ValidationResult> validationResults)
-        {
-            if (Abp.Dependency.IocManager.Instance.IsRegistered(typeof(IValidator<TEntity>)))
-            {
-                var validator = Abp.Dependency.IocManager.Instance.Resolve<IValidator<TEntity>>();
-                FluentValidationResult fluentValidationResults = await validator.ValidateAsync(entity);
-
-                //Map FluentValidationResult to normal System.ComponentModel.DataAnnotations.ValidationResult,
-                //so to throw one same Validations Exceptions on AbpValidationException
-                if (!fluentValidationResults.IsValid)
-                    fluentValidationResults.Errors.ForEach(err =>
-                    {
-                        var memberNames = new List<string>() { err.PropertyName };
-                        var valResult = new ValidationResult(err.ErrorMessage, memberNames);
-                        validationResults.Add(valResult);
-                    });
-            }
-        }
-
-        /// <summary>
         /// Create entity.
         /// NOTE: don't use on prod, will be merged with the `Update`endpoint soon
         /// </summary>
@@ -223,7 +169,7 @@ namespace Shesha
         {
             CheckUpdatePermission();
             var entity = await InternalCreateAsync(input);
-            return await QueryAsync(new GetDynamicEntityInput<TPrimaryKey>() { Id = input.Id, Properties = properties });
+            return await QueryAsync(new GetDynamicEntityInput<TPrimaryKey>() { Id = entity.Id, Properties = properties });
         }
 
         [EntityAction(StandardEntityActions.Create)]

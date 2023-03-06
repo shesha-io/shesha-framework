@@ -9,7 +9,8 @@ import settingsFormJson from './settingsForm.json';
 import { getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import RefListDropDown from '../../../refListDropDown';
 import { DataTypes } from '../../../../interfaces/dataTypes';
-import { evaluateString, useForm, useGlobalState, useSheshaApplication } from '../../../..';
+import { evaluateString } from '../../../..';
+import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../../../../providers';
 import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
 import { customDropDownEventHandler } from '../utils';
 import { axiosHttp } from '../../../../apis/axios';
@@ -24,10 +25,10 @@ const DropdownComponent: IToolboxComponent<IDropdownProps> = {
   icon: <DownSquareOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.referenceListItem,
   factory: (model: IDropdownProps, _c, form) => {
-    const { formData, formMode, setFormDataAndInstance } = useForm();
-    const { globalState } = useGlobalState();
+    const { formMode, setFormDataAndInstance } = useForm();
+    const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
-
+    const { data: formData } = useFormData();
     const eventProps = {
       model,
       form,
@@ -38,10 +39,13 @@ const DropdownComponent: IToolboxComponent<IDropdownProps> = {
       message,
       moment,
       setFormData: setFormDataAndInstance,
+      setGlobalState,
     };
 
+    const initialValue = model?.defaultValue ? { initialValue: model.defaultValue } : {};
+
     return (
-      <ConfigurableFormItem model={model}>
+      <ConfigurableFormItem model={model} {...initialValue}>
         <Dropdown {...model} {...customDropDownEventHandler(eventProps)} />
       </ConfigurableFormItem>
     );
@@ -95,7 +99,8 @@ export const Dropdown: FC<IDropdownProps> = ({
   size,
   allowClear = true,
 }) => {
-  const { formMode, isComponentDisabled, formData } = useForm();
+  const { formMode, isComponentDisabled } = useForm();
+  const { data: formData } = useFormData();
   const { globalState } = useGlobalState();
 
   const getOptions = (): ILabelValue[] => {
