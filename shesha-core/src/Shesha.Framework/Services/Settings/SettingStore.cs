@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Shesha.Services.Settings
@@ -24,7 +25,7 @@ namespace Shesha.Services.Settings
         private readonly IRepository<SettingConfiguration, Guid> _settingConfigurationRepository;
         private readonly IRepository<SettingValue, Guid> _settingValueRepository;
         private readonly IConfigurationFrameworkRuntime _cfRuntime;
-
+        
         public SettingStore(
             IRepository<SettingConfiguration, Guid> repository, 
             IRepository<ConfigurationItem, Guid> configurationItemRepository, 
@@ -109,17 +110,33 @@ namespace Shesha.Services.Settings
 
         public async Task<SettingValue> GetSettingValueAsync(SettingDefinition setting, SettingManagementContext context)
         {
-            var query = _settingValueRepository.GetAll().Where(v => v.SettingConfiguration.Configuration.Name == setting.Name);
+            return await WithUnitOfWorkAsync(async () => {
+                var query = _settingValueRepository.GetAll().Where(v => v.SettingConfiguration.Configuration.Name == setting.Name);
 
-            if (setting.IsClientSpecific)
+                if (setting.IsClientSpecific)
+                {
+                    var appKey = context.AppKey ?? _cfRuntime.FrontEndApplication;
+                    query = !string.IsNullOrWhiteSpace(appKey)
+                        ? query.Where(v => v.Application != null && v.Application.AppKey == appKey)
+                        : query.Where(v => v.Application == null);
+                }
+
+                return await query.FirstOrDefaultAsync();
+            });
+        }
+
+        private async Task<TResult> WithUnitOfWorkAsync<TResult>(Func<Task<TResult>> action)
+        {
+            if (UnitOfWorkManager.Current != null)
+                return await action.Invoke();
+
+            using (var uow = UnitOfWorkManager.Begin()) 
             {
-                var appKey = context.AppKey ?? _cfRuntime.FrontEndApplication;
-                query = !string.IsNullOrWhiteSpace(appKey)
-                    ? query.Where(v => v.Application != null && v.Application.AppKey == appKey)
-                    : query.Where(v => v.Application == null);
+                var result = await action.Invoke();
+                await uow.CompleteAsync();
+                
+                return result;
             }
-
-            return await query.FirstOrDefaultAsync();
         }
     }
 }
