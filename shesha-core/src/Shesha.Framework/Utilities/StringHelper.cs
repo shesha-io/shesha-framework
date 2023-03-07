@@ -243,6 +243,7 @@ namespace Shesha.Utilities
         /// <summary>
         /// Convert string to Guid. Returns Guid.Empty if the string is in incorrect format
         /// </summary>
+        [DebuggerStepThrough]
         public static Guid ToGuid(this string value)
         {
             return value.ToGuidOrNull() ?? Guid.Empty;
@@ -251,6 +252,7 @@ namespace Shesha.Utilities
         /// <summary>
         /// Convert string to Guid or null. Returns null if the string is in incorrect format
         /// </summary>
+        [DebuggerStepThrough]
         public static Guid? ToGuidOrNull(this string value)
         {
             return Guid.TryParse(value?.Trim('{', '}'), out var result)

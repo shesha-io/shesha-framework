@@ -1,5 +1,6 @@
 ﻿using Abp.Dependency;
 using Shesha.Reflection;
+using Shesha.Utilities;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -45,7 +46,7 @@ namespace Shesha.Settings
         /// inheritedDoc
         public TValue GetValue()
         {
-            return _settingManager.GetOrNull<TValue>(Module, Name);
+            return AsyncHelper.RunSync<TValue>(() => GetValueAsync());
         }
 
         /// inheritedDoc

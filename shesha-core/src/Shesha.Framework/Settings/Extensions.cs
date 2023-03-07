@@ -23,20 +23,6 @@ namespace Shesha.Settings
         /// <param name="module">Setting module</param>
         /// <param name="name">Unique name of the setting</param>
         /// <returns>Value of the setting</returns>
-        public static T GetSettingValue<T>(this IShaSettingManager settingProvider, string module, string name)
-            where T : struct
-        {
-            return settingProvider.GetOrNull<T>(module, name);
-        }
-
-        /// <summary>
-        /// Gets value of a setting in given type (<typeparamref name="T"/>).
-        /// </summary>
-        /// <typeparam name="T">Type of the setting to get</typeparam>
-        /// <param name="settingProvider">Setting manager</param>
-        /// <param name="module">Setting module</param>
-        /// <param name="name">Unique name of the setting</param>
-        /// <returns>Value of the setting</returns>
         public static async Task<T> GetSettingValueAsync<T>(this IShaSettingManager settingProvider, string module, string name)
             where T : struct
         {
