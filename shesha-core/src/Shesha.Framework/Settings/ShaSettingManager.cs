@@ -39,14 +39,6 @@ namespace Shesha.Settings
             _moduleRepository = moduleRepository;
         }
 
-        public TValue GetOrNull<TValue>([NotNull] string module, [NotNull] string name, SettingManagementContext context = null)
-        {
-            // find definition
-            // check 
-
-            throw new System.NotImplementedException();
-        }
-
         public async Task<object> GetOrNullAsync([NotNull] string module, [NotNull] string name, SettingManagementContext context = null) 
         {
             var setting = _settingDefinitionManager.Get(name);
