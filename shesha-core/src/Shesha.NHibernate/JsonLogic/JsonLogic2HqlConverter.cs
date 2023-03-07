@@ -28,7 +28,7 @@ namespace Shesha.JsonLogic
             if (rule is JObject ruleObj)
             {
                 var operationProps = GetOperation(ruleObj);
-                var jsOperator = operations.GetOperator(operationProps.Operation);
+                var jsOperator = operations.GetOperator(operationProps.Name);
                 return jsOperator(this, operationProps.Arguments, context);
             }
 
@@ -51,7 +51,7 @@ namespace Shesha.JsonLogic
                     : new JToken[] { p.Value };
                 return new OperationProps
                 {
-                    Operation = operationName,
+                    Name = operationName,
                     Arguments = operationArguments,
                 };
             }

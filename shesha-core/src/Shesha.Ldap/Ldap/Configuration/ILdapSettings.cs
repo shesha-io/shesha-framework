@@ -1,18 +1,45 @@
-using System.DirectoryServices.AccountManagement;
-using System.Threading.Tasks;
+using Shesha.Settings;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Ldap.Configuration
 {
     /// <summary>
-    /// Used to obtain current values of LDAP settings.
-    /// This abstraction allows to define a different source for settings than SettingManager (see default implementation: <see cref="LdapSettings"/>).
+    /// LDAP Settings
     /// </summary>
-    public interface ILdapSettings
+    [Category("LDAP")]
+    public interface ILdapSettings : ISettingAccessors
     {
-        Task<bool> GetIsEnabled(int? tenantId);
-        Task<string> GetServer(int? tenantId);
-        Task<int> GetPort(int? tenantId);
-        Task<bool> GetUseSsl(int? tenantId);
-        Task<string> GetDomain(int? tenantId);
+        /// <summary>
+        /// Is Enabled
+        /// </summary>
+        [Display(Name = "Is Enabled")]
+        [Setting(LdapSettingNames.IsEnabled)]
+        ISettingAccessor<bool> IsEnabled { get; }
+
+        /// <summary>
+        /// LDAP Server
+        /// </summary>
+        [Setting(LdapSettingNames.Server)]
+        ISettingAccessor<string> Server { get; }
+
+        /// <summary>
+        /// Port
+        /// </summary>
+        [Setting(LdapSettingNames.Port)]
+        ISettingAccessor<int> Port { get; }
+
+        /// <summary>
+        /// Use SSL
+        /// </summary>
+        [Display(Name = "Use SSL")]
+        [Setting(LdapSettingNames.UseSsl)]
+        ISettingAccessor<bool> UseSsl { get; }
+
+        /// <summary>
+        /// Domain
+        /// </summary>
+        [Setting(LdapSettingNames.IsEnabled)]
+        ISettingAccessor<string> Domain { get; }
     }
 }

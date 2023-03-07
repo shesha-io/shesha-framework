@@ -1,6 +1,5 @@
 ﻿using Abp;
 using Abp.AutoMapper;
-using Abp.Configuration;
 using Abp.Configuration.Startup;
 using Abp.Dependency;
 using Abp.Modules;
@@ -10,24 +9,19 @@ using Abp.Notifications;
 using Abp.Reflection;
 using Castle.MicroKernel.Registration;
 using Shesha.Authorization;
-using Shesha.Configuration;
 using Shesha.Email;
+using Shesha.GraphQL;
 using Shesha.Notifications;
 using Shesha.Otp.Configuration;
 using Shesha.Push;
 using Shesha.Push.Configuration;
 using Shesha.Reflection;
+using Shesha.Settings.Ioc;
 using Shesha.Sms;
 using Shesha.Sms.Configuration;
 using Shesha.Startup;
 using System.Linq;
 using System.Reflection;
-using Abp.Authorization;
-using Shesha.GraphQL;
-using Shesha.Validations;
-using Shesha.GraphQL.Provider;
-using Shesha.Api;
-using System;
 
 namespace Shesha
 {
@@ -42,9 +36,6 @@ namespace Shesha
         {
             IocManager.Register<IShaApplicationModuleConfiguration, ShaApplicationModuleConfiguration>();
 
-            Configuration.Settings.Providers.Add<SmsSettingProvider>();
-            Configuration.Settings.Providers.Add<PushSettingProvider>();
-            Configuration.Settings.Providers.Add<EmailSettingProvider>();
             Configuration.Notifications.Providers.Add<ShaNotificationProvider>();
             Configuration.Notifications.Notifiers.Add<EmailRealTimeNotifier>();
             Configuration.Notifications.Notifiers.Add<SmsRealTimeNotifier>();
@@ -55,8 +46,6 @@ namespace Shesha
 
             // replace email sender
             Configuration.ReplaceService<ISmtpEmailSenderConfiguration, SmtpEmailSenderSettings>(DependencyLifeStyle.Transient);
-
-            Configuration.Settings.Providers.Add<OtpSettingProvider>();
 
             // ToDo: migrate Notification to ABP 6.6.2
             //Configuration.Notifications.Distributers.Clear();
@@ -70,12 +59,15 @@ namespace Shesha
 
             #region Push notifications
 
+            IocManager.RegisterSettingAccessor<IPushSettings>(s => {
+                s.PushNotifier.WithDefaultValue(NullPushNotifier.Uid);
+            });
             IocManager.Register<NullPushNotifier, NullPushNotifier>(DependencyLifeStyle.Transient);
             IocManager.IocContainer.Register(
                 Component.For<IPushNotifier>().UsingFactoryMethod(f =>
                 {
-                    var settings = f.Resolve<ISettingManager>();
-                    var pushNotifier = settings.GetSettingValue(SheshaSettingNames.Push.PushNotifier);
+                    var settings = f.Resolve<IPushSettings>();
+                    var pushNotifier = settings.PushNotifier.GetValue();
 
                     var pushNotifierType = !string.IsNullOrWhiteSpace(pushNotifier)
                         ? f.Resolve<ITypeFinder>().Find(t => typeof(IPushNotifier).IsAssignableFrom(t) && t.GetClassUid() == pushNotifier).FirstOrDefault()
@@ -94,12 +86,15 @@ namespace Shesha
 
             #region SMS Gateways
 
+            IocManager.RegisterSettingAccessor<ISmsSettings>(s => {
+                s.SmsGateway.WithDefaultValue(NullSmsGateway.Uid);
+            });
             IocManager.Register<NullSmsGateway, NullSmsGateway>(DependencyLifeStyle.Transient);
             IocManager.IocContainer.Register(
                 Component.For<ISmsGateway>().UsingFactoryMethod(f =>
                 {
-                    var settings = f.Resolve<ISettingManager>();
-                    var gatewayUid = settings.GetSettingValue(SheshaSettingNames.Sms.SmsGateway);
+                    var settings = f.Resolve<ISmsSettings>();
+                    var gatewayUid = settings.SmsGateway.GetValue();
 
                     var gatewayType = !string.IsNullOrWhiteSpace(gatewayUid)
                         ? f.Resolve<ITypeFinder>().Find(t => typeof(ISmsGateway).IsAssignableFrom(t) && t.GetClassUid() == gatewayUid).FirstOrDefault()
@@ -118,6 +113,19 @@ namespace Shesha
 
         public override void Initialize()
         {
+            IocManager.RegisterSettingAccessor<IOtpSettings>(s => {
+                s.PasswordLength.WithDefaultValue(OtpDefaults.DefaultPasswordLength);
+                s.Alphabet.WithDefaultValue(OtpDefaults.DefaultAlphabet);
+                s.DefaultLifetime.WithDefaultValue(OtpDefaults.DefaultLifetime);
+                s.DefaultSubjectTemplate.WithDefaultValue(OtpDefaults.DefaultSubjectTemplate);
+                s.DefaultBodyTemplate.WithDefaultValue(OtpDefaults.DefaultBodyTemplate);
+
+                s.DefaultEmailSubjectTemplate.WithDefaultValue(OtpDefaults.DefaultEmailSubjectTemplate);
+                s.DefaultEmailSubjectTemplate.WithDefaultValue(OtpDefaults.DefaultEmailBodyTemplate);
+            });
+            
+            
+
             IocManager.Register<ISheshaAuthorizationHelper, ApiAuthorizationHelper>(DependencyLifeStyle.Transient);
             IocManager.Register<ISheshaAuthorizationHelper, EntityCrudAuthorizationHelper>(DependencyLifeStyle.Transient);
 

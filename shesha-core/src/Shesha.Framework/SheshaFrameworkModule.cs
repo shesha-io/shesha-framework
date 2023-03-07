@@ -1,8 +1,10 @@
 ﻿using Abp.Authorization;
 using Abp.AutoMapper;
 using Abp.Dependency;
+using Abp.Domain.Repositories;
 using Abp.Modules;
 using Abp.Web.Models;
+using Castle.Facilities.TypedFactory;
 using Castle.MicroKernel.Registration;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
@@ -19,6 +21,8 @@ using Shesha.Services;
 using Shesha.Services.ReferenceLists;
 using Shesha.Services.ReferenceLists.Distribution;
 using Shesha.Services.StoredFiles;
+using Shesha.Settings;
+using Shesha.Settings.Ioc;
 using System.Reflection;
 
 namespace Shesha
@@ -26,7 +30,8 @@ namespace Shesha
     [DependsOn(typeof(AbpAutoMapperModule))]
     public class SheshaFrameworkModule : SheshaModule
     {
-        public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo("Shesha") { 
+        public const string ModuleName = "Shesha";
+        public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo(ModuleName) { 
             FriendlyName = "Shesha Core",
             Publisher = "Boxfusion" 
         };
@@ -37,7 +42,7 @@ namespace Shesha
 
         public override void PreInitialize()
         {
-            Configuration.Settings.Providers.Add<SheshaSettingProvider>();
+            //Configuration.Settings.Providers.Add<SheshaSettingProviderLegacy>();
             IocManager.Register<IPermissionManager, IShaPermissionManager, IPermissionDefinitionContext, ShaPermissionManager>();
 
             Configuration.ReplaceService(typeof(IExceptionFilter),
@@ -96,6 +101,35 @@ namespace Shesha
             );
 
             IocManager.RegisterAssemblyByConvention(thisAssembly);
+
+            IocManager.IocContainer.Register(
+                Component.For(typeof(ISettingAccessor<>)).ImplementedBy(typeof(SettingAccessor<>)).LifestyleTransient()
+            );
+            
+            IocManager.RegisterSettingAccessor<IAuthenticationSettings>(s => {
+                s.UserLockOutEnabled.WithDefaultValue(true);
+                s.MaxFailedAccessAttemptsBeforeLockout.WithDefaultValue(5);
+                s.DefaultAccountLockoutSeconds.WithDefaultValue(300 /* 5 minutes */);
+
+                s.AutoLogoffTimeout.WithDefaultValue(0);
+                s.ResetPasswordViaSecurityQuestionsNumQuestionsAllowed.WithDefaultValue(3);
+            });
+            IocManager.RegisterSettingAccessor<IPasswordComplexitySettings>(s => {
+                s.RequiredLength.WithDefaultValue(3);
+            });
+            IocManager.RegisterSettingAccessor<ISheshaSettings>(s => {
+                s.UploadFolder.WithDefaultValue("~/App_Data/Upload");
+            });
+
+            IocManager.RegisterSettingAccessor<IEmailSettings>(s => {
+                s.RedirectAllMessagesTo.WithDefaultValue("default!");
+                s.SmtpSettings.WithDefaultValue(new SmtpSettings
+                {
+                    Port = 25,
+                    UseSmtpRelay = false,
+                    EnableSsl = false,
+                });
+            });
         }
 
         public override void PostInitialize()

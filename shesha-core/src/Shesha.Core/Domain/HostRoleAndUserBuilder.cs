@@ -9,6 +9,7 @@ using System;
 
 namespace Shesha.Domain
 {
+    /// <summary>
     /// Role and user builder
     /// </summary>
     public class HostRoleAndUserBuilder: IHostRoleAndUserBuilder, ITransientDependency

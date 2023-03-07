@@ -32,7 +32,7 @@ namespace Shesha.Services.StoredFiles
         }
 
         /// <summary>
-        /// Returns physical path of the specified version of the specified <paramref name="file"/>
+        /// Returns physical path of the specified version
         /// </summary>
         public string PhysicalFilePath(StoredFileVersion fileVersion)
         {
@@ -43,7 +43,7 @@ namespace Shesha.Services.StoredFiles
             var path = _pathHelper.Combine(
                 !string.IsNullOrWhiteSpace(folder) && (Path.IsPathRooted(folder) || folder.StartsWith("~"))
                     ? ""
-                    : _sheshaSettings.UploadFolder,
+                    : _sheshaSettings.UploadFolder.GetValue(),
                 folder ?? "",
                 fileVersion.Id + fileVersion.FileType);
 

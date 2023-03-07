@@ -11,16 +11,6 @@ namespace Shesha.Utilities
     /// </summary>
     public class PathHelper: IPathHelper, ITransientDependency
     {
-        //private readonly IWebHostEnvironment _webHostEnvironment;
-
-        /// <summary>
-        /// Default constructor
-        /// </summary>
-        /// <param name="webHostEnvironment"></param>
-        //public PathHelper(IWebHostEnvironment webHostEnvironment)
-        //{
-        //    _webHostEnvironment = webHostEnvironment;
-        //}
         public IocManager IocManager { get; set; }
 
         /// <summary>

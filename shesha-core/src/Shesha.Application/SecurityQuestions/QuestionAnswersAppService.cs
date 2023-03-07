@@ -1,5 +1,4 @@
 ﻿using Abp.Authorization;
-using Abp.Configuration;
 using Abp.Domain.Repositories;
 using Abp.UI;
 using Shesha.Authorization.Users;
@@ -7,9 +6,6 @@ using Shesha.Configuration;
 using Shesha.Domain;
 using Shesha.SecurityQuestions.Dto;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Shesha.SecurityQuestions
@@ -17,14 +13,14 @@ namespace Shesha.SecurityQuestions
     public class QuestionAnswersAppService : SheshaCrudServiceBase<QuestionAssignment, UserAnswerDto, Guid>
     {
         private readonly IRepository<User, long> _userRepository;
-        private readonly ISettingManager _settingManager;
+        private readonly IAuthenticationSettings _setting;
 
         public QuestionAnswersAppService(IRepository<QuestionAssignment, Guid> repository,
             IRepository<User, long> userRepository,
-            ISettingManager settingManager) : base(repository)
+            IAuthenticationSettings setting) : base(repository)
         {
             _userRepository = userRepository;
-            _settingManager = settingManager;
+            _setting = setting;
         }
 
         [AbpAuthorize()]
@@ -40,7 +36,7 @@ namespace Shesha.SecurityQuestions
             var user = await _userRepository.GetAsync(currentUserId.Value);
 
 
-            var numberOfQuestionsAllowed = _settingManager.GetSettingValue<int>(SheshaSettingNames.Security.ResetPasswordWithSecurityQuestionsNumQuestionsAllowed);
+            var numberOfQuestionsAllowed = await _setting.ResetPasswordViaSecurityQuestionsNumQuestionsAllowed.GetValueAsync();
 
             var numberOfQuestionsSelected = await Repository.CountAsync(q => q.User == user);
 
@@ -55,7 +51,7 @@ namespace Shesha.SecurityQuestions
                 throw new UserFriendlyException("You have already answered this question");
             }
 
-            var entity = await SaveOrUpdateEntityAsync<QuestionAssignment>(null, async item =>
+            var entity = await SaveOrUpdateEntityAsync<QuestionAssignment>(null, item =>
             {
                 ObjectMapper.Map(input, item);
                 item.User = user;
@@ -70,7 +66,6 @@ namespace Shesha.SecurityQuestions
 
 
             return ObjectMapper.Map<UserAnswerDto>(entity);
-
         }
     }
 }

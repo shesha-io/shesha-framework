@@ -25,7 +25,6 @@ using Shesha.Validations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentValidationResult = FluentValidation.Results.ValidationResult;
@@ -166,6 +165,21 @@ namespace Shesha
         /// Saves or update entity with the specified id
         /// </summary>
         /// <typeparam name="T">Type of entity</typeparam>
+        /// <param name="id">Id of the existing entity or null for a new one</param>
+        /// <param name="action">Update action</param>
+        protected async Task<T> SaveOrUpdateEntityAsync<T>(Guid? id, Action<T> action)
+            where T : class, IEntity<Guid>
+        {
+            return await SaveOrUpdateEntityAsync<T, Guid>(id, a => { 
+                action.Invoke(a);
+                return Task.CompletedTask;
+            });
+        }
+
+        /// <summary>
+        /// Saves or update entity with the specified id
+        /// </summary>
+        /// <typeparam name="T">Type of entity</typeparam>
         /// <typeparam name="TId">Id type</typeparam>
         /// <param name="id">Id of the existing entity or null for a new one</param>
         /// <param name="action">Update action</param>
@@ -254,55 +268,6 @@ namespace Shesha
                     });
             }
         }
-
-
-        #region Settings
-
-        /// <summary>
-        /// Changes setting for tenant with fallback to application
-        /// </summary>
-        /// <param name="name">Setting name</param>
-        /// <param name="value">Setting value</param>
-        protected async Task ChangeSettingAsync(string name, string value)
-        {
-            if (AbpSession.TenantId.HasValue)
-            {
-                await SettingManager.ChangeSettingForTenantAsync(AbpSession.TenantId.Value, name, value);
-            }
-            else
-            {
-                await SettingManager.ChangeSettingForApplicationAsync(name, value);
-            }
-        }
-
-        /// <summary>
-        /// Changes setting for tenant with fallback to application
-        /// </summary>
-        /// <param name="name">Setting name</param>
-        /// <param name="value">Setting value</param>
-        protected async Task ChangeSettingAsync<T>(string name, T value) where T : struct, IConvertible
-        {
-            await ChangeSettingAsync(name, value.ToString(CultureInfo.InvariantCulture));
-        }
-
-        /// <summary>
-        /// Changes setting for tenant with fallback to application
-        /// </summary>
-        /// <param name="name">Setting name</param>
-        /// <param name="value">Setting value</param>
-        protected async Task<string> GetSettingValueAsync(string name)
-        {
-            if (AbpSession.TenantId.HasValue)
-            {
-                return await SettingManager.GetSettingValueForTenantAsync(name, AbpSession.TenantId.Value);
-            }
-            else
-            {
-                return await SettingManager.GetSettingValueForApplicationAsync(name);
-            }
-        }
-
-        #endregion
 
         #region Dynamic DTOs
 
@@ -445,6 +410,12 @@ namespace Shesha
             await DynamicPropertyManager.MapJObjectToEntityAsync<TEntity, TPrimaryKey>(jObject, entity);
 
             // ToDo: Add validations
+            return true;
+        }
+
+        protected async Task<bool> DeleteCascadeAsync<TEntity>(TEntity entity)
+        {
+            await EntityModelBinder.DeleteCascadeAsync(entity);
             return true;
         }
 

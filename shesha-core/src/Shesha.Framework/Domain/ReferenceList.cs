@@ -19,17 +19,6 @@ namespace Shesha.Domain
 
         public override string ItemType => ItemTypeName;
 
-        /*
-        [Required(AllowEmptyStrings = false), StringLength(300)]
-        public virtual string Name { get; set; }
-
-        [StringLength(300)]
-        public virtual string Description { get; set; }
-
-        [Required(AllowEmptyStrings = false), StringLength(300)]
-        public virtual string Namespace { get; set; }
-        */
-
         [StringLength(300)]
         [Display(Name = "Namespace")]
         [Obsolete("Is used for backward compatibility only")]

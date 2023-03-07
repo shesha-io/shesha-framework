@@ -44,5 +44,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Application\Gql\" />
+    <Folder Include="Configuration\" />
   </ItemGroup>
 </Project>

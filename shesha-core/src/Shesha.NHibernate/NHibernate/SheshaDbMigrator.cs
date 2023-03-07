@@ -142,7 +142,7 @@ namespace Shesha.NHibernate
                 else
                     runner.MigrateUp();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                  throw;
             }

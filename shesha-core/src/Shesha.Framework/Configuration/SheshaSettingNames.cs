@@ -4,7 +4,10 @@
     {
         public const string UploadFolder = "Shesha.UploadFolder";
 
-        public const string ExchangeName = "Shesha.ExchangeName";
+        public static class RabbitMQ 
+        {
+            public const string ExchangeName = "Shesha.ExchangeName";
+        }
 
         public static class Security
         {
@@ -33,9 +36,10 @@
 
         public static class Email
         {
-            public const string SupportSmtpRelay = "Shesha.Email.SupportSmtpRelay";
+            //public const string SupportSmtpRelay = "Shesha.Email.SupportSmtpRelay";
             public const string RedirectAllMessagesTo = "Shesha.Email.RedirectAllMessagesTo";
             public const string EmailsEnabled = "Shesha.Email.EmailsEnabled";
+            public const string SmtpSettings = "Shesha.SmtpSettings";
         }
     }
 }

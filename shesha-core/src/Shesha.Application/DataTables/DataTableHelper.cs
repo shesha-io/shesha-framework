@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using Abp.Dependency;
-using Abp.Domain.Entities;
-using Abp.Runtime.Caching;
+﻿using Abp.Dependency;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
@@ -16,11 +8,14 @@ using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
 using Shesha.JsonLogic;
 using Shesha.Metadata;
-using Shesha.Metadata.Dtos;
 using Shesha.QuickSearch;
 using Shesha.Reflection;
-using Shesha.Services;
 using Shesha.Utilities;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Shesha.DataTables
 {
@@ -45,21 +40,6 @@ namespace Shesha.DataTables
             _metadataProvider = metadataProvider;
             _entityConfigCache = entityConfigCache;
             _modelConfigurationProvider = modelConfigurationProvider;
-        }
-
-        /// <summary>
-        /// Returns a list of properties for the SQL quick search
-        /// </summary>
-        public List<QuickSearchPropertyInfo> GetPropertiesForSqlQuickSearch(Type rowType, List<DataTableColumn> columns, string cacheKey)
-        {
-            if (string.IsNullOrWhiteSpace(cacheKey))
-                return DoGetPropertiesForSqlQuickSearch(rowType, columns);
-
-            var cacheManager = StaticContext.IocManager.Resolve<ICacheManager>();
-
-            return cacheManager
-                .GetCache<string, List<QuickSearchPropertyInfo>>("SqlQuickSearchCache")
-                .Get(cacheKey, (s) => DoGetPropertiesForSqlQuickSearch(rowType, columns));
         }
 
         private List<QuickSearchPropertyInfo> DoGetPropertiesForSqlQuickSearch(Type rowType, List<DataTableColumn> columns)
@@ -134,78 +114,6 @@ namespace Shesha.DataTables
         }
 
         /// <summary>
-        /// Converts <see cref="Shesha.Configuration.Runtime.GeneralDataType"/> to data type for datatable column
-        /// </summary>
-        /// <param name="generalType"></param>
-        /// <returns></returns>
-        public static string GeneralDataType2ColumnDataType(GeneralDataType generalType)
-        {
-            switch (generalType)
-            {
-                case GeneralDataType.Boolean:
-                    return ColumnDataTypes.Boolean;
-
-                case GeneralDataType.ReferenceList:
-                    return ColumnDataTypes.ReferenceList;
-
-                case GeneralDataType.MultiValueReferenceList:
-                    return ColumnDataTypes.MultiValueReferenceList;
-
-                case GeneralDataType.EntityReference:
-                    return ColumnDataTypes.EntityReference;
-
-                case GeneralDataType.Date:
-                    return ColumnDataTypes.Date;
-                case GeneralDataType.DateTime:
-                    return ColumnDataTypes.DateTime;
-
-                case GeneralDataType.Time:
-                    return ColumnDataTypes.Time;
-                case GeneralDataType.Numeric:
-                    return ColumnDataTypes.Number;
-                case GeneralDataType.Text:
-                    return ColumnDataTypes.String;
-
-                default:
-                    return ColumnDataTypes.String;
-            }
-        }
-
-        public static string DataType2ColumnDataType(string dataType, string dataFormat)
-        {
-            switch (dataType)
-            {
-                case DataTypes.Boolean:
-                    return ColumnDataTypes.Boolean;
-
-                case DataTypes.ReferenceListItem:
-                    return ColumnDataTypes.ReferenceList;
-
-                    /*
-                case DataTypes.Array:
-                    return ColumnDataTypes.MultiValueReferenceList;
-                    */
-                case DataTypes.EntityReference:
-                    return ColumnDataTypes.EntityReference;
-
-                case DataTypes.Date:
-                    return ColumnDataTypes.Date;
-                case DataTypes.DateTime:
-                    return ColumnDataTypes.DateTime;
-
-                case DataTypes.Time:
-                    return ColumnDataTypes.Time;
-                case DataTypes.Number:
-                    return ColumnDataTypes.Number;
-                case DataTypes.String:
-                    return ColumnDataTypes.String;
-
-                default:
-                    return ColumnDataTypes.String;
-            }
-        }
-
-        /// <summary>
         /// Fill metadata of the <see cref="JsonLogic2HqlConverterContext"/> with specified columns
         /// </summary>
         public static void FillContextMetadata(List<DataTableColumn> columns, JsonLogic2HqlConverterContext context)
@@ -222,39 +130,6 @@ namespace Shesha.DataTables
                     } as IPropertyMetadata;
                 }
             );
-        }
-
-        /// <summary>
-        /// Fill metadata of the <see cref="JsonLogic2HqlConverterContext"/> with columns of the specified <paramref name="tableConfig"/>
-        /// </summary>
-        public static void FillContextMetadata(List<PropertyMetadataDto> properties, JsonLogic2HqlConverterContext context)
-        {
-            context.FieldsMetadata = properties.ToDictionary(
-                c => c.Path,
-                c => new PropertyMetadata
-                {
-                    Name = c.Path,
-                    Label = c.Label,
-                    Description = c.Description,
-                    DataType = c.DataType
-                } as IPropertyMetadata
-            );
-        }
-
-        /// <summary>
-        /// Fill variable resolvers of the <see cref="JsonLogic2HqlConverterContext"/> with columns of the specified <paramref name="tableConfig"/>
-        /// </summary>
-        public static void FillVariablesResolvers(List<DataTableColumn> columns, JsonLogic2HqlConverterContext context)
-        {
-            context.VariablesResolvers = columns.ToDictionary(c => c.Name, c => c.PropertyName);
-        }
-
-        /// <summary>
-        /// Fill variable resolvers of the <see cref="JsonLogic2HqlConverterContext"/> with columns of the specified <paramref name="tableConfig"/>
-        /// </summary>
-        public static void FillVariablesResolvers(List<PropertyMetadataDto> properties, JsonLogic2HqlConverterContext context)
-        {
-            context.VariablesResolvers = properties.ToDictionary(c => c.Path, c => c.Path);
         }
 
         /// inheritedDoc

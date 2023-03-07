@@ -14,4 +14,5 @@ export { removeZeroWidthCharsFromString } from './providers/form/utils';
 export { default as EntityConfiguratorPage } from './pages/entity-config/configurator';
 export { default as DynamicPage } from './pages/dynamic';
 export { default as FormsDesignerPage } from './pages/forms-designer';
+export { default as SettingsPage } from './pages/settings-editor';
 export { default as ConfigurableThemePage } from './pages/settings/dynamic-theme';

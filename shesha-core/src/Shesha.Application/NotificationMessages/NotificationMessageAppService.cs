@@ -20,7 +20,7 @@ public class NotificationMessageAppService : SheshaCrudServiceBase<NotificationM
     }
 
     /// <summary>
-    /// Resend notification message with <see cref=""/>
+    /// Resend notification message with specified <paramref name="id"/>
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>

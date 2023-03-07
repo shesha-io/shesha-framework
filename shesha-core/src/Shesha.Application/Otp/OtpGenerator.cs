@@ -1,6 +1,6 @@
-﻿using System;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Shesha.Otp.Configuration;
+using System;
 
 namespace Shesha.Otp
 {
@@ -18,9 +18,12 @@ namespace Shesha.Otp
             var random = new Random();
             var password = string.Empty;
 
-            for (int i = 0; i < _settings.PasswordLength; i++)
+            var alphabet = _settings.Alphabet.GetValue();
+            var passwordLength = _settings.PasswordLength.GetValue();
+
+            for (int i = 0; i < passwordLength; i++)
             {
-                password += _settings.Alphabet[random.Next(_settings.Alphabet.Length)];
+                password += alphabet[random.Next(alphabet.Length)];
             }
 
             return password;

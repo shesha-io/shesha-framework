@@ -1,3 +1,4 @@
+import { FormMode } from './../../pages/dynamic/interfaces';
 import { IAnyObject } from './../../interfaces/anyObject';
 import {
   IFlatComponentsStructure,
@@ -220,11 +221,11 @@ export const getCustomVisibilityFunc = ({ customVisibility, name }: IConfigurabl
     try {
       /* tslint:disable:function-constructor */
 
-      const customVisibilityExecutor = new Function('value, data', customVisibility);
+      const customVisibilityExecutor = new Function('value, data, globalState, formMode', customVisibility);
 
-      const getIsVisible = (data = {}) => {
+      const getIsVisible = (data = {}, globalState = {}, formMode) => {
         try {
-          return customVisibilityExecutor(data?.[name], data);
+          return customVisibilityExecutor(data?.[name], data, globalState, formMode);
         } catch (e) {
           console.warn(`Custom Visibility of field ${name} throws exception: ${e}`);
           return true;
@@ -243,11 +244,11 @@ export const getCustomVisibilityFunc = ({ customVisibility, name }: IConfigurabl
 export const getCustomEnabledFunc = ({ customEnabled, name }: IConfigurableFormComponent) => {
   if (customEnabled) {
     try {
-      const customEnabledExecutor = new Function('value, data', customEnabled);
+      const customEnabledExecutor = new Function('value, data, globalState, formMode', customEnabled);
 
-      const getIsEnabled = (data = {}) => {
+      const getIsEnabled = (data = {}, globalState = {}, formMode) => {
         try {
-          return customEnabledExecutor(data?.[name], data);
+          return customEnabledExecutor(data?.[name], data, globalState, formMode);
         } catch (e) {
           console.error(`Custom Enabled of field ${name} throws exception: ${e}`);
           return true;
@@ -540,7 +541,12 @@ export function executeScriptSync<TResult = any>(expression: string, context: IE
 /**
  * Return ids of visible components according to the custom visibility
  */
-export const getVisibleComponentIds = (components: IComponentsDictionary, values: any): string[] => {
+export const getVisibleComponentIds = (
+  components: IComponentsDictionary,
+  values: any,
+  globalState: any,
+  formMode: FormMode
+): string[] => {
   const visibleComponents: string[] = [];
   for (const key in components) {
     if (components.hasOwnProperty(key)) {
@@ -549,7 +555,7 @@ export const getVisibleComponentIds = (components: IComponentsDictionary, values
       if (!component || component.hidden || component.visibility === 'No' || component.visibility === 'Removed')
         continue;
 
-      const isVisible = component.visibilityFunc == null || component.visibilityFunc(values);
+      const isVisible = component.visibilityFunc == null || component.visibilityFunc(values, globalState, formMode);
       if (isVisible) visibleComponents.push(key);
     }
   }
@@ -559,7 +565,12 @@ export const getVisibleComponentIds = (components: IComponentsDictionary, values
 /**
  * Return ids of visible components according to the custom enabled
  */
-export const getEnabledComponentIds = (components: IComponentsDictionary, values: any): string[] => {
+export const getEnabledComponentIds = (
+  components: IComponentsDictionary,
+  values: any,
+  globalState: any,
+  formMode: FormMode
+): string[] => {
   const enabledComponents: string[] = [];
   for (const key in components) {
     if (components.hasOwnProperty(key)) {
@@ -568,7 +579,7 @@ export const getEnabledComponentIds = (components: IComponentsDictionary, values
 
       const isEnabled =
         !Boolean(component?.enabledFunc) ||
-        (typeof component?.enabledFunc === 'function' && component?.enabledFunc(values));
+        (typeof component?.enabledFunc === 'function' && component?.enabledFunc(values, globalState, formMode));
 
       if (isEnabled) enabledComponents.push(key);
     }
@@ -1128,8 +1139,8 @@ export const getObjectWithOnlyIncludedKeys = (obj: IAnyObject, includedProps: st
   return response;
 };
 
-export const getStyle = (style: string, formData: any = {}, globalState: any = {}): CSSProperties => {
-  if (!style) return {};
+export const getStyle = (style: string, formData: any = {}, globalState: any = {}, defaultStyle: object = {}): CSSProperties => {
+  if (!style) return defaultStyle;
   // tslint:disable-next-line:function-constructor
   return new Function('data, globalState', style)(formData, globalState);
 };

@@ -19,6 +19,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Services\ApplicationParts\**" />
+    <EmbeddedResource Remove="Services\ApplicationParts\**" />
+    <None Remove="Services\ApplicationParts\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Abp" Version="6.6.2" />
     <PackageReference Include="Abp.AspNetCore" Version="6.6.2" />
     <PackageReference Include="Abp.AutoMapper" Version="6.6.2" />
@@ -26,6 +32,7 @@
     <PackageReference Include="Azure.Storage.Blobs" Version="12.4.4" />
     <PackageReference Include="ConcurrentHashSet" Version="1.1.0" />
     <PackageReference Include="EasyNetQ" Version="5.1.2" />
+    <PackageReference Include="FluentMigrator" Version="3.2.1" />
     <PackageReference Include="FluentValidation" Version="10.3.3" />
     <PackageReference Include="JsonLogic.Net" Version="1.1.9" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.4" />
@@ -40,7 +47,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\ApplicationParts\" />
+    <Folder Include="FluentMigrator\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Shesha.FluentMigrator\Shesha.FluentMigrator.csproj" />
   </ItemGroup>
 
 </Project>

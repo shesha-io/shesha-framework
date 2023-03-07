@@ -1,83 +1,76 @@
-﻿using System.Globalization;
-using System.Threading.Tasks;
-using Abp.Application.Services;
-using Abp.Configuration;
-using Abp.Zero.Configuration;
+﻿using Abp.Application.Services;
 using Shesha.Authorization.Settings.Dto;
 using Shesha.Configuration;
+using System;
+using System.Threading.Tasks;
 
 namespace Shesha.Authorization.Settings
 {
+    [Obsolete("To be removed, is used for backward compatibility only")]
     public class AuthorizationSettingsAppService: ApplicationService
     {
+        private readonly IPasswordComplexitySettings _passwordComplexitySettings;
+        private readonly IAuthenticationSettings _authenticationSettings;
+
+        public AuthorizationSettingsAppService(IPasswordComplexitySettings passwordComplexitySettings, IAuthenticationSettings authenticationSettings)
+        {
+            _passwordComplexitySettings = passwordComplexitySettings;
+            _authenticationSettings = authenticationSettings;
+        }
+
         public async Task UpdateSettings(AuthorizationSettingsDto dto)
         {
-            // todo: add tenants support
-
             //Lockout
-            await SettingManager.ChangeSettingForApplicationAsync(AbpZeroSettingNames.UserManagement.UserLockOut.IsEnabled, dto.IsLockoutEnabled.ToString(CultureInfo.InvariantCulture));
-            await SettingManager.ChangeSettingForApplicationAsync(AbpZeroSettingNames.UserManagement.UserLockOut.DefaultAccountLockoutSeconds, dto.DefaultAccountLockoutSeconds.ToString(CultureInfo.InvariantCulture));
-            await SettingManager.ChangeSettingForApplicationAsync(AbpZeroSettingNames.UserManagement.UserLockOut.MaxFailedAccessAttemptsBeforeLockout, dto.MaxFailedAccessAttemptsBeforeLockout.ToString(CultureInfo.InvariantCulture));
-            await SettingManager.ChangeSettingForApplicationAsync(SheshaSettingNames.Security.AutoLogoffTimeout, dto.AutoLogoffTimeout.ToString(CultureInfo.InvariantCulture));
+            await _authenticationSettings.UserLockOutEnabled.SetValueAsync(dto.IsLockoutEnabled);
+            await _authenticationSettings.DefaultAccountLockoutSeconds.SetValueAsync(dto.DefaultAccountLockoutSeconds);
+            await _authenticationSettings.MaxFailedAccessAttemptsBeforeLockout.SetValueAsync(dto.MaxFailedAccessAttemptsBeforeLockout);
+            await _authenticationSettings.AutoLogoffTimeout.SetValueAsync(dto.AutoLogoffTimeout);
+            await _authenticationSettings.UserLockOutEnabled.SetValueAsync(dto.IsLockoutEnabled);
 
             //Password complexity
-            await SettingManager.ChangeSettingForApplicationAsync(AbpZeroSettingNames.UserManagement.PasswordComplexity.RequireDigit, dto.RequireDigit.ToString(CultureInfo.InvariantCulture));
-            await SettingManager.ChangeSettingForApplicationAsync(AbpZeroSettingNames.UserManagement.PasswordComplexity.RequireLowercase, dto.RequireLowercase.ToString(CultureInfo.InvariantCulture));
-            await SettingManager.ChangeSettingForApplicationAsync(AbpZeroSettingNames.UserManagement.PasswordComplexity.RequireNonAlphanumeric, dto.RequireNonAlphanumeric.ToString(CultureInfo.InvariantCulture));
-            await SettingManager.ChangeSettingForApplicationAsync(AbpZeroSettingNames.UserManagement.PasswordComplexity.RequireUppercase, dto.RequireUppercase.ToString(CultureInfo.InvariantCulture));
-            await SettingManager.ChangeSettingForApplicationAsync(AbpZeroSettingNames.UserManagement.PasswordComplexity.RequiredLength, dto.RequiredLength.ToString(CultureInfo.InvariantCulture));
+            await _passwordComplexitySettings.RequireDigit.SetValueAsync(dto.RequireDigit);
+            await _passwordComplexitySettings.RequireLowercase.SetValueAsync(dto.RequireLowercase);
+            await _passwordComplexitySettings.RequireNonAlphanumeric.SetValueAsync(dto.RequireNonAlphanumeric);
+            await _passwordComplexitySettings.RequireUppercase.SetValueAsync(dto.RequireUppercase);
+            await _passwordComplexitySettings.RequiredLength.SetValueAsync(dto.RequiredLength);
 
             // Password reset
-            await SettingManager.ChangeSettingForApplicationAsync(SheshaSettingNames.Security.ResetPasswordWithEmailLinkIsSupported, dto.ResetPasswordWithEmailLinkIsSupported.ToString(CultureInfo.InvariantCulture));
-            await SettingManager.ChangeSettingForApplicationAsync(SheshaSettingNames.Security.ResetPasswordWithEmailLinkExpiryDelay, dto.ResetPasswordWithEmailLinkExpiryDelay.ToString(CultureInfo.InvariantCulture));
-            await SettingManager.ChangeSettingForApplicationAsync(SheshaSettingNames.Security.ResetPasswordWithSmsOtpIsSupported, dto.ResetPasswordWithSmsOtpIsSupported.ToString(CultureInfo.InvariantCulture));
-            await SettingManager.ChangeSettingForApplicationAsync(SheshaSettingNames.Security.ResetPasswordWithSmsOtpExpiryDelay, dto.ResetPasswordWithSmsOtpExpiryDelay.ToString(CultureInfo.InvariantCulture));
-            await SettingManager.ChangeSettingForApplicationAsync(SheshaSettingNames.Security.ResetPasswordWithSecurityQuestionsIsSupported, dto.ResetPasswordWithSecurityQuestionsIsSupported.ToString(CultureInfo.InvariantCulture));
-            await SettingManager.ChangeSettingForApplicationAsync(SheshaSettingNames.Security.ResetPasswordWithSecurityQuestionsNumQuestionsAllowed, dto.ResetPasswordWithSecurityQuestionsNumQuestionsAllowed.ToString(CultureInfo.InvariantCulture));
-            
+            await _authenticationSettings.UseResetPasswordViaEmailLink.SetValueAsync(dto.ResetPasswordWithEmailLinkIsSupported);
+            await _authenticationSettings.ResetPasswordEmailLinkLifetime.SetValueAsync(dto.ResetPasswordWithEmailLinkExpiryDelay);
+
+            await _authenticationSettings.UseResetPasswordViaSmsOtp.SetValueAsync(dto.ResetPasswordWithSmsOtpIsSupported);
+            await _authenticationSettings.ResetPasswordSmsOtpLifetime.SetValueAsync(dto.ResetPasswordWithSmsOtpExpiryDelay);
+
+            await _authenticationSettings.UseResetPasswordViaSecurityQuestions.SetValueAsync(dto.ResetPasswordWithSecurityQuestionsIsSupported);
+            await _authenticationSettings.ResetPasswordViaSecurityQuestionsNumQuestionsAllowed.SetValueAsync(dto.ResetPasswordWithSecurityQuestionsNumQuestionsAllowed);
         }
 
         public async Task<AuthorizationSettingsDto> GetSettings()
         {
             var dto = new AuthorizationSettingsDto();
             
-            // todo: add tenants support
-            int? tenantId = null;
-
             //Lockout
-            dto.IsLockoutEnabled = await IsTrueAsync(AbpZeroSettingNames.UserManagement.UserLockOut.IsEnabled, tenantId);
-            dto.DefaultAccountLockoutSeconds = await GetSettingValueAsync<int>(AbpZeroSettingNames.UserManagement.UserLockOut.DefaultAccountLockoutSeconds, tenantId);
-            dto.MaxFailedAccessAttemptsBeforeLockout = await GetSettingValueAsync<int>(AbpZeroSettingNames.UserManagement.UserLockOut.MaxFailedAccessAttemptsBeforeLockout, tenantId);
-            dto.AutoLogoffTimeout = await GetSettingValueAsync<int>(SheshaSettingNames.Security.AutoLogoffTimeout, tenantId);
+            dto.IsLockoutEnabled = await _authenticationSettings.UserLockOutEnabled.GetValueAsync();
+            dto.DefaultAccountLockoutSeconds = await _authenticationSettings.DefaultAccountLockoutSeconds.GetValueAsync();
+            dto.MaxFailedAccessAttemptsBeforeLockout = await _authenticationSettings.MaxFailedAccessAttemptsBeforeLockout.GetValueAsync();
+            dto.AutoLogoffTimeout = await _authenticationSettings.AutoLogoffTimeout.GetValueAsync();
 
             //Password complexity
-            dto.RequireDigit = await GetSettingValueAsync<bool>(AbpZeroSettingNames.UserManagement.PasswordComplexity.RequireDigit, tenantId);
-            dto.RequireLowercase = await GetSettingValueAsync<bool>(AbpZeroSettingNames.UserManagement.PasswordComplexity.RequireLowercase, tenantId);
-            dto.RequireNonAlphanumeric = await GetSettingValueAsync<bool>(AbpZeroSettingNames.UserManagement.PasswordComplexity.RequireNonAlphanumeric, tenantId);
-            dto.RequireUppercase = await GetSettingValueAsync<bool>(AbpZeroSettingNames.UserManagement.PasswordComplexity.RequireUppercase, tenantId);
-            dto.RequiredLength = await GetSettingValueAsync<int>(AbpZeroSettingNames.UserManagement.PasswordComplexity.RequiredLength, tenantId);
+            dto.RequireDigit = await _passwordComplexitySettings.RequireDigit.GetValueAsync();
+            dto.RequireLowercase = await _passwordComplexitySettings.RequireLowercase.GetValueAsync();
+            dto.RequireNonAlphanumeric = await _passwordComplexitySettings.RequireNonAlphanumeric.GetValueAsync();
+            dto.RequireUppercase = await _passwordComplexitySettings.RequireUppercase.GetValueAsync();
+            dto.RequiredLength = await _passwordComplexitySettings.RequiredLength.GetValueAsync();
 
             // Password reset
-            dto.ResetPasswordWithEmailLinkIsSupported = await GetSettingValueAsync<bool>(SheshaSettingNames.Security.ResetPasswordWithEmailLinkIsSupported, tenantId);
-            dto.ResetPasswordWithEmailLinkExpiryDelay = await GetSettingValueAsync<int>(SheshaSettingNames.Security.ResetPasswordWithEmailLinkExpiryDelay, tenantId);
-            dto.ResetPasswordWithSmsOtpIsSupported = await GetSettingValueAsync<bool>(SheshaSettingNames.Security.ResetPasswordWithSmsOtpIsSupported, tenantId);
-            dto.ResetPasswordWithSmsOtpExpiryDelay = await GetSettingValueAsync<int>(SheshaSettingNames.Security.ResetPasswordWithSmsOtpExpiryDelay, tenantId);
-            dto.ResetPasswordWithSecurityQuestionsIsSupported = await GetSettingValueAsync<bool>(SheshaSettingNames.Security.ResetPasswordWithSecurityQuestionsIsSupported, tenantId);
-            dto.ResetPasswordWithSecurityQuestionsNumQuestionsAllowed = await GetSettingValueAsync<int>(SheshaSettingNames.Security.ResetPasswordWithSecurityQuestionsNumQuestionsAllowed, tenantId);
+            dto.ResetPasswordWithEmailLinkIsSupported = await _authenticationSettings.UseResetPasswordViaEmailLink.GetValueAsync();
+            dto.ResetPasswordWithEmailLinkExpiryDelay = await _authenticationSettings.ResetPasswordEmailLinkLifetime.GetValueAsync();
+            dto.ResetPasswordWithSmsOtpIsSupported = await _authenticationSettings.UseResetPasswordViaSmsOtp.GetValueAsync();
+            dto.ResetPasswordWithSmsOtpExpiryDelay = await _authenticationSettings.ResetPasswordSmsOtpLifetime.GetValueAsync();
+            dto.ResetPasswordWithSecurityQuestionsIsSupported = await _authenticationSettings.UseResetPasswordViaSecurityQuestions.GetValueAsync();
+            dto.ResetPasswordWithSecurityQuestionsNumQuestionsAllowed = await _authenticationSettings.ResetPasswordViaSecurityQuestionsNumQuestionsAllowed.GetValueAsync();
 
             return dto;
-        }
-
-        private Task<bool> IsTrueAsync(string settingName, int? tenantId)
-        {
-            return GetSettingValueAsync<bool>(settingName, tenantId);
-        }
-
-        private Task<T> GetSettingValueAsync<T>(string settingName, int? tenantId) where T : struct
-        {
-            return tenantId == null
-                ? SettingManager.GetSettingValueForApplicationAsync<T>(settingName)
-                : SettingManager.GetSettingValueForTenantAsync<T>(settingName, tenantId.Value);
         }
     }
 }

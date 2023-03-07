@@ -55,7 +55,7 @@ namespace Shesha.Scheduler
         /// <param name="methodName"></param>
         /// <param name="methodArgs"></param>
         /// <returns></returns>
-        Task ExecuteJobMethodAsync(Guid jobId, string jobType, string methodName, object?[]? methodArgs);
+        Task ExecuteJobMethodAsync(Guid jobId, string jobType, string methodName, object[] methodArgs);
 
         /// <summary>
         /// Get job type by Id

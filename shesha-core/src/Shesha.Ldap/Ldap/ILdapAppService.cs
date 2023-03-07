@@ -1,12 +1,14 @@
-﻿using System.Threading.Tasks;
-using Abp.Application.Services;
+﻿using Abp.Application.Services;
 using Shesha.Ldap.Dtos;
+using System;
+using System.Threading.Tasks;
 
 namespace Shesha.Ldap
 {
     /// <summary>
     /// LDAP application service
     /// </summary>
+    [Obsolete]
     public interface ILdapAppService : IApplicationService
     {
         /// <summary>

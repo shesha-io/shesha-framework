@@ -20,4 +20,8 @@
     <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.7" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Shesha.Framework\Shesha.Framework.csproj" />
+  </ItemGroup>
+
 </Project>

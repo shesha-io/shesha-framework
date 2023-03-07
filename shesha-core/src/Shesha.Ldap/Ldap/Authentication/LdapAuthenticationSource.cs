@@ -40,17 +40,17 @@ namespace Shesha.Ldap.Authentication
         /// <inheritdoc/>
         public override async Task<bool> TryAuthenticateAsync(string userNameOrEmailAddress, string plainPassword, TTenant tenant)
         {
-            if (!_ldapModuleConfig.IsEnabled || !(await _settings.GetIsEnabled(tenant?.Id)))
+            if (!_ldapModuleConfig.IsEnabled || !(await _settings.IsEnabled.GetValueAsync()))
             {
                 return false;
             }
             
             try
             {
-                var server = await _settings.GetServer(tenant?.Id);
-                var port = await _settings.GetPort(tenant?.Id);
-                var useSsl = await _settings.GetUseSsl(tenant?.Id);
-                string domain = await _settings.GetDomain(tenant?.Id);
+                var server = await _settings.Server.GetValueAsync();
+                var port = await _settings.Port.GetValueAsync();
+                var useSsl = await _settings.UseSsl.GetValueAsync();
+                string domain = await _settings.Domain.GetValueAsync();
 
                 var fullUserName = userNameOrEmailAddress.Contains("@") || string.IsNullOrWhiteSpace(domain)
                     ? userNameOrEmailAddress
@@ -87,11 +87,16 @@ namespace Shesha.Ldap.Authentication
                 throw new AbpException("Ldap Authentication module is disabled globally!");                
             }
 
+            if (!await _settings.IsEnabled.GetValueAsync())
+                throw new AbpException("Ldap Authentication is disabled! You can enable it by setting '" + LdapSettingNames.IsEnabled + "' to true");
+
+            /* todo: implement tenants support
             var tenantId = tenant?.Id;
-            if (!await _settings.GetIsEnabled(tenantId))
+            if (!await _settings.IsEnabled.GetValueAsync())
             {
                 throw new AbpException("Ldap Authentication is disabled for given tenant (id:" + tenantId + ")! You can enable it by setting '" + LdapSettingNames.IsEnabled + "' to true");
             }
+            */
         }
 
         public static bool ServerCallBack(LdapConnection connection, X509Certificate certificate)

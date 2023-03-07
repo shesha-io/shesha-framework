@@ -40,10 +40,11 @@ namespace Shesha.Permission
             _versionedFieldManager = versionedFieldManager;
         }
 
-        public async Task Process()
+        public Task Process()
         {
             // ToDo: use UOW!!!!!!!!!
-            return;
+            return Task.CompletedTask;
+            /*
             var providers = IocManager.Instance.ResolveAll<IPermissionedObjectProvider>();
             foreach (var permissionedObjectProvider in providers)
             {
@@ -94,7 +95,7 @@ namespace Shesha.Permission
                     }
                 }
             }
-
+            */
             // todo: write changelog
         }
     }

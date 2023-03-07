@@ -1,10 +1,6 @@
 ﻿using Shesha.Domain.Attributes;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shesha.Domain.Enums
 {
@@ -16,7 +12,7 @@ namespace Shesha.Domain.Enums
         EmailLink = 2,
 
         [Display(Name = "SMS OTP")]
-        SMSOtp = 4,
+        SmsOtp = 4,
 
         [Display(Name = "Security Questions")]
         SecurityQuestions = 8,

@@ -1,17 +1,48 @@
-using System.Threading.Tasks;
+using Shesha.Settings;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.AzureAD.Configuration
 {
     /// <summary>
-    /// Used to obtain current values of AzureAD settings.
-    /// This abstraction allows to define a different source for settings than SettingManager (see default implementation: <see cref="AzureADSettings"/>).
+    /// AzureAD settings
     /// </summary>
-    public interface IAzureADSettings
+    [Category("Azure AD")]
+    public interface IAzureADSettings: ISettingAccessors
     {
-        Task<bool> GetIsEnabled(int? tenantId);
-        Task<string> GetInstanceUrl(int? tenantId);
-        Task<string> GetTenant(int? tenantId);
-        Task<string> GetAppIdUri(int? tenantId);
-        Task<string> GetClientApplicationId(int? tenantId);
+        /// <summary>
+        /// Is enabled
+        /// </summary>
+        [Display(Name = "Is enabled")]
+        [SettingAttribute(AzureADSettingNames.IsEnabled)]
+        ISettingAccessor<bool> IsEnabled { get; }
+
+        /// <summary>
+        /// Instance Url
+        /// </summary>
+        [Display(Name = "Instance Url")]
+        [SettingAttribute(AzureADSettingNames.InstanceUrl)]
+        ISettingAccessor<string> InstanceUrl { get; }
+
+        /// <summary>
+        /// Tenant
+        /// </summary>
+        [Display(Name = "Tenant")]
+        [SettingAttribute(AzureADSettingNames.Tenant)]
+        ISettingAccessor<string> Tenant { get; }
+
+        /// <summary>
+        /// App Id Uri
+        /// </summary>
+        [Display(Name = "App Id Uri")]
+        [SettingAttribute(AzureADSettingNames.AppIdUri)]
+        ISettingAccessor<string> AppIdUri { get; }
+
+        /// <summary>
+        /// Client Application Id
+        /// </summary>
+        [Display(Name = "Client Application Id")]
+        [SettingAttribute(AzureADSettingNames.ClientApplicationId)]
+        ISettingAccessor<string> ClientApplicationId { get; }
     }
 }

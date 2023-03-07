@@ -146,3 +146,4 @@ export { default as ButtonGroupConfigurator } from './formDesigner/components/bu
 export { default as CodeEditorModal } from './formDesigner/components/codeEditor/codeEditor';
 export { default as LabelValueEditor } from './formDesigner/components/labelValueEditor/labelValueEditor';
 export { default as RichTextEditor, IRichTextEditorProps } from './richTextEditor';
+export { default as SettingsEditor, ISettingsEditorProps } from './settingsEditor';

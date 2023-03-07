@@ -1,19 +1,24 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Shesha.Domain;
+using Shesha.Settings;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Configuration
 {
-    public interface ISheshaSettings
+    /// <summary>
+    /// Shesha settings
+    /// </summary>
+    public interface ISheshaSettings : ISettingAccessors
     {
         /// <summary>
-        /// Upload Folder
+        /// Upload folder for stored files (<see cref="StoredFile"/>) 
         /// </summary>
-        [Display(Name = "Upload Folder")]
-        string UploadFolder { get; }
+        [Display(Name = "Upload Folder", Description = "Upload folder for stored files", GroupName = "General")]
+        [SettingAttribute(SheshaSettingNames.UploadFolder)]
+        ISettingAccessor<string> UploadFolder { get; }
 
-        /// <summary>
-        /// RabbitMq Exchange
-        /// </summary>
-        [Display(Name = "Exchange Name")]
-        string ExchangeName { get; }
+        [Display(Name = "ExchangeName", GroupName = "RabbitMQ")]
+        [SettingAttribute(SheshaSettingNames.RabbitMQ.ExchangeName)]
+        ISettingAccessor<string> ExchangeName { get; }
     }
 }

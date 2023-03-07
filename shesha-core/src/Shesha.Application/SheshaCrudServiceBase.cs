@@ -5,7 +5,6 @@ using Abp.Extensions;
 using Abp.Runtime.Validation;
 using GraphQL;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using Shesha.Application.Services;
 using Shesha.Application.Services.Dto;
 using Shesha.Attributes;
@@ -22,7 +21,6 @@ using Shesha.QuickSearch;
 using Shesha.Specifications;
 using Shesha.Utilities;
 using Shesha.Web;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -94,9 +92,10 @@ namespace Shesha
         }
 
         [EntityAction(StandardEntityActions.Delete)]
-        public override Task DeleteAsync(EntityDto<TPrimaryKey> input)
+        public override async Task DeleteAsync(EntityDto<TPrimaryKey> input)
         {
-            return base.DeleteAsync(input);
+            await DeleteCascadeAsync(Repository.Get(input.Id));
+            await base.DeleteAsync(input);
         }
 
         /// <summary>
@@ -181,7 +180,7 @@ namespace Shesha
   }}
 }}";
 
-            var result = await DocumentExecuter.ExecuteAsync(async s =>
+            var result = await DocumentExecuter.ExecuteAsync(s =>
             {
                 s.Schema = schema;
 
@@ -237,7 +236,7 @@ namespace Shesha
               }}
             }}";
 
-            var result = await DocumentExecuter.ExecuteAsync(async s =>
+            var result = await DocumentExecuter.ExecuteAsync(s =>
             {
                 s.Schema = schema;
 

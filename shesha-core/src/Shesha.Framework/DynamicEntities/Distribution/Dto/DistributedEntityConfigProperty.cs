@@ -1,4 +1,6 @@
-﻿using Shesha.Domain.Enums;
+﻿using Abp.Domain.Entities;
+using Abp.Domain.Entities.Auditing;
+using Shesha.Domain.Enums;
 using System.Collections.Generic;
 
 namespace Shesha.DynamicEntities.Distribution.Dto

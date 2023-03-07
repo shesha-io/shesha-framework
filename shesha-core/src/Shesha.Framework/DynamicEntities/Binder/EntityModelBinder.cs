@@ -193,7 +193,7 @@ namespace Shesha.DynamicEntities.Binder
                                                      //case DataTypes.Enum: // Enum binded as integer
                                     object parsedValue = null;
                                     result = Parser.TryParseToValueType(jproperty.Value.ToString(), property.PropertyType, out parsedValue, isDateOnly: propType.DataType == DataTypes.Date);
-                                    if (dbValue.ToString() != parsedValue.ToString())
+                                    if (dbValue?.ToString() != parsedValue.ToString())
                                         if (result && (await Validate(entity, jFullName, parsedValue, context)))
                                             property.SetValue(entity, parsedValue);
                                     break;
@@ -201,7 +201,7 @@ namespace Shesha.DynamicEntities.Binder
                                 case DataTypes.Date:
                                     var value = jproperty.Value.To<DateTime>();
                                     value = propType.DataType == DataTypes.Date ? value.Date : value;
-                                    if (dbValue.ToString() != value.ToString())
+                                    if (dbValue?.ToString() != value.ToString())
                                         if (await Validate(entity, jFullName, value, context))
                                             property.SetValue(entity, value);
                                     break;
@@ -286,7 +286,7 @@ namespace Shesha.DynamicEntities.Binder
                                                             {
                                                                 enumVal = Enum.Parse(type, valComponents[i], true);
                                                             }
-                                                            catch (Exception e)
+                                                            catch (Exception)
                                                             {
                                                                 context.LocalValidationResult.Add(new ValidationResult($"Value of '{jproperty.Path}' is not valid."));
                                                                 break;
@@ -369,7 +369,7 @@ namespace Shesha.DynamicEntities.Binder
                                         if (!string.IsNullOrEmpty(jchildId))
                                         {
                                             var newChildEntity = dbValue;
-                                            var childId = dbValue?.GetType().GetId().ToString();
+                                            var childId = dbValue?.GetId().ToString();
 
                                             // if child entity is specified
                                             if (childId?.ToLower() != jchildId?.ToLower()
@@ -515,7 +515,7 @@ namespace Shesha.DynamicEntities.Binder
                 {
                     context.LocalValidationResult.Add(new ValidationResult($"{ex.Message} for '{jproperty.Path}'"));
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     context.LocalValidationResult.Add(new ValidationResult($"Value of '{jproperty.Path}' is not valid."));
                 }
@@ -526,15 +526,16 @@ namespace Shesha.DynamicEntities.Binder
             return !context.LocalValidationResult.Any();
         }
 
-        private async Task<object> GetEntityById(Type entityType, string id, string displayName, string propertyPath, EntityModelBindingContext context)
+        private Task<object> GetEntityById(Type entityType, string id, string displayName, string propertyPath, EntityModelBindingContext context)
         {
             if (context.GetEntityById != null)
-                return context.GetEntityById(entityType, id, displayName, propertyPath, context);
+                return Task.FromResult(context.GetEntityById(entityType, id, displayName, propertyPath, context));
 
             var newChildEntity = _dynamicRepository.Get(entityType, id);
             if (newChildEntity == null)
                 context.LocalValidationResult.Add(new ValidationResult($"Entity with Id='{id}' not found for `{propertyPath}`."));
-            return newChildEntity;
+            
+            return Task.FromResult(newChildEntity);
         }
 
         private async Task<object> GetObjectOrObjectReference(Type objectType, JObject jobject, EntityModelBindingContext context, List<string> formFields = null)
@@ -562,27 +563,60 @@ namespace Shesha.DynamicEntities.Binder
 
         }
 
+        public async Task<bool> DeleteCascadeAsync(object entity)
+        {
+            var entityType = entity.GetType().StripCastleProxyType();
+            var shortAlias = entityType.GetTypeShortAlias();
+            var props = entityType.GetProperties();
+            var result = false;
+
+            var propConfigs = _entityPropertyRepository.GetAll().Where(x =>
+                x.EntityConfig.Namespace == entityType.Namespace
+                && (x.EntityConfig.ClassName == entityType.Name || x.EntityConfig.ClassName == shortAlias))
+                .ToList();
+            foreach (var prop in props)
+            {
+                var propConfig = propConfigs.FirstOrDefault(x => x.Name == prop.Name);
+                if ((prop.GetCustomAttribute<CascadeUpdateRulesAttribute>()?.DeleteUnreferenced ?? false)
+                    || (propConfig?.CascadeDeleteUnreferenced ?? false))
+                {
+                    var child = prop.GetValue(entity, null);
+                    if (child != null)
+                    {
+                        prop.SetValue(entity, null);
+                        result |= await DeleteUnreferencedEntityAsync(child, entity);
+                    }
+                }
+            }
+
+            return result;
+        }
+
         private async Task<bool> DeleteUnreferencedEntityAsync(object entity, object parentEntity)
         {
-            var typeShortAlias = entity.GetType().GetCustomAttribute<EntityAttribute>()?.TypeShortAlias ?? entity.GetType().FullName;
-            var references = _entityPropertyRepository.GetAll().Where(x => x.EntityType == typeShortAlias);
+            var typeShortAlias = entity.GetType().GetCustomAttribute<EntityAttribute>()?.TypeShortAlias;
+            var entityType = entity.GetType().StripCastleProxyType();
+            var entityTypeName = entityType.FullName;
+            var references = _entityPropertyRepository.GetAll().Where(x => x.EntityType == typeShortAlias || x.EntityType == entityTypeName);
             if (!references.Any())
                 return false;
 
-            var parentId = Extensions.EntityExtensions.GetId(parentEntity);
+            var parentId = parentEntity.GetId();
             if (parentId == null)
                 throw new CascadeUpdateRuleException("Parent object does not implement IEntity interface");
 
-            var id = Extensions.EntityExtensions.GetId(entity);
+            var id = entity.GetId();
             if (id == null)
                 throw new CascadeUpdateRuleException("Related object does not implement IEntity interface");
 
             var any = false;
             foreach (var reference in references)
             {
-                var refType = _typeFinder.Find(x => x.Namespace == reference.EntityConfig.Namespace && x.Name == reference.EntityConfig.ClassName).FirstOrDefault();
+                var refType = _typeFinder.Find(x => x.Namespace == reference.EntityConfig.Namespace 
+                && (x.Name == reference.EntityConfig.ClassName || x.GetTypeShortAlias() == reference.EntityConfig.ClassName))
+                .FirstOrDefault();
                 // Do not raise error becase some EntityConfig can be irrelevant
-                if (refType == null) continue;
+                if (refType == null || !refType.IsEntityType()) continue;
 
                 var refParam = Expression.Parameter(refType);
                 var query = Expression.Lambda(
@@ -592,11 +626,11 @@ namespace Shesha.DynamicEntities.Binder
                         ),
                     refParam);
 
-                var repoType = typeof(IRepository<,>).MakeGenericType(refType, refType.GetProperty("Id")?.PropertyType);
+                var idType = refType.GetProperty("Id")?.PropertyType;
+                if (idType == null) continue;
+                var repoType = typeof(IRepository<,>).MakeGenericType(refType, idType);
                 var repo = _iocManager.Resolve(repoType);
                 var where = (repoType.GetMethod("GetAll")?.Invoke(repo, null) as IQueryable).Where(query);
-
-                var test = where.Any();
 
                 if (refType.IsAssignableFrom(parentEntity.GetType()))
                 {
@@ -609,13 +643,18 @@ namespace Shesha.DynamicEntities.Binder
                     where = where.Where(queryExclude);
                 }
 
-                any = where.Any();
-                if (any)
-                    break;
+                try
+                {
+                    any = where.Any();
+                    if (any)
+                        break;
+                }
+                catch {/* skip errors due to incorrect entity configs*/}
             }
 
             if (!any)
             {
+                await DeleteCascadeAsync(entity);
                 await _dynamicRepository.DeleteAsync(entity);
                 return true;
             }

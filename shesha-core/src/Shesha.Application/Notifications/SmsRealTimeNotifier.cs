@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Notifications;
@@ -15,6 +11,10 @@ using Shesha.NHibernate;
 using Shesha.NotificationMessages.Dto;
 using Shesha.Sms;
 using Shesha.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Shesha.Notifications
 {
@@ -71,7 +71,7 @@ namespace Shesha.Notifications
                     UowManager.Current.DoAfterTransaction(() => BackgroundJob.Enqueue(() => SendNotification(messageId)));
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw;
             }

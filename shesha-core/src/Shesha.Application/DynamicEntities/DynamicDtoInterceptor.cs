@@ -7,7 +7,7 @@ namespace Shesha.DynamicEntities
 {
 
     // ToDo AS: Don't use. Is not completed!
-    [Obsolete("Don't use. Is not completed!")]
+    //[Obsolete("Don't use. Is not completed!")]
     public class DynamicDtoInterceptor : IInterceptor
     {
         private string _name;

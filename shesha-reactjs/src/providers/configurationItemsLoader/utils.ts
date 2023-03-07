@@ -18,7 +18,7 @@ export const getFormNotFoundMessage = (formId: FormIdentifier) => {
 
     const fullName = asFormFullName(formId);
     if (fullName)
-        return `Form with '${getFormFullName(fullName.module, fullName.name)}' not found`;
+        return `Form '${getFormFullName(fullName.module, fullName.name)}' not found`;
 
     return 'Form not found';
 }

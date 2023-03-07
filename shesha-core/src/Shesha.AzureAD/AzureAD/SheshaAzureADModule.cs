@@ -1,14 +1,13 @@
-﻿using System.Reflection;
-using Abp.Localization.Dictionaries.Xml;
-using Abp.Localization.Sources;
-using Abp.Modules;
+﻿using Abp.Modules;
 using Abp.Zero;
 using Shesha.AzureAD.Configuration;
+using Shesha.Settings.Ioc;
+using System.Reflection;
 
 namespace Shesha.AzureAD
 {
     /// <summary>
-    /// This module extends module zero to add LDAP authentication.
+    /// This module extends module zero to add AzureAD authentication.
     /// </summary>
     [DependsOn(typeof(AbpZeroCommonModule))]
     public class SheshaAzureADModule : AbpModule
@@ -16,21 +15,12 @@ namespace Shesha.AzureAD
         public override void PreInitialize()
         {
             IocManager.Register<ISheshaAzureADModuleConfig, SheshaAzureADModuleConfig>();
-
-            Configuration.Localization.Sources.Extensions.Add(
-                new LocalizationSourceExtensionInfo(
-                    AbpZeroConsts.LocalizationSourceName,
-                    new XmlEmbeddedFileLocalizationDictionaryProvider(
-                        Assembly.GetExecutingAssembly(),
-                        "Shesha.AzureAD.Localization.Source")
-                )
-            );
-
-            Configuration.Settings.Providers.Add<AzureADSettingProvider>();
         }
 
         public override void Initialize()
         {
+            IocManager.RegisterSettingAccessor<IAzureADSettings>();
+
             IocManager.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
         }
     }

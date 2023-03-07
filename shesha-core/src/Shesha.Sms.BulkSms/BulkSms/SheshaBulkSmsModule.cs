@@ -2,6 +2,7 @@
 using Abp.AspNetCore.Configuration;
 using Abp.Modules;
 using Castle.MicroKernel.Registration;
+using Shesha.Settings.Ioc;
 using System.Reflection;
 
 namespace Shesha.Sms.BulkSms
@@ -11,8 +12,6 @@ namespace Shesha.Sms.BulkSms
     {
         public override void PreInitialize()
         {
-            Configuration.Settings.Providers.Add<BulkSmsSettingProvider>();
-
             Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(
                 this.GetType().Assembly,
                 moduleName: "SheshaBulkSms",
@@ -22,6 +21,10 @@ namespace Shesha.Sms.BulkSms
         public override void Initialize()
         {
             IocManager.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
+
+            IocManager.RegisterSettingAccessor<IBulkSmsSettings>(s => {
+                s.ApiUrl.WithDefaultValue("http://bulksms.2way.co.za:5567/eapi/submission/send_sms/2/2.0");
+            });
 
             IocManager.IocContainer.Register(
                 Component.For<IBulkSmsGateway>().Forward<BulkSmsGateway>().ImplementedBy<BulkSmsGateway>().LifestyleTransient()

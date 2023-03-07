@@ -1,26 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Abp.Application.Services.Dto;
-using Abp.Authorization;
+﻿using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Localization;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NHibernate.Linq;
-using NUglify.Helpers;
 using Shesha.Authorization;
 using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
 using Shesha.Roles.Dto;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Shesha.Permissions
 {
     [AbpAuthorize()]
     public class PermissionAppService : SheshaAppServiceBase
     {
-        //private readonly IPermissionDefinitionContext _permissionDefinitionContext;
         private readonly IRepository<PermissionDefinition, Guid> _permissionDefinitionRepository;
         private readonly ILocalizationContext _localizationContext;
         private IPermissionDefinitionContext _defenitionContext => PermissionManager as IPermissionDefinitionContext;
@@ -29,36 +24,38 @@ namespace Shesha.Permissions
         private const string emptyId = "_";
 
         public PermissionAppService(
-            //IPermissionDefinitionContext permissionDefinitionContext,
             IRepository<PermissionDefinition, Guid> permissionDefinitionRepository,
             ILocalizationContext localizationContext
             )
         {
-            //_permissionDefinitionContext = permissionDefinitionContext;
             _permissionDefinitionRepository = permissionDefinitionRepository;
             _localizationContext = localizationContext;
         }
 
-        public async Task<PermissionDto> GetAsync(string id)
+        public Task<PermissionDto> GetAsync(string id)
         {
             if (string.IsNullOrEmpty(id))
                 return null;
-            return ObjectMapper.Map<PermissionDto>(PermissionManager.GetPermission(id));
+
+            var dto = ObjectMapper.Map<PermissionDto>(PermissionManager.GetPermission(id));
+            return Task.FromResult(dto);
         }
 
-        public async Task<List<PermissionDto>> GetAllAsync()
+        public Task<List<PermissionDto>> GetAllAsync()
         {
             var permissions = PermissionManager.GetAllPermissions();
 
-            return ObjectMapper.Map<List<PermissionDto>>(permissions)
+            var dtos = ObjectMapper.Map<List<PermissionDto>>(permissions)
                 .Select(x => 
                 {
                     x.Child = null;
                     return x;
                 }).OrderBy(p => p.DisplayName).ToList();
+
+            return Task.FromResult(dtos);
         }
 
-        public async Task<List<PermissionDto>> GetAllTreeAsync()
+        public Task<List<PermissionDto>> GetAllTreeAsync()
         {
             var permissions = PermissionManager.GetAllPermissions();
 
@@ -75,7 +72,7 @@ namespace Shesha.Permissions
 
             tree.AddRange(dtoList);
 
-            return tree;
+            return Task.FromResult(tree);
         }
 
         private void AddChild(PermissionDto perm, List<PermissionDto> list)
@@ -121,11 +118,11 @@ namespace Shesha.Permissions
         }
 
         [HttpGet]
-        public async Task<List<AutocompleteItemDto>> AutocompleteAsync(string term)
+        public Task<List<AutocompleteItemDto>> AutocompleteAsync(string term)
         {
             term = (term ?? "").ToLower();
             
-            var persons = PermissionManager.GetAllPermissions()
+            var permissions = PermissionManager.GetAllPermissions()
                 .Where(p => (p.Name ?? "").ToLower().Contains(term)
                             || (p.Description?.Localize(_localizationContext) ?? "").ToLower().Contains(term)
                             || (p.DisplayName?.Localize(_localizationContext) ?? "").ToLower().Contains(term)
@@ -139,12 +136,7 @@ namespace Shesha.Permissions
                 })
                 .ToList();
 
-            return persons;
-        }
-
-        private static ILocalizableString L(string name)
-        {
-            return new LocalizableString(name, SheshaConsts.LocalizationSourceName);
+            return Task.FromResult(permissions);
         }
     }
 }

@@ -33,7 +33,7 @@ namespace Shesha.Test
         }
 
         [HttpGet]
-        public async Task<List<object>> CheckGenericEntity()
+        public Task<List<object>> CheckGenericEntity()
         {
             var entities = Repository.GetAll().Where(x => x.AnyEntity != null).ToList();
             var entity = entities.FirstOrDefault(x => x.AnyEntity._className == typeof(Person).FullName && x.AnyEntity.Id == "b3b60f2e-5b88-4f44-b8eb-d3987a8483d9");
@@ -44,15 +44,16 @@ namespace Shesha.Test
 
             var dbPerson = (Person)dbEntity.AnyEntity;
 
-            return new List<object> { 
+            var result = new List<object> { 
                 new { id = person.Id, fullName = person.FullName }, 
                 new { id = dbPerson.Id, fullName = dbPerson.FullName }
             };
+            return Task.FromResult( result );
         }
 
 
         [HttpGet]
-        public async Task<JObject> CheckJObject()
+        public Task<JObject> CheckJObject()
         {
             var obj = new JObject();
             obj.Add(new JProperty("name", "Shurik"));
@@ -64,14 +65,14 @@ namespace Shesha.Test
                 new JProperty("age", 43)
             }));
 
-            return obj;
+            return Task.FromResult(obj);
         }
 
         [HttpGet]
-        public async Task CheckData()
+        public Task CheckData()
         {
             var obj = Repository.GetAll().ToList();
-
+            return Task.CompletedTask;
         }
 
         [HttpGet]

@@ -199,9 +199,11 @@ namespace Shesha.Services.StoredFiles
             return query;
         }
 
-        public async Task MarkDownloadedAsync(StoredFileVersion fileVersion)
+        public Task MarkDownloadedAsync(StoredFileVersion fileVersion)
         {
             // todo: implement
+
+            return Task.CompletedTask;            
         }
 
         /// <summary>
@@ -318,7 +320,7 @@ namespace Shesha.Services.StoredFiles
         }
 
         /// <summary>
-        /// Prepares a dictionary of files with unique file names as a key. Renames duplicated files like this `[fileName] (<num>).[extension]`
+        /// Prepares a dictionary of files with unique file names as a key. Renames duplicated files like this `[fileName] ([num]).[extension]`
         /// </summary>
         public Dictionary<string, StoredFile> MakeUniqueFileNames(IList<StoredFile> files)
         {

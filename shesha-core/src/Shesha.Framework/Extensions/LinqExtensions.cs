@@ -66,48 +66,5 @@ namespace Shesha.Extensions
 
             throw new Exception("Invalid Sort Direction");
         }
-
-        /// <summary>
-        /// Order by property name
-        /// </summary>
-        /// <param name="items">A sequence of values to order</param>
-        /// <param name="propertyName">name of property</param>
-        /// <param name="direction">Direction: "asc"/"desc"</param>
-        /// <returns></returns>
-        public static IEnumerable<T> LikeDynamic<T>(this IEnumerable<T> items, string[] propertyNames, string filterValue)
-        {
-            if (!propertyNames.Any()) return items;
-
-            var result = typeof(LinqExtensions)
-                .GetMethod("LikeDynamic_Private", BindingFlags.NonPublic | BindingFlags.Static)
-                .MakeGenericMethod(typeof(T))
-                .Invoke(null, new object[] { items, propertyNames, filterValue });
-
-            return (IEnumerable<T>)result;
-        }
-
-        private static IEnumerable<T> LikeDynamic_Private<T>(IEnumerable<T> items, string[] propertyNames, string filterValue)
-        {
-            Expression<Func<T, bool>> fullExpression = null;
-
-            foreach (var propertyName in propertyNames)
-            {
-                // Necessarily create a new string variable to use in different expressions
-                var tPropName = propertyName;
-                Expression<Func<T, bool>> expr = x =>
-                    (x.GetType().InvokeMember(
-                         tPropName,
-                         BindingFlags.GetProperty,
-                         null,
-                         x, null)
-                     ?? string.Empty).ToString().IndexOf(filterValue, StringComparison.InvariantCultureIgnoreCase) >= 0;
-                
-                // add expressions to OR condition
-                fullExpression = fullExpression == null ? expr : fullExpression.Or(expr);
-            }
-
-            return fullExpression == null ? items : items.Where(fullExpression.Compile());
-        }
-
     }
 }

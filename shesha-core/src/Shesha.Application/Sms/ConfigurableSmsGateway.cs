@@ -11,11 +11,6 @@ namespace Shesha.Sms
     public abstract class ConfigurableSmsGateway<TSettings> : IConfigurableSmsGateway<TSettings> where TSettings : class
     {
         /// <summary>
-        /// Settings manager. Injected by IoC
-        /// </summary>
-        public ISettingManager SettingManager { get; set; }
-
-        /// <summary>
         /// Gateway settings type
         /// </summary>
         public Type SettingsType => typeof(TSettings);

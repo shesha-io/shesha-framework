@@ -49,7 +49,7 @@ namespace Shesha.Tests.VersionedFields
                     await uow.CompleteAsync();
                 }
             }
-            catch (Exception e) 
+            catch (Exception) 
             {
                 throw;
             }

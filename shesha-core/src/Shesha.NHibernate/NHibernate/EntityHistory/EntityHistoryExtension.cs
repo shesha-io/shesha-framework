@@ -116,7 +116,6 @@ namespace Shesha.NHibernate.EntityHistory
         ///  Add custom entity event
         /// </summary>
         /// <param name="entity">The entity with which the event occurred</param>
-        /// <param name="eventType">Event type</param>
         /// <param name="eventName">Event name</param>
         /// <param name="description">Event description</param>
         public static void AddHistoryEvent(this object entity, string eventName, string description)

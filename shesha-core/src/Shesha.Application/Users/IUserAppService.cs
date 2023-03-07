@@ -8,7 +8,7 @@ using Shesha.Users.Dto;
 
 namespace Shesha.Users
 {
-    public interface IUserAppService : IAsyncCrudAppService<UserDto, long, PagedUserResultRequestDto, CreateUserDto, UserDto>
+    public interface IUserAppService : IAsyncCrudAppService<UserDto, long, PagedUserResultRequestDto, CreateUserDto, UpdateUserDto>
     {
         Task<ListResultDto<RoleDto>> GetRoles();
 
@@ -16,7 +16,7 @@ namespace Shesha.Users
 
         Task<ResetPasswordSendOtpResponse> ResetPasswordSendOtp(string mobileNo);
 
-        Task<bool> SendSMSOTP(string username);
+        Task<bool> SendSmsOtp(string username);
 
         Task<List<SecurityQuestionDto>> GetSecurityQuestions(string username);
 

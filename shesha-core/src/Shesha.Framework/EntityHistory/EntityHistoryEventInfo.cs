@@ -22,11 +22,8 @@ namespace Shesha.EntityHistory
 
     public class EntityChangesInfo<E, T> : EntityChangesInfo
     {
-        public E Entity { get; set; }
-        public T OldValue { get; set; }
-        public T NewValue { get; set; }
-
-        public DateTime DateTime { get; set; }
+        public new E Entity { get; set; }
+        public new T OldValue { get; set; }
+        public new T NewValue { get; set; }
     }
-
 }

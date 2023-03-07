@@ -90,6 +90,7 @@ public class NotificationAppService: SheshaCrudServiceBase<Notification, Notific
     /// <param name="notificationName">Name of the notification. Default email template of the specified notification will be used</param>
     /// <param name="data">Data that is used to fill template</param>
     /// <param name="emailAddress">Recipient email address</param>
+    /// <param name="attachments">Notification attachments</param>
     /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
     /// <returns></returns>
     public async Task PublishEmailNotificationAsync<TData>(string notificationName,

@@ -14,6 +14,8 @@ import { IPersistedFormProps } from '../../providers/formPersisterProvider/model
 import { ConfigurationItemVersionStatusMap } from '../../utils/configurationFramework/models';
 import Show from '../show';
 import FormInfo from './formInfo';
+import { Result } from 'antd';
+import { getFormNotFoundMessage } from '../../providers/configurationItemsLoader/utils';
 
 export const ConfigurableForm: FC<IConfigurableFormProps> = props => {
   const { formId, markup, mode, actions, sections, context, formRef, refetchData, formProps, ...restProps } = props;
@@ -27,8 +29,8 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = props => {
     return typeof fId === 'string'
       ? `${app.routes.formsDesigner}?id=${fId}`
       : Boolean(fId?.name)
-      ? `${app.routes.formsDesigner}?module=${fId.module}&name=${fId.name}`
-      : null;
+        ? `${app.routes.formsDesigner}?module=${fId.module}&name=${fId.name}`
+        : null;
   };
   const formDesignerUrl = getDesignerUrl(formId);
   const openInDesigner = () => {
@@ -92,7 +94,20 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = props => {
           ) : (
             <FormPersisterProvider formId={formId}>
               <FormPersisterConsumer>
-                {persister => renderWithMarkup(persister.markup, persister.formSettings, persister.formProps)}
+                {persister => (
+                  <>
+                    {persister.loadError?.code == 404 && (
+                      <Result
+                        status="404"
+                        //style={{ height: '100vh - 55px' }}
+                        title="404"
+                        subTitle={getFormNotFoundMessage(formId)}
+                      />
+                    )}
+                    {persister.loaded && renderWithMarkup(persister.markup, persister.formSettings, persister.formProps)}
+                  </>
+                )
+                }
               </FormPersisterConsumer>
             </FormPersisterProvider>
           )}

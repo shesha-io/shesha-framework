@@ -1,9 +1,8 @@
-﻿using Abp.Dependency;
-using EasyNetQ;
+﻿using EasyNetQ;
 using Shesha.Configuration;
+using Shesha.Services;
 using System;
 using System.Linq;
-using Shesha.Services;
 
 namespace Shesha.RabbitMQ
 {
@@ -34,21 +33,25 @@ namespace Shesha.RabbitMQ
             ExchangeNamingConvention = messageType =>
             {
                 var attr = GetQueueAttribute(messageType);
+                
+                // todo: use controller injection
                 var settings = StaticContext.IocManager.Resolve<ISheshaSettings>();
-                var exchangeName = string.IsNullOrEmpty(settings.ExchangeName) ? typeNameSerializer.Serialize(messageType) : settings.ExchangeName;
+                var exchangeNameSetting = settings.ExchangeName.GetValue();
+
+                var exchangeName = string.IsNullOrEmpty(exchangeNameSetting) 
+                    ? typeNameSerializer.Serialize(messageType) 
+                    : exchangeNameSetting;
+
                 return string.IsNullOrEmpty(attr.ExchangeName)
                     ? (exchangeName)
                     : attr.ExchangeName;
             };
-            
-
         }
 
         private QueueAttribute GetQueueAttribute(Type messageType)
         {
             return messageType.GetAttribute<QueueAttribute>() ?? new QueueAttribute(string.Empty);
         }
-
     }
 }
 

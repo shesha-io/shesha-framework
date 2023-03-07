@@ -10,11 +10,9 @@ using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using Shesha.QuickSearch;
 using Shesha.Services;
-using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -26,7 +24,7 @@ namespace Shesha.Tests.QuickSearch
     public class QuickSearcher_Tests : SheshaNhTestBase
     {
         [Fact]
-        public async Task SearchPerson_TextFields_Convert_Test()
+        public void SearchPerson_TextFields_Convert_Test()
         {
             var quickSearcher = Resolve<QuickSearcher>();
 
@@ -56,7 +54,7 @@ namespace Shesha.Tests.QuickSearch
         }
 
         [Fact]
-        public async Task SearchTestPerson_TextFields_Convert_Test()
+        public void SearchTestPerson_TextFields_Convert_Test()
         {
             var quickSearcher = Resolve<QuickSearcher>();
 
@@ -70,7 +68,7 @@ namespace Shesha.Tests.QuickSearch
         }
 
         [Fact]
-        public async Task SearchTestPerson_TextFields_NestedEntity_Convert_Test()
+        public void SearchTestPerson_TextFields_NestedEntity_Convert_Test()
         {
             var quickSearcher = Resolve<QuickSearcher>();
 
@@ -84,7 +82,7 @@ namespace Shesha.Tests.QuickSearch
         }
 
         [Fact]
-        public async Task SearchTestPerson_RefList_Convert_Test()
+        public void SearchTestPerson_RefList_Convert_Test()
         {
             var quickSearcher = Resolve<QuickSearcher>();
 
@@ -126,7 +124,7 @@ namespace Shesha.Tests.QuickSearch
         }
 
         [Fact]
-        public async Task SearchTest_Organisation_MultiValueRefList_Convert_Test()
+        public void SearchTest_Organisation_MultiValueRefList_Convert_Test()
         {
             var quickSearcher = Resolve<QuickSearcher>();
 
@@ -138,7 +136,7 @@ namespace Shesha.Tests.QuickSearch
         }
 
         [Fact]
-        public async Task SearchTest_Organisation_MultiValueRefList_Fetch_Test()
+        public void SearchTest_Organisation_MultiValueRefList_Fetch_Test()
         {
             var orgRepoMock = new Mock<IRepository<TestOrganisation, Guid>>();
 

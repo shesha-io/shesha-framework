@@ -442,7 +442,7 @@ namespace Shesha.Utilities
         public static string ToMd5Fingerprint(this string s)
         {
             var bytes = Encoding.Unicode.GetBytes(s.ToCharArray());
-            var hash = new MD5CryptoServiceProvider().ComputeHash(bytes);
+            var hash = MD5.Create().ComputeHash(bytes);
 
             // concat the hash bytes into one long string
             return hash.Aggregate(new StringBuilder(32),
@@ -517,12 +517,12 @@ namespace Shesha.Utilities
         /// </summary>
         /// <param name="value">comma separated string to be converted to list</param>
         /// <returns></returns>
-        public static List<string> ConvertCommaSeparatedStringToList(string CommaSeparatedString)
+        public static List<string> ConvertCommaSeparatedStringToList(string value)
         {
-            if (!String.IsNullOrEmpty(CommaSeparatedString))
+            if (!String.IsNullOrEmpty(value))
             {
                 return
-                    CommaSeparatedString.Split(',')
+                    value.Split(',')
                             .Select(t => t)
                             .ToList();
             }

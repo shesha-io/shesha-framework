@@ -1,7 +1,7 @@
-﻿using System.Threading.Tasks;
-using Abp.Application.Services;
+﻿using Abp.Application.Services;
 using Abp.Web.Models;
 using Shesha.NHibernate.Maps;
+using System.Threading.Tasks;
 
 namespace Shesha.Services
 {
@@ -15,9 +15,9 @@ namespace Shesha.Services
         /// </summary>
         /// <returns></returns>
         [DontWrapResult]
-        public async Task<string> GetConventions()
+        public Task<string> GetConventions()
         {
-            return Conventions.LastCompiledXml;
+            return Task.FromResult(Conventions.LastCompiledXml);
         }
     }
 }

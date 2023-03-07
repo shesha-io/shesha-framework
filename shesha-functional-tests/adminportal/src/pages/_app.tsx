@@ -14,7 +14,7 @@ import React from 'react';
 import { BASE_URL } from 'src/api/utils/constants';
 import { StyledThemeProvider } from 'src/definitions/styled-components';
 require('@shesha/reactjs/dist/styles.less');
-require('antd/dist/antd.less');
+require('src/styles/compiled.antd.variable.css');
 require('src/styles/custom-n-progress.less');
 
 interface IState {}

@@ -18,11 +18,8 @@ namespace Shesha.Notes
         }
 
         /// <summary>
-        /// 
+        /// Get notes
         /// </summary>
-        /// <param name="ownerId"></param>
-        /// <param name="ownerType"></param>
-        /// <returns></returns>
         //[HttpGet, Route("")]
         public async Task<List<NoteDto>> GetListAsync(GetListInput input)
         {
@@ -33,6 +30,7 @@ namespace Shesha.Notes
             return notes.Select(c => ObjectMapper.Map<NoteDto>(c)).ToList();
         }
 
+        /// inheritedDoc
         public override async Task<NoteDto> CreateAsync(CreateNoteDto input)
         {
             CheckCreatePermission();

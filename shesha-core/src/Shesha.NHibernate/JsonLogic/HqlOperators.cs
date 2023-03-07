@@ -153,7 +153,7 @@ namespace Shesha.JsonLogic
                 var convertedArgument = p.Convert(argument, data);
 
                 var nestedOperation = p.GetOperation(argument);
-                if (nestedOperation.Operation == "var")
+                if (nestedOperation.Name == "var")
                 {
                     // check datatype of the argument and add " or trim({convertedArgument}) = ''" for strings
                     return $"{convertedArgument} is null";

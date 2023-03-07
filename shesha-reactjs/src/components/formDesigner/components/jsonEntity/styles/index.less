@@ -1,0 +1,25 @@
+@json-entity-btn-width: 45px;
+
+.json-entity-container {
+  width: 100%;
+
+  .ant-input-group {
+    .ant-select {
+      width: calc(100% - @json-entity-btn-width);
+    }
+
+    .json-entity-add {
+      width: @json-entity-btn-width;
+    }
+  }
+
+  .json-entity-full-width {
+    .ant-select {
+      width: 100%;
+    }
+  }
+
+  .global-tablefilter {
+    padding-right: unset !important;
+  }
+}

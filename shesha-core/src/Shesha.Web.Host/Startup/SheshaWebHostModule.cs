@@ -2,9 +2,6 @@
 using Abp.Hangfire.Configuration;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Shesha.Configuration;
 using Shesha.GraphQL;
 using Shesha.Web.FormsDesigner;
 
@@ -16,13 +13,8 @@ namespace Shesha.Web.Host.Startup
         typeof(SheshaGraphQLModule))]
     public class SheshaWebHostModule: AbpModule
     {
-        private readonly IHostingEnvironment _env;
-        private readonly IConfigurationRoot _appConfiguration;
-
-        public SheshaWebHostModule(IHostingEnvironment env)
+        public SheshaWebHostModule()
         {
-            _env = env;
-            _appConfiguration = env.GetAppConfiguration();
         }
 
         public override void PreInitialize()

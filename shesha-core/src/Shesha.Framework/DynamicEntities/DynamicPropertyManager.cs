@@ -155,7 +155,7 @@ namespace Shesha.DynamicEntities
 
                 return await (genericGetterMethod.Invoke(this, new object[] { entity, propertyName }) as Task<object>);
             }
-            catch (Exception e) 
+            catch (Exception) 
             {
                 throw;
             }

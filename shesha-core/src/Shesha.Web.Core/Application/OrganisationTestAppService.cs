@@ -1,10 +1,7 @@
-﻿using Abp.Authorization;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
-using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.Extensions.Primitives;
 using Shesha.Domain;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Dtos;
@@ -12,8 +9,6 @@ using Shesha.Specifications;
 using Shesha.Swagger;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Shesha.Application
@@ -35,7 +30,7 @@ namespace Shesha.Application
             _swaggerProvider = swaggerProvider;
         }
 
-        public async Task Test()
+        public void Test()
         {
             /*var provider = (DynamicEntityControllerFeatureProvider)_applicationPartManager
                 .FeatureProviders.Where(p => p is DynamicEntityControllerFeatureProvider).FirstOrDefault();

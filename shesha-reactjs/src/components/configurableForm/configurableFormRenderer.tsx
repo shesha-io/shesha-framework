@@ -6,7 +6,7 @@ import { useForm } from '../../providers/form';
 import { IConfigurableFormRendererProps, IDataSourceComponent } from './models';
 import { useMutate } from 'restful-react';
 import { IAnyObject, ValidateErrorEntity } from '../../interfaces';
-import { addFormFieldsList, hasFiles, jsonToFormData } from '../../utils/form';
+import { addFormFieldsList, hasFiles, jsonToFormData, removeGhostKeys } from '../../utils/form';
 import { useGlobalState, useSheshaApplication } from '../../providers';
 import moment from 'moment';
 import {
@@ -326,8 +326,8 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
         const nonFormValues = { ...dynamicValues, ...initialValues };
 
         const postData = excludeFormFieldsInPayload
-          ? { ...formData, ...nonFormValues }
-          : addFormFieldsList(formData, nonFormValues, form);
+          ? removeGhostKeys({ ...formData, ...nonFormValues })
+          : removeGhostKeys(addFormFieldsList(formData, nonFormValues, form));
 
         const subFormNamesToIgnore = getComponentNames(
           allComponents,

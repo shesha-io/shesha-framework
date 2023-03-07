@@ -1,13 +1,7 @@
-﻿using Abp.Authorization;
-using Abp.Configuration;
-using Abp.Domain.Repositories;
+﻿using Abp.Domain.Repositories;
 using Abp.Runtime.Validation;
-using Microsoft.AspNetCore.Mvc;
 using NHibernate.Linq;
-using Shesha.Application.Services.Dto;
-using Shesha.Authorization;
 using Shesha.Authorization.Users;
-using Shesha.AutoMapper.Dto;
 using Shesha.Configuration;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
@@ -27,15 +21,19 @@ namespace Shesha.UserManagements
     {
         private readonly UserManager _userManager;
         private readonly IRepository<ShaRoleAppointedPerson, Guid> _rolePersonRepository;
-        private readonly ISettingManager _settingManager;
         private readonly IRepository<Person, Guid> _repository;
+        private readonly IAuthenticationSettings _authSettings;
 
-        public UserManagementAppService(IRepository<Person, Guid> repository, UserManager userManager, IRepository<ShaRoleAppointedPerson, Guid> rolePersonRepository, ISettingManager settingManager)
+        public UserManagementAppService(
+            IRepository<Person, Guid> repository, 
+            UserManager userManager, 
+            IRepository<ShaRoleAppointedPerson, Guid> rolePersonRepository,
+            IAuthenticationSettings authSettings)
         {
             _userManager = userManager;
             _rolePersonRepository = rolePersonRepository;
-            _settingManager = settingManager;
             _repository = repository;
+            _authSettings = authSettings;
         }
 
         /// <summary>
@@ -75,17 +73,17 @@ namespace Shesha.UserManagements
             // Supported password reset methods for the user
             // This might need reviewing since some methods might be unavailable for some users during time of
             // creation.
-            var isEmailLinkSupported = _settingManager.GetSettingValue<bool>(SheshaSettingNames.Security.ResetPasswordWithEmailLinkIsSupported);
+            var isEmailLinkSupported = await _authSettings.UseResetPasswordViaEmailLink.GetValueAsync();
             if (isEmailLinkSupported)
                 supportedPasswordResetMethods.Add((int)RefListPasswordResetMethods.EmailLink);
 
-            var isSecurityQuestionsSupported = _settingManager.GetSettingValue<bool>(SheshaSettingNames.Security.ResetPasswordWithSecurityQuestionsIsSupported);
+            var isSecurityQuestionsSupported = await _authSettings.UseResetPasswordViaSecurityQuestions.GetValueAsync();
             if (isSecurityQuestionsSupported)
                 supportedPasswordResetMethods.Add((int)RefListPasswordResetMethods.SecurityQuestions);
 
-            var isSMSOtpSupported = _settingManager.GetSettingValue<bool>(SheshaSettingNames.Security.ResetPasswordWithSmsOtpIsSupported);
-            if (isSMSOtpSupported)
-                supportedPasswordResetMethods.Add((int)RefListPasswordResetMethods.SMSOtp);
+            var isSsmOtpSupported = await _authSettings.UseResetPasswordViaSmsOtp.GetValueAsync();
+            if (isSsmOtpSupported)
+                supportedPasswordResetMethods.Add((int)RefListPasswordResetMethods.SmsOtp);
 
             var defaultMethods = supportedPasswordResetMethods.Count > 0 ? supportedPasswordResetMethods.Sum() : 0;
 

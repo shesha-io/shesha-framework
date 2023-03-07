@@ -1,6 +1,5 @@
 ﻿using Abp.Dependency;
 using Abp.TestBase;
-using AutoMapper.QueryableExtensions;
 using Castle.DynamicProxy;
 using Castle.MicroKernel;
 using Shesha.Services;
@@ -92,26 +91,8 @@ namespace Shesha.Tests.Interceptors
             return "";
         }
 
-        private R Get<T, R>(Expression<Func<T, R>> expr)
-        {
-            var r = ((expr.Body as BinaryExpression).Left as BinaryExpression).Right;
-            return default(R);
-        }
-
         [Fact]
-        public async Task Lambda_Test()
-        {
-            var pars = new Dictionary<string, object>();
-            var tables = new Dictionary<string, object>();
-
-            //var s = GetSql<MyTest>(x => x.Link.Name != "" && x.Name == "Test" && !(x.Name != x.Description), pars, tables);
-
-            //var r = Get<MyTest, bool>(x => 2 > 1 && !(x.Name != x.Description) || x.Name.Contains(x.Description));
-        }
-
-
-        [Fact]
-        public async Task Main_Test()
+        public void Main_Test()
         {
             try
             {
@@ -126,7 +107,7 @@ namespace Shesha.Tests.Interceptors
                     shurik.Name.ShouldBe("Shurik: Method Intercepted");
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw;
             }

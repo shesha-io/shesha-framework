@@ -29,6 +29,7 @@ namespace Shesha.Notifications
         /// <param name="notificationName">Name of the notification. Default email template of the specified notification will be used</param>
         /// <param name="data">Data that is used to fill template</param>
         /// <param name="emailAddress">Recipient email address</param>
+        /// <param name="attachments">Notification attachments</param>
         /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
         /// <returns></returns>
         Task PublishEmailNotificationAsync<TData>(string notificationName, TData data, string emailAddress, List<NotificationAttachmentDto> attachments, object sourceEntity = null) where TData : NotificationData;
@@ -39,6 +40,7 @@ namespace Shesha.Notifications
         /// <param name="templateId">Id of the template</param>
         /// <param name="data">Data that is used to fill template</param>
         /// <param name="emailAddress">Recipient email address</param>
+        /// <param name="attachments">Notification attachments</param>
         /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
         /// <returns></returns>
         Task PublishEmailNotificationAsync<TData>(Guid templateId, TData data, string emailAddress, List<NotificationAttachmentDto> attachments, object sourceEntity = null) where TData : NotificationData;

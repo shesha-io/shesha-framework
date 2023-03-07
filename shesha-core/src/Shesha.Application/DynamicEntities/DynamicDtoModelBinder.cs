@@ -1,5 +1,4 @@
-﻿using Abp.Extensions;
-using AutoMapper;
+﻿using AutoMapper;
 using Castle.DynamicProxy;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
@@ -10,16 +9,13 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using NHibernate.Mapping;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
 using Shesha.JsonEntities;
 using Shesha.Reflection;
 using Shesha.Services;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -38,7 +34,7 @@ namespace Shesha.DynamicEntities
         private readonly IList<IInputFormatter> _formatters;
         private readonly Func<Stream, Encoding, TextReader> _readerFactory;
         private readonly ILogger _logger;
-        private readonly MvcOptions? _options;
+        private readonly MvcOptions _options;
         private readonly IDynamicDtoTypeBuilder _dtoBuilder;
 
         /// <summary>
@@ -54,7 +50,7 @@ namespace Shesha.DynamicEntities
         public DynamicDtoModelBinder(
             IList<IInputFormatter> formatters,
             IHttpRequestStreamReaderFactory readerFactory,
-            ILoggerFactory? loggerFactory,
+            ILoggerFactory loggerFactory,
             IDynamicDtoTypeBuilder dynamicDtoTypeBuilder)
             : this(formatters, readerFactory, loggerFactory, options: null, dynamicDtoTypeBuilder)
         {
@@ -74,8 +70,8 @@ namespace Shesha.DynamicEntities
         public DynamicDtoModelBinder(
             IList<IInputFormatter> formatters,
             IHttpRequestStreamReaderFactory readerFactory,
-            ILoggerFactory? loggerFactory,
-            MvcOptions? options,
+            ILoggerFactory loggerFactory,
+            MvcOptions options,
             IDynamicDtoTypeBuilder dynamicDtoTypeBuilder)
         {
             if (formatters == null)
@@ -163,7 +159,7 @@ namespace Shesha.DynamicEntities
                 _readerFactory,
                 AllowEmptyBody);
 
-            var formatter = (IInputFormatter?)null;
+            var formatter = (IInputFormatter)null;
             for (var i = 0; i < _formatters.Count; i++)
             {
                 if (_formatters[i].CanRead(formatterContext))

@@ -1,7 +1,5 @@
 ﻿using Abp.Domain.Entities;
 using AutoMapper.Internal;
-using Castle.DynamicProxy;
-using Newtonsoft.Json.Linq;
 using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
 using Shesha.DynamicEntities.Dtos;
@@ -16,7 +14,7 @@ namespace Shesha.DynamicEntities
 {
     public static class EntityToDtoModelExtesions
     {
-        public static async Task<TDynamicDto> MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(TEntity entity, IDynamicMappingSettings settings = null)
+        public static Task<TDynamicDto> MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(TEntity entity, IDynamicMappingSettings settings = null)
             where TEntity : class, IEntity<TPrimaryKey>
             where TDynamicDto : class, IDynamicDto<TEntity, TPrimaryKey>
         {
@@ -51,7 +49,7 @@ namespace Shesha.DynamicEntities
                 MapProps(entity, dto);
             }
 
-            return dto;
+            return Task.FromResult(dto);
         }
 
         public static void MapProps(object src, object dest)
@@ -132,7 +130,7 @@ namespace Shesha.DynamicEntities
                         else
                             destProp.SetValue(dest, srcValue);
                     }
-                    catch(Exception e)
+                    catch(Exception)
                     {
 
                     }

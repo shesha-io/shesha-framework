@@ -1,29 +1,29 @@
-﻿using System.Threading.Tasks;
-using Abp.Configuration;
-using Shesha.Ldap.Configuration;
+﻿using Shesha.Ldap.Configuration;
 using Shesha.Ldap.Dtos;
-using Shesha.Utilities;
+using System;
+using System.Threading.Tasks;
 
 namespace Shesha.Ldap
 {
     /// inheritDoc
+    [Obsolete]
     public class LdapAppService: ILdapAppService
     {
-        private readonly ISettingManager _settingManager;
+        private readonly ILdapSettings _settings;
 
-        public LdapAppService(ISettingManager settingManager)
+        public LdapAppService(ILdapSettings settings)
         {
-            _settingManager = settingManager;
+            _settings = settings;
         }
 
         /// inheritDoc
         public async Task UpdateSettings(LdapSettingsDto dto)
         {
-            await _settingManager.ChangeSettingForApplicationAsync(LdapSettingNames.IsEnabled, dto.IsEnabled.ToString());
-            await _settingManager.ChangeSettingForApplicationAsync(LdapSettingNames.Server, dto.Server);
-            await _settingManager.ChangeSettingForApplicationAsync(LdapSettingNames.Port, dto.Port.ToString());
-            await _settingManager.ChangeSettingForApplicationAsync(LdapSettingNames.UseSsl, dto.UseSsl.ToString());
-            await _settingManager.ChangeSettingForApplicationAsync(LdapSettingNames.Domain, dto.Domain);
+            await _settings.IsEnabled.SetValueAsync(dto.IsEnabled);
+            await _settings.Server.SetValueAsync(dto.Server);
+            await _settings.Port.SetValueAsync(dto.Port);
+            await _settings.UseSsl.SetValueAsync(dto.UseSsl);
+            await _settings.Domain.SetValueAsync(dto.Domain);
         }
 
         /// inheritDoc
@@ -31,11 +31,11 @@ namespace Shesha.Ldap
         {
             var settings = new LdapSettingsDto
             {
-                IsEnabled = (await _settingManager.GetSettingValueForApplicationAsync(LdapSettingNames.IsEnabled)) == true.ToString(),
-                Server = await _settingManager.GetSettingValueForApplicationAsync(LdapSettingNames.Server),
-                Port = (await _settingManager.GetSettingValueForApplicationAsync(LdapSettingNames.Port)).ToInt(0),
-                UseSsl = (await _settingManager.GetSettingValueForApplicationAsync(LdapSettingNames.UseSsl)) == true.ToString(),
-                Domain = await _settingManager.GetSettingValueForApplicationAsync(LdapSettingNames.Domain)
+                IsEnabled = await _settings.IsEnabled.GetValueAsync(),
+                Server = await _settings.Server.GetValueAsync(),
+                Port = await _settings.Port.GetValueAsync(),
+                UseSsl = await _settings.UseSsl.GetValueAsync(),
+                Domain = await _settings.Domain.GetValueAsync()
             };
 
             return settings;
