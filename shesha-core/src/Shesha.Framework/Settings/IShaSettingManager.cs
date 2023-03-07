@@ -27,15 +27,6 @@ namespace Shesha.Settings
         Task<TValue> GetOrNullAsync<TValue>([NotNull] string module, [NotNull] string name, SettingManagementContext context = null);
 
         /// <summary>
-        /// Get setting value or null
-        /// </summary>
-        /// <param name="module">Module name</param>
-        /// <param name="name">Setting name</param>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        TValue GetOrNull<TValue>([NotNull] string module, [NotNull] string name, SettingManagementContext context = null);
-
-        /// <summary>
         /// Set setting value
         /// </summary>
         /// <param name="module">Module name</param>

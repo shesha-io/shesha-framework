@@ -58,7 +58,8 @@ namespace Shesha.Swagger
             var okResponse = ((int)HttpStatusCode.OK).ToString();
             if (wrapResultAttribute.WrapOnSuccess &&  // auto-wrapping of success response is enable
                                                       //!operation.Responses.ContainsKey(okResponse) && // OK response is missing
-                unwrappedReturnType != typeof(AjaxResponseBase) // not added manually as AjaxResponseBase
+                unwrappedReturnType != typeof(AjaxResponseBase) && // not added manually as AjaxResponseBase
+                unwrappedReturnType != typeof(void)
                 )
             {
                 var wrappedResponseType = typeof(AjaxResponse<>).MakeGenericType(unwrappedReturnType);
@@ -87,7 +88,8 @@ namespace Shesha.Swagger
             var badResponse = ((int)HttpStatusCode.BadRequest).ToString();
             if (wrapResultAttribute.WrapOnError && // auto-wrapping of error response is enable
                 !operation.Responses.ContainsKey(badResponse) && // BadRequest response is missing
-                unwrappedReturnType != typeof(AjaxResponseBase) // not added manually as AjaxResponseBase
+                unwrappedReturnType != typeof(AjaxResponseBase) && // not added manually as AjaxResponseBase
+                unwrappedReturnType != typeof(void)
                 )
             {
                 var responseType = typeof(AjaxResponseBase);

@@ -30,7 +30,8 @@ namespace Shesha.Notifications
         private readonly IRepository<NotificationMessage, Guid> _messageRepository;
         private readonly IRepository<StoredFile, Guid> _storedFileRepository;
         private readonly IRepository<NotificationMessageAttachment, Guid> _attachmentRepository;
-        
+        private readonly INotificationPublicationContext _publicationContext;
+
         public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;
 
         /// <summary>
@@ -42,7 +43,11 @@ namespace Shesha.Notifications
             INotificationStore notificationStore,
             IUnitOfWorkManager unitOfWorkManager,
             IGuidGenerator guidGenerator,
-            IIocResolver iocResolver, IRepository<NotificationMessage, Guid> messageRepository, IRepository<StoredFile, Guid> storedFileRepository, IRepository<NotificationMessageAttachment, Guid> attachmentRepository)
+            IIocResolver iocResolver, 
+            IRepository<NotificationMessage, Guid> messageRepository, 
+            IRepository<StoredFile, Guid> storedFileRepository, 
+            IRepository<NotificationMessageAttachment, Guid> attachmentRepository,
+            INotificationPublicationContext publicationContext)
         {
             _notificationConfiguration = notificationConfiguration;
             _notificationDefinitionManager = notificationDefinitionManager;
@@ -53,6 +58,7 @@ namespace Shesha.Notifications
             _messageRepository = messageRepository;
             _storedFileRepository = storedFileRepository;
             _attachmentRepository = attachmentRepository;
+            _publicationContext = publicationContext;
         }
 
         public async Task DistributeAsync(Guid notificationId)
@@ -290,6 +296,9 @@ namespace Shesha.Notifications
                         notificationMessages.Add(notificationMessageDto);
 
                         await CurrentUnitOfWork.SaveChangesAsync(); //To get Ids of the notifications
+
+                        // collect statistics
+                        _publicationContext.NotificationMessageCreated(notificationMessageDto);
                     }
                 }
             }
