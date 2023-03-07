@@ -59,8 +59,17 @@ namespace Shesha.DynamicEntities
 
                     if (val is IJsonEntityProxy proxy)
                         jprop.Value = JsonEntityProxy.GetJson(proxy, jprop.Value as JObject);
-                    else
-                        jprop.Value = ValueToJson(prop.PropertyType, val, jprop.Value, addMissedProperties);
+                    else {
+                        if (prop.IsMultiValueReferenceListProperty())
+                        {
+                            var arrayValue = val != null
+                                ? EntityExtensions.DecomposeIntoBitFlagComponents((Int64)System.Convert.ChangeType(val, typeof(Int64)))
+                                : new Int64[0];
+                            
+                            jprop.Value = ValueToJson(arrayValue.GetType(), arrayValue, jprop.Value, addMissedProperties);
+                        } else
+                            jprop.Value = ValueToJson(prop.PropertyType, val, jprop.Value, addMissedProperties);
+                    }
                 }
                 catch (Exception e)
                 {
