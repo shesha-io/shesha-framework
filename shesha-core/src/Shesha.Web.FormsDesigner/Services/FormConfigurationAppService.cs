@@ -1,16 +1,19 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Domain.Repositories;
+using Abp.Extensions;
 using Abp.Runtime.Validation;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Shesha.Application.Services.Dto;
 using Shesha.AutoMapper.Dto;
+using Shesha.Configuration.Runtime;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Cache;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Exceptions;
 using Shesha.Mvc;
+using Shesha.Services;
 using Shesha.Utilities;
 using Shesha.Web.FormsDesigner.Domain;
 using Shesha.Web.FormsDesigner.Dtos;
@@ -34,14 +37,22 @@ namespace Shesha.Web.FormsDesigner.Services
         private readonly IFormManager _formManager;
         private readonly IConfigurationFrameworkRuntime _cfRuntime;
         private readonly IConfigurationItemClientSideCache _clientSideCache;
-        
+        private readonly IEntityConfigManager _entityConfigManager;
 
-        public FormConfigurationAppService(IRepository<FormConfiguration, Guid> repository, IRepository<Module, Guid> moduleRepository, IFormManager formManager, IConfigurationFrameworkRuntime cfRuntime, IConfigurationItemClientSideCache clientSideCache) : base(repository)
+        public FormConfigurationAppService(
+            IRepository<FormConfiguration, Guid> repository, 
+            IRepository<Module, Guid> moduleRepository, 
+            IFormManager formManager, 
+            IConfigurationFrameworkRuntime cfRuntime, 
+            IConfigurationItemClientSideCache clientSideCache,
+            IEntityConfigManager entityConfigManager
+            ) : base(repository)
         {
             _moduleRepository = moduleRepository;
             _formManager = formManager;
             _cfRuntime = cfRuntime;
             _clientSideCache = clientSideCache;
+            _entityConfigManager = entityConfigManager;
         }
 
         /// <summary>
@@ -385,6 +396,39 @@ namespace Shesha.Web.FormsDesigner.Services
                 .ToList();
 
             return result;
+        }
+
+        public async Task<List<object>> GetFormsWithNotImplemented()
+        {
+            var configs = (await _entityConfigManager.GetMainDataListAsync()).Where(x => x.NotImplemented).ToList();
+            var list = new List<object>();
+
+            var forms = Repository.GetAll().Where(x =>
+                    (int)x.Configuration.VersionStatus < 4
+                    && !x.Configuration.Name.Contains(".json")
+                    && x.Markup != null)
+                .Select(x => new { x.FullName, x.Configuration.VersionNo, x.Configuration.VersionStatus, x.Markup })
+                .ToList();
+
+            foreach (var config in configs)
+            {
+                var className = $"\"{config.FullClassName}\"";
+                var typeShortAlias = $"\"{config.TypeShortAlias}\"";
+                var usetsa = !config.TypeShortAlias.IsNullOrWhiteSpace();
+                var formConfigs = forms.Where(x =>/*usetsa && x.Markup.Contains(typeShortAlias) ||*/ x.Markup.Contains(className)).ToList();
+
+                list.AddRange(formConfigs.Select(x => {
+                    return new
+                    {
+                        className,
+                        typeShortAlias,
+                        x.FullName,
+                        x.VersionNo,
+                        x.VersionStatus
+                    };
+                }).ToList());
+            }
+            return list;
         }
 
         #region private methods
