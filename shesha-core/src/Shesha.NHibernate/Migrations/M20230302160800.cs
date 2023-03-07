@@ -1,9 +1,4 @@
 ﻿using FluentMigrator;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shesha.Migrations
 {
@@ -14,7 +9,7 @@ namespace Shesha.Migrations
         {
             Delete.Column("PriorityLkp").FromTable("Core_Notes");
             Alter.Table("Core_Notes").AddColumn("VisibilityTypeLkp").AsInt64().Nullable();
-            Alter.Table("Core_Notes").AddColumn("HasAttachment").AsBoolean();
+            Alter.Table("Core_Notes").AddColumn("HasAttachment").AsBoolean().WithDefaultValue(false);
         }
         public override void Down()
         {
