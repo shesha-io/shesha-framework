@@ -16,7 +16,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
         /// </summary>
         public virtual string TestProp { get; set; }
 
-        public virtual TestJsonEntity JsonProp { get; set; }
+        public virtual JsonCar JsonProp { get; set; }
 
         [ReferenceList("Boxfusion.SheshaFunctionalTests.Domain.Enum", "TestItem")]
         public virtual RefListTestItem? ReflistProp { get; set; }
