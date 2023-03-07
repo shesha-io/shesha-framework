@@ -11,17 +11,20 @@ using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
 using Shesha.JsonEntities;
+using Shesha.Services;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+
 namespace Shesha.DynamicEntities;
 
 public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, EntityConfigDto, Guid>, IEntityConfigAppService
 {
     private readonly EntityConfigurationStore _entityConfigurationStore;
+    private readonly IEntityConfigManager _entityConfigManager;
     private readonly IRepository<EntityProperty, Guid> _propertyRepository;
     private readonly ITypeFinder _typeFinder;
     private readonly IRepository<ConfigurationItem, Guid> _configItemRepository;
@@ -29,6 +32,7 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
     public EntityConfigAppService(
         IRepository<EntityConfig, Guid> repository,
         EntityConfigurationStore entityConfigurationStore,
+        IEntityConfigManager entityConfigManager,
         ITypeFinder typeFinder,
         IRepository<ConfigurationItem, Guid> configItemRepository,
         IRepository<EntityProperty, Guid> propertyRepository
@@ -36,6 +40,7 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
         ) : base(repository)
     {
         _entityConfigurationStore = entityConfigurationStore;
+        _entityConfigManager = entityConfigManager;
         _typeFinder = typeFinder;
         _configItemRepository = configItemRepository;
         _propertyRepository = propertyRepository;
@@ -65,7 +70,7 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
         query = ApplySorting(query, input);
         query = ApplyPaging(query, input);
 
-        var entities = await GetMainDataListAsync(query);
+        var entities = await _entityConfigManager.GetMainDataListAsync(query);
 
         return new PagedResultDto<EntityConfigDto>(totalCount, entities);
     }
@@ -74,7 +79,7 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
     public async Task<List<AutocompleteItemDto>> EntityConfigAutocompleteAsync(bool? implemented, string term, string selectedValue)
     {
         var isPreselection = string.IsNullOrWhiteSpace(term) && !string.IsNullOrWhiteSpace(selectedValue);
-        var models = await GetMainDataListAsync(implemented: implemented);
+        var models = await _entityConfigManager.GetMainDataListAsync(implemented: implemented);
 
         var entities = isPreselection
             ? models.Where(e => e.Id == selectedValue.ToGuid()).ToList()
@@ -97,32 +102,6 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
             .ToList();
 
         return result;
-    }
-
-    private async Task<List<EntityConfigDto>> GetMainDataListAsync(IQueryable<EntityConfig> query = null, bool? implemented = null)
-    {
-        // Do not change to Mapper to avoid performance issues
-        var result = await (query ?? Repository.GetAll())
-            .Where(x => !x.Configuration.IsDeleted)
-            .Select(x => new EntityConfigDto()
-            {
-                Id = x.Id,
-                ClassName = x.ClassName,
-                FriendlyName = x.FriendlyName,
-                TypeShortAlias = x.TypeShortAlias,
-                TableName = x.TableName,
-                Namespace = x.Namespace,
-                DiscriminatorValue = x.DiscriminatorValue,
-                Source = x.Source,
-                EntityConfigType = x.EntityConfigType,
-                Suppress = x.Configuration.Suppress,
-                Module = x.Configuration.Module.Name,
-                Name = x.Configuration.Name,
-                Label = x.Configuration.Label
-            }).ToListAsync();
-        return implemented ?? false
-            ? result.Where(x => !x.NotImplemented).ToList()
-            : result;
     }
 
     [HttpDelete]

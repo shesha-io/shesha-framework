@@ -20,10 +20,13 @@
   <ItemGroup>
     <Compile Remove="Dtos\**" />
     <Compile Remove="ObjectMapper\**" />
+    <Compile Remove="_Test\Case\**" />
     <EmbeddedResource Remove="Dtos\**" />
     <EmbeddedResource Remove="ObjectMapper\**" />
+    <EmbeddedResource Remove="_Test\Case\**" />
     <None Remove="Dtos\**" />
     <None Remove="ObjectMapper\**" />
+    <None Remove="_Test\Case\**" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Excel\template.xlsx" />
