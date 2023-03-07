@@ -50,6 +50,7 @@ import Paragraph from '../../../components/formDesigner/components/legacy/paragr
 import Title from '../../../components/formDesigner/components/legacy/title';
 import Link from '../../../components/formDesigner/components/link';
 import List from '../../../components/formDesigner/components/listControl';
+import MapComponent from '../../../components/formDesigner/components/mapComponent';
 import Markdown from '../../../components/formDesigner/components/markdown';
 import Notes from '../../../components/formDesigner/components/notes/notesComponent';
 import NumberField from '../../../components/formDesigner/components/numberField/numberField';
@@ -88,6 +89,7 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
     components: [
       Address,
       AttachmentsEditor,
+      MapComponent,
       AutocompleteTagGroup,
       ChildDataTable,
       CodeEditor,
