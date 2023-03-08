@@ -80,6 +80,7 @@ import TimeField from '../../../components/formDesigner/components/timeField';
 import ValidationErrors from '../../../components/formDesigner/components/validationErrors';
 import Wizard from '../../../components/formDesigner/components/wizard';
 import { IToolboxComponentGroup } from '../../../interfaces/formDesigner';
+import TimelineComponent from '../../../components/formDesigner/components/timeline/timeline';
 
 export const ToolboxComponents: IToolboxComponentGroup[] = [
   {
@@ -89,6 +90,7 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
       Address,
       AttachmentsEditor,
       AutocompleteTagGroup,
+      TimelineComponent,
       ChildDataTable,
       ChildEntitiesTagGroup,
       CodeEditor,
