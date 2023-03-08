@@ -14,5 +14,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
         public virtual string Model { get; set; }
 
         public virtual string VinNumber { get; set; }
+
+        public virtual IList<JsonWheel> Wheels { get; set; }
     }
 }
