@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Abp.Auditing;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Threading.Tasks;
@@ -15,12 +16,15 @@ namespace Shesha.Domain
         /// Data type of the value
         /// </summary>
         [StringLength(100)]
+        [Audited]
         public virtual string DataType { get; set; }
 
         [StringLength(200)]
+        [Audited]
         public virtual string EditorFormName { get; set; }
         
         [StringLength(200)]
+        [Audited]
         public virtual string EditorFormModule { get; set; }
 
         /// <summary>
@@ -32,17 +36,20 @@ namespace Shesha.Domain
         /// Category of the setting, is used for groupping in the UI only
         /// </summary>
         [StringLength(200)]
+        [Audited]
         public virtual string Category { get; set; }
 
         /// <summary>
         /// If true, indicates that this setting should be specific to each of the application's clients
         /// </summary>
+        [Audited]
         public virtual bool IsClientSpecific { get; set; }
 
         /// <summary>
         /// Specifies who can access the application setting value via the APIs.
         /// </summary>
         [Column("AccessModeLkp")]
+        [Audited]
         public virtual SettingAccessMode AccessMode { get; set; }
 
         public override Task<IList<ConfigurationItemBase>> GetDependenciesAsync()

@@ -122,7 +122,6 @@ namespace Shesha
             });
 
             IocManager.RegisterSettingAccessor<IEmailSettings>(s => {
-                s.RedirectAllMessagesTo.WithDefaultValue("default!");
                 s.SmtpSettings.WithDefaultValue(new SmtpSettings
                 {
                     Port = 25,

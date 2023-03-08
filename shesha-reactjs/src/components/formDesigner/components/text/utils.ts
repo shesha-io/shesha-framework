@@ -2,7 +2,7 @@ import moment from 'moment';
 import { getNumberFormat } from '../../../../utils/string';
 import { ITextTypographyProps } from './models';
 
-export type ContentType = 'secondary' | 'success' | 'warning' | 'danger' | 'custom';
+export type ContentType = 'primary' | 'secondary' | 'success' | 'warning' | 'info' | 'danger' | 'custom';
 export type ContentDisplay = 'content' | 'name';
 
 export const FONT_SIZES = {
