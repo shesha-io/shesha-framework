@@ -4,23 +4,28 @@ import FormAutocomplete from '../../../formAutocomplete';
 import PropertyAutocomplete from '../../../propertyAutocomplete/propertyAutocomplete';
 import SectionSeparator from '../../../sectionSeparator';
 import CodeEditor from '../codeEditor/codeEditor';
-import { IJsonEntityProps } from './models';
+import { IChildEntitiesTagGroupProps } from './models';
 
 const FormItem = Form.Item;
 const { Option } = Select;
 
-export interface IJsonEntitySettingsProps {
+export interface IChildEntitiesTagGroupSettingsProps {
   readOnly: boolean;
-  model: IJsonEntityProps;
-  onSave: (model: IJsonEntityProps) => void;
+  model: IChildEntitiesTagGroupProps;
+  onSave: (model: IChildEntitiesTagGroupProps) => void;
   onCancel: () => void;
-  onValuesChange?: (changedValues: any, values: IJsonEntityProps) => void;
+  onValuesChange?: (changedValues: any, values: IChildEntitiesTagGroupProps) => void;
 }
 
-export const JsonEntitySettings: FC<IJsonEntitySettingsProps> = ({ readOnly, onSave, model, onValuesChange }) => {
+export const ChildEntitiesTagGroupSettings: FC<IChildEntitiesTagGroupSettingsProps> = ({
+  readOnly,
+  onSave,
+  model,
+  onValuesChange,
+}) => {
   const [form] = Form.useForm();
 
-  const handleValuesChange = (changedValues: IJsonEntityProps, values: IJsonEntityProps) => {
+  const handleValuesChange = (changedValues: IChildEntitiesTagGroupProps, values: IChildEntitiesTagGroupProps) => {
     if (readOnly) return;
 
     form?.setFieldsValue(changedValues);

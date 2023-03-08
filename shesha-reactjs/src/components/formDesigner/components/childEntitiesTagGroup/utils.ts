@@ -1,7 +1,10 @@
 import { nanoid } from 'nanoid';
-import { IJsonEntityPayload, IJsonEntitySelectOptions } from './models';
+import { IChildEntitiesTagGroupPayload, IChildEntitiesTagGroupSelectOptions } from './models';
 
-export const addJsonEntityOption = (values: IJsonEntitySelectOptions[], option: IJsonEntitySelectOptions) => {
+export const addChildEntitiesTagGroupOption = (
+  values: IChildEntitiesTagGroupSelectOptions[],
+  option: IChildEntitiesTagGroupSelectOptions
+) => {
   const exists = values.some(({ value }) => value === option?.value);
 
   if (exists) {
@@ -17,8 +20,8 @@ export const addJsonEntityOption = (values: IJsonEntitySelectOptions[], option: 
   return [...values, option];
 };
 
-export const formatOptions = (values: any, key: string, initialValue: IJsonEntitySelectOptions = null) => {
-  const properties = ['label', 'metadata', 'value'] as Array<keyof IJsonEntitySelectOptions>;
+export const formatOptions = (values: any, key: string, initialValue: IChildEntitiesTagGroupSelectOptions = null) => {
+  const properties = ['label', 'metadata', 'value'] as Array<keyof IChildEntitiesTagGroupSelectOptions>;
   const tempKey = getPropertyHolder(values);
 
   delete values?.['_formFields'];
@@ -30,10 +33,10 @@ export const formatOptions = (values: any, key: string, initialValue: IJsonEntit
   return { label: values?.[key || tempKey], value: nanoid(), metadata: values };
 };
 
-export const getInitJsonEntityOptions = (
-  form: IJsonEntityPayload<object[]>,
+export const getInitChildEntitiesTagGroupOptions = (
+  form: IChildEntitiesTagGroupPayload<object[]>,
   label: string
-): IJsonEntitySelectOptions[] =>
+): IChildEntitiesTagGroupSelectOptions[] =>
   (form?.value || []).map(i => ({ value: nanoid(), label: i?.[label || getPropertyHolder(form)], metadata: i }));
 
 export const getPropertyHolder = (values: object) =>
@@ -41,6 +44,6 @@ export const getPropertyHolder = (values: object) =>
     ? Object.getOwnPropertyNames(values).filter(i => !i.startsWith('_'))[0]
     : 'name';
 
-export const morphJsonEntity = (values: IJsonEntitySelectOptions[]) => ({
+export const morphChildEntitiesTagGroup = (values: IChildEntitiesTagGroupSelectOptions[]) => ({
   value: values.map(({ metadata }) => metadata),
 });

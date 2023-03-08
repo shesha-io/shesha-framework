@@ -2,28 +2,32 @@ import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Input, Modal, Select, Tag } from 'antd';
 import React, { FC, useEffect, useState } from 'react';
 import { FormMode, useForm, useGlobalState } from '../../../..';
-import JsonEntityModal from './modal';
-import { IJsonEntityProps, IJsonEntitySelectOptions } from './models';
+import ChildEntitiesTagGroupModal from './modal';
+import { IChildEntitiesTagGroupProps, IChildEntitiesTagGroupSelectOptions } from './models';
 import './styles/index.less';
-import { addJsonEntityOption, getInitJsonEntityOptions, morphJsonEntity } from './utils';
+import {
+  addChildEntitiesTagGroupOption,
+  getInitChildEntitiesTagGroupOptions,
+  morphChildEntitiesTagGroup,
+} from './utils';
 
 const { confirm } = Modal;
 
 interface IProps {
   formMode?: FormMode;
-  model: IJsonEntityProps;
+  model: IChildEntitiesTagGroupProps;
   onChange?: Function;
 }
 
 interface IState {
   activeValue?: string;
   open: boolean;
-  options: IJsonEntitySelectOptions[];
+  options: IChildEntitiesTagGroupSelectOptions[];
 }
 
 const INIT_STATE: IState = { open: false, options: [] };
 
-const JsonEntityControl: FC<IProps> = ({ formMode: fMode, model, onChange }) => {
+const ChildEntitiesTagGroupControl: FC<IProps> = ({ formMode: fMode, model, onChange }) => {
   const [state, setState] = useState<IState>(INIT_STATE);
   const { activeValue, open, options } = state;
   const { labelFormat, name } = model;
@@ -34,17 +38,17 @@ const JsonEntityControl: FC<IProps> = ({ formMode: fMode, model, onChange }) => 
 
   useEffect(() => {
     if (form?.[name]) {
-      setState(s => ({ ...s, options: getInitJsonEntityOptions(form?.[name], labelFromatExecutor()) }));
-      onChange(morphJsonEntity(getInitJsonEntityOptions(form?.[name], labelFromatExecutor())));
+      setState(s => ({ ...s, options: getInitChildEntitiesTagGroupOptions(form?.[name], labelFromatExecutor()) }));
+      onChange(morphChildEntitiesTagGroup(getInitChildEntitiesTagGroupOptions(form?.[name], labelFromatExecutor())));
     }
   }, []);
 
   const setOpen = (open: boolean) => setState(s => ({ ...s, open, activeValue: null }));
 
-  const setOption = (option: IJsonEntitySelectOptions) => {
-    setState(s => ({ ...s, options: addJsonEntityOption(s.options, option) }));
+  const setOption = (option: IChildEntitiesTagGroupSelectOptions) => {
+    setState(s => ({ ...s, options: addChildEntitiesTagGroupOption(s.options, option) }));
 
-    onChange(morphJsonEntity(addJsonEntityOption(options, option)));
+    onChange(morphChildEntitiesTagGroup(addChildEntitiesTagGroupOption(options, option)));
   };
 
   const onClickTag = (value: string) => () => {
@@ -66,7 +70,7 @@ const JsonEntityControl: FC<IProps> = ({ formMode: fMode, model, onChange }) => 
       },
     });
 
-    onChange(morphJsonEntity(options.filter(({ value }) => value !== item)));
+    onChange(morphChildEntitiesTagGroup(options.filter(({ value }) => value !== item)));
   };
 
   const labelFromatExecutor = () => {
@@ -85,11 +89,11 @@ const JsonEntityControl: FC<IProps> = ({ formMode: fMode, model, onChange }) => 
 
   const isEditable = fMode !== 'readonly' && !model?.readOnly;
   const formMode = model?.readOnly ? 'readonly' : fMode;
-  const inputGroupProps = isEditable ? {} : { className: 'json-entity-full-width' };
+  const inputGroupProps = isEditable ? {} : { className: 'child-entity-tag-full-width' };
 
   return (
-    <div className="json-entity-container">
-      <JsonEntityModal
+    <div className="child-entity-tag-container">
+      <ChildEntitiesTagGroupModal
         {...model}
         formMode={formMode}
         open={open}
@@ -100,10 +104,12 @@ const JsonEntityControl: FC<IProps> = ({ formMode: fMode, model, onChange }) => 
       />
       <Input.Group {...inputGroupProps}>
         <Select mode="tags" value={options} tagRender={tagRender} dropdownStyle={{ display: 'none' }} />
-        {isEditable && <Button onClick={() => setOpen(true)} className="json-entity-add" icon={<PlusOutlined />} />}
+        {isEditable && (
+          <Button onClick={() => setOpen(true)} className="child-entity-tag-add" icon={<PlusOutlined />} />
+        )}
       </Input.Group>
     </div>
   );
 };
 
-export default JsonEntityControl;
+export default ChildEntitiesTagGroupControl;

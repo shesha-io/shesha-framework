@@ -6,19 +6,19 @@ import { useFormConfiguration } from '../../../../providers/form/api';
 import { GHOST_PAYLOAD_KEY } from '../../../../utils/form';
 import ValidationErrors from '../../../validationErrors';
 import SubForm from '../subForm/subForm';
-import { IJsonEntityProps, IJsonEntitySelectOptions } from './models';
+import { IChildEntitiesTagGroupProps, IChildEntitiesTagGroupSelectOptions } from './models';
 import { formatOptions } from './utils';
 
-interface IProps extends IJsonEntityProps {
+interface IProps extends IChildEntitiesTagGroupProps {
   formMode?: FormMode;
-  initialValues?: IJsonEntitySelectOptions;
+  initialValues?: IChildEntitiesTagGroupSelectOptions;
   labelKey: string;
   open: boolean;
   onSetData: Function;
   onToggle: Function;
 }
 
-const JsonEntityModal: FC<IProps> = ({
+const ChildEntitiesTagGroupModal: FC<IProps> = ({
   formId: formIdentity,
   formMode,
   initialValues,
@@ -81,4 +81,4 @@ const JsonEntityModal: FC<IProps> = ({
   );
 };
 
-export default JsonEntityModal;
+export default ChildEntitiesTagGroupModal;
