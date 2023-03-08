@@ -175,6 +175,11 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
         id: '32ebcc5b-6775-4b34-b856-d7ed42f33c3c',
       },
       {
+        label: 'Primary',
+        value: 'primary',
+        id: '32ebcc5b-6775-4b34-b856-d7ed42f33c3e',
+      },
+      {
         label: 'Secondary',
         value: 'secondary',
         id: '32ebcc5b-6775-4b34-b856-d7ed42f33c3b',
@@ -190,7 +195,12 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
         id: '3e6a5ac8-bf51-48fb-b5c1-33ba455a1246',
       },
       {
-        label: 'Danger',
+        label: 'Info',
+        value: 'info',
+        id: '32ebcc5b-6775-4b34-b856-d7ed42f33c3b',
+      },
+      {
+        label: 'Error',
         value: 'danger',
         id: '4b3830fa-6b2a-4493-a049-2a4a5be4b0a4',
       },
