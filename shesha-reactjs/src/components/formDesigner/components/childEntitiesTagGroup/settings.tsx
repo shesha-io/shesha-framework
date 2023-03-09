@@ -51,6 +51,18 @@ export const ChildEntitiesTagGroupSettings: FC<IChildEntitiesTagGroupSettingsPro
 
       <SectionSeparator title="Display" />
 
+      <FormItem name="deleteConfirmationTitle" label="Delete Confirmation Title">
+        <Input readOnly={readOnly} />
+      </FormItem>
+
+      <FormItem name="deleteConfirmationBody" label="Delete Confirmation Body">
+        <Input readOnly={readOnly} />
+      </FormItem>
+
+      <FormItem name="modalTitle" label="Modal Title">
+        <Input readOnly={readOnly} />
+      </FormItem>
+
       <FormItem name="modalWidth" label="Modal Width">
         <Select disabled={readOnly} defaultValue="60%">
           <Option value="100%">Full</Option>
@@ -61,6 +73,14 @@ export const ChildEntitiesTagGroupSettings: FC<IChildEntitiesTagGroupSettingsPro
       </FormItem>
 
       <SectionSeparator title="Render" />
+
+      <FormItem name="capturedProperties" label="Captured Properties">
+        <Select mode="tags" />
+      </FormItem>
+
+      <FormItem name="formId" label="Form Path">
+        <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
+      </FormItem>
 
       <FormItem name="labelFormat" label="Label Format" required>
         <CodeEditor
@@ -87,10 +107,6 @@ export const ChildEntitiesTagGroupSettings: FC<IChildEntitiesTagGroupSettingsPro
             },
           ]}
         />
-      </FormItem>
-
-      <FormItem name="formId" label="Form Path">
-        <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
       </FormItem>
 
       <SectionSeparator title="Visibility" />
