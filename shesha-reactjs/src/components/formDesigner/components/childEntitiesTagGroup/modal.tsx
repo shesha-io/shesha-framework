@@ -1,4 +1,4 @@
-import { Modal } from 'antd';
+import { Modal, Skeleton } from 'antd';
 import React, { FC, useEffect } from 'react';
 import { useDeepCompareEffect } from 'react-use';
 import { FormMode, SubFormProvider, useForm } from '../../../../providers';
@@ -23,7 +23,8 @@ const ChildEntitiesTagGroupModal: FC<IProps> = ({
   formMode,
   initialValues,
   labelKey,
-  modalWidth,
+  modalTitle: title,
+  modalWidth: width = '60%',
   name,
   open,
   onSetData,
@@ -31,7 +32,7 @@ const ChildEntitiesTagGroupModal: FC<IProps> = ({
 }) => {
   const { formData, form } = useForm();
 
-  const { formConfiguration, refetch: refetchFormConfig, error: fetchFormError } = useFormConfiguration({
+  const { formConfiguration, refetch: refetchFormConfig, error, loading } = useFormConfiguration({
     formId: formIdentity,
     lazy: true,
   });
@@ -69,14 +70,17 @@ const ChildEntitiesTagGroupModal: FC<IProps> = ({
       open={open}
       onOk={onOk}
       onCancel={onCancel}
-      width={modalWidth || '60%'}
+      title={title}
+      width={width}
       okButtonProps={{ disabled: formMode === 'readonly' }}
     >
-      <ValidationErrors error={fetchFormError} />
+      <Skeleton loading={loading}>
+        <ValidationErrors error={error} />
 
-      <SubFormProvider name={mutatedName} markup={markup} properties={[]} defaultValue={initialValues?.metadata}>
-        <SubForm readOnly={formMode === 'readonly'} />
-      </SubFormProvider>
+        <SubFormProvider name={mutatedName} markup={markup} properties={[]} defaultValue={initialValues?.metadata}>
+          <SubForm readOnly={formMode === 'readonly'} />
+        </SubFormProvider>
+      </Skeleton>
     </Modal>
   );
 };
