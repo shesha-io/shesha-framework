@@ -173,6 +173,14 @@ export const IndexTable: FC<Partial<IIndexTableProps>> = ({
 
             // Allow the user to override the default render behavior of the table without having to make changes to it
             if (allRenderers) {
+              const strictRenderer = columnItem.dataType && columnItem.dataFormat
+                ? allRenderers.find(r => r.key === columnItem.dataType && r.dataFormat === columnItem.dataFormat)
+                : null;
+
+              if (strictRenderer)
+                return strictRenderer.render(props, router) ?? null;
+
+              // todo: review and delete anfter refactoring of `GetColumns` on back-end
               for (const customRender of allRenderers) {
                 const { key, render } = customRender;
 

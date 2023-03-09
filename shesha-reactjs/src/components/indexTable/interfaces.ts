@@ -13,6 +13,7 @@ export interface ITableActionColumns {
 
 export interface ITableCustomTypesRender {
   key: string;
+  dataFormat?: string;
   render: (data: any, router: any) => ReactNode;
 }
 
