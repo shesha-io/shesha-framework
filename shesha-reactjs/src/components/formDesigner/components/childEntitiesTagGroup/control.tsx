@@ -6,9 +6,9 @@ import ChildEntitiesTagGroupModal from './modal';
 import { IChildEntitiesTagGroupProps, IChildEntitiesTagGroupSelectOptions } from './models';
 import './styles/index.less';
 import {
-  addChildEntitiesTagGroupOption,
-  getInitChildEntitiesTagGroupOptions,
-  morphChildEntitiesTagGroup,
+  addChildEntitiesTagGroupOption as addTagGroupOption,
+  getInitChildEntitiesTagGroupOptions as getTagOptions,
+  morphChildEntitiesTagGroup as morphTagGroup,
 } from './utils';
 
 const { confirm } = Modal;
@@ -17,38 +17,43 @@ interface IProps {
   formMode?: FormMode;
   model: IChildEntitiesTagGroupProps;
   onChange?: Function;
+  value?: any;
 }
 
 interface IState {
   activeValue?: string;
   open: boolean;
   options: IChildEntitiesTagGroupSelectOptions[];
+  origin: object[] | object | null;
 }
 
-const INIT_STATE: IState = { open: false, options: [] };
+const INIT_STATE: IState = { open: false, options: [], origin: null };
+const CONFIRM_DELETE_TITLE = 'Are you sure you want to delete this item?';
 
-const ChildEntitiesTagGroupControl: FC<IProps> = ({ formMode: fMode, model, onChange }) => {
+const ChildEntitiesTagGroupControl: FC<IProps> = ({ formMode: fMode, model, onChange, value }) => {
   const [state, setState] = useState<IState>(INIT_STATE);
-  const { activeValue, open, options } = state;
-  const { labelFormat, name } = model;
+  const { activeValue, open, options, origin } = state;
+  const { capturedProperties, deleteConfirmationBody, deleteConfirmationTitle, labelFormat, name } = model;
 
   const { globalState } = useGlobalState();
 
   const { form, formData } = useForm();
 
   useEffect(() => {
-    if (form?.[name]) {
-      setState(s => ({ ...s, options: getInitChildEntitiesTagGroupOptions(form?.[name], labelFromatExecutor()) }));
-      onChange(morphChildEntitiesTagGroup(getInitChildEntitiesTagGroupOptions(form?.[name], labelFromatExecutor())));
+    const data = form?.[name] || value;
+
+    if (data) {
+      setState(s => ({ ...s, options: getTagOptions(data, labelFromatExecutor()), origin: data }));
+      onChange(morphTagGroup(getTagOptions(data, labelFromatExecutor()), data, capturedProperties));
     }
   }, []);
 
   const setOpen = (open: boolean) => setState(s => ({ ...s, open, activeValue: null }));
 
   const setOption = (option: IChildEntitiesTagGroupSelectOptions) => {
-    setState(s => ({ ...s, options: addChildEntitiesTagGroupOption(s.options, option) }));
+    setState(s => ({ ...s, options: addTagGroupOption(s.options, option) }));
 
-    onChange(morphChildEntitiesTagGroup(addChildEntitiesTagGroupOption(options, option)));
+    onChange(morphTagGroup(addTagGroupOption(options, option), origin, capturedProperties));
   };
 
   const onClickTag = (value: string) => () => {
@@ -59,18 +64,22 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ formMode: fMode, model, onCh
     e.preventDefault();
 
     confirm({
-      title: 'Are you sure delete this item?',
+      title: deleteConfirmationTitle || CONFIRM_DELETE_TITLE,
       icon: <ExclamationCircleOutlined />,
-      content: 'Click yes to remove.',
+      content: deleteConfirmationBody,
       okText: 'Yes',
       okType: 'danger',
       cancelText: 'No',
-      onOk() {
-        setState(s => ({ ...s, options: s.options.filter(({ value }) => value !== item) }));
-      },
+      onOk: () => setState(s => ({ ...s, options: s.options.filter(({ value }) => value !== item) })),
     });
 
-    onChange(morphChildEntitiesTagGroup(options.filter(({ value }) => value !== item)));
+    onChange(
+      morphTagGroup(
+        options.filter(({ value }) => value !== item),
+        origin,
+        capturedProperties
+      )
+    );
   };
 
   const labelFromatExecutor = () => {
@@ -93,15 +102,17 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ formMode: fMode, model, onCh
 
   return (
     <div className="child-entity-tag-container">
-      <ChildEntitiesTagGroupModal
-        {...model}
-        formMode={formMode}
-        open={open}
-        onToggle={setOpen}
-        onSetData={setOption}
-        initialValues={options?.find(({ value }) => value === activeValue)}
-        labelKey={labelFromatExecutor()}
-      />
+      {open && (
+        <ChildEntitiesTagGroupModal
+          {...model}
+          formMode={formMode}
+          open={open}
+          onToggle={setOpen}
+          onSetData={setOption}
+          initialValues={options?.find(({ value }) => value === activeValue)}
+          labelKey={labelFromatExecutor()}
+        />
+      )}
       <Input.Group {...inputGroupProps}>
         <Select mode="tags" value={options} tagRender={tagRender} dropdownStyle={{ display: 'none' }} />
         {isEditable && (
