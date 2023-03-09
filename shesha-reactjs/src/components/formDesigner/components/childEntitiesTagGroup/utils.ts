@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { IChildEntitiesTagGroupPayload, IChildEntitiesTagGroupSelectOptions } from './models';
+import { IChildEntitiesTagGroupSelectOptions } from './models';
 
 export const addChildEntitiesTagGroupOption = (
   values: IChildEntitiesTagGroupSelectOptions[],
@@ -21,29 +21,58 @@ export const addChildEntitiesTagGroupOption = (
 };
 
 export const formatOptions = (values: any, key: string, initialValue: IChildEntitiesTagGroupSelectOptions = null) => {
-  const properties = ['label', 'metadata', 'value'] as Array<keyof IChildEntitiesTagGroupSelectOptions>;
   const tempKey = getPropertyHolder(values);
+
+  if (Array.isArray(values)) {
+    const id = nanoid();
+    return { label: values?.[key || id], value: id, metadata: values.map(i => formatOptions(i, key, initialValue)) };
+  }
 
   delete values?.['_formFields'];
 
-  if (initialValue && properties.every(i => Object.keys(initialValue || {}).includes(i))) {
-    return { label: values?.[key || tempKey], value: initialValue?.value, metadata: values };
-  }
-
-  return { label: values?.[key || tempKey], value: nanoid(), metadata: values };
+  return { label: values?.[key || tempKey], value: initialValue?.value ?? nanoid(), metadata: values };
 };
 
 export const getInitChildEntitiesTagGroupOptions = (
-  form: IChildEntitiesTagGroupPayload<object[]>,
+  form: any[] | object | null,
   label: string
-): IChildEntitiesTagGroupSelectOptions[] =>
-  (form?.value || []).map(i => ({ value: nanoid(), label: i?.[label || getPropertyHolder(form)], metadata: i }));
+): IChildEntitiesTagGroupSelectOptions[] => {
+  if (Array.isArray(form))
+    return (form || []).map(i => ({ value: nanoid(), label: i?.[label || getPropertyHolder(form)], metadata: i }));
+
+  return [];
+};
 
 export const getPropertyHolder = (values: object) =>
   Object.getOwnPropertyNames(values || {})?.length
     ? Object.getOwnPropertyNames(values).filter(i => !i.startsWith('_'))[0]
     : 'name';
 
-export const morphChildEntitiesTagGroup = (values: IChildEntitiesTagGroupSelectOptions[]) => ({
-  value: values.map(({ metadata }) => metadata),
-});
+export const morphChildEntitiesTagGroup = (
+  values: IChildEntitiesTagGroupSelectOptions[],
+  origin: object[] | object,
+  keys: string[] = []
+) => {
+  if (values.length) {
+    if (Array.isArray(origin) && origin.length) {
+      return values.map(({ metadata }) => metadata).map(i => ({ ...filterObjFromKeys(origin[0], keys), ...i }));
+    }
+
+    if (Object.getOwnPropertyNames(origin || {})) {
+      return values.map(({ metadata }) => metadata).map(i => ({ ...filterObjFromKeys(origin, keys), ...i }));
+    }
+
+    return values.map(({ metadata }) => metadata);
+  }
+
+  if (Array.isArray(origin) && origin.length) {
+    return filterObjFromKeys(origin[0], keys);
+  }
+
+  return origin;
+};
+
+export const filterObjFromKeys = (value: object, keys: string[]) =>
+  Object.entries(value || {})
+    .filter(([key]) => keys.includes(key))
+    .reduce((acc, [key, value]) => ({ ...acc, ...{ [key]: value } }), {});
