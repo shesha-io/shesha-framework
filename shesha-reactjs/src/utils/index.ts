@@ -106,3 +106,19 @@ export const getPlainValue = <T = object | any[]>(value: T): T => {
     return value;
   }
 };
+
+export const getStaticExecuteExpressionParams = (params: string, dynamicParam?: { [key: string]: any }) => {
+  let parameters = params;
+
+  Object.keys(dynamicParam || {}).map(key => {
+    parameters = `${parameters}, ${key}`;
+  });
+
+  return parameters;
+};
+
+export const executeExpressionPayload = (fn: Function, dynamicParam: { [key: string]: any }, ...args: any[]) => {
+  Object.values(dynamicParam || {}).map(key => args.push(key));
+
+  return fn.apply(null, args);
+};
