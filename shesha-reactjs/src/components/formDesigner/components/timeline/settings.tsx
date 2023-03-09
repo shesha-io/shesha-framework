@@ -1,5 +1,5 @@
-import React, { FC, useRef, useState } from 'react';
-import { Checkbox, Form, Input, RefSelectProps, Select } from 'antd';
+import React, { FC, useState } from 'react';
+import { Checkbox, Form, Input, Select } from 'antd';
 
 import { ITimelineProps } from './timeline';
 import { nanoid } from 'nanoid';
@@ -10,7 +10,6 @@ import { getSettings } from './itemSettings';
 
 import Show from '../../../show';
 import { AutocompleteRaw } from '../../../autocomplete';
-import CodeEditor from '../codeEditor/codeEditor';
 import { QueryBuilderComponentRenderer } from '../queryBuilder/queryBuilderComponent';
 import { QueryBuilderWithModelType } from '../queryBuilder/queryBuilderWithModelType';
 import Properties from '../../../properties';
@@ -59,25 +58,14 @@ const TimelineSettings: FC<ITabSettingsProps> = (props) => {
   const onAddNewItem = (_, count: number) => {
     const buttonProps: IWizardStepProps = {
       id: nanoid(),
-      itemType: 'item',
-      sortOrder: count,
+
       name: `item${count + 1}`,
-      label: `Item ${count + 1}`,
-      key: `ItemKey${count + 1}`,
-      title: `Item ${count + 1}`,
-      subTitle: `Sub title ${count + 1}`,
-      description: `Description ${count + 1}`,
-      nextButtonText: 'Next',
-      backButtonText: 'Back',
-      components: [],
     };
 
     return buttonProps;
   };
 
   const items = props?.model?.items?.map((item) => ({ ...item, label: item?.title }));
-
-  const selectRef = useRef<RefSelectProps>();
 
   return (
     <Form
@@ -95,37 +83,6 @@ const TimelineSettings: FC<ITabSettingsProps> = (props) => {
 
       <Form.Item name="name" initialValue={props.model.name} label="Name" rules={[{ required: true }]}>
         <Input />
-      </Form.Item>
-
-      <Form.Item name="timelineType" initialValue={props.model.timelineType} label="Timeline Type">
-        <Select allowClear>
-          <Option value="default">Default</Option>
-          <Option value="navigation">Navigation</Option>
-        </Select>
-      </Form.Item>
-
-      <Form.Item
-        name="size"
-        initialValue={props.model.size}
-        label="Size"
-        tooltip="This will set the size for all buttons"
-      >
-        <Select>
-          <Option value="default">default</Option>
-          <Option value="small">small</Option>
-        </Select>
-      </Form.Item>
-
-      <Form.Item
-        name="direction"
-        initialValue={props.model.size}
-        label="Direction"
-        tooltip="To specify the direction of the step bar"
-      >
-        <Select>
-          <Option value="vertical">vertical</Option>
-          <Option value="horizontal">horizontal</Option>
-        </Select>
       </Form.Item>
 
       <Form.Item name="dataSource" label="Data Source">
@@ -192,87 +149,27 @@ const TimelineSettings: FC<ITabSettingsProps> = (props) => {
         </Show>
       </Show>
 
-      <Show when={state?.apiSource === 'custom'}>
+      <Show when={state?.apiSource === 'custom' && state?.dataSource == 'api'}>
         <Form.Item label="Custom Api URL" name="customApiUrl" tooltip="The URL for a custom Api.">
           <Input readOnly={state.readOnly} />
         </Form.Item>
       </Show>
 
-      <Form.Item
-        name="labelPlacement"
-        initialValue={props.model.labelPlacement}
-        label="Label Placement"
-        tooltip="To specify the label placement"
-      >
-        <Select>
-          <Option value="vertical">vertical</Option>
-          <Option value="horizontal">horizontal</Option>
-        </Select>
-      </Form.Item>
+      <Show when={state?.dataSource === 'form'}>
+        <SectionSeparator title="Configure Timeline items" />
 
-      <Form.Item
-        name="defaultActiveItem"
-        initialValue={props.model.defaultActiveItem}
-        label="Default Active Step"
-        tooltip="This will be the default step tha"
-      >
-        <Select allowClear ref={selectRef} value={state?.defaultActiveItem}>
-          {state?.items?.map(({ id, title }) => (
-            <Option value={id} key={id}>
-              {title}
-            </Option>
-          ))}
-        </Select>
-      </Form.Item>
-
-      <Form.Item
-        name="buttonsLayout"
-        initialValue={props.model.buttonsLayout}
-        label="Buttons Layout"
-        tooltip="How you want the steps buttons to be aligned"
-      >
-        <Select>
-          <Option value="left">Left</Option>
-          <Option value="right">Right</Option>
-          <Option value="spaceBetween">Space Between</Option>
-        </Select>
-      </Form.Item>
-
-      <Form.Item
-        name="visibility"
-        initialValue={props.model.visibility}
-        label="Visibility"
-        tooltip="This property will eventually replace the 'hidden' property and other properties that toggle visibility on the UI and payload"
-      >
-        <Select>
-          <Option value="Yes">Yes (Display in UI and include in payload)</Option>
-          <Option value="No">No (Only include in payload)</Option>
-          <Option value="Removed">Removed (Remove from UI and exlude from payload)</Option>
-        </Select>
-      </Form.Item>
-
-      <SectionSeparator title="Configure Timeline items" />
-
-      <Form.Item name="items" initialValue={items}>
-        <ItemListSettingsModal
-          options={{ onAddNewItem }}
-          title="Configure Timeline items"
-          heading="Settings"
-          callToAction="Configure Timeline items"
-          itemTypeMarkup={getSettings()}
-          allowAddGroups={false}
-          insertMode="after"
-        />
-      </Form.Item>
-
-      <SectionSeparator title="Security" />
-
-      <Form.Item
-        label="Permissions"
-        name="permissions"
-        initialValue={props.model.permissions}
-        tooltip="Enter a list of permissions that should be associated with this component"
-      ></Form.Item>
+        <Form.Item name="items" initialValue={items}>
+          <ItemListSettingsModal
+            options={{ onAddNewItem }}
+            title="Configure Timeline items"
+            heading="Settings"
+            callToAction="Configure Timeline items"
+            itemTypeMarkup={getSettings()}
+            allowAddGroups={false}
+            insertMode="after"
+          />
+        </Form.Item>
+      </Show>
     </Form>
   );
 };

@@ -47,7 +47,7 @@ const TimelineComponent: IToolboxComponent<ITimelineProps> = {
     const { formMode, isComponentDisabled, formData } = useForm();
     const isReadOnly = model?.readOnly || formMode === 'readonly';
     const { items } = model;
-    const [components, setComponents] = useState<IConfigurableFormComponent[]>();
+    const [components] = useState<IConfigurableFormComponent[]>();
 
     const { globalState, setState: setGlobalState } = useGlobalState();
 
