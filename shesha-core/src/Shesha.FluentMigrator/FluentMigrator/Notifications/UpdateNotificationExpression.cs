@@ -1,8 +1,5 @@
 ﻿using FluentMigrator;
 using FluentMigrator.Expressions;
-using System;
-using System.Collections.Generic;
-using System.Data;
 
 namespace Shesha.FluentMigrator.Notifications
 {

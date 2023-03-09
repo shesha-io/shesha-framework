@@ -504,7 +504,7 @@ namespace Shesha.FluentMigrator
                 throw new Exception("Failed to get migration context");
             var context = contextProp.GetValue(migration) as IMigrationContext;
                 
-            return new SheshaExpressionRoot(context);
+            return new SheshaExpressionRoot(context, migration);
         }
 
         #endregion

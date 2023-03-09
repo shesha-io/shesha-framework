@@ -5,48 +5,12 @@ namespace Shesha.FluentMigrator.Notifications
     /// <summary>
     /// Notification DB helper
     /// </summary>
-    internal class NotificationDbHelper
+    internal class NotificationDbHelper: DbHelperBase
     {
-        private readonly IDbConnection _connection;
-        private readonly IDbTransaction _transaction;
-
-        public NotificationDbHelper(IDbConnection connection, IDbTransaction transaction)
+        public NotificationDbHelper(IDbConnection connection, IDbTransaction transaction): base (connection, transaction)
         {
-            _connection = connection;
-            _transaction = transaction;
         }
 
-        #region private declarations
-        private void ExecuteNonQuery(string sql, Action<IDbCommand> prepareAction = null)
-        {
-            ExecuteCommand(sql, command => {
-                prepareAction?.Invoke(command);
-                command.ExecuteNonQuery();
-            });
-        }
-
-        private T ExecuteScalar<T>(string sql, Action<IDbCommand> prepareAction = null)
-        {
-            T result = default(T);
-            ExecuteCommand(sql, command => {
-                prepareAction?.Invoke(command);
-                result = (T)command.ExecuteScalar();
-            });
-            return result;
-        }
-
-        private void ExecuteCommand(string sql, Action<IDbCommand> action)
-        {
-            using (var command = _connection.CreateCommand())
-            {
-                command.Transaction = _transaction;
-                command.CommandText = sql;
-
-                action.Invoke(command);
-            }
-        }
-
-        #endregion
 
         #region Notifications
 

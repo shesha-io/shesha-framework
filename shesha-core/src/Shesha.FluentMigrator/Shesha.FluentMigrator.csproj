@@ -11,4 +11,10 @@
     <PackageReference Include="FluentMigrator" Version="3.2.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="JetBrains.Annotations">
+      <HintPath>..\..\..\..\..\..\.nuget\jetbrains.annotations\2022.1.0\lib\netstandard2.0\JetBrains.Annotations.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
