@@ -44,6 +44,7 @@ import { IConfigurableFormComponent, IFormValidationErrors } from '../../interfa
 import { useConfigurableAction } from '../configurableActionsDispatcher';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { useGlobalState } from '../globalState';
+import { useDeepCompareEffect } from 'react-use';
 
 export interface IFormProviderProps {
   name: string;
@@ -83,6 +84,8 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   isActionsOwner,
 }) => {
   const toolboxComponents = useFormDesignerComponents();
+
+  const { globalState } = useGlobalState();
 
   const getToolboxComponent = (type: string) => toolboxComponents[type];
 
@@ -258,8 +261,6 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     dispatch(setVisibleComponentsAction(payload));
   };
 
-  const { globalState } = useGlobalState();
-
   const updateVisibleComponents = (formContext: IFormStateContext) => {
     const visibleComponents = getVisibleComponentIds(
       formContext.allComponents,
@@ -277,6 +278,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     // delay in ms
     200
   );
+
   //#endregion
 
   //#region Set enabled components
@@ -303,6 +305,12 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     200
   );
   //#endregion
+
+  // Also update visible and enabled components ids when the global state changes
+  useDeepCompareEffect(() => {
+    debouncedUpdateVisibleComponents(state);
+    debouncedUpdateEnabledComponents(state);
+  }, [globalState]);
 
   const setFormData = (payload: ISetFormDataPayload) => {
     dispatch((dispatchThunk, getState) => {

@@ -21,7 +21,7 @@ export const renderers: ITableCustomTypesRender[] = [
   {
     key: 'number',
     render: props => {
-      const { metadata } = useMetadata(false);
+      const metadata = useMetadata(false)?.metadata;
 
       const format = metadata?.properties?.find(({ path }) => toCamelCase(path) === props?.column?.id)?.dataFormat;
 
@@ -31,7 +31,7 @@ export const renderers: ITableCustomTypesRender[] = [
   {
     key: 'date',
     render: props => {
-      const { metadata } = useMetadata(false);
+      const metadata = useMetadata(false)?.metadata;
 
       const dataFormat = metadata?.properties?.find(({ path }) => toCamelCase(path) === props?.column?.id)?.dataFormat;
 
@@ -41,7 +41,7 @@ export const renderers: ITableCustomTypesRender[] = [
   {
     key: 'date-time',
     render: props => {
-      const { metadata } = useMetadata(false);
+      const metadata = useMetadata(false)?.metadata;
 
       const dataFormat = metadata?.properties?.find(({ path }) => toCamelCase(path) === props?.column?.id)?.dataFormat;
 
@@ -51,7 +51,7 @@ export const renderers: ITableCustomTypesRender[] = [
   {
     key: 'time',
     render: props => {
-      const { metadata } = useMetadata(false);
+      const metadata = useMetadata(false)?.metadata;
 
       const dataFormat = metadata?.properties?.find(({ path }) => toCamelCase(path) === props?.column?.id)?.dataFormat;
 
