@@ -34,5 +34,9 @@
         /// Set display name
         /// </summary>
         IUpdateSettingConfigurationSyntax SetDisplayName(string displayName);
+
+        void SetValue(string value);
+        void ResetValueToDefault();
+        void SetValueForApplication(string appKey, string value);
     }
 }

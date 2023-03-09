@@ -83,5 +83,19 @@ namespace Shesha.FluentMigrator
         }
 
         #endregion
+
+        #region Applications
+
+        /// <summary>
+        /// Get front-end application Id by appKey
+        /// </summary>
+        public Guid? GetFrontEndAppId(string appKey)
+        {
+            return ExecuteScalar<Guid?>(@"select Id from Frwk_FrontEndApps where AppKey = @appKey", command => {
+                command.AddParameter("@appKey", appKey);
+            });
+        }
+
+        #endregion
     }
 }

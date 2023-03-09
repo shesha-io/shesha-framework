@@ -56,5 +56,24 @@ namespace Shesha.FluentMigrator.Settings
             Expression.DisplayName.Set(displayName);
             return this;
         }
+
+        /// inheritedDoc
+        public void SetValue(string value)
+        {
+            Expression.Value.Set(value);
+        }
+
+        /// inheritedDoc
+        public void ResetValueToDefault()
+        {
+            Expression.Value.Set(null);
+        }
+
+        /// inheritedDoc
+        public void SetValueForApplication(string appKey, string value)
+        {
+            Expression.Value.Set(value);
+            Expression.ValueAppKey.Set(appKey);
+        }
     }
 }

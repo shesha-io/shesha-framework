@@ -32,6 +32,9 @@ namespace Shesha.FluentMigrator.Settings
         public PropertyUpdateDefinition<ConfigurationItemIdentifier> ReferenceList { get; set; } = new PropertyUpdateDefinition<ConfigurationItemIdentifier>();
         public PropertyUpdateDefinition<string> DisplayName { get; set; } = new PropertyUpdateDefinition<string>();
 
+        public PropertyUpdateDefinition<string?> Value { get; set; } = new PropertyUpdateDefinition<string?>();
+        public PropertyUpdateDefinition<string?> ValueAppKey { get; set; } = new PropertyUpdateDefinition<string?>();
+
         public override void ExecuteWith(IMigrationProcessor processor)
         {
             var exp = new PerformDBOperationExpression()
@@ -57,7 +60,21 @@ namespace Shesha.FluentMigrator.Settings
                     if (ReferenceList.IsSet)
                         helper.UpdateReferenceList(id.Value, ReferenceList.Value);
                     if (DisplayName.IsSet)
-                        helper.UpdateDisplayName(id.Value, DisplayName.Value);                    
+                        helper.UpdateDisplayName(id.Value, DisplayName.Value);
+
+                    // update value
+                    if (Value.IsSet)
+                    {
+                        if (ValueAppKey.IsSet && !string.IsNullOrEmpty(ValueAppKey.Value))
+                        {
+                            var appId = helper.GetFrontEndAppId(ValueAppKey.Value);
+                            if (appId == null)
+                                throw new SheshaMigrationException($"Front-end application with appKey = `{ValueAppKey.Value}` not found");
+
+                            helper.UpdateSettingValue(id.Value, appId, Value.Value);
+                        } else
+                            helper.UpdateSettingValue(id.Value, null, Value.Value);
+                    }
                 }
             };
             processor.Process(exp);

@@ -121,7 +121,7 @@ namespace Shesha.FluentMigrator
 
         #region Settings
 
-        public IAddSettingConfigurationSyntax SettingDefinitionCreate(string name, string displayName)
+        public IAddSettingConfigurationSyntax SettingCreate(string name, string displayName)
         {
             var moduleLocator = _context.ServiceProvider.GetService<IModuleLocator>();
             var moduleName = moduleLocator.GetModuleName(_migration.GetType());
@@ -133,7 +133,7 @@ namespace Shesha.FluentMigrator
             return new AddSettingConfigurationExpressionBuilder(expression, _context);
         }
 
-        public IUpdateSettingConfigurationSyntax SettingDefinitionUpdate(string name) 
+        public IUpdateSettingConfigurationSyntax SettingUpdate(string name) 
         {
             var moduleLocator = _context.ServiceProvider.GetService<IModuleLocator>();
             var moduleName = moduleLocator.GetModuleName(_migration.GetType());
@@ -145,7 +145,7 @@ namespace Shesha.FluentMigrator
             return new UpdateSettingConfigurationExpressionBuilder(expression, _context);
         }
 
-        public IDeleteSettingConfigurationSyntax SettingDefinitionDelete(string name)
+        public IDeleteSettingConfigurationSyntax SettingDelete(string name)
         {
             var moduleLocator = _context.ServiceProvider.GetService<IModuleLocator>();
             var moduleName = moduleLocator.GetModuleName(_migration.GetType());

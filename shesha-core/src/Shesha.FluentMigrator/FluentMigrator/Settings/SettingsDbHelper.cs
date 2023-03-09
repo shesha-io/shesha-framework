@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using Microsoft.Extensions.Primitives;
+using System.Data;
 
 namespace Shesha.FluentMigrator.Settings
 {
@@ -172,6 +173,72 @@ where
             });
             ExecuteNonQuery("delete from Frwk_ConfigurationItems where Id = @Id", command => {
                 command.AddParameter("@Id", id);
+            });
+        }
+
+        internal Guid? GetSettingValueId(Guid settingId) 
+        {
+            var sql = @"select Id from Frwk_SettingValues where SettingConfigurationId = @settingId and ApplicationId is null";
+            return ExecuteScalar<Guid?>(sql, command =>
+            {
+                command.AddParameter("@settingId", settingId);
+            });
+        }
+
+        internal Guid? GetSettingValueId(Guid settingId, Guid? appId)
+        {
+            var sql = @"select 
+	Id 
+from 
+	Frwk_SettingValues
+where 
+	SettingConfigurationId = @settingId
+	and ApplicationId = @appId";
+
+            return ExecuteScalar<Guid?>(sql, command =>
+            {
+                command.AddParameter("@settingId", settingId);
+                command.AddParameter("@appId", appId);
+            });
+        }
+
+        internal void UpdateSettingValue(Guid settingId, Guid? appId, string? value)
+        {
+            var valueId = GetSettingValueId(settingId, appId);
+            if (valueId != null)
+            {
+                UpdateSettingValueById(valueId.Value, value);
+            }
+            else
+            {
+                CreateSettingValue(settingId, appId, value);
+            }
+        }
+
+        internal void UpdateSettingValueById(Guid valueId, string? value) 
+        {
+            ExecuteNonQuery("update Frwk_SettingValues set Value = @value where Id = @valueId", command => {
+                command.AddParameter("@valueId", valueId);
+                command.AddParameter("@value", value);
+            });
+        }
+
+        private void CreateSettingValue(Guid settingId, Guid? appId, string? value) 
+        {
+            var id = Guid.NewGuid();
+
+            var sql = @"insert into 
+	Frwk_SettingValues
+	(Id, CreationTime, Value, SettingConfigurationId, ApplicationId)
+values
+	(@Id, @CreationTime, @Value, @SettingConfigurationId, @ApplicationId)";
+
+            ExecuteNonQuery(sql, command => {
+                command.AddParameter("@Id", id);
+                command.AddParameter("@CreationTime", DateTime.Now);
+                command.AddParameter("@Value", value);
+                command.AddParameter("@SettingConfigurationId", settingId);
+                command.AddParameter("@ApplicationId", appId);
             });
         }
     }
