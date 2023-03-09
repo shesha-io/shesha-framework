@@ -12,7 +12,8 @@ import { formatOptions } from './utils';
 interface IProps extends IChildEntitiesTagGroupProps {
   formMode?: FormMode;
   initialValues?: IChildEntitiesTagGroupSelectOptions;
-  labelKey: string;
+  labelExecutor: Function;
+  labelKeys: string[];
   open: boolean;
   onSetData: Function;
   onToggle: Function;
@@ -22,7 +23,8 @@ const ChildEntitiesTagGroupModal: FC<IProps> = ({
   formId: formIdentity,
   formMode,
   initialValues,
-  labelKey,
+  labelExecutor,
+  labelKeys,
   modalTitle: title,
   modalWidth: width = '60%',
   name,
@@ -50,7 +52,7 @@ const ChildEntitiesTagGroupModal: FC<IProps> = ({
   }, [open, initialValues?.metadata]);
 
   const onOk = () => {
-    onSetData(formatOptions(formData?.[mutatedName], labelKey, initialValues));
+    onSetData(formatOptions(formData?.[mutatedName], labelExecutor, labelKeys, initialValues));
     onCancel();
   };
 
