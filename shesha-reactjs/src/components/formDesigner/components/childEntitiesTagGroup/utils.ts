@@ -20,25 +20,49 @@ export const addChildEntitiesTagGroupOption = (
   return [...values, option];
 };
 
-export const formatOptions = (values: any, key: string, initialValue: IChildEntitiesTagGroupSelectOptions = null) => {
+export const formatOptions = (
+  values: any,
+  fn: Function,
+  keys: string[],
+  initialValue: IChildEntitiesTagGroupSelectOptions = null
+) => {
   const tempKey = getPropertyHolder(values);
 
   if (Array.isArray(values)) {
     const id = nanoid();
-    return { label: values?.[key || id], value: id, metadata: values.map(i => formatOptions(i, key, initialValue)) };
+    return {
+      label: fn(getExpressionLabel(values, keys)) ?? values?.[id],
+      value: id,
+      metadata: values.map(i => formatOptions(i, fn, keys, initialValue)),
+    };
   }
 
   delete values?.['_formFields'];
 
-  return { label: values?.[key || tempKey], value: initialValue?.value ?? nanoid(), metadata: values };
+  return {
+    label: fn(getExpressionLabel(values, keys)) ?? values?.[tempKey],
+    value: initialValue?.value ?? nanoid(),
+    metadata: values,
+  };
 };
+
+export const getExpressionLabel = (values: object, keys: string[]) =>
+  keys
+    .map(i => [i, values?.[i]])
+    .filter(([k, v]) => k && v)
+    .reduce((acc, [key, value]) => ({ ...acc, ...{ [key]: value } }), {});
 
 export const getInitChildEntitiesTagGroupOptions = (
   form: any[] | object | null,
-  label: string
+  fn: Function,
+  keys: string[]
 ): IChildEntitiesTagGroupSelectOptions[] => {
   if (Array.isArray(form))
-    return (form || []).map(i => ({ value: nanoid(), label: i?.[label || getPropertyHolder(form)], metadata: i }));
+    return (form || []).map(i => ({
+      value: nanoid(),
+      label: fn(getExpressionLabel(i, keys)) ?? i?.[getPropertyHolder(form)],
+      metadata: i,
+    }));
 
   return [];
 };
