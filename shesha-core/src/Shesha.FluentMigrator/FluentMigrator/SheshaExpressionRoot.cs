@@ -1,12 +1,9 @@
 ﻿using FluentMigrator;
 using FluentMigrator.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
 using Shesha.FluentMigrator.Notifications;
 using Shesha.FluentMigrator.ReferenceLists;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Shesha.FluentMigrator.Settings;
 
 namespace Shesha.FluentMigrator
 {
@@ -16,14 +13,16 @@ namespace Shesha.FluentMigrator
     public class SheshaExpressionRoot : IFluentSyntax
     {
         private readonly IMigrationContext _context;
+        private readonly MigrationBase _migration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SheshaExpressionRoot"/> class.
         /// </summary>
         /// <param name="context">The migration context</param>
-        public SheshaExpressionRoot(IMigrationContext context)
+        public SheshaExpressionRoot(IMigrationContext context, MigrationBase migration)
         {
             _context = context;
+            _migration = migration;
         }
 
         #region Reference Lists
@@ -116,6 +115,46 @@ namespace Shesha.FluentMigrator
             _context.Expressions.Add(expression);
 
             return new UpdateNotificationTemplateExpressionBuilder(expression, _context);
+        }
+
+        #endregion
+
+        #region Settings
+
+        public IAddSettingConfigurationSyntax SettingCreate(string name, string displayName)
+        {
+            var moduleLocator = _context.ServiceProvider.GetService<IModuleLocator>();
+            var moduleName = moduleLocator.GetModuleName(_migration.GetType());
+
+            var expression = new AddSettingConfigurationExpression(moduleName, name, displayName);
+
+            _context.Expressions.Add(expression);
+
+            return new AddSettingConfigurationExpressionBuilder(expression, _context);
+        }
+
+        public IUpdateSettingConfigurationSyntax SettingUpdate(string name) 
+        {
+            var moduleLocator = _context.ServiceProvider.GetService<IModuleLocator>();
+            var moduleName = moduleLocator.GetModuleName(_migration.GetType());
+
+            var expression = new UpdateSettingConfigurationExpression(moduleName, name);
+
+            _context.Expressions.Add(expression);
+
+            return new UpdateSettingConfigurationExpressionBuilder(expression, _context);
+        }
+
+        public IDeleteSettingConfigurationSyntax SettingDelete(string name)
+        {
+            var moduleLocator = _context.ServiceProvider.GetService<IModuleLocator>();
+            var moduleName = moduleLocator.GetModuleName(_migration.GetType());
+
+            var expression = new DeleteSettingConfigurationExpression(moduleName, name);
+
+            _context.Expressions.Add(expression);
+
+            return new DeleteSettingConfigurationExpressionBuilder(expression, _context);
         }
 
         #endregion
