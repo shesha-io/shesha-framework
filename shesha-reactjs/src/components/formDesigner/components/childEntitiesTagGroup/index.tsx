@@ -3,15 +3,15 @@ import React from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
 import { useForm } from '../../../../providers';
 import ConfigurableFormItem from '../formItem';
-import JsonEntityControl from './control';
-import { IJsonEntityProps } from './models';
-import { JsonEntitySettings } from './settings';
+import ChildEntitiesTagGroupControl from './control';
+import { IChildEntitiesTagGroupProps } from './models';
+import { ChildEntitiesTagGroupSettings } from './settings';
 
-const JsonEntity: IToolboxComponent<IJsonEntityProps> = {
-  type: 'jsonEntity',
-  name: 'JSON Entity',
+const ChildEntitiesTagGroup: IToolboxComponent<IChildEntitiesTagGroupProps> = {
+  type: 'childEntitiesTagGroup',
+  name: 'Child Entities Tag Group',
   icon: <UnorderedListOutlined />,
-  factory: (model: IJsonEntityProps) => {
+  factory: (model: IChildEntitiesTagGroupProps) => {
     const { isComponentHidden, formMode } = useForm();
 
     const isHidden = isComponentHidden(model);
@@ -20,13 +20,13 @@ const JsonEntity: IToolboxComponent<IJsonEntityProps> = {
 
     return (
       <ConfigurableFormItem model={model}>
-        <JsonEntityControl model={model} formMode={formMode} />
+        <ChildEntitiesTagGroupControl model={model} formMode={formMode} />
       </ConfigurableFormItem>
     );
   },
   settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
     return (
-      <JsonEntitySettings
+      <ChildEntitiesTagGroupSettings
         readOnly={readOnly}
         model={model}
         onSave={onSave as any}
@@ -37,4 +37,4 @@ const JsonEntity: IToolboxComponent<IJsonEntityProps> = {
   },
 };
 
-export default JsonEntity;
+export default ChildEntitiesTagGroup;

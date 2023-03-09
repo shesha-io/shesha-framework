@@ -4,23 +4,28 @@ import FormAutocomplete from '../../../formAutocomplete';
 import PropertyAutocomplete from '../../../propertyAutocomplete/propertyAutocomplete';
 import SectionSeparator from '../../../sectionSeparator';
 import CodeEditor from '../codeEditor/codeEditor';
-import { IJsonEntityProps } from './models';
+import { IChildEntitiesTagGroupProps } from './models';
 
 const FormItem = Form.Item;
 const { Option } = Select;
 
-export interface IJsonEntitySettingsProps {
+export interface IChildEntitiesTagGroupSettingsProps {
   readOnly: boolean;
-  model: IJsonEntityProps;
-  onSave: (model: IJsonEntityProps) => void;
+  model: IChildEntitiesTagGroupProps;
+  onSave: (model: IChildEntitiesTagGroupProps) => void;
   onCancel: () => void;
-  onValuesChange?: (changedValues: any, values: IJsonEntityProps) => void;
+  onValuesChange?: (changedValues: any, values: IChildEntitiesTagGroupProps) => void;
 }
 
-export const JsonEntitySettings: FC<IJsonEntitySettingsProps> = ({ readOnly, onSave, model, onValuesChange }) => {
+export const ChildEntitiesTagGroupSettings: FC<IChildEntitiesTagGroupSettingsProps> = ({
+  readOnly,
+  onSave,
+  model,
+  onValuesChange,
+}) => {
   const [form] = Form.useForm();
 
-  const handleValuesChange = (changedValues: IJsonEntityProps, values: IJsonEntityProps) => {
+  const handleValuesChange = (changedValues: IChildEntitiesTagGroupProps, values: IChildEntitiesTagGroupProps) => {
     if (readOnly) return;
 
     form?.setFieldsValue(changedValues);
@@ -46,6 +51,18 @@ export const JsonEntitySettings: FC<IJsonEntitySettingsProps> = ({ readOnly, onS
 
       <SectionSeparator title="Display" />
 
+      <FormItem name="deleteConfirmationTitle" label="Delete Confirmation Title">
+        <Input readOnly={readOnly} />
+      </FormItem>
+
+      <FormItem name="deleteConfirmationBody" label="Delete Confirmation Body">
+        <Input readOnly={readOnly} />
+      </FormItem>
+
+      <FormItem name="modalTitle" label="Modal Title">
+        <Input readOnly={readOnly} />
+      </FormItem>
+
       <FormItem name="modalWidth" label="Modal Width">
         <Select disabled={readOnly} defaultValue="60%">
           <Option value="100%">Full</Option>
@@ -56,6 +73,14 @@ export const JsonEntitySettings: FC<IJsonEntitySettingsProps> = ({ readOnly, onS
       </FormItem>
 
       <SectionSeparator title="Render" />
+
+      <FormItem name="capturedProperties" label="Captured Properties">
+        <Select mode="tags" />
+      </FormItem>
+
+      <FormItem name="formId" label="Form Path">
+        <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
+      </FormItem>
 
       <FormItem name="labelFormat" label="Label Format" required>
         <CodeEditor
@@ -82,10 +107,6 @@ export const JsonEntitySettings: FC<IJsonEntitySettingsProps> = ({ readOnly, onS
             },
           ]}
         />
-      </FormItem>
-
-      <FormItem name="formId" label="Form Path">
-        <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
       </FormItem>
 
       <SectionSeparator title="Visibility" />

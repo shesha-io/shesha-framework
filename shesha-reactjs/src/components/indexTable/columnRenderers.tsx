@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import moment from 'moment';
 import { ITableCustomTypesRender } from './interfaces';
 import { IConfigurableActionColumnsProps } from '../../providers/datatableColumnsConfigurator/models';
@@ -6,7 +6,7 @@ import ShaIcon, { IconType } from '../shaIcon';
 import { useDataTable, useForm, useGlobalState, useMetadata, useSheshaApplication } from '../../providers';
 import { message } from 'antd';
 import { axiosHttp } from '../../apis/axios';
-import { useReferenceListItem } from '../../providers/referenceListDispatcher';
+import { useReferenceList, useReferenceListItem } from '../../providers/referenceListDispatcher';
 import { useConfigurableActionDispatcher } from '../../providers/configurableActionsDispatcher';
 import { getNumberFormat, toCamelCase } from '../../utils/string';
 import { MODAL_DATA } from '../../constants';
@@ -21,7 +21,7 @@ export const renderers: ITableCustomTypesRender[] = [
   {
     key: 'number',
     render: props => {
-      const { metadata } = useMetadata(false);
+      const metadata = useMetadata(false)?.metadata;
 
       const format = metadata?.properties?.find(({ path }) => toCamelCase(path) === props?.column?.id)?.dataFormat;
 
@@ -31,7 +31,7 @@ export const renderers: ITableCustomTypesRender[] = [
   {
     key: 'date',
     render: props => {
-      const { metadata } = useMetadata(false);
+      const metadata = useMetadata(false)?.metadata;
 
       const dataFormat = metadata?.properties?.find(({ path }) => toCamelCase(path) === props?.column?.id)?.dataFormat;
 
@@ -41,7 +41,7 @@ export const renderers: ITableCustomTypesRender[] = [
   {
     key: 'date-time',
     render: props => {
-      const { metadata } = useMetadata(false);
+      const metadata = useMetadata(false)?.metadata;
 
       const dataFormat = metadata?.properties?.find(({ path }) => toCamelCase(path) === props?.column?.id)?.dataFormat;
 
@@ -51,7 +51,7 @@ export const renderers: ITableCustomTypesRender[] = [
   {
     key: 'time',
     render: props => {
-      const { metadata } = useMetadata(false);
+      const metadata = useMetadata(false)?.metadata;
 
       const dataFormat = metadata?.properties?.find(({ path }) => toCamelCase(path) === props?.column?.id)?.dataFormat;
 
@@ -78,9 +78,31 @@ export const renderers: ITableCustomTypesRender[] = [
         column: { referenceListName, referenceListModule },
         value: colValue,
       } = props;
-      //console.log('reference-list-item', referenceListModule, referenceListName);
       const item = useReferenceListItem(referenceListModule, referenceListName, colValue);
       return item?.data?.item;
+    },
+  },
+  {
+    key: 'array',
+    dataFormat: 'reference-list-item',
+    render: props => {
+      const {
+        column: { referenceListName, referenceListModule },
+        value: colValue,
+      } = props;
+      const list = useReferenceList({ module: referenceListModule, name: referenceListName });
+      const refListItems = list?.data?.items;
+
+      const mapped = useMemo(() => {
+        if (!refListItems || !Array.isArray(refListItems) ||
+            !colValue || !Array.isArray(colValue))
+          return null;
+
+        const mappedArray = colValue.map(item => refListItems.find(i => i.itemValue === item)?.item);
+        return mappedArray.join(", ");
+      }, [refListItems, colValue]);
+
+      return mapped;
     },
   },
   {
