@@ -6,6 +6,12 @@
     public interface IAddSettingConfigurationSyntax
     {
         /// <summary>
+        /// Skip creation of setting configuration when it already exist
+        /// </summary>
+        /// <returns></returns>
+        IAddSettingConfigurationSyntax IfNotExists();
+
+        /// <summary>
         /// Set module name. By default it's set to a module current migration belongs to
         /// </summary>
         IAddSettingConfigurationSyntax OnModule(string moduleName);

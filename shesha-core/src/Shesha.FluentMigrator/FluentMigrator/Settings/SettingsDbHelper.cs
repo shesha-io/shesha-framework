@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Primitives;
-using System.Data;
+﻿using System.Data;
 
 namespace Shesha.FluentMigrator.Settings
 {

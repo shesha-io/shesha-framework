@@ -75,5 +75,11 @@ namespace Shesha.FluentMigrator.Settings
             Expression.Value.Set(value);
             Expression.ValueAppKey.Set(appKey);
         }
+
+        public IUpdateSettingConfigurationSyntax OnModule(string moduleName)
+        {
+            Expression.Module.Set(moduleName);
+            return this;
+        }
     }
 }
