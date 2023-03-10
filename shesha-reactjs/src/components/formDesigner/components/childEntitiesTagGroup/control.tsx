@@ -1,7 +1,13 @@
 import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Input, Modal, Select, Tag } from 'antd';
 import React, { FC, useEffect, useState } from 'react';
-import { FormMode, useForm, useGlobalState } from '../../../..';
+import {
+  executeExpressionPayload as exe,
+  FormMode,
+  getStaticExecuteExpressionParams as exp,
+  useForm,
+  useGlobalState,
+} from '../../../..';
 import ChildEntitiesTagGroupModal from './modal';
 import { IChildEntitiesTagGroupProps, IChildEntitiesTagGroupSelectOptions } from './models';
 import './styles/index.less';
@@ -33,7 +39,14 @@ const CONFIRM_DELETE_TITLE = 'Are you sure you want to delete this item?';
 const ChildEntitiesTagGroupControl: FC<IProps> = ({ formMode: fMode, model, onChange, value }) => {
   const [state, setState] = useState<IState>(INIT_STATE);
   const { activeValue, open, options, origin } = state;
-  const { capturedProperties, deleteConfirmationBody, deleteConfirmationTitle, labelFormat, name } = model;
+  const {
+    capturedProperties,
+    deleteConfirmationBody,
+    deleteConfirmationTitle,
+    labelFormat,
+    labelProperties,
+    name,
+  } = model;
 
   const { globalState } = useGlobalState();
 
@@ -43,8 +56,8 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ formMode: fMode, model, onCh
     const data = form?.[name] || value;
 
     if (data) {
-      setState(s => ({ ...s, options: getTagOptions(data, labelFromatExecutor()), origin: data }));
-      onChange(morphTagGroup(getTagOptions(data, labelFromatExecutor()), data, capturedProperties));
+      setState(s => ({ ...s, options: getTagOptions(data, labelFromatExecutor, labelProperties), origin: data }));
+      onChange(morphTagGroup(getTagOptions(data, labelFromatExecutor, labelProperties), data, capturedProperties));
     }
   }, []);
 
@@ -82,12 +95,26 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ formMode: fMode, model, onCh
     );
   };
 
-  const labelFromatExecutor = () => {
-    if (!labelFormat) {
+  const labelFromatExecutor = (dynamicParam?: object) => {
+    try {
+      if (!labelFormat) {
+        return null;
+      }
+
+      if (dynamicParam) {
+        return exe(
+          new Function(exp('data, globalState, formMode', dynamicParam), labelFormat),
+          dynamicParam || {},
+          formData,
+          globalState,
+          formMode
+        );
+      }
+
+      return new Function('data, globalState', labelFormat)(formData, globalState);
+    } catch (_e) {
       return null;
     }
-
-    return new Function('data, globalState', labelFormat)(formData, globalState);
   };
 
   const tagRender = ({ label, value }) => (
@@ -109,8 +136,9 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ formMode: fMode, model, onCh
           open={open}
           onToggle={setOpen}
           onSetData={setOption}
+          labelKeys={labelProperties}
+          labelExecutor={labelFromatExecutor}
           initialValues={options?.find(({ value }) => value === activeValue)}
-          labelKey={labelFromatExecutor()}
         />
       )}
       <Input.Group {...inputGroupProps}>
