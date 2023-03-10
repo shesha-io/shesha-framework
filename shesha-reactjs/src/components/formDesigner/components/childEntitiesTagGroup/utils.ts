@@ -28,12 +28,12 @@ export const formatOptions = (
   keys: string[],
   initialValue: IChildEntitiesTagGroupSelectOptions = null
 ) => {
-  const tempKey = getPropertyHolder(values);
+  const label = getPropertyHolder(values);
 
   if (Array.isArray(values)) {
     const id = nanoid();
     return {
-      label: fn(getExpressionLabel(values, keys)) ?? values?.[id],
+      label: fn(getExpressionLabel(values, keys)) ?? label,
       value: id,
       metadata: values.map(i => formatOptions(i, fn, keys, initialValue)),
     };
@@ -42,7 +42,7 @@ export const formatOptions = (
   delete values?.['_formFields'];
 
   return {
-    label: fn(getExpressionLabel(values, keys)) ?? values?.[tempKey],
+    label: fn(getExpressionLabel(values, keys)) ?? label,
     value: initialValue?.value ?? nanoid(),
     metadata: values,
   };
@@ -67,17 +67,22 @@ export const getInitChildEntitiesTagGroupOptions = (
   if (Array.isArray(form))
     return (form || []).map(i => ({
       value: nanoid(),
-      label: fn(getExpressionLabel(i, keys)) ?? i?.[getPropertyHolder(form)],
+      label: fn(getExpressionLabel(i, keys)) ?? getPropertyHolder(form, i),
       metadata: i,
     }));
 
   return [];
 };
 
-export const getPropertyHolder = (values: object) =>
-  Object.getOwnPropertyNames(values || {})?.length
-    ? Object.getOwnPropertyNames(values).filter(i => !i.startsWith('_'))[0]
-    : 'name';
+export const getPropertyHolder = (values: object, item: object = values) => {
+  try {
+    const key = Object.getOwnPropertyNames(values || {}).filter(i => !i.startsWith('_'))[0];
+
+    return item?.[key] ?? nanoid();
+  } catch (_e) {
+    return nanoid();
+  }
+};
 
 export const morphChildEntitiesTagGroup = (
   values: IChildEntitiesTagGroupSelectOptions[],
