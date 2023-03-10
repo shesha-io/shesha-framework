@@ -1,4 +1,6 @@
 import { nanoid } from 'nanoid';
+import { IFormDto } from '../../../..';
+import { IPersistedFormProps } from '../../../../providers/formPersisterProvider/models';
 import { IChildEntitiesTagGroupSelectOptions } from './models';
 
 export const addChildEntitiesTagGroupOption = (
@@ -45,6 +47,11 @@ export const formatOptions = (
     metadata: values,
   };
 };
+
+export const getChildEntitiesFormInfo = (formInfo: IFormDto): IPersistedFormProps => ({
+  ...formInfo,
+  formSettings: formInfo?.settings,
+});
 
 export const getExpressionLabel = (values: object, keys: string[]) =>
   keys

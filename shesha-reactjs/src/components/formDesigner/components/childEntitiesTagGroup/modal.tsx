@@ -1,13 +1,16 @@
 import { Modal, Skeleton } from 'antd';
 import React, { FC, useEffect } from 'react';
 import { useDeepCompareEffect } from 'react-use';
-import { FormMode, SubFormProvider, useForm } from '../../../../providers';
+import { FormMode, SubFormProvider, useAppConfigurator, useForm } from '../../../../providers';
 import { useFormConfiguration } from '../../../../providers/form/api';
+import { ConfigurationItemVersionStatusMap } from '../../../../utils/configurationFramework/models';
 import { GHOST_PAYLOAD_KEY } from '../../../../utils/form';
+import FormInfo from '../../../configurableForm/formInfo';
+import Show from '../../../show';
 import ValidationErrors from '../../../validationErrors';
 import SubForm from '../subForm/subForm';
 import { IChildEntitiesTagGroupProps, IChildEntitiesTagGroupSelectOptions } from './models';
-import { formatOptions } from './utils';
+import { formatOptions, getChildEntitiesFormInfo } from './utils';
 
 interface IProps extends IChildEntitiesTagGroupProps {
   formMode?: FormMode;
@@ -39,6 +42,8 @@ const ChildEntitiesTagGroupModal: FC<IProps> = ({
     lazy: true,
   });
 
+  const { formInfoBlockVisible } = useAppConfigurator();
+
   useEffect(() => {
     if (formIdentity) {
       refetchFormConfig();
@@ -67,6 +72,11 @@ const ChildEntitiesTagGroupModal: FC<IProps> = ({
     formSettings: formConfiguration?.settings,
   };
 
+  const showFormInfo =
+    !!formConfiguration &&
+    formInfoBlockVisible &&
+    !!ConfigurationItemVersionStatusMap?.[formConfiguration?.versionStatus];
+
   return (
     <Modal
       open={open}
@@ -77,6 +87,10 @@ const ChildEntitiesTagGroupModal: FC<IProps> = ({
       okButtonProps={{ disabled: formMode === 'readonly' }}
     >
       <Skeleton loading={loading}>
+        <Show when={showFormInfo}>
+          <FormInfo {...getChildEntitiesFormInfo(formConfiguration)} />
+        </Show>
+
         <ValidationErrors error={error} />
 
         <SubFormProvider name={mutatedName} markup={markup} properties={[]} defaultValue={initialValues?.metadata}>
