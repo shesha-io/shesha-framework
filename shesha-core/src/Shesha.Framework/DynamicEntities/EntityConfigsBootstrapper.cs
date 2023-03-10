@@ -25,6 +25,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.DynamicEntities
 {
+    [DependsOnBootstrapper(typeof(ConfigurableModuleBootstrapper))]
     public class EntityConfigsBootstrapper : IBootstrapper, ITransientDependency
     {
         private readonly IUnitOfWorkManager _unitOfWorkManager;
@@ -57,7 +58,7 @@ namespace Shesha.DynamicEntities
             _unitOfWorkManager = unitOfWorkManager;
         }
 
-        public async Task Process()
+        public async Task ProcessAsync()
         {
             var assemblies = _assembleFinder.GetAllAssemblies()
                 .Distinct(new AssemblyFullNameComparer())

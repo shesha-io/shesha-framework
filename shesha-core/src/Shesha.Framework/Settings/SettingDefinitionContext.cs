@@ -10,19 +10,19 @@ namespace Shesha.Settings
     /// </summary>
     public class SettingDefinitionContext : ISettingDefinitionContext
     {
-        protected Dictionary<string, SettingDefinition> Settings { get; }
+        protected Dictionary<SettingIdentifier, SettingDefinition> Settings { get; }
 
         public string ModuleName { get; private set; }
 
-        public SettingDefinitionContext(Dictionary<string, SettingDefinition> settings, ISettingDefinitionProvider provider)
+        public SettingDefinitionContext(Dictionary<SettingIdentifier, SettingDefinition> settings, ISettingDefinitionProvider provider)
         {
             Settings = settings;
             ModuleName = provider?.GetType().GetConfigurableModuleName();
         }
 
-        public virtual SettingDefinition GetOrNull(string name)
+        public virtual SettingDefinition GetOrNull(string module, string name)
         {
-            return Settings.GetOrDefault(name);
+            return Settings.GetOrDefault(new SettingIdentifier(module, name));
         }
 
         public virtual IReadOnlyList<SettingDefinition> GetAll()
@@ -39,8 +39,8 @@ namespace Shesha.Settings
 
             foreach (var definition in definitions)
             {
-                definition.ModuleName = ModuleName;
-                Settings[definition.Name] = definition;
+                var id = new SettingIdentifier(definition.ModuleName, definition.Name);
+                Settings[id] = definition;
             }
         }
     }

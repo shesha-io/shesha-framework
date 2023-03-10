@@ -9,10 +9,10 @@ namespace Shesha.Settings
     public interface ISettingDefinitionManager
     {
         [NotNull]
-        SettingDefinition Get([NotNull] string name);
+        SettingDefinition Get([NotNull] string moduleName, [NotNull] string name);
 
         IReadOnlyList<SettingDefinition> GetAll();
 
-        SettingDefinition GetOrNull(string name);
+        SettingDefinition GetOrNull([NotNull] string moduleName, string name);
     }
 }

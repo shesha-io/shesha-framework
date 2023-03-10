@@ -1,6 +1,7 @@
 ﻿using Abp.Modules;
 using Abp.Zero;
 using Shesha.AzureAD.Configuration;
+using Shesha.Modules;
 using Shesha.Settings.Ioc;
 using System.Reflection;
 
@@ -10,8 +11,15 @@ namespace Shesha.AzureAD
     /// This module extends module zero to add AzureAD authentication.
     /// </summary>
     [DependsOn(typeof(AbpZeroCommonModule))]
-    public class SheshaAzureADModule : AbpModule
+    public class SheshaAzureADModule : SheshaModule
     {
+        public const string ModuleName = "Shesha.AzureAD";
+        public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo(ModuleName)
+        {
+            FriendlyName = "Shesha Azure AD",
+            Publisher = "Boxfusion"
+        };
+
         public override void PreInitialize()
         {
             IocManager.Register<ISheshaAzureADModuleConfig, SheshaAzureADModuleConfig>();
