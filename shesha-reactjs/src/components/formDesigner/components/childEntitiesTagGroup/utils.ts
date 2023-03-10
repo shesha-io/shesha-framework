@@ -74,9 +74,10 @@ export const getInitChildEntitiesTagGroupOptions = (
   return [];
 };
 
-export const getPropertyHolder = (values: object, item: object = values) => {
+export const getPropertyHolder = (values: object[] | object, item: object = values) => {
   try {
-    const key = Object.getOwnPropertyNames(values || {}).filter(i => !i.startsWith('_'))[0];
+    const list = Array.isArray(values) ? values[0] : values;
+    const key = Object.getOwnPropertyNames(list || {}).filter(i => !i.startsWith('_'))[0];
 
     return item?.[key] ?? nanoid();
   } catch (_e) {
