@@ -257,3 +257,11 @@ export const ObservationCaptureForm = addStory(DesignerTemplate, {
     version: 1
   },
 });
+
+export const HisAccountDetails = addStory(DesignerTemplate, {
+  formId: {
+    module: 'Boxfusion.His.Clients.Houghton',
+    name: 'account-details',
+    version: 11,
+  },
+});

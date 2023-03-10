@@ -274,6 +274,16 @@ export const PayerEdit = addStory(Template, {
   //id: 'aecdd722-948a-456a-98b1-5968ea58f630',
 });
 
+export const HisAccountDetails = addStory(Template, {
+  formId: {
+    module: 'Boxfusion.His.Clients.Houghton',
+    name: 'account-details',
+    version: 11,
+  },
+  id: '6EF9A91C-62ED-46F0-86EE-0352989BF0F2',
+  mode: 'edit'
+});
+
 Basic.args = DEFAULT_ARGS;
 
 const Template2: Story<{}> = () => {
