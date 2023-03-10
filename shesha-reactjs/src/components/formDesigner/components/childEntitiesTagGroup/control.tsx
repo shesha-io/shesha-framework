@@ -111,7 +111,7 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ formMode: fMode, model, onCh
         );
       }
 
-      return new Function('data, globalState', labelFormat)(formData, globalState);
+      return new Function('data, globalState, formMode', labelFormat)(formData, globalState);
     } catch (_e) {
       return null;
     }
