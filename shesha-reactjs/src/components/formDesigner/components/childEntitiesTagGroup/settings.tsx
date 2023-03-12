@@ -1,6 +1,5 @@
 import { Checkbox, Form, Input, Select } from 'antd';
-import { nanoid } from 'nanoid';
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import FormAutocomplete from '../../../formAutocomplete';
 import PropertyAutocomplete from '../../../propertyAutocomplete/propertyAutocomplete';
 import SectionSeparator from '../../../sectionSeparator';
@@ -18,10 +17,6 @@ export interface IChildEntitiesTagGroupSettingsProps {
   onValuesChange?: (changedValues: any, values: IChildEntitiesTagGroupProps) => void;
 }
 
-type StateType = Omit<IChildEntitiesTagGroupProps, 'name' | 'type' | 'id'>;
-
-const DEFAULT_STATE: StateType = { capturedProperties: [], labelProperties: [] };
-
 export const ChildEntitiesTagGroupSettings: FC<IChildEntitiesTagGroupSettingsProps> = ({
   readOnly,
   onSave,
@@ -30,13 +25,10 @@ export const ChildEntitiesTagGroupSettings: FC<IChildEntitiesTagGroupSettingsPro
 }) => {
   const [form] = Form.useForm();
 
-  const [{ labelProperties }, setState] = useState<StateType>({ ...DEFAULT_STATE, ...model });
-
   const handleValuesChange = (changedValues: IChildEntitiesTagGroupProps, values: IChildEntitiesTagGroupProps) => {
     if (readOnly) return;
 
     form?.setFieldsValue(changedValues);
-    setState(s => ({ ...s, ...changedValues }));
 
     onValuesChange(changedValues, values);
   };
@@ -90,10 +82,6 @@ export const ChildEntitiesTagGroupSettings: FC<IChildEntitiesTagGroupSettingsPro
         <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
       </FormItem>
 
-      <FormItem name="labelProperties" label="Label Properties">
-        <Select mode="tags" />
-      </FormItem>
-
       <FormItem name="labelFormat" label="Label Format" required>
         <CodeEditor
           readOnly={readOnly}
@@ -123,12 +111,6 @@ export const ChildEntitiesTagGroupSettings: FC<IChildEntitiesTagGroupSettingsPro
               description: 'Editable state of form',
               type: "'designer' | 'edit' | 'readonly'",
             },
-            ...labelProperties.map(name => ({
-              id: nanoid(),
-              name,
-              description: 'The property fieled state',
-              type: 'any',
-            })),
           ]}
         />
       </FormItem>
