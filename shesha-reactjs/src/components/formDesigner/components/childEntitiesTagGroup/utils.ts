@@ -1,6 +1,8 @@
 import { nanoid } from 'nanoid';
 import { IFormDto } from '../../../..';
+import { MetadataDtoAjaxResponse } from '../../../../apis/metadata';
 import { IPersistedFormProps } from '../../../../providers/formPersisterProvider/models';
+import { toCamelCase } from '../../../../utils/string';
 import { IChildEntitiesTagGroupSelectOptions } from './models';
 
 export const addChildEntitiesTagGroupOption = (
@@ -72,6 +74,14 @@ export const getInitChildEntitiesTagGroupOptions = (
     }));
 
   return [];
+};
+
+export const getLabelKeys = (metadata: MetadataDtoAjaxResponse) => {
+  if (!metadata) {
+    return [];
+  }
+
+  return (metadata?.result?.properties || []).map(({ path }) => toCamelCase(path));
 };
 
 export const getPropertyHolder = (values: object[] | object, item: object = values) => {
