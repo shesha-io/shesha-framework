@@ -62,7 +62,7 @@ export const dialogArgumentsForm = new DesignerToolbarSettings()
     ],
     dataSourceType: 'values',
     customVisibility: 'return data.showModalFooter === true',
-    defaultValue: ['POST'],
+    defaultValue: 'POST',
     useRawValues: true,
   })
   .addLabelValueEditor({
