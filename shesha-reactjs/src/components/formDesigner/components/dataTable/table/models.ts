@@ -1,5 +1,6 @@
 import { IConfigurableFormComponent } from '../../../../../providers/form/models';
 import { IConfigurableColumnsBase } from '../../../../../providers/datatableColumnsConfigurator/models';
+import { IConfigurableActionConfiguration } from '../../../../../interfaces/configurableAction';
 
 export type RowDroppedMode = 'executeScript' | 'showDialog';
 
@@ -9,6 +10,7 @@ export interface ITableComponentBaseProps {
   allowRowDragAndDrop?: boolean;
   onRowDropped?: string;
   rowDroppedMode?: RowDroppedMode;
+  rowDroppedActionConfiguration?: IConfigurableActionConfiguration;
 
   //#region Dialog recheck!
   dialogTitle?: string;

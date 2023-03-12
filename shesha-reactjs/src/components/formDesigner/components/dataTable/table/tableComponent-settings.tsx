@@ -7,6 +7,8 @@ import SectionSeparator from '../../../../sectionSeparator';
 import Show from '../../../../show';
 import CodeEditor from '../../codeEditor/codeEditor';
 import Autocomplete from '../../../../autocomplete';
+import PropertyAutocomplete from '../../../../propertyAutocomplete/propertyAutocomplete';
+import { ConfigurableActionConfigurator } from '../../configurableActionsConfigurator';
 
 export interface IProps {
   readOnly: boolean;
@@ -55,6 +57,10 @@ function TableSettings(props: IProps) {
       wrapperCol={{ span: 24 }}
       labelCol={{ span: 24 }}
     >
+      <Form.Item name="name" label="Name">
+        <PropertyAutocomplete readOnly={props.readOnly} showFillPropsButton={false} />
+      </Form.Item>
+
       <Button onClick={toggleColumnsModal}>{props.readOnly ? 'View Columns' : 'Customize Columns'}</Button>
 
       <Form.Item name="items">
@@ -78,6 +84,10 @@ function TableSettings(props: IProps) {
         tooltip="Whether rows should be dragged and dropped to rearrange them"
       >
         <Checkbox disabled={props.readOnly} />
+      </Form.Item>
+
+      <Form.Item name="rowDroppedActionConfiguration" label="On Row Dropped Action">
+        <ConfigurableActionConfigurator editorConfig={null} level={0} />
       </Form.Item>
 
       <Show when={state?.allowRowDragAndDrop}>

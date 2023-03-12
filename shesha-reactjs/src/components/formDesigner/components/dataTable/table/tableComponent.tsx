@@ -1,4 +1,4 @@
-import React, { FC, Fragment, useEffect, useState } from 'react';
+import React, { FC, Fragment, useEffect, useRef, useState } from 'react';
 import { IToolboxComponent } from '../../../../../interfaces';
 import { TableOutlined } from '@ant-design/icons';
 import { Alert, message } from 'antd';
@@ -11,6 +11,9 @@ import {
   axiosHttp,
   useSheshaApplication,
   useModal,
+  useFormData,
+  useConfigurableActionDispatcher,
+  useDataTable,
 } from '../../../../../';
 import { useDataTableSelection } from '../../../../../providers/dataTableSelection';
 import { useDataTableStore, useGlobalState } from '../../../../../providers';
@@ -20,6 +23,8 @@ import { IModalProps } from '../../../../../providers/dynamicModal/models';
 import { getStyle } from '../../../../../providers/form/utils';
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
+import moment from 'moment';
+import { useDeepCompareEffect } from 'react-use';
 
 const TableComponent: IToolboxComponent<ITableComponentProps> = {
   type: 'datatable',
@@ -86,11 +91,14 @@ export const TableWrapper: FC<ITableComponentProps> = ({
   dialogTitle,
   tableStyle,
   containerStyle,
+  rowDroppedActionConfiguration,
 }) => {
-  const { formMode, formData } = useForm();
-  const { globalState } = useGlobalState();
+  const { formMode, form, setFormDataAndInstance } = useForm();
+  const { data: formData } = useFormData();
+  const { globalState, setState: setGlobalState } = useGlobalState();
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const { backendUrl } = useSheshaApplication();
+  const { executeAction } = useConfigurableActionDispatcher();
   const [state, setState] = useState<ITableWrapperState>({
     modalProps: null,
   });
@@ -165,49 +173,84 @@ export const TableWrapper: FC<ITableComponentProps> = ({
     );
   };
 
+  const tableDataItems = useRef(tableData);
+
+  useDeepCompareEffect(() => {
+    tableDataItems.current = tableData;
+  }, [tableData]);
+
+
+  // TODO: Refactor this code to use configurableActions.
   const handleOnRowDropped = (row: any, oldIndex: number, newIndex: number) => {
     changeActionedRow(row);
-    if (rowDroppedMode === 'executeScript') {
-      getExpressionExecutor(onRowDropped, row, oldIndex, newIndex);
-    } else {
-      const dialogExpressionExecutor = (expression: string, result?: any) => {
-        if (!expression) {
-          return null;
-        }
 
-        // tslint:disable-next-line:function-constructor
-        return new Function('data, result, globalState, http, message, refreshTable', expression)(
-          formData,
-          result,
-          globalState,
-          axiosHttp(backendUrl),
-          message,
-          refreshTable
-        );
+    if (rowDroppedActionConfiguration) {
+      const evaluationContext = {
+        items: tableDataItems?.current,
+        selectedRow: row,
+        newIndex,
+        oldIndex,
+        data: formData,
+        moment: moment,
+        form,
+        formMode,
+        http: axiosHttp(backendUrl),
+        message,
+        globalState,
+        setFormData: setFormDataAndInstance,
+        setGlobalState,
       };
-      setState(prev => ({
-        ...prev,
-        modalProps: {
-          id: dialogForm,
-          isVisible: false,
-          formId: dialogForm,
-          skipFetchData: dialogFormSkipFetchData,
-          title: dialogTitle,
-          showModalFooter: dialogShowModalButtons,
-          submitHttpVerb: dialogSubmitHttpVerb,
-          parentFormValues: row,
-          onSubmitted: (submittedValue: any) => {
-            if (dialogOnSuccessScript) {
-              dialogExpressionExecutor(dialogOnSuccessScript, submittedValue);
-            }
+      executeAction({
+        actionConfiguration: rowDroppedActionConfiguration,
+        argumentsEvaluationContext: evaluationContext,
+      });
+    }
+    //  else console.error('Action is not configured'); // TODO:: Reinstate this code after refactoring
+    else {
+      // TODO: Remove the code below after writing migrations
+      if (rowDroppedMode === 'executeScript') {
+        getExpressionExecutor(onRowDropped, row, oldIndex, newIndex);
+      } else {
+        const dialogExpressionExecutor = (expression: string, result?: any) => {
+          if (!expression) {
+            return null;
+          }
+
+          // tslint:disable-next-line:function-constructor
+          return new Function('data, result, globalState, http, message, refreshTable', expression)(
+            formData,
+            result,
+            globalState,
+            axiosHttp(backendUrl),
+            message,
+            refreshTable
+          );
+        };
+
+        setState(prev => ({
+          ...prev,
+          modalProps: {
+            id: dialogForm,
+            isVisible: false,
+            formId: dialogForm,
+            skipFetchData: dialogFormSkipFetchData,
+            title: dialogTitle,
+            showModalFooter: dialogShowModalButtons,
+            submitHttpVerb: dialogSubmitHttpVerb,
+            parentFormValues: row,
+            onSubmitted: (submittedValue: any) => {
+              if (dialogOnSuccessScript) {
+                dialogExpressionExecutor(dialogOnSuccessScript, submittedValue);
+              }
+            },
+            onFailed: () => {
+              if (dialogOnErrorScript) {
+                dialogExpressionExecutor(dialogOnErrorScript);
+              }
+            },
           },
-          onFailed: () => {
-            if (dialogOnErrorScript) {
-              dialogExpressionExecutor(dialogOnErrorScript);
-            }
-          },
-        },
-      }));
+        }));
+      }
     }
   };
 

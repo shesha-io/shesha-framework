@@ -289,7 +289,7 @@ export const entityPickerSettings = new DesignerToolbarSettings()
         ],
         dataSourceType: 'values',
         customVisibility: 'return data.showModalFooter === true',
-        defaultValue: ['POST'],
+        defaultValue: 'POST',
       })
       .addTextField({
         id: 'e669632e-55e0-46f4-9585-9e81ef0ae174',
