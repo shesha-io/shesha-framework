@@ -141,6 +141,7 @@ namespace Shesha.DynamicEntities.Binder
                     var childFormFields = formFieldsInternal
                         .Where(x => x.Equals(jName) || x.StartsWith(jName + "."))
                         .Select(x => x.RemovePrefix(jName).RemovePrefix("."))
+                        .Where(x => !x.IsNullOrWhiteSpace())
                         .ToList();
                     childFormFields = childFormFields.Any() ? childFormFields : null;
 
