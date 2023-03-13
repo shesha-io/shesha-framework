@@ -124,6 +124,12 @@ namespace Shesha.FluentMigrator.Settings
 
             return this;
         }
+
+        public IAddSettingConfigurationSyntax IfNotExists()
+        {
+            Expression.ApplyWhenMissing = true;
+            return this;
+        }
         #endregion
     }
 }

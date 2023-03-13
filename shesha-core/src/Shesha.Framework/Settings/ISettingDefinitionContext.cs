@@ -4,7 +4,7 @@ namespace Shesha.Settings
 {
     public interface ISettingDefinitionContext
     {
-        SettingDefinition GetOrNull(string name);
+        SettingDefinition GetOrNull(string module, string name);
 
         IReadOnlyList<SettingDefinition> GetAll();
 

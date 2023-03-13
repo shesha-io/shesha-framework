@@ -1,30 +1,38 @@
 import { Modal, Skeleton } from 'antd';
-import React, { FC, useEffect } from 'react';
+import React, { FC } from 'react';
 import { useDeepCompareEffect } from 'react-use';
-import { FormMode, SubFormProvider, useForm } from '../../../../providers';
-import { useFormConfiguration } from '../../../../providers/form/api';
+import { FormMode, SubFormProvider, useAppConfigurator, useForm } from '../../../../providers';
+import { IFormMarkupResponse } from '../../../../providers/form/api';
+import { ConfigurationItemVersionStatusMap } from '../../../../utils/configurationFramework/models';
 import { GHOST_PAYLOAD_KEY } from '../../../../utils/form';
+import FormInfo from '../../../configurableForm/formInfo';
+import Show from '../../../show';
 import ValidationErrors from '../../../validationErrors';
 import SubForm from '../subForm/subForm';
 import { IChildEntitiesTagGroupProps, IChildEntitiesTagGroupSelectOptions } from './models';
-import { formatOptions } from './utils';
+import { formatOptions, getChildEntitiesFormInfo } from './utils';
 
 interface IProps extends IChildEntitiesTagGroupProps {
+  data?: IFormMarkupResponse['formConfiguration'];
+  error: IFormMarkupResponse['error'] | any;
   formMode?: FormMode;
   initialValues?: IChildEntitiesTagGroupSelectOptions;
   labelExecutor: Function;
   labelKeys: string[];
+  loading: boolean;
   open: boolean;
   onSetData: Function;
   onToggle: Function;
 }
 
 const ChildEntitiesTagGroupModal: FC<IProps> = ({
-  formId: formIdentity,
+  data,
+  error,
   formMode,
   initialValues,
   labelExecutor,
   labelKeys,
+  loading,
   modalTitle: title,
   modalWidth: width = '60%',
   name,
@@ -34,16 +42,7 @@ const ChildEntitiesTagGroupModal: FC<IProps> = ({
 }) => {
   const { formData, form } = useForm();
 
-  const { formConfiguration, refetch: refetchFormConfig, error, loading } = useFormConfiguration({
-    formId: formIdentity,
-    lazy: true,
-  });
-
-  useEffect(() => {
-    if (formIdentity) {
-      refetchFormConfig();
-    }
-  }, [formIdentity]);
+  const { formInfoBlockVisible } = useAppConfigurator();
 
   useDeepCompareEffect(() => {
     if (open && initialValues?.metadata) {
@@ -63,9 +62,11 @@ const ChildEntitiesTagGroupModal: FC<IProps> = ({
 
   const mutatedName = `${GHOST_PAYLOAD_KEY}_${name}`;
   const markup = {
-    components: formConfiguration?.markup,
-    formSettings: formConfiguration?.settings,
+    components: data?.markup,
+    formSettings: data?.settings,
   };
+
+  const showFormInfo = !!data && formInfoBlockVisible && !!ConfigurationItemVersionStatusMap?.[data?.versionStatus];
 
   return (
     <Modal
@@ -77,6 +78,10 @@ const ChildEntitiesTagGroupModal: FC<IProps> = ({
       okButtonProps={{ disabled: formMode === 'readonly' }}
     >
       <Skeleton loading={loading}>
+        <Show when={showFormInfo}>
+          <FormInfo {...getChildEntitiesFormInfo(data)} />
+        </Show>
+
         <ValidationErrors error={error} />
 
         <SubFormProvider name={mutatedName} markup={markup} properties={[]} defaultValue={initialValues?.metadata}>

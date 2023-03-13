@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Reflection;
@@ -17,9 +10,16 @@ using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Utilities;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Shesha.Bootstrappers
 {
+    [DependsOnBootstrapper(typeof(ConfigurableModuleBootstrapper))]
     public class ReferenceListBootstrapper : IBootstrapper, ITransientDependency
     {
         private readonly ITypeFinder _typeFinder;
@@ -46,7 +46,7 @@ namespace Shesha.Bootstrappers
             _moduleManager = moduleManager;
         }
 
-        public async Task Process()
+        public async Task ProcessAsync()
         {
             using (var unitOfWork = _unitOfWorkManager.Begin())
             {

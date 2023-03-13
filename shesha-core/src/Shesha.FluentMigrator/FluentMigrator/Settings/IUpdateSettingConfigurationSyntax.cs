@@ -35,6 +35,11 @@
         /// </summary>
         IUpdateSettingConfigurationSyntax SetDisplayName(string displayName);
 
+        /// <summary>
+        /// Set module name. By default it's set to a module current migration belongs to
+        /// </summary>
+        IUpdateSettingConfigurationSyntax OnModule(string moduleName);
+
         void SetValue(string value);
         void ResetValueToDefault();
         void SetValueForApplication(string appKey, string value);

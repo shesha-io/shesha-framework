@@ -5,6 +5,7 @@ using Abp.Modules;
 using Abp.Zero;
 using Shesha.Firebase;
 using Shesha.Firebase.Configuration;
+using Shesha.Modules;
 using Shesha.Settings.Ioc;
 using System.Reflection;
 
@@ -14,8 +15,15 @@ namespace Shesha
     /// This module extends module zero to add Firebase notifications.
     /// </summary>
     [DependsOn(typeof(AbpZeroCommonModule), typeof(AbpAspNetCoreModule))]
-    public class SheshaFirebaseModule : AbpModule
+    public class SheshaFirebaseModule : SheshaModule
     {
+        public const string ModuleName = "Shesha.Firebase";
+        public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo(ModuleName)
+        {
+            FriendlyName = "Shesha Firebase",
+            Publisher = "Boxfusion"
+        };
+
         public override void PreInitialize()
         {
             Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(

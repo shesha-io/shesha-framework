@@ -306,10 +306,14 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   );
   //#endregion
 
-  // Also update visible and enabled components ids when the global state changes
   useDeepCompareEffect(() => {
-    debouncedUpdateVisibleComponents(state);
-    debouncedUpdateEnabledComponents(state);
+    dispatch((_, getState) => {
+      const newState = getState();
+
+      // Here there's always visibleComponentIds and enabledComponentIds
+      debouncedUpdateVisibleComponents(newState);
+      debouncedUpdateEnabledComponents(newState);
+    });
   }, [globalState]);
 
   const setFormData = (payload: ISetFormDataPayload) => {

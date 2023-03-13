@@ -27,6 +27,11 @@ namespace Shesha.FluentMigrator.Settings
         /// </summary>
         public string DisplayName { get; set; }
 
+        /// <summary>
+        /// If true, indicates that expression should be applied only when setting is missing in the DB
+        /// </summary>
+        public bool ApplyWhenMissing { get; set; }
+        
         public PropertyUpdateDefinition<string> Module { get; set; } = new PropertyUpdateDefinition<string>();
         public PropertyUpdateDefinition<string> Description { get; set; } = new PropertyUpdateDefinition<string>();
         public PropertyUpdateDefinition<string> Category { get; set; } = new PropertyUpdateDefinition<string>();
@@ -55,8 +60,13 @@ namespace Shesha.FluentMigrator.Settings
                     var module = Module.IsSet ? Module.Value : _migrationModule;
 
                     var existingId = helper.GetSettingId(module, Name);
-                    if (existingId != null)
-                        throw new SheshaMigrationException($"Setting `{Name}` already exists in module `{module}`");
+                    if (existingId != null) 
+                    {
+                        if (ApplyWhenMissing)
+                            return;
+                        else
+                            throw new SheshaMigrationException($"Setting `{Name}` already exists in module `{module}`");
+                    }
 
                     var id = helper.InsertSettingConfiguration(module, Name, DisplayName, dataType, dataFormat);
 
