@@ -71,6 +71,7 @@ export const ShaTimeline: FC<ITimelineComponentProps> = ({
             return <Timeline.Item>{item?.content}</Timeline.Item>;
           })}
         {dataSource === 'api' &&
+          !!customApiUrl &&
           data?.result?.map(({ title, body, user, createdTime }) => {
             return <TimelineItem title={title} user={user} creationTime={createdTime} body={body} />;
           })}
@@ -88,7 +89,13 @@ export interface ITimelineItemProps {
   type?: string;
 }
 
-const TimelineItem: FC<ITimelineItemProps> = ({ title, type, user, body, creationTime }) => {
+const TimelineItem: FC<ITimelineItemProps> = ({
+  title,
+  type,
+  user = 'pholosho',
+  body,
+  creationTime = '20/03/2023',
+}) => {
   return (
     <Timeline.Item dot={<TimelineIcon type={type} />}>
       <Card
