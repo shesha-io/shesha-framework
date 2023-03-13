@@ -48,7 +48,7 @@
 		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.2" />
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\..\src\Module\Boxfusion.SheshaFunctionalTests.Common.Application\Boxfusion.SheshaFunctionalTests.Common.Application.csproj" />
+	  <ProjectReference Include="..\..\src\Module\Boxfusion.SheshaFunctionalTests.Common.Domain\Boxfusion.SheshaFunctionalTests.Common.Domain.csproj" />
 	</ItemGroup>
 
   <ItemGroup>
