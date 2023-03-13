@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC } from 'react';
 import { Modal, Form } from 'antd';
 import { useDynamicModals } from '../../providers';
 import { ConfigurableForm, IConfigurableFormProps } from '../';
@@ -97,20 +97,10 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = props => {
     }
   };
 
-  // Some Dropdown components that set the `submitHttpVerb` sets it as follows
-  // defaultValue: ['POST']
-  // the value would change from array to string as you change it on the dropdown. Which means you can end up with ['POST'], 'POST' or 'PUT'
-  // That has been updated in this commit such that you no longer receive an array
-  const submitAction = useMemo(() => {
-    const submitVerb =
-      Array.isArray(submitHttpVerb) && submitHttpVerb?.length ? (submitHttpVerb[0] as string) : submitHttpVerb;
-
-    return submitVerb === 'POST' || !submitVerb ? StandardEntityActions.create : StandardEntityActions.update;
-  }, [submitHttpVerb]);
-
   const formProps: IConfigurableFormProps = {
     formId: formId,
-    submitAction,
+    submitAction:
+      submitHttpVerb === 'POST' || !submitHttpVerb ? StandardEntityActions.create : StandardEntityActions.update,
     form: form,
     mode: mode,
     actions: {
