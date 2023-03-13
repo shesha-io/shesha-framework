@@ -57,7 +57,7 @@ export const getOnRowDraggedDialogAction = (
             actionOwner: 'Common',
             actionName: 'Execute Script',
             actionArguments: {
-              expression: dialogOnSuccessScript,
+              expression: dialogOnErrorScript,
             },
             handleFail: false,
             handleSuccess: false,
@@ -68,7 +68,7 @@ export const getOnRowDraggedDialogAction = (
             actionOwner: 'Common',
             actionName: 'Execute Script',
             actionArguments: {
-              expression: dialogOnErrorScript,
+              expression: dialogOnSuccessScript,
             },
             handleFail: false,
             handleSuccess: false,
