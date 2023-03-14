@@ -111,7 +111,6 @@ const TimelineComponent: IToolboxComponent<ITimelineProps> = {
       };
     });
 
-    console.log('LOG:::evaluated', evaluateValue(model.id, { data: formData }));
     const ownerId = evaluateValue(model.ownerId, { data: formData });
 
     return (

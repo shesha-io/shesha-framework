@@ -53,16 +53,12 @@ export const ShaTimeline: FC<ITimelineComponentProps> = ({
     return _queryParams;
   }, [properties, globalState]);
 
-  const debouncedRefresh = useDebouncedCallback(
-    () => {
-      fetchEntities({ queryParams });
-    },
-    // delay in ms
-    300
-  );
+  const debouncedRefresh = useDebouncedCallback(() => {
+    fetchEntities({ queryParams });
+  }, 300);
 
   const timelineData = apiSource === 'custom' ? data?.result : data?.result?.items;
-  console.log('LOG:::data', data, customApiUrl);
+
   useEffect(() => {
     debouncedRefresh();
   }, [queryParams]);
@@ -75,8 +71,16 @@ export const ShaTimeline: FC<ITimelineComponentProps> = ({
             return <Timeline.Item>{item?.content}</Timeline.Item>;
           })}
         {dataSource === 'api' &&
-          timelineData?.map(({ title, body, toPerson, actionDate }) => {
-            return <TimelineItem title={title} toPerson={toPerson?._displayName} actionDate={actionDate} body={body} />;
+          timelineData?.map(({ title, body, toPerson, actionDate, type }) => {
+            return (
+              <TimelineItem
+                title={title}
+                toPerson={toPerson?._displayName}
+                type={type}
+                actionDate={actionDate}
+                body={body}
+              />
+            );
           })}
       </Timeline>
     </Spin>
@@ -88,7 +92,6 @@ export interface ITimelineItemProps {
   fromPerson?: string;
   body?: string;
   title?: string;
-  description?: string;
   actionDate?: string;
   type?: string;
 }
