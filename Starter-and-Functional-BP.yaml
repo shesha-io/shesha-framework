@@ -107,19 +107,19 @@ stages:
       inputs:
         command: restore
         # projects: '$(System.DefaultWorkingDirectory)/shesha-functional-tests/backend/src/Boxfusion.SheshaFunctionalTests.Web.Host/Boxfusion.SheshaFunctionalTests.Web.Host.csproj'
-        projects: shesha-functional-tests/backend/$(BuildParameters.solution)
+        projects: shesha-functional-tests/backend/Boxfusion.SheshaFunctionalTests.sln
         vstsFeed: '44b4667a-8963-403d-9962-bde66225adbd'
 
     - task: DotNetCoreCLI@2
       displayName: dotnet build
       inputs:
-        projects: $(BuildParameters.solution1)
+        projects: shesha-functional-tests/backend/Boxfusion.SheshaFunctionalTests.sln
         arguments: --configuration $(BuildParameters.configuration)
     - task: DotNetCoreCLI@2
       displayName: dotnet pack
       inputs:
         command: 'pack'
-        packagesToPack: '$(System.DefaultWorkingDirectory)/shesha-functional-tests/backend/src/Module/**/*.csproj'
+        packagesToPack: 'shesha-functional-tests/backend/src/Module/**/*.csproj'
         configuration: '$(BuildParameters.configuration)'
         nobuild: true
         includesymbols: true
@@ -136,7 +136,7 @@ stages:
       inputs:
         command: publish
         publishWebProjects: false
-        projects: $(System.DefaultWorkingDirectory)/shesha-functional-tests/backend/$(BuildParameters.solution1)
+        projects: shesha-functional-tests/backend/Boxfusion.SheshaFunctionalTests.sln
         arguments: --configuration $(BuildParameters.configuration) --output $(build.artifactstagingdirectory) --no-build
         zipAfterPublish: false
         modifyOutputPath: false
@@ -225,7 +225,7 @@ stages:
       displayName: 'Dotnet Restore'
       inputs:
         command: restore
-        projects: '$(System.DefaultWorkingDirectory)/shesha-functional-tests/backend/src/Module/**/*.csproj'
+        projects: 'shesha-starter/backend/Boxfusion.SheshaFunctionalTests.sln'
         vstsFeed: '44b4667a-8963-403d-9962-bde66225adbd'
     - task: DotNetCoreCLI@2
       displayName: dotnet build
@@ -236,7 +236,7 @@ stages:
       displayName: dotnet pack
       inputs:
         command: 'pack'
-        packagesToPack: '$(System.DefaultWorkingDirectory)/shesha-functional-tests/backend/src/Module/**/*.csproj'
+        packagesToPack: 'shesha-starter-tests/backend/src/Module/**/*.csproj'
         configuration: '$(BuildParameters.configuration)'
         nobuild: true
         includesymbols: true
@@ -253,7 +253,7 @@ stages:
       inputs:
         command: publish
         publishWebProjects: false
-        projects: $(BuildParameters.solution2)
+        projects: shesha-starter/backend/$(BuildParameters.solution2)
         arguments: --configuration $(BuildParameters.configuration) --output $(build.artifactstagingdirectory) --no-build
         zipAfterPublish: false
         modifyOutputPath: false
@@ -356,10 +356,10 @@ stages:
         customCommand: run build
     - task: ArchiveFiles@2
       inputs:
-        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/shesha-functional-tests/adminportal'
+        rootFolderOrFile: 'shesha-functional-tests/adminportal'
         includeRootFolder: false
         archiveType: 'zip'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/shesha-adminportal-functional.zip'
+        archiveFile: 'shesha-adminportal-functional.zip'
         replaceExistingArchive: true  
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: shesha-adminportal-functional'
@@ -460,12 +460,12 @@ stages:
         customCommand: run build
     - task: ArchiveFiles@2
       inputs:
-        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/shesha-functional-tests/adminportal'
+        rootFolderOrFile: 'shesha-functional-tests/adminportal'
         includeRootFolder: false
         archiveType: 'zip'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/shesha-adminportal-starter.zip'
+        archiveFile: 'shesha-adminportal-starter.zip'
         replaceExistingArchive: true  
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: shesha-adminportal-starter'
       inputs:
-        ArtifactName: adminportal-starter        
+        ArtifactName: adminportal-starter
