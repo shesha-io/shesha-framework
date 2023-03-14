@@ -21,12 +21,15 @@
     <Compile Remove="Dtos\**" />
     <Compile Remove="ObjectMapper\**" />
     <Compile Remove="_Test\Case\**" />
+    <Compile Remove="_Test\FunctionalTest\**" />
     <EmbeddedResource Remove="Dtos\**" />
     <EmbeddedResource Remove="ObjectMapper\**" />
     <EmbeddedResource Remove="_Test\Case\**" />
+    <EmbeddedResource Remove="_Test\FunctionalTest\**" />
     <None Remove="Dtos\**" />
     <None Remove="ObjectMapper\**" />
     <None Remove="_Test\Case\**" />
+    <None Remove="_Test\FunctionalTest\**" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Excel\template.xlsx" />

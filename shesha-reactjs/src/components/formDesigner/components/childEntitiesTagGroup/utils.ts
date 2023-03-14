@@ -1,4 +1,8 @@
 import { nanoid } from 'nanoid';
+import { IFormDto } from '../../../..';
+import { MetadataDtoAjaxResponse } from '../../../../apis/metadata';
+import { IPersistedFormProps } from '../../../../providers/formPersisterProvider/models';
+import { toCamelCase } from '../../../../utils/string';
 import { IChildEntitiesTagGroupSelectOptions } from './models';
 
 export const addChildEntitiesTagGroupOption = (
@@ -26,12 +30,12 @@ export const formatOptions = (
   keys: string[],
   initialValue: IChildEntitiesTagGroupSelectOptions = null
 ) => {
-  const tempKey = getPropertyHolder(values);
+  const label = getPropertyHolder(values);
 
   if (Array.isArray(values)) {
     const id = nanoid();
     return {
-      label: fn(getExpressionLabel(values, keys)) ?? values?.[id],
+      label: fn(getExpressionLabel(values, keys)) ?? label,
       value: id,
       metadata: values.map(i => formatOptions(i, fn, keys, initialValue)),
     };
@@ -40,11 +44,16 @@ export const formatOptions = (
   delete values?.['_formFields'];
 
   return {
-    label: fn(getExpressionLabel(values, keys)) ?? values?.[tempKey],
+    label: fn(getExpressionLabel(values, keys)) ?? label,
     value: initialValue?.value ?? nanoid(),
     metadata: values,
   };
 };
+
+export const getChildEntitiesFormInfo = (formInfo: IFormDto): IPersistedFormProps => ({
+  ...formInfo,
+  formSettings: formInfo?.settings,
+});
 
 export const getExpressionLabel = (values: object, keys: string[]) =>
   keys
@@ -60,17 +69,31 @@ export const getInitChildEntitiesTagGroupOptions = (
   if (Array.isArray(form))
     return (form || []).map(i => ({
       value: nanoid(),
-      label: fn(getExpressionLabel(i, keys)) ?? i?.[getPropertyHolder(form)],
+      label: fn(getExpressionLabel(i, keys)) ?? getPropertyHolder(form, i),
       metadata: i,
     }));
 
   return [];
 };
 
-export const getPropertyHolder = (values: object) =>
-  Object.getOwnPropertyNames(values || {})?.length
-    ? Object.getOwnPropertyNames(values).filter(i => !i.startsWith('_'))[0]
-    : 'name';
+export const getLabelKeys = (metadata: MetadataDtoAjaxResponse) => {
+  if (!metadata) {
+    return [];
+  }
+
+  return (metadata?.result?.properties || []).map(({ path }) => toCamelCase(path));
+};
+
+export const getPropertyHolder = (values: object[] | object, item: object = values) => {
+  try {
+    const list = Array.isArray(values) ? values[0] : values;
+    const key = Object.getOwnPropertyNames(list || {}).filter(i => !i.startsWith('_'))[0];
+
+    return item?.[key] ?? nanoid();
+  } catch (_e) {
+    return nanoid();
+  }
+};
 
 export const morphChildEntitiesTagGroup = (
   values: IChildEntitiesTagGroupSelectOptions[],

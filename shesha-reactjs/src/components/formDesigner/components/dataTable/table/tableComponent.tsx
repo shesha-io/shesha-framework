@@ -1,4 +1,4 @@
-import React, { FC, Fragment, useEffect, useState } from 'react';
+import React, { FC, Fragment, useEffect, useRef } from 'react';
 import { IToolboxComponent } from '../../../../../interfaces';
 import { TableOutlined } from '@ant-design/icons';
 import { Alert, message } from 'antd';
@@ -10,16 +10,19 @@ import {
   IndexTableColumnVisibilityToggle,
   axiosHttp,
   useSheshaApplication,
-  useModal,
+  useFormData,
+  useConfigurableActionDispatcher,
 } from '../../../../../';
 import { useDataTableSelection } from '../../../../../providers/dataTableSelection';
 import { useDataTableStore, useGlobalState } from '../../../../../providers';
 import TableSettings from './tableComponent-settings';
 import { ITableComponentProps } from './models';
-import { IModalProps } from '../../../../../providers/dynamicModal/models';
 import { getStyle } from '../../../../../providers/form/utils';
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
+import moment from 'moment';
+import { useDeepCompareEffect } from 'react-use';
+import { getOnRowDroppedAction } from './utils';
 
 const TableComponent: IToolboxComponent<ITableComponentProps> = {
   type: 'datatable',
@@ -66,36 +69,23 @@ const NotConfiguredWarning: FC = () => {
   return <Alert className="sha-designer-warning" message="Table is not configured properly" type="warning" />;
 };
 
-interface ITableWrapperState {
-  modalProps?: IModalProps;
-}
+export const TableWrapper: FC<ITableComponentProps> = props => {
+  const {
+    id,
+    items,
+    useMultiselect,
+    allowRowDragAndDrop,
+    tableStyle,
+    containerStyle,
+    rowDroppedActionConfiguration,
+  } = props;
 
-export const TableWrapper: FC<ITableComponentProps> = ({
-  id,
-  items,
-  useMultiselect,
-  allowRowDragAndDrop,
-  onRowDropped,
-  rowDroppedMode,
-  dialogForm,
-  dialogFormSkipFetchData,
-  dialogOnSuccessScript,
-  dialogOnErrorScript,
-  dialogSubmitHttpVerb,
-  dialogShowModalButtons,
-  dialogTitle,
-  tableStyle,
-  containerStyle,
-}) => {
-  const { formMode, formData } = useForm();
-  const { globalState } = useGlobalState();
+  const { formMode, form, setFormDataAndInstance } = useForm();
+  const { data: formData } = useFormData();
+  const { globalState, setState: setGlobalState } = useGlobalState();
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const { backendUrl } = useSheshaApplication();
-  const [state, setState] = useState<ITableWrapperState>({
-    modalProps: null,
-  });
-
-  const dynamicModal = useModal(state?.modalProps);
+  const { executeAction } = useConfigurableActionDispatcher();
 
   const isDesignMode = formMode === 'designer';
 
@@ -104,7 +94,6 @@ export const TableWrapper: FC<ITableComponentProps> = ({
     isInProgress: { isFiltering, isSelectingColumns },
     setIsInProgressFlag,
     registerConfigurableColumns,
-    refreshTable,
     changeActionedRow,
     tableData,
   } = useDataTableStore();
@@ -117,12 +106,6 @@ export const TableWrapper: FC<ITableComponentProps> = ({
 
     registerConfigurableColumns(id, permissibleColumns);
   }, [items, isDesignMode]);
-
-  useEffect(() => {
-    if (state?.modalProps) {
-      dynamicModal?.open();
-    }
-  }, [state]);
 
   const { selectedRow, setSelectedRow, setMultiSelectedRow } = useDataTableSelection();
 
@@ -138,76 +121,38 @@ export const TableWrapper: FC<ITableComponentProps> = ({
     return <Fragment />;
   };
 
-  /**
-   * This expression will be executed when the row has been dropped
-   * @param expression - the expression to be executed
-   * @param row - the row data that has just been dropped
-   * @param oldIndex - the old index of the row
-   * @param newIndex - the new index of the row
-   * @returns - a function to execute
-   */
-  const getExpressionExecutor = (expression: string, row: any, oldIndex: number, newIndex: number) => {
-    if (!expression) {
-      return null;
-    }
+  const tableDataItems = useRef(tableData);
 
-    // tslint:disable-next-line:function-constructor
-    return new Function('row, routes, oldIndex, newIndex, globalState, http, message, data, refreshTable', expression)(
-      row,
-      tableData,
-      oldIndex,
-      newIndex,
-      globalState,
-      axiosHttp(backendUrl),
-      message,
-      formData,
-      refreshTable
-    );
-  };
+  useDeepCompareEffect(() => {
+    tableDataItems.current = tableData;
+  }, [tableData]);
 
   const handleOnRowDropped = (row: any, oldIndex: number, newIndex: number) => {
     changeActionedRow(row);
-    if (rowDroppedMode === 'executeScript') {
-      getExpressionExecutor(onRowDropped, row, oldIndex, newIndex);
-    } else {
-      const dialogExpressionExecutor = (expression: string, result?: any) => {
-        if (!expression) {
-          return null;
-        }
 
-        // tslint:disable-next-line:function-constructor
-        return new Function('data, result, globalState, http, message, refreshTable', expression)(
-          formData,
-          result,
-          globalState,
-          axiosHttp(backendUrl),
-          message,
-          refreshTable
-        );
-      };
-      setState(prev => ({
-        ...prev,
-        modalProps: {
-          id: dialogForm,
-          isVisible: false,
-          formId: dialogForm,
-          skipFetchData: dialogFormSkipFetchData,
-          title: dialogTitle,
-          showModalFooter: dialogShowModalButtons,
-          submitHttpVerb: dialogSubmitHttpVerb,
-          parentFormValues: row,
-          onSubmitted: (submittedValue: any) => {
-            if (dialogOnSuccessScript) {
-              dialogExpressionExecutor(dialogOnSuccessScript, submittedValue);
-            }
-          },
-          onFailed: () => {
-            if (dialogOnErrorScript) {
-              dialogExpressionExecutor(dialogOnErrorScript);
-            }
-          },
-        },
-      }));
+    const evaluationContext = {
+      items: tableDataItems?.current,
+      selectedRow: row,
+      newIndex,
+      oldIndex,
+      data: formData,
+      moment: moment,
+      form,
+      formMode,
+      http: axiosHttp(backendUrl),
+      message,
+      globalState,
+      setFormData: setFormDataAndInstance,
+      setGlobalState,
+    };
+
+    if (rowDroppedActionConfiguration) {
+      executeAction({
+        actionConfiguration: rowDroppedActionConfiguration,
+        argumentsEvaluationContext: evaluationContext,
+      });
+    } else {
+      executeAction(getOnRowDroppedAction(props, evaluationContext));
     }
   };
 

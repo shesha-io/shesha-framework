@@ -1,6 +1,7 @@
 import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Input, Modal, Select, Tag } from 'antd';
+import { Button, Input, message, Modal, Select, Tag } from 'antd';
 import React, { FC, useEffect, useState } from 'react';
+import { useDeepCompareEffect } from 'react-use';
 import {
   executeExpressionPayload as exe,
   FormMode,
@@ -8,12 +9,15 @@ import {
   useForm,
   useGlobalState,
 } from '../../../..';
+import { useMetadataGet } from '../../../../apis/metadata';
+import { useFormConfiguration } from '../../../../providers/form/api';
 import ChildEntitiesTagGroupModal from './modal';
 import { IChildEntitiesTagGroupProps, IChildEntitiesTagGroupSelectOptions } from './models';
 import './styles/index.less';
 import {
   addChildEntitiesTagGroupOption as addTagGroupOption,
   getInitChildEntitiesTagGroupOptions as getTagOptions,
+  getLabelKeys,
   morphChildEntitiesTagGroup as morphTagGroup,
 } from './utils';
 
@@ -35,31 +39,59 @@ interface IState {
 
 const INIT_STATE: IState = { open: false, options: [], origin: null };
 const CONFIRM_DELETE_TITLE = 'Are you sure you want to delete this item?';
+const WARNING_BIND_FORM = 'Please bind an appropriate form to this component.';
 
 const ChildEntitiesTagGroupControl: FC<IProps> = ({ formMode: fMode, model, onChange, value }) => {
   const [state, setState] = useState<IState>(INIT_STATE);
   const { activeValue, open, options, origin } = state;
-  const {
-    capturedProperties,
-    deleteConfirmationBody,
-    deleteConfirmationTitle,
-    labelFormat,
-    labelProperties,
-    name,
-  } = model;
+  const { capturedProperties, deleteConfirmationBody, deleteConfirmationTitle, formId, labelFormat, name } = model;
 
   const { globalState } = useGlobalState();
 
   const { form, formData } = useForm();
 
-  useEffect(() => {
+  const {
+    formConfiguration,
+    loading: isFetchingFormConfiguration,
+    refetch: refetchFormConfig,
+    error: formConfigurationError,
+  } = useFormConfiguration({
+    formId,
+    lazy: true,
+  });
+
+  const { data: metadata, loading: isFetchingMetada, refetch: refetchMetada, error: metadatError } = useMetadataGet({
+    lazy: true,
+  });
+
+  useDeepCompareEffect(() => {
     const data = form?.[name] || value;
 
-    if (data) {
-      setState(s => ({ ...s, options: getTagOptions(data, labelFromatExecutor, labelProperties), origin: data }));
-      onChange(morphTagGroup(getTagOptions(data, labelFromatExecutor, labelProperties), data, capturedProperties));
+    if (data && metadata) {
+      setState(s => ({
+        ...s,
+        options: getTagOptions(data, labelFromatExecutor, getLabelKeys(metadata)),
+        origin: data,
+      }));
+      onChange(
+        morphTagGroup(getTagOptions(data, labelFromatExecutor, getLabelKeys(metadata)), data, capturedProperties)
+      );
     }
-  }, []);
+  }, [metadata]);
+
+  useEffect(() => {
+    if (formId) {
+      refetchFormConfig();
+    }
+  }, [formId]);
+
+  const container = formConfiguration?.modelType;
+
+  useEffect(() => {
+    if (container) {
+      refetchMetada({ queryParams: { container } });
+    }
+  }, [container]);
 
   const setOpen = (open: boolean) => setState(s => ({ ...s, open, activeValue: null }));
 
@@ -95,6 +127,14 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ formMode: fMode, model, onCh
     );
   };
 
+  const onOpenModal = () => {
+    if (formConfiguration) {
+      setOpen(true);
+    } else {
+      message.warning(WARNING_BIND_FORM);
+    }
+  };
+
   const labelFromatExecutor = (dynamicParam?: object) => {
     try {
       if (!labelFormat) {
@@ -111,7 +151,7 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ formMode: fMode, model, onCh
         );
       }
 
-      return new Function('data, globalState', labelFormat)(formData, globalState);
+      return new Function('data, globalState, formMode', labelFormat)(formData, globalState);
     } catch (_e) {
       return null;
     }
@@ -127,25 +167,30 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ formMode: fMode, model, onCh
   const formMode = model?.readOnly ? 'readonly' : fMode;
   const inputGroupProps = isEditable ? {} : { className: 'child-entity-tag-full-width' };
 
+  const error = formConfigurationError || metadatError;
+  const loading = isFetchingFormConfiguration || isFetchingMetada;
+
   return (
     <div className="child-entity-tag-container">
       {open && (
         <ChildEntitiesTagGroupModal
           {...model}
+          data={formConfiguration}
+          error={error}
           formMode={formMode}
           open={open}
           onToggle={setOpen}
           onSetData={setOption}
-          labelKeys={labelProperties}
+          labelKeys={getLabelKeys(metadata)}
           labelExecutor={labelFromatExecutor}
+          loading={loading}
           initialValues={options?.find(({ value }) => value === activeValue)}
         />
       )}
+
       <Input.Group {...inputGroupProps}>
         <Select mode="tags" value={options} tagRender={tagRender} dropdownStyle={{ display: 'none' }} />
-        {isEditable && (
-          <Button onClick={() => setOpen(true)} className="child-entity-tag-add" icon={<PlusOutlined />} />
-        )}
+        {isEditable && <Button onClick={onOpenModal} className="child-entity-tag-add" icon={<PlusOutlined />} />}
       </Input.Group>
     </div>
   );

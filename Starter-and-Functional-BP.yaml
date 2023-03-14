@@ -1,0 +1,454 @@
+# Variable 'artifactName' was defined in the Variables tab
+# Agent Queue 'Azure Pipelines' was used with unrecognized Agent Specification, vmImage property must be specified to determine image - https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops&tabs=yaml#software
+variables:
+- name: BuildParameters.solution1
+  value: shesha-framework/shesha-functional-tests/backend/Boxfusion.SheshaFunctionalTests.sln
+- name: BuildParameters.solution2
+  value: shesha-framework/shesha-starter/backend/ShaCompanyName.ShaProjectName.sln  
+- name: BuildParameters.configuration
+  value: release
+- name: pack-version
+  value: $(Build.BuildNumber)
+trigger:
+  tags:
+    include:
+    - '*'
+  branches:
+    include:
+    - releases/*
+    - refs/tags/*
+    exclude:
+    - main
+pool: 
+  name: Azure Pipelines
+  vmImage1: windows-latest
+  vmImage2: ubuntu-latest
+name: 2.0.0.$(BuildID)
+stages:
+- stage: Build_Functional_Shesha_API
+  displayName: Build_Functional_Shesha_API
+  jobs:
+  - job: Job_1
+    displayName: Agent job 1
+    pool:
+      name: Azure Pipelines
+      vmImage: windows-latest
+    steps:
+    - checkout: self
+    - task: UseDotNet@2
+      displayName: Use .NET Core sdk 6.x
+      inputs:
+        version: 6.x
+    # - task: DotNetCoreCLI@2
+    #   displayName: 'Dotnet Restore'
+    #   inputs:
+    #     command: restore
+    #     projects: $(BuildParameters.solution)
+    #     feedsToUse: config
+    #     nugetConfigPath: backend/.nuget/NuGet.Config
+    - task: Assembly-Info-NetCore@3
+      displayName: Set Assembly Manifest Data
+      inputs:
+        InsertAttributes: true
+        GeneratePackageOnBuild: false
+        PackageRequireLicenseAcceptance: false
+        VersionNumber: $(Build.BuildNumber)
+        FileVersionNumber: $(Build.BuildNumber)
+        InformationalVersion: $(Build.BuildNumber)
+        PackageVersion: $(Build.BuildNumber)
+
+    - task: PowerShell@2
+      displayName: Check to establish if this pipeline was triggered from a tag  
+      inputs:
+        targetType: 'inline'
+        script: |
+          # Write your PowerShell commands here.
+          write-host $(Build.SourceBranch)
+          $branch = 'Unknown'
+          if ("$(Build.SourceBranch)" -like "*tags*"){
+              write-host "Source Branch should be tags here: $(Build.SourceBranch)"
+              $branch = Invoke-Expression "git branch -r --contains $(Build.SourceBranch)"
+              write-host "##vso[task.setvariable variable=currentBranch]$branch"
+
+              $path = $branch
+              $version = Split-Path $path -Leaf
+              Write-Host $version
+
+              Set-Variable -Name "pack-version" -Value "$version"
+          }
+          else{
+              write-host "Source Branch should be main or releases here: $(Build.SourceBranch)"            
+              write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
+          }
+        workingDirectory: '$(System.DefaultWorkingDirectory)'      
+    - task: PowerShell@2
+      displayName: Output to console the current branch  
+      inputs:
+        targetType: 'inline'
+        script: |
+          # Write your PowerShell commands here.
+          write-host "The current branch is: $(currentBranch)"
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+    - task: PowerShell@2
+      displayName: Create a txt file to carry the original branch name to the release pipeline  
+      inputs:
+        targetType: 'inline'
+        script: |
+          $variable = '$(currentBranch)'
+          $variable | Out-File $(Build.ArtifactStagingDirectory)\branchName.txt
+          Get-Content $(Build.ArtifactStagingDirectory)\branchName.txt
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: api-info-1'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'api-info-1'
+    - task: DotNetCoreCLI@2
+      displayName: dotnet build
+      inputs:
+        projects: $(BuildParameters.solution1)
+        arguments: --configuration $(BuildParameters.configuration)
+    - task: DotNetCoreCLI@2
+      displayName: dotnet pack
+      inputs:
+        command: 'pack'
+        packagesToPack: 'shesha-framework/shesha-functional-tests/backend/src/Module/**/*.csproj'
+        configuration: '$(BuildParameters.configuration)'
+        nobuild: true
+        includesymbols: true
+        includesource: true        
+        versioningScheme: 'byEnvVar'
+        versionEnvVar: 'pack-version'
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: Nuget packs'  
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'packs-functional'
+    - task: DotNetCoreCLI@2
+      displayName: dotnet publish
+      inputs:
+        command: publish
+        publishWebProjects: false
+        projects: $(BuildParameters.solution1)
+        arguments: --configuration $(BuildParameters.configuration) --output $(build.artifactstagingdirectory) --no-build
+        zipAfterPublish: false
+        modifyOutputPath: false
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: functional-shesha-api'
+      inputs:
+        ArtifactName: functional-shesha-api
+- stage: Build_Starter_Shesha_API
+  displayName: Build_Starter_Shesha_API
+  jobs:
+  - job: Job_2
+    displayName: Agent job 2
+    pool:
+      name: Azure Pipelines
+      vmImage: windows-latest
+    steps:
+    - checkout: self
+    - task: UseDotNet@2
+      displayName: Use .NET Core sdk 6.x
+      inputs:
+        version: 6.x
+    # - task: DotNetCoreCLI@2
+    #   displayName: 'Dotnet Restore'
+    #   inputs:
+    #     command: restore
+    #     projects: $(BuildParameters.solution)
+    #     feedsToUse: config
+    #     nugetConfigPath: backend/.nuget/NuGet.Config
+    - task: Assembly-Info-NetCore@3
+      displayName: Set Assembly Manifest Data
+      inputs:
+        InsertAttributes: true
+        GeneratePackageOnBuild: false
+        PackageRequireLicenseAcceptance: false
+        VersionNumber: $(Build.BuildNumber)
+        FileVersionNumber: $(Build.BuildNumber)
+        InformationalVersion: $(Build.BuildNumber)
+        PackageVersion: $(Build.BuildNumber)
+
+    - task: PowerShell@2
+      displayName: Check to establish if this pipeline was triggered from a tag  
+      inputs:
+        targetType: 'inline'
+        script: |
+          # Write your PowerShell commands here.
+          write-host $(Build.SourceBranch)
+          $branch = 'Unknown'
+          if ("$(Build.SourceBranch)" -like "*tags*"){
+              write-host "Source Branch should be tags here: $(Build.SourceBranch)"
+              $branch = Invoke-Expression "git branch -r --contains $(Build.SourceBranch)"
+              write-host "##vso[task.setvariable variable=currentBranch]$branch"
+
+              $path = $branch
+              $version = Split-Path $path -Leaf
+              Write-Host $version
+
+              Set-Variable -Name "pack-version" -Value "$version"
+          }
+          else{
+              write-host "Source Branch should be main or releases here: $(Build.SourceBranch)"            
+              write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
+          }
+        workingDirectory: '$(System.DefaultWorkingDirectory)'      
+    - task: PowerShell@2
+      displayName: Output to console the current branch  
+      inputs:
+        targetType: 'inline'
+        script: |
+          # Write your PowerShell commands here.
+          write-host "The current branch is: $(currentBranch)"
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+    - task: PowerShell@2
+      displayName: Create a txt file to carry the original branch name to the release pipeline  
+      inputs:
+        targetType: 'inline'
+        script: |
+          $variable = '$(currentBranch)'
+          $variable | Out-File $(Build.ArtifactStagingDirectory)\branchName.txt
+          Get-Content $(Build.ArtifactStagingDirectory)\branchName.txt
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: api-info-2'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'api-info-2'
+    - task: DotNetCoreCLI@2
+      displayName: dotnet build
+      inputs:
+        projects: $(BuildParameters.solution2)
+        arguments: --configuration $(BuildParameters.configuration)
+        command: 'pack'
+        packagesToPack: 'shesha-framework/shesha-starter/backend/src/Module/**/*.csproj'
+        configuration: '$(BuildParameters.configuration)'
+        nobuild: true
+        includesymbols: true
+        includesource: true        
+        versioningScheme: 'byEnvVar'
+        versionEnvVar: 'pack-version'
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: Nuget packs'  
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'packs-starter'
+    - task: DotNetCoreCLI@2
+      displayName: dotnet publish
+      inputs:
+        command: publish
+        publishWebProjects: false
+        projects: $(BuildParameters.solution2)
+        arguments: --configuration $(BuildParameters.configuration) --output $(build.artifactstagingdirectory) --no-build
+        zipAfterPublish: false
+        modifyOutputPath: false
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: starter-shesha-api'
+      inputs:
+        ArtifactName: starter-shesha-api
+- stage: Build_Functional_Shesha_AdminPortal
+  displayName: Build_Functional_Shesha_AdminPortal
+  jobs:
+  - job: Job_3
+    displayName: Agent job 3
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - task: PowerShell@2
+      displayName: Check to establish if this pipeline was triggered from a tag  
+      inputs:
+        targetType: 'inline'
+        script: |
+          # Write your PowerShell commands here.
+          write-host $(Build.SourceBranch)
+          $branch = 'Unknown'
+          if ("$(Build.SourceBranch)" -like "*tags*"){
+              write-host "Source Branch should be tags here: $(Build.SourceBranch)"
+              $branch = Invoke-Expression "git branch -r --contains $(Build.SourceBranch)"
+              write-host "##vso[task.setvariable variable=currentBranch]$branch"
+
+              $path = $branch
+              $version = Split-Path $path -Leaf
+              Write-Host $version
+
+              Set-Variable -Name "pack-version" -Value "$version"
+          }
+          else{
+              write-host "Source Branch should be main or releases here: $(Build.SourceBranch)"            
+              write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
+          }
+        workingDirectory: 'adminportal'
+    - task: PowerShell@2
+      displayName: Output to console the current branch  
+      inputs:
+        targetType: 'inline'
+        script: |
+          # Write your PowerShell commands here.
+          write-host "The current branch is: $(currentBranch)"
+        workingDirectory: 'adminportal'
+    - task: NodeTool@0
+      displayName: 'Use Node 14.21.1'
+      inputs:
+        versionSpec: 14.21.1
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '2.7.18'
+        addToPath: true
+        architecture: 'x64'
+    - task: Npm@1
+      displayName: Install Latest Shesha
+      inputs:
+        command: custom
+        workingDir: 'adminportal'
+        verbose: false
+        customCommand: install @shesha/reactjs@latest
+    - task: PowerShell@2
+      displayName: Set Version for publishing
+      inputs:
+        targetType: 'inline'
+        script: |
+          $filePath = "package.json" #filepath
+          $Jsonfile = Get-Content $filePath | ConvertFrom-Json
+          $version = $Jsonfile.version
+          $bumpedVersion = $(pack-version)
+
+          write-host $bumpedVersion
+          Write-Host "##vso[task.setvariable variable=version]$bumpedVersion"
+
+          ls
+        workingDirectory: 'adminportal'        
+    - task: Npm@1
+      displayName: Npm Set the version
+      inputs:
+        command: custom
+        workingDir: 'adminportal'
+        verbose: true
+        #customCommand: version --no-git-tag-version #$(pack-version)
+        customCommand: 'version $(pack-version)'
+    - task: Npm@1
+      displayName: 'Npm Install'
+      inputs:
+        command: custom
+        workingDir: adminportal
+        verbose: false
+        customCommand: 'install --legacy-peer-deps'        
+    - task: Npm@1
+      displayName: Npm Build
+      inputs:
+        command: custom
+        workingDir: 'adminportal'
+        verbose: true
+        customCommand: run build
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/adminportal'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/shesha-adminportal-functional.zip'
+        replaceExistingArchive: true  
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: shesha-adminportal-functional'
+      inputs:
+        ArtifactName: adminportal-functional
+- stage: Build_Starter_Shesha_AdminPortal
+  displayName: Build_Starter_Shesha_AdminPortal
+  jobs:
+  - job: Job_4
+    displayName: Agent job 4
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - task: PowerShell@2
+      displayName: Check to establish if this pipeline was triggered from a tag  
+      inputs:
+        targetType: 'inline'
+        script: |
+          # Write your PowerShell commands here.
+          write-host $(Build.SourceBranch)
+          $branch = 'Unknown'
+          if ("$(Build.SourceBranch)" -like "*tags*"){
+              write-host "Source Branch should be tags here: $(Build.SourceBranch)"
+              $branch = Invoke-Expression "git branch -r --contains $(Build.SourceBranch)"
+              write-host "##vso[task.setvariable variable=currentBranch]$branch"
+
+              $path = $branch
+              $version = Split-Path $path -Leaf
+              Write-Host $version
+
+              Set-Variable -Name "pack-version" -Value "$version"
+          }
+          else{
+              write-host "Source Branch should be main or releases here: $(Build.SourceBranch)"            
+              write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
+          }
+        workingDirectory: 'adminportal'
+    - task: PowerShell@2
+      displayName: Output to console the current branch  
+      inputs:
+        targetType: 'inline'
+        script: |
+          # Write your PowerShell commands here.
+          write-host "The current branch is: $(currentBranch)"
+        workingDirectory: 'adminportal'
+    - task: NodeTool@0
+      displayName: 'Use Node 14.21.1'
+      inputs:
+        versionSpec: 14.21.1
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '2.7.18'
+        addToPath: true
+        architecture: 'x64'
+    - task: Npm@1
+      displayName: Install Latest Shesha
+      inputs:
+        command: custom
+        workingDir: 'adminportal'
+        verbose: false
+        customCommand: install @shesha/reactjs@latest
+    - task: PowerShell@2
+      displayName: Set Version for publishing
+      inputs:
+        targetType: 'inline'
+        script: |
+          $filePath = "package.json" #filepath
+          $Jsonfile = Get-Content $filePath | ConvertFrom-Json
+          $version = $Jsonfile.version
+          $bumpedVersion = $(pack-version)
+
+          write-host $bumpedVersion
+          Write-Host "##vso[task.setvariable variable=version]$bumpedVersion"
+
+          ls
+        workingDirectory: 'adminportal'        
+    - task: Npm@1
+      displayName: Npm Set the version
+      inputs:
+        command: custom
+        workingDir: 'adminportal'
+        verbose: true
+        #customCommand: version --no-git-tag-version #$(pack-version)
+        customCommand: 'version $(pack-version)'
+    - task: Npm@1
+      displayName: 'Npm Install'
+      inputs:
+        command: custom
+        workingDir: adminportal
+        verbose: false
+        customCommand: 'install --legacy-peer-deps'        
+    - task: Npm@1
+      displayName: Npm Build
+      inputs:
+        command: custom
+        workingDir: 'adminportal'
+        verbose: true
+        customCommand: run build
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/adminportal'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/shesha-adminportal-starter.zip'
+        replaceExistingArchive: true  
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: shesha-adminportal-starter'
+      inputs:
+        ArtifactName: adminportal-starter        
