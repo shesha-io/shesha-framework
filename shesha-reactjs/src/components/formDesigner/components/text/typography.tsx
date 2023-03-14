@@ -13,6 +13,8 @@ import {
   getFontSizeStyle,
   getPaddingSizeStyle,
 } from './utils';
+import './styles/index.less';
+import classNames from 'classnames';
 
 const { Paragraph, Text, Title } = Typography;
 
@@ -55,7 +57,8 @@ const TypographyComponent: FC<ITextTypographyProps> = ({
     underline: model?.underline,
     keyboard: model?.keyboard,
     italic: model?.italic,
-    type: contentType !== 'custom' ? contentType : null,
+    type: contentType !== 'custom' && contentType !== 'info' && contentType !== 'primary' ? contentType : null,
+
     style: {
       margin: 'unset',
       ...fontSizeStyle,
@@ -94,15 +97,29 @@ const TypographyComponent: FC<ITextTypographyProps> = ({
     return <Alert type="warning" message="Please make sure you enter the content to be displayed here!" />;
   }
 
+  const className = classNames('typography-text', { primary: contentType === 'primary', info: contentType === 'info' });
+
   if (textType === 'span') {
-    return <Text {...textProps}>{content}</Text>;
+    return (
+      <Text {...textProps} className={className}>
+        {content}
+      </Text>
+    );
   }
 
   if (textType === 'paragraph') {
-    return <Paragraph {...paragraphProps}>{content}</Paragraph>;
+    return (
+      <Paragraph {...paragraphProps} className={className}>
+        {content}
+      </Paragraph>
+    );
   }
 
-  return <Title {...titleProps}>{content}</Title>;
+  return (
+    <Title {...titleProps} className={className}>
+      {content}
+    </Title>
+  );
 };
 
 export default TypographyComponent;

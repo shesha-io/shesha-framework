@@ -5,16 +5,10 @@ EXPOSE 80
 EXPOSE 443
 
 WORKDIR /app
-#COPY . .
 
 COPY . /app
 
-#FROM base AS final
-#COPY --from=. /app/publish .
-
-ENTRYPOINT ["dotnet", "Infra.Shesha.Web.Host.dll"]
-
-WORKDIR /app
-RUN ls
-
-
+#ENTRYPOINT ["dotnet", "Infra.Shesha.Web.Host.dll"]
+#ENTRYPOINT ["dotnet", "*.Web.Host.dll"]
+#ENTRYPOINT ["dotnet", "*.Web.Host.dll"]
+ENTRYPOINT ["sh", "-c", "dotnet $(find . -maxdepth 1 -name '*.Web.Host.dll' -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d' ')"]

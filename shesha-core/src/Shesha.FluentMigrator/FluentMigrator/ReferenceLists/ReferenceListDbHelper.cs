@@ -7,50 +7,14 @@ namespace Shesha.FluentMigrator.ReferenceLists
     /// <summary>
     /// ReferenceList DB provider
     /// </summary>
-    internal class ReferenceListDbHelper
+    internal class ReferenceListDbHelper: DbHelperBase
     {
-        private readonly IDbConnection _connection;
-        private readonly IDbTransaction _transaction;
         private readonly IQuerySchema _querySchema;        
 
-        public ReferenceListDbHelper(IDbConnection connection, IDbTransaction transaction, IQuerySchema querySchema)
+        public ReferenceListDbHelper(IDbConnection connection, IDbTransaction transaction, IQuerySchema querySchema) : base(connection, transaction)
         {
-            _connection = connection;
-            _transaction = transaction;
             _querySchema = querySchema;
         }
-
-        #region private declarations
-        private void ExecuteNonQuery(string sql, Action<IDbCommand> prepareAction = null)
-        {
-            ExecuteCommand(sql, command => {
-                prepareAction?.Invoke(command);
-                command.ExecuteNonQuery();
-            });
-        }
-
-        private T ExecuteScalar<T>(string sql, Action<IDbCommand> prepareAction = null)
-        {
-            T result = default(T);
-            ExecuteCommand(sql, command => {
-                prepareAction?.Invoke(command);
-                result = (T)command.ExecuteScalar();
-            });
-            return result;
-        }
-
-        private void ExecuteCommand(string sql, Action<IDbCommand> action)
-        {
-            using (var command = _connection.CreateCommand())
-            {
-                command.Transaction = _transaction;
-                command.CommandText = sql;
-
-                action.Invoke(command);
-            }
-        }
-
-        #endregion
 
         #region list
 

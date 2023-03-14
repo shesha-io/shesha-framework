@@ -21,9 +21,11 @@ using Abp.ObjectMapping;
 using Shesha.Extensions;
 using Shesha.Permissions;
 using Shesha.Services.VersionedFields;
+using Shesha.ConfigurationItems;
 
 namespace Shesha.Permission
 {
+    [DependsOnBootstrapper(typeof(ConfigurableModuleBootstrapper))]
     public class PermissionedObjectsBootstrapper : IBootstrapper, ITransientDependency
     {
         private readonly IRepository<PermissionedObject, Guid> _permissionedObjectRepository;
@@ -40,7 +42,7 @@ namespace Shesha.Permission
             _versionedFieldManager = versionedFieldManager;
         }
 
-        public Task Process()
+        public Task ProcessAsync()
         {
             // ToDo: use UOW!!!!!!!!!
             return Task.CompletedTask;

@@ -256,7 +256,7 @@ namespace Shesha.NHibernate
                                 var uowManager = ioc.Resolve<IUnitOfWorkManager>();
                                 using (var unitOfWork = uowManager.Begin())
                                 {
-                                    await bootstrapper.Process();
+                                    await bootstrapper.ProcessAsync();
                                     await unitOfWork.CompleteAsync();
                                 }
 
@@ -284,7 +284,7 @@ namespace Shesha.NHibernate
             var withDeps = types.Select(t => new
                 {
                     Type = t,
-                    Dependencies = t.GetAttribute<DependsOnAttribute>()?.DependedModuleTypes?.ToList()
+                    Dependencies = t.GetAttribute<DependsOnBootstrapperAttribute>()?.DependedBootstrappers?.ToList()
                 })
                 .ToList();
             

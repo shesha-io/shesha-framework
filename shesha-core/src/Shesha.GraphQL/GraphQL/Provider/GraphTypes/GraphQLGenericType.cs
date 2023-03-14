@@ -8,6 +8,7 @@ using Shesha.DynamicEntities.Cache;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.JsonEntities;
+using Shesha.Reflection;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
@@ -152,6 +153,22 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                     return jsonEntity != null
                         ? new RawJson(jsonEntity)
                         : null;
+                });
+                return;
+            }
+
+            if (ReflectionHelper.IsMultiValueReferenceListProperty(propertyInfo)) 
+            {
+                var gtn = typeof(Int64);
+                var gqlListType = GraphTypeMapper.GetGraphType(gtn, isInput: false);
+                var listType = typeof(ListGraphType<>).MakeGenericType(gqlListType);
+                Field(listType, propertyInfo.Name, resolve: context => {
+                    var rawValue = propertyInfo.GetValue(context.Source);
+                    var arrayValue = rawValue != null
+                                ? EntityExtensions.DecomposeIntoBitFlagComponents((Int64)System.Convert.ChangeType(rawValue, typeof(Int64)))
+                                : new Int64[0];
+
+                    return arrayValue;
                 });
                 return;
             }

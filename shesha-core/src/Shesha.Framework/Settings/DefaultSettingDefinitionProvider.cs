@@ -62,17 +62,19 @@ namespace Shesha.Settings
             if (settingAttribute == null)
                 return null;
 
-            var name = settingAttribute.Name;
+            var name = settingAttribute != null
+                ? settingAttribute.Name
+                : property.Name;
             var displayName = ReflectionHelper.GetDisplayName(property);
 
             var defaultValue = propertyInstance.GetDefaultValue();
 
             var definition = Activator.CreateInstance(definitionType, name, defaultValue, displayName) as SettingDefinition;
             definition.Description = ReflectionHelper.GetDescription(property);
-            definition.IsClientSpecific = settingAttribute.IsClientSpecific;
+            definition.IsClientSpecific = settingAttribute?.IsClientSpecific ?? false;
 
             definition.ModuleName = moduleName;
-            definition.EditForm = !string.IsNullOrWhiteSpace(settingAttribute.EditorFormName)
+            definition.EditForm = !string.IsNullOrWhiteSpace(settingAttribute?.EditorFormName)
                 ? new ConfigurationItemIdentifier() { Name = settingAttribute.EditorFormName, Module = definition.ModuleName }
                 : null;            
 

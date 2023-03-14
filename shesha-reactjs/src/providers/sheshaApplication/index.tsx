@@ -13,7 +13,6 @@ import IRequestHeaders from '../../interfaces/requestHeaders';
 import { setBackendUrlAction, setHeadersAction } from './actions';
 import { Router } from 'next/router';
 import AuthProvider from '../auth';
-import AuthorizationSettingsProvider from '../authorizationSettings';
 import ShaRoutingProvider from '../shaRouting';
 import { AppConfiguratorProvider } from '../appConfigurator';
 import { DynamicModalProvider } from '../dynamicModal';
@@ -27,6 +26,7 @@ import { ConfigurableActionDispatcherProvider } from '../configurableActionsDisp
 import { ApplicationActionsProcessor } from './configurable-actions/applicationActionsProcessor';
 import { ConfigurationItemsLoaderProvider } from '../configurationItemsLoader';
 import { FRONT_END_APP_HEADER_NAME } from './models';
+import { SettingsProvider } from '../settings';
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;
@@ -107,43 +107,45 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
             headers: state.httpHeaders,
           }}
         >
-          <ConfigurableActionDispatcherProvider>
-            <UiProvider>
-              <ShaRoutingProvider getFormUrlFunc={getFormUrlFunc} router={router} >
-                <ConditionalWrap
-                  condition={!props?.noAuth}
-                  wrap={authChildren => (
-                    <AuthProvider
-                      tokenName={accessTokenName || DEFAULT_ACCESS_TOKEN_NAME}
-                      onSetRequestHeaders={setRequestHeaders}
-                      unauthorizedRedirectUrl={unauthorizedRedirectUrl}
-                      whitelistUrls={whitelistUrls}
-                      authRef={authRef}
-                      homePageUrl={homePageUrl}
-                    >
-                      <AuthorizationSettingsProvider>{authChildren}</AuthorizationSettingsProvider>
-                    </AuthProvider>
-                  )}
-                >
-                  <ConfigurationItemsLoaderProvider>
-                    <ThemeProvider {...(themeProps || {})}>
-                      <AppConfiguratorProvider>
-                        <ReferenceListDispatcherProvider>
-                          <MetadataDispatcherProvider>
-                            <StackedNavigationProvider>
-                              <DynamicModalProvider>
-                                <ApplicationActionsProcessor>{children}</ApplicationActionsProcessor>
-                              </DynamicModalProvider>
-                            </StackedNavigationProvider>
-                          </MetadataDispatcherProvider>
-                        </ReferenceListDispatcherProvider>
-                      </AppConfiguratorProvider>
-                    </ThemeProvider>
-                  </ConfigurationItemsLoaderProvider>
-                </ConditionalWrap>
-              </ShaRoutingProvider>
-            </UiProvider>
-          </ConfigurableActionDispatcherProvider>
+          <SettingsProvider>
+            <ConfigurableActionDispatcherProvider>
+              <UiProvider>
+                <ShaRoutingProvider getFormUrlFunc={getFormUrlFunc} router={router} >
+                  <ConditionalWrap
+                    condition={!props?.noAuth}
+                    wrap={authChildren => (
+                      <AuthProvider
+                        tokenName={accessTokenName || DEFAULT_ACCESS_TOKEN_NAME}
+                        onSetRequestHeaders={setRequestHeaders}
+                        unauthorizedRedirectUrl={unauthorizedRedirectUrl}
+                        whitelistUrls={whitelistUrls}
+                        authRef={authRef}
+                        homePageUrl={homePageUrl}
+                      >
+                        {authChildren}
+                      </AuthProvider>
+                    )}
+                  >
+                    <ConfigurationItemsLoaderProvider>
+                      <ThemeProvider {...(themeProps || {})}>
+                        <AppConfiguratorProvider>
+                          <ReferenceListDispatcherProvider>
+                            <MetadataDispatcherProvider>
+                              <StackedNavigationProvider>
+                                <DynamicModalProvider>
+                                  <ApplicationActionsProcessor>{children}</ApplicationActionsProcessor>
+                                </DynamicModalProvider>
+                              </StackedNavigationProvider>
+                            </MetadataDispatcherProvider>
+                          </ReferenceListDispatcherProvider>
+                        </AppConfiguratorProvider>
+                      </ThemeProvider>
+                    </ConfigurationItemsLoaderProvider>
+                  </ConditionalWrap>
+                </ShaRoutingProvider>
+              </UiProvider>
+            </ConfigurableActionDispatcherProvider>
+          </SettingsProvider>
         </RestfulProvider>
       </SheshaApplicationActionsContext.Provider>
     </SheshaApplicationStateContext.Provider>

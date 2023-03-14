@@ -349,10 +349,11 @@ namespace Shesha
 
             switch (property.DataType)
             {
+                /*
                 case DataTypes.Array:
                     // todo: implement and uncomment
                     return;
-
+                */
                 case DataTypes.EntityReference:
                     if (property.EntityType.IsNullOrWhiteSpace())
                         // GenericEntityReference

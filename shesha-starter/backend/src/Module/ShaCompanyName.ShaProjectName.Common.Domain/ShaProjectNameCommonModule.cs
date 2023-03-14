@@ -11,6 +11,7 @@ using System.Reflection;
 
 namespace ShaCompanyName.ShaProjectName.Common
 {
+    [IntentManaged(Mode.Ignore)]
     /// <summary>
     /// ShaProjectNameCommon Module
     /// </summary>

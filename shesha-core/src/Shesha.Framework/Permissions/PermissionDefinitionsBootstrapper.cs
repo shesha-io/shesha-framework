@@ -21,9 +21,11 @@ using Abp.Domain.Uow;
 using Abp.ObjectMapping;
 using Shesha.Authorization;
 using Shesha.Permissions;
+using Shesha.ConfigurationItems;
 
 namespace Shesha.Permission
 {
+    [DependsOnBootstrapper(typeof(ConfigurableModuleBootstrapper))]
     public class PermissionDefinitionsBootstrapper : IBootstrapper, ITransientDependency
     {
         private readonly IShaPermissionManager _permissionManager;
@@ -40,7 +42,7 @@ namespace Shesha.Permission
             _unitOfWorkManager = unitOfWorkManager;
         }
 
-        public async Task Process()
+        public async Task ProcessAsync()
         {
             using (var unitOfWork = _unitOfWorkManager.Begin())
             {

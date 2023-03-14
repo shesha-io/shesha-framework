@@ -1,6 +1,6 @@
 import React, { FC, useContext, useEffect, PropsWithChildren, useMemo, MutableRefObject } from 'react';
 import { authReducer } from './reducer';
-import useThunkReducer from 'react-hook-thunk-reducer';
+import useThunkReducer from '../../hooks/thunkReducer';
 import {
   AuthStateContext,
   AuthActionsContext,

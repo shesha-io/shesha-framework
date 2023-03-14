@@ -12,7 +12,7 @@ import {
   IGetComponentPayload,
   IUpdateComponentPayload,
 } from './contexts';
-import useThunkReducer from 'react-hook-thunk-reducer';
+import useThunkReducer from '../../hooks/thunkReducer';
 import { IComponentsDictionary, IFormsDictionary, IReferenceListsDictionary } from './models';
 import { FormIdentifier, useSheshaApplication } from '../../providers';
 import { asFormFullName, asFormRawId } from '../form/utils';

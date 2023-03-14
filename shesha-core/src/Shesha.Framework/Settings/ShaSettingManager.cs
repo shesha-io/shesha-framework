@@ -41,7 +41,7 @@ namespace Shesha.Settings
 
         public async Task<object> GetOrNullAsync([NotNull] string module, [NotNull] string name, SettingManagementContext context = null) 
         {
-            var setting = _settingDefinitionManager.Get(name);
+            var setting = _settingDefinitionManager.Get(module, name);
 
             var settingValue = await _settingStore.GetSettingValueAsync(setting, context ?? GetCurrentContext());
 
@@ -52,7 +52,7 @@ namespace Shesha.Settings
 
         public async Task<TValue> GetOrNullAsync<TValue>([NotNull] string module, [NotNull] string name, SettingManagementContext context = null) 
         {
-            var setting = _settingDefinitionManager.Get(name);
+            var setting = _settingDefinitionManager.Get(module, name);
 
             var settingValue = await _settingStore.GetSettingValueAsync(setting, context ?? GetCurrentContext());
 
@@ -66,7 +66,7 @@ namespace Shesha.Settings
         public async Task SetAsync<TValue>([NotNull] string module, [NotNull] string name, [CanBeNull] TValue value, SettingManagementContext context = null)
         {
             context = context ?? GetCurrentContext();
-            var setting = _settingDefinitionManager.Get(name);
+            var setting = _settingDefinitionManager.Get(module, name);
 
             var settingValue = await _settingStore.GetSettingValueAsync(setting, context);
             if (settingValue == null) 

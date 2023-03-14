@@ -2,14 +2,22 @@
 using Abp.AspNetCore.Configuration;
 using Abp.Modules;
 using Castle.MicroKernel.Registration;
+using Shesha.Modules;
 using Shesha.Settings.Ioc;
 using System.Reflection;
 
 namespace Shesha.Sms.SmsPortal
 {
     [DependsOn(typeof(SheshaFrameworkModule), typeof(SheshaApplicationModule), typeof(AbpAspNetCoreModule))]
-    public class SheshaSmsPortalModule : AbpModule
+    public class SheshaSmsPortalModule : SheshaModule
     {
+        public const string ModuleName = "Shesha.SmsPortal";
+        public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo(ModuleName)
+        {
+            FriendlyName = "Shesha SMS Portal",
+            Publisher = "Boxfusion"
+        };
+
         public override void PreInitialize()
         {
             Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(
