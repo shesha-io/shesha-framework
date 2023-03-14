@@ -103,6 +103,12 @@ stages:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'api-info-1'
     - task: DotNetCoreCLI@2
+      displayName: 'Dotnet Restore'
+      inputs:
+        command: restore
+        projects: 'shesha-io/shesha-framework/shesha-functional-tests/backend/src/Module/**/*.csproj'
+        vstsFeed: '44b4667a-8963-403d-9962-bde66225adbd'
+    - task: DotNetCoreCLI@2
       displayName: dotnet build
       inputs:
         projects: $(BuildParameters.solution1)
@@ -214,12 +220,21 @@ stages:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'api-info-2'
     - task: DotNetCoreCLI@2
+      displayName: 'Dotnet Restore'
+      inputs:
+        command: restore
+        projects: 'shesha-io/shesha-framework/shesha-functional-tests/backend/src/Module/**/*.csproj'
+        vstsFeed: '44b4667a-8963-403d-9962-bde66225adbd'
+    - task: DotNetCoreCLI@2
       displayName: dotnet build
       inputs:
-        projects: $(BuildParameters.solution2)
+        projects: $(BuildParameters.solution1)
         arguments: --configuration $(BuildParameters.configuration)
+    - task: DotNetCoreCLI@2
+      displayName: dotnet pack
+      inputs:
         command: 'pack'
-        packagesToPack: 'shesha-framework/shesha-starter/backend/src/Module/**/*.csproj'
+        packagesToPack: 'shesha-framework/shesha-functional-tests/backend/src/Module/**/*.csproj'
         configuration: '$(BuildParameters.configuration)'
         nobuild: true
         includesymbols: true
@@ -230,7 +245,7 @@ stages:
       displayName: 'Publish Artifact: Nuget packs'  
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: 'packs-starter'
+        ArtifactName: 'packs-functional'
     - task: DotNetCoreCLI@2
       displayName: dotnet publish
       inputs:
