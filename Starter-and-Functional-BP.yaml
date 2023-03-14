@@ -2,9 +2,9 @@
 # Agent Queue 'Azure Pipelines' was used with unrecognized Agent Specification, vmImage property must be specified to determine image - https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops&tabs=yaml#software
 variables:
 - name: BuildParameters.solution1
-  value: shesha-framework/shesha-functional-tests/backend/Boxfusion.SheshaFunctionalTests.sln
+  value: shesha-io/shesha-framework/shesha-functional-tests/backend/Boxfusion.SheshaFunctionalTests.sln
 - name: BuildParameters.solution2
-  value: shesha-framework/shesha-starter/backend/ShaCompanyName.ShaProjectName.sln  
+  value: shesha-io/shesha-framework/shesha-starter/backend/ShaCompanyName.ShaProjectName.sln  
 - name: BuildParameters.configuration
   value: release
 - name: pack-version
