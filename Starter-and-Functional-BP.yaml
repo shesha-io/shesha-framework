@@ -267,7 +267,7 @@ stages:
       displayName: dotnet pack
       inputs:
         command: 'pack'
-        packagesToPack: 'shesha-starter-tests/backend/src/Module/**/*.csproj'
+        packagesToPack: 'shesha-starter/backend/src/Module/**/*.csproj'
         configuration: '$(BuildParameters.configuration)'
         nobuild: true
         includesymbols: true
