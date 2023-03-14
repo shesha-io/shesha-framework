@@ -16,9 +16,9 @@ trigger:
   branches:
     include:
     - releases/*
-    - refs/tags/*
-    exclude:
-    - main
+    # - refs/tags/*
+    # exclude:
+    # - main
 pool: 
   name: Azure Pipelines
   vmImage1: windows-latest
