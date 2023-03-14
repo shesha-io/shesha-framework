@@ -107,7 +107,7 @@ stages:
       inputs:
         command: restore
         # projects: '$(System.DefaultWorkingDirectory)/shesha-functional-tests/backend/src/Boxfusion.SheshaFunctionalTests.Web.Host/Boxfusion.SheshaFunctionalTests.Web.Host.csproj'
-        projects: shesha-functional-tests/backend/Boxfusion.SheshaFunctionalTests.sln
+        projects: shesha-functional-tests/backend/**/*.csproj
         vstsFeed: '44b4667a-8963-403d-9962-bde66225adbd'
 
     - task: DotNetCoreCLI@2
@@ -225,7 +225,7 @@ stages:
       displayName: 'Dotnet Restore'
       inputs:
         command: restore
-        projects: 'shesha-starter/backend/Boxfusion.SheshaFunctionalTests.sln'
+        projects: shesha-starter/backend/**/*.csproj
         vstsFeed: '44b4667a-8963-403d-9962-bde66225adbd'
     - task: DotNetCoreCLI@2
       displayName: dotnet build
