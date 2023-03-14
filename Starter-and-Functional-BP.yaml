@@ -9,6 +9,9 @@ variables:
   value: release
 - name: pack-version
   value: $(Build.BuildNumber)
+- name: isMain
+  value: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
+
 trigger:
   tags:
     include:
@@ -17,8 +20,8 @@ trigger:
     include:
     - releases/*
     # - refs/tags/*
-    # exclude:
-    # - main
+    exclude:
+    - main
 pool: 
   name: Azure Pipelines
   vmImage1: windows-latest
@@ -27,6 +30,7 @@ name: 2.0.0.$(BuildID)
 stages:
 - stage: Build_Functional_Shesha_API
   displayName: Build_Functional_Shesha_API
+  condition: eq(variables.isMain, 'false')
   jobs:
   - job: Job_1
     displayName: Agent job 1
@@ -146,6 +150,7 @@ stages:
         ArtifactName: functional-shesha-api
 - stage: Build_Starter_Shesha_API
   displayName: Build_Starter_Shesha_API
+  condition: eq(variables.isMain, 'false')  
   jobs:
   - job: Job_2
     displayName: Agent job 2
@@ -263,6 +268,7 @@ stages:
         ArtifactName: starter-shesha-api
 - stage: Build_Functional_Shesha_AdminPortal
   displayName: Build_Functional_Shesha_AdminPortal
+  condition: eq(variables.isMain, 'false')
   jobs:
   - job: Job_3
     displayName: Agent job 3
@@ -367,6 +373,7 @@ stages:
         ArtifactName: adminportal-functional
 - stage: Build_Starter_Shesha_AdminPortal
   displayName: Build_Starter_Shesha_AdminPortal
+  condition: eq(variables.isMain, 'false')
   jobs:
   - job: Job_4
     displayName: Agent job 4
