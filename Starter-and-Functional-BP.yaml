@@ -56,13 +56,6 @@ stages:
       displayName: Use .NET Core sdk 6.x
       inputs:
         version: 6.x
-    # - task: DotNetCoreCLI@2
-    #   displayName: 'Dotnet Restore'
-    #   inputs:
-    #     command: restore
-    #     projects: $(BuildParameters.solution)
-    #     feedsToUse: config
-    #     nugetConfigPath: backend/.nuget/NuGet.Config
     - task: Assembly-Info-NetCore@3
       displayName: Set Assembly Manifest Data
       inputs:
@@ -123,10 +116,8 @@ stages:
       displayName: 'Dotnet Restore'
       inputs:
         command: restore
-        # projects: '$(System.DefaultWorkingDirectory)/shesha-functional-tests/backend/src/Boxfusion.SheshaFunctionalTests.Web.Host/Boxfusion.SheshaFunctionalTests.Web.Host.csproj'
         projects: shesha-functional-tests/backend/**/*.csproj
         vstsFeed: '44b4667a-8963-403d-9962-bde66225adbd'
-
     - task: DotNetCoreCLI@2
       displayName: dotnet build
       inputs:
@@ -153,17 +144,17 @@ stages:
         configuration: '$(BuildParameters.configuration)'
         nobuild: true
         includesymbols: true
-        includesource: true        
+        includesource: true
         versioningScheme: 'byEnvVar'
         versionEnvVar: 'pack-version'
     - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: Nuget packs'  
+      displayName: 'Publish Artifact: Nuget packs'
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'packs-functional'
 - stage: Build_Starter_Shesha_API
   displayName: Build_Starter_Shesha_API
-  condition: eq(variables.isMain, 'false')  
+  condition: eq(variables.isMain, 'false')
   jobs:
   - job: Job_2
     displayName: Agent job 2
@@ -176,13 +167,6 @@ stages:
       displayName: Use .NET Core sdk 6.x
       inputs:
         version: 6.x
-    # - task: DotNetCoreCLI@2
-    #   displayName: 'Dotnet Restore'
-    #   inputs:
-    #     command: restore
-    #     projects: $(BuildParameters.solution)
-    #     feedsToUse: config
-    #     nugetConfigPath: backend/.nuget/NuGet.Config
     - task: Assembly-Info-NetCore@3
       displayName: Set Assembly Manifest Data
       inputs:
@@ -378,7 +362,7 @@ stages:
         rootFolderOrFile: 'shesha-functional-tests/frontend'
         includeRootFolder: false
         archiveType: 'zip'
-        archiveFile: 'shesha-adminportal-functional.zip'
+        archiveFile: 'shesha-functional-tests/frontend.zip'
         replaceExistingArchive: true
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: shesha-adminportal-functional'
@@ -455,7 +439,7 @@ stages:
           Write-Host "##vso[task.setvariable variable=version]$bumpedVersion"
 
           ls
-        workingDirectory: 'shesha-starter/frontend'        
+        workingDirectory: 'shesha-starter/frontend'
     - task: Npm@1
       displayName: Npm Set the version
       inputs:
