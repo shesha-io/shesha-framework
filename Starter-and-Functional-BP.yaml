@@ -16,13 +16,13 @@ trigger:
   branches:
     include:
     - releases/*
-    - refs/tags/*    
+    - refs/tags/*
     exclude:
     - main
 pool: 
   name: Azure Pipelines
   vmImage1: windows-latest
-  vmImage2: 'ubuntu-latest'
+  vmImage2: ubuntu-latest
 name: 2.0.0.$(BuildID)
 stages:
 - stage: Build_Functional_Shesha_API
