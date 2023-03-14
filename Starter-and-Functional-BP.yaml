@@ -1,4 +1,4 @@
-# Variable 'artifactName' was defined in the Variables tab
+# Variable 'artifactName' was defined in the Variables tab - test
 # Agent Queue 'Azure Pipelines' was used with unrecognized Agent Specification, vmImage property must be specified to determine image - https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops&tabs=yaml#software
 variables:
 - name: BuildParameters.solution1
