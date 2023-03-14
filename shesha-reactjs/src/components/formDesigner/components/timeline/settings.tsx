@@ -2,10 +2,7 @@ import React, { FC, useState } from 'react';
 import { Checkbox, Form, Input, Select } from 'antd';
 
 import { ITimelineProps } from './timeline';
-import { nanoid } from 'nanoid';
 import SectionSeparator from '../../../sectionSeparator';
-import ItemListSettingsModal from '../itemListConfigurator/itemListSettingsModal';
-import { getSettings } from './itemSettings';
 
 import Show from '../../../show';
 import { AutocompleteRaw } from '../../../autocomplete';
@@ -54,17 +51,6 @@ const TimelineSettings: FC<ITabSettingsProps> = (props) => {
     onValuesChange(changedValues, incomingState);
   };
 
-  const onAddNewItem = (_, count: number) => {
-    const buttonProps = {
-      id: nanoid(),
-      name: `item${count + 1}`,
-    };
-
-    return buttonProps;
-  };
-
-  const items = props?.model?.items?.map((item) => ({ ...item, label: item?.title }));
-
   return (
     <Form
       initialValues={props?.model}
@@ -83,30 +69,21 @@ const TimelineSettings: FC<ITabSettingsProps> = (props) => {
         <Input />
       </Form.Item>
 
-      <Form.Item name="dataSource" label="Data Source">
-        <Select defaultValue={props?.model?.dataSource}>
-          <Option value="api">api</Option>
-          <Option value="form">form</Option>
+      <Form.Item
+        name="apiSource"
+        label="Api source"
+        tooltip="An option to use entity option or custom api. Bare in mind that everything works the same as entity for custom api, the source is the only thing that differs."
+        initialValue={['entity']}
+      >
+        <Select disabled={state.readOnly}>
+          <Option value="entity">entity</Option>
+          <Option value="custom">custom Url</Option>
         </Select>
       </Form.Item>
 
-      <Show when={state?.dataSource === 'api'}>
-        <Form.Item
-          name="apiSource"
-          label="Api source"
-          tooltip="An option to use entity option or custom api. Bare in mind that everything works the same as entity for custom api, the source is the only thing that differs."
-          initialValue={['entity']}
-        >
-          <Select disabled={state.readOnly}>
-            <Option value="entity">entity</Option>
-            <Option value="custom">custom Url</Option>
-          </Select>
-        </Form.Item>
-
-        <Form.Item name={'ownerId'} label="id">
-          <Input />
-        </Form.Item>
-      </Show>
+      <Form.Item name={'ownerId'} label="id">
+        <Input />
+      </Form.Item>
 
       <Show when={state?.apiSource === 'entity'}>
         <Form.Item name="entityType" label="Entity type">
@@ -154,22 +131,6 @@ const TimelineSettings: FC<ITabSettingsProps> = (props) => {
       <Show when={state?.apiSource === 'custom' && state?.dataSource == 'api'}>
         <Form.Item label="Custom Api URL" name="customApiUrl" tooltip="The URL for a custom Api.">
           <Input readOnly={state.readOnly} />
-        </Form.Item>
-      </Show>
-
-      <Show when={state?.dataSource === 'form'}>
-        <SectionSeparator title="Configure Timeline items" />
-
-        <Form.Item name="items" initialValue={items}>
-          <ItemListSettingsModal
-            options={{ onAddNewItem }}
-            title="Configure Timeline items"
-            heading="Settings"
-            callToAction="Configure Timeline items"
-            itemTypeMarkup={getSettings()}
-            allowAddGroups={false}
-            insertMode="after"
-          />
         </Form.Item>
       </Show>
     </Form>

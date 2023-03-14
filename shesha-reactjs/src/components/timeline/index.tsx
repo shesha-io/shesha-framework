@@ -19,9 +19,7 @@ import { ITimelineProps } from '../formDesigner/components/timeline/timeline';
 export interface ITimelineComponentProps extends ITimelineProps {}
 
 export const ShaTimeline: FC<ITimelineComponentProps> = ({
-  dataSource,
   properties,
-  items,
   ownerId,
   entityType,
   customApiUrl,
@@ -65,24 +63,19 @@ export const ShaTimeline: FC<ITimelineComponentProps> = ({
 
   return (
     <Spin spinning={isFetchingEntities}>
-      {(!timelineData?.length && dataSource === 'api' && <Empty description="Empty timeline" />) || (
+      {(!timelineData?.length && <Empty description="Empty timeline" />) || (
         <Timeline>
-          {dataSource === 'form' &&
-            items?.map((item) => {
-              return <Timeline.Item>{item?.content}</Timeline.Item>;
-            })}
-          {dataSource === 'api' &&
-            timelineData?.map(({ title, body, toPerson, actionDate, type }) => {
-              return (
-                <TimelineItem
-                  title={title}
-                  toPerson={toPerson?._displayName}
-                  type={type}
-                  actionDate={actionDate}
-                  body={body}
-                />
-              );
-            })}
+          {timelineData?.map(({ title, body, toPerson, actionDate, type }) => {
+            return (
+              <TimelineItem
+                title={title}
+                toPerson={toPerson?._displayName}
+                type={type}
+                actionDate={actionDate}
+                body={body}
+              />
+            );
+          })}
         </Timeline>
       )}
     </Spin>
