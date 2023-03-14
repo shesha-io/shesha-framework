@@ -16,6 +16,12 @@ trigger:
   tags:
     include:
     - '*'
+  paths:
+    exclude:
+    - shesha-core
+    - shesha-docs
+    - shesha-reactjs
+    - .github/workflows
   branches:
     include:
     - releases/*
