@@ -242,7 +242,7 @@ stages:
       inputs:
         command: publish
         publishWebProjects: false
-        projects: shesha-starter/backend/$(BuildParameters.solution2)
+        projects: shesha-starter/backend/ShaCompanyName.ShaProjectName.sln
         arguments: --configuration $(BuildParameters.configuration) --output $(build.artifactstagingdirectory) --no-build
         zipAfterPublish: false
         modifyOutputPath: false
@@ -265,7 +265,7 @@ stages:
       displayName: 'Publish Artifact: Nuget packs'  
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: 'packs-functional'        
+        ArtifactName: 'packs-starter'
 - stage: Build_Functional_Shesha_AdminPortal
   displayName: Build_Functional_Shesha_AdminPortal
   condition: eq(variables.isMain, 'false')
