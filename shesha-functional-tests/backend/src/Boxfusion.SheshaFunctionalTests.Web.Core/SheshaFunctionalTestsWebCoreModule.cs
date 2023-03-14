@@ -41,7 +41,7 @@ namespace Boxfusion.SheshaFunctionalTests
         typeof(SheshaSmsPortalModule),
         typeof(SheshaFunctionalTestsCommonModule),
         typeof(SheshaFunctionalTestsCommonApplicationModule)
-	 )]
+     )]
     public class SheshaFunctionalTestsWebCoreModule : AbpModule
     {
         private readonly IWebHostEnvironment _env;
