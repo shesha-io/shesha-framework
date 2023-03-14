@@ -235,7 +235,7 @@ stages:
     - task: DotNetCoreCLI@2
       displayName: dotnet build
       inputs:
-        projects: $(BuildParameters.solution1)
+        projects: shesha-starter/backend/ShaCompanyName.ShaProjectName.sln
         arguments: --configuration $(BuildParameters.configuration)
     - task: DotNetCoreCLI@2
       displayName: dotnet publish
@@ -258,7 +258,7 @@ stages:
         configuration: '$(BuildParameters.configuration)'
         nobuild: true
         includesymbols: true
-        includesource: true        
+        includesource: true
         versioningScheme: 'byEnvVar'
         versionEnvVar: 'pack-version'
     - task: PublishBuildArtifacts@1
