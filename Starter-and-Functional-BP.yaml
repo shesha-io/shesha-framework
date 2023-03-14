@@ -121,14 +121,14 @@ stages:
     - task: DotNetCoreCLI@2
       displayName: dotnet build
       inputs:
-        projects: shesha-functional-tests/backend/ShaCompanyName.ShaProjectName.sln
+        projects: shesha-functional-tests/backend/Boxfusion.SheshaFunctionalTests.sln
         arguments: --configuration $(BuildParameters.configuration)
     - task: DotNetCoreCLI@2
       displayName: dotnet publish
       inputs:
         command: publish
         publishWebProjects: false
-        projects: shesha-functional-tests/backend/ShaCompanyName.ShaProjectName.sln
+        projects: shesha-functional-tests/backend/Boxfusion.SheshaFunctionalTests.sln
         arguments: --configuration $(BuildParameters.configuration) --output $(build.artifactstagingdirectory) --no-build
         zipAfterPublish: false
         modifyOutputPath: false
