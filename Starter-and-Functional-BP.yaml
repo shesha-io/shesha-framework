@@ -298,7 +298,7 @@ stages:
               write-host "Source Branch should be main or releases here: $(Build.SourceBranch)"            
               write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
           }
-        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/frontend'
     - task: PowerShell@2
       displayName: Output to console the current branch  
       inputs:
@@ -306,7 +306,7 @@ stages:
         script: |
           # Write your PowerShell commands here.
           write-host "The current branch is: $(currentBranch)"
-        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/frontend'
     - task: NodeTool@0
       displayName: 'Use Node 14.21.1'
       inputs:
@@ -320,7 +320,7 @@ stages:
       displayName: Install Latest Shesha
       inputs:
         command: custom
-        workingDir: '$(System.DefaultWorkingDirectory)'
+        workingDir: '$(System.DefaultWorkingDirectory)/frontend'
         verbose: false
         customCommand: install @shesha/reactjs@latest
     - task: PowerShell@2
@@ -337,12 +337,12 @@ stages:
           Write-Host "##vso[task.setvariable variable=version]$bumpedVersion"
 
           ls
-        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/frontend'
     - task: Npm@1
       displayName: Npm Set the version
       inputs:
         command: custom
-        workingDir: '$(System.DefaultWorkingDirectory)'
+        workingDir: '$(System.DefaultWorkingDirectory)/frontend'
         verbose: true
         #customCommand: version --no-git-tag-version #$(pack-version)
         customCommand: 'version $(pack-version)'
@@ -350,23 +350,23 @@ stages:
       displayName: 'Npm Install'
       inputs:
         command: custom
-        workingDir: $(System.DefaultWorkingDirectory)
+        workingDir: $(System.DefaultWorkingDirectory)/frontend
         verbose: false
         customCommand: 'install --legacy-peer-deps'        
     - task: Npm@1
       displayName: Npm Build
       inputs:
         command: custom
-        workingDir: '$(System.DefaultWorkingDirectory)'
+        workingDir: '$(System.DefaultWorkingDirectory)/frontend'
         verbose: true
         customCommand: run build
     - task: ArchiveFiles@2
       inputs:
-        rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/frontend'
         includeRootFolder: false
         archiveType: 'zip'
         archiveFile: 'shesha-adminportal-functional.zip'
-        replaceExistingArchive: true  
+        replaceExistingArchive: true
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: shesha-adminportal-functional'
       inputs:
@@ -403,7 +403,7 @@ stages:
               write-host "Source Branch should be main or releases here: $(Build.SourceBranch)"            
               write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
           }
-        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/frontend'
     - task: PowerShell@2
       displayName: Output to console the current branch  
       inputs:
@@ -411,7 +411,7 @@ stages:
         script: |
           # Write your PowerShell commands here.
           write-host "The current branch is: $(currentBranch)"
-        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/frontend'
     - task: NodeTool@0
       displayName: 'Use Node 14.21.1'
       inputs:
@@ -442,12 +442,12 @@ stages:
           Write-Host "##vso[task.setvariable variable=version]$bumpedVersion"
 
           ls
-        workingDirectory: '$(System.DefaultWorkingDirectory)'        
+        workingDirectory: '$(System.DefaultWorkingDirectory)/frontend'        
     - task: Npm@1
       displayName: Npm Set the version
       inputs:
         command: custom
-        workingDir: '$(System.DefaultWorkingDirectory)'
+        workingDir: '$(System.DefaultWorkingDirectory)/frontend'
         verbose: true
         #customCommand: version --no-git-tag-version #$(pack-version)
         customCommand: 'version $(pack-version)'
@@ -455,19 +455,19 @@ stages:
       displayName: 'Npm Install'
       inputs:
         command: custom
-        workingDir: $(System.DefaultWorkingDirectory)
+        workingDir: '$(System.DefaultWorkingDirectory)/frontend'
         verbose: false
-        customCommand: 'install --legacy-peer-deps'        
+        customCommand: 'install --legacy-peer-deps'
     - task: Npm@1
       displayName: Npm Build
       inputs:
         command: custom
-        workingDir: '$(System.DefaultWorkingDirectory)'
+        workingDir: '$(System.DefaultWorkingDirectory)/frontend'
         verbose: true
         customCommand: run build
     - task: ArchiveFiles@2
       inputs:
-        rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/frontend'
         includeRootFolder: false
         archiveType: 'zip'
         archiveFile: 'shesha-adminportal-starter.zip'
