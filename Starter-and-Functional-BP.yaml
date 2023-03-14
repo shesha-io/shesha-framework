@@ -120,6 +120,19 @@ stages:
         projects: shesha-functional-tests/backend/Boxfusion.SheshaFunctionalTests.sln
         arguments: --configuration $(BuildParameters.configuration)
     - task: DotNetCoreCLI@2
+      displayName: dotnet publish
+      inputs:
+        command: publish
+        publishWebProjects: false
+        projects: shesha-functional-tests/backend/Boxfusion.SheshaFunctionalTests.sln
+        arguments: --configuration $(BuildParameters.configuration) --output $(build.artifactstagingdirectory) --no-build
+        zipAfterPublish: false
+        modifyOutputPath: false
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: functional-shesha-api'
+      inputs:
+        ArtifactName: functional-shesha-api
+    - task: DotNetCoreCLI@2
       displayName: dotnet pack
       inputs:
         command: 'pack'
@@ -135,19 +148,6 @@ stages:
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'packs-functional'
-    - task: DotNetCoreCLI@2
-      displayName: dotnet publish
-      inputs:
-        command: publish
-        publishWebProjects: false
-        projects: shesha-functional-tests/backend/Boxfusion.SheshaFunctionalTests.sln
-        arguments: --configuration $(BuildParameters.configuration) --output $(build.artifactstagingdirectory) --no-build
-        zipAfterPublish: false
-        modifyOutputPath: false
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: functional-shesha-api'
-      inputs:
-        ArtifactName: functional-shesha-api
 - stage: Build_Starter_Shesha_API
   displayName: Build_Starter_Shesha_API
   condition: eq(variables.isMain, 'false')  
@@ -238,6 +238,19 @@ stages:
         projects: $(BuildParameters.solution1)
         arguments: --configuration $(BuildParameters.configuration)
     - task: DotNetCoreCLI@2
+      displayName: dotnet publish
+      inputs:
+        command: publish
+        publishWebProjects: false
+        projects: shesha-starter/backend/$(BuildParameters.solution2)
+        arguments: --configuration $(BuildParameters.configuration) --output $(build.artifactstagingdirectory) --no-build
+        zipAfterPublish: false
+        modifyOutputPath: false
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: starter-shesha-api'
+      inputs:
+        ArtifactName: starter-shesha-api
+    - task: DotNetCoreCLI@2
       displayName: dotnet pack
       inputs:
         command: 'pack'
@@ -252,20 +265,7 @@ stages:
       displayName: 'Publish Artifact: Nuget packs'  
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: 'packs-functional'
-    - task: DotNetCoreCLI@2
-      displayName: dotnet publish
-      inputs:
-        command: publish
-        publishWebProjects: false
-        projects: shesha-starter/backend/$(BuildParameters.solution2)
-        arguments: --configuration $(BuildParameters.configuration) --output $(build.artifactstagingdirectory) --no-build
-        zipAfterPublish: false
-        modifyOutputPath: false
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: starter-shesha-api'
-      inputs:
-        ArtifactName: starter-shesha-api
+        ArtifactName: 'packs-functional'        
 - stage: Build_Functional_Shesha_AdminPortal
   displayName: Build_Functional_Shesha_AdminPortal
   condition: eq(variables.isMain, 'false')
