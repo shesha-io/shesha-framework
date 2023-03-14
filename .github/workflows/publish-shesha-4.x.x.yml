@@ -10,14 +10,14 @@ on:
     paths:
       - shesha-reactjs/**
       - shesha-core/**
-  pull_request:
-    types:
-      - closed
-    branches: 
-      - main
-    paths:
-      - shesha-reactjs/**
-      - shesha-core/**
+  # pull_request:
+  #   types:
+  #     - closed
+  #   branches: 
+  #     - main
+  #   paths:
+  #     - shesha-reactjs/**
+  #     - shesha-core/**
 env:
   NODE_VERSION: '15'
   PYTHON_VERSOIN: '2.7.18'
