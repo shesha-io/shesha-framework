@@ -72,8 +72,8 @@ export const ShaTimeline: FC<ITimelineComponentProps> = ({
           })}
         {dataSource === 'api' &&
           !!customApiUrl &&
-          data?.result?.map(({ title, body, user, createdTime }) => {
-            return <TimelineItem title={title} user={user} creationTime={createdTime} body={body} />;
+          data?.result?.map(({ title, body, toPerson, actionDate }) => {
+            return <TimelineItem title={title} toPerson={toPerson?._displayName} actionDate={actionDate} body={body} />;
           })}
       </Timeline>
     </Spin>
@@ -81,34 +81,29 @@ export const ShaTimeline: FC<ITimelineComponentProps> = ({
 };
 
 export interface ITimelineItemProps {
-  user?: string;
+  toPerson?: string;
+  fromPerson?: string;
   body?: string;
   title?: string;
   description?: string;
-  creationTime?: string;
+  actionDate?: string;
   type?: string;
 }
 
-const TimelineItem: FC<ITimelineItemProps> = ({
-  title,
-  type,
-  user = 'pholosho',
-  body,
-  creationTime = '20/03/2023',
-}) => {
+const TimelineItem: FC<ITimelineItemProps> = ({ title, type, toPerson, body, actionDate }) => {
   return (
     <Timeline.Item dot={<TimelineIcon type={type} />}>
       <Card
         extra={
           <small style={{ color: 'gray' }}>
             <ClockCircleOutlined />
-            {creationTime}
+            {actionDate}
           </small>
         }
         title={
           <div>
             <label>
-              <strong style={{ textDecoration: 'underline' }}>{user}</strong> {title}
+              <strong style={{ textDecoration: 'underline' }}>{toPerson}</strong> {title}
             </label>
           </div>
         }
