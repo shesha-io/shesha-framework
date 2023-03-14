@@ -32,7 +32,7 @@ stages:
     displayName: Agent job 1
     pool:
       name: Azure Pipelines
-      vmImage: $(vmImage1)
+      vmImage: windows-latest
     steps:
     - checkout: self
     - task: UseDotNet@2
@@ -143,7 +143,7 @@ stages:
     displayName: Agent job 2
     pool:
       name: Azure Pipelines
-      vmImage: $(vmImage1)
+      vmImage: windows-latest
     steps:
     - checkout: self
     - task: UseDotNet@2
@@ -250,7 +250,7 @@ stages:
   - job: Job_3
     displayName: Agent job 3
     pool:
-      vmImage: $(vmImage2)
+      vmImage: ubuntu-latest
     steps:
     - task: PowerShell@2
       displayName: Check to establish if this pipeline was triggered from a tag  
@@ -354,7 +354,7 @@ stages:
   - job: Job_4
     displayName: Agent job 4
     pool:
-      vmImage: $(vmImage2)
+      vmImage: ubuntu-latest
     steps:
     - task: PowerShell@2
       displayName: Check to establish if this pipeline was triggered from a tag  
