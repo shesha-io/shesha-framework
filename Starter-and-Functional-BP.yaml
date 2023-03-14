@@ -56,13 +56,6 @@ stages:
       displayName: Use .NET Core sdk 6.x
       inputs:
         version: 6.x
-    # - task: DotNetCoreCLI@2
-    #   displayName: 'Dotnet Restore'
-    #   inputs:
-    #     command: restore
-    #     projects: $(BuildParameters.solution)
-    #     feedsToUse: config
-    #     nugetConfigPath: backend/.nuget/NuGet.Config
     - task: Assembly-Info-NetCore@3
       displayName: Set Assembly Manifest Data
       inputs:
@@ -123,21 +116,19 @@ stages:
       displayName: 'Dotnet Restore'
       inputs:
         command: restore
-        # projects: '$(System.DefaultWorkingDirectory)/shesha-functional-tests/backend/src/Boxfusion.SheshaFunctionalTests.Web.Host/Boxfusion.SheshaFunctionalTests.Web.Host.csproj'
         projects: shesha-functional-tests/backend/**/*.csproj
         vstsFeed: '44b4667a-8963-403d-9962-bde66225adbd'
-
     - task: DotNetCoreCLI@2
       displayName: dotnet build
       inputs:
-        projects: shesha-functional-tests/backend/Boxfusion.SheshaFunctionalTests.sln
+        projects: shesha-functional-tests/backend/ShaCompanyName.ShaProjectName.sln
         arguments: --configuration $(BuildParameters.configuration)
     - task: DotNetCoreCLI@2
       displayName: dotnet publish
       inputs:
         command: publish
         publishWebProjects: false
-        projects: shesha-functional-tests/backend/Boxfusion.SheshaFunctionalTests.sln
+        projects: shesha-functional-tests/backend/ShaCompanyName.ShaProjectName.sln
         arguments: --configuration $(BuildParameters.configuration) --output $(build.artifactstagingdirectory) --no-build
         zipAfterPublish: false
         modifyOutputPath: false
@@ -153,17 +144,17 @@ stages:
         configuration: '$(BuildParameters.configuration)'
         nobuild: true
         includesymbols: true
-        includesource: true        
+        includesource: true
         versioningScheme: 'byEnvVar'
         versionEnvVar: 'pack-version'
     - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: Nuget packs'  
+      displayName: 'Publish Artifact: Nuget packs'
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'packs-functional'
 - stage: Build_Starter_Shesha_API
   displayName: Build_Starter_Shesha_API
-  condition: eq(variables.isMain, 'false')  
+  condition: eq(variables.isMain, 'false')
   jobs:
   - job: Job_2
     displayName: Agent job 2
@@ -176,13 +167,6 @@ stages:
       displayName: Use .NET Core sdk 6.x
       inputs:
         version: 6.x
-    # - task: DotNetCoreCLI@2
-    #   displayName: 'Dotnet Restore'
-    #   inputs:
-    #     command: restore
-    #     projects: $(BuildParameters.solution)
-    #     feedsToUse: config
-    #     nugetConfigPath: backend/.nuget/NuGet.Config
     - task: Assembly-Info-NetCore@3
       displayName: Set Assembly Manifest Data
       inputs:
@@ -311,7 +295,7 @@ stages:
               write-host "Source Branch should be main or releases here: $(Build.SourceBranch)"            
               write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
           }
-        workingDirectory: 'shesha-functional-tests/frontend'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/frontend'
     - task: PowerShell@2
       displayName: Output to console the current branch  
       inputs:
@@ -319,7 +303,7 @@ stages:
         script: |
           # Write your PowerShell commands here.
           write-host "The current branch is: $(currentBranch)"
-        workingDirectory: 'shesha-functional-tests/frontend'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/frontend'
     - task: NodeTool@0
       displayName: 'Use Node 14.21.1'
       inputs:
@@ -333,7 +317,7 @@ stages:
       displayName: Install Latest Shesha
       inputs:
         command: custom
-        workingDir: 'shesha-functional-tests/frontend'
+        workingDir: '$(System.DefaultWorkingDirectory)/frontend'
         verbose: false
         customCommand: install @shesha/reactjs@latest
     - task: PowerShell@2
@@ -350,12 +334,12 @@ stages:
           Write-Host "##vso[task.setvariable variable=version]$bumpedVersion"
 
           ls
-        workingDirectory: 'shesha-functional-tests/frontend'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/frontend'
     - task: Npm@1
       displayName: Npm Set the version
       inputs:
         command: custom
-        workingDir: 'shesha-functional-tests/frontend'
+        workingDir: '$(System.DefaultWorkingDirectory)/frontend'
         verbose: true
         #customCommand: version --no-git-tag-version #$(pack-version)
         customCommand: 'version $(pack-version)'
@@ -363,19 +347,19 @@ stages:
       displayName: 'Npm Install'
       inputs:
         command: custom
-        workingDir: shesha-functional-tests/frontend
+        workingDir: $(System.DefaultWorkingDirectory)/frontend
         verbose: false
         customCommand: 'install --legacy-peer-deps'        
     - task: Npm@1
       displayName: Npm Build
       inputs:
         command: custom
-        workingDir: 'shesha-functional-tests/frontend'
+        workingDir: '$(System.DefaultWorkingDirectory)/frontend'
         verbose: true
         customCommand: run build
     - task: ArchiveFiles@2
       inputs:
-        rootFolderOrFile: 'shesha-functional-tests/frontend'
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/frontend'
         includeRootFolder: false
         archiveType: 'zip'
         archiveFile: 'shesha-adminportal-functional.zip'
@@ -416,7 +400,7 @@ stages:
               write-host "Source Branch should be main or releases here: $(Build.SourceBranch)"            
               write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
           }
-        workingDirectory: 'shesha-starter/frontend'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/frontend'
     - task: PowerShell@2
       displayName: Output to console the current branch  
       inputs:
@@ -424,7 +408,7 @@ stages:
         script: |
           # Write your PowerShell commands here.
           write-host "The current branch is: $(currentBranch)"
-        workingDirectory: 'shesha-starter/frontend'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/frontend'
     - task: NodeTool@0
       displayName: 'Use Node 14.21.1'
       inputs:
@@ -455,12 +439,12 @@ stages:
           Write-Host "##vso[task.setvariable variable=version]$bumpedVersion"
 
           ls
-        workingDirectory: 'shesha-starter/frontend'        
+        workingDirectory: '$(System.DefaultWorkingDirectory)/frontend'        
     - task: Npm@1
       displayName: Npm Set the version
       inputs:
         command: custom
-        workingDir: 'shesha-starter/frontend'
+        workingDir: '$(System.DefaultWorkingDirectory)/frontend'
         verbose: true
         #customCommand: version --no-git-tag-version #$(pack-version)
         customCommand: 'version $(pack-version)'
@@ -468,19 +452,19 @@ stages:
       displayName: 'Npm Install'
       inputs:
         command: custom
-        workingDir: 'shesha-starter/frontend'
+        workingDir: '$(System.DefaultWorkingDirectory)/frontend'
         verbose: false
         customCommand: 'install --legacy-peer-deps'
     - task: Npm@1
       displayName: Npm Build
       inputs:
         command: custom
-        workingDir: 'shesha-starter/frontend'
+        workingDir: '$(System.DefaultWorkingDirectory)/frontend'
         verbose: true
         customCommand: run build
     - task: ArchiveFiles@2
       inputs:
-        rootFolderOrFile: 'shesha-starter/frontend'
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/frontend'
         includeRootFolder: false
         archiveType: 'zip'
         archiveFile: 'shesha-adminportal-starter.zip'
