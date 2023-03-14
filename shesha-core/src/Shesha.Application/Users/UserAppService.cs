@@ -298,6 +298,10 @@ namespace Shesha.Users
             var isEmailLinkEnabled = await _authSettings.UseResetPasswordViaEmailLink.GetValueAsync();
             var isSMSOTPEnabled = await _authSettings.UseResetPasswordViaSmsOtp.GetValueAsync();
             var isSecurityQuestionsEnabled = await _authSettings.UseResetPasswordViaSecurityQuestions.GetValueAsync();
+            
+            var hasPhoneNumber = !string.IsNullOrEmpty(person.PhoneNumber);
+            var hasEmail = !string.IsNullOrEmpty(person.EmailAddress);
+            var hasQuestions = await _questionRepository.CountAsync(q => q.User == person) > 0;
 
             if (supportedResetOptions.Length > 0)
             {
@@ -308,7 +312,7 @@ namespace Shesha.Users
                     methodOption.Method = reflistItem;
                     var isAllowed = false;
 
-                    if (reflistItem == RefListPasswordResetMethods.SmsOtp && isSMSOTPEnabled)
+                    if (reflistItem == RefListPasswordResetMethods.SmsOtp && isSMSOTPEnabled && hasPhoneNumber)
                     {
                         var maskedPhoneNumber = person.PhoneNumber.MaskMobileNo();
                         methodOption.Prompt = $"SMS an OTP to {maskedPhoneNumber}";
@@ -316,14 +320,14 @@ namespace Shesha.Users
                         isAllowed = true;
                         
                     }
-                    else if (reflistItem == RefListPasswordResetMethods.EmailLink && isEmailLinkEnabled)
+                    else if (reflistItem == RefListPasswordResetMethods.EmailLink && isEmailLinkEnabled && hasEmail)
                     {
                         var maskedEmail = person.EmailAddress.MaskEmail();
                         methodOption.Prompt = $"Email a link to {maskedEmail}";
                         methodOption.MaskedIdentifier = maskedEmail;
                         isAllowed = true;
                     }
-                    else if (reflistItem == RefListPasswordResetMethods.SecurityQuestions && isSecurityQuestionsEnabled)
+                    else if (reflistItem == RefListPasswordResetMethods.SecurityQuestions && isSecurityQuestionsEnabled && hasQuestions)
                     {
                         methodOption.Prompt = "Answer security questions";
                         isAllowed = true;
