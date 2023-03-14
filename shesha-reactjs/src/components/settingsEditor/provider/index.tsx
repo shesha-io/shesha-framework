@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import { FC } from 'react';
-import useThunkReducer from 'react-hook-thunk-reducer';
+import useThunkReducer from '../../../hooks/thunkReducer';
 import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '../../../interfaces/gql';
 import { IEditorBridge, ISettingsEditorContext, ISettingsEditorStateContext, SettingsEditorContext, SETTINGS_EDITOR_STATE_CONTEXT_INITIAL_STATE } from './contexts';
 import { settingsEditorReducer } from './reducer';

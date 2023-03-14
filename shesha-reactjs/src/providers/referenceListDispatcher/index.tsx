@@ -8,7 +8,7 @@ import {
   IReferenceListDispatcherActionsContext,
   IGetReferenceListPayload,
 } from './contexts';
-import useThunkReducer from 'react-hook-thunk-reducer';
+import useThunkReducer from '../../hooks/thunkReducer';
 import { ILoadingState, IReferenceListIdentifier } from './models';
 import { IReferenceList, IReferenceListItem } from '../../interfaces/referenceList';
 import { PromisedValue } from '../../utils/promises';

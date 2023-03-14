@@ -1,5 +1,5 @@
 import React, { FC, useContext, useEffect, useRef, useState } from 'react';
-import useThunkReducer from 'react-hook-thunk-reducer';
+import useThunkReducer from '../../hooks/thunkReducer';
 import { SETTINGS_CONTEXT_INITIAL_STATE, SettingsContext, ISettingsContext } from './contexts';
 import { ISettingIdentifier, ISettingsDictionary } from './models';
 import reducer from './reducer';

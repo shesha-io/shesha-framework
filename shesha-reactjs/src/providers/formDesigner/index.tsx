@@ -42,7 +42,7 @@ import {
 } from './actions';
 import { useFormDesignerComponentGroups, useFormDesignerComponents } from '../form/utils';
 import { ActionCreators } from 'redux-undo';
-import useThunkReducer from 'react-hook-thunk-reducer';
+import useThunkReducer from '../../hooks/thunkReducer';
 import { IAsyncValidationError, IFormValidationErrors, IToolboxComponent } from '../../interfaces';
 import { IDataSource } from '../formDesigner/models';
 import { useMetadataDispatcher } from '../../providers';

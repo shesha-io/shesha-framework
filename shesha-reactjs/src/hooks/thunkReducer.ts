@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { Reducer, useCallback, useRef, useState } from 'react';
 
 /**
  * @function Thunk
@@ -13,6 +13,15 @@ import { useCallback, useRef, useState } from 'react';
  * @returns {void|*}
  */
 
+ export interface ThunkDispatch<S, A> {
+  <
+    Action extends (dispatch: ThunkDispatch<S, A>, getState: () => S) => unknown
+  >(
+    action: Action
+  ): ReturnType<Action>;
+  (value: A): void;
+}
+
 /**
  * Augments React's useReducer() hook so that the action
  * dispatcher supports thunks.
@@ -22,8 +31,8 @@ import { useCallback, useRef, useState } from 'react';
  * @param {Function} [init]
  * @returns {[*, Dispatch]}
  */
-export function useThunkReducer(reducer, initialArg, init = (a) => a) {
-  const [hookState, setHookState] = useState(() => init(initialArg));
+export function useThunkReducer<S, A>(reducer: Reducer<S, A>, initialArg: S, init?: (s: S) => S): [S, ThunkDispatch<S, A>] {
+  const [hookState, setHookState] = useState(() => init ? init(initialArg) : initialArg);
 
   // State management.
   const state = useRef(hookState);
