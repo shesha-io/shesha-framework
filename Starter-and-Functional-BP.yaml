@@ -25,8 +25,8 @@ pool:
   vmImage2: 'ubuntu-latest'
 name: 2.0.0.$(BuildID)
 stages:
-- stage: Build Functional Shesha - API
-  displayName: Build Functional Shesha - API
+- stage: Build Functional Shesha API
+  displayName: Build Functional Shesha API
   jobs:
   - job: Job_1
     displayName: Agent job 1
@@ -136,8 +136,8 @@ stages:
       displayName: 'Publish Artifact: functional-shesha-api'
       inputs:
         ArtifactName: functional-shesha-api
-- stage: Build Starter Shesha - API
-  displayName: Build Starter Shesha - API
+- stage: Build Starter Shesha API
+  displayName: Build Starter Shesha API
   jobs:
   - job: Job_1
     displayName: Agent job 1
@@ -244,8 +244,8 @@ stages:
       displayName: 'Publish Artifact: starter-shesha-api'
       inputs:
         ArtifactName: starter-shesha-api
-- stage: Build Functional Shesha - AdminPortal
-  displayName: Build Functional Shesha - AdminPortal
+- stage: Build Functional Shesha AdminPortal
+  displayName: Build Functional Shesha AdminPortal
   jobs:
   - job: Build
     displayName: Build
@@ -348,8 +348,8 @@ stages:
       displayName: 'Publish Artifact: shesha-adminportal-functional'
       inputs:
         ArtifactName: adminportal-functional
-- stage: Build Starter Shesha - AdminPortal
-  displayName: Build Starter Shesha - AdminPortal
+- stage: Build Starter Shesha AdminPortal
+  displayName: Build Starter Shesha AdminPortal
   jobs:
   - job: Build
     displayName: Build
