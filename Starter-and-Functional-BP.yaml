@@ -362,7 +362,7 @@ stages:
         rootFolderOrFile: 'shesha-functional-tests/adminportal'
         includeRootFolder: false
         archiveType: 'zip'
-        archiveFile: 'shesha-functional-tests/frontend.zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/frontend.zip'
         replaceExistingArchive: true
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: shesha-adminportal-functional'
@@ -468,7 +468,7 @@ stages:
         rootFolderOrFile: 'shesha-starter/frontend'
         includeRootFolder: false
         archiveType: 'zip'
-        archiveFile: 'shesha-adminportal-starter.zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/shesha-adminportal-starter.zip'
         replaceExistingArchive: true  
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: shesha-adminportal-starter'
