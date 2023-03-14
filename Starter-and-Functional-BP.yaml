@@ -2,9 +2,9 @@
 # Agent Queue 'Azure Pipelines' was used with unrecognized Agent Specification, vmImage property must be specified to determine image - https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops&tabs=yaml#software
 variables:
 - name: BuildParameters.solution1
-  value: $(System.DefaultWorkingDirectory)/shesha-functional-tests/backend/Boxfusion.SheshaFunctionalTests.sln
+  value: Boxfusion.SheshaFunctionalTests.sln
 - name: BuildParameters.solution2
-  value: $(System.DefaultWorkingDirectory)/shesha-starter/backend/ShaCompanyName.ShaProjectName.sln  
+  value: ShaCompanyName.ShaProjectName.sln
 - name: BuildParameters.configuration
   value: release
 - name: pack-version
@@ -106,7 +106,8 @@ stages:
       displayName: 'Dotnet Restore'
       inputs:
         command: restore
-        projects: '$(System.DefaultWorkingDirectory)/shesha-functional-tests/backend/src/Boxfusion.SheshaFunctionalTests.Web.Host/Boxfusion.SheshaFunctionalTests.Web.Host.csproj'
+        # projects: '$(System.DefaultWorkingDirectory)/shesha-functional-tests/backend/src/Boxfusion.SheshaFunctionalTests.Web.Host/Boxfusion.SheshaFunctionalTests.Web.Host.csproj'
+        projects: '$(System.DefaultWorkingDirectory)/shesha-functional-tests/backend/$(BuildParameters.solution)'        
         vstsFeed: '44b4667a-8963-403d-9962-bde66225adbd'
 
     - task: DotNetCoreCLI@2
