@@ -160,7 +160,7 @@ namespace Shesha.Scheduler.Services.ScheduledJobs
         public async Task<string> BootstrapScheduledJobs()
         {
             var bootstrapper = IocManager.Resolve<ScheduledJobBootstrapper>();
-            await bootstrapper.Process();
+            await bootstrapper.ProcessAsync();
             return "Bootstrapped successfully";
         }
 

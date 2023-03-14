@@ -36,6 +36,11 @@ namespace Shesha.DataTables
         public string DataType { get; set; }
 
         /// <summary>
+        /// Data type
+        /// </summary>
+        public string DataFormat { get; set; }
+
+        /// <summary>
         /// Reference list name
         /// </summary>
         public string ReferenceListName { get; set; }
@@ -43,7 +48,7 @@ namespace Shesha.DataTables
         /// <summary>
         /// Reference list namespace
         /// </summary>
-        public string ReferenceListNamespace { get; set; }
+        public string ReferenceListModule { get; set; }
 
         /// <summary>
         /// Entity type short alias

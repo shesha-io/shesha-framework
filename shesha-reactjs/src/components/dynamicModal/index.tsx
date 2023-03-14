@@ -99,7 +99,8 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = props => {
 
   const formProps: IConfigurableFormProps = {
     formId: formId,
-    submitAction: submitHttpVerb === 'POST' || !submitHttpVerb ? StandardEntityActions.create : StandardEntityActions.update,
+    submitAction:
+      submitHttpVerb === 'POST' || !submitHttpVerb ? StandardEntityActions.create : StandardEntityActions.update,
     form: form,
     mode: mode,
     actions: {
@@ -112,7 +113,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = props => {
     httpVerb: submitHttpVerb,
     initialValues: initialValues,
     parentFormValues: parentFormValues,
-    skipFetchData: skipFetchData
+    skipFetchData: skipFetchData,
   };
 
   return (
@@ -125,9 +126,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = props => {
       onOk={onOk}
       onCancel={closeModal}
       footer={showModalFooter ? undefined : null}
-      content={
-        <ConfigurableForm {...formProps}/>
-      }
+      content={<ConfigurableForm {...formProps} />}
     />
   );
 };

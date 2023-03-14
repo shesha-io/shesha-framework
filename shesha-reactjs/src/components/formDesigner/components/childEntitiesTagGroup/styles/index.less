@@ -1,0 +1,25 @@
+@child-entity-tag-btn-width: 45px;
+
+.child-entity-tag-container {
+  width: 100%;
+
+  .ant-input-group {
+    .ant-select {
+      width: calc(100% - @child-entity-tag-btn-width);
+    }
+
+    .child-entity-tag-add {
+      width: @child-entity-tag-btn-width;
+    }
+  }
+
+  .child-entity-tag-full-width {
+    .ant-select {
+      width: 100%;
+    }
+  }
+
+  .global-tablefilter {
+    padding-right: unset !important;
+  }
+}

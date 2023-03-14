@@ -1,5 +1,4 @@
-﻿using System;
-using System.Data;
+﻿using System.Data;
 
 namespace Shesha.FluentMigrator
 {
@@ -9,7 +8,7 @@ namespace Shesha.FluentMigrator
     /// </summary>
     public static class DbCommandExtensions
     {
-        public static void AddParameter(this IDbCommand command, string name, object value)
+        public static void AddParameter(this IDbCommand command, string name, object? value)
         {
             var parameter = command.CreateParameter();
             parameter.ParameterName = name;

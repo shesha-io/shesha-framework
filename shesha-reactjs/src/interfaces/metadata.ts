@@ -1,4 +1,4 @@
-import { IDictionary } from "../components/configurationFramework/models";
+import { IDictionary } from '../components/configurationFramework/models';
 
 export interface IPropertyMetadata {
   isVisible?: boolean;
@@ -63,6 +63,7 @@ export enum DataTypes {
   reflist = 'reflist',
   boolean = 'boolean',
   list = 'list',
+  objectReference = 'object-reference',
 }
 
 export enum StandardEntityActions {

@@ -1,10 +1,7 @@
 ﻿using Abp;
 using Abp.Collections.Extensions;
-using Abp.Configuration;
 using Abp.Dependency;
 using Abp.Reflection;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -20,17 +17,17 @@ namespace Shesha.Settings
         private readonly ITypeFinder _typeFinder;
         private readonly IIocManager _iocManager;
 
-        protected Lazy<IDictionary<string, SettingDefinition>> SettingDefinitions { get; }
+        protected Lazy<IDictionary<SettingIdentifier, SettingDefinition>> SettingDefinitions { get; }
 
         public SettingDefinitionManager(ITypeFinder typeFinder, IIocManager iocManager)
         {
             _typeFinder = typeFinder;
             _iocManager = iocManager;
 
-            SettingDefinitions = new Lazy<IDictionary<string, SettingDefinition>>(CreateSettingDefinitions, true);
+            SettingDefinitions = new Lazy<IDictionary<SettingIdentifier, SettingDefinition>>(CreateSettingDefinitions, true);
         }
 
-        protected virtual IDictionary<string, SettingDefinition> CreateSettingDefinitions()
+        protected virtual IDictionary<SettingIdentifier, SettingDefinition> CreateSettingDefinitions()
         {
             var definitionProvidersTypes = _typeFinder.Find(t => t.IsPublic && 
                     !t.IsAbstract && 
@@ -41,7 +38,7 @@ namespace Shesha.Settings
 
             var definitionProviders = definitionProvidersTypes.Select(t => _iocManager.Resolve(t) as ISettingDefinitionProvider).ToList();
 
-            var settings = new Dictionary<string, SettingDefinition>();
+            var settings = new Dictionary<SettingIdentifier, SettingDefinition>();
             foreach (var definitionProvider in definitionProviders)
             {
                 definitionProvider.Define(new SettingDefinitionContext(settings, definitionProvider));
@@ -49,11 +46,12 @@ namespace Shesha.Settings
             return settings;
         }
 
-        public virtual SettingDefinition Get(string name)
+        public virtual SettingDefinition Get(string moduleName, string name)
         {
+            Check.NotNull(moduleName, nameof(moduleName));
             Check.NotNull(name, nameof(name));
 
-            var setting = GetOrNull(name);
+            var setting = GetOrNull(moduleName, name);
 
             if (setting == null)
             {
@@ -68,9 +66,9 @@ namespace Shesha.Settings
             return SettingDefinitions.Value.Values.ToImmutableList();
         }
 
-        public virtual SettingDefinition GetOrNull(string name)
+        public virtual SettingDefinition GetOrNull(string moduleName, string name)
         {
-            return SettingDefinitions.Value.GetOrDefault(name);
+            return SettingDefinitions.Value.GetOrDefault(new SettingIdentifier(moduleName, name));
         }
     }
 }

@@ -9,6 +9,8 @@ using Abp.Reflection;
 using Castle.Core.Logging;
 using FluentMigrator.Runner;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Shesha.FluentMigrator;
 using Shesha.NHibernate.Exceptions;
 
 namespace Shesha.NHibernate
@@ -60,7 +62,10 @@ namespace Shesha.NHibernate
         /// </summary>
         private IServiceProvider CreateServices(string connectionString)
         {
-            return new ServiceCollection()
+            var services = new ServiceCollection();
+            services.TryAddSingleton<IModuleLocator, ModuleLocator>();
+
+            return services
                 // Add common FluentMigrator services
                 .AddFluentMigratorCore()
                 .ConfigureRunner(rb =>

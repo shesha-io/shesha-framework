@@ -10,6 +10,7 @@ import Buttons from '../../../components/formDesigner/components/button/buttonGr
 import Checkbox from '../../../components/formDesigner/components/checkbox/checkbox';
 import CheckboxGroup from '../../../components/formDesigner/components/checkboxGroup/checkboxGroup';
 import ChildDataTable from '../../../components/formDesigner/components/childDataTable/childDataTableComponent';
+import ChildEntitiesTagGroup from '../../../components/formDesigner/components/childEntitiesTagGroup';
 import CodeEditor from '../../../components/formDesigner/components/codeEditor';
 import CollapsiblePanel from '../../../components/formDesigner/components/collapsiblePanel/collapsiblePanelComponent';
 import ColorPickerComponent from '../../../components/formDesigner/components/colorPicker';
@@ -44,7 +45,6 @@ import FormAutocompleteComponent from '../../../components/formDesigner/componen
 import HierarchicalChecklistComponent from '../../../components/formDesigner/components/hierarchicalChecklist/hierarchicalChecklistComponent';
 import IconPicker from '../../../components/formDesigner/components/iconPicker';
 import Image from '../../../components/formDesigner/components/image';
-import JsonEntity from '../../../components/formDesigner/components/jsonEntity';
 import KeyValueEditor from '../../../components/formDesigner/components/labelValueEditor/labelValueEditorComponent';
 import Paragraph from '../../../components/formDesigner/components/legacy/paragraph';
 import Title from '../../../components/formDesigner/components/legacy/title';
@@ -90,6 +90,7 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
       AttachmentsEditor,
       AutocompleteTagGroup,
       ChildDataTable,
+      ChildEntitiesTagGroup,
       CodeEditor,
       ColorPickerComponent,
       ConfigurableActionConfigurator,
@@ -104,7 +105,6 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
       FormAutocompleteComponent,
       IconPicker,
       Image,
-      JsonEntity,
       HierarchicalChecklistComponent,
       KeyValueEditor,
       List,

@@ -3,6 +3,7 @@ using Abp.AspNetCore.Configuration;
 using Abp.Modules;
 using Abp.Zero;
 using Shesha.Ldap.Configuration;
+using Shesha.Modules;
 using Shesha.Settings.Ioc;
 using System.Reflection;
 
@@ -12,8 +13,15 @@ namespace Shesha.Ldap
     /// This module extends module zero to add LDAP authentication.
     /// </summary>
     [DependsOn(typeof(AbpZeroCommonModule), typeof(AbpAspNetCoreModule))]
-    public class SheshaLdapModule : AbpModule
+    public class SheshaLdapModule : SheshaModule
     {
+        public const string ModuleName = "Shesha.Ldap";
+        public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo(ModuleName)
+        {
+            FriendlyName = "Shesha LDAP",
+            Publisher = "Boxfusion"
+        };
+
         public override void PreInitialize()
         {
             IocManager.Register<ISheshaLdapModuleConfig, SheshaLdapModuleConfig>();
