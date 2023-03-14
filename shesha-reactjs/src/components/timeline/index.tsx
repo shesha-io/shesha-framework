@@ -7,7 +7,7 @@ import {
   ClockCircleOutlined,
   PlusCircleOutlined,
 } from '@ant-design/icons';
-import { Card, Spin, Timeline } from 'antd';
+import { Card, Empty, Spin, Timeline } from 'antd';
 import React, { FC, useEffect, useMemo, useState } from 'react';
 import { useGet } from 'restful-react';
 import { useDebouncedCallback } from 'use-debounce/lib';
@@ -65,24 +65,26 @@ export const ShaTimeline: FC<ITimelineComponentProps> = ({
 
   return (
     <Spin spinning={isFetchingEntities}>
-      <Timeline>
-        {dataSource === 'form' &&
-          items?.map((item) => {
-            return <Timeline.Item>{item?.content}</Timeline.Item>;
-          })}
-        {dataSource === 'api' &&
-          timelineData?.map(({ title, body, toPerson, actionDate, type }) => {
-            return (
-              <TimelineItem
-                title={title}
-                toPerson={toPerson?._displayName}
-                type={type}
-                actionDate={actionDate}
-                body={body}
-              />
-            );
-          })}
-      </Timeline>
+      {(!timelineData?.length && <Empty description="Empty timeline" />) || (
+        <Timeline>
+          {dataSource === 'form' &&
+            items?.map((item) => {
+              return <Timeline.Item>{item?.content}</Timeline.Item>;
+            })}
+          {dataSource === 'api' &&
+            timelineData?.map(({ title, body, toPerson, actionDate, type }) => {
+              return (
+                <TimelineItem
+                  title={title}
+                  toPerson={toPerson?._displayName}
+                  type={type}
+                  actionDate={actionDate}
+                  body={body}
+                />
+              );
+            })}
+        </Timeline>
+      )}
     </Spin>
   );
 };

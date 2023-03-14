@@ -6,7 +6,7 @@ import { message } from 'antd';
 import ConfigurableFormItem from '../formItem';
 
 import { DataTypes } from '../../../../interfaces/dataTypes';
-import { FormIdentifier, useForm, useFormData, useGlobalState, useSheshaApplication } from '../../../../providers';
+import { FormIdentifier, useForm, useGlobalState, useSheshaApplication } from '../../../../providers';
 import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
 import ComponentsContainer, { ICommonContainerProps } from '../../componentsContainer';
 import TimelineSettings from './settings';
