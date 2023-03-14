@@ -335,14 +335,14 @@ stages:
 
           ls
         workingDirectory: 'shesha-functional-tests/adminportal'
-    - task: Npm@1
-      displayName: Npm Set the version
-      inputs:
-        command: custom
-        workingDir: 'shesha-functional-tests/adminportal'
-        verbose: true
-        #customCommand: version --no-git-tag-version #$(pack-version)
-        customCommand: 'version $(pack-version)'
+    # - task: Npm@1
+    #   displayName: Npm Set the version
+    #   inputs:
+    #     command: custom
+    #     workingDir: 'shesha-functional-tests/adminportal'
+    #     verbose: true
+    #     #customCommand: version --no-git-tag-version #$(pack-version)
+    #     customCommand: 'version $(pack-version)'
     - task: Npm@1
       displayName: 'Npm Install'
       inputs:
@@ -440,14 +440,15 @@ stages:
 
           ls
         workingDirectory: 'shesha-starter/frontend'
-    - task: Npm@1
-      displayName: Npm Set the version
-      inputs:
-        command: custom
-        workingDir: 'shesha-starter/frontend'
-        verbose: true
-        #customCommand: version --no-git-tag-version #$(pack-version)
-        customCommand: 'version $(pack-version)'
+
+    # - task: Npm@1
+    #   displayName: Npm Set the version
+    #   inputs:
+    #     command: custom
+    #     workingDir: 'shesha-starter/frontend'
+    #     verbose: true
+    #     #customCommand: version --no-git-tag-version #$(pack-version)
+    #     customCommand: 'version $(pack-version)'
     - task: Npm@1
       displayName: 'Npm Install'
       inputs:
