@@ -1,4 +1,3 @@
-// import { useAuth, useAuthorizationSettings, useGlobalState, usePublish } from '@shesha/reactjs';
 import React, { FC, useEffect, useState } from 'react';
 import { Button, Input, message } from 'antd';
 import { useGlobalState } from '../../providers';

@@ -1,6 +1,8 @@
-﻿using Abp.Configuration;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Shesha.ConfigurationItems;
 using Shesha.Settings.Dto;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.Settings
@@ -11,10 +13,29 @@ namespace Shesha.Settings
     public class SettingsAppService : SheshaAppServiceBase
     {
         private readonly IShaSettingManager _settingProvider;
+        private readonly IConfigurationFrameworkRuntime _cfRuntime;
 
-        public SettingsAppService(IShaSettingManager settingProvider)
+        public SettingsAppService(IShaSettingManager settingProvider, IConfigurationFrameworkRuntime cfRuntime)
         {
             _settingProvider = settingProvider;
+            _cfRuntime = cfRuntime;
+        }
+
+        /// <summary>
+        /// Get setting values
+        /// </summary>
+        [HttpGet]
+        public async Task<Dictionary<SettingIdentifier, object>> GetValues(GetSettingValuesInput input)
+        {
+            var distinctIds = input.Identifiers.Distinct().ToList();
+            var values = new Dictionary<SettingIdentifier, object>();
+            foreach (var identifier in distinctIds)
+            {
+                var value = await _settingProvider.GetOrNullAsync(identifier.Module, identifier.Name);
+                values.Add(identifier, value);
+            }
+
+            return values;
         }
 
         /// <summary>
@@ -23,7 +44,13 @@ namespace Shesha.Settings
         [HttpGet]
         public async Task<object> GetValue(GetSettingValueInput input)
         {
-            var value = await _settingProvider.GetOrNullAsync(input.Module, input.Name, new SettingManagementContext { AppKey = input.AppKey });
+            var appKey = !string.IsNullOrWhiteSpace(input.AppKey)
+                ? input.AppKey
+                : _cfRuntime.FrontEndApplication;
+            var value = await _settingProvider.GetOrNullAsync(input.Module, input.Name, 
+                new SettingManagementContext { 
+                    AppKey = appKey
+                });
 
             return value;
         }
