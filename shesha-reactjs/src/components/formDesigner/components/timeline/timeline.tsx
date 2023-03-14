@@ -18,18 +18,14 @@ export interface ITimelineProps extends IConfigurableFormComponent, ICommonConta
   useExpression: string | boolean;
   entityType: string;
   permissions?: any;
-  buttonsLayout?: any;
   properties?: string[];
   formId?: FormIdentifier;
   ownerId: string;
   queryParamsExpression?: string;
   readOnly?: boolean;
-  labelPlacement?: any;
-  activeItem: any;
   dataSource?: 'form' | 'api';
   customApiUrl?: string;
   apiSource?: 'entity' | 'custom';
-  timelineType?: 'default' | 'vertical' | 'horizontal';
 }
 
 const TimelineComponent: IToolboxComponent<ITimelineProps> = {
