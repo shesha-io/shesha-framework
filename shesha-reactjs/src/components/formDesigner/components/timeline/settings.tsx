@@ -5,7 +5,6 @@ import { ITimelineProps } from './timeline';
 import { nanoid } from 'nanoid';
 import SectionSeparator from '../../../sectionSeparator';
 import ItemListSettingsModal from '../itemListConfigurator/itemListSettingsModal';
-import { IWizardComponentProps, IWizardStepProps } from '../wizard/models';
 import { getSettings } from './itemSettings';
 
 import Show from '../../../show';
@@ -28,7 +27,7 @@ const TimelineSettings: FC<ITabSettingsProps> = (props) => {
   const [state, setState] = useState(props?.model);
   const [form] = Form.useForm();
 
-  const onValuesChange = (changedValues: any, values: IWizardComponentProps) => {
+  const onValuesChange = (changedValues: any, values) => {
     // whenever the tabs change, check to see if `defaultActiveStep` is still present within the tabs. If not, remove it
     const foundIndex = values?.defaultActiveStep
       ? values?.steps?.findIndex((item) => item?.id === values?.defaultActiveStep)
@@ -56,9 +55,8 @@ const TimelineSettings: FC<ITabSettingsProps> = (props) => {
   };
 
   const onAddNewItem = (_, count: number) => {
-    const buttonProps: IWizardStepProps = {
+    const buttonProps = {
       id: nanoid(),
-
       name: `item${count + 1}`,
     };
 

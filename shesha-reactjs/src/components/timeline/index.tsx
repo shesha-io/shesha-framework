@@ -65,7 +65,7 @@ export const ShaTimeline: FC<ITimelineComponentProps> = ({
 
   return (
     <Spin spinning={isFetchingEntities}>
-      {(!timelineData?.length && <Empty description="Empty timeline" />) || (
+      {(!timelineData?.length && dataSource === 'api' && <Empty description="Empty timeline" />) || (
         <Timeline>
           {dataSource === 'form' &&
             items?.map((item) => {
