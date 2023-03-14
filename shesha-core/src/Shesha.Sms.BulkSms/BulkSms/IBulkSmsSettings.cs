@@ -20,56 +20,56 @@ namespace Shesha.Sms.BulkSms
         /// Host
         /// </summary>
         [Display(Name = "Api Url")]
-        [SettingAttribute(BulkSmsSettingNames.ApiUrl)]
+        [Setting(BulkSmsSettingNames.ApiUrl)]
         ISettingAccessor<string> ApiUrl { get; }
 
         /// <summary>
         /// Api Username
         /// </summary>
         [Display(Name = "Api Username")]
-        [SettingAttribute(BulkSmsSettingNames.ApiUsername)]
+        [Setting(BulkSmsSettingNames.ApiUsername)]
         ISettingAccessor<string> ApiUsername { get; }
 
         /// <summary>
         /// Api Password
         /// </summary>
         [Display(Name = "Api Password")]
-        [SettingAttribute(BulkSmsSettingNames.ApiPassword)]
+        [Setting(BulkSmsSettingNames.ApiPassword)]
         ISettingAccessor<string> ApiPassword { get; }
 
         /// <summary>
         /// Use Proxy
         /// </summary>
         [Display(Name = "Use Proxy")]
-        [SettingAttribute(BulkSmsSettingNames.UseProxy)]
+        [Setting(BulkSmsSettingNames.UseProxy)]
         ISettingAccessor<bool> UseProxy { get; }
 
         /// <summary>
         /// Use default proxy credentials
         /// </summary>
         [Display(Name = "Use default proxy credentials")]
-        [SettingAttribute(BulkSmsSettingNames.UseDefaultProxyCredentials)]
+        [Setting(BulkSmsSettingNames.UseDefaultProxyCredentials)]
         ISettingAccessor<bool> UseDefaultProxyCredentials { get; }
 
         /// <summary>
         /// Web Proxy Address
         /// </summary>
         [Display(Name = "Web Proxy Address")]
-        [SettingAttribute(BulkSmsSettingNames.WebProxyAddress)]
+        [Setting(BulkSmsSettingNames.WebProxyAddress)]
         ISettingAccessor<string> WebProxyAddress { get; }
 
         /// <summary>
         /// Proxy Login
         /// </summary>
         [Display(Name = "Proxy Login")]
-        [SettingAttribute(BulkSmsSettingNames.WebProxyUsername)]
+        [Setting(BulkSmsSettingNames.WebProxyUsername)]
         ISettingAccessor<string> WebProxyUsername { get; }
 
         /// <summary>
         /// Proxy Password
         /// </summary>
         [Display(Name = "Proxy Password")]
-        [SettingAttribute(BulkSmsSettingNames.WebProxyPassword)]
+        [Setting(BulkSmsSettingNames.WebProxyPassword)]
         ISettingAccessor<string> WebProxyPassword { get; }
     }
 

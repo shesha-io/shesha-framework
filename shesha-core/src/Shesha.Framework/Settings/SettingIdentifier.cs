@@ -1,4 +1,6 @@
-﻿namespace Shesha.Settings
+﻿using JetBrains.Annotations;
+
+namespace Shesha.Settings
 {
     /// <summary>
     /// Setting identifier. Contains name and module name
@@ -7,6 +9,11 @@
     {
         public string Name { get; set; }
         public string Module { get; set; }
+
+        [UsedImplicitly]
+        public SettingIdentifier() 
+        { 
+        }
 
         public SettingIdentifier(string name, string module)
         {
