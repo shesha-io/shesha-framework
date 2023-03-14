@@ -2,9 +2,9 @@
 # Agent Queue 'Azure Pipelines' was used with unrecognized Agent Specification, vmImage property must be specified to determine image - https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops&tabs=yaml#software
 variables:
 - name: BuildParameters.solution1
-  value: shesha-functional-tests/backend/Boxfusion.SheshaFunctionalTests.sln
+  value: $(System.DefaultWorkingDirectory)/shesha-functional-tests/backend/Boxfusion.SheshaFunctionalTests.sln
 - name: BuildParameters.solution2
-  value: shesha-starter/backend/ShaCompanyName.ShaProjectName.sln  
+  value: $(System.DefaultWorkingDirectory)/shesha-starter/backend/ShaCompanyName.ShaProjectName.sln  
 - name: BuildParameters.configuration
   value: release
 - name: pack-version
@@ -106,7 +106,7 @@ stages:
       displayName: 'Dotnet Restore'
       inputs:
         command: restore
-        projects: 'shesha-functional-tests/backend/src/Module/**/*.csproj'
+        projects: '$(System.DefaultWorkingDirectory)/shesha-functional-tests/backend/src/Module/**/*.csproj'
         vstsFeed: '44b4667a-8963-403d-9962-bde66225adbd'
     - task: DotNetCoreCLI@2
       displayName: dotnet build
@@ -117,7 +117,7 @@ stages:
       displayName: dotnet pack
       inputs:
         command: 'pack'
-        packagesToPack: 'shesha-functional-tests/backend/src/Module/**/*.csproj'
+        packagesToPack: '$(System.DefaultWorkingDirectory)/shesha-functional-tests/backend/src/Module/**/*.csproj'
         configuration: '$(BuildParameters.configuration)'
         nobuild: true
         includesymbols: true
@@ -134,7 +134,7 @@ stages:
       inputs:
         command: publish
         publishWebProjects: false
-        projects: $(BuildParameters.solution1)
+        projects: $(System.DefaultWorkingDirectory)/shesha-functional-tests/backend/$(BuildParameters.solution1)
         arguments: --configuration $(BuildParameters.configuration) --output $(build.artifactstagingdirectory) --no-build
         zipAfterPublish: false
         modifyOutputPath: false
@@ -223,7 +223,7 @@ stages:
       displayName: 'Dotnet Restore'
       inputs:
         command: restore
-        projects: 'shesha-functional-tests/backend/src/Module/**/*.csproj'
+        projects: '$(System.DefaultWorkingDirectory)/shesha-functional-tests/backend/src/Module/**/*.csproj'
         vstsFeed: '44b4667a-8963-403d-9962-bde66225adbd'
     - task: DotNetCoreCLI@2
       displayName: dotnet build
@@ -234,7 +234,7 @@ stages:
       displayName: dotnet pack
       inputs:
         command: 'pack'
-        packagesToPack: 'shesha-functional-tests/backend/src/Module/**/*.csproj'
+        packagesToPack: '$(System.DefaultWorkingDirectory)/shesha-functional-tests/backend/src/Module/**/*.csproj'
         configuration: '$(BuildParameters.configuration)'
         nobuild: true
         includesymbols: true
@@ -354,7 +354,7 @@ stages:
         customCommand: run build
     - task: ArchiveFiles@2
       inputs:
-        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/adminportal'
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/shesha-functional-tests/adminportal'
         includeRootFolder: false
         archiveType: 'zip'
         archiveFile: '$(Build.ArtifactStagingDirectory)/shesha-adminportal-functional.zip'
@@ -458,7 +458,7 @@ stages:
         customCommand: run build
     - task: ArchiveFiles@2
       inputs:
-        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/adminportal'
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/shesha-functional-tests/adminportal'
         includeRootFolder: false
         archiveType: 'zip'
         archiveFile: '$(Build.ArtifactStagingDirectory)/shesha-adminportal-starter.zip'
