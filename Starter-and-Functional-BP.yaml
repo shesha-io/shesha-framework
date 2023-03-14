@@ -26,7 +26,7 @@ pool:
 name: 2.0.0.$(BuildID)
 stages:
 - stage: Build_Functional_Shesha_API
-  displayName: Build Functional Shesha API
+  displayName: Build_Functional_Shesha_API
   jobs:
   - job: Job_1
     displayName: Agent job 1
@@ -137,7 +137,7 @@ stages:
       inputs:
         ArtifactName: functional-shesha-api
 - stage: Build_Starter_Shesha_API
-  displayName: Build Starter Shesha API
+  displayName: Build_Starter_Shesha_API
   jobs:
   - job: Job_1
     displayName: Agent job 1
@@ -244,7 +244,7 @@ stages:
       displayName: 'Publish Artifact: starter-shesha-api'
       inputs:
         ArtifactName: starter-shesha-api
-- stage: Build Functional Shesha AdminPortal
+- stage: Build_Functional_Shesha_AdminPortal
   displayName: Build_Functional_Shesha_AdminPortal
   jobs:
   - job: Build
@@ -348,8 +348,8 @@ stages:
       displayName: 'Publish Artifact: shesha-adminportal-functional'
       inputs:
         ArtifactName: adminportal-functional
-- stage: Build Starter Shesha AdminPortal
-  displayName: Build Starter Shesha AdminPortal
+- stage: Build_Starter_Shesha_AdminPortal
+  displayName: Build_Starter_Shesha_AdminPortal
   jobs:
   - job: Build
     displayName: Build
