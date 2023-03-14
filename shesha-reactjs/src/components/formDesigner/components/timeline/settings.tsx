@@ -101,8 +101,12 @@ const TimelineSettings: FC<ITabSettingsProps> = (props) => {
         >
           <Select disabled={state.readOnly}>
             <Option value="entity">entity</Option>
-            <Option value="custom">custom</Option>
+            <Option value="custom">custom Url</Option>
           </Select>
+        </Form.Item>
+
+        <Form.Item name={'ownerId'} label="id">
+          <Input />
         </Form.Item>
       </Show>
 

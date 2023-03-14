@@ -13,6 +13,7 @@ import { useGet } from 'restful-react';
 import { useDebouncedCallback } from 'use-debounce/lib';
 import { EntitiesGetAllQueryParams, useEntitiesGetAll } from '../../apis/entities';
 import { useGlobalState } from '../../providers';
+
 import { ITimelineProps } from '../formDesigner/components/timeline/timeline';
 
 export interface ITimelineComponentProps extends ITimelineProps {}
@@ -21,6 +22,7 @@ export const ShaTimeline: FC<ITimelineComponentProps> = ({
   dataSource,
   properties,
   items,
+  ownerId,
   entityType,
   customApiUrl,
   apiSource,
@@ -28,8 +30,8 @@ export const ShaTimeline: FC<ITimelineComponentProps> = ({
   const useGetAll = apiSource === 'custom' ? useGet : useEntitiesGetAll;
 
   const { globalState } = useGlobalState();
-
-  const getAllProps = apiSource === 'custom' ? { path: customApiUrl || '', lazy: true } : { lazy: true };
+  const getAllProps =
+    apiSource === 'custom' ? { path: customApiUrl + `?id=${ownerId}` || '', lazy: true } : { lazy: true };
   const { refetch: fetchAllEntities, loading: isFetchingEntities, data } = useGetAll(getAllProps as any);
 
   const fetchEntities = (params: object) => {
@@ -59,6 +61,8 @@ export const ShaTimeline: FC<ITimelineComponentProps> = ({
     300
   );
 
+  const timelineData = apiSource === 'custom' ? data?.result : data?.result?.items;
+  console.log('LOG:::data', data, customApiUrl);
   useEffect(() => {
     debouncedRefresh();
   }, [queryParams]);
@@ -71,8 +75,7 @@ export const ShaTimeline: FC<ITimelineComponentProps> = ({
             return <Timeline.Item>{item?.content}</Timeline.Item>;
           })}
         {dataSource === 'api' &&
-          !!customApiUrl &&
-          data?.result?.map(({ title, body, toPerson, actionDate }) => {
+          timelineData?.map(({ title, body, toPerson, actionDate }) => {
             return <TimelineItem title={title} toPerson={toPerson?._displayName} actionDate={actionDate} body={body} />;
           })}
       </Timeline>

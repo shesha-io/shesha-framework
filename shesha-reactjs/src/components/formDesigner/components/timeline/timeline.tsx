@@ -6,7 +6,7 @@ import { message } from 'antd';
 import ConfigurableFormItem from '../formItem';
 
 import { DataTypes } from '../../../../interfaces/dataTypes';
-import { FormIdentifier, useForm, useGlobalState, useSheshaApplication } from '../../../../providers';
+import { FormIdentifier, useForm, useFormData, useGlobalState, useSheshaApplication } from '../../../../providers';
 import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
 import ComponentsContainer, { ICommonContainerProps } from '../../componentsContainer';
 import TimelineSettings from './settings';
@@ -14,6 +14,7 @@ import { axiosHttp } from '../../../../apis/axios';
 import moment from 'moment';
 import ShaIcon from '../../../shaIcon';
 import { ShaTimeline } from '../../../timeline/index';
+import { evaluateValue } from '../../../../providers/form/utils';
 
 export interface ITimelineProps extends IConfigurableFormComponent, ICommonContainerProps {
   useExpression: string | boolean;
@@ -23,6 +24,7 @@ export interface ITimelineProps extends IConfigurableFormComponent, ICommonConta
   properties?: string[];
   defaultActiveItem?: any;
   formId?: FormIdentifier;
+  ownerId: string;
   queryParamsExpression?: string;
   readOnly?: boolean;
   labelPlacement?: any;
@@ -109,12 +111,15 @@ const TimelineComponent: IToolboxComponent<ITimelineProps> = {
       };
     });
 
+    console.log('LOG:::evaluated', evaluateValue(model.id, { data: formData }));
+    const ownerId = evaluateValue(model.ownerId, { data: formData });
+
     return (
       <ConfigurableFormItem model={{ ...model }} valuePropName="checked" initialValue={model?.defaultValue}>
         {isReadOnly ? (
           <ReadOnlyDisplayFormItem type="checkbox" disabled={disabled} />
         ) : (
-          <ShaTimeline {...model} items={timelineItems} />
+          <ShaTimeline {...model} ownerId={ownerId} items={timelineItems} />
         )}
       </ConfigurableFormItem>
     );
