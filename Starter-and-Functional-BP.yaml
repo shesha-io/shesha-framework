@@ -317,7 +317,7 @@ stages:
       displayName: Install Latest Shesha
       inputs:
         command: custom
-        workingDir: 'shesha-functional-tests/frontend'
+        workingDir: 'shesha-functional-tests/adminportal'
         verbose: false
         customCommand: install @shesha/reactjs@latest
     - task: PowerShell@2
@@ -422,7 +422,7 @@ stages:
       displayName: Install Latest Shesha
       inputs:
         command: custom
-        workingDir: 'adminportal'
+        workingDir: 'shesha-starter/frontend'
         verbose: false
         customCommand: install @shesha/reactjs@latest
     - task: PowerShell@2
