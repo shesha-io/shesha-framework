@@ -107,10 +107,10 @@ stages:
         InsertAttributes: true
         GeneratePackageOnBuild: false
         PackageRequireLicenseAcceptance: false
-        VersionNumber: $(pack-version)
-        FileVersionNumber: $(pack-version)
-        InformationalVersion: $(pack-version)
-        PackageVersion: $(pack-version)
+        VersionNumber: $(Build.BuildNumber)
+        FileVersionNumber: $(Build.BuildNumber)
+        InformationalVersion: $(Build.BuildNumber)
+        PackageVersion: $(Build.BuildNumber)
     - task: DotNetCoreCLI@2
       displayName: dotnet Restore
       inputs:
