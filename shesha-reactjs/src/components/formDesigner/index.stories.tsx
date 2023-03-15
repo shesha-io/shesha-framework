@@ -246,7 +246,7 @@ export const PersonEdit = addStory(DesignerTemplate, {
   formId: {
     name: 'person-edit',
     module: 'Test Module',
-    version: 3
+    version: 6
   },
 });
 

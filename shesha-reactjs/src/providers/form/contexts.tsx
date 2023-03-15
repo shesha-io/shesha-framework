@@ -57,6 +57,9 @@ export interface ISetFormControlsDataPayload {
 
   /** control values */
   values: any;
+
+  /** control actions */
+  actions: any;
 }
 
 export interface ISetFormDataPayload {
