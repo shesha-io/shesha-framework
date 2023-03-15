@@ -99,7 +99,7 @@ export const getSettings = (data: any) =>
       validate: {},
     })
     .addCheckbox({
-      id: '4e9b886a-6186-4467-a688-639b30a0e064',
+      id: 'd25a7d85-6afe-4595-899f-62675fb6c491',
       name: 'block',
       label: 'Block',
       labelAlign: 'right',
