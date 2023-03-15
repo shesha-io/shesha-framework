@@ -154,18 +154,3 @@ outputs:
   sqlServerName: ${containerAppRevisionImage}
   sqlElasticPoolName: ${sqlElasticPoolName}
   sqlDatabaseName: ${sqlDatabaseName}
-Footer
-© 2023 GitHub, Inc.
-Footer navigation
-Terms
-Privacy
-Security
-Status
-Docs
-Contact GitHub
-Pricing
-API
-Training
-Blog
-About
-shesha-framework/Pulumi.yaml at main · shesha-io/shesha-framework
