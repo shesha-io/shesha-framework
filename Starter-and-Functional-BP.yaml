@@ -113,10 +113,12 @@ stages:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'api-info-1'
     - task: DotNetCoreCLI@2
-      displayName: 'Dotnet Restore'
+      displayName: dotnet Restore
       inputs:
-        command: restore
-        projects: shesha-functional-tests/backend/**/*.csproj
+        command: 'restore'
+        projects: shesha-starter/backend/**/*.csproj        
+        feedsToUse: 'select'
+        vstsFeed: '44b4667a-8963-403d-9962-bde66225adbd'
     - task: DotNetCoreCLI@2
       inputs:
         command: 'restore'
@@ -225,8 +227,10 @@ stages:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'api-info-2'
     - task: DotNetCoreCLI@2
+      displayName: dotnet Restore
       inputs:
         command: 'restore'
+        projects: shesha-starter/backend/**/*.csproj        
         feedsToUse: 'select'
         vstsFeed: '44b4667a-8963-403d-9962-bde66225adbd'
     - task: DotNetCoreCLI@2
