@@ -55,17 +55,6 @@ stages:
       displayName: Use .NET Core sdk 6.x
       inputs:
         version: 6.x
-    - task: Assembly-Info-NetCore@3
-      displayName: Set Assembly Manifest Data
-      inputs:
-        InsertAttributes: true
-        GeneratePackageOnBuild: false
-        PackageRequireLicenseAcceptance: false
-        VersionNumber: $(Build.BuildNumber)
-        FileVersionNumber: $(Build.BuildNumber)
-        InformationalVersion: $(Build.BuildNumber)
-        PackageVersion: $(Build.BuildNumber)
-
     - task: PowerShell@2
       displayName: Check to establish if this pipeline was triggered from a tag  
       inputs:
@@ -112,6 +101,16 @@ stages:
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'api-info-1'
+    - task: Assembly-Info-NetCore@3
+      displayName: Set Assembly Manifest Data
+      inputs:
+        InsertAttributes: true
+        GeneratePackageOnBuild: false
+        PackageRequireLicenseAcceptance: false
+        VersionNumber: $(pack-version)
+        FileVersionNumber: $(pack-version)
+        InformationalVersion: $(pack-version)
+        PackageVersion: $(pack-version)
     - task: DotNetCoreCLI@2
       displayName: dotnet Restore
       inputs:
