@@ -40,14 +40,7 @@ pool:
   vmImage1: windows-latest
   vmImage2: ubuntu-latest
 
-strategy:
-  parallel: 4  
-
 name: 2.0.0.$(BuildID)
-stages:
-- stage: Build_Shesha_Release_Version
-  displayName: Build_Functional_Shesha_API
-  condition: eq(variables.isMain, 'false')
   jobs:
   - job: Job_1
     displayName: Agent job 1
