@@ -304,11 +304,11 @@ stages:
       displayName: 'Use Node 14.21.1'
       inputs:
         versionSpec: 14.21.1
-    - task: UsePythonVersion@0
-      inputs:
-        versionSpec: '2.7.18'
-        addToPath: true
-        architecture: 'x64'
+    # - task: UsePythonVersion@0
+    #   inputs:
+    #     versionSpec: '2.7.18'
+    #     addToPath: true
+    #     architecture: 'x64'
     - task: Npm@1
       displayName: Install Latest Shesha
       inputs:
@@ -405,11 +405,11 @@ stages:
       displayName: 'Use Node 14.21.1'
       inputs:
         versionSpec: 14.21.1
-    - task: UsePythonVersion@0
-      inputs:
-        versionSpec: '2.7.18'
-        addToPath: true
-        architecture: 'x64'
+    # - task: UsePythonVersion@0
+    #   inputs:
+    #     versionSpec: '2.7.18'
+    #     addToPath: true
+    #     architecture: 'x64'
     - task: Npm@1
       displayName: Install Latest Shesha
       inputs:
