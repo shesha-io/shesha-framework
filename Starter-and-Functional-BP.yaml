@@ -40,7 +40,9 @@ pool:
   vmImage1: windows-latest
   vmImage2: ubuntu-latest
 
-name: 2.0.0.$(BuildID)
+# name: 2.0.0.$(BuildID)
+stages:
+- stage: build
   jobs:
   - job: Job_1
     displayName: Agent job 1
