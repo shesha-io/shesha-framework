@@ -5,16 +5,7 @@ EXPOSE 80
 EXPOSE 443
 
 WORKDIR /app
-#COPY . .
 
 COPY . /app
 
-#FROM base AS final
-#COPY --from=. /app/publish .
-
-ENTRYPOINT ["dotnet", "Infra.Shesha.Web.Host.dll"]
-
-WORKDIR /app
-RUN ls
-
-
+ENTRYPOINT ["dotnet", "Boxfusion.SheshaFunctionalTests.Web.Host.dll"]
