@@ -40,10 +40,6 @@ pool:
   vmImage1: windows-latest
   vmImage2: ubuntu-latest
 name: 2.0.0.$(BuildID)
-stages:
-- stage: Build_Functional_Shesha_API
-  displayName: Build_Functional_Shesha_API
-  condition: eq(variables.isMain, 'false')
   jobs:
   - job: Job_1
     displayName: Agent job 1
@@ -152,10 +148,6 @@ stages:
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'packs-functional'
-- stage: Build_Starter_Shesha_API
-  displayName: Build_Starter_Shesha_API
-  condition: eq(variables.isMain, 'false')
-  jobs:
   - job: Job_2
     displayName: Agent job 2
     pool:
@@ -263,10 +255,6 @@ stages:
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'packs-starter'
-- stage: Build_Functional_Shesha_AdminPortal
-  displayName: Build_Functional_Shesha_AdminPortal
-  condition: eq(variables.isMain, 'false')
-  jobs:
   - job: Job_3
     displayName: Agent job 3
     pool:
@@ -368,10 +356,6 @@ stages:
       displayName: 'Publish Artifact: shesha-adminportal-functional'
       inputs:
         ArtifactName: adminportal-functional
-- stage: Build_Starter_Shesha_AdminPortal
-  displayName: Build_Starter_Shesha_AdminPortal
-  condition: eq(variables.isMain, 'false')
-  jobs:
   - job: Job_4
     displayName: Agent job 4
     pool:
