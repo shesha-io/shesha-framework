@@ -157,7 +157,7 @@ stages:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'packs-functional'
 
-  jobs:
+
   - job: Job_2
     displayName: Agent job 2
     pool:
@@ -266,7 +266,7 @@ stages:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'packs-starter'
 
-  jobs:
+
   - job: Job_3
     displayName: Agent job 3
     pool:
@@ -369,7 +369,7 @@ stages:
       inputs:
         ArtifactName: adminportal-functional
 
-  jobs:
+
   - job: Job_4
     displayName: Agent job 4
     pool:
