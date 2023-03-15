@@ -29,7 +29,7 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
   const [form] = Form.useForm();
 
   const [formTypesOptions, setFormTypesOptions] = useState<{ value: string }[]>(
-    formTypes.map(i => {
+    formTypes.map((i) => {
       return { value: i };
     })
   );
@@ -58,7 +58,7 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
           }
         }
 
-        setState(prev => ({ ...prev, ...incomingState }));
+        setState((prev) => ({ ...prev, ...incomingState }));
 
         onValuesChange(changedValues, incomingState);
       }}
@@ -103,14 +103,14 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
             <AutoComplete
               disabled={readOnly}
               options={formTypesOptions}
-              onSearch={t =>
+              onSearch={(t) =>
                 setFormTypesOptions(
                   (t
-                    ? formTypes.filter(f => {
+                    ? formTypes.filter((f) => {
                         return f.toLowerCase().includes(t.toLowerCase());
                       })
                     : formTypes
-                  ).map(i => {
+                  ).map((i) => {
                     return { value: i };
                   })
                 )
@@ -267,7 +267,7 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
             </Show>
 
             <FormItem
-              label="POST Url"
+              label="POST Unnrl"
               name="postUrl"
               tooltip="The API url that will be used to update data. Write the code that returns the string"
             >
