@@ -28,6 +28,9 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="wwwroot\favicon.ico" />
+    <None Update="app.config.json.pipeline">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Dockerfile">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
