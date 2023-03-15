@@ -1,3 +1,37 @@
+Skip to content
+Search or jump to…
+Pull requests
+Issues
+Codespaces
+Marketplace
+Explore
+ 
+@admin-shesha 
+shesha-io
+/
+shesha-framework
+Public
+Fork your own copy of shesha-io/shesha-framework
+Code
+Issues
+Pull requests
+3
+Discussions
+Actions
+Projects
+Wiki
+Security
+Insights
+Settings
+shesha-framework/shesha-functional-tests/backend/src/Boxfusion.SheshaFunctionalTests.Web.Host/Pulumi.yaml
+@admin-shesha
+admin-shesha Added infra config files
+Latest commit 48fd7be 7 hours ago
+ History
+ 2 contributors
+@admin-shesha@IvanIlyichev
+156 lines (153 sloc)  6.14 KB
+
 name: shesha-#{role}#-#{env}#
 runtime: yaml
 description: Shesha #{role}# #{env}# for #{projectName}#
@@ -154,3 +188,18 @@ outputs:
   sqlServerName: ${containerAppRevisionImage}
   sqlElasticPoolName: ${sqlElasticPoolName}
   sqlDatabaseName: ${sqlDatabaseName}
+Footer
+© 2023 GitHub, Inc.
+Footer navigation
+Terms
+Privacy
+Security
+Status
+Docs
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
+shesha-framework/Pulumi.yaml at main · shesha-io/shesha-framework
