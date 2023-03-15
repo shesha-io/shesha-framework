@@ -120,11 +120,6 @@ stages:
         feedsToUse: 'select'
         vstsFeed: '44b4667a-8963-403d-9962-bde66225adbd'
     - task: DotNetCoreCLI@2
-      inputs:
-        command: 'restore'
-        feedsToUse: 'select'
-        vstsFeed: '44b4667a-8963-403d-9962-bde66225adbd'
-    - task: DotNetCoreCLI@2
       displayName: dotnet build
       inputs:
         projects: shesha-functional-tests/backend/Boxfusion.SheshaFunctionalTests.sln
