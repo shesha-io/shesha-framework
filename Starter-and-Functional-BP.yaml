@@ -116,7 +116,7 @@ stages:
       displayName: dotnet Restore
       inputs:
         command: 'restore'
-        projects: shesha-starter/backend/**/*.csproj        
+        projects: shesha-functional-tests/backend/**/*.csproj        
         feedsToUse: 'select'
         vstsFeed: '44b4667a-8963-403d-9962-bde66225adbd'
     - task: DotNetCoreCLI@2
