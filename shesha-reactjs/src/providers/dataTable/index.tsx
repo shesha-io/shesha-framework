@@ -1,5 +1,5 @@
 import React, { FC, useContext, PropsWithChildren, useEffect, useRef, useMemo } from 'react';
-import useThunkReducer from 'react-hook-thunk-reducer';
+import { useThunkReducer } from '../../hooks/thunkReducer';
 import { dataTableReducer } from './reducer';
 import axios from 'axios';
 import FileSaver from 'file-saver';

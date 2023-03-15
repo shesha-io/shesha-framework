@@ -1,22 +1,38 @@
-# Variable 'artifactName' was defined in the Variables tab
+# Variable 'artifactName' was defined in the Variables tab - test
 # Agent Queue 'Azure Pipelines' was used with unrecognized Agent Specification, vmImage property must be specified to determine image - https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops&tabs=yaml#software
 variables:
 - name: BuildParameters.solution1
-  value: shesha-io/shesha-framework/shesha-functional-tests/backend/Boxfusion.SheshaFunctionalTests.sln
+  value: Boxfusion.SheshaFunctionalTests.sln
 - name: BuildParameters.solution2
-  value: shesha-io/shesha-framework/shesha-starter/backend/ShaCompanyName.ShaProjectName.sln  
+  value: ShaCompanyName.ShaProjectName.sln
 - name: BuildParameters.configuration
   value: release
 - name: pack-version
   value: $(Build.BuildNumber)
+- name: isMain
+  value: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
+
+pr:
+  branches:
+    exclude:
+    - main
+    include:
+    - releases/*
+
 trigger:
   tags:
     include:
     - '*'
+  paths:
+    exclude:
+    - shesha-core
+    - shesha-docs
+    - shesha-reactjs
+    - .github/workflows
   branches:
     include:
     - releases/*
-    - refs/tags/*
+    # - refs/tags/*
     exclude:
     - main
 pool: 
@@ -27,6 +43,7 @@ name: 2.0.0.$(BuildID)
 stages:
 - stage: Build_Functional_Shesha_API
   displayName: Build_Functional_Shesha_API
+  condition: eq(variables.isMain, 'false')
   jobs:
   - job: Job_1
     displayName: Agent job 1
@@ -39,13 +56,6 @@ stages:
       displayName: Use .NET Core sdk 6.x
       inputs:
         version: 6.x
-    # - task: DotNetCoreCLI@2
-    #   displayName: 'Dotnet Restore'
-    #   inputs:
-    #     command: restore
-    #     projects: $(BuildParameters.solution)
-    #     feedsToUse: config
-    #     nugetConfigPath: backend/.nuget/NuGet.Config
     - task: Assembly-Info-NetCore@3
       displayName: Set Assembly Manifest Data
       inputs:
@@ -106,35 +116,19 @@ stages:
       displayName: 'Dotnet Restore'
       inputs:
         command: restore
-        projects: 'shesha-io/shesha-framework/shesha-functional-tests/backend/src/Module/**/*.csproj'
+        projects: shesha-functional-tests/backend/**/*.csproj
         vstsFeed: '44b4667a-8963-403d-9962-bde66225adbd'
     - task: DotNetCoreCLI@2
       displayName: dotnet build
       inputs:
-        projects: $(BuildParameters.solution1)
+        projects: shesha-functional-tests/backend/Boxfusion.SheshaFunctionalTests.sln
         arguments: --configuration $(BuildParameters.configuration)
-    - task: DotNetCoreCLI@2
-      displayName: dotnet pack
-      inputs:
-        command: 'pack'
-        packagesToPack: 'shesha-framework/shesha-functional-tests/backend/src/Module/**/*.csproj'
-        configuration: '$(BuildParameters.configuration)'
-        nobuild: true
-        includesymbols: true
-        includesource: true        
-        versioningScheme: 'byEnvVar'
-        versionEnvVar: 'pack-version'
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: Nuget packs'  
-      inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: 'packs-functional'
     - task: DotNetCoreCLI@2
       displayName: dotnet publish
       inputs:
         command: publish
         publishWebProjects: false
-        projects: $(BuildParameters.solution1)
+        projects: shesha-functional-tests/backend/Boxfusion.SheshaFunctionalTests.sln
         arguments: --configuration $(BuildParameters.configuration) --output $(build.artifactstagingdirectory) --no-build
         zipAfterPublish: false
         modifyOutputPath: false
@@ -142,8 +136,25 @@ stages:
       displayName: 'Publish Artifact: functional-shesha-api'
       inputs:
         ArtifactName: functional-shesha-api
+    - task: DotNetCoreCLI@2
+      displayName: dotnet pack
+      inputs:
+        command: 'pack'
+        packagesToPack: 'shesha-functional-tests/backend/src/Module/**/*.csproj'
+        configuration: '$(BuildParameters.configuration)'
+        nobuild: true
+        includesymbols: true
+        includesource: true
+        versioningScheme: 'byEnvVar'
+        versionEnvVar: 'pack-version'
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: Nuget packs'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'packs-functional'
 - stage: Build_Starter_Shesha_API
   displayName: Build_Starter_Shesha_API
+  condition: eq(variables.isMain, 'false')
   jobs:
   - job: Job_2
     displayName: Agent job 2
@@ -156,13 +167,6 @@ stages:
       displayName: Use .NET Core sdk 6.x
       inputs:
         version: 6.x
-    # - task: DotNetCoreCLI@2
-    #   displayName: 'Dotnet Restore'
-    #   inputs:
-    #     command: restore
-    #     projects: $(BuildParameters.solution)
-    #     feedsToUse: config
-    #     nugetConfigPath: backend/.nuget/NuGet.Config
     - task: Assembly-Info-NetCore@3
       displayName: Set Assembly Manifest Data
       inputs:
@@ -223,35 +227,19 @@ stages:
       displayName: 'Dotnet Restore'
       inputs:
         command: restore
-        projects: 'shesha-io/shesha-framework/shesha-functional-tests/backend/src/Module/**/*.csproj'
+        projects: shesha-starter/backend/**/*.csproj
         vstsFeed: '44b4667a-8963-403d-9962-bde66225adbd'
     - task: DotNetCoreCLI@2
       displayName: dotnet build
       inputs:
-        projects: $(BuildParameters.solution1)
+        projects: shesha-starter/backend/ShaCompanyName.ShaProjectName.sln
         arguments: --configuration $(BuildParameters.configuration)
-    - task: DotNetCoreCLI@2
-      displayName: dotnet pack
-      inputs:
-        command: 'pack'
-        packagesToPack: 'shesha-framework/shesha-functional-tests/backend/src/Module/**/*.csproj'
-        configuration: '$(BuildParameters.configuration)'
-        nobuild: true
-        includesymbols: true
-        includesource: true        
-        versioningScheme: 'byEnvVar'
-        versionEnvVar: 'pack-version'
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: Nuget packs'  
-      inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: 'packs-functional'
     - task: DotNetCoreCLI@2
       displayName: dotnet publish
       inputs:
         command: publish
         publishWebProjects: false
-        projects: $(BuildParameters.solution2)
+        projects: shesha-starter/backend/ShaCompanyName.ShaProjectName.sln
         arguments: --configuration $(BuildParameters.configuration) --output $(build.artifactstagingdirectory) --no-build
         zipAfterPublish: false
         modifyOutputPath: false
@@ -259,8 +247,25 @@ stages:
       displayName: 'Publish Artifact: starter-shesha-api'
       inputs:
         ArtifactName: starter-shesha-api
+    - task: DotNetCoreCLI@2
+      displayName: dotnet pack
+      inputs:
+        command: 'pack'
+        packagesToPack: 'shesha-starter/backend/src/Module/**/*.csproj'
+        configuration: '$(BuildParameters.configuration)'
+        nobuild: true
+        includesymbols: true
+        includesource: true
+        versioningScheme: 'byEnvVar'
+        versionEnvVar: 'pack-version'
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: Nuget packs'  
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'packs-starter'
 - stage: Build_Functional_Shesha_AdminPortal
   displayName: Build_Functional_Shesha_AdminPortal
+  condition: eq(variables.isMain, 'false')
   jobs:
   - job: Job_3
     displayName: Agent job 3
@@ -290,7 +295,7 @@ stages:
               write-host "Source Branch should be main or releases here: $(Build.SourceBranch)"            
               write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
           }
-        workingDirectory: 'adminportal'
+        workingDirectory: 'shesha-functional-tests/adminportal'
     - task: PowerShell@2
       displayName: Output to console the current branch  
       inputs:
@@ -298,7 +303,7 @@ stages:
         script: |
           # Write your PowerShell commands here.
           write-host "The current branch is: $(currentBranch)"
-        workingDirectory: 'adminportal'
+        workingDirectory: 'shesha-functional-tests/adminportal'
     - task: NodeTool@0
       displayName: 'Use Node 14.21.1'
       inputs:
@@ -312,7 +317,7 @@ stages:
       displayName: Install Latest Shesha
       inputs:
         command: custom
-        workingDir: 'adminportal'
+        workingDir: 'shesha-functional-tests/adminportal'
         verbose: false
         customCommand: install @shesha/reactjs@latest
     - task: PowerShell@2
@@ -329,42 +334,43 @@ stages:
           Write-Host "##vso[task.setvariable variable=version]$bumpedVersion"
 
           ls
-        workingDirectory: 'adminportal'        
-    - task: Npm@1
-      displayName: Npm Set the version
-      inputs:
-        command: custom
-        workingDir: 'adminportal'
-        verbose: true
-        #customCommand: version --no-git-tag-version #$(pack-version)
-        customCommand: 'version $(pack-version)'
+        workingDirectory: 'shesha-functional-tests/adminportal'
+    # - task: Npm@1
+    #   displayName: Npm Set the version
+    #   inputs:
+    #     command: custom
+    #     workingDir: 'shesha-functional-tests/adminportal'
+    #     verbose: true
+    #     #customCommand: version --no-git-tag-version #$(pack-version)
+    #     customCommand: 'version $(pack-version)'
     - task: Npm@1
       displayName: 'Npm Install'
       inputs:
         command: custom
-        workingDir: adminportal
+        workingDir: shesha-functional-tests/adminportal
         verbose: false
         customCommand: 'install --legacy-peer-deps'        
     - task: Npm@1
       displayName: Npm Build
       inputs:
         command: custom
-        workingDir: 'adminportal'
+        workingDir: 'shesha-functional-tests/adminportal'
         verbose: true
         customCommand: run build
     - task: ArchiveFiles@2
       inputs:
-        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/adminportal'
+        rootFolderOrFile: 'shesha-functional-tests/adminportal'
         includeRootFolder: false
         archiveType: 'zip'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/shesha-adminportal-functional.zip'
-        replaceExistingArchive: true  
+        archiveFile: '$(Build.ArtifactStagingDirectory)/frontend.zip'
+        replaceExistingArchive: true
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: shesha-adminportal-functional'
       inputs:
         ArtifactName: adminportal-functional
 - stage: Build_Starter_Shesha_AdminPortal
   displayName: Build_Starter_Shesha_AdminPortal
+  condition: eq(variables.isMain, 'false')
   jobs:
   - job: Job_4
     displayName: Agent job 4
@@ -394,7 +400,7 @@ stages:
               write-host "Source Branch should be main or releases here: $(Build.SourceBranch)"            
               write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
           }
-        workingDirectory: 'adminportal'
+        workingDirectory: 'shesha-starter/frontend'
     - task: PowerShell@2
       displayName: Output to console the current branch  
       inputs:
@@ -402,7 +408,7 @@ stages:
         script: |
           # Write your PowerShell commands here.
           write-host "The current branch is: $(currentBranch)"
-        workingDirectory: 'adminportal'
+        workingDirectory: 'shesha-starter/frontend'
     - task: NodeTool@0
       displayName: 'Use Node 14.21.1'
       inputs:
@@ -416,7 +422,7 @@ stages:
       displayName: Install Latest Shesha
       inputs:
         command: custom
-        workingDir: 'adminportal'
+        workingDir: 'shesha-starter/frontend'
         verbose: false
         customCommand: install @shesha/reactjs@latest
     - task: PowerShell@2
@@ -433,32 +439,33 @@ stages:
           Write-Host "##vso[task.setvariable variable=version]$bumpedVersion"
 
           ls
-        workingDirectory: 'adminportal'        
-    - task: Npm@1
-      displayName: Npm Set the version
-      inputs:
-        command: custom
-        workingDir: 'adminportal'
-        verbose: true
-        #customCommand: version --no-git-tag-version #$(pack-version)
-        customCommand: 'version $(pack-version)'
+        workingDirectory: 'shesha-starter/frontend'
+
+    # - task: Npm@1
+    #   displayName: Npm Set the version
+    #   inputs:
+    #     command: custom
+    #     workingDir: 'shesha-starter/frontend'
+    #     verbose: true
+    #     #customCommand: version --no-git-tag-version #$(pack-version)
+    #     customCommand: 'version $(pack-version)'
     - task: Npm@1
       displayName: 'Npm Install'
       inputs:
         command: custom
-        workingDir: adminportal
+        workingDir: 'shesha-starter/frontend'
         verbose: false
-        customCommand: 'install --legacy-peer-deps'        
+        customCommand: 'install --legacy-peer-deps'
     - task: Npm@1
       displayName: Npm Build
       inputs:
         command: custom
-        workingDir: 'adminportal'
+        workingDir: 'shesha-starter/frontend'
         verbose: true
         customCommand: run build
     - task: ArchiveFiles@2
       inputs:
-        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/adminportal'
+        rootFolderOrFile: 'shesha-starter/frontend'
         includeRootFolder: false
         archiveType: 'zip'
         archiveFile: '$(Build.ArtifactStagingDirectory)/shesha-adminportal-starter.zip'
@@ -466,4 +473,4 @@ stages:
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: shesha-adminportal-starter'
       inputs:
-        ArtifactName: adminportal-starter        
+        ArtifactName: adminportal-starter

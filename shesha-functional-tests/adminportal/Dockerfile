@@ -1,15 +1,7 @@
-FROM node:12-alpine
+FROM node:14
+EXPOSE 3000
 
-WORKDIR /opt/app
-
-ENV NODE_ENV production
-
-COPY package*.json ./
-
-RUN npm ci 
-
-COPY . /opt/app
-
-RUN npm install --dev && npm run build
+WORKDIR /app
+COPY . /app
 
 CMD [ "npm", "start" ]
