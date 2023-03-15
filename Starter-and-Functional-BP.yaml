@@ -55,14 +55,14 @@ stages:
       displayName: Use .NET Core sdk 6.x
       inputs:
         version: 6.x
-    - task: Assembly-Info-NetCore@3
-      displayName: 'Set Assembly Manifest Data'
-      inputs:
-        InsertAttributes: true
-        VersionNumber: '$(Build.BuildNumber)'
-        FileVersionNumber: '$(Build.BuildNumber)'
-        InformationalVersion: '$(Build.BuildNumber)'
-        PackageVersion: '$(Build.BuildNumber)'
+    # - task: Assembly-Info-NetCore@3
+    #   displayName: 'Set Assembly Manifest Data'
+    #   inputs:
+    #     InsertAttributes: true
+    #     VersionNumber: '$(Build.BuildNumber)'
+    #     FileVersionNumber: '$(Build.BuildNumber)'
+    #     InformationalVersion: '$(Build.BuildNumber)'
+    #     PackageVersion: '$(Build.BuildNumber)'
     - task: PowerShell@2
       displayName: Check to establish if this pipeline was triggered from a tag  
       inputs:
@@ -161,14 +161,14 @@ stages:
       displayName: Use .NET Core sdk 6.x
       inputs:
         version: 6.x
-    - task: Assembly-Info-NetCore@3
-      displayName: 'Set Assembly Manifest Data'
-      inputs:
-        InsertAttributes: true
-        VersionNumber: '$(Build.BuildNumber)'
-        FileVersionNumber: '$(Build.BuildNumber)'
-        InformationalVersion: '$(Build.BuildNumber)'
-        PackageVersion: '$(Build.BuildNumber)'
+    # - task: Assembly-Info-NetCore@3
+    #   displayName: 'Set Assembly Manifest Data'
+    #   inputs:
+    #     InsertAttributes: true
+    #     VersionNumber: '$(Build.BuildNumber)'
+    #     FileVersionNumber: '$(Build.BuildNumber)'
+    #     InformationalVersion: '$(Build.BuildNumber)'
+    #     PackageVersion: '$(Build.BuildNumber)'
     - task: PowerShell@2
       displayName: Check to establish if this pipeline was triggered from a tag  
       inputs:
