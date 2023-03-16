@@ -1,5 +1,4 @@
-﻿using Abp.Domain.Entities;
-using Abp.Domain.Repositories;
+﻿using Abp.Domain.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Shesha.Application.Services.Dto;
@@ -8,7 +7,6 @@ using Shesha.ConfigurationItems.Cache;
 using Shesha.ConfigurationItems.Exceptions;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
-using Shesha.Elmah;
 using Shesha.Exceptions;
 using Shesha.Utilities;
 using Shesha.Web.FormsDesigner.Domain;
@@ -31,8 +29,7 @@ namespace Shesha.Web.FormsDesigner.Services
         private readonly IRepository<FrontEndApp, Guid> _frontEndAppRepository;        
         private readonly IConfigurationFrameworkRuntime _cfRuntime;
         private readonly IConfigurationItemClientSideCache _clientSideCache;
-        private readonly IRepository<ConfigurationItem, Guid> _configurationItemRepository;
-
+        
         /// <summary>
         /// Default constructor
         /// </summary>
@@ -42,15 +39,13 @@ namespace Shesha.Web.FormsDesigner.Services
             IRepository<Module, Guid> moduleRepository,
             IRepository<FrontEndApp, Guid> frontEndAppRepository,
             IConfigurationFrameworkRuntime cfRuntime,
-            IConfigurationItemClientSideCache clientSideCache,
-            IRepository<ConfigurationItem, Guid> configurationItemRepository) : base(repository)
+            IConfigurationItemClientSideCache clientSideCache) : base(repository)
         {
             _componentStore = componentStore;
             _moduleRepository = moduleRepository;
             _frontEndAppRepository = frontEndAppRepository;
             _cfRuntime = cfRuntime;
             _clientSideCache = clientSideCache;
-            _configurationItemRepository = configurationItemRepository;
         }
 
         /// <summary>
@@ -98,24 +93,23 @@ namespace Shesha.Web.FormsDesigner.Services
                 component = new ConfigurableComponent {
                     
                 };
-                component.Configuration.Name = input.Name;
-                component.Configuration.Module = await GetModuleAsync(input.Module);
+                component.Name = input.Name;
+                component.Module = await GetModuleAsync(input.Module);
 
-                component.Configuration.VersionNo = 1;
-                component.Configuration.VersionStatus = ConfigurationItemVersionStatus.Live;
-                component.Configuration.Origin = component.Configuration;
+                component.VersionNo = 1;
+                component.VersionStatus = ConfigurationItemVersionStatus.Live;
+                component.Origin = component;
 
                 if (input.IsApplicationSpecific && !string.IsNullOrWhiteSpace(_cfRuntime.FrontEndApplication)) {
                     var application = await GetFrontEndAppAsync(_cfRuntime.FrontEndApplication);
                     if (application == null)
                         throw new FrontEndApplicationNotFoundException(_cfRuntime.FrontEndApplication);
                     
-                    component.Configuration.Application = application;
+                    component.Application = application;
                 }
 
                 component.Normalize();
 
-                await _configurationItemRepository.InsertAsync(component.Configuration);
                 await Repository.InsertAsync(component);
             }
 
@@ -134,16 +128,16 @@ namespace Shesha.Web.FormsDesigner.Services
             var moduleEntity = await GetModuleAsync(input.Module);
 
             // todo: move to a generic method
-            var query = Repository.GetAll().Where(f => f.Configuration.Module == moduleEntity &&
-                f.Configuration.Name == input.Name);
+            var query = Repository.GetAll().Where(f => f.Module == moduleEntity &&
+                f.Name == input.Name);
 
             if (!string.IsNullOrWhiteSpace(input.FrontEndApplication)) 
-                query = query.Where(c => c.Configuration.Application.AppKey == input.FrontEndApplication);
+                query = query.Where(c => c.Application.AppKey == input.FrontEndApplication);
 
             switch (mode)
             {
                 case ConfigurationItems.Models.ConfigurationItemViewMode.Live:
-                    query = query.Where(f => f.Configuration.VersionStatus == ConfigurationItemVersionStatus.Live);
+                    query = query.Where(f => f.VersionStatus == ConfigurationItemVersionStatus.Live);
                     break;
                 case ConfigurationItems.Models.ConfigurationItemViewMode.Ready:
                     {
@@ -152,7 +146,7 @@ namespace Shesha.Web.FormsDesigner.Services
                         ConfigurationItemVersionStatus.Ready
                     };
 
-                        query = query.Where(f => statuses.Contains(f.Configuration.VersionStatus)).OrderByDescending(f => f.Configuration.VersionNo);
+                        query = query.Where(f => statuses.Contains(f.VersionStatus)).OrderByDescending(f => f.VersionNo);
                         break;
                     }
                 case ConfigurationItems.Models.ConfigurationItemViewMode.Latest:
@@ -162,7 +156,7 @@ namespace Shesha.Web.FormsDesigner.Services
                         ConfigurationItemVersionStatus.Ready,
                         ConfigurationItemVersionStatus.Draft
                     };
-                        query = query.Where(f => f.Configuration.IsLast && statuses.Contains(f.Configuration.VersionStatus));
+                        query = query.Where(f => f.IsLast && statuses.Contains(f.VersionStatus));
                         break;
                     }
             }

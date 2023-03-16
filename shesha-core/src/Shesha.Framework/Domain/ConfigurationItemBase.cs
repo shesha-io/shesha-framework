@@ -1,11 +1,7 @@
-﻿using Abp.Domain.Entities;
-using JetBrains.Annotations;
-using Shesha.ConfigurationItems;
+﻿using Shesha.ConfigurationItems;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.ConfigurationItems;
-using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Threading.Tasks;
 
 namespace Shesha.Domain
@@ -13,43 +9,20 @@ namespace Shesha.Domain
     /// <summary>
     /// Configuration item base
     /// </summary>
-    public abstract class ConfigurationItemBase: Entity<Guid>, IConfigurationItem
+    public class ConfigurationItemBase: ConfigurationItem, IConfigurationItem
     {
-        /// <summary>
-        /// Configuration item base info
-        /// </summary>
-        [ForeignKey("Id")]
-        [OneToOne]
-        [NotNull]
-        public virtual ConfigurationItem Configuration { get; set; }
+        public virtual string ItemType { get; }
 
-        public abstract string ItemType { get; }
-
-        public ConfigurationItemBase()
+        public virtual Task<IList<ConfigurationItemBase>> GetDependenciesAsync()
         {
-            Configuration = new ConfigurationItem() { 
-                ItemType = ItemType
-            };
+            return Task.FromResult<IList<ConfigurationItemBase>>(new List<ConfigurationItemBase>());
         }
-
-        public abstract Task<IList<ConfigurationItemBase>> GetDependenciesAsync();
 
         public virtual void Normalize() 
         {
-            if (Id == Guid.Empty)
-            { 
-                Id = Guid.NewGuid();
-                if (Configuration == null)
-                    throw new NotSupportedException("Configuration must exists");
-                if (Configuration.Id != Guid.Empty && Configuration.Id != Id)
-                    throw new NotSupportedException($"Change Id of the `{nameof(Configuration)}` is not supported");
-
-                Configuration.Id = Id;
-            }
-
             // If Origin is not specified - add self reference
-            if (Configuration.Origin == null)
-                Configuration.Origin = Configuration;
+            if (Origin == null)
+                Origin = this;
         }
     }
 }

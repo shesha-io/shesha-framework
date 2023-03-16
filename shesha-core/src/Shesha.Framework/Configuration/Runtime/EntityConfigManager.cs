@@ -1,9 +1,6 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
-using Abp.Events.Bus.Entities;
-using Abp.Events.Bus.Handlers;
 using Abp.Runtime.Session;
-using Abp.Timing;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.DynamicEntities.Dtos;
@@ -16,7 +13,7 @@ using System.Threading.Tasks;
 namespace Shesha.Configuration.Runtime
 {
     /// inheritedDoc
-    public class EntityConfigManager : IEventHandler<EntityUpdatingEventData<EntityConfig>>, IEntityConfigManager, ITransientDependency
+    public class EntityConfigManager : IEntityConfigManager, ITransientDependency
     {
         private readonly IRepository<ConfigurationItem, Guid> _configurationItemRepository;
         private readonly IRepository<EntityConfig, Guid> _repository;
@@ -35,7 +32,7 @@ namespace Shesha.Configuration.Runtime
         {
             // Do not change to Mapper to avoid performance issues
             var result = await (query ?? _repository.GetAll())
-                .Where(x => !x.Configuration.IsDeleted)
+                .Where(x => !x.IsDeleted)
                 .Select(x => new EntityConfigDto()
                 {
                     Id = x.Id,
@@ -47,24 +44,14 @@ namespace Shesha.Configuration.Runtime
                     DiscriminatorValue = x.DiscriminatorValue,
                     Source = x.Source,
                     EntityConfigType = x.EntityConfigType,
-                    Suppress = x.Configuration.Suppress,
-                    Module = x.Configuration.Module.Name,
-                    Name = x.Configuration.Name,
-                    Label = x.Configuration.Label
+                    Suppress = x.Suppress,
+                    Module = x.Module.Name,
+                    Name = x.Name,
+                    Label = x.Label
                 }).ToListAsync();
             return implemented ?? false
                 ? result.Where(x => !x.NotImplemented).ToList()
                 : result;
-        }
-
-        public void HandleEvent(EntityUpdatingEventData<EntityConfig> eventData)
-        {
-            /*if (eventData.Entity.Configuration != null)
-            {
-                eventData.Entity.Configuration.LastModificationTime = Clock.Now;
-                eventData.Entity.Configuration.LastModifierUserId = AbpSession?.UserId;
-                _configurationItemRepository.InsertOrUpdate(eventData.Entity.Configuration);
-            }*/
         }
     }
 }

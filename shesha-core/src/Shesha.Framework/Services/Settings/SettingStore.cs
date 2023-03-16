@@ -14,7 +14,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Shesha.Services.Settings
@@ -33,16 +32,14 @@ namespace Shesha.Services.Settings
             IUnitOfWorkManager unitOfWorkManager,
             IRepository<SettingValue, Guid> settingValueRepository,
             IRepository<SettingConfiguration, Guid> settingConfigurationRepository,
-            IConfigurationFrameworkRuntime cfRuntime) : base(repository, configurationItemRepository, moduleRepository, unitOfWorkManager)
+            IConfigurationFrameworkRuntime cfRuntime) : base(repository, moduleRepository, unitOfWorkManager)
         {
             _settingValueRepository = settingValueRepository;
             _settingConfigurationRepository = settingConfigurationRepository;
             _cfRuntime = cfRuntime;
         }
 
-        public override string ItemType => SettingConfiguration.ItemTypeName;
-
-        public override Task<ConfigurationItemBase> CopyAsync(ConfigurationItemBase item, CopyItemInput input)
+        public override Task<SettingConfiguration> CopyAsync(SettingConfiguration item, CopyItemInput input)
         {
             throw new System.NotImplementedException();
         }
@@ -55,7 +52,7 @@ namespace Shesha.Services.Settings
 
             var validationResults = new List<ValidationResult>();
 
-            var alreadyExist = await Repository.GetAll().Where(f => f.Configuration.Module == module && f.Configuration.Name == input.Name).AnyAsync();
+            var alreadyExist = await Repository.GetAll().Where(f => f.Module == module && f.Name == input.Name).AnyAsync();
             if (alreadyExist)
                 validationResults.Add(new ValidationResult(
                     module != null
@@ -67,14 +64,14 @@ namespace Shesha.Services.Settings
                 throw new AbpValidationException("Please correct the errors and try again", validationResults);
 
             var definition = new SettingConfiguration();
-            definition.Configuration.Name = input.Name;
-            definition.Configuration.Module = module;
-            definition.Configuration.Description = input.Description;
-            definition.Configuration.Label = input.Label;
+            definition.Name = input.Name;
+            definition.Module = module;
+            definition.Description = input.Description;
+            definition.Label = input.Label;
 
-            definition.Configuration.VersionNo = 1;
-            definition.Configuration.VersionStatus = ConfigurationItemVersionStatus.Live;
-            definition.Configuration.Origin = definition.Configuration;
+            definition.VersionNo = 1;
+            definition.VersionStatus = ConfigurationItemVersionStatus.Live;
+            definition.Origin = definition;
 
             definition.DataType = input.DataType;
             definition.EditorFormName = input.EditorFormName;
@@ -86,13 +83,12 @@ namespace Shesha.Services.Settings
 
             definition.Normalize();
 
-            await ConfigurationItemRepository.InsertAsync(definition.Configuration);
             await Repository.InsertAsync(definition);
 
             return definition;
         }
 
-        public override Task<ConfigurationItemBase> CreateNewVersionAsync(ConfigurationItemBase item)
+        public override Task<SettingConfiguration> CreateNewVersionAsync(SettingConfiguration item)
         {
             throw new System.NotImplementedException();
         }
@@ -102,7 +98,7 @@ namespace Shesha.Services.Settings
             return await Repository.GetAll().Where(new ByNameAndModuleSpecification<SettingConfiguration>(id.Name, id.Module).ToExpression()).FirstOrDefaultAsync();
         }
 
-        public override Task<IConfigurationItemDto> MapToDtoAsync(ConfigurationItemBase item)
+        public override Task<IConfigurationItemDto> MapToDtoAsync(SettingConfiguration item)
         {
             var dto = ObjectMapper.Map<SettingDefinitionDto>(item);
             return Task.FromResult<IConfigurationItemDto>(dto);
@@ -111,9 +107,9 @@ namespace Shesha.Services.Settings
         public async Task<SettingValue> GetSettingValueAsync(SettingDefinition setting, SettingManagementContext context)
         {
             return await WithUnitOfWorkAsync(async () => {
-                var query = _settingValueRepository.GetAll().Where(v => v.SettingConfiguration.Configuration.Name == setting.Name);
+                var query = _settingValueRepository.GetAll().Where(v => v.SettingConfiguration.Name == setting.Name);
                 if (!string.IsNullOrWhiteSpace(setting.ModuleName))
-                    query = query.Where(v => v.SettingConfiguration.Configuration.Module != null && v.SettingConfiguration.Configuration.Module.Name == setting.ModuleName);
+                    query = query.Where(v => v.SettingConfiguration.Module != null && v.SettingConfiguration.Module.Name == setting.ModuleName);
 
                 if (setting.IsClientSpecific)
                 {

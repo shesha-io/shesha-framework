@@ -15,6 +15,7 @@ namespace Shesha.Domain.ConfigurationItems
     /// <summary>
     /// Configuration Item
     /// </summary>
+    [Discriminator(DiscriminatorColumn = "ItemType")]
     public class ConfigurationItem : FullAuditedEntity<Guid, User>, IMayHaveTenant
     {
         /// <summary>
@@ -36,12 +37,6 @@ namespace Shesha.Domain.ConfigurationItems
         [StringLength(200)]
         [Display(Name = "Label", Description = "Label of the item, can be used in lists as a user friendly name")]
         public virtual string Label { get; set; }
-
-        /// <summary>
-        /// Item name
-        /// </summary>
-        [StringLength(200)]
-        public virtual string ItemType { get; set; }
 
         /// <summary>
         /// Item description

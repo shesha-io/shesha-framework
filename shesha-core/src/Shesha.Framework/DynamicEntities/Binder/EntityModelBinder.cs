@@ -86,7 +86,7 @@ namespace Shesha.DynamicEntities.Binder
             var entityType = entity.GetType().StripCastleProxyType();
             var properties = entityType.GetProperties().Where(p => p.CanWrite && p.Name != "Id").ToList();
 
-            var config = _entityConfigRepository.GetAll().FirstOrDefault(x => x.Namespace == entityType.Namespace && x.ClassName == entityType.Name && !x.Configuration.IsDeleted);
+            var config = _entityConfigRepository.GetAll().FirstOrDefault(x => x.Namespace == entityType.Namespace && x.ClassName == entityType.Name && !x.IsDeleted);
 
             context.LocalValidationResult = new List<ValidationResult>();
 
