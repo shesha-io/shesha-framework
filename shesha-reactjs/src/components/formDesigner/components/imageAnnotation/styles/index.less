@@ -1,0 +1,48 @@
+.annotation-conatainer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.8rem;
+  .container-image {
+    width: calc(50% - 0.5rem);
+    margin-bottom: 1rem;
+  }
+  .container-image-Cover {
+    position: absolute;
+    width: calc(50% - 0.5rem);
+    margin-bottom: 1rem;
+    background-color: transparent;
+  }
+
+  .description-container {
+    width: calc(40% - 0.5rem);
+    padding: auto;
+    overflow-y: scroll;
+  }
+}
+.customInput_container {
+  display: flex;
+}
+.outer-List-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: inherit; /* Set a height to center vertically */
+  overflow-y: scroll;
+  .List-Container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.8rem !important;
+  }
+}
+
+.numbering {
+  border-radius: 50%;
+  height: 2rem;
+  width: 2rem;
+  border: 2px solid;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
