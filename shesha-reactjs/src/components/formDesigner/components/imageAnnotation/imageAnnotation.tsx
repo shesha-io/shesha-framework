@@ -113,7 +113,7 @@ const ImageAnnotation: FC<IProps> = ({ model, onChange: onChangeForm, value }) =
         <div
           className="description-container"
           style={{
-            ...pageSize
+            height:pageSize.height
           }}
         >
           <div className="outer-List-container">
