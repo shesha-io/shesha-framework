@@ -301,7 +301,7 @@ namespace Shesha.Users
             
             var hasPhoneNumber = !string.IsNullOrEmpty(person.PhoneNumber);
             var hasEmail = !string.IsNullOrEmpty(person.EmailAddress);
-            var hasQuestions = await _questionRepository.CountAsync(q => q.User == person) > 0;
+            var hasQuestions = await _questionRepository.GetAll().Where(q => q.User == person).AnyAsync();
 
             if (supportedResetOptions.Length > 0)
             {

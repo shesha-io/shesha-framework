@@ -63,7 +63,7 @@ namespace Shesha.Otp
             };
 
             // send otp
-            if (!await _otpSettings.IgnoreOtpValidation.GetValueAsync())
+            if (await _otpSettings.IgnoreOtpValidation.GetValueAsync())
             {
                 otp.SendStatus = OtpSendStatus.Ignored;
             } else

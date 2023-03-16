@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Repositories;
+using Abp.Runtime.Validation;
 using Abp.UI;
 using Boxfusion.SheshaFunctionalTests.Common.Domain.Domain;
 using Boxfusion.SheshaFunctionalTests.Common.Domain.Domain.Enum;
@@ -7,6 +8,7 @@ using Shesha;
 using Shesha.DynamicEntities.Dtos;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,7 +32,9 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             var member = await _memberRepo.GetAsync(memberId);
             var payments = await _membershipPaymentRepo.GetAllListAsync(data => data.Member.Id == memberId);
 
-            if (payments.Count == 0) throw new UserFriendlyException("There no payments made");
+            var errors = new List<ValidationResult>();
+
+            if (payments.Count == 0) errors.Add(new ValidationResult("There no payments made"));
 
             double totalAmount = 0;
             payments.ForEach(a =>
@@ -38,7 +42,9 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                 totalAmount += a.Amount;
             });
 
-            if (totalAmount < 100) throw new UserFriendlyException("Payments made are less than 100");
+            if (totalAmount < 100) errors.Add(new ValidationResult("Payments made are less than 100"));
+
+            if (errors.Any()) throw new AbpValidationException("Erros", errors);
 
 
             member.MembershipStatus = RefListMembershipStatuses.Active;

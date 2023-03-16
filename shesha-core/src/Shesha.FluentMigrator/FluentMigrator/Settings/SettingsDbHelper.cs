@@ -12,10 +12,17 @@ namespace Shesha.FluentMigrator.Settings
 
         internal Guid InsertSettingConfiguration(string module, string name, string displayName, string dataType, string? dataFormat)
         {
+            if (string.IsNullOrWhiteSpace(module))
+                throw new ArgumentNullException($"`{nameof(module)}` is mandatory", nameof(module));
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentNullException($"`{nameof(name)}` is mandatory", nameof(name));
+
             var id = Guid.NewGuid();
 
             // get module by name
             var moduleId = GetOrCreateModuleId(module);
+            if (moduleId == null)
+                throw new SheshaMigrationException($"Failed to get or create module with name `{module}`");
 
             ExecuteNonQuery(@"INSERT INTO Frwk_ConfigurationItems
            (Id

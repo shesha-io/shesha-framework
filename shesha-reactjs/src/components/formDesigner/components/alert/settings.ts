@@ -32,6 +32,7 @@ export const getSettings = (data: any) =>
         { id: '21fc57e5-5e5d-4ae8-83c4-080a15b55176', label: 'Error', value: 'error' },
       ],
       validate: { required: true },
+      defaultValue: 'info',
     })
     .addTextArea({
       id: '277b7ffe-d023-4543-a4b4-ff7f76052867',
@@ -44,6 +45,7 @@ export const getSettings = (data: any) =>
       showCount: false,
       allowClear: false,
       validate: { required: true },
+      description: 'Accepts {{mustache}} syntax',
     })
     .addTextArea({
       id: '8340f638-c466-448e-99cd-fb8c544fe02a',
@@ -54,7 +56,7 @@ export const getSettings = (data: any) =>
       label: 'Description',
       autoSize: false,
       showCount: false,
-      // allowClear: true,
+      description: 'Accepts {{mustache}} syntax',
     })
     .addCheckbox({
       id: '65aef83a-ea37-480a-9d77-ee4f4e229a70',
