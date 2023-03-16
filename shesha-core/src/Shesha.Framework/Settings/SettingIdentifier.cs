@@ -21,10 +21,10 @@ namespace Shesha.Settings
             Module = module;    
         }
 
-        public string FullName => $"{Module}:{Name}";
+        public string NormalizedFullName => $"{Module}:{Name}".ToLower();
         public override int GetHashCode()
         {
-            return FullName.GetHashCode();
+            return NormalizedFullName.GetHashCode();
         }
         public override bool Equals(object obj)
         {
@@ -33,7 +33,7 @@ namespace Shesha.Settings
 
         public bool Equals(SettingIdentifier obj)
         {
-            return obj != null && obj.FullName == this.FullName;
+            return obj != null && obj.NormalizedFullName == this.NormalizedFullName;
         }
     }
 }
