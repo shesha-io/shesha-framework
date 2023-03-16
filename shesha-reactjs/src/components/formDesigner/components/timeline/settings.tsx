@@ -95,17 +95,6 @@ const TimelineSettings: FC<ITabSettingsProps> = (props) => {
         </Form.Item>
         <Show when={Boolean(state?.entityType)}>
           <Form.Item name="properties" label="Properties">
-            {/* <CodeEditor
-              readOnly={state.readOnly}
-              mode="inline"
-              setOptions={{ minLines: 15, maxLines: 500, fixedWidthGutter: true }}
-              name="properties"
-              type={''}
-              id={''}
-              language="graphqlschema"
-              label="Query Params"
-              description="Properties in GraphQL-like syntax"
-            /> */}
             <Properties modelType={state?.entityType} mode="multiple" value={state?.properties} />
           </Form.Item>
 
