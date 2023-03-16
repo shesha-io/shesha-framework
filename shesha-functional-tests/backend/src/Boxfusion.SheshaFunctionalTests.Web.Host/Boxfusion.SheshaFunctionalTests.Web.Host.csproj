@@ -83,7 +83,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Shesha.Framework" Version="4.7.3" />
+    <PackageReference Include="Shesha.Framework" Version="4.7.8" />
+    <ProjectReference Include="..\..\..\..\shesha-core\src\Shesha.Framework\Shesha.Framework.csproj" />
     <ProjectReference Include="..\Boxfusion.SheshaFunctionalTests.Web.Core\Boxfusion.SheshaFunctionalTests.Web.Core.csproj" />
   </ItemGroup>
 

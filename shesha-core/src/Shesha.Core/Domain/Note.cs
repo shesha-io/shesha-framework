@@ -14,9 +14,6 @@ namespace Shesha.Domain
         [ReferenceList("Shesha", "NoteType")]
         public virtual int? Category { get; set; }
 
-        [ReferenceList("Shesha", "NotePriority")]
-        public virtual int? Priority { get; set; }
-
         public virtual Note Parent { get; set; }
 
         [StringLength(int.MaxValue, MinimumLength = 3)]
