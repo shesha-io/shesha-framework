@@ -28,6 +28,6 @@ export interface IDataAnnotationListProps {
 export interface IImageProps extends IConfigurableFormComponent, IFormItem {
     height: string;
     width: string;
-    onImage: boolean;
+    isOnImage: boolean;
     url: string;
 }

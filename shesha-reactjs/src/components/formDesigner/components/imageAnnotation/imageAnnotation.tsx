@@ -1,11 +1,12 @@
 import { getString } from '../../../../providers/form/utils';
 import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { ReactPictureAnnotation } from 'react-picture-annotation';
-import { FormMode, useFormData } from '../../../../providers';
+import { FormMode, useForm, useFormData } from '../../../../providers';
 import { IAnnotation, IImageProps } from './model';
 import './styles/index.less';
 import { DescriptionsList } from './descriptionList';
 import { CustomInput } from './customAnnotationInput';
+import { parseIntOrDefault } from './utilis';
 
 interface IProps {
   formMode?: FormMode;
@@ -15,17 +16,19 @@ interface IProps {
 }
 
 const ImageAnnotation: FC<IProps> = ({ model, onChange: onChangeForm, value }) => {
-  const { onImage, height, width } = model;
+  const { isOnImage, height, width } = model;
   const { data: formData } = useFormData();
+  const { formMode } = useForm();
   const imageFrameRef = useRef<HTMLDivElement>(null);
   const [pageSize, setPageSize] = useState({
-    width: parseInt(width),
-    height: parseInt(height),
+    width: parseIntOrDefault(width),
+    height: parseIntOrDefault(height),
   });
   const [annotationData, setAnnotationData] = useState<IAnnotation[]>(value ?? []);
   const [numberOfMarks, setMarksLength] = useState<number>(annotationData.length);
 
   const url: string = getString(model?.url, formData) || formData?.[model.name];
+  const isReadOnly = model?.readOnly || formMode === 'readonly';
 
   useEffect(() => {
     window.addEventListener('resize', onResize);
@@ -34,8 +37,8 @@ const ImageAnnotation: FC<IProps> = ({ model, onChange: onChangeForm, value }) =
 
   useEffect(() => {
     setPageSize(() => ({
-      width: parseInt(width),
-      height: parseInt(height),
+      width: parseIntOrDefault(width),
+      height: parseIntOrDefault(height),
     }));
   }, [height, width]);
 
@@ -79,16 +82,19 @@ const ImageAnnotation: FC<IProps> = ({ model, onChange: onChangeForm, value }) =
   let defaultNumber = useMemo(() => annotationData?.length?.toString(), [annotationData]);
 
   const onResize = () => {
-    setPageSize({ width: imageFrameRef.current.offsetWidth, height: imageFrameRef.current.offsetHeight });
+    setPageSize({
+      width: parseIntOrDefault(imageFrameRef?.current?.offsetWidth),
+      height: parseIntOrDefault(imageFrameRef?.current?.offsetHeight),
+    });
   };
 
   const onSelect = () => {
     const newAnnotationData = annotationData.map(({ id, comment, ...rest }) => {
       return { id, comment, ...rest };
     });
-
     setAnnotationData(() => newAnnotationData);
   };
+
   const onChange = (data: IAnnotation[]) => {
     setAnnotationData(data);
   };
@@ -104,16 +110,18 @@ const ImageAnnotation: FC<IProps> = ({ model, onChange: onChangeForm, value }) =
           image={url}
           onSelect={onSelect}
           onChange={onChange}
-          width={imageFrameRef?.current?.offsetWidth}
-          height={imageFrameRef?.current?.offsetHeight}
+          width={parseIntOrDefault(imageFrameRef?.current?.offsetWidth)}
+          height={parseIntOrDefault(imageFrameRef?.current?.offsetHeight)}
           marginWithInput={2}
         />
       </div>
-      {!onImage && (
+      {isReadOnly && <div className="container-image-Cover" style={{ ...pageSize }} />}
+
+      {!isOnImage && (
         <div
           className="description-container"
           style={{
-            height:pageSize.height
+            height: pageSize.height,
           }}
         >
           <div className="outer-List-container">
