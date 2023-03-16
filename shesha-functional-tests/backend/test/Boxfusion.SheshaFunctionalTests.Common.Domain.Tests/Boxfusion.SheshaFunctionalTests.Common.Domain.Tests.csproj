@@ -27,10 +27,9 @@
 		<PackageReference Include="Hangfire.SqlServer" Version="1.7.25" />
 		<PackageReference Include="nunit" Version="3.12.0" />
 		<PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
-		<PackageReference Include="Shesha.Application" Version="4.2.13" />
-		<PackageReference Include="Shesha.Core" Version="4.2.13" />
-		<PackageReference Include="Shesha.Framework" Version="4.2.13" />
-	</ItemGroup>
+		<PackageReference Include="Shesha.Application" Version="4.7.8" />
+		<PackageReference Include="Shesha.Core" Version="4.7.8" />
+		<PackageReference Include="Shesha.Framework" Version="4.7.8" />	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Identity.Client" Version="4.9.0" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
@@ -48,16 +47,19 @@
 		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.2" />
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\..\src\Module\Boxfusion.SheshaFunctionalTests.Common.Application\Boxfusion.SheshaFunctionalTests.Common.Application.csproj" />
+	  <ProjectReference Include="..\..\..\..\shesha-core\src\Shesha.Application\Shesha.Application.csproj" />
+	  <ProjectReference Include="..\..\..\..\shesha-core\src\Shesha.Core\Shesha.Core.csproj" />
+	  <ProjectReference Include="..\..\..\..\shesha-core\src\Shesha.Framework\Shesha.Framework.csproj" />
+	  <ProjectReference Include="..\..\src\Module\Boxfusion.SheshaFunctionalTests.Common.Domain\Boxfusion.SheshaFunctionalTests.Common.Domain.csproj" />
 	</ItemGroup>
 
-  <ItemGroup>
+   <ItemGroup>
 		<None Update="appsettings.Test.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-		<None Update="log4net.config">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
+		  <None Update="log4netTest.config">
+			  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		  </None>
 	</ItemGroup>
-
+	
 </Project>

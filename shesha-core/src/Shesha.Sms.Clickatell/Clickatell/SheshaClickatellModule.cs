@@ -2,16 +2,24 @@
 using Abp.AspNetCore.Configuration;
 using Abp.Modules;
 using Castle.MicroKernel.Registration;
+using Shesha.Modules;
 using Shesha.Settings.Ioc;
 using System.Reflection;
 
 namespace Shesha.Sms.Clickatell
 {
     [DependsOn(typeof(SheshaFrameworkModule), typeof(SheshaApplicationModule), typeof(AbpAspNetCoreModule))]
-    public class SheshaClickatellModule : AbpModule
+    public class SheshaClickatellModule : SheshaModule
     {
         public const int DefaultSingleMessageMaxLength = 160;
         public const int DefaultMessagePartLength = 153;
+
+        public const string ModuleName = "Shesha.Clickatell";
+        public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo(ModuleName)
+        {
+            FriendlyName = "Shesha Clickatell",
+            Publisher = "Boxfusion"
+        };
 
         public override void PreInitialize()
         {

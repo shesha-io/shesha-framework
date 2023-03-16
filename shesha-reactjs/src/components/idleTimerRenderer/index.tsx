@@ -3,7 +3,8 @@ import React, { FC, PropsWithChildren, useState } from 'react';
 import IdleTimer from 'react-idle-timer';
 import { useInterval } from 'react-use';
 import { useAuth } from '../../providers/auth';
-import { useAuthorizationSettings } from '../../providers/authorizationSettings';
+import { useSettingValue } from '../../providers/settings';
+import { ISettingIdentifier } from '../../providers/settings/models';
 import { getPercentage, getStatus, getTimeFormat, MIN_TIME, ONE_SECOND, SIXTY } from './util';
 
 export interface IIdleTimerRendererProps {}
@@ -18,17 +19,19 @@ const INIT_STATE: IIdleTimerState = {
   remainingTime: SIXTY,
 };
 
+const autoLogoffTimeoutSettingId: ISettingIdentifier = { name: 'Shesha.Security.AutoLogoffTimeout', module: 'Shesha' };
+
 export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> = ({ children }) => {
-  const { settings } = useAuthorizationSettings();
+  const { value: autoLogoffTimeout } = useSettingValue<number>(autoLogoffTimeoutSettingId);
+  const timeoutSeconds = autoLogoffTimeout ?? 0;
+
   const { logoutUser, loginInfo } = useAuth();
 
   const [state, setState] = useState<IIdleTimerState>(INIT_STATE);
   const { isIdle, remainingTime: rt } = state;
 
-  const autoLogoffTimeout = settings?.autoLogoffTimeout;
-
-  const isTimeoutSet = autoLogoffTimeout >= MIN_TIME && !!loginInfo;
-  const timeout = getTimeFormat(autoLogoffTimeout);
+  const isTimeoutSet = timeoutSeconds >= MIN_TIME && !!loginInfo;
+  const timeout = getTimeFormat(timeoutSeconds);
   const visible = isIdle && isTimeoutSet;
 
   useInterval(() => {

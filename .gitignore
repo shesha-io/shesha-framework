@@ -305,3 +305,6 @@ storybook-static
 /shesha-starter/backend/src/ShaCompanyName.ShaProjectName.Common.Domain/Boxfusion.Health.His.Domain.xml
 /shesha-starter/backend/src/ShaCompanyName.ShaProjectName.Web.Core/ShaCompanyName.ShaProjectName.Web.Core.xml
 /shesha-starter/backend/src/ShaCompanyName.ShaProjectName.Common.Domain/ShaCompanyName.ShaProjectName.Domain.xml
+
+
+**/.next/**

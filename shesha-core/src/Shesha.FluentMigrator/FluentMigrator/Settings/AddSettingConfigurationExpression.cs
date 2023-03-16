@@ -12,6 +12,9 @@ namespace Shesha.FluentMigrator.Settings
 
         public AddSettingConfigurationExpression(string migrationModule, string name, string displayName)
         {
+            if (string.IsNullOrWhiteSpace(Name))
+                throw new ArgumentNullException($"`{nameof(name)}` is mandatory", nameof(name));
+
             _migrationModule = migrationModule;
             Name = name;
             DisplayName = displayName;
@@ -27,6 +30,11 @@ namespace Shesha.FluentMigrator.Settings
         /// </summary>
         public string DisplayName { get; set; }
 
+        /// <summary>
+        /// If true, indicates that expression should be applied only when setting is missing in the DB
+        /// </summary>
+        public bool ApplyWhenMissing { get; set; }
+        
         public PropertyUpdateDefinition<string> Module { get; set; } = new PropertyUpdateDefinition<string>();
         public PropertyUpdateDefinition<string> Description { get; set; } = new PropertyUpdateDefinition<string>();
         public PropertyUpdateDefinition<string> Category { get; set; } = new PropertyUpdateDefinition<string>();
@@ -53,10 +61,17 @@ namespace Shesha.FluentMigrator.Settings
                     var dataFormat = DataFormat.Value;
 
                     var module = Module.IsSet ? Module.Value : _migrationModule;
+                    if (string.IsNullOrWhiteSpace(module))
+                        throw new SheshaMigrationException($"Module must be specified for setting `{Name}`");
 
                     var existingId = helper.GetSettingId(module, Name);
-                    if (existingId != null)
-                        throw new SheshaMigrationException($"Setting `{Name}` already exists in module `{module}`");
+                    if (existingId != null) 
+                    {
+                        if (ApplyWhenMissing)
+                            return;
+                        else
+                            throw new SheshaMigrationException($"Setting `{Name}` already exists in module `{module}`");
+                    }
 
                     var id = helper.InsertSettingConfiguration(module, Name, DisplayName, dataType, dataFormat);
 

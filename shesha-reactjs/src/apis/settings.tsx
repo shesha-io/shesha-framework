@@ -29,19 +29,24 @@ export interface ObjectAjaxResponse {
   result?: {} | null;
 }
 
-export interface SettingDefinitionDto {
+/**
+ * Setting identifier. Contains name and module name
+ */
+export interface SettingIdentifier {
   name?: string | null;
-  displayName?: string | null;
-  description?: string | null;
+  module?: string | null;
+  fullName?: string | null;
 }
 
-export interface SettingDefinitionDtoListAjaxResponse {
+export interface SettingIdentifierObjectDictionaryAjaxResponse {
   targetUrl?: string | null;
   success?: boolean;
   error?: ErrorInfo;
   unAuthorizedRequest?: boolean;
   __abp?: boolean;
-  result?: SettingDefinitionDto[] | null;
+  result?: {
+    [key: string]: {} | null;
+  } | null;
 }
 
 /**
@@ -57,13 +62,13 @@ export interface UpdateSettingValueInput {
    */
   module?: string | null;
   /**
-   * Front-end application key, see <seealso cref="P:Shesha.Domain.FrontEndApp.AppKey" />. Is used for client-specific applications only
-   */
-  appKey?: string | null;
-  /**
    * Setting value
    */
   value?: {} | null;
+  /**
+   * Front-end application key, see <seealso cref="P:Shesha.Domain.FrontEndApp.AppKey" />. Is used for client-specific applications only
+   */
+  appKey?: string | null;
 }
 
 export interface ValidationErrorInfo {
@@ -71,48 +76,69 @@ export interface ValidationErrorInfo {
   members?: string[] | null;
 }
 
-export interface SettingsGetAllQueryParams {
+export interface SettingsGetValuesQueryParams {
+  identifiers?: SettingIdentifier[];
   /**
    * The requested API version
    */
   'api-version'?: string;
 }
 
-export type SettingsGetAllProps = Omit<
-  GetProps<SettingDefinitionDtoListAjaxResponse, AjaxResponseBase, SettingsGetAllQueryParams, void>,
+export type SettingsGetValuesProps = Omit<
+  GetProps<SettingIdentifierObjectDictionaryAjaxResponse, AjaxResponseBase, SettingsGetValuesQueryParams, void>,
   'path'
 >;
 
-export const SettingsGetAll = (props: SettingsGetAllProps) => (
-  <Get<SettingDefinitionDtoListAjaxResponse, AjaxResponseBase, SettingsGetAllQueryParams, void>
-    path={`/api/services/app/Settings/GetAll`}
+/**
+ * Get setting values
+ */
+export const SettingsGetValues = (props: SettingsGetValuesProps) => (
+  <Get<SettingIdentifierObjectDictionaryAjaxResponse, AjaxResponseBase, SettingsGetValuesQueryParams, void>
+    path={`/api/services/app/Settings/GetValues`}
     {...props}
   />
 );
 
-export type UseSettingsGetAllProps = Omit<
-  UseGetProps<SettingDefinitionDtoListAjaxResponse, AjaxResponseBase, SettingsGetAllQueryParams, void>,
+export type UseSettingsGetValuesProps = Omit<
+  UseGetProps<SettingIdentifierObjectDictionaryAjaxResponse, AjaxResponseBase, SettingsGetValuesQueryParams, void>,
   'path'
 >;
 
-export const useSettingsGetAll = (props: UseSettingsGetAllProps) =>
-  useGet<SettingDefinitionDtoListAjaxResponse, AjaxResponseBase, SettingsGetAllQueryParams, void>(
-    `/api/services/app/Settings/GetAll`,
+/**
+ * Get setting values
+ */
+export const useSettingsGetValues = (props: UseSettingsGetValuesProps) =>
+  useGet<SettingIdentifierObjectDictionaryAjaxResponse, AjaxResponseBase, SettingsGetValuesQueryParams, void>(
+    `/api/services/app/Settings/GetValues`,
     props
   );
 
-export type settingsGetAllProps = Omit<
-  RestfulShesha.GetProps<SettingDefinitionDtoListAjaxResponse, AjaxResponseBase, SettingsGetAllQueryParams, void>,
+export type settingsGetValuesProps = Omit<
+  RestfulShesha.GetProps<
+    SettingIdentifierObjectDictionaryAjaxResponse,
+    AjaxResponseBase,
+    SettingsGetValuesQueryParams,
+    void
+  >,
   'queryParams'
 >;
-export const settingsGetAll = (queryParams: SettingsGetAllQueryParams, props: settingsGetAllProps) =>
-  RestfulShesha.get<SettingDefinitionDtoListAjaxResponse, AjaxResponseBase, SettingsGetAllQueryParams, void>(
-    `/api/services/app/Settings/GetAll`,
-    queryParams,
-    props
-  );
+/**
+ * Get setting values
+ */
+export const settingsGetValues = (queryParams: SettingsGetValuesQueryParams, props: settingsGetValuesProps) =>
+  RestfulShesha.get<
+    SettingIdentifierObjectDictionaryAjaxResponse,
+    AjaxResponseBase,
+    SettingsGetValuesQueryParams,
+    void
+  >(`/api/services/app/Settings/GetValues`, queryParams, props);
 
 export interface SettingsGetValueQueryParams {
+  /**
+   * Front-end application key, see <seealso cref="P:Shesha.Domain.FrontEndApp.AppKey" />. Is used for client-specific applications only.
+   * NOTE: this parameter if optional with fallback to the `sha-frontend-application` header
+   */
+  appKey?: string;
   /**
    * Setting name
    */
@@ -121,10 +147,6 @@ export interface SettingsGetValueQueryParams {
    * Module name
    */
   module?: string;
-  /**
-   * Front-end application key, see <seealso cref="P:Shesha.Domain.FrontEndApp.AppKey" />. Is used for client-specific applications only
-   */
-  appKey?: string;
   /**
    * The requested API version
    */
@@ -136,6 +158,9 @@ export type SettingsGetValueProps = Omit<
   'path'
 >;
 
+/**
+ * Get setting value
+ */
 export const SettingsGetValue = (props: SettingsGetValueProps) => (
   <Get<ObjectAjaxResponse, AjaxResponseBase, SettingsGetValueQueryParams, void>
     path={`/api/services/app/Settings/GetValue`}
@@ -148,6 +173,9 @@ export type UseSettingsGetValueProps = Omit<
   'path'
 >;
 
+/**
+ * Get setting value
+ */
 export const useSettingsGetValue = (props: UseSettingsGetValueProps) =>
   useGet<ObjectAjaxResponse, AjaxResponseBase, SettingsGetValueQueryParams, void>(
     `/api/services/app/Settings/GetValue`,
@@ -158,6 +186,9 @@ export type settingsGetValueProps = Omit<
   RestfulShesha.GetProps<ObjectAjaxResponse, AjaxResponseBase, SettingsGetValueQueryParams, void>,
   'queryParams'
 >;
+/**
+ * Get setting value
+ */
 export const settingsGetValue = (queryParams: SettingsGetValueQueryParams, props: settingsGetValueProps) =>
   RestfulShesha.get<ObjectAjaxResponse, AjaxResponseBase, SettingsGetValueQueryParams, void>(
     `/api/services/app/Settings/GetValue`,
@@ -177,6 +208,9 @@ export type SettingsUpdateValueProps = Omit<
   'path' | 'verb'
 >;
 
+/**
+ * Update setting value
+ */
 export const SettingsUpdateValue = (props: SettingsUpdateValueProps) => (
   <Mutate<void, unknown, SettingsUpdateValueQueryParams, UpdateSettingValueInput, void>
     verb="POST"
@@ -190,6 +224,9 @@ export type UseSettingsUpdateValueProps = Omit<
   'path' | 'verb'
 >;
 
+/**
+ * Update setting value
+ */
 export const useSettingsUpdateValue = (props: UseSettingsUpdateValueProps) =>
   useMutate<void, unknown, SettingsUpdateValueQueryParams, UpdateSettingValueInput, void>(
     'POST',
@@ -201,6 +238,9 @@ export type settingsUpdateValueProps = Omit<
   RestfulShesha.MutateProps<void, unknown, SettingsUpdateValueQueryParams, UpdateSettingValueInput, void>,
   'data'
 >;
+/**
+ * Update setting value
+ */
 export const settingsUpdateValue = (data: UpdateSettingValueInput, props: settingsUpdateValueProps) =>
   RestfulShesha.mutate<void, unknown, SettingsUpdateValueQueryParams, UpdateSettingValueInput, void>(
     'POST',

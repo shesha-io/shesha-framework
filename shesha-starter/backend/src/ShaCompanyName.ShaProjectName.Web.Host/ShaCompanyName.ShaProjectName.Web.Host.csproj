@@ -21,6 +21,9 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="wwwroot\favicon.ico" />
+    <None Update="app.config.json.pipeline">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Dockerfile">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -69,7 +72,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Shesha.Framework" Version="3.5.43" />
+    <PackageReference Include="Shesha.Framework" Version="4.4.2" />
     <ProjectReference Include="..\ShaCompanyName.ShaProjectName.Web.Core\ShaCompanyName.ShaProjectName.Web.Core.csproj" />
   </ItemGroup>
 
@@ -80,6 +83,12 @@
   </ProjectExtensions>
 
   <ItemGroup>
+    <None Update="Pulumi.shesha-api-test.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Pulumi.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="wwwroot\favicon.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -58,6 +58,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
   return (
     <Button
       title={props.tooltip}
+      block={props.block}
       onClick={event => onButtonClick(event)}
       type={props.buttonType}
       danger={props.danger}

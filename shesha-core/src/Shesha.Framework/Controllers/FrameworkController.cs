@@ -96,7 +96,7 @@ namespace Shesha.Controllers
         public async Task<string> BootstrapReferenceLists()
         {
             var bootstrapper = StaticContext.IocManager.Resolve<ReferenceListBootstrapper>();
-            await bootstrapper.Process();
+            await bootstrapper.ProcessAsync();
             return "Bootstrapped successfully";
         }
 
@@ -104,7 +104,7 @@ namespace Shesha.Controllers
         public async Task<string> BootstrapSettings()
         {
             var bootstrapper = StaticContext.IocManager.Resolve<SettingsBootstrapper>();
-            await bootstrapper.Process();
+            await bootstrapper.ProcessAsync();
             return "Bootstrapped successfully";
         }
 
@@ -169,7 +169,7 @@ namespace Shesha.Controllers
         public async Task BootstrapEntityConfigsAsync()
         {
             var bootstrapper = IocManager.Resolve<EntityConfigsBootstrapper>();
-            await bootstrapper.Process();
+            await bootstrapper.ProcessAsync();
         }
     }
 }

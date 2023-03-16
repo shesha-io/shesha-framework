@@ -14,35 +14,35 @@ namespace Shesha.AzureAD.Configuration
         /// Is enabled
         /// </summary>
         [Display(Name = "Is enabled")]
-        [SettingAttribute(AzureADSettingNames.IsEnabled)]
+        [Setting(AzureADSettingNames.IsEnabled)]
         ISettingAccessor<bool> IsEnabled { get; }
 
         /// <summary>
         /// Instance Url
         /// </summary>
         [Display(Name = "Instance Url")]
-        [SettingAttribute(AzureADSettingNames.InstanceUrl)]
+        [Setting(AzureADSettingNames.InstanceUrl)]
         ISettingAccessor<string> InstanceUrl { get; }
 
         /// <summary>
         /// Tenant
         /// </summary>
         [Display(Name = "Tenant")]
-        [SettingAttribute(AzureADSettingNames.Tenant)]
+        [Setting(AzureADSettingNames.Tenant)]
         ISettingAccessor<string> Tenant { get; }
 
         /// <summary>
         /// App Id Uri
         /// </summary>
         [Display(Name = "App Id Uri")]
-        [SettingAttribute(AzureADSettingNames.AppIdUri)]
+        [Setting(AzureADSettingNames.AppIdUri)]
         ISettingAccessor<string> AppIdUri { get; }
 
         /// <summary>
         /// Client Application Id
         /// </summary>
         [Display(Name = "Client Application Id")]
-        [SettingAttribute(AzureADSettingNames.ClientApplicationId)]
+        [Setting(AzureADSettingNames.ClientApplicationId)]
         ISettingAccessor<string> ClientApplicationId { get; }
     }
 }

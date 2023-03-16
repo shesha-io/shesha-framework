@@ -4,3 +4,4 @@ WORKDIR /app
 COPY . .
 
 ENTRYPOINT ["dotnet", "Shesha.Web.Host.dll"]
+#ENTRYPOINT ["dotnet", "Shesha.Web.Host.dll"]

@@ -8,7 +8,9 @@ using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
 using Shesha.Services.Settings;
 using Shesha.Services.Settings.Dto;
+using Shesha.Settings.Exceptions;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -17,6 +19,7 @@ namespace Shesha.Settings
     /// <summary>
     /// Settings bootstrapper. Updates settings definiion in the DB
     /// </summary>
+    [DependsOnBootstrapper(typeof(ConfigurableModuleBootstrapper))]
     public class SettingsBootstrapper : IBootstrapper, ITransientDependency
     {
         private readonly IRepository<SettingConfiguration, Guid> _settingConfigurationRepository;
@@ -39,7 +42,7 @@ namespace Shesha.Settings
             _moduleRepository = moduleRepository;
         }
 
-        public async Task Process()
+        public async Task ProcessAsync()
         {
             var definitionsInCode = _settingDefinitionManager.GetAll();
 
@@ -48,6 +51,18 @@ namespace Shesha.Settings
             var modules = _moduleRepository.GetAll().ToList();
             // delete only the ones which are hard linked to the app
             //var toDelete = configurationsInDb
+
+            // check for duplicated settings names
+            var duplicates = definitionsInCode.GroupBy(d => d.Name, 
+                d => d, 
+                (name, items) => new { 
+                    Name = name, 
+                    Items = items 
+                })
+                .Where(g => g.Items.Count() > 1)
+                .ToDictionary(i => i.Name, i => i.Items.ToList());
+            if (duplicates.Any())
+                throw new AmbiguousSettingsException(duplicates);
 
             var consolidated = definitionsInCode.Select(d => new {
                     Code = d, 

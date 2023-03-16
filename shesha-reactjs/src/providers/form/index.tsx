@@ -40,7 +40,7 @@ import {
   useFormDesignerComponents,
 } from './utils';
 import { FormInstance } from 'antd';
-import useThunkReducer from 'react-hook-thunk-reducer';
+import useThunkReducer from '../../hooks/thunkReducer';
 import { useDebouncedCallback } from 'use-debounce';
 import { IConfigurableFormComponent, IFormValidationErrors } from '../../interfaces';
 import { useConfigurableAction } from '../configurableActionsDispatcher';
@@ -308,10 +308,14 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   );
   //#endregion
 
-  // Also update visible and enabled components ids when the global state changes
   useDeepCompareEffect(() => {
-    debouncedUpdateVisibleComponents(state);
-    debouncedUpdateEnabledComponents(state);
+    dispatch((_, getState) => {
+      const newState = getState();
+
+      // Here there's always visibleComponentIds and enabledComponentIds
+      debouncedUpdateVisibleComponents(newState);
+      debouncedUpdateEnabledComponents(newState);
+    });
   }, [globalState]);
 
   const setFormControlsData = (payload: ISetFormControlsDataPayload) => {

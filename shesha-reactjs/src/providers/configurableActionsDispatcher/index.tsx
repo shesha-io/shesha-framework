@@ -10,7 +10,7 @@ import {
   IRegisterActionPayload,
   IExecuteActionPayload,
 } from './contexts';
-import useThunkReducer from 'react-hook-thunk-reducer';
+import useThunkReducer from '../../hooks/thunkReducer';
 import { IConfigurableActionGroupDictionary } from './models';
 import { IConfigurableActionArguments, IConfigurableActionDescriptor, IConfigurableActionIdentifier } from '../../interfaces/configurableAction';
 import { genericActionArgumentsEvaluator } from '../form/utils';
