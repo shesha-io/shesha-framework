@@ -3,7 +3,7 @@ Shesha is a [Low Code](https://en.wikipedia.org/wiki/Low-code_development_platfo
 
 It combines and builds on top of other excellent frameworks and libraries (most notably ASP\.NET Core, Abp\.io, React, NextJs) and layers on additional Low-Code capabilities to further accelerate the development of business applications.
 
-If you are familiar with ASP.NET Core and React, and are in the business of developing business software, and really hate doing the boring and repetitive stuff, Shesha is for you!
+If you are familiar with ASP.NET Core and React, and are in the business of developing business software, and really hate doing the boring and repetitive stuff, Shesha is for you! 
 
 ## Other things you should know
 * Boxfusion intends to open source the core Shesha framework in the hope of building a global community around it and seeing it thrive
