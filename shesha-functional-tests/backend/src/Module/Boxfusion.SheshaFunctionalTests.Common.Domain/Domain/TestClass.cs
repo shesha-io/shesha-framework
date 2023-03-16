@@ -17,15 +17,28 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
         /// 
         /// </summary>
         public virtual string TestProp { get; set; }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public virtual JsonCar JsonProp { get; set; }
-
+        /// <summary>
+        /// 
+        /// </summary>
         [SaveAsJson]
         public virtual IList<JsonCar> TestListOfJsonEntitiesProp { get; set; }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        [SaveAsJson]
+        public virtual IList<JsonHouse> TestListOfJsonHouses { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         [ReferenceList("Boxfusion.SheshaFunctionalTests.Domain.Enum", "TestItem")]
         public virtual RefListTestItem? ReflistProp { get; set; }
-
+        /// <summary>
+        /// 
+        /// </summary>
         [EntityReference(true)]
         public virtual GenericEntityReference SomeGenericProp { get; set; }
     }
