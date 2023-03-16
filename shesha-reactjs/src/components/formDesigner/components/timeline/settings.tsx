@@ -128,7 +128,7 @@ const TimelineSettings: FC<ITabSettingsProps> = (props) => {
         </Show>
       </Show>
 
-      <Show when={state?.apiSource === 'custom' && state?.dataSource == 'api'}>
+      <Show when={state?.apiSource === 'custom'}>
         <Form.Item label="Custom Api URL" name="customApiUrl" tooltip="The URL for a custom Api.">
           <Input readOnly={state.readOnly} />
         </Form.Item>
