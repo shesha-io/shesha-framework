@@ -64,8 +64,11 @@ namespace Shesha.FluentMigrator
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        protected Guid GetOrCreateModuleId(string name)
+        protected Guid? GetOrCreateModuleId(string name)
         {
+            if (string.IsNullOrWhiteSpace(name))
+                return null;
+
             var id = ExecuteScalar<Guid?>(@"select Id from Frwk_Modules where Name = @name", command => {
                 command.AddParameter("@name", name);
             });
