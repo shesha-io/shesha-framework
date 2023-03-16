@@ -38,7 +38,7 @@ import {
   useFormDesignerComponents,
 } from './utils';
 import { FormInstance } from 'antd';
-import useThunkReducer from 'react-hook-thunk-reducer';
+import useThunkReducer from '../../hooks/thunkReducer';
 import { useDebouncedCallback } from 'use-debounce';
 import { IConfigurableFormComponent, IFormValidationErrors } from '../../interfaces';
 import { useConfigurableAction } from '../configurableActionsDispatcher';

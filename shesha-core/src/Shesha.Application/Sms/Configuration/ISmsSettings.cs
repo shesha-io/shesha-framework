@@ -15,7 +15,7 @@ namespace Shesha.Sms.Configuration
         /// SMS Gateway
         /// </summary>
         [Display(Name = "SMS Gateway")]
-        [SettingAttribute(SheshaSettingNames.Sms.SmsGateway)]
+        [Setting(SheshaSettingNames.Sms.SmsGateway)]
         ISettingAccessor<string> SmsGateway { get; }
 
         /// <summary>
@@ -23,7 +23,7 @@ namespace Shesha.Sms.Configuration
         /// Is used for testing purposes only
         /// </summary>
         [Display(Name = "Redirect all messages to", Description = "Is used for testing purposes only")]
-        [SettingAttribute(SheshaSettingNames.Sms.RedirectAllMessagesTo)]
+        [Setting(SheshaSettingNames.Sms.RedirectAllMessagesTo)]
         ISettingAccessor<string> RedirectAllMessagesTo { get; }
     }
 }

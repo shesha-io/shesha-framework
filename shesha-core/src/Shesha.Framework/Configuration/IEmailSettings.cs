@@ -14,21 +14,21 @@ namespace Shesha.Configuration
         /// Emails enabled
         /// </summary>
         [Display(Name = "Emails enabled", Description = "If true, all emails are enabled")]
-        [SettingAttribute(SheshaSettingNames.Email.EmailsEnabled)]
+        [Setting(SheshaSettingNames.Email.EmailsEnabled)]
         ISettingAccessor<bool> EmailsEnabled { get; }
 
         /// <summary>
         /// Redirect all emails to
         /// </summary>
         [Display(Name = "Redirect all emails to", Description = "If not null or empty the all outgoing emails will be sent to this email address, is used for testing only")]
-        [SettingAttribute(SheshaSettingNames.Email.RedirectAllMessagesTo)]
+        [Setting(SheshaSettingNames.Email.RedirectAllMessagesTo)]
         ISettingAccessor<string> RedirectAllMessagesTo { get; }
 
         /// <summary>
         /// SMTP Settings
         /// </summary>
         [Display(Name = "SMTP Settings")]
-        [SettingAttribute(SheshaSettingNames.Email.SmtpSettings, EditorFormName = "smtp-settings")]
+        [Setting(SheshaSettingNames.Email.SmtpSettings, EditorFormName = "smtp-settings")]
         ISettingAccessor<SmtpSettings> SmtpSettings { get; }
     }    
 }

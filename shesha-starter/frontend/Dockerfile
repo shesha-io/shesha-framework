@@ -1,15 +1,9 @@
-FROM node:12-alpine
+FROM node:14
 
-WORKDIR /opt/app
+ENV NODE_VERSION 14.21.3
+EXPOSE 3000
 
-ENV NODE_ENV production
-
-COPY package*.json ./
-
-RUN npm ci 
-
-COPY . /opt/app
-
-RUN npm install --dev && npm run build
+WORKDIR /app
+COPY . /app
 
 CMD [ "npm", "start" ]

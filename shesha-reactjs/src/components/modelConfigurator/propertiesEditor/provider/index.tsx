@@ -1,6 +1,6 @@
 import React, { FC, useContext, PropsWithChildren, useRef } from 'react';
 import modelReducer from './reducer';
-import useThunkReducer from 'react-hook-thunk-reducer';
+import useThunkReducer from '../../../../hooks/thunkReducer';
 import {
   IUpdateChildItemsPayload,
   IUpdateItemSettingsPayload,

@@ -16,7 +16,7 @@ namespace Shesha.Push.Configuration
         /// Push Notifier
         /// </summary>
         [Display(Name = "Push Notifier")]
-        [SettingAttribute(SheshaSettingNames.Push.PushNotifier)]
+        [Setting(SheshaSettingNames.Push.PushNotifier)]
         ISettingAccessor<string> PushNotifier { get; }
     }
 }

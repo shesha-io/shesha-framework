@@ -1,4 +1,6 @@
-﻿namespace Shesha.Settings
+﻿using JetBrains.Annotations;
+
+namespace Shesha.Settings
 {
     /// <summary>
     /// Setting identifier. Contains name and module name
@@ -8,16 +10,21 @@
         public string Name { get; set; }
         public string Module { get; set; }
 
+        [UsedImplicitly]
+        public SettingIdentifier() 
+        { 
+        }
+
         public SettingIdentifier(string name, string module)
         {
             Name = name;
             Module = module;    
         }
 
-        public string FullName => $"{Module}:{Name}";
+        public string NormalizedFullName => $"{Module}:{Name}".ToLower();
         public override int GetHashCode()
         {
-            return FullName.GetHashCode();
+            return NormalizedFullName.GetHashCode();
         }
         public override bool Equals(object obj)
         {
@@ -26,7 +33,7 @@
 
         public bool Equals(SettingIdentifier obj)
         {
-            return obj != null && obj.FullName == this.FullName;
+            return obj != null && obj.NormalizedFullName == this.NormalizedFullName;
         }
     }
 }

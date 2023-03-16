@@ -8,7 +8,7 @@ import {
   MetadataContext,
 } from './contexts';
 import { setMetadataAction } from './actions';
-import useThunkReducer from 'react-hook-thunk-reducer';
+import useThunkReducer from '../../hooks/thunkReducer';
 import { useMetadataDispatcher } from '../../providers';
 import { ProperyDataType } from '../../interfaces/metadata';
 

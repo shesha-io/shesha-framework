@@ -3,6 +3,7 @@ using Abp.AspNetCore.Configuration;
 using Abp.AutoMapper;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
+using Intent.RoslynWeaver.Attributes;
 using Shesha;
 using Shesha.Modules;
 using Shesha.Startup;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace ShaCompanyName.ShaProjectName.Common
 {
+    [IntentManaged(Mode.Ignore)]
     /// <summary>
     /// ShaProjectName Module
     /// </summary>

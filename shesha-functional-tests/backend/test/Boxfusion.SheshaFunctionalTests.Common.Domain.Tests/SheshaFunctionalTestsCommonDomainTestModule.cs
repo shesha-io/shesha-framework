@@ -120,7 +120,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Tests
             var thisAssembly = Assembly.GetExecutingAssembly();
             IocManager.RegisterAssemblyByConvention(thisAssembly);
 
-            IocManager.IocContainer.AddFacility<LoggingFacility>(f => f.UseAbpLog4Net().WithConfig("log4net.config"));
+            IocManager.IocContainer.AddFacility<LoggingFacility>(f => f.UseAbpLog4Net().WithConfig("log4netTest.config"));
 
             StaticContext.SetIocManager(IocManager);
 

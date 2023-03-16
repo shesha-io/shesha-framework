@@ -6,6 +6,7 @@ const STORYBOOK_BASE_URL = 'http://localhost:21021';
 const ROOT_PATH = './src/apis';
 
 const API_LIST = [
+  'Settings'
   //'FormConfiguration',
   //'Form',
   //'DataTable',
