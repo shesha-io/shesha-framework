@@ -116,7 +116,6 @@ export const AnnotationSettingsForm = new DesignerToolbarSettings()
     .addCheckbox({
         id: "3be9da3f-f47e-48ae-b4c3-f5cc36f934d9",
         name: "onImage",
-        defaultValue: 'false',
         parentId: "root",
         label: "Annotation on Image"
     })
@@ -155,13 +154,13 @@ export const AnnotationSettingsForm = new DesignerToolbarSettings()
         parentId: "root",
         label: "Files"
     })
-    .addTextField({
+    .addNumberField({
         id: "417ee22e-a49d-44f2-a1c7-fef42ec87503",
         name: "height",
         parentId: "root",
         label: "Height"
     })
-    .addTextField({
+    .addNumberField({
         id: "c6ecd70c-7419-4ea7-a715-d42699d26e6e",
         name: "width",
         parentId: "root",

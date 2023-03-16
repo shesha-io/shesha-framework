@@ -1,6 +1,9 @@
+import { IFormItem } from "../../../..";
+import { IConfigurableFormComponent } from "../../../../providers";
+
 export interface IAnnotation {
     id: string,    // required,
-    comment?: string,  // not required
+    comment: string,  // not required
     mark: {
         type: "RECT",                  // now only support rect
 
@@ -15,9 +18,16 @@ export interface IAnnotation {
 }
 export interface ICustomInputProps {
     value?: string;
+    defaultNumber?: string;
     onChange: (value: string) => void;
     onDelete?: () => void;
 }
 export interface IDataAnnotationListProps {
     data: IAnnotation[];
+}
+export interface IImageProps extends IConfigurableFormComponent, IFormItem {
+    height: string;
+    width: string;
+    onImage: boolean;
+    url: string;
 }
