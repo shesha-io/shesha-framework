@@ -3,11 +3,12 @@ name: shesha-4.x.x
 # This workflow is designed to build the shesha-core and shesha-reactjs applications 
 # and then publish them to their respective repositories i.e. nuget and npmjs
 
+# IMPORTANT!!!!!!
+# we are triggering on push because branch protection and codeowners enforce 
+# using pull requests to commit to the main branch
 on:
-  pull_request:
-    types:
-      - closed
-    branches: 
+  push:
+    branches:
       - main
     paths:
       - shesha-reactjs/**
