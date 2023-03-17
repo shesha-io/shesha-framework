@@ -30,8 +30,8 @@ jobs:
 
       # Get tag
       - name: Get tag name
-          id: get_tag_name
-          run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+        id: get_tag_name
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
 
       # ============ SETUP ENVIRONMENTS ===============
 
