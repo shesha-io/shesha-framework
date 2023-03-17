@@ -1,10 +1,10 @@
-name: release-shesha-4.x.x
+name: release-shesha
 
 on:
   workflow_dispatch:
       inputs:
-        branch:
-          description: 'Branch to release'
+        tag:
+          description: 'Tag to release'
 env:
   NODE_VERSION: '15'
   PYTHON_VERSOIN: '2.7.18'
@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           clean: true
-          ref: ${{ inputs.branch }}
+          ref: refs/tags/${{ inputs.tag }}
 
       # ============ GET TAG NAME ===============
 
