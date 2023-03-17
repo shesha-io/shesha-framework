@@ -1,4 +1,4 @@
-# Variable 'artifactName' was defined in the Variables tab - test
+# Variable 'artifactName' was defined in the Variables tab - test test test
 # Agent Queue 'Azure Pipelines' was used with unrecognized Agent Specification, vmImage property must be specified to determine image - https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops&tabs=yaml#software
 variables:
 - name: BuildParameters.solution1
@@ -39,40 +39,25 @@ pool:
   name: Azure Pipelines
   vmImage1: windows-latest
   vmImage2: ubuntu-latest
-name: 2.0.0.$(BuildID)
+
+# name: 2.0.0.$(BuildID)
 stages:
-- stage: Build_Functional_Shesha_API
-  displayName: Build_Functional_Shesha_API
-  condition: eq(variables.isMain, 'false')
+- stage: build
   jobs:
   - job: Job_1
-    displayName: Agent job 1
+    displayName: Build_Functional_Shesha_API
     pool:
       name: Azure Pipelines
       vmImage: windows-latest
     steps:
     - checkout: self
-    - task: UseDotNet@2
-      displayName: Use .NET Core sdk 6.x
-      inputs:
-        version: 6.x
-    - task: Assembly-Info-NetCore@3
-      displayName: Set Assembly Manifest Data
-      inputs:
-        InsertAttributes: true
-        GeneratePackageOnBuild: false
-        PackageRequireLicenseAcceptance: false
-        VersionNumber: $(Build.BuildNumber)
-        FileVersionNumber: $(Build.BuildNumber)
-        InformationalVersion: $(Build.BuildNumber)
-        PackageVersion: $(Build.BuildNumber)
-
     - task: PowerShell@2
       displayName: Check to establish if this pipeline was triggered from a tag  
       inputs:
         targetType: 'inline'
         script: |
           # Write your PowerShell commands here.
+          write-host "The build number is: $(Build.BuildNumber)"
           write-host $(Build.SourceBranch)
           $branch = 'Unknown'
           if ("$(Build.SourceBranch)" -like "*tags*"){
@@ -80,24 +65,37 @@ stages:
               $branch = Invoke-Expression "git branch -r --contains $(Build.SourceBranch)"
               write-host "##vso[task.setvariable variable=currentBranch]$branch"
 
-              $path = $branch
-              $version = Split-Path $path -Leaf
-              Write-Host $version
+                $path = $(Build.SourceBranch)
+                $version = Split-Path $path -Leaf
+                Write-Host $version
 
-              Set-Variable -Name "pack-version" -Value "$version"
+                Set-Variable -Name "pack-version" -Value "$version"
+                write-host "##vso[task.setvariable variable=versionNo]$version"
+          }
+          elseif ("$(Build.SourceBranch)" -like "*releases*"){
+            write-host "Source Branch should be releases here: $(Build.SourceBranch)"            
+            write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
+
+            $path = "$(Build.SourceBranch)"
+            $version = Split-Path $path -Leaf
+            Write-Host $version
+
+            Set-Variable -Name "pack-version" -Value "$version"
+            write-host "##vso[task.setvariable variable=versionNo]$version"
           }
           else{
-              write-host "Source Branch should be main or releases here: $(Build.SourceBranch)"            
-              write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
+             write-host "Source Branch should not be tags or releases here: $(Build.SourceBranch)"
+             write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
+             write-host "##vso[task.setvariable variable=versionNo]$(pack-version)"
           }
         workingDirectory: '$(System.DefaultWorkingDirectory)'      
     - task: PowerShell@2
-      displayName: Output to console the current branch  
+      displayName: Output to console the current branch and version
       inputs:
         targetType: 'inline'
         script: |
-          # Write your PowerShell commands here.
           write-host "The current branch is: $(currentBranch)"
+          write-host "The current version is: $(versionNo)"
         workingDirectory: '$(System.DefaultWorkingDirectory)'
     - task: PowerShell@2
       displayName: Create a txt file to carry the original branch name to the release pipeline  
@@ -112,11 +110,24 @@ stages:
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'api-info-1'
-    - task: DotNetCoreCLI@2
-      displayName: 'Dotnet Restore'
+    - task: UseDotNet@2
+      displayName: Use .NET Core sdk 6.x
       inputs:
-        command: restore
-        projects: shesha-functional-tests/backend/**/*.csproj
+        version: 6.x
+    - task: Assembly-Info-NetCore@3
+      displayName: 'Set Assembly Manifest Data'
+      inputs:
+        InsertAttributes: true
+        VersionNumber: '$(versionNo)'
+        FileVersionNumber: '$(versionNo)'
+        InformationalVersion: '$(versionNo)'
+        PackageVersion: '$(versionNo)'
+    - task: DotNetCoreCLI@2
+      displayName: dotnet Restore
+      inputs:
+        command: 'restore'
+        projects: shesha-functional-tests/backend/**/*.csproj        
+        feedsToUse: 'select'
         vstsFeed: '44b4667a-8963-403d-9962-bde66225adbd'
     - task: DotNetCoreCLI@2
       displayName: dotnet build
@@ -140,50 +151,33 @@ stages:
       displayName: dotnet pack
       inputs:
         command: 'pack'
-        packagesToPack: 'shesha-functional-tests/backend/src/Module/**/*.csproj'
+        packagesToPack: 'shesha-functional-tests/backend/src/**/*.csproj'
         configuration: '$(BuildParameters.configuration)'
         nobuild: true
         includesymbols: true
         includesource: true
         versioningScheme: 'byEnvVar'
-        versionEnvVar: 'pack-version'
+        versionEnvVar: 'versionNo'
+
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: Nuget packs'
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'packs-functional'
-- stage: Build_Starter_Shesha_API
-  displayName: Build_Starter_Shesha_API
-  condition: eq(variables.isMain, 'false')
-  jobs:
   - job: Job_2
-    displayName: Agent job 2
+    displayName: Build_Starter_Shesha_API
     pool:
       name: Azure Pipelines
       vmImage: windows-latest
     steps:
     - checkout: self
-    - task: UseDotNet@2
-      displayName: Use .NET Core sdk 6.x
-      inputs:
-        version: 6.x
-    - task: Assembly-Info-NetCore@3
-      displayName: Set Assembly Manifest Data
-      inputs:
-        InsertAttributes: true
-        GeneratePackageOnBuild: false
-        PackageRequireLicenseAcceptance: false
-        VersionNumber: $(Build.BuildNumber)
-        FileVersionNumber: $(Build.BuildNumber)
-        InformationalVersion: $(Build.BuildNumber)
-        PackageVersion: $(Build.BuildNumber)
-
     - task: PowerShell@2
       displayName: Check to establish if this pipeline was triggered from a tag  
       inputs:
         targetType: 'inline'
         script: |
           # Write your PowerShell commands here.
+          write-host "The build number is: $(Build.BuildNumber)"
           write-host $(Build.SourceBranch)
           $branch = 'Unknown'
           if ("$(Build.SourceBranch)" -like "*tags*"){
@@ -191,24 +185,37 @@ stages:
               $branch = Invoke-Expression "git branch -r --contains $(Build.SourceBranch)"
               write-host "##vso[task.setvariable variable=currentBranch]$branch"
 
-              $path = $branch
+              $path = "$(Build.SourceBranch)"
               $version = Split-Path $path -Leaf
               Write-Host $version
 
-              Set-Variable -Name "pack-version" -Value "$version"
+              write-host "##vso[task.setvariable variable=versionNo]$version"
+          }
+          elseif ("$(Build.SourceBranch)" -like "*releases*"){
+              $path = "$(Build.SourceBranch)"
+              $version = Split-Path $path -Leaf
+              Write-Host $version
+
+              write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
+              write-host "##vso[task.setvariable variable=versionNo]$version"
           }
           else{
-              write-host "Source Branch should be main or releases here: $(Build.SourceBranch)"            
+              $filePath = "package.json" #filepath
+              $Jsonfile = Get-Content $filePath | ConvertFrom-Json
+              
+              $version = $Jsonfile.version
+              write-host "Source Branch should not be releases here: $(Build.SourceBranch)"
               write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
+              write-host "##vso[task.setvariable variable=versionNo]$version"
           }
-        workingDirectory: '$(System.DefaultWorkingDirectory)'      
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
     - task: PowerShell@2
-      displayName: Output to console the current branch  
+      displayName: Output to console the current branch and version
       inputs:
         targetType: 'inline'
         script: |
-          # Write your PowerShell commands here.
           write-host "The current branch is: $(currentBranch)"
+          write-host "The current version is: $(versionNo)"
         workingDirectory: '$(System.DefaultWorkingDirectory)'
     - task: PowerShell@2
       displayName: Create a txt file to carry the original branch name to the release pipeline  
@@ -223,11 +230,24 @@ stages:
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'api-info-2'
-    - task: DotNetCoreCLI@2
-      displayName: 'Dotnet Restore'
+    - task: UseDotNet@2
+      displayName: Use .NET Core sdk 6.x
       inputs:
-        command: restore
-        projects: shesha-starter/backend/**/*.csproj
+        version: 6.x
+    - task: Assembly-Info-NetCore@3
+      displayName: 'Set Assembly Manifest Data'
+      inputs:
+        InsertAttributes: true
+        VersionNumber: '$(versionNo)'
+        FileVersionNumber: '$(versionNo)'
+        InformationalVersion: '$(versionNo)'
+        PackageVersion: '$(versionNo)'
+    - task: DotNetCoreCLI@2
+      displayName: dotnet Restore
+      inputs:
+        command: 'restore'
+        projects: shesha-starter/backend/**/*.csproj        
+        feedsToUse: 'select'
         vstsFeed: '44b4667a-8963-403d-9962-bde66225adbd'
     - task: DotNetCoreCLI@2
       displayName: dotnet build
@@ -251,24 +271,20 @@ stages:
       displayName: dotnet pack
       inputs:
         command: 'pack'
-        packagesToPack: 'shesha-starter/backend/src/Module/**/*.csproj'
+        packagesToPack: 'shesha-starter/backend/src/**/*.csproj'
         configuration: '$(BuildParameters.configuration)'
         nobuild: true
         includesymbols: true
         includesource: true
         versioningScheme: 'byEnvVar'
-        versionEnvVar: 'pack-version'
+        versionEnvVar: 'versionNo'
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: Nuget packs'  
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'packs-starter'
-- stage: Build_Functional_Shesha_AdminPortal
-  displayName: Build_Functional_Shesha_AdminPortal
-  condition: eq(variables.isMain, 'false')
-  jobs:
   - job: Job_3
-    displayName: Agent job 3
+    displayName: Build_Functional_Shesha_AdminPortal
     pool:
       vmImage: ubuntu-latest
     steps:
@@ -285,15 +301,30 @@ stages:
               $branch = Invoke-Expression "git branch -r --contains $(Build.SourceBranch)"
               write-host "##vso[task.setvariable variable=currentBranch]$branch"
 
-              $path = $branch
+              $path = "$(Build.SourceBranch)"
               $version = Split-Path $path -Leaf
               Write-Host $version
 
-              Set-Variable -Name "pack-version" -Value "$version"
+              write-host "##vso[task.setvariable variable=currentBranch]$branch"
+              write-host "##vso[task.setvariable variable=versionNo]$version"
+          }
+          elseif ("$(Build.SourceBranch)" -like "*releases*"){
+
+              $path = "$(Build.SourceBranch)"
+              $version = Split-Path $path -Leaf
+              Write-Host $version
+
+              write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
+              write-host "##vso[task.setvariable variable=versionNo]$version"
           }
           else{
-              write-host "Source Branch should be main or releases here: $(Build.SourceBranch)"            
+              $filePath = "package.json" #filepath
+              $Jsonfile = Get-Content $filePath | ConvertFrom-Json
+              
+              $version = $Jsonfile.version
+              write-host "Source Branch should not be releases here: $(Build.SourceBranch)"
               write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
+              write-host "##vso[task.setvariable variable=versionNo]$version"
           }
         workingDirectory: 'shesha-functional-tests/adminportal'
     - task: PowerShell@2
@@ -303,46 +334,26 @@ stages:
         script: |
           # Write your PowerShell commands here.
           write-host "The current branch is: $(currentBranch)"
+          write-host "The current version is: $(versionNo)"
         workingDirectory: 'shesha-functional-tests/adminportal'
     - task: NodeTool@0
-      displayName: 'Use Node 14.21.1'
+      displayName: 'Use Node 14.x'
       inputs:
-        versionSpec: 14.21.1
-    - task: UsePythonVersion@0
-      inputs:
-        versionSpec: '2.7.18'
-        addToPath: true
-        architecture: 'x64'
-    - task: Npm@1
-      displayName: Install Latest Shesha
-      inputs:
-        command: custom
-        workingDir: 'shesha-functional-tests/adminportal'
-        verbose: false
-        customCommand: install @shesha/reactjs@latest
-    - task: PowerShell@2
-      displayName: Set Version for publishing
-      inputs:
-        targetType: 'inline'
-        script: |
-          $filePath = "package.json" #filepath
-          $Jsonfile = Get-Content $filePath | ConvertFrom-Json
-          $version = $Jsonfile.version
-          $bumpedVersion = $(pack-version)
-
-          write-host $bumpedVersion
-          Write-Host "##vso[task.setvariable variable=version]$bumpedVersion"
-
-          ls
-        workingDirectory: 'shesha-functional-tests/adminportal'
+        versionSpec: 14.x
     # - task: Npm@1
-    #   displayName: Npm Set the version
+    #   displayName: Install Latest Shesha
     #   inputs:
     #     command: custom
     #     workingDir: 'shesha-functional-tests/adminportal'
-    #     verbose: true
-    #     #customCommand: version --no-git-tag-version #$(pack-version)
-    #     customCommand: 'version $(pack-version)'
+    #     verbose: false
+    #     customCommand: install @shesha/reactjs@latest
+    - task: Npm@1
+      displayName: 'Npm Update Version'
+      inputs:
+        command: custom
+        workingDir: shesha-functional-tests/adminportal
+        verbose: false
+        customCommand: 'version $(versionNo) --allow-same-version'
     - task: Npm@1
       displayName: 'Npm Install'
       inputs:
@@ -368,12 +379,8 @@ stages:
       displayName: 'Publish Artifact: shesha-adminportal-functional'
       inputs:
         ArtifactName: adminportal-functional
-- stage: Build_Starter_Shesha_AdminPortal
-  displayName: Build_Starter_Shesha_AdminPortal
-  condition: eq(variables.isMain, 'false')
-  jobs:
   - job: Job_4
-    displayName: Agent job 4
+    displayName: Build_Starter_Shesha_AdminPortal
     pool:
       vmImage: ubuntu-latest
     steps:
@@ -390,15 +397,30 @@ stages:
               $branch = Invoke-Expression "git branch -r --contains $(Build.SourceBranch)"
               write-host "##vso[task.setvariable variable=currentBranch]$branch"
 
-              $path = $branch
+              $path = "$(Build.SourceBranch)"
               $version = Split-Path $path -Leaf
               Write-Host $version
 
-              Set-Variable -Name "pack-version" -Value "$version"
+              write-host "##vso[task.setvariable variable=currentBranch]$branch"
+              write-host "##vso[task.setvariable variable=versionNo]$version"
+          }
+          elseif ("$(Build.SourceBranch)" -like "*releases*"){
+            
+              $path = "$(Build.SourceBranch)"
+              $version = Split-Path $path -Leaf
+              Write-Host $version
+
+              write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
+              write-host "##vso[task.setvariable variable=versionNo]$version"
           }
           else{
-              write-host "Source Branch should be main or releases here: $(Build.SourceBranch)"            
+              $filePath = "package.json" #filepath
+              $Jsonfile = Get-Content $filePath | ConvertFrom-Json
+              
+              $version = $Jsonfile.version
+              write-host "Source Branch should not be releases here: $(Build.SourceBranch)"
               write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
+              write-host "##vso[task.setvariable variable=versionNo]$version"
           }
         workingDirectory: 'shesha-starter/frontend'
     - task: PowerShell@2
@@ -408,52 +430,31 @@ stages:
         script: |
           # Write your PowerShell commands here.
           write-host "The current branch is: $(currentBranch)"
+          write-host "The current version is: $(versionNo)"
         workingDirectory: 'shesha-starter/frontend'
     - task: NodeTool@0
-      displayName: 'Use Node 14.21.1'
+      displayName: 'Use Node 14.x'
       inputs:
-        versionSpec: 14.21.1
-    - task: UsePythonVersion@0
-      inputs:
-        versionSpec: '2.7.18'
-        addToPath: true
-        architecture: 'x64'
-    - task: Npm@1
-      displayName: Install Latest Shesha
-      inputs:
-        command: custom
-        workingDir: 'shesha-starter/frontend'
-        verbose: false
-        customCommand: install @shesha/reactjs@latest
-    - task: PowerShell@2
-      displayName: Set Version for publishing
-      inputs:
-        targetType: 'inline'
-        script: |
-          $filePath = "package.json" #filepath
-          $Jsonfile = Get-Content $filePath | ConvertFrom-Json
-          $version = $Jsonfile.version
-          $bumpedVersion = $(pack-version)
-
-          write-host $bumpedVersion
-          Write-Host "##vso[task.setvariable variable=version]$bumpedVersion"
-
-          ls
-        workingDirectory: 'shesha-starter/frontend'
-
+        versionSpec: 14.x
     # - task: Npm@1
-    #   displayName: Npm Set the version
+    #   displayName: Install Latest Shesha
     #   inputs:
     #     command: custom
     #     workingDir: 'shesha-starter/frontend'
-    #     verbose: true
-    #     #customCommand: version --no-git-tag-version #$(pack-version)
-    #     customCommand: 'version $(pack-version)'
+    #     verbose: false
+    #     customCommand: install @shesha/reactjs@latest
+    - task: Npm@1
+      displayName: 'Npm Update Version'
+      inputs:
+        command: custom
+        workingDir: shesha-starter/frontend
+        verbose: false
+        customCommand: 'version $(versionNo)--allow-same-version'
     - task: Npm@1
       displayName: 'Npm Install'
       inputs:
         command: custom
-        workingDir: 'shesha-starter/frontend'
+        workingDir: shesha-starter/frontend
         verbose: false
         customCommand: 'install --legacy-peer-deps'
     - task: Npm@1

@@ -49,5 +49,16 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
         /// The status of the membership
         /// </summary>
         public virtual RefListMembershipStatuses? MembershipStatus { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        [MultiValueReferenceList("Boxfusion.Health.HealthCommon.Domain.Fhir", "CommonLanguage")]
+        public virtual RefListCommunicationLanguage? CommunicationLanguage { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        [SaveAsJson]
+        public List<ImageAnnotation> ImageAnnotation { get; set; }
+
     }
 }
