@@ -23,12 +23,18 @@ jobs:
 
       # ============ CHECKOUT CODE ===============
 
-      # checkout latest code
+      # Checkout latest code
       - name: Get Sources
         uses: actions/checkout@v3
         run: echo "${GITHUB_REF#refs/heads/}.$(git rev-parse --short "$GITHUB_SHA")"
         with:
           clean: true
+
+      # ============ PRINT VERSION ===============
+
+      # Pint a version
+      - name: Print Version
+        run: echo "${GITHUB_REF#refs/heads/}.$(git rev-parse --short "$GITHUB_SHA")"
 
       # # ============ TAG BRANCH ===============
 
