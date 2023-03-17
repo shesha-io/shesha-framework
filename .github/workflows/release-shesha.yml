@@ -68,7 +68,7 @@ jobs:
       - name: Update package.json
         uses: reedyuk/npm-version@1.1.1
         with:
-          version: ${{ steps.get_tag_name.outputs.VERSION }}
+          version: ${{ inputs.tag }}
           package: 'shesha-reactjs/'
       
       # ============ BUILD ===============
@@ -86,7 +86,7 @@ jobs:
 
       # Pack shesha-core (Solution)
       - name: Dotnet Pack shesha-core
-        run: dotnet pack -o ../dist -p:PackageVersion=${{ steps.get_tag_name.outputs.VERSION }} -p:Version=${{ steps.get_tag_name.outputs.VERSION }} --include-symbols --include-source
+        run: dotnet pack -o ../dist -p:PackageVersion=${{ inputs.tag }} -p:Version=${{ inputs.tag }} --include-symbols --include-source
         working-directory: ./shesha-core
 
       # ============ PUBLISH ===============
