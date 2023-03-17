@@ -10,7 +10,7 @@ name: tag-shesha
 on:
   push:
     branches:
-      - releases/*
+      - 'releases/**'
 env:
   NODE_VERSION: '15'
   PYTHON_VERSOIN: '2.7.18'
