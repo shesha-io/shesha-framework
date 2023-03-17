@@ -25,5 +25,13 @@ namespace Shesha.Domain
         public virtual int? TenantId { get; set; }
 
         public virtual RefListAreaType? AreaType { get; set; }
+
+        public virtual RefListAreaSubType? AreaSubType { get; set; }
+
+        public virtual decimal? AreaSize { get; set; }
+
+        public virtual decimal? Latitude { get; set; }
+
+        public virtual decimal? Longitude { get; set; }
     }
 }

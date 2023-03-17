@@ -203,7 +203,7 @@ export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (pro
 
         const formData = new FormData();
         formData.append('file', uploadFile.originFileObj);
-        appendFormData(formData, 'itemsToImport', checkedIds);
+        appendFormData(formData, 'itemsToImport', JSON.stringify(checkedIds));
 
         return axios
             .post(`${backendUrl}/api/services/app/ConfigurationItem/ImportPackage`,

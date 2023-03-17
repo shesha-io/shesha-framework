@@ -60,6 +60,7 @@ namespace Shesha.Web.FormsDesigner.Services
             newVersion.Configuration.ItemType = item.Configuration.ItemType;
             newVersion.Configuration.Name = item.Configuration.Name;
             newVersion.Configuration.Module = item.Configuration.Module;
+            newVersion.Configuration.Application = item.Configuration.Application;
             newVersion.Configuration.Description = item.Configuration.Description;
             newVersion.Configuration.Label = item.Configuration.Label;
             newVersion.Configuration.TenantId = item.Configuration.TenantId;
