@@ -26,6 +26,7 @@ export type ButtonActionType =
 export interface IButtonGroupItemBase {
   id: string;
   name: string;
+  block?: boolean;
   label?: string;
   tooltip?: string;
   sortOrder: number;

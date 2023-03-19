@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -21,6 +22,7 @@ namespace Shesha.ConfigurationItems.Dtos
         /// <summary>
         /// List of items to import
         /// </summary>
+        [BindProperty(BinderType = typeof(ItemsToImportBinder))]
         public List<Guid> ItemsToImport { get; set; } = new List<Guid>();
     }
 }

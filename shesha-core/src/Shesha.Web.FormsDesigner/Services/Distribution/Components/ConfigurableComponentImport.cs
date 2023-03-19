@@ -5,9 +5,11 @@ using Newtonsoft.Json;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
+using Shesha.Extensions;
 using Shesha.Web.FormsDesigner.Domain;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.Web.FormsDesigner.Services.Distribution
@@ -58,6 +60,21 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
             }
         }
 
+        private async Task<ConfigurationItemBase> GetLiveVersionFor(DistributedConfigurableComponent item) 
+        {
+            var query = _componentRepo.GetAll().Where(f => f.Configuration.Name == item.Name && f.Configuration.VersionStatus == ConfigurationItemVersionStatus.Live);
+            query = query.Where(!string.IsNullOrWhiteSpace(item.ModuleName) 
+                ? f => f.Configuration.Module.Name == item.ModuleName
+                : f => f.Configuration.Module == null
+            );
+            query = query.Where(!string.IsNullOrWhiteSpace(item.FrontEndApplication)
+                ? f => f.Configuration.Application.AppKey == item.FrontEndApplication
+                : f => f.Configuration.Application == null
+            );
+
+            return await query.FirstOrDefaultAsync();
+        }
+
         /// inheritedDoc
         protected async Task<ConfigurationItemBase> ImportComponentAsync(DistributedConfigurableComponent item, IConfigurationItemsImportContext context)
         {
@@ -87,7 +104,8 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
                 {
                     var liveVersion = existingComponent.Configuration.VersionStatus == ConfigurationItemVersionStatus.Live
                         ? existingComponent
-                        : await _componentRepo.FirstOrDefaultAsync(f => f.Configuration.Name == item.Name && (f.Configuration.Module == null && item.ModuleName == null || f.Configuration.Module.Name == item.ModuleName) && f.Configuration.VersionStatus == ConfigurationItemVersionStatus.Live);
+                        : await GetLiveVersionFor(item);
+
                     if (liveVersion != null)
                     {
                         await _componentManger.UpdateStatusAsync(liveVersion, ConfigurationItemVersionStatus.Retired);
