@@ -1,4 +1,4 @@
-import Address from '../../../components/formDesigner/components/address/addressComponent';
+import Address from '../../../components/formDesigner/components/address';
 import Alert from '../../../components/formDesigner/components/alert';
 import AttachmentsEditor from '../../../components/formDesigner/components/attachmentsEditor/attachmentsEditor';
 import Autocomplete from '../../../components/formDesigner/components/autocomplete/autocomplete';
