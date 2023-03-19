@@ -49,7 +49,7 @@ export const ChildEntitiesTagGroupSettings: FC<IChildEntitiesTagGroupSettingsPro
         <Checkbox disabled={readOnly} />
       </Form.Item>
 
-      <SectionSeparator title="Display" />
+      <SectionSeparator title="Modal Display" />
 
       <FormItem name="deleteConfirmationTitle" label="Delete Confirmation Title">
         <Input readOnly={readOnly} />
