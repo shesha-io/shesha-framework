@@ -64,13 +64,15 @@ stages:
           if ("$(Build.SourceBranch)" -like "*pull*"){
               write-host "Source Branch should be pull here: $(Build.SourceBranch)"
 
-              $commitRef = Invoke-Expression "git ls-remote --refs origin $(Build.SourceBranch)/head"
+              $originalRefs = $(Build.SourceBranch).Replace("merge", "head")
+              $commitRef = Invoke-Expression "git ls-remote --refs origin $originalRefs"
               
               $commitId = ($commitRef -split '\s+')[0]
 
               write-host "This is the commit id: $commitId"
 
               $branch = Invoke-Expression "git branch --contains $commitId"  
+              $branch = $branch.Remove(0,2)
 
               write-host "##vso[task.setvariable variable=currentBranch]$branch"
 
@@ -80,20 +82,6 @@ stages:
 
                 write-host "##vso[task.setvariable variable=versionNo]$version"
           }          
-          elseif ("$(Build.SourceBranch)" -like "*tags*"){
-              write-host "Source Branch should be tags here: $(Build.SourceBranch)"
-              $branch = Invoke-Expression "git branch -r --contains $(Build.SourceBranch)"
-              write-host "##vso[task.setvariable variable=currentBranch]$branch"
-
-                $path = "$(Build.SourceBranch)"
-                $version = Split-Path $path -Leaf
-                Write-Host $version
-
-                Set-Variable -Name "pack-version" -Value "$version"
-                write-host "##vso[task.setvariable variable=versionNo]$version"
-          }
-
-
           elseif ("$(Build.SourceBranch)" -like "*tags*"){
               write-host "Source Branch should be tags here: $(Build.SourceBranch)"
               $branch = Invoke-Expression "git branch -r --contains $(Build.SourceBranch)"
@@ -218,13 +206,15 @@ stages:
           if ("$(Build.SourceBranch)" -like "*pull*"){
               write-host "Source Branch should be pull here: $(Build.SourceBranch)"
 
-              $commitRef = Invoke-Expression "git ls-remote --refs origin $(Build.SourceBranch)/head"
+              $originalRefs = $(Build.SourceBranch).Replace("merge", "head")
+              $commitRef = Invoke-Expression "git ls-remote --refs origin $originalRefs"
               
               $commitId = ($commitRef -split '\s+')[0]
 
               write-host "This is the commit id: $commitId"
 
               $branch = Invoke-Expression "git branch --contains $commitId"  
+              $branch = $branch.Remove(0,2)
 
               write-host "##vso[task.setvariable variable=currentBranch]$branch"
 
@@ -353,13 +343,15 @@ stages:
           if ("$(Build.SourceBranch)" -like "*pull*"){
               write-host "Source Branch should be pull here: $(Build.SourceBranch)"
 
-              $commitRef = Invoke-Expression "git ls-remote --refs origin $(Build.SourceBranch)/head"
+              $originalRefs = $(Build.SourceBranch).Replace("merge", "head")
+              $commitRef = Invoke-Expression "git ls-remote --refs origin $originalRefs"
               
               $commitId = ($commitRef -split '\s+')[0]
 
               write-host "This is the commit id: $commitId"
 
               $branch = Invoke-Expression "git branch --contains $commitId"  
+              $branch = $branch.Remove(0,2)
 
               write-host "##vso[task.setvariable variable=currentBranch]$branch"
 
@@ -468,13 +460,15 @@ stages:
           if ("$(Build.SourceBranch)" -like "*pull*"){
               write-host "Source Branch should be pull here: $(Build.SourceBranch)"
 
-              $commitRef = Invoke-Expression "git ls-remote --refs origin $(Build.SourceBranch)/head"
+              $originalRefs = $(Build.SourceBranch).Replace("merge", "head")
+              $commitRef = Invoke-Expression "git ls-remote --refs origin $originalRefs"
               
               $commitId = ($commitRef -split '\s+')[0]
 
               write-host "This is the commit id: $commitId"
 
               $branch = Invoke-Expression "git branch --contains $commitId"  
+              $branch = $branch.Remove(0,2)
 
               write-host "##vso[task.setvariable variable=currentBranch]$branch"
 
