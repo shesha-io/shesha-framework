@@ -3,6 +3,7 @@ name: tag-release-branch-updates
 on:
   push:
     branches:
+      - 'main'
       - 'releases/**'
 env:
   NODE_VERSION: '15'
@@ -16,15 +17,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      # ============ CHECKOUT BRANCH ===============
-
-      # checkout latest code
-      - name: Get Sources
-        uses: actions/checkout@v2
-        with:
-          clean: true
-
-
       # ============ TAG BRANCH ===============
-      
-      - run: git tag ${GITHUB_BASE_REF}
+
+      # Create Tag
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tag_prefix: ''
