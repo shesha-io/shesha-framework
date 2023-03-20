@@ -22,7 +22,7 @@ import {
   TextJustify,
 } from './components/container/model';
 import ConditionalWrap from '../conditionalWrapper';
-import { useGlobalState } from '../../providers';
+import { useFormData, useGlobalState } from '../../providers';
 import { executeScriptSync } from '../../utils/publicUtils';
 
 export type Direction = 'horizontal' | 'vertical';
@@ -55,7 +55,8 @@ export interface IComponentsContainerProps extends ICommonContainerProps {
 }
 
 const ComponentsContainer: FC<IComponentsContainerProps> = props => {
-  const { formMode, formData } = useForm();
+  const { formMode } = useForm();
+  const { data: formData } = useFormData();
   const designer = useFormDesigner(false);
   const { globalState } = useGlobalState();
 
