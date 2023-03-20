@@ -21,6 +21,10 @@ jobs:
       # checkout latest code
       - name: Get Sources
         uses: actions/checkout@v2
-        run: git tag ${GITHUB_BASE_REF}
         with:
           clean: true
+
+
+      # ============ TAG BRANCH ===============
+      
+      - run: git tag ${GITHUB_BASE_REF}
