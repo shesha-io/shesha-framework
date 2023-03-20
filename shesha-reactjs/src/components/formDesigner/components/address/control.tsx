@@ -39,6 +39,7 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = model => {
 
   const onSetPayload = (resolve: Function, payload: IOpenCageResponse | IAddressAndCoords) => {
     form?.setFieldsValue({ [name]: payload });
+    onChange((payload as IAddressAndCoords).address);
     resolve(payload);
   };
 
