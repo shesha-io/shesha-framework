@@ -72,7 +72,7 @@ stages:
               write-host "This is the commit id: $commitId"
 
               $branch = Invoke-Expression "git branch --contains $commitId"  
-              $branch = $branch.Remove(0,2)
+              $branch = "$branch.Remove(0,2)"
 
               write-host "##vso[task.setvariable variable=currentBranch]$branch"
 
@@ -214,7 +214,7 @@ stages:
               write-host "This is the commit id: $commitId"
 
               $branch = Invoke-Expression "git branch --contains $commitId"  
-              $branch = $branch.Remove(0,2)
+              $branch = "$branch.Remove(0,2)"
 
               write-host "##vso[task.setvariable variable=currentBranch]$branch"
 
@@ -351,7 +351,7 @@ stages:
               write-host "This is the commit id: $commitId"
 
               $branch = Invoke-Expression "git branch --contains $commitId"  
-              $branch = $branch.Remove(0,2)
+              $branch = "$branch.Remove(0,2)"
 
               write-host "##vso[task.setvariable variable=currentBranch]$branch"
 
@@ -468,7 +468,7 @@ stages:
               write-host "This is the commit id: $commitId"
 
               $branch = Invoke-Expression "git branch --contains $commitId"  
-              $branch = $branch.Remove(0,2)
+              $branch = "$branch.Remove(0,2)"
 
               write-host "##vso[task.setvariable variable=currentBranch]$branch"
 
