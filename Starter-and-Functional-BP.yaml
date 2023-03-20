@@ -64,7 +64,7 @@ stages:
           if ("$(Build.SourceBranch)" -like "*pull*"){
               write-host "Source Branch should be pull here: $(Build.SourceBranch)"
 
-              $originalRefs = $(Build.SourceBranch).Replace("merge", "head")
+              $originalRefs = "$(Build.SourceBranch)".Replace("merge", "head")
               $commitRef = Invoke-Expression "git ls-remote --refs origin $originalRefs"
               
               $commitId = ($commitRef -split '\s+')[0]
@@ -206,7 +206,7 @@ stages:
           if ("$(Build.SourceBranch)" -like "*pull*"){
               write-host "Source Branch should be pull here: $(Build.SourceBranch)"
 
-              $originalRefs = $(Build.SourceBranch).Replace("merge", "head")
+              $originalRefs = "$(Build.SourceBranch)".Replace("merge", "head")
               $commitRef = Invoke-Expression "git ls-remote --refs origin $originalRefs"
               
               $commitId = ($commitRef -split '\s+')[0]
@@ -343,7 +343,7 @@ stages:
           if ("$(Build.SourceBranch)" -like "*pull*"){
               write-host "Source Branch should be pull here: $(Build.SourceBranch)"
 
-              $originalRefs = $(Build.SourceBranch).Replace("merge", "head")
+              $originalRefs = "$(Build.SourceBranch)".Replace("merge", "head")
               $commitRef = Invoke-Expression "git ls-remote --refs origin $originalRefs"
               
               $commitId = ($commitRef -split '\s+')[0]
@@ -460,7 +460,7 @@ stages:
           if ("$(Build.SourceBranch)" -like "*pull*"){
               write-host "Source Branch should be pull here: $(Build.SourceBranch)"
 
-              $originalRefs = $(Build.SourceBranch).Replace("merge", "head")
+              $originalRefs = "$(Build.SourceBranch)".Replace("merge", "head")
               $commitRef = Invoke-Expression "git ls-remote --refs origin $originalRefs"
               
               $commitId = ($commitRef -split '\s+')[0]
