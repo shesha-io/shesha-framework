@@ -18,8 +18,5 @@ Shesha and the various shesha community components and services are available un
 
 ## Pipeline Test
 Commit build
-Commit build
-Commit build
-Commit build
 
 Someone wanted me to change this

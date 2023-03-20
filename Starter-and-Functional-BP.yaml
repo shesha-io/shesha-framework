@@ -114,14 +114,22 @@ stages:
       displayName: Use .NET Core sdk 6.x
       inputs:
         version: 6.x
+    - task: PowerShell@2
+      inputs:
+        targetType: 'inline'
+        script: |
+          # Write your PowerShell commands here.
+          Write-Host "Build no is: $(Build.BuildNumber)"          
+          Write-Host "Version no is: $(versionNo)"
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
     - task: Assembly-Info-NetCore@3
       displayName: 'Set Assembly Manifest Data'
       inputs:
         InsertAttributes: true
-        VersionNumber: '$(versionNo)'
-        FileVersionNumber: '$(versionNo)'
-        InformationalVersion: '$(versionNo)'
-        PackageVersion: '$(versionNo)'
+        VersionNumber: "$(versionNo)"
+        FileVersionNumber: "$(versionNo)"
+        InformationalVersion: "$(versionNo)"
+        PackageVersion: "$(versionNo)"
     - task: DotNetCoreCLI@2
       displayName: dotnet Restore
       inputs:
@@ -238,10 +246,10 @@ stages:
       displayName: 'Set Assembly Manifest Data'
       inputs:
         InsertAttributes: true
-        VersionNumber: '$(versionNo)'
-        FileVersionNumber: '$(versionNo)'
-        InformationalVersion: '$(versionNo)'
-        PackageVersion: '$(versionNo)'
+        VersionNumber: "$(versionNo)"
+        FileVersionNumber: "$(versionNo)"
+        InformationalVersion: "$(versionNo)"
+        PackageVersion: "$(versionNo)"
     - task: DotNetCoreCLI@2
       displayName: dotnet Restore
       inputs:
