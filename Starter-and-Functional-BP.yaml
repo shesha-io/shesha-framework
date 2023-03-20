@@ -65,28 +65,28 @@ stages:
               $branch = Invoke-Expression "git branch -r --contains $(Build.SourceBranch)"
               write-host "##vso[task.setvariable variable=currentBranch]$branch"
 
-              $path = "$(Build.SourceBranch)"
-              $version = Split-Path $path -Leaf
-              Write-Host $version
+                $path = "$(Build.SourceBranch)"
+                $version = Split-Path $path -Leaf
+                Write-Host $version
 
-              write-host "##vso[task.setvariable variable=versionNo]$version"
+                Set-Variable -Name "pack-version" -Value "$version"
+                write-host "##vso[task.setvariable variable=versionNo]$version"
           }
           elseif ("$(Build.SourceBranch)" -like "*releases*"){
-              $path = "$(Build.SourceBranch)"
-              $version = Split-Path $path -Leaf
-              Write-Host $version
+            write-host "Source Branch should be releases here: $(Build.SourceBranch)"            
+            write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
 
-              write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
-              write-host "##vso[task.setvariable variable=versionNo]$version"
+            $path = "$(Build.SourceBranch)"
+            $version = Split-Path $path -Leaf
+            Write-Host $version
+
+            Set-Variable -Name "pack-version" -Value "$version"
+            write-host "##vso[task.setvariable variable=versionNo]$version"
           }
           else{
-              $filePath = "package.json" #filepath
-              $Jsonfile = Get-Content $filePath | ConvertFrom-Json
-              
-              $version = $Jsonfile.version
-              write-host "Source Branch should not be releases here: $(Build.SourceBranch)"
-              write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
-              write-host "##vso[task.setvariable variable=versionNo]$version"
+             write-host "Source Branch should not be tags or releases here: $(Build.SourceBranch)"
+             write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
+             write-host "##vso[task.setvariable variable=versionNo]$(pack-version)"
           }
         workingDirectory: '$(System.DefaultWorkingDirectory)'      
     - task: PowerShell@2
@@ -337,9 +337,9 @@ stages:
           write-host "The current version is: $(versionNo)"
         workingDirectory: 'shesha-functional-tests/adminportal'
     - task: NodeTool@0
-      displayName: 'Use Node 14.x'
+      displayName: 'Use Node 14.21.1'
       inputs:
-        versionSpec: 14.x
+        versionSpec: 14.21.1
     # - task: Npm@1
     #   displayName: Install Latest Shesha
     #   inputs:
@@ -433,9 +433,9 @@ stages:
           write-host "The current version is: $(versionNo)"
         workingDirectory: 'shesha-starter/frontend'
     - task: NodeTool@0
-      displayName: 'Use Node 14.x'
+      displayName: 'Use Node 14.21.1'
       inputs:
-        versionSpec: 14.x
+        versionSpec: 14.21.1
     # - task: Npm@1
     #   displayName: Install Latest Shesha
     #   inputs:
