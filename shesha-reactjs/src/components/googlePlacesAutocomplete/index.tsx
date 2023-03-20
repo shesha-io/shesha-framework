@@ -1,7 +1,7 @@
-import React, { FC, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 import { Input, notification } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { SearchOutlined, LoadingOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 import { LatLngPolygon, PointPolygon, pointsInPolygon } from '../../utils/googleMaps';
 import { CSSProperties } from 'react';
@@ -25,6 +25,10 @@ interface ISuggestion {
 }
 
 export interface IGooglePlacesAutocompleteProps {
+  disableGoogleEvent?: (value: string) => boolean;
+  debounce?: number;
+  externalApiKey?: string;
+  externalLoader?: boolean;
   isInvalid?: boolean;
   onGeocodeChange?: (payload?: IAddressAndCoords) => void;
   onChange?: (payload?: string) => void;
@@ -43,6 +47,10 @@ export interface IGooglePlacesAutocompleteProps {
 }
 
 const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
+  disableGoogleEvent,
+  debounce,
+  externalApiKey,
+  externalLoader,
   onChange,
   value,
   selectedValue,
@@ -59,6 +67,17 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
   const [highlightedPlaceId, setHighlightedPlaceId] = useState('');
   const [showSuggestionsDropdownContainer, setShowSuggestionsDropdownContainer] = useState(true);
   const suggestionRef = useRef<ISuggestion[]>([]);
+
+  useEffect(() => {
+    if (externalApiKey) {
+      const script = document.createElement('script');
+
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${externalApiKey}&v=3.exp&libraries=geometry,drawing,places`;
+      script.async = true;
+
+      document.body.appendChild(script);
+    }
+  }, [externalApiKey]);
 
   if (typeof window === 'undefined' || !(typeof window.google === 'object' && typeof window.google.maps === 'object'))
     return null;
@@ -116,6 +135,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
   };
 
   const displayValue = selectedValue || value;
+  const inputPrefix = externalLoader ? <LoadingOutlined /> : <SearchOutlined />;
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (!suggestionRef.current || suggestionRef?.current?.length === 0) return;
@@ -177,6 +197,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
       value={(prefix ? `${prefix} ${displayValue}` : displayValue) ?? ''}
       onChange={handleChange}
       onSelect={handleSelect}
+      debounce={debounce}
 
       // className="location-search-input"
     >
@@ -201,11 +222,15 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
                       target: { value: realValue },
                     } = e;
                     handleChange(realValue);
-                    inputProps.onChange(e);
+
+                    if (!disableGoogleEvent || !disableGoogleEvent(value)) {
+                      inputProps.onChange(e);
+                    }
                   }
                 }}
                 allowClear
-                prefix={<SearchOutlined />}
+                placeholder={placeholder}
+                prefix={inputPrefix}
                 disabled={disabled}
                 tabIndex={tabIndex}
                 onKeyDown={onKeyDown}
