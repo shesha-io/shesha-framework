@@ -1,4 +1,4 @@
-name: tag-shesha
+name: tag-and-publish-shesha
 
 # This workflow is designed to build the shesha-core and shesha-reactjs applications 
 # and then publish them to their respective repositories i.e. nuget and npmjs
@@ -9,7 +9,7 @@ name: tag-shesha
 on:
   push:
     branches:
-      - releases/4.x.x
+      - main
     paths:
       - shesha-reactjs/**
       - shesha-core/**
@@ -107,3 +107,16 @@ jobs:
           tag: ${{ steps.tag_version.outputs.new_tag }}
           name: shesha-reactjs@${{ steps.tag_version.outputs.new_tag }}
           body: ${{ steps.tag_version.outputs.changelog }}
+
+      # ============ PUBLISH ===============
+
+      # push nuget packages
+      - name: Dotnet Nuget Push
+        run: dotnet nuget push "../dist/*.nupkg" --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }} --skip-duplicate
+        working-directory: ./shesha-core
+      # publish shesha-reactjs to npmjs registry
+      - name: Publish shesha-reactjs to npmjs registry
+        run: npm publish --access public
+        working-directory: ./shesha-reactjs
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPMJS_API_KEY }}
