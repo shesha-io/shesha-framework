@@ -17,18 +17,24 @@ pr:
     exclude:
     - main
     include:
-    - 'releases/*'
+    - releases/*
 
 trigger:
-  branches:
+  tags:
     include:
-    - 'releases/*'
+    - '*'
   paths:
     exclude:
     - shesha-core
     - shesha-docs
     - shesha-reactjs
     - .github/workflows
+  branches:
+    include:
+    - releases/*
+    # - refs/tags/*
+    exclude:
+    - main
 pool: 
   name: Azure Pipelines
   vmImage1: windows-latest
