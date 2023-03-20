@@ -3,7 +3,6 @@ name: tag-release-branch-updates
 on:
   push:
     branches:
-      - 'main'
       - 'releases/**'
 env:
   NODE_VERSION: '15'
