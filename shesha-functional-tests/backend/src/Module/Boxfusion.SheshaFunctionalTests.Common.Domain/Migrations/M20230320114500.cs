@@ -14,11 +14,11 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Migrations
         public override void Up()
         {
             this.Shesha().SettingUpdate("Greeting")
-                        .OnModule("Boxfusion.SheshaFunctionalTests.Common")
+                        .OnModule("Shesha")
                         .SetValue("Hello world");
 
             this.Shesha().SettingUpdate("IsAllowedTo")
-                        .OnModule("Boxfusion.SheshaFunctionalTests.Common")
+                        .OnModule("Shesha")
                         .SetValue(true.ToString());
                  
         }
