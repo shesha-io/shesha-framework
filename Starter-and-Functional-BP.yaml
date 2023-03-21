@@ -60,7 +60,42 @@ stages:
           write-host "The build number is: $(Build.BuildNumber)"
           write-host $(Build.SourceBranch)
           $branch = 'Unknown'
-          if ("$(Build.SourceBranch)" -like "*tags*"){
+
+          if ("$(Build.SourceBranch)" -like "*pull*"){
+              write-host "Source Branch should be pull here: $(Build.SourceBranch)"
+              $originalRefs = "$(Build.SourceBranch)".Replace("merge", "head")
+              
+              $commitRef   = Invoke-Expression "git ls-remote --refs origin $originalRefs"
+              write-host "The commit info is: $commitRef "
+
+              $commitSHA = $commitRef.Substring(0, 40)
+              write-host "The commit id is: $commitSHA"
+
+              $branch = Invoke-Expression "git branch --contains $commitSHA --sort=-committerdate | Select-Object -Skip 1 -First 1"
+              Write-Host "Latest branch: $branch"
+              write-host "##vso[task.setvariable variable=currentBranch]$branch"
+
+              $path = $branch
+              $version = Split-Path $path -Leaf
+              Write-Host $version
+
+              write-host "##vso[task.setvariable variable=versionNo]$version"
+          }           
+          elseif ("$(Build.SourceBranch)" -like "*tags*"){
+              write-host "Source Branch should be tags here: $(Build.SourceBranch)"
+              $branch = Invoke-Expression "git branch -r --contains $(Build.SourceBranch)"
+              write-host "##vso[task.setvariable variable=currentBranch]$branch"
+
+                $path = "$(Build.SourceBranch)"
+                $version = Split-Path $path -Leaf
+                Write-Host $versiond
+
+                Set-Variable -Name "pack-version" -Value "$version"
+                write-host "##vso[task.setvariable variable=versionNo]$version"
+          }
+
+
+          elseif ("$(Build.SourceBranch)" -like "*tags*"){
               write-host "Source Branch should be tags here: $(Build.SourceBranch)"
               $branch = Invoke-Expression "git branch -r --contains $(Build.SourceBranch)"
               write-host "##vso[task.setvariable variable=currentBranch]$branch"
@@ -114,14 +149,6 @@ stages:
       displayName: Use .NET Core sdk 6.x
       inputs:
         version: 6.x
-    - task: PowerShell@2
-      inputs:
-        targetType: 'inline'
-        script: |
-          # Write your PowerShell commands here.
-          Write-Host "Build no is: $(Build.BuildNumber)"          
-          Write-Host "Version no is: $(versionNo)"
-        workingDirectory: '$(System.DefaultWorkingDirectory)'
     - task: Assembly-Info-NetCore@3
       displayName: 'Set Assembly Manifest Data'
       inputs:
@@ -188,7 +215,28 @@ stages:
           write-host "The build number is: $(Build.BuildNumber)"
           write-host $(Build.SourceBranch)
           $branch = 'Unknown'
-          if ("$(Build.SourceBranch)" -like "*tags*"){
+          
+          if ("$(Build.SourceBranch)" -like "*pull*"){
+              write-host "Source Branch should be pull here: $(Build.SourceBranch)"
+              $originalRefs = "$(Build.SourceBranch)".Replace("merge", "head")
+              
+              $commitRef   = Invoke-Expression "git ls-remote --refs origin $originalRefs"
+              write-host "The commit info is: $commitRef "
+
+              $commitSHA = $commitRef.Substring(0, 40)
+              write-host "The commit id is: $commitSHA"
+
+              $branch = Invoke-Expression "git branch --contains $commitSHA --sort=-committerdate | Select-Object -Skip 1 -First 1"
+              Write-Host "Latest branch: $branch"
+              write-host "##vso[task.setvariable variable=currentBranch]$branch"
+
+              $path = $branch
+              $version = Split-Path $path -Leaf
+              Write-Host $version
+
+              write-host "##vso[task.setvariable variable=versionNo]$version"
+          }         
+          elseif ("$(Build.SourceBranch)" -like "*tags*"){
               write-host "Source Branch should be tags here: $(Build.SourceBranch)"
               $branch = Invoke-Expression "git branch -r --contains $(Build.SourceBranch)"
               write-host "##vso[task.setvariable variable=currentBranch]$branch"
@@ -304,7 +352,27 @@ stages:
           # Write your PowerShell commands here.
           write-host $(Build.SourceBranch)
           $branch = 'Unknown'
-          if ("$(Build.SourceBranch)" -like "*tags*"){
+          if ("$(Build.SourceBranch)" -like "*pull*"){
+              write-host "Source Branch should be pull here: $(Build.SourceBranch)"
+              $originalRefs = "$(Build.SourceBranch)".Replace("merge", "head")
+              
+              $commitRef   = Invoke-Expression "git ls-remote --refs origin $originalRefs"
+              write-host "The commit info is: $commitRef "
+
+              $commitSHA = $commitRef.Substring(0, 40)
+              write-host "The commit id is: $commitSHA"
+
+              $branch = Invoke-Expression "git branch --contains $commitSHA --sort=-committerdate | Select-Object -Skip 1 -First 1"
+              Write-Host "Latest branch: $branch"
+              write-host "##vso[task.setvariable variable=currentBranch]$branch"
+
+              $path = $branch
+              $version = Split-Path $path -Leaf
+              Write-Host $version
+
+              write-host "##vso[task.setvariable variable=versionNo]$version"
+          } 
+          elseif ("$(Build.SourceBranch)" -like "*tags*"){
               write-host "Source Branch should be tags here: $(Build.SourceBranch)"
               $branch = Invoke-Expression "git branch -r --contains $(Build.SourceBranch)"
               write-host "##vso[task.setvariable variable=currentBranch]$branch"
@@ -400,7 +468,27 @@ stages:
           # Write your PowerShell commands here.
           write-host $(Build.SourceBranch)
           $branch = 'Unknown'
-          if ("$(Build.SourceBranch)" -like "*tags*"){
+          if ("$(Build.SourceBranch)" -like "*pull*"){
+              write-host "Source Branch should be pull here: $(Build.SourceBranch)"
+              $originalRefs = "$(Build.SourceBranch)".Replace("merge", "head")
+              
+              $commitRef   = Invoke-Expression "git ls-remote --refs origin $originalRefs"
+              write-host "The commit info is: $commitRef "
+
+              $commitSHA = $commitRef.Substring(0, 40)
+              write-host "The commit id is: $commitSHA"
+
+              $branch = Invoke-Expression "git branch --contains $commitSHA --sort=-committerdate | Select-Object -Skip 1 -First 1"
+              Write-Host "Latest branch: $branch"
+              write-host "##vso[task.setvariable variable=currentBranch]$branch"
+
+              $path = $branch
+              $version = Split-Path $path -Leaf
+              Write-Host $version
+
+              write-host "##vso[task.setvariable variable=versionNo]$version"
+          }           
+          elseif ("$(Build.SourceBranch)" -like "*tags*"){
               write-host "Source Branch should be tags here: $(Build.SourceBranch)"
               $branch = Invoke-Expression "git branch -r --contains $(Build.SourceBranch)"
               write-host "##vso[task.setvariable variable=currentBranch]$branch"
