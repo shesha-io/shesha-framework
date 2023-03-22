@@ -3,8 +3,8 @@ import { IToolboxComponent } from '../../../../interfaces';
 import { IConfigurableFormComponent } from '../../../../providers/form/models';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
-import { evaluateString, executeCustomExpression, getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import { useForm, useFormData, useGlobalState } from '../../../../providers';
+import { evaluateString, getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
+import { useForm, useFormData } from '../../../../providers';
 import { getSettings } from './settings';
 import ShaIcon from '../../../shaIcon';
 
