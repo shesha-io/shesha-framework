@@ -87,10 +87,11 @@ stages:
                 $version = Split-Path $path -Leaf
                 Write-Host $version
 
-                $releaseBranch = "refs/heads/releases/$version".Replace("release-", "")
+                $releaseVersion = "$version".Replace("release-", "")
+                $releaseBranch = "refs/heads/releases/$releaseVersion"
 
                 write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
-                write-host "##vso[task.setvariable variable=versionNo]$version"
+                write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
           }
           elseif ("$(Build.SourceBranch)" -like "*releases/*"){
             write-host "Source Branch should be releases here: $(Build.SourceBranch)"            
@@ -230,10 +231,11 @@ stages:
                 $version = Split-Path $path -Leaf
                 Write-Host $version
 
-                $releaseBranch = "refs/heads/releases/$version".Replace("release-", "")
+                $releaseVersion = "$version".Replace("release-", "")
+                $releaseBranch = "refs/heads/releases/$releaseVersion"
 
                 write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
-                write-host "##vso[task.setvariable variable=versionNo]$version"
+                write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
           }
           elseif ("$(Build.SourceBranch)" -like "*releases/*"){
             write-host "Source Branch should be releases here: $(Build.SourceBranch)"            
@@ -368,10 +370,11 @@ stages:
                 $version = Split-Path $path -Leaf
                 Write-Host $version
 
-                $releaseBranch = "refs/heads/releases/$version".Replace("release-", "")
+                $releaseVersion = "$version".Replace("release-", "")
+                $releaseBranch = "refs/heads/releases/$releaseVersion"
 
                 write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
-                write-host "##vso[task.setvariable variable=versionNo]$version"
+                write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
           }
           elseif ("$(Build.SourceBranch)" -like "*releases/*"){
             write-host "Source Branch should be releases here: $(Build.SourceBranch)"            
@@ -484,10 +487,11 @@ stages:
                 $version = Split-Path $path -Leaf
                 Write-Host $version
 
-                $releaseBranch = "refs/heads/releases/$version".Replace("release-", "")
+                $releaseVersion = "$version".Replace("release-", "")
+                $releaseBranch = "refs/heads/releases/$releaseVersion"
 
                 write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
-                write-host "##vso[task.setvariable variable=versionNo]$version"
+                write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
           }
           elseif ("$(Build.SourceBranch)" -like "*releases/*"){
             write-host "Source Branch should be releases here: $(Build.SourceBranch)"            
