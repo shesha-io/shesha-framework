@@ -68,8 +68,8 @@ stages:
               $commitSHA = $commitRef.Substring(0, 40)
               write-host "The commit id is: $commitSHA"
 
-              $branch = Invoke-Expression "git branch --contains $commitSHA --sort=-committerdate | Select-Object -Skip 1 -First 1"
-              $branch = $branch.Trim()
+              $branch = git branch --contains $commitSHA --sort=-committerdate | %{ $_.TrimStart('*').Trim() } | Select-Object -First 1
+
               Write-Host "Latest branch: $branch"
               write-host "##vso[task.setvariable variable=currentBranch]$branch"
 
@@ -224,8 +224,8 @@ stages:
               $commitSHA = $commitRef.Substring(0, 40)
               write-host "The commit id is: $commitSHA"
 
-              $branch = Invoke-Expression "git branch --contains $commitSHA --sort=-committerdate | Select-Object -Skip 1 -First 1"
-              $branch = $branch.Trim()
+              $branch = git branch --contains $commitSHA --sort=-committerdate | %{ $_.TrimStart('*').Trim() } | Select-Object -First 1
+
               Write-Host "Latest branch: $branch"
               write-host "##vso[task.setvariable variable=currentBranch]$branch"
 
@@ -361,8 +361,8 @@ stages:
               $commitSHA = $commitRef.Substring(0, 40)
               write-host "The commit id is: $commitSHA"
 
-              $branch = Invoke-Expression "git branch --contains $commitSHA --sort=-committerdate | Select-Object -Skip 1 -First 1"
-              $branch = $branch.Trim()              
+              $branch = git branch --contains $commitSHA --sort=-committerdate | %{ $_.TrimStart('*').Trim() } | Select-Object -First 1
+
               Write-Host "Latest branch: $branch"
               write-host "##vso[task.setvariable variable=currentBranch]$branch"
 
@@ -478,8 +478,8 @@ stages:
               $commitSHA = $commitRef.Substring(0, 40)
               write-host "The commit id is: $commitSHA"
 
-              $branch = Invoke-Expression "git branch --contains $commitSHA --sort=-committerdate | Select-Object -Skip 1 -First 1"
-              $branch = $branch.Trim()              
+              $branch = git branch --contains $commitSHA --sort=-committerdate | %{ $_.TrimStart('*').Trim() } | Select-Object -First 1
+
               Write-Host "Latest branch: $branch"
               write-host "##vso[task.setvariable variable=currentBranch]$branch"
 
