@@ -87,7 +87,7 @@ stages:
                 $version = Split-Path $path -Leaf
                 Write-Host $version
 
-                $releaseBranch = "refs/heads/releases/$version"
+                $releaseBranch = "refs/heads/releases/$version".Replace("release-", "")
 
                 write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
                 write-host "##vso[task.setvariable variable=versionNo]$version"
@@ -230,7 +230,7 @@ stages:
                 $version = Split-Path $path -Leaf
                 Write-Host $version
 
-                $releaseBranch = "refs/heads/releases/$version"
+                $releaseBranch = "refs/heads/releases/$version".Replace("release-", "")
 
                 write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
                 write-host "##vso[task.setvariable variable=versionNo]$version"
@@ -368,7 +368,7 @@ stages:
                 $version = Split-Path $path -Leaf
                 Write-Host $version
 
-                $releaseBranch = "refs/heads/releases/$version"
+                $releaseBranch = "refs/heads/releases/$version".Replace("release-", "")
 
                 write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
                 write-host "##vso[task.setvariable variable=versionNo]$version"
@@ -484,7 +484,7 @@ stages:
                 $version = Split-Path $path -Leaf
                 Write-Host $version
 
-                $releaseBranch = "refs/heads/releases/$version"
+                $releaseBranch = "refs/heads/releases/$version".Replace("release-", "")
 
                 write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
                 write-host "##vso[task.setvariable variable=versionNo]$version"
@@ -592,17 +592,18 @@ stages:
 
               write-host "##vso[task.setvariable variable=versionNo]$version"
           }           
-          elseif ("$(Build.SourceBranch)" -like "*tags*"){
+          elseif ("$(Build.SourceBranch)" -like "*tags/release-*"){
               write-host "Source Branch should be tags here: $(Build.SourceBranch)"
-              $branch = Invoke-Expression "git branch -r --contains $(Build.SourceBranch)"
-              write-host "##vso[task.setvariable variable=currentBranch]$branch"
+              #$branch = Invoke-Expression "git branch -r --contains $(Build.SourceBranch)"
 
-              $path = "$(Build.SourceBranch)"
-              $version = Split-Path $path -Leaf
-              Write-Host $version
+                $path = "$(Build.SourceBranch)"
+                $version = Split-Path $path -Leaf
+                Write-Host $version
 
-              write-host "##vso[task.setvariable variable=currentBranch]$branch"
-              write-host "##vso[task.setvariable variable=versionNo]$version"
+                $releaseBranch = "refs/heads/releases/$version".Replace("release-", "")
+
+                write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
+                write-host "##vso[task.setvariable variable=versionNo]$version"
           }
           elseif ("$(Build.SourceBranch)" -like "*releases*"){
             
