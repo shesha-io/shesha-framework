@@ -22,7 +22,7 @@ pr:
 trigger:
   tags:
     include:
-    - 'release/*'
+    - '*release-*'
   branches:
     include:
     - releases/*
