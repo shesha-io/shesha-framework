@@ -72,6 +72,7 @@ stages:
               write-host "The commit id is: $commitSHA"
 
               $branch = Invoke-Expression "git branch --contains $commitSHA --sort=-committerdate | Select-Object -Skip 1 -First 1"
+              $branch = $branch.Trim()
               Write-Host "Latest branch: $branch"
               write-host "##vso[task.setvariable variable=currentBranch]$branch"
 
@@ -227,6 +228,7 @@ stages:
               write-host "The commit id is: $commitSHA"
 
               $branch = Invoke-Expression "git branch --contains $commitSHA --sort=-committerdate | Select-Object -Skip 1 -First 1"
+              $branch = $branch.Trim()
               Write-Host "Latest branch: $branch"
               write-host "##vso[task.setvariable variable=currentBranch]$branch"
 
@@ -363,6 +365,7 @@ stages:
               write-host "The commit id is: $commitSHA"
 
               $branch = Invoke-Expression "git branch --contains $commitSHA --sort=-committerdate | Select-Object -Skip 1 -First 1"
+              $branch = $branch.Trim()              
               Write-Host "Latest branch: $branch"
               write-host "##vso[task.setvariable variable=currentBranch]$branch"
 
@@ -479,6 +482,7 @@ stages:
               write-host "The commit id is: $commitSHA"
 
               $branch = Invoke-Expression "git branch --contains $commitSHA --sort=-committerdate | Select-Object -Skip 1 -First 1"
+              $branch = $branch.Trim()              
               Write-Host "Latest branch: $branch"
               write-host "##vso[task.setvariable variable=currentBranch]$branch"
 
