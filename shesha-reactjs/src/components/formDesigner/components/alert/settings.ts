@@ -104,5 +104,6 @@ export const getSettings = (data: any) =>
       label: 'Custom Visibility',
       description:
         'Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
+      mode: 'dialog',
     })
     .toJson();
