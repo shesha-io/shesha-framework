@@ -48,17 +48,37 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
         /// <summary>
         /// The status of the membership
         /// </summary>
+        [ReferenceList("SheshaFunctionalTests", "MembershipStatuses")]
         public virtual RefListMembershipStatuses? MembershipStatus { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        [MultiValueReferenceList("Boxfusion.Health.HealthCommon.Domain.Fhir", "CommonLanguage")]
+        [MultiValueReferenceList("SheshaFunctionalTests", "CommunicationLanguage")]
         public virtual RefListCommunicationLanguage? CommunicationLanguage { get; set; }
         /// <summary>
         /// 
         /// </summary>
         [SaveAsJson]
-        public List<ImageAnnotation> ImageAnnotation { get; set; }
-
+        public virtual IList<ImageAnnotation> ImageAnnotation { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        [ReferenceList("SheshaFunctionalTests", "Provinces")]
+        public virtual RefListProvinces? Province { get; set; }
+        /// <summary> 
+        /// 
+        /// </summary>
+        [ReferenceList("SheshaFunctionalTests", "Religion")]
+        public virtual RefListReligion? Religion { get; set; }
+        /// <summary> 
+        /// 
+        /// </summary>
+        [ReferenceList("SheshaFunctionalTests", "EducationLevel")]
+        public virtual RefListEducationLevel? EducationLevel { get; set; }
+        /// <summary> 
+        /// 
+        /// </summary>
+        [ReferenceList("SheshaFunctionalTests", "MaritalStatus")]
+        public virtual RefListMaritalStatus? MaritalStatus { get; set; }
     }
 }

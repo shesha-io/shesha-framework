@@ -16,18 +16,18 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
         /// <summary>
         /// 
         /// </summary>
-        public long X { get; set; }
+        public decimal X { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        public long Y { get; set; }
+        public decimal Y { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        public long Width { get; set; }
+        public decimal Width { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        public long Height { get; set; }
+        public decimal Height { get; set; }
     }
 }
