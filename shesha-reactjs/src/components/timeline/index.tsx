@@ -1,30 +1,13 @@
-import {
-  CommentOutlined,
-  InboxOutlined,
-  MailOutlined,
-  MessageOutlined,
-  PhoneOutlined,
-  ClockCircleOutlined,
-  PlusCircleOutlined,
-} from '@ant-design/icons';
-import { Card, Empty, Spin, Timeline } from 'antd';
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import { Empty, Spin, Timeline } from 'antd';
+import React, { FC, useEffect, useMemo } from 'react';
 import { useGet } from 'restful-react';
 import { useDebouncedCallback } from 'use-debounce/lib';
 import { EntitiesGetAllQueryParams, useEntitiesGetAll } from '../../apis/entities';
 import { useGlobalState } from '../../providers';
+import { ITimelineProps } from './models';
+import { TimelineItem } from './timelineItem';
 
-import { ITimelineProps } from '../formDesigner/components/timeline/timeline';
-
-export interface ITimelineComponentProps extends ITimelineProps {}
-
-export const ShaTimeline: FC<ITimelineComponentProps> = ({
-  properties,
-  ownerId,
-  entityType,
-  customApiUrl,
-  apiSource,
-}) => {
+export const ShaTimeline: FC<ITimelineProps> = ({ properties, ownerId, entityType, customApiUrl, apiSource }) => {
   const useGetAll = apiSource === 'custom' ? useGet : useEntitiesGetAll;
 
   const { globalState } = useGlobalState();
@@ -80,62 +63,4 @@ export const ShaTimeline: FC<ITimelineComponentProps> = ({
       )}
     </Spin>
   );
-};
-
-export interface ITimelineItemProps {
-  toPerson?: string;
-  fromPerson?: string;
-  body?: string;
-  title?: string;
-  actionDate?: string;
-  type?: string;
-}
-
-const TimelineItem: FC<ITimelineItemProps> = ({ title, type, toPerson, body, actionDate }) => {
-  return (
-    <Timeline.Item dot={<TimelineIcon type={type} />}>
-      <Card
-        extra={
-          <small style={{ color: 'gray' }}>
-            <ClockCircleOutlined />
-            {actionDate}
-          </small>
-        }
-        title={
-          <div>
-            <label>
-              <strong style={{ textDecoration: 'underline' }}>{toPerson}</strong> {title}
-            </label>
-          </div>
-        }
-      >
-        <p>{body}</p>
-      </Card>
-    </Timeline.Item>
-  );
-};
-
-const TimelineIcon = ({ type }) => {
-  const [icon, setIcon] = useState(<PlusCircleOutlined />);
-
-  useEffect(() => {
-    switch (type) {
-      case 'phone':
-      case 'call':
-        setIcon(<PhoneOutlined />);
-        break;
-      case 'sms':
-        setIcon(<InboxOutlined />);
-        break;
-      case 'message':
-        setIcon(<MessageOutlined />);
-        break;
-      case 'email':
-        setIcon(<MailOutlined />);
-        break;
-      case 'note':
-        setIcon(<CommentOutlined />);
-    }
-  }, [type]);
-  return icon;
 };

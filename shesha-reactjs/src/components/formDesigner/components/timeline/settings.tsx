@@ -1,14 +1,12 @@
 import React, { FC, useState } from 'react';
 import { Checkbox, Form, Input, Select } from 'antd';
-
-import { ITimelineProps } from './timeline';
 import SectionSeparator from '../../../sectionSeparator';
-
 import Show from '../../../show';
 import { AutocompleteRaw } from '../../../autocomplete';
 import { QueryBuilderComponentRenderer } from '../queryBuilder/queryBuilderComponent';
 import { QueryBuilderWithModelType } from '../queryBuilder/queryBuilderWithModelType';
 import Properties from '../../../properties';
+import { ITimelineProps } from '../../../timeline/models';
 
 const { Option } = Select;
 
@@ -25,15 +23,7 @@ const TimelineSettings: FC<ITabSettingsProps> = (props) => {
   const [form] = Form.useForm();
 
   const onValuesChange = (changedValues: any, values) => {
-    // whenever the tabs change, check to see if `defaultActiveStep` is still present within the tabs. If not, remove it
-    const foundIndex = values?.defaultActiveStep
-      ? values?.steps?.findIndex((item) => item?.id === values?.defaultActiveStep)
-      : 0;
-
-    const newValues = { ...state, ...values, defaultActiveStep: foundIndex < 0 ? null : values?.defaultActiveStep };
-
-    //setState((prev) => ({ ...prev, ...values, defaultActiveItem: foundIndex < 0 ? null : values?.defaultActiveStep }));
-
+    const newValues = { ...state, ...values };
     if (props.onValuesChange) props.onValuesChange(changedValues, newValues);
   };
 
@@ -81,9 +71,11 @@ const TimelineSettings: FC<ITabSettingsProps> = (props) => {
         </Select>
       </Form.Item>
 
-      <Form.Item name={'ownerId'} label="id">
-        <Input />
-      </Form.Item>
+      <Show when={state.apiSource === 'custom'}>
+        <Form.Item name={'ownerId'} label="id">
+          <Input />
+        </Form.Item>
+      </Show>
 
       <Show when={state?.apiSource === 'entity'}>
         <Form.Item name="entityType" label="Entity type">
