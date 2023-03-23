@@ -1,4 +1,4 @@
-# Variable 'artifactName' was defined in the Variables tab - tag test test
+# Variable 'artifactName' was defined in the Variables tab - tag test test test test
 # Agent Queue 'Azure Pipelines' was used with unrecognized Agent Specification, vmImage property must be specified to determine image - https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops&tabs=yaml#software
 variables:
 - name: BuildParameters.solution1
@@ -9,16 +9,14 @@ variables:
   value: release
 - name: pack-version
   value: ""
-- name: isMain
-  value: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
+# - name: isMain
+#   value: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
 
 pr:
   branches:
-    exclude:
-    - main
     include:
     - releases/*
-
+    - main    
 trigger:
   tags:
     include:
@@ -26,8 +24,8 @@ trigger:
   branches:
     include:
     - releases/*
-    exclude:
-    - main
+    - main    
+    
 pool: 
   name: Azure Pipelines
   vmImage1: windows-latest
@@ -51,47 +49,13 @@ stages:
         script: |
           # Write your PowerShell commands here.
           write-host "The build number is: $(Build.BuildNumber)"
-          write-host $(Build.SourceBranch)
+          write-host "The source branch is: $(Build.SourceBranch)"
+
           $branch = 'Unknown'
 
           write-host "This is the commit id using the pre-defined variable Build.SourceVersion: $(Build.SourceVersion)"
 
-          if ("$(Build.SourceBranch)" -like "*pull*"){
-              write-host "Source Branch should be pull here: $(Build.SourceBranch)"
-              $originalRefs = "$(Build.SourceBranch)".Replace("merge", "head")
-              
-              $commitRef   = Invoke-Expression "git ls-remote --refs origin $originalRefs"
-              write-host "The commit info is: $commitRef "
-
-              $commitSHA = $commitRef.Substring(0, 40)
-              write-host "The commit id is: $commitSHA"
-
-              $branch = git branch --contains $commitSHA --sort=-committerdate | %{ $_.TrimStart('*').Trim() } | Select-Object -First 1
-
-              Write-Host "Latest branch: $branch"
-              write-host "##vso[task.setvariable variable=currentBranch]$branch"
-
-              $path = $branch
-              $version = Split-Path $path -Leaf
-              Write-Host $version
-
-              write-host "##vso[task.setvariable variable=versionNo]$version"
-          }           
-          elseif ("$(Build.SourceBranch)" -like "*tags/release-*"){
-              write-host "Source Branch should be tags here: $(Build.SourceBranch)"
-              #$branch = Invoke-Expression "git branch -r --contains $(Build.SourceBranch)"
-
-                $path = "$(Build.SourceBranch)"
-                $version = Split-Path $path -Leaf
-                Write-Host $version
-
-                $releaseVersion = "$version".Replace("release-", "")
-                $releaseBranch = "refs/heads/releases/$releaseVersion"
-
-                write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
-                write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
-          }
-          elseif ("$(Build.SourceBranch)" -like "*releases/*"){
+          if ("$(Build.SourceBranch)" -like "*/releases/*"){
             write-host "Source Branch should be releases here: $(Build.SourceBranch)"            
             write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
 
@@ -102,8 +66,33 @@ stages:
             Set-Variable -Name "pack-version" -Value "$version"
             write-host "##vso[task.setvariable variable=versionNo]$version"
           }
-          else{
-             write-host "Source Branch should not be tags or releases here: $(Build.SourceBranch)"
+          elseif ("$(Build.SourceBranch)" -like "*/pull/*"){
+              write-host "Source Branch should be pull here: $(Build.SourceBranch)"
+              write-host "Target Branch of the PR should be: $(System.PullRequest.TargetBranch)"              
+              write-host "##vso[task.setvariable variable=currentBranch]$(System.PullRequest.TargetBranch)"
+
+              $path = "$(System.PullRequest.TargetBranch)"
+              $version = Split-Path $path -Leaf
+              Write-Host $version
+
+              write-host "##vso[task.setvariable variable=versionNo]$version"
+          }    
+          elseif ("$(Build.SourceBranch)" -like "*/tags/release-*"){
+              write-host "Source Branch should be tags here: $(Build.SourceBranch)"
+              #$branch = Invoke-Expression "git branch -r --contains $(Build.SourceBranch)"
+
+              $path = "$(Build.SourceBranch)"
+              $version = Split-Path $path -Leaf
+              Write-Host $version
+
+              $releaseVersion = "$version".Replace("release-", "")
+              $releaseBranch = "refs/heads/releases/$releaseVersion"
+
+              write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
+              write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
+          }
+          elseif ("$(Build.SourceBranch)" -like "*/main"){
+             write-host "Source Branch should be main here: $(Build.SourceBranch)"
              write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
              write-host "##vso[task.setvariable variable=versionNo]$(pack-version)"
           }
@@ -197,45 +186,13 @@ stages:
         script: |
           # Write your PowerShell commands here.
           write-host "The build number is: $(Build.BuildNumber)"
-          write-host $(Build.SourceBranch)
+          write-host "The source branch is: $(Build.SourceBranch)"
+
           $branch = 'Unknown'
-          
-          if ("$(Build.SourceBranch)" -like "*pull*"){
-              write-host "Source Branch should be pull here: $(Build.SourceBranch)"
-              $originalRefs = "$(Build.SourceBranch)".Replace("merge", "head")
-              
-              $commitRef   = Invoke-Expression "git ls-remote --refs origin $originalRefs"
-              write-host "The commit info is: $commitRef "
 
-              $commitSHA = $commitRef.Substring(0, 40)
-              write-host "The commit id is: $commitSHA"
+          write-host "This is the commit id using the pre-defined variable Build.SourceVersion: $(Build.SourceVersion)"
 
-              $branch = git branch --contains $commitSHA --sort=-committerdate | %{ $_.TrimStart('*').Trim() } | Select-Object -First 1
-
-              Write-Host "Latest branch: $branch"
-              write-host "##vso[task.setvariable variable=currentBranch]$branch"
-
-              $path = $branch
-              $version = Split-Path $path -Leaf
-              Write-Host $version
-
-              write-host "##vso[task.setvariable variable=versionNo]$version"
-          }           
-          elseif ("$(Build.SourceBranch)" -like "*tags/release-*"){
-              write-host "Source Branch should be tags here: $(Build.SourceBranch)"
-              #$branch = Invoke-Expression "git branch -r --contains $(Build.SourceBranch)"
-
-                $path = "$(Build.SourceBranch)"
-                $version = Split-Path $path -Leaf
-                Write-Host $version
-
-                $releaseVersion = "$version".Replace("release-", "")
-                $releaseBranch = "refs/heads/releases/$releaseVersion"
-
-                write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
-                write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
-          }
-          elseif ("$(Build.SourceBranch)" -like "*releases/*"){
+          if ("$(Build.SourceBranch)" -like "*/releases/*"){
             write-host "Source Branch should be releases here: $(Build.SourceBranch)"            
             write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
 
@@ -246,8 +203,33 @@ stages:
             Set-Variable -Name "pack-version" -Value "$version"
             write-host "##vso[task.setvariable variable=versionNo]$version"
           }
-          else{
-             write-host "Source Branch should not be tags or releases here: $(Build.SourceBranch)"
+          elseif ("$(Build.SourceBranch)" -like "*/pull/*"){
+              write-host "Source Branch should be pull here: $(Build.SourceBranch)"
+              write-host "Target Branch of the PR should be: $(System.PullRequest.TargetBranch)"              
+              write-host "##vso[task.setvariable variable=currentBranch]$(System.PullRequest.TargetBranch)"
+
+              $path = "$(System.PullRequest.TargetBranch)"
+              $version = Split-Path $path -Leaf
+              Write-Host $version
+
+              write-host "##vso[task.setvariable variable=versionNo]$version"
+          }    
+          elseif ("$(Build.SourceBranch)" -like "*/tags/release-*"){
+              write-host "Source Branch should be tags here: $(Build.SourceBranch)"
+              #$branch = Invoke-Expression "git branch -r --contains $(Build.SourceBranch)"
+
+              $path = "$(Build.SourceBranch)"
+              $version = Split-Path $path -Leaf
+              Write-Host $version
+
+              $releaseVersion = "$version".Replace("release-", "")
+              $releaseBranch = "refs/heads/releases/$releaseVersion"
+
+              write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
+              write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
+          }
+          elseif ("$(Build.SourceBranch)" -like "*/main"){
+             write-host "Source Branch should be main here: $(Build.SourceBranch)"
              write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
              write-host "##vso[task.setvariable variable=versionNo]$(pack-version)"
           }
@@ -337,44 +319,14 @@ stages:
         targetType: 'inline'
         script: |
           # Write your PowerShell commands here.
-          write-host $(Build.SourceBranch)
+          write-host "The build number is: $(Build.BuildNumber)"
+          write-host "The source branch is: $(Build.SourceBranch)"
+
           $branch = 'Unknown'
-          if ("$(Build.SourceBranch)" -like "*pull*"){
-              write-host "Source Branch should be pull here: $(Build.SourceBranch)"
-              $originalRefs = "$(Build.SourceBranch)".Replace("merge", "head")
-              
-              $commitRef   = Invoke-Expression "git ls-remote --refs origin $originalRefs"
-              write-host "The commit info is: $commitRef "
 
-              $commitSHA = $commitRef.Substring(0, 40)
-              write-host "The commit id is: $commitSHA"
+          write-host "This is the commit id using the pre-defined variable Build.SourceVersion: $(Build.SourceVersion)"
 
-              $branch = git branch --contains $commitSHA --sort=-committerdate | %{ $_.TrimStart('*').Trim() } | Select-Object -First 1
-
-              Write-Host "Latest branch: $branch"
-              write-host "##vso[task.setvariable variable=currentBranch]$branch"
-
-              $path = $branch
-              $version = Split-Path $path -Leaf
-              Write-Host $version
-
-              write-host "##vso[task.setvariable variable=versionNo]$version"
-          }           
-          elseif ("$(Build.SourceBranch)" -like "*tags/release-*"){
-              write-host "Source Branch should be tags here: $(Build.SourceBranch)"
-              #$branch = Invoke-Expression "git branch -r --contains $(Build.SourceBranch)"
-
-                $path = "$(Build.SourceBranch)"
-                $version = Split-Path $path -Leaf
-                Write-Host $version
-
-                $releaseVersion = "$version".Replace("release-", "")
-                $releaseBranch = "refs/heads/releases/$releaseVersion"
-
-                write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
-                write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
-          }
-          elseif ("$(Build.SourceBranch)" -like "*releases/*"){
+          if ("$(Build.SourceBranch)" -like "*/releases/*"){
             write-host "Source Branch should be releases here: $(Build.SourceBranch)"            
             write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
 
@@ -385,8 +337,33 @@ stages:
             Set-Variable -Name "pack-version" -Value "$version"
             write-host "##vso[task.setvariable variable=versionNo]$version"
           }
-          else{
-             write-host "Source Branch should not be tags or releases here: $(Build.SourceBranch)"
+          elseif ("$(Build.SourceBranch)" -like "*/pull/*"){
+              write-host "Source Branch should be pull here: $(Build.SourceBranch)"
+              write-host "Target Branch of the PR should be: $(System.PullRequest.TargetBranch)"              
+              write-host "##vso[task.setvariable variable=currentBranch]$(System.PullRequest.TargetBranch)"
+
+              $path = "$(System.PullRequest.TargetBranch)"
+              $version = Split-Path $path -Leaf
+              Write-Host $version
+
+              write-host "##vso[task.setvariable variable=versionNo]$version"
+          }    
+          elseif ("$(Build.SourceBranch)" -like "*/tags/release-*"){
+              write-host "Source Branch should be tags here: $(Build.SourceBranch)"
+              #$branch = Invoke-Expression "git branch -r --contains $(Build.SourceBranch)"
+
+              $path = "$(Build.SourceBranch)"
+              $version = Split-Path $path -Leaf
+              Write-Host $version
+
+              $releaseVersion = "$version".Replace("release-", "")
+              $releaseBranch = "refs/heads/releases/$releaseVersion"
+
+              write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
+              write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
+          }
+          elseif ("$(Build.SourceBranch)" -like "*/main"){
+             write-host "Source Branch should be main here: $(Build.SourceBranch)"
              write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
              write-host "##vso[task.setvariable variable=versionNo]$(pack-version)"
           }
@@ -454,44 +431,14 @@ stages:
         targetType: 'inline'
         script: |
           # Write your PowerShell commands here.
-          write-host $(Build.SourceBranch)
+          write-host "The build number is: $(Build.BuildNumber)"
+          write-host "The source branch is: $(Build.SourceBranch)"
+
           $branch = 'Unknown'
-          if ("$(Build.SourceBranch)" -like "*pull*"){
-              write-host "Source Branch should be pull here: $(Build.SourceBranch)"
-              $originalRefs = "$(Build.SourceBranch)".Replace("merge", "head")
-              
-              $commitRef   = Invoke-Expression "git ls-remote --refs origin $originalRefs"
-              write-host "The commit info is: $commitRef "
 
-              $commitSHA = $commitRef.Substring(0, 40)
-              write-host "The commit id is: $commitSHA"
+          write-host "This is the commit id using the pre-defined variable Build.SourceVersion: $(Build.SourceVersion)"
 
-              $branch = git branch --contains $commitSHA --sort=-committerdate | %{ $_.TrimStart('*').Trim() } | Select-Object -First 1
-
-              Write-Host "Latest branch: $branch"
-              write-host "##vso[task.setvariable variable=currentBranch]$branch"
-
-              $path = $branch
-              $version = Split-Path $path -Leaf
-              Write-Host $version
-
-              write-host "##vso[task.setvariable variable=versionNo]$version"
-          }           
-          elseif ("$(Build.SourceBranch)" -like "*tags/release-*"){
-              write-host "Source Branch should be tags here: $(Build.SourceBranch)"
-              #$branch = Invoke-Expression "git branch -r --contains $(Build.SourceBranch)"
-
-                $path = "$(Build.SourceBranch)"
-                $version = Split-Path $path -Leaf
-                Write-Host $version
-
-                $releaseVersion = "$version".Replace("release-", "")
-                $releaseBranch = "refs/heads/releases/$releaseVersion"
-
-                write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
-                write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
-          }
-          elseif ("$(Build.SourceBranch)" -like "*releases/*"){
+          if ("$(Build.SourceBranch)" -like "*/releases/*"){
             write-host "Source Branch should be releases here: $(Build.SourceBranch)"            
             write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
 
@@ -502,8 +449,33 @@ stages:
             Set-Variable -Name "pack-version" -Value "$version"
             write-host "##vso[task.setvariable variable=versionNo]$version"
           }
-          else{
-             write-host "Source Branch should not be tags or releases here: $(Build.SourceBranch)"
+          elseif ("$(Build.SourceBranch)" -like "*/pull/*"){
+              write-host "Source Branch should be pull here: $(Build.SourceBranch)"
+              write-host "Target Branch of the PR should be: $(System.PullRequest.TargetBranch)"              
+              write-host "##vso[task.setvariable variable=currentBranch]$(System.PullRequest.TargetBranch)"
+
+              $path = "$(System.PullRequest.TargetBranch)"
+              $version = Split-Path $path -Leaf
+              Write-Host $version
+
+              write-host "##vso[task.setvariable variable=versionNo]$version"
+          }    
+          elseif ("$(Build.SourceBranch)" -like "*/tags/release-*"){
+              write-host "Source Branch should be tags here: $(Build.SourceBranch)"
+              #$branch = Invoke-Expression "git branch -r --contains $(Build.SourceBranch)"
+
+              $path = "$(Build.SourceBranch)"
+              $version = Split-Path $path -Leaf
+              Write-Host $version
+
+              $releaseVersion = "$version".Replace("release-", "")
+              $releaseBranch = "refs/heads/releases/$releaseVersion"
+
+              write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
+              write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
+          }
+          elseif ("$(Build.SourceBranch)" -like "*/main"){
+             write-host "Source Branch should be main here: $(Build.SourceBranch)"
              write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
              write-host "##vso[task.setvariable variable=versionNo]$(pack-version)"
           }
