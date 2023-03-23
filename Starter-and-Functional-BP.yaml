@@ -8,9 +8,9 @@ variables:
 - name: BuildParameters.configuration
   value: release
 - name: pack-version
-  value: ""
-# - name: isMain
-#   value: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
+  value: $(Build.BuildNumber)
+- name: isMain
+  value: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
 
 pr:
   branches:
@@ -71,11 +71,8 @@ stages:
                   $version = Split-Path $path -Leaf
                   Write-Host $version
 
-                  Set-Variable -Name "pack-version" -Value "$version"
                   write-host "##vso[task.setvariable variable=versionNo]$version"
               }              
-
-              write-host "PR target branch did not match. This pipeline will error out"
           }  
           elseif ("$(Build.SourceBranch)" -like "*/releases/*"){
             write-host "Source Branch should be releases here: $(Build.SourceBranch)"            
@@ -85,7 +82,6 @@ stages:
             $version = Split-Path $path -Leaf
             Write-Host $version
 
-            Set-Variable -Name "pack-version" -Value "$version"
             write-host "##vso[task.setvariable variable=versionNo]$version"
           }
           elseif ("$(Build.SourceBranch)" -like "*/tags/release-*"){
@@ -219,11 +215,8 @@ stages:
                   $version = Split-Path $path -Leaf
                   Write-Host $version
 
-                  Set-Variable -Name "pack-version" -Value "$version"
                   write-host "##vso[task.setvariable variable=versionNo]$version"
               }              
-
-              write-host "PR target branch did not match. This pipeline will error out"
           }  
           elseif ("$(Build.SourceBranch)" -like "*/releases/*"){
             write-host "Source Branch should be releases here: $(Build.SourceBranch)"            
@@ -233,7 +226,6 @@ stages:
             $version = Split-Path $path -Leaf
             Write-Host $version
 
-            Set-Variable -Name "pack-version" -Value "$version"
             write-host "##vso[task.setvariable variable=versionNo]$version"
           }
           elseif ("$(Build.SourceBranch)" -like "*/tags/release-*"){
@@ -364,11 +356,8 @@ stages:
                   $version = Split-Path $path -Leaf
                   Write-Host $version
 
-                  Set-Variable -Name "pack-version" -Value "$version"
                   write-host "##vso[task.setvariable variable=versionNo]$version"
               }              
-
-              write-host "PR target branch did not match. This pipeline will error out"
           }  
           elseif ("$(Build.SourceBranch)" -like "*/releases/*"){
             write-host "Source Branch should be releases here: $(Build.SourceBranch)"            
@@ -378,7 +367,6 @@ stages:
             $version = Split-Path $path -Leaf
             Write-Host $version
 
-            Set-Variable -Name "pack-version" -Value "$version"
             write-host "##vso[task.setvariable variable=versionNo]$version"
           }
           elseif ("$(Build.SourceBranch)" -like "*/tags/release-*"){
@@ -487,11 +475,8 @@ stages:
                   $version = Split-Path $path -Leaf
                   Write-Host $version
 
-                  Set-Variable -Name "pack-version" -Value "$version"
                   write-host "##vso[task.setvariable variable=versionNo]$version"
               }              
-
-              write-host "PR target branch did not match. This pipeline will error out"
           }  
           elseif ("$(Build.SourceBranch)" -like "*/releases/*"){
             write-host "Source Branch should be releases here: $(Build.SourceBranch)"            
@@ -501,7 +486,6 @@ stages:
             $version = Split-Path $path -Leaf
             Write-Host $version
 
-            Set-Variable -Name "pack-version" -Value "$version"
             write-host "##vso[task.setvariable variable=versionNo]$version"
           }
           elseif ("$(Build.SourceBranch)" -like "*/tags/release-*"){
@@ -610,11 +594,8 @@ stages:
                   $version = Split-Path $path -Leaf
                   Write-Host $version
 
-                  Set-Variable -Name "pack-version" -Value "$version"
                   write-host "##vso[task.setvariable variable=versionNo]$version"
               }              
-
-              write-host "PR target branch did not match. This pipeline will error out"
           }  
           elseif ("$(Build.SourceBranch)" -like "*/releases/*"){
             write-host "Source Branch should be releases here: $(Build.SourceBranch)"            
@@ -624,7 +605,6 @@ stages:
             $version = Split-Path $path -Leaf
             Write-Host $version
 
-            Set-Variable -Name "pack-version" -Value "$version"
             write-host "##vso[task.setvariable variable=versionNo]$version"
           }
           elseif ("$(Build.SourceBranch)" -like "*/tags/release-*"){
