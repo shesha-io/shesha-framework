@@ -336,7 +336,7 @@ stages:
   - job: Job_3
     displayName: Build_Functional_Shesha_AdminPortal
     pool:
-      vmImage: ubuntu-latest
+      vmImage: windows-latest
     steps:
     - task: PowerShell@2
       displayName: Check to establish if this pipeline was triggered from a tag  
@@ -460,7 +460,7 @@ stages:
   - job: Job_4
     displayName: Build_Starter_Shesha_AdminPortal
     pool:
-      vmImage: ubuntu-latest
+      vmImage: windows-latest
     steps:
     - task: PowerShell@2
       displayName: Check to establish if this pipeline was triggered from a tag  
@@ -584,7 +584,7 @@ stages:
   - job: Job_5
     displayName: Prepare Release if published
     pool:
-      vmImage: ubuntu-latest
+      vmImage: windows-latest
     steps:
     - task: PowerShell@2
       displayName: Check to establish if this pipeline was triggered from a tag  
