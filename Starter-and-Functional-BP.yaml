@@ -8,7 +8,7 @@ variables:
 - name: BuildParameters.configuration
   value: release
 - name: pack-version
-  value: $(Build.BuildNumber)
+  value: ""
 - name: isMain
   value: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
 
@@ -61,7 +61,7 @@ stages:
               if ("$(System.PullRequest.TargetBranch)" -eq "main"){
                   write-host "PR target is main branch. Setting currentBranch to refs/heads/main"  
                   write-host "##vso[task.setvariable variable=currentBranch]refs/heads/main"
-                  write-host "##vso[task.setvariable variable=versionNo]$(pack-version)"
+                  write-host "##vso[task.setvariable variable=versionNo]$(Build.BuildNumber)"
               }
               elseif ("$(System.PullRequest.TargetBranch)" -like "refs/heads/releases/*"){
                   write-host "PR target is a release branch. Setting currentBranch to refs/heads/$(System.PullRequest.TargetBranch)"                  
@@ -101,7 +101,7 @@ stages:
           elseif ("$(Build.SourceBranch)" -like "*/main"){
              write-host "Source Branch should be main here: $(Build.SourceBranch)"
              write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
-             write-host "##vso[task.setvariable variable=versionNo]$(pack-version)"
+             write-host "##vso[task.setvariable variable=versionNo]$(Build.BuildNumber)"
           }
         workingDirectory: '$(System.DefaultWorkingDirectory)'      
     - task: PowerShell@2
@@ -205,7 +205,7 @@ stages:
               if ("$(System.PullRequest.TargetBranch)" -eq "main"){
                   write-host "PR target is main branch. Setting currentBranch to refs/heads/main"  
                   write-host "##vso[task.setvariable variable=currentBranch]refs/heads/main"
-                  write-host "##vso[task.setvariable variable=versionNo]$(pack-version)"
+                  write-host "##vso[task.setvariable variable=versionNo]$(Build.BuildNumber)"
               }
               elseif ("$(System.PullRequest.TargetBranch)" -like "refs/heads/releases/*"){
                   write-host "PR target is a release branch. Setting currentBranch to refs/heads/$(System.PullRequest.TargetBranch)"                  
@@ -245,7 +245,7 @@ stages:
           elseif ("$(Build.SourceBranch)" -like "*/main"){
              write-host "Source Branch should be main here: $(Build.SourceBranch)"
              write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
-             write-host "##vso[task.setvariable variable=versionNo]$(pack-version)"
+             write-host "##vso[task.setvariable variable=versionNo]$(Build.BuildNumber)"
           }
         workingDirectory: '$(System.DefaultWorkingDirectory)'
     - task: PowerShell@2
