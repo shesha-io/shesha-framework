@@ -122,5 +122,9 @@ namespace Shesha.Domain
 
         [ManyToMany("Core_Persons_Languages", "LanguageId", "PersonId")]
         public virtual IList<ApplicationLanguage> PreferredLanguages { get; set; } = new List<ApplicationLanguage>();
+
+        public virtual Organisation PrimaryOrganisation { get; set; }
+        public virtual Account PrimaryAccount { get; set; }
+        public virtual Site PrimaryType { get; set; }
     }
 }
