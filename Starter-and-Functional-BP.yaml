@@ -24,7 +24,6 @@ trigger:
   branches:
     include:
     - releases/*
-    - main    
     
 pool: 
   name: Azure Pipelines
