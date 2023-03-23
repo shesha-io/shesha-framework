@@ -12,12 +12,6 @@ variables:
 - name: isMain
   value: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
 
-variables:
-  ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/') }}:
-    branchName: $[ replace(variables['Build.SourceBranch'], 'refs/heads/', '') ]
-  ${{ if startsWith(variables['Build.SourceBranch'], 'refs/pull/') }}:
-    branchName: $[ replace(variables['System.PullRequest.TargetBranch'], 'refs/heads/', '') ]  
-
 pr:
   branches:
     exclude:
