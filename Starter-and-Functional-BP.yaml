@@ -100,7 +100,7 @@ stages:
               write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
           }
           else{
-             write-host "Source Branch should not be tags or releases here: $(Build.SourceBranch)"
+             write-host "Source Branch should be main here: $(Build.SourceBranch)"
              write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
              write-host "##vso[task.setvariable variable=versionNo]$(pack-version)"
           }
@@ -237,7 +237,7 @@ stages:
               write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
           }
           else{
-             write-host "Source Branch should not be tags or releases here: $(Build.SourceBranch)"
+             write-host "Source Branch should be main here: $(Build.SourceBranch)"
              write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
              write-host "##vso[task.setvariable variable=versionNo]$(pack-version)"
           }
@@ -371,7 +371,7 @@ stages:
               write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
           }
           else{
-             write-host "Source Branch should not be tags or releases here: $(Build.SourceBranch)"
+             write-host "Source Branch should be main here: $(Build.SourceBranch)"
              write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
              write-host "##vso[task.setvariable variable=versionNo]$(pack-version)"
           }
@@ -483,7 +483,7 @@ stages:
               write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
           }
           else{
-             write-host "Source Branch should not be tags or releases here: $(Build.SourceBranch)"
+             write-host "Source Branch should be main here: $(Build.SourceBranch)"
              write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
              write-host "##vso[task.setvariable variable=versionNo]$(pack-version)"
           }
