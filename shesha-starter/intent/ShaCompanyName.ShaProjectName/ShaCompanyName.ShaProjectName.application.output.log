@@ -12,23 +12,23 @@
       <ProjectId>4e12de3a-1824-48ae-a202-825b26859f9c</ProjectId>
       <CorrelationId>Intent.VisualStudio.Projects.CoreLibrary.CSProject#4e12de3a-1824-48ae-a202-825b26859f9c</CorrelationId>
       <OverwriteBehaviour>always</OverwriteBehaviour>
-      <ApplicationRelativeFilePath>../../backend/src/Module/ShaCompanyName.ShaProjectName.Common.Application/ShaCompanyName.ShaProjectName.Common.Application.csproj</ApplicationRelativeFilePath>
-      <ProjectRelativeFilePath>ShaCompanyName.ShaProjectName.Common.Application.csproj</ProjectRelativeFilePath>
+      <ApplicationRelativeFilePath>../../backend/src/Module/ShaCompanyName.ShaProjectName.Application/ShaCompanyName.ShaProjectName.Application.csproj</ApplicationRelativeFilePath>
+      <ProjectRelativeFilePath>ShaCompanyName.ShaProjectName.Application.csproj</ProjectRelativeFilePath>
       <IsIgnored>false</IsIgnored>
     </FileLog>
     <FileLog>
       <ProjectId>4e12de3a-1824-48ae-a202-825b26859f9c</ProjectId>
       <CorrelationId>Boxfusion.Modules.Application.Services.AppService#b2e5535c-846b-4538-b595-ddbe1eed089d</CorrelationId>
       <OverwriteBehaviour>always</OverwriteBehaviour>
-      <ApplicationRelativeFilePath>../../backend/src/Module/ShaCompanyName.ShaProjectName.Common.Application/ShaProjectNameCommonApplicationModule.cs</ApplicationRelativeFilePath>
-      <ProjectRelativeFilePath>ShaProjectNameCommonApplicationModule.cs</ProjectRelativeFilePath>
+      <ApplicationRelativeFilePath>../../backend/src/Module/ShaCompanyName.ShaProjectName.Application/ShaProjectNameApplicationModule.cs</ApplicationRelativeFilePath>
+      <ProjectRelativeFilePath>ShaProjectNameApplicationModule.cs</ProjectRelativeFilePath>
       <IsIgnored>false</IsIgnored>
     </FileLog>
     <FileLog>
       <ProjectId>3acd8e57-c6da-483e-bc14-1fe0934bfc35</ProjectId>
       <CorrelationId>Boxfusion.Modules.Domain.Entity#c3a828f2-afd3-422f-9b05-ff10c441f781</CorrelationId>
       <OverwriteBehaviour>always</OverwriteBehaviour>
-      <ApplicationRelativeFilePath>../../backend/src/Module/ShaCompanyName.ShaProjectName.Common.Domain/Domain/NewClass.cs</ApplicationRelativeFilePath>
+      <ApplicationRelativeFilePath>../../backend/src/Module/ShaCompanyName.ShaProjectName.Domain/Domain/NewClass.cs</ApplicationRelativeFilePath>
       <ProjectRelativeFilePath>Domain/NewClass.cs</ProjectRelativeFilePath>
       <IsIgnored>false</IsIgnored>
     </FileLog>
@@ -36,23 +36,15 @@
       <ProjectId>3acd8e57-c6da-483e-bc14-1fe0934bfc35</ProjectId>
       <CorrelationId>Boxfusion.Modules.FluentMigrator.EnumMigrationMetadata#b2e5535c-846b-4538-b595-ddbe1eed089d</CorrelationId>
       <OverwriteBehaviour>always</OverwriteBehaviour>
-      <ApplicationRelativeFilePath>../../backend/src/Module/ShaCompanyName.ShaProjectName.Common.Domain/Migrations/enum-migration-metadata.json</ApplicationRelativeFilePath>
+      <ApplicationRelativeFilePath>../../backend/src/Module/ShaCompanyName.ShaProjectName.Domain/Migrations/enum-migration-metadata.json</ApplicationRelativeFilePath>
       <ProjectRelativeFilePath>Migrations/enum-migration-metadata.json</ProjectRelativeFilePath>
-      <IsIgnored>false</IsIgnored>
-    </FileLog>
-    <FileLog>
-      <ProjectId>3acd8e57-c6da-483e-bc14-1fe0934bfc35</ProjectId>
-      <CorrelationId>511d8bbb-b651-491f-bfa0-45401c02f27c</CorrelationId>
-      <OverwriteBehaviour>once-off</OverwriteBehaviour>
-      <ApplicationRelativeFilePath>../../backend/src/Module/ShaCompanyName.ShaProjectName.Common.Domain/Migrations/M20230120165609.cs</ApplicationRelativeFilePath>
-      <ProjectRelativeFilePath>Migrations/M20230120165609.cs</ProjectRelativeFilePath>
       <IsIgnored>false</IsIgnored>
     </FileLog>
     <FileLog>
       <ProjectId>3acd8e57-c6da-483e-bc14-1fe0934bfc35</ProjectId>
       <CorrelationId>Boxfusion.Modules.FluentMigrator.MigrationMetadata#b2e5535c-846b-4538-b595-ddbe1eed089d</CorrelationId>
       <OverwriteBehaviour>always</OverwriteBehaviour>
-      <ApplicationRelativeFilePath>../../backend/src/Module/ShaCompanyName.ShaProjectName.Common.Domain/Migrations/migration-metadata.json</ApplicationRelativeFilePath>
+      <ApplicationRelativeFilePath>../../backend/src/Module/ShaCompanyName.ShaProjectName.Domain/Migrations/migration-metadata.json</ApplicationRelativeFilePath>
       <ProjectRelativeFilePath>Migrations/migration-metadata.json</ProjectRelativeFilePath>
       <IsIgnored>false</IsIgnored>
     </FileLog>
@@ -60,7 +52,7 @@
       <ProjectId>3acd8e57-c6da-483e-bc14-1fe0934bfc35</ProjectId>
       <CorrelationId>Boxfusion.Modules.Domain.Properties#b2e5535c-846b-4538-b595-ddbe1eed089d</CorrelationId>
       <OverwriteBehaviour>always</OverwriteBehaviour>
-      <ApplicationRelativeFilePath>../../backend/src/Module/ShaCompanyName.ShaProjectName.Common.Domain/Properties/AssemblyInfo.cs</ApplicationRelativeFilePath>
+      <ApplicationRelativeFilePath>../../backend/src/Module/ShaCompanyName.ShaProjectName.Domain/Properties/AssemblyInfo.cs</ApplicationRelativeFilePath>
       <ProjectRelativeFilePath>Properties/AssemblyInfo.cs</ProjectRelativeFilePath>
       <IsIgnored>false</IsIgnored>
     </FileLog>
@@ -68,16 +60,16 @@
       <ProjectId>3acd8e57-c6da-483e-bc14-1fe0934bfc35</ProjectId>
       <CorrelationId>Intent.VisualStudio.Projects.CoreLibrary.CSProject#3acd8e57-c6da-483e-bc14-1fe0934bfc35</CorrelationId>
       <OverwriteBehaviour>always</OverwriteBehaviour>
-      <ApplicationRelativeFilePath>../../backend/src/Module/ShaCompanyName.ShaProjectName.Common.Domain/ShaCompanyName.ShaProjectName.Common.Domain.csproj</ApplicationRelativeFilePath>
-      <ProjectRelativeFilePath>ShaCompanyName.ShaProjectName.Common.Domain.csproj</ProjectRelativeFilePath>
+      <ApplicationRelativeFilePath>../../backend/src/Module/ShaCompanyName.ShaProjectName.Domain/ShaCompanyName.ShaProjectName.Domain.csproj</ApplicationRelativeFilePath>
+      <ProjectRelativeFilePath>ShaCompanyName.ShaProjectName.Domain.csproj</ProjectRelativeFilePath>
       <IsIgnored>false</IsIgnored>
     </FileLog>
     <FileLog>
       <ProjectId>3acd8e57-c6da-483e-bc14-1fe0934bfc35</ProjectId>
       <CorrelationId>Boxfusion.Modules.Domain.Module#b2e5535c-846b-4538-b595-ddbe1eed089d</CorrelationId>
       <OverwriteBehaviour>always</OverwriteBehaviour>
-      <ApplicationRelativeFilePath>../../backend/src/Module/ShaCompanyName.ShaProjectName.Common.Domain/ShaProjectNameCommonModule.cs</ApplicationRelativeFilePath>
-      <ProjectRelativeFilePath>ShaProjectNameCommonModule.cs</ProjectRelativeFilePath>
+      <ApplicationRelativeFilePath>../../backend/src/Module/ShaCompanyName.ShaProjectName.Domain/ShaProjectNameModule.cs</ApplicationRelativeFilePath>
+      <ProjectRelativeFilePath>ShaProjectNameModule.cs</ProjectRelativeFilePath>
       <IsIgnored>false</IsIgnored>
     </FileLog>
     <FileLog>

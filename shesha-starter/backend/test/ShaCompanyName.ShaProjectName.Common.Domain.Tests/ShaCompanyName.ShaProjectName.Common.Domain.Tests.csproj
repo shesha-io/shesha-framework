@@ -32,7 +32,7 @@
 		<PackageReference Include="Abp.TestBase" Version="6.6.2" />
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\..\src\Module\ShaCompanyName.ShaProjectName.Common.Application\ShaCompanyName.ShaProjectName.Common.Application.csproj" />
+	  <ProjectReference Include="..\..\src\Module\ShaCompanyName.ShaProjectName.Domain\ShaCompanyName.ShaProjectName.Domain.csproj" />
 	</ItemGroup>
 
   <ItemGroup>

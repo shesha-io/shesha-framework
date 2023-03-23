@@ -8,7 +8,7 @@
   <isMapped>false</isMapped>
   <parentFolderId>106618d3-9ac1-4e03-bcb5-c4b507f2eef1</parentFolderId>
   <packageId>b2e5535c-846b-4538-b595-ddbe1eed089d</packageId>
-  <packageName>ShaCompanyName.ShaProjectName.Common</packageName>
+  <packageName>ShaCompanyName.ShaProjectName</packageName>
   <stereotypes>
     <stereotype stereotypeDefinitionId="64a1e48f-80e9-49f7-8d32-c048fd05ef59" name="Entity Settings">
       <addedByDefault>true</addedByDefault>
@@ -45,7 +45,7 @@
       <isMapped>false</isMapped>
       <parentFolderId>c3a828f2-afd3-422f-9b05-ff10c441f781</parentFolderId>
       <packageId>b2e5535c-846b-4538-b595-ddbe1eed089d</packageId>
-      <packageName>ShaCompanyName.ShaProjectName.Common</packageName>
+      <packageName>ShaCompanyName.ShaProjectName</packageName>
       <stereotypes>
         <stereotype stereotypeDefinitionId="34163c46-790f-4b68-a3b7-3b92b5c78885" name="Attribute Settings">
           <addedByDefault>true</addedByDefault>
