@@ -1,9 +1,5 @@
 ﻿using Abp.Domain.Entities.Auditing;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shesha.Domain
 {
@@ -13,7 +9,8 @@ namespace Shesha.Domain
 
         public virtual Person PrimaryContact{ get; set; }
 
-        public virtual Organisation Organisation { get; set; }
+        // commented out, has no corresponding column in the DB
+        //public virtual Organisation Organisation { get; set; }
 
         public virtual Account Parent { get; set; }
 
