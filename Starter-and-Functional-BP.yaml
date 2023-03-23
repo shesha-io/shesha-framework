@@ -60,7 +60,12 @@ stages:
               if ("$(System.PullRequest.TargetBranch)" -eq "main"){
                   write-host "PR target is main branch. Setting currentBranch to refs/heads/main"  
                   write-host "##vso[task.setvariable variable=currentBranch]refs/heads/main"
-                  write-host "##vso[task.setvariable variable=versionNo]$(Build.BuildNumber)"
+                  
+                  git fetch --tags
+                  $tag = git describe --tags $(git rev-list --tags --max-count=1 --no-walk $(Build.SourceVersion))
+                  Write-Host "Tag: $tag"
+
+                  write-host "##vso[task.setvariable variable=versionNo]$tag"
               }
               elseif ("$(System.PullRequest.TargetBranch)" -like "refs/heads/releases/*"){
                   write-host "PR target is a release branch. Setting currentBranch to refs/heads/$(System.PullRequest.TargetBranch)"                  
@@ -136,7 +141,7 @@ stages:
         FileVersionNumber: "$(versionNo)"
         InformationalVersion: "$(versionNo)"
         PackageVersion: "$(versionNo)"
-      condition: ne(variables['currentBranch'], 'refs/heads/main')
+      # condition: ne(variables['currentBranch'], 'refs/heads/main')
     - task: DotNetCoreCLI@2
       displayName: dotnet Restore
       inputs:
@@ -205,7 +210,12 @@ stages:
               if ("$(System.PullRequest.TargetBranch)" -eq "main"){
                   write-host "PR target is main branch. Setting currentBranch to refs/heads/main"  
                   write-host "##vso[task.setvariable variable=currentBranch]refs/heads/main"
-                  write-host "##vso[task.setvariable variable=versionNo]$(Build.BuildNumber)"
+                  
+                  git fetch --tags
+                  $tag = git describe --tags $(git rev-list --tags --max-count=1 --no-walk $(Build.SourceVersion))
+                  Write-Host "Tag: $tag"
+
+                  write-host "##vso[task.setvariable variable=versionNo]$tag"
               }
               elseif ("$(System.PullRequest.TargetBranch)" -like "refs/heads/releases/*"){
                   write-host "PR target is a release branch. Setting currentBranch to refs/heads/$(System.PullRequest.TargetBranch)"                  
@@ -281,7 +291,7 @@ stages:
         FileVersionNumber: "$(versionNo)"
         InformationalVersion: "$(versionNo)"
         PackageVersion: "$(versionNo)"
-      condition: ne(variables['currentBranch'], 'refs/heads/main')        
+      # condition: ne(variables['currentBranch'], 'refs/heads/main')        
     - task: DotNetCoreCLI@2
       displayName: dotnet Restore
       inputs:
@@ -347,7 +357,12 @@ stages:
               if ("$(System.PullRequest.TargetBranch)" -eq "main"){
                   write-host "PR target is main branch. Setting currentBranch to refs/heads/main"  
                   write-host "##vso[task.setvariable variable=currentBranch]refs/heads/main"
-                  write-host "##vso[task.setvariable variable=versionNo]$(pack-version)"
+                  
+                  git fetch --tags
+                  $tag = git describe --tags $(git rev-list --tags --max-count=1 --no-walk $(Build.SourceVersion))
+                  Write-Host "Tag: $tag"
+
+                  write-host "##vso[task.setvariable variable=versionNo]$tag"
               }
               elseif ("$(System.PullRequest.TargetBranch)" -like "refs/heads/releases/*"){
                   write-host "PR target is a release branch. Setting currentBranch to refs/heads/$(System.PullRequest.TargetBranch)"                  
