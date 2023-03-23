@@ -67,7 +67,7 @@ stages:
 
                   write-host "##vso[task.setvariable variable=versionNo]$tag"
               }
-              elseif ("$(System.PullRequest.TargetBranch)" -like "refs/heads/releases/*"){
+              elseif ("$(System.PullRequest.TargetBranch)" -like "releases/*"){
                   write-host "PR target is a release branch. Setting currentBranch to refs/heads/$(System.PullRequest.TargetBranch)"                  
                   write-host "##vso[task.setvariable variable=currentBranch]refs/heads/$(System.PullRequest.TargetBranch)"
                   
@@ -217,7 +217,7 @@ stages:
 
                   write-host "##vso[task.setvariable variable=versionNo]$tag"
               }
-              elseif ("$(System.PullRequest.TargetBranch)" -like "refs/heads/releases/*"){
+              elseif ("$(System.PullRequest.TargetBranch)" -like "releases/*"){
                   write-host "PR target is a release branch. Setting currentBranch to refs/heads/$(System.PullRequest.TargetBranch)"                  
                   write-host "##vso[task.setvariable variable=currentBranch]refs/heads/$(System.PullRequest.TargetBranch)"
                   
@@ -364,7 +364,7 @@ stages:
 
                   write-host "##vso[task.setvariable variable=versionNo]$tag"
               }
-              elseif ("$(System.PullRequest.TargetBranch)" -like "refs/heads/releases/*"){
+              elseif ("$(System.PullRequest.TargetBranch)" -like "releases/*"){
                   write-host "PR target is a release branch. Setting currentBranch to refs/heads/$(System.PullRequest.TargetBranch)"                  
                   write-host "##vso[task.setvariable variable=currentBranch]refs/heads/$(System.PullRequest.TargetBranch)"
                   
@@ -488,7 +488,7 @@ stages:
 
                   write-host "##vso[task.setvariable variable=versionNo]$tag"
               }
-              elseif ("$(System.PullRequest.TargetBranch)" -like "refs/heads/releases/*"){
+              elseif ("$(System.PullRequest.TargetBranch)" -like "releases/*"){
                   write-host "PR target is a release branch. Setting currentBranch to refs/heads/$(System.PullRequest.TargetBranch)"                  
                   write-host "##vso[task.setvariable variable=currentBranch]refs/heads/$(System.PullRequest.TargetBranch)"
                   
@@ -612,7 +612,7 @@ stages:
 
                   write-host "##vso[task.setvariable variable=versionNo]$tag"
               }
-              elseif ("$(System.PullRequest.TargetBranch)" -like "refs/heads/releases/*"){
+              elseif ("$(System.PullRequest.TargetBranch)" -like "releases/*"){
                   write-host "PR target is a release branch. Setting currentBranch to refs/heads/$(System.PullRequest.TargetBranch)"                  
                   write-host "##vso[task.setvariable variable=currentBranch]refs/heads/$(System.PullRequest.TargetBranch)"
                   
