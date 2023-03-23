@@ -252,11 +252,11 @@ stages:
               write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
               write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
           }
-          elseif ("$(Build.SourceBranch)" -like "*/main"){
-             write-host "Source Branch should be main here: $(Build.SourceBranch)"
-             write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
-             write-host "##vso[task.setvariable variable=versionNo]$(Build.BuildNumber)"
-          }
+          # elseif ("$(Build.SourceBranch)" -like "*/main"){
+          #    write-host "Source Branch should be main here: $(Build.SourceBranch)"
+          #    write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
+          #    write-host "##vso[task.setvariable variable=versionNo]$(Build.BuildNumber)"
+          # }
         workingDirectory: '$(System.DefaultWorkingDirectory)'
     - task: PowerShell@2
       displayName: Output to console the current branch and version
@@ -399,11 +399,11 @@ stages:
               write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
               write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
           }
-          elseif ("$(Build.SourceBranch)" -like "*/main"){
-             write-host "Source Branch should be main here: $(Build.SourceBranch)"
-             write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
-             write-host "##vso[task.setvariable variable=versionNo]$(Build.BuildNumber)"
-          }
+          # elseif ("$(Build.SourceBranch)" -like "*/main"){
+          #    write-host "Source Branch should be main here: $(Build.SourceBranch)"
+          #    write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
+          #    write-host "##vso[task.setvariable variable=versionNo]$(Build.BuildNumber)"
+          # }
         workingDirectory: 'shesha-functional-tests/adminportal'
     - task: PowerShell@2
       displayName: Output to console the current branch  
@@ -523,11 +523,11 @@ stages:
               write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
               write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
           }
-          elseif ("$(Build.SourceBranch)" -like "*/main"){
-             write-host "Source Branch should be main here: $(Build.SourceBranch)"
-             write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
-             write-host "##vso[task.setvariable variable=versionNo]$(Build.BuildNumber)"
-          }
+          # elseif ("$(Build.SourceBranch)" -like "*/main"){
+          #    write-host "Source Branch should be main here: $(Build.SourceBranch)"
+          #    write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
+          #    write-host "##vso[task.setvariable variable=versionNo]$(Build.BuildNumber)"
+          # }
         workingDirectory: 'shesha-starter/frontend'
     - task: PowerShell@2
       displayName: Output to console the current branch  
@@ -605,7 +605,12 @@ stages:
               if ("$(System.PullRequest.TargetBranch)" -eq "main"){
                   write-host "PR target is main branch. Setting currentBranch to refs/heads/main"  
                   write-host "##vso[task.setvariable variable=currentBranch]refs/heads/main"
-                  write-host "##vso[task.setvariable variable=versionNo]$(pack-version)"
+                  
+                  git fetch --tags
+                  $tag = git describe --tags $(git rev-list --tags --max-count=1 --no-walk $(Build.SourceVersion))
+                  Write-Host "Tag: $tag"
+
+                  write-host "##vso[task.setvariable variable=versionNo]$tag"
               }
               elseif ("$(System.PullRequest.TargetBranch)" -like "refs/heads/releases/*"){
                   write-host "PR target is a release branch. Setting currentBranch to refs/heads/$(System.PullRequest.TargetBranch)"                  
@@ -642,11 +647,11 @@ stages:
               write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
               write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
           }
-          elseif ("$(Build.SourceBranch)" -like "*/main"){
-             write-host "Source Branch should be main here: $(Build.SourceBranch)"
-             write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
-             write-host "##vso[task.setvariable variable=versionNo]$(pack-version)"
-          }
+          # elseif ("$(Build.SourceBranch)" -like "*/main"){
+          #    write-host "Source Branch should be main here: $(Build.SourceBranch)"
+          #    write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
+          #    write-host "##vso[task.setvariable variable=versionNo]$(Build.BuildNumber)"
+          # }
         workingDirectory: '$(System.DefaultWorkingDirectory)'
     - task: PowerShell@2
       displayName: Delete Pipeline and Actions Yaml Files
