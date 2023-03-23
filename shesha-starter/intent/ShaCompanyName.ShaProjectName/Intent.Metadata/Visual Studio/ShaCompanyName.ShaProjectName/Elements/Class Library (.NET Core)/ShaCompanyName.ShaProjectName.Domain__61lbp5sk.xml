@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <class id="3acd8e57-c6da-483e-bc14-1fe0934bfc35" type="Class Library (.NET Core)" typeId="52B49DB5-3EA9-4095-B1A7-DF1AC22D7DAE">
-  <name>ShaCompanyName.ShaProjectName.Common.Domain</name>
-  <display>ShaCompanyName.ShaProjectName.Common.Domain</display>
+  <name>ShaCompanyName.ShaProjectName.Domain</name>
+  <display>ShaCompanyName.ShaProjectName.Domain</display>
   <externalReference>6fefddc1-5be1-44f9-a1a5-74ca9e1ec706</externalReference>
   <isAbstract>false</isAbstract>
   <sort-children>by-type-then-by-name</sort-children>
@@ -34,7 +34,7 @@
       <definitionPackageId>a0636ab7-d3a1-430b-9609-11a18aa3cc7f</definitionPackageId>
       <properties>
         <property name="cb56677d-e132-4397-b2ec-3f47e950a111" display="Language Version" value="default" isActive="true" />
-        <property name="5c953a82-78c4-4986-b204-df9fcbea5242" display="Relative Location" value="src/Module/ShaCompanyName.ShaProjectName.Common.Domain" isActive="true" />
+        <property name="5c953a82-78c4-4986-b204-df9fcbea5242" display="Relative Location" value="src/Module/ShaCompanyName.ShaProjectName.Domain" isActive="true" />
         <property name="415a5406-0517-4c0e-ab60-bc809a23c308" display="Nullable Enabled" value="false" isActive="false" />
         <property name="68a31b13-148b-45da-a6ea-5a6883f86438" display="Nullable" value="enable" isActive="true" />
       </properties>
