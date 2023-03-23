@@ -1,4 +1,4 @@
-# Variable 'artifactName' was defined in the Variables tab - tag test test test test
+# Variable 'artifactName' was defined in the Variables tab - This is from my fix branch
 # Agent Queue 'Azure Pipelines' was used with unrecognized Agent Specification, vmImage property must be specified to determine image - https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops&tabs=yaml#software
 variables:
 - name: BuildParameters.solution1
@@ -102,11 +102,11 @@ stages:
               write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
               write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
           }
-          elseif ("$(Build.SourceBranch)" -like "*/main"){
-             write-host "Source Branch should be main here: $(Build.SourceBranch)"
-             write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
-             write-host "##vso[task.setvariable variable=versionNo]$(Build.BuildNumber)"
-          }
+          # elseif ("$(Build.SourceBranch)" -like "*/main"){
+          #    write-host "Source Branch should be main here: $(Build.SourceBranch)"
+          #    write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
+          #    write-host "##vso[task.setvariable variable=versionNo]$(Build.BuildNumber)"
+          # }
         workingDirectory: '$(System.DefaultWorkingDirectory)'      
     - task: PowerShell@2
       displayName: Output to console the current branch and version
@@ -196,7 +196,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-         # Write your PowerShell commands here.
+          # Write your PowerShell commands here.
           write-host "The build number is: $(Build.BuildNumber)"
           write-host "The source branch is: $(Build.SourceBranch)"
 
@@ -252,11 +252,11 @@ stages:
               write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
               write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
           }
-          elseif ("$(Build.SourceBranch)" -like "*/main"){
-             write-host "Source Branch should be main here: $(Build.SourceBranch)"
-             write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
-             write-host "##vso[task.setvariable variable=versionNo]$(Build.BuildNumber)"
-          }
+          # elseif ("$(Build.SourceBranch)" -like "*/main"){
+          #    write-host "Source Branch should be main here: $(Build.SourceBranch)"
+          #    write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
+          #    write-host "##vso[task.setvariable variable=versionNo]$(Build.BuildNumber)"
+          # }
         workingDirectory: '$(System.DefaultWorkingDirectory)'
     - task: PowerShell@2
       displayName: Output to console the current branch and version
@@ -336,14 +336,14 @@ stages:
   - job: Job_3
     displayName: Build_Functional_Shesha_AdminPortal
     pool:
-      vmImage: ubuntu-latest
+      vmImage: windows-latest
     steps:
     - task: PowerShell@2
       displayName: Check to establish if this pipeline was triggered from a tag  
       inputs:
         targetType: 'inline'
         script: |
-         # Write your PowerShell commands here.
+          # Write your PowerShell commands here.
           write-host "The build number is: $(Build.BuildNumber)"
           write-host "The source branch is: $(Build.SourceBranch)"
 
@@ -399,11 +399,11 @@ stages:
               write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
               write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
           }
-          elseif ("$(Build.SourceBranch)" -like "*/main"){
-             write-host "Source Branch should be main here: $(Build.SourceBranch)"
-             write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
-             write-host "##vso[task.setvariable variable=versionNo]$(pack-version)"
-          }
+          # elseif ("$(Build.SourceBranch)" -like "*/main"){
+          #    write-host "Source Branch should be main here: $(Build.SourceBranch)"
+          #    write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
+          #    write-host "##vso[task.setvariable variable=versionNo]$(Build.BuildNumber)"
+          # }
         workingDirectory: 'shesha-functional-tests/adminportal'
     - task: PowerShell@2
       displayName: Output to console the current branch  
@@ -460,14 +460,14 @@ stages:
   - job: Job_4
     displayName: Build_Starter_Shesha_AdminPortal
     pool:
-      vmImage: ubuntu-latest
+      vmImage: windows-latest
     steps:
     - task: PowerShell@2
       displayName: Check to establish if this pipeline was triggered from a tag  
       inputs:
         targetType: 'inline'
         script: |
-         # Write your PowerShell commands here.
+          # Write your PowerShell commands here.
           write-host "The build number is: $(Build.BuildNumber)"
           write-host "The source branch is: $(Build.SourceBranch)"
 
@@ -481,7 +481,12 @@ stages:
               if ("$(System.PullRequest.TargetBranch)" -eq "main"){
                   write-host "PR target is main branch. Setting currentBranch to refs/heads/main"  
                   write-host "##vso[task.setvariable variable=currentBranch]refs/heads/main"
-                  write-host "##vso[task.setvariable variable=versionNo]$(pack-version)"
+                  
+                  git fetch --tags
+                  $tag = git describe --tags $(git rev-list --tags --max-count=1 --no-walk $(Build.SourceVersion))
+                  Write-Host "Tag: $tag"
+
+                  write-host "##vso[task.setvariable variable=versionNo]$tag"
               }
               elseif ("$(System.PullRequest.TargetBranch)" -like "refs/heads/releases/*"){
                   write-host "PR target is a release branch. Setting currentBranch to refs/heads/$(System.PullRequest.TargetBranch)"                  
@@ -518,11 +523,11 @@ stages:
               write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
               write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
           }
-          elseif ("$(Build.SourceBranch)" -like "*/main"){
-             write-host "Source Branch should be main here: $(Build.SourceBranch)"
-             write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
-             write-host "##vso[task.setvariable variable=versionNo]$(pack-version)"
-          }
+          # elseif ("$(Build.SourceBranch)" -like "*/main"){
+          #    write-host "Source Branch should be main here: $(Build.SourceBranch)"
+          #    write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
+          #    write-host "##vso[task.setvariable variable=versionNo]$(Build.BuildNumber)"
+          # }
         workingDirectory: 'shesha-starter/frontend'
     - task: PowerShell@2
       displayName: Output to console the current branch  
@@ -579,14 +584,14 @@ stages:
   - job: Job_5
     displayName: Prepare Release if published
     pool:
-      vmImage: ubuntu-latest
+      vmImage: windows-latest
     steps:
     - task: PowerShell@2
       displayName: Check to establish if this pipeline was triggered from a tag  
       inputs:
         targetType: 'inline'
         script: |
-         # Write your PowerShell commands here.
+          # Write your PowerShell commands here.
           write-host "The build number is: $(Build.BuildNumber)"
           write-host "The source branch is: $(Build.SourceBranch)"
 
@@ -600,7 +605,12 @@ stages:
               if ("$(System.PullRequest.TargetBranch)" -eq "main"){
                   write-host "PR target is main branch. Setting currentBranch to refs/heads/main"  
                   write-host "##vso[task.setvariable variable=currentBranch]refs/heads/main"
-                  write-host "##vso[task.setvariable variable=versionNo]$(pack-version)"
+                  
+                  git fetch --tags
+                  $tag = git describe --tags $(git rev-list --tags --max-count=1 --no-walk $(Build.SourceVersion))
+                  Write-Host "Tag: $tag"
+
+                  write-host "##vso[task.setvariable variable=versionNo]$tag"
               }
               elseif ("$(System.PullRequest.TargetBranch)" -like "refs/heads/releases/*"){
                   write-host "PR target is a release branch. Setting currentBranch to refs/heads/$(System.PullRequest.TargetBranch)"                  
@@ -637,11 +647,11 @@ stages:
               write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
               write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
           }
-          elseif ("$(Build.SourceBranch)" -like "*/main"){
-             write-host "Source Branch should be main here: $(Build.SourceBranch)"
-             write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
-             write-host "##vso[task.setvariable variable=versionNo]$(pack-version)"
-          }
+          # elseif ("$(Build.SourceBranch)" -like "*/main"){
+          #    write-host "Source Branch should be main here: $(Build.SourceBranch)"
+          #    write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
+          #    write-host "##vso[task.setvariable variable=versionNo]$(Build.BuildNumber)"
+          # }
         workingDirectory: '$(System.DefaultWorkingDirectory)'
     - task: PowerShell@2
       displayName: Delete Pipeline and Actions Yaml Files
