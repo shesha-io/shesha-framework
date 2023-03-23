@@ -51,7 +51,9 @@ stages:
         script: |
           # Write your PowerShell commands here.
           write-host "The build number is: $(Build.BuildNumber)"
-          write-host $(Build.SourceBranch)
+          write-host "The source branch is: $(Build.SourceBranch)"
+          write-host "The target branch for a pull request is: $(System.PullRequest.TargetBranch)"
+
           $branch = 'Unknown'
 
           write-host "This is the commit id using the pre-defined variable Build.SourceVersion: $(Build.SourceVersion)"
