@@ -100,7 +100,7 @@ const FormPersisterProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
 
     const dto: FormUpdateMarkupInput = {
       id: state.formProps.id,
-      markup: JSON.stringify(payload, null, 2),
+      markup: JSON.stringify(payload),
     };
 
     await saveFormHttp(dto, {})
