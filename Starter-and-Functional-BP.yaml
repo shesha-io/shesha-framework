@@ -102,11 +102,11 @@ stages:
               write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
               write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
           }
-          elseif ("$(Build.SourceBranch)" -like "*/main"){
-             write-host "Source Branch should be main here: $(Build.SourceBranch)"
-             write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
-             write-host "##vso[task.setvariable variable=versionNo]$(Build.BuildNumber)"
-          }
+          # elseif ("$(Build.SourceBranch)" -like "*/main"){
+          #    write-host "Source Branch should be main here: $(Build.SourceBranch)"
+          #    write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
+          #    write-host "##vso[task.setvariable variable=versionNo]$(Build.BuildNumber)"
+          # }
         workingDirectory: '$(System.DefaultWorkingDirectory)'      
     - task: PowerShell@2
       displayName: Output to console the current branch and version
@@ -196,7 +196,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-         # Write your PowerShell commands here.
+          # Write your PowerShell commands here.
           write-host "The build number is: $(Build.BuildNumber)"
           write-host "The source branch is: $(Build.SourceBranch)"
 
@@ -343,7 +343,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-         # Write your PowerShell commands here.
+          # Write your PowerShell commands here.
           write-host "The build number is: $(Build.BuildNumber)"
           write-host "The source branch is: $(Build.SourceBranch)"
 
@@ -467,7 +467,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-         # Write your PowerShell commands here.
+          # Write your PowerShell commands here.
           write-host "The build number is: $(Build.BuildNumber)"
           write-host "The source branch is: $(Build.SourceBranch)"
 
@@ -591,7 +591,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-         # Write your PowerShell commands here.
+          # Write your PowerShell commands here.
           write-host "The build number is: $(Build.BuildNumber)"
           write-host "The source branch is: $(Build.SourceBranch)"
 
