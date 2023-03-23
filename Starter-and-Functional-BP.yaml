@@ -137,6 +137,7 @@ stages:
         FileVersionNumber: "$(versionNo)"
         InformationalVersion: "$(versionNo)"
         PackageVersion: "$(versionNo)"
+      condition: ne(variables['currentBranch'], 'refs/heads/main')
     - task: DotNetCoreCLI@2
       displayName: dotnet Restore
       inputs:
@@ -281,6 +282,7 @@ stages:
         FileVersionNumber: "$(versionNo)"
         InformationalVersion: "$(versionNo)"
         PackageVersion: "$(versionNo)"
+      condition: ne(variables['currentBranch'], 'refs/heads/main')        
     - task: DotNetCoreCLI@2
       displayName: dotnet Restore
       inputs:
