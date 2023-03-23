@@ -9,16 +9,14 @@ variables:
   value: release
 - name: pack-version
   value: ""
-- name: isMain
-  value: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
+# - name: isMain
+#   value: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
 
 pr:
   branches:
-    exclude:
-    - main
     include:
     - releases/*
-
+    - main    
 trigger:
   tags:
     include:
@@ -26,8 +24,8 @@ trigger:
   branches:
     include:
     - releases/*
-    exclude:
-    - main
+    - main    
+    
 pool: 
   name: Azure Pipelines
   vmImage1: windows-latest
@@ -93,7 +91,7 @@ stages:
               write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
               write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
           }
-          else{
+          elseif ("$(Build.SourceBranch)" -like "*/main"){
              write-host "Source Branch should be main here: $(Build.SourceBranch)"
              write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
              write-host "##vso[task.setvariable variable=versionNo]$(pack-version)"
@@ -230,7 +228,7 @@ stages:
               write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
               write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
           }
-          else{
+          elseif ("$(Build.SourceBranch)" -like "*/main"){
              write-host "Source Branch should be main here: $(Build.SourceBranch)"
              write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
              write-host "##vso[task.setvariable variable=versionNo]$(pack-version)"
@@ -364,7 +362,7 @@ stages:
               write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
               write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
           }
-          else{
+          elseif ("$(Build.SourceBranch)" -like "*/main"){
              write-host "Source Branch should be main here: $(Build.SourceBranch)"
              write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
              write-host "##vso[task.setvariable variable=versionNo]$(pack-version)"
@@ -476,7 +474,7 @@ stages:
               write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
               write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
           }
-          else{
+          elseif ("$(Build.SourceBranch)" -like "*/main"){
              write-host "Source Branch should be main here: $(Build.SourceBranch)"
              write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
              write-host "##vso[task.setvariable variable=versionNo]$(pack-version)"
