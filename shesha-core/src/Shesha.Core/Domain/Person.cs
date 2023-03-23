@@ -125,6 +125,6 @@ namespace Shesha.Domain
 
         public virtual Organisation PrimaryOrganisation { get; set; }
         public virtual Account PrimaryAccount { get; set; }
-        public virtual Site PrimaryType { get; set; }
+        public virtual Site PrimarySite { get; set; }
     }
 }

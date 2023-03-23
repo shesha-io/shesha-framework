@@ -32,7 +32,7 @@ namespace Shesha.Domain
 
         public virtual Organisation Organisation { get; set; }
 
-        public virtual decimal? Latidude { get; set; }
+        public virtual decimal? Latitude { get; set; }
 
         public virtual decimal? Longitude { get; set; }
 
