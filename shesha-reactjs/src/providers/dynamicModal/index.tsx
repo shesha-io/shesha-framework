@@ -71,16 +71,17 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
       executer: (actionArgs, context) => {
         const modalId = nanoid();
 
+        const { formMode, ...restArguments } = actionArgs;
+
         const initialValues = evaluateKeyValuesToObject(actionArgs.additionalProperties, context ?? {});
         const parentFormValues = context?.data ?? {};
 
         const { modalWidth, customWidth, widthUnits } = actionArgs;
 
-        //console.log('modal initial values', initialValues);
-
         return new Promise((resolve, _reject) => {
           const modalProps: IModalProps = {
-            ...actionArgs,
+            ...restArguments,
+            mode: formMode,
             id: modalId,
             title: actionArgs.modalTitle,
             width: modalWidth === 'custom' && customWidth ? `${customWidth}${widthUnits}` : modalWidth,

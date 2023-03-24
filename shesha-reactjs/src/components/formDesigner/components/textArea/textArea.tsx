@@ -79,7 +79,9 @@ const TextField: IToolboxComponent<ITextAreaProps> = {
       setGlobalState,
     };
 
-    const isObjectData = typeof form?.getFieldValue(model.name) === 'object';
+    const currentValue = form?.getFieldValue(model.name);
+    const showAsJson = Boolean(currentValue) && typeof currentValue === 'object';
+
     return (
       <ConfigurableFormItem
         model={model}
@@ -88,12 +90,12 @@ const TextField: IToolboxComponent<ITextAreaProps> = {
           evaluateString(model?.initialValue, { formData, formMode, globalState })
         }
       >
-        {isObjectData ? (
+        {showAsJson ? (
           <JsonTextArea textAreaProps={textAreaProps} customEventHandler={customEventHandler(eventProps)} />
         ) : isReadOnly ? (
           <ReadOnlyDisplayFormItem disabled={disabled} />
         ) : (
-          <Input.TextArea rows={2} {...textAreaProps} disabled={disabled} {...customEventHandler(eventProps)} />
+          <Input.TextArea rows={2} {...textAreaProps} disabled={disabled ? disabled : undefined} {...customEventHandler(eventProps)} />
         )}
       </ConfigurableFormItem>
     );

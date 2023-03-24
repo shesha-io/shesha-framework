@@ -1,7 +1,7 @@
 import { nanoid } from "nanoid";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { GetDataError, useGet } from "restful-react";
-import { componentsTreeToFlatStructure, IMatchData, IToolboxComponents, useAppConfigurator, useMetadataDispatcher, useSheshaApplication } from "../..";
+import { componentsTreeToFlatStructure, getMatchData, IMatchData, IToolboxComponents, useAppConfigurator, useMetadataDispatcher, useSheshaApplication } from "../..";
 import { IAjaxResponseBase } from "../../interfaces/ajaxResponse";
 import { IErrorInfo } from "../../interfaces/errorInfo";
 import { IAbpWrappedGetEntityResponse } from "../../interfaces/gql";
@@ -516,14 +516,6 @@ export const useFormData = (args: UseFormDataArguments): UseFormDataResult => {
         actionName: StandardEntityActions.read,
         formSettings: formSettings,
         mappings: urlEvaluationData,
-        /*
-        [
-            //{ match: 'data', data: formData }, NOTE: form data must not be used here!
-            { match: 'parentFormValues', data: parentFormValues },
-            { match: 'globalState', data: globalState },
-            { match: 'query', data: queryParamsFromAddressBar },
-        ]        
-        */
     });
 
     const { getMetadata, getContainerProperties } = useMetadataDispatcher();
@@ -562,38 +554,45 @@ export const useFormData = (args: UseFormDataArguments): UseFormDataResult => {
 
             // fetch data and resolve
             queryParams = { ...queryParams, properties: gqlFields };
+            if (!queryParams['id'] && urlEvaluationData){
+                const initialValues = getMatchData(urlEvaluationData, 'initialValues');
+                if (initialValues?.id)
+                    queryParams['id'] = initialValues?.id;
+            }
 
-            const dataFetcher = () => RestfulShesha.get<EntityAjaxResponse, any, any, any>(
-                getDataUrl,
-                queryParams,
-                { base: backendUrl, headers: httpHeaders }
-            ).then(dataResponse => {
-                if (requestUidRef.current !== requestId)
-                    return null; // todo: cancel data request
-
-                if (dataResponse.success) {
-                    setState(prev => ({
-                        ...prev,
-                        loadingState: 'ready',
-                        loaderHint: null,
-                        data: dataResponse.result,
-                    }));
-                } else {
-                    setState(prev => ({
-                        ...prev,
-                        loadingState: 'failed',
-                        loaderHint: null,
-                        data: null,
-                        error: dataResponse.error
-                    }));
-                }
-                return dataResponse;
-            })
-                .catch(e => {
-                    const error = (e as IAjaxResponseBase)?.error;
-                    setState(prev => ({ ...prev, loadingState: 'failed', loaderHint: null, error: error }));
-                    return null;
-                });
+            const dataFetcher = () => {
+                return RestfulShesha.get<EntityAjaxResponse, any, any, any>(
+                    getDataUrl,
+                    queryParams,
+                    { base: backendUrl, headers: httpHeaders }
+                ).then(dataResponse => {
+                    if (requestUidRef.current !== requestId)
+                        return null; // todo: cancel data request
+    
+                    if (dataResponse.success) {
+                        setState(prev => ({
+                            ...prev,
+                            loadingState: 'ready',
+                            loaderHint: null,
+                            data: dataResponse.result,
+                        }));
+                    } else {
+                        setState(prev => ({
+                            ...prev,
+                            loadingState: 'failed',
+                            loaderHint: null,
+                            data: null,
+                            error: dataResponse.error
+                        }));
+                    }
+                    return dataResponse;
+                })
+                    .catch(e => {
+                        const error = (e as IAjaxResponseBase)?.error;
+                        setState(prev => ({ ...prev, loadingState: 'failed', loaderHint: null, error: error }));
+                        return null;
+                    });
+            }
 
             if (!lazy) {
                 setState(prev => ({ ...prev, loaderHint: 'Fetching data...', dataFetcher: dataFetcher }));

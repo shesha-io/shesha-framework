@@ -69,7 +69,7 @@ export const ChildDataTableSettings: FC<IChildDataTableSettingsProps> = ({
       </Form.Item>
 
       <Form.Item name="isInline" label="Is Button Inline" valuePropName="checked">
-        <Checkbox />
+        <Checkbox disabled={readOnly} />
       </Form.Item>
 
       <SectionSeparator title="Toolbar" />

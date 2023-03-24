@@ -3,6 +3,7 @@ using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Runtime.Validation;
+using DocumentFormat.OpenXml.ExtendedProperties;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Application.Services.Dto;
 using Shesha.ConfigurationItems.Cache;
@@ -185,17 +186,15 @@ namespace Shesha.ConfigurationItems
 
         private IConfigurationItemManager GetSingleManager(ConfigurationItemBase item) 
         {
-            throw new NotImplementedException();
-            /*
-            var allManagers = IocManager.ResolveAll<IConfigurationItemManager>();
-            var managers = allManagers.Where(m => m.ItemType == itemType).ToList();
-            if (!managers.Any())
-                throw new ConfigurationItemManagerNotFoundException(itemType);
-            if (managers.Count() > 1)
-                throw new AmbiguousConfigurationItemManagersException(itemType);
+            var managerType = typeof(IConfigurationItemManager<>).MakeGenericType(item.GetType());
+            var manager = IocManager.Resolve(managerType) as IConfigurationItemManager;
 
-            return managers.First();
-            */
+            var allManagers = IocManager.Resolve<IConfigurationItemManager>();
+
+            if (manager == null)
+                throw new ConfigurationItemManagerNotFoundException(item.GetType().Name);
+
+            return manager as IConfigurationItemManager;
         }
 
 

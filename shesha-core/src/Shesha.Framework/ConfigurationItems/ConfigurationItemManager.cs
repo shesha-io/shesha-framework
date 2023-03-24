@@ -120,45 +120,39 @@ namespace Shesha.ConfigurationItems
             await Repository.DeleteAsync(f => f.Name == item.Name && f.Module == item.Module && !f.IsDeleted);
         }
 
-        public Task UpdateStatusAsync(ConfigurationItemBase item, ConfigurationItemVersionStatus status)
+        public async Task UpdateStatusAsync(ConfigurationItemBase item, ConfigurationItemVersionStatus status)
         {
-            throw new NotImplementedException();
+            await UpdateStatusAsync(item as TItem, status);
         }
 
-        public Task<ConfigurationItemBase> CopyAsync(ConfigurationItemBase item, CopyItemInput input)
+        public async Task<ConfigurationItemBase> CopyAsync(ConfigurationItemBase item, CopyItemInput input)
         {
-            throw new NotImplementedException();
+            return await CopyAsync(item as TItem, input) as ConfigurationItemBase;
         }
 
-        public Task CancelVersoinAsync(ConfigurationItemBase item)
+        public async Task CancelVersoinAsync(ConfigurationItemBase item)
         {
-            throw new NotImplementedException();
+            await CancelVersoinAsync(item as TItem);
         }
 
-        public Task MoveToModuleAsync(ConfigurationItemBase item, MoveItemToModuleInput input)
+        public async Task MoveToModuleAsync(ConfigurationItemBase item, MoveItemToModuleInput input)
         {
-            throw new NotImplementedException();
+            await MoveToModuleAsync(item as TItem, input);
         }
 
-        public Task<ConfigurationItemBase> CreateNewVersionAsync(ConfigurationItemBase item)
+        public async Task<ConfigurationItemBase> CreateNewVersionAsync(ConfigurationItemBase item)
         {
-            throw new NotImplementedException();
+            return await CreateNewVersionAsync(item as TItem) as ConfigurationItemBase;
         }
 
-        public Task DeleteAllVersionsAsync(ConfigurationItemBase item)
+        public async Task DeleteAllVersionsAsync(ConfigurationItemBase item)
         {
-            throw new NotImplementedException();
+            await DeleteAllVersionsAsync(item as TItem);
         }
 
-        public Task<IConfigurationItemDto> MapToDtoAsync(ConfigurationItemBase item)
+        public async Task<IConfigurationItemDto> MapToDtoAsync(ConfigurationItemBase item)
         {
-            throw new NotImplementedException();
+            return await MapToDtoAsync(item as TItem) as IConfigurationItemDto;
         }
-
-        #region abstraction layer
-
-
-
-        #endregion
     }
 }

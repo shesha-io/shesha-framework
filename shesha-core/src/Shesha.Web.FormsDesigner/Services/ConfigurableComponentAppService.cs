@@ -23,8 +23,6 @@ namespace Shesha.Web.FormsDesigner.Services
     /// </summary>
     public class ConfigurableComponentAppService : SheshaCrudServiceBase<ConfigurableComponent, ConfigurableComponentDto, Guid, FilteredPagedAndSortedResultRequestDto, CreateConfigurableComponentDto, UpdateConfigurableComponentDto, GetConfigurableComponentByIdInput>, IConfigurableComponentAppService
     {
-        private readonly IConfigurableComponentStore _componentStore;
-
         private readonly IRepository<Module, Guid> _moduleRepository;
         private readonly IRepository<FrontEndApp, Guid> _frontEndAppRepository;        
         private readonly IConfigurationFrameworkRuntime _cfRuntime;
@@ -35,13 +33,11 @@ namespace Shesha.Web.FormsDesigner.Services
         /// </summary>
         public ConfigurableComponentAppService(
             IRepository<ConfigurableComponent, Guid> repository,
-            IConfigurableComponentStore componentStore,
             IRepository<Module, Guid> moduleRepository,
             IRepository<FrontEndApp, Guid> frontEndAppRepository,
             IConfigurationFrameworkRuntime cfRuntime,
             IConfigurationItemClientSideCache clientSideCache) : base(repository)
         {
-            _componentStore = componentStore;
             _moduleRepository = moduleRepository;
             _frontEndAppRepository = frontEndAppRepository;
             _cfRuntime = cfRuntime;

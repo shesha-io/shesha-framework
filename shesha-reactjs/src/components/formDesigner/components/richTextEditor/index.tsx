@@ -6,12 +6,14 @@ import { IToolboxComponent } from '../../../../interfaces/formDesigner';
 import { FormMarkup } from '../../../../providers/form/models';
 import settingsFormJson from './settingsForm.json';
 import RichTextEditor from '../../../richTextEditor';
-import { useForm, useFormData } from '../../../..';
+import { useDeepCompareMemoKeepReference, useForm, useFormData } from '../../../..';
 import { IRichTextEditorProps } from './interfaces';
 import { getStyle } from '../../../../providers/form/utils';
 import { IJoditEditorProps } from '../../../richTextEditor/joditEditor';
 
 const settingsForm = settingsFormJson as FormMarkup;
+
+type PartialRichTextEditorConfig = Partial<IJoditEditorProps['config']>;
 
 const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
   type: 'richTextEditor',
@@ -25,27 +27,29 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
 
     const readOnly = formMode === 'readonly' || model.readOnly;
 
-    const config: Partial<IJoditEditorProps['config']> = {
-      toolbar: model?.toolbar,
-      preset: model?.preset,
-      textIcons: model?.textIcons,
-      toolbarButtonSize: model?.toolbarButtonSize,
-      theme: model?.theme,
-      iframe: model?.iframe,
-      direction: model?.direction,
-      disablePlugins: model?.disablePlugins?.join(',') || '',
-      height: model?.height,
-      width: model?.width,
-      readonly: readOnly || disabled,
-      style: getStyle(model?.style, formData),
-
-      defaultActionOnPaste: 'insert_as_html',
-      enter: 'br',
-      editHTMLDocumentMode: false,
-      enterBlock: 'div',
-      colorPickerDefaultTab: 'color',
-    };
-
+    const config = useDeepCompareMemoKeepReference<PartialRichTextEditorConfig>(() => {
+      const typedConfig: PartialRichTextEditorConfig = {
+        toolbar: model?.toolbar,
+        preset: model?.preset,
+        textIcons: model?.textIcons,
+        toolbarButtonSize: model?.toolbarButtonSize,
+        theme: model?.theme,
+        iframe: model?.iframe,
+        direction: model?.direction,
+        disablePlugins: model?.disablePlugins?.join(',') || '',
+        height: model?.height,
+        width: model?.width,
+        readonly: readOnly || disabled,
+        style: getStyle(model?.style, formData),
+  
+        defaultActionOnPaste: 'insert_as_html',
+        enter: 'br',
+        editHTMLDocumentMode: false,
+        enterBlock: 'div',
+        colorPickerDefaultTab: 'color',
+      };
+      return typedConfig;
+    }, [model, readOnly]);
     return (
       <ConfigurableFormItem model={model}>
         <RichTextEditor config={config} />

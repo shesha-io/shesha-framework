@@ -1,6 +1,8 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
+using Abp.Events.Bus.Entities;
+using Abp.Events.Bus.Handlers;
 using Abp.Reflection;
 using Castle.Core.Logging;
 using Hangfire;
@@ -22,6 +24,13 @@ namespace Shesha.Scheduler
 {
     /// inheritedDoc
     public class ScheduledJobManager: IScheduledJobManager, ITransientDependency
+        , IAsyncEventHandler<EntityCreatedEventData<ScheduledJob>>
+        , IAsyncEventHandler<EntityDeletedEventData<ScheduledJob>>
+        , IAsyncEventHandler<EntityUpdatedEventData<ScheduledJob>>
+        
+        , IAsyncEventHandler<EntityCreatedEventData<ScheduledJobTrigger>>
+        , IAsyncEventHandler<EntityDeletedEventData<ScheduledJobTrigger>>
+        , IAsyncEventHandler<EntityUpdatedEventData<ScheduledJobTrigger>>
     {
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IRepository<ScheduledJobTrigger, Guid> _triggerRepository;
@@ -152,5 +161,51 @@ namespace Shesha.Scheduler
             var jobInstance = _iocManager.Resolve(jobType) as ScheduledJobBase;
             return jobInstance;
         }
+
+        private async Task SyncWithJobManagerAsync() 
+        {
+            using (var uow = _unitOfWorkManager.Begin())
+            {
+                // sync with Hangfire
+                await EnqueueAllAsync();
+
+                await uow.CompleteAsync();
+            }
+        }
+
+        #region events
+
+        public async Task HandleEventAsync(EntityCreatedEventData<ScheduledJob> eventData)
+        {
+            await SyncWithJobManagerAsync();
+        }
+
+        [UnitOfWork]
+        public async Task HandleEventAsync(EntityDeletedEventData<ScheduledJob> eventData)
+        {
+            await SyncWithJobManagerAsync();
+        }
+
+        [UnitOfWork]
+        public async Task HandleEventAsync(EntityUpdatedEventData<ScheduledJob> eventData)
+        {
+            await SyncWithJobManagerAsync();
+        }
+
+        public async Task HandleEventAsync(EntityCreatedEventData<ScheduledJobTrigger> eventData)
+        {
+            await SyncWithJobManagerAsync();
+        }
+
+        public async Task HandleEventAsync(EntityDeletedEventData<ScheduledJobTrigger> eventData)
+        {
+            await SyncWithJobManagerAsync();
+        }
+
+        public async Task HandleEventAsync(EntityUpdatedEventData<ScheduledJobTrigger> eventData)
+        {
+            await SyncWithJobManagerAsync();
+        }
+        #endregion
     }
 }
