@@ -1,3 +1,10 @@
+param(
+    [string]$PipeBuildNumber,
+    [string]$PipeSourceBranch,
+    [string]$PipeSourceVersion,
+    [string]$PipeTargetBranch
+)
+
 write-host "The build number is: $PipeBuildNumber"
 write-host "The source branch is: $PipeSourceBranch"
 
