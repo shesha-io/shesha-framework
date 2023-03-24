@@ -1,4 +1,12 @@
 # Write your PowerShell commands here.
+
+if (-not $env:System_PullRequest_TargetBranch -and $env:System_PullRequest_TargetBranch) {
+    $targetBranch = $env:System_PullRequest_TargetBranch
+    Write-Host "Target branch: $targetBranch"
+} else {
+    Write-Host "Target branch is not available."
+}
+
 write-host "The build number is: $(Build.BuildNumber)"
 write-host "The source branch is: $(Build.SourceBranch)"
 

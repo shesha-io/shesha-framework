@@ -45,7 +45,8 @@ stages:
       displayName: Check to establish if this pipeline was triggered from a tag
       inputs:
         filePath: 'ReleaseFlow.ps1'
-        workingDirectory: '$(System.DefaultWorkingDirectory)'      
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        arguments: '-PipeBuildNumber "$(Build.BuildNumber)" -PipeSourceBranch "$(Build.SourceBranch)" -PipeSourceVersion "$(Build.SourceVersion)" -PipeTargetBranch "$(System.PullRequest.TargetBranch)"'            
     - task: PowerShell@2
       displayName: Output to console the current branch and version
       inputs:
@@ -134,6 +135,7 @@ stages:
       inputs:
         filePath: 'ReleaseFlow.ps1'
         workingDirectory: '$(System.DefaultWorkingDirectory)'    
+        arguments: '-PipeBuildNumber "$(Build.BuildNumber)" -PipeSourceBranch "$(Build.SourceBranch)" -PipeSourceVersion "$(Build.SourceVersion)" -PipeTargetBranch "$(System.PullRequest.TargetBranch)"'
     - task: PowerShell@2
       displayName: Output to console the current branch and version
       inputs:
@@ -219,6 +221,7 @@ stages:
       inputs:
         filePath: 'ReleaseFlow.ps1'
         workingDirectory: '$(System.DefaultWorkingDirectory)'
+        arguments: '-PipeBuildNumber "$(Build.BuildNumber)" -PipeSourceBranch "$(Build.SourceBranch)" -PipeSourceVersion "$(Build.SourceVersion)" -PipeTargetBranch "$(System.PullRequest.TargetBranch)"'        
     - task: PowerShell@2
       displayName: Output to console the current branch  
       inputs:
@@ -281,6 +284,7 @@ stages:
       inputs:
         filePath: 'ReleaseFlow.ps1'
         workingDirectory: '$(System.DefaultWorkingDirectory)'
+        arguments: '-PipeBuildNumber "$(Build.BuildNumber)" -PipeSourceBranch "$(Build.SourceBranch)" -PipeSourceVersion "$(Build.SourceVersion)" -PipeTargetBranch "$(System.PullRequest.TargetBranch)"'        
     - task: PowerShell@2
       displayName: Output to console the current branch  
       inputs:
@@ -343,6 +347,7 @@ stages:
       inputs:
         filePath: 'ReleaseFlow.ps1'
         workingDirectory: '$(System.DefaultWorkingDirectory)'
+        arguments: '-PipeBuildNumber "$(Build.BuildNumber)" -PipeSourceBranch "$(Build.SourceBranch)" -PipeSourceVersion "$(Build.SourceVersion)" -PipeTargetBranch "$(System.PullRequest.TargetBranch)"'        
     - task: PowerShell@2
       displayName: Delete Pipeline and Actions Yaml Files
       inputs:
