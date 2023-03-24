@@ -64,6 +64,7 @@ import QueryBuilderComponent from '../../../components/formDesigner/components/q
 import Radio from '../../../components/formDesigner/components/radio/radio';
 import Rate from '../../../components/formDesigner/components/rate';
 import ReferenceListAutocompleteComponent from '../../../components/formDesigner/components/referenceListAutocomplete';
+import RefListStatusComponent from '../../../components/formDesigner/components/refListStatus';
 import RichTextEditor from '../../../components/formDesigner/components/richTextEditor';
 import ScheduledJobExecutionLog from '../../../components/formDesigner/components/scheduledJobExecutionLog/scheduledJobExecutionLog';
 import Section from '../../../components/formDesigner/components/section';
@@ -120,6 +121,7 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
       PropertyAutocomplete,
       QueryBuilderComponent,
       ReferenceListAutocompleteComponent,
+      RefListStatusComponent,
       RichTextEditor,
       ScheduledJobExecutionLog,
       StatusTag,
