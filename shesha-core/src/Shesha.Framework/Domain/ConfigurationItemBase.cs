@@ -11,8 +11,6 @@ namespace Shesha.Domain
     /// </summary>
     public class ConfigurationItemBase: ConfigurationItem, IConfigurationItem
     {
-        public virtual string ItemType { get; }
-
         public virtual Task<IList<ConfigurationItemBase>> GetDependenciesAsync()
         {
             return Task.FromResult<IList<ConfigurationItemBase>>(new List<ConfigurationItemBase>());
