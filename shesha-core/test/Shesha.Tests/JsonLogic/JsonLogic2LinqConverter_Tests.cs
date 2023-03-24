@@ -969,6 +969,78 @@ namespace Shesha.Tests.JsonLogic
             Assert.NotNull(data);
         }
 
+        [Fact]
+        public void EntityReference_IsEmpty_Convert_Test()
+        {
+            var expression = ConvertToExpression<ShaRolePermission>(@"{
+  ""and"": [
+    {
+      ""!"": {
+        ""var"": ""shaRole""
+      }
+    }
+  ]
+}");
+
+            Assert.Equal(@"ent => (ent.ShaRole == null)", expression.ToString());
+        }
+
+
+        private readonly string _entityReference_IsNull_expression = @"{
+  ""and"": [
+    {
+      ""=="": [
+        {
+          ""var"": ""shaRole""
+        },
+        null
+      ]
+    }
+  ]
+}";
+        [Fact]
+        public void EntityReference_IsNull_Convert()
+        {
+            var expression = ConvertToExpression<ShaRolePermission>(_entityReference_IsNull_expression);
+
+            Assert.Equal($@"ent => (ent.ShaRole == null)", expression.ToString());
+        }
+
+        [Fact]
+        public async Task EntityReference_IsNull_Fetch()
+        {
+            var data = await TryFetchData<ShaRolePermission, Guid>(_entityReference_IsNull_expression);
+            Assert.NotNull(data);
+        }
+
+        private readonly string _entityReference_IsNotNull_expression = @"{
+  ""and"": [
+    {
+      ""!="": [
+        {
+          ""var"": ""shaRole""
+        },
+        null
+      ]
+    }
+  ]
+}";
+
+        [Fact]
+        public void EntityReference_IsNotNull_Convert()
+        {
+            var expression = ConvertToExpression<ShaRolePermission>(_entityReference_IsNotNull_expression);
+
+            Assert.Equal($@"ent => Not((ent.ShaRole == null))", expression.ToString());
+        }
+
+        [Fact]
+        public async Task EntityReference_IsNotNull_Fetch()
+        {
+            var data = await TryFetchData<ShaRolePermission, Guid>(_entityReference_IsNotNull_expression);
+            Assert.NotNull(data);
+        }
+
         #endregion
 
         #region complex expression (with `or` and `and`)

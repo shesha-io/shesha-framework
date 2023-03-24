@@ -160,14 +160,19 @@ export const IndexTable: FC<Partial<IIndexTableProps>> = ({
     const localPreparedColumns = columns
       .filter(({ show }) => show)
       .map<Column<any>>(columnItem => {
+        const strictWidth = columnItem.minWidth && columnItem.maxWidth && columnItem.minWidth === columnItem.maxWidth
+          ? columnItem.minWidth
+          : undefined;
         return {
           ...columnItem,
           accessor: camelcaseDotNotation(columnItem.accessor),
           Header: columnItem.header,
-          minWidth: columnItem.minWidth,
-          maxWidth: columnItem.maxWidth,
-          width: undefined,
-          resizable: true,
+          minWidth: Boolean(columnItem.minWidth) ? columnItem.minWidth : undefined,
+          maxWidth: Boolean(columnItem.maxWidth) ? columnItem.maxWidth : undefined,
+          width: strictWidth,
+          resizable: !strictWidth,
+          disableSortBy: !columnItem.isSortable,
+          disableResizing: Boolean(strictWidth),
           Cell: props => {
             const allRenderers = [...(customTypeRenders || []), ...renderers];
 
@@ -246,8 +251,8 @@ export const IndexTable: FC<Partial<IIndexTableProps>> = ({
   const defaultSorting = tableSorting
     ? tableSorting.map<SortingRule<string>>(c => ({ id: c.id, desc: c.desc }))
     : columns
-        .filter(c => c.defaultSorting !== null)
-        .map<SortingRule<string>>(c => ({ id: c.id, desc: c.defaultSorting === 1 }));
+      .filter(c => c.defaultSorting !== null)
+      .map<SortingRule<string>>(c => ({ id: c.id, desc: c.defaultSorting === 1 }));
 
   const isLoading = isFetchingTableData;
 

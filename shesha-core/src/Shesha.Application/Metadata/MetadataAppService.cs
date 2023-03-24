@@ -178,7 +178,7 @@ namespace Shesha.Metadata
                     .ToList();
             foreach (var actionDescriptor in actionDescriptors)
             {
-                var entityActionAttribute = actionDescriptor.MethodInfo.GetAttribute<EntityActionAttribute>();
+                var entityActionAttribute = actionDescriptor.MethodInfo.GetAttribute<EntityActionAttribute>(true);
                 if (entityActionAttribute != null) 
                 {
                     var url = actionDescriptor.AttributeRouteInfo?.Template;

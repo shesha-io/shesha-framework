@@ -11,7 +11,6 @@ using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
 using Shesha.JsonEntities;
-using Shesha.Services;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
@@ -48,13 +47,13 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
 
     public async Task<FormIdFullNameDto> GetEntityConfigForm(string entityConfigName, string typeName)
     {
-        var entityConfig = await AsyncQueryableExecuter.FirstOrDefaultAsync(Repository.GetAll().Where(x => x.Configuration.Name == entityConfigName || x.TypeShortAlias == entityConfigName));
+        var entityConfig = await AsyncQueryableExecuter.FirstOrDefaultAsync(Repository.GetAll().Where(x => x.Name == entityConfigName || x.TypeShortAlias == entityConfigName));
         if (entityConfig == null)
             return null;
 
         return entityConfig.ViewConfigurations
             .FirstOrDefault(x => x.Type == typeName || x.Type.Replace(" ", "").ToLower() == typeName || x.Type.ToLower() == typeName)?.FormId
-            ?? new FormIdFullNameDto() { Name = $"{entityConfigName}-{typeName.Replace(" ", "").ToLower()}", Module = entityConfig.Configuration.Module?.Name };
+            ?? new FormIdFullNameDto() { Name = $"{entityConfigName}-{typeName.Replace(" ", "").ToLower()}", Module = entityConfig.Module?.Name };
     }
 
     // Used to avoid performance issues

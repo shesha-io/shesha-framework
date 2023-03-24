@@ -22,15 +22,15 @@ namespace Shesha.ConfigurationItems
         public bool IsSatisfiedBy(TItem obj)
         {
             return string.IsNullOrWhiteSpace(ModuleName)
-                ? obj.Configuration.Name == Name && obj.Configuration.Module == null
-                : obj.Configuration.Name == Name && obj.Configuration.Module?.Name == ModuleName;
+                ? obj.Name == Name && obj.Module == null
+                : obj.Name == Name && obj.Module?.Name == ModuleName;
         }
 
         public Expression<Func<TItem, bool>> ToExpression()
         {
             return string.IsNullOrWhiteSpace(ModuleName)
-                ? item => item.Configuration.Name == Name && item.Configuration.Module == null
-                : item => item.Configuration.Name == Name && item.Configuration.Module != null && item.Configuration.Module.Name == ModuleName;
+                ? item => item.Name == Name && item.Module == null
+                : item => item.Name == Name && item.Module != null && item.Module.Name == ModuleName;
         }
     }
 }

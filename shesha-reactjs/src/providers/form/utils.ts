@@ -1080,6 +1080,11 @@ export interface IMatchData {
   data: any;
 }
 
+export const getMatchData = (dictionary: IMatchData[], name: string): any => {
+  const item = dictionary.find(i => i.match === name);
+  return item?.data;
+}
+
 const convertToKeyValues = (obj: IAnyObject): IKeyValue[] => {
   return Object.keys(obj).map(key => ({
     key,

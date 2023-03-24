@@ -20,17 +20,15 @@ namespace Shesha.Services.ReferenceLists.Distribution
     {
         private readonly IRepository<ReferenceList, Guid> _refListRepo;
         private readonly IRepository<ReferenceListItem, Guid> _refListItemRepo;
-        private readonly IRepository<ConfigurationItem, Guid> _configItemRepository;
         private readonly IRepository<Module, Guid> _moduleRepo;
         private readonly IReferenceListManager _refListManger;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
 
-        public ReferenceListImport(IReferenceListManager formManger, IRepository<ReferenceList, Guid> refListRepo, IRepository<ReferenceListItem, Guid> refListItemRepo, IRepository<ConfigurationItem, Guid> configItemRepository, IRepository<Module, Guid> moduleRepo, IUnitOfWorkManager unitOfWorkManager)
+        public ReferenceListImport(IReferenceListManager formManger, IRepository<ReferenceList, Guid> refListRepo, IRepository<ReferenceListItem, Guid> refListItemRepo, IRepository<Module, Guid> moduleRepo, IUnitOfWorkManager unitOfWorkManager)
         {
             _refListManger = formManger;
             _refListRepo = refListRepo;
             _refListItemRepo = refListItemRepo;
-            _configItemRepository = configItemRepository;
             _moduleRepo = moduleRepo;
             _unitOfWorkManager = unitOfWorkManager;
         }
@@ -63,13 +61,13 @@ namespace Shesha.Services.ReferenceLists.Distribution
         protected async Task<ConfigurationItemBase> ImportRefListAsync(DistributedReferenceList item, IConfigurationItemsImportContext context)
         {
             // check if form exists
-            var existingList = await _refListRepo.FirstOrDefaultAsync(f => f.Configuration.Name == item.Name && (f.Configuration.Module == null && item.ModuleName == null || f.Configuration.Module.Name == item.ModuleName) && f.Configuration.IsLast);
+            var existingList = await _refListRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module.Name == item.ModuleName) && f.IsLast);
 
             // use status specified in the context with fallback to imported value
             var statusToImport = context.ImportStatusAs ?? item.VersionStatus;
             if (existingList != null) 
             {
-                switch (existingList.Configuration.VersionStatus) 
+                switch (existingList.VersionStatus) 
                 {
                     case ConfigurationItemVersionStatus.Draft:
                     case ConfigurationItemVersionStatus.Ready: 
@@ -82,9 +80,9 @@ namespace Shesha.Services.ReferenceLists.Distribution
                 // mark existing live form as retired if we import new form as live
                 if (statusToImport == ConfigurationItemVersionStatus.Live) 
                 {
-                    var liveForm = existingList.Configuration.VersionStatus == ConfigurationItemVersionStatus.Live
+                    var liveForm = existingList.VersionStatus == ConfigurationItemVersionStatus.Live
                         ? existingList
-                        : await _refListRepo.FirstOrDefaultAsync(f => f.Configuration.Name == item.Name && (f.Configuration.Module == null && item.ModuleName == null || f.Configuration.Module.Name == item.ModuleName) && f.Configuration.VersionStatus == ConfigurationItemVersionStatus.Live);
+                        : await _refListRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module.Name == item.ModuleName) && f.VersionStatus == ConfigurationItemVersionStatus.Live);
                     if (liveForm != null)
                     {
                         await _refListManger.UpdateStatusAsync(liveForm, ConfigurationItemVersionStatus.Retired);
@@ -94,38 +92,35 @@ namespace Shesha.Services.ReferenceLists.Distribution
 
                 // create new version
                 var newListVersion = await _refListManger.CreateNewVersionAsync(existingList);
-                MapToForm(item, newListVersion);
+                MapToRefList(item, newListVersion);
 
                 // important: set status according to the context
-                newListVersion.Configuration.VersionStatus = statusToImport;
-                newListVersion.Configuration.CreatedByImport = context.ImportResult;
+                newListVersion.VersionStatus = statusToImport;
+                newListVersion.CreatedByImport = context.ImportResult;
                 newListVersion.Normalize();
 
                 // todo: save external Id
                 // how to handle origin?
 
-                await _configItemRepository.UpdateAsync(newListVersion.Configuration);
                 await _refListRepo.UpdateAsync(newListVersion);
 
                 return newListVersion;
             } else 
             {
                 var newList = new ReferenceList();
-                MapToForm(item, newList);
+                MapToRefList(item, newList);
 
                 // fill audit?
-                newList.Configuration.VersionNo = 1;
-                newList.Configuration.Module = await GetModuleAsync(item.ModuleName, context);
+                newList.VersionNo = 1;
+                newList.Module = await GetModuleAsync(item.ModuleName, context);
 
                 // important: set status according to the context
-                newList.Configuration.VersionStatus = statusToImport;
-                newList.Configuration.CreatedByImport = context.ImportResult;
+                newList.VersionStatus = statusToImport;
+                newList.CreatedByImport = context.ImportResult;
 
                 newList.Normalize();
 
-                await _configItemRepository.InsertAsync(newList.Configuration);
                 await _refListRepo.InsertAsync(newList);
-                
 
                 return newList;
             }
@@ -185,30 +180,13 @@ namespace Shesha.Services.ReferenceLists.Distribution
             return module;
         }
 
-        private void MapToForm(DistributedReferenceList item, ReferenceList form) 
+        private void MapToRefList(DistributedReferenceList item, ReferenceList refList) 
         {
-            form.Configuration.Name = item.Name;
-            form.Configuration.Label = item.Label;
-            form.Configuration.ItemType = item.ItemType;
-            form.Configuration.Description = item.Description;
-            form.Configuration.VersionStatus = item.VersionStatus;
-            form.Configuration.Suppress = item.Suppress;
-
-            /*
-            form.Markup = item.Markup;
-            form.ModelType = item.ModelType;
-            */
-            
-            // todo: decide how to handle other properties
-            /*
-            form.Configuration.Origin
-            form.Configuration.Module
-            form.Configuration.BaseItem
-            form.Configuration.VersionNo
-            form.Configuration.ParentVersion
-            form.Configuration.CreatedByImport
-            form.Configuration.TenantId
-            */
+            refList.Name = item.Name;
+            refList.Label = item.Label;
+            refList.Description = item.Description;
+            refList.VersionStatus = item.VersionStatus;
+            refList.Suppress = item.Suppress;
         }
     }
 }

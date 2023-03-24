@@ -64,7 +64,6 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = props => {
   };
 
   const onSubmitted = (_: any, response: any) => {
-    //console.log('LOG:onSubmitted');
     if (onSuccessRedirectUrl) {
       const computedRedirectUrl = evaluateString(onSuccessRedirectUrl, response);
 

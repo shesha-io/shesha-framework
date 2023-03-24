@@ -21,5 +21,4 @@ using Shesha.Attributes;
 [assembly: Guid("5B8D4998-5F43-45C1-B8DB-38CCB1678562")]
 
 [assembly: TablePrefix("Frwk_")]
-[assembly: BelongsToConfigurableModule(typeof(SheshaFrameworkModule))]
 [assembly: UserSecretsId("94EA409E-6F83-450E-A38D-1B1EEE0ECD04")]

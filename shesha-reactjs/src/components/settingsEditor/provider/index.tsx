@@ -20,9 +20,9 @@ const getListFetcherQueryParams = (maxResultCount): IGenericGetAllPayload => {
         skipCount: 0,
         maxResultCount: maxResultCount ?? -1,
         entityType: 'Shesha.Domain.SettingConfiguration',
-        properties: 'id category dataType editorFormModule editorFormName isClientSpecific configuration { name, module { id name }, label, description, versionNo }',
+        properties: 'id category dataType editorFormModule editorFormName isClientSpecific name, module { id name }, label, description, versionNo',
         quickSearch: null,
-        sorting: 'configuration.module.name, configuration.name',
+        sorting: 'module.name, name',
     };
 };
 interface SettingConfigurationDto {
@@ -32,15 +32,13 @@ interface SettingConfigurationDto {
     editorFormModule?: string;
     editorFormName?: string;
     isClientSpecific: boolean;
-    configuration: {
+    name: string;
+    label?: string;
+    description?: string;
+    versionNo?: number;
+    module?: {
+        id: string;
         name: string;
-        label?: string;
-        description?: string;
-        versionNo?: number;
-        module?: {
-            id: string;
-            name: string;
-        }
     }
 }
 
@@ -65,12 +63,12 @@ const SettingsEditorProvider: FC<ISettingsEditorProviderProps> = ({ children }) 
                 const settingConfigurations = response.result.items.map<ISettingConfiguration>(item => {
                     return {
                         id: item.id,
-                        name: item.configuration.name,
+                        name: item.name,
                         dataType: item.dataType,
-                        label: item.configuration.label,
-                        description: item.configuration.description,
+                        label: item.label,
+                        description: item.description,
                         category: item.category,
-                        module: item.configuration.module?.name,
+                        module: item.module?.name,
                         editorForm: item.editorFormName ? { name: item.editorFormName, module: item.editorFormModule } : null,
                         isClientSpecific: item.isClientSpecific,
                     };

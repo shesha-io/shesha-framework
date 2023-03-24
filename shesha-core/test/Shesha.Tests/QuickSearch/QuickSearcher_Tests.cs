@@ -150,13 +150,11 @@ namespace Shesha.Tests.QuickSearch
 
             orgRepoMock.Setup(s => s.GetAll()).Returns(() => testOrganisations.AsQueryable());
 
-            var refList = new ReferenceList { 
-                Namespace = "Shesha.Core", 
-                Configuration = new Domain.ConfigurationItems.ConfigurationItem { 
-                    Id = Guid.NewGuid(),
-                    Name = "PreferredContactMethod", 
-                    Module = new Domain.ConfigurationItems.Module { Name = "Shesha" } 
-                } 
+            var refList = new ReferenceList {
+                Id = Guid.NewGuid(),
+                Namespace = "Shesha.Core",
+                Name = "PreferredContactMethod",
+                Module = new Domain.ConfigurationItems.Module { Name = "Shesha" }
             };
             var refListItems = new List<ReferenceListItem>();
             var enumValues = Enum.GetValues(typeof(TestContactMethod));

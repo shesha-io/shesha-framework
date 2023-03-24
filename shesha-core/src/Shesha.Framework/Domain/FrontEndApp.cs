@@ -1,4 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Abp.Domain.Repositories;
+using FluentValidation;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Linq;
+using Shesha.Extensions;
 
 namespace Shesha.Domain
 {
@@ -24,6 +31,25 @@ namespace Shesha.Domain
         /// Description of the Front-end application.
         /// </summary>
         public virtual string Description { get; set; }
+    }
 
+    public class FrontEndAppValidator : AbstractValidator<FrontEndApp>
+    {
+        private readonly IRepository<FrontEndApp, Guid> _repository;
+
+        public FrontEndAppValidator(IRepository<FrontEndApp, Guid> repository)
+        {
+            _repository = repository;
+            RuleFor(x => x.AppKey).NotEmpty().MustAsync(UniqueNameAsync).WithMessage("Application with application key '{PropertyValue}' already exists.");
+        }
+
+        private async Task<bool> UniqueNameAsync(FrontEndApp app, string appKey, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(appKey))
+                return true;
+
+            var alreadyExist = await _repository.GetAll().Where(m => m.AppKey.ToLower() == appKey.ToLower() && m.Id != app.Id).AnyAsync();
+            return !alreadyExist;
+        }
     }
 }

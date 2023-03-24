@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Security.Claims;
 using Abp.Authorization.Users;
 using Abp.MultiTenancy;
 

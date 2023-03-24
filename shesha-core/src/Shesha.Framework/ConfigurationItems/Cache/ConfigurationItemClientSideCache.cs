@@ -3,14 +3,14 @@ using Abp.Events.Bus.Entities;
 using Abp.Events.Bus.Handlers;
 using Abp.Runtime.Caching;
 using Shesha.ConfigurationItems.Models;
-using Shesha.Domain.ConfigurationItems;
+using Shesha.Domain;
 using System;
 using System.Threading.Tasks;
 
 namespace Shesha.ConfigurationItems.Cache
 {
     /// inhertiedDoc
-    public class ConfigurationItemClientSideCache : IConfigurationItemClientSideCache, IEventHandler<EntityChangedEventData<ConfigurationItem>> , ISingletonDependency
+    public class ConfigurationItemClientSideCache : IConfigurationItemClientSideCache, IEventHandler<EntityChangedEventData<ConfigurationItemBase>> , ISingletonDependency
     {
         private readonly ICacheManager _cacheManager;
         protected string CachePrefix => $"{this.GetType().Name}:";
@@ -73,7 +73,7 @@ namespace Shesha.ConfigurationItems.Cache
             return id.ToString();
         }
 
-        public void HandleEvent(EntityChangedEventData<ConfigurationItem> eventData)
+        public void HandleEvent(EntityChangedEventData<ConfigurationItemBase> eventData)
         {
             var configItem = eventData.Entity;
 

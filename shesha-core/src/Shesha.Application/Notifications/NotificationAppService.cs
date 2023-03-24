@@ -3,11 +3,9 @@ using Abp.BackgroundJobs;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Notifications;
-using Microsoft.AspNetCore.Mvc;
-using NHibernate.Linq;
-using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
+using Shesha.DynamicEntities.Dtos;
 using Shesha.Notifications.Dto;
 using Shesha.Services;
 using System;
@@ -21,7 +19,7 @@ namespace Shesha.Notifications;
 /// <summary>
 /// Notification application service
 /// </summary>
-public class NotificationAppService: SheshaCrudServiceBase<Notification, NotificationDto, Guid>, INotificationAppService
+public class NotificationAppService: DynamicCrudAppService<Notification, DynamicDto<Notification, Guid>, Guid>, INotificationAppService
 {
     private readonly INotificationPublisher _notificationPublisher;
     private readonly IBackgroundJobManager _backgroundJobManager;
@@ -56,30 +54,6 @@ public class NotificationAppService: SheshaCrudServiceBase<Notification, Notific
             userIds: userIds,
             entityIdentifier: entityIdentifier
         );
-    }
-
-    /// <summary>
-    /// Notifications autocomplete
-    /// </summary>
-    /// <param name="term"></param>
-    /// <returns></returns>
-    [HttpGet]
-    public async Task<List<AutocompleteItemDto>> Autocomplete(string term)
-    {
-        term = (term ?? "").ToLower();
-
-        var notifications = await Repository.GetAll()
-            .Where(p => (p.Name ?? "").ToLower().Contains(term))
-            .OrderBy(p => p.Name)
-            .Take(10)
-            .Select(p => new AutocompleteItemDto
-            {
-                DisplayText = p.Name.Trim(),
-                Value = p.Id.ToString()
-            })
-            .ToListAsync();
-
-        return notifications;
     }
 
     #region Direct email notifications

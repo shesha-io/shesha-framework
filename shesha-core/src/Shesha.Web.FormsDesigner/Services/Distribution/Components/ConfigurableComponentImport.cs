@@ -20,17 +20,15 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
     public class ConfigurableComponentImport: IConfigurableComponentImport, ITransientDependency
     {
         private readonly IRepository<ConfigurableComponent, Guid> _componentRepo;
-        private readonly IRepository<ConfigurationItem, Guid> _configItemRepository;
         private readonly IRepository<Module, Guid> _moduleRepo;
         private readonly IRepository<FrontEndApp, Guid> _frontendAppRepo;
         private readonly IConfigurableComponentManager _componentManger;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
 
-        public ConfigurableComponentImport(IConfigurableComponentManager componentManger, IRepository<ConfigurableComponent, Guid> formConfigRepo, IRepository<ConfigurationItem, Guid> configItemRepository, IRepository<Module, Guid> moduleRepo, IRepository<FrontEndApp, Guid> frontendAppRepo, IUnitOfWorkManager unitOfWorkManager)
+        public ConfigurableComponentImport(IConfigurableComponentManager componentManger, IRepository<ConfigurableComponent, Guid> formConfigRepo, IRepository<Module, Guid> moduleRepo, IRepository<FrontEndApp, Guid> frontendAppRepo, IUnitOfWorkManager unitOfWorkManager)
         {
             _componentManger = componentManger;
             _componentRepo = formConfigRepo;
-            _configItemRepository = configItemRepository;
             _moduleRepo = moduleRepo;
             _frontendAppRepo = frontendAppRepo;
             _unitOfWorkManager = unitOfWorkManager;
@@ -62,14 +60,14 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
 
         private async Task<ConfigurationItemBase> GetLiveVersionFor(DistributedConfigurableComponent item) 
         {
-            var query = _componentRepo.GetAll().Where(f => f.Configuration.Name == item.Name && f.Configuration.VersionStatus == ConfigurationItemVersionStatus.Live);
+            var query = _componentRepo.GetAll().Where(f => f.Name == item.Name && f.VersionStatus == ConfigurationItemVersionStatus.Live);
             query = query.Where(!string.IsNullOrWhiteSpace(item.ModuleName) 
-                ? f => f.Configuration.Module.Name == item.ModuleName
-                : f => f.Configuration.Module == null
+                ? f => f.Module.Name == item.ModuleName
+                : f => f.Module == null
             );
             query = query.Where(!string.IsNullOrWhiteSpace(item.FrontEndApplication)
-                ? f => f.Configuration.Application.AppKey == item.FrontEndApplication
-                : f => f.Configuration.Application == null
+                ? f => f.Application.AppKey == item.FrontEndApplication
+                : f => f.Application == null
             );
 
             return await query.FirstOrDefaultAsync();
@@ -79,17 +77,17 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
         protected async Task<ConfigurationItemBase> ImportComponentAsync(DistributedConfigurableComponent item, IConfigurationItemsImportContext context)
         {
             // check if form exists
-            var existingComponent = await _componentRepo.FirstOrDefaultAsync(f => f.Configuration.Name == item.Name && 
-                (f.Configuration.Module == null && item.ModuleName == null || f.Configuration.Module.Name == item.ModuleName) &&
-                (f.Configuration.Application == null && item.FrontEndApplication == null || f.Configuration.Application.AppKey == item.FrontEndApplication) &&
-                f.Configuration.IsLast
+            var existingComponent = await _componentRepo.FirstOrDefaultAsync(f => f.Name == item.Name && 
+                (f.Module == null && item.ModuleName == null || f.Module.Name == item.ModuleName) &&
+                (f.Application == null && item.FrontEndApplication == null || f.Application.AppKey == item.FrontEndApplication) &&
+                f.IsLast
             );
 
             // use status specified in the context with fallback to imported value
             var statusToImport = context.ImportStatusAs ?? item.VersionStatus;
             if (existingComponent != null) 
             {
-                switch (existingComponent.Configuration.VersionStatus) 
+                switch (existingComponent.VersionStatus) 
                 {
                     case ConfigurationItemVersionStatus.Draft:
                     case ConfigurationItemVersionStatus.Ready: 
@@ -102,7 +100,7 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
                 // mark existing live form as retired if we import new form as live
                 if (statusToImport == ConfigurationItemVersionStatus.Live) 
                 {
-                    var liveVersion = existingComponent.Configuration.VersionStatus == ConfigurationItemVersionStatus.Live
+                    var liveVersion = existingComponent.VersionStatus == ConfigurationItemVersionStatus.Live
                         ? existingComponent
                         : await GetLiveVersionFor(item);
 
@@ -118,14 +116,13 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
                 MapToComponent(item, newComponentVersion);
 
                 // important: set status according to the context
-                newComponentVersion.Configuration.VersionStatus = statusToImport;
-                newComponentVersion.Configuration.CreatedByImport = context.ImportResult;
+                newComponentVersion.VersionStatus = statusToImport;
+                newComponentVersion.CreatedByImport = context.ImportResult;
                 newComponentVersion.Normalize();
 
                 // todo: save external Id
                 // how to handle origin?
 
-                await _configItemRepository.UpdateAsync(newComponentVersion.Configuration);
                 await _componentRepo.UpdateAsync(newComponentVersion);
 
                 return newComponentVersion;
@@ -135,19 +132,17 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
                 MapToComponent(item, newComponent);
 
                 // fill audit?
-                newComponent.Configuration.VersionNo = 1;
-                newComponent.Configuration.Module = await GetModuleAsync(item.ModuleName, context);
-                newComponent.Configuration.Application = await GetFrontEndAppAsync(item.FrontEndApplication, context);                
+                newComponent.VersionNo = 1;
+                newComponent.Module = await GetModuleAsync(item.ModuleName, context);
+                newComponent.Application = await GetFrontEndAppAsync(item.FrontEndApplication, context);                
 
                 // important: set status according to the context
-                newComponent.Configuration.VersionStatus = statusToImport;
-                newComponent.Configuration.CreatedByImport = context.ImportResult;
+                newComponent.VersionStatus = statusToImport;
+                newComponent.CreatedByImport = context.ImportResult;
 
                 newComponent.Normalize();
 
-                await _configItemRepository.InsertAsync(newComponent.Configuration);
                 await _componentRepo.InsertAsync(newComponent);
-                
 
                 return newComponent;
             }
@@ -194,12 +189,11 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
 
         private void MapToComponent(DistributedConfigurableComponent item, ConfigurableComponent component) 
         {
-            component.Configuration.Name = item.Name;
-            component.Configuration.Label = item.Label;
-            component.Configuration.ItemType = item.ItemType;
-            component.Configuration.Description = item.Description;
-            component.Configuration.VersionStatus = item.VersionStatus;
-            component.Configuration.Suppress = item.Suppress;
+            component.Name = item.Name;
+            component.Label = item.Label;
+            component.Description = item.Description;
+            component.VersionStatus = item.VersionStatus;
+            component.Suppress = item.Suppress;
 
             component.Settings = item.Settings;
         }
