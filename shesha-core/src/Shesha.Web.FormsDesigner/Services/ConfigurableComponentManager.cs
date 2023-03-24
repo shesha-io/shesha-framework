@@ -43,6 +43,7 @@ namespace Shesha.Web.FormsDesigner.Services
             newVersion.Origin = item.Origin;
             newVersion.Name = item.Name;
             newVersion.Module = item.Module;
+            newVersion.Application = item.Application;
             newVersion.Description = item.Description;
             newVersion.Label = item.Label;
             newVersion.TenantId = item.TenantId;

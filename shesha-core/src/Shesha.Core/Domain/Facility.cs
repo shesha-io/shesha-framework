@@ -5,6 +5,10 @@ using Shesha.Domain.Attributes;
 
 namespace Shesha.Domain
 {
+    /// <summary>
+    /// This class is supposed to be replaced by the Site entity
+    /// </summary>
+    [Obsolete]
     [Entity(TypeShortAlias = "Shesha.Core.Facility")]
     [Discriminator]
     public class Facility : FullAuditedEntity<Guid>

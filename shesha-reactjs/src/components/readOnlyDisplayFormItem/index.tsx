@@ -1,43 +1,17 @@
-import React, { FC, ReactNode } from 'react';
 import { EditOutlined, LockOutlined } from '@ant-design/icons';
-import { Show } from '../show';
-import { useForm } from '../../providers';
-import { IDtoType, ISelectOption } from '../autocomplete';
-import Checkbox from 'antd/lib/checkbox/Checkbox';
 import { Switch, Tag } from 'antd';
-import { getMoment } from '../../utils/date';
-import moment from 'moment';
+import Checkbox from 'antd/lib/checkbox/Checkbox';
 import classNames from 'classnames';
+import moment from 'moment';
+import React, { FC } from 'react';
+import { useForm } from '../../providers';
+import { getMoment } from '../../utils/date';
+import { IDtoType, ISelectOption } from '../autocomplete';
 import QuickView, { GenericQuickView } from '../quickView';
-import { FormIdentifier } from '../../providers/form/models';
+import { Show } from '../show';
+import { IReadOnlyDisplayFormItemProps } from './models';
 
 type AutocompleteType = ISelectOption<IDtoType>;
-
-export interface IReadOnlyDisplayFormItemProps {
-  value?: any;
-  render?: () => ReactNode | ReactNode;
-  type?:
-    | 'string'
-    | 'number'
-    | 'dropdown'
-    | 'dropdownMultiple'
-    | 'time'
-    | 'datetime'
-    | 'checkbox'
-    | 'switch'
-    | 'radiogroup';
-  dropdownDisplayMode?: 'raw' | 'tags';
-  dateFormat?: string;
-  timeFormat?: string;
-  disabled?: boolean;
-  checked?: boolean;
-  defaultChecked?: boolean;
-  quickviewEnabled?: boolean;
-  quickviewFormPath?: FormIdentifier;
-  quickviewDisplayPropertyName?: string;
-  quickviewGetEntityUrl?: string;
-  quickviewWidth?: number;
-}
 
 export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = ({
   value,

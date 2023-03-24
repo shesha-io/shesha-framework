@@ -6,6 +6,7 @@ using Castle.MicroKernel.Registration;
 using Intent.RoslynWeaver.Attributes;
 using Shesha;
 using Shesha.Authorization;
+using Shesha.Modules;
 
 [assembly: DefaultIntentManaged(Mode.Fully)]
 [assembly: IntentTemplate("Boxfusion.Modules.Domain.Module", Version = "1.0")]
@@ -19,8 +20,14 @@ namespace Boxfusion.SheshaFunctionalTests.Common
         typeof(SheshaCoreModule),
         typeof(SheshaApplicationModule)
     )]
-    public class SheshaFunctionalTestsCommonModule : AbpModule
+    public class SheshaFunctionalTestsCommonModule : SheshaModule
     {
+        public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo("Boxfusion.SheshaFunctionalTests.Common")
+        {
+            FriendlyName = "Shesha Functional Tests Common",
+            Publisher = "Boxfusion"
+        };
+
         /// inheritedDoc
         public override void Initialize()
         {

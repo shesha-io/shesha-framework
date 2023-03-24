@@ -242,6 +242,10 @@ namespace Shesha.NHibernate.Maps
             {
                 var propertyType = member.LocalMember.GetPropertyOrFieldType();
 
+                var lazyAttribute = member.LocalMember.GetAttribute<LazyAttribute>(true);
+                if (lazyAttribute != null)
+                    propertyCustomizer.Lazy(true);
+
                 var columnName = MappingHelper.GetColumnName(member.LocalMember);
                 string sqlType = null;
                 IType columnType = null;
