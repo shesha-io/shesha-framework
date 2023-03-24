@@ -592,7 +592,8 @@ stages:
       vmImage: windows-latest
     steps:
     - task: PowerShell@2
-      displayName: Check to establish if this pipeline was triggered from a tag  
+      displayName: Check to establish if this pipeline was triggered from a tag
+      retryCountOnTaskFailure: 5      
       inputs:
         targetType: 'inline'
         script: |
