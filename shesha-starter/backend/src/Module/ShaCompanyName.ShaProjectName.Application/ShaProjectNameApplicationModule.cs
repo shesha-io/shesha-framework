@@ -1,28 +1,32 @@
-﻿using Abp.AspNetCore;
+using System.Reflection;
+using System.Threading.Tasks;
+using Abp.AspNetCore;
 using Abp.AspNetCore.Configuration;
 using Abp.AutoMapper;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
 using Intent.RoslynWeaver.Attributes;
+using ShaCompanyName.ShaProjectName.Domain;
 using Shesha;
 using Shesha.Modules;
 using Shesha.Startup;
 using Shesha.Web.FormsDesigner;
-using System.Reflection;
-using System.Threading.Tasks;
 
-namespace ShaCompanyName.ShaProjectName.Common
+[assembly: IntentTemplate("Boxfusion.Modules.Application.Services.AppService", Version = "1.0")]
+[assembly: DefaultIntentManaged(Mode.Fully)]
+
+namespace ShaCompanyName.ShaProjectName.Application
 {
     [IntentManaged(Mode.Ignore)]
     /// <summary>
     /// ShaProjectName Module
     /// </summary>
     [DependsOn(
-        typeof(ShaProjectNameCommonModule),
+        typeof(ShaProjectNameModule),
         typeof(SheshaCoreModule),
         typeof(AbpAspNetCoreModule)
     )]
-    public class ShaProjectNameCommonApplicationModule : SheshaSubModule<ShaProjectNameCommonModule>
+    public class ShaProjectNameApplicationModule : SheshaSubModule<ShaProjectNameModule>
     {
         public override async Task<bool> InitializeConfigurationAsync()
         {
@@ -68,18 +72,18 @@ namespace ShaCompanyName.ShaProjectName.Common
                  );
 
             Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(
-               typeof(ShaProjectNameCommonApplicationModule).Assembly,
-               moduleName: "ShaProjectNameCommon",
+               typeof(ShaProjectNameApplicationModule).Assembly,
+               moduleName: "ShaProjectName",
                 useConventionalHttpVerbs: true);
 
             Configuration.Modules.AbpAspNetCore()
                  .CreateControllersForAppServices(
-                     typeof(ShaProjectNameCommonModule).GetAssembly()
+                     typeof(ShaProjectNameModule).GetAssembly()
                  );
 
             Configuration.Modules.AbpAspNetCore()
                  .CreateControllersForAppServices(
-                     typeof(ShaProjectNameCommonApplicationModule).GetAssembly()
+                     typeof(ShaProjectNameApplicationModule).GetAssembly()
                  );
         }
     }

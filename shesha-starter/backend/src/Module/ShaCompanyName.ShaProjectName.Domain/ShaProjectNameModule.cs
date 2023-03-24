@@ -1,15 +1,17 @@
+using System.Reflection;
 using Abp.AspNetCore.Configuration;
 using Abp.AutoMapper;
 using Abp.Modules;
+using Castle.MicroKernel.Registration;
 using Intent.RoslynWeaver.Attributes;
 using Shesha;
+using Shesha.Authorization;
 using Shesha.Modules;
-using System.Reflection;
 
 [assembly: DefaultIntentManaged(Mode.Fully)]
 [assembly: IntentTemplate("Boxfusion.Modules.Domain.Module", Version = "1.0")]
 
-namespace ShaCompanyName.ShaProjectName.Common
+namespace ShaCompanyName.ShaProjectName.Domain
 {
     [IntentManaged(Mode.Ignore)]
     /// <summary>
@@ -19,7 +21,7 @@ namespace ShaCompanyName.ShaProjectName.Common
         typeof(SheshaCoreModule),
         typeof(SheshaApplicationModule)
     )]
-    public class ShaProjectNameCommonModule : SheshaModule
+    public class ShaProjectNameModule : SheshaModule
     {
         public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo("ShaCompanyName.ShaProjectName")
         {
@@ -50,7 +52,7 @@ namespace ShaCompanyName.ShaProjectName.Common
         public override void PostInitialize()
         {
             Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(
-                typeof(ShaProjectNameCommonModule).Assembly,
+                typeof(ShaProjectNameModule).Assembly,
                 moduleName: "ShaProjectNameCommon",
                 useConventionalHttpVerbs: true);
         }

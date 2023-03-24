@@ -39,8 +39,7 @@ export const TestForm = addStory(DesignerTemplate, {
 export const TestForm2 = addStory(DesignerTemplate, {
   //formId: '28a2cf97-ae6d-483b-9866-bdfc2e8a03e9',
   //formId: 'd6bba814-7a82-4071-bb6f-2d5ed6fe0aac',
-  formId: 'd6bba814-7a82-4071-bb6f-2d5ed6fe0aac'
-  
+  formId: 'd6bba814-7a82-4071-bb6f-2d5ed6fe0aac',
 });
 
 export const RefListRefactoring = addStory(DesignerTemplate, {
@@ -49,7 +48,6 @@ export const RefListRefactoring = addStory(DesignerTemplate, {
 export const RefLists = addStory(DesignerTemplate, {
   formId: '2a8d45e2-0a2b-4e18-b274-2d593fe07a94',
 });
-
 
 export const AutocompleteSettingsForm = addStory(DesignerTemplate, {
   formId: '7c19404f-7c6f-4cee-9af7-6b82b7be3982',
@@ -204,7 +202,7 @@ export const Playground = addStory(DesignerTemplate, {
 });
 
 export const TestWizard = addStory(DesignerTemplate, {
-  formId: 'a1dbe3d1-b560-431d-aa3f-dc39738e7200',
+  formId: '3753607d-a768-4b51-ac2a-d7dd873e3d47',
   // formId: {
   //   name: 'test-wizard-form',
   //   module: 'Shesha',
@@ -213,7 +211,7 @@ export const TestWizard = addStory(DesignerTemplate, {
 });
 
 export const OrganisationEdit = addStory(DesignerTemplate, {
-  formId: '561DD191-1CB4-4195-A272-688FE2348136'
+  formId: '561DD191-1CB4-4195-A272-688FE2348136',
   //formId: { name: '/organisations/edit', version: 2 },
 });
 
@@ -226,7 +224,7 @@ export const ModelConfigurationEdit = addStory(DesignerTemplate, {
 });
 
 export const PermissionEdit = addStory(DesignerTemplate, {
-  formId: { name: 'permission-edit', version: 2 }
+  formId: { name: 'permission-edit', version: 2 },
 });
 
 export const StyleFixEdit = addStory(DesignerTemplate, {
@@ -246,7 +244,7 @@ export const PersonEdit = addStory(DesignerTemplate, {
   formId: {
     name: 'person-edit',
     module: 'Test Module',
-    version: 3
+    version: 3,
   },
 });
 
@@ -254,6 +252,6 @@ export const ObservationCaptureForm = addStory(DesignerTemplate, {
   formId: {
     module: 'Boxfusion.His.Observations',
     name: 'observation-capture-form',
-    version: 1
+    version: 1,
   },
 });

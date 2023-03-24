@@ -1,6 +1,5 @@
 ﻿using Abp.Modules;
 using Abp.Reflection.Extensions;
-using ShaCompanyName.ShaProjectName.Common;
 using Castle.MicroKernel.Registration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -20,6 +19,8 @@ using Shesha.Web.FormsDesigner;
 using System;
 using System.Text;
 using ShaCompanyName.ShaProjectName.Common.Authorization;
+using ShaCompanyName.ShaProjectName.Domain;
+using ShaCompanyName.ShaProjectName.Application;
 
 namespace ShaCompanyName.ShaProjectName
 {
@@ -39,8 +40,8 @@ namespace ShaCompanyName.ShaProjectName
         typeof(SheshaBulkSmsModule),
         typeof(SheshaXml2SmsModule),
         typeof(SheshaSmsPortalModule),
-        typeof(ShaProjectNameCommonModule),
-        typeof(ShaProjectNameCommonApplicationModule)
+        typeof(ShaProjectNameModule),
+        typeof(ShaProjectNameApplicationModule)
 	 )]
     public class ShaProjectNameWebCoreModule : AbpModule
     {

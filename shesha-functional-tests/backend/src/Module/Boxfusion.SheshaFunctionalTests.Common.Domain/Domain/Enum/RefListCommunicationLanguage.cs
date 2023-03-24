@@ -15,24 +15,24 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain.Enum
 
         Afrikaans = 2,
 
-        Xhosa = 3,
+        Xhosa = 4,
 
-        Zulu = 4,
+        Zulu = 8,
 
-        Tswana = 5,
+        Tswana = 16,
 
         [Display(Name = "Southern Sotho")]
-        SouthernSotho = 6,
+        SouthernSotho = 32,
 
         [Display(Name = "Northern Sotho")]
-        NorthernSotho = 7,
+        NorthernSotho = 64,
 
-        Venda = 8,
+        Venda = 128,
 
-        Tsonga = 9,
+        Tsonga = 256,
         
-        Swati = 10,
+        Swati = 512,
         
-        Ndebele = 11
+        Ndebele = 1024
     }
 }

@@ -1,7 +1,9 @@
 ﻿using Shesha.Domain;
 using Shesha.Domain.Attributes;
+using Shesha.NHibernate.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Threading.Tasks;
 
 namespace Shesha.Web.FormsDesigner.Domain
@@ -18,6 +20,7 @@ namespace Shesha.Web.FormsDesigner.Domain
         /// Form markup
         /// </summary>
         [StringLength(int.MaxValue)]
+        [Lazy]
         public virtual string Markup { get; set; }
 
         /// <summary>

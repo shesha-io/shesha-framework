@@ -5,7 +5,6 @@ import { TagOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '../formItem';
 import settingsFormJson from './settingsForm.json';
 import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import { DataTypes } from '../../../../interfaces/dataTypes';
 import AutocompleteTagGroup from '../../../autocompleteTagGroup';
 import { useForm } from '../../../..';
 
@@ -15,12 +14,12 @@ export interface IAutocompleteTagsOutlinedComponentProps extends IConfigurableFo
   autocompleteUrl: string;
   onChange?: (values?: string[]) => void;
   /**
-  * Whether this control is disabled
-  */
-   disabled?: boolean;
+   * Whether this control is disabled
+   */
+  disabled?: boolean;
   /**
-  * If true, the automplete will be in read-only mode. This is not the same sa disabled mode
-  */
+   * If true, the automplete will be in read-only mode. This is not the same sa disabled mode
+   */
   readOnly?: boolean;
 }
 
@@ -30,18 +29,16 @@ const AutocompleteTagGroupComponent: IToolboxComponent<IAutocompleteTagsOutlined
   type: 'autocompleteTagGroup',
   name: 'AutocompleteTagsOutlined',
   icon: <TagOutlined />,
-  dataTypeSupported: ({ dataType }) => dataType === DataTypes.array,
   factory: (model: IAutocompleteTagsOutlinedComponentProps) => {
-
     const { formMode } = useForm();
 
     return (
       <ConfigurableFormItem model={model}>
-        <AutocompleteTagGroup 
-          value={model?.value} 
-          defaultValue={model?.defaultValue} 
+        <AutocompleteTagGroup
+          value={model?.value}
+          defaultValue={model?.defaultValue}
           onChange={model?.onChange}
-          autocompleteUrl={model?.autocompleteUrl} 
+          autocompleteUrl={model?.autocompleteUrl}
           readOnly={model?.readOnly || formMode === 'readonly'}
           disabled={model?.disabled}
         />

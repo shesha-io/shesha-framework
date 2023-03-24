@@ -15,9 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShaCompanyName.ShaProjectNa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShaCompanyName.ShaProjectName.Common.Domain.Tests", "test\ShaCompanyName.ShaProjectName.Common.Domain.Tests\ShaCompanyName.ShaProjectName.Common.Domain.Tests.csproj", "{1E3B0FB7-94E8-48AD-83AC-17EABA2EA5D1}"
 EndProject
-Project("{52B49DB5-3EA9-4095-B1A7-DF1AC22D7DAE}") = "ShaCompanyName.ShaProjectName.Common.Application", "src\Module\ShaCompanyName.ShaProjectName.Common.Application\ShaCompanyName.ShaProjectName.Common.Application.csproj", "{4E12DE3A-1824-48AE-A202-825B26859F9C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShaCompanyName.ShaProjectName.Domain", "src\Module\ShaCompanyName.ShaProjectName.Domain\ShaCompanyName.ShaProjectName.Domain.csproj", "{18F3CFCE-4532-457A-B4E2-B1FFE601C7A4}"
 EndProject
-Project("{52B49DB5-3EA9-4095-B1A7-DF1AC22D7DAE}") = "ShaCompanyName.ShaProjectName.Common.Domain", "src\Module\ShaCompanyName.ShaProjectName.Common.Domain\ShaCompanyName.ShaProjectName.Common.Domain.csproj", "{3ACD8E57-C6DA-483E-BC14-1FE0934BFC35}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShaCompanyName.ShaProjectName.Application", "src\Module\ShaCompanyName.ShaProjectName.Application\ShaCompanyName.ShaProjectName.Application.csproj", "{CDBB7196-2532-4E94-9EAF-7DA7BC32C0D2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,18 +44,18 @@ Global
 		{1E3B0FB7-94E8-48AD-83AC-17EABA2EA5D1}.DebugLocalShesha|Any CPU.Build.0 = Debug|Any CPU
 		{1E3B0FB7-94E8-48AD-83AC-17EABA2EA5D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1E3B0FB7-94E8-48AD-83AC-17EABA2EA5D1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4E12DE3A-1824-48AE-A202-825B26859F9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4E12DE3A-1824-48AE-A202-825B26859F9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4E12DE3A-1824-48AE-A202-825B26859F9C}.DebugLocalShesha|Any CPU.ActiveCfg = DebugLocalShesha|Any CPU
-		{4E12DE3A-1824-48AE-A202-825B26859F9C}.DebugLocalShesha|Any CPU.Build.0 = DebugLocalShesha|Any CPU
-		{4E12DE3A-1824-48AE-A202-825B26859F9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4E12DE3A-1824-48AE-A202-825B26859F9C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3ACD8E57-C6DA-483E-BC14-1FE0934BFC35}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3ACD8E57-C6DA-483E-BC14-1FE0934BFC35}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3ACD8E57-C6DA-483E-BC14-1FE0934BFC35}.DebugLocalShesha|Any CPU.ActiveCfg = DebugLocalShesha|Any CPU
-		{3ACD8E57-C6DA-483E-BC14-1FE0934BFC35}.DebugLocalShesha|Any CPU.Build.0 = DebugLocalShesha|Any CPU
-		{3ACD8E57-C6DA-483E-BC14-1FE0934BFC35}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3ACD8E57-C6DA-483E-BC14-1FE0934BFC35}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18F3CFCE-4532-457A-B4E2-B1FFE601C7A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18F3CFCE-4532-457A-B4E2-B1FFE601C7A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18F3CFCE-4532-457A-B4E2-B1FFE601C7A4}.DebugLocalShesha|Any CPU.ActiveCfg = Debug|Any CPU
+		{18F3CFCE-4532-457A-B4E2-B1FFE601C7A4}.DebugLocalShesha|Any CPU.Build.0 = Debug|Any CPU
+		{18F3CFCE-4532-457A-B4E2-B1FFE601C7A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18F3CFCE-4532-457A-B4E2-B1FFE601C7A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDBB7196-2532-4E94-9EAF-7DA7BC32C0D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDBB7196-2532-4E94-9EAF-7DA7BC32C0D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDBB7196-2532-4E94-9EAF-7DA7BC32C0D2}.DebugLocalShesha|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDBB7196-2532-4E94-9EAF-7DA7BC32C0D2}.DebugLocalShesha|Any CPU.Build.0 = Debug|Any CPU
+		{CDBB7196-2532-4E94-9EAF-7DA7BC32C0D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDBB7196-2532-4E94-9EAF-7DA7BC32C0D2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
