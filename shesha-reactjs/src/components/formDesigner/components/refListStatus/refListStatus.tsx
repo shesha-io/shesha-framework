@@ -3,7 +3,7 @@ import { FormMode, useForm } from '../../../../providers';
 import './styles/index.less';
 import { IRefListStatusProps } from './models';
 import convertCssColorNameToHex from 'convert-css-color-name-to-hex';
-import { Alert, Tag } from 'antd';
+import { Alert, Skeleton, Tag } from 'antd';
 import { getStyle } from '../../../../utils/publicUtils';
 import { ReferenceListItemDto, useReferenceListGetByName } from '../../../../apis/referenceList';
 
@@ -54,14 +54,16 @@ const RefListStatus: FC<IProps> = ({ model }) => {
   }, [currentStatus, showIcon]);
 
   return (
-    <Tag
-      className="sha-status-tag"
-      color={memoizedColor}
-      style={{ ...getStyle(style, data) }}
-      icon={canShowIcon ? <Icon type={currentStatus?.icon} /> : null}
-    >
-      {currentStatus?.item}
-    </Tag>
+    <Skeleton loading={isFetchingRefListData}>
+      <Tag
+        className="sha-status-tag"
+        color={memoizedColor}
+        style={{ ...getStyle(style, data) }}
+        icon={canShowIcon ? <Icon type={currentStatus?.icon} /> : null}
+      >
+        {currentStatus?.item}
+      </Tag>
+    </Skeleton>
   );
 };
 
