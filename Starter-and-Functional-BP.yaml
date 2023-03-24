@@ -152,12 +152,12 @@ stages:
           $targetBranch = ""
           if ("$(Build.SourceBranch)" -like "*/pull/*")
           {
-              $targetBranch = "$(System.PullRequest.TargetBranch)""
+              $targetBranch = "$(System.PullRequest.TargetBranch)"
               write-host "This is a Pull Request and the target branch is: $targetBranch"  
               write-host "##vso[task.setvariable variable=prTargetBranch]$targetBranch"
           }
           write-host "This is not a Pull Request and the target branch is set to empty string"  
-        workingDirectory: '$(System.DefaultWorkingDirectory)'        
+        workingDirectory: '$(System.DefaultWorkingDirectory)'       
     - task: PowerShell@2
       displayName: Check to establish if this pipeline was triggered from a tag      
       inputs:
@@ -252,7 +252,7 @@ stages:
           $targetBranch = ""
           if ("$(Build.SourceBranch)" -like "*/pull/*")
           {
-              $targetBranch = "$(System.PullRequest.TargetBranch)""
+              $targetBranch = "$(System.PullRequest.TargetBranch)"
               write-host "This is a Pull Request and the target branch is: $targetBranch"  
               write-host "##vso[task.setvariable variable=prTargetBranch]$targetBranch"
           }
@@ -329,7 +329,7 @@ stages:
           $targetBranch = ""
           if ("$(Build.SourceBranch)" -like "*/pull/*")
           {
-              $targetBranch = "$(System.PullRequest.TargetBranch)""
+              $targetBranch = "$(System.PullRequest.TargetBranch)"
               write-host "This is a Pull Request and the target branch is: $targetBranch"  
               write-host "##vso[task.setvariable variable=prTargetBranch]$targetBranch"
           }
@@ -406,7 +406,7 @@ stages:
           $targetBranch = ""
           if ("$(Build.SourceBranch)" -like "*/pull/*")
           {
-              $targetBranch = "$(System.PullRequest.TargetBranch)""
+              $targetBranch = "$(System.PullRequest.TargetBranch)"
               write-host "This is a Pull Request and the target branch is: $targetBranch"  
               write-host "##vso[task.setvariable variable=prTargetBranch]$targetBranch"
           }
