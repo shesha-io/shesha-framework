@@ -42,7 +42,8 @@ stages:
     steps:
     - checkout: self
     - task: PowerShell@2
-      displayName: Check to establish if this pipeline was triggered from a tag  
+      displayName: Check to establish if this pipeline was triggered from a tag
+      retryCountOnTaskFailure: 5
       inputs:
         targetType: 'inline'
         script: |
@@ -192,7 +193,8 @@ stages:
     steps:
     - checkout: self
     - task: PowerShell@2
-      displayName: Check to establish if this pipeline was triggered from a tag  
+      displayName: Check to establish if this pipeline was triggered from a tag
+      retryCountOnTaskFailure: 5      
       inputs:
         targetType: 'inline'
         script: |
@@ -339,7 +341,8 @@ stages:
       vmImage: windows-latest
     steps:
     - task: PowerShell@2
-      displayName: Check to establish if this pipeline was triggered from a tag  
+      displayName: Check to establish if this pipeline was triggered from a tag
+      retryCountOnTaskFailure: 5       
       inputs:
         targetType: 'inline'
         script: |
@@ -406,7 +409,8 @@ stages:
           # }
         workingDirectory: 'shesha-functional-tests/adminportal'
     - task: PowerShell@2
-      displayName: Output to console the current branch  
+      displayName: Output to console the current branch
+      retryCountOnTaskFailure: 5      
       inputs:
         targetType: 'inline'
         script: |
@@ -463,7 +467,8 @@ stages:
       vmImage: windows-latest
     steps:
     - task: PowerShell@2
-      displayName: Check to establish if this pipeline was triggered from a tag  
+      displayName: Check to establish if this pipeline was triggered from a tag
+      retryCountOnTaskFailure: 5      
       inputs:
         targetType: 'inline'
         script: |
