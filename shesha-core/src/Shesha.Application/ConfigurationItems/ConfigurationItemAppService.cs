@@ -17,6 +17,7 @@ using Shesha.Domain.ConfigurationItems;
 using Shesha.Dto.Interfaces;
 using Shesha.Extensions;
 using Shesha.Mvc;
+using Shesha.Reflection;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -186,7 +187,8 @@ namespace Shesha.ConfigurationItems
 
         private IConfigurationItemManager GetSingleManager(ConfigurationItemBase item) 
         {
-            var managerType = typeof(IConfigurationItemManager<>).MakeGenericType(item.GetType());
+            var itemType = item.GetType().StripCastleProxyType();
+            var managerType = typeof(IConfigurationItemManager<>).MakeGenericType(itemType);
             var manager = IocManager.Resolve(managerType) as IConfigurationItemManager;
 
             var allManagers = IocManager.Resolve<IConfigurationItemManager>();

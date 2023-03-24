@@ -3,12 +3,7 @@ using Abp.Domain.Entities.Auditing;
 using Shesha.Authorization.Users;
 using Shesha.Domain.Attributes;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shesha.Domain.ConfigurationItems
 {
@@ -18,6 +13,9 @@ namespace Shesha.Domain.ConfigurationItems
     [Discriminator(DiscriminatorColumn = "ItemType")]
     public class ConfigurationItem : FullAuditedEntity<Guid, User>, IMayHaveTenant
     {
+        [ReadonlyProperty]
+        public virtual string ItemType { get; set; }
+
         /// <summary>
         /// The Guid for the Config Item.
         /// Different versions for the same Config Item will share this Id which the very first version of the item will be responsible for generating.

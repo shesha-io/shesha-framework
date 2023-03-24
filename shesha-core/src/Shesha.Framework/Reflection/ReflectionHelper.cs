@@ -10,6 +10,7 @@ using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Reflection;
 using Castle.DynamicProxy;
+using NHibernate.Intercept;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Proxy;
 using NHibernate.Proxy.DynamicProxy;
@@ -261,7 +262,7 @@ namespace Shesha.Reflection
         public static Type StripCastleProxyType(this Type type)
         {
             #pragma warning disable 612, 618
-            if (type.GetInterfaces().Any(i => i == typeof(INHibernateProxy) || i == typeof(IProxy) || i == typeof(IProxyTargetAccessor)))
+            if (type.GetInterfaces().Any(i => i == typeof(INHibernateProxy) || i == typeof(IProxy) || i == typeof(IProxyTargetAccessor) || i == typeof(IFieldInterceptorAccessor)))
             {
                 return type.BaseType;
             }
