@@ -1,7 +1,7 @@
 import { Empty, Spin, Timeline } from 'antd';
 import React, { FC, useEffect, useMemo } from 'react';
 import { useGet } from 'restful-react';
-import { useDebouncedCallback } from 'use-debounce/lib';
+import { useDebouncedCallback } from 'use-debounce';
 import { EntitiesGetAllQueryParams, useEntitiesGetAll } from '../../apis/entities';
 import { useGlobalState } from '../../providers';
 import { ITimelineProps } from './models';
