@@ -23,7 +23,7 @@ if ("$PipeSourceBranch" -like "*/pull/*"){
 
         write-host "##vso[task.setvariable variable=versionNo]$tag"
     }
-    elseif ("$(System.PullRequest.TargetBranch)" -like "releases/*"){
+    elseif ("$PipeTargetBranch" -like "releases/*"){
         write-host "PR target is a release branch. Setting currentBranch to refs/heads/$PipeTargetBranch"                  
         write-host "##vso[task.setvariable variable=currentBranch]refs/heads/$PipeTargetBranch"
         
@@ -58,8 +58,8 @@ elseif ("$PipeSourceBranch" -like "*/tags/release-*"){
     write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
     write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
 }
-# elseif ("$(Build.SourceBranch)" -like "*/main"){
-#    write-host "Source Branch should be main here: $(Build.SourceBranch)"
-#    write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
-#    write-host "##vso[task.setvariable variable=versionNo]$(Build.BuildNumber)"
+# elseif ("$PipeSourceBranch" -like "*/main"){
+#    write-host "Source Branch should be main here: $PipeSourceBranch"
+#    write-host "##vso[task.setvariable variable=currentBranch]$PipeSourceBranch"
+#    write-host "##vso[task.setvariable variable=versionNo]$PipeSourceBranch"
 # }
