@@ -78,6 +78,11 @@ import { GENERIC_ENTITIES_ENDPOINT } from '../../constants';
 import { useConfigurableAction } from '../configurableActionsDispatcher';
 
 interface IDataTableProviderProps {
+  
+  value?: any;
+
+  sourceType?: 'Form' | 'Entity' |'Url';
+  
   /** Type of entity */
   entityType: string;
   /** Configurable columns. Is used in pair with entityType  */
@@ -139,10 +144,14 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
   actionOwnerId,
   actionOwnerName,
   onFetchDataSuccess,
+  sourceType,
+  ...props
 }) => {
   const [state, dispatch] = useThunkReducer(dataTableReducer, {
     ...DATA_TABLE_CONTEXT_INITIAL_STATE,
     entityType,
+    getDataPath,
+    sourceType,
     configurableColumns: configurableColumns ?? [],
     title,
     parentEntityId,
@@ -162,7 +171,9 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
       url: getDataUrl,
       method: 'GET',
       headers,
-    }).then(response => response.data as IResult<ITableDataResponse>);
+    }).then(response =>
+       response.data as IResult<ITableDataResponse>
+    );
   };
 
   const expandFetchDataPayload = (
@@ -269,10 +280,13 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
   ): IResult<ITableDataInternalResponse> => {
     if (!response.result) return { ...response, result: null };
 
+    const items = response.result.items ?? (Array.isArray(response.result) ? response.result : null);
+    const totalCount = response.result.totalCount ?? items?.length;
+
     const internalResult: ITableDataInternalResponse = {
-      totalRows: response.result.totalCount,
-      totalPages: Math.ceil(response.result.totalCount / pageSize),
-      rows: response.result.items,
+      totalRows: totalCount,
+      totalPages: Math.ceil(totalCount / pageSize),
+      rows: items,
       totalRowsBeforeFilter: 0,
     };
 
@@ -292,6 +306,23 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
   const fetchDataTableData = (
     payload: IGetDataPayloadInternal
   ): Promise<IResult<ITableDataInternalResponse>> | null => {
+    
+    // fetch data from the form value
+    if (sourceType == 'Form' ) {
+      let filtered = [];
+      if (Boolean(props.value) && Array.isArray(props.value)) {
+        filtered = props.value.filter((_, index) => {
+          const skip = (payload.currentPage - 1) * payload.pageSize;
+          return index >= skip && index < skip + payload.pageSize
+            // ToDo: Add filter by fields
+            // ToDo: Add sort by fields
+            ;
+        });
+      }
+
+      return Promise.resolve(convertDataResponse({result:{totalCount: props.value?.length ?? 0, items: filtered}}, payload.pageSize));
+    }
+
     // save current user configuration to local storage
     const userConfigToSave: IDataTableUserConfig = {
       ...userDTSettingsInner,
@@ -315,7 +346,9 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
 
     //console.log('DT fetch', { payload, expandedPayload, fetchPayload })
 
-    return fetchDataTableDataInternal(fetchPayload).then(response => convertDataResponse(response, payload.pageSize));
+    return fetchDataTableDataInternal(fetchPayload).then(response => 
+      convertDataResponse(response, payload.pageSize)
+    );
   };
 
   const [userDTSettingsInner, setUserDTSettings] = useLocalStorage<IDataTableUserConfig>(
@@ -342,7 +375,7 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
 
   // fetch table data when config is ready or something changed (selected filter, changed current page etc.)
   useEffect(() => {
-    if (entityType) {
+    if (entityType || getDataPath || sourceType == 'Form') {
       // fecth using entity type
       tableIsReady.current = true; // is used to prevent unneeded data fetch by the ReactTable. Any data fetch requests before this line should be skipped
       refreshTable();
@@ -354,13 +387,14 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
     state.selectedPageSize,
     state.tableConfigLoaded,
     state.entityType,
+    state.getDataPath,
     state.columns?.length,
     state.tableSorting,
   ]);
 
   // fetch table data when config is ready or something changed (selected filter, changed current page etc.)
   const refreshTableWhenAppropriate = () => {
-    if (entityType) {
+    if (entityType || getDataPath || props.value) {
       // fecth using entity type
       tableIsReady.current = true; // is used to prevent unneeded data fetch by the ReactTable. Any data fetch requests before this line should be skipped
       refreshTable();
@@ -380,7 +414,7 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
   }, [state.predefinedFilters]);
 
   const refreshTable = () => {
-    if (columnsAreReady && tableIsReady.current === true) {
+    if (tableIsReady.current === true) {
       fetchTableData();
     }
   };
@@ -432,8 +466,6 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
     300
   );
 
-  const columnsAreReady = entityType && state?.columns?.length > 0;
-
   const fetchTableData = (payload?: IGetDataPayloadInternal) => {
     const internalPayload = {
       ...getFetchTableDataPayload(),
@@ -445,7 +477,7 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
     // so we have to save the payload on every fetch request but skip data fetch in some cases
     dispatch(fetchTableDataAction(internalPayload)); // todo: remove this line, it's needed just to save the Id
 
-    if (columnsAreReady && tableIsReady.current === true) {
+    if (tableIsReady.current === true) {
       debouncedFetch(internalPayload);
     }
   };
@@ -693,7 +725,7 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
       .catch(e => {
         console.log(e);
       });
-  }, [state.configurableColumns, state.entityType]);
+  }, [state.configurableColumns, state.entityType, state.getDataPath]);
 
   const registerConfigurableColumns = (ownerId: string, columns: IConfigurableColumnsBase[]) => {
     dispatch(registerConfigurableColumnsAction({ ownerId, columns }));

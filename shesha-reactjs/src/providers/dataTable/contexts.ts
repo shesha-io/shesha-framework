@@ -63,9 +63,13 @@ export interface IDataTableStateContext
    */
   displayColumnName?: string;
 
+  sourceType?: 'Form' | 'Entity' |'Url';
+
   formData?: any;
   /** Type of entity */
   entityType?: string;
+  /** Endpoint URl (if provided) */
+  getDataPath?: string;
   /** Configurable columns. Is used in pair with entityType  */
   configurableColumns?: IConfigurableColumnsBase[];
   /** Pre-defined stored filters. configurable in the forms designer */
