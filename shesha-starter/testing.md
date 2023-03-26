@@ -1,1 +1,1 @@
-Used Bash for DNS check
+Test 1 - After cleanup
