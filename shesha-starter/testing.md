@@ -1,1 +1,1 @@
-jsm final test
+Used Bash for DNS check
