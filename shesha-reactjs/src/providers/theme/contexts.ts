@@ -4,6 +4,8 @@ import { Theme } from 'antd/lib/config-provider/context';
 export interface IApplicationTheme {
   application?: Theme;
   sidebar?: 'dark' | 'light';
+  sidebarBackground?: string;
+  layoutBackground?: string;
 }
 
 export interface IThemeStateContext {
@@ -26,6 +28,7 @@ export const THEME_CONTEXT_INITIAL_STATE: IThemeStateContext = {
       infoColor: '#1890ff',
     },
     sidebar: 'dark',
+    layoutBackground: '#f0f2f5',
   },
 };
 
