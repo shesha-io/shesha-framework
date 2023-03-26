@@ -1,1 +1,1 @@
-Test 1 - Checking why PR sometime do work
+Test 1 - Removed existing db to pipeline can complete sucessfully
