@@ -80,11 +80,23 @@ namespace Shesha.DynamicEntities.Binder
             ).ToList();
         }
 
+        private bool IsFrameworkFields(JProperty prop)
+        {
+            return prop.Name.ToLower() != nameof(IEntity.Id).ToLower()
+                && prop.Name != nameof(IHasFormFieldsList._formFields)
+                && prop.Name != nameof(IHasJObjectField._jObject).ToCamelCase()
+                && prop.Name != nameof(IHasClassNameField._className)
+                && prop.Name != nameof(IHasDisplayNameField._displayName);
+        }
+
         public async Task<bool> BindPropertiesAsync(JObject jobject, object entity, EntityModelBindingContext context,
             string propertyName = null, List<string> formFields = null)
         {
             var entityType = entity.GetType().StripCastleProxyType();
-            var properties = entityType.GetProperties().Where(p => p.CanWrite && p.Name != "Id").ToList();
+
+            var properties = entityType.GetProperties().Where(p => p.CanWrite).ToList();
+            if (entity.GetType().GetProperty("Id")?.GetValue(entity) != null)
+                properties = properties.Where(p => p.Name != "Id").ToList();
 
             var config = _entityConfigRepository.GetAll().FirstOrDefault(x => x.Namespace == entityType.Namespace && x.ClassName == entityType.Name && !x.IsDeleted);
 
@@ -100,8 +112,7 @@ namespace Shesha.DynamicEntities.Binder
 
             formFieldsInternal = formFieldsInternal.Select(x => x.ToCamelCase()).ToList();
 
-            var jProps = ExcludeFrameworkFields(jobject.Properties().ToList());
-
+            var jProps = jobject.Properties().ToList();
 
             // properties that were added to the _formFields list but not presented in the json should be reset to Null
             var missedFormFields = formFieldsInternal.Select(x => { var parts = x.Split("."); return parts[0]; })
@@ -509,7 +520,8 @@ namespace Shesha.DynamicEntities.Binder
                     }
                     else
                     {
-                        context.LocalValidationResult.Add(new ValidationResult($"Property '{jproperty.Path}' not found for '{propertyName ?? entity.GetType().Name}'."));
+                        if (!IsFrameworkFields(jproperty))
+                            context.LocalValidationResult.Add(new ValidationResult($"Property '{jproperty.Path}' not found for '{propertyName ?? entity.GetType().Name}'."));
                     }
                 }
                 catch (CascadeUpdateRuleException ex)
