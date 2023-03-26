@@ -1,18 +1,11 @@
 import { Divider, Form, Radio, Space } from 'antd';
-import { Theme } from 'antd/lib/config-provider/context';
 import React, { FC, Fragment, useCallback } from 'react';
 import { ColorResult } from 'react-color';
 import { SectionSeparator } from '../../../components';
 import ColorPicker from '../../../components/colorPicker';
 import { useTheme } from '../../../providers';
+import { IConfigurableTheme } from '../../../providers/theme/contexts';
 import { humanizeString } from '../../../utils/string';
-
-interface IConfigurableTheme {
-  application?: Theme;
-  sidebar?: 'dark' | 'light';
-  sidebarBackground?: string;
-  layoutBackground?: string;
-}
 
 const ThemeParameters: FC = () => {
   const { theme, changeTheme } = useTheme();
@@ -47,7 +40,7 @@ const ThemeParameters: FC = () => {
   );
 
   const colorConfigs = [
-    { name: 'processingColor', onChange: (hex: string) => onColorChange({ processingColor: hex }) },
+    { name: 'primaryColor', onChange: (hex: string) => onColorChange({ primaryColor: hex }) },
     { name: 'errorColor', onChange: (hex: string) => onColorChange({ errorColor: hex }) },
     { name: 'warningColor', onChange: (hex: string) => onColorChange({ warningColor: hex }) },
     { name: 'successColor', onChange: (hex: string) => onColorChange({ successColor: hex }) },
