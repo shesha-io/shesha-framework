@@ -18,7 +18,8 @@ if ("$PipeSourceBranch" -like "*/pull/*"){
         write-host "##vso[task.setvariable variable=currentBranch]refs/heads/main"
         
         git fetch --tags
-        $tag = git describe --tags $(git rev-list --tags --max-count=1 --no-walk $PipeSourceVersion)
+        # $tag = git describe --tags $(git rev-list --tags --max-count=1 --no-walk $PipeSourceVersion)
+        $tag = git describe --tags $(git rev-list --tags --max-count=1 --no-walk)        
         Write-Host "Tag: $tag"
 
         write-host "##vso[task.setvariable variable=versionNo]$tag"
