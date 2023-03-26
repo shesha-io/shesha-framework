@@ -8,6 +8,7 @@ import { IOpenCageResponse } from '../../../googlePlacesAutocomplete/models';
 import ValidationErrors from '../../../validationErrors';
 import { customAddressEventHandler } from '../utils';
 import { IAddressCompomentProps } from './models';
+import { getAddressValue, getSearchOptions } from './utils';
 
 interface IAutoCompletePlacesFieldProps extends IAddressCompomentProps {
   value?: any;
@@ -19,7 +20,6 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = model => {
     debounce,
     googleMapsApiKey,
     minCharactersSearch,
-    name,
     onChange,
     openCageApiKey,
     placeholder,
@@ -38,7 +38,6 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = model => {
   const { backendUrl } = useSheshaApplication();
 
   const onSetPayload = (resolve: Function, payload: IOpenCageResponse | IAddressAndCoords) => {
-    form?.setFieldsValue({ [name]: payload });
     onChange((payload as IAddressAndCoords).address);
     resolve(payload);
   };
@@ -81,13 +80,14 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = model => {
       <ValidationErrors error={error} />
 
       <GooglePlacesAutocomplete
-        value={value}
+        value={getAddressValue(value)}
         debounce={debounce}
         externalApiKey={googleMapsApiKey}
         externalLoader={loading}
         placeholder={placeholder}
         prefix={prefix}
         disableGoogleEvent={disableGoogleEvent}
+        searchOptions={getSearchOptions(model)}
         {...customAddressEventHandler(eventProps)}
       />
     </Fragment>

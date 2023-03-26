@@ -42,73 +42,30 @@ stages:
     steps:
     - checkout: self
     - task: PowerShell@2
-      displayName: Check to establish if this pipeline was triggered from a tag
+      displayName: Check if Pull Request
       retryCountOnTaskFailure: 5
       inputs:
         targetType: 'inline'
         script: |
-          # Write your PowerShell commands here.
-          write-host "The build number is: $(Build.BuildNumber)"
-          write-host "The source branch is: $(Build.SourceBranch)"
-
-          $branch = 'Unknown'
-
-          write-host "This is the commit id using the pre-defined variable Build.SourceVersion: $(Build.SourceVersion)"
-          if ("$(Build.SourceBranch)" -like "*/pull/*"){
-              write-host "Source Branch should be pull here: $(Build.SourceBranch)"
-              write-host "Target Branch of the PR should be: $(System.PullRequest.TargetBranch)"              
-
-              if ("$(System.PullRequest.TargetBranch)" -eq "main"){
-                  write-host "PR target is main branch. Setting currentBranch to refs/heads/main"  
-                  write-host "##vso[task.setvariable variable=currentBranch]refs/heads/main"
-                  
-                  git fetch --tags
-                  $tag = git describe --tags $(git rev-list --tags --max-count=1 --no-walk $(Build.SourceVersion))
-                  Write-Host "Tag: $tag"
-
-                  write-host "##vso[task.setvariable variable=versionNo]$tag"
-              }
-              elseif ("$(System.PullRequest.TargetBranch)" -like "releases/*"){
-                  write-host "PR target is a release branch. Setting currentBranch to refs/heads/$(System.PullRequest.TargetBranch)"                  
-                  write-host "##vso[task.setvariable variable=currentBranch]refs/heads/$(System.PullRequest.TargetBranch)"
-                  
-                  $path = "refs/heads/$(System.PullRequest.TargetBranch)"
-                  $version = Split-Path $path -Leaf
-                  Write-Host $version
-
-                  write-host "##vso[task.setvariable variable=versionNo]$version"
-              }              
-          }  
-          elseif ("$(Build.SourceBranch)" -like "*/releases/*"){
-            write-host "Source Branch should be releases here: $(Build.SourceBranch)"            
-            write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
-
-            $path = "$(Build.SourceBranch)"
-            $version = Split-Path $path -Leaf
-            Write-Host $version
-
-            write-host "##vso[task.setvariable variable=versionNo]$version"
+          $targetBranch = ""
+          if ("$(Build.SourceBranch)" -like "*/pull/*")
+          {
+              $targetBranch = "$(System.PullRequest.TargetBranch)"
+              write-host "This is a Pull Request and the target branch is: $targetBranch"  
+              write-host "##vso[task.setvariable variable=prTargetBranch]$targetBranch"
           }
-          elseif ("$(Build.SourceBranch)" -like "*/tags/release-*"){
-              write-host "Source Branch should be tags here: $(Build.SourceBranch)"
-              #$branch = Invoke-Expression "git branch -r --contains $(Build.SourceBranch)"
-
-              $path = "$(Build.SourceBranch)"
-              $version = Split-Path $path -Leaf
-              Write-Host $version
-
-              $releaseVersion = "$version".Replace("release-", "")
-              $releaseBranch = "refs/heads/releases/$releaseVersion"
-
-              write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
-              write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
-          }
-          # elseif ("$(Build.SourceBranch)" -like "*/main"){
-          #    write-host "Source Branch should be main here: $(Build.SourceBranch)"
-          #    write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
-          #    write-host "##vso[task.setvariable variable=versionNo]$(Build.BuildNumber)"
-          # }
-        workingDirectory: '$(System.DefaultWorkingDirectory)'      
+          else
+          {
+            write-host "This is not a Pull Request and the target branch is set to empty string"  
+            write-host "##vso[task.setvariable variable=prTargetBranch]''"                              
+          }                         
+        workingDirectory: '$(System.DefaultWorkingDirectory)'    
+    - task: PowerShell@2
+      displayName: Check to establish if this pipeline was triggered from a tag
+      inputs:
+        filePath: 'ReleaseFlow.ps1'
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        arguments: '-PipeBuildNumber "$(Build.BuildNumber)" -PipeSourceBranch "$(Build.SourceBranch)" -PipeSourceVersion "$(Build.SourceVersion)" -PipeTargetBranch "$(prTargetBranch)"' 
     - task: PowerShell@2
       displayName: Output to console the current branch and version
       inputs:
@@ -193,73 +150,29 @@ stages:
     steps:
     - checkout: self
     - task: PowerShell@2
-      displayName: Check to establish if this pipeline was triggered from a tag
-      retryCountOnTaskFailure: 5      
+      displayName: Check if Pull Request
       inputs:
         targetType: 'inline'
         script: |
-          # Write your PowerShell commands here.
-          write-host "The build number is: $(Build.BuildNumber)"
-          write-host "The source branch is: $(Build.SourceBranch)"
-
-          $branch = 'Unknown'
-
-          write-host "This is the commit id using the pre-defined variable Build.SourceVersion: $(Build.SourceVersion)"
-          if ("$(Build.SourceBranch)" -like "*/pull/*"){
-              write-host "Source Branch should be pull here: $(Build.SourceBranch)"
-              write-host "Target Branch of the PR should be: $(System.PullRequest.TargetBranch)"              
-
-              if ("$(System.PullRequest.TargetBranch)" -eq "main"){
-                  write-host "PR target is main branch. Setting currentBranch to refs/heads/main"  
-                  write-host "##vso[task.setvariable variable=currentBranch]refs/heads/main"
-                  
-                  git fetch --tags
-                  $tag = git describe --tags $(git rev-list --tags --max-count=1 --no-walk $(Build.SourceVersion))
-                  Write-Host "Tag: $tag"
-
-                  write-host "##vso[task.setvariable variable=versionNo]$tag"
-              }
-              elseif ("$(System.PullRequest.TargetBranch)" -like "releases/*"){
-                  write-host "PR target is a release branch. Setting currentBranch to refs/heads/$(System.PullRequest.TargetBranch)"                  
-                  write-host "##vso[task.setvariable variable=currentBranch]refs/heads/$(System.PullRequest.TargetBranch)"
-                  
-                  $path = "refs/heads/$(System.PullRequest.TargetBranch)"
-                  $version = Split-Path $path -Leaf
-                  Write-Host $version
-
-                  write-host "##vso[task.setvariable variable=versionNo]$version"
-              }              
-          }  
-          elseif ("$(Build.SourceBranch)" -like "*/releases/*"){
-            write-host "Source Branch should be releases here: $(Build.SourceBranch)"            
-            write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
-
-            $path = "$(Build.SourceBranch)"
-            $version = Split-Path $path -Leaf
-            Write-Host $version
-
-            write-host "##vso[task.setvariable variable=versionNo]$version"
+          $targetBranch = ""
+          if ("$(Build.SourceBranch)" -like "*/pull/*")
+          {
+              $targetBranch = "$(System.PullRequest.TargetBranch)"
+              write-host "This is a Pull Request and the target branch is: $targetBranch"  
+              write-host "##vso[task.setvariable variable=prTargetBranch]$targetBranch"
           }
-          elseif ("$(Build.SourceBranch)" -like "*/tags/release-*"){
-              write-host "Source Branch should be tags here: $(Build.SourceBranch)"
-              #$branch = Invoke-Expression "git branch -r --contains $(Build.SourceBranch)"
-
-              $path = "$(Build.SourceBranch)"
-              $version = Split-Path $path -Leaf
-              Write-Host $version
-
-              $releaseVersion = "$version".Replace("release-", "")
-              $releaseBranch = "refs/heads/releases/$releaseVersion"
-
-              write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
-              write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
-          }
-          # elseif ("$(Build.SourceBranch)" -like "*/main"){
-          #    write-host "Source Branch should be main here: $(Build.SourceBranch)"
-          #    write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
-          #    write-host "##vso[task.setvariable variable=versionNo]$(Build.BuildNumber)"
-          # }
-        workingDirectory: '$(System.DefaultWorkingDirectory)'
+          else
+          {
+            write-host "This is not a Pull Request and the target branch is set to empty string"  
+            write-host "##vso[task.setvariable variable=prTargetBranch]''"                              
+          }                                   
+        workingDirectory: '$(System.DefaultWorkingDirectory)'       
+    - task: PowerShell@2
+      displayName: Check to establish if this pipeline was triggered from a tag      
+      inputs:
+        filePath: 'ReleaseFlow.ps1'
+        workingDirectory: '$(System.DefaultWorkingDirectory)'    
+        arguments: '-PipeBuildNumber "$(Build.BuildNumber)" -PipeSourceBranch "$(Build.SourceBranch)" -PipeSourceVersion "$(Build.SourceVersion)" -PipeTargetBranch "$(prTargetBranch)"'
     - task: PowerShell@2
       displayName: Output to console the current branch and version
       inputs:
@@ -341,73 +254,30 @@ stages:
       vmImage: windows-latest
     steps:
     - task: PowerShell@2
-      displayName: Check to establish if this pipeline was triggered from a tag
+      displayName: Check if Pull Request
       retryCountOnTaskFailure: 5       
       inputs:
         targetType: 'inline'
         script: |
-          # Write your PowerShell commands here.
-          write-host "The build number is: $(Build.BuildNumber)"
-          write-host "The source branch is: $(Build.SourceBranch)"
-
-          $branch = 'Unknown'
-
-          write-host "This is the commit id using the pre-defined variable Build.SourceVersion: $(Build.SourceVersion)"
-          if ("$(Build.SourceBranch)" -like "*/pull/*"){
-              write-host "Source Branch should be pull here: $(Build.SourceBranch)"
-              write-host "Target Branch of the PR should be: $(System.PullRequest.TargetBranch)"              
-
-              if ("$(System.PullRequest.TargetBranch)" -eq "main"){
-                  write-host "PR target is main branch. Setting currentBranch to refs/heads/main"  
-                  write-host "##vso[task.setvariable variable=currentBranch]refs/heads/main"
-                  
-                  git fetch --tags
-                  $tag = git describe --tags $(git rev-list --tags --max-count=1 --no-walk $(Build.SourceVersion))
-                  Write-Host "Tag: $tag"
-
-                  write-host "##vso[task.setvariable variable=versionNo]$tag"
-              }
-              elseif ("$(System.PullRequest.TargetBranch)" -like "releases/*"){
-                  write-host "PR target is a release branch. Setting currentBranch to refs/heads/$(System.PullRequest.TargetBranch)"                  
-                  write-host "##vso[task.setvariable variable=currentBranch]refs/heads/$(System.PullRequest.TargetBranch)"
-                  
-                  $path = "refs/heads/$(System.PullRequest.TargetBranch)"
-                  $version = Split-Path $path -Leaf
-                  Write-Host $version
-
-                  write-host "##vso[task.setvariable variable=versionNo]$version"
-              }              
-          }  
-          elseif ("$(Build.SourceBranch)" -like "*/releases/*"){
-            write-host "Source Branch should be releases here: $(Build.SourceBranch)"            
-            write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
-
-            $path = "$(Build.SourceBranch)"
-            $version = Split-Path $path -Leaf
-            Write-Host $version
-
-            write-host "##vso[task.setvariable variable=versionNo]$version"
+          $targetBranch = ""
+          if ("$(Build.SourceBranch)" -like "*/pull/*")
+          {
+              $targetBranch = "$(System.PullRequest.TargetBranch)"
+              write-host "This is a Pull Request and the target branch is: $targetBranch"  
+              write-host "##vso[task.setvariable variable=prTargetBranch]$targetBranch"
           }
-          elseif ("$(Build.SourceBranch)" -like "*/tags/release-*"){
-              write-host "Source Branch should be tags here: $(Build.SourceBranch)"
-              #$branch = Invoke-Expression "git branch -r --contains $(Build.SourceBranch)"
-
-              $path = "$(Build.SourceBranch)"
-              $version = Split-Path $path -Leaf
-              Write-Host $version
-
-              $releaseVersion = "$version".Replace("release-", "")
-              $releaseBranch = "refs/heads/releases/$releaseVersion"
-
-              write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
-              write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
-          }
-          # elseif ("$(Build.SourceBranch)" -like "*/main"){
-          #    write-host "Source Branch should be main here: $(Build.SourceBranch)"
-          #    write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
-          #    write-host "##vso[task.setvariable variable=versionNo]$(Build.BuildNumber)"
-          # }
-        workingDirectory: 'shesha-functional-tests/adminportal'
+          else
+          {
+            write-host "This is not a Pull Request and the target branch is set to empty string"  
+            write-host "##vso[task.setvariable variable=prTargetBranch]''"                              
+          }                                   
+        workingDirectory: '$(System.DefaultWorkingDirectory)'        
+    - task: PowerShell@2
+      displayName: Check to establish if this pipeline was triggered from a tag      
+      inputs:
+        filePath: 'ReleaseFlow.ps1'
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        arguments: '-PipeBuildNumber "$(Build.BuildNumber)" -PipeSourceBranch "$(Build.SourceBranch)" -PipeSourceVersion "$(Build.SourceVersion)" -PipeTargetBranch "$(prTargetBranch)"'
     - task: PowerShell@2
       displayName: Output to console the current branch
       retryCountOnTaskFailure: 5      
@@ -467,73 +337,30 @@ stages:
       vmImage: windows-latest
     steps:
     - task: PowerShell@2
-      displayName: Check to establish if this pipeline was triggered from a tag
+      displayName: Check if Pull Request
       retryCountOnTaskFailure: 5      
       inputs:
         targetType: 'inline'
         script: |
-          # Write your PowerShell commands here.
-          write-host "The build number is: $(Build.BuildNumber)"
-          write-host "The source branch is: $(Build.SourceBranch)"
-
-          $branch = 'Unknown'
-
-          write-host "This is the commit id using the pre-defined variable Build.SourceVersion: $(Build.SourceVersion)"
-          if ("$(Build.SourceBranch)" -like "*/pull/*"){
-              write-host "Source Branch should be pull here: $(Build.SourceBranch)"
-              write-host "Target Branch of the PR should be: $(System.PullRequest.TargetBranch)"              
-
-              if ("$(System.PullRequest.TargetBranch)" -eq "main"){
-                  write-host "PR target is main branch. Setting currentBranch to refs/heads/main"  
-                  write-host "##vso[task.setvariable variable=currentBranch]refs/heads/main"
-                  
-                  git fetch --tags
-                  $tag = git describe --tags $(git rev-list --tags --max-count=1 --no-walk $(Build.SourceVersion))
-                  Write-Host "Tag: $tag"
-
-                  write-host "##vso[task.setvariable variable=versionNo]$tag"
-              }
-              elseif ("$(System.PullRequest.TargetBranch)" -like "releases/*"){
-                  write-host "PR target is a release branch. Setting currentBranch to refs/heads/$(System.PullRequest.TargetBranch)"                  
-                  write-host "##vso[task.setvariable variable=currentBranch]refs/heads/$(System.PullRequest.TargetBranch)"
-                  
-                  $path = "refs/heads/$(System.PullRequest.TargetBranch)"
-                  $version = Split-Path $path -Leaf
-                  Write-Host $version
-
-                  write-host "##vso[task.setvariable variable=versionNo]$version"
-              }              
-          }  
-          elseif ("$(Build.SourceBranch)" -like "*/releases/*"){
-            write-host "Source Branch should be releases here: $(Build.SourceBranch)"            
-            write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
-
-            $path = "$(Build.SourceBranch)"
-            $version = Split-Path $path -Leaf
-            Write-Host $version
-
-            write-host "##vso[task.setvariable variable=versionNo]$version"
+          $targetBranch = ""
+          if ("$(Build.SourceBranch)" -like "*/pull/*")
+          {
+              $targetBranch = "$(System.PullRequest.TargetBranch)"
+              write-host "This is a Pull Request and the target branch is: $targetBranch"  
+              write-host "##vso[task.setvariable variable=prTargetBranch]$targetBranch"
           }
-          elseif ("$(Build.SourceBranch)" -like "*/tags/release-*"){
-              write-host "Source Branch should be tags here: $(Build.SourceBranch)"
-              #$branch = Invoke-Expression "git branch -r --contains $(Build.SourceBranch)"
-
-              $path = "$(Build.SourceBranch)"
-              $version = Split-Path $path -Leaf
-              Write-Host $version
-
-              $releaseVersion = "$version".Replace("release-", "")
-              $releaseBranch = "refs/heads/releases/$releaseVersion"
-
-              write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
-              write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
-          }
-          # elseif ("$(Build.SourceBranch)" -like "*/main"){
-          #    write-host "Source Branch should be main here: $(Build.SourceBranch)"
-          #    write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
-          #    write-host "##vso[task.setvariable variable=versionNo]$(Build.BuildNumber)"
-          # }
-        workingDirectory: 'shesha-starter/frontend'
+          else
+          {
+            write-host "This is not a Pull Request and the target branch is set to empty string"  
+            write-host "##vso[task.setvariable variable=prTargetBranch]''"                              
+          }                             
+        workingDirectory: '$(System.DefaultWorkingDirectory)'        
+    - task: PowerShell@2
+      displayName: Check to establish if this pipeline was triggered from a tag
+      inputs:
+        filePath: 'ReleaseFlow.ps1'
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        arguments: '-PipeBuildNumber "$(Build.BuildNumber)" -PipeSourceBranch "$(Build.SourceBranch)" -PipeSourceVersion "$(Build.SourceVersion)" -PipeTargetBranch "$(prTargetBranch)"'
     - task: PowerShell@2
       displayName: Output to console the current branch  
       inputs:
@@ -592,73 +419,30 @@ stages:
       vmImage: windows-latest
     steps:
     - task: PowerShell@2
-      displayName: Check to establish if this pipeline was triggered from a tag
+      displayName: Check if Pull Request
       retryCountOnTaskFailure: 5      
       inputs:
         targetType: 'inline'
         script: |
-          # Write your PowerShell commands here.
-          write-host "The build number is: $(Build.BuildNumber)"
-          write-host "The source branch is: $(Build.SourceBranch)"
-
-          $branch = 'Unknown'
-
-          write-host "This is the commit id using the pre-defined variable Build.SourceVersion: $(Build.SourceVersion)"
-          if ("$(Build.SourceBranch)" -like "*/pull/*"){
-              write-host "Source Branch should be pull here: $(Build.SourceBranch)"
-              write-host "Target Branch of the PR should be: $(System.PullRequest.TargetBranch)"              
-
-              if ("$(System.PullRequest.TargetBranch)" -eq "main"){
-                  write-host "PR target is main branch. Setting currentBranch to refs/heads/main"  
-                  write-host "##vso[task.setvariable variable=currentBranch]refs/heads/main"
-                  
-                  git fetch --tags
-                  $tag = git describe --tags $(git rev-list --tags --max-count=1 --no-walk $(Build.SourceVersion))
-                  Write-Host "Tag: $tag"
-
-                  write-host "##vso[task.setvariable variable=versionNo]$tag"
-              }
-              elseif ("$(System.PullRequest.TargetBranch)" -like "releases/*"){
-                  write-host "PR target is a release branch. Setting currentBranch to refs/heads/$(System.PullRequest.TargetBranch)"                  
-                  write-host "##vso[task.setvariable variable=currentBranch]refs/heads/$(System.PullRequest.TargetBranch)"
-                  
-                  $path = "refs/heads/$(System.PullRequest.TargetBranch)"
-                  $version = Split-Path $path -Leaf
-                  Write-Host $version
-
-                  write-host "##vso[task.setvariable variable=versionNo]$version"
-              }              
-          }  
-          elseif ("$(Build.SourceBranch)" -like "*/releases/*"){
-            write-host "Source Branch should be releases here: $(Build.SourceBranch)"            
-            write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
-
-            $path = "$(Build.SourceBranch)"
-            $version = Split-Path $path -Leaf
-            Write-Host $version
-
-            write-host "##vso[task.setvariable variable=versionNo]$version"
+          $targetBranch = ""
+          if ("$(Build.SourceBranch)" -like "*/pull/*")
+          {
+              $targetBranch = "$(System.PullRequest.TargetBranch)"
+              write-host "This is a Pull Request and the target branch is: $targetBranch"  
+              write-host "##vso[task.setvariable variable=prTargetBranch]$targetBranch"
           }
-          elseif ("$(Build.SourceBranch)" -like "*/tags/release-*"){
-              write-host "Source Branch should be tags here: $(Build.SourceBranch)"
-              #$branch = Invoke-Expression "git branch -r --contains $(Build.SourceBranch)"
-
-              $path = "$(Build.SourceBranch)"
-              $version = Split-Path $path -Leaf
-              Write-Host $version
-
-              $releaseVersion = "$version".Replace("release-", "")
-              $releaseBranch = "refs/heads/releases/$releaseVersion"
-
-              write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
-              write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
+          else
+          {
+            write-host "This is not a Pull Request and the target branch is set to empty string"  
+            write-host "##vso[task.setvariable variable=prTargetBranch]''"                              
           }
-          # elseif ("$(Build.SourceBranch)" -like "*/main"){
-          #    write-host "Source Branch should be main here: $(Build.SourceBranch)"
-          #    write-host "##vso[task.setvariable variable=currentBranch]$(Build.SourceBranch)"
-          #    write-host "##vso[task.setvariable variable=versionNo]$(Build.BuildNumber)"
-          # }
+        workingDirectory: '$(System.DefaultWorkingDirectory)'        
+    - task: PowerShell@2
+      displayName: Check to establish if this pipeline was triggered from a tag
+      inputs:
+        filePath: 'ReleaseFlow.ps1'
         workingDirectory: '$(System.DefaultWorkingDirectory)'
+        arguments: '-PipeBuildNumber "$(Build.BuildNumber)" -PipeSourceBranch "$(Build.SourceBranch)" -PipeSourceVersion "$(Build.SourceVersion)" -PipeTargetBranch "$(prTargetBranch)"'
     - task: PowerShell@2
       displayName: Delete Pipeline and Actions Yaml Files
       inputs:

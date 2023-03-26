@@ -7,7 +7,6 @@ import ConfigurableFormItem from '../formItem';
 import AutoCompletePlacesControl from './control';
 import { IAddressCompomentProps } from './models';
 import AddressSettings from './settings';
-import { getAddressModel } from './utils';
 
 const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
   type: 'address',
@@ -18,10 +17,8 @@ const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
 
     const readOnly = model?.readOnly || formMode === 'readonly';
 
-    const addressModel = getAddressModel(model);
-
     return (
-      <ConfigurableFormItem model={addressModel}>
+      <ConfigurableFormItem model={model}>
         <ReadOnlyDisplayFormItemWrapper readOnly={readOnly} disabled={model?.disabled}>
           <AutoCompletePlacesControl {...model} />
         </ReadOnlyDisplayFormItemWrapper>

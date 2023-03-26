@@ -51,9 +51,11 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
         if (entityConfig == null)
             return null;
 
+        typeName = typeName.Replace(" ", "").ToLower();
+
         return entityConfig.ViewConfigurations
-            .FirstOrDefault(x => x.Type == typeName || x.Type.Replace(" ", "").ToLower() == typeName || x.Type.ToLower() == typeName)?.FormId
-            ?? new FormIdFullNameDto() { Name = $"{entityConfigName}-{typeName.Replace(" ", "").ToLower()}", Module = entityConfig.Module?.Name };
+            .FirstOrDefault(x => x.Type == typeName || x.Type.Replace(" ", "").ToLower() == typeName)?.FormId
+            ?? new FormIdFullNameDto() { Name = $"{entityConfigName}-{typeName}", Module = entityConfig.Module?.Name };
     }
 
     // Used to avoid performance issues
