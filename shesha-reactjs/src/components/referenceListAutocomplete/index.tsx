@@ -25,7 +25,7 @@ interface IOption {
 
 const baseItemFilter = [
     {
-        "==": [{ "var": "configuration.isLast" }, true]
+        "==": [{ "var": "isLast" }, true]
     }
 ];
 const getFilter = (term: string) => {
@@ -33,8 +33,8 @@ const getFilter = (term: string) => {
         ? [
             {
                 or: [
-                    { 'in': [term, { 'var': 'configuration.name' }] },
-                    { 'in': [term, { 'var': 'configuration.module.name' }] },
+                    { 'in': [term, { 'var': 'name' }] },
+                    { 'in': [term, { 'var': 'module.name' }] },
                 ]
             },
         ]
@@ -45,7 +45,7 @@ const getFilter = (term: string) => {
     return JSON.stringify(filter);
 }
 const REFERENCE_LIST_ENTITY_TYPE = 'Shesha.Framework.ReferenceList';
-const REFERENCE_LIST_PROPERTIES = 'id configuration { name, module { id name }, label, description, versionNo }';
+const REFERENCE_LIST_PROPERTIES = 'id name module { id name } label description versionNo';
 const getListFetcherQueryParams = (term: string, maxResultCount): IGenericGetAllPayload => {
     return {
         skipCount: 0,
@@ -54,7 +54,7 @@ const getListFetcherQueryParams = (term: string, maxResultCount): IGenericGetAll
         properties: REFERENCE_LIST_PROPERTIES,
         quickSearch: null,
         filter: getFilter(term),
-        sorting: 'configuration.module.name, configuration.name',
+        sorting: 'module.name, name',
     };
 };
 const getSelectedValueQueryParams = (value?: IReferenceListIdentifier): IGenericGetAllPayload => {
@@ -63,10 +63,10 @@ const getSelectedValueQueryParams = (value?: IReferenceListIdentifier): IGeneric
 
     const filters = [
         ...baseItemFilter,
-        { '==': [{ 'var': 'configuration.name' }, value.name] },
+        { '==': [{ 'var': 'name' }, value.name] },
     ];
     if (value.module !== undefined)
-        filters.push({ '==': [{ 'var': 'configuration.module.name' }, value.module] });
+        filters.push({ '==': [{ 'var': 'module.name' }, value.module] });
 
     const expression = { and: filters };
 
@@ -83,15 +83,13 @@ const getSelectedValueQueryParams = (value?: IReferenceListIdentifier): IGeneric
 
 interface IResponseItem {
     id: string;
-    configuration: {
+    name: string;
+    label?: string;
+    description?: string;
+    versionNo?: number;
+    module?: {
+        id: string;
         name: string;
-        label?: string;
-        description?: string;
-        versionNo?: number;
-        module?: {
-            id: string;
-            name: string;
-        }
     }
 }
 
@@ -121,10 +119,10 @@ const RefListLabel: FC<IConfigurationItemProps> = ({ name, description, versionN
 const getDisplayText = (item: IResponseItem) => {
     if (!item)
         return null;
-    const fullName = item.configuration.name;
+    const fullName = item.name;
 
-    return item.configuration.module
-        ? `${item.configuration.module.name}:${fullName}`
+    return item.module
+        ? `${item.module.name}:${fullName}`
         : fullName;
 }
 
@@ -183,21 +181,21 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
         const result: IOption[] = [];
         if (fetchedItems) {
             fetchedItems.forEach(item => {
-                const module = item.configuration.module ?? { name: LEGACY_REFERENCE_LISTS_MODULE_NAME, id: '-' };
+                const module = item.module ?? { name: LEGACY_REFERENCE_LISTS_MODULE_NAME, id: '-' };
 
                 const opt: IOption = {
                     label: (
                         <RefListLabel
-                            name={item.configuration.name}
-                            label={item.configuration.label}
-                            description={item.configuration.description}
-                            versionNo={item.configuration.versionNo}
+                            name={item.name}
+                            label={item.label}
+                            description={item.description}
+                            versionNo={item.versionNo}
                         />
                     ),
                     value: getDisplayText(item),
                     data: {
-                        name: item.configuration.name,
-                        module: item.configuration.module?.name,
+                        name: item.name,
+                        module: item.module?.name,
                     }
                 };
                 let group = result.find(g => g.value === module.id);

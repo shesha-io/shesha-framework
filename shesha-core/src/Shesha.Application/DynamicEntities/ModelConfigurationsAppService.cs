@@ -3,10 +3,8 @@ using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using AutoMapper;
-using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.AspNetCore.Mvc;
 using NHibernate.Linq;
-using NUglify.JavaScript.Syntax;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
@@ -20,7 +18,6 @@ using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Shesha.DynamicEntities
@@ -32,7 +29,6 @@ namespace Shesha.DynamicEntities
     public class ModelConfigurationsAppService : SheshaAppServiceBase, IApplicationService
     {
         private readonly IRepository<EntityConfig, Guid> _entityConfigRepository;
-        private readonly IRepository<ConfigurationItem, Guid> _configurationItemRepository;
         private readonly IRepository<Module, Guid> _moduleRepository;
         private readonly IRepository<EntityProperty, Guid> _entityPropertyRepository;
         private readonly IModelConfigurationManager _modelConfigurationManager;
@@ -44,7 +40,6 @@ namespace Shesha.DynamicEntities
 
         public ModelConfigurationsAppService(
             IRepository<EntityConfig, Guid> entityConfigRepository,
-            IRepository<ConfigurationItem, Guid> configurationItemRepository,
             IRepository<Module, Guid> moduleRepository,
             IRepository<EntityProperty, Guid> entityPropertyRepository,
             IModelConfigurationManager modelConfigurationProvider,
@@ -54,7 +49,6 @@ namespace Shesha.DynamicEntities
             IEntityConfigurationStore entityConfigurationStore)
         {
             _entityConfigRepository = entityConfigRepository;
-            _configurationItemRepository = configurationItemRepository;
             _moduleRepository = moduleRepository;
             _entityPropertyRepository = entityPropertyRepository;
             _modelConfigurationManager = modelConfigurationProvider;
@@ -167,26 +161,24 @@ namespace Shesha.DynamicEntities
                 ? await _moduleRepository.GetAsync(input.ModuleId.Value)
                 : null;
 
-            modelConfig.Configuration.Module = module;
-            modelConfig.Configuration.Name = input.Name;
-            modelConfig.Configuration.Label = input.Label;
-            modelConfig.Configuration.Description = input.Description;
-            modelConfig.Configuration.Suppress = input.Suppress;
+            modelConfig.Module = module;
+            modelConfig.Name = input.Name;
+            modelConfig.Label = input.Label;
+            modelConfig.Description = input.Description;
+            modelConfig.Suppress = input.Suppress;
 
             // ToDo: Temporary
-            modelConfig.Configuration.VersionNo = 1;
-            modelConfig.Configuration.VersionStatus = ConfigurationItemVersionStatus.Live;
+            modelConfig.VersionNo = 1;
+            modelConfig.VersionStatus = ConfigurationItemVersionStatus.Live;
 
             modelConfig.Normalize();
 
             if (create)
             {
-                await _configurationItemRepository.InsertAsync(modelConfig.Configuration);
                 await _entityConfigRepository.InsertAsync(modelConfig);
             }
             else
             {
-                await _configurationItemRepository.UpdateAsync(modelConfig.Configuration);
                 await _entityConfigRepository.UpdateAsync(modelConfig);
             }
 

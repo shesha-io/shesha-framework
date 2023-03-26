@@ -3,6 +3,7 @@ using Abp.Linq;
 using Abp.Runtime.Validation;
 using FluentValidation;
 using Shesha.Domain.Attributes;
+using Shesha.Extensions;
 using Shesha.Services;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -16,7 +17,7 @@ namespace Shesha.Domain.ConfigurationItems
     /// Module
     /// </summary>
     [Entity(GenerateApplicationService = GenerateApplicationServiceState.AlwaysGenerateApplicationService)]
-    public class Module: FullPowerEntity, ICustomValidate
+    public class Module: FullPowerEntity
     {
         /// <summary>
         /// Module name
@@ -72,30 +73,25 @@ namespace Shesha.Domain.ConfigurationItems
         /// If true, indicates that the module is enabled
         /// </summary>
         public virtual bool IsEnabled { get; set; }
-
-        public void AddValidationErrors(CustomValidationContext context)
-        {
-            
-        }
     }
 
     public class ModuleValidator : AbstractValidator<Module>
     {
-        public ModuleValidator()
+        private readonly IRepository<Module, Guid> _repository;
+
+        public ModuleValidator(IRepository<Module, Guid> repository)
         {
+            _repository = repository;
+
             RuleFor(x => x.Name).NotEmpty().MustAsync(UniqueNameAsync).WithMessage("Module with name '{PropertyValue}' already exists.");
         }
 
         private async Task<bool> UniqueNameAsync(Module module, string name, CancellationToken cancellationToken)
         {
-            var repository = StaticContext.IocManager.Resolve<IRepository<Module, Guid>>();
-            var asyncExecuter = StaticContext.IocManager.Resolve<IAsyncQueryableExecuter>();
-
             if (string.IsNullOrWhiteSpace(name))
                 return true;
 
-            var query = repository.GetAll().Where(m => m.Name.ToLower() == name.ToLower() && m.Id != module.Id);
-            var alreadyExist = await asyncExecuter.AnyAsync(query);
+            var alreadyExist = await _repository.GetAll().Where(m => m.Name.ToLower() == name.ToLower() && m.Id != module.Id).AnyAsync();
             return !alreadyExist;
         }
     }

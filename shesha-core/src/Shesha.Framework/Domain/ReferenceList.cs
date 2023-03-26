@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 namespace Shesha.Domain
 {
     [Entity(TypeShortAlias = "Shesha.Framework.ReferenceList", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
+    [JoinedProperty("Frwk_ReferenceLists")]
+    [DiscriminatorValue(ItemTypeName)]
     public class ReferenceList : ConfigurationItemBase
     {
         public const string ItemTypeName = "reference-list";
@@ -45,11 +47,6 @@ namespace Shesha.Domain
         public virtual bool MustUseBitNumbering { get; set; }         
          */
 
-        public override Task<IList<ConfigurationItemBase>> GetDependenciesAsync()
-        {
-            return Task.FromResult<IList<ConfigurationItemBase>>(new List<ConfigurationItemBase>());
-        }
-
         /// <summary>
         /// Get reference list identifier
         /// </summary>
@@ -58,8 +55,8 @@ namespace Shesha.Domain
         {
             return new ReferenceListIdentifier
             {
-                Module = Configuration?.Module?.Name,
-                Name = Configuration?.Name
+                Module = Module?.Name,
+                Name = Name
             };
         }
 

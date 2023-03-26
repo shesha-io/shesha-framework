@@ -2,7 +2,6 @@
 using Abp.Domain.Repositories;
 using Newtonsoft.Json;
 using Shesha.ConfigurationItems.Distribution;
-using Shesha.ConfigurationItems.Exceptions;
 using Shesha.Domain;
 using Shesha.DynamicEntities.Distribution.Dto;
 using Shesha.DynamicEntities.Dtos;
@@ -42,25 +41,22 @@ namespace Shesha.DynamicEntities.Distribution
             if (!(item is EntityConfig entityConfig))
                 throw new ArgumentException($"Wrong type of argument {item}. Expected {nameof(EntityConfig)}, actual: {item.GetType().FullName}");
 
-            if (entityConfig.Configuration == null)
-                throw new ConfigurationMissingException(entityConfig);
-
             var result = new DistributedEntityConfig
             {
                 Id = entityConfig.Id,
-                Name = entityConfig.Configuration.Name,
-                ModuleName = entityConfig.Configuration.Module?.Name,
-                FrontEndApplication = entityConfig.Configuration.Application?.AppKey,
-                ItemType = entityConfig.Configuration.ItemType,
+                Name = entityConfig.Name,
+                ModuleName = entityConfig.Module?.Name,
+                FrontEndApplication = entityConfig.Application?.AppKey,
+                ItemType = entityConfig.ItemType,
 
-                Label = entityConfig.Configuration.Label,
-                Description = entityConfig.Configuration.Description,
-                OriginId = entityConfig.Configuration.Origin?.Id,
-                BaseItem = entityConfig.Configuration.BaseItem?.Id,
-                VersionNo = entityConfig.Configuration.VersionNo,
-                VersionStatus = entityConfig.Configuration.VersionStatus,
-                ParentVersionId = entityConfig.Configuration.ParentVersion?.Id,
-                Suppress = entityConfig.Configuration.Suppress,
+                Label = entityConfig.Label,
+                Description = entityConfig.Description,
+                OriginId = entityConfig.Origin?.Id,
+                BaseItem = entityConfig.BaseItem?.Id,
+                VersionNo = entityConfig.VersionNo,
+                VersionStatus = entityConfig.VersionStatus,
+                ParentVersionId = entityConfig.ParentVersion?.Id,
+                Suppress = entityConfig.Suppress,
 
                 // entity config specific properties
                 FriendlyName = entityConfig.FriendlyName,

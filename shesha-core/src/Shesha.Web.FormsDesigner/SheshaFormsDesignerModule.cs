@@ -7,6 +7,7 @@ using Castle.MicroKernel.Registration;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Modules;
+using Shesha.Web.FormsDesigner.Domain;
 using Shesha.Web.FormsDesigner.Services;
 using Shesha.Web.FormsDesigner.Services.Distribution;
 using System.Reflection;
@@ -27,25 +28,13 @@ namespace Shesha.Web.FormsDesigner
             var thisAssembly = Assembly.GetExecutingAssembly();
 
             IocManager.IocContainer.Register(
-                Component.For<IConfigurableItemImport>().Forward<IFormConfigurationImport>().ImplementedBy<FormConfigurationImport>().LifestyleTransient()
-            );
-            IocManager.IocContainer.Register(
-                Component.For<IConfigurableItemExport>().Forward<IFormConfigurationExport>().ImplementedBy<FormConfigurationExport>().LifestyleTransient()
-            );
-
-            IocManager.IocContainer.Register(
-                Component.For<IConfigurationItemManager>().Forward<IFormManager>().Forward<FormManager>().ImplementedBy<FormManager>().LifestyleTransient()
-            );
-
-            IocManager.IocContainer.Register(
-                Component.For<IConfigurableItemImport>().Forward<IConfigurableComponentImport>().ImplementedBy<ConfigurableComponentImport>().LifestyleTransient()
-            );
-            IocManager.IocContainer.Register(
-                Component.For<IConfigurableItemExport>().Forward<IConfigurableComponentExport>().ImplementedBy<ConfigurableComponentExport>().LifestyleTransient()
-            );
-
-            IocManager.IocContainer.Register(
-                Component.For<IConfigurationItemManager>().Forward<IConfigurableComponentManager>().Forward<ConfigurableComponentManager>().ImplementedBy<ConfigurableComponentManager>().LifestyleTransient()
+                Component.For<IConfigurableItemImport>().Forward<IFormConfigurationImport>().ImplementedBy<FormConfigurationImport>().LifestyleTransient(),
+                Component.For<IConfigurableItemExport>().Forward<IFormConfigurationExport>().ImplementedBy<FormConfigurationExport>().LifestyleTransient(),
+                Component.For<IConfigurationItemManager<FormConfiguration>>().Forward<IFormManager>().ImplementedBy<FormManager>().LifestyleTransient(),
+                
+                Component.For<IConfigurableItemImport>().Forward<IConfigurableComponentImport>().ImplementedBy<ConfigurableComponentImport>().LifestyleTransient(),
+                Component.For<IConfigurableItemExport>().Forward<IConfigurableComponentExport>().ImplementedBy<ConfigurableComponentExport>().LifestyleTransient(),
+                Component.For<IConfigurationItemManager<ConfigurableComponent>>().Forward<IConfigurableComponentManager>().ImplementedBy<ConfigurableComponentManager>().LifestyleTransient()
             );
 
             IocManager.RegisterAssemblyByConvention(thisAssembly);

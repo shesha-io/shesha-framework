@@ -11,6 +11,7 @@ using Castle.MicroKernel.Registration;
 using Shesha.Authorization;
 using Shesha.Email;
 using Shesha.GraphQL;
+using Shesha.Modules;
 using Shesha.Notifications;
 using Shesha.Otp.Configuration;
 using Shesha.Push;
@@ -30,7 +31,7 @@ namespace Shesha
         typeof(SheshaCoreModule),
         typeof(SheshaGraphQLModule),
         typeof(AbpAutoMapperModule))]
-    public class SheshaApplicationModule : AbpModule
+    public class SheshaApplicationModule : SheshaSubModule<SheshaFrameworkModule>
     {
         public override void PreInitialize()
         {

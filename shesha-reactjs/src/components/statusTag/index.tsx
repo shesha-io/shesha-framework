@@ -53,7 +53,7 @@ export const StatusTag: FC<IStatusTagProps> = ({
         if (computed === code) {
           return item;
         }
-      } else if (value) {
+      } else if (typeof value === 'string') {
         if (value.match(text)) {
           return item;
         }

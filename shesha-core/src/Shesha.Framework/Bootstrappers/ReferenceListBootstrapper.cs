@@ -26,7 +26,6 @@ namespace Shesha.Bootstrappers
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IRepository<ReferenceList, Guid> _listRepo;
         private readonly IRepository<ReferenceListItem, Guid> _listItemRepo;
-        private readonly IRepository<ConfigurationItem, Guid> _configItemRepository;
         private readonly IModuleManager _moduleManager;
 
         public ReferenceListBootstrapper(
@@ -34,7 +33,6 @@ namespace Shesha.Bootstrappers
             IUnitOfWorkManager unitOfWorkManager,
             IRepository<ReferenceList, Guid> listRepo,
             IRepository<ReferenceListItem, Guid> listItemRepo,
-            IRepository<ConfigurationItem, Guid> configItemRepository,
             IModuleManager moduleManager
         )
         {
@@ -42,7 +40,6 @@ namespace Shesha.Bootstrappers
             _unitOfWorkManager = unitOfWorkManager;
             _listRepo = listRepo;
             _listItemRepo = listItemRepo;
-            _configItemRepository = configItemRepository;
             _moduleManager = moduleManager;
         }
 
@@ -128,14 +125,14 @@ namespace Shesha.Bootstrappers
 
                         var listInDb = searchByNamespaceOnly
                             ? await _listRepo.GetAll()
-                                .Where(l => l.Configuration.Name == list.Attribute.FullName)
-                                .OrderBy(l => l.Configuration.Module == null ? 0 : 1)
-                                .ThenBy(l => !l.Configuration.IsDeleted ? 0 : 1)
+                                .Where(l => l.Name == list.Attribute.FullName)
+                                .OrderBy(l => l.Module == null ? 0 : 1)
+                                .ThenBy(l => !l.IsDeleted ? 0 : 1)
                                 .FirstOrDefaultAsync()
                             : await _listRepo.GetAll()
-                                .Where(l => l.Configuration.Name == list.Attribute.FullName &&
-                                    l.Configuration.Module == listModule)
-                                .OrderBy(l => !l.Configuration.IsDeleted ? 0 : 1)
+                                .Where(l => l.Name == list.Attribute.FullName &&
+                                    l.Module == listModule)
+                                .OrderBy(l => !l.IsDeleted ? 0 : 1)
                             .FirstOrDefaultAsync();
                         if (listInDb == null)
                         {
@@ -146,32 +143,30 @@ namespace Shesha.Bootstrappers
                             listInDb.SetHardLinkToApplication(true);
 
                             // ToDo: AS - Get Module, Description and Suppress
-                            listInDb.Configuration.Module = module;
-                            listInDb.Configuration.Name = list.Attribute.FullName;
+                            listInDb.Module = module;
+                            listInDb.Name = list.Attribute.FullName;
 
-                            listInDb.Configuration.Label = list.Enum.GetDisplayName();
-                            listInDb.Configuration.Description = list.Enum.GetDescription();
-                            listInDb.Configuration.Suppress = false;
+                            listInDb.Label = list.Enum.GetDisplayName();
+                            listInDb.Description = list.Enum.GetDescription();
+                            listInDb.Suppress = false;
 
                             // ToDo: Temporary
-                            listInDb.Configuration.VersionNo = 1;
-                            listInDb.Configuration.VersionStatus = ConfigurationItemVersionStatus.Live;
+                            listInDb.VersionNo = 1;
+                            listInDb.VersionStatus = ConfigurationItemVersionStatus.Live;
 
                             listInDb.Normalize();
 
-                            await _configItemRepository.InsertAsync(listInDb.Configuration);
                             await _listRepo.InsertAsync(listInDb);
                         }
                         else
                         {
                             // update list if required
-                            if (module != null && listInDb.Configuration.Module != module || !listInDb.HardLinkToApplication)
+                            if (module != null && listInDb.Module != module || !listInDb.HardLinkToApplication)
                             {
-                                listInDb.Configuration.Module = listModule;
+                                listInDb.Module = listModule;
                                 listInDb.SetHardLinkToApplication(true);
 
                                 await _listRepo.UpdateAsync(listInDb);
-                                await _configItemRepository.UpdateAsync(listInDb.Configuration);
                             }
                         }
 

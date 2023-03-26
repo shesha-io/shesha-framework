@@ -43,6 +43,7 @@ stages:
     - checkout: self
     - task: PowerShell@2
       displayName: Check if Pull Request
+      retryCountOnTaskFailure: 5
       inputs:
         targetType: 'inline'
         script: |
@@ -248,6 +249,7 @@ stages:
     steps:
     - task: PowerShell@2
       displayName: Check if Pull Request
+      retryCountOnTaskFailure: 5       
       inputs:
         targetType: 'inline'
         script: |
@@ -268,7 +270,8 @@ stages:
         workingDirectory: '$(System.DefaultWorkingDirectory)'
         arguments: '-PipeBuildNumber "$(Build.BuildNumber)" -PipeSourceBranch "$(Build.SourceBranch)" -PipeSourceVersion "$(Build.SourceVersion)" -PipeTargetBranch "$(prTargetBranch)"'
     - task: PowerShell@2
-      displayName: Output to console the current branch  
+      displayName: Output to console the current branch
+      retryCountOnTaskFailure: 5      
       inputs:
         targetType: 'inline'
         script: |
@@ -326,6 +329,7 @@ stages:
     steps:
     - task: PowerShell@2
       displayName: Check if Pull Request
+      retryCountOnTaskFailure: 5      
       inputs:
         targetType: 'inline'
         script: |
@@ -404,6 +408,7 @@ stages:
     steps:
     - task: PowerShell@2
       displayName: Check if Pull Request
+      retryCountOnTaskFailure: 5      
       inputs:
         targetType: 'inline'
         script: |

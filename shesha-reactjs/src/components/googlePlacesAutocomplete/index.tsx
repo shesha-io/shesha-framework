@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
-import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
+import PlacesAutocomplete, { geocodeByAddress, getLatLng, PropTypes } from 'react-places-autocomplete';
 import { Input, notification } from 'antd';
 import { SearchOutlined, LoadingOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
@@ -44,6 +44,7 @@ export interface IGooglePlacesAutocompleteProps {
   biasedCoordinates?: LatLngPolygon | PointPolygon;
   style?: CSSProperties;
   size?: SizeType;
+  searchOptions?: PropTypes['searchOptions'];
 }
 
 const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
@@ -63,6 +64,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
   biasedCoordinates,
   style,
   size,
+  searchOptions,
 }) => {
   const [highlightedPlaceId, setHighlightedPlaceId] = useState('');
   const [showSuggestionsDropdownContainer, setShowSuggestionsDropdownContainer] = useState(true);
@@ -198,6 +200,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
       onChange={handleChange}
       onSelect={handleSelect}
       debounce={debounce}
+      searchOptions={searchOptions}
 
       // className="location-search-input"
     >

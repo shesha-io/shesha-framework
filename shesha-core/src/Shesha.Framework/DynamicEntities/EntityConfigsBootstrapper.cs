@@ -29,7 +29,6 @@ namespace Shesha.DynamicEntities
     public class EntityConfigsBootstrapper : IBootstrapper, ITransientDependency
     {
         private readonly IUnitOfWorkManager _unitOfWorkManager;
-        private readonly IRepository<ConfigurationItem, Guid> _configItemRepository;
         private readonly IRepository<EntityConfig, Guid> _entityConfigRepository;
         private readonly IRepository<EntityProperty, Guid> _entityPropertyRepository;
         private readonly IModuleManager _moduleManager;
@@ -39,7 +38,6 @@ namespace Shesha.DynamicEntities
         private readonly IMetadataProvider _metadataProvider;
 
         public EntityConfigsBootstrapper(
-            IRepository<ConfigurationItem, Guid> configItemRepository,
             IRepository<EntityConfig, Guid> entityConfigRepository,
             IEntityConfigurationStore entityConfigurationStore,
             IAssemblyFinder assembleFinder,
@@ -48,7 +46,6 @@ namespace Shesha.DynamicEntities
             IModuleManager moduleManager,
             IUnitOfWorkManager unitOfWorkManager)
         {
-            _configItemRepository = configItemRepository;
             _entityConfigRepository = entityConfigRepository;
             _entityConfigurationStore = entityConfigurationStore;
             _assembleFinder = assembleFinder;
@@ -161,7 +158,7 @@ namespace Shesha.DynamicEntities
                         c.db.TypeShortAlias != c.code.Config.SafeTypeShortAlias ||
                         c.db.DiscriminatorValue != c.code.Config.DiscriminatorValue ||
                         c.db.PropertiesMD5 != c.code.PropertiesMD5 ||
-                        c.db.Configuration.Module != module ||
+                        c.db.Module != module ||
                         c.attr != null
                             && c.attr.GenerateApplicationService != GenerateApplicationServiceState.UseConfiguration
                             && c.attr.GenerateApplicationService == GenerateApplicationServiceState.AlwaysGenerateApplicationService ^ c.db.GenerateAppService
@@ -177,12 +174,8 @@ namespace Shesha.DynamicEntities
                 if (config.attr != null && config.attr.GenerateApplicationService != GenerateApplicationServiceState.UseConfiguration)
                     config.db.GenerateAppService = config.attr.GenerateApplicationService == GenerateApplicationServiceState.AlwaysGenerateApplicationService;
 
-                if (config.db.Configuration.Module != module)
-                {
-                    config.db.Configuration.Module = module;
-
-                    await _configItemRepository.UpdateAsync(config.db.Configuration);
-                }
+                if (config.db.Module != module)
+                    config.db.Module = module;
 
                 await _entityConfigRepository.UpdateAsync(config.db);
 
@@ -215,19 +208,18 @@ namespace Shesha.DynamicEntities
                 };
 
                 // ToDo: AS - Get Module, Description and Suppress
-                ec.Configuration.Module = module;
-                ec.Configuration.Name = ec.FullClassName;
-                ec.Configuration.Label = ec.FriendlyName ?? ec.ClassName;
-                ec.Configuration.Description = null;
-                ec.Configuration.Suppress = false;
+                ec.Module = module;
+                ec.Name = ec.FullClassName;
+                ec.Label = ec.FriendlyName ?? ec.ClassName;
+                ec.Description = null;
+                ec.Suppress = false;
 
                 // ToDo: Temporary
-                ec.Configuration.VersionNo = 1;
-                ec.Configuration.VersionStatus = ConfigurationItemVersionStatus.Live;
+                ec.VersionNo = 1;
+                ec.VersionStatus = ConfigurationItemVersionStatus.Live;
 
                 ec.Normalize();
 
-                await _configItemRepository.InsertAsync(ec.Configuration);
                 await _entityConfigRepository.InsertAsync(ec);
 
                 await UpdatePropertiesAsync(ec, config.Config.EntityType, config.Properties, config.PropertiesMD5);

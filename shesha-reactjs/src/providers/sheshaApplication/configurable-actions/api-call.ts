@@ -7,6 +7,7 @@ import { IKeyValue } from "../../../interfaces/keyValue";
 import { useConfigurableAction } from "../../configurableActionsDispatcher";
 import qs from "qs";
 import { getQueryString } from "../../../components/autocomplete/utils";
+import { unwrapAbpResponse } from "../../../utils/fetchers";
 
 export interface IApiCallArguments {
   url: string;
@@ -138,7 +139,7 @@ export const useApiCallAction = () => {
         data: preparedData,
         method: verb as Method,
         headers: allHeaders,
-      });
+      }).then(response => unwrapAbpResponse(response.data));
     }
   }, [backendUrl, httpHeaders]);
 }  

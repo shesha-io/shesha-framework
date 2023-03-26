@@ -222,8 +222,8 @@ const reducer = handleActions<IDataTableStateContext, any>(
             case 'data': {
               const srvColumn = dataProps.propertyName
                 ? columns.find(
-                    c => camelcaseDotNotation(c.propertyName) === camelcaseDotNotation(dataProps.propertyName)
-                  )
+                  c => camelcaseDotNotation(c.propertyName) === camelcaseDotNotation(dataProps.propertyName)
+                )
                 : {};
 
               return {
@@ -232,7 +232,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
                 accessor: camelcaseDotNotation(dataProps?.propertyName),
                 propertyName: dataProps?.propertyName,
                 minWidth: column.minWidth || MIN_COLUMN_WIDTH,
-                maxWidth: column.minWidth,
+                maxWidth: column.maxWidth,
                 isEditable: colProps.isEditable,
 
                 dataType: srvColumn?.dataType as IndexColumnDataType,
@@ -262,7 +262,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
                 accessor: column.id,
                 propertyName: column.id,
                 minWidth: column.minWidth,
-                maxWidth: column.minWidth,
+                maxWidth: column.maxWidth,
 
                 dataType: 'action',
                 actionProps, // todo: review and add to interface

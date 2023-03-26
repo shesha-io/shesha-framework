@@ -1,3 +1,5 @@
+import { PropTypes } from 'react-places-autocomplete';
+import { IEntityReferenceDto } from '../../../../interfaces';
 import { IAddressCompomentProps } from './models';
 
 export const EXPOSED_VARIABLES = [
@@ -64,7 +66,33 @@ export const EXPOSED_VARIABLES = [
   },
 ];
 
-export const getAddressModel = (model: IAddressCompomentProps) => ({
-  ...model,
-  name: `${model?.name || ''}.address`,
-});
+export const getAddressValue = (value: string | IEntityReferenceDto) => {
+  if (!value) return '';
+
+  if (typeof value !== 'string' && value?.id) return value?._displayName;
+
+  return value as string;
+};
+
+export const getSearchOptions = (model: IAddressCompomentProps): PropTypes['searchOptions'] => {
+  const {
+    countryRestriction: country,
+    latPriority: lat,
+    lngPriority: lng,
+    radiusPriority: radius,
+    showPriorityBounds,
+  } = model;
+  let result = {} as PropTypes['searchOptions'];
+
+  if (country?.length) {
+    result = { componentRestrictions: { country } };
+  }
+
+  try {
+    if (showPriorityBounds && lat && lng && radius) {
+      result = { ...result, location: new google.maps.LatLng(lat, lng), radius };
+    }
+  } catch (_e) {}
+
+  return result;
+};

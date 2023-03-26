@@ -166,7 +166,7 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
 
   useEffect(() => {
     if (fetchedFormEntity && onDataLoaded) {
-      executeExpression(onDataLoaded); // On Initialize
+      executeExpression(onDataLoaded, true, true, true, true, fetchedFormEntity); // On Initialize
     }
   }, [onDataLoaded, fetchedFormEntity]);
 

@@ -1,7 +1,6 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Timing;
-using NHibernate.Engine;
 using Shesha.ConfigurationItems.Distribution.Exceptions;
 using Shesha.ConfigurationItems.Distribution.Models;
 using Shesha.Domain;
@@ -131,15 +130,15 @@ namespace Shesha.ConfigurationItems.Distribution
 
         private string GetItemRelativePath(ConfigurationItemBase item)
         {
-            var moduleFolder = item.Configuration.Module != null
-                ? item.Configuration.Module.Name
+            var moduleFolder = item.Module != null
+                ? item.Module.Name
                 : NoModuleFolder;
 
-            var folder = item.Configuration.Application != null
-                ? Path.Combine(moduleFolder, item.ItemType, item.Configuration.Application.AppKey)
+            var folder = item.Application != null
+                ? Path.Combine(moduleFolder, item.ItemType, item.Application.AppKey)
                 : Path.Combine(moduleFolder, item.ItemType);
 
-            return Path.Combine(folder, $"{item.Configuration.Name.RemovePathIllegalCharacters()}.json");
+            return Path.Combine(folder, $"{item.Name.RemovePathIllegalCharacters()}.json");
         }
 
         public async Task ImportAsync(ConfigurationItemsPackage package, PackageImportContext context)

@@ -86,7 +86,7 @@ namespace Shesha.DynamicEntities.Binder
             var entityType = entity.GetType().StripCastleProxyType();
             var properties = entityType.GetProperties().Where(p => p.CanWrite && p.Name != "Id").ToList();
 
-            var config = _entityConfigRepository.GetAll().FirstOrDefault(x => x.Namespace == entityType.Namespace && x.ClassName == entityType.Name && !x.Configuration.IsDeleted);
+            var config = _entityConfigRepository.GetAll().FirstOrDefault(x => x.Namespace == entityType.Namespace && x.ClassName == entityType.Name && !x.IsDeleted);
 
             context.LocalValidationResult = new List<ValidationResult>();
 
@@ -194,8 +194,8 @@ namespace Shesha.DynamicEntities.Binder
                                                      //case DataTypes.Enum: // Enum binded as integer
                                     object parsedValue = null;
                                     result = Parser.TryParseToValueType(jproperty.Value.ToString(), property.PropertyType, out parsedValue, isDateOnly: propType.DataType == DataTypes.Date);
-                                    if (dbValue?.ToString() != parsedValue.ToString())
-                                        if (result && (await Validate(entity, jFullName, parsedValue, context)))
+                                    if (result && dbValue?.ToString() != parsedValue.ToString())
+                                        if (await Validate(entity, jFullName, parsedValue, context))
                                             property.SetValue(entity, parsedValue);
                                     break;
                                 case DataTypes.DateTime:

@@ -13,7 +13,6 @@ using Shesha.ConfigurationItems.Models;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Exceptions;
 using Shesha.Mvc;
-using Shesha.Services;
 using Shesha.Utilities;
 using Shesha.Web.FormsDesigner.Domain;
 using Shesha.Web.FormsDesigner.Dtos;
@@ -76,16 +75,16 @@ namespace Shesha.Web.FormsDesigner.Services
             var moduleEntity = await GetModuleAsync(input.Module);
 
             // todo: move to a generic method
-            var query = Repository.GetAll().Where(f => f.Configuration.Module == moduleEntity &&
-                f.Configuration.Name == input.Name);
+            var query = Repository.GetAll().Where(f => f.Module == moduleEntity &&
+                f.Name == input.Name);
 
             if (input.Version.HasValue)
-                query = query.Where(f => f.Configuration.VersionNo == input.Version.Value);
+                query = query.Where(f => f.VersionNo == input.Version.Value);
             else {
                 switch (mode) 
                 {
                     case ConfigurationItems.Models.ConfigurationItemViewMode.Live:
-                        query = query.Where(f => f.Configuration.VersionStatus == ConfigurationItemVersionStatus.Live);
+                        query = query.Where(f => f.VersionStatus == ConfigurationItemVersionStatus.Live);
                         break;
                     case ConfigurationItems.Models.ConfigurationItemViewMode.Ready:
                     {
@@ -94,7 +93,7 @@ namespace Shesha.Web.FormsDesigner.Services
                             ConfigurationItemVersionStatus.Ready 
                         };
 
-                        query = query.Where(f => statuses.Contains(f.Configuration.VersionStatus)).OrderByDescending(f => f.Configuration.VersionNo);
+                        query = query.Where(f => statuses.Contains(f.VersionStatus)).OrderByDescending(f => f.VersionNo);
                         break;
                     }
                     case ConfigurationItems.Models.ConfigurationItemViewMode.Latest:
@@ -104,7 +103,7 @@ namespace Shesha.Web.FormsDesigner.Services
                             ConfigurationItemVersionStatus.Ready,
                             ConfigurationItemVersionStatus.Draft
                         };
-                        query = query.Where(f => f.Configuration.IsLast && statuses.Contains(f.Configuration.VersionStatus));
+                        query = query.Where(f => f.IsLast && statuses.Contains(f.VersionStatus));
                         break;
                     }
                 }
@@ -214,11 +213,11 @@ namespace Shesha.Web.FormsDesigner.Services
 
             var validationResults = new List<ValidationResult>();
 
-            if (item.Configuration.VersionStatus != ConfigurationItemVersionStatus.Live &&
-                item.Configuration.VersionStatus != ConfigurationItemVersionStatus.Cancelled)
+            if (item.VersionStatus != ConfigurationItemVersionStatus.Live &&
+                item.VersionStatus != ConfigurationItemVersionStatus.Cancelled)
                 validationResults.Add(new ValidationResult($"Creation of new version allowed only for items with '{ConfigurationItemVersionStatus.Live}' or '{ConfigurationItemVersionStatus.Cancelled}' status"));
 
-            if (!item.Configuration.IsLast)
+            if (!item.IsLast)
                 validationResults.Add(new ValidationResult($"Creation of new version allowed only for last version of form"));
 
             if (validationResults.Any())
@@ -243,10 +242,10 @@ namespace Shesha.Web.FormsDesigner.Services
 
             var validationResults = new List<ValidationResult>();
 
-            if (item.Configuration.VersionStatus != ConfigurationItemVersionStatus.Ready)
+            if (item.VersionStatus != ConfigurationItemVersionStatus.Ready)
                 validationResults.Add(new ValidationResult($"This operation is allowed only for items with '{ConfigurationItemVersionStatus.Ready}' status"));
 
-            if (!item.Configuration.IsLast)
+            if (!item.IsLast)
                 validationResults.Add(new ValidationResult($"This operation is allowed only for last version of form"));
 
             if (validationResults.Any())
@@ -282,7 +281,7 @@ namespace Shesha.Web.FormsDesigner.Services
             var item = await Repository.GetAsync(input.ItemId);
             
             var validationResults = new List<ValidationResult>();
-            if (item.Configuration.VersionStatus != ConfigurationItemVersionStatus.Draft)
+            if (item.VersionStatus != ConfigurationItemVersionStatus.Draft)
                 validationResults.Add(new ValidationResult($"Import JSON is allowed for Draft version only"));
 
             if (input.File == null || input.File.Length == 0)
@@ -318,8 +317,8 @@ namespace Shesha.Web.FormsDesigner.Services
 
             var entity = await GetEntityByIdAsync(input.Id);
 
-            entity.Configuration.Label = input.Label;
-            entity.Configuration.Description = input.Description;
+            entity.Label = input.Label;
+            entity.Description = input.Description;
             entity.Markup = input.Markup;
             entity.ModelType = input.ModelType;
 
@@ -369,7 +368,7 @@ namespace Shesha.Web.FormsDesigner.Services
         {
             var isPreselection = string.IsNullOrWhiteSpace(term) && !string.IsNullOrWhiteSpace(selectedValue);
             var models = (await AsyncQueryableExecuter.ToListAsync(
-                Repository.GetAll().Select(x => new { Name = x.Configuration.Name, Module = x.Configuration.Module.Name }))
+                Repository.GetAll().Select(x => new { Name = x.Name, Module = x.Module.Name }))
                 ).Distinct();
 
             var formIdJson = (string name, string module) => { return $"{{\"name\":\"{name}\",\"module\":\"{module}\"}}"; };
@@ -404,10 +403,10 @@ namespace Shesha.Web.FormsDesigner.Services
             var list = new List<object>();
 
             var forms = Repository.GetAll().Where(x =>
-                    (int)x.Configuration.VersionStatus < 4
-                    && !x.Configuration.Name.Contains(".json")
+                    (int)x.VersionStatus < 4
+                    && !x.Name.Contains(".json")
                     && x.Markup != null)
-                .Select(x => new { x.FullName, x.Configuration.VersionNo, x.Configuration.VersionStatus, x.Markup })
+                .Select(x => new { x.FullName, x.VersionNo, x.VersionStatus, x.Markup })
                 .ToList();
 
             foreach (var config in configs)
