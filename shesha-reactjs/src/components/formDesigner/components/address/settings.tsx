@@ -1,8 +1,10 @@
-import { Checkbox, Form, Input, InputNumber } from 'antd';
+import { Checkbox, Form, Input, InputNumber, Select } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
+import { COUNTRY_CODES } from '../../../../constants/country-codes';
 import PropertyAutocomplete from '../../../propertyAutocomplete/propertyAutocomplete';
 import SectionSeparator from '../../../sectionSeparator';
+import Show from '../../../show';
 import CodeEditor from '../codeEditor/codeEditor';
 import { IAddressCompomentProps } from './models';
 import { EXPOSED_VARIABLES } from './utils';
@@ -17,11 +19,14 @@ export interface IButtonGroupSettingsProps {
 
 const AddressSettings: FC<IButtonGroupSettingsProps> = ({ readOnly, model, onSave, onValuesChange }) => {
   const [form] = Form.useForm();
+  const [{ showPriorityBounds }, setState] = useState<IAddressCompomentProps>(model);
 
   const handleValuesChange = (changedValues: IAddressCompomentProps, values: IAddressCompomentProps) => {
     if (readOnly) return;
 
     form?.setFieldsValue(changedValues);
+
+    setState(s => ({ ...s, ...changedValues }));
 
     onValuesChange(changedValues, values);
   };
@@ -30,7 +35,7 @@ const AddressSettings: FC<IButtonGroupSettingsProps> = ({ readOnly, model, onSav
     <Form form={form} onFinish={onSave} onValuesChange={handleValuesChange} initialValues={model} layout="vertical">
       <SectionSeparator title="Display" />
 
-      <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+      <Form.Item name="name" label="Name" required>
         <PropertyAutocomplete id="415cc8ec-2fd1-4c5a-88e2-965153e16069" readOnly={readOnly} />
       </Form.Item>
 
@@ -61,11 +66,11 @@ const AddressSettings: FC<IButtonGroupSettingsProps> = ({ readOnly, model, onSav
       <SectionSeparator title="Configuration" />
 
       <Form.Item name="minCharactersSearch" label="Min Characters Before Search">
-        <InputNumber style={{ width: '100%' }} />
+        <InputNumber style={{ width: '100%' }} disabled={readOnly} />
       </Form.Item>
 
       <Form.Item name="debounce" label="Debounce (MS)">
-        <InputNumber style={{ width: '100%' }} />
+        <InputNumber style={{ width: '100%' }} disabled={readOnly} />
       </Form.Item>
 
       <Form.Item name="googleMapsApiKey" label="Google Maps Key">
@@ -76,10 +81,36 @@ const AddressSettings: FC<IButtonGroupSettingsProps> = ({ readOnly, model, onSav
         <Input.Password readOnly={readOnly} />
       </Form.Item>
 
-      <Form.Item name="prefix" label="Prefix (Area restriction)">
-        <Input readOnly={readOnly} />
+      <Form.Item name="countryRestriction" label="Country Restriction">
+        <Select
+          allowClear
+          mode="multiple"
+          options={COUNTRY_CODES}
+          filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+        />
       </Form.Item>
 
+      <Form.Item name="prefix" label="Prefix (Area Restriction)">
+        <InputNumber style={{ width: '100%' }} disabled={readOnly} />
+      </Form.Item>
+
+      <Form.Item name="showPriorityBounds" label="Priority Bounds (Advanced)" valuePropName="checked">
+        <Checkbox disabled={readOnly} />
+      </Form.Item>
+
+      <Show when={showPriorityBounds}>
+        <Form.Item name="latPriority" label="Latitude (Priority Bound)" required>
+          <InputNumber style={{ width: '100%' }} disabled={readOnly} />
+        </Form.Item>
+
+        <Form.Item name="lngPriority" label="Longitude (Priority Bound)" required>
+          <InputNumber style={{ width: '100%' }} disabled={readOnly} />
+        </Form.Item>
+
+        <Form.Item name="radiusPriority" label="Radius (Priority Bound)" required>
+          <InputNumber style={{ width: '100%' }} />
+        </Form.Item>
+      </Show>
       <SectionSeparator title="Events" />
 
       <Form.Item
