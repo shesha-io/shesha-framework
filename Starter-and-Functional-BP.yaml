@@ -54,8 +54,11 @@ stages:
               write-host "This is a Pull Request and the target branch is: $targetBranch"  
               write-host "##vso[task.setvariable variable=prTargetBranch]$targetBranch"
           }
-          write-host "This is not a Pull Request and the target branch is set to empty string"  
-          write-host "##vso[task.setvariable variable=prTargetBranch]''"                          
+          else
+          {
+            write-host "This is not a Pull Request and the target branch is set to empty string"  
+            write-host "##vso[task.setvariable variable=prTargetBranch]''"                              
+          }                         
         workingDirectory: '$(System.DefaultWorkingDirectory)'    
     - task: PowerShell@2
       displayName: Check to establish if this pipeline was triggered from a tag
@@ -158,8 +161,11 @@ stages:
               write-host "This is a Pull Request and the target branch is: $targetBranch"  
               write-host "##vso[task.setvariable variable=prTargetBranch]$targetBranch"
           }
-          write-host "This is not a Pull Request and the target branch is set to empty string"  
-          write-host "##vso[task.setvariable variable=prTargetBranch]''"                                    
+          else
+          {
+            write-host "This is not a Pull Request and the target branch is set to empty string"  
+            write-host "##vso[task.setvariable variable=prTargetBranch]''"                              
+          }                                   
         workingDirectory: '$(System.DefaultWorkingDirectory)'       
     - task: PowerShell@2
       displayName: Check to establish if this pipeline was triggered from a tag      
@@ -260,8 +266,11 @@ stages:
               write-host "This is a Pull Request and the target branch is: $targetBranch"  
               write-host "##vso[task.setvariable variable=prTargetBranch]$targetBranch"
           }
-          write-host "This is not a Pull Request and the target branch is set to empty string"  
-          write-host "##vso[task.setvariable variable=prTargetBranch]''"                                    
+          else
+          {
+            write-host "This is not a Pull Request and the target branch is set to empty string"  
+            write-host "##vso[task.setvariable variable=prTargetBranch]''"                              
+          }                                   
         workingDirectory: '$(System.DefaultWorkingDirectory)'        
     - task: PowerShell@2
       displayName: Check to establish if this pipeline was triggered from a tag      
@@ -340,8 +349,11 @@ stages:
               write-host "This is a Pull Request and the target branch is: $targetBranch"  
               write-host "##vso[task.setvariable variable=prTargetBranch]$targetBranch"
           }
-          write-host "This is not a Pull Request and the target branch is set to empty string"  
-          write-host "##vso[task.setvariable variable=prTargetBranch]''"                              
+          else
+          {
+            write-host "This is not a Pull Request and the target branch is set to empty string"  
+            write-host "##vso[task.setvariable variable=prTargetBranch]''"                              
+          }                             
         workingDirectory: '$(System.DefaultWorkingDirectory)'        
     - task: PowerShell@2
       displayName: Check to establish if this pipeline was triggered from a tag
@@ -419,8 +431,11 @@ stages:
               write-host "This is a Pull Request and the target branch is: $targetBranch"  
               write-host "##vso[task.setvariable variable=prTargetBranch]$targetBranch"
           }
-          write-host "This is not a Pull Request and the target branch is set to empty string"  
-          write-host "##vso[task.setvariable variable=prTargetBranch]''"                              
+          else
+          {
+            write-host "This is not a Pull Request and the target branch is set to empty string"  
+            write-host "##vso[task.setvariable variable=prTargetBranch]''"                              
+          }
         workingDirectory: '$(System.DefaultWorkingDirectory)'        
     - task: PowerShell@2
       displayName: Check to establish if this pipeline was triggered from a tag
