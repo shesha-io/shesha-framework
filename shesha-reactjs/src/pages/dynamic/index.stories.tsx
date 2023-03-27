@@ -84,12 +84,6 @@ export const UserManagementPage = addStory(Template, {
   formId: { name: 'user-management-new' },
 });
 
-export const PersonDetailsPage = addStory(Template, {
-  formId: { name: 'person-details', module: 'shesha' },
-  id: '98273D2D-F59E-42A3-9D8A-0218874548A9',
-  mode: 'edit',
-});
-
 export const SubFormPage = addStory(Template, {
   formId: { name: 'sub-form' },
   mode: 'edit',
@@ -147,14 +141,20 @@ export const WizardDebugForm = addStory(Template, {
   },
 });
 
-export const PersonForm = addStory(Template, {
-  formId: { name: 'person-edit', module: 'Test Module', version: 3 },
+export const PersonDetailsPage = addStory(Template, {
+  formId: { name: 'person-details', module: 'Test Module' },
+  id: '98273D2D-F59E-42A3-9D8A-0218874548A9',
+  mode: 'edit',
+});
+
+export const PersonEdit = addStory(Template, {
+  formId: { name: 'person-edit', module: 'Test Module' },
   mode: 'edit',
   id: '192C2957-76A1-4760-8A35-3ED28067E78F',
 });
 
 export const OrganisationEdit = addStory(Template, {
-  formId: { name: 'organisation-edit' },
+  formId: { name: 'organisation-edit', module: 'Test Module' },
   id: '0CA1A087-D0DD-4780-82B1-CD29F474E29D',
   mode: 'edit',
 });
@@ -278,6 +278,16 @@ export const PayerEdit = addStory(Template, {
     version: 13
   },
   //id: 'aecdd722-948a-456a-98b1-5968ea58f630',
+});
+
+export const HisAccountDetails = addStory(Template, {
+  formId: {
+    module: 'Boxfusion.His.Clients.Houghton',
+    name: 'account-details',
+    version: 11,
+  },
+  id: '6EF9A91C-62ED-46F0-86EE-0352989BF0F2',
+  mode: 'edit'
 });
 
 Basic.args = DEFAULT_ARGS;

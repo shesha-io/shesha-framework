@@ -10,6 +10,7 @@ import {
   ConfigurableFormInstance,
   IFormActionsContext,
   ISetEnabledComponentsPayload,
+  ISetFormControlsDataPayload,
 } from './contexts';
 import {
   IFormActions,
@@ -29,6 +30,7 @@ import {
   registerComponentActionsAction,
   setEnabledComponentsAction,
   setValidationErrorsAction,
+  setFormControlsDataAction,
 } from './actions';
 import {
   convertActions,
@@ -316,6 +318,10 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     });
   }, [globalState]);
 
+  const setFormControlsData = (payload: ISetFormControlsDataPayload) => {
+    dispatch(setFormControlsDataAction(payload));
+  };
+
   const setFormData = (payload: ISetFormDataPayload) => {
     dispatch((dispatchThunk, getState) => {
       dispatchThunk(setFormDataAction(payload));
@@ -398,6 +404,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     setFormMode,
     setVisibleComponents,
     setFormData,
+    setFormControlsData,
     setValidationErrors,
     registerActions,
     getAction,

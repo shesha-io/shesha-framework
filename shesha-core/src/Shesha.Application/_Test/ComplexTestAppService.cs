@@ -33,6 +33,20 @@ namespace Shesha.Test
         }
 
         [HttpGet]
+        public object GetDifferentEntitiesAsync()
+        {
+            var list = new List<object>();
+
+            list.Add(new { id = 1, fullName = "Shurik 1", _className = "Shesha.Domain.Person" });
+            list.Add(new { id = 13, firstName = "Test Json Shurik", fullName = "Test Json Full Name", _className = "Shesha.Test.JsonPerson" });
+            list.Add(new { id = 2, fullName = "Shurik 33", _className = "Shesha.Domain.Person" });
+
+
+            return list;
+            //return new { totalCount = 13, items = list };
+        }
+
+        [HttpGet]
         public Task<List<object>> CheckGenericEntity()
         {
             var entities = Repository.GetAll().Where(x => x.AnyEntity != null).ToList();
@@ -44,11 +58,11 @@ namespace Shesha.Test
 
             var dbPerson = (Person)dbEntity.AnyEntity;
 
-            var result = new List<object> { 
-                new { id = person.Id, fullName = person.FullName }, 
+            var result = new List<object> {
+                new { id = person.Id, fullName = person.FullName },
                 new { id = dbPerson.Id, fullName = dbPerson.FullName }
             };
-            return Task.FromResult( result );
+            return Task.FromResult(result);
         }
 
 
