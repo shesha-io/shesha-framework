@@ -101,7 +101,7 @@ const ListControl: FC<IListControlProps> = props => {
     selectedItemIndexes: [],
   });
   const queryParamsFromBrowser = useMemo(() => getQueryParams(), []);
-  const { formData, formMode } = useForm();
+  const { formData, formMode, setFormControlsData } = useForm();
   const { globalState, setState: setGlobalStateState } = useGlobalState();
 
   const useGetAll = apiSource === 'custom' ? useGet : useEntitiesGetAll;
@@ -213,6 +213,17 @@ const ListControl: FC<IListControlProps> = props => {
 
   useDeepCompareEffect(() => {
     if (uniqueStateId && Array.isArray(value) && value.length) {
+      setFormControlsData({
+        name: name,
+        values: {
+          selectedItemIndexes: state?.selectedItemIndexes,
+          selectedItems:
+            selectionMode === 'multiple'
+              ? value?.filter((_, index) => state?.selectedItemIndexes?.includes(index))
+              : null,
+          selectedItem: selectionMode === 'single' ? value[state?.selectedItemIndex] : null,
+        }
+      });
       setGlobalStateState({
         key: uniqueStateId,
         data: {
@@ -226,12 +237,12 @@ const ListControl: FC<IListControlProps> = props => {
       });
     }
 
-    return () => {
+    /*return () => {
       setGlobalStateState({
         key: uniqueStateId,
         data: undefined,
       });
-    };
+    };*/
   }, [state, uniqueStateId, value]);
 
   useDeepCompareEffect(() => {

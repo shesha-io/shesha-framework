@@ -1,5 +1,6 @@
 import { LayoutOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
+import FormItem from 'antd/lib/form/FormItem';
 import React, { FC, Fragment, useEffect, useState } from 'react';
 import { IToolboxComponent } from '../../../../../interfaces';
 import { MetadataProvider, useDataTableStore, useForm } from '../../../../../providers';
@@ -12,6 +13,7 @@ import ImportConfigModal from './modal/importConfigModal';
 import settingsFormJson from './settingsForm.json';
 
 export interface ITableContextComponentProps extends IConfigurableFormComponent {
+  sourceType?: 'Form' | 'Entity' |'Url';
   entityType?: string;
   endpoint?: string;
   components?: IConfigurableFormComponent[]; // If isDynamic we wanna
@@ -31,6 +33,11 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
       ...prev,
       name: prev['uniqueStateId'] ?? prev.name,
     };
+  }).add<ITableContextComponentProps>(1, prev => {
+    return {
+      ...prev,
+      sourceType: 'Entity'
+    };
   }),
   settingsFormMarkup: settingsForm,
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
@@ -41,7 +48,7 @@ export const TableContext: FC<ITableContextComponentProps> = props => {
   const { entityType } = props;
 
   useEffect(() => {
-    const uniqueKey = `${props.entityType ?? 'empty'}`; // is used just for re-rendering
+    const uniqueKey = `${props.sourceType}_${props.name}_${props.entityType ?? 'empty'}`; // is used just for re-rendering
     setTable(<TableContextInner key={uniqueKey} {...props} />);
   }, [props.entityType]);
 
@@ -55,17 +62,17 @@ export const TableContext: FC<ITableContextComponentProps> = props => {
 };
 
 export const TableContextInner: FC<ITableContextComponentProps> = props => {
-  const { entityType, endpoint, label, id, name } = props;
+  const { sourceType, entityType, endpoint, label, id, name } = props;
   const { formMode } = useForm();
   const [selectedRow, setSelectedRow] = useState(-1);
   const isDesignMode = formMode === 'designer';
 
-  if (isDesignMode && !entityType)
+  if (isDesignMode && ((sourceType == 'Entity' && !entityType) || (sourceType == 'Url' && !endpoint)))
     return (
       <Alert
         className="sha-designer-warning"
         message="Table is not configured"
-        description="Select entity type on the settings panel"
+        description={sourceType == 'Entity' ? "Select entity type on the settings panel" : "Select endpoint on the settings panel"}
         type="warning"
         showIcon
       />
@@ -75,20 +82,30 @@ export const TableContextInner: FC<ITableContextComponentProps> = props => {
     setSelectedRow(index);
   };
 
+  const provider = <DataTableProvider
+    userConfigId={props.id}
+    entityType={entityType}
+    getDataPath={endpoint}
+    title={label}
+    selectedRow={selectedRow}
+    onSelectRow={onSelectRow}
+    actionOwnerId={id}
+    actionOwnerName={name}
+    sourceType={props.sourceType}
+  >
+    <TableContextAccessor {...props} />
+  </DataTableProvider>;
+
+  const providerWrapper = sourceType == 'Form'
+    ? <FormItem name={props.name}>
+        {provider}
+      </FormItem>
+    : provider;
+
+
   return (
     <DataTableSelectionProvider>
-      <DataTableProvider
-        userConfigId={props.id}
-        entityType={entityType}
-        getDataPath={endpoint}
-        title={label}
-        selectedRow={selectedRow}
-        onSelectRow={onSelectRow}
-        actionOwnerId={id}
-        actionOwnerName={name}
-      >
-        <TableContextAccessor {...props} />
-      </DataTableProvider>
+      {providerWrapper}
     </DataTableSelectionProvider>
   );
 };
