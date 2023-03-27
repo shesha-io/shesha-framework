@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Form, Select, AutoComplete } from 'antd';
 //import { ColumnsEditorModal } from './columnsEditor/columnsEditorModal';
-import SectionSeparator from '../../../../sectionSeparator';
-import CodeEditor from '../../codeEditor/codeEditor';
-import PropertyAutocomplete from '../../../../propertyAutocomplete/propertyAutocomplete';
-import { FormSelectionMode, IDataListComponentProps } from '../../../../dataList/models';
+import SectionSeparator from '../../../sectionSeparator';
+import CodeEditor from '../codeEditor/codeEditor';
+import PropertyAutocomplete from '../../../propertyAutocomplete/propertyAutocomplete';
+import { FormSelectionMode, IDataListComponentProps } from '../../../dataList/models';
 import { Option } from 'antd/lib/mentions';
-import FormAutocomplete from '../../../../formAutocomplete';
+import FormAutocomplete from '../../../formAutocomplete';
 
 export interface IProps {
   readOnly: boolean;
