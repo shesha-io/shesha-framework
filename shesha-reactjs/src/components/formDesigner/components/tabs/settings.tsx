@@ -19,7 +19,7 @@ export interface ITabSettingsProps {
   onValuesChange?: (changedValues: any, values: ITabsComponentProps) => void;
 }
 
-const TabSettings: FC<ITabSettingsProps> = props => {
+const TabSettings: FC<ITabSettingsProps> = (props) => {
   const [form] = Form.useForm();
 
   const onValuesChange = (changedValues, values) => {
@@ -27,12 +27,13 @@ const TabSettings: FC<ITabSettingsProps> = props => {
   };
 
   const onAddNewItem = (_, count: number) => {
+    const id = nanoid();
     const buttonProps: ITabPaneProps = {
-      id: nanoid(),
+      id: id,
       itemType: 'item',
       sortOrder: count,
       name: `Tab${count + 1}`,
-      key: `tabKey${count + 1}`,
+      key: id,
       title: `Tab ${count + 1}`,
       components: [],
     };
@@ -40,7 +41,7 @@ const TabSettings: FC<ITabSettingsProps> = props => {
     return buttonProps;
   };
 
-  const tabs = props.model.tabs?.map(item => ({ ...item, label: item?.title }));
+  const tabs = props.model.tabs?.map((item) => ({ ...item, label: item?.title }));
 
   return (
     <Form
