@@ -105,7 +105,7 @@ interface IGetFormByIdPayload {
     id: string;
 }
 
-const getMarkupFromResponse = (data: IAbpWrappedGetEntityResponse<FormConfigurationDto>): FormMarkupWithSettings => {
+export const getMarkupFromResponse = (data: IAbpWrappedGetEntityResponse<FormConfigurationDto>): FormMarkupWithSettings => {
     const markupJson = data?.result?.markup;
     return markupJson
         ? JSON.parse(markupJson) as FormMarkupWithSettings
@@ -115,6 +115,23 @@ const getMarkupFromResponse = (data: IAbpWrappedGetEntityResponse<FormConfigurat
 /**
  * Load form markup from the back-end
  */
+export const getFormConfiguration = (formId: FormIdentifier, backendUrl: string, httpHeaders: HeadersInit) => {
+
+    const formRawId = asFormRawId(formId);
+    const formFullName = removeNullUndefined(asFormFullName(formId));
+
+    const requestParams = formRawId 
+        ? { url: '/api/services/Shesha/FormConfiguration/Get', queryParams: { id: formRawId } }
+        : formFullName
+            ? {
+                url: '/api/services/Shesha/FormConfiguration/GetByName', 
+                queryParams: { name: formFullName.name, module: formFullName.module, version: formFullName.version }
+            }
+            : null;
+
+    return RestfulShesha.get<IAbpWrappedGetEntityResponse<FormConfigurationDto>>(requestParams.url, requestParams.queryParams, { base: backendUrl, headers: httpHeaders})
+}
+
 export const useFormConfiguration = (args: UseFormConfigurationArgs): IFormMarkupResponse => {
 
     const { configurationItemMode } = useAppConfigurator();
