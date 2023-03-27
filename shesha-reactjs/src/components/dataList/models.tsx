@@ -1,5 +1,5 @@
-import { FormIdentifier, IConfigurableFormComponent } from "../../../../..";
-import { ISelectionProps } from "../../../../../providers/dataTableSelection/models";
+import { FormIdentifier, IConfigurableFormComponent } from "../..";
+import { ISelectionProps } from "../../providers/dataTableSelection/models";
 
 export type FormSelectionMode = 'name' | 'view' | 'expression';
 

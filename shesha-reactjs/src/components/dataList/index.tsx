@@ -3,17 +3,17 @@ import classNames from "classnames";
 import { nanoid } from "nanoid";
 import React, { FC, useEffect, useMemo, useState } from "react";
 import { useMeasure, usePrevious } from "react-use";
-import { FormFullName, FormIdentifier, IFormDto, useAppConfigurator, useSheshaApplication } from "../../../../../providers";
-import { useConfigurationItemsLoader } from "../../../../../providers/configurationItemsLoader";
-import { getFormConfiguration, getMarkupFromResponse } from "../../../../../providers/form/api";
-import { IPersistedFormProps } from "../../../../../providers/formPersisterProvider/models";
-import ConditionalWrap from "../../../../conditionalWrapper";
-import ConfigurableForm from "../../../../configurableForm";
-import FormInfo from "../../../../configurableForm/formInfo";
-import ShaSpin from "../../../../shaSpin";
-import Show from "../../../../show";
+import { FormFullName, FormIdentifier, IFormDto, useAppConfigurator, useSheshaApplication } from "../../providers";
+import { useConfigurationItemsLoader } from "../../providers/configurationItemsLoader";
+import { getFormConfiguration, getMarkupFromResponse } from "../../providers/form/api";
+import { IPersistedFormProps } from "../../providers/formPersisterProvider/models";
+import ConditionalWrap from "../conditionalWrapper";
+import ConfigurableForm from "../configurableForm";
+import FormInfo from "../configurableForm/formInfo";
+import ShaSpin from "../shaSpin";
+import Show from "../show";
 import { IDataListProps } from "./models";
-import { asFormRawId, asFormFullName } from "../../../../../providers/form/utils"
+import { asFormRawId, asFormFullName } from "../../providers/form/utils"
 
 interface EntityForm {
     entityType: string;
@@ -44,7 +44,6 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     const { backendUrl, httpHeaders } = useSheshaApplication();
     const [ formConfigs, setFormConfigs ] = useState<IFormDto[]>([]);
     const [ entityForms, setEntityForms ] = useState<EntityForm[]>([]);
-    //const [ formIdentifier, setFormIdentifier ] = useState<FormIdentifier>(formId); //props.formSelectionMode == 'name' ? formId : null);
 
     const onSelectRowLocal = (index: number, row: any) => {
         if (selectionMode === 'none') return;

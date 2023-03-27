@@ -3,8 +3,8 @@ import { UnorderedListOutlined } from "@ant-design/icons";
 import { IToolboxComponent } from "../../../../../interfaces";
 import { Alert } from 'antd';
 import { useDataTableSelection, useDataTableStore, useForm } from '../../../../../providers';
-import { DataList } from './dataList';
-import { IDataListComponentProps } from './models';
+import { DataList } from '../../../../dataList';
+import { IDataListComponentProps } from '../../../../dataList/models';
 import DataListSettings from './dataListSettings';
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
@@ -41,51 +41,20 @@ const NotConfiguredWarning: FC = () => {
   
 export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
   const { formMode } = useForm();
-  //const { globalState } = useGlobalState();
-
   const isDesignMode = formMode === 'designer';
 
   const {
     entityType,
     getDataPath,
     sourceType,
-
     tableData,
     isFetchingTableData,
-
-    // Select
     selectedIds,
     changeSelectedRow,
     changeSelectedIds
   } = useDataTableStore();
 
   const { selectedRow, selectedRows, setSelectedRow, setMultiSelectedRow } = useDataTableSelection();
-
-  /**
-   * This expression will be executed when the row has been dropped
-   * @param expression - the expression to be executed
-   * @param row - the row data that has just been dropped
-   * @param oldIndex - the old index of the row
-   * @param newIndex - the new index of the row
-   * @returns - a function to execute
-   */
-  /*const getExpressionExecutor = (expression: string, row: any, oldIndex: number, newIndex: number) => {
-    if (!expression) 
-      return null;
-
-    // tslint:disable-next-line:function-constructor
-    return new Function('row, routes, oldIndex, newIndex, globalState, http, message, data, refreshTable', expression)(
-      row,
-      tableData,
-      oldIndex,
-      newIndex,
-      globalState,
-      axiosHttp(backendUrl),
-      message,
-      formData,
-      refreshTable
-    );
-  };*/
 
   if (isDesignMode && (!(entityType || getDataPath || sourceType == "Form") || !(props.formId || props.formType))) return <NotConfiguredWarning />;
 
@@ -107,7 +76,6 @@ export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
       <DataList
         {...props}
         entityType={entityType}
-        
         onSelectRow={onSelectRow}
         onMultiSelectRows={onMultiRowSelect}
         selectedRow={selectedRow}
