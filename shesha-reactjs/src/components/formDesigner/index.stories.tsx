@@ -209,6 +209,9 @@ export const TestWizard = addStory(DesignerTemplate, {
   // },
   // mode: 'readonly',
 });
+export const DemoDesignerRefListStatus = addStory(DesignerTemplate, {
+  formId: '234276e6-cc6b-41b9-8e06-21275e3f02a7',
+});
 
 export const OrganisationEdit = addStory(DesignerTemplate, {
   formId: '561DD191-1CB4-4195-A272-688FE2348136',

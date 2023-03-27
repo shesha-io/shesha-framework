@@ -53,6 +53,8 @@ const RefListStatus: FC<IProps> = ({ model }) => {
     return showIcon && currentStatus?.icon;
   }, [currentStatus, showIcon]);
 
+  if (!currentStatus?.itemValue && refListData?.success) return null;
+
   return (
     <Skeleton loading={isFetchingRefListData}>
       <Tag
