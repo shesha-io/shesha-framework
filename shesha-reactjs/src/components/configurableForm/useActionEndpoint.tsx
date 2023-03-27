@@ -72,6 +72,7 @@ export const useModelApiHelper = (): IEntityEndpointsEvaluator => {
   const getFormActionUrl = (payload: GetFormActionUrlPayload): Promise<IApiEndpoint> => {
     const { formSettings, actionName, mappings } = payload;
     const customEndpoint = getActionUrlFromFormSettings(formSettings, actionName);
+    
     if (customEndpoint) {
       const evaluatedrl = evaluateComplexString(customEndpoint.url, mappings);
 
@@ -103,7 +104,9 @@ export const useModelApiEndpoint = (args: UseEntityEndpointArguments): IApiEndpo
   const endpointsHelper = useModelApiHelper();
 
   useDeepCompareEffect(() => {
-    endpointsHelper.getFormActionUrl({ actionName, formSettings, mappings }).then(e => setEndpoint(e));
+    endpointsHelper.getFormActionUrl({ actionName, formSettings, mappings }).then(e => {
+      setEndpoint(e)
+    });
   }, [args]);
 
   return endpoint;

@@ -31,7 +31,7 @@ const SettingItem: FC<IProps> = ({ setting /*, index*/ }) => {
   //selectedSetting
 
   const onClick = () => {
-    console.log('LOG: select', { setting, selectedSetting });
+    //console.log('LOG: select', { setting, selectedSetting });
     selectSetting(setting);
   }
 

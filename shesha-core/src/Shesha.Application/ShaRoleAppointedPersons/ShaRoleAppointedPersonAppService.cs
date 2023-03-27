@@ -129,7 +129,6 @@ namespace Shesha.ShaRoleAppointedPersons
             return dto;
         }
 
-        [HttpPost] // for restful-react
         public override async Task DeleteAsync(EntityDto<Guid> input)
         {
             CheckDeletePermission();

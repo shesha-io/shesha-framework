@@ -1,5 +1,4 @@
-﻿using Abp.Dependency;
-using Abp.Modules;
+﻿using Abp.Modules;
 using Abp.Reflection.Extensions;
 using Abp.Timing;
 using Abp.Zero;
@@ -8,8 +7,8 @@ using Castle.MicroKernel.Registration;
 using Shesha.Authorization;
 using Shesha.Authorization.Roles;
 using Shesha.Authorization.Users;
-using Shesha.Domain;
 using Shesha.Localization;
+using Shesha.Modules;
 using Shesha.MultiTenancy;
 using Shesha.Timing;
 
@@ -17,7 +16,7 @@ namespace Shesha
 {
     [DependsOn(typeof(AbpZeroCoreModule),
         typeof(SheshaFrameworkModule))]
-    public class SheshaCoreModule : AbpModule
+    public class SheshaCoreModule : SheshaSubModule<SheshaFrameworkModule>
     {
         public override void PreInitialize()
         {

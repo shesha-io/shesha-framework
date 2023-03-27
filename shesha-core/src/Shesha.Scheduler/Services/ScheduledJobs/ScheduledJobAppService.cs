@@ -1,11 +1,11 @@
-﻿using Abp.Application.Services.Dto;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 using NHibernate.Linq;
 using Shesha.Authorization.Users;
+using Shesha.DynamicEntities.Dtos;
 using Shesha.Scheduler.Attributes;
 using Shesha.Scheduler.Bootstrappers;
 using Shesha.Scheduler.Domain;
@@ -19,33 +19,30 @@ namespace Shesha.Scheduler.Services.ScheduledJobs
     /// <summary>
     /// Scheduled Job application service
     /// </summary>
-    public class ScheduledJobAppService : SheshaCrudServiceBase<ScheduledJob, ScheduledJobDto, Guid>, ITransientDependency
+    public class ScheduledJobAppService : DynamicCrudAppService<ScheduledJob, DynamicDto<ScheduledJob, Guid>, Guid>, ITransientDependency
     {
         private readonly IScheduledJobManager _jobManager;
         private readonly IRepository<ScheduledJob, Guid> _jobRepo;
-        private readonly IServiceProvider _serviceProvider;
 
         public IRepository<User, Int64> UserRepository { get; set; }
 
         /// <summary>
         /// Default constructor
         /// </summary>
-        public ScheduledJobAppService(IRepository<ScheduledJob, Guid> repository, IScheduledJobManager jobManager, IRepository<ScheduledJob, Guid> jobRepo, IServiceProvider provider) : base(repository)
+        public ScheduledJobAppService(IRepository<ScheduledJob, Guid> repository, IScheduledJobManager jobManager, IRepository<ScheduledJob, Guid> jobRepo) : base(repository)
         {
             _jobManager = jobManager;
             _jobRepo = jobRepo;
-            _serviceProvider = provider;
         }
 
         /// <summary>
         /// Run scheduled job
         /// </summary>
-        /// <param name="id">Scheduled job Id</param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
         [HttpPost]
-        public async Task<Guid> StartJobAsync(Guid id, CancellationToken cancellationToken)
+        public async Task<StartJobResponse> StartJobAsync(StartJobInput input, CancellationToken cancellationToken)
         {
+            var id = input.JobId;
+
             // note: special code fore manual jobs
             var scheduledJob = await _jobRepo.GetAll().FirstOrDefaultAsync(j => j.Id == id, cancellationToken: cancellationToken);
 
@@ -85,7 +82,7 @@ namespace Shesha.Scheduler.Services.ScheduledJobs
                 BackgroundJob.Enqueue<IScheduledJobManager>(manager => manager.RunJobAsync(id, executionId, AbpSession.UserId, cancellationToken, scheduledJob.JobName));
             }
 
-            return executionId;
+            return new StartJobResponse(executionId);
         }
 
         /// <summary>
@@ -162,43 +159,6 @@ namespace Shesha.Scheduler.Services.ScheduledJobs
             var bootstrapper = IocManager.Resolve<ScheduledJobBootstrapper>();
             await bootstrapper.ProcessAsync();
             return "Bootstrapped successfully";
-        }
-
-        /// inheritedDoc
-        public override async Task<ScheduledJobDto> CreateAsync(ScheduledJobDto input)
-        {
-            var result = await base.CreateAsync(input);
-
-            await UnitOfWorkManager.Current.SaveChangesAsync();
-
-            // sync with Hangfire
-            await _jobManager.EnqueueAllAsync();
-
-            return result;
-        }
-
-        /// inheritedDoc
-        public override async Task<ScheduledJobDto> UpdateAsync(ScheduledJobDto input)
-        {
-            var result = await base.UpdateAsync(input);
-
-            await UnitOfWorkManager.Current.SaveChangesAsync();
-
-            // sync with Hangfire
-            await _jobManager.EnqueueAllAsync();
-
-            return result;
-        }
-
-        /// inheritedDoc
-        public override async Task DeleteAsync(EntityDto<Guid> input)
-        {
-            await base.DeleteAsync(input);
-
-            await UnitOfWorkManager.Current.SaveChangesAsync();
-
-            // sync with Hangfire
-            await _jobManager.EnqueueAllAsync();
         }
     }
 }

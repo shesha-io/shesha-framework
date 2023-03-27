@@ -64,10 +64,10 @@ namespace Shesha.Metadata
                         ? null
                         : new ModelDto
                         {
-                            Suppress = t.Configuration.Suppress,
+                            Suppress = t.Suppress,
                             ClassName = t.FullClassName,
                             Type = config?.EntityType,
-                            Description = t.Configuration?.Description ?? (config?.EntityType != null ? ReflectionHelper.GetDescription(config?.EntityType) : ""),
+                            Description = t.Description ?? (config?.EntityType != null ? ReflectionHelper.GetDescription(config?.EntityType) : ""),
                             Alias = string.IsNullOrWhiteSpace(t.TypeShortAlias) ? config?.SafeTypeShortAlias : t.TypeShortAlias,
                         };
                 })

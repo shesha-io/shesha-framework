@@ -2,7 +2,6 @@
 using Abp.Domain.Repositories;
 using Newtonsoft.Json;
 using Shesha.ConfigurationItems.Distribution;
-using Shesha.ConfigurationItems.Exceptions;
 using Shesha.Domain;
 using Shesha.Web.FormsDesigner.Domain;
 using System;
@@ -38,25 +37,22 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
             if (!(item is ConfigurableComponent component))
                 throw new ArgumentException($"Wrong type of argument {item}. Expected {nameof(ConfigurableComponent)}, actual: {item.GetType().FullName}");
 
-            if (component.Configuration == null)
-                throw new ConfigurationMissingException(component);
-
             var result = new DistributedConfigurableComponent
             {
                 Id = component.Id,
-                Name = component.Configuration.Name,
-                ModuleName = component.Configuration.Module?.Name,
-                FrontEndApplication = component.Configuration.Application?.AppKey,
-                ItemType = component.Configuration.ItemType,
+                Name = component.Name,
+                ModuleName = component.Module?.Name,
+                FrontEndApplication = component.Application?.AppKey,
+                ItemType = component.ItemType,
 
-                Label = component.Configuration.Label,
-                Description = component.Configuration.Description,
-                OriginId = component.Configuration.Origin?.Id,
-                BaseItem = component.Configuration.BaseItem?.Id,
-                VersionNo = component.Configuration.VersionNo,
-                VersionStatus = component.Configuration.VersionStatus,
-                ParentVersionId = component.Configuration.ParentVersion?.Id,
-                Suppress = component.Configuration.Suppress,
+                Label = component.Label,
+                Description = component.Description,
+                OriginId = component.Origin?.Id,
+                BaseItem = component.BaseItem?.Id,
+                VersionNo = component.VersionNo,
+                VersionStatus = component.VersionStatus,
+                ParentVersionId = component.ParentVersion?.Id,
+                Suppress = component.Suppress,
 
                 // form specific properties
                 Settings = component.Settings,

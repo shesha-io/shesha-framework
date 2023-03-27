@@ -165,12 +165,12 @@ export const Basic = addStory(BasicTemplate, {
   },
 });
 
-export const ReadOnly = addStory(DualModeForm, {
-  // ...configurableFormProps,
+export const Notifications = addStory(DualModeForm, {
   formId: {
-    name: '/settings/forms/playground',
+    name: 'notifications',
+    module: 'Shesha'
   },
-  mode: 'readonly',
+  mode: 'edit',
 });
 
 export const IndexPage = IndexPageTemplate.bind({});

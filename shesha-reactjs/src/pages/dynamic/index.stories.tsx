@@ -38,11 +38,17 @@ export const TestSubform = addStory(Template, {
 });
 
 export const BugFix = addStory(Template, {
-  formId: { name: 'facility-patient-flattened-table', module: 'Boxfusion.His.Clients.Houghton' },
+  formId: { name: 'home-url-routes', module: 'Shesha' }
 });
 
 export const BugFix2 = addStory(Template, {
-  formId: { name: 'test-loading', module: 'test' },
+  formId: { name: 'notifications', module: 'Shesha' }  
+});
+
+export const BugFix3 = addStory(Template, {
+  formId: { name: 'scheduled-job-details', module: 'Shesha' },
+  id: '1ff7882e-0a3b-4f88-a8b3-c3c20afafbde',
+  mode: 'edit'
 });
 
 export const FormLoadingRefactoring_Table = addStory(Template, {

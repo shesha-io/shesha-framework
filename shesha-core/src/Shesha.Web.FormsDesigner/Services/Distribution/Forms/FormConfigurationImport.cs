@@ -18,16 +18,14 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
     public class FormConfigurationImport: IFormConfigurationImport, ITransientDependency
     {
         private readonly IRepository<FormConfiguration, Guid> _formConfigRepo;
-        private readonly IRepository<ConfigurationItem, Guid> _configItemRepository;
         private readonly IRepository<Module, Guid> _moduleRepo;
         private readonly IFormManager _formManger;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
 
-        public FormConfigurationImport(IFormManager formManger, IRepository<FormConfiguration, Guid> formConfigRepo, IRepository<ConfigurationItem, Guid> configItemRepository, IRepository<Module, Guid> moduleRepo, IUnitOfWorkManager unitOfWorkManager)
+        public FormConfigurationImport(IFormManager formManger, IRepository<FormConfiguration, Guid> formConfigRepo, IRepository<Module, Guid> moduleRepo, IUnitOfWorkManager unitOfWorkManager)
         {
             _formManger = formManger;
             _formConfigRepo = formConfigRepo;
-            _configItemRepository = configItemRepository;
             _moduleRepo = moduleRepo;
             _unitOfWorkManager = unitOfWorkManager;
         }
@@ -60,13 +58,13 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
         protected async Task<ConfigurationItemBase> ImportFormAsync(DistributedFormConfiguration item, IConfigurationItemsImportContext context)
         {
             // check if form exists
-            var existingForm = await _formConfigRepo.FirstOrDefaultAsync(f => f.Configuration.Name == item.Name && (f.Configuration.Module == null && item.ModuleName == null || f.Configuration.Module.Name == item.ModuleName) && f.Configuration.IsLast);
+            var existingForm = await _formConfigRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module.Name == item.ModuleName) && f.IsLast);
 
             // use status specified in the context with fallback to imported value
             var statusToImport = context.ImportStatusAs ?? item.VersionStatus;
             if (existingForm != null) 
             {
-                switch (existingForm.Configuration.VersionStatus) 
+                switch (existingForm.VersionStatus) 
                 {
                     case ConfigurationItemVersionStatus.Draft:
                     case ConfigurationItemVersionStatus.Ready: 
@@ -79,9 +77,9 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
                 // mark existing live form as retired if we import new form as live
                 if (statusToImport == ConfigurationItemVersionStatus.Live) 
                 {
-                    var liveForm = existingForm.Configuration.VersionStatus == ConfigurationItemVersionStatus.Live
+                    var liveForm = existingForm.VersionStatus == ConfigurationItemVersionStatus.Live
                         ? existingForm
-                        : await _formConfigRepo.FirstOrDefaultAsync(f => f.Configuration.Name == item.Name && (f.Configuration.Module == null && item.ModuleName == null || f.Configuration.Module.Name == item.ModuleName) && f.Configuration.VersionStatus == ConfigurationItemVersionStatus.Live);
+                        : await _formConfigRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module.Name == item.ModuleName) && f.VersionStatus == ConfigurationItemVersionStatus.Live);
                     if (liveForm != null)
                     {
                         await _formManger.UpdateStatusAsync(liveForm, ConfigurationItemVersionStatus.Retired);
@@ -94,14 +92,13 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
                 MapToForm(item, newFormVersion);
 
                 // important: set status according to the context
-                newFormVersion.Configuration.VersionStatus = statusToImport;
-                newFormVersion.Configuration.CreatedByImport = context.ImportResult;
+                newFormVersion.VersionStatus = statusToImport;
+                newFormVersion.CreatedByImport = context.ImportResult;
                 newFormVersion.Normalize();
 
                 // todo: save external Id
                 // how to handle origin?
 
-                await _configItemRepository.UpdateAsync(newFormVersion.Configuration);
                 await _formConfigRepo.UpdateAsync(newFormVersion);
 
                 return newFormVersion;
@@ -111,18 +108,16 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
                 MapToForm(item, newForm);
 
                 // fill audit?
-                newForm.Configuration.VersionNo = 1;
-                newForm.Configuration.Module = await GetModuleAsync(item.ModuleName, context);
+                newForm.VersionNo = 1;
+                newForm.Module = await GetModuleAsync(item.ModuleName, context);
 
                 // important: set status according to the context
-                newForm.Configuration.VersionStatus = statusToImport;
-                newForm.Configuration.CreatedByImport = context.ImportResult;
+                newForm.VersionStatus = statusToImport;
+                newForm.CreatedByImport = context.ImportResult;
 
                 newForm.Normalize();
 
-                await _configItemRepository.InsertAsync(newForm.Configuration);
                 await _formConfigRepo.InsertAsync(newForm);
-                
 
                 return newForm;
             }
@@ -149,12 +144,11 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
 
         private void MapToForm(DistributedFormConfiguration item, FormConfiguration form) 
         {
-            form.Configuration.Name = item.Name;
-            form.Configuration.Label = item.Label;
-            form.Configuration.ItemType = item.ItemType;
-            form.Configuration.Description = item.Description;
-            form.Configuration.VersionStatus = item.VersionStatus;
-            form.Configuration.Suppress = item.Suppress;
+            form.Name = item.Name;
+            form.Label = item.Label;
+            form.Description = item.Description;
+            form.VersionStatus = item.VersionStatus;
+            form.Suppress = item.Suppress;
 
             form.Markup = item.Markup;
             form.ModelType = item.ModelType;

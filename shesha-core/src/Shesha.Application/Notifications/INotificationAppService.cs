@@ -1,5 +1,6 @@
 ﻿using Abp.Notifications;
 using Shesha.Domain;
+using Shesha.DynamicEntities.Dtos;
 using Shesha.Notifications.Dto;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace Shesha.Notifications
     /// <summary>
     /// Notification service
     /// </summary>
-    public interface INotificationAppService: ISheshaCrudAppService<NotificationDto, Guid>
+    public interface INotificationAppService: IDynamicCrudAppService<Notification, DynamicDto<Notification, Guid>, Guid>
     {
         /// <summary>
         /// Publish new notification

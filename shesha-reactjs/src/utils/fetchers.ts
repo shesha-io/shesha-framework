@@ -1,5 +1,6 @@
 import { AxiosResponse } from "axios";
 import qs from "qs";
+import { IAjaxResponse } from "../interfaces/ajaxResponse";
 
 export interface BaseRequestOptions {
   /**
@@ -148,4 +149,16 @@ export const getFileNameFromContentDisposition = (disposition: string): string =
 
 export const getFileNameFromResponse = (fileResponse: AxiosResponse<any>): string => {
   return getFileNameFromContentDisposition(fileResponse.headers['content-disposition']);
+}
+
+export const unwrapAbpResponse = <TResponse extends any, TData extends any>(response: TResponse): TData | TResponse => {
+  if (!response)
+    return response;
+  
+  const ajaxResponse = response as IAjaxResponse<TData>;
+  const result = ajaxResponse.success && ajaxResponse.result
+    ? ajaxResponse.result
+    : response;
+
+  return result;
 }

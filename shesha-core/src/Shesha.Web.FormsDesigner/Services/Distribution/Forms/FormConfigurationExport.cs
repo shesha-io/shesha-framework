@@ -2,7 +2,6 @@
 using Abp.Domain.Repositories;
 using Newtonsoft.Json;
 using Shesha.ConfigurationItems.Distribution;
-using Shesha.ConfigurationItems.Exceptions;
 using Shesha.Domain;
 using Shesha.Web.FormsDesigner.Domain;
 using System;
@@ -38,24 +37,21 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
             if (!(item is FormConfiguration form))
                 throw new ArgumentException($"Wrong type of argument {item}. Expected {nameof(FormConfiguration)}, actual: {item.GetType().FullName}");
 
-            if (form.Configuration == null)
-                throw new ConfigurationMissingException(form);
-
             var result = new DistributedFormConfiguration
             {
                 Id = form.Id,
-                Name = form.Configuration.Name,
-                ModuleName = form.Configuration.Module?.Name,
-                ItemType = form.Configuration.ItemType,
+                Name = form.Name,
+                ModuleName = form.Module?.Name,
+                ItemType = form.ItemType,
 
-                Label = form.Configuration.Label,
-                Description = form.Configuration.Description,
-                OriginId = form.Configuration.Origin?.Id,
-                BaseItem = form.Configuration.BaseItem?.Id,
-                VersionNo = form.Configuration.VersionNo,
-                VersionStatus = form.Configuration.VersionStatus,
-                ParentVersionId = form.Configuration.ParentVersion?.Id,
-                Suppress = form.Configuration.Suppress,
+                Label = form.Label,
+                Description = form.Description,
+                OriginId = form.Origin?.Id,
+                BaseItem = form.BaseItem?.Id,
+                VersionNo = form.VersionNo,
+                VersionStatus = form.VersionStatus,
+                ParentVersionId = form.ParentVersion?.Id,
+                Suppress = form.Suppress,
 
                 // form specific properties
                 Markup = form.Markup,
