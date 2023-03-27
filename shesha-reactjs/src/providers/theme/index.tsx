@@ -1,9 +1,7 @@
 import React, { FC, useReducer, useContext, PropsWithChildren, useEffect } from 'react';
 import { uiReducer } from './reducer';
-import {
-  setThemeAction,
-} from './actions';
-import { UiActionsContext, UiStateContext, THEME_CONTEXT_INITIAL_STATE, IApplicationTheme } from './contexts';
+import { setThemeAction } from './actions';
+import { UiActionsContext, UiStateContext, THEME_CONTEXT_INITIAL_STATE, IConfigurableTheme } from './contexts';
 import { ConfigProvider } from 'antd';
 import { THEME_CONFIG_NAME } from '../../constants';
 import { useDebouncedCallback } from 'use-debounce';
@@ -30,9 +28,8 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
   useEffect(() => {
     const promisedTheme = getComponent({ name: THEME_CONFIG_NAME, isApplicationSpecific: true, skipCache: false });
     promisedTheme.promise.then(data => {
-      const theme = data?.settings as IApplicationTheme;
-      if (theme)
-        dispatch(setThemeAction(theme));
+      const theme = data?.settings as IConfigurableTheme;
+      if (theme) dispatch(setThemeAction(theme));
     });
   }, []);
 
@@ -49,7 +46,7 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
     });
   }, [state?.theme]);
 
-  const changeTheme = (theme: IApplicationTheme) => {
+  const changeTheme = (theme: IConfigurableTheme) => {
     // save theme to the state
     dispatch(setThemeAction(theme));
 
