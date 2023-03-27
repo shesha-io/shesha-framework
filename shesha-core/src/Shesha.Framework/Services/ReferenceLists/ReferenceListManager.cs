@@ -193,7 +193,6 @@ namespace Shesha.Services.ReferenceLists
                 var dstItem = CloneListItem(srcItem);
                 dstItem.ReferenceList = destination;
                 dstItem.Parent = destinationParent;
-                //dstItem.Id = Guid.NewGuid(); // todo: use generator to generate sequential ids
 
                 await _listItemsRepository.InsertAsync(dstItem);
 
@@ -217,7 +216,7 @@ namespace Shesha.Services.ReferenceLists
             };
         }
 
-        public override async Task<ReferenceList> CreateNewVersionAsync(ReferenceList srcList)
+        public async Task<ReferenceList> CreateNewVersionWithoutItemsAsync(ReferenceList srcList) 
         {
             var newVersion = new ReferenceList();
             newVersion.Origin = srcList.Origin;
@@ -235,15 +234,15 @@ namespace Shesha.Services.ReferenceLists
 
             await Repository.InsertAsync(newVersion);
 
+            return newVersion;
+        }
+
+        public override async Task<ReferenceList> CreateNewVersionAsync(ReferenceList srcList)
+        {
+            var newVersion = await CreateNewVersionWithoutItemsAsync(srcList);
+            
             await CopyItemsAsync(srcList, newVersion);
 
-            /* note: we must mark previous version as retired only during publication of the new version
-            if (form.Configuration.VersionStatus == ConfigurationItemVersionStatus.Live) 
-            {
-                form.Configuration.VersionStatus = ConfigurationItemVersionStatus.Retired;
-                await ConfigurationItemRepository.UpdateAsync(form.Configuration);
-            }
-            */
             return newVersion;
         }
     }

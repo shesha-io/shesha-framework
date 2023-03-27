@@ -3,7 +3,7 @@ using Shesha.Domain;
 using System;
 using System.Linq.Expressions;
 
-namespace Shesha.ConfigurationItems
+namespace Shesha.ConfigurationItems.Specifications
 {
     /// <summary>
     /// Specification to find configuration item by name and module
