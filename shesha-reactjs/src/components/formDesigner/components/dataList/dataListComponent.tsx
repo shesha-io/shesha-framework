@@ -1,10 +1,10 @@
 import React, { FC, useMemo } from 'react';
 import { UnorderedListOutlined } from "@ant-design/icons";
-import { IToolboxComponent } from "../../../../../interfaces";
+import { IToolboxComponent } from "../../../../interfaces";
 import { Alert } from 'antd';
-import { useDataTableSelection, useDataTableStore, useForm } from '../../../../../providers';
-import { DataList } from '../../../../dataList';
-import { IDataListComponentProps } from '../../../../dataList/models';
+import { useDataTableSelection, useDataTableStore, useForm } from '../../../../providers';
+import { DataList } from '../../../dataList';
+import { IDataListComponentProps } from '../../../dataList/models';
 import DataListSettings from './dataListSettings';
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
