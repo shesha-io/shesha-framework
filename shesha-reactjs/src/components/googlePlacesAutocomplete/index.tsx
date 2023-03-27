@@ -27,7 +27,6 @@ interface ISuggestion {
 export interface IGooglePlacesAutocompleteProps {
   disableGoogleEvent?: (value: string) => boolean;
   debounce?: number;
-  externalApiKey?: string;
   externalLoader?: boolean;
   isInvalid?: boolean;
   onGeocodeChange?: (payload?: IAddressAndCoords) => void;
@@ -50,7 +49,6 @@ export interface IGooglePlacesAutocompleteProps {
 const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
   disableGoogleEvent,
   debounce,
-  externalApiKey,
   externalLoader,
   onChange,
   value,
@@ -69,17 +67,6 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
   const [highlightedPlaceId, setHighlightedPlaceId] = useState('');
   const [showSuggestionsDropdownContainer, setShowSuggestionsDropdownContainer] = useState(true);
   const suggestionRef = useRef<ISuggestion[]>([]);
-
-  useEffect(() => {
-    if (externalApiKey) {
-      const script = document.createElement('script');
-
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${externalApiKey}&v=3.exp&libraries=geometry,drawing,places`;
-      script.async = true;
-
-      document.body.appendChild(script);
-    }
-  }, [externalApiKey]);
 
   if (typeof window === 'undefined' || !(typeof window.google === 'object' && typeof window.google.maps === 'object'))
     return null;

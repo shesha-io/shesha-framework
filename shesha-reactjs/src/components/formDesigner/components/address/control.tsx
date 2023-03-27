@@ -16,16 +16,7 @@ interface IAutoCompletePlacesFieldProps extends IAddressCompomentProps {
 }
 
 const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = model => {
-  const {
-    debounce,
-    googleMapsApiKey,
-    minCharactersSearch,
-    onChange,
-    openCageApiKey,
-    placeholder,
-    prefix,
-    value,
-  } = model;
+  const { debounce, minCharactersSearch, onChange, openCageApiKey, placeholder, prefix, value } = model;
 
   const { loading, error, refetch } = useGet<IOpenCageResponse>({
     base: 'https://api.opencagedata.com',
@@ -82,7 +73,6 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = model => {
       <GooglePlacesAutocomplete
         value={getAddressValue(value)}
         debounce={debounce}
-        externalApiKey={googleMapsApiKey}
         externalLoader={loading}
         placeholder={placeholder}
         prefix={prefix}
