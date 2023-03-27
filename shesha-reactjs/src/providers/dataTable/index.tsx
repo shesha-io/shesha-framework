@@ -171,9 +171,7 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
       url: getDataUrl,
       method: 'GET',
       headers,
-    }).then(response =>
-       response.data as IResult<ITableDataResponse>
-    );
+    }).then(response => response.data as IResult<ITableDataResponse>);
   };
 
   const expandFetchDataPayload = (
@@ -346,9 +344,7 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
 
     //console.log('DT fetch', { payload, expandedPayload, fetchPayload })
 
-    return fetchDataTableDataInternal(fetchPayload).then(response => 
-      convertDataResponse(response, payload.pageSize)
-    );
+    return fetchDataTableDataInternal(fetchPayload).then(response => convertDataResponse(response, payload.pageSize));
   };
 
   const [userDTSettingsInner, setUserDTSettings] = useLocalStorage<IDataTableUserConfig>(
