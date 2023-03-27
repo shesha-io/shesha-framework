@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Select, Input } from 'antd';
+import { Form, Select, AutoComplete } from 'antd';
 //import { ColumnsEditorModal } from './columnsEditor/columnsEditorModal';
 import SectionSeparator from '../../../../sectionSeparator';
 import CodeEditor from '../../codeEditor/codeEditor';
@@ -16,6 +16,8 @@ export interface IProps {
   onValuesChange?: (changedValues: any, values: IDataListComponentProps) => void;
 }
 
+const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
+
 function DataListSettings(props: IProps) {
   const [form] = Form.useForm();
 
@@ -24,6 +26,11 @@ function DataListSettings(props: IProps) {
   };
 
   const [state, setState] = useState<IDataListComponentProps>(initialState)
+  const [formTypesOptions, setFormTypesOptions] = useState<{ value: string }[]>(
+    formTypes.map(i => {
+      return { value: i };
+    })
+  );
 
   const onValuesChange = (changedValues, values: IDataListComponentProps) => {
     if (props.onValuesChange) props.onValuesChange(changedValues, values as any);
@@ -80,13 +87,42 @@ function DataListSettings(props: IProps) {
 
       {state.formSelectionMode == 'view' &&
       <Form.Item name="formType" label="formType">
-        <Input readOnly={props.readOnly} />
+        <AutoComplete
+          disabled={props.readOnly}
+          options={formTypesOptions}
+          onSearch={t =>
+            setFormTypesOptions(
+              (t
+                ? formTypes.filter(f => {
+                    return f.toLowerCase().includes(t.toLowerCase());
+                  })
+                : formTypes
+              ).map(i => {
+                return { value: i };
+              })
+            )
+          }
+        />
       </Form.Item>
       }
 
       {state.formSelectionMode == 'expression' && 
-      null
-      }
+      <Form.Item name="formIdExpression" label="Form identifer expression">
+        <CodeEditor
+          readOnly={props.readOnly}
+          mode="dialog"
+          setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
+          name="formIdExpression"
+          type={''}
+          id={''}
+          label="Form identifer expression"
+          description="Enter code to get form identifier. You must return { name: string; module?: string; version?: number; } object. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
+          exposedVariables={[
+            { "name": "item", "description": "List item", "type": "object" },
+          ]}
+        />
+    </Form.Item>
+    }
 
       <Form.Item name="customVisibility" label="Custom visibility">
         <CodeEditor

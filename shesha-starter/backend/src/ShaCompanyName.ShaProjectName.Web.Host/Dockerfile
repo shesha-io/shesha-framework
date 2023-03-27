@@ -9,4 +9,4 @@ WORKDIR /app
 
 COPY . /app
 
-ENTRYPOINT ["dotnet", "Boxfusion.SheshaFunctionalTests.Web.Host.dll"]
+ENTRYPOINT ["dotnet", "ShaCompanyName.ShaProjectName.Web.Host.dll"]

@@ -6,6 +6,7 @@ import { FormIdentifier } from '../../form/models';
 export interface IShowModalActionArguments {
   modalTitle: string;
   formId: FormIdentifier;
+  formMode?: 'edit' | 'readonly';
   showModalFooter: boolean;
   additionalProperties?: IKeyValue[];
   modalWidth?: number | string;
@@ -38,6 +39,16 @@ export const dialogArgumentsForm = new DesignerToolbarSettings()
       required: true,
     },
     convertToFullId: true,
+  })
+  .addDropdown({
+    id: nanoid(),
+    label: 'Form mode',
+    name: 'formMode',
+    dataSourceType: 'values',
+    values: [
+      { id: nanoid(), label: 'Edit', value: 'edit' },
+      { id: nanoid(), label: 'Readonly', value: 'readonly' },
+    ]
   })
   .addCheckbox({
     id: 'c815c322-ba5d-4062-9736-e5d03c724134',

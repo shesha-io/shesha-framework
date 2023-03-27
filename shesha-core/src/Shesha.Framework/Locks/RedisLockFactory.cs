@@ -63,17 +63,6 @@ namespace Shesha.Locks
                 }
                 return redLock.IsAcquired;
             }
-            /*
-            using (var redLock = _redLockFactory.CreateLock(resource, expiryTime))
-            {
-                // make sure we got the lock
-                if (redLock.IsAcquired)
-                {
-                    action.Invoke();
-                }
-                return redLock.IsAcquired;
-            }
-            */
         }
 
         /// <summary>

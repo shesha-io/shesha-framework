@@ -8,6 +8,7 @@ export interface IDataListProps {
     formId?: FormIdentifier;
     formType?: string;
     selectionMode?: 'none' | 'single' | 'multiple';
+    formIdExpression?: string;
     
     records?: object[];
 

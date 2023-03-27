@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import { UnorderedListOutlined } from "@ant-design/icons";
 import { IToolboxComponent } from "../../../../../interfaces";
 import { Alert } from 'antd';
@@ -101,14 +101,18 @@ export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
     setMultiSelectedRow(rows);
   }
 
+  const data = useMemo(() => { return isDesignMode ? [{}] : tableData }, [isDesignMode, tableData])
+
   return (
       <DataList
         {...props}
+        entityType={entityType}
+        
         onSelectRow={onSelectRow}
         onMultiSelectRows={onMultiRowSelect}
         selectedRow={selectedRow}
         selectedRows={selectedRows}
-        records={isDesignMode ? [{}] : tableData}
+        records={data}
         isFetchingTableData={isFetchingTableData}
         selectedIds={selectedIds}
         changeSelectedIds={changeSelectedIds}

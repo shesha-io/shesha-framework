@@ -1,5 +1,4 @@
 ﻿using Shesha.Domain.Attributes;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Dtos;
 using System.Collections.Generic;
@@ -13,6 +12,8 @@ namespace Shesha.Domain
     /// Entity configuration
     /// </summary>
     [Entity(TypeShortAlias = "Shesha.Framework.EntityConfig", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
+    [JoinedProperty("Frwk_EntityConfigs")]
+    [DiscriminatorValue(ItemTypeName)]
     public class EntityConfig : ConfigurationItemBase
     {
         public const string ItemTypeName = "entity";
@@ -59,16 +60,6 @@ namespace Shesha.Domain
             Source = MetadataSourceType.UserDefined;
             
             EntityConfigType = Enums.EntityConfigTypes.Class;
-            
-            Configuration = new ConfigurationItem()
-            {
-                ItemType = ItemType
-            };
-        }
-
-        public override Task<IList<ConfigurationItemBase>> GetDependenciesAsync()
-        {
-            return Task.FromResult<IList<ConfigurationItemBase>>(new List<ConfigurationItemBase>());
         }
 
         [NotMapped]

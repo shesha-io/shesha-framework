@@ -26,8 +26,8 @@ const DesignerTemplate: Story<IFormDesignerStoryProps> = ({ formId }) => (
   </StoryApp>
 );
 
-export const PublicHolidaysForm = addStory(DesignerTemplate, {
-  formId: { name: 'public-holiday-table' },
+export const Buigfix = addStory(DesignerTemplate, {
+  formId: '456cf5ca-fd15-4a1f-aa07-ec3a66b761d7',
 });
 export const RoleAppointmentForm = addStory(DesignerTemplate, {
   formId: '7d50a512-f100-4a6c-977d-c4f39e34b637',
@@ -39,8 +39,7 @@ export const TestForm = addStory(DesignerTemplate, {
 export const TestForm2 = addStory(DesignerTemplate, {
   //formId: '28a2cf97-ae6d-483b-9866-bdfc2e8a03e9',
   //formId: 'd6bba814-7a82-4071-bb6f-2d5ed6fe0aac',
-  formId: 'd6bba814-7a82-4071-bb6f-2d5ed6fe0aac'
-  
+  formId: 'd6bba814-7a82-4071-bb6f-2d5ed6fe0aac',
 });
 
 export const RefListRefactoring = addStory(DesignerTemplate, {
@@ -49,7 +48,6 @@ export const RefListRefactoring = addStory(DesignerTemplate, {
 export const RefLists = addStory(DesignerTemplate, {
   formId: '2a8d45e2-0a2b-4e18-b274-2d593fe07a94',
 });
-
 
 export const AutocompleteSettingsForm = addStory(DesignerTemplate, {
   formId: '7c19404f-7c6f-4cee-9af7-6b82b7be3982',
@@ -197,7 +195,7 @@ export const Playground = addStory(DesignerTemplate, {
 });
 
 export const TestWizard = addStory(DesignerTemplate, {
-  formId: 'a1dbe3d1-b560-431d-aa3f-dc39738e7200',
+  formId: '3753607d-a768-4b51-ac2a-d7dd873e3d47',
   // formId: {
   //   name: 'test-wizard-form',
   //   module: 'Shesha',
@@ -214,7 +212,7 @@ export const ModelConfigurationEdit = addStory(DesignerTemplate, {
 });
 
 export const PermissionEdit = addStory(DesignerTemplate, {
-  formId: { name: 'permission-edit', version: 2 }
+  formId: { name: 'permission-edit', version: 2 },
 });
 
 export const StyleFixEdit = addStory(DesignerTemplate, {
@@ -257,7 +255,7 @@ export const ObservationCaptureForm = addStory(DesignerTemplate, {
   formId: {
     module: 'Boxfusion.His.Observations',
     name: 'observation-capture-form',
-    version: 1
+    version: 1,
   },
 });
 

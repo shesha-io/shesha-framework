@@ -25,6 +25,6 @@ const Template: Story<IDesignerPageProps> = args => (
 export const Basic = Template.bind({});
 
 export const Test = addStory(Template, {
-  formId: '44cac8c6-5a91-4a6a-b1c0-cfed3766148d',
+  formId: 'b9b13fd7-21cf-4e65-9422-fb471c3ea216',
 });
 

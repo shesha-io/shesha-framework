@@ -227,7 +227,7 @@
             },
             {
               "id": "adbc3b29-9a53-4305-869a-f37ba6e8bb94",
-              "type": "autocomplete",
+              "type": "formAutocomplete",
               "name": "modalFormId",
               "label": "Modal form",
               "labelAlign": "right",
@@ -236,10 +236,7 @@
               "customVisibility": null,
               "validate": {
                 "required": true
-              },
-              "dataSourceType": "entitiesList",
-              "entityTypeShortAlias": "Shesha.Core.FormConfiguration",
-              "entityDisplayProperty": "configuration.name"
+              }              
             },
             {
               "id": "2ab34541-6fa0-4be2-bb1e-eb65ec63b353",

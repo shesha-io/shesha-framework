@@ -43,23 +43,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Shesha.AzureAD" Version="4.7.8" />
-    <PackageReference Include="Shesha.Firebase" Version="4.7.8" />
-    <PackageReference Include="Shesha.Import" Version="4.7.8" />
-    <PackageReference Include="Shesha.Ldap" Version="4.7.8" />
-    <PackageReference Include="Shesha.Sms.BulkSms" Version="4.7.8" />
-    <PackageReference Include="Shesha.Sms.Clickatell" Version="4.7.8" />
-    <PackageReference Include="Shesha.Sms.SmsPortal" Version="4.7.8" />
-    <PackageReference Include="Shesha.Sms.Xml2Sms" Version="4.7.8" />
-    <PackageReference Include="Shesha.Web.FormsDesigner" Version="4.7.8" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Controllers\" />
   </ItemGroup>
 
   <ItemGroup>
-    <!--<ProjectReference Include="..\Module\Boxfusion.SheshaFunctionalTests.Common.Application\Boxfusion.SheshaFunctionalTesting.Common.Application.csproj" />-->
     <ProjectReference Include="..\..\..\..\shesha-core\src\Shesha.AzureAD\Shesha.AzureAD.csproj" />
     <ProjectReference Include="..\..\..\..\shesha-core\src\Shesha.Firebase\Shesha.Firebase.csproj" />
     <ProjectReference Include="..\..\..\..\shesha-core\src\Shesha.Import\Shesha.Import.csproj" />

@@ -123,7 +123,7 @@ namespace Shesha.Extensions
 
         public static object GetId(this object entity)
         {
-            if (entity == null || !entity.IsEntity())
+            if (entity == null)
                 return null;
 
             return entity is IEntity<Guid> guidEntity

@@ -23,16 +23,16 @@ const AlertComponent: IToolboxComponent<IAlertProps> = {
   icon: <ExclamationCircleOutlined />,
   factory: (model: IAlertProps) => {
     const { isComponentHidden } = useForm();
+    const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
-    const { data } = useFormData();
+
     const { text, alertType, description, showIcon, closable, icon, style } = model;
 
-    const isHidden = isComponentHidden(model);
+    const evaluatedMessage = evaluateString(text, { ...formData, ...globalState });
 
-    const evaluatedMessage = evaluateString(text, { data, globalState }) ?? '';
-    const evaluatedDescription = evaluateString(description, { data, globalState }) ?? '';
+    const evaluatedDescription = evaluateString(description, formData);
 
-    if (isHidden) return null;
+    if (isComponentHidden(model)) return null;
 
     return (
       <Alert
@@ -40,7 +40,7 @@ const AlertComponent: IToolboxComponent<IAlertProps> = {
         type={alertType}
         description={evaluatedDescription}
         showIcon={showIcon}
-        style={getStyle(style, data)} // Temporary. Make it configurable
+        style={getStyle(style, formData)} // Temporary. Make it configurable
         closable={closable}
         icon={icon ? <ShaIcon iconName={icon as any} /> : null}
       />

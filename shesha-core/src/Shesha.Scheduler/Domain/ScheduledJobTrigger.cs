@@ -1,8 +1,16 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using Abp.Domain.Entities.Auditing;
+﻿using Abp.Domain.Entities.Auditing;
+using Abp.Domain.Repositories;
+using FluentValidation;
+using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.Scheduler.Domain.Enums;
+using Shesha.Scheduler.Utilities;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Linq;
+using Shesha.Extensions;
 
 namespace Shesha.Scheduler.Domain
 {
@@ -35,6 +43,28 @@ namespace Shesha.Scheduler.Domain
         public ScheduledJobTrigger()
         {
             Status = TriggerStatus.Enabled;
+        }
+    }
+
+    public class ScheduledJobTriggerValidator : AbstractValidator<ScheduledJobTrigger>
+    {
+        private readonly IRepository<ScheduledJobTrigger, Guid> _repository;
+
+        public ScheduledJobTriggerValidator(IRepository<ScheduledJobTrigger, Guid> repository)
+        {
+            _repository = repository;
+            RuleFor(x => x.Job).NotEmpty();
+            RuleFor(x => x.CronString).Must(cron => !string.IsNullOrWhiteSpace(cron) && CronStringHelper.IsValidCronExpression(cron)).WithMessage("CRON String is invalid.");
+            RuleFor(x => x.CronString).MustAsync(UniqueCronStringAsync).WithMessage("Trigger with the same CRON String already exists.");
+        }
+
+        private async Task<bool> UniqueCronStringAsync(ScheduledJobTrigger trigger, string cronString, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(cronString))
+                return true;
+
+            var alreadyExist = await _repository.GetAll().Where(m => m.Job == trigger.Job && m.CronString == cronString && m.Id != trigger.Id).AnyAsync();
+            return !alreadyExist;
         }
     }
 }

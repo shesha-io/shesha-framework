@@ -1,5 +1,6 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Entities;
+using Castle.Core;
 using Newtonsoft.Json.Linq;
 using Shesha.Extensions;
 using Shesha.JsonLogic.Exceptions;
@@ -427,15 +428,7 @@ namespace Shesha.JsonLogic
 
                             var name = GetStringValue(@operator.Arguments.First());
 
-                            var expr = ExpressionExtensions.GetMemberExpression(param, name);
-
-                            if (expr.Type.IsEntityType()) 
-                            {
-                                name = $"{name}.{nameof(IEntity.Id)}";
-                                expr = ExpressionExtensions.GetMemberExpression(param, name);
-                            }
-
-                            return expr;
+                            return ExpressionExtensions.GetMemberExpression(param, name);
                         }
 
                     case JsOperators.In:
@@ -652,12 +645,15 @@ namespace Shesha.JsonLogic
 
                     return CombineExpressions<T>(new Expression[]
                         {
-                                            SafeNullable(from, pair.Left, Expression.LessThanOrEqual),
-                                            SafeNullable(pair.Left, to, Expression.LessThanOrEqual),
+                            SafeNullable(from, pair.Left, Expression.LessThanOrEqual),
+                            SafeNullable(pair.Left, to, Expression.LessThanOrEqual),
                         },
                         Expression.AndAlso,
                         param);
                 }
+
+                ConvertEntityReferenceForEquality(param, pair);
+
                 var convertedPair = PrepareExpressionPair(pair);
                 return Expression.Equal(convertedPair.Left, convertedPair.Right);
             });
@@ -768,6 +764,31 @@ namespace Shesha.JsonLogic
         {
             if (ExpressionExtensions.IsNullableExpression(a) && !ExpressionExtensions.IsNullableExpression(b))
                 b = Expression.Convert(b, a.Type);
+        }
+
+        private void ConvertEntityReferenceForEquality(ParameterExpression param, Expression potentialIdExpr, ref Expression potentialEntityRefExpr) 
+        {
+            if (potentialEntityRefExpr is MemberExpression memberExpression &&
+                memberExpression.Type.IsEntityType() &&
+                potentialIdExpr is ConstantExpression idExpr && 
+                idExpr.Value != null /* null values should be processed as references not as Id value*/)
+            {
+                var idName = $"{memberExpression.Member.Name}.{nameof(IEntity.Id)}";
+                var expr = ExpressionExtensions.GetMemberExpression(param, idName);
+                potentialEntityRefExpr = expr;
+            }
+        }        
+
+        private void ConvertEntityReferenceForEquality(ParameterExpression param, ExpressionPair pair)
+        {
+            var left = pair.Left;
+            var right = pair.Right;
+
+            ConvertEntityReferenceForEquality(param, left, ref right);
+            ConvertEntityReferenceForEquality(param, right, ref left);
+
+            pair.Left = left;
+            pair.Right = right;
         }
 
         private Expression Compare<T>(ParameterExpression param, JToken[] tokens, Func<ExpressionPair, ExpressionPair> preparePair, Func<ExpressionPair, Expression> comparator) 

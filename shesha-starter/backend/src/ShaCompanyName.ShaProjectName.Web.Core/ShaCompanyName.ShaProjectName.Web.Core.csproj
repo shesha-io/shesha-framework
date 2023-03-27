@@ -51,8 +51,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Module\ShaCompanyName.ShaProjectName.Common.Application\ShaCompanyName.ShaProjectName.Common.Application.csproj" />
-    <ProjectReference Include="..\Module\ShaCompanyName.ShaProjectName.Common.Domain\ShaCompanyName.ShaProjectName.Common.Domain.csproj" />
+    <ProjectReference Include="..\Module\ShaCompanyName.ShaProjectName.Application\ShaCompanyName.ShaProjectName.Application.csproj" />
+    <ProjectReference Include="..\Module\ShaCompanyName.ShaProjectName.Domain\ShaCompanyName.ShaProjectName.Domain.csproj" />
   </ItemGroup>
 
 </Project>

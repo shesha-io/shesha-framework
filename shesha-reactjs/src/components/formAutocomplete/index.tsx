@@ -26,7 +26,7 @@ interface IOption {
 
 const baseItemFilter = [
     {
-        "==": [{ "var": "configuration.isLast" }, true]
+        "==": [{ "var": "isLast" }, true]
     },
     {
         "==": [{ "var": "isTemplate" }, false]
@@ -37,8 +37,8 @@ const getFilter = (term: string) => {
         ? [
             {
                 or: [
-                    { 'in': [term, { 'var': 'configuration.name' }] },
-                    { 'in': [term, { 'var': 'configuration.module.name' }] },
+                    { 'in': [term, { 'var': 'name' }] },
+                    { 'in': [term, { 'var': 'module.name' }] },
                 ]
             },
         ]
@@ -49,7 +49,7 @@ const getFilter = (term: string) => {
     return JSON.stringify(filter);
 }
 const FORM_CONFIG_ENTITY_TYPE = 'Shesha.Core.FormConfiguration';
-const FORM_CONFIG_PROPERTIES = 'id configuration { name, module { id name }, label, description, versionNo }';
+const FORM_CONFIG_PROPERTIES = 'id name module { id name } label description versionNo';
 const getListFetcherQueryParams = (term: string, maxResultCount): IGenericGetAllPayload => {
     return {
         skipCount: 0,
@@ -58,7 +58,7 @@ const getListFetcherQueryParams = (term: string, maxResultCount): IGenericGetAll
         properties: FORM_CONFIG_PROPERTIES,
         quickSearch: null,
         filter: getFilter(term),
-        sorting: 'configuration.module.name, configuration.name',
+        sorting: 'module.name, name',
     };
 };
 const getSelectedValueQueryParams = (value?: FormIdentifier): IGenericGetAllPayload => {
@@ -74,8 +74,8 @@ const getSelectedValueQueryParams = (value?: FormIdentifier): IGenericGetAllPayl
             ? {
                 and: [
                     ...baseItemFilter,
-                    { '==': [{ 'var': 'configuration.name' }, fullName.name] },
-                    { '==': [{ 'var': 'configuration.module.name' }, fullName.module] },
+                    { '==': [{ 'var': 'name' }, fullName.name] },
+                    { '==': [{ 'var': 'module.name' }, fullName.module] },
                 ]
             }
             : null;
@@ -93,15 +93,13 @@ const getSelectedValueQueryParams = (value?: FormIdentifier): IGenericGetAllPayl
 
 interface IResponseItem {
     id: string;
-    configuration: {
+    name: string;
+    label?: string;
+    description?: string;
+    versionNo?: number;
+    module?: {
+        id: string;
         name: string;
-        label?: string;
-        description?: string;
-        versionNo?: number;
-        module?: {
-            id: string;
-            name: string;
-        }
     }
 }
 
@@ -129,16 +127,16 @@ const FormLabel: FC<IConfigurationItemProps> = ({ name, description, versionNo, 
 }
 
 const getFormValue = (item: IResponseItem) => {
-    return item.configuration.module
-        ? `${item.configuration.module.name}:${item.configuration.name}`
-        : item.configuration.name;
+    return item.module
+        ? `${item.module.name}:${item.name}`
+        : item.name;
 }
 
 const getDisplayText = (item: IResponseItem) => {
     return item
-        ? item.configuration.module
-            ? `${item.configuration.module.name}: ${item.configuration.name}`
-            : item.configuration.name
+        ? item.module
+            ? `${item.module.name}: ${item.name}`
+            : item.name
         : null;
 }
 
@@ -197,21 +195,21 @@ export const FormAutocomplete: FC<IFormAutocompleteRuntimeProps> = (props) => {
         const result: IOption[] = [];
         if (fetchedItems) {
             fetchedItems.forEach(item => {
-                const module = item.configuration.module ?? { name: LEGACY_FORMS_MODULE_NAME, id: '-' };
+                const module = item.module ?? { name: LEGACY_FORMS_MODULE_NAME, id: '-' };
 
                 const opt: IOption = {
                     label: (
                         <FormLabel
-                            name={item.configuration.name}
-                            label={item.configuration.label}
-                            description={item.configuration.description}
-                            versionNo={item.configuration.versionNo}
+                            name={item.name}
+                            label={item.label}
+                            description={item.description}
+                            versionNo={item.versionNo}
                         />
                     ),
                     value: getFormValue(item),
                     data: {
-                        name: item.configuration.name,
-                        module: item.configuration.module?.name,
+                        name: item.name,
+                        module: item.module?.name,
                     }
                 };
                 let group = result.find(g => g.value === module.id);

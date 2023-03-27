@@ -3,10 +3,9 @@ using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using Shesha.Domain;
+using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
 using Shesha.Scheduler.Domain;
-using Shesha.Scheduler.Services.ScheduledJobs.Dto;
 using Shesha.Scheduler.SignalR;
 using Shesha.Services;
 using System;
@@ -16,19 +15,16 @@ using System.Threading.Tasks;
 
 namespace Shesha.Scheduler.Services.ScheduledJobs
 {
-    public class ScheduledJobExecutionAppService : SheshaCrudServiceBase<ScheduledJobExecution, ScheduledJobExecutionDto, Guid>, ITransientDependency
+    public class ScheduledJobExecutionAppService : DynamicCrudAppService<ScheduledJobExecution, DynamicDto<ScheduledJobExecution, Guid>, Guid>, ITransientDependency
     {
         private readonly IMimeMappingService _mimeMappingService;
-        private readonly IRepository<StoredFileVersion, Guid> _fileVersionRepository;
         private readonly IStoredFileService _storedFileService;
 
         public ScheduledJobExecutionAppService(IRepository<ScheduledJobExecution, Guid> repository,
             IMimeMappingService mimeMappingService, 
-            IRepository<StoredFileVersion, Guid> fileVersionRepository,
             IStoredFileService storedFileService) : base(repository)
         {
             _mimeMappingService = mimeMappingService;
-            _fileVersionRepository = fileVersionRepository;
             _storedFileService = storedFileService;
         }
 

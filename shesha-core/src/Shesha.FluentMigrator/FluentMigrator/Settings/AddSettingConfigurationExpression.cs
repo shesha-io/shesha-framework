@@ -12,7 +12,7 @@ namespace Shesha.FluentMigrator.Settings
 
         public AddSettingConfigurationExpression(string migrationModule, string name, string displayName)
         {
-            if (string.IsNullOrWhiteSpace(Name))
+            if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentNullException($"`{nameof(name)}` is mandatory", nameof(name));
 
             _migrationModule = migrationModule;

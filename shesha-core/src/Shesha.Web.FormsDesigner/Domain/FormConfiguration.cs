@@ -1,8 +1,7 @@
 ﻿using Shesha.Domain;
 using Shesha.Domain.Attributes;
-using System.Collections.Generic;
+using Shesha.NHibernate.Attributes;
 using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
 
 namespace Shesha.Web.FormsDesigner.Domain
 {
@@ -10,6 +9,8 @@ namespace Shesha.Web.FormsDesigner.Domain
     /// Form configuration
     /// </summary>
     [Entity(TypeShortAlias = "Shesha.Core.FormConfiguration")]
+    [JoinedProperty("Frwk_FormConfigurations")]
+    [DiscriminatorValue(ItemTypeName)]
     public class FormConfiguration : ConfigurationItemBase
     {
         public const string ItemTypeName = "form";
@@ -18,6 +19,7 @@ namespace Shesha.Web.FormsDesigner.Domain
         /// Form markup
         /// </summary>
         [StringLength(int.MaxValue)]
+        [Lazy]
         public virtual string Markup { get; set; }
 
         /// <summary>
@@ -44,15 +46,8 @@ namespace Shesha.Web.FormsDesigner.Domain
         /// </summary>
         public virtual FormConfiguration Template { get; set; }
 
-        public override Task<IList<ConfigurationItemBase>> GetDependenciesAsync()
-        {
-            return Task.FromResult<IList<ConfigurationItemBase>>(new List<ConfigurationItemBase>());
-        }
-
-        public virtual string FullName => Configuration != null
-            ? Configuration?.Module != null
-                ? $"{Configuration.Module.Name}.{Configuration.Name}"
-                : Configuration.Name
-            : null;
+        public virtual string FullName => Module != null
+                ? $"{Module.Name}.{Name}"
+                : Name;
     }
 }

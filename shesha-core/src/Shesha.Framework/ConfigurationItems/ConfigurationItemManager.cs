@@ -10,7 +10,6 @@ using Shesha.Extensions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,8 +20,12 @@ namespace Shesha.ConfigurationItems
     /// </summary>
     public abstract class ConfigurationItemManager<TItem> : IConfigurationItemManager<TItem> where TItem : class, IConfigurationItem
     {
+        /// <summary>
+        /// Configurable Item type supported by the current manager
+        /// </summary>
+        public Type ItemType => typeof(TItem);
+
         protected IRepository<TItem, Guid> Repository { get; private set; }
-        protected IRepository<ConfigurationItem, Guid> ConfigurationItemRepository { get; private set; }
         protected IRepository<Module, Guid> ModuleRepository { get; private set; }
         protected IUnitOfWorkManager UnitOfWorkManager { get; private set; }
         /// <summary>
@@ -30,17 +33,14 @@ namespace Shesha.ConfigurationItems
         /// </summary>
         public IObjectMapper ObjectMapper { get; set; }
 
-        public abstract string ItemType { get; }
-
-        public ConfigurationItemManager(IRepository<TItem, Guid> repository, IRepository<ConfigurationItem, Guid> configurationItemRepository, IRepository<Module, Guid> moduleRepository, IUnitOfWorkManager unitOfWorkManager)
+        public ConfigurationItemManager(IRepository<TItem, Guid> repository, IRepository<Module, Guid> moduleRepository, IUnitOfWorkManager unitOfWorkManager)
         {
             Repository = repository;
-            ConfigurationItemRepository = configurationItemRepository;
             ModuleRepository = moduleRepository;
             UnitOfWorkManager = unitOfWorkManager;
         }
 
-        public virtual async Task UpdateStatusAsync(ConfigurationItemBase item, ConfigurationItemVersionStatus status)
+        public virtual async Task UpdateStatusAsync(TItem item, ConfigurationItemVersionStatus status)
         {
             // todo: implement transition rules
             // todo: cover transition rules by unit tests
@@ -48,40 +48,40 @@ namespace Shesha.ConfigurationItems
             // mark previously published version as retired
             if (status == ConfigurationItemVersionStatus.Live)
             {
-                var liveVersionsQuery = Repository.GetAll().Where(v => v.Configuration.Module == item.Configuration.Module &&
-                    v.Configuration.Name == item.Configuration.Name &&
+                var liveVersionsQuery = Repository.GetAll().Where(v => v.Module == item.Module &&
+                    v.Name == item.Name &&
                     v != item &&
-                    v.Configuration.VersionStatus == ConfigurationItemVersionStatus.Live);
+                    v.VersionStatus == ConfigurationItemVersionStatus.Live);
                 var liveVersions = await liveVersionsQuery.ToListAsync();
 
                 foreach (var version in liveVersions)
                 {
-                    version.Configuration.VersionStatus = ConfigurationItemVersionStatus.Retired;
-                    await ConfigurationItemRepository.UpdateAsync(version.Configuration);
+                    version.VersionStatus = ConfigurationItemVersionStatus.Retired;
+                    await Repository.UpdateAsync(version);
                 }
 
                 await UnitOfWorkManager.Current.SaveChangesAsync();
             }
 
-            item.Configuration.VersionStatus = status;
-            await ConfigurationItemRepository.UpdateAsync(item.Configuration);
+            item.VersionStatus = status;
+            await Repository.UpdateAsync(item);
         }
 
         /// inheritedDoc
-        public abstract Task<ConfigurationItemBase> CopyAsync(ConfigurationItemBase item, CopyItemInput input);
+        public abstract Task<TItem> CopyAsync(TItem item, CopyItemInput input);
 
         /// inheritedDoc
-        public abstract Task<IConfigurationItemDto> MapToDtoAsync(ConfigurationItemBase item);
+        public abstract Task<IConfigurationItemDto> MapToDtoAsync(TItem item);
 
         /// inheritedDoc
-        public virtual async Task CancelVersoinAsync(ConfigurationItemBase item) 
+        public virtual async Task CancelVersoinAsync(TItem item) 
         {
-            item.Configuration.VersionStatus = ConfigurationItemVersionStatus.Cancelled;
-            await ConfigurationItemRepository.UpdateAsync(item.Configuration);
+            item.VersionStatus = ConfigurationItemVersionStatus.Cancelled;
+            await Repository.UpdateAsync(item);
         }
 
         /// inheritedDoc
-        public async virtual Task MoveToModuleAsync(ConfigurationItemBase item, MoveItemToModuleInput input)
+        public async virtual Task MoveToModuleAsync(TItem item, MoveItemToModuleInput input)
         {
             var module = await ModuleRepository.GetAsync(input.ModuleId);
 
@@ -94,30 +94,65 @@ namespace Shesha.ConfigurationItems
                 validationResults.Add(new ValidationResult("Module is mandatory", new List<string> { nameof(input.ModuleId) }));
             if (module != null && item != null)
             {
-                var alreadyExist = await Repository.GetAll().Where(f => f.Configuration.Module == module && f.Configuration.Name == item.Configuration.Name && f != item).AnyAsync();
+                var alreadyExist = await Repository.GetAll().Where(f => f.Module == module && f.Name == item.Name && f != item).AnyAsync();
                 if (alreadyExist)
-                    validationResults.Add(new ValidationResult($"Item with name `{item.Configuration.Name}` already exists in module `{module.Name}`")
+                    validationResults.Add(new ValidationResult($"Item with name `{item.Name}` already exists in module `{module.Name}`")
                     );
             }
 
             if (validationResults.Any())
                 throw new AbpValidationException("Please correct the errors and try again", validationResults);
 
-            var allVersionsQuery = Repository.GetAll().Where(v => v.Configuration.Origin == item.Configuration.Origin);
+            var allVersionsQuery = Repository.GetAll().Where(v => v.Origin == item.Origin);
             var allVersions = await allVersionsQuery.ToListAsync();
 
             foreach (var version in allVersions)
             {
-                version.Configuration.Module = module;
-                await ConfigurationItemRepository.UpdateAsync(version.Configuration);
+                version.Module = module;
+                await Repository.UpdateAsync(version);
             }
         }
 
-        public abstract Task<ConfigurationItemBase> CreateNewVersionAsync(ConfigurationItemBase item);
+        public abstract Task<TItem> CreateNewVersionAsync(TItem item);
 
-        public virtual async Task DeleteAllVersionsAsync(ConfigurationItemBase item)
+        public virtual async Task DeleteAllVersionsAsync(TItem item)
         {
-            await ConfigurationItemRepository.DeleteAsync(f => f.Name == item.Configuration.Name && f.Module == item.Configuration.Module && f.ItemType == item.Configuration.ItemType && !f.IsDeleted);
+            await Repository.DeleteAsync(f => f.Name == item.Name && f.Module == item.Module && !f.IsDeleted);
+        }
+
+        public async Task UpdateStatusAsync(ConfigurationItemBase item, ConfigurationItemVersionStatus status)
+        {
+            await UpdateStatusAsync(item as TItem, status);
+        }
+
+        public async Task<ConfigurationItemBase> CopyAsync(ConfigurationItemBase item, CopyItemInput input)
+        {
+            return await CopyAsync(item as TItem, input) as ConfigurationItemBase;
+        }
+
+        public async Task CancelVersoinAsync(ConfigurationItemBase item)
+        {
+            await CancelVersoinAsync(item as TItem);
+        }
+
+        public async Task MoveToModuleAsync(ConfigurationItemBase item, MoveItemToModuleInput input)
+        {
+            await MoveToModuleAsync(item as TItem, input);
+        }
+
+        public async Task<ConfigurationItemBase> CreateNewVersionAsync(ConfigurationItemBase item)
+        {
+            return await CreateNewVersionAsync(item as TItem) as ConfigurationItemBase;
+        }
+
+        public async Task DeleteAllVersionsAsync(ConfigurationItemBase item)
+        {
+            await DeleteAllVersionsAsync(item as TItem);
+        }
+
+        public async Task<IConfigurationItemDto> MapToDtoAsync(ConfigurationItemBase item)
+        {
+            return await MapToDtoAsync(item as TItem) as IConfigurationItemDto;
         }
     }
 }
