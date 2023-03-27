@@ -4,7 +4,7 @@ import { IDataAnnotationListProps } from './model';
 
 const DescriptionsList: FC<IDataAnnotationListProps> = ({ data }) => {
   return (
-    <>
+    <div className="List-Container">
       {data
         ?.filter(mark => !!mark?.comment)
         ?.sort((a, b) => {
@@ -14,13 +14,13 @@ const DescriptionsList: FC<IDataAnnotationListProps> = ({ data }) => {
         ?.map(mrk => {
           const [index, comment] = mrk.comment?.split('.') || [];
           return (
-            <div className="List-Container">
+            <div className="List-item">
               <span className="numbering">{`${index}.`}</span>
               <DisplayFormItem> {comment}</DisplayFormItem>
             </div>
           );
         })}
-    </>
+    </div>
   );
 };
 
