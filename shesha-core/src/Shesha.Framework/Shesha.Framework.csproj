@@ -19,8 +19,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Domain\Specifications\**" />
+    <Compile Remove="FluentMigrator\**" />
     <Compile Remove="Services\ApplicationParts\**" />
+    <EmbeddedResource Remove="Domain\Specifications\**" />
+    <EmbeddedResource Remove="FluentMigrator\**" />
     <EmbeddedResource Remove="Services\ApplicationParts\**" />
+    <None Remove="Domain\Specifications\**" />
+    <None Remove="FluentMigrator\**" />
     <None Remove="Services\ApplicationParts\**" />
   </ItemGroup>
 
@@ -44,11 +50,6 @@
     <PackageReference Include="PluralizeService.Core" Version="1.2.19339.3" />
     <PackageReference Include="RedLock.net" Version="2.2.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Domain\Specifications\" />
-    <Folder Include="FluentMigrator\" />
   </ItemGroup>
 
   <ItemGroup>

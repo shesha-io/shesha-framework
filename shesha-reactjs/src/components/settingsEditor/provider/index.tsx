@@ -10,6 +10,7 @@ import { GENERIC_ENTITIES_ENDPOINT } from '../../../constants';
 import { useSheshaApplication } from '../../..';
 import { FrontEndApplicationDto, IFrontEndApplication, ISettingConfiguration, ISettingIdentifier, SettingValue } from './models';
 import { settingsGetValue, settingsUpdateValue } from '../../../apis/settings';
+import { ConfigurationItemVersionStatus } from '../../../utils/configurationFramework/models';
 
 export interface ISettingsEditorProviderProps {
 
@@ -23,6 +24,7 @@ const getListFetcherQueryParams = (maxResultCount): IGenericGetAllPayload => {
         properties: 'id category dataType editorFormModule editorFormName isClientSpecific name, module { id name }, label, description, versionNo',
         quickSearch: null,
         sorting: 'module.name, name',
+        filter: JSON.stringify({ '==': [{ 'var': 'versionStatus' }, ConfigurationItemVersionStatus.Live] }),
     };
 };
 interface SettingConfigurationDto {

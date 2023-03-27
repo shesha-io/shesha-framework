@@ -6,6 +6,7 @@ using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
+using Shesha.Services.ConfigurationItems;
 using Shesha.Web.FormsDesigner.Domain;
 using System;
 using System.IO;
@@ -17,20 +18,20 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
     /// <summary>
     /// Configurable component import
     /// </summary>
-    public class ConfigurableComponentImport: IConfigurableComponentImport, ITransientDependency
+    public class ConfigurableComponentImport: ConfigurationItemImportBase, IConfigurableComponentImport, ITransientDependency
     {
         private readonly IRepository<ConfigurableComponent, Guid> _componentRepo;
-        private readonly IRepository<Module, Guid> _moduleRepo;
-        private readonly IRepository<FrontEndApp, Guid> _frontendAppRepo;
         private readonly IConfigurableComponentManager _componentManger;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
 
-        public ConfigurableComponentImport(IConfigurableComponentManager componentManger, IRepository<ConfigurableComponent, Guid> formConfigRepo, IRepository<Module, Guid> moduleRepo, IRepository<FrontEndApp, Guid> frontendAppRepo, IUnitOfWorkManager unitOfWorkManager)
+        public ConfigurableComponentImport(IRepository<Module, Guid> moduleRepo,
+            IRepository<FrontEndApp, Guid> frontEndAppRepo,
+            IConfigurableComponentManager componentManger, 
+            IRepository<ConfigurableComponent, Guid> formConfigRepo, 
+            IUnitOfWorkManager unitOfWorkManager): base(moduleRepo, frontEndAppRepo)
         {
             _componentManger = componentManger;
             _componentRepo = formConfigRepo;
-            _moduleRepo = moduleRepo;
-            _frontendAppRepo = frontendAppRepo;
             _unitOfWorkManager = unitOfWorkManager;
         }
 
@@ -146,45 +147,6 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
 
                 return newComponent;
             }
-        }
-
-        private async Task<Module> GetModuleAsync(string name, IConfigurationItemsImportContext context) 
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                return null;
-
-            var module = await _moduleRepo.FirstOrDefaultAsync(m => m.Name == name);
-            if (module == null) 
-            {
-                if (context.CreateModules) 
-                {
-                    module = new Module { Name = name, IsEnabled = true };
-                    await _moduleRepo.InsertAsync(module);
-                } else
-                    throw new NotSupportedException($"Module `{name}` is missing in the destination");
-            }
-
-            return module;
-        }
-
-        private async Task<FrontEndApp> GetFrontEndAppAsync(string appKey, IConfigurationItemsImportContext context)
-        {
-            if (string.IsNullOrWhiteSpace(appKey))
-                return null;
-
-            var application = await _frontendAppRepo.FirstOrDefaultAsync(m => m.AppKey == appKey);
-            if (application == null)
-            {
-                if (context.CreateFrontEndApplications)
-                {
-                    application = new FrontEndApp { AppKey = appKey, Name = appKey };
-                    await _frontendAppRepo.InsertAsync(application);
-                }
-                else
-                    throw new NotSupportedException($"Front-end application `{appKey}` is missing in the destination");
-            }
-
-            return application;
         }
 
         private void MapToComponent(DistributedConfigurableComponent item, ConfigurableComponent component) 

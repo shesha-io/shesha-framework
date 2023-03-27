@@ -8,7 +8,7 @@ namespace Shesha.Domain
     /// <summary>
     /// Setting value
     /// </summary>
-    public class SettingValue: AuditedEntity<Guid>
+    public class SettingValue: AuditedEntity<Guid>, IMayHaveFrontEndApplication
     {
         /// <summary>
         /// Setting definition

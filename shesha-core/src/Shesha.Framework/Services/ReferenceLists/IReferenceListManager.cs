@@ -24,5 +24,10 @@ namespace Shesha.Services.ReferenceLists
         /// <param name="input"></param>
         /// <returns></returns>
         Task UpdateAsync(ReferenceList refList, UpdateReferenceListDto input);
+
+        /// <summary>
+        /// Create new version of the reference listwithout list items
+        /// </summary>
+        Task<ReferenceList> CreateNewVersionWithoutItemsAsync(ReferenceList srcList);
     }
 }

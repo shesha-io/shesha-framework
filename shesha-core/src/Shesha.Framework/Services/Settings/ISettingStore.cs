@@ -12,16 +12,16 @@ namespace Shesha.Services.Settings
     public interface ISettingStore: IConfigurationItemManager<SettingConfiguration>
     {
         /// <summary>
-        /// Create new setting definition
+        /// Create new setting configuration
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        Task<SettingConfiguration> CreateSettingDefinitionAsync(CreateSettingDefinitionDto input);
+        Task<SettingConfiguration> CreateSettingConfigurationAsync(CreateSettingDefinitionDto input);
 
         /// <summary>
-        /// Get setting definition
+        /// Get setting configuration
         /// </summary>
-        Task<SettingConfiguration> GetSettingDefinitionAsync(ConfigurationItemIdentifier id);
+        Task<SettingConfiguration> GetSettingConfigurationAsync(ConfigurationItemIdentifier id);
 
         /// <summary>
         /// Get stored setting value
