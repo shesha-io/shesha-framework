@@ -52,12 +52,12 @@ import {
   IStoredFilter,
   ITableFilter,
   IColumnSorting,
-  DataTableColumnDtoListAjaxResponse,
   GetColumnsInput,
   IGetDataPayload,
   ITableColumn,
   IExportExcelPayload,
   IExcelColumn,
+  DataTableColumnDto,
 } from './interfaces';
 import { isEmpty, isEqual, sortBy } from 'lodash';
 import { IResult } from '../../interfaces/result';
@@ -76,13 +76,14 @@ import { advancedFilter2JsonLogic } from './utils';
 import { camelcaseDotNotation, convertDotNotationPropertiesToGraphQL } from '../form/utils';
 import { GENERIC_ENTITIES_ENDPOINT } from '../../constants';
 import { useConfigurableAction } from '../configurableActionsDispatcher';
+import { useMetadataDispatcher } from '../..';
 
 interface IDataTableProviderProps {
-  
+
   value?: any;
 
-  sourceType?: 'Form' | 'Entity' |'Url';
-  
+  sourceType?: 'Form' | 'Entity' | 'Url';
+
   /** Type of entity */
   entityType: string;
   /** Configurable columns. Is used in pair with entityType  */
@@ -304,9 +305,9 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
   const fetchDataTableData = (
     payload: IGetDataPayloadInternal
   ): Promise<IResult<ITableDataInternalResponse>> | null => {
-    
+
     // fetch data from the form value
-    if (sourceType == 'Form' ) {
+    if (sourceType == 'Form') {
       let filtered = [];
       if (Boolean(props.value) && Array.isArray(props.value)) {
         filtered = props.value.filter((_, index) => {
@@ -318,7 +319,7 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
         });
       }
 
-      return Promise.resolve(convertDataResponse({result:{totalCount: props.value?.length ?? 0, items: filtered}}, payload.pageSize));
+      return Promise.resolve(convertDataResponse({ result: { totalCount: props.value?.length ?? 0, items: filtered } }, payload.pageSize));
     }
 
     // save current user configuration to local storage
@@ -387,6 +388,8 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
     state.columns?.length,
     state.tableSorting,
   ]);
+
+  const metaDispatcher = useMetadataDispatcher();
 
   // fetch table data when config is ready or something changed (selected filter, changed current page etc.)
   const refreshTableWhenAppropriate = () => {
@@ -681,47 +684,74 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
     return dataFields.map(f => f.propertyName);
   }, [state?.configurableColumns]);
 
+
+  const getColumnDtos = (payload: GetColumnsInput): Promise<DataTableColumnDto[]> => {
+    const { properties } = payload;
+
+    if (properties.length === 0 || !entityType)
+      return Promise.resolve([]);
+
+    return metaDispatcher.getPropertiesMetadata({ modelType: entityType, properties: properties })
+      .then(response => {
+
+        return properties.map<DataTableColumnDto>(p => {
+
+          const baseProps = {
+            propertyName: p,
+            name: p,
+          };
+          const propMeta = response[p];
+          return propMeta
+            ? {
+              ...baseProps,
+              caption: propMeta.label,
+              description: propMeta.description,
+              dataType: propMeta.dataType,
+              dataFormat: propMeta.dataFormat,
+              referenceListName: propMeta.referenceListName,
+              referenceListModule: propMeta.referenceListModule,
+              entityReferenceTypeShortAlias: propMeta.entityType,
+              allowInherited: false, // todo: add to metadata
+              isFilterable: true, // todo: add to metadata
+              isSortable: true, // todo: add to metadata
+            }
+            : baseProps;
+        });
+      }).catch(e => {
+        // todo: return error and handle on the upper level
+        console.error('Failed to fetch table columns', e);
+        return [];
+      });
+  }
+
+  //#region get columns from back-end
   useEffect(() => {
     const { configurableColumns } = state;
     if (!entityType) return;
 
     const localProperties = getDataProperties(configurableColumns);
 
-    if (localProperties.length === 0) {
-      // don't fetch data from server when properties is empty
-      dispatch(fetchColumnsSuccessSuccessAction({ columns: [], configurableColumns, userConfig: userDTSettings }));
-      return;
-    }
-
     // fetch columns config from server
     const getColumnsPayload: GetColumnsInput = {
       entityType,
       properties: localProperties,
     };
-
-    axios({
-      method: 'POST',
-      url: `${backendUrl}/api/services/app/DataTable/GetColumns`,
-      data: getColumnsPayload,
-      headers,
-    })
-      .then(response => {
-        const responseData = response.data as DataTableColumnDtoListAjaxResponse;
-
-        if (responseData.success) {
-          dispatch(
-            fetchColumnsSuccessSuccessAction({
-              columns: responseData.result,
-              configurableColumns,
-              userConfig: userDTSettings,
-            })
-          );
-        }
+    getColumnDtos(getColumnsPayload)
+      .then(columns => {
+        dispatch(
+          fetchColumnsSuccessSuccessAction({
+            columns,
+            configurableColumns,
+            userConfig: userDTSettings,
+          })
+        );
       })
       .catch(e => {
         console.log(e);
       });
+
   }, [state.configurableColumns, state.entityType, state.getDataPath]);
+  //#endregion
 
   const registerConfigurableColumns = (ownerId: string, columns: IConfigurableColumnsBase[]) => {
     dispatch(registerConfigurableColumnsAction({ ownerId, columns }));

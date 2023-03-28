@@ -9,6 +9,8 @@ import {
   IGetMetadataPayload,
   IRegisterProviderPayload,
   IGetNestedPropertiesPayload,
+  IGetPropertyMetadataPayload,
+  IGetPropertiesMetadataPayload,
 } from './contexts';
 import {
   activateProviderAction,
@@ -21,6 +23,7 @@ import { useSheshaApplication } from '../../providers';
 import { IModelMetadata, IPropertyMetadata, ISpecification } from '../../interfaces/metadata';
 import camelcase from 'camelcase';
 import { DataTypes } from '../../interfaces/dataTypes';
+import { IDictionary } from '../../interfaces';
 
 export interface IMetadataDispatcherProviderProps { }
 
@@ -66,7 +69,7 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
             description: s.description,
           }));
           const apiEndpoints = {};
-          for(const actionName in response.result.apiEndpoints){
+          for (const actionName in response.result.apiEndpoints) {
             const endpoint = response.result.apiEndpoints[actionName];
             if (endpoint)
               apiEndpoints[actionName] = { ...endpoint };
@@ -92,36 +95,64 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
     return metaPromise;
   };
 
-  /*
-  const getSpecifications = (payload: IGetSpecificationsPayload): Promise<ISpecification[]> => {
-    const { modelType } = payload;
-    const loadedSpecs = specifications.current[payload.modelType];
-    if (loadedSpecs) return loadedSpecs;
-
-    const specsPromise = new Promise<ISpecification[]>((resolve, reject) => {
-      entitiesSpecifications({ base: backendUrl, headers: httpHeaders, queryParams: { entityType: modelType } })
-        .then(response => {
-          if (!response.success) {
-            reject(response.error);
-          }
-
-          const specs = response.result.map<ISpecification>(p => ({
-            name: p.name,
-            friendlyName: p.friendlyName,
-            description: p.description
-          }));
-
-          resolve(specs);
-        })
-        .catch(e => {
-          reject(e);
-        });
-    });
-    specifications.current[payload.modelType] = specsPromise;
-
-    return specsPromise;
+  const getPropertyByName = (properties: IPropertyMetadata[], name: string): IPropertyMetadata => {
+    return properties?.find(p => camelcase(p.path) === name);
   }
-  */
+  const extractNestedProperty = (mainProperty: IPropertyMetadata, name: string): Promise<IPropertyMetadata> => {
+    return mainProperty.dataType === 'entity'
+      ? getMetadata({ modelType: mainProperty.entityType }).then(entityMeta => {
+        return getPropertyByName(entityMeta?.properties, name);
+      })
+      : Promise.resolve(getPropertyByName(mainProperty.properties, name));
+  }
+
+  const getPropertyMetadata = (payload: IGetPropertyMetadataPayload): Promise<IPropertyMetadata> => {
+    const { modelType, propertyPath } = payload;
+
+    const pathParts = propertyPath.split('.');
+    if (pathParts.length === 0)
+      return Promise.reject('Failed to build property path');
+
+    // get container metadata
+    const rootMetaPromise = getMetadata({ modelType: modelType });
+    // get first level property and its metadata
+    const level1 = pathParts.shift();
+    const level1Promise = rootMetaPromise.then(m => {
+      const propertyMeta = getPropertyByName(m?.properties, level1);
+      return propertyMeta;
+    })
+
+    // run full chain of properties starting from the first one
+    const result = pathParts.reduce((a, c) => {
+      return a.then(m => extractNestedProperty(m, c));
+    }, level1Promise);
+
+    return result;
+  }
+
+
+  interface IPropertyPathWithMetadata {
+    path: string;
+    metadata: IPropertyMetadata;
+  }
+  const getPropertiesMetadata = (payload: IGetPropertiesMetadataPayload): Promise<IDictionary<IPropertyMetadata>> => {
+    const { properties, modelType } = payload;
+
+    const promises = properties.map(p => getPropertyMetadata({ modelType: modelType, propertyPath: p })
+      .then<IPropertyPathWithMetadata>(propMeta => ({ path: p, metadata: propMeta }))
+    );
+
+    return Promise.allSettled(promises).then(results => {
+      const dictionary: IDictionary<IPropertyMetadata> = {};
+      results.filter(r => r.status === 'fulfilled').forEach(r => {
+        const pathWithMeta = (r as PromiseFulfilledResult<IPropertyPathWithMetadata>)?.value;
+        if (pathWithMeta)
+          dictionary[pathWithMeta.path] = pathWithMeta.metadata;
+      });
+
+      return dictionary;
+    });
+  }
 
   const registerProvider = (payload: IRegisterProviderPayload) => {
     const existingProvider = providers.current[payload.id];
@@ -148,7 +179,7 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
   };
 
   const getNested = (meta: IModelMetadata, propName: string): Promise<IModelMetadata> => {
-    const propMeta = meta.properties.find(p => camelcase(p.path) == propName);
+    const propMeta = meta.properties.find(p => camelcase(p.path) === propName);
 
     if (!propMeta)
       return Promise.reject(`property '${propName}' not found`);
@@ -198,8 +229,9 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
 
   const metadataActions: IMetadataDispatcherActionsContext = {
     getMetadata,
+    getPropertyMetadata,
+    getPropertiesMetadata,
     isEntityType,
-    //getSpecifications,
     getContainerProperties,
     getContainerMetadata,
     registerProvider,

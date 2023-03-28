@@ -33,7 +33,8 @@ const Template: Story<IDynamicPageProps> = args => (
 export const Basic = Template.bind({});
 
 export const TestSubform = addStory(Template, {
-  formId: { name: 'test-subform', module: 'test' },
+  formId: { name: 'personal-details-and-address', module: 'shesha' },
+  id: '28876571-4f62-4df0-9f03-fffe74f463f4',
   mode: 'edit'
 });
 

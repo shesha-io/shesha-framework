@@ -28,7 +28,7 @@ import { isValidRefListId } from '../referenceListDispatcher/utils';
 import { IReferenceListIdentifier } from '../referenceListDispatcher/models';
 import { entityConfigGetEntityConfigForm } from '../../apis/entityConfig';
 import localForage from 'localforage';
-import { IDictionary } from '../../components/configurationFramework/models';
+import { IDictionary } from '../../interfaces';
 
 type LocalForage = ReturnType<typeof localForage.createInstance>;
 type StoragesDictionary = IDictionary<LocalForage>;

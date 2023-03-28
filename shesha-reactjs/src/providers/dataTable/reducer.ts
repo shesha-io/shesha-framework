@@ -242,7 +242,6 @@ const reducer = handleActions<IDataTableStateContext, any>(
                 entityReferenceTypeShortAlias: srvColumn?.entityReferenceTypeShortAlias,
                 referenceListName: srvColumn?.referenceListName,
                 referenceListModule: srvColumn?.referenceListModule,
-                autocompleteUrl: srvColumn?.autocompleteUrl,
                 allowInherited: srvColumn?.allowInherited,
 
                 caption: column.caption,

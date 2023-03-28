@@ -17,3 +17,7 @@ export interface IReferenceListItemValueDto {
   item?: string;
   itemValue?: number;
 }
+
+export type IDictionary<TItem> = {
+  [key: string]: TItem;
+}
