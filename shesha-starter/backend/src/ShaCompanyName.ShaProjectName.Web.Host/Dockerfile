@@ -9,4 +9,4 @@ WORKDIR /app
 
 COPY . /app
 
-ENTRYPOINT ["dotnet", "ShaCompanyName.ShaProjectName.Web.Host.dll"]
+ENTRYPOINT ["sh", "-c", "dotnet $(find . -maxdepth 1 -name '*.Web.Host.dll' -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d' ')"]
