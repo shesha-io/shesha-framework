@@ -48,14 +48,18 @@ export interface ErrorInfo {
 }
 
 /**
- * Generic entity Dto with display text
+ * Generic entity reference Dto
  */
-export interface GuidNullableEntityWithDisplayNameDto {
+export interface GuidNullableEntityReferenceDto {
   id?: string | null;
   /**
    * Entity display name
    */
-  displayText?: string | null;
+  _displayName?: string | null;
+  /**
+   * Entity class name
+   */
+  _className?: string | null;
 }
 
 /**
@@ -141,7 +145,7 @@ export interface ReferenceListItemDto {
   itemValue?: number;
   description?: string | null;
   orderIndex?: number;
-  referenceList?: GuidNullableEntityWithDisplayNameDto;
+  referenceList?: GuidNullableEntityReferenceDto;
   /**
    * Color associated with the item
    */
@@ -238,6 +242,14 @@ export interface UpdateReferenceListDto {
   /**
    * Label
    */
+  moduleId?: string | null;
+  /**
+   * Name
+   */
+  name?: string | null;
+  /**
+   * Label
+   */
   label?: string | null;
   /**
    * Description
@@ -255,10 +267,6 @@ export interface ReferenceListGetByNameQueryParams {
    * Module name
    */
   module?: string;
-  /**
-   * Namespace
-   */
-  namespace?: string;
   /**
    * Reference list name
    */
@@ -326,7 +334,7 @@ export const referenceListGetByName = (
   );
 
 export interface ReferenceListGetItemsQueryParams {
-  namespace?: string;
+  module?: string;
   name?: string;
   /**
    * The requested API version
@@ -434,65 +442,6 @@ export const referenceListClearCacheFull = (props: referenceListClearCacheFullPr
   RestfulShesha.mutate<void, unknown, ReferenceListClearCacheFullQueryParams, void, void>(
     'POST',
     `/api/services/app/ReferenceList/ClearCache`,
-    undefined,
-    props
-  );
-
-export interface ReferenceListClearCacheQueryParams {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string;
-}
-
-export interface ReferenceListClearCachePathParams {
-  module: string;
-  namespace: string;
-  name: string;
-}
-
-export type ReferenceListClearCacheProps = Omit<
-  MutateProps<void, unknown, ReferenceListClearCacheQueryParams, void, ReferenceListClearCachePathParams>,
-  'path' | 'verb'
-> &
-  ReferenceListClearCachePathParams;
-
-export const ReferenceListClearCache = ({ module, namespace, name, ...props }: ReferenceListClearCacheProps) => (
-  <Mutate<void, unknown, ReferenceListClearCacheQueryParams, void, ReferenceListClearCachePathParams>
-    verb="POST"
-    path={`/api/services/app/ReferenceList/ClearCache/${module}/${namespace}/${name}`}
-    {...props}
-  />
-);
-
-export type UseReferenceListClearCacheProps = Omit<
-  UseMutateProps<void, unknown, ReferenceListClearCacheQueryParams, void, ReferenceListClearCachePathParams>,
-  'path' | 'verb'
-> &
-  ReferenceListClearCachePathParams;
-
-export const useReferenceListClearCache = ({ module, namespace, name, ...props }: UseReferenceListClearCacheProps) =>
-  useMutate<void, unknown, ReferenceListClearCacheQueryParams, void, ReferenceListClearCachePathParams>(
-    'POST',
-    (paramsInPath: ReferenceListClearCachePathParams) =>
-      `/api/services/app/ReferenceList/ClearCache/${paramsInPath.module}/${paramsInPath.namespace}/${paramsInPath.name}`,
-    { pathParams: { module, namespace, name }, ...props }
-  );
-
-export type referenceListClearCacheProps = Omit<
-  RestfulShesha.MutateProps<
-    void,
-    unknown,
-    ReferenceListClearCacheQueryParams,
-    void,
-    ReferenceListClearCachePathParams
-  > & { module: string; namespace: string; name: string },
-  'data'
->;
-export const referenceListClearCache = ({ module, namespace, name, ...props }: referenceListClearCacheProps) =>
-  RestfulShesha.mutate<void, unknown, ReferenceListClearCacheQueryParams, void, ReferenceListClearCachePathParams>(
-    'POST',
-    `/api/services/app/ReferenceList/ClearCache/${module}/${namespace}/${name}`,
     undefined,
     props
   );
@@ -645,6 +594,101 @@ export const referenceListCreate = (data: CreateReferenceListDto, props: referen
     void
   >('POST', `/api/services/app/ReferenceList/Create`, data, props);
 
+export interface ReferenceListGetQueryParams {
+  /**
+   * Reference listid
+   */
+  id?: string;
+  /**
+   * MD5 of the reference list. Is used for the client side caching.
+   * If specified, the application should compare the value received from the client with a local cache and return http response with code 304 (not changed)
+   */
+  md5?: string;
+  /**
+   * The requested API version
+   */
+  'api-version'?: string;
+}
+
+export type ReferenceListGetProps = Omit<
+  GetProps<ReferenceListDtoAjaxResponse, AjaxResponseBase, ReferenceListGetQueryParams, void>,
+  'path'
+>;
+
+export const ReferenceListGet = (props: ReferenceListGetProps) => (
+  <Get<ReferenceListDtoAjaxResponse, AjaxResponseBase, ReferenceListGetQueryParams, void>
+    path={`/api/services/app/ReferenceList/Get`}
+    {...props}
+  />
+);
+
+export type UseReferenceListGetProps = Omit<
+  UseGetProps<ReferenceListDtoAjaxResponse, AjaxResponseBase, ReferenceListGetQueryParams, void>,
+  'path'
+>;
+
+export const useReferenceListGet = (props: UseReferenceListGetProps) =>
+  useGet<ReferenceListDtoAjaxResponse, AjaxResponseBase, ReferenceListGetQueryParams, void>(
+    `/api/services/app/ReferenceList/Get`,
+    props
+  );
+
+export type referenceListGetProps = Omit<
+  RestfulShesha.GetProps<ReferenceListDtoAjaxResponse, AjaxResponseBase, ReferenceListGetQueryParams, void>,
+  'queryParams'
+>;
+export const referenceListGet = (queryParams: ReferenceListGetQueryParams, props: referenceListGetProps) =>
+  RestfulShesha.get<ReferenceListDtoAjaxResponse, AjaxResponseBase, ReferenceListGetQueryParams, void>(
+    `/api/services/app/ReferenceList/Get`,
+    queryParams,
+    props
+  );
+
+export interface ReferenceListDeleteQueryParams {
+  id?: string;
+  /**
+   * The requested API version
+   */
+  'api-version'?: string;
+}
+
+export type ReferenceListDeleteProps = Omit<
+  MutateProps<void, unknown, ReferenceListDeleteQueryParams, void, void>,
+  'path' | 'verb'
+>;
+
+export const ReferenceListDelete = (props: ReferenceListDeleteProps) => (
+  <Mutate<void, unknown, ReferenceListDeleteQueryParams, void, void>
+    verb="DELETE"
+    path={`/api/services/app/ReferenceList/Delete`}
+    {...props}
+  />
+);
+
+export type UseReferenceListDeleteProps = Omit<
+  UseMutateProps<void, unknown, ReferenceListDeleteQueryParams, void, void>,
+  'path' | 'verb'
+>;
+
+export const useReferenceListDelete = (props: UseReferenceListDeleteProps) =>
+  useMutate<void, unknown, ReferenceListDeleteQueryParams, void, void>(
+    'DELETE',
+    `/api/services/app/ReferenceList/Delete`,
+    { ...props }
+  );
+
+export type referenceListDeleteProps = Omit<
+  RestfulShesha.MutateProps<void, unknown, ReferenceListDeleteQueryParams, void, void>,
+  'data'
+>;
+export const referenceListDelete = (props: referenceListDeleteProps) =>
+  RestfulShesha.mutate<void, unknown, ReferenceListDeleteQueryParams, void, void>(
+    'DELETE',
+    `/api/services/app/ReferenceList/Delete`,
+    undefined,
+    props
+  );
+
 export interface ReferenceListGetAllQueryParams {
   /**
    * Filter string in JsonLogic format
@@ -654,6 +698,10 @@ export interface ReferenceListGetAllQueryParams {
    * Quick search string. Is used to search entities by text
    */
   quickSearch?: string;
+  /**
+   * List of specifications to apply on top of query
+   */
+  specifications?: string[];
   sorting?: string;
   skipCount?: number;
   maxResultCount?: number;
@@ -778,6 +826,10 @@ export interface ReferenceListQueryAllQueryParams {
    * Quick search string. Is used to search entities by text
    */
   quickSearch?: string;
+  /**
+   * List of specifications to apply on top of query
+   */
+  specifications?: string[];
   sorting?: string;
   skipCount?: number;
   maxResultCount?: number;
@@ -858,98 +910,3 @@ export const referenceListQueryAll = (
     ReferenceListQueryAllQueryParams,
     void
   >(`/api/services/app/ReferenceList/QueryAll`, queryParams, props);
-
-export interface ReferenceListGetQueryParams {
-  /**
-   * Reference listid
-   */
-  id?: string;
-  /**
-   * MD5 of the reference list. Is used for the client side caching.
-   * If specified, the application should compare the value received from the client with a local cache and return http response with code 304 (not changed)
-   */
-  md5?: string;
-  /**
-   * The requested API version
-   */
-  'api-version'?: string;
-}
-
-export type ReferenceListGetProps = Omit<
-  GetProps<ReferenceListDtoAjaxResponse, AjaxResponseBase, ReferenceListGetQueryParams, void>,
-  'path'
->;
-
-export const ReferenceListGet = (props: ReferenceListGetProps) => (
-  <Get<ReferenceListDtoAjaxResponse, AjaxResponseBase, ReferenceListGetQueryParams, void>
-    path={`/api/services/app/ReferenceList/Get`}
-    {...props}
-  />
-);
-
-export type UseReferenceListGetProps = Omit<
-  UseGetProps<ReferenceListDtoAjaxResponse, AjaxResponseBase, ReferenceListGetQueryParams, void>,
-  'path'
->;
-
-export const useReferenceListGet = (props: UseReferenceListGetProps) =>
-  useGet<ReferenceListDtoAjaxResponse, AjaxResponseBase, ReferenceListGetQueryParams, void>(
-    `/api/services/app/ReferenceList/Get`,
-    props
-  );
-
-export type referenceListGetProps = Omit<
-  RestfulShesha.GetProps<ReferenceListDtoAjaxResponse, AjaxResponseBase, ReferenceListGetQueryParams, void>,
-  'queryParams'
->;
-export const referenceListGet = (queryParams: ReferenceListGetQueryParams, props: referenceListGetProps) =>
-  RestfulShesha.get<ReferenceListDtoAjaxResponse, AjaxResponseBase, ReferenceListGetQueryParams, void>(
-    `/api/services/app/ReferenceList/Get`,
-    queryParams,
-    props
-  );
-
-export interface ReferenceListDeleteQueryParams {
-  id?: string;
-  /**
-   * The requested API version
-   */
-  'api-version'?: string;
-}
-
-export type ReferenceListDeleteProps = Omit<
-  MutateProps<void, unknown, ReferenceListDeleteQueryParams, void, void>,
-  'path' | 'verb'
->;
-
-export const ReferenceListDelete = (props: ReferenceListDeleteProps) => (
-  <Mutate<void, unknown, ReferenceListDeleteQueryParams, void, void>
-    verb="DELETE"
-    path={`/api/services/app/ReferenceList/Delete`}
-    {...props}
-  />
-);
-
-export type UseReferenceListDeleteProps = Omit<
-  UseMutateProps<void, unknown, ReferenceListDeleteQueryParams, void, void>,
-  'path' | 'verb'
->;
-
-export const useReferenceListDelete = (props: UseReferenceListDeleteProps) =>
-  useMutate<void, unknown, ReferenceListDeleteQueryParams, void, void>(
-    'DELETE',
-    `/api/services/app/ReferenceList/Delete`,
-    { ...props }
-  );
-
-export type referenceListDeleteProps = Omit<
-  RestfulShesha.MutateProps<void, unknown, ReferenceListDeleteQueryParams, void, void>,
-  'data'
->;
-export const referenceListDelete = (props: referenceListDeleteProps) =>
-  RestfulShesha.mutate<void, unknown, ReferenceListDeleteQueryParams, void, void>(
-    'DELETE',
-    `/api/services/app/ReferenceList/Delete`,
-    undefined,
-    props
-  );
