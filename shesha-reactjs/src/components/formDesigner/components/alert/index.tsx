@@ -28,7 +28,7 @@ const AlertComponent: IToolboxComponent<IAlertProps> = {
 
     const { text, alertType, description, showIcon, closable, icon, style } = model;
 
-    const evaluatedMessage = evaluateString(text, { ...formData, ...globalState });
+    const evaluatedMessage = evaluateString(text, { data: formData, globalState });
 
     const evaluatedDescription = evaluateString(description, formData);
 

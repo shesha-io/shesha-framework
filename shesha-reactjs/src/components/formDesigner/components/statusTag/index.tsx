@@ -24,7 +24,7 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
   name: 'Status Tag',
   icon: <ArrowsAltOutlined />,
   factory: (model: IStatusTagProps) => {
-    const { formMode } = useForm();
+    const { formMode ,} = useForm();
     const { globalState } = useGlobalState();
     const { data } = useFormData();
 
