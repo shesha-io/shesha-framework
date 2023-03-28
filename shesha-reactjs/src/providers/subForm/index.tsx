@@ -233,7 +233,8 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
       return;
     }
 
-    if (!getUrl) return;
+    // NOTE: getUrl may be null and a real URL according to the entity type or other params
+    //if (!getUrl) return; 
 
     dataRequestAbortController.current = new AbortController();
 
