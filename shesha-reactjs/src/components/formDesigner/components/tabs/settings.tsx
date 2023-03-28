@@ -119,6 +119,7 @@ const TabSettings: FC<ITabSettingsProps> = (props) => {
           options={{ onAddNewItem }}
           title="Configure Tabs"
           heading="Settings"
+          insertMode="after"
           callToAction="Configure Tab Panes"
           itemTypeMarkup={itemSettings as FormMarkup}
           allowAddGroups={false}
