@@ -5,6 +5,7 @@ import {
   ISetFormDataPayload,
   IRegisterActionsPayload,
   ISetEnabledComponentsPayload,
+  ISetFormControlsDataPayload,
 } from './contexts';
 import {
   FormMode,
@@ -74,6 +75,10 @@ const reducer = handleActions<IFormStateContext, any>(
         ...state,
         enabledComponentIds: payload.componentIds,
       };
+    },
+
+    [FormActionEnums.SetFormControlsData]: (state: IFormStateContext, action: ReduxActions.Action<ISetFormControlsDataPayload>) => {
+      return { ...state, formControlsData: { ...state.formControlsData, ...action.payload?.values } };
     },
 
     [FormActionEnums.SetFormData]: (state: IFormStateContext, action: ReduxActions.Action<ISetFormDataPayload>) => {

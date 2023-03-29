@@ -37,6 +37,7 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
           message="ReflistStatus configuration is incomplete"
           description="Please make sure that you've specified 'module and namespace' properties."
           type="warning"
+          
         />
       );
     }

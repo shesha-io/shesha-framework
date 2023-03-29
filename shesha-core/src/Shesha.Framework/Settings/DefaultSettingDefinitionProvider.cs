@@ -32,6 +32,9 @@ namespace Shesha.Settings
                 var interfaceType = accessorType.GetInterfaces().Where(t => t != typeof(ISettingAccessors) && typeof(ISettingAccessors).IsAssignableFrom(t)).FirstOrDefault();
                 var moduleName = interfaceType.GetConfigurableModuleName();
 
+                if (string.IsNullOrWhiteSpace(moduleName))
+                    continue; // note: we automatically define only settings in the Shesha modules
+
                 var properties = accessorType.GetProperties().Where(t => typeof(ISettingAccessor).IsAssignableFrom(t.PropertyType)).ToList();
 
                 foreach (var property in properties) 

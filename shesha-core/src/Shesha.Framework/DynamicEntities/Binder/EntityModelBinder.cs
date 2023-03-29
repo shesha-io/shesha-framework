@@ -82,11 +82,11 @@ namespace Shesha.DynamicEntities.Binder
 
         private bool IsFrameworkFields(JProperty prop)
         {
-            return prop.Name.ToLower() != nameof(IEntity.Id).ToLower()
-                && prop.Name != nameof(IHasFormFieldsList._formFields)
-                && prop.Name != nameof(IHasJObjectField._jObject).ToCamelCase()
-                && prop.Name != nameof(IHasClassNameField._className)
-                && prop.Name != nameof(IHasDisplayNameField._displayName);
+            return prop.Name.ToLower() == nameof(IEntity.Id).ToLower()
+                || prop.Name == nameof(IHasFormFieldsList._formFields)
+                || prop.Name == nameof(IHasJObjectField._jObject).ToCamelCase()
+                || prop.Name == nameof(IHasClassNameField._className)
+                || prop.Name == nameof(IHasDisplayNameField._displayName);
         }
 
         public async Task<bool> BindPropertiesAsync(JObject jobject, object entity, EntityModelBindingContext context,

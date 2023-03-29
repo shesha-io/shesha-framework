@@ -32,6 +32,7 @@ export interface IFormStateContext extends IFlatComponentsStructure /*IFormProps
 
   // runtime props
   formData?: any;
+  formControlsData?: any;
   validationErrors?: IFormValidationErrors;
   visibleComponentIds?: string[];
   enabledComponentIds?: string[];
@@ -48,6 +49,14 @@ export interface ISetVisibleComponentsPayload {
 
 export interface ISetEnabledComponentsPayload {
   componentIds: string[];
+}
+
+export interface ISetFormControlsDataPayload {
+  /** control name */
+  name: string;
+
+  /** control values */
+  values: any;
 }
 
 export interface ISetFormDataPayload {
@@ -71,6 +80,7 @@ export interface IFormActionsContext {
   isComponentHidden: (model: Pick<IConfigurableFormComponent, 'id' | 'isDynamic' | 'hidden'>) => boolean;
   setVisibleComponents: (payload: ISetVisibleComponentsPayload) => void;
   setFormData: (payload: ISetFormDataPayload) => void;
+  setFormControlsData: (payload: ISetFormControlsDataPayload) => void;
   setFormDataAndInstance: (payload: ISetFormDataPayload) => void;
   setValidationErrors: (payload: IFormValidationErrors) => void;
   registerActions: (id: string, actions: IFormActions) => void;

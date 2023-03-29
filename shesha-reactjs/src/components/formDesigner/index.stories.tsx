@@ -60,13 +60,6 @@ export const RoleDetailsForm = addStory(DesignerTemplate, {
   formId: { name: 'role-details' },
 });
 
-export const PersonDetails = addStory(DesignerTemplate, {
-  formId: {
-    name: 'person-details',
-    module: 'shesha',
-  },
-});
-
 export const WardDetails = addStory(DesignerTemplate, {
   /*
   formId: {
@@ -210,11 +203,6 @@ export const TestWizard = addStory(DesignerTemplate, {
   // mode: 'readonly',
 });
 
-export const OrganisationEdit = addStory(DesignerTemplate, {
-  formId: '561DD191-1CB4-4195-A272-688FE2348136',
-  //formId: { name: '/organisations/edit', version: 2 },
-});
-
 export const PermissionedObjects = addStory(DesignerTemplate, {
   formId: { name: '/permissionedObject/webapi' },
 });
@@ -240,11 +228,26 @@ export const UselessForm = addStory(DesignerTemplate, {
   // formId: { name: 'useless-form', module: 'Shesha' },
 });
 
+export const PersonDetails = addStory(DesignerTemplate, {
+  formId: {
+    name: 'person-details',
+    module: 'Test Module',
+    version: 1,
+  },
+});
+
 export const PersonEdit = addStory(DesignerTemplate, {
   formId: {
     name: 'person-edit',
     module: 'Test Module',
-    version: 3,
+  },
+});
+
+export const OrganisationEdit = addStory(DesignerTemplate, {
+  formId: {
+    name: 'organisation-edit',
+    module: 'Test Module',
+    version: 1,
   },
 });
 
@@ -253,5 +256,13 @@ export const ObservationCaptureForm = addStory(DesignerTemplate, {
     module: 'Boxfusion.His.Observations',
     name: 'observation-capture-form',
     version: 1,
+  },
+});
+
+export const HisAccountDetails = addStory(DesignerTemplate, {
+  formId: {
+    module: 'Boxfusion.His.Clients.Houghton',
+    name: 'account-details',
+    version: 11,
   },
 });

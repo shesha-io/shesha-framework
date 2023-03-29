@@ -1195,8 +1195,8 @@ export const convertDotNotationPropertiesToGraphQL = (properties: string[], colu
   };
 
   const expandedProps = [...properties];
-  // add id if missing
-  if (!expandedProps.includes('id')) expandedProps.push('id');
+  // add id if missing only if any other peropties
+  if (expandedProps?.length > 0 && !expandedProps.includes('id')) expandedProps.push('id');
 
   // special handling for entity references: expand properties list to include `id` and `_displayName`
   const entityColumns = columns.filter(c => c.dataType === 'entity');

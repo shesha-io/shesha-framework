@@ -17,6 +17,7 @@ import ColorPickerComponent from '../../../components/formDesigner/components/co
 import Columns from '../../../components/formDesigner/components/columns/columns';
 import ConfigurableActionConfigurator from '../../../components/formDesigner/components/configurableActionsConfigurator';
 import ContainerComponent from '../../../components/formDesigner/components/container/containerComponent';
+import DataList from '../../../components/formDesigner/components/dataList/dataListComponent';
 import AdvancedFilterButton from '../../../components/formDesigner/components/dataTable/advancedFilterButton/advancedFilterButtonComponent';
 import ChildTable from '../../../components/formDesigner/components/dataTable/childTable';
 import Filter from '../../../components/formDesigner/components/dataTable/filter/filterComponent';
@@ -174,6 +175,13 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
       TableTemplate,
       TableViewSelector,
       Toolbar,
+    ],
+  },
+  {
+    name: 'DataList',
+    visible: true,
+    components: [
+      DataList
     ],
   },
   {

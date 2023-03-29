@@ -166,10 +166,10 @@ namespace Shesha.Services
 
             switch (mode)
             {
-                case ConfigurationItems.Models.ConfigurationItemViewMode.Live:
+                case ConfigurationItemViewMode.Live:
                     query = query.Where(f => f.VersionStatus == ConfigurationItemVersionStatus.Live);
                     break;
-                case ConfigurationItems.Models.ConfigurationItemViewMode.Ready:
+                case ConfigurationItemViewMode.Ready:
                     {
                         var statuses = new ConfigurationItemVersionStatus[] {
                             ConfigurationItemVersionStatus.Live,
@@ -179,7 +179,7 @@ namespace Shesha.Services
                         query = query.Where(f => statuses.Contains(f.VersionStatus)).OrderByDescending(f => f.VersionNo);
                         break;
                     }
-                case ConfigurationItems.Models.ConfigurationItemViewMode.Latest:
+                case ConfigurationItemViewMode.Latest:
                     {
                         var statuses = new ConfigurationItemVersionStatus[] {
                             ConfigurationItemVersionStatus.Live,

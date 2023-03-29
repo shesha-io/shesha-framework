@@ -20,6 +20,7 @@ using Shesha.Services;
 using Shesha.Services.ReferenceLists;
 using Shesha.Services.ReferenceLists.Distribution;
 using Shesha.Services.Settings;
+using Shesha.Services.Settings.Distribution;
 using Shesha.Services.StoredFiles;
 using Shesha.Settings;
 using Shesha.Settings.Ioc;
@@ -87,6 +88,8 @@ namespace Shesha
                 Component.For<IConfigurableItemExport>().Forward<IReferenceListExport>().ImplementedBy<ReferenceListExport>().LifestyleTransient(),
                 Component.For<IConfigurationItemManager<ReferenceList>>().Forward<IConfigurationItemManager>().Forward<IReferenceListManager>().ImplementedBy<ReferenceListManager>().LifestyleTransient(),
 
+                Component.For<IConfigurableItemImport>().Forward<ISettingImport>().ImplementedBy<SettingImport>().LifestyleTransient(),
+                Component.For<IConfigurableItemExport>().Forward<ISettingExport>().ImplementedBy<SettingExport>().LifestyleTransient(),
                 Component.For<IConfigurationItemManager<SettingConfiguration>>().Forward<IConfigurationItemManager>().Forward<ISettingStore>().ImplementedBy<SettingStore>().LifestyleTransient(),
 
                 Component.For(typeof(ISettingAccessor<>)).ImplementedBy(typeof(SettingAccessor<>)).LifestyleTransient()

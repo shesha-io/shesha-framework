@@ -2,6 +2,7 @@
 using Abp.Domain.Repositories;
 using Shesha.Bootstrappers;
 using Shesha.ConfigurationItems;
+using Shesha.ConfigurationItems.Specifications;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
@@ -76,7 +77,7 @@ namespace Shesha.Settings
 
                 var dataType = definition.GetSettingDataType();
 
-                await _settingStore.CreateSettingDefinitionAsync(new CreateSettingDefinitionDto
+                await _settingStore.CreateSettingConfigurationAsync(new CreateSettingDefinitionDto
                 {
                     Name = definition.Name,
                     Label = definition.DisplayName,

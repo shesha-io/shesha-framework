@@ -1,17 +1,19 @@
 import { createContext } from 'react';
 import { Theme } from 'antd/lib/config-provider/context';
 
-export interface IApplicationTheme {
+export interface IConfigurableTheme {
   application?: Theme;
   sidebar?: 'dark' | 'light';
+  sidebarBackground?: string;
+  layoutBackground?: string;
 }
 
 export interface IThemeStateContext {
-  readonly theme?: IApplicationTheme;
+  readonly theme?: IConfigurableTheme;
 }
 
 export interface IThemeActionsContext {
-  changeTheme: (theme: IApplicationTheme) => void;
+  changeTheme: (theme: IConfigurableTheme) => void;
 
   /* NEW_ACTION_ACTION_DECLARATIO_GOES_HERE */
 }
@@ -26,6 +28,7 @@ export const THEME_CONTEXT_INITIAL_STATE: IThemeStateContext = {
       infoColor: '#1890ff',
     },
     sidebar: 'dark',
+    layoutBackground: '#f0f2f5',
   },
 };
 

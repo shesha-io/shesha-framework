@@ -5,7 +5,7 @@ import React, { FC, useEffect } from 'react';
 import { CancelButton, IndexToolbar, ShaSpin } from '..';
 import { IToolbarItem } from '../../interfaces';
 import Show from '../show';
-import { useShaRouting, useSheshaApplication } from '../../providers';
+import { useShaRouting, useSheshaApplication, useTheme } from '../../providers';
 import PageHeaderTag, { ITagProps } from './pageHeaderTag';
 import StatusTag, { IStatusTagProps } from '../statusTag';
 import { IToolbarButtonItem } from '../toolbar/models';
@@ -52,6 +52,7 @@ export const Page: FC<IPageProps> = ({
 }) => {
   const { router } = useShaRouting();
   const { applicationName } = useSheshaApplication();
+  const { theme } = useTheme();
 
   useEffect(() => {
     document.title = `${applicationName} | ${title}`;
@@ -68,7 +69,7 @@ export const Page: FC<IPageProps> = ({
   const hasStatus = Boolean(status);
 
   return (
-    <section className="sha-page">
+    <section className="sha-page" style={{ background: theme?.layoutBackground }}>
       <ShaSpin spinning={loading || false} tip={loadingText}>
         <Show when={showHeading}>
           <div className="sha-page-heading">
