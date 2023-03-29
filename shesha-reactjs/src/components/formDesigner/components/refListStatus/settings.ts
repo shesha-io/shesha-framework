@@ -48,32 +48,6 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
         label: "Description",
         readOnly: false
     })
-    .addDropdown({
-        id: "df8a8f35-a50b-42f9-9642-73d390ceddbf",
-        name: "visibility",
-        parentId: "root",
-        label: "Visibility",
-        description: "This property will eventually replace the 'hidden' property and other properties that toggle visibility on the UI and payload",
-        allowClear: true,
-        values: [
-            {
-                label: "Yes (Display in UI and include in payload)",
-                value: "Yes",
-                id: "53cd10ce-26af-474b-af75-8e7b1f19e51d"
-            },
-            {
-                label: "No (Only include in payload)",
-                value: "No",
-                id: "f07a228c-cb9c-4da7-a8bc-bc2be518a058"
-            },
-            {
-                label: "Removed (Remove from UI and exlude from payload)",
-                value: "Removed",
-                id: "3b6282ee-2eee-47ec-bab9-4cba52b970a0"
-            }
-        ],
-        dataSourceType: "values"
-    })
     .addCheckbox({
         id: "cfd7d45e-c7e3-4a27-987b-dc525c412448",
         name: "hidden",
@@ -86,28 +60,6 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
         parentId: "root",
         defaultValue: true,
         label: "Hide Label"
-    })
-    .addCheckbox({
-        id: "24a8be15-98eb-40f7-99ea-ebb602693e9c",
-        name: "disabled",
-        parentId: "root",
-        label: "Disabled"
-    })
-    .addCodeEditor({
-        id: "4b5e5951-4998-4635-b1c8-0b6d3940c300",
-        name: "customEnabled",
-        label: "Custom Enabled",
-        labelAlign: "right",
-        parentId: "root",
-        hidden: false,
-        customEnabled: null,
-        description: "Enter custom enabled code.  You must return true to enable the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-        validate: {},
-        settingsValidationErrors: [],
-        exposedVariables: [
-            { id: "3be9da3f-f47e-48ae-b4c3-f5cc36e534d7", name: "value", description: "Component current value", type: "string | any" },
-            { id: "3be9da3f-f58e-48ae-b4c3-f5cc36e534d7", name: "data", description: "Selected form values", type: "object" }
-        ]
     })
     .addSectionSeparator({
         id: "5478b8f9-ec00-4d0a-9k2a-44a630cb2dcb",
@@ -127,18 +79,6 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
         parentId: "root",
         defaultValue: true,
         label: "Show Solid Background"
-    })
-    .addSectionSeparator({
-        id: "d675bfe4-ee69-431e-931b-b0e0b9ceee6f",
-        name: "separator2",
-        parentId: "root",
-        label: "Validation"
-    })
-    .addCheckbox({
-        id: "3be9da3f-f47e-48ae-b4c3-f5cc36e534d9",
-        name: "validate.required",
-        parentId: "root",
-        label: "Required"
     })
     .addSectionSeparator({
         id: "6befdd49-41aa-41d6-a29e-76fa00590b75",

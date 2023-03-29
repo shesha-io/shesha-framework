@@ -195,7 +195,7 @@ export const Playground = addStory(DesignerTemplate, {
 });
 
 export const TestWizard = addStory(DesignerTemplate, {
-  formId: '3753607d-a768-4b51-ac2a-d7dd873e3d47',
+  formId: '234276e6-cc6b-41b9-8e06-21275e3f02a7',
   // formId: {
   //   name: 'test-wizard-form',
   //   module: 'Shesha',
@@ -232,14 +232,14 @@ export const PersonDetails = addStory(DesignerTemplate, {
   formId: {
     name: 'person-details',
     module: 'Test Module',
-    "version": 1
+    version: 1,
   },
 });
 
 export const PersonEdit = addStory(DesignerTemplate, {
   formId: {
     name: 'person-edit',
-    module: 'Test Module'
+    module: 'Test Module',
   },
 });
 
@@ -247,7 +247,7 @@ export const OrganisationEdit = addStory(DesignerTemplate, {
   formId: {
     name: 'organisation-edit',
     module: 'Test Module',
-    "version": 1
+    version: 1,
   },
 });
 
