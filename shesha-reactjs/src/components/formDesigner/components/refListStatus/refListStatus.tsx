@@ -15,7 +15,7 @@ interface IProps {
 }
 
 const RefListStatus: FC<IProps> = ({ model }) => {
-  const { formData: data } = useForm();
+  const { formData: data, formMode } = useForm();
   const { module, nameSpace, showIcon, solidBackground, style, name } = model;
 
   const {
@@ -40,13 +40,16 @@ const RefListStatus: FC<IProps> = ({ model }) => {
 
   const currentStatus: ReferenceListItemDto = useMemo(() => {
     model.description = refListData?.result?.description;
+    if (formMode === 'designer') {
+      return !refListData?.result?.items?.length ? null : refListData?.result?.items[0];
+    }
     return !refListData?.result?.items?.length || data[name] === null || data[name] === undefined
       ? null
       : refListData?.result?.items?.find(i => i.itemValue == data[name]);
   }, [refListData]);
 
   const memoizedColor = useMemo(() => {
-    return solidBackground ? convertCssColorNameToHex(currentStatus?.color ?? '') : currentStatus?.color.toLowerCase();
+    return solidBackground ? convertCssColorNameToHex(currentStatus?.color ?? '') : currentStatus?.color?.toLowerCase();
   }, [solidBackground, currentStatus]);
 
   const canShowIcon = useMemo(() => {
