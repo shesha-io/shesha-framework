@@ -42,7 +42,7 @@ variables:
   #     return: passwords
   adminUsername: boxfusionregistry
   adminPasswords: fKSsWcdQ8IbdmJZT3Y7udTZD/jjSQ7dhCwTa1BDgaS+ACRBwxWQ1      
-  containerAppName: #{projectName}#-#-admin-#-#{env}#
+  containerAppName: #{projectName}#-#{role}#-#{env}#
   containerAppCustomerDomainName: #{projectName}#-#{role}#-#{env}#.shesha.dev
   containerAppEnvName: shesha-#{role}#-#{env}#
   certificateId: /subscriptions/0e111515-3d91-4650-bd92-dfca52077d62/resourceGroups/containerapps-shesha-#{role}#-#{env}#-rg/providers/Microsoft.App/managedEnvironments/shesha-#{role}#-#{env}#-env/certificates/shesha.dev
