@@ -125,7 +125,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
 
   const setters = getFlagSetters(dispatch);
 
-  //#region Fetch user login info`1
+  //#region Fetch user login info
 
   const profileLoadedSubscriptions = useRef<IDictionary<IProfileLoadedHandler>>({});
   const subscribeOnProfileLoading = (name: string, handler: IProfileLoadedHandler) => {
