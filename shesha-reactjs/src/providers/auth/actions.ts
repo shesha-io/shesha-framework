@@ -14,6 +14,7 @@ export enum AuthActionEnums {
   FetchUserDataRequest = 'FETCH_USER_DATA_REQUEST',
   FetchUserDataSuccess = 'FETCH_USER_DATA_SUCCESS',
   FetchUserDataError = 'FETCH_USER_DATA_ERROR',
+  SetIsLoggedIn = 'SET_IS_LOGGED_IN',
 
   //#region Rest Password
   VerifyOtpSuccess = 'VERIFY_OTP_SUCCESS',
@@ -45,6 +46,11 @@ export const fetchUserDataAction = createAction(AuthActionEnums.FetchUserDataReq
 
 export const fetchUserDataActionSuccessAction = createAction<UserLoginInfoDto, UserLoginInfoDto>(
   AuthActionEnums.FetchUserDataSuccess,
+  p => p
+);
+
+export const setIsLoggedInAction = createAction<boolean, boolean>(
+  AuthActionEnums.SetIsLoggedIn,
   p => p
 );
 

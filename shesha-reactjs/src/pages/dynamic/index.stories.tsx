@@ -84,20 +84,6 @@ export const UserManagementPage = addStory(Template, {
   formId: { name: 'user-management-new' },
 });
 
-<<<<<<< HEAD
-export const PersonDetailsPage = addStory(Template, {
-  formId: { name: 'person-details', module: 'shesha' },
-  id: '98273D2D-F59E-42A3-9D8A-0218874548A9',
-  mode: 'edit',
-});
-export const DemoRefListStatus = addStory(Template, {
-  formId: { name: 'hospital-admission-details', module: 'Boxfusion.His.Clients.Houghton' },
-  id: '1c76e79a-50a8-457a-a4d5-0037a052897b',
-  mode: 'readonly',
-});
-
-=======
->>>>>>> 5fed31c95eab77d25b80dad1f7659d1556f42f91
 export const SubFormPage = addStory(Template, {
   formId: { name: 'sub-form' },
   mode: 'edit',

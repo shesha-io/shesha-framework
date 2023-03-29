@@ -113,6 +113,18 @@ const baseAuthReducer = handleActions<IAuthStateContext, any>(
         token,
       };
     },
+
+    [AuthActionEnums.SetIsLoggedIn]: (
+      state: IAuthStateContext,
+      action: ReduxActions.Action<boolean>
+    ) => {
+      const { payload } = action;
+
+      return { 
+        ...state, 
+        isLoggedIn: payload,
+      };
+    },
   },
   AUTH_CONTEXT_INITIAL_STATE
 );
