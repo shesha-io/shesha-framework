@@ -1,50 +1,83 @@
-import { Divider, Form, Radio, Space } from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
+import { Divider, Form, Radio, Space, Tooltip } from 'antd';
 import React, { FC, Fragment, useCallback } from 'react';
 import { ColorResult } from 'react-color';
-import { SectionSeparator } from '../../../components';
+import { SectionSeparator, Show } from '../../../components';
 import ColorPicker from '../../../components/colorPicker';
 import { useTheme } from '../../../providers';
 import { IConfigurableTheme } from '../../../providers/theme/contexts';
 import { humanizeString } from '../../../utils/string';
+import { BACKGROUND_PRESET_COLORS, PRESET_COLORS, TEXT_PRESET_COLORS } from './presetColors';
+
+interface IThemeConfig {
+  name: string;
+  onChange: (hex: string) => void;
+  hint?: string;
+}
 
 const ThemeParameters: FC = () => {
   const { theme, changeTheme } = useTheme();
 
-  const onColorChange = (nextColor: Partial<IConfigurableTheme['application']>) => {
+  const mergeThemeSection = (
+    section: keyof IConfigurableTheme,
+    update: Partial<IConfigurableTheme[keyof IConfigurableTheme]>
+  ) => {
+    return { ...((theme[section] as unknown) as Record<string, unknown>), ...(update as Record<string, unknown>) };
+  };
+
+  const updateTheme = (
+    section: keyof IConfigurableTheme,
+    update: Partial<IConfigurableTheme[keyof IConfigurableTheme]>
+  ) => {
     changeTheme({
       ...theme,
-      application: {
-        ...theme?.application,
-        ...nextColor,
-      },
+      [section]: mergeThemeSection(section, update),
     });
   };
 
   const renderColor = useCallback(
-    (colorName: string, initialColor: string, onChange: (color: ColorResult) => void, presetColors?: string[]) => {
-      return (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
-          <ColorPicker
-            title={humanizeString(colorName)}
-            presetColors={presetColors ?? ['#1890ff', '#25b864', '#ff6f00', '#ff4d4f', '#faad14', '#52c41a', '#1890ff']}
-            // @ts-ignore
-            color={{ hex: initialColor }}
-            onChange={onChange}
-          />
-
+    (
+      colorName: string,
+      initialColor: string,
+      onChange: (color: ColorResult) => void,
+      presetColors?: string[],
+      hint?: string
+    ) => (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+        <ColorPicker
+          title={humanizeString(colorName)}
+          presetColors={presetColors ?? PRESET_COLORS}
+          // @ts-ignore
+          color={{ hex: initialColor }}
+          onChange={onChange}
+        />
+        <Space>
           <span>{humanizeString(colorName)} </span>
-        </div>
-      );
-    },
+          <Show when={Boolean(hint)}>
+            <Tooltip title={hint}>
+              <span className="sha-color-tooltip" style={{ cursor: 'pointer' }}>
+                <QuestionCircleOutlined />
+              </span>
+            </Tooltip>
+          </Show>
+        </Space>
+      </div>
+    ),
     [theme]
   );
 
-  const colorConfigs = [
-    { name: 'primaryColor', onChange: (hex: string) => onColorChange({ primaryColor: hex }) },
-    { name: 'errorColor', onChange: (hex: string) => onColorChange({ errorColor: hex }) },
-    { name: 'warningColor', onChange: (hex: string) => onColorChange({ warningColor: hex }) },
-    { name: 'successColor', onChange: (hex: string) => onColorChange({ successColor: hex }) },
-    { name: 'infoColor', onChange: (hex: string) => onColorChange({ infoColor: hex }) },
+  const colorConfigs: IThemeConfig[] = [
+    { name: 'primaryColor', onChange: (hex: string) => updateTheme('application', { primaryColor: hex }) },
+    { name: 'errorColor', onChange: (hex: string) => updateTheme('application', { errorColor: hex }) },
+    { name: 'warningColor', onChange: (hex: string) => updateTheme('application', { warningColor: hex }) },
+    { name: 'successColor', onChange: (hex: string) => updateTheme('application', { successColor: hex }) },
+    { name: 'infoColor', onChange: (hex: string) => updateTheme('application', { infoColor: hex }) },
+  ];
+
+  const textConfigs: IThemeConfig[] = [
+    { name: 'default', onChange: (hex: string) => updateTheme('text', { default: hex }) },
+    { name: 'secondary', onChange: (hex: string) => updateTheme('text', { secondary: hex }) },
+    { name: 'link', onChange: (hex: string) => updateTheme('text', { link: hex }), hint: 'Placeholder for now' },
   ];
 
   return (
@@ -63,19 +96,23 @@ const ThemeParameters: FC = () => {
           'layoutBackground',
           theme?.layoutBackground,
           ({ hex }) => changeTheme({ ...theme, layoutBackground: hex }),
-          [
-            '#f0f2f5', // Default
-            '#F0F0F0', // Light Gray
-            '#FAFAFA', // Off White
-            '#FFF9D9', // Pale Yellow
-            '#FFF0F5', // Soft Pink
-            '#E6E6FA', // Light Lavender
-            '#E0FFFF', // Baby Blue
-            '#E0F2F1', // Mint Green
-            '#FFE4C4', // Pastel Peach
-            '#B0E0E6', // Powder Blue
-            '#F5F5DC', // Light Beige
-          ]
+          BACKGROUND_PRESET_COLORS
+        )}
+      </Space>
+
+      <Divider />
+
+      <SectionSeparator title="Text" />
+
+      <Space direction="vertical" align="start">
+        {textConfigs.map(config =>
+          renderColor(
+            config.name,
+            theme?.text?.[config.name],
+            ({ hex }) => config.onChange(hex),
+            TEXT_PRESET_COLORS,
+            config?.hint
+          )
         )}
       </Space>
 
@@ -101,7 +138,13 @@ const ThemeParameters: FC = () => {
         </Form.Item>
 
         <Form.Item label="Background">
-          {renderColor('', theme?.sidebarBackground, ({ hex }) => changeTheme({ ...theme, sidebarBackground: hex }))}
+          {renderColor(
+            '',
+            theme?.sidebarBackground,
+            ({ hex }) => changeTheme({ ...theme, sidebarBackground: hex }),
+            null,
+            'Placeholder for now'
+          )}
         </Form.Item>
       </Form>
 
