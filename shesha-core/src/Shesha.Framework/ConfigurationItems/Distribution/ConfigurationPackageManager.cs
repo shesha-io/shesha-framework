@@ -69,7 +69,7 @@ namespace Shesha.ConfigurationItems.Distribution
 
             foreach (var entry in zip.Entries)
             {
-                var parts = entry.FullName.Split(Path.DirectorySeparatorChar);
+                var parts = entry.FullName.Split('\\', '/');
 
                 if (parts.Length == 3 || parts.Length == 4) 
                 {
