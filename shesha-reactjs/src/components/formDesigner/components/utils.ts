@@ -163,19 +163,24 @@ export const customDropDownEventHandler = <T = any>({
   },
 });
 
-export const customInputNumberEventHandler = ({
-  model,
-  form,
-  formData,
-  formMode,
-  globalState,
-  http,
-  message,
-  moment,
-  setFormData,
-  setGlobalState,
-}: ICustomEventHandler) => ({
+export const customInputNumberEventHandler = (
+  {
+    model,
+    form,
+    formData,
+    formMode,
+    globalState,
+    http,
+    message,
+    moment,
+    setFormData,
+    setGlobalState,
+  }: ICustomEventHandler,
+  changeEvent: Function
+) => ({
   onChange: (value: any) => {
+    changeEvent(value);
+
     const eventFunc = new Function(
       'data, form, formMode, globalState, http, message, moment, value, setFormData, setGlobalState',
       model?.onChangeCustom
