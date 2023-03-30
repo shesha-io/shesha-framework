@@ -158,13 +158,19 @@ export const AnnotationSettingsForm = new DesignerToolbarSettings()
         id: "417ee22e-a49d-44f2-a1c7-fef42ec87503",
         name: "height",
         parentId: "root",
-        label: "Height"
+        label: "Height",
+        validate: {
+            required: true
+        }
     })
     .addNumberField({
         id: "c6ecd70c-7419-4ea7-a715-d42699d26e6e",
         name: "width",
         parentId: "root",
-        label: "Width"
+        label: "Width", 
+        validate: {
+            required: true
+        }
     })
     .addCodeEditor({
         id: "06ab0599-914d-4d2d-875c-765a495482f8",
