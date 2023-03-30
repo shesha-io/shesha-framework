@@ -37,6 +37,7 @@ namespace Shesha.Domain
         public virtual decimal? Longitude { get; set; }
 
         public virtual decimal? Altitude { get; set; }
+        public virtual RefListSiteSubType? SiteSubType { get; set; }
 
         public virtual Single? Area { get; set; }
     }

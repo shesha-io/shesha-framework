@@ -23,6 +23,7 @@ using Shesha.Sms.Configuration;
 using Shesha.Startup;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Shesha
 {
@@ -33,6 +34,11 @@ namespace Shesha
         typeof(AbpAutoMapperModule))]
     public class SheshaApplicationModule : SheshaSubModule<SheshaFrameworkModule>
     {
+        public override async Task<bool> InitializeConfigurationAsync()
+        {
+            return await ImportConfigurationAsync();
+        }
+
         public override void PreInitialize()
         {
             IocManager.Register<IShaApplicationModuleConfiguration, ShaApplicationModuleConfiguration>();

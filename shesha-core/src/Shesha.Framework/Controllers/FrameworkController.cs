@@ -1,4 +1,6 @@
-﻿using Abp.Dependency;
+﻿using Abp.Authorization.Roles;
+using Abp.Authorization.Users;
+using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Reflection;
 using Abp.Web.Models;
@@ -57,7 +59,11 @@ namespace Shesha.Controllers
                 var sessionFactory = StaticContext.IocManager.Resolve<ISessionFactory>();
                 var migrationGenerator = StaticContext.IocManager.Resolve<IMigrationGenerator>();
 
-                var types = typeFinder.FindAll().Where(t => t.IsEntityType() && t != typeof(AggregateRoot)).ToList();
+                var types = typeFinder.FindAll().Where(t => t.IsEntityType() 
+                    && t != typeof(AggregateRoot)
+                    && t != typeof(UserPermissionSetting)
+                    && t != typeof(RolePermissionSetting)
+                    ).ToList();
 
                 var errors = new Dictionary<Type, Exception>();
 

@@ -1,12 +1,12 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const camelcase = require('camelcase');
 
-const STORYBOOK_BASE_URL = 'http://localhost:21021';
+const STORYBOOK_BASE_URL = 'https://houghtonh-his-api-test.azurewebsites.net';
 // const STORYBOOK_BASE_URL = process.env.STORYBOOK_BASE_URL;
 const ROOT_PATH = './src/apis';
 
 const API_LIST = [
-  'Settings'
+  'Settings',
   //'FormConfiguration',
   //'Form',
   //'DataTable',
@@ -20,7 +20,7 @@ const API_LIST = [
   //'ConfigurableComponent',
   //'Note',
   //'Person',
-  //'ReferenceList',
+  'ReferenceList',
   //'ScheduledJobExecution',
   //'Session',
   //'StoredFile',

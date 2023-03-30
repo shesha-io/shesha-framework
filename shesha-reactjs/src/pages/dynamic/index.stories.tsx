@@ -34,7 +34,7 @@ export const Basic = Template.bind({});
 
 export const TestSubform = addStory(Template, {
   formId: { name: 'test-subform', module: 'test' },
-  mode: 'edit'
+  mode: 'edit',
 });
 
 export const BugFix = addStory(Template, {
@@ -52,23 +52,23 @@ export const BugFix3 = addStory(Template, {
 });
 
 export const FormLoadingRefactoring_Table = addStory(Template, {
-  formId: { name: 'cash-coverage-table', module: 'Boxfusion.His.Clients.Houghton' }  
+  formId: { name: 'cash-coverage-table', module: 'Boxfusion.His.Clients.Houghton' },
 });
 
 export const FormLoadingRefactoring_Details = addStory(Template, {
   formId: { name: 'cash-coverage-details', module: 'Boxfusion.His.Clients.Houghton' },
-  id: 'c121972b-072f-4834-a4cd-019dff0a43a8'
+  id: 'c121972b-072f-4834-a4cd-019dff0a43a8',
 });
 
 export const FormsTest = addStory(Template, {
   formId: { name: 'form-details', module: 'shesha' },
-  id: '439c337b-c2e3-4421-95c3-d9a2999e0b98'
+  id: '439c337b-c2e3-4421-95c3-d9a2999e0b98',
 });
 
 export const TestUrls = addStory(Template, {
   formId: { module: 'Boxfusion.His.Clients.Houghton', name: 'cash-coverage-details' },
   //formId: '8621377c-b1de-43c6-819c-06bdfd555ddd',
-  id: '598b83ab-808b-465b-9146-0736343faf84'
+  id: '598b83ab-808b-465b-9146-0736343faf84',
 });
 
 export const TestIndexPage = addStory(Template, {
@@ -181,7 +181,7 @@ export const WardsIndex = addStory(Template, {
 export const RefListRefactornig = addStory(Template, {
   formId: {
     module: 'test',
-    name: 'reflist-refactoring'
+    name: 'reflist-refactoring',
   },
   mode: 'edit',
 });
@@ -194,7 +194,6 @@ export const Performance = addStory(Template, {
   mode: 'readonly',
   id: '0dee0b4a-48eb-4a81-86f1-192175c284ae',
 });
-
 
 export const ComplexModel = addStory(Template, {
   formId: {
@@ -257,9 +256,9 @@ export const HospitalAdmissionDetails = addStory(Template, {
   formId: {
     module: 'Boxfusion.His.Clients.Houghton',
     name: 'hospital-admission-details',
-    version: 16
+    version: 16,
   },
-  id: '1390fb03-2c28-4730-ac02-23c3c041ce0b'
+  id: '1390fb03-2c28-4730-ac02-23c3c041ce0b',
 });
 
 export const ReferenceListDetails = addStory(Template, {
@@ -275,7 +274,7 @@ export const PayerEdit = addStory(Template, {
   formId: {
     module: 'Boxfusion.His.Clients.Houghton',
     name: 'facility-patient-flattened-table',
-    version: 13
+    version: 13,
   },
   //id: 'aecdd722-948a-456a-98b1-5968ea58f630',
 });
@@ -297,7 +296,7 @@ const Template2: Story<{}> = () => {
     {
       formId: { name: 'form-details', module: 'test' },
       mode: 'edit',
-      id: '265b4645-affe-4b4e-a364-3f0e8062eb80'
+      id: '265b4645-affe-4b4e-a364-3f0e8062eb80',
     },
     {
       formId: { name: 'modules', module: 'Shesha' },
