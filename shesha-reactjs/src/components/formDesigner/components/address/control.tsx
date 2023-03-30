@@ -16,16 +16,7 @@ interface IAutoCompletePlacesFieldProps extends IAddressCompomentProps {
 }
 
 const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = model => {
-  const {
-    debounce,
-    googleMapsApiKey,
-    minCharactersSearch,
-    onChange,
-    openCageApiKey,
-    placeholder,
-    prefix,
-    value,
-  } = model;
+  const { debounce, minCharactersSearch, onChange, openCageApiKey, placeholder, prefix, value } = model;
 
   const { loading, error, refetch } = useGet<IOpenCageResponse>({
     base: 'https://api.opencagedata.com',
@@ -37,11 +28,6 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = model => {
   const { globalState, setState: setGlobalState } = useGlobalState();
   const { backendUrl } = useSheshaApplication();
 
-  const onSetPayload = (resolve: Function, payload: IOpenCageResponse | IAddressAndCoords) => {
-    onChange((payload as IAddressAndCoords).address);
-    resolve(payload);
-  };
-
   const onSelect = (selected: IAddressAndCoords): Promise<IOpenCageResponse | IAddressAndCoords> =>
     new Promise((resolve, reject) => {
       const { lat, lng } = selected;
@@ -49,9 +35,9 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = model => {
       try {
         if (openCageApiKey) {
           refetch({ queryParams: { key: openCageApiKey, q: `${lat} ${lng}` } })
-            .then(result => onSetPayload(resolve, { ...selected, ...result }))
+            .then(result => resolve({ ...selected, ...result }))
             .catch(reject);
-        } else onSetPayload(resolve, selected);
+        } else resolve(selected);
       } catch (error) {
         reject(error);
       }
@@ -82,7 +68,6 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = model => {
       <GooglePlacesAutocomplete
         value={getAddressValue(value)}
         debounce={debounce}
-        externalApiKey={googleMapsApiKey}
         externalLoader={loading}
         placeholder={placeholder}
         prefix={prefix}

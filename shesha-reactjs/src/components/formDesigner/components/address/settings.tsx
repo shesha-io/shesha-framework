@@ -65,23 +65,43 @@ const AddressSettings: FC<IButtonGroupSettingsProps> = ({ readOnly, model, onSav
 
       <SectionSeparator title="Configuration" />
 
-      <Form.Item name="minCharactersSearch" label="Min Characters Before Search">
+      <Form.Item
+        name="minCharactersSearch"
+        label="Min Characters Before Search"
+        tooltip="The minimum characters required before an api call can be made."
+      >
         <InputNumber style={{ width: '100%' }} disabled={readOnly} />
       </Form.Item>
 
-      <Form.Item name="debounce" label="Debounce (MS)">
+      <Form.Item
+        name="debounce"
+        label="Debounce (MS)"
+        tooltip="Debouncing prevents extra activations/inputs from triggering too often. This is the time in milliseconds the call will be delayed by."
+      >
         <InputNumber style={{ width: '100%' }} disabled={readOnly} />
       </Form.Item>
 
-      <Form.Item name="googleMapsApiKey" label="Google Maps Key">
+      <Form.Item
+        name="googleMapsApiKey"
+        label="Google Maps Key"
+        tooltip="API key for authorization. Google Maps key which is required to make successful calls to Google services."
+      >
         <Input.Password readOnly={readOnly} />
       </Form.Item>
 
-      <Form.Item name="openCageApiKey" label="Open Cage Key">
+      <Form.Item
+        name="openCageApiKey"
+        label="OpenCage Key"
+        tooltip="API key for authorization. Go to (https://opencagedata.com/api) to learn about OpenCage. OpenCage key which is required to make successful calls to OpenCage services."
+      >
         <Input.Password readOnly={readOnly} />
       </Form.Item>
 
-      <Form.Item name="countryRestriction" label="Country Restriction">
+      <Form.Item
+        name="countryRestriction"
+        label="Country Restriction"
+        tooltip="A filter which is based on the country/countries, multiple countries can be selected."
+      >
         <Select
           allowClear
           mode="multiple"
@@ -90,24 +110,48 @@ const AddressSettings: FC<IButtonGroupSettingsProps> = ({ readOnly, model, onSav
         />
       </Form.Item>
 
-      <Form.Item name="prefix" label="Prefix (Area Restriction)">
-        <InputNumber style={{ width: '100%' }} disabled={readOnly} />
+      <Form.Item
+        name="prefix"
+        label="Prefix (Area Restriction)"
+        tooltip="A simple prefix which is appended in the search but not the input search field, often used to create a biased search in address."
+      >
+        <Input style={{ width: '100%' }} disabled={readOnly} />
       </Form.Item>
 
-      <Form.Item name="showPriorityBounds" label="Priority Bounds (Advanced)" valuePropName="checked">
+      <Form.Item
+        name="showPriorityBounds"
+        label="Priority Bounds (Advanced)"
+        valuePropName="checked"
+        tooltip="Advanced search options, not required if a search priority is not needed. Note this will be discarded unless all values are provided."
+      >
         <Checkbox disabled={readOnly} />
       </Form.Item>
 
       <Show when={showPriorityBounds}>
-        <Form.Item name="latPriority" label="Latitude (Priority Bound)" required>
+        <Form.Item
+          name="latPriority"
+          label="Latitude (Priority Bound)"
+          required
+          tooltip="Latitude value which the search will be prioritized from."
+        >
           <InputNumber style={{ width: '100%' }} disabled={readOnly} />
         </Form.Item>
 
-        <Form.Item name="lngPriority" label="Longitude (Priority Bound)" required>
+        <Form.Item
+          name="lngPriority"
+          label="Longitude (Priority Bound)"
+          required
+          tooltip="Longitude value which the search will be prioritized from."
+        >
           <InputNumber style={{ width: '100%' }} disabled={readOnly} />
         </Form.Item>
 
-        <Form.Item name="radiusPriority" label="Radius (Priority Bound)" required>
+        <Form.Item
+          name="radiusPriority"
+          label="Radius (Priority Bound)"
+          required
+          tooltip="The radius in which the latitude and longitude will be priorities from."
+        >
           <InputNumber style={{ width: '100%' }} />
         </Form.Item>
       </Show>

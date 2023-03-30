@@ -10,7 +10,7 @@ export interface IComponentWithAuthProps {
 }
 export const ComponentWithAuth: FC<IComponentWithAuthProps> = props => {
   const { landingPage, unauthorizedRedirectUrl } = props;
-  const { isCheckingAuth, loginInfo, checkAuth, getAccessToken } = useAuth();
+  const { isCheckingAuth, loginInfo, checkAuth, getAccessToken, isLoggedIn } = useAuth();
 
   const { goingToRoute, router } = useShaRouting();
 
@@ -26,11 +26,9 @@ export const ComponentWithAuth: FC<IComponentWithAuthProps> = props => {
     }
   }, [isCheckingAuth]);
 
-  return isCheckingAuth || !loginInfo ? (
-    <OverlayLoader loading={true} loadingText="Initializing..." />
-  ) : (
-    <Fragment>{props.children(router?.query)}</Fragment>
-  );
+  return isLoggedIn 
+    ? <Fragment>{props.children(router?.query)}</Fragment>
+    : <OverlayLoader loading={true} loadingText="Initializing..." />;
 };
 
 /**

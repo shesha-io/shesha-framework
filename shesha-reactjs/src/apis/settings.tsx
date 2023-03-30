@@ -35,7 +35,7 @@ export interface ObjectAjaxResponse {
 export interface SettingIdentifier {
   name?: string | null;
   module?: string | null;
-  fullName?: string | null;
+  normalizedFullName?: string | null;
 }
 
 export interface SettingIdentifierObjectDictionaryAjaxResponse {

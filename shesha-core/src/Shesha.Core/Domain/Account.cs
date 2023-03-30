@@ -9,8 +9,7 @@ namespace Shesha.Domain
 
         public virtual Person PrimaryContact{ get; set; }
 
-        // commented out, has no corresponding column in the DB
-        //public virtual Organisation Organisation { get; set; }
+        public virtual Organisation Organisation { get; set; }
 
         public virtual Account Parent { get; set; }
 

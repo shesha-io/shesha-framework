@@ -5,6 +5,7 @@ import { useForm } from '../../../../providers';
 import ReadOnlyDisplayFormItemWrapper from '../../../readOnlyDisplayFormItem/wrapper';
 import ConfigurableFormItem from '../formItem';
 import AutoCompletePlacesControl from './control';
+import AddressEffect from './effect';
 import { IAddressCompomentProps } from './models';
 import AddressSettings from './settings';
 
@@ -18,11 +19,13 @@ const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
     const readOnly = model?.readOnly || formMode === 'readonly';
 
     return (
-      <ConfigurableFormItem model={model}>
-        <ReadOnlyDisplayFormItemWrapper readOnly={readOnly} disabled={model?.disabled}>
-          <AutoCompletePlacesControl {...model} />
-        </ReadOnlyDisplayFormItemWrapper>
-      </ConfigurableFormItem>
+      <AddressEffect externalApiKey={model?.googleMapsApiKey}>
+        <ConfigurableFormItem model={model}>
+          <ReadOnlyDisplayFormItemWrapper readOnly={readOnly} disabled={model?.disabled}>
+            <AutoCompletePlacesControl {...model} />
+          </ReadOnlyDisplayFormItemWrapper>
+        </ConfigurableFormItem>
+      </AddressEffect>
     );
   },
   settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {

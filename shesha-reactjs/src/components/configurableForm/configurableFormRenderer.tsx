@@ -267,7 +267,7 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
     }
     // tslint:disable-next-line:function-constructor
     return new Function(
-      'data, parentFormValues, initialValues, globalState, moment, http, message, shesha, form, setFormData,setGlobalState',
+      'data, parentFormValues, initialValues, globalState, moment, http, message, shesha, form, setFormData, setGlobalState',
       expression
     )(
       exposedData || formData,
