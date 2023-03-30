@@ -1,12 +1,12 @@
 import { getString } from '../../../../providers/form/utils';
-import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import { ReactPictureAnnotation } from 'react-picture-annotation';
 import { FormMode, useForm, useFormData } from '../../../../providers';
-import { IAnnotation, IImageProps } from './model';
+import { IAnnotation, IImageAnnotationData, IImageProps } from './model';
 import './styles/index.less';
 import { DescriptionsList } from './descriptionList';
 import { CustomInput } from './customAnnotationInput';
-import { parseIntOrDefault } from './utilis';
+import { getViewData, parseIntOrDefault, sortAnnotationData } from './utilis';
 
 interface IProps {
   formMode?: FormMode;
@@ -24,16 +24,28 @@ const ImageAnnotation: FC<IProps> = ({ model, onChange: onChangeForm, value }) =
     width: parseIntOrDefault(width),
     height: parseIntOrDefault(height),
   });
-  const [annotationData, setAnnotationData] = useState<IAnnotation[]>(value || []);
-  const [annotationDataHolder, setAnnotationDataHolder] = useState<IAnnotation[]>(value || []);
-  const [numberOfMarks, setMarksLength] = useState<number>(annotationData?.length);
+  const [imageAnnotationData, setImageAnnotationData] = useState<IImageAnnotationData>({
+    actualData: value || [],
+    viewData: value || [],
+  });
 
   const url: string = getString(model?.url, formData) || formData?.[model.name];
   const isReadOnly = model?.readOnly || formMode === 'readonly';
 
   useEffect(() => {
     window.addEventListener('resize', onResize);
-    setAnnotationData(annotationDataHolder);
+    const isNumbersOnly = !isOnImage && isReadOnly;
+    if (isNumbersOnly) {
+      setImageAnnotationData({
+        ...imageAnnotationData,
+        viewData: getViewData(imageAnnotationData.actualData),
+      });
+    } else {
+      setImageAnnotationData({
+        ...imageAnnotationData,
+        viewData: imageAnnotationData.actualData,
+      });
+    }
     return () => window.removeEventListener('resize', onResize);
   }, [isReadOnly]);
 
@@ -44,57 +56,6 @@ const ImageAnnotation: FC<IProps> = ({ model, onChange: onChangeForm, value }) =
     }));
   }, [height, width]);
 
-  useEffect(() => {
-    if (!isReadOnly) setAnnotationDataHolder(annotationData);
-  }, [annotationData]);
-
-  useEffect(() => {
-    let annotationLength = annotationData?.length;
-    const withComments = annotationData
-      ?.filter(mark => !!mark?.comment)
-      ?.sort((a, b) => {
-        const order = [...a.comment?.split('.'), ...b.comment?.split('.')];
-        return parseInt(order[0]) - parseInt(order[2]);
-      })
-      ?.map(({ comment, ...rest }, index) => {
-        const [, commt] = comment?.split('.');
-        return {
-          ...rest,
-          comment: `${index + 1}.${commt}`,
-        };
-      });
-    if (annotationData[annotationLength - 1]) {
-      if (!annotationData[annotationLength - 1]?.comment) {
-        withComments.push(annotationData[annotationLength - 1]);
-      }
-    }
-
-    setAnnotationData(withComments);
-  }, [numberOfMarks]);
-
-  const props = useMemo(() => {
-    let annoProps: ReactPictureAnnotation;
-    if (!!annotationData.length && annotationData.length != numberOfMarks) {
-      setMarksLength(annotationData.length);
-    }
-    onChangeForm(annotationData);
-    const isNumbersOnly = !isOnImage && isReadOnly;
-
-    let viewData = annotationDataHolder?.map((mrk, index) => {
-      return {
-        ...mrk,
-        comment: `${index + 1}.`,
-      };
-    });
-
-    if (!!annotationData?.length) {
-      return { ...annoProps, annotationData: isNumbersOnly ? viewData : annotationData };
-    }
-    return null;
-  }, [annotationData, isReadOnly]);
-
-  let defaultNumber = useMemo(() => annotationData?.length?.toString(), [annotationData]);
-
   const onResize = () => {
     setPageSize({
       width: parseIntOrDefault(imageFrameRef?.current?.offsetWidth),
@@ -102,15 +63,19 @@ const ImageAnnotation: FC<IProps> = ({ model, onChange: onChangeForm, value }) =
     });
   };
 
-  const onSelect = () => {
-    const newAnnotationData = annotationData?.map(({ id, comment, ...rest }) => {
-      return { id, comment, ...rest };
-    });
-    setAnnotationData(() => newAnnotationData);
+  const onSelect = (selectedId: string) => {
+    //on select is mandatory in ReactPictureAnnotation
+    console.log(selectedId);
   };
 
   const onChange = (data: IAnnotation[]) => {
-    setAnnotationData(data);
+    if (!isReadOnly) {
+      setImageAnnotationData({
+        viewData: data,
+        actualData: data,
+      });
+      onChangeForm(sortAnnotationData(data));
+    }
   };
 
   return (
@@ -118,9 +83,14 @@ const ImageAnnotation: FC<IProps> = ({ model, onChange: onChangeForm, value }) =
       <div className="container-image" ref={imageFrameRef} style={{ ...pageSize }}>
         <ReactPictureAnnotation
           inputElement={(value, onChange, onDelete) => (
-            <CustomInput value={value} defaultNumber={defaultNumber} onChange={onChange} onDelete={onDelete} />
+            <CustomInput
+              value={value}
+              defaultNumber={imageAnnotationData?.viewData?.length}
+              onChange={onChange}
+              onDelete={onDelete}
+            />
           )}
-          {...props}
+          annotationData={sortAnnotationData(imageAnnotationData.viewData)}
           image={url}
           onSelect={onSelect}
           onChange={onChange}
@@ -138,7 +108,7 @@ const ImageAnnotation: FC<IProps> = ({ model, onChange: onChangeForm, value }) =
             height: pageSize.height,
           }}
         >
-          <DescriptionsList data={annotationDataHolder} />
+          <DescriptionsList data={sortAnnotationData(imageAnnotationData?.actualData)} />
         </div>
       )}
     </div>
