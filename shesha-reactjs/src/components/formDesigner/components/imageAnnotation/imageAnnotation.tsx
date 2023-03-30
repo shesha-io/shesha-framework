@@ -24,16 +24,18 @@ const ImageAnnotation: FC<IProps> = ({ model, onChange: onChangeForm, value }) =
     width: parseIntOrDefault(width),
     height: parseIntOrDefault(height),
   });
-  const [annotationData, setAnnotationData] = useState<IAnnotation[]>(value ?? []);
-  const [numberOfMarks, setMarksLength] = useState<number>(annotationData.length);
+  const [annotationData, setAnnotationData] = useState<IAnnotation[]>(value || []);
+  const [annotationDataHolder, setAnnotationDataHolder] = useState<IAnnotation[]>(value || []);
+  const [numberOfMarks, setMarksLength] = useState<number>(annotationData?.length);
 
   const url: string = getString(model?.url, formData) || formData?.[model.name];
   const isReadOnly = model?.readOnly || formMode === 'readonly';
 
   useEffect(() => {
     window.addEventListener('resize', onResize);
+    setAnnotationData(annotationDataHolder);
     return () => window.removeEventListener('resize', onResize);
-  }, []);
+  }, [isReadOnly]);
 
   useEffect(() => {
     setPageSize(() => ({
@@ -41,6 +43,10 @@ const ImageAnnotation: FC<IProps> = ({ model, onChange: onChangeForm, value }) =
       height: parseIntOrDefault(height),
     }));
   }, [height, width]);
+
+  useEffect(() => {
+    if (!isReadOnly) setAnnotationDataHolder(annotationData);
+  }, [annotationData]);
 
   useEffect(() => {
     let annotationLength = annotationData?.length;
@@ -72,12 +78,20 @@ const ImageAnnotation: FC<IProps> = ({ model, onChange: onChangeForm, value }) =
       setMarksLength(annotationData.length);
     }
     onChangeForm(annotationData);
+    const isNumbersOnly = !isOnImage && isReadOnly;
 
-    if (!!annotationData.length) {
-      return { ...annoProps, annotationData };
+    let viewData = annotationDataHolder?.map((mrk, index) => {
+      return {
+        ...mrk,
+        comment: `${index + 1}.`,
+      };
+    });
+
+    if (!!annotationData?.length) {
+      return { ...annoProps, annotationData: isNumbersOnly ? viewData : annotationData };
     }
     return null;
-  }, [annotationData]);
+  }, [annotationData, isReadOnly]);
 
   let defaultNumber = useMemo(() => annotationData?.length?.toString(), [annotationData]);
 
@@ -89,7 +103,7 @@ const ImageAnnotation: FC<IProps> = ({ model, onChange: onChangeForm, value }) =
   };
 
   const onSelect = () => {
-    const newAnnotationData = annotationData.map(({ id, comment, ...rest }) => {
+    const newAnnotationData = annotationData?.map(({ id, comment, ...rest }) => {
       return { id, comment, ...rest };
     });
     setAnnotationData(() => newAnnotationData);
@@ -124,7 +138,7 @@ const ImageAnnotation: FC<IProps> = ({ model, onChange: onChangeForm, value }) =
             height: pageSize.height,
           }}
         >
-          <DescriptionsList data={annotationData} />
+          <DescriptionsList data={annotationDataHolder} />
         </div>
       )}
     </div>

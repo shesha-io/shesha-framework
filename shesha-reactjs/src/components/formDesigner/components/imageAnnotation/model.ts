@@ -16,6 +16,9 @@ export interface IAnnotation {
         height: number
     }
 }
+export interface IAnnotationNumbers extends IAnnotation {
+    postion?: number;
+}
 export interface ICustomInputProps {
     value?: string;
     defaultNumber?: string;

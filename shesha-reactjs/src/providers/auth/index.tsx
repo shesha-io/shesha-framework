@@ -1,4 +1,4 @@
-import React, { FC, useContext, useEffect, PropsWithChildren, useMemo, MutableRefObject } from 'react';
+import React, { FC, useContext, useEffect, PropsWithChildren, useMemo, MutableRefObject, useRef } from 'react';
 import { authReducer } from './reducer';
 import useThunkReducer from '../../hooks/thunkReducer';
 import {
@@ -7,6 +7,7 @@ import {
   AUTH_CONTEXT_INITIAL_STATE,
   ILoginForm,
   IAuthStateContext,
+  IProfileLoadedHandler,
 } from './contexts';
 import {
   loginUserAction,
@@ -20,6 +21,7 @@ import {
   fetchUserDataActionSuccessAction,
   fetchUserDataActionErrorAction,
   loginUserSuccessAction,
+  setIsLoggedInAction,
   /* NEW_ACTION_IMPORT_GOES_HERE */
 } from './actions';
 import { URL_LOGIN_PAGE, URL_HOME_PAGE, URL_CHANGE_PASSWORD, HOME_CACHE_URL } from '../../constants';
@@ -49,6 +51,7 @@ import { useSheshaApplication } from '../sheshaApplication';
 import { getCurrentUrl, getLoginUrlWithReturn, getQueryParam, isSameUrls } from '../../utils/url';
 import { getFlagSetters } from '../utils/flagsSetters';
 import { IErrorInfo } from '../../interfaces/errorInfo';
+import { IDictionary } from '../../components/configurationFramework/models';
 
 const DEFAULT_HOME_PAGE = '/';
 
@@ -122,7 +125,29 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
 
   const setters = getFlagSetters(dispatch);
 
-  //#region Fetch user login info`1
+  //#region Fetch user login info
+
+  const profileLoadedSubscriptions = useRef<IDictionary<IProfileLoadedHandler>>({});
+  const subscribeOnProfileLoading = (name: string, handler: IProfileLoadedHandler) => {
+    profileLoadedSubscriptions.current[name] = handler;
+  }
+  const unSubscribeOnProfileLoading = (name: string) => {
+    delete profileLoadedSubscriptions.current[name];
+  }
+
+  const processSubscriptions = (): Promise<void> => {
+    const handlers = profileLoadedSubscriptions.current
+    const promises: Promise<void>[] = [];
+    for (const handlerName in handlers) {
+      if (!handlers.hasOwnProperty(handlerName))
+        continue;
+
+      const handler = handlers[handlerName];
+      promises.push(handler());
+    }
+
+    return Promise.all(promises).then();
+  }
 
   const fetchUserInfo = (headers: IHttpHeaders) => {
     if (state.isFetchingUserInfo || Boolean(state.loginInfo)) return;
@@ -135,20 +160,24 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
         if (response.result.user) {
           dispatch(fetchUserDataActionSuccessAction(response.result.user));
 
-          if (state.requireChangePassword && Boolean(changePasswordUrl)) {
-            redirect(changePasswordUrl);
-          } else {
-            const currentUrl = getCurrentUrl();
+          processSubscriptions().then(() => {
+            dispatch(setIsLoggedInAction(true));
 
-            // if we are on the login page - redirect to the returnUrl or home page
-            if (isSameUrls(currentUrl, unauthorizedRedirectUrl)) {
-              const returnUrl = getQueryParam('returnUrl')?.toString();
+            if (state.requireChangePassword && Boolean(changePasswordUrl)) {
+              redirect(changePasswordUrl);
+            } else {
+              const currentUrl = getCurrentUrl();
 
-              cacheHomeUrl(response.result?.user?.homeUrl || homePageUrl);
+              // if we are on the login page - redirect to the returnUrl or home page
+              if (isSameUrls(currentUrl, unauthorizedRedirectUrl)) {
+                const returnUrl = getQueryParam('returnUrl')?.toString();
 
-              redirect(returnUrl ?? response.result?.user?.homeUrl ?? homePageUrl ?? DEFAULT_HOME_PAGE);
+                cacheHomeUrl(response.result?.user?.homeUrl || homePageUrl);
+
+                redirect(returnUrl ?? response.result?.user?.homeUrl ?? homePageUrl ?? DEFAULT_HOME_PAGE);
+              }
             }
-          }
+          });
         } else {
           // user may be null in some cases
           clearAccessToken();
@@ -398,7 +427,8 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
             verifyOtpSuccess,
             resetPasswordSuccess,
             fireHttpHeadersChanged,
-
+            subscribeOnProfileLoading,
+            unSubscribeOnProfileLoading,
             /* NEW_ACTION_GOES_HERE */
           }}
         >
@@ -409,24 +439,32 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
   );
 };
 
-function useAuthState() {
+function useAuthState(require: boolean = true) {
   const context = useContext(AuthStateContext);
-  if (!context) {
+  if (require && context === undefined) {
     throw new Error('useAuthState must be used within a AuthProvider');
   }
   return context;
 }
 
-function useAuthActions() {
+function useAuthActions(require: boolean = true) {
   const context = useContext(AuthActionsContext);
-  if (context === undefined) {
+  if (require && context === undefined) {
     throw new Error('useAuthActions must be used within a AuthProvider');
   }
   return context;
 }
 
-function useAuth() {
-  return { ...useAuthActions(), ...useAuthState() };
+function useAuth(require: boolean = true) {
+  const actionsContext = useAuthActions(require);
+  const stateContext = useAuthState(require);
+
+  // useContext() returns initial state when provider is missing
+  // initial context state is useless especially when require == true
+  // so we must return value only when both context are available
+  return actionsContext !== undefined && stateContext !== undefined
+    ? { ...actionsContext, ...stateContext }
+    : undefined;
 }
 
 export default AuthProvider;

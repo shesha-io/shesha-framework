@@ -3,9 +3,10 @@ import DisplayFormItem from '../../../displayFormItem';
 import { IDataAnnotationListProps } from './model';
 
 const DescriptionsList: FC<IDataAnnotationListProps> = ({ data }) => {
+  const filteredData = data?.map(({ id, mark, comment }) => ({ id, mark, comment }));
   return (
     <div className="List-Container">
-      {data
+      {filteredData
         ?.filter(mark => !!mark?.comment)
         ?.sort((a, b) => {
           const order = [...a.comment?.split('.'), ...b.comment?.split('.')];
