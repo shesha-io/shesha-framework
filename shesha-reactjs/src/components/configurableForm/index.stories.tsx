@@ -5,7 +5,6 @@ import ConfigurableForm from '.';
 import { Button, Col, Form, Row } from 'antd';
 import { IConfigurableFormProps } from './models';
 import { StoredFilesProvider } from '../../providers';
-import { IndexPageTemplate } from './stories/indexPage';
 import StoredFilesRenderer from '../storedFilesRenderer';
 import { addStory } from '../../stories/utils';
 import { ConfigurableFormInstance } from '../../providers/form/contexts';
@@ -172,11 +171,6 @@ export const Notifications = addStory(DualModeForm, {
   },
   mode: 'edit',
 });
-
-export const IndexPage = IndexPageTemplate.bind({});
-IndexPage.args = {
-  formPath: '/indexTable',
-};
 
 export const PersonEditTest = addStory(BasicTemplate, {
   ...configurableFormProps,

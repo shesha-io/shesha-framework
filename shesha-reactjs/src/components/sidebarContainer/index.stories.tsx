@@ -17,8 +17,6 @@ const sharedProps: ISidebarContainerProps = {
   allowFullCollapse: false,
 };
 
-const backendUrl = process.env.STORYBOOK_BASE_URL; // TODO: Make this configurable
-
 //#region Basic usage
 const TemplateBasic: Story<ISidebarContainerProps> = args => {
   const [state, setState] = useState<IStoryState>({

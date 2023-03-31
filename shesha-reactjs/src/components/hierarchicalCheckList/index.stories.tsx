@@ -12,7 +12,7 @@ export default {
 export interface IHierarchicalCheckListStoryProps {
 }
 
-const Template: Story<IHierarchicalCheckListStoryProps> = (props) => {
+const Template: Story<IHierarchicalCheckListStoryProps> = (_props) => {
   return (
     <HierarchicalCheckList 
       id={''} 

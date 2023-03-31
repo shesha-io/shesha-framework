@@ -4,8 +4,6 @@ import { Meta } from '@storybook/react/types-6-0';
 import { Story } from '@storybook/react';
 import RefListDropDown, { IRefListDropDownProps } from './';
 import { addStory } from '../../stories/utils';
-import { GlobalStateProvider, ShaApplicationProvider } from '../../providers';
-import AuthContainer from '../authedContainer';
 import StoryApp from '../storyBookApp';
 
 export default {
@@ -27,8 +25,6 @@ export default {
     },
   },
 } as Meta;
-
-const backendUrl = process.env.STORYBOOK_BASE_URL; // TODO: Make this configurable
 
 interface IStoryArgs extends IRefListDropDownProps {
   /**
@@ -125,13 +121,11 @@ const DtoTemplate: Story<IStoryArgs> = args => {
 
 // Reuse that template for creating different stories
 export const SingleDto = addStory(DtoTemplate, {
-  listNamespace: 'Shesha.Core',
-  listName: 'PersonTitles',
+  referenceListId: { module: 'shesha', name: 'PersonTitles' },
 });
 
 export const SingleDtoWithInitialValue = addStory(DtoTemplate, {
-  listNamespace: 'Shesha.Core',
-  listName: 'PersonTitles',
+  referenceListId: { module: 'shesha', name: 'PersonTitles' },
   initialValue: {
     itemValue: 2,
     item: 'Mrs',
@@ -139,8 +133,7 @@ export const SingleDtoWithInitialValue = addStory(DtoTemplate, {
 });
 
 export const MultipleDto = addStory(DtoTemplate, {
-  listNamespace: 'Shesha.Core',
-  listName: 'PersonTitles',
+  referenceListId: { module: 'shesha', name: 'PersonTitles' },
   mode: 'multiple',
   testValue: [
     {
@@ -154,8 +147,7 @@ export const MultipleDto = addStory(DtoTemplate, {
   ],
 });
 export const MultipleDtoWithInitialValue = addStory(DtoTemplate, {
-  listNamespace: 'Shesha.Core',
-  listName: 'PersonTitles',
+  referenceListId: { module: 'shesha', name: 'PersonTitles' },
   mode: 'multiple',
   initialValue: [
     {
@@ -183,25 +175,21 @@ const RawTemplate: Story<IStoryArgs> = args => {
 };
 
 export const SingleRaw = addStory(RawTemplate, {
-  listNamespace: 'Shesha.Core',
-  listName: 'TypeOfAccount',
+  referenceListId: { module: 'shesha', name: 'TypeOfAccount' },
 });
 
 export const SingleRawWithInitialValue = addStory(RawTemplate, {
-  listNamespace: 'Shesha.Core',
-  listName: 'TypeOfAccount',
+  referenceListId: { module: 'shesha', name: 'TypeOfAccount' },
   initialValue: 1,
 });
 
 export const MultipleRaw = addStory(RawTemplate, {
-  listNamespace: 'Shesha.Core',
-  listName: 'TypeOfAccount',
+  referenceListId: { module: 'shesha', name: 'TypeOfAccount' },
   mode: 'multiple',
   testValue: [0, 1],
 });
 export const MultipleRawWithInitialValue = addStory(RawTemplate, {
-  listNamespace: 'Shesha.Core',
-  listName: 'TypeOfAccount',
+  referenceListId: { module: 'shesha', name: 'TypeOfAccount' },
   mode: 'multiple',
   initialValue: [0, 1],
 });

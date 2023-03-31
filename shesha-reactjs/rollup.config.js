@@ -102,7 +102,7 @@ export default {
       modulesOnly: true,
     }),
     typescript({
-      rollupCommonJSResolveHack: true,
+      //rollupCommonJSResolveHack: true,
       clean: true,
     }),
     commonjs({

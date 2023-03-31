@@ -32,7 +32,7 @@ const STATS: {
 ];
 
 // Create a master template for mapping args to render the Button component
-const Template: Story<IFormDesignerStoryProps> = args => (
+const Template: Story<IFormDesignerStoryProps> = _args => (
   <CollapsiblePanel header="Statistics">
     <Row gutter={[12, 12]}>
       {STATS?.map(props => (

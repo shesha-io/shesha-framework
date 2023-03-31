@@ -23,7 +23,7 @@ const Template: Story<IGenericEditPageProps> = props => {
         id={props.id}
         fetcher={props.fetcher}
         updater={props.updater}
-        formPath={props.formPath}
+        formId={props.formId}
         onDataLoaded={onDataLoaded}
       />
     </StoryApp>
@@ -32,7 +32,7 @@ const Template: Story<IGenericEditPageProps> = props => {
 
 export const Base = addStory(Template, {
   id: 'AA0F6A79-B57B-4F4E-A6C3-3825AB3545F2',
-  formPath: 'person-edit',
+  formId: { name: 'person-edit' },
   fetcher: usePersonGet,
   updater: usePersonUpdate,
 });

@@ -123,6 +123,7 @@ export const MultipleEntityDto = addStory(Template, {
     module: 'shesha'
   },
   testUid: '80A62EAB-2771-4650-88C9-C8FC676D6A60',
+  convertToFullId: false,
 });
 
 /*

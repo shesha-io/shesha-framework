@@ -14,7 +14,7 @@ export interface IFormAutocompleteRuntimeProps {
     onChange?: (value?: FormIdentifier) => void;
     readOnly?: boolean;
     maxResultCount?: number;
-    convertToFullId: boolean;
+    convertToFullId?: boolean;
 }
 
 interface IOption {

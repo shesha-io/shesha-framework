@@ -4,7 +4,7 @@ import { Story } from '@storybook/react';
 import ConfigurableThemePage, { IConfigurableThemePageProps } from '.';
 import StoryApp from '../../../components/storyBookApp';
 import { SidebarMenuDefaultsProvider } from '../../../providers';
-import { DefaultLayout, Page } from '../../../components';
+import { DefaultLayout } from '../../../components';
 
 export default {
   title: 'Pages/ConfigurableThemePage',

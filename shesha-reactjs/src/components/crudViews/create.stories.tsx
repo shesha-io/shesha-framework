@@ -15,12 +15,12 @@ export default {
 const Template: Story<IGenericCreatePageProps> = props => {
   return (
     <StoryApp>
-      <GenericCreatePage title="Create User" updater={props.updater} formPath={props.formPath} />
+      <GenericCreatePage title="Create User" updater={props.updater} formId={props.formId} />
     </StoryApp>
   );
 };
 
 export const Base = addStory(Template, {
-  formPath: '/areas/create',
+  formId: { name: 'area-create' },
   updater: usePersonTestCreate,
 });

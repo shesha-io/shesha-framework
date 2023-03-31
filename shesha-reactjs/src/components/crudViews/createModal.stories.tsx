@@ -19,14 +19,14 @@ export default {
 const BaseTemplate: Story<IGenericCreateModalProps> = props => {
   return (
     <StoryApp>
-      <GenericCreateModal title={props.title} formPath={props.formPath} updater={props.updater} />
+      <GenericCreateModal title={props.title} formId={props.formId} updater={props.updater} />
     </StoryApp>
   );
 };
 
 const baseProps: IGenericCreateModalProps = {
   title: 'Create Entity',
-  formPath: '/areas/create',
+  formId: { name: 'area-create' },
   updater: useAreaCreate,
 };
 

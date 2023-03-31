@@ -1,10 +1,8 @@
-import React /*, { useState } */ from 'react';
+import React from 'react';
 import { Meta } from '@storybook/react/types-6-0';
 import { Story } from '@storybook/react';
 import { MetadataDispatcherProvider, IMetadataDispatcherProviderProps, useMetadataDispatcher } from './';
 import { AutoComplete } from 'antd';
-//import { IPropertyMetadata } from './contexts';
-//import Autocomplete from '../../components/autocomplete';
 
 export default {
   title: 'Providers/MetadataDispatcherProvider',
@@ -37,7 +35,6 @@ const MetadataConsumer = () => {
       options={opts}
       style={{ width: 200 }}
       onSelect={onSelect}
-      //onSearch={onSearch}
       filterOption={(inputValue, option) => option?.value?.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}
       placeholder="input here"
     />
@@ -46,7 +43,6 @@ const MetadataConsumer = () => {
 
 // Reuse that template for creating different stories
 export const Basic = Template.bind({
-  //containerType: 'Shesha.Core.Person'
 });
 Basic.args = {
   containerType: 'Shesha.Core.Person',

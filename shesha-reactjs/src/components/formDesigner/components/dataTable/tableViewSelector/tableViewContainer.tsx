@@ -8,7 +8,7 @@ export interface ITableViewSortableProps {
   index?: number[];
   items: ITableViewProps[];
   onConfigClick?: (selectedItemId: string) => void;
-  readOnly: boolean;
+  readOnly?: boolean;
 }
 
 export const TableViewContainer: FC<ITableViewSortableProps> = ({ onConfigClick, readOnly, ...props }) => {

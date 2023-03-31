@@ -17,14 +17,11 @@ const configurableFormProps = {
 
 // Create a master template for mapping args to render the Button component
 const Template: Story<IGenericDetailsPageProps> = () => {
-  // const { formItemLayout } = useUi();
-
   return (
     <StoryApp>
       <ConfigurableForm
         mode="edit"
-        // {...formItemLayout}
-        path={'test/form-designer-components'}
+        formId={{ name: 'form-designer-components' }}
         onValuesChange={data => {
           console.log('data: ', data);
         }}
@@ -39,9 +36,3 @@ const Template: Story<IGenericDetailsPageProps> = () => {
 
 export const Basic = Template.bind({});
 Basic.args = { ...configurableFormProps };
-
-// export const IndexPage = Template.bind({});
-// IndexPage.args = {
-//   backendUrl: backendUrl,
-//   formPath: '/indexTable',
-// };

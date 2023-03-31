@@ -23,7 +23,7 @@ export interface ISettingsEditorStateContext {
 }
 
 export interface ISettingsEditorActionsContext {
-    selectSetting: (setting: ISettingConfiguration, app: IFrontEndApplication) => void;
+    selectSetting: (setting: ISettingConfiguration, app?: IFrontEndApplication) => void;
 
     saveSetting: () => Promise<void>;
     startEditSetting: () => void;

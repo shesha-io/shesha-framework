@@ -47,7 +47,7 @@ export default {
 } as Meta;
 
 // Create a master template for mapping args to render the Button component
-const Template: Story<IAppliedCustomFiltersProps> = args => (
+const Template: Story<IAppliedCustomFiltersProps> = _args => (
   <AppliedCustomFilters appliedCustomFilterOptions={appliedCustomFilters} />
 );
 
