@@ -13,7 +13,7 @@ import FormInfo from "../configurableForm/formInfo";
 import ShaSpin from "../shaSpin";
 import Show from "../show";
 import { IDataListProps } from "./models";
-import { asFormRawId, asFormFullName } from "../../providers/form/utils"
+import { asFormRawId, asFormFullName } from "../../providers/form/utils";
 
 interface EntityForm {
     entityType: string;
@@ -42,20 +42,22 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     ...props
 }) => {
     const { backendUrl, httpHeaders } = useSheshaApplication();
-    const [ formConfigs, setFormConfigs ] = useState<IFormDto[]>([]);
-    const [ entityForms, setEntityForms ] = useState<EntityForm[]>([]);
+    const [formConfigs, setFormConfigs] = useState<IFormDto[]>([]);
+    const [entityForms, setEntityForms] = useState<EntityForm[]>([]);
 
     const onSelectRowLocal = (index: number, row: any) => {
         if (selectionMode === 'none') return;
 
         if (selectionMode === 'multiple') {
             let selected = [...selectedIds];
-            if (selectedIds.find(x => x == row?.id))
-                selected = selected.filter(x => x != row?.id)
+            if (selectedIds.find(x => x === row?.id))
+                selected = selected.filter(x => x !== row?.id);
             else
                 selected = [...selected, row?.id];
-            changeSelectedIds(selected)
-            onMultiSelectRows(records?.map((item: any, index) => { return { isSelected: Boolean(selected.find(x => x == item?.id)), index, id: item?.id, original: item }; }));
+            changeSelectedIds(selected);
+            onMultiSelectRows(records?.map((item: any, index) => {
+                return { isSelected: Boolean(selected.find(x => x === item?.id)), index, id: item?.id, original: item };
+            }));
         } else {
             if (onSelectRow)
                 onSelectRow(index, row);
@@ -63,16 +65,20 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     };
 
     const onSelectAllRowsLocal = (val: Boolean) => {
-        changeSelectedIds(val ? records?.map((item: any) => { return item?.id; }) : []);
-        onMultiSelectRows(records?.map((item: any, index) => { return { isSelected: val, index, id: item?.id, original: item }; }));
+        changeSelectedIds(val ? records?.map((item: any) => {
+            return item?.id;
+        }) : []);
+        onMultiSelectRows(records?.map((item: any, index) => {
+            return { isSelected: val, index, id: item?.id, original: item };
+        }));
     };
 
     const previousIds = usePrevious(selectedIds);
 
     useEffect(() => {
-    if (!(previousIds?.length === 0 && selectedIds?.length === 0) && typeof onSelectedIdsChanged === 'function') {
-        onSelectedIdsChanged(selectedIds);
-    }
+        if (!(previousIds?.length === 0 && selectedIds?.length === 0) && typeof onSelectedIdsChanged === 'function') {
+            onSelectedIdsChanged(selectedIds);
+        }
     }, [selectedIds]);
 
     useEffect(() => {
@@ -84,46 +90,50 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
     useEffect(() => {
         setEntityForms([]);
-    }, [formType, formSelectionMode, records])
+    }, [formType, formSelectionMode, records]);
 
     const getFormIdFromExpression = (item): FormFullName => {
-        if (!formIdExpression) 
+        if (!formIdExpression)
             return null;
-  
+
         // tslint:disable-next-line:function-constructor
         return new Function('item',
             //globalState, http, message, data, refreshTable',
-            formIdExpression) (
-            item/*,
+            formIdExpression)(
+                item/*,
             globalState,
             axiosHttp(backendUrl),
             message,
             formData,
             refreshTable*/
-        );
+            );
     };
 
     const renderSubForm = (item?: any) => {
-        let values: { [key: string]: any, id: string } = {...item};
+        let values: { [key: string]: any; id: string } = { ...item };
 
         let formConfig = null;//formConfiguration;
 
         if (!Boolean(formConfig)) {
-            if (formSelectionMode == 'name') {
+            if (formSelectionMode === 'name') {
                 const fid = asFormRawId(formId);
                 if (Boolean(fid)) {
-                    formConfig = formConfigs.find(x => { return x.id == fid; })
+                    formConfig = formConfigs.find(x => {
+                        return x.id === fid;
+                    });
                 } else {
                     const f = asFormFullName(formId);
                     if (!Boolean(f))
                         return null;
-                    formConfig = formConfigs.find(x => { return x.name == f.name && x.module == f.module && (!f.version || x.versionNo == f.version);})
+                    formConfig = formConfigs.find(x => {
+                        return x.name === f.name && x.module === f.module && (!f.version || x.versionNo === f.version);
+                    });
                 }
             }
-            if (formSelectionMode == 'view') {
+            if (formSelectionMode === 'view') {
                 const className = entityType ?? item?._className;
                 if (Boolean(className)) {
-                    const entityForm = entityForms.find(x => x.entityType == className);
+                    const entityForm = entityForms.find(x => x.entityType === className);
                     if (Boolean(entityForm)) {
                         if (entityForm.isFetchingFormConfiguration || entityForm.isFetchingFormId) {
                             return null;
@@ -136,16 +146,16 @@ export const DataList: FC<Partial<IDataListProps>> = ({
                         return null;
                     }
                 } else {
-                    return null
+                    return null;
                 }
             }
-            if (formSelectionMode == 'expression') {
+            if (formSelectionMode === 'expression') {
                 const formId = getFormIdFromExpression(item);
                 if (!Boolean(formId))
                     return null;
                 formConfig = formConfigs.find(x => {
-                    return x.name == formId.name && x.module == formId.module && (!formId.version || x.versionNo == formId.version);
-                })
+                    return x.name === formId.name && x.module === formId.module && (!formId.version || x.versionNo === formId.version);
+                });
                 if (!Boolean(formConfigs)) {
                     return null;
                 }
@@ -159,19 +169,19 @@ export const DataList: FC<Partial<IDataListProps>> = ({
                 //labelCol={{span: 3}}
                 //wrapperCol={{span: 17}} 
                 markup={{ components: formConfig?.markup, formSettings: formConfig?.settings }}
-                initialValues={values} 
+                initialValues={values}
                 skipFetchData={true}
-                //onValuesChange={(value, index) => { alert(JSON.stringify(value) + " : " + JSON.stringify(index))}}
+            //onValuesChange={(value, index) => { alert(JSON.stringify(value) + " : " + JSON.stringify(index))}}
             />
         );
     };
 
     const { formInfoBlockVisible } = useAppConfigurator();
-    
+
     const formConfiguration = formConfigs.length > 0 ? formConfigs[0] : null;
 
     const showFormInfo = Boolean(formConfiguration) && formInfoBlockVisible;
-    const persistedFormProps: IPersistedFormProps = { 
+    const persistedFormProps: IPersistedFormProps = {
         id: formConfiguration?.id,
         module: formConfiguration?.module,
         versionNo: formConfiguration?.versionNo,
@@ -181,50 +191,49 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     };
 
     const [ref, measured] = useMeasure();
-    
+
     const listItemWidth = 1;
 
     const itemWidth = useMemo(() => {
         if (!measured) return 0;
         //ensures that vertical landscape is always 100% of measured width
         if (!listItemWidth /*|| orientation === 'vertical'*/) {
-          return measured?.width;
+            return measured?.width;
         }
-    
+
         /*if (listItemWidth === 'custom') {
           if (!customListItemWidth) return measured?.width;
           else return customListItemWidth;
         }*/
-    
+
         return measured?.width * listItemWidth;
     }, [measured?.width, listItemWidth/*, customListItemWidth, orientation*/]);
 
     const entityTypes = useMemo(() => {
-        if (formSelectionMode == 'name')
+        if (formSelectionMode === 'name')
             return ['formName'];
-        if (formSelectionMode == 'expression')
-        {
+        if (formSelectionMode === 'expression') {
             const et = [];
             const ef = entityForms;
             records.forEach((x, index) => {
-                
+
                 const ename = `expression_${index}`;
-                const entityForm = entityForms.find(x => x.entityType == ename);
+                const entityForm = entityForms.find(x => x.entityType === ename);
                 if (!Boolean(entityForm)) {
                     const fc = getFormIdFromExpression(x);
                     ef.push({
-                        entityType: ename, 
+                        entityType: ename,
                         formId: fc,
                         isFetchingFormId: false,
                         isFetchingFormConfiguration: false,
                         formConfiguration: Boolean(fc)
-                            ? formConfigs.find(x => x.name == fc.name && x.module == fc.module)
+                            ? formConfigs.find(x => x.name === fc.name && x.module === fc.module)
                             : null
                     });
                 }
                 et.push(ename);
             });
-            if (entityForms?.length != ef?.length) 
+            if (entityForms?.length !== ef?.length)
                 setEntityForms(ef);
             return et;
         }
@@ -233,14 +242,14 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
         const et = [];
         records.forEach(x => {
-            if (Boolean((x as any)?._className) && !Boolean(et.find(e => e == (x as any)?._className))) {
+            if (Boolean((x as any)?._className) && !Boolean(et.find(e => e === (x as any)?._className))) {
                 et.push((x as any)?._className);
             }
         });
         return et;
     }, [records, entityType, formSelectionMode]);
 
-    const getFormConfig = (entityForm: EntityForm, formId: FormIdentifier ) => {
+    const getFormConfig = (entityForm: EntityForm, formId: FormIdentifier) => {
         entityForm.isFetchingFormConfiguration = true;
         getFormConfiguration(formId, backendUrl, httpHeaders)
             .then(response => {
@@ -254,17 +263,17 @@ export const DataList: FC<Partial<IDataListProps>> = ({
                 entityForm.isFetchingFormConfiguration = false;
                 entityForm.formConfiguration = formConf;
                 setEntityForms(prev => prev.map(x => {
-                    if (x.entityType == entityForm.entityType) 
+                    if (x.entityType === entityForm.entityType)
                         return entityForm;
-                    return x; 
+                    return x;
                 }));
             });
-    }
+    };
 
     if (records?.length > 0) {
         entityTypes.forEach(etype => {
             if (Boolean(etype)) {
-                const entityForm = entityForms.find(x => x.entityType == etype);
+                const entityForm = entityForms.find(x => x.entityType === etype);
                 if (Boolean(entityForm)) {
                     if (entityForm.isFetchingFormConfiguration || entityForm.isFetchingFormId) {
                         return;
@@ -272,43 +281,45 @@ export const DataList: FC<Partial<IDataListProps>> = ({
                         return;
                         //const formConfig = entityForm.formConfiguration;
                     } else if (Boolean(entityForm.formId)) {
-                        entityForm.formConfiguration = formConfigs.find(x => x.name == entityForm.formId.name && x.module == entityForm.formId.module);
+                        entityForm.formConfiguration = formConfigs.find(x => x.name === entityForm.formId.name && x.module === entityForm.formId.module);
                         if (!Boolean(entityForm.formConfiguration)) {
-                            getFormConfig(entityForm, entityForm.formId)
+                            getFormConfig(entityForm, entityForm.formId);
                         }
                         setEntityForms(prev => prev.map(x => {
-                            if (x.entityType == entityForm.entityType) 
+                            if (x.entityType === entityForm.entityType)
                                 return entityForm;
-                            return x; 
+                            return x;
                         }));
                     } else {
                         getEntityFormId(etype, formType, (formid) => {
                             entityForm.formId = formid;
                             entityForm.isFetchingFormId = false;
-                            entityForm.formConfiguration = formConfigs.find(x => x.name == formid.name && x.module == formid.module);
+                            entityForm.formConfiguration = formConfigs.find(x => x.name === formid.name && x.module === formid.module);
                             if (!Boolean(entityForm.formConfiguration)) {
-                                getFormConfig(entityForm, entityForm.formId)
+                                getFormConfig(entityForm, entityForm.formId);
                             }
                             setEntityForms(prev => prev.map(x => {
-                                if (x.entityType == entityForm.entityType) 
+                                if (x.entityType === entityForm.entityType)
                                     return entityForm;
-                                return x; 
+                                return x;
                             }));
                         });
-                        setEntityForms(prev => prev.map(x => { return {...x, isFetchingFormId: x.entityType == etype ? true : x.isFetchingFormId} }));
+                        setEntityForms(prev => prev.map(x => {
+                            return { ...x, isFetchingFormId: x.entityType === etype ? true : x.isFetchingFormId };
+                        }));
                         return;
                     }
                 } else {
                     const entityForm: EntityForm = {
-                        entityType: etype, 
-                        formId: formSelectionMode == 'name' 
-                            ? asFormFullName(formId) 
+                        entityType: etype,
+                        formId: formSelectionMode === 'name'
+                            ? asFormFullName(formId)
                             : undefined,
                         isFetchingFormId: false,
                         isFetchingFormConfiguration: false,
                         formConfiguration: undefined
                     };
-                    setEntityForms(prev => [...prev, entityForm ]);
+                    setEntityForms(prev => [...prev, entityForm]);
                     return;
                 }
             } else {
@@ -326,13 +337,15 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             </Show>
             <Show when={selectionMode === 'multiple'}>
                 <Checkbox
-                    onChange={(e) => { onSelectAllRowsLocal(e.target.checked)}}
+                    onChange={(e) => {
+                        onSelectAllRowsLocal(e.target.checked);
+                    }}
                     checked={selectedRows?.length === records?.length && records?.length > 0}
                     indeterminate={selectedRows?.length !== records?.length && selectedRows?.length > 0}
                 >
                     Select All
                 </Checkbox>
-                <Divider/>
+                <Divider />
             </Show>
             <ShaSpin spinning={isFetchingTableData} tip={isFetchingTableData ? 'Loading...' : 'Submitting...'}>
                 <div
@@ -344,8 +357,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
                 >
                     <Show when={Boolean(records) /*&& Boolean(formConfiguration?.markup)*/}>
                         {records?.map((item: any, index) => {
-                            const isLastItem = records?.length - 1 == index;
-                            const selected = selectedRow?.index == index || selectedRows?.length > 0 && selectedRows?.some(({id}) => id === item?.id);
+                            const isLastItem = records?.length - 1 === index;
+                            const selected = selectedRow?.index === index || selectedRows?.length > 0 && selectedRows?.some(({ id }) => id === item?.id);
                             return (
                                 <div key={item['id']} >
                                     <ConditionalWrap
@@ -365,7 +378,9 @@ export const DataList: FC<Partial<IDataListProps>> = ({
                                     >
                                         <div
                                             className={classNames('sha-list-component-item', { selected })}
-                                            onClick={() => { onSelectRowLocal(index, item); }}
+                                            onClick={() => {
+                                                onSelectRowLocal(index, item);
+                                            }}
                                             style={{ width: selectionMode === 'none' ? itemWidth : !isNaN(itemWidth) ? itemWidth - 28 : itemWidth }}
                                         >
                                             {renderSubForm(item)}

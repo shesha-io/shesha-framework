@@ -12,27 +12,21 @@ export const SettingsEditorToolbar: FC<ISettingsEditorToolbarProps> = () => {
 
     const { settingSelection: selectedSetting, editorMode, saveSetting, cancelEditSetting, startEditSetting } = useSettingsEditor();
 
-    const onNewClick = () => {
-
-    }
-    const onDeleteClick = () => {
-
-    }
     const onEditClick = () => {
         startEditSetting();
-    }
+    };
     const onSaveClick = () => {
         //saveSetting();
         saveSetting().then(() => {
             message.success('Setting saved successfully');
         });
-    }
+    };
     const onCancelEditClick = () => {
         cancelEditSetting();
-    }
+    };
     const onEditSettingConfigurationClick = () => {
-
-    }
+        /*nop*/
+    };
 
     const canEdit = Boolean(selectedSetting) && editorMode === 'readonly';
     const canSave = Boolean(selectedSetting) && editorMode === 'edit';
@@ -43,12 +37,12 @@ export const SettingsEditorToolbar: FC<ISettingsEditorToolbarProps> = () => {
         <div className="sha-components-container horizontal sha-index-toolbar">
             <div className="sha-components-container-inner">
                 {false && (
-                    <Button onClick={onNewClick} type="link">
+                    <Button type="link">
                         <PlusOutlined /> New
                     </Button>)}
                 {
                     false && (
-                        <Button onClick={onDeleteClick} type="link">
+                        <Button type="link">
                             <DeleteOutlined /> Delete
                         </Button>)
                 }
@@ -82,6 +76,6 @@ export const SettingsEditorToolbar: FC<ISettingsEditorToolbarProps> = () => {
             </div>
         </div>
     );
-}
+};
 
 export default SettingsEditorToolbar;

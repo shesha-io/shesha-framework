@@ -23,7 +23,7 @@ export interface ConfigurationItemDto {
 
 export type IDictionary<TItem> = {
     [key: string]: TItem;
-}
+};
 export interface IModule {
     id: string;
     name: string;

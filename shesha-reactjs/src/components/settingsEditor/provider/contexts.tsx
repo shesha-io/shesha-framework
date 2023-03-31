@@ -3,7 +3,7 @@ import { FormMode } from '../../../providers';
 import { FrontEndApplicationDto, IFrontEndApplication, ISettingConfiguration, ISettingIdentifier, LoadingState, SettingValue } from './models';
 
 export interface IEditorBridge {
-    save: () => Promise<void>,
+    save: () => Promise<void>;
     //startEdit: () => void,
 }
 

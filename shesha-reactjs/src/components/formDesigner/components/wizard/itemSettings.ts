@@ -386,7 +386,8 @@ export const getSettings = (_data?: IWizardStepProps) =>
       hidden: false,
       customVisibility: null,
       description:
-        'Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
+        'Enter custom visibility code.  You must return true to show the component. ' + 
+        'The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
       validate: {},
       settingsValidationErrors: [],
       exposedVariables: [
@@ -413,7 +414,8 @@ export const getSettings = (_data?: IWizardStepProps) =>
       hidden: false,
       customEnabled: null,
       description:
-        'Enter custom enabled code.  You must return true to enable the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
+        'Enter custom enabled code.  You must return true to enable the component. ' + 
+        'The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
       validate: {},
       settingsValidationErrors: [],
       exposedVariables: [

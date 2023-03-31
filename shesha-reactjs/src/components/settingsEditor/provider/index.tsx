@@ -4,7 +4,15 @@ import useThunkReducer from '../../../hooks/thunkReducer';
 import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '../../../interfaces/gql';
 import { IEditorBridge, ISettingsEditorContext, ISettingsEditorStateContext, SettingsEditorContext, SETTINGS_EDITOR_STATE_CONTEXT_INITIAL_STATE } from './contexts';
 import { settingsEditorReducer } from './reducer';
-import { fetchApplicationsErrorAction, fetchApplicationsSuccessAction, fetchConfigurationsAction, fetchConfigurationsErrorAction, fetchConfigurationsSuccessAction, selectSettingAction, setEditorBridgeAction, setEditorModeAction } from './actions';
+import {
+    fetchApplicationsErrorAction,
+    fetchApplicationsSuccessAction,
+    fetchConfigurationsAction,
+    fetchConfigurationsErrorAction,
+    fetchConfigurationsSuccessAction,
+    selectSettingAction,
+    setEditorBridgeAction,
+    setEditorModeAction } from './actions';
 import * as RestfulShesha from '../../../utils/fetchers';
 import { GENERIC_ENTITIES_ENDPOINT } from '../../../constants';
 import { useSheshaApplication } from '../../..';
@@ -41,7 +49,7 @@ interface SettingConfigurationDto {
     module?: {
         id: string;
         name: string;
-    }
+    };
 }
 
 const SettingsEditorProvider: FC<ISettingsEditorProviderProps> = ({ children }) => {
@@ -103,7 +111,7 @@ const SettingsEditorProvider: FC<ISettingsEditorProviderProps> = ({ children }) 
         }).catch(error => {
             dispatch(fetchApplicationsErrorAction({ error }));
         });
-    }
+    };
 
     useEffect(() => {
         fetchConfigurations();
@@ -111,20 +119,20 @@ const SettingsEditorProvider: FC<ISettingsEditorProviderProps> = ({ children }) 
 
     const selectSetting = (setting: ISettingConfiguration, app: IFrontEndApplication) => {
         dispatch(selectSettingAction({ setting, app }));
-    }
+    };
 
     const saveSetting = () => {
         if (!state.editorBridge)
             return Promise.reject('Setting editor not available');
 
         return state.editorBridge.save();
-    }
+    };
     const startEditSetting = () => {
         dispatch(setEditorModeAction('edit'));
-    }
+    };
     const cancelEditSetting = () => {
         dispatch(setEditorModeAction('readonly'));
-    }
+    };
 
     const fetchSettingValue = (settingId: ISettingIdentifier) => {
         return settingsGetValue({ name: settingId.name, module: settingId.module, appKey: settingId.appKey }, { base: backendUrl, headers: httpHeaders }).then(response => {
@@ -132,7 +140,7 @@ const SettingsEditorProvider: FC<ISettingsEditorProviderProps> = ({ children }) 
         }).catch(error => {
             console.error(error);
         });
-    }
+    };
 
     const saveSettingValue = (settingId: ISettingIdentifier, value: SettingValue) => {
         return settingsUpdateValue({
@@ -145,11 +153,11 @@ const SettingsEditorProvider: FC<ISettingsEditorProviderProps> = ({ children }) 
         }).catch(error => {
             console.error(error);
         });
-    }
+    };
 
     const setEditor = (editorBridge: IEditorBridge) => {
         dispatch(setEditorBridgeAction(editorBridge));
-    }
+    };
 
     const contextValue: ISettingsEditorContext = {
         ...state,
@@ -164,7 +172,7 @@ const SettingsEditorProvider: FC<ISettingsEditorProviderProps> = ({ children }) 
     };
 
     return <SettingsEditorContext.Provider value={contextValue}>{children}</SettingsEditorContext.Provider>;
-}
+};
 
 function useSettingsEditor(require: boolean = true) {
     const context = useContext(SettingsEditorContext);

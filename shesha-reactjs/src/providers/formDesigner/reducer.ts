@@ -81,7 +81,7 @@ const addComponentToFlatStructure = (
 
 const idArraysEqual = (array1: string[], array2: string[]): boolean => {
   return array1.length === array2.length && array1.every((value, index) => value === array2[index]);
-}
+};
 
 const reducer = handleActions<IFormDesignerStateContext, any>(
   {
@@ -269,7 +269,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
         });
 
         return clone;
-      }
+      };
 
       const srcComponent = state.allComponents[payload.componentId];
 

@@ -86,7 +86,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
   const { getAction, registerActions, formData, setFormMode } = useForm(false);
 
   useEffect(() => {
-    if (rest.mode == 'Select' && allItems != null) return; // skip refetch for selectmode if fetched
+    if (rest.mode === 'Select' && allItems !== null) return; // skip refetch for selectmode if fetched
 
     fetcher.refetch();
     setSearchText('');
@@ -104,14 +104,14 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
         list.forEach(item => {
           const i = item.child.find(c => {
             return value.find(v => {
-              return v == c.id;
+              return v === c.id;
             });
           });
           if (item.child?.length > 0 && Boolean(i)) {
             if (
               !Boolean(
                 exp.find(e => {
-                  return e == item.id;
+                  return e === item.id;
                 })
               )
             )
@@ -132,7 +132,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
         const fetchedData = fetchingDataResponse?.result;
         if (fetchedData) {
           setAllItems(fetchedData);
-          if (rest.mode != 'Select')
+          if (rest.mode !== 'Select')
             registerActions(null, { createRootPermission, createPermission, deletePermission });
         }
       }
@@ -164,8 +164,8 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
   };
 
   useEffect(() => {
-    if (doSelect != null) {
-      if (doSelect == '') {
+    if (doSelect !== null) {
+      if (doSelect === '') {
         onSelect([]);
       } else {
         onSelect([doSelect]);
@@ -190,11 +190,11 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
       return item.toString();
     });
     const item = findItem(allItems, ids[0]);
-    if (rest.mode == 'Edit' && Boolean(getAction)) {
+    if (rest.mode === 'Edit' && Boolean(getAction)) {
       if (!item.isDbPermission) {
         setFormMode('readonly');
       }
-      if (item.id == emptyId) {
+      if (item.id === emptyId) {
         const action = getAction(rest.formComponentId, 'onChangeFormData');
         if (Boolean(action)) {
           action({ values: item, mergeValues: false });
@@ -212,9 +212,9 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
   const findItem = (items: PermissionDto[], key: string): PermissionDto => {
     let res = null;
     let i = 0;
-    while (items != null && res == null && i < items.length) {
-      res = items[i]?.id == key ? items[i] : null;
-      if (res == null) {
+    while (items !== null && res === null && i < items.length) {
+      res = items[i]?.id === key ? items[i] : null;
+      if (res === null) {
         res = findItem(items[i].child, key);
       }
       i++;
@@ -228,7 +228,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
       name: 'NewPermission',
       displayName: 'New permission',
       description: '',
-      parentName: parent != null ? parent.name : null,
+      parentName: parent !== null ? parent.name : null,
       isDbPermission: true,
       parent: null,
     };
@@ -239,11 +239,11 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
   const expandParent = item => {
     if (Boolean(item.parentName)) {
       const parent = findItem(allItems, item.parentName);
-      if (parent != null) {
+      if (parent !== null) {
         if (
           expanded.find(x => {
-            return x == parent.id;
-          }) == null
+            return x === parent.id;
+          }) === null
         ) {
           setExpanded(prev => {
             return [...prev, parent.id];
@@ -257,7 +257,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
   useEffect(() => {
     if (doUpdateTree && Boolean(formData)) {
       const item = findItem(allItems, selected[0]);
-      if (rest.mode == 'Edit' && item != null) {
+      if (rest.mode === 'Edit' && item !== null) {
         item.id = formData.name;
         item.name = formData.name;
         item.displayName = formData.displayName;
@@ -271,13 +271,13 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
   }, [doUpdateTree]);
 
   useSubscribe(DynamicFormPubSubConstants.DataSaved, () => {
-    if (rest.mode == 'Edit') setDoUpdateTree(true);
+    if (rest.mode === 'Edit') setDoUpdateTree(true);
   });
 
   useEffect(() => {
     if (doCreateRoot) {
       let s = findItem(allItems, emptyId);
-      if (s == null) {
+      if (s === null) {
         setAllItems(prev => {
           addPermission(null, prev);
           return [...prev];
@@ -300,10 +300,10 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
   useEffect(() => {
     if (doCreate) {
       let s = findItem(allItems, emptyId);
-      if (s == null) {
+      if (s === null) {
         s = findItem(allItems, selected[0]);
-        if (s != null) {
-          if (s.child == null) s.child = [];
+        if (s !== null) {
+          if (s.child === null) s.child = [];
           s = addPermission(s, s.child);
           setAllItems([...allItems]);
         }
@@ -327,12 +327,12 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
       if (deleteDataError) {
         message.error(deleteDataError.message);
       } else {
-        _delete();
+        deleteInternal();
       }
     }
   }, [isDeleting, deleteDataError]);
 
-  const _delete = () => {
+  const deleteInternal = () => {
     const s = findItem(allItems, selected[0]);
     if (Boolean(s.parentName)) {
       setDoSelect(s.parentName);
@@ -353,13 +353,13 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
   useEffect(() => {
     if (doDelete) {
       const s = findItem(allItems, selected[0]);
-      if (s != null) {
+      if (s !== null) {
         if (!s.isDbPermission) {
           message.warning('Permission "' + s.displayName + '" is a system permission and can not be deleted!');
           return;
         }
-        if (s.id == emptyId) {
-          _delete();
+        if (s.id === emptyId) {
+          deleteInternal();
         } else {
           deleteRequest.mutate(null, { queryParams: { name: s.name } });
         }
@@ -420,7 +420,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
     const dropItem = findItem(allItems, info.node.key);
     const dragItem = findItem(allItems, info.dragNode.key);
 
-    if (dragItem.parentName == dropItem.name || (!Boolean(dragItem.parentName) && info.dropToGap)) return;
+    if (dragItem.parentName === dropItem.name || (!Boolean(dragItem.parentName) && info.dropToGap)) return;
 
     if (!dragItem.isDbPermission) {
       message.warning('Permission "' + dragItem.displayName + '" is a system permission and can not be moved!');
@@ -442,7 +442,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
     items?.forEach(item => {
       const childItems = getVisible(item.child, searchText);
       const matched =
-        (searchText ?? '') == '' ||
+        (searchText ?? '') === '' ||
         item.displayName?.toLowerCase().includes(searchText.toLowerCase()) ||
         item.description?.toLowerCase().includes(searchText.toLowerCase()) ||
         item.name?.toLowerCase().includes(searchText.toLowerCase());
@@ -500,8 +500,8 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
           disabled={rest.disabled}
           expandedKeys={expanded}
           defaultExpandAll
-          checkable={rest.mode == 'Select'}
-          draggable={rest.mode == 'Edit'}
+          checkable={rest.mode === 'Select'}
+          draggable={rest.mode === 'Edit'}
           onCheck={onCheck}
           onExpand={onExpand}
           onSelect={onSelect}

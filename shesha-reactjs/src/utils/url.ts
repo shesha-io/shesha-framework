@@ -72,8 +72,7 @@ export const joinUrlAndPath = (baseUrl: string, path: string) => {
 };
 
 export function removeURLParameter(url: string, parameter: string) {
-  if (!url)
-    return url;
+  if (!url) return url;
   //prefer to use l.search if you have a location/link object
   const urlParts = url.split('?');
   if (urlParts.length >= 2) {

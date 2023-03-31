@@ -394,8 +394,8 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
           } else {
             doPost();
           }
-        } // note: we pass merged values
-        else if (props.onFinish) props.onFinish(postData, null, options);
+        } else 
+          if (props.onFinish) props.onFinish(postData, null, options);
       })
       .catch(error => console.error(error));
   };

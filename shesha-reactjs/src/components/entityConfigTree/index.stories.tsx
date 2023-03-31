@@ -29,6 +29,6 @@ const Template: Story<IEntityConfigStoryProps> = () => {
       </ShaApplicationProvider>
     </GlobalStateProvider>
   );
-}
+};
 
 export const Base = addStory(Template, {});

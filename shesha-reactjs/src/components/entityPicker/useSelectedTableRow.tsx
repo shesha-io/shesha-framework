@@ -45,7 +45,7 @@ export const useSelectedTableRow = (selectedTableId: string) => {
 
           setData(rows?.length ? rows[0] : null); // length === 1
         }else{
-          setData(null)
+          setData(null);
         }
   
       })

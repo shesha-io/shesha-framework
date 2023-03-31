@@ -35,7 +35,11 @@ const parseToken = (token: string): IAccessToken => {
     console.error('failed to parse token', error);
     return null;
   }
-}
+};
+
+export const hasTokenExpired = (date: string): boolean => {
+  return new Date(date) < new Date();
+};
 
 export const getAccessToken = (tokenName: string): IAccessToken | null => {
   const token = getLocalStorage()?.getItem(tokenName);
@@ -64,10 +68,6 @@ export const removeAccessToken = (tokenName: string) => {
   }
 };
 
-export const hasTokenExpired = (date: string): boolean => {
-  return new Date(date) < new Date();
-};
-
 export const getHttpHeaders = (token: string | null) => {
   const headers = {};
   if (token)
@@ -76,4 +76,4 @@ export const getHttpHeaders = (token: string | null) => {
   headers['.AspNetCore.Culture'] = getLocalizationOrDefault();
     
   return headers;
-}
+};

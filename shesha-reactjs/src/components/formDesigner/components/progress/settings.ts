@@ -146,7 +146,8 @@ export const alertSettingsForm = new DesignerToolbarSettings()
         name: 'lineStrokeColor',
         label: 'Stroke Width',
         description:
-          'The color of progress bar, render linear-gradient when passing an object, could accept string[] when has steps. Write the code that returns any of the following: `string | string[] | { from: string; to: string; direction: string }`',
+          'The color of progress bar, render linear-gradient when passing an object, could accept string[] when has steps. ' + 
+          'Write the code that returns any of the following: `string | string[] | { from: string; to: string; direction: string }`',
         mode: 'dialog',
       })
       .toJson(),

@@ -107,7 +107,7 @@ const BaseTemplate: FC<ITemplateProps> = props => {
 
 // Create a master template for mapping args to render the Button component
 const Template: Story<IStoryArgs> = args => {
-  const { testFullName: testValue, initialValue, ...autocompleteProps } = args;
+  const { ...autocompleteProps } = args;
   return (
     <BaseTemplate {...args}>
       <ReferenceListAutocomplete {...autocompleteProps} />

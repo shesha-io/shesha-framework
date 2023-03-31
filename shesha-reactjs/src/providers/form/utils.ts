@@ -55,8 +55,8 @@ import { Migrator } from '../../utils/fluentMigrator/migrator';
 /**
  * Convert components tree to flat structure.
  * In flat structure we store components settings and their relations separately:
- *    allComponents - dictionary (key:value) of components. key - Id of the component, value - conponent settings
- *    componentRelations - dictionary of component relations. key - id of the container, value - ordered list of subcomponent ids
+ * allComponents - dictionary (key:value) of components. key - Id of the component, value - conponent settings
+ * componentRelations - dictionary of component relations. key - id of the container, value - ordered list of subcomponent ids
  */
 export const componentsTreeToFlatStructure = (
   toolboxComponents: IToolboxComponents,
@@ -268,7 +268,7 @@ export const getCustomEnabledFunc = ({ customEnabled, name }: IConfigurableFormC
  * Evaluates the string using Mustache template.
  *
  * Given a the below expression
- *  const expression =  'My name is {{name}}';
+ * const expression =  'My name is {{name}}';
  *
  * and the below data
  *  const data = { name: 'John', surname: 'Dow' };
@@ -288,8 +288,8 @@ export const evaluateString = (template: string = '', data: any) => {
     if (localData) {
       //adding a function to the data object that will format datetime
 
-      localData.dateFormat = function() {
-        return function(timestamp, render) {
+      localData.dateFormat = function () {
+        return function (timestamp, render) {
           return new Date(render(timestamp).trim()).toLocaleDateString('en-us', {
             year: 'numeric',
             month: 'short',
@@ -487,8 +487,10 @@ export function executeExpression<TResult>(
       let argsDefinition = '';
       const argList: any[] = [];
       for (const argumentName in expressionArgs) {
-        argsDefinition += (argsDefinition ? ', ' : '') + argumentName;
-        argList.push(expressionArgs[argumentName]);
+        if (expressionArgs.hasOwnProperty(argumentName)) {
+          argsDefinition += (argsDefinition ? ', ' : '') + argumentName;
+          argList.push(expressionArgs[argumentName]);
+        }
       }
 
       const expressionExecuter = new Function(argsDefinition, expression);
@@ -510,8 +512,10 @@ export function executeScript<TResult = any>(
     let argsDefinition = '';
     const argList: any[] = [];
     for (const argumentName in expressionArgs) {
-      argsDefinition += (argsDefinition ? ', ' : '') + argumentName;
-      argList.push(expressionArgs[argumentName]);
+      if (expressionArgs.hasOwnProperty(argumentName)) {
+        argsDefinition += (argsDefinition ? ', ' : '') + argumentName;
+        argList.push(expressionArgs[argumentName]);
+      }
     }
 
     const expressionExecuter = new Function(argsDefinition, expression);
@@ -589,6 +593,7 @@ export const getEnabledComponentIds = (
 
 /**
  * Return field name for the antd form by a given expression
+ *
  * @param expression field name in dot notation e.g. 'supplier.name' or 'fullName'
  */
 export const getFieldNameFromExpression = (expression: string) => {
@@ -691,6 +696,7 @@ const NESTED_ACCESSOR_REGEX = /((?<key>[\w]+)\.(?<accessor>[^\}]+))/;
  *  let expression = 'Full name is {{name}} {{surname}}';
  *
  * evaluateExpression(expression, person) will display 'Full name is First Last';
+ *
  * @param expression the expression to evaluate
  * @param data the data to use to evaluate the expression
  * @returns
@@ -700,7 +706,7 @@ export const evaluateStringLiteralExpression = (expression: string, data: any) =
 };
 
 export const evaluateValue = (value: string, dictionary: any) => {
-  return _evaluateValue(value, dictionary, true);
+  return evaluateValueInternal(value, dictionary, true);
 };
 
 /**
@@ -711,6 +717,7 @@ export const evaluateValue = (value: string, dictionary: any) => {
  *  let expression = 'Full name is {{name}} {{surname}}';
  *
  * evaluateExpression(expression, person) will display 'Full name is First Last';
+ *
  * @param expression the expression to evaluate
  * @param data the data to use to evaluate the expression
  * @returns
@@ -738,7 +745,7 @@ export const removeZeroWidthCharsFromString = (value: string): string => {
   return value.replace(/[\u200B-\u200D\uFEFF]/g, '');
 };
 
-export const _evaluateValue = (value: string, dictionary: any, isRoot: boolean) => {
+const evaluateValueInternal = (value: string, dictionary: any, isRoot: boolean) => {
   if (!value) return value;
   if (!dictionary) return null;
 
@@ -748,7 +755,7 @@ export const _evaluateValue = (value: string, dictionary: any, isRoot: boolean) 
   // check nested properties
   if (match.groups.accessor.match(NESTED_ACCESSOR_REGEX)) {
     // try get value recursive
-    return _evaluateValue(match.groups.accessor, dictionary[match.groups.key], false);
+    return evaluateValueInternal(match.groups.accessor, dictionary[match.groups.key], false);
   } else {
     const container = dictionary[match.groups.key];
     if (!container) return null;
@@ -947,6 +954,7 @@ export const processRecursive = (
 
 /**
  * Clone components and generate new ids for them
+ *
  * @param componentsRegistration
  * @param components
  * @returns
@@ -1083,7 +1091,7 @@ export interface IMatchData {
 export const getMatchData = (dictionary: IMatchData[], name: string): any => {
   const item = dictionary.find(i => i.match === name);
   return item?.data;
-}
+};
 
 const convertToKeyValues = (obj: IAnyObject): IKeyValue[] => {
   return Object.keys(obj).map(key => ({
@@ -1169,6 +1177,7 @@ export const filterFormData = (data: any) => {
 
 /**
  * Convert list of properties in dot notation to a list of properties for fetching using GraphQL syntax
+ *
  * @param properties
  * @returns
  */
@@ -1219,10 +1228,14 @@ export const convertDotNotationPropertiesToGraphQL = (properties: string[], colu
   const getNodes = (container: object): string => {
     let result = '';
     for (const node in container) {
-      if (result !== '') result += ' ';
-      const nodeValue = container[node];
-      if (typeof nodeValue === 'object') result += `${preparePropertyName(node)} { ${getNodes(nodeValue)} }`;
-      else result += preparePropertyName(node);
+      if (container.hasOwnProperty(node)) {
+        if (result !== '') result += ' ';
+        const nodeValue = container[node];
+        if (typeof nodeValue === 'object')
+          result += `${preparePropertyName(node)} { ${getNodes(nodeValue)} }`;
+        else
+          result += preparePropertyName(node);
+      }
     }
     return result;
   };

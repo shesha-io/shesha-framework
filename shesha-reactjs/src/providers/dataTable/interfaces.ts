@@ -194,14 +194,6 @@ export interface ITableDataInternalResponse {
 
 export interface IDataTableInstance extends IPublicDataTableActions { }
 
-export interface IFormDataPayload {
-  formData?: any;
-}
-
-export interface IFormDataPayload {
-  crudSettings?: any;
-}
-
 export type ListSortDirection = 0 | 1;
 
 export interface DataTableColumnDto {

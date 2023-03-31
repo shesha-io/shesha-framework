@@ -53,7 +53,7 @@ export const PasswordCombo: FC<IProps> = ({
       formProps={formProps}
       passwordLength={passwordLength}
       errorMessage={errorMessage}
-      isPasswordOk={_e => {}}
+      isPasswordOk={_e => { /*nop*/ }}
     />
   );
 };

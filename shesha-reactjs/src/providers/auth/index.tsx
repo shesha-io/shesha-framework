@@ -113,7 +113,9 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
 
   const storedToken = getAccessTokenFromStorage(tokenName);
 
-  const { [AUTHORIZATION_HEADER_NAME]: _auth = null, ...headersWithoutAuth } = { ...(httpHeaders ?? {}) };
+  //const { [AUTHORIZATION_HEADER_NAME]: __auth = null, ...headersWithoutAuth } = { ...(httpHeaders ?? {}) };
+  const headersWithoutAuth = { ...(httpHeaders ?? {}) };
+  delete headersWithoutAuth[AUTHORIZATION_HEADER_NAME];
 
   const initialHeaders = { ...headersWithoutAuth, ...getHttpHeadersFromToken(storedToken?.accessToken) };
 
@@ -130,13 +132,13 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
   const profileLoadedSubscriptions = useRef<IDictionary<IProfileLoadedHandler>>({});
   const subscribeOnProfileLoading = (name: string, handler: IProfileLoadedHandler) => {
     profileLoadedSubscriptions.current[name] = handler;
-  }
+  };
   const unSubscribeOnProfileLoading = (name: string) => {
     delete profileLoadedSubscriptions.current[name];
-  }
+  };
 
   const processSubscriptions = (): Promise<void> => {
-    const handlers = profileLoadedSubscriptions.current
+    const handlers = profileLoadedSubscriptions.current;
     const promises: Promise<void>[] = [];
     for (const handlerName in handlers) {
       if (!handlers.hasOwnProperty(handlerName))
@@ -147,7 +149,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
     }
 
     return Promise.all(promises).then();
-  }
+  };
 
   const fetchUserInfo = (headers: IHttpHeaders) => {
     if (state.isFetchingUserInfo || Boolean(state.loginInfo)) return;

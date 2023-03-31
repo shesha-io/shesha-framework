@@ -7,11 +7,11 @@ export default {
   component: EditableTagGroup
 } as Meta;
 
-const INITIAL_VaLUES = ['app:Configurator', 'app:Roles', 'app:Dashboard'];
+const INITIAL_VALUES = ['app:Configurator', 'app:Roles', 'app:Dashboard'];
 
 //#region Default
 const BasicTemplate: Story<IEditableTagGroupProps> = args => {
-  const [values, setValues] = useState(INITIAL_VaLUES);
+  const [values, setValues] = useState(INITIAL_VALUES);
 
   return <EditableTagGroup {...args} value={values} onChange={setValues} />;
 };

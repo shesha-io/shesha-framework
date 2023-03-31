@@ -44,7 +44,7 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = model => {
     });
 
   const disableGoogleEvent = (value: string) =>
-    (value?.length || 0) < parseInt((minCharactersSearch as string) || '0') - 1;
+    (value?.length || 0) < parseInt((minCharactersSearch as string) || '0', 10) - 1;
 
   const eventProps = {
     model,

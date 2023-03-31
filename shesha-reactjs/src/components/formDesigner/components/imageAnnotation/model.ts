@@ -2,19 +2,19 @@ import { IFormItem } from "../../../..";
 import { IConfigurableFormComponent } from "../../../../providers";
 
 export interface IAnnotation {
-    id: string,    // required,
-    comment: string,  // not required
+    id: string;    // required,
+    comment: string;  // not required
     mark: {
-        type: "RECT",                  // now only support rect
+        type: "RECT";                  // now only support rect
 
         // The number of pixels in the upper left corner of the image
-        x: number,
-        y: number,
+        x: number;
+        y: number;
 
         // The size of tag
-        width: number,
-        height: number
-    }
+        width: number;
+        height: number;
+    };
 }
 export interface ICustomInputProps {
     value?: string;

@@ -89,6 +89,7 @@ export const ButtonGroup: FC<IButtonGroupProps> = ({ items, id, size, spaceSize 
 
   /**
    * Return the visibility state of a button. A button is visible is it's not hidden and the user is permitted to view it
+   *
    * @param item
    * @returns
    */

@@ -110,7 +110,7 @@ export const getMarkupFromResponse = (data: IAbpWrappedGetEntityResponse<FormCon
     return markupJson
         ? JSON.parse(markupJson) as FormMarkupWithSettings
         : null;
-}
+};
 
 /**
  * Load form markup from the back-end
@@ -129,8 +129,8 @@ export const getFormConfiguration = (formId: FormIdentifier, backendUrl: string,
             }
             : null;
 
-    return RestfulShesha.get<IAbpWrappedGetEntityResponse<FormConfigurationDto>>(requestParams.url, requestParams.queryParams, { base: backendUrl, headers: httpHeaders})
-}
+    return RestfulShesha.get<IAbpWrappedGetEntityResponse<FormConfigurationDto>>(requestParams.url, requestParams.queryParams, { base: backendUrl, headers: httpHeaders});
+};
 
 export const useFormConfiguration = (args: UseFormConfigurationArgs): IFormMarkupResponse => {
 
@@ -180,7 +180,7 @@ export const useFormConfiguration = (args: UseFormConfigurationArgs): IFormMarku
 
     const reFetch = () => {
         return fetcher.refetch({ path: requestParams.url, queryParams: requestParams.queryParams });
-    }
+    };
 
     const reFetcher = () => {
         return canFetch
@@ -198,7 +198,7 @@ export const useFormConfiguration = (args: UseFormConfigurationArgs): IFormMarku
         requestParams: requestParams
     };
     return result;
-}
+};
 
 export interface UseFormWitgDataArgs {
     formId?: FormIdentifier;
@@ -354,7 +354,7 @@ export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse
     };
 
     return result;
-}
+};
 
 // just for intrenal use
 interface IFieldData {
@@ -402,7 +402,9 @@ const getFormFields = (payload: GetFormFieldsPayload): string[] => {
         .allComponents;
     let fieldNames = [];
     for (const key in components) {
-        fieldNames.push(components[key].name);
+        if (components.hasOwnProperty(key)){
+            fieldNames.push(components[key].name);
+        }
     }
 
     fieldNames = fieldNames.concat(formSettings?.fieldsToFetch ?? []);
@@ -420,7 +422,7 @@ const getFormFields = (payload: GetFormFieldsPayload): string[] => {
     fieldNames = fieldNames.sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
 
     return fieldNames;
-}
+};
 
 interface GetGqlFieldsPayload extends GetFormFieldsPayload {
     getContainerProperties: IMetadataDispatcherActionsContext['getContainerProperties'];
@@ -445,11 +447,11 @@ export const getGqlFields = (payload: GetGqlFieldsPayload): Promise<IFieldData[]
                 item = item.trim();
                 const pathParts = item.split('.');
 
-                if (pathParts.length == 1) {
+                if (pathParts.length === 1) {
                     fields.push({
                         name: item,
                         child: [],
-                        property: metadata.properties.find(p => p.path.toLowerCase() == pathParts[0].toLowerCase()),
+                        property: metadata.properties.find(p => p.path.toLowerCase() === pathParts[0].toLowerCase()),
                     });
                     return;
                 }
@@ -458,22 +460,22 @@ export const getGqlFields = (payload: GetGqlFieldsPayload): Promise<IFieldData[]
                 let containerPath = "";
                 pathParts.forEach((part, idx) => {
                     let levelChilds = parent?.child ?? fields;
-                    let field = levelChilds.find(f => f.name == part);
+                    let field = levelChilds.find(f => f.name === part);
                     if (!field) {
                         field = {
                             name: part,
                             child: [],
-                            property: idx == 0
-                                ? metadata.properties.find(p => p.path.toLowerCase() == part.toLowerCase())
-                                : parent?.property?.dataType == 'object'
-                                    ? parent.property.properties?.find(p => p.path.toLowerCase() == part.toLowerCase())
+                            property: idx === 0
+                                ? metadata.properties.find(p => p.path.toLowerCase() === part.toLowerCase())
+                                : parent?.property?.dataType === 'object'
+                                    ? parent.property.properties?.find(p => p.path.toLowerCase() === part.toLowerCase())
                                     : null,
                         };
                         // If property metadata is not set - fetch it using dispatcher.
                         // Note: it's safe to fetch the same container multiple times because the dispatcher returns the same promise for all requests
                         if (!field.property) {
                             const metaPromise = getContainerProperties({ metadata: metadata, containerPath: containerPath }).then(response => {
-                                field.property = response.find(p => p.path.toLowerCase() == field.name.toLowerCase());
+                                field.property = response.find(p => p.path.toLowerCase() === field.name.toLowerCase());
                             });
                             // add promise to list
                             promises.push(metaPromise);
@@ -490,7 +492,7 @@ export const getGqlFields = (payload: GetGqlFieldsPayload): Promise<IFieldData[]
         return new Promise<IFieldData[]>((resolve) => {
             Promise.allSettled(promises).then(() => {
                 resolve(fields);
-            })
+            });
         });
     });
 };
@@ -609,7 +611,7 @@ export const useFormData = (args: UseFormDataArguments): UseFormDataResult => {
                         setState(prev => ({ ...prev, loadingState: 'failed', loaderHint: null, error: error }));
                         return null;
                     });
-            }
+            };
 
             if (!lazy) {
                 setState(prev => ({ ...prev, loaderHint: 'Fetching data...', dataFetcher: dataFetcher }));
@@ -632,11 +634,11 @@ export const useFormData = (args: UseFormDataArguments): UseFormDataResult => {
     };
 
     return result;
-}
+};
 
 
 const getCorrectGetUrl = (endpoint: IApiEndpoint): string => {
     return endpoint && endpoint.httpVerb?.toLowerCase() === 'get'
         ? endpoint.url
         : null;
-}
+};

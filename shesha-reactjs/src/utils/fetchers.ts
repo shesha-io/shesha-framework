@@ -2,6 +2,26 @@ import { AxiosResponse } from "axios";
 import qs from "qs";
 import { IAjaxResponse } from "../interfaces/ajaxResponse";
 
+export function constructUrl<TQueryParams>(
+  base: string,
+  path: string,
+  queryParams?: TQueryParams,
+) {
+  let normalizedBase = Boolean(base) ? base : '';
+  normalizedBase = normalizedBase.endsWith("/") ? normalizedBase : `${normalizedBase}/`;
+
+  let trimmedPath = Boolean(path) ? path : '';
+  trimmedPath = trimmedPath.startsWith("/") ? trimmedPath.slice(1) : trimmedPath;
+
+  const encodedPathWithParams = Object.keys(queryParams || {}).length
+    ? `${trimmedPath}?${qs.stringify(queryParams)}`
+    : trimmedPath;
+
+  const composed = normalizedBase + encodedPathWithParams;
+
+  return composed;
+}
+
 export interface BaseRequestOptions {
   /**
    * An escape hatch and an alternative to `path` when you'd like
@@ -63,7 +83,7 @@ export interface MutateProps<
   > extends BaseRequestOptions {
   data: TRequestBody | null;
   queryParams?: TQueryParams;
-  signal?: RequestInit["signal"]
+  signal?: RequestInit["signal"];
   //options?: MutateRequestOptions<TQueryParams, TPathParams>
 }
 
@@ -103,26 +123,6 @@ export const mutate = <
   }).then(res => res.json());
 };
 
-export function constructUrl<TQueryParams>(
-  base: string,
-  path: string,
-  queryParams?: TQueryParams,
-) {
-  let normalizedBase = Boolean(base) ? base : '';
-  normalizedBase = normalizedBase.endsWith("/") ? normalizedBase : `${normalizedBase}/`;
-
-  let trimmedPath = Boolean(path) ? path : '';
-  trimmedPath = trimmedPath.startsWith("/") ? trimmedPath.slice(1) : trimmedPath;
-
-  const encodedPathWithParams = Object.keys(queryParams || {}).length
-    ? `${trimmedPath}?${qs.stringify(queryParams)}`
-    : trimmedPath;
-
-  const composed = normalizedBase + encodedPathWithParams;
-
-  return composed;
-}
-
 export const getFileNameFromContentDisposition = (disposition: string): string => {
   if (!disposition)
     return null;
@@ -145,11 +145,11 @@ export const getFileNameFromContentDisposition = (disposition: string): string =
     }
   }
   return fileName;
-}
+};
 
 export const getFileNameFromResponse = (fileResponse: AxiosResponse<any>): string => {
   return getFileNameFromContentDisposition(fileResponse.headers['content-disposition']);
-}
+};
 
 export const unwrapAbpResponse = <TResponse extends any, TData extends any>(response: TResponse): TData | TResponse => {
   if (!response)
@@ -161,4 +161,4 @@ export const unwrapAbpResponse = <TResponse extends any, TData extends any>(resp
     : response;
 
   return result;
-}
+};

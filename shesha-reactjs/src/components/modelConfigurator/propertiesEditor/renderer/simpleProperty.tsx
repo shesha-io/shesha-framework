@@ -38,7 +38,7 @@ export const SimpleProperty: FC<IProps> = props => {
         )}
         <div className="sha-sidebar-item-controls">
           {
-            props.source == MetadataSourceType.UserDefined 
+            props.source === MetadataSourceType.UserDefined 
               ? <Button icon={<DeleteFilled color="red" />} onClick={onDeleteClick} size="small" danger />
               : <Tag>APP</Tag>
           }

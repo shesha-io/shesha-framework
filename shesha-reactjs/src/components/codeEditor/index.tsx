@@ -55,13 +55,13 @@ export const CodeEditor: FC<ICodeEditorProps> = (props) => {
                 value={restProps.value ? restProps.value : ""} // note: have to change null/undefined to empty string to force re-rendering of the editor
             />
         </React.Suspense>
-    )
-}
+    );
+};
 
 const CodeEditorFallback: FC = () => {
     return (
         <Skeleton.Input active={true} />
     );
-}
+};
 
 export default CodeEditor;

@@ -55,7 +55,8 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
     const linkStyle: CSSProperties = {};
 
     if (direction === 'horizontal' && justifyContent) {
-      (linkStyle['display'] = 'flex'), (linkStyle['justifyContent'] = justifyContent);
+      linkStyle['display'] = 'flex';
+      linkStyle['justifyContent'] = justifyContent;
       linkStyle['alignItems'] = alignItems;
       linkStyle['justifyItems'] = justifyItems;
     }

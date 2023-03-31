@@ -18,6 +18,6 @@ export const HelpTextPopover: FC<IHelpTextPopoverProps> = ({ content, children }
             </>
         )
         : <>{children}</>;
-}
+};
 
 export default HelpTextPopover;

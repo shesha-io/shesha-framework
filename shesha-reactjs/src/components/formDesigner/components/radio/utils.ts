@@ -9,8 +9,8 @@ import { IReferenceListIdentifier } from '../../../../providers/referenceListDis
 export interface IRadioProps extends Omit<IConfigurableFormComponent, 'style'> {
   items?: ILabelValue[];
   /**
-  * @deprecated - use referenceListId instead
-  */
+   * @deprecated - use referenceListId instead
+   */
   referenceListNamespace?: string;
   /**
    * @deprecated - use referenceListId instead

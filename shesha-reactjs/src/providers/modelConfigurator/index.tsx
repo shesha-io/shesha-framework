@@ -58,11 +58,11 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
 
   const changeModelId = (id: string) => {
     dispatch(changeModelIdAction(id));
-  }
+  };
 
   const createNew = (model: ModelConfigurationDto) => {
     dispatch(createNewAction(model));
-  }
+  };
 
   const load = () => {
     if (state.id) {
@@ -73,8 +73,7 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
         .then(response => {
           if (response.success) {
             dispatch(loadSuccessAction(response.result));
-          }
-          else
+          } else
             dispatch(loadErrorAction(response.error));
         })
         .catch(e => {
@@ -83,15 +82,15 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
     }/*
     else
       console.error("Failed to fetch a model configuraiton by Id - Id not specified");*/
-  }
+  };
 
   const submit = () => {
     state.form.submit();
-  }
+  };
 
   const prepareValues = (values: ModelConfigurationDto): ModelConfigurationDto => {
     return {...values, id: state.id };
-  }
+  };
 
   const save = (values: ModelConfigurationDto): Promise<ModelConfigurationDto> => new Promise<ModelConfigurationDto>((resolve, reject) => {
     // todo: validate all properties
@@ -108,8 +107,7 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
         if (response.success) {
           dispatch(saveSuccessAction(response.result));
           resolve(response.result);
-        }
-        else {
+        } else {
           dispatch(saveErrorAction(response.error));
           reject();
         }

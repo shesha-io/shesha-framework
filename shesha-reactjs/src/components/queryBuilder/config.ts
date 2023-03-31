@@ -17,7 +17,7 @@ const setTypeOperators = (type: Type, operators: string[]): Type => {
     operators: operators
   };
   return result;
-}
+};
 
 const types = {
   ...AntdConfig.types,

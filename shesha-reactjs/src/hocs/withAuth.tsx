@@ -39,13 +39,13 @@ export const withAuth = <P extends object>(
   unauthorizedRedirectUrl = '/login',
   landingPage = '/'
 ): FC<P> => props => {
-  const _props = Array.isArray(props) ? props[0] : props;
+  const propsObj = Array.isArray(props) ? props[0] : props;
 
   return (
     <ComponentWithAuth landingPage={landingPage} unauthorizedRedirectUrl={unauthorizedRedirectUrl}>
       {query => (
         <IdleTimerRenderer>
-          <Component {..._props} id={query?.id} />
+          <Component {...propsObj} id={query?.id} />
         </IdleTimerRenderer>
       )}
     </ComponentWithAuth>

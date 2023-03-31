@@ -54,7 +54,7 @@ export const evaluateDynamicFilters = (filters: IStoredFilter[], mappings: IMatc
         }
 
         return { handled: false };
-      }
+      };
       const convertedExpression = convertJsonLogicNode(filter.expression, evaluator);
       return {
         ...filter,
@@ -104,9 +104,9 @@ export const hasDynamicFilter = (filters: IStoredFilter[]) => {
   if (filters?.length === 0) return false;
 
   const found = filters?.find(({ expression }) => {
-    const _expression = typeof expression === 'string' ? expression : JSON.stringify(expression);
+    const stringExpression = typeof expression === 'string' ? expression : JSON.stringify(expression);
 
-    return _expression?.includes('{{') && _expression?.includes('}}');
+    return stringExpression?.includes('{{') && stringExpression?.includes('}}');
   });
 
   return Boolean(found);
@@ -172,7 +172,7 @@ export const advancedFilter2JsonLogic = (advancedFilter: ITableFilter[], columns
   const filterItems = advancedFilter
     .map(f => {
       const property = { var: f.columnId };
-      const column = columns.find(c => c.id == f.columnId);
+      const column = columns.find(c => c.id === f.columnId);
       // skip incorrect columns
       if (!column || !column.dataType)
         return null;
@@ -222,7 +222,7 @@ export const advancedFilter2JsonLogic = (advancedFilter: ITableFilter[], columns
             endsWith: [property, filterValues],
           };
         case 'between':
-          if (Array.isArray(filterValues) && filterValues.length == 2) {
+          if (Array.isArray(filterValues) && filterValues.length === 2) {
             return {
               '<=': [filterValues[0], property, filterValues[1]],
             };

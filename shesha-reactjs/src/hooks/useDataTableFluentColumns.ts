@@ -23,7 +23,7 @@ const getColumnsBuilder = (): ITableColumnsBuilder => {
     };
 
     return builder;
-}
+};
 
 export const useDataTableFluentColumns = (columns: TableColumnsFluentSyntax): IConfigurableColumnsBase[] => {
     const configurableColumns = useMemo(() => {
@@ -33,4 +33,4 @@ export const useDataTableFluentColumns = (columns: TableColumnsFluentSyntax): IC
     }, [columns]);
 
     return configurableColumns;
-}
+};

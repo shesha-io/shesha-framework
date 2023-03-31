@@ -21,4 +21,4 @@ function removeNullUndefined<T extends Object>(obj: T): T {
 }
 
 
-export { removeNullUndefined }
+export { removeNullUndefined };

@@ -21,7 +21,7 @@ const ValidationErrorsComponent: IToolboxComponent<IValidationErrorsComponentPro
     if (formMode === 'designer')
       return (
         <ValidationErrors error="Validation Errors (visible in the runtime only)"/>
-      )
+      );
 
     return <ValidationErrors error={validationErrors}/>;
   },

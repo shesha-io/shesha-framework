@@ -11,7 +11,7 @@ import { UrlAutocomplete } from './urlAutocomplete';
 export const Autocomplete = <TValue,>(props: IAutocompleteProps<TValue>) => {
   return props.dataSourceType === 'entitiesList'
     ? <EntityAutocomplete {...props} />
-    : <UrlAutocomplete {...props}  />
+    : <UrlAutocomplete {...props}  />;
 };
 
 export type IDtoType = IEntityReferenceDto | IEntityReferenceDto[];

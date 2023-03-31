@@ -36,7 +36,7 @@ const QueryBuilderProvider: FC<PropsWithChildren<IQueryBuilderProviderProps>> = 
       const qbProp = propertyMetadata2QbProperty(p);
       qbProp.propertyName = getPropertyFullPath(p.path, prefix);
       return qbProp;
-    })
+    });
     // handle specifications
     modelMeta.specifications.forEach(specification => {
       const allParts = specification.name.split('.');
@@ -44,7 +44,7 @@ const QueryBuilderProvider: FC<PropsWithChildren<IQueryBuilderProviderProps>> = 
       let nsPath = null;
       allParts.forEach(ns => {
         nsPath = nsPath ? `${nsPath}.${ns}` : ns;
-        const existingProp = properties.find(p => p.propertyName == ns);
+        const existingProp = properties.find(p => p.propertyName === ns);
         if (!existingProp)
           properties.push({
             dataType: '!struct',
@@ -63,7 +63,7 @@ const QueryBuilderProvider: FC<PropsWithChildren<IQueryBuilderProviderProps>> = 
     });
     return properties;
 
-  }
+  };
 
   const fetchFields = (fieldNames: string[]) => {
     if (!meta?.metadata?.properties)
@@ -125,7 +125,7 @@ const QueryBuilderProvider: FC<PropsWithChildren<IQueryBuilderProviderProps>> = 
     });
 
     return promise;
-  }
+  };
 
   return (
     <QueryBuilderStateContext.Provider value={{ ...state }}>

@@ -81,6 +81,7 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
 
   /**
    * Evaluate url using js expression
+   *
    * @urlExpression - javascript expression that returns an url
    */
   const evaluateUrlFromJsExpression = (urlExpression: string): string => {
@@ -144,7 +145,7 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
 
   // show form based on the entity type
   useEffect(() => {
-    if (formData && formSelectionMode == 'dynamic') {
+    if (formData && formSelectionMode === 'dynamic') {
       const obj = formData[name];
       if (obj && typeof obj === 'object' && obj['_className'] && !formConfig?.formId)
         getEntityFormId(obj['_className'], formType, formid => {
@@ -164,7 +165,7 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
   });
 
   /**
-   *  Memoized query params evaluator. It executes `queryParams` (javascript defined on the component settings) to get query params
+   * Memoized query params evaluator. It executes `queryParams` (javascript defined on the component settings) to get query params
    */
   const queryParamsEvaluator = useMemo<QueryParamsEvaluator>(() => {
     // tslint:disable-next-line:function-constructor

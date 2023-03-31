@@ -17,12 +17,12 @@ export interface IPermissionTreeStoryProps {
   updateKey?: string;
   onChange?: (values?: string[]) => void;
   /**
-  * Whether this control is disabled
-  */
+   * Whether this control is disabled
+   */
    disabled?: boolean;
   /**
-  * If true, the automplete will be in read-only mode. This is not the same sa disabled mode
-  */
+   * If true, the automplete will be in read-only mode. This is not the same sa disabled mode
+   */
   readOnly?: boolean;
   height?: number;
   mode: PermissionsTreeMode;  
@@ -40,7 +40,7 @@ const Template: Story<IPermissionTreeStoryProps> = (props) => {
         </ShaApplicationProvider>
     </GlobalStateProvider>                
   );
-}
+};
 
 export const Base = addStory(Template, {
   mode: 'Select'

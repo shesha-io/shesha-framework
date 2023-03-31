@@ -29,7 +29,7 @@ export const ComplexProperty: FC<IProps> = props => {
 
   const onAddChildClick = () => {
     addItem(props.id);
-  }
+  };
 
   return (
     <div className={classes.reduce((a, c) => a + ' ' + c)} ref={selectedItemId === props.id ? selectedItemRef : undefined}>
@@ -47,7 +47,7 @@ export const ComplexProperty: FC<IProps> = props => {
 
         <div className="sha-sidebar-item-controls">
           {
-            props.source == MetadataSourceType.UserDefined 
+            props.source === MetadataSourceType.UserDefined 
               ? <Button icon={<DeleteFilled color="red" />} onClick={onDeleteClick} size="small" danger />
               : <Tag>APP</Tag>
           }

@@ -82,7 +82,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteProps> = {
 
       const localFormData = !isEmpty(data) ? camelCaseKeys(data, { deep: true, pascalCase: true }) : data;
 
-      const _response = evaluateDynamicFilters(
+      const response = evaluateDynamicFilters(
         [{ expression: filter } as any],
         [
           {
@@ -96,9 +96,9 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteProps> = {
         ]
       );
       //@ts-ignore everything is in place here
-      if (_response.find(f => f?.unevaluatedExpressions?.length)) return '';
+      if (response.find(f => f?.unevaluatedExpressions?.length)) return '';
 
-      return JSON.stringify(_response[0]?.expression) || '';
+      return JSON.stringify(response[0]?.expression) || '';
     }, [filter, data, globalState]);
 
     const getQueryParams = (): IQueryParams => {

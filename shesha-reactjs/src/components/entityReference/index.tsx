@@ -67,25 +67,25 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
     const { getEntityFormId } = useConfigurationItemsLoader();
     const { backendUrl, httpHeaders } = useSheshaApplication();
-    const [ formIdentifier, setFormIdentifier ] = useState<FormIdentifier>(props.formSelectionMode == 'name' ? props.formIdentifier : null);
+    const [ formIdentifier, setFormIdentifier ] = useState<FormIdentifier>(props.formSelectionMode === 'name' ? props.formIdentifier : null);
     const [ fetched, setFetched ] = useState(false);
     const [ displayText, setDisplayText ] = useState((!props.value ? props.placeholder : props.value._displayName) ?? '');
 
     const entityId = props.value?.id ?? props.value;
     const entityType = props.entityType ?? props.value?._className;
-    const formType = props.formType ?? (props.entityReferenceType == 'Quickview' ? 'quickview' : 'details');
+    const formType = props.formType ?? (props.entityReferenceType === 'Quickview' ? 'quickview' : 'details');
 
     useEffect(() => {
-        if (!Boolean(formIdentifier) && props.formSelectionMode == 'dynamic' && Boolean(entityType) && Boolean(formType) && props.entityReferenceType != 'Quickview') {
+        if (!Boolean(formIdentifier) && props.formSelectionMode === 'dynamic' && Boolean(entityType) && Boolean(formType) && props.entityReferenceType !== 'Quickview') {
             getEntityFormId(entityType, formType, (formid) => {
-                setFormIdentifier({name: formid.name, module: formid.module})
+                setFormIdentifier({name: formid.name, module: formid.module});
             });
         }
     }, [formIdentifier, entityType, formType]);
 
     useEffect(() => {
         // fetch data only for NavigateLink and Dialog mode. Quickview will fetch data later
-        if (!fetched && props.entityReferenceType != 'Quickview' && props.value) {
+        if (!fetched && props.entityReferenceType !== 'Quickview' && props.value) {
             //
             const queryParams = { id: entityId, properties: `id ${props.displayProperty}` };
             const fetcher = props.getEntityUrl 
@@ -144,19 +144,19 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
         });
     };
 
-    if (props.formSelectionMode == 'name' && !Boolean(formIdentifier))
+    if (props.formSelectionMode === 'name' && !Boolean(formIdentifier))
         return <Button type="link" disabled>Form identifier is not configured</Button>;
     
     if (!props.value)
         return <Button type="link" disabled>{displayText}</Button>;
 
-    return !(formIdentifier && displayText && entityId || props.entityReferenceType == 'Quickview')
+    return !(formIdentifier && displayText && entityId || props.entityReferenceType === 'Quickview')
             ? <Button type="link"><span><Spin size="small" /> Loading...</span></Button>
             : props.disabled
                 ? <Button disabled type="link">{displayText}</Button>
-                : props.entityReferenceType == 'NavigateLink'
+                : props.entityReferenceType === 'NavigateLink'
                     ? <ShaLink linkToForm={formIdentifier} params={{id: entityId}}>{displayText}</ShaLink>
-                    : props.entityReferenceType == 'Quickview'
+                    : props.entityReferenceType === 'Quickview'
                         ? <GenericQuickView
                             displayProperty={props.displayProperty}
                             displayName={displayText}
@@ -167,4 +167,4 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
                             formIdentifier={formIdentifier}
                         />
                         : <Button type="link" onClick={dialogExecute}>{displayText}</Button>;
-}
+};

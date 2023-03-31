@@ -39,7 +39,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
     setInternalValue(null);
     if (props.onChange)
           props.onChange(null);
-  }
+  };
   const meta = useMetadata(false);
 
   const metaItems = useMemo<ICodeTreeLevel>(() => {
@@ -77,7 +77,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
   const onDialogCancel = () => {
     setInternalValue(value);
     setShowDialog(false);
-  }
+  };
   const onDialogSave = () => {
     if (props.onChange)
       props.onChange(internalValue);

@@ -34,7 +34,7 @@ export const DynamicView: FC<DynamicViewProps> = (model) => {
     const propsToRender = useMemo<IPropertyMetadata[]>(() => {
         if (!currentMeta)
             return [];
-        const propertiesToMap = currentMeta.properties.filter(property => property.isVisible && !property.isFrameworkRelated && !staticComponentBindings.includes(camelcaseDotNotation(property.path)))
+        const propertiesToMap = currentMeta.properties.filter(property => property.isVisible && !property.isFrameworkRelated && !staticComponentBindings.includes(camelcaseDotNotation(property.path)));
         return propertiesToMap;
     }, [staticComponents, currentMeta]);
 
@@ -53,6 +53,6 @@ export const DynamicView: FC<DynamicViewProps> = (model) => {
     return (
         <DynamicContainer components={dynamicComponents} />
     );
-}
+};
 
 export default DynamicView;

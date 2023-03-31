@@ -85,7 +85,8 @@ export const dialogArgumentsForm = new DesignerToolbarSettings()
     valueTitle: 'Value',
     valueName: 'value',
     description:
-      'Additional properties you want to be passed when the form gets submitted like parentId in the case where the modal is used in a childTable. Also note you can use Mustache expression like {{id}} for value property',
+      'Additional properties you want to be passed when the form gets submitted like parentId in the case where the modal is used in a childTable.' + 
+      'Also note you can use Mustache expression like {{id}} for value property',
   })
   .addDropdown({
     id: '264903ff-b525-4a6e-893f-d560b219df9d',

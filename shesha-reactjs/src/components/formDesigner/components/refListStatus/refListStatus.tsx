@@ -45,7 +45,7 @@ const RefListStatus: FC<IProps> = ({ model }) => {
     }
     return !refListData?.result?.items?.length || data[name] === null || data[name] === undefined
       ? null
-      : refListData?.result?.items?.find(i => i.itemValue == data[name]);
+      : refListData?.result?.items?.find(i => String(i.itemValue) === String(data[name]));
   }, [refListData]);
 
   const memoizedColor = useMemo(() => {

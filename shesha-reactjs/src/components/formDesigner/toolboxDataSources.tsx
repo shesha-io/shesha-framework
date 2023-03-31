@@ -71,13 +71,6 @@ export const ToolboxDataSources: FC<IToolboxDataSourcesProps> = () => {
     return dataSources;
   }, [allDataSources, searchText]);
 
-  const itemContainsText = (item: IPropertyMetadata, loweredSearchText: string): boolean => {
-    if (item.path?.toLowerCase()?.includes(loweredSearchText) || item.label?.toLowerCase()?.includes(loweredSearchText))
-      return true;
-
-    return (item.properties ?? []).some(child => itemContainsText(child, loweredSearchText));
-  };
-
   if (allDataSources.length === 0) return null;
 
   const onCollapseChange = (key: string | string[]) => {

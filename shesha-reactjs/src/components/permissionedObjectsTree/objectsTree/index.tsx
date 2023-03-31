@@ -25,15 +25,15 @@ const getTreeData = (prop: PermissionedObjectDto, onAddItem: (prop: Permissioned
     onAddItem(prop);
 
     return node;
-}
+};
 
 interface DataNodeWithObject extends DataNode {
     object: PermissionedObjectDto;
 }
 
 interface NodesWithExpanded {
-    nodes: DataNodeWithObject[],
-    expandedKeys: string[],
+    nodes: DataNodeWithObject[];
+    expandedKeys: string[];
 }
 
 const ObjectTree: FC<IProps> = (props) => {
@@ -42,7 +42,9 @@ const ObjectTree: FC<IProps> = (props) => {
     
     const treeData = useMemo<NodesWithExpanded>(() => {
         const expanded: string[] = [];
-        const nodes = props.items.map(item => getTreeData(item, (item) => { expanded.push(item.id); }));
+        const nodes = props.items.map(item => getTreeData(item, (item) => {
+ expanded.push(item.id); 
+}));
 
         return { nodes: nodes, expandedKeys: expanded };
     }, [props.items]);
@@ -68,7 +70,7 @@ const ObjectTree: FC<IProps> = (props) => {
                 {afterStr}
             </span>
         );
-    }
+    };
 
     const renderTitle = (node: DataNodeWithObject): React.ReactNode => {
         let icon  = 'BookOutlined' as IconType;
@@ -87,7 +89,7 @@ const ObjectTree: FC<IProps> = (props) => {
                 <span className='sha-component-title'> {getTitle(node.object)}</span>
             </div>
         );
-    }
+    };
 
     const onExpand = (expandedKeys) => {
         setManuallyExpanded(expandedKeys);
@@ -103,7 +105,9 @@ const ObjectTree: FC<IProps> = (props) => {
             draggable={false}
             selectable={true}
             titleRender={renderTitle}
-            onClick={ (_, node) => { props.onChange(node.key.toString()) } }
+            onClick={ (_, node) => {
+ props.onChange(node.key.toString()); 
+} }
             selectedKeys={[props.defaultSelected]}
         />
     );

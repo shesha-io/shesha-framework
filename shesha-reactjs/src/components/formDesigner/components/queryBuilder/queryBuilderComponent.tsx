@@ -46,13 +46,13 @@ const QueryBuilder: FC<IQueryBuilderProps> = props => {
 
 export const QueryBuilderComponentRenderer: FC<IQueryBuilderProps> = props => {
   const { formMode, formData } = useForm();
-  const { fieldsUnavailableHint, useExpression: _useExpression } = props;
+  const { fieldsUnavailableHint, useExpression: useExpressionFromProps } = props;
   const { selectedItemId, items } = useTableViewSelectorConfigurator(false) ?? {}; // note: it should be outside the QueryBuilder component!
 
   // TODO: implement combined components which support both expressions/functions and custom values like date/datetime and remove the `useExpression` property
   const useExpression =
-    _useExpression === true ||
-    (typeof _useExpression === 'string' && evaluateString(_useExpression, { data: formData }) === 'true') ||
+    useExpressionFromProps === true ||
+    (typeof useExpressionFromProps === 'string' && evaluateString(useExpressionFromProps, { data: formData }) === 'true') ||
     items?.find(({ id }) => id === selectedItemId)?.useExpression === true;
 
   const queryBuilder = useQueryBuilder(false);

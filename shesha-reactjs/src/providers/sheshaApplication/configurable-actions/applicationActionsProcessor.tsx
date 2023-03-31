@@ -14,4 +14,4 @@ export const ApplicationActionsProcessor: FC = ({ children }) => {
   return (
     <>{children}</>
   );
-}
+};

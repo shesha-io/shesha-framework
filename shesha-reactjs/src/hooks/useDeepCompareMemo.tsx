@@ -8,6 +8,7 @@ export function useDeepCompareMemo<T>(callback: () => T, dependencies: Dependenc
 
 /**
  * Variation of the `useDeepCompareMemo` that keeps reference if the result contains the same data. It allows to avoid unneeded re-rendering
+ *
  * @param callback 
  * @param dependencies 
  * @returns 

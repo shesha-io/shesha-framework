@@ -52,6 +52,7 @@
     "**/*.test.js",
     "**/*.test.ts",
     "**/*.test.tsx",
-    "**/*.stories.d.ts"
+    "**/*.stories.d.ts",
+    "**/__test__/**"
   ]
 }

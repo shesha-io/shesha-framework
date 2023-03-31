@@ -2,7 +2,7 @@ import { DeleteOutlined, MergeCellsOutlined, SaveOutlined } from '@ant-design/ic
 import { Alert, Checkbox, Col, Form, message, Modal, Row } from 'antd';
 import React, { useMemo, useRef, useState } from 'react';
 import { Autocomplete, ModelConfigurator, Page } from '../../../components';
-import IndexToolbar from '../../../components/indexToolbar'
+import IndexToolbar from '../../../components/indexToolbar';
 import EntityConfigTree, { IEntityConfigTreeInstance } from '../../../components/entityConfigTree';
 import { IToolbarItem, PageWithLayout } from '../../../interfaces';
 //import { useShaRouting } from '../../../providers';
@@ -41,10 +41,10 @@ const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps> = ({
         setEntityConfigId(item.id);
         setEntityConfig(item);
         if (configuratorRef.current) configuratorRef.current.changeModelId(item.id);
-    }
+    };
 
     const handleOk = () => {
-        const del =  isDeleteAfterMerge && (!(entityConfig?.source == MetadataSourceType.ApplicationCode) || entityConfig?.notImplemented);
+        const del =  isDeleteAfterMerge && (!(entityConfig?.source === MetadataSourceType.ApplicationCode) || entityConfig?.notImplemented);
         setLoadingState({ loading: true, loadingText: 'Saving...' });
         modelConfigurationsMerge({sourceId: entityConfig.id, destinationId: autocompleteResult.id, deleteAfterMerge: del}, { base: backendUrl, headers: httpHeaders})
             .then(response => {
@@ -62,14 +62,14 @@ const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps> = ({
             .finally(() => {
                 setLoadingState({ loading: false, loadingText: null });
             });
-    }
+    };
 
     const allowDelete = useMemo(() => {
-        return entityConfig && (entityConfig.source == MetadataSourceType.UserDefined || entityConfig.notImplemented);
-    }, [entityConfig])
+        return entityConfig && (entityConfig.source === MetadataSourceType.UserDefined || entityConfig.notImplemented);
+    }, [entityConfig]);
     const allowMerge = useMemo(() => {
-        return entityConfig && entityConfig.source == MetadataSourceType.ApplicationCode && entityConfig.notImplemented;
-    }, [entityConfig])
+        return entityConfig && entityConfig.source === MetadataSourceType.ApplicationCode && entityConfig.notImplemented;
+    }, [entityConfig]);
 
     const toolbarItems: IToolbarItem[] = [
         /*{
@@ -83,7 +83,7 @@ const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps> = ({
         {
             title: 'Save',
             icon: <SaveOutlined />,
-            disabled: entityConfigId == null, // Check only entityConfigId
+            disabled: entityConfigId === null, // Check only entityConfigId
             onClick: () => {
                 if (configuratorRef.current) {
                     setLoadingState({ loading: true, loadingText: 'Saving...' });
@@ -110,9 +110,9 @@ const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps> = ({
         {
             title: 'Merge entity to...',
             icon: <MergeCellsOutlined />,
-            disabled: entityConfigId == null || !allowMerge,
+            disabled: entityConfigId === null || !allowMerge,
             onClick: () => {
-                setIsDeleteAfterMerge(!(entityConfig?.source == MetadataSourceType.ApplicationCode) || entityConfig?.notImplemented);
+                setIsDeleteAfterMerge(!(entityConfig?.source === MetadataSourceType.ApplicationCode) || entityConfig?.notImplemented);
                 setAutocompleteResult(null);
                 setMergeError(null);
                 setIsModalOpen(true);
@@ -121,7 +121,7 @@ const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps> = ({
         {
             title: 'Delete',
             icon: <DeleteOutlined />,
-            disabled: entityConfigId == null || !allowDelete,
+            disabled: entityConfigId === null || !allowDelete,
             onClick: () => {
                 modal.confirm({
                     content: 'Are you sure want to delete?',
@@ -171,10 +171,15 @@ const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps> = ({
                 </Col>
             </Row>
             <div>{contextHolder}</div>
-            <Modal title="Merge entity confifurations" open={isModalOpen} onOk={handleOk} onCancel={() => {setIsModalOpen(false)}}>
+            <Modal title="Merge entity confifurations" open={isModalOpen} onOk={handleOk} onCancel={() => {
+setIsModalOpen(false);
+}}>
                 <ValidationErrors error={mergeError}/>
                 <Alert type="warning" showIcon
-                    description={"This will merge this entity configuration '" + entityConfig?.namespace + "." + entityConfig?.className + "' into and overwrite the configuration of the entity you selected"}
+                    description={"This will merge this entity configuration '" + 
+                        entityConfig?.namespace + "." + 
+                        entityConfig?.className + 
+                        "' into and overwrite the configuration of the entity you selected"}
                 />
                 <Row>
                     <Col span='6'>
@@ -197,11 +202,16 @@ const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps> = ({
                     </Col>
                     <Col span='18'>
                         <Form.Item>
-                            <Autocomplete dataSourceType={'url'} dataSourceUrl={"/api/services/app/EntityConfig/EntityConfigAutocomplete?implemented=true"} value={autocompleteResult} onChange={setAutocompleteResult}/>
+                            <Autocomplete 
+                                dataSourceType={'url'} 
+                                dataSourceUrl={"/api/services/app/EntityConfig/EntityConfigAutocomplete?implemented=true"} 
+                                value={autocompleteResult} 
+                                onChange={setAutocompleteResult}
+                            />
                         </Form.Item>
                     </Col>
                 </Row>
-                {(!(entityConfig?.source == MetadataSourceType.ApplicationCode) || entityConfig?.notImplemented) &&
+                {(!(entityConfig?.source === MetadataSourceType.ApplicationCode) || entityConfig?.notImplemented) &&
                 <Row>
                     <Col span='6'>
                         <Form.Item>
@@ -212,7 +222,9 @@ const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps> = ({
                         <Form.Item>
                             <Checkbox 
                                 checked={isDeleteAfterMerge} 
-                                onChange={(e) => {setIsDeleteAfterMerge(e.target.checked);}} />
+                                onChange={(e) => {
+setIsDeleteAfterMerge(e.target.checked);
+}} />
                         </Form.Item>
                     </Col>
                 </Row>

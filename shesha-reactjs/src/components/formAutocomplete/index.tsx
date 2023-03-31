@@ -47,7 +47,7 @@ const getFilter = (term: string) => {
         and: [...baseItemFilter, ...termFilter]
     };
     return JSON.stringify(filter);
-}
+};
 const FORM_CONFIG_ENTITY_TYPE = 'Shesha.Core.FormConfiguration';
 const FORM_CONFIG_PROPERTIES = 'id name module { id name } label description versionNo';
 const getListFetcherQueryParams = (term: string, maxResultCount): IGenericGetAllPayload => {
@@ -89,7 +89,7 @@ const getSelectedValueQueryParams = (value?: FormIdentifier): IGenericGetAllPayl
             filter: JSON.stringify(expression),
         }
         : null;
-}
+};
 
 interface IResponseItem {
     id: string;
@@ -100,7 +100,7 @@ interface IResponseItem {
     module?: {
         id: string;
         name: string;
-    }
+    };
 }
 
 interface IConfigurationItemProps {
@@ -124,13 +124,13 @@ const FormLabel: FC<IConfigurationItemProps> = ({ name, description, versionNo, 
             )}
         </div>
     );
-}
+};
 
 const getFormValue = (item: IResponseItem) => {
     return item.module
         ? `${item.module.name}:${item.name}`
         : item.name;
-}
+};
 
 const getDisplayText = (item: IResponseItem) => {
     return item
@@ -138,7 +138,7 @@ const getDisplayText = (item: IResponseItem) => {
             ? `${item.module.name}: ${item.name}`
             : item.name
         : null;
-}
+};
 
 export const FormAutocomplete: FC<IFormAutocompleteRuntimeProps> = (props) => {
     const selectedValue = useRef(null);
@@ -222,7 +222,7 @@ export const FormAutocomplete: FC<IFormAutocompleteRuntimeProps> = (props) => {
                     };
                     result.push(group);
                 } else
-                    group.options.push(opt)
+                    group.options.push(opt);
 
             });
         }
@@ -241,7 +241,7 @@ export const FormAutocomplete: FC<IFormAutocompleteRuntimeProps> = (props) => {
 
     const onSearch = (term) => {
         debouncedFetchItems(term);
-    }
+    };
 
     const onSelect = (_value, option) => {
         const formId = (option as IOption)?.data;
@@ -249,14 +249,14 @@ export const FormAutocomplete: FC<IFormAutocompleteRuntimeProps> = (props) => {
         if (props.onChange) {
             props.onChange(formId);
         }
-    }
+    };
 
     const onClear = () => {
         selectedValue.current = null;
         if (props.onChange) {
             props.onChange(null);
         }
-    }
+    };
 
     const loading = listFetcher.loading;
 
@@ -277,6 +277,6 @@ export const FormAutocomplete: FC<IFormAutocompleteRuntimeProps> = (props) => {
         >
         </AutoComplete>
     );
-}
+};
 
 export default FormAutocomplete;

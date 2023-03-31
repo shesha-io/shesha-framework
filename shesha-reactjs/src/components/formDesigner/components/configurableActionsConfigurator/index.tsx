@@ -56,7 +56,7 @@ const getActionFullName = (actionOwner: string, actionName: string): string => {
   return actionName
     ? `${actionOwner}:${actionName}`
     : null;
-}
+};
 interface IActionIdentifier {
   actionName: string;
   actionOwner: string;
@@ -66,7 +66,7 @@ const parseActionFullName = (fullName: string): IActionIdentifier => {
   return parts && parts.length === 2
     ? { actionOwner: parts[0], actionName: parts[1] }
     : null;
-}
+};
 
 export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorProps> = props => {
   const [form] = Form.useForm();
@@ -99,7 +99,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
 
       onChange(formValues);
     }
-  }
+  };
 
   const { actionName, actionOwner } = value ?? {};
   const selectedAction = useMemo(() => {
@@ -166,7 +166,7 @@ const getConfigurableActionFullName = (owner: string, name: string) => {
   return owner
     ? `${owner}:${name}`
     : name;
-}
+};
 
 interface IActionSelectProps {
   actions: IConfigurableActionGroupDictionary;
@@ -189,6 +189,8 @@ const ActionSelect: FC<IActionSelectProps> = ({ value, onChange, actions, readOn
     //console.log('build actions', actions)
 
     for (const owner in actions) {
+      if (!actions.hasOwnProperty(owner))
+        continue;
       const ownerActions = actions[owner];
       const ownerNodes: IActionSelectItem[] = [];
       ownerActions.actions.forEach(action => {
@@ -239,6 +241,6 @@ const ActionSelect: FC<IActionSelectProps> = ({ value, onChange, actions, readOn
     >
     </TreeSelect>
   );
-}
+};
 
 export default ConfigurableActionConfiguratorComponent;

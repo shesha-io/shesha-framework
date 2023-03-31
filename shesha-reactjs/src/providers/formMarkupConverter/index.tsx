@@ -3,8 +3,8 @@ import { FormRawMarkup, IFlatComponentsStructure } from '../form/models';
 import { componentsTreeToFlatStructure, getComponentsFromMarkup, upgradeComponents, useFormDesignerComponents } from '../form/utils';
 
 export interface IFormMarkupConverterProps {
-    markup: FormRawMarkup,
-    children: (flatStructure: IFlatComponentsStructure, onChange: (flatStructure: IFlatComponentsStructure) => void) => ReactNode,
+    markup: FormRawMarkup;
+    children: (flatStructure: IFlatComponentsStructure, onChange: (flatStructure: IFlatComponentsStructure) => void) => ReactNode;
 }
 
 const FormMarkupConverter: FC<IFormMarkupConverterProps> = ({
@@ -24,8 +24,8 @@ const FormMarkupConverter: FC<IFormMarkupConverterProps> = ({
     }, [markup]);
 
     const onChange = (_value: IFlatComponentsStructure) => {
-        console.log('CONVERTER onChange')
-    }
+        console.log('CONVERTER onChange');
+    };
 
     return <>{children(flatComponents, onChange)}</>;
 };

@@ -5,20 +5,20 @@ import { PropertySelect } from "../../propertyAutocomplete/propertySelect";
 import { IPropertyMetadata } from "../../../interfaces/metadata";
 
 export interface IFieldSelectProps {
-    config: Config,
-    customProps?: { [key: string]: any },
-    items: [],
-    placeholder?: string,
-    selectedKey?: string,
-    selectedKeys?: [],
-    selectedPath?: [],
-    selectedLabel?: string,
-    selectedAltLabel?: string,
-    selectedFullLabel?: string,
-    selectedOpts?: object,
-    readonly?: boolean,
+    config: Config;
+    customProps?: { [key: string]: any };
+    items: [];
+    placeholder?: string;
+    selectedKey?: string;
+    selectedKeys?: [];
+    selectedPath?: [];
+    selectedLabel?: string;
+    selectedAltLabel?: string;
+    selectedFullLabel?: string;
+    selectedOpts?: object;
+    readonly?: boolean;
     //actions
-    setField: (key: string) => void,
+    setField: (key: string) => void;
 }
 
 export const FieldAutocomplete: FC<IFieldSelectProps> = (props) => {
@@ -31,7 +31,7 @@ export const FieldAutocomplete: FC<IFieldSelectProps> = (props) => {
 
     const onChange = (key) => {
         setText(key);
-    }
+    };
 
     const {
         config, customProps, /*items,*/ placeholder,
@@ -46,7 +46,7 @@ export const FieldAutocomplete: FC<IFieldSelectProps> = (props) => {
     const width = isFieldSelected && !showSearch ? null : selectWidth + SELECT_WIDTH_OFFSET_RIGHT;
 
     let tooltipText = selectedAltLabel || selectedFullLabel;
-    if (tooltipText == selectedLabel)
+    if (tooltipText === selectedLabel)
         tooltipText = null;
 
     const readOnly = config.settings.immutableFieldsMode === true;
@@ -57,8 +57,8 @@ export const FieldAutocomplete: FC<IFieldSelectProps> = (props) => {
             value={text}
             onChange={onChange}
             style={{ width }}
-            size={config.settings.renderSize == 'medium' ? 'middle' : config.settings.renderSize}
+            size={config.settings.renderSize === 'medium' ? 'middle' : config.settings.renderSize}
             onSelect={onSelect}
         />
     );
-}
+};

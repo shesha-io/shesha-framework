@@ -96,7 +96,7 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = props => {
               <FormPersisterConsumer>
                 {persister => (
                   <>
-                    {persister.loadError?.code == 404 && (
+                    {persister.loadError?.code === 404 && (
                       <Result
                         status="404"
                         //style={{ height: '100vh - 55px' }}

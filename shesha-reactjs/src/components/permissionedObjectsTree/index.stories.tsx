@@ -12,7 +12,7 @@ export default {
 } as Meta;
 
 export interface IPermissionedObjectsConfiguratorStoryProps {
-  type?: string 
+  type?: string; 
 }
 
 const backendUrl = process.env.STORYBOOK_BASE_URL; // TODO: Make this configurable
@@ -31,7 +31,7 @@ const Template: Story<IPermissionedObjectsConfiguratorStoryProps> = (props) => {
       </ShaApplicationProvider>
     </GlobalStateProvider>
   );
-}
+};
 
 export const Base = addStory(Template, {
   type: "Shesha.WebApi"

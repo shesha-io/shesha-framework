@@ -104,7 +104,7 @@ export const Dropdown: FC<IDropdownProps> = ({
   const { globalState } = useGlobalState();
 
   const getOptions = (): ILabelValue[] => {
-    return value && typeof value === 'number' ? values?.map(i => ({ ...i, value: parseInt(i.value) })) : values;
+    return value && typeof value === 'number' ? values?.map(i => ({ ...i, value: parseInt(i.value, 10) })) : values;
   };
 
   const selectedMode = mode === 'single' ? undefined : mode;

@@ -6,4 +6,4 @@ export const migrateV1toV2 = (props: IButtonProps, context: SettingsMigrationCon
     const { actionConfiguration } = props;
 
     return { ...props, actionConfiguration: upgradeActionConfig(actionConfiguration, context) };
-}
+};

@@ -34,13 +34,15 @@ export const GenericQuickView: FC<IQuickViewProps> = (props) => {
 
     useEffect(() => {
         if (props.className && !formConfig)
-            getEntityFormId(props.className, props.formType ?? 'Quickview', (f) => {setFormConfig(f);});
+            getEntityFormId(props.className, props.formType ?? 'Quickview', (f) => {
+setFormConfig(f);
+});
     }, [props.className, props.formType, formConfig]);
 
     return formConfig
         ? <QuickView {...props} formIdentifier={formConfig}  />
         : <Button type="link"><span><Spin size="small" /> Loading...</span></Button>;
-}
+};
 
 const QuickView: FC<Omit<IQuickViewProps, 'children' | 'formType'>> = ({
     entityId,
@@ -69,8 +71,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'children' | 'formType'>> = ({
     }, [formIdentifier]);
 
     useEffect(() => {
-        if (!formData && entityId && formSettings)
-        {
+        if (!formData && entityId && formSettings) {
             const getUrl = getEntityUrl ?? formSettings?.formSettings?.getUrl;
             const fetcher = getUrl 
                 ? get(getUrl, { id: entityId }, { base: backendUrl, headers: httpHeaders})

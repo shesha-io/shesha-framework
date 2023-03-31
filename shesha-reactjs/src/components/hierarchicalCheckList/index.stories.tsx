@@ -18,7 +18,7 @@ const Template: Story<IHierarchicalCheckListStoryProps> = (_props) => {
       ownerType={''}
     />
   );
-}
+};
 
 export const Base = addStory(Template, {
   
