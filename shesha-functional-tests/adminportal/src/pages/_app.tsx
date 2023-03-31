@@ -1,76 +1,63 @@
 import {
-  AppConfiguratorProvider,
-  DynamicModalProvider,
-  GlobalStateProvider,
-  PageWithLayout,
-  ShaApplicationProvider,
-  StoredFilesProvider,
-  UiProvider,
+	AppConfiguratorProvider,
+	DynamicModalProvider,
+	GlobalStateProvider,
+	PageWithLayout,
+	ShaApplicationProvider,
+	StoredFilesProvider,
+	UiProvider,
 } from '@shesha/reactjs';
 import { CustomErrorBoundary, CustomNProgress } from 'components';
-import App from 'next/app';
-import { withRouter } from 'next/router';
-import React from 'react';
+import { AppProps } from 'next/app';
+import { useRouter } from 'next/router';
+import React, { useEffect } from 'react';
 import { BASE_URL } from 'src/api/utils/constants';
 import { StyledThemeProvider } from 'src/definitions/styled-components';
 require('@shesha/reactjs/dist/styles.less');
 require('src/styles/compiled.antd.variable.css');
 require('src/styles/custom-n-progress.less');
 
-interface IState {}
+function MyApp({ Component, pageProps }: AppProps): JSX.Element {
+	const router = useRouter();
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export class Main extends App<{}, {}, IState> {
-  static async getInitialProps({ Component, ctx }: { Component: any; ctx: any }): Promise<{
-    pageProps: any;
-  }> {
-    const pageProps = Component.getInitialProps ? await Component.getInitialProps(ctx) : {};
-    return { pageProps };
-  }
+	useEffect(() => {
+		setAppInsights();
+	}, []);
 
-  constructor(props: any) {
-    super(props);
-    this.state = {};
-  }
+	const setAppInsights = () => {
+		// Register Application Insights
+		if (process.browser && process.env.NODE_ENV === 'production') {
+			import('utils/applicationInsights').then(({ initAppInsights }) => {
+				initAppInsights();
+			});
+		}
+	};
 
-  componentDidMount() {
-    this.setAppInsights();
-  }
+	// Use the layout defined at the page level, if available
+	const getLayout = (Component as PageWithLayout<any>).getLayout ?? ((page) => page);
 
-  setAppInsights() {
-    // Register Application Insights
-    if (process.browser && process.env.NODE_ENV === 'production') {
-      import('utils/applicationInsights').then(({ initAppInsights }) => {
-        initAppInsights();
-      });
-    }
-  }
-
-  render() {
-    const { Component, pageProps, router } = this.props;
-
-    // Use the layout defined at the page level, if available
-    const getLayout = (Component as PageWithLayout<any>).getLayout ?? ((page) => page);
-
-    return (
-      <CustomErrorBoundary>
-        <StyledThemeProvider>
-          <GlobalStateProvider>
-            <ShaApplicationProvider backendUrl={BASE_URL} router={router}>
-              <AppConfiguratorProvider>
-                <DynamicModalProvider>
-                  <CustomNProgress />
-                  <StoredFilesProvider baseUrl={BASE_URL} ownerId={''} ownerType={''}>
-                    <UiProvider>{getLayout(<Component {...(router?.query || {})} {...pageProps} />)}</UiProvider>
-                  </StoredFilesProvider>
-                </DynamicModalProvider>
-              </AppConfiguratorProvider>
-            </ShaApplicationProvider>
-          </GlobalStateProvider>
-        </StyledThemeProvider>
-      </CustomErrorBoundary>
-    );
-  }
+	return (
+		<CustomErrorBoundary>
+			<StyledThemeProvider>
+				<GlobalStateProvider>
+					<ShaApplicationProvider
+						backendUrl={BASE_URL}
+						router={router as any}
+						noAuth={router?.asPath?.includes('/no-auth')}
+					>
+						<AppConfiguratorProvider>
+							<DynamicModalProvider>
+								<CustomNProgress />
+								<StoredFilesProvider baseUrl={BASE_URL} ownerId={''} ownerType={''}>
+									<UiProvider>{getLayout(<Component {...(router?.query || {})} {...pageProps} />)}</UiProvider>
+								</StoredFilesProvider>
+							</DynamicModalProvider>
+						</AppConfiguratorProvider>
+					</ShaApplicationProvider>
+				</GlobalStateProvider>
+			</StyledThemeProvider>
+		</CustomErrorBoundary>
+	);
 }
 
-export default withRouter(Main);
+export default MyApp;
