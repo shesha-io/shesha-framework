@@ -23,18 +23,10 @@ declare const TITLE_ELE_LIST: [1, 2, 3, 4, 5];
 type LevelType = typeof TITLE_ELE_LIST[number];
 
 const TypographyComponent: FC<ITextTypographyProps> = ({
-  name,
-  backgroundColor,
-  color,
   contentDisplay = DEFAULT_CONTENT_DISPLAY,
-  contentType,
   dataType,
   dateFormat,
-  fontSize,
-  level,
   numberFormat,
-  padding = DEFAULT_PADDING_SIZE,
-  textType,
   value,
   style,
   ...model
@@ -59,14 +51,14 @@ const TypographyComponent: FC<ITextTypographyProps> = ({
   const computedStyle = getStyle(style, formData) ?? {};
 
   return (
-    <GenericText style={computedStyle} contentType={'success'} textType={'span'} {...model}>
+    <GenericText style={computedStyle} {...model}>
       {content}
     </GenericText>
   );
 };
 
 interface IGenericTextProps
-  extends Omit<ITextTypographyProps, 'style' | 'contentDisplay' | 'name' | 'id' | 'type' | 'content'> {
+  extends Omit<ITextTypographyProps, 'style' | 'contentDisplay' | 'name' | 'id' | 'type' | 'content' | 'value'> {
   style?: CSSProperties;
 }
 
@@ -82,7 +74,6 @@ export const GenericText: FC<IGenericTextProps> = ({
   numberFormat,
   padding = DEFAULT_PADDING_SIZE,
   textType,
-  value,
   style,
   ...model
 }) => {
@@ -100,7 +91,7 @@ export const GenericText: FC<IGenericTextProps> = ({
 
     if (contentType === 'custom' && color) return color.hex;
 
-    return 'black';
+    return null;
   }, [color, contentType, theme?.text]);
 
   const baseProps: ITypographyProps = {
