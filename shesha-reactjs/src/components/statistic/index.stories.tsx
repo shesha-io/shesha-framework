@@ -1,6 +1,5 @@
 import React, { ReactNode } from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import ShaStatistic from '.';
 import { CollapsiblePanel } from '..';
 import { Col, Row } from 'antd';
@@ -9,7 +8,7 @@ import { ArrowUpOutlined } from '@ant-design/icons';
 
 export default {
   title: 'Components/Statistic',
-  component: ShaStatistic,
+  component: ShaStatistic
 } as Meta;
 
 export interface IFormDesignerStoryProps {

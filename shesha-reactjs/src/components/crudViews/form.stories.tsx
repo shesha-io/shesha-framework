@@ -1,13 +1,12 @@
 import React from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import { ConfigurableForm, GenericDetailsPage } from '../..';
 import { IGenericDetailsPageProps } from './detailsPage';
 import StoryApp from '../storyBookApp';
 
 export default {
   title: 'Components/CrudViews/ConfigurableForm',
-  component: GenericDetailsPage,
+  component: GenericDetailsPage
 } as Meta;
 
 const id = '6743d48e-d67f-48ab-a3a2-10a32d448e08';

@@ -1,17 +1,6 @@
 module.exports = {
-  stories: ['../src/**/*.stories.mdx', '../src/**/*.stories.md', '../src/**/*.stories.@(js|jsx|ts|tsx)'],
-  addons: [
-    '@storybook/addon-links',
-    '@storybook/addon-essentials',
-    // {
-    //   name: '@storybook/addon-postcss',
-    //   options: {
-    //     postcssLoaderOptions: {
-    //       implementation: require('postcss'),
-    //     },
-    //   },
-    // },
-  ],
+  stories: ['../src/**/*.mdx', '../src/**/*.stories.md', '../src/**/*.stories.@(js|jsx|ts|tsx)'],
+  addons: ['@storybook/addon-links', '@storybook/addon-essentials', '@storybook/addon-mdx-gfm'],
   webpackFinal: async config => {
     // `configType` has a value of 'DEVELOPMENT' or 'PRODUCTION'
     // You can change the configuration based on that.
@@ -20,40 +9,33 @@ module.exports = {
     // Make whatever fine-grained changes you need
     config.module.rules.push({
       test: /\.scss$/,
-      use: [
-        'style-loader',
-        'css-loader',
-        'sass-loader',
-        // {
-        //   loader: 'sass-loader',
-        //   options: {
-        //     implementation: require('sass'),
-        //     sassOptions: {
-        //       fiber: false,
-        //     },
-        //   },
-        // },
-      ],
+      use: ['style-loader', 'css-loader', 'sass-loader'
+      // {
+      //   loader: 'sass-loader',
+      //   options: {
+      //     implementation: require('sass'),
+      //     sassOptions: {
+      //       fiber: false,
+      //     },
+      //   },
+      // },
+      ]
       // include: path.resolve(__dirname, './'),
     });
 
     config.module.rules.push({
       test: /\.less$/,
-      use: [
-        'style-loader',
-        'css-loader',
-        {
-          loader: 'less-loader',
-          options: {
-            javascriptEnabled: true,
-            strictMath: false,
-            noIeCompat: true,
-            modifyVars: {
-              'form-item-margin-bottom': '8px',
-            },
-          },
-        },
-      ],
+      use: ['style-loader', 'css-loader', {
+        loader: 'less-loader',
+        options: {
+          javascriptEnabled: true,
+          strictMath: false,
+          noIeCompat: true,
+          modifyVars: {
+            'form-item-margin-bottom': '8px'
+          }
+        }
+      }]
     });
 
     // console.log('config.module.rules: ', config.module.rules);
@@ -61,4 +43,11 @@ module.exports = {
     // Return the altered config
     return config;
   },
+  framework: {
+    name: '@storybook/react-webpack5',
+    options: {}
+  },
+  docs: {
+    autodocs: true
+  }
 };

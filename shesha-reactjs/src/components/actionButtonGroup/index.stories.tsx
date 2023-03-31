@@ -1,6 +1,5 @@
 import React from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import ActionButtonGroup, { IActionButtonGroupProps } from '.';
 import { IToolbarItem } from '../../interfaces';
 import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
@@ -8,7 +7,7 @@ import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 export default {
   title: 'Components/ActionButtonGroup',
   component: ActionButtonGroup,
-  argTypes: {},
+  argTypes: {}
 } as Meta;
 
 const onClick = () => console.log('Clicked!!!');

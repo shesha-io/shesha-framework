@@ -1,7 +1,6 @@
 import React, { FC, useState } from 'react';
 import { Button, Form } from 'antd';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import RefListDropDown, { IRefListDropDownProps } from './';
 import { addStory } from '../../stories/utils';
 import StoryApp from '../storyBookApp';
@@ -23,7 +22,7 @@ export default {
         type: null,
       },
     },
-  },
+  }
 } as Meta;
 
 interface IStoryArgs extends IRefListDropDownProps {

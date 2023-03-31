@@ -1,12 +1,11 @@
 import React from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import { addStory } from '../../stories/utils';
 import HierarchicalCheckList from '.';
 
 export default {
   title: 'Components/HierarchicalCheckList',
-  component: HierarchicalCheckList,
+  component: HierarchicalCheckList
 } as Meta;
 
 export interface IHierarchicalCheckListStoryProps {

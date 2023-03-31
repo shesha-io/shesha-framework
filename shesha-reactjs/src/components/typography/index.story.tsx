@@ -1,6 +1,5 @@
 import React from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import { IToolbarItem } from '../../interfaces';
 import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import ActionButtonGroup, { IActionButtonGroupProps } from '../actionButtonGroup';

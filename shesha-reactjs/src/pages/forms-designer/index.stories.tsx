@@ -1,6 +1,5 @@
 import React from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import StoryApp from '../../components/storyBookApp';
 import DesignerPage, { IDesignerPageProps } from './';
 import { addStory } from '../../stories/utils';
@@ -9,7 +8,7 @@ import { MainLayout } from '../..';
 export default {
   title: 'Pages/Designer',
   component: DesignerPage,
-  argTypes: {},
+  argTypes: {}
 } as Meta;
 
 // Create a master template for mapping args to render the Button component

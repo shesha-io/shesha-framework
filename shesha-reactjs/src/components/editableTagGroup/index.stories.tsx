@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import EditableTagGroup, { IEditableTagGroupProps } from './';
 
 export default {
   title: 'Components/EditableTagGroup',
-  component: EditableTagGroup,
+  component: EditableTagGroup
 } as Meta;
 
 const INITIAL_VaLUES = ['app:Configurator', 'app:Roles', 'app:Dashboard'];

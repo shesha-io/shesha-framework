@@ -1,13 +1,12 @@
 import React from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import { MetadataDispatcherProvider, IMetadataDispatcherProviderProps, useMetadataDispatcher } from './';
 import { AutoComplete } from 'antd';
 
 export default {
   title: 'Providers/MetadataDispatcherProvider',
   component: MetadataDispatcherProvider,
-  argTypes: {},
+  argTypes: {}
 } as Meta;
 
 // Create a master template

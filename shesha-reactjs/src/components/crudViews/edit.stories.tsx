@@ -1,6 +1,5 @@
 import React from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import { GenericEditPage, IGenericEditPageProps } from '../..';
 import { usePersonGet, usePersonUpdate } from '../../apis/person';
 import { addStory } from '../../stories/utils';
@@ -8,7 +7,7 @@ import StoryApp from '../storyBookApp';
 
 export default {
   title: 'Components/CrudViews/EditView',
-  component: GenericEditPage,
+  component: GenericEditPage
 } as Meta;
 
 // Create a master template for mapping args to render the Button component

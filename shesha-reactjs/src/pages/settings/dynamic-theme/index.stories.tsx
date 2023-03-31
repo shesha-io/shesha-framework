@@ -1,6 +1,5 @@
 import React from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import ConfigurableThemePage, { IConfigurableThemePageProps } from '.';
 import StoryApp from '../../../components/storyBookApp';
 import { SidebarMenuDefaultsProvider } from '../../../providers';
@@ -9,7 +8,7 @@ import { DefaultLayout } from '../../../components';
 export default {
   title: 'Pages/ConfigurableThemePage',
   component: ConfigurableThemePage,
-  argTypes: {},
+  argTypes: {}
 } as Meta;
 
 // Create a master template for mapping args to render the Button component

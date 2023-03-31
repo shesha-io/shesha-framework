@@ -1,6 +1,5 @@
 import React from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import FormDesigner from './formDesigner';
 import { MetadataDispatcherProvider } from '../../providers';
 import { addStory } from '../../stories/utils';
@@ -9,7 +8,7 @@ import StoryApp from '../storyBookApp';
 
 export default {
   title: 'Components/Temp/FormDesigner',
-  component: FormDesigner,
+  component: FormDesigner
 } as Meta;
 
 export interface IFormDesignerStoryProps {

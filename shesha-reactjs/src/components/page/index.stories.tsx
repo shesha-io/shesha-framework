@@ -1,6 +1,5 @@
 import React from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import { SidebarMenuDefaultsProvider } from '../../providers';
 import Page, { IBreadcrumbItem, IPageProps } from './';
 import { IToolbarItem } from '../..';
@@ -10,7 +9,7 @@ import StoryApp from '../storyBookApp';
 
 export default {
   title: 'Components/Page',
-  component: Page,
+  component: Page
 } as Meta;
 
 const defaultProps: IPageProps = {

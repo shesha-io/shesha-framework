@@ -1,6 +1,5 @@
 import React from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import ValidationErrors, { IValidationErrorsProps } from './';
 import { IErrorInfo } from '../../interfaces/errorInfo';
 
@@ -21,7 +20,7 @@ export default {
     //     type: null,
     //   },
     // },
-  },
+  }
 } as Meta;
 
 const errorMessageOnly: IErrorInfo = {

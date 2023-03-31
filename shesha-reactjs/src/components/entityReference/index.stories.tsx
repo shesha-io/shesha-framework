@@ -1,6 +1,5 @@
 import React from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import StoryApp from '../storyBookApp';
 import { EntityReference, IEntityReferenceProps } from '.';
 import { DynamicModalProvider } from '../..';
@@ -9,7 +8,7 @@ import { DynamicModalProvider } from '../..';
 
 export default {
   title: 'Components/EntityReference',
-  component: EntityReference,
+  component: EntityReference
 } as Meta;
 
 // #endregion

@@ -1,6 +1,5 @@
 import React from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import { SidebarMenuDefaultsProvider } from '../../providers';
 import DefaultLayout, { IDefaultLayoutProps } from './';
 // import { SIDEBAR_MENU_ITEMS } from './menuItems';
@@ -9,7 +8,7 @@ import StoryApp from '../storyBookApp';
 
 export default {
   title: 'Components/DefaultLayout',
-  component: DefaultLayout,
+  component: DefaultLayout
 } as Meta;
 
 const defaultProps: IDefaultLayoutProps = {};

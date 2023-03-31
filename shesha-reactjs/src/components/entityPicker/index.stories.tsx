@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import StoredFileUpload, { EntityPicker } from './';
 import { CollapsiblePanel } from '..';
 import { Button, Form, Input } from 'antd';
@@ -11,7 +10,7 @@ import { IDataColumnsProps } from '../../providers/datatableColumnsConfigurator/
 
 export default {
   title: 'Components/EntityPicker',
-  component: StoredFileUpload,
+  component: StoredFileUpload
 } as Meta;
 
 interface IStoryArgs extends IEntityPickerProps {
