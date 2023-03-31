@@ -1,11 +1,18 @@
 import { createContext } from 'react';
 import { Theme } from 'antd/lib/config-provider/context';
 
+interface ITextTheme {
+  default?: string;
+  secondary?: string;
+  link?: string;
+}
+
 export interface IConfigurableTheme {
   application?: Theme;
   sidebar?: 'dark' | 'light';
   sidebarBackground?: string;
   layoutBackground?: string;
+  text?: ITextTheme;
 }
 
 export interface IThemeStateContext {
@@ -29,6 +36,11 @@ export const THEME_CONTEXT_INITIAL_STATE: IThemeStateContext = {
     },
     sidebar: 'dark',
     layoutBackground: '#f0f2f5',
+    text: {
+      default: '#000000d9',
+      secondary: '#00000073',
+      link: '',
+    },
   },
 };
 
