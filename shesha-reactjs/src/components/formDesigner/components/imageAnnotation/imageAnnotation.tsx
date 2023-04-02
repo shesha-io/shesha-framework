@@ -82,11 +82,12 @@ const ImageAnnotation: FC<IProps> = ({ model, onChange: onChangeForm, value }) =
 
   const maxpointReached = !!maxPoints && imageAnnotationData?.actualData?.length - 1 >= maxPoints;
 
-  
   return (
     <div className="annotation-conatainer">
       <div className="container-image" ref={imageFrameRef} style={{ ...pageSize }}>
-        <AlertMessage minPoints={minPoints} maxPoints={maxPoints} data={imageAnnotationData?.actualData} />
+        {!isReadOnly && (
+          <AlertMessage minPoints={minPoints} maxPoints={maxPoints} data={imageAnnotationData?.actualData} />
+        )}
         <ReactPictureAnnotation
           inputElement={(value, onChange, onDelete) => (
             <CustomInput
