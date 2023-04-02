@@ -65,9 +65,9 @@
   },
   "devDependencies": {
     "@ant-design/icons": "^4.7.0",
-    "@babel/plugin-proposal-class-properties": "^7.18.6",
     "@babel/preset-env": "^7.21.4",
     "@babel/preset-react": "^7.18.6",
+    "@babel/preset-typescript": "^7.21.4",
     "@microsoft/signalr": "^5.0.3",
     "@rollup/plugin-commonjs": "^19.0.0",
     "@rollup/plugin-multi-entry": "^4.1.0",

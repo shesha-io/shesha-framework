@@ -15,7 +15,7 @@ module.exports = {
   "env": {
     "browser": true
   },
-  "ignorePatterns": ["/.next/**", "/.out/**", "/node_modules/**", "/example/**", "/src/apis/*", "**/__tests__/**"],
+  "ignorePatterns": ["/.next/**", "/.out/**", "/node_modules/**", "/example/**", "/src/apis/*", "**/__tests__/**", "!.storybook"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "project": "tsconfig.json",
