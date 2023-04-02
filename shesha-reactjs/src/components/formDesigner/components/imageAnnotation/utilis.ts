@@ -1,5 +1,15 @@
 import { IAnnotation } from "./model";
 
+
+function canSubmit(data: IAnnotation[], minPoints: number, maxPoints: number,) {
+    const numberOfPoints = data?.length;
+    if (!!minPoints && numberOfPoints < minPoints) {
+        return false;
+    } else if (!!maxPoints && numberOfPoints > maxPoints) {
+        return false;
+    }
+    return true;
+}
 function parseIntOrDefault(input: any, defaultValue: number = 0): number {
     const parsed = parseInt(input, 0);
     return isNaN(parsed) ? defaultValue : parsed;
@@ -29,15 +39,16 @@ function sortAnnotationData(data: IAnnotation[]) {
     return arrangedComments;
 
 };
-function getViewData(data: IAnnotation[]) {
+function getViewData(data: IAnnotation[], allowAddingNotes = false) {
     let viewData = data?.map((mrk, index) => {
         return {
             ...mrk,
-            comment: `${index + 1}.`,
+            comment: allowAddingNotes ? `${index + 1}.` : `${index + 1}.X`,
         };
     });
 
     return viewData;
 }
-export { parseIntOrDefault, sortAnnotationData, getViewData };
+
+export { parseIntOrDefault, sortAnnotationData, getViewData, canSubmit };
 

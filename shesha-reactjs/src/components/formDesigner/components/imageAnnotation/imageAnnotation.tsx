@@ -6,7 +6,8 @@ import { IAnnotation, IImageAnnotationData, IImageProps } from './model';
 import './styles/index.less';
 import { DescriptionsList } from './descriptionList';
 import { CustomInput } from './customAnnotationInput';
-import { getViewData, parseIntOrDefault, sortAnnotationData } from './utilis';
+import { canSubmit, getViewData, parseIntOrDefault, sortAnnotationData } from './utilis';
+import { AlertMessage } from './alertMessage';
 
 interface IProps {
   formMode?: FormMode;
@@ -16,7 +17,7 @@ interface IProps {
 }
 
 const ImageAnnotation: FC<IProps> = ({ model, onChange: onChangeForm, value }) => {
-  const { isOnImage, height, width } = model;
+  const { isOnImage, height, width, allowAddingNotes = true, minPoints = 0, maxPoints = 0 } = model;
   const { data: formData } = useFormData();
   const { formMode } = useForm();
   const imageFrameRef = useRef<HTMLDivElement>(null);
@@ -38,7 +39,7 @@ const ImageAnnotation: FC<IProps> = ({ model, onChange: onChangeForm, value }) =
     if (isNumbersOnly) {
       setImageAnnotationData({
         ...imageAnnotationData,
-        viewData: getViewData(imageAnnotationData.actualData),
+        viewData: getViewData(imageAnnotationData.actualData, allowAddingNotes),
       });
     } else {
       setImageAnnotationData({
@@ -64,23 +65,28 @@ const ImageAnnotation: FC<IProps> = ({ model, onChange: onChangeForm, value }) =
   };
 
   const onSelect = (selectedId: string) => {
-    //on select is mandatory in ReactPictureAnnotation
-    console.log(selectedId);
+    console.log('selectedId', selectedId);
   };
 
   const onChange = (data: IAnnotation[]) => {
     if (!isReadOnly) {
       setImageAnnotationData({
-        viewData: data,
+        viewData: allowAddingNotes ? data : getViewData(sortAnnotationData(data), allowAddingNotes),
         actualData: data,
       });
-      onChangeForm(sortAnnotationData(data));
+      if (canSubmit(data, minPoints, maxPoints)) {
+        onChangeForm(sortAnnotationData(data));
+      }
     }
   };
 
+  const maxpointReached = !!maxPoints && imageAnnotationData?.actualData?.length - 1 >= maxPoints;
+
+  
   return (
     <div className="annotation-conatainer">
       <div className="container-image" ref={imageFrameRef} style={{ ...pageSize }}>
+        <AlertMessage minPoints={minPoints} maxPoints={maxPoints} data={imageAnnotationData?.actualData} />
         <ReactPictureAnnotation
           inputElement={(value, onChange, onDelete) => (
             <CustomInput
@@ -99,9 +105,9 @@ const ImageAnnotation: FC<IProps> = ({ model, onChange: onChangeForm, value }) =
           marginWithInput={2}
         />
       </div>
-      {isReadOnly && <div className="container-image-Cover" style={{ ...pageSize }} />}
+      {(isReadOnly || maxpointReached) && <div className="container-image-Cover" style={{ ...pageSize }} />}
 
-      {!isOnImage && (
+      {!isOnImage && allowAddingNotes && (
         <div
           className="description-container"
           style={{

@@ -27,6 +27,8 @@ const ImageAnnotationComponent: IToolboxComponent<IImageProps> = {
         />
       );
     }
+
+   
     return (
       <ConfigurableFormItem model={model}>
         <ImageAnnotation model={model} />
