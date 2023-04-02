@@ -28,11 +28,13 @@ module.exports = {
       use: ['style-loader', 'css-loader', {
         loader: 'less-loader',
         options: {
-          javascriptEnabled: true,
-          strictMath: false,
-          noIeCompat: true,
-          modifyVars: {
-            'form-item-margin-bottom': '8px'
+          lessOptions: {
+            javascriptEnabled: true,
+            strictMath: false,
+            noIeCompat: true,
+            modifyVars: {
+              'form-item-margin-bottom': '8px'
+            }
           }
         }
       }]
