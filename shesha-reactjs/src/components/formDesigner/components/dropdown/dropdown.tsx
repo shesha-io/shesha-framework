@@ -4,7 +4,7 @@ import { FormMarkup } from '../../../../providers/form/models';
 import { DownSquareOutlined } from '@ant-design/icons';
 import { message, Select } from 'antd';
 import ConfigurableFormItem from '../formItem';
-import { IDropdownProps, ILabelValue } from './models';
+import { IDropdownComponentProps, ILabelValue } from './interfaces';
 import settingsFormJson from './settingsForm.json';
 import { getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import RefListDropDown from '../../../refListDropDown';
@@ -19,12 +19,12 @@ import { getLegacyReferenceListIdentifier } from '../../../../utils/referenceLis
 
 const settingsForm = settingsFormJson as FormMarkup;
 
-const DropdownComponent: IToolboxComponent<IDropdownProps> = {
+const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
   type: 'dropdown',
   name: 'Dropdown',
   icon: <DownSquareOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.referenceListItem,
-  factory: (model: IDropdownProps, _c, form) => {
+  factory: (model: IDropdownComponentProps, _c, form) => {
     const { formMode, setFormDataAndInstance } = useForm();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
@@ -54,18 +54,18 @@ const DropdownComponent: IToolboxComponent<IDropdownProps> = {
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
   migrator: m =>
     m
-      .add<IDropdownProps>(0, prev => ({
+      .add<IDropdownComponentProps>(0, prev => ({
         ...prev,
         dataSourceType: prev['dataSourceType'] ?? 'values',
         useRawValues: prev['useRawValues'] ?? false,
       }))
-      .add<IDropdownProps>(1, prev => {
+      .add<IDropdownComponentProps>(1, prev => {
         return {
           ...prev,
           referenceListId: getLegacyReferenceListIdentifier(prev.referenceListNamespace, prev.referenceListName),
         };
       }),
-  linkToModelMetadata: (model, metadata): IDropdownProps => {
+  linkToModelMetadata: (model, metadata): IDropdownComponentProps => {
     return {
       ...model,
       dataSourceType: metadata.dataType === DataTypes.referenceListItem ? 'referenceList' : 'values',
@@ -79,7 +79,7 @@ const DropdownComponent: IToolboxComponent<IDropdownProps> = {
   },
 };
 
-export const Dropdown: FC<IDropdownProps> = ({
+export const Dropdown: FC<IDropdownComponentProps> = ({
   id,
   dataSourceType,
   values,

@@ -20,7 +20,7 @@ import {
   JustifyItems,
   JustifySelf,
   TextJustify,
-} from './components/container/model';
+} from './components/container/interfaces';
 import ConditionalWrap from '../conditionalWrapper';
 import { useFormData, useGlobalState } from '../../providers';
 import { executeScriptSync } from '../../utils/publicUtils';

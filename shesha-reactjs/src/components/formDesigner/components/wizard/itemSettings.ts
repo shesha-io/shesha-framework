@@ -109,7 +109,6 @@ export const getSettings = (_data?: IWizardStepProps) =>
       name: 'nextButtonSeparatorVisibility',
       parentId: 'root',
       label: 'Next Button',
-      title: '',
     })
     .addTextField({
       id: '737ae9b8-61d2-4ecd-9891-feaaec244a3a',
@@ -154,7 +153,6 @@ export const getSettings = (_data?: IWizardStepProps) =>
       name: 'backButtonSeparatorVisibility',
       parentId: 'root',
       label: 'Back Button',
-      title: '',
     })
 
     .addTextField({
@@ -201,7 +199,6 @@ export const getSettings = (_data?: IWizardStepProps) =>
       name: 'doneButtonSeparatorVisibility',
       parentId: 'root',
       label: 'Done Button',
-      title: '',
     })
     .addTextField({
       id: '20ea7d88-2e09-4d2e-9e4a-caa23b1e3502',

@@ -1,6 +1,6 @@
 import { IConfigurableFormComponent } from '../../../../providers/form/models';
 
-export interface INumberFieldProps extends IConfigurableFormComponent {
+export interface INumberFieldComponentProps extends IConfigurableFormComponent {
   hideBorder?: boolean;
   min?: number;
   max?: number;

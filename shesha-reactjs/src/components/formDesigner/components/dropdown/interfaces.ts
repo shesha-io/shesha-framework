@@ -9,7 +9,7 @@ export interface ILabelValue<TValue = any> {
   value: TValue;
 }
 
-export interface IDropdownProps extends IConfigurableFormComponent {
+export interface IDropdownComponentProps extends IConfigurableFormComponent {
   dataSourceType: DataSourceType;
   values?: ILabelValue[];
   /**

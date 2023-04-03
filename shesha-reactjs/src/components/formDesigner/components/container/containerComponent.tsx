@@ -1,20 +1,14 @@
 import React from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
-import { IConfigurableFormComponent } from '../../../../providers/form/models';
 import { GroupOutlined } from '@ant-design/icons';
 import ComponentsContainer, { ICommonContainerProps } from '../../componentsContainer';
 import { useForm } from '../../../../providers/form';
 import { getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import { getSettings } from './settingsForm';
 import { useFormData } from '../../../../providers';
+import { IContainerComponentProps } from './interfaces';
 
 export type ContainerDirection = 'horizontal' | 'vertical';
-
-export interface IContainerComponentProps extends IConfigurableFormComponent, ICommonContainerProps {
-  className?: string;
-  wrapperStyle?: string;
-  components: IConfigurableFormComponent[]; // Only important for fluent API
-}
 
 const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   type: 'container',

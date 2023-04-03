@@ -2,7 +2,7 @@ import { CSSProperties } from 'react';
 import { RadioChangeEvent, SpaceProps } from 'antd';
 import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 import { IConfigurableFormComponent } from '../../../../providers/form/models';
-import { DataSourceType, ILabelValue } from '../dropdown/models';
+import { DataSourceType, ILabelValue } from '../dropdown/interfaces';
 import { IReferenceListIdentifier } from '../../../../providers/referenceListDispatcher/models';
 
 type CheckboxGroupMode = 'single' | 'multiple';

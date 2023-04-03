@@ -1,7 +1,7 @@
 import { SwitcherOutlined } from '@ant-design/icons';
 import { Switch } from 'antd';
 import { IToolboxComponent } from '../../../../interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '../../../../providers/form/models';
+import { FormMarkup } from '../../../../providers/form/models';
 import React from 'react';
 import ConfigurableFormItem from '../formItem';
 import settingsFormJson from './settingsForm.json';
@@ -10,17 +10,16 @@ import { useForm, useFormData } from '../../../../providers';
 import { DataTypes } from '../../../../interfaces/dataTypes';
 import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
 import { SwitchSize } from 'antd/lib/switch';
-
-export interface ISwitchProps extends IConfigurableFormComponent {}
+import { ISwitchComponentProps } from './interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
-const SwitchComponent: IToolboxComponent<ISwitchProps> = {
+const SwitchComponent: IToolboxComponent<ISwitchComponentProps> = {
   type: 'switch',
   name: 'Switch',
   icon: <SwitcherOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
-  factory: ({ size, ...model }: ISwitchProps) => {
+  factory: ({ size, ...model }: ISwitchComponentProps) => {
     const { formMode, isComponentDisabled } = useForm();
     const { data: formData } = useFormData();
 

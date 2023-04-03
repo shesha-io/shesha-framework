@@ -45,7 +45,7 @@ module.exports = {
       }]
     });
 
-    // console.log('config.module.rules: ', config.module.rules);
+    console.log('!Storybook WebPack config: ', config);
 
     // Return the altered config
     return config;

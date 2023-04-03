@@ -3,7 +3,7 @@ import { FormMarkup } from '../../../../providers/form/models';
 import { NumberOutlined } from '@ant-design/icons';
 import { InputNumber, InputNumberProps, message } from 'antd';
 import ConfigurableFormItem from '../formItem';
-import { INumberFieldProps } from './models';
+import { INumberFieldComponentProps } from './interfaces';
 import settingsFormJson from './settingsForm.json';
 import React from 'react';
 import { evaluateString, getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
@@ -17,12 +17,12 @@ import FormItemWrapper from '../formItemWrapper';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
-const NumberField: IToolboxComponent<INumberFieldProps> = {
+const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
   type: 'numberField',
   name: 'Number field',
   icon: <NumberOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.number,
-  factory: (model: INumberFieldProps, _c, form) => {
+  factory: (model: INumberFieldComponentProps, _c, form) => {
     const { formMode, isComponentDisabled, formData, setFormDataAndInstance } = useForm();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
@@ -76,7 +76,7 @@ const NumberField: IToolboxComponent<INumberFieldProps> = {
     ...model,
   }),
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
-  linkToModelMetadata: (model, metadata): INumberFieldProps => {
+  linkToModelMetadata: (model, metadata): INumberFieldComponentProps => {
     return {
       ...model,
       label: metadata.label,
@@ -88,4 +88,4 @@ const NumberField: IToolboxComponent<INumberFieldProps> = {
   },
 };
 
-export default NumberField;
+export default NumberFieldComponent;

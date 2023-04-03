@@ -4,7 +4,7 @@ import { MutableRefObject } from 'react';
 
 export type FilterTarget = 'model' | 'table';
 
-export interface ICustomFilterProps extends IConfigurableFormComponent {
+export interface ICustomFilterComponentProps extends IConfigurableFormComponent {
   filters: ITableViewProps[];
   useExpression?: boolean;
   componentRef: MutableRefObject<any>;

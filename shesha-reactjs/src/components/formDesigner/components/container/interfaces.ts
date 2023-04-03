@@ -1,3 +1,6 @@
+import { IConfigurableFormComponent } from '../../../../providers/form/models';
+import { ICommonContainerProps } from '../../componentsContainer';
+
 export type JustifyContent =
   | 'center'
   | 'start'
@@ -134,3 +137,9 @@ export type AlignSelf =
   | 'revert'
   | 'revert-layer'
   | 'unset';
+
+export interface IContainerComponentProps extends IConfigurableFormComponent, ICommonContainerProps {
+  className?: string;
+  wrapperStyle?: string;
+  components: IConfigurableFormComponent[]; // Only important for fluent API
+}

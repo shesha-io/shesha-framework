@@ -1,21 +1,12 @@
 import React, { CSSProperties, FC, ReactNode, useMemo } from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
-import { IConfigurableFormComponent } from '../../../../providers/form/models';
 import { HeartOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '../formItem';
 import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import IconPicker, { ShaIconTypes } from '../../../iconPicker';
 import { executeScriptSync, useForm, useFormData, useGlobalState } from '../../../..';
 import { iconPickerFormSettings } from './settings';
-import { ColorResult } from 'react-color';
-
-export interface IIconPickerComponentProps extends IConfigurableFormComponent {
-  readOnly?: boolean;
-  fontSize?: number;
-  color?: ColorResult;
-  customIcon?: string;
-  customColor?: string;
-}
+import { IIconPickerComponentProps } from './interfaces';
 
 const IconPickerComponent: IToolboxComponent<IIconPickerComponentProps> = {
   type: 'iconPicker',

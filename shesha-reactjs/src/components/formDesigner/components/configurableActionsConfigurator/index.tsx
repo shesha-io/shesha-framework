@@ -1,6 +1,5 @@
 import React, { FC, ReactNode, useMemo } from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
-import { IConfigurableFormComponent } from '../../../../providers/form/models';
 import { ThunderboltOutlined } from '@ant-design/icons';
 import { Collapse, Form, Switch, TreeSelect } from 'antd';
 import { useForm } from '../../../../providers';
@@ -11,19 +10,16 @@ import { IConfigurableActionConfiguration } from '../../../../interfaces/configu
 import { IConfigurableActionGroupDictionary } from '../../../../providers/configurableActionsDispatcher/models';
 import ActionArgumentsEditor from './actionArgumensEditor';
 import HelpTextPopover from '../../../helpTextPopover';
-
-export interface IConfigurableActionNamesComponentProps extends IConfigurableFormComponent {
-
-}
+import { IConfigurableActionConfiguratorComponentProps } from './interfaces';
 
 const { Panel } = Collapse;
 
-const ConfigurableActionConfiguratorComponent: IToolboxComponent<IConfigurableActionNamesComponentProps> = {
+const ConfigurableActionConfiguratorComponent: IToolboxComponent<IConfigurableActionConfiguratorComponentProps> = {
   type: 'configurableActionConfigurator',
   name: 'Configurable Action Configurator',
   icon: <ThunderboltOutlined />,
   isHidden: true,
-  factory: (model: IConfigurableActionNamesComponentProps) => {
+  factory: (model: IConfigurableActionConfiguratorComponentProps) => {
     const { isComponentHidden, formMode } = useForm();
 
     const isHidden = isComponentHidden(model);
@@ -41,7 +37,7 @@ const ConfigurableActionConfiguratorComponent: IToolboxComponent<IConfigurableAc
 };
 
 interface IConfigurableActionConfiguratorProps {
-  editorConfig: IConfigurableActionNamesComponentProps;
+  editorConfig: IConfigurableActionConfiguratorComponentProps;
   value?: IConfigurableActionConfiguration;
   onChange?: (value: IConfigurableActionConfiguration) => void;
   level: number;

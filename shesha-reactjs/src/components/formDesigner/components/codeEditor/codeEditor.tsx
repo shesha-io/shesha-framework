@@ -5,7 +5,7 @@ import { ICodeTreeLevel } from '../../../codeEditor/codeCompleter';
 import { IPropertyMetadata } from '../../../../interfaces/metadata';
 import { Alert, Button, Modal, Space, Tabs } from 'antd';
 import { CodeOutlined } from '@ant-design/icons';
-import { ICodeEditorProps } from './models';
+import { ICodeEditorProps } from './interfaces';
 import { CodeVariablesTables } from '../../../codeVariablesTable';
 
 const { TabPane } = Tabs;

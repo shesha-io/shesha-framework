@@ -3,7 +3,7 @@ import { CSSProperties } from 'react';
 import { RadioChangeEvent, SpaceProps } from 'antd';
 import { ReferenceListItemDto } from '../../../../apis/referenceList';
 import { IConfigurableFormComponent } from '../../../../interfaces';
-import { DataSourceType, ILabelValue } from '../dropdown/models';
+import { DataSourceType, ILabelValue } from '../dropdown/interfaces';
 import { IReferenceListIdentifier } from '../../../../providers/referenceListDispatcher/models';
 
 export interface IRadioProps extends Omit<IConfigurableFormComponent, 'style'> {

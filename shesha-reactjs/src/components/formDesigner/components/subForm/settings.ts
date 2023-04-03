@@ -6,7 +6,6 @@ export const alertSettingsForm = new DesignerToolbarSettings()
     name: 'separator1',
     parentId: 'root',
     label: 'Display',
-    title: '',
   })
   .addPropertyAutocomplete({
     id: 'e602b791-2352-4858-98c2-b4eb7377e1c9',

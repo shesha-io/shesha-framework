@@ -14,7 +14,6 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
     name: 'separator1',
     parentId: 'root',
     label: 'Display',
-    title: '',
   })
   .addDropdown({
     id: nanoid(),
@@ -85,7 +84,6 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
     name: 'separator2',
     parentId: 'root',
     label: 'Data type and format',
-    title: '',
   })
   .addDropdown({
     id: '747589ce-a289-44b9-b713-01d072ac9d01',
@@ -159,7 +157,6 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
   .addSectionSeparator({
     id: nanoid(),
     name: 'separatorColor',
-    title: 'Color',
     label: 'Color',
   })
   .addDropdown({
@@ -228,7 +225,6 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
   .addSectionSeparator({
     id: nanoid(),
     name: 'separatorFont',
-    title: 'Font',
     label: 'Font',
   })
   .addDropdown({
@@ -345,7 +341,6 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
     name: 'sectionStyle',
     parentId: 'root',
     label: 'Style',
-    title: '',
   })
   .addCodeEditor({
     id: '06ab0599-914d-4d2d-875c-765a495472f8',
