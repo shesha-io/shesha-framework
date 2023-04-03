@@ -119,6 +119,27 @@ export const AnnotationSettingsForm = new DesignerToolbarSettings()
         parentId: "root",
         label: "Annotation on Image"
     })
+    .addCheckbox({
+        id: "3be9da3f-f47k-71ae-b4c3-f5cc36f934d9",
+        name: "allowAddingNotes",
+        parentId: "root",
+        defaultValue: true,
+        label: "Allow adding notes"
+    })
+    .addNumberField({
+        id: "417ee22e-a49d-44f2-a1c7-fef42ec89603",
+        name: "minPoints",
+        parentId: "root",
+        label: "Min number of points",
+        min: 0,
+    })
+    .addNumberField({
+        id: "417ee33e-a49d-44f2-a1c7-fef42ec87503",
+        name: "maxPoints",
+        parentId: "root",
+        label: "Max number of points",
+        min: 0,
+    })
     .addSectionSeparator({
         id: "d675bfe4-ee69-431e-931b-b0e0b9ceee6f",
         name: "separator2",
@@ -158,13 +179,19 @@ export const AnnotationSettingsForm = new DesignerToolbarSettings()
         id: "417ee22e-a49d-44f2-a1c7-fef42ec87503",
         name: "height",
         parentId: "root",
-        label: "Height"
+        label: "Height",
+        validate: {
+            required: true
+        }
     })
     .addNumberField({
         id: "c6ecd70c-7419-4ea7-a715-d42699d26e6e",
         name: "width",
         parentId: "root",
-        label: "Width"
+        label: "Width",
+        validate: {
+            required: true
+        }
     })
     .addCodeEditor({
         id: "06ab0599-914d-4d2d-875c-765a495482f8",

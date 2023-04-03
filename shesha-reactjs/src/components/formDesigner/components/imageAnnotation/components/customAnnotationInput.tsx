@@ -1,7 +1,7 @@
 import { DeleteOutlined } from '@ant-design/icons';
 import { Button, Input } from 'antd';
 import React, { FC } from 'react';
-import { ICustomInputProps } from './model';
+import { ICustomInputProps } from '../model';
 
 const CustomInput: FC<ICustomInputProps> = ({ onChange, value, onDelete, defaultNumber }) => {
   return (
@@ -18,4 +18,4 @@ const CustomInput: FC<ICustomInputProps> = ({ onChange, value, onDelete, default
   );
 };
 
-export { CustomInput };
+export default CustomInput;

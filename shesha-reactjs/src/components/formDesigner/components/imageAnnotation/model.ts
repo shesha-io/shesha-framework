@@ -16,18 +16,33 @@ export interface IAnnotation {
         height: number
     }
 }
+export interface IAlertMessage {
+    minPoints?: number;
+    maxPoints?: number;
+    data: IAnnotation[];
+}
+export interface IAnnotationNumbers extends IAnnotation {
+    postion?: number;
+}
 export interface ICustomInputProps {
     value?: string;
-    defaultNumber?: string;
+    defaultNumber?: number;
     onChange: (value: string) => void;
     onDelete?: () => void;
 }
 export interface IDataAnnotationListProps {
     data: IAnnotation[];
 }
+export interface IImageAnnotationData {
+    viewData: IAnnotation[];
+    actualData: IAnnotation[];
+}
 export interface IImageProps extends IConfigurableFormComponent, IFormItem {
     height: string;
     width: string;
     isOnImage: boolean;
+    allowAddingNotes: boolean;
+    minPoints?: number;
+    maxPoints?: number;
     url: string;
 }
