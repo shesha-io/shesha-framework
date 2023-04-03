@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
-import DisplayFormItem from '../../../displayFormItem';
-import { IDataAnnotationListProps } from './model';
+import DisplayFormItem from '../../../../displayFormItem';
+import { IDataAnnotationListProps } from '../model';
 
 const DescriptionsList: FC<IDataAnnotationListProps> = ({ data }) => {
   const filteredData = data?.map(({ id, mark, comment }) => ({ id, mark, comment }));
@@ -25,4 +25,4 @@ const DescriptionsList: FC<IDataAnnotationListProps> = ({ data }) => {
   );
 };
 
-export { DescriptionsList };
+export default DescriptionsList;

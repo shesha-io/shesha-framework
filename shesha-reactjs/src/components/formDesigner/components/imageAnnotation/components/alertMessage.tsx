@@ -1,6 +1,6 @@
 import { Alert } from 'antd';
 import React, { FC } from 'react';
-import { IAlertMessage } from './model';
+import { IAlertMessage } from '../model';
 
 const AlertMessage: FC<IAlertMessage> = ({ maxPoints, minPoints, data }) => {
   const numberOfPoints = data?.length;
@@ -18,4 +18,4 @@ const AlertMessage: FC<IAlertMessage> = ({ maxPoints, minPoints, data }) => {
   return <>{!!message() && <Alert type="warning" showIcon message={message()} closable />}</>;
 };
 
-export { AlertMessage };
+export default AlertMessage;

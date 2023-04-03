@@ -4,10 +4,10 @@ import { ReactPictureAnnotation } from 'react-picture-annotation';
 import { FormMode, useForm, useFormData } from '../../../../providers';
 import { IAnnotation, IImageAnnotationData, IImageProps } from './model';
 import './styles/index.less';
-import { DescriptionsList } from './descriptionList';
-import { CustomInput } from './customAnnotationInput';
+import DescriptionsList from './components/descriptionList';
+import CustomInput from './components/customAnnotationInput';
 import { canSubmit, getViewData, parseIntOrDefault, sortAnnotationData } from './utilis';
-import { AlertMessage } from './alertMessage';
+import AlertMessage from './components/alertMessage';
 
 interface IProps {
   formMode?: FormMode;
@@ -16,21 +16,27 @@ interface IProps {
   value?: any;
 }
 
-const ImageAnnotation: FC<IProps> = ({ model, onChange: onChangeForm, value }) => {
+const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, value }) => {
   const { isOnImage, height, width, allowAddingNotes = true, minPoints = 0, maxPoints = 0 } = model;
+
   const { data: formData } = useFormData();
+
   const { formMode } = useForm();
+
   const imageFrameRef = useRef<HTMLDivElement>(null);
+
   const [pageSize, setPageSize] = useState({
     width: parseIntOrDefault(width),
     height: parseIntOrDefault(height),
   });
+
   const [imageAnnotationData, setImageAnnotationData] = useState<IImageAnnotationData>({
     actualData: value || [],
     viewData: value || [],
   });
 
   const url: string = getString(model?.url, formData) || formData?.[model.name];
+
   const isReadOnly = model?.readOnly || formMode === 'readonly';
 
   useEffect(() => {
@@ -64,9 +70,7 @@ const ImageAnnotation: FC<IProps> = ({ model, onChange: onChangeForm, value }) =
     });
   };
 
-  const onSelect = (selectedId: string) => {
-    console.log('selectedId', selectedId);
-  };
+  const onSelect = () => {};
 
   const onChange = (data: IAnnotation[]) => {
     if (!isReadOnly) {
@@ -122,4 +126,4 @@ const ImageAnnotation: FC<IProps> = ({ model, onChange: onChangeForm, value }) =
   );
 };
 
-export { ImageAnnotation };
+export default ImageAnnotationControl;
