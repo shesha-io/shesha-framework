@@ -1,11 +1,13 @@
 import { nanoid } from 'nanoid/non-secure';
 import { DesignerToolbarSettings } from '../../../../interfaces';
 import {
+  FONT_SIZES,
+  PADDING_SIZES, 
+} from './models';
+import {
   DEFAULT_CONTENT_DISPLAY,
   DEFAULT_CONTENT_TYPE,
   DEFAULT_PADDING_SIZE,
-  FONT_SIZES,
-  PADDING_SIZES,
 } from './utils';
 
 export const settingsFormMarkup = new DesignerToolbarSettings()

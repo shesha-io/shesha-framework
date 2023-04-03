@@ -9,13 +9,13 @@ import {
 } from '../../../../../providers/buttonGroupConfigurator/models';
 import { ReactSortable, ItemInterface } from 'react-sortablejs';
 
-export interface IButtonGroupItemsSortableProps {
+export interface IButtonGroupItemsContainerProps {
   index?: number[];
   id?: string;
   items: ButtonGroupItemProps[];
 }
 
-export const ButtonGroupItemsContainer: FC<IButtonGroupItemsSortableProps> = props => {
+export const ButtonGroupItemsContainer: FC<IButtonGroupItemsContainerProps> = props => {
   const { updateChildItems, readOnly } = useButtonGroupConfigurator();
 
   const renderItem = (item: ButtonGroupItemProps, index: number) => {

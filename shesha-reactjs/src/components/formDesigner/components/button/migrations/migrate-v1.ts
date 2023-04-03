@@ -4,12 +4,12 @@ import { IKeyValue } from "../../../../../interfaces/keyValue";
 import { IShowModalActionArguments } from "../../../../../providers/dynamicModal/configurable-actions/show-dialog-arguments";
 import { getClosestTableId } from "../../../../../providers/form/utils";
 import { getDispatchEventReplacement } from "../../_common-migrations/migrate-events";
-import { IButtonProps } from "../button";
+import { IButtonComponentProps } from "../interfaces";
 
-export const migrateV0toV1 = (props: IButtonGroupButtonV0, context: SettingsMigrationContext): IButtonProps => {
+export const migrateV0toV1 = (props: IButtonGroupButtonV0, context: SettingsMigrationContext): IButtonComponentProps => {
     const actionConfiguration = getActionConfiguration(props, context);
 
-    const result: IButtonProps = {
+    const result: IButtonComponentProps = {
         ...props,
         actionConfiguration: actionConfiguration,
         type: props['type'] ?? "button"

@@ -1,17 +1,23 @@
 import React, { FC } from 'react';
 import { Button } from 'antd';
 import { DeleteFilled } from '@ant-design/icons';
-import { IButtonGroup } from '../../../../../providers/toolbarConfigurator/models';
+import { IButtonGroup, ToolbarItemProps } from '../../../../../providers/toolbarConfigurator/models';
 import { useToolbarConfigurator } from '../../../../../providers/toolbarConfigurator';
-import ToolbarItemsContainer from './toolbarItemsContainer';
 import DragHandle from './dragHandle';
 import ShaIcon, { IconType } from '../../../../shaIcon';
 
-export interface IProps extends IButtonGroup {
-  index: number[];
+export interface IContainerRenderArgs {
+  index?: number[];
+  id?: string;
+  items: ToolbarItemProps[];
 }
 
-export const ToolbarItemsGroup: FC<IProps> = props => {
+export interface IToolbarItemsGroupProps extends IButtonGroup {
+  index: number[];
+  containerRendering: (args: IContainerRenderArgs) => React.ReactNode;
+}
+
+export const ToolbarItemsGroup: FC<IToolbarItemsGroupProps> = props => {
   const { deleteGroup, selectedItemId, readOnly } = useToolbarConfigurator();
 
   const onDeleteClick = () => {
@@ -34,7 +40,7 @@ export const ToolbarItemsGroup: FC<IProps> = props => {
         )}
       </div>
       <div className="sha-toolbar-group-container">
-        <ToolbarItemsContainer index={props.index} items={props.childItems || []} id={props.id} />
+        {props.containerRendering({ index: props.index, items: props.childItems || [], id: props.id })}
       </div>
     </div>
   );

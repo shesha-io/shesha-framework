@@ -10,7 +10,7 @@ import {
   DroppableStateSnapshot,
 } from 'react-beautiful-dnd';
 
-import { IColumnProps } from './columns';
+import { IColumnProps } from './interfaces';
 import { Table, Space, Popconfirm, Button, Form, InputNumber, Modal } from 'antd';
 import { MenuOutlined, PlusOutlined } from '@ant-design/icons';
 import { nanoid } from 'nanoid/non-secure';
