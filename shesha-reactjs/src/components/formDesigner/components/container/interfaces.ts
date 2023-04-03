@@ -1,5 +1,5 @@
 import { IConfigurableFormComponent } from '../../../../providers/form/models';
-import { ICommonContainerProps } from '../../componentsContainer';
+import { ContainerDirection } from '../../common/interfaces';
 
 export type JustifyContent =
   | 'center'
@@ -137,6 +137,22 @@ export type AlignSelf =
   | 'revert'
   | 'revert-layer'
   | 'unset';
+
+export interface ICommonContainerProps {
+  display?: 'block' | 'flex' | 'grid' | 'inline-grid';
+  direction?: ContainerDirection;
+  flexWrap?: FlexWrap;
+  flexDirection?: FlexDirection;
+  justifyContent?: JustifyContent;
+  alignItems?: AlignItems;
+  alignSelf?: AlignSelf;
+  justifyItems?: JustifyItems;
+  textJustify?: TextJustify;
+  justifySelf?: JustifySelf;
+  noDefaultStyling?: boolean;
+  gridColumnsCount?: number;
+  gap?: string | number;
+}
 
 export interface IContainerComponentProps extends IConfigurableFormComponent, ICommonContainerProps {
   className?: string;

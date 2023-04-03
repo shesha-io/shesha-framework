@@ -1,14 +1,12 @@
 import React from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
 import { GroupOutlined } from '@ant-design/icons';
-import ComponentsContainer, { ICommonContainerProps } from '../../componentsContainer';
+import ComponentsContainer from '../../componentsContainer';
 import { useForm } from '../../../../providers/form';
 import { getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import { getSettings } from './settingsForm';
 import { useFormData } from '../../../../providers';
-import { IContainerComponentProps } from './interfaces';
-
-export type ContainerDirection = 'horizontal' | 'vertical';
+import { ICommonContainerProps, IContainerComponentProps } from './interfaces';
 
 const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   type: 'container',

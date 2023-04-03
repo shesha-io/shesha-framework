@@ -1,6 +1,6 @@
 import { FormIdentifier } from '../..';
 import { IConfigurableFormComponent } from '../../providers';
-import { ICommonContainerProps } from '../formDesigner/componentsContainer';
+import { ICommonContainerProps } from '../formDesigner/components/container/interfaces';
 
 export interface ITimelineItemProps {
   toPerson?: string;
