@@ -5,7 +5,7 @@ import React, { useMemo } from 'react';
 import { useForm, useFormData, useGlobalState } from '../../../../providers';
 import { IRefListStatusProps } from './models';
 import { RefListStatusSettingsForm } from './settings';
-import { RefListStatus } from './refListStatus';
+import RefListStatusControl from './components/control';
 import { validateConfigurableComponentSettings } from '../../../../formDesignerUtils';
 import { executeCustomExpression } from '../../../../utils/publicUtils';
 import { Alert } from 'antd';
@@ -43,7 +43,7 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
 
     return (
       <ConfigurableFormItem model={{ ...model, hideLabel }}>
-        <RefListStatus model={{ ...model, solidBackground, showReflistName }} />
+        <RefListStatusControl model={{ ...model, solidBackground, showReflistName }} />
       </ConfigurableFormItem>
     );
   },
