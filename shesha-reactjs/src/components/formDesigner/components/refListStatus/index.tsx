@@ -5,7 +5,7 @@ import React, { useMemo } from 'react';
 import { useForm, useFormData, useGlobalState } from '../../../../providers';
 import { IRefListStatusProps } from './models';
 import { RefListStatusSettingsForm } from './settings';
-import { RefListStatus } from './refListStatus';
+import RefListStatusControl from './components/control';
 import { validateConfigurableComponentSettings } from '../../../../formDesignerUtils';
 import { executeCustomExpression } from '../../../../utils/publicUtils';
 import { Alert } from 'antd';
@@ -17,7 +17,7 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
 
   factory: (model: IRefListStatusProps) => {
     const { formMode } = useForm();
-    const { hideLabel = true, solidBackground = true, module, nameSpace } = model;
+    const { hideLabel = true, solidBackground = true, module, nameSpace, showReflistName = true } = model;
 
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
@@ -37,14 +37,13 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
           message="ReflistStatus configuration is incomplete"
           description="Please make sure that you've specified 'module and namespace' properties."
           type="warning"
-          
         />
       );
     }
 
     return (
       <ConfigurableFormItem model={{ ...model, hideLabel }}>
-        <RefListStatus model={{ ...model, solidBackground }} />
+        <RefListStatusControl model={{ ...model, solidBackground, showReflistName }} />
       </ConfigurableFormItem>
     );
   },

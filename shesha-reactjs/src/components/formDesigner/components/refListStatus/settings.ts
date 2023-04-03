@@ -68,6 +68,13 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
         label: "Customize Status"
     })
     .addCheckbox({
+        id: "3fg9da3f-f47e-48ae-b4c3-f5cc36f934d9",
+        name: "showReflistName",
+        parentId: "root",
+        defaultValue: true,
+        label: "Show Reflist Item Name"
+    })
+    .addCheckbox({
         id: "3be9da3f-f47e-48ae-b4c3-f5cc36f934d9",
         name: "showIcon",
         parentId: "root",
