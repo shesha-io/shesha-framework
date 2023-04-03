@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { ButtonGroupItem } from './buttonGroupItem';
-import { ButtonGroupItemsGroup } from './buttonGrouptemsGroup';
+import { ButtonGroupItemsGroup } from './buttonGroupItemsGroup';
 import { useButtonGroupConfigurator } from '../../../../../providers/buttonGroupConfigurator';
 import {
   IButtonGroup,
@@ -26,7 +26,14 @@ export const ButtonGroupItemsContainer: FC<IButtonGroupItemsSortableProps> = pro
 
       case 'group':
         const groupProps = item as IButtonGroup;
-        return <ButtonGroupItemsGroup key={index} {...groupProps} index={[...props.index, index]} />;
+        return (
+          <ButtonGroupItemsGroup 
+            key={index} 
+            {...groupProps} 
+            index={[...props.index, index]}
+            containerRendering={(args) => (<ButtonGroupItemsContainer {...args}/>)}
+          />
+        );
     }
   };
 

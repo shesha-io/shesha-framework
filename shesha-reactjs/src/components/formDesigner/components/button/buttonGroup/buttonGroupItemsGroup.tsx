@@ -1,17 +1,23 @@
 import React, { FC } from 'react';
 import { Button } from 'antd';
 import { DeleteFilled } from '@ant-design/icons';
-import { IButtonGroup } from '../../../../../providers/buttonGroupConfigurator/models';
+import { ButtonGroupItemProps, IButtonGroup } from '../../../../../providers/buttonGroupConfigurator/models';
 import { useButtonGroupConfigurator } from '../../../../../providers/buttonGroupConfigurator';
-import ButtonGroupItemsContainer from './buttonGrouptemsContainer';
 import DragHandle from './dragHandle';
 import ShaIcon, { IconType } from '../../../../shaIcon';
 
-export interface IProps extends IButtonGroup {
-  index: number[];
+export interface IContainerRenderArgs {
+  index?: number[];
+  id?: string;
+  items: ButtonGroupItemProps[];
 }
 
-export const ButtonGroupItemsGroup: FC<IProps> = props => {
+export interface IButtonGroupItemsGroupProps extends IButtonGroup {
+  index: number[];
+  containerRendering: (args: IContainerRenderArgs) => React.ReactNode;
+}
+
+export const ButtonGroupItemsGroup: FC<IButtonGroupItemsGroupProps> = props => {
   const { deleteGroup, selectedItemId, readOnly } = useButtonGroupConfigurator();
 
   const onDeleteClick = () => {
@@ -34,7 +40,7 @@ export const ButtonGroupItemsGroup: FC<IProps> = props => {
         )}
       </div>
       <div className="sha-button-group-group-container">
-        <ButtonGroupItemsContainer index={props.index} items={props.childItems || []} id={props.id} />
+        {props.containerRendering({ index: props.index, items: props.childItems || [], id: props.id })}
       </div>
     </div>
   );
