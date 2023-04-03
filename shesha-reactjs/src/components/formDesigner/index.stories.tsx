@@ -195,7 +195,7 @@ export const Playground = addStory(DesignerTemplate, {
 });
 
 export const TestWizard = addStory(DesignerTemplate, {
-  formId: 'adc2ee2c-fa02-4d4b-baef-cd1fed4b11c1',
+  formId: '51db0826-1548-4d79-8f2a-4836e3c51e18',
   // formId: {
   //   name: 'test-wizard-form',
   //   module: 'Shesha',

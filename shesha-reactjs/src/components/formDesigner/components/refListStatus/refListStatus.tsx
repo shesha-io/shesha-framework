@@ -3,7 +3,7 @@ import { FormMode, useForm } from '../../../../providers';
 import './styles/index.less';
 import { IRefListStatusProps } from './models';
 import convertCssColorNameToHex from 'convert-css-color-name-to-hex';
-import { Alert, Skeleton, Tag } from 'antd';
+import { Alert, Skeleton, Tag, Tooltip } from 'antd';
 import { getStyle } from '../../../../utils/publicUtils';
 import { ReferenceListItemDto, useReferenceListGetByName } from '../../../../apis/referenceList';
 
@@ -16,7 +16,7 @@ interface IProps {
 
 const RefListStatus: FC<IProps> = ({ model }) => {
   const { formData: data, formMode } = useForm();
-  const { module, nameSpace, showIcon, solidBackground, style, name } = model;
+  const { module, nameSpace, showIcon, solidBackground, style, name, showReflistName } = model;
 
   const {
     data: refListData,
@@ -60,14 +60,16 @@ const RefListStatus: FC<IProps> = ({ model }) => {
 
   return (
     <Skeleton loading={isFetchingRefListData}>
-      <Tag
-        className="sha-status-tag"
-        color={memoizedColor}
-        style={{ ...getStyle(style, data) }}
-        icon={canShowIcon ? <Icon type={currentStatus?.icon} /> : null}
-      >
-        {currentStatus?.item}
-      </Tag>
+      <Tooltip placement="rightTop" title={toolTipTittle(currentStatus, showReflistName)}>
+        <Tag
+          className="sha-status-tag"
+          color={memoizedColor}
+          style={{ ...getStyle(style, data) }}
+          icon={canShowIcon ? <Icon type={currentStatus?.icon} /> : null}
+        >
+          {showReflistName && currentStatus?.item}
+        </Tag>
+      </Tooltip>
     </Skeleton>
   );
 };
@@ -77,5 +79,20 @@ const Icon = ({ type, ...rest }) => {
   const Component = icons[type];
   return <Component {...rest} />;
 };
-
+const toolTipTittle = (currentStatus: ReferenceListItemDto, showReflistName: boolean) => {
+  return (
+    <>
+      {showReflistName ? (
+        <p>Description:{currentStatus?.description}</p>
+      ) : (
+        <p>
+          {' '}
+          Description:{currentStatus?.item}
+          <br />
+          Description:{currentStatus?.description}
+        </p>
+      )}
+    </>
+  );
+};
 export { RefListStatus };

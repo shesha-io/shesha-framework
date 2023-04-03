@@ -2,8 +2,9 @@ import React, { FC } from 'react';
 import { Col, Divider, Row } from 'antd';
 import { CollapsiblePanel, Page, SectionSeparator } from '../../../components';
 import FormExample from './form';
-import AlertsExample from './aletrs';
+import AlertsExample from './alertsExamples';
 import ThemeParameters from './parameters';
+import TextsExample from './textsExample';
 
 export interface IConfigurableThemePageProps {}
 
@@ -26,6 +27,11 @@ const ConfigurableThemePage: FC<IConfigurableThemePageProps> = () => {
 
             <SectionSeparator title="Forms" />
             <FormExample />
+
+            <Divider />
+
+            <SectionSeparator title="Texts" />
+            <TextsExample />
           </CollapsiblePanel>
         </Col>
       </Row>
