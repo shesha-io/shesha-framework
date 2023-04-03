@@ -8,7 +8,7 @@ import { upgradeComponentsTree, useFormDesignerComponents } from '../../../../pr
 import Show from '../../../show';
 import FormInfo from '../../../configurableForm/formInfo';
 import { ConfigurationItemVersionStatusMap } from '../../../../utils/configurationFramework/models';
-import { IPersistedFormProps } from '../../../../providers/formPersisterProvider/models';
+import { IPersistedFormProps } from '../../../../providers/form/models';
 
 interface ISubFormProps {
   style?: CSSProperties;

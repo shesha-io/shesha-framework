@@ -1,6 +1,5 @@
 import { Moment } from 'moment';
 import { IDataColumnsProps } from '../datatableColumnsConfigurator/models';
-import { IPublicDataTableActions } from './contexts';
 export type ColumnFilter = string[] | number[] | Moment[] | Date[] | string | number | Moment | Date | boolean;
 
 export type IndexColumnDataType =
@@ -190,6 +189,15 @@ export interface ITableDataInternalResponse {
   readonly totalRows: number;
   readonly totalRowsBeforeFilter: number;
   readonly rows: object[];
+}
+
+export interface IPublicDataTableActions {
+  refreshTable: () => void;
+  exportToExcel?: () => void;
+  deleteRow?: () => void;
+  toggleColumnsSelector?: () => void;
+  toggleAdvancedFilter?: () => void;
+  setToEditMode?: () => void;
 }
 
 export interface IDataTableInstance extends IPublicDataTableActions { }

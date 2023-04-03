@@ -9,6 +9,7 @@ import {
   IndexColumnFilterOption,
   ColumnFilter,
   IGetDataPayloadInternal,
+  IPublicDataTableActions,
 } from './interfaces';
 
 export type IFlagProgressFlags =
@@ -136,15 +137,6 @@ export interface IDataTableStateContext
 
   userConfigId?: string;
   //#endregion
-}
-
-export interface IPublicDataTableActions {
-  refreshTable: () => void;
-  exportToExcel?: () => void;
-  deleteRow?: () => void;
-  toggleColumnsSelector?: () => void;
-  toggleAdvancedFilter?: () => void;
-  setToEditMode?: () => void;
 }
 
 export interface IDataTableActionsContext

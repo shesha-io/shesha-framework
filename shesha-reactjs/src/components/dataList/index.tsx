@@ -6,7 +6,7 @@ import { useMeasure, usePrevious } from "react-use";
 import { FormFullName, FormIdentifier, IFormDto, useAppConfigurator, useSheshaApplication } from "../../providers";
 import { useConfigurationItemsLoader } from "../../providers/configurationItemsLoader";
 import { getFormConfiguration, getMarkupFromResponse } from "../../providers/form/api";
-import { IPersistedFormProps } from "../../providers/formPersisterProvider/models";
+import {  } from "../../providers/form/models";
 import ConditionalWrap from "../conditionalWrapper";
 import ConfigurableForm from "../configurableForm";
 import FormInfo from "../configurableForm/formInfo";

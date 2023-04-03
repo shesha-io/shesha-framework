@@ -8,9 +8,8 @@ import { useAppConfigurator, useShaRouting, useSheshaApplication } from '../../p
 import classNames from 'classnames';
 import { FormPersisterConsumer, FormPersisterProvider } from '../../providers/formPersisterProvider';
 import { FormMarkupConverter } from '../../providers/formMarkupConverter';
-import { FormIdentifier, FormRawMarkup, IFormSettings } from '../../providers/form/models';
+import { FormIdentifier, FormRawMarkup, IFormSettings, IPersistedFormProps } from '../../providers/form/models';
 import { convertToMarkupWithSettings } from '../../providers/form/utils';
-import { IPersistedFormProps } from '../../providers/formPersisterProvider/models';
 import { ConfigurationItemVersionStatusMap } from '../../utils/configurationFramework/models';
 import Show from '../show';
 import FormInfo from './formInfo';
