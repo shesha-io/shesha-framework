@@ -3,7 +3,7 @@ import classNames from "classnames";
 import { nanoid } from "nanoid";
 import React, { FC, useEffect, useMemo, useState } from "react";
 import { useMeasure, usePrevious } from "react-use";
-import { FormFullName, FormIdentifier, IFormDto, useAppConfigurator, useSheshaApplication } from "../../providers";
+import { FormFullName, FormIdentifier, IFormDto, IPersistedFormProps, useAppConfigurator, useSheshaApplication } from "../../providers";
 import { useConfigurationItemsLoader } from "../../providers/configurationItemsLoader";
 import { getFormConfiguration, getMarkupFromResponse } from "../../providers/form/api";
 import {  } from "../../providers/form/models";

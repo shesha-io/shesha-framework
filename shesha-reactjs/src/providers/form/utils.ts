@@ -46,10 +46,8 @@ import formViewMarkup from './defaults/markups/formView.json';
 import masterDetailsViewMarkup from './defaults/markups/masterDetailsView.json';
 import menuViewMarkup from './defaults/markups/menuView.json';
 import tableViewMarkup from './defaults/markups/tableView.json';
-import { useSheshaApplication } from '..';
-import { CSSProperties, useMemo } from 'react';
+import { CSSProperties } from 'react';
 import camelcase from 'camelcase';
-import defaultToolboxComponents from './defaults/toolboxComponents';
 import { Migrator } from '../../utils/fluentMigrator/migrator';
 
 /**
@@ -820,18 +818,6 @@ export const convertSectionsToList = (ownerId: string, sections: IFormSections):
   return result;
 };
 
-export const toolbarGroupsToComponents = (availableComponents: IToolboxComponentGroup[]): IToolboxComponents => {
-  const allComponents: IToolboxComponents = {};
-  if (availableComponents) {
-    availableComponents.forEach(group => {
-      group.components.forEach(component => {
-        allComponents[component.type] = component;
-      });
-    });
-  }
-  return allComponents;
-};
-
 export const findToolboxComponent = (
   availableComponents: IToolboxComponentGroup[],
   predicate: (component: IToolboxComponent) => boolean
@@ -1045,21 +1031,6 @@ export const createComponentModelForDataProperty = (
   componentModel = listComponentToModelMetadata(toolboxComponent, componentModel, propertyMetadata);
 
   return componentModel;
-};
-
-export const useFormDesignerComponentGroups = () => {
-  const app = useSheshaApplication(false);
-  const appComponentGroups = app?.toolboxComponentGroups ?? [];
-
-  const toolboxComponentGroups = [...(defaultToolboxComponents || []), ...appComponentGroups];
-  return toolboxComponentGroups;
-};
-
-export const useFormDesignerComponents = () => {
-  const componentGroups = useFormDesignerComponentGroups();
-
-  const toolboxComponents = useMemo(() => toolbarGroupsToComponents(componentGroups), [componentGroups]);
-  return toolboxComponents;
 };
 
 interface IKeyValue {

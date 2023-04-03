@@ -2,7 +2,8 @@ import React, { FC, useMemo } from 'react';
 import { IConfigurableFormComponent } from '../../../../interfaces/formDesigner';
 import { IPropertyMetadata } from '../../../../interfaces/metadata';
 import { useForm } from '../../../../providers/form';
-import { camelcaseDotNotation, createComponentModelForDataProperty, useFormDesignerComponentGroups } from '../../../../providers/form/utils';
+import { camelcaseDotNotation, createComponentModelForDataProperty } from '../../../../providers/form/utils';
+import { useFormDesignerComponentGroups } from '../../../../providers/form/hooks';
 import { useMetadata } from '../../../../providers/metadata';
 import DynamicContainer from './dynamicContainer';
 

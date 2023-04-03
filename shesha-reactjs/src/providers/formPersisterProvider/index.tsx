@@ -23,8 +23,7 @@ import {
 } from './actions';
 import { useFormConfigurationUpdateMarkup, FormUpdateMarkupInput } from '../../apis/formConfiguration';
 import useThunkReducer from '../../hooks/thunkReducer';
-import { DEFAULT_FORM_SETTINGS, FormIdentifier, FormMarkupWithSettings, IFormSettings } from '../form/models';
-import { IPersistedFormProps } from './models';
+import { DEFAULT_FORM_SETTINGS, FormIdentifier, FormMarkupWithSettings, IFormSettings, IPersistedFormProps } from '../form/models';
 import { useConfigurationItemsLoader } from '../configurationItemsLoader';
 import { useAppConfigurator } from '../..';
 

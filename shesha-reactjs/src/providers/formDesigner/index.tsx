@@ -40,7 +40,7 @@ import {
   dataPropertyAddAction,
   componentAddFromTemplateAction,
 } from './actions';
-import { useFormDesignerComponentGroups, useFormDesignerComponents } from '../form/utils';
+import { useFormDesignerComponentGroups, useFormDesignerComponents } from '../form/hooks';
 import { ActionCreators } from 'redux-undo';
 import useThunkReducer from '../../hooks/thunkReducer';
 import { IAsyncValidationError, IFormValidationErrors, IToolboxComponent } from '../../interfaces';

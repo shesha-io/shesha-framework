@@ -16,7 +16,8 @@ import {
 import { useForm } from '../../providers/form';
 import { useFormPersister } from '../../providers/formPersisterProvider';
 import { useFormDesigner } from '../../providers/formDesigner';
-import { componentsFlatStructureToTree, useFormDesignerComponents } from '../../providers/form/utils';
+import { componentsFlatStructureToTree } from '../../providers/form/utils';
+import { useFormDesignerComponents } from '../../providers/form/hooks';
 import { FormMarkupWithSettings } from '../../providers/form/models';
 import FormSettingsEditor from './formSettingsEditor';
 import { ConfigurationItemVersionStatus } from '../../utils/configurationFramework/models';
