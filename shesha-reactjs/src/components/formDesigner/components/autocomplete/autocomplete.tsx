@@ -1,7 +1,7 @@
 import { FileSearchOutlined } from '@ant-design/icons';
 import { message } from 'antd';
 import React, { Key, useMemo } from 'react';
-import { axiosHttp } from '../../../../apis/axios';
+import { axiosHttp } from '../../../../utils/fetchers';
 import { IToolboxComponent } from '../../../../interfaces';
 import { DataTypes } from '../../../../interfaces/dataTypes';
 import { FormIdentifier, useFormData, useGlobalState, useSheshaApplication } from '../../../../providers';

@@ -1,4 +1,4 @@
-export { axiosHttp } from '../apis/axios';
+export { axiosHttp } from './fetchers';
 export { requestHeaders } from './requestHeaders';
 export * from '../providers/form/utils';
 

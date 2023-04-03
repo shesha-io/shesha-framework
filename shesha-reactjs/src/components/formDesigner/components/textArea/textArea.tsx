@@ -11,7 +11,7 @@ import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../.
 import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
 import { DataTypes, StringFormats } from '../../../../interfaces/dataTypes';
 import { customEventHandler } from '../utils';
-import { axiosHttp } from '../../../../apis/axios';
+import { axiosHttp } from '../../../../utils/fetchers';
 import moment from 'moment';
 
 export interface ITextAreaProps extends IConfigurableFormComponent {

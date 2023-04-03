@@ -8,11 +8,11 @@ import {
   CollapsibleSidebarContainer,
   IndexTableColumnFilters,
   IndexTableColumnVisibilityToggle,
-  axiosHttp,
   useSheshaApplication,
   useFormData,
   useConfigurableActionDispatcher,
 } from '../../../../../';
+import { axiosHttp } from '../../../../../utils/fetchers';
 import { useDataTableSelection } from '../../../../../providers/dataTableSelection';
 import { useDataTableStore, useGlobalState } from '../../../../../providers';
 import TableSettings from './tableComponent-settings';

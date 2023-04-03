@@ -13,7 +13,7 @@ import { evaluateString } from '../../../..';
 import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../../../../providers';
 import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
 import { customDropDownEventHandler } from '../utils';
-import { axiosHttp } from '../../../../apis/axios';
+import { axiosHttp } from '../../../../utils/fetchers';
 import moment from 'moment';
 import { getLegacyReferenceListIdentifier } from '../../../../utils/referenceList';
 

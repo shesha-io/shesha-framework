@@ -13,7 +13,7 @@ import { DataTypes } from '../../../../interfaces/dataTypes';
 import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
 import { getPropertyMetadata, getMoment } from '../../../../utils/date';
 import { customDateEventHandler } from '../utils';
-import { axiosHttp } from '../../../../apis/axios';
+import { axiosHttp } from '../../../../utils/fetchers';
 import { ProperyDataType } from '../../../../interfaces/metadata';
 
 const DATE_TIME_FORMATS = {

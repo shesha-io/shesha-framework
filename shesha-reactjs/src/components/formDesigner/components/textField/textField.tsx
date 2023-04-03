@@ -11,7 +11,7 @@ import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../.
 import { customEventHandler } from '../utils';
 import { DataTypes, StringFormats } from '../../../../interfaces/dataTypes';
 import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
-import { axiosHttp } from '../../../../apis/axios';
+import { axiosHttp } from '../../../../utils/fetchers';
 import moment from 'moment';
 //import { Migrator, MigratorFluent } from '../../../../utils/fluentMigrator/migrator';
 

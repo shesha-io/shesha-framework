@@ -1,6 +1,8 @@
-import { AxiosResponse } from "axios";
+import axios, { AxiosResponse } from "axios";
 import qs from "qs";
 import { IAjaxResponse } from "../interfaces/ajaxResponse";
+import { DEFAULT_ACCESS_TOKEN_NAME } from '../providers/sheshaApplication/contexts';
+import { requestHeaders } from './requestHeaders';
 
 export function constructUrl<TQueryParams>(
   base: string,
@@ -154,7 +156,7 @@ export const getFileNameFromResponse = (fileResponse: AxiosResponse<any>): strin
 export const unwrapAbpResponse = <TResponse extends any, TData extends any>(response: TResponse): TData | TResponse => {
   if (!response)
     return response;
-  
+
   const ajaxResponse = response as IAjaxResponse<TData>;
   const result = ajaxResponse.success && ajaxResponse.result
     ? ajaxResponse.result
@@ -162,3 +164,10 @@ export const unwrapAbpResponse = <TResponse extends any, TData extends any>(resp
 
   return result;
 };
+
+export const axiosHttp = (baseURL: string, tokenName?: string) =>
+  axios.create({
+    baseURL,
+    timeout: 10000,
+    headers: requestHeaders(tokenName || DEFAULT_ACCESS_TOKEN_NAME, { addCustomHeaders: true }),
+  });
