@@ -73,7 +73,8 @@ import { useGlobalState } from '../globalState';
 import camelCaseKeys from 'camelcase-keys';
 import qs from 'qs';
 import { advancedFilter2JsonLogic } from './utils';
-import { camelcaseDotNotation, convertDotNotationPropertiesToGraphQL } from '../form/utils';
+import { convertDotNotationPropertiesToGraphQL } from '../form/utils';
+import { camelcaseDotNotation } from '../../utils/string';
 import { GENERIC_ENTITIES_ENDPOINT } from '../../constants';
 import { useConfigurableAction } from '../configurableActionsDispatcher';
 

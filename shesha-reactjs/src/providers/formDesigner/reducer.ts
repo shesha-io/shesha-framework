@@ -22,7 +22,6 @@ import {
 import { FormActionEnums } from './actions';
 import { handleActions } from 'redux-actions';
 import {
-  camelcaseDotNotation,
   cloneComponents,
   createComponentModelForDataProperty,
   findToolboxComponent,
@@ -31,6 +30,7 @@ import {
   processRecursive,
   upgradeComponent,
 } from '../form/utils';
+import { camelcaseDotNotation } from '../../utils/string';
 import undoable, { includeAction } from 'redux-undo';
 import { IFormValidationErrors } from '../../interfaces';
 import { IDataSource } from '../formDesigner/models';

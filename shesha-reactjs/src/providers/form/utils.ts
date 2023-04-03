@@ -676,13 +676,6 @@ export const getValidationRules = (component: IConfigurableFormComponent, option
   return rules;
 };
 
-/* Convert string to camelCase */
-export const camelcaseDotNotation = str =>
-  str
-    .split('.')
-    .map(s => camelcase(s))
-    .join('.');
-
 const DICTIONARY_ACCESSOR_REGEX = /(^[\s]*\{(?<key>[\w]+)\.(?<accessor>[^\}]+)\}[\s]*$)/;
 const NESTED_ACCESSOR_REGEX = /((?<key>[\w]+)\.(?<accessor>[^\}]+))/;
 

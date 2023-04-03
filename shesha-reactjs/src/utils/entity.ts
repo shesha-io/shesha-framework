@@ -2,7 +2,7 @@ import { useMemo, useRef } from "react";
 import { useGet } from "restful-react";
 import { GENERIC_ENTITIES_ENDPOINT } from "../constants";
 import { EntityData, IAbpWrappedGetEntityListResponse, IGetAllPayload } from "../interfaces/gql";
-import { camelcaseDotNotation } from "../providers/form/utils";
+import { camelcaseDotNotation } from "../utils/string";
 
 export interface IUseEntityDisplayTextProps {
     entityType?: string;

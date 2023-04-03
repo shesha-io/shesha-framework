@@ -1,7 +1,7 @@
 import { IconType } from "../components/shaIcon";
 import { DataTypes } from "../interfaces/dataTypes";
 import { IPropertyMetadata } from "../interfaces/metadata";
-import { camelcaseDotNotation } from "../providers/form/utils";
+import { camelcaseDotNotation } from "../utils/string";
 import ShaIcon from '../components/shaIcon';
 import GenericOutlined from "../icons/genericOutlined";
 import { JsonOutlined } from "../icons/jsonOutlined";
