@@ -1,6 +1,6 @@
 import React, { FC, useEffect } from 'react';
 import { FormMode, useForm } from '../../../../../providers';
-import './styles/index.less';
+import '../styles/index.less';
 import { IRefListStatusProps } from '../models';
 import convertCssColorNameToHex from 'convert-css-color-name-to-hex';
 import { Alert, Skeleton, Tag, Tooltip } from 'antd';
