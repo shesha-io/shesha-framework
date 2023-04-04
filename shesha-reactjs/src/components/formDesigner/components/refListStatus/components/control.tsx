@@ -8,6 +8,7 @@ import { getStyle } from '../../../../../utils/publicUtils';
 import { useReferenceListGetByName } from '../../../../../apis/referenceList';
 import { getCurrentStatus } from '../utilis';
 import ToolTipTittle from './tooltip';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 
 interface IProps {
   formMode?: FormMode;
@@ -52,10 +53,7 @@ const RefListStatusControl: FC<IProps> = ({ model }) => {
 
   return (
     <Skeleton loading={isFetchingRefListData}>
-      <Tooltip
-        placement="rightTop"
-        title={<ToolTipTittle showReflistName={showReflistName} currentStatus={currentStatus} />}
-      >
+      <div className='sha-status-tag-container'>
         <Tag
           className="sha-status-tag"
           color={memoizedColor}
@@ -64,7 +62,13 @@ const RefListStatusControl: FC<IProps> = ({ model }) => {
         >
           {showReflistName && currentStatus?.item}
         </Tag>
-      </Tooltip>
+        <Tooltip
+          placement="rightTop"
+          title={<ToolTipTittle showReflistName={showReflistName} currentStatus={currentStatus} />}
+        >
+          <QuestionCircleOutlined />
+        </Tooltip>
+      </div>
     </Skeleton>
   );
 };

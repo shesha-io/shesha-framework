@@ -122,7 +122,7 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
         name: "nameSpace",
         parentId: "root",
         validate: { required: true },
-        label: "Name Space"
+        label: "Name"
     })
     .addSectionSeparator({
         id: 'bc67960e-77e3-40f2-89cc-f18f94678cce',
