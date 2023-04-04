@@ -22,7 +22,7 @@
     "noImplicitThis": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "outDir": "build",
+    "outDir": "dist",
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "sourceMap": true,
@@ -36,7 +36,7 @@
     "build",
     "dist",
     "example",
-    "rollup.config.js",
+    "rollup.config.mjs",
     "**/tests",
     "**/*.test.js",
     "**/*.test.ts",
@@ -46,8 +46,7 @@
   ],
   "include": [
     "src",
-    "typings",
-    "less-compile.js"
+    "typings"
   ],
   "rootDir": "src",
   "typeRoots": [
