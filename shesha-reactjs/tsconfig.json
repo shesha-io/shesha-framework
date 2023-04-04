@@ -1,10 +1,13 @@
 {
-  "rootDir": "src",
   "compilerOptions": {
-    "outDir": "build",
-    "module": "esnext",
-    "target": "es5",
+    "allowJs": false,
+    "allowSyntheticDefaultImports": true,
+    "declaration": true,
     "downlevelIteration": true,
+    "esModuleInterop": false,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "jsx": "react",
     "lib": [
       "es6",
       "dom",
@@ -12,36 +15,22 @@
       "es2017",
       "esnext"
     ],
-    "sourceMap": true,
-    "allowJs": false,
-    "jsx": "react",
-    "declaration": true,
+    "module": "esnext",
     "moduleResolution": "node",
-    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": false, // todo: change to true after first successfull build
     "noImplicitReturns": true,
     "noImplicitThis": true,
-    "noImplicitAny": false, // todo: change to true after first successfull build
-    "suppressImplicitAnyIndexErrors": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": false,
+    "outDir": "build",
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
     "strictNullChecks": false,
     "strictPropertyInitialization": false,
-    "resolveJsonModule": true,
-    "experimentalDecorators": true,
-    "skipLibCheck": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "target": "es5"
   },
-  "typeRoots": [
-    "typings",
-    "node_modules/@types",
-    "models"
-  ],
-  "include": [
-    "src",
-    "typings",
-    "less-compile.js"
-  ],
   "exclude": [
     "node_modules",
     "build",
@@ -54,5 +43,16 @@
     "**/*.test.tsx",
     "**/*.stories.d.ts",
     "**/__test__/**"
+  ],
+  "include": [
+    "src",
+    "typings",
+    "less-compile.js"
+  ],
+  "rootDir": "src",
+  "typeRoots": [
+    "typings",
+    "node_modules/@types",
+    "models"
   ]
 }
