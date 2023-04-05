@@ -9,6 +9,6 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
     {
         public virtual Employee Employee { get; set; }
 
-        public virtual Account Account { get; set; }
+        public virtual TestAccount TestAccount { get; set; }
     }
 }
