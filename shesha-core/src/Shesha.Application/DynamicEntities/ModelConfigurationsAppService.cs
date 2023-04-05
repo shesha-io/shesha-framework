@@ -162,10 +162,6 @@ namespace Shesha.DynamicEntities
                 : null;
 
             modelConfig.Module = module;
-            modelConfig.Name = input.Name;
-            modelConfig.Label = input.Label;
-            modelConfig.Description = input.Description;
-            modelConfig.Suppress = input.Suppress;
 
             // ToDo: Temporary
             modelConfig.VersionNo = 1;
@@ -307,6 +303,7 @@ namespace Shesha.DynamicEntities
                 {
                     mapExpression.ForMember(d => d.ClassName, o => o.Ignore());
                     mapExpression.ForMember(d => d.Namespace, o => o.Ignore());
+                    mapExpression.ForMember(e => e.Module, c => c.Ignore());
                 }
             });
 
