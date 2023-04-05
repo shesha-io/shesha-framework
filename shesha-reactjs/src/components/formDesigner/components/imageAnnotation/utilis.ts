@@ -1,11 +1,11 @@
 import { IAnnotation } from "./model";
 
 
-function canSubmit(data: IAnnotation[], minPoints: number, maxPoints: number,) {
-    const numberOfPoints = data?.length;
-    if (!!minPoints && numberOfPoints < minPoints) {
-        return false;
-    } else if (!!maxPoints && numberOfPoints > maxPoints) {
+function canSubmit(data: IAnnotation[], minPoints: number) {
+
+    const numberOfPoints = data?.filter(({ comment }) => !!comment)?.length;
+
+    if (numberOfPoints < minPoints) {
         return false;
     }
     return true;
@@ -15,6 +15,7 @@ function parseIntOrDefault(input: any, defaultValue: number = 0): number {
     return isNaN(parsed) ? defaultValue : parsed;
 }
 function sortAnnotationData(data: IAnnotation[]) {
+
     let annotationLength = data?.length;
     const arrangedComments = data
         ?.filter(mark => !!mark?.comment)
@@ -23,6 +24,7 @@ function sortAnnotationData(data: IAnnotation[]) {
             return parseInt(order[0]) - parseInt(order[2]);
         })
         ?.map(({ comment, ...rest }, index) => {
+
             const [, commt] = comment?.split('.');
             return {
                 ...rest,

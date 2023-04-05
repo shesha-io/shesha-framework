@@ -62,12 +62,16 @@ const RefListStatusControl: FC<IProps> = ({ model }) => {
         >
           {showReflistName && currentStatus?.item}
         </Tag>
-        <Tooltip
-          placement="rightTop"
-          title={<ToolTipTittle showReflistName={showReflistName} currentStatus={currentStatus} />}
-        >
-          <QuestionCircleOutlined />
-        </Tooltip>
+        {currentStatus?.description && (
+          <Tooltip
+            placement="rightTop"
+            title={<ToolTipTittle showReflistName={showReflistName} currentStatus={currentStatus} />}
+          >
+
+            <QuestionCircleOutlined className='sha-help-icon' />
+
+          </Tooltip>
+        )}
       </div>
     </Skeleton>
   );

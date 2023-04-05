@@ -1,16 +1,16 @@
-import { getString } from '../../../../providers/form/utils';
 import React, { FC, useEffect, useRef, useState } from 'react';
 import { ReactPictureAnnotation } from 'react-picture-annotation';
-import { FormMode, useForm, useFormData } from '../../../../providers';
+import { usePrevious } from '../../../../hooks';
+import { useForm, useFormData } from '../../../../providers';
+import { getString } from '../../../../providers/form/utils';
+import CustomInput from './components/customAnnotationInput';
+import DescriptionsList from './components/descriptionList';
+import ErrorMessage from './components/errorMessage';
 import { IAnnotation, IImageAnnotationData, IImageProps } from './model';
 import './styles/index.less';
-import DescriptionsList from './components/descriptionList';
-import CustomInput from './components/customAnnotationInput';
 import { canSubmit, getViewData, parseIntOrDefault, sortAnnotationData } from './utilis';
-import AlertMessage from './components/alertMessage';
 
 interface IProps {
-  formMode?: FormMode;
   model: IImageProps;
   onChange?: Function;
   value?: any;
@@ -35,7 +35,7 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
     viewData: value || [],
   });
 
-  const url: string = getString(model?.url, formData) || formData?.[model.name];
+  const prevLeghth = usePrevious(imageAnnotationData?.viewData?.length);
 
   const isReadOnly = model?.readOnly || formMode === 'readonly';
 
@@ -62,6 +62,8 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
       height: parseIntOrDefault(height),
     }));
   }, [height, width]);
+  
+  const url: string = getString(model?.url, formData) || formData?.[model.name];
 
   const onResize = () => {
     setPageSize({
@@ -70,46 +72,79 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
     });
   };
 
-  const onSelect = () => {};
+  const setIsRequired = (required: boolean) => {
+    model.validate.required = required;
+  };
+  
+  const onSelect = () => { };
 
   const onChange = (data: IAnnotation[]) => {
     if (!isReadOnly) {
+      const recordedData = data?.filter(({ comment }) => !!comment);
+
       setImageAnnotationData({
         viewData: allowAddingNotes ? data : getViewData(sortAnnotationData(data), allowAddingNotes),
-        actualData: data,
+        actualData: recordedData,
       });
-      if (canSubmit(data, minPoints, maxPoints)) {
+
+      if (canSubmit(data, minPoints)) {
+        setIsRequired(false);
+
         onChangeForm(sortAnnotationData(data));
+      } else {
+        const recordeddata = data?.filter(({ comment }) => !!comment)?.length;
+
+        if (!!minPoints && minPoints > recordeddata) {
+          setIsRequired(true);
+        }
+
+        onChangeForm([]);
       }
     }
   };
 
-  const maxpointReached = !!maxPoints && imageAnnotationData?.actualData?.length - 1 >= maxPoints;
+  const maxpointReached = !!maxPoints && imageAnnotationData?.actualData?.length >= maxPoints;
+
+  const hasUpdated = prevLeghth != imageAnnotationData?.viewData?.length;
+
+  const topDisplacement = parseInt(height) * 0.98;
 
   return (
     <div className="annotation-conatainer">
       <div className="container-image" ref={imageFrameRef} style={{ ...pageSize }}>
+        <div className="image-frame-with-error">
+          <ReactPictureAnnotation
+            inputElement={(value, onChange, onDelete) => (
+              <CustomInput
+                value={value}
+                defaultNumber={imageAnnotationData?.viewData?.length}
+                onChange={onChange}
+                onDelete={onDelete}
+              />
+            )}
+            annotationData={
+              hasUpdated ? sortAnnotationData(imageAnnotationData.viewData) : imageAnnotationData.viewData
+            }
+            image={url}
+            onSelect={onSelect}
+            onChange={onChange}
+            width={parseIntOrDefault(imageFrameRef?.current?.offsetWidth)}
+            height={parseIntOrDefault(imageFrameRef?.current?.offsetHeight)}
+            marginWithInput={2}
+          />
+        </div>
         {!isReadOnly && (
-          <AlertMessage minPoints={minPoints} maxPoints={maxPoints} data={imageAnnotationData?.actualData} />
-        )}
-        <ReactPictureAnnotation
-          inputElement={(value, onChange, onDelete) => (
-            <CustomInput
-              value={value}
-              defaultNumber={imageAnnotationData?.viewData?.length}
-              onChange={onChange}
-              onDelete={onDelete}
+          <div className="annotation-error" style={{ top: topDisplacement }}>
+            <ErrorMessage
+              isRequired={!!model.validate?.required}
+              minPoints={minPoints}
+              maxPoints={maxPoints}
+              dataLength={imageAnnotationData?.actualData?.length}
             />
-          )}
-          annotationData={sortAnnotationData(imageAnnotationData.viewData)}
-          image={url}
-          onSelect={onSelect}
-          onChange={onChange}
-          width={parseIntOrDefault(imageFrameRef?.current?.offsetWidth)}
-          height={parseIntOrDefault(imageFrameRef?.current?.offsetHeight)}
-          marginWithInput={2}
-        />
+          </div>
+        )}
       </div>
+
       {(isReadOnly || maxpointReached) && <div className="container-image-Cover" style={{ ...pageSize }} />}
 
       {!isOnImage && allowAddingNotes && (

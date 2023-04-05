@@ -16,6 +16,9 @@ const ImageAnnotationComponent: IToolboxComponent<IImageProps> = {
 
   factory: (model: IImageProps) => {
     const { formMode } = useForm();
+    
+
+
 
     if (formMode === 'designer' && !model?.url) {
       return (

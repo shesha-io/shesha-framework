@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid';
 import { DesignerToolbarSettings } from '../../../../interfaces/toolbarSettings';
 
 export const RefListStatusSettingsForm = new DesignerToolbarSettings()
@@ -138,5 +139,9 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
         label: 'Custom Visibility',
         description:
             'Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
+        exposedVariables: [
+            { id: nanoid(), name: 'value', description: 'Component current value', type: 'string | any' },
+            { id: nanoid(), name: 'data', description: 'Selected form values', type: 'object' },
+        ],
     })
     .toJson()

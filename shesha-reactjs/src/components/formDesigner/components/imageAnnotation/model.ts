@@ -17,7 +17,6 @@ export interface IAnnotation {
     }
 }
 export interface IAlertMessage {
-    minPoints?: number;
     maxPoints?: number;
     data: IAnnotation[];
 }
