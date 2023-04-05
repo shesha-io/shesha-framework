@@ -1,26 +1,22 @@
-import { getString } from '../../../../providers/form/utils';
 import React, { FC, useEffect, useRef, useState } from 'react';
 import { ReactPictureAnnotation } from 'react-picture-annotation';
-import { FormMode, useForm, useFormData } from '../../../../providers';
-import { IAnnotation, IImageAnnotationData, IImageProps } from './model';
-import './styles/index.less';
+import { usePrevious } from '../../../../hooks';
+import { useForm, useFormData } from '../../../../providers';
+import { getString } from '../../../../providers/form/utils';
+import CustomInput from './components/customAnnotationInput';
 import DescriptionsList from './components/descriptionList';
 import ErrorMessage from './components/errorMessage';
-import CustomInput from './components/customAnnotationInput';
+import { IAnnotation, IImageAnnotationData, IImageProps } from './model';
+import './styles/index.less';
 import { canSubmit, getViewData, parseIntOrDefault, sortAnnotationData } from './utilis';
 
-import { usePrevious } from '../../../../hooks';
-
 interface IProps {
-  formMode?: FormMode;
   model: IImageProps;
   onChange?: Function;
-  setIsRequired?: React.Dispatch<React.SetStateAction<boolean>>;
-  isRequired?: boolean;
   value?: any;
 }
 
-const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, value, setIsRequired, isRequired }) => {
+const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, value }) => {
   const { isOnImage, height, width, allowAddingNotes = true, minPoints = 0, maxPoints = 0 } = model;
 
   const { data: formData } = useFormData();
@@ -40,8 +36,6 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
   });
 
   const prevLeghth = usePrevious(imageAnnotationData?.viewData?.length);
-
-  const url: string = getString(model?.url, formData) || formData?.[model.name];
 
   const isReadOnly = model?.readOnly || formMode === 'readonly';
 
@@ -68,6 +62,8 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
       height: parseIntOrDefault(height),
     }));
   }, [height, width]);
+  
+  const url: string = getString(model?.url, formData) || formData?.[model.name];
 
   const onResize = () => {
     setPageSize({
@@ -76,6 +72,10 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
     });
   };
 
+  const setIsRequired = (required: boolean) => {
+    model.validate.required = required;
+  };
+  
   const onSelect = () => { };
 
   const onChange = (data: IAnnotation[]) => {
@@ -88,17 +88,14 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
       });
 
       if (canSubmit(data, minPoints)) {
-
-        setIsRequired(() => false);
+        setIsRequired(false);
 
         onChangeForm(sortAnnotationData(data));
-
       } else {
         const recordeddata = data?.filter(({ comment }) => !!comment)?.length;
 
         if (!!minPoints && minPoints > recordeddata) {
-
-          setIsRequired(() => true);
+          setIsRequired(true);
         }
 
         onChangeForm([]);
@@ -106,9 +103,9 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
     }
   };
 
-  const maxpointReached = !!maxPoints && imageAnnotationData?.actualData?.length - 1 >= maxPoints;
+  const maxpointReached = !!maxPoints && imageAnnotationData?.actualData?.length >= maxPoints;
 
-  const hasUpdated = prevLeghth != imageAnnotationData?.viewData?.length
+  const hasUpdated = prevLeghth != imageAnnotationData?.viewData?.length;
 
   const topDisplacement = parseInt(height) * 0.98;
 
@@ -139,7 +136,7 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
         {!isReadOnly && (
           <div className="annotation-error" style={{ top: topDisplacement }}>
             <ErrorMessage
-              isRequired={isRequired}
+              isRequired={!!model.validate?.required}
               minPoints={minPoints}
               maxPoints={maxPoints}
               dataLength={imageAnnotationData?.actualData?.length}

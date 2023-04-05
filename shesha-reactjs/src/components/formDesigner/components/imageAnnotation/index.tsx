@@ -2,7 +2,7 @@ import { IToolboxComponent } from '../../../../interfaces';
 import { FileImageOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '../formItem';
 import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { AnnotationSettingsForm } from './settings';
 import { useForm } from '../../../../providers';
 import { IImageProps } from './model';
@@ -16,12 +16,9 @@ const ImageAnnotationComponent: IToolboxComponent<IImageProps> = {
 
   factory: (model: IImageProps) => {
     const { formMode } = useForm();
-    const { validate } = model;
-    const [isRequired, setIsRequired] = useState(validate?.required);
+    
 
-    useEffect(() => {
-      model.validate.required = isRequired;
-    }, [isRequired]);
+
 
     if (formMode === 'designer' && !model?.url) {
       return (
@@ -36,7 +33,7 @@ const ImageAnnotationComponent: IToolboxComponent<IImageProps> = {
 
     return (
       <ConfigurableFormItem model={model}>
-        <ImageAnnotationControl model={model} setIsRequired={setIsRequired} isRequired={isRequired} />
+        <ImageAnnotationControl model={model} />
       </ConfigurableFormItem>
     );
   },
