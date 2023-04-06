@@ -21,7 +21,7 @@ function sortAnnotationData(data: IAnnotation[]) {
         ?.filter(mark => !!mark?.comment)
         ?.sort((a, b) => {
             const order = [...a.comment?.split('.'), ...b.comment?.split('.')];
-            return parseInt(order[0]) - parseInt(order[2]);
+            return parseInt(order[0], 10) - parseInt(order[2], 10);
         })
         ?.map(({ comment, ...rest }, index) => {
 

@@ -76,7 +76,9 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
     model.validate.required = required;
   };
   
-  const onSelect = () => { };
+  const onSelect = () => { 
+    return; 
+  };
 
   const onChange = (data: IAnnotation[]) => {
     if (!isReadOnly) {
@@ -105,9 +107,9 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
 
   const maxpointReached = !!maxPoints && imageAnnotationData?.actualData?.length >= maxPoints;
 
-  const hasUpdated = prevLeghth != imageAnnotationData?.viewData?.length;
+  const hasUpdated = prevLeghth !== imageAnnotationData?.viewData?.length;
 
-  const topDisplacement = parseInt(height) * 0.98;
+  const topDisplacement = parseInt(height, 10) * 0.98;
 
   return (
     <div className="annotation-conatainer">
