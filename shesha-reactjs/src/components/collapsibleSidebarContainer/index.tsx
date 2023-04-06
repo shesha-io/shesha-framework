@@ -120,9 +120,7 @@ export const CollapsibleSidebarContainer: FC<ICollapsibleSidebarContainerProps> 
     <div className={'sidebar-container'}>
       {header && <div className="sidebar-container-header">{typeof header === 'function' ? header() : header}</div>}
 
-      <div
-        className={'sidebar-container-body'}
-      >
+      <div className={'sidebar-container-body'}>
         {renderSidebar('left')}
 
         <div

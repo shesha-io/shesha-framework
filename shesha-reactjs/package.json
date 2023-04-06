@@ -87,6 +87,7 @@
     "@types/file-saver": "^2.0.1",
     "@types/lodash": "^4.14.168",
     "@types/mustache": "^4.1.2",
+    "@types/node": "^18.15.11",
     "@types/number-to-words": "^1.2.1",
     "@types/point-in-polygon": "^1.0.0",
     "@types/pubsub-js": "^1.8.3",

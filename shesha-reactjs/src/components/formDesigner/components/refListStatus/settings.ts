@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid';
 import { DesignerToolbarSettings } from '../../../../interfaces/toolbarSettings';
 
 export const RefListStatusSettingsForm = new DesignerToolbarSettings()
@@ -68,6 +69,13 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
         label: "Customize Status"
     })
     .addCheckbox({
+        id: "3fg9da3f-f47e-48ae-b4c3-f5cc36f934d9",
+        name: "showReflistName",
+        parentId: "root",
+        defaultValue: true,
+        label: "Show Reflist Item Name"
+    })
+    .addCheckbox({
         id: "3be9da3f-f47e-48ae-b4c3-f5cc36f934d9",
         name: "showIcon",
         parentId: "root",
@@ -115,7 +123,7 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
         name: "nameSpace",
         parentId: "root",
         validate: { required: true },
-        label: "Name Space"
+        label: "Name"
     })
     .addSectionSeparator({
         id: 'bc67960e-77e3-40f2-89cc-f18f94678cce',
@@ -131,5 +139,9 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
         description:
             'Enter custom visibility code.  You must return true to show the component. ' + 
             'The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
+        exposedVariables: [
+            { id: nanoid(), name: 'value', description: 'Component current value', type: 'string | any' },
+            { id: nanoid(), name: 'data', description: 'Selected form values', type: 'object' },
+        ],
     })
     .toJson();

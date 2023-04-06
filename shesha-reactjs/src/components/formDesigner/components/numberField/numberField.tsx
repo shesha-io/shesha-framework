@@ -1,19 +1,16 @@
-import { IToolboxComponent } from '../../../../interfaces';
-import { FormMarkup } from '../../../../providers/form/models';
 import { NumberOutlined } from '@ant-design/icons';
-import { InputNumber, InputNumberProps, message } from 'antd';
+import React from 'react';
+import { IToolboxComponent } from '../../../../interfaces';
+import { DataTypes } from '../../../../interfaces/dataTypes';
+import { useForm, useGlobalState } from '../../../../providers';
+import { FormMarkup } from '../../../../providers/form/models';
+import { evaluateString, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
+import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
 import ConfigurableFormItem from '../formItem';
+import FormItemWrapper from '../formItemWrapper';
+import NumberFieldControl from './control';
 import { INumberFieldComponentProps } from './interfaces';
 import settingsFormJson from './settingsForm.json';
-import React from 'react';
-import { evaluateString, getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import { DataTypes } from '../../../../interfaces/dataTypes';
-import { useForm, useGlobalState, useSheshaApplication } from '../../../../providers';
-import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
-import { customInputNumberEventHandler } from '../utils';
-import { axiosHttp } from '../../../../utils/fetchers';
-import moment from 'moment';
-import FormItemWrapper from '../formItemWrapper';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -23,42 +20,12 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
   icon: <NumberOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.number,
   factory: (model: INumberFieldComponentProps, _c, form) => {
-    const { formMode, isComponentDisabled, formData, setFormDataAndInstance } = useForm();
-    const { globalState, setState: setGlobalState } = useGlobalState();
-    const { backendUrl } = useSheshaApplication();
+    const { formMode, isComponentDisabled, formData } = useForm();
+    const { globalState } = useGlobalState();
 
     const isReadOnly = model?.readOnly || formMode === 'readonly';
 
     const disabled = isComponentDisabled(model);
-
-    const eventProps = {
-      model,
-      form,
-      formData,
-      formMode,
-      globalState,
-      http: axiosHttp(backendUrl),
-      message,
-      moment,
-      setFormData: setFormDataAndInstance,
-      setGlobalState,
-    };
-
-    const renderInputNumber = () => {
-      const inputProps: InputNumberProps = {
-        disabled: disabled,
-        bordered: !model.hideBorder,
-        min: model?.min,
-        max: model?.max,
-        size: model?.size,
-        style: getStyle(model?.style, formData),
-        step: model?.highPrecision ? model?.stepNumeric : model?.stepNumeric,
-        ...customInputNumberEventHandler(eventProps),
-        defaultValue: model?.defaultValue,
-      };
-
-      return <InputNumber {...inputProps} stringMode={model?.highPrecision} />;
-    };
 
     return (
       <ConfigurableFormItem
@@ -66,7 +33,11 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
         initialValue={evaluateString(model?.defaultValue, { formData, formMode, globalState })}
       >
         <FormItemWrapper mutate={isReadOnly} formType="number">
-          {isReadOnly ? <ReadOnlyDisplayFormItem disabled={disabled} /> : renderInputNumber()}
+          {isReadOnly ? (
+            <ReadOnlyDisplayFormItem disabled={disabled} />
+          ) : (
+            <NumberFieldControl form={form} disabled={disabled} model={model} />
+          )}
         </FormItemWrapper>
       </ConfigurableFormItem>
     );

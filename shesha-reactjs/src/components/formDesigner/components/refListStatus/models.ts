@@ -9,4 +9,5 @@ export interface IRefListStatusProps extends IConfigurableFormComponent, IFormIt
     nameSpace: string;
     showIcon?: boolean;
     solidBackground?: boolean;
+    showReflistName?: boolean;
 }

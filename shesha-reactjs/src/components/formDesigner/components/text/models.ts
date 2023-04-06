@@ -64,7 +64,7 @@ export interface ITypographyProps {
 export interface ITextTypographyProps extends IConfigurableFormComponent {
   textType: 'span' | 'paragraph' | 'title';
   content: string;
-  contentType: ContentType;
+  contentType?: ContentType;
   contentDisplay: ContentDisplay;
   color?: ColorResult;
   backgroundColor?: ColorResult;

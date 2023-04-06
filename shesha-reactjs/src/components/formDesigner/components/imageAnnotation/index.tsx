@@ -6,7 +6,7 @@ import React from 'react';
 import { AnnotationSettingsForm } from './settings';
 import { useForm } from '../../../../providers';
 import { IImageProps } from './model';
-import { ImageAnnotation } from './imageAnnotation';
+import ImageAnnotationControl from './control';
 import { Alert } from 'antd';
 
 const ImageAnnotationComponent: IToolboxComponent<IImageProps> = {
@@ -16,6 +16,9 @@ const ImageAnnotationComponent: IToolboxComponent<IImageProps> = {
 
   factory: (model: IImageProps) => {
     const { formMode } = useForm();
+    
+
+
 
     if (formMode === 'designer' && !model?.url) {
       return (
@@ -27,9 +30,10 @@ const ImageAnnotationComponent: IToolboxComponent<IImageProps> = {
         />
       );
     }
+
     return (
       <ConfigurableFormItem model={model}>
-        <ImageAnnotation model={model} />
+        <ImageAnnotationControl model={model} />
       </ConfigurableFormItem>
     );
   },
