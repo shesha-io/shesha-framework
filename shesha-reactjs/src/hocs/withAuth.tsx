@@ -1,6 +1,6 @@
 import React, { FC, useEffect, ComponentType, Fragment } from 'react';
 import { useAuth, useShaRouting } from '../providers';
-import { IdleTimerRenderer, OverlayLoader } from '../components';
+import { /*IdleTimerRenderer,*/ OverlayLoader } from '../components';
 import { getLoginUrlWithReturn } from '../utils/url';
 
 export interface IComponentWithAuthProps {
@@ -44,9 +44,9 @@ export const withAuth = <P extends object>(
   return (
     <ComponentWithAuth landingPage={landingPage} unauthorizedRedirectUrl={unauthorizedRedirectUrl}>
       {query => (
-        <IdleTimerRenderer>
+        // <IdleTimerRenderer>
           <Component {...propsObj} id={query?.id} />
-        </IdleTimerRenderer>
+        // </IdleTimerRenderer>
       )}
     </ComponentWithAuth>
   );

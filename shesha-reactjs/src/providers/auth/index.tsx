@@ -25,7 +25,6 @@ import {
   /* NEW_ACTION_IMPORT_GOES_HERE */
 } from './actions';
 import { URL_LOGIN_PAGE, URL_HOME_PAGE, URL_CHANGE_PASSWORD, HOME_CACHE_URL } from '../../constants';
-import IdleTimer from 'react-idle-timer';
 import { IAccessToken } from '../../interfaces';
 import { OverlayLoader } from '../../components/overlayLoader';
 import { sessionGetCurrentLoginInformations } from '../../apis/session';
@@ -415,29 +414,26 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
   return (
-    // @ts-ignore
-    <IdleTimer>
-      <AuthStateContext.Provider value={state}>
-        <AuthActionsContext.Provider
-          value={{
-            ...setters,
-            checkAuth,
-            loginUser,
-            getAccessToken,
-            logoutUser,
-            anyOfPermissionsGranted: anyOfPermissionsGrantedWrapper,
-            verifyOtpSuccess,
-            resetPasswordSuccess,
-            fireHttpHeadersChanged,
-            subscribeOnProfileLoading,
-            unSubscribeOnProfileLoading,
-            /* NEW_ACTION_GOES_HERE */
-          }}
-        >
-          {children}
-        </AuthActionsContext.Provider>
-      </AuthStateContext.Provider>
-    </IdleTimer>
+    <AuthStateContext.Provider value={state}>
+      <AuthActionsContext.Provider
+        value={{
+          ...setters,
+          checkAuth,
+          loginUser,
+          getAccessToken,
+          logoutUser,
+          anyOfPermissionsGranted: anyOfPermissionsGrantedWrapper,
+          verifyOtpSuccess,
+          resetPasswordSuccess,
+          fireHttpHeadersChanged,
+          subscribeOnProfileLoading,
+          unSubscribeOnProfileLoading,
+          /* NEW_ACTION_GOES_HERE */
+        }}
+      >
+        {children}
+      </AuthActionsContext.Provider>
+    </AuthStateContext.Provider>
   );
 };
 
