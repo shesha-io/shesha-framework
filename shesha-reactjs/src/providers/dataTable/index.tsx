@@ -127,6 +127,8 @@ interface IDataTableProviderProps {
   getDataPath?: string;
   getExportToExcelPath?: string;
   defaultFilter?: IFilterItem[];
+
+  initialPageSize?: number;
 }
 
 const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
@@ -146,6 +148,7 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
   actionOwnerName,
   onFetchDataSuccess,
   sourceType,
+  initialPageSize,
   ...props
 }) => {
   const [state, dispatch] = useThunkReducer(dataTableReducer, {
@@ -156,6 +159,7 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
     configurableColumns: configurableColumns ?? [],
     title,
     parentEntityId,
+    selectedPageSize: initialPageSize ?? DATA_TABLE_CONTEXT_INITIAL_STATE.selectedPageSize
   });
 
   const { setState: setGlobalState } = useGlobalState();
@@ -727,7 +731,7 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
   //#region get columns from back-end
   useEffect(() => {
     const { configurableColumns } = state;
-    if (!entityType) return;
+    if (!entityType || !configurableColumns || configurableColumns?.length === 0) return;
 
     const localProperties = getDataProperties(configurableColumns);
 
@@ -914,28 +918,39 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
   );
 };
 
-function useDataTableState() {
+function useDataTableState(require: boolean = true) {
   const context = useContext(DataTableStateContext);
 
-  if (context === undefined) {
+  if (context === undefined && require) {
     throw new Error('useDataTableState must be used within a DataTableProvider');
   }
 
   return context;
 }
 
-function useDataTableActions() {
+function useDataTableActions(require: boolean = true) {
   const context = useContext(DataTableActionsContext);
 
-  if (context === undefined) {
+  if (context === undefined && require) {
     throw new Error('useDataTableActions must be used within a DataTableProvider');
   }
 
   return context;
 }
 
-function useDataTableStore() {
-  return { ...useDataTableState(), ...useDataTableActions() };
+function useDataTableStore(require: boolean = true) {
+  const actionsContext = useDataTableActions(require);
+  const stateContext = useDataTableState(require);
+
+  if ((actionsContext === undefined || actionsContext === undefined) && require) {
+    throw new Error('useDataTableActions must be used within a DataTableProvider');
+  }
+  // useContext() returns initial state when provider is missing
+  // initial context state is useless especially when require == true
+  // so we must return value only when both context are available
+  return actionsContext !== undefined && stateContext !== undefined
+    ? { ...actionsContext, ...stateContext }
+    : undefined;
 }
 
 const useDataTable = useDataTableStore;

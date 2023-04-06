@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Form, Select, AutoComplete } from 'antd';
-//import { ColumnsEditorModal } from './columnsEditor/columnsEditorModal';
 import SectionSeparator from '../../../sectionSeparator';
 import CodeEditor from '../codeEditor/codeEditor';
 import PropertyAutocomplete from '../../../propertyAutocomplete/propertyAutocomplete';
@@ -21,6 +20,11 @@ const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem'
 function DataListSettings(props: IProps) {
   const [form] = Form.useForm();
 
+  /*const dataSourcesDict = useDataSources()?.getDataSources() ?? {};
+  const dataSources: IDataSourceDescriptor[] = [];
+  for (let key in dataSourcesDict) {
+    dataSources.push(dataSourcesDict[key] as IDataSourceDescriptor);
+  }*/
   const initialState: IDataListComponentProps = {
     ...props?.model,
   };
@@ -33,7 +37,7 @@ function DataListSettings(props: IProps) {
   );
 
   const onValuesChange = (changedValues, values: IDataListComponentProps) => {
-    if (props.onValuesChange) props.onValuesChange(changedValues, values as any);
+    if (props.onValuesChange) props.onValuesChange(changedValues, values);
   };
 
   return (
@@ -45,6 +49,15 @@ function DataListSettings(props: IProps) {
       wrapperCol={{ span: 24 }}
       labelCol={{ span: 24 }}
     >
+      {/*<Form.Item name="dataSource" label="Data Source">
+        <Select disabled={props.readOnly}>
+          <Option key='-1' value={null}>Data context</Option>
+          {dataSources.map((item, index) => {
+            return <Option key={index.toString()} value={`${item.id}_${item.name}`}>{item.name}</Option>
+          })}         
+        </Select>
+        </Form.Item>*/}
+
       <Form.Item name="name" label="Name">
         <PropertyAutocomplete readOnly={props.readOnly} showFillPropsButton={false} />
       </Form.Item>

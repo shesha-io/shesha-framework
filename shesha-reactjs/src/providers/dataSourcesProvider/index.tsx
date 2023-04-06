@@ -1,0 +1,94 @@
+import React, { FC, PropsWithChildren, useContext, useEffect, useRef, useState } from "react";
+import { DataSourcesProviderActionsContext, DataSourcesProviderStateContext, IDataSourcesProviderActionsContext, IDataSourcesProviderStateContext, IGetDataSourcePayload, IRegisterDataSourcePayload } from "./contexts";
+import { IDataSourceDictionary } from "./models";
+
+export interface IDataSourcesProviderProps { }
+
+const DataSourcesProvider: FC<PropsWithChildren<IDataSourcesProviderProps>> = ({ children }) => {
+
+    const [state, _dispatch] = useState<IDataSourcesProviderStateContext>({});
+
+    const dataSources = useRef<IDataSourceDictionary>({});
+
+    const registerDataSource = (payload: IRegisterDataSourcePayload) => {
+        dataSources.current = {
+          ...dataSources.current,
+          [`${payload.id}_${payload.name}`]: { id: payload.id, name: payload.name, dataSource: payload.dataSource, dataSelection: payload.dataSelection }
+        };
+    };
+
+    const unregisterDataSource = (payload: IRegisterDataSourcePayload) => {
+        delete dataSources.current[`${payload.id}_${payload.name}`];
+    };
+
+    const getDataSources = () => {
+        return dataSources.current;
+    }
+
+    const getDataSource = (payload: IGetDataSourcePayload | string) => {
+        if (typeof(payload) === 'string') 
+            return dataSources.current[payload];
+        else
+            return dataSources.current[`${payload.id}_${payload.name}`];
+    }
+
+    const dataSourcesProviderActions: IDataSourcesProviderActionsContext = {
+        registerDataSource,
+        unregisterDataSource,
+        getDataSources,
+        getDataSource
+        /*registerAction,
+        unregisterAction,
+        getConfigurableAction,
+        getConfigurableActionOrNull,
+        getActions,
+        prepareArguments,
+        executeAction,*/
+    };
+
+    return (
+        <DataSourcesProviderStateContext.Provider value={state}>
+            <DataSourcesProviderActionsContext.Provider value={dataSourcesProviderActions}>
+                {children}
+            </DataSourcesProviderActionsContext.Provider>
+        </DataSourcesProviderStateContext.Provider>
+    );
+}
+
+function useDataSources(require: boolean = true) {
+    const actionsContext = useContext(DataSourcesProviderActionsContext);
+    const stateContext = useContext(DataSourcesProviderStateContext);
+  
+    if ((actionsContext === undefined || actionsContext === undefined) && require) {
+      throw new Error('useDataSources must be used within a DataSourcesProvider');
+    }
+    // useContext() returns initial state when provider is missing
+    // initial context state is useless especially when require == true
+    // so we must return value only when both context are available
+    return actionsContext !== undefined && stateContext !== undefined
+      ? { ...actionsContext, ...stateContext }
+      : undefined;
+}
+
+function useDataSource(
+    payload: IRegisterDataSourcePayload,
+    deps?: ReadonlyArray<any>
+): void {
+    const { registerDataSource, unregisterDataSource } = useDataSources();
+  
+    useEffect(() => {
+        //if (!payload.owner || !payload.ownerUid)
+            //return null;
+        
+        registerDataSource(payload);
+        return () => {
+            unregisterDataSource(payload);
+        };
+    }, deps);
+}
+  
+export {
+    DataSourcesProvider,
+    useDataSources,
+    useDataSource,
+};
