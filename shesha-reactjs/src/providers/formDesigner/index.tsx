@@ -41,7 +41,7 @@ import {
   componentAddFromTemplateAction,
 } from './actions';
 import { useFormDesignerComponentGroups, useFormDesignerComponents } from '../form/hooks';
-import { ActionCreators } from 'redux-undo';
+//import { ActionCreators } from 'redux-undo';
 import useThunkReducer from '../../hooks/thunkReducer';
 import { IAsyncValidationError, IFormValidationErrors, IToolboxComponent } from '../../interfaces';
 import { IDataSource } from '../formDesigner/models';
@@ -74,17 +74,22 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
 
   const { activateProvider } = useMetadataDispatcher(false) ?? {};
 
+  /*
   const [state, dispatch] = useThunkReducer(formReducer, {
     past: [],
     present: initial,
     future: [],
   });
+  */
+  const [state, dispatch] = useThunkReducer(formReducer, initial);
+
+  const statePresent = state; //state.present;
 
   useEffect(() => {
     if (
       flatComponents &&
-      (flatComponents.allComponents !== state.present.allComponents ||
-        flatComponents.componentRelations !== state.present.componentRelations)
+      (flatComponents.allComponents !== statePresent.allComponents ||
+        flatComponents.componentRelations !== statePresent.componentRelations)
     ) {
       setFlatComponents(flatComponents);
     }
@@ -121,7 +126,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   };
 
   const getComponentModel = componentId => {
-    return state.present.allComponents[componentId];
+    return statePresent.allComponents[componentId];
   };
 
   const updateComponent = (payload: IComponentUpdatePayload) => {
@@ -148,10 +153,10 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   };
 
   const getChildComponents = (componentId: string) => {
-    const childIds = state.present.componentRelations[componentId];
+    const childIds = statePresent.componentRelations[componentId];
     if (!childIds) return [];
     const components = childIds.map(childId => {
-      return state.present.allComponents[childId];
+      return statePresent.allComponents[childId];
     });
     return components;
   };
@@ -159,7 +164,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   const setFlatComponents = (flatComponents: IFlatComponentsStructure) => {
     dispatch((dispatchThunk, _getState) => {
       dispatchThunk(setFlatComponentsAction(flatComponents));
-      dispatchThunk(ActionCreators.clearHistory());
+      //dispatchThunk(ActionCreators.clearHistory());
     });
   };
 
@@ -192,11 +197,11 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   };
 
   const undo = () => {
-    dispatch(ActionCreators.undo());
+    //dispatch(ActionCreators.undo());
   };
 
   const redo = () => {
-    dispatch(ActionCreators.redo());
+    //dispatch(ActionCreators.redo());
   };
 
   const setSelectedComponent = (componentId: string, dataSourceId: string, componentRef?: MutableRefObject<any>) => {
@@ -221,8 +226,8 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   };
 
   const getActiveDataSource = () => {
-    return state.present.activeDataSourceId
-      ? state.present.dataSources.find(ds => ds.id === state.present.activeDataSourceId)
+    return statePresent.activeDataSourceId
+      ? statePresent.dataSources.find(ds => ds.id === statePresent.activeDataSourceId)
       : null;
   };
   //#endregion
@@ -258,13 +263,13 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   };
 
   return (
-    <UndoableFormDesignerStateContext.Provider value={state}>
-      <FormDesignerStateContext.Provider value={state.present}>
+    // <UndoableFormDesignerStateContext.Provider value={state}>
+      <FormDesignerStateContext.Provider value={statePresent}>
         <FormDesignerActionsContext.Provider value={configurableFormActions}>
           {children}
         </FormDesignerActionsContext.Provider>
       </FormDesignerStateContext.Provider>
-    </UndoableFormDesignerStateContext.Provider>
+    // </UndoableFormDesignerStateContext.Provider>
   );
 };
 
@@ -296,8 +301,8 @@ function useUndoableState(require: boolean = true) {
   }
 
   return {
-    canUndo: context.past.length > 0,
-    canRedo: context.future.length > 0,
+    canUndo: false,//context.past.length > 0,
+    canRedo: false,//context.future.length > 0,
   };
 }
 

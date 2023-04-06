@@ -31,7 +31,7 @@ import {
   upgradeComponent,
 } from '../form/utils';
 import { camelcaseDotNotation } from '../../utils/string';
-import undoable, { includeAction } from 'redux-undo';
+//import undoable, { includeAction } from 'redux-undo';
 import { IFormValidationErrors } from '../../interfaces';
 import { IDataSource } from '../formDesigner/models';
 import { nanoid } from 'nanoid/non-secure';
@@ -514,7 +514,14 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
   FORM_DESIGNER_CONTEXT_INITIAL_STATE
 );
 
-const undoableReducer = undoable(reducer, {
+export default reducer;
+/*
+const undoableType = typeof(undoable);
+console.log('LOG!', undoableType);
+console.log('LOG!!', JSON.stringify(undoable, null, 2));
+
+const undoableReducer = undoable 
+? undoable(reducer, {
   filter: includeAction([
     FormActionEnums.DataPropertyAdd,
     FormActionEnums.ComponentAdd,
@@ -523,6 +530,8 @@ const undoableReducer = undoable(reducer, {
     FormActionEnums.EndDragging,
   ]),
   limit: 20, // set a limit for the size of the history
-});
+})
+: null;
 
 export default undoableReducer;
+*/

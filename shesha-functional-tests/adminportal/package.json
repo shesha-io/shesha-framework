@@ -21,7 +21,7 @@
     "@microsoft/applicationinsights-web": "^2.6.2",
     "@microsoft/signalr": "^5.0.6",
     "@next/bundle-analyzer": "^10.0.5",
-    "@shesha/reactjs": "file:shesha-reactjs-4.0.126--canary.tgz",
+    "@shesha/reactjs": "^4.11.44",
     "antd": "^4.24.0",
     "axios": "^0.21.1",
     "camelcase": "^6.2.0",
