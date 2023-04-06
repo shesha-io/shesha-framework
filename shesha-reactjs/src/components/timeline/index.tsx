@@ -24,14 +24,14 @@ export const ShaTimeline: FC<ITimelineProps> = ({ properties, ownerId, entityTyp
   };
 
   const queryParams = useMemo(() => {
-    const _queryParams: EntitiesGetAllQueryParams = {
+    const result: EntitiesGetAllQueryParams = {
       entityType,
     };
 
-    _queryParams.properties =
+    result.properties =
       typeof properties === 'string' ? `id ${properties}` : ['id', ...Array.from(new Set(properties || []))].join(' ');
 
-    return _queryParams;
+    return result;
   }, [properties, globalState]);
 
   const debouncedRefresh = useDebouncedCallback(() => {

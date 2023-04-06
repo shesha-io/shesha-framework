@@ -7,7 +7,6 @@ export const getSettings = (data: any) =>
       name: 'separator1',
       parentId: 'root',
       label: 'Display',
-      title: '',
     })
     .addPropertyAutocomplete({
       id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
@@ -21,7 +20,6 @@ export const getSettings = (data: any) =>
       name: 'separatorPageSizes',
       parentId: 'root',
       label: 'Page Sizes',
-      title: 'Page Sizes',
     })
     .addDropdown({
       id: 'f6c3d710-8d98-47fc-9fe2-7c6312e9a03c',
@@ -63,7 +61,6 @@ export const getSettings = (data: any) =>
       name: 'separatorVisibility',
       parentId: 'root',
       label: 'Visibility',
-      title: 'Visibility',
     })
     .addCodeEditor({
       id: '03959ffd-cadb-496c-bf6d-b742f7f6edc6',

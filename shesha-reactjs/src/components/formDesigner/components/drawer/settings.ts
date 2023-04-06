@@ -8,7 +8,6 @@ export const getSettings = (data: { readOnly?: boolean }) =>
       name: 'separator1',
       parentId: 'root',
       label: 'Display',
-      title: '',
     })
     .addPropertyAutocomplete({
       id: nanoid(),
@@ -143,7 +142,6 @@ export const getSettings = (data: { readOnly?: boolean }) =>
       name: 'separatorVisibility',
       parentId: 'root',
       label: 'Visibility',
-      title: 'Visibility',
     })
     .addCodeEditor({
       id: '03959ffd-cadb-496c-bf6d-b742f7f6edc6',

@@ -4,18 +4,18 @@ import { IKeyValue } from "../../../../../interfaces/keyValue";
 import { IShowModalActionArguments } from "../../../../../providers/dynamicModal/configurable-actions/show-dialog-arguments";
 import { getClosestTableId } from "../../../../../providers/form/utils";
 import { getDispatchEventReplacement } from "../../_common-migrations/migrate-events";
-import { IButtonProps } from "../button";
+import { IButtonComponentProps } from "../interfaces";
 
-export const migrateV0toV1 = (props: IButtonGroupButtonV0, context: SettingsMigrationContext): IButtonProps => {
+export const migrateV0toV1 = (props: IButtonGroupButtonV0, context: SettingsMigrationContext): IButtonComponentProps => {
     const actionConfiguration = getActionConfiguration(props, context);
 
-    const result: IButtonProps = {
+    const result: IButtonComponentProps = {
         ...props,
         actionConfiguration: actionConfiguration,
         type: props['type'] ?? "button"
     };
     return result;
-}
+};
 
 const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: SettingsMigrationContext): IConfigurableActionConfiguration => {
     if (buttonProps['actionConfiguration'])
@@ -28,7 +28,7 @@ const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: Sett
                 actionName: 'Cancel Edit',
                 handleFail: false,
                 handleSuccess: false,
-            }
+            };
         }
         case "reset": {
             return {
@@ -36,7 +36,7 @@ const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: Sett
                 actionName: 'Reset',
                 handleFail: false,
                 handleSuccess: false,
-            }
+            };
         }
         case "submit": {
             return {
@@ -44,7 +44,7 @@ const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: Sett
                 actionName: 'Submit',
                 handleFail: false,
                 handleSuccess: false,
-            }
+            };
         }
         case "startFormEdit": {
             return {
@@ -52,7 +52,7 @@ const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: Sett
                 actionName: 'Start Edit',
                 handleFail: false,
                 handleSuccess: false,
-            }
+            };
         }
         case "navigate": {
             return {
@@ -63,7 +63,7 @@ const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: Sett
                 actionArguments: {
                     target: buttonProps.targetUrl
                 },
-            }
+            };
         }
         case "dialogue": {
             const actionConfig: IConfigurableActionConfiguration = {
@@ -71,7 +71,7 @@ const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: Sett
                 actionName: 'Show Dialog',
                 handleFail: false,
                 handleSuccess: false,
-            }
+            };
 
             const propsWithModal = buttonProps as IToolbarButtonTableDialogPropsV0;
 
@@ -154,15 +154,12 @@ const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: Sett
                 };
             }
         }
-        case "customAction": {
-
-        }
         case "dispatchAnEvent": {
             return getDispatchEventReplacement(buttonProps);
         }
     }
     return null;
-}
+};
 
 //#region old types
 

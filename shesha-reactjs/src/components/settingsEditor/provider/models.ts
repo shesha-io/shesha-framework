@@ -7,7 +7,7 @@ export interface ISettingConfiguration {
     category?: string;
     name: string;
     dataType: string;
-    editorForm?: FormFullName,
+    editorForm?: FormFullName;
     label?: string;
     description?: string;
     module?: string;

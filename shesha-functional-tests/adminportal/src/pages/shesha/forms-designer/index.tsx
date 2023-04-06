@@ -2,7 +2,7 @@ import React from 'react';
 import dynamic from 'next/dynamic';
 import { getLayout } from 'src/components/layouts';
 import { NextPageWithLayout } from 'models';
-import { FormIdentifier } from '@shesha/reactjs/dist/providers/form/models';
+import { FormIdentifier, FormsDesignerPage } from '@shesha/reactjs';
 
 interface IFormsDesignerPageProps {
     /**
@@ -21,7 +21,7 @@ interface IFormsDesignerPageProps {
     id?: string;
 }
 
-const LazyLoadedPage = dynamic(
+const LazyLoadedPage = dynamic<FormsDesignerPage>(
     async () => {
         const modules = await import('@shesha/reactjs');
         return modules.FormsDesignerPage;

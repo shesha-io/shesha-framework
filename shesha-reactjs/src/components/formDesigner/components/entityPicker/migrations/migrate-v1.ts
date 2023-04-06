@@ -26,14 +26,14 @@ export const migrateV0toV1 = (props: IEntityPickerComponentProps, context: Setti
                             break;
                         }
                         case "editRow": {
-
+                            /*nop*/
                         }
                         case "deleteRow": {
                             actonColumn.actionConfiguration = getDeleteRowActionConfig(oldColumn, context);
                             break;
                         }
                         case "executeFormAction": {
-                            
+                            /*nop*/
                         }
                         case "executeScript": {
                             actonColumn.actionConfiguration = getExecuteScriptActionConfig(oldColumn);
@@ -48,7 +48,7 @@ export const migrateV0toV1 = (props: IEntityPickerComponentProps, context: Setti
         return item;
     });
     return { ...props, items: newItems };
-}
+};
 
 const getNavigateActionConfig = (oldColumn: IConfigurableActionColumnsPropsV0): IConfigurableActionConfiguration => {
     return {
@@ -60,7 +60,7 @@ const getNavigateActionConfig = (oldColumn: IConfigurableActionColumnsPropsV0): 
             target: oldColumn.targetUrl
         },
     };
-}
+};
 
 const wrapInConfirmationIfRequired = (actionConfig: IConfigurableActionConfiguration, oldColumn: IConfigurableActionColumnsPropsV0): IConfigurableActionConfiguration => {
     if (oldColumn.showConfirmDialogBeforeSubmit){
@@ -80,7 +80,7 @@ const wrapInConfirmationIfRequired = (actionConfig: IConfigurableActionConfigura
         };
     } else
         return actionConfig;
-}
+};
 
 const getExecuteScriptActionConfig = (oldColumn: IConfigurableActionColumnsPropsV0): IConfigurableActionConfiguration => {
     return wrapInConfirmationIfRequired({
@@ -92,7 +92,7 @@ const getExecuteScriptActionConfig = (oldColumn: IConfigurableActionColumnsProps
         handleFail: false,
         handleSuccess: false,
     }, oldColumn);
-}
+};
 
 const getDeleteRowActionConfig = (oldColumn: IConfigurableActionColumnsPropsV0, context: SettingsMigrationContext): IConfigurableActionConfiguration => {
     const actionConfiguration: IConfigurableActionConfiguration = {
@@ -121,7 +121,7 @@ const getDeleteRowActionConfig = (oldColumn: IConfigurableActionColumnsPropsV0, 
         }
     };
     return actionConfiguration;
-}
+};
 
 const getShowDialogActionConfig = (oldColumn: IConfigurableActionColumnsPropsV0): IConfigurableActionConfiguration => {
     const actionConfiguration: IConfigurableActionConfiguration = {
@@ -159,7 +159,7 @@ const getShowDialogActionConfig = (oldColumn: IConfigurableActionColumnsPropsV0)
     };
     
     return actionConfiguration;
-}
+};
 
 type FormMode = 'designer' | 'edit' | 'readonly';
 type ButtonActionType = 'navigate' | 'dialogue' | 'executeScript' | 'executeFormAction' | 'deleteRow' | 'editRow';
@@ -215,6 +215,6 @@ interface IConfigurableActionColumnsPropsV0 {
     modalWidth?: any;
     //#endregion
 
-    showConfirmDialogBeforeSubmit?: boolean,
-    modalConfirmDialogMessage?: string,
+    showConfirmDialogBeforeSubmit?: boolean;
+    modalConfirmDialogMessage?: string;
 } 

@@ -21,7 +21,7 @@ export interface IImportInterface {
 
 export interface IConfigurationItemsImportProps {
     onImported?: () => void;
-    importRef: MutableRefObject<IImportInterface>;
+    importRef?: MutableRefObject<IImportInterface>;
 }
 
 interface IItemInfo {
@@ -109,7 +109,7 @@ const packageInfo2TreeState = (pack: IPackageInfo): ITreeState => {
         itemsCount: itemsCount,
         indexes: getIndexesList(treeNodes),
     };
-}
+};
 
 export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (props) => {
     const { backendUrl, httpHeaders } = useSheshaApplication();
@@ -159,15 +159,15 @@ export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (pro
                 payload.onError(e);
                 setIsPackLoading(false);
             });
-    }
+    };
     const onChangeSelection = (checkedIds: string[]) => {
         setCheckedIds(checkedIds);
-    }
+    };
 
     const onDeleteClick = () => {
         setUploadFile(null);
         setTreeState(null);
-    }
+    };
 
     const fileRender = (_originNode, file, _currFileList) => {
         return (
@@ -191,7 +191,7 @@ export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (pro
             </div>
         );
         // {filesize(file.size)}
-    }
+    };
 
     const importExecuter = () => {
         if (!uploadFile?.originFileObj)
@@ -223,7 +223,7 @@ export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (pro
                 setIsImporting(false);
                 throw e;
             });
-    }
+    };
 
     if (props.importRef)
         props.importRef.current = {
@@ -256,6 +256,6 @@ export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (pro
             </Form>
         </Spin>
     );
-}
+};
 
 export default ConfigurationItemsImport;

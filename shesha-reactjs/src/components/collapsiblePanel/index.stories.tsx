@@ -1,12 +1,11 @@
 import React from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import CollapsiblePanel, { ICollapsiblePanelProps } from '.';
 import { Button, message } from 'antd';
 
 export default {
   title: 'Components/CollapsiblePanel',
-  component: CollapsiblePanel,
+  component: CollapsiblePanel
 } as Meta;
 
 const defaultProps: ICollapsiblePanelProps = {

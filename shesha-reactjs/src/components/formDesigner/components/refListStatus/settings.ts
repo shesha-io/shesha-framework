@@ -130,7 +130,6 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
         name: 'separatorVisibility',
         parentId: 'root',
         label: 'Visibility',
-        title: 'Visibility',
     })
     .addCodeEditor({
         id: '03959ffd-cadb-496c-bf6d-b742f7f6edc6',
@@ -138,10 +137,11 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
         parentId: 'root',
         label: 'Custom Visibility',
         description:
-            'Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
+            'Enter custom visibility code.  You must return true to show the component. ' + 
+            'The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
         exposedVariables: [
             { id: nanoid(), name: 'value', description: 'Component current value', type: 'string | any' },
             { id: nanoid(), name: 'data', description: 'Selected form values', type: 'object' },
         ],
     })
-    .toJson()
+    .toJson();

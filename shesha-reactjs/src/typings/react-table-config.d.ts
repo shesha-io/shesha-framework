@@ -7,7 +7,7 @@ import {
   UseExpandedRowProps,
   UseExpandedState,
   UseFiltersColumnOptions,
-  UseFiltersColumnProps,
+  //UseFiltersColumnProps,
   UseFiltersInstanceProps,
   UseFiltersOptions,
   UseFiltersState,
@@ -108,7 +108,7 @@ declare module 'react-table' {
       UseResizeColumnsColumnProps<D>,
       UseSortByColumnProps<D> {}
 
-  export interface Cell<D extends Record<string, unknown> = Record<string, unknown>, V = any>
+  export interface Cell<D extends Record<string, unknown> = Record<string, unknown>, _V = any>
     extends UseGroupByCellProps<D>,
       UseRowStateCellProps<D> {}
 

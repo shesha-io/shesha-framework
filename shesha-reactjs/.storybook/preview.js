@@ -1,4 +1,3 @@
-// import '../dist/styles/styles.css';
 import '../src/styles/index.less';
 import './compiled.antd.variable.css';
 

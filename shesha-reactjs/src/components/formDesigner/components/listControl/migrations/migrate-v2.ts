@@ -16,4 +16,4 @@ export const migrateV1toV2 = (props: IListComponentProps, context: SettingsMigra
     });
 
     return { ...props, buttons: newButtons };
-}
+};

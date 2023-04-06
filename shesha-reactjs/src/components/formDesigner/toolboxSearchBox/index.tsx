@@ -12,7 +12,7 @@ export const SearchBox: FC<ISearchBoxProps> = (props) => {
 
     const handleSearchChange = (e: React.FormEvent<HTMLInputElement>) => {
         props.onChange(e.currentTarget.value);
-    }
+    };
 
     return (
         <Input
@@ -26,6 +26,6 @@ export const SearchBox: FC<ISearchBoxProps> = (props) => {
             }
         />
     );
-}
+};
 
 export default SearchBox;

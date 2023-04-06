@@ -5,14 +5,20 @@ import { useSidebarMenuConfigurator } from '../../../providers/sidebarMenuConfig
 import DragHandle from './dragHandle';
 import ShaIcon, { IconType } from '../../shaIcon';
 import { ISidebarMenuItem } from '../../../interfaces/sidebar';
-import SidebarItemsContainer from './sidebarItemsContainer';
 import classNames from 'classnames';
 
-export interface IProps extends ISidebarMenuItem {
-  index: number[];
+export interface IContainerRenderArgs {
+  index?: number[];
+  id?: string;
+  items: ISidebarMenuItem[];
 }
 
-export const SidebarMenuGroup: FC<IProps> = props => {
+export interface ISidebarMenuGroupProps extends ISidebarMenuItem {
+  index: number[];
+  containerRendering: (args: IContainerRenderArgs) => React.ReactNode;
+}
+
+export const SidebarMenuGroup: FC<ISidebarMenuGroupProps> = props => {
   const { deleteItem, selectedItemId } = useSidebarMenuConfigurator();
 
   const onDeleteClick = () => {
@@ -34,11 +40,8 @@ export const SidebarMenuGroup: FC<IProps> = props => {
           <Button icon={<DeleteFilled color="red" />} onClick={onDeleteClick} size="small" danger />
         </div>
         <div className="sha-sidebar-group-container">
-          <SidebarItemsContainer index={props.index} items={props.childItems || []} />
+          {props.containerRendering({ index: props.index, items: props.childItems || [], id: props.id })}
         </div>
-        {/* { props.childItems && props.childItems.map((item, index) => {
-          return <SidebarMenuItem {...item} key={index} index={[ ...props.index, index ]} />
-        }) } */}
       </div>
     </div>
   );

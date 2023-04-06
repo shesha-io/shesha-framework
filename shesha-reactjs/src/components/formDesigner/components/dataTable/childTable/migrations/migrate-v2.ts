@@ -18,4 +18,4 @@ export const migrateV1toV2 = (props: IChildTableComponentProps, context: Setting
     });
 
     return { ...props, toolbarItems: newToolbarItems ?? [] };
-}
+};

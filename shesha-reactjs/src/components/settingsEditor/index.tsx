@@ -37,6 +37,6 @@ export const SettingsEditor: FC<ISettingsEditorProps> = () => {
       </div>
     </SettingsEditorProvider>
   );
-}
+};
 
 export default SettingsEditor;

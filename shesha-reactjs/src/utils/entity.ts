@@ -2,7 +2,7 @@ import { useMemo, useRef } from "react";
 import { useGet } from "restful-react";
 import { GENERIC_ENTITIES_ENDPOINT } from "../constants";
 import { EntityData, IAbpWrappedGetEntityListResponse, IGetAllPayload } from "../interfaces/gql";
-import { camelcaseDotNotation } from "../providers/form/utils";
+import { camelcaseDotNotation } from "../utils/string";
 
 export interface IUseEntityDisplayTextProps {
     entityType?: string;
@@ -26,21 +26,6 @@ const normalizePropertyName = (propName: string): string => {
     return !propName || propName.startsWith('_')
         ? propName
         : camelcaseDotNotation(propName);
-}
-
-export const useEntityDisplayText = (props: IUseEntityDisplayTextProps): string => {
-    const selection = useEntitySelectionData(props);
-    const rows = selection?.rows;
-
-    const result = useMemo<string>(() => {
-        if (!rows)
-            return null;
-
-        const result = rows.map(ent => ent[normalizePropertyName(props.propertyName)] ?? 'unknown').join(',');
-        return result;
-    }, [selection]);
-
-    return result;
 };
 
 export interface IEntitySelectionResult {
@@ -49,7 +34,7 @@ export interface IEntitySelectionResult {
 }
 
 interface ILoadedSelectionSummary {
-    keys: string[],
+    keys: string[];
     entityType: string;
     propertyName: string;
 }
@@ -110,4 +95,19 @@ export const useEntitySelectionData = (props: IUseEntityDisplayTextProps): IEnti
         rows: result,
         loading: valueFetcher.loading,
     };
+};
+
+export const useEntityDisplayText = (props: IUseEntityDisplayTextProps): string => {
+    const selection = useEntitySelectionData(props);
+    const rows = selection?.rows;
+
+    const result = useMemo<string>(() => {
+        if (!rows)
+            return null;
+
+        const result = rows.map(ent => ent[normalizePropertyName(props.propertyName)] ?? 'unknown').join(',');
+        return result;
+    }, [selection]);
+
+    return result;
 };

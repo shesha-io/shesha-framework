@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import StoryApp from '../../components/storyBookApp';
 import DynamicPage from './';
 import { addStory } from '../../stories/utils';
@@ -11,7 +10,7 @@ import { Button } from 'antd';
 export default {
   title: 'Pages/DynamicPage',
   component: DynamicPage,
-  argTypes: {},
+  argTypes: {}
 } as Meta;
 
 const DEFAULT_ARGS: IDynamicPageProps = {
@@ -51,11 +50,11 @@ export const BugFix3 = addStory(Template, {
   mode: 'edit'
 });
 
-export const FormLoadingRefactoring_Table = addStory(Template, {
+export const FormLoadingRefactoringTable = addStory(Template, {
   formId: { name: 'cash-coverage-table', module: 'Boxfusion.His.Clients.Houghton' },
 });
 
-export const FormLoadingRefactoring_Details = addStory(Template, {
+export const FormLoadingRefactoringDetails = addStory(Template, {
   formId: { name: 'cash-coverage-details', module: 'Boxfusion.His.Clients.Houghton' },
   id: 'c121972b-072f-4834-a4cd-019dff0a43a8',
 });

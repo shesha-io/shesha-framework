@@ -1,11 +1,16 @@
 {
-  "rootDir": "src",
   "compilerOptions": {
-    "outDir": "build",
-    "module": "esnext",
-    "target": "es5",
+    "allowJs": false,
+    "allowSyntheticDefaultImports": true,
+    "declaration": true,
     "ignoreDeprecations": "5.0",
     "downlevelIteration": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "incremental": true,
+    "isolatedModules": false,
+    "jsx": "react",
     "lib": [
       "es6",
       "dom",
@@ -13,46 +18,44 @@
       "es2017",
       "esnext"
     ],
-    "sourceMap": true,
-    "allowJs": false,
-    "jsx": "react",
-    "declaration": true,
+    "module": "esnext",
     "moduleResolution": "node",
-    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "noImplicitAny": false, // todo: change to true after first successfull build
     "noImplicitReturns": true,
     "noImplicitThis": true,
-    "noImplicitAny": false, // todo: change to true after first successfull build
-    "suppressImplicitAnyIndexErrors": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": false,
+    "outDir": "dist",
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strict": false,
     "strictNullChecks": false,
     "strictPropertyInitialization": false,
-    "resolveJsonModule": true,
-    "experimentalDecorators": true,
-    "skipLibCheck": true,
+    "target": "es5"
   },
-  "typeRoots": [
-    "typings",
-    "node_modules/@types",
-    "models"
-  ],
-  "include": [
-    "src",
-    "typings",
-    "less-compile.js"
-  ],
   "exclude": [
     "node_modules",
     "build",
     "dist",
     "example",
-    "rollup.config.js",
+    "rollup.config.mjs",
     "**/tests",
     "**/*.test.js",
     "**/*.test.ts",
     "**/*.test.tsx",
-    "**/*.stories.d.ts"
+    "**/*.stories.d.ts",
+    "**/__test__/**"
+  ],
+  "include": [
+    "src",
+    "typings"
+  ],
+  "rootDir": "src",
+  "typeRoots": [
+    "typings",
+    "node_modules/@types",
+    "models"
   ]
 }

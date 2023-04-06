@@ -39,7 +39,7 @@ export const SettingsMenu: FC<ISettingsMenuProps> = () => {
 
   const getSettingKey = (config: ISettingConfiguration, app?: IFrontEndApplication) => {
     return app ? `${app.appKey}|${config.name}` : config.name;
-  }
+  };
 
   useEffect(() => {
     if (applicationsLoadingState === 'success' && configsLoadingState === 'success') {
@@ -57,7 +57,7 @@ export const SettingsMenu: FC<ISettingsMenuProps> = () => {
         const item: ISettingItem = { config, app };
         allSettings[key] = item;
         group.settings.push(item);
-      }
+      };
 
       settingConfigurations.forEach(s => {
         //const moduleName = s.configuration.module?.name ?? 'no module';
@@ -107,7 +107,7 @@ export const SettingsMenu: FC<ISettingsMenuProps> = () => {
     
     if (selectedItem)
       selectSetting(selectedItem.config, selectedItem.app);
-  }
+  };
 
   return (
     <div className="sha-settings-editor-toolbox">
@@ -142,6 +142,6 @@ export const SettingsMenu: FC<ISettingsMenuProps> = () => {
       </Spin>
     </div>
   );
-}
+};
 
 export default SettingsMenu;

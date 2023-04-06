@@ -7,6 +7,7 @@ interface IHiddenFormItemProps {
 
 /**
  * This is a field that is solely used to display fields in a form for example start and end dates and times
+ *
  * @param name name property
  * @returns
  */

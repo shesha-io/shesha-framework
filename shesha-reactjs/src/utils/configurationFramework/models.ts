@@ -35,7 +35,7 @@ interface VersionStatusMapItem {
 }
 type VersionStatusMap = {
     [key in ConfigurationItemVersionStatus]: VersionStatusMapItem;
-}
+};
 
 export const ConfigurationItemVersionStatusMap: VersionStatusMap = {
     [ConfigurationItemVersionStatus.Draft]: { text: 'Draft', color: '#b4b4b4' },
@@ -43,7 +43,7 @@ export const ConfigurationItemVersionStatusMap: VersionStatusMap = {
     [ConfigurationItemVersionStatus.Live]: { text: 'Live', color: '#87d068' },
     [ConfigurationItemVersionStatus.Cancelled]: { text: 'Cancelled', color: '#cd201f' },
     [ConfigurationItemVersionStatus.Retired]: { text: 'Retired', color: '#FF7518' },
-}
+};
 
 export const FORM_STATUS_MAPPING: IStatusMappings = { 
     mapping: Object.values(ConfigurationItemVersionStatus)

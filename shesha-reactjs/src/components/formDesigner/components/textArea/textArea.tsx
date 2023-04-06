@@ -1,5 +1,5 @@
 import { IToolboxComponent } from '../../../../interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '../../../../providers/form/models';
+import { FormMarkup } from '../../../../providers/form/models';
 import { FontColorsOutlined } from '@ant-design/icons';
 import { Input, message } from 'antd';
 import ConfigurableFormItem from '../formItem';
@@ -11,18 +11,9 @@ import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../.
 import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
 import { DataTypes, StringFormats } from '../../../../interfaces/dataTypes';
 import { customEventHandler } from '../utils';
-import { axiosHttp } from '../../../../apis/axios';
+import { axiosHttp } from '../../../../utils/fetchers';
 import moment from 'moment';
-
-export interface ITextAreaProps extends IConfigurableFormComponent {
-  placeholder?: string;
-  showCount?: boolean;
-  autoSize?: boolean;
-  allowClear?: boolean;
-  hideBorder?: boolean;
-  initialValue?: string;
-  passEmptyStringByDefault?: boolean;
-}
+import { ITextAreaComponentProps } from './interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -38,13 +29,13 @@ const JsonTextArea: React.FC<IJsonTextAreaProps> = props => {
   );
 };
 
-const TextField: IToolboxComponent<ITextAreaProps> = {
+const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
   type: 'textArea',
   name: 'Text Area',
   icon: <FontColorsOutlined />,
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string && dataFormat === StringFormats.multiline,
-  factory: (model: ITextAreaProps, _c, form) => {
+  factory: (model: ITextAreaComponentProps, _c, form) => {
     const { formMode, isComponentDisabled, setFormDataAndInstance } = useForm();
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
@@ -101,7 +92,7 @@ const TextField: IToolboxComponent<ITextAreaProps> = {
     );
   },
   initModel: model => {
-    const textAreaModel: ITextAreaProps = {
+    const textAreaModel: ITextAreaComponentProps = {
       ...model,
       label: 'Text Area',
       autoSize: false,
@@ -115,4 +106,4 @@ const TextField: IToolboxComponent<ITextAreaProps> = {
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
 };
 
-export default TextField;
+export default TextAreaComponent;

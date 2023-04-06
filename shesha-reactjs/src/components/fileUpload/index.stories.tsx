@@ -1,6 +1,5 @@
 import React from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import { StoredFileProvider } from '../../providers';
 import { ICustomFileProps } from '../customFile';
 import { FileUpload } from './';
@@ -8,7 +7,7 @@ import StoryApp from '../storyBookApp';
 
 export default {
   title: 'Components/Temp/StoredFileUpload',
-  component: FileUpload,
+  component: FileUpload
 } as Meta;
 
 const customFileProps: ICustomFileProps = {};

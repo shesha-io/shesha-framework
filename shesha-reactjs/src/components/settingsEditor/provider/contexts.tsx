@@ -3,7 +3,7 @@ import { FormMode } from '../../../providers';
 import { FrontEndApplicationDto, IFrontEndApplication, ISettingConfiguration, ISettingIdentifier, LoadingState, SettingValue } from './models';
 
 export interface IEditorBridge {
-    save: () => Promise<void>,
+    save: () => Promise<void>;
     //startEdit: () => void,
 }
 
@@ -23,7 +23,7 @@ export interface ISettingsEditorStateContext {
 }
 
 export interface ISettingsEditorActionsContext {
-    selectSetting: (setting: ISettingConfiguration, app: IFrontEndApplication) => void;
+    selectSetting: (setting: ISettingConfiguration, app?: IFrontEndApplication) => void;
 
     saveSetting: () => Promise<void>;
     startEditSetting: () => void;

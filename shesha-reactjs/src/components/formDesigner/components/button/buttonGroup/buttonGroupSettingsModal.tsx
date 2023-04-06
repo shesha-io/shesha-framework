@@ -18,11 +18,11 @@ export interface IToolbarSettingsModal {
   heading?: ReactNode | (() => ReactNode);
 }
 
-interface ButtonGroupSettingsModalInner extends Omit<IToolbarSettingsModal, 'readOnly'>{
+interface IButtonGroupSettingsModalInnerProps extends Omit<IToolbarSettingsModal, 'readOnly'>{
 
 }
 
-export const ButtonGroupSettingsModalInner: FC<ButtonGroupSettingsModalInner> = ({
+export const ButtonGroupSettingsModalInner: FC<IButtonGroupSettingsModalInnerProps> = ({
   onChange,
   allowAddGroups,
   render,

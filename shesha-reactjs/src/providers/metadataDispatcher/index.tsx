@@ -67,9 +67,11 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
           }));
           const apiEndpoints = {};
           for(const actionName in response.result.apiEndpoints){
-            const endpoint = response.result.apiEndpoints[actionName];
-            if (endpoint)
-              apiEndpoints[actionName] = { ...endpoint };
+            if (response.result.apiEndpoints.hasOwnProperty(actionName)){
+              const endpoint = response.result.apiEndpoints[actionName];
+              if (endpoint)
+                apiEndpoints[actionName] = { ...endpoint };
+            }
           }
 
           const meta: IModelMetadata = {
@@ -148,7 +150,7 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
   };
 
   const getNested = (meta: IModelMetadata, propName: string): Promise<IModelMetadata> => {
-    const propMeta = meta.properties.find(p => camelcase(p.path) == propName);
+    const propMeta = meta.properties.find(p => camelcase(p.path) === propName);
 
     if (!propMeta)
       return Promise.reject(`property '${propName}' not found`);
@@ -163,7 +165,7 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
       return Promise.resolve({ type: DataTypes.object, properties: propMeta.properties, specifications: [], apiEndpoints: {}, dataType: DataTypes.object });
 
     return Promise.reject(`data type '${propMeta.dataType}' doesn't support nested properties`);
-  }
+  };
 
   const getContainerProperties = (payload: IGetNestedPropertiesPayload) => {
     return getContainerMetadata(payload).then(m => m.properties);
@@ -194,7 +196,7 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
     return getMetadata({ modelType: modelType }).then(m => {
       return m.dataType === DataTypes.entityReference;
     });
-  }
+  };
 
   const metadataActions: IMetadataDispatcherActionsContext = {
     getMetadata,

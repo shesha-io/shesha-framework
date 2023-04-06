@@ -5,6 +5,7 @@ const CUSTOM_HEADERS_KEY = 'f5b34b63-d808-40d5-8b3b-01a16520ac9e';
 
 /**
  * Sets the tenant id
+ *
  * @param tenantId - the tenant id
  */
 export const setTenantId = (tenantId: string) => {
@@ -17,6 +18,7 @@ export const setTenantId = (tenantId: string) => {
 
 /**
  * Gets the tenant id
+ *
  * @returns tenantId
  */
 export const getTenantId = () => {
@@ -25,7 +27,16 @@ export const getTenantId = () => {
     return null;
   }
 
-  return parseInt(value);
+  return parseInt(value, 10);
+};
+
+export const isJsonParseable = (value: any): boolean => {
+  try {
+    JSON.parse(value);
+    return true;
+  } catch (error) {
+    return false;
+  }
 };
 
 export const getCustomHeaders = () => {
@@ -40,13 +51,4 @@ export const getCustomHeaders = () => {
   }
 
   return [];
-};
-
-export const isJsonParseable = (value: any): boolean => {
-  try {
-    JSON.parse(value);
-    return true;
-  } catch (error) {
-    return false;
-  }
 };

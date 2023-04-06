@@ -5,7 +5,6 @@ import { FormLayout } from 'antd/lib/form/Form';
 import { IKeyValue } from '../../interfaces/keyValue';
 import { ColProps } from 'antd';
 import { IHasVersion } from '../../utils/fluentMigrator/migrator';
-import { IPersistedFormProps } from '../formPersisterProvider/models';
 
 export const ROOT_COMPONENT_KEY: string = 'root'; // root key of the flat components structure
 export const TOOLBOX_COMPONENT_DROPPABLE_KEY: string = 'toolboxComponent';
@@ -190,6 +189,29 @@ export interface FormFullName {
 }
 export type FormUid = string;
 export type FormIdentifier = FormFullName | FormUid;
+
+export interface IPersistedFormProps {
+  id?: string;
+  module?: string;
+  name?: string;
+  label?: string;
+  description?: string;
+  markup?: FormRawMarkup;
+  formSettings?: IFormSettings;
+  /**
+   * Version number
+   */
+  versionNo?: number;
+  /**
+   * Version status
+   */
+  versionStatus?: number;
+
+  /**
+   * If true, indicates that it's the last version of the form
+   */
+  isLastVersion?: boolean;
+}
 
 export interface IConfigurableFormBaseProps {
   formId?: FormIdentifier;

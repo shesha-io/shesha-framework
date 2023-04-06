@@ -11,7 +11,7 @@ function canSubmit(data: IAnnotation[], minPoints: number) {
     return true;
 }
 function parseIntOrDefault(input: any, defaultValue: number = 0): number {
-    const parsed = parseInt(input, 0);
+    const parsed = parseInt(input, 10);
     return isNaN(parsed) ? defaultValue : parsed;
 }
 function sortAnnotationData(data: IAnnotation[]) {

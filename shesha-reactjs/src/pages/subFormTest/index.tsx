@@ -15,13 +15,21 @@ const SubFormTestPage: PageWithLayout<ISubFormTestPageProps> = () => {
         <Page
             title="SubForm Test"
             description=""
-            //loading={loadingState.loading}
-            //loadingText={loadingState.loadingText}
         >
-            <FormProvider mode={'edit'} flatComponents={{ allComponents: {}, componentRelations: {} }} formSettings={{ colon: true, labelCol: {}, wrapperCol: {}, layout: 'vertical' }} name={''} isActionsOwner={false}>
+            <FormProvider 
+                mode={'edit'} 
+                flatComponents={{ allComponents: {}, componentRelations: {} }} 
+                formSettings={{ colon: true, labelCol: {}, wrapperCol: {}, layout: 'vertical' }} 
+                name={''} 
+                isActionsOwner={false}
+            >
                 <Form.Item>
-                    <Button onClick={() => {setFormName('/organisations/edit');}}>Organisaiont</Button>
-                    <Button onClick={() => {setFormName('person-edit');}}>Person</Button>
+                    <Button onClick={() => {
+setFormName('/organisations/edit');
+}}>Organisaiont</Button>
+                    <Button onClick={() => {
+setFormName('person-edit');
+}}>Person</Button>
                 </Form.Item>
                 <Form.Item>
                     <SubFormProvider
@@ -39,6 +47,6 @@ const SubFormTestPage: PageWithLayout<ISubFormTestPageProps> = () => {
             </FormProvider>
         </Page>
     );
-}
+};
 
 export default SubFormTestPage;

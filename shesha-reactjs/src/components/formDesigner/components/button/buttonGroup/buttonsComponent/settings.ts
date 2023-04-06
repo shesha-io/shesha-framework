@@ -6,7 +6,6 @@ export const buttonsSettingsForm = new DesignerToolbarSettings()
     name: 'separator1',
     parentId: 'root',
     label: 'Display',
-    title: '',
   })
   .addPropertyAutocomplete({
     id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',

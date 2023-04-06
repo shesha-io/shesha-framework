@@ -46,7 +46,7 @@ const ComponentRenderer: FC<IComponentRendererProps> = ({ id, componentRef }) =>
       <FormComponent id={id} componentRef={componentRef} />
     </CustomErrorBoundary>
   );
-}
+};
 
 interface IConfigurableFormComponentDesignerProps {
   componentModel: IConfigurableFormComponent;
@@ -108,6 +108,6 @@ const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerPr
       </div>
     </div>
   );
-}
+};
 
 export default ConfigurableFormComponent;

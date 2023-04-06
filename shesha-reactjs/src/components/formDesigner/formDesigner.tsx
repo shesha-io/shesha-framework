@@ -64,6 +64,6 @@ export const FormDesigner: FC<IFormDesignerProps> = ({ formId }) => {
       </FormPersisterStateConsumer>
     </FormPersisterProvider>
   );
-}
+};
 
 export default FormDesigner;

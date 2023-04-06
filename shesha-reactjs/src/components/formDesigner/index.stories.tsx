@@ -1,6 +1,5 @@
 import React from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import FormDesigner from './formDesigner';
 import { MetadataDispatcherProvider } from '../../providers';
 import { addStory } from '../../stories/utils';
@@ -9,7 +8,7 @@ import StoryApp from '../storyBookApp';
 
 export default {
   title: 'Components/Temp/FormDesigner',
-  component: FormDesigner,
+  component: FormDesigner
 } as Meta;
 
 export interface IFormDesignerStoryProps {
@@ -26,7 +25,7 @@ const DesignerTemplate: Story<IFormDesignerStoryProps> = ({ formId }) => (
   </StoryApp>
 );
 
-export const Buigfix = addStory(DesignerTemplate, {
+export const Bugfix = addStory(DesignerTemplate, {
   formId: '456cf5ca-fd15-4a1f-aa07-ec3a66b761d7',
 });
 export const RoleAppointmentForm = addStory(DesignerTemplate, {

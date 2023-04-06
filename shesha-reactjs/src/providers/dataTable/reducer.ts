@@ -27,7 +27,7 @@ import {
   IDataColumnsProps,
 } from '../datatableColumnsConfigurator/models';
 import { getFilterOptions } from '../../components/columnItemFilter';
-import { camelcaseDotNotation } from '../form/utils';
+import { camelcaseDotNotation } from '../../utils/string';
 import { getIncomingSelectedStoredFilterIds } from './utils';
 
 /** get dirty filter if exists and fallback to current filter state */
