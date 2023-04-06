@@ -96,10 +96,10 @@ AutocompleteInterface.EntityDto = EntityDtoAutocomplete;
 export {
   RawAutocomplete as AutocompleteRaw,
   EntityDtoAutocomplete as AutocompleteDto,
-  IAutocompleteProps,
-  ISelectOption,
-  AutocompleteDataSourceType,
-  CustomLabeledValue
-};
+  type IAutocompleteProps,
+  type ISelectOption,
+  type AutocompleteDataSourceType,
+  type CustomLabeledValue
+}; 
 
 export default AutocompleteInterface;

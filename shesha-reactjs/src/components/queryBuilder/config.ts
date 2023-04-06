@@ -1,5 +1,5 @@
 // For AntDesign widgets only:
-import { Type, Config } from 'react-awesome-query-builder';
+import { Type, Config, BasicConfig } from 'react-awesome-query-builder';
 import AntdConfig from 'react-awesome-query-builder/lib/config/antd';
 import EntityAutocompleteWidget from './widgets/entityAutocomplete';
 import RefListDropdownWidget from './widgets/refListDropDown';
@@ -19,12 +19,18 @@ const setTypeOperators = (type: Type, operators: string[]): Type => {
   return result;
 };
 
+const basicConfig = BasicConfig;
+
+const standardTypes = AntdConfig.types ?? basicConfig.types;
+const standardOperators = AntdConfig.operators ?? basicConfig.operators;
+const standardWidgets = AntdConfig.widgets ?? basicConfig.widgets;
+
 const types = {
-  ...AntdConfig.types,
+  ...standardTypes,
   entityReference: EntityReferenceType,
   refList: RefListType,
   dateTimeDynamic: DateTimeDynamicType,
-  text: setTypeOperators(AntdConfig.types.text, [
+  text: setTypeOperators(standardTypes.text, [
     'equal',
     'not_equal',
     'is_empty',
@@ -39,13 +45,13 @@ const types = {
 };
 
 const operators = {
-  ...AntdConfig.operators,
+  ...standardOperators,
   starts_with: {
-    ...AntdConfig.operators.starts_with,
+    ...standardOperators.starts_with,
     jsonLogic: 'startsWith',
   },
   ends_with: {
-    ...AntdConfig.operators.ends_with,
+    ...standardOperators.ends_with,
     jsonLogic: 'endsWith',
   },
   is_satisfied: {
@@ -61,19 +67,19 @@ const operators = {
 };
 
 const widgets = {
-  ...AntdConfig.widgets,
+  ...standardWidgets,
   entityAutocomplete: EntityAutocompleteWidget,
   refListDropdown: RefListDropdownWidget,
   dateTimeDynamic: DateTimeDynamicWidget,
   datetime: {
-    ...AntdConfig.widgets.datetime,
+    ...standardWidgets.datetime,
     timeFormat: 'HH:mm',
     jsonLogic: (val, _, wgtDef) => {
       return moment(val, wgtDef.valueFormat).format();
     },
   },
   date: {
-    ...AntdConfig.widgets.date,
+    ...standardWidgets.date,
     jsonLogic: (val, _, wgtDef) => {
       return moment(val, wgtDef.valueFormat).format();
     },

@@ -5,7 +5,6 @@ import { Autocomplete, ModelConfigurator, Page } from '../../../components';
 import IndexToolbar from '../../../components/indexToolbar';
 import EntityConfigTree, { IEntityConfigTreeInstance } from '../../../components/entityConfigTree';
 import { IToolbarItem, PageWithLayout } from '../../../interfaces';
-//import { useShaRouting } from '../../../providers';
 import { IModelConfiguratorInstance } from '../../../providers/modelConfigurator/interfaces';
 import { EntityConfigDto } from '../../../apis/entityConfig';
 import { MetadataSourceType } from '../../../interfaces/metadata';

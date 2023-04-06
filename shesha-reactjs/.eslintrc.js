@@ -17,13 +17,16 @@ module.exports = {
   },
   "ignorePatterns": [
     "/.next/**", 
+    "/dist/**", 
     "/.out/**", 
     "/node_modules/**", 
     "/example/**", 
     "/src/apis/*", 
     "**/__tests__/**", 
     "/.storybook/**",
-    ".eslintrc.js"
+    ".eslintrc.js",
+    "rollup.config.mjs",
+    "less-bundle.js"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {

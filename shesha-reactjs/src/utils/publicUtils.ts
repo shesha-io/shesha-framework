@@ -3,7 +3,7 @@ export { requestHeaders } from './requestHeaders';
 export * from '../providers/form/utils';
 
 export {
-  QueryStringParams,
+  type QueryStringParams,
   getCurrentUrl,
   getCurrentQueryString,
   getCurrentUrlWithQueryString,

@@ -1,24 +1,25 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "allowJs": false,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "downlevelIteration": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "incremental": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
     "lib": [
+      "es6",
       "dom",
-      "dom.iterable",
+      "es2016",
+      "es2017",
       "esnext"
     ],
-    "allowJs": false,
-    "skipLibCheck": true,
-    "strict": false,
-    "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
-    "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "experimentalDecorators": true,
-    "jsx": "preserve",
-    "baseUrl": ".",
+    "noEmit": true,
     "paths": {
       "api": [
         "src/api"
@@ -44,11 +45,11 @@
       "hooks": [
         "src/hooks"
       ],
-      "interfaces": [
-        "src/interfaces"
-      ],
       "i18n": [
         "./i18n.json"
+      ],
+      "interfaces": [
+        "src/interfaces"
       ],
       "models": [
         "src/models"
@@ -71,11 +72,11 @@
       "routes": [
         "src/routes"
       ],
-      "routes/settingsRoutes": [
-        "src/routes/settingsRoutes"
-      ],
       "routes/*": [
         "src/routes/*"
+      ],
+      "routes/settingsRoutes": [
+        "src/routes/settingsRoutes"
       ],
       "styles": [
         "src/styles"
@@ -93,20 +94,25 @@
         "src/utils"
       ]
     },
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "strictNullChecks": false,
+    "strictPropertyInitialization": false,
+    "target": "es5",
     "typeRoots": [
       "typings",
       "node_modules/@types"
-    ],
-    "incremental": true
+    ]
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx"
-  ],
   "exclude": [
     "node_modules",
     "test/*",
     "src/api/**"
+  ],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx"
   ]
 }

@@ -4,9 +4,11 @@
     "allowSyntheticDefaultImports": true,
     "declaration": true,
     "downlevelIteration": true,
-    "esModuleInterop": false,
+    "esModuleInterop": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
+    "incremental": true,
+    "isolatedModules": false,
     "jsx": "react",
     "lib": [
       "es6",
@@ -17,6 +19,7 @@
     ],
     "module": "esnext",
     "moduleResolution": "node",
+    "noEmit": true,
     "noImplicitAny": false, // todo: change to true after first successfull build
     "noImplicitReturns": true,
     "noImplicitThis": true,
@@ -26,9 +29,9 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "sourceMap": true,
+    "strict": false,
     "strictNullChecks": false,
     "strictPropertyInitialization": false,
-    "suppressImplicitAnyIndexErrors": true,
     "target": "es5"
   },
   "exclude": [

@@ -1,11 +1,11 @@
-import typescript from '@rollup/plugin-typescript';
+//import typescript from '@rollup/plugin-typescript';
+import typescript from 'rollup-plugin-typescript2';
 import commonjs from '@rollup/plugin-commonjs';
 import postCss from 'rollup-plugin-postcss';
 import multi from '@rollup/plugin-multi-entry';
 import url from 'rollup-plugin-url';
 import svgr from '@svgr/rollup';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
-import includePaths from 'rollup-plugin-includepaths';
 import localResolve from 'rollup-plugin-local-resolve';
 import terser from '@rollup/plugin-terser';
 import json from 'rollup-plugin-json';
@@ -61,12 +61,6 @@ export default {
     'react-syntax-highlighter',
   ],
   plugins: [
-    // alias({
-    //   resolve: ['.jsx', '.js', '.tsx', '.ts'],
-    //   entries: [
-    //     { find: 'components', replacement: path.resolve(projectRootDir, 'src/components') },
-    //   ]
-    // }),
     multi(),
     peerDepsExternal({
       includeDependencies: true,
@@ -98,20 +92,15 @@ export default {
       // browser: false,
       modulesOnly: true,
     }),
+    typescript({
+      rollupCommonJSResolveHack: true,
+      clean: true,
+    }),
     commonjs({
       include: 'node_modules/**',
+      defaultIsModuleExports: true,
     }),
-    typescript(),
     json(),
     localResolve(),
-    includePaths({
-      include: {
-        components: 'src/index.tsx',
-        models: 'src/models/index.d.ts',
-      },
-      paths: ['src/components', 'src/models', 'src/utils', 'src/providers', 'src/hooks', 'src/interfaces', 'src/enums'],
-      external: [],
-      extensions: ['.js', '.json', '.tsx', '.tsx', '.ts', '.d.ts'],
-    }),
   ],
 };

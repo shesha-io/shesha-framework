@@ -74,7 +74,7 @@ export const ButtonGroup: FC<IButtonGroupProps> = ({ items, id, size, spaceSize 
 
   const localexecuteExpression = (expression: string) => {
     const expressionArgs = {
-      data: formData,
+      data: formData ?? {},
       form: form,
       formMode: formMode,
       globalState: globalState,
@@ -82,7 +82,7 @@ export const ButtonGroup: FC<IButtonGroupProps> = ({ items, id, size, spaceSize 
       context: { selectedRow },
     };
     return executeExpression<boolean>(expression, expressionArgs, true, error => {
-      console.error(error);
+      console.error('Expression evaluation failed', error);
       return true;
     });
   };
