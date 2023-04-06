@@ -166,6 +166,7 @@
     "localforage": "^1.10.0",
     "mustache": "^4.2.0",
     "nested-property": "^4.0.0",
+    "next": "^12.2.2",
     "number-to-words": "^1.2.4",
     "point-in-polygon": "^1.1.0",
     "pubsub-js": "^1.9.4",
