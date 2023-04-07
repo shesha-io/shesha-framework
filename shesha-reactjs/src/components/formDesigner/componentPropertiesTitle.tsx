@@ -15,7 +15,7 @@ export const ComponentPropertiesTitle: FC<IProps> = ({}) => {
   const onDuplicateClick = () => {
     if (!readOnly)
       duplicateComponent({ componentId: selectedComponentId });
-  }
+  };
 
   return (
     <div className="component-properties-actions">

@@ -5,7 +5,7 @@ import { IConfigurableActionColumnsProps } from '../../providers/datatableColumn
 import ShaIcon, { IconType } from '../shaIcon';
 import { useDataTable, useForm, useGlobalState, useMetadata, useSheshaApplication } from '../../providers';
 import { message } from 'antd';
-import { axiosHttp } from '../../apis/axios';
+import { axiosHttp } from '../../utils/fetchers';
 import { useReferenceList, useReferenceListItem } from '../../providers/referenceListDispatcher';
 import { useConfigurableActionDispatcher } from '../../providers/configurableActionsDispatcher';
 import { getNumberFormat, toCamelCase } from '../../utils/string';

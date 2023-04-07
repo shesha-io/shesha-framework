@@ -10,6 +10,6 @@ export const ActionCell: FC<IActionCellProps> = () => {
             New Component
         </div>
     );
-}
+};
 
 export default ActionCell;

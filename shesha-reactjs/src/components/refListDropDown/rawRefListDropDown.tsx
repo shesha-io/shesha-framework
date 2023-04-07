@@ -14,7 +14,7 @@ export const RawRefListDropDown: FC<IRefListDropDownProps> = props => {
 
   const getLabeledValue = (itemValue: number, options: ISelectOption<number>[]) => {
     if (itemValue === undefined) return undefined;
-    const item = options?.find(i => i.value == itemValue);
+    const item = options?.find(i => String(i.value) === String(itemValue));
     return {
       value: itemValue,
       label: item?.label ?? 'unknown',

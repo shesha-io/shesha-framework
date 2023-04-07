@@ -1,7 +1,7 @@
 import { nanoid } from 'nanoid';
 import { IFormDto } from '../../../..';
 import { MetadataDtoAjaxResponse } from '../../../../apis/metadata';
-import { IPersistedFormProps } from '../../../../providers/formPersisterProvider/models';
+import { IPersistedFormProps } from '../../../../providers/form/models';
 import { toCamelCase } from '../../../../utils/string';
 import { IChildEntitiesTagGroupSelectOptions } from './models';
 

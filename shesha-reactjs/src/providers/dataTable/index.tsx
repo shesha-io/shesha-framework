@@ -73,7 +73,8 @@ import { useGlobalState } from '../globalState';
 import camelCaseKeys from 'camelcase-keys';
 import qs from 'qs';
 import { advancedFilter2JsonLogic } from './utils';
-import { camelcaseDotNotation, convertDotNotationPropertiesToGraphQL } from '../form/utils';
+import { convertDotNotationPropertiesToGraphQL } from '../form/utils';
+import { camelcaseDotNotation } from '../../utils/string';
 import { GENERIC_ENTITIES_ENDPOINT } from '../../constants';
 import { useConfigurableAction } from '../configurableActionsDispatcher';
 import { useMetadataDispatcher } from '../..';
@@ -303,6 +304,7 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
 
   /**
    * Returns the fetch data table data or null in a case where `skipFetch: true`
+   *
    * @param payload
    * @returns Promise<IResult<ITableDataResponse>> or null
    */
@@ -311,7 +313,7 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
   ): Promise<IResult<ITableDataInternalResponse>> | null => {
 
     // fetch data from the form value
-    if (sourceType == 'Form') {
+    if (sourceType === 'Form' ) {
       let filtered = [];
       if (Boolean(props.value) && Array.isArray(props.value)) {
         filtered = props.value.filter((_, index) => {
@@ -376,7 +378,7 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
 
   // fetch table data when config is ready or something changed (selected filter, changed current page etc.)
   useEffect(() => {
-    if (entityType || getDataPath || sourceType == 'Form') {
+    if (entityType || getDataPath || sourceType === 'Form') {
       // fecth using entity type
       tableIsReady.current = true; // is used to prevent unneeded data fetch by the ReactTable. Any data fetch requests before this line should be skipped
       refreshTable();
@@ -542,7 +544,7 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
         .filter(c => c.dataType !== 'action')
         .map<IExcelColumn>(c => ({ propertyName: c.propertyName, label: c.caption }));
 
-      if (excelColumns.findIndex(c => c.propertyName == 'id') === -1) {
+      if (excelColumns.findIndex(c => c.propertyName === 'id') === -1) {
         excelColumns = [{ propertyName: 'id', label: 'Id' }, ...excelColumns];
       }
 
@@ -726,7 +728,7 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
         console.error('Failed to fetch table columns', e);
         return [];
       });
-  }
+  };
 
   //#region get columns from back-end
   useEffect(() => {

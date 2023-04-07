@@ -9,6 +9,7 @@ import {
   IndexColumnFilterOption,
   ColumnFilter,
   IGetDataPayloadInternal,
+  IPublicDataTableActions,
 } from './interfaces';
 
 export type IFlagProgressFlags =
@@ -63,7 +64,7 @@ export interface IDataTableStateContext
    */
   displayColumnName?: string;
 
-  sourceType?: 'Form' | 'Entity' |'Url';
+  sourceType?: 'Form' | 'Entity' | 'Url';
 
   formData?: any;
   /** Type of entity */
@@ -138,18 +139,9 @@ export interface IDataTableStateContext
   //#endregion
 }
 
-export interface IPublicDataTableActions {
-  refreshTable: () => void;
-  exportToExcel?: () => void;
-  deleteRow?: () => void;
-  toggleColumnsSelector?: () => void;
-  toggleAdvancedFilter?: () => void;
-  setToEditMode?: () => void;
-}
-
 export interface IDataTableActionsContext
   extends IFlagsSetters<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags>,
-    IPublicDataTableActions {
+  IPublicDataTableActions {
   fetchTableData?: (payload: IGetDataPayloadInternal) => void;
   fetchTableConfig?: (id: string) => void;
   toggleColumnVisibility?: (val: string) => void;
@@ -223,7 +215,7 @@ export const DATA_TABLE_CONTEXT_INITIAL_STATE: IDataTableStateContext = {
   userConfigId: null,
 };
 
-export interface DataTableFullInstance extends IDataTableStateContext, IDataTableActionsContext {}
+export interface DataTableFullInstance extends IDataTableStateContext, IDataTableActionsContext { }
 
 export const DataTableStateContext = createContext<IDataTableStateContext>(DATA_TABLE_CONTEXT_INITIAL_STATE);
 

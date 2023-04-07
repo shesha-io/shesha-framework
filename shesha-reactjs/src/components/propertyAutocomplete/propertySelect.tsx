@@ -32,7 +32,7 @@ interface IAutocompleteState {
 
 const getFullPath = (path: string, prefix: string) => {
   return prefix ? `${prefix}.${camelcase(path)}` : camelcase(path);
-}
+};
 
 export const getPropertyItemIdentifier = (item: IPropertyItem, prefix: string): string => {
   switch(item.itemType){
@@ -40,7 +40,7 @@ export const getPropertyItemIdentifier = (item: IPropertyItem, prefix: string): 
     case 'specification': return (item as ISpecification).name;
   }
   return null;
-}
+};
 
 const propertyItem2option = (item: IPropertyItem, prefix: string): IOption => {
   if (item.itemType === 'specification') {
@@ -68,14 +68,14 @@ const propertyItem2option = (item: IPropertyItem, prefix: string): IOption => {
       label: label
     };
   }
-}
+};
 
 const propertyItems2options = (properties: IPropertyItem[], prefix: string): IOption[] => {
   return properties.filter(p => !(p.itemType === 'property' && (p as IPropertyMetadata).dataType === DataTypes.array)).map(p => propertyItem2option(p, prefix));
-}
+};
 
 export interface IHasPropertyType {
-  itemType: 'property' | 'specification',
+  itemType: 'property' | 'specification';
 }
 
 export type IPropertyItem = (IPropertyMetadata | ISpecification) & IHasPropertyType;
@@ -89,7 +89,7 @@ const getPropertiesWithSpecs = (metadata?: IModelMetadata): IPropertyItem[] => {
 
 
   return [...properties, ...specifications];
-}
+};
 
 export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, ...props }) => {
   const meta = useMetadata(false);
@@ -105,7 +105,7 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, ...
       propertyItems: properties,
       options: propertyItems2options(properties, prefix)
     });
-  }
+  };
 
   const containerPath = useMemo(() => {
     if (!props.value || Array.isArray(props.value))
@@ -129,13 +129,13 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, ...
     // fetch container if changed
     fetchContainer(containerPath).then(m => {
       const propertyItems = getPropertiesWithSpecs(m);
-      setProperties(propertyItems, containerPath)
+      setProperties(propertyItems, containerPath);
     });
   }, [metadata?.properties, containerPath]);
 
   const getPropertyItem = (path: string): IPropertyItem => {
     return state.propertyItems.find(p => getPropertyItemIdentifier(p, containerPath) === path);
-  }
+  };
 
   const onSelect = (data: string) => {
     if (props.onChange) props.onChange(data);

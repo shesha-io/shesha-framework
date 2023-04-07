@@ -11,7 +11,7 @@ namespace Shesha.Domain.ConfigurationItems
     /// Configuration Item
     /// </summary>
     [Discriminator(DiscriminatorColumn = "ItemType")]
-    public class ConfigurationItem : FullAuditedEntity<Guid, User>, IMayHaveTenant
+    public class ConfigurationItem : FullAuditedEntity<Guid, User>, IMayHaveTenant, IMayHaveFrontEndApplication
     {
         [ReadonlyProperty]
         public virtual string ItemType { get; set; }

@@ -1,7 +1,7 @@
 import React, { FC, Fragment, useState } from 'react';
 import { IToolboxComponent } from '../../../../../interfaces';
 import { FilterOutlined } from '@ant-design/icons';
-import { FilterTarget, ICustomFilterProps } from './models';
+import { FilterTarget, ICustomFilterComponentProps } from './interfaces';
 import { ConfigurableFormItem } from '../../../..';
 import { Button, Modal } from 'antd';
 import { QueryBuilderWrapper } from '../../queryBuilder/queryBuilderWrapper';
@@ -10,19 +10,19 @@ import FilterConfigurator from './filterConfigurator';
 import { ITableViewProps } from '../../../../../providers/tableViewSelectorConfigurator/models';
 import { useMedia } from 'react-use';
 
-const CustomFilterComponent: IToolboxComponent<ICustomFilterProps> = {
+const CustomFilterComponent: IToolboxComponent<ICustomFilterComponentProps> = {
   type: 'filter',
   name: 'Filter',
   icon: <FilterOutlined />,
   isHidden: true,
-  factory: (model: ICustomFilterProps) => {
+  factory: (model: ICustomFilterComponentProps) => {
     return (
       <ConfigurableFormItem model={model}>
         <CustomFilter target={model?.target} />
       </ConfigurableFormItem>
     );
   },
-  initModel: (model: ICustomFilterProps) => {
+  initModel: (model: ICustomFilterComponentProps) => {
     return {
       ...model,
       filters: [],

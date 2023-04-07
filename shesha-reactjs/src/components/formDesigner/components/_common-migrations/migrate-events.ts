@@ -17,7 +17,7 @@ export const getDispatchEventReplacement = (eventCallerProps: IHasDispatchEvent)
                 actionOwner: target,
                 handleFail: false,
                 handleSuccess: false,
-            }
+            };
         }
         case SUB_FORM_EVENT_NAMES.postFormData: {
             return {
@@ -25,7 +25,7 @@ export const getDispatchEventReplacement = (eventCallerProps: IHasDispatchEvent)
                 actionOwner: target,
                 handleFail: false,
                 handleSuccess: false,
-            }
+            };
         }
         case SUB_FORM_EVENT_NAMES.updateFormData: {
             return {
@@ -33,7 +33,7 @@ export const getDispatchEventReplacement = (eventCallerProps: IHasDispatchEvent)
                 actionOwner: target,
                 handleFail: false,
                 handleSuccess: false,
-            }
+            };
         }
         case ListControlEvents.refreshListItems: {
             return {
@@ -41,7 +41,7 @@ export const getDispatchEventReplacement = (eventCallerProps: IHasDispatchEvent)
                 actionOwner: target,
                 handleFail: false,
                 handleSuccess: false,
-            }
+            };
         }
         case ListControlEvents.saveListItems: {
             return {
@@ -49,7 +49,7 @@ export const getDispatchEventReplacement = (eventCallerProps: IHasDispatchEvent)
                 actionOwner: target,
                 handleFail: false,
                 handleSuccess: false,
-            }
+            };
         }
         case ListControlEvents.addListItems: {
             return {
@@ -57,12 +57,12 @@ export const getDispatchEventReplacement = (eventCallerProps: IHasDispatchEvent)
                 actionOwner: target,
                 handleFail: false,
                 handleSuccess: false,
-            }
+            };
         }
     }
 
     return null;
-}
+};
 
 const SUB_FORM_EVENT_NAMES = {
     getFormData: 'getFormData',

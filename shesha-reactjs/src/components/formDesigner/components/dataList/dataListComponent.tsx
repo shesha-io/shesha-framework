@@ -50,7 +50,7 @@ export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
 
   const ds = useDataSources();
 
-  const dts = useDataTableStore(false)
+  const dts = useDataTableStore(false);
 
   const dataSource = props.dataSource
     ? ds.getDataSource(props.dataSource)?.dataSource
@@ -76,9 +76,9 @@ export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
     changeSelectedIds
   } = dataSource;
 
-  const { selectedRow, selectedRows, setSelectedRow, setMultiSelectedRow } = dataSelection
+  const { selectedRow, selectedRows, setSelectedRow, setMultiSelectedRow } = dataSelection;
 
-  if (isDesignMode && (!(entityType || getDataPath || sourceType == "Form") || !(props.formId || props.formType))) return <NotConfiguredWarning />;
+  if (isDesignMode && (!(entityType || getDataPath || sourceType === "Form") || !(props.formId || props.formType))) return <NotConfiguredWarning />;
 
   const onSelectRow = (index: number, row: any) => {
     if (row) {
@@ -90,9 +90,11 @@ export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
 
   const onMultiRowSelect = (rows: any[]) => {
     setMultiSelectedRow(rows);
-  }
+  };
 
-  const data = useMemo(() => { return isDesignMode ? [{}] : tableData }, [isDesignMode, tableData])
+  const data = useMemo(() => {
+ return isDesignMode ? [{}] : tableData; 
+}, [isDesignMode, tableData]);
 
   //console.log(`DataListWrapper render, ${data?.length} records`);
 

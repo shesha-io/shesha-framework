@@ -80,19 +80,18 @@ namespace Shesha.Services.ReferenceLists.Distribution
                 // mark existing live form as retired if we import new form as live
                 if (statusToImport == ConfigurationItemVersionStatus.Live) 
                 {
-                    var liveForm = existingList.VersionStatus == ConfigurationItemVersionStatus.Live
+                    var liveVersion = existingList.VersionStatus == ConfigurationItemVersionStatus.Live
                         ? existingList
                         : await _refListRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module.Name == item.ModuleName) && f.VersionStatus == ConfigurationItemVersionStatus.Live);
-                    if (liveForm != null)
+                    if (liveVersion != null)
                     {
-                        await _refListManger.UpdateStatusAsync(liveForm, ConfigurationItemVersionStatus.Retired);
+                        await _refListManger.UpdateStatusAsync(liveVersion, ConfigurationItemVersionStatus.Retired);
                         await _unitOfWorkManager.Current.SaveChangesAsync(); // save changes to guarantee sequence of update
                     }
                 }
 
-                // create new version
-                var newListVersion = await _refListManger.CreateNewVersionAsync(existingList);
-                MapToRefList(item, newListVersion);
+                // Create new version. Note: it copies all items
+                var newListVersion = await _refListManger.CreateNewVersionWithoutItemsAsync(existingList);
 
                 // important: set status according to the context
                 newListVersion.VersionStatus = statusToImport;
@@ -103,6 +102,8 @@ namespace Shesha.Services.ReferenceLists.Distribution
                 // how to handle origin?
 
                 await _refListRepo.UpdateAsync(newListVersion);
+
+                await ImportListItemsAsync(newListVersion, item.Items);
 
                 return newListVersion;
             } else 
@@ -122,14 +123,17 @@ namespace Shesha.Services.ReferenceLists.Distribution
 
                 await _refListRepo.InsertAsync(newList);
 
+                await ImportListItemsAsync(newList, item.Items);
+
                 return newList;
             }
         }
 
-        private async Task ImportListItems(ReferenceList refList, List<DistributedReferenceListItem> distributedItems)
+        private async Task ImportListItemsAsync(ReferenceList refList, List<DistributedReferenceListItem> distributedItems)
         {
             await ImportListItemLevelAsync(refList, distributedItems, null);
         }
+
         private async Task ImportListItemLevelAsync(ReferenceList refList, List<DistributedReferenceListItem> items, ReferenceListItem parent)
         {
             foreach (var distributedItem in items)

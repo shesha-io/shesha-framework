@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef } from 'react';
-import { Select, Tag } from 'antd';
+import { Select } from 'antd';
 import { AutocompleteItemDto } from '../../apis/autocomplete';
 import { useDebouncedCallback } from 'use-debounce';
 import { useSubscribe } from '../..';
@@ -29,7 +29,7 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
     getOptionFromFetchedItem,
     getLabeledValue,
     readOnly,
-    readOnlyMultipleMode = 'raw',
+    //readOnlyMultipleMode = 'raw',
     disableSearch,
     quickviewEnabled,
     quickviewFormPath,
@@ -149,6 +149,7 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
     } else onChange(selectedValue);
   };
 
+  /*
   if (readOnly) {
     const wrappedValue = wrapValue(value);
 
@@ -164,6 +165,7 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
       displayValue = (wrappedValue as any)?.label;
     }
   }
+  */
 
   const dataLoaded = fetchedData && fetchedData.length > 0;
   const autocompleteValue = value || dataLoaded || fetchError ? wrapValue(value) : undefined;

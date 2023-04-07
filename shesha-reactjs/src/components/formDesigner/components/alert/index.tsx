@@ -1,34 +1,25 @@
 import React from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
-import { IConfigurableFormComponent } from '../../../../providers/form/models';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
 import { evaluateString, getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import { useForm, useFormData, useGlobalState } from '../../../../providers';
 import { getSettings } from './settings';
 import ShaIcon from '../../../shaIcon';
+import { IAlertComponentProps } from './interfaces';
 
-export interface IAlertProps extends IConfigurableFormComponent {
-  text: string;
-  description?: string;
-  showIcon?: boolean;
-  alertType?: 'success' | 'info' | 'warning' | 'error';
-  closable?: boolean;
-  icon?: string;
-}
-
-const AlertComponent: IToolboxComponent<IAlertProps> = {
+const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
   type: 'alert',
   name: 'Alert',
   icon: <ExclamationCircleOutlined />,
-  factory: (model: IAlertProps) => {
+  factory: (model: IAlertComponentProps) => {
     const { isComponentHidden } = useForm();
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
 
     const { text, alertType, description, showIcon, closable, icon, style } = model;
 
-    const evaluatedMessage = evaluateString(text, { ...formData, ...globalState });
+    const evaluatedMessage = evaluateString(text, { data: formData, globalState });
 
     const evaluatedDescription = evaluateString(description, formData);
 

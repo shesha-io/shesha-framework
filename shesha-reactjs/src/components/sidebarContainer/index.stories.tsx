@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import SidebarContainer, { ISidebarContainerProps } from './';
 import { CollapsiblePanel } from '..';
 import { Button } from 'antd';
@@ -10,14 +9,12 @@ import StoryApp from '../storyBookApp';
 export default {
   title: 'Components/SidebarContainer',
   component: SidebarContainer,
-  argTypes: {},
+  argTypes: {}
 } as Meta;
 
 const sharedProps: ISidebarContainerProps = {
   allowFullCollapse: false,
 };
-
-const backendUrl = process.env.STORYBOOK_BASE_URL; // TODO: Make this configurable
 
 //#region Basic usage
 const TemplateBasic: Story<ISidebarContainerProps> = args => {

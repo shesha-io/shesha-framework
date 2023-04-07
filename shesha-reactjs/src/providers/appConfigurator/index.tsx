@@ -28,8 +28,9 @@ import {
 import { genericItemActionArgumentsForm } from './configurable-actions/generic-item-arguments';
 import { useLocalStorage } from '../../hooks';
 import { PERM_APP_CONFIGURATOR } from '../../constants';
+import { useAuth } from '../auth';
 
-export interface IAppConfiguratorProviderProps {}
+export interface IAppConfiguratorProviderProps { }
 
 const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProps>> = ({ children }) => {
   const [storageFormInfoVisible, setStorageFormInfoVisible] = useLocalStorage<boolean>('FORM_INFO_VISIBLE', false);
@@ -38,23 +39,38 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
     formInfoBlockVisible: storageFormInfoVisible,
   });
 
-  const { backendUrl, httpHeaders, setRequestHeaders, anyOfPermissionsGranted } = useSheshaApplication();
+  const {
+    backendUrl,
+    httpHeaders,
+    setRequestHeaders,
+  } = useSheshaApplication();
 
   // read configurationItemsMode on start and check availability
   const [storageConfigItemMode, setStorageConfigItemMode] = useLocalStorage<ConfigurationItemsViewMode>(
     'CONFIGURATION_ITEM_MODE',
     'live'
   );
-  useEffect(() => {
-    const hasRights =
-      typeof anyOfPermissionsGranted === 'function' ? anyOfPermissionsGranted([PERM_APP_CONFIGURATOR]) : false;
+  
+  const auth = useAuth(false);
+  if (auth){
+    const subscriptionName = 'configurator';
 
-    const mode = hasRights ? storageConfigItemMode : APP_CONTEXT_INITIAL_STATE.configurationItemMode;
+    auth.subscribeOnProfileLoading(subscriptionName, () => {
+      //console.log('LOG: subscription!');
+  
+      const hasRights = auth.anyOfPermissionsGranted([PERM_APP_CONFIGURATOR]);
 
-    if (mode !== state.configurationItemMode) switchConfigurationItemMode(mode);
+      const mode = hasRights ? storageConfigItemMode : APP_CONTEXT_INITIAL_STATE.configurationItemMode;
 
-    if (state.formInfoBlockVisible && !hasRights) toggleShowInfoBlock(false);
-  }, []);
+      if (mode !== state.configurationItemMode) 
+        switchConfigurationItemMode(mode);
+
+      if (state.formInfoBlockVisible && !hasRights) 
+        toggleShowInfoBlock(false);
+
+      return Promise.resolve();
+    });
+  }
 
   //#region Configuration Framework
 
@@ -235,5 +251,5 @@ export {
   useAppConfiguratorState,
   useAppConfiguratorActions,
   useAppConfigurator,
-  ApplicationMode,
+  type ApplicationMode,
 };

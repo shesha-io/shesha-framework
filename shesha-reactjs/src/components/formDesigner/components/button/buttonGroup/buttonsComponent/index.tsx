@@ -1,19 +1,18 @@
 import React from 'react';
-import { IConfigurableFormComponent, IToolboxComponent } from '../../../../../../interfaces';
+import { IToolboxComponent } from '../../../../../../interfaces';
 import { GroupOutlined } from '@ant-design/icons';
-import ButtonGroupSettingsModal, { IToolbarSettingsModal } from '../buttonGroupSettingsModal';
+import ButtonGroupSettingsModal from '../buttonGroupSettingsModal';
 import { buttonsSettingsForm } from './settings';
 import ConfigurableFormItem from '../../../formItem';
 import { useForm } from '../../../../../..';
+import { IButtonsProps as IButtonsComponentProps } from './interfaces';
 
-export interface IButtonsProps extends Omit<IToolbarSettingsModal, 'readOnly'>, IConfigurableFormComponent {}
-
-const ButtonsComponent: IToolboxComponent<IButtonsProps> = {
+const ButtonsComponent: IToolboxComponent<IButtonsComponentProps> = {
   type: 'buttons',
   name: 'Buttons',
   icon: <GroupOutlined />,
   isHidden: true,
-  factory: (model: IButtonsProps) => {
+  factory: (model: IButtonsComponentProps) => {
     const { formMode } = useForm();
     return (
       <ConfigurableFormItem model={model}>

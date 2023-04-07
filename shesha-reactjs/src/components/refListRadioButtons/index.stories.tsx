@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import RefListRadioButtons, { IRefListRadioButtonsProps } from './';
 import { Form } from 'antd';
 import StoryApp from '../storyBookApp';
@@ -21,7 +20,7 @@ export default {
         options: ['default', 'button'],
       },
     },
-  },
+  }
 } as Meta;
 
 const autocompleteProps: IRefListRadioButtonsProps = {

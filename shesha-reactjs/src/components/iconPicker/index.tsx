@@ -109,12 +109,12 @@ const IconPicker: FC<IIconPickerProps> = ({
 
   const memoizedActiveGroup = useMemo(() => {
     if (searchQuery) {
-      const _activeGroup = searchOption?.group;
+      const activeGroup = searchOption?.group;
       const filteredGroup = {};
-      const objectKeys = Object.keys(_activeGroup);
+      const objectKeys = Object.keys(activeGroup);
 
       for (const key of objectKeys) {
-        filteredGroup[key] = _activeGroup[key].filter((groupItem: string) =>
+        filteredGroup[key] = activeGroup[key].filter((groupItem: string) =>
           groupItem?.toLowerCase()?.includes(searchQuery?.toLowerCase())
         );
       }

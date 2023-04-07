@@ -42,7 +42,7 @@ export const ItemsTree: FC<IItemsTreeProps> = ({ treeState, onChangeSelection })
             return { nodes: [], itemsCount: 0 };
 
         let itemsCount = 0;
-        const loop = (data: ConfigItemDataNode[], onMatched: () => void = () => { }): ConfigItemDataNode[] =>
+        const loop = (data: ConfigItemDataNode[], onMatched: () => void = () => { /**/ }): ConfigItemDataNode[] =>
             data.map((item) => {
                 const strTitle = item.title as string;
                 const index = strTitle.toLocaleLowerCase().indexOf(term.toLowerCase());
@@ -97,7 +97,7 @@ export const ItemsTree: FC<IItemsTreeProps> = ({ treeState, onChangeSelection })
             nodes: filtered,
             itemsCount: itemsCount,
         };
-    }
+    };
 
     useEffect(() => {
         const withStat: TreeNodesWithStat = !Boolean(treeState.treeNodes)
@@ -126,7 +126,7 @@ export const ItemsTree: FC<IItemsTreeProps> = ({ treeState, onChangeSelection })
 
     const debouncedSearch = useDebouncedCallback<(value: string) => void>(
         localValue => {
-            console.time('filter');
+            //console.time('filter');
             const newExpandedKeys = localValue
                 ? treeState.indexes
                     .map((item) => {
@@ -137,7 +137,7 @@ export const ItemsTree: FC<IItemsTreeProps> = ({ treeState, onChangeSelection })
                     })
                     .filter((item, i, self) => item && self.indexOf(item) === i)
                 : [];
-            console.timeEnd('filter');
+            //console.timeEnd('filter');
 
             setExpandedKeys(newExpandedKeys as React.Key[]);
             setSearchValue(localValue);
@@ -179,6 +179,6 @@ export const ItemsTree: FC<IItemsTreeProps> = ({ treeState, onChangeSelection })
             </div>
         </>
     );
-}
+};
 
 export default ItemsTree;

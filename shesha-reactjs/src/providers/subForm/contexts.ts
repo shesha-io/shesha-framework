@@ -1,8 +1,7 @@
 import { createContext } from 'react';
 import { GetDataError } from 'restful-react';
 import { IConfigurableFormComponent } from '../../interfaces';
-import { IFormSettings } from '../form/models';
-import { IPersistedFormProps } from '../formPersisterProvider/models';
+import { IFormSettings, IPersistedFormProps } from '../form/models';
 
 export interface IPersistedFormPayload
   extends Pick<IPersistedFormProps, 'id' | 'versionNo' | 'versionStatus' | 'description' | 'module'> { }

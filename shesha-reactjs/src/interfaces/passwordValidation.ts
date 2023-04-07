@@ -6,6 +6,7 @@
  *    - contain at least 1 numeric character
  *    - contain at least one special character, but we are escaping reserved RegEx characters to avoid conflict
  *    - be eight characters or longer
+ *
  * @param password - the password to validate
  */
 export interface IPasswordValidation {

@@ -6,6 +6,7 @@ import { IProperty } from "./models";
 
 /**
  * Convert property metadata to QueryBuilder property
+ *
  * @param property property metadata
  * @returns 
  */
@@ -22,11 +23,11 @@ export const propertyMetadata2QbProperty = (property: IPropertyMetadata): IPrope
             allowInherited: true,
         },
     };
-}
+};
 
 export const getPropertyFullPath = (path: string, prefix: string) => {
     return prefix ? `${prefix}.${camelcase(path)}` : camelcase(path);
-}
+};
 
 export const useMetadataFields = () => {
     const metadata = useMetadata(false);

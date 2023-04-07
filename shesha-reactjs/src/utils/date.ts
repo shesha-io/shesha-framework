@@ -5,6 +5,7 @@ import { toCamelCase } from './string';
 
 /**
  * Checks if the date provided is within the date range
+ *
  * @param {string} dateFrom - the minimum date
  * @param {string} dateTo - the maximum date
  * @param {string} dateToCompare - the date to compare
@@ -34,14 +35,15 @@ export const getFormattedDate = (dateString: string) => {
 
 /**
  * Convert date from ISO format to `YYYY/MM/DD HH:mm:ss`
+ *
  * @param date - date in `YYYY/MM/DD HH:mm:ss` format
  * @returns date in `YYYY/MM/DD HH:mm:ss` or an empty string if the date passed was in the wrong format
  */
 export const formattedDate = (date: string) => {
   try {
-    const _date = new Date(date);
+    const dateValue = new Date(date);
 
-    return moment(_date).format('YYYY/MM/DD HH:mm');
+    return moment(dateValue).format('YYYY/MM/DD HH:mm');
   } catch (error) {
     return '';
   }
@@ -49,9 +51,9 @@ export const formattedDate = (date: string) => {
 
 export const shortDob = (date: string) => {
   try {
-    const _date = new Date(date);
+    const dateValue = new Date(date);
 
-    return moment(_date).format('YYYY/MM/DD');
+    return moment(dateValue).format('YYYY/MM/DD');
   } catch (error) {
     return '';
   }
@@ -59,9 +61,9 @@ export const shortDob = (date: string) => {
 
 export const LongDob = (date: string) => {
   try {
-    const _date = new Date(date);
+    const dateValue = new Date(date);
 
-    return moment(_date).format('DD MMM YYYY');
+    return moment(dateValue).format('DD MMM YYYY');
   } catch (error) {
     return '';
   }

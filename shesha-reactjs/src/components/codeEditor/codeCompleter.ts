@@ -4,15 +4,16 @@ import { Ace } from 'ace-builds';
  * Gets token at current cursor posistion. Returns null if none
  */
 // @ts-ignore
+/*
 function getCurrentToken(editor) {
     try {
         const pos = editor.getSelectionRange().end;
         return editor.session.getTokenAt(pos.row, pos.column);
-    }
-    catch (ex) {
+    } catch (ex) {
         console.error(ex);
     }
 }
+*/
 
 export interface ICodeTreeItem {
     value: string;
@@ -40,7 +41,7 @@ const treeLevel2Completions = (level: ICodeTreeLevel, prefix: string = ''): Ace.
     }
 
     return completions;
-}
+};
 
 export const metadataCodeCompleter =
 {
@@ -73,7 +74,7 @@ export const metadataCodeCompleter =
                 if (currentItem)
                     currentLevel = currentItem.childs;
                 // todo: load if chlids are not loaded yet
-            } while (parts.length > 0 && currentItem)
+            } while (parts.length > 0 && currentItem);
 
             if (Boolean(currentLevel) && parts.length === 0) {
                 const completions = treeLevel2Completions(currentLevel, prefix);

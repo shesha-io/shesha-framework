@@ -1,4 +1,4 @@
-import React, { FC, useContext, useEffect, PropsWithChildren, useMemo, MutableRefObject } from 'react';
+import React, { FC, useContext, useEffect, PropsWithChildren, useMemo, MutableRefObject, useRef } from 'react';
 import { authReducer } from './reducer';
 import useThunkReducer from '../../hooks/thunkReducer';
 import {
@@ -7,6 +7,7 @@ import {
   AUTH_CONTEXT_INITIAL_STATE,
   ILoginForm,
   IAuthStateContext,
+  IProfileLoadedHandler,
 } from './contexts';
 import {
   loginUserAction,
@@ -20,11 +21,11 @@ import {
   fetchUserDataActionSuccessAction,
   fetchUserDataActionErrorAction,
   loginUserSuccessAction,
+  setIsLoggedInAction,
   /* NEW_ACTION_IMPORT_GOES_HERE */
 } from './actions';
 import { URL_LOGIN_PAGE, URL_HOME_PAGE, URL_CHANGE_PASSWORD, HOME_CACHE_URL } from '../../constants';
-import IdleTimer from 'react-idle-timer';
-import { IAccessToken } from '../../interfaces';
+import { IAccessToken, IDictionary } from '../../interfaces';
 import { OverlayLoader } from '../../components/overlayLoader';
 import { sessionGetCurrentLoginInformations } from '../../apis/session';
 import { ResetPasswordVerifyOtpResponse } from '../../apis/user';
@@ -110,7 +111,9 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
 
   const storedToken = getAccessTokenFromStorage(tokenName);
 
-  const { [AUTHORIZATION_HEADER_NAME]: _auth = null, ...headersWithoutAuth } = { ...(httpHeaders ?? {}) };
+  //const { [AUTHORIZATION_HEADER_NAME]: __auth = null, ...headersWithoutAuth } = { ...(httpHeaders ?? {}) };
+  const headersWithoutAuth = { ...(httpHeaders ?? {}) };
+  delete headersWithoutAuth[AUTHORIZATION_HEADER_NAME];
 
   const initialHeaders = { ...headersWithoutAuth, ...getHttpHeadersFromToken(storedToken?.accessToken) };
 
@@ -122,7 +125,29 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
 
   const setters = getFlagSetters(dispatch);
 
-  //#region Fetch user login info`1
+  //#region Fetch user login info
+
+  const profileLoadedSubscriptions = useRef<IDictionary<IProfileLoadedHandler>>({});
+  const subscribeOnProfileLoading = (name: string, handler: IProfileLoadedHandler) => {
+    profileLoadedSubscriptions.current[name] = handler;
+  };
+  const unSubscribeOnProfileLoading = (name: string) => {
+    delete profileLoadedSubscriptions.current[name];
+  };
+
+  const processSubscriptions = (): Promise<void> => {
+    const handlers = profileLoadedSubscriptions.current;
+    const promises: Promise<void>[] = [];
+    for (const handlerName in handlers) {
+      if (!handlers.hasOwnProperty(handlerName))
+        continue;
+
+      const handler = handlers[handlerName];
+      promises.push(handler());
+    }
+
+    return Promise.all(promises).then();
+  };
 
   const fetchUserInfo = (headers: IHttpHeaders) => {
     if (state.isFetchingUserInfo || Boolean(state.loginInfo)) return;
@@ -135,20 +160,24 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
         if (response.result.user) {
           dispatch(fetchUserDataActionSuccessAction(response.result.user));
 
-          if (state.requireChangePassword && Boolean(changePasswordUrl)) {
-            redirect(changePasswordUrl);
-          } else {
-            const currentUrl = getCurrentUrl();
+          processSubscriptions().then(() => {
+            dispatch(setIsLoggedInAction(true));
 
-            // if we are on the login page - redirect to the returnUrl or home page
-            if (isSameUrls(currentUrl, unauthorizedRedirectUrl)) {
-              const returnUrl = getQueryParam('returnUrl')?.toString();
+            if (state.requireChangePassword && Boolean(changePasswordUrl)) {
+              redirect(changePasswordUrl);
+            } else {
+              const currentUrl = getCurrentUrl();
 
-              cacheHomeUrl(response.result?.user?.homeUrl || homePageUrl);
+              // if we are on the login page - redirect to the returnUrl or home page
+              if (isSameUrls(currentUrl, unauthorizedRedirectUrl)) {
+                const returnUrl = getQueryParam('returnUrl')?.toString();
 
-              redirect(returnUrl ?? response.result?.user?.homeUrl ?? homePageUrl ?? DEFAULT_HOME_PAGE);
+                cacheHomeUrl(response.result?.user?.homeUrl || homePageUrl);
+
+                redirect(returnUrl ?? response.result?.user?.homeUrl ?? homePageUrl ?? DEFAULT_HOME_PAGE);
+              }
             }
-          }
+          });
         } else {
           // user may be null in some cases
           clearAccessToken();
@@ -384,49 +413,55 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
   return (
-    // @ts-ignore
-    <IdleTimer>
-      <AuthStateContext.Provider value={state}>
-        <AuthActionsContext.Provider
-          value={{
-            ...setters,
-            checkAuth,
-            loginUser,
-            getAccessToken,
-            logoutUser,
-            anyOfPermissionsGranted: anyOfPermissionsGrantedWrapper,
-            verifyOtpSuccess,
-            resetPasswordSuccess,
-            fireHttpHeadersChanged,
-
-            /* NEW_ACTION_GOES_HERE */
-          }}
-        >
-          {children}
-        </AuthActionsContext.Provider>
-      </AuthStateContext.Provider>
-    </IdleTimer>
+    <AuthStateContext.Provider value={state}>
+      <AuthActionsContext.Provider
+        value={{
+          ...setters,
+          checkAuth,
+          loginUser,
+          getAccessToken,
+          logoutUser,
+          anyOfPermissionsGranted: anyOfPermissionsGrantedWrapper,
+          verifyOtpSuccess,
+          resetPasswordSuccess,
+          fireHttpHeadersChanged,
+          subscribeOnProfileLoading,
+          unSubscribeOnProfileLoading,
+          /* NEW_ACTION_GOES_HERE */
+        }}
+      >
+        {children}
+      </AuthActionsContext.Provider>
+    </AuthStateContext.Provider>
   );
 };
 
-function useAuthState() {
+function useAuthState(require: boolean = true) {
   const context = useContext(AuthStateContext);
-  if (!context) {
+  if (require && context === undefined) {
     throw new Error('useAuthState must be used within a AuthProvider');
   }
   return context;
 }
 
-function useAuthActions() {
+function useAuthActions(require: boolean = true) {
   const context = useContext(AuthActionsContext);
-  if (context === undefined) {
+  if (require && context === undefined) {
     throw new Error('useAuthActions must be used within a AuthProvider');
   }
   return context;
 }
 
-function useAuth() {
-  return { ...useAuthActions(), ...useAuthState() };
+function useAuth(require: boolean = true) {
+  const actionsContext = useAuthActions(require);
+  const stateContext = useAuthState(require);
+
+  // useContext() returns initial state when provider is missing
+  // initial context state is useless especially when require == true
+  // so we must return value only when both context are available
+  return actionsContext !== undefined && stateContext !== undefined
+    ? { ...actionsContext, ...stateContext }
+    : undefined;
 }
 
 export default AuthProvider;

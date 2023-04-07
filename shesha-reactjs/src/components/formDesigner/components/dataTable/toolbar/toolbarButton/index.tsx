@@ -7,7 +7,7 @@ import ShaIcon, { IconType } from '../../../../../shaIcon';
 import classNames from 'classnames';
 import moment from 'moment';
 import { useConfigurableActionDispatcher } from '../../../../../../providers/configurableActionsDispatcher';
-import { axiosHttp } from '../../../../../../apis/axios';
+import { axiosHttp } from '../../../../../../utils/fetchers';
 
 export interface IToolbarButtonProps extends IToolbarButton {
   formComponentId: string;

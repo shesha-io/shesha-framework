@@ -2,7 +2,7 @@ import React, { FC, ReactNode } from 'react';
 import { Alert, Button } from 'antd';
 import { SidebarContainer } from '../../../..';
 import { ButtonGroupProperties } from './properties';
-import ButtonGroupItemsContainer from './buttonGrouptemsContainer';
+import ButtonGroupItemsContainer from './buttonGroupItemsContainer';
 import { useButtonGroupConfigurator } from '../../../../../providers/buttonGroupConfigurator';
 import './styles/index.less';
 

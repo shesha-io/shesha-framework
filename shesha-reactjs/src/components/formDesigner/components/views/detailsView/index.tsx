@@ -51,10 +51,6 @@ const DetailsViewComponent: IToolboxComponent<IDetailsViewComponentProps> = {
           color,
           value,
         }}
-        // headerTagList={[
-        //   { title: 'Some title', tag: 'Some tag' },
-        //   { title: 'Another title', tag: 'another tag' },
-        // ]}
       >
         <ComponentsContainer containerId={model.id} />
       </Page>

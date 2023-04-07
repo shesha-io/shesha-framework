@@ -183,8 +183,8 @@ namespace Shesha.Otp
                 }
                 case OtpSendType.EmailLink:
                 {
-                    var bodyTemplate = await _otpSettings.DefaultEmailSubjectTemplate.GetValueAsync();
-                    var subjectTemplate = await _otpSettings.DefaultEmailBodyTemplate.GetValueAsync();
+                    var subjectTemplate = await _otpSettings.DefaultEmailSubjectTemplate.GetValueAsync();
+                    var bodyTemplate  = await _otpSettings.DefaultEmailBodyTemplate.GetValueAsync();
 
                     var body = bodyTemplate.Replace("{{token}}", otp.Pin);
                     body = body.Replace("{{userid}}", otp.RecipientId);

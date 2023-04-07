@@ -6,7 +6,7 @@ export interface IDataSourcesProviderProps { }
 
 const DataSourcesProvider: FC<PropsWithChildren<IDataSourcesProviderProps>> = ({ children }) => {
 
-    const [state, _dispatch] = useState<IDataSourcesProviderStateContext>({});
+    const [state] = useState<IDataSourcesProviderStateContext>({});
 
     const dataSources = useRef<IDataSourceDictionary>({});
 
@@ -23,14 +23,14 @@ const DataSourcesProvider: FC<PropsWithChildren<IDataSourcesProviderProps>> = ({
 
     const getDataSources = () => {
         return dataSources.current;
-    }
+    };
 
     const getDataSource = (payload: IGetDataSourcePayload | string) => {
         if (typeof(payload) === 'string') 
             return dataSources.current[payload];
         else
             return dataSources.current[`${payload.id}_${payload.name}`];
-    }
+    };
 
     const dataSourcesProviderActions: IDataSourcesProviderActionsContext = {
         registerDataSource,
@@ -53,7 +53,7 @@ const DataSourcesProvider: FC<PropsWithChildren<IDataSourcesProviderProps>> = ({
             </DataSourcesProviderActionsContext.Provider>
         </DataSourcesProviderStateContext.Provider>
     );
-}
+};
 
 function useDataSources(require: boolean = true) {
     const actionsContext = useContext(DataSourcesProviderActionsContext);

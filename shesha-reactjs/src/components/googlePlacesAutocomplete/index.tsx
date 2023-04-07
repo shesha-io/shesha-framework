@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useRef, useState } from 'react';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng, PropTypes } from 'react-places-autocomplete';
 import { Input, notification } from 'antd';
 import { SearchOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -27,7 +27,6 @@ interface ISuggestion {
 export interface IGooglePlacesAutocompleteProps {
   disableGoogleEvent?: (value: string) => boolean;
   debounce?: number;
-  externalApiKey?: string;
   externalLoader?: boolean;
   isInvalid?: boolean;
   onGeocodeChange?: (payload?: IAddressAndCoords) => void;
@@ -50,7 +49,6 @@ export interface IGooglePlacesAutocompleteProps {
 const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
   disableGoogleEvent,
   debounce,
-  externalApiKey,
   externalLoader,
   onChange,
   value,
@@ -69,17 +67,6 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
   const [highlightedPlaceId, setHighlightedPlaceId] = useState('');
   const [showSuggestionsDropdownContainer, setShowSuggestionsDropdownContainer] = useState(true);
   const suggestionRef = useRef<ISuggestion[]>([]);
-
-  useEffect(() => {
-    if (externalApiKey) {
-      const script = document.createElement('script');
-
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${externalApiKey}&v=3.exp&libraries=geometry,drawing,places`;
-      script.async = true;
-
-      document.body.appendChild(script);
-    }
-  }, [externalApiKey]);
 
   if (typeof window === 'undefined' || !(typeof window.google === 'object' && typeof window.google.maps === 'object'))
     return null;
@@ -142,37 +129,37 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
   const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (!suggestionRef.current || suggestionRef?.current?.length === 0) return;
 
-    const _suggestions = suggestionRef.current;
+    const suggestions = suggestionRef.current;
 
     const foundIndex = highlightedPlaceId
-      ? _suggestions?.map(({ placeId }) => placeId)?.indexOf(highlightedPlaceId)
+      ? suggestions?.map(({ placeId }) => placeId)?.indexOf(highlightedPlaceId)
       : -1;
 
     const firstIndex = 0;
 
-    const lastIndex = _suggestions?.length - 1;
+    const lastIndex = suggestions?.length - 1;
 
     if (event.keyCode === KeyCodes.ArrowUp || event.keyCode === KeyCodes.ArrowDown) {
       let suggestion: ISuggestion;
 
       if (event.keyCode === KeyCodes.ArrowUp) {
         if (!highlightedPlaceId) {
-          suggestion = _suggestions[lastIndex]; // Return the last one if the highlighted is empty
+          suggestion = suggestions[lastIndex]; // Return the last one if the highlighted is empty
         } else {
           if (foundIndex === firstIndex) {
-            suggestion = _suggestions[lastIndex]; // It's the first one, go to the last one
+            suggestion = suggestions[lastIndex]; // It's the first one, go to the last one
           } else {
-            suggestion = _suggestions[foundIndex - 1]; // Go to the previous one
+            suggestion = suggestions[foundIndex - 1]; // Go to the previous one
           }
         }
       } else if (event.keyCode === KeyCodes.ArrowDown) {
         if (!highlightedPlaceId) {
-          suggestion = _suggestions[firstIndex]; // Return the first one if the highlighted is empty
+          suggestion = suggestions[firstIndex]; // Return the first one if the highlighted is empty
         } else {
           if (foundIndex === lastIndex) {
-            suggestion = _suggestions[firstIndex]; // It's the last element, so select the first one
+            suggestion = suggestions[firstIndex]; // It's the last element, so select the first one
           } else {
-            suggestion = _suggestions[foundIndex + 1]; // Go to the next one
+            suggestion = suggestions[foundIndex + 1]; // Go to the next one
           }
         }
       }
@@ -180,7 +167,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
       setHighlightedPlaceId(suggestion.placeId);
     } else if (event.keyCode === KeyCodes.Enter) {
       if (highlightedPlaceId) {
-        const foundDescription = _suggestions?.find(({ placeId }) => placeId === highlightedPlaceId)?.description;
+        const foundDescription = suggestions?.find(({ placeId }) => placeId === highlightedPlaceId)?.description;
 
         if (foundDescription) {
           handleSelect(ignoreText ? foundDescription?.replace(ignoreText, '') : foundDescription);

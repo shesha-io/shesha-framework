@@ -1,6 +1,5 @@
 import React from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import IconPicker, { IIconPickerProps } from './';
 import { Form } from 'antd';
 // import './styles/index.less';
@@ -15,7 +14,7 @@ export default {
         options: ['middle', 'small', 'large'],
       },
     },
-  },
+  }
 } as Meta;
 
 const iconPickerProps: IIconPickerProps = {

@@ -37,8 +37,8 @@ import {
   getVisibleComponentIds,
   convertSectionsToList,
   getEnabledComponentIds,
-  useFormDesignerComponents,
 } from './utils';
+import { useFormDesignerComponents } from './hooks';
 import { FormInstance } from 'antd';
 import useThunkReducer from '../../hooks/thunkReducer';
 import { useDebouncedCallback } from 'use-debounce';

@@ -41,13 +41,15 @@ export interface ILoginForm extends AuthenticateModel {
   rememberMe?: boolean;
 }
 
+export type IProfileLoadedHandler = () => Promise<void>;
+
 export interface IAuthStateContext
   extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
   isCheckingAuth?: boolean;
   isFetchingUserInfo?: boolean;
   loginInfo?: UserLoginInfoDto;
   requireChangePassword?: boolean;
-  loginUserSuccessful?: boolean | null;
+  isLoggedIn: boolean;
   token?: string;
   headers?: IRequestHeaders;
   // The below field is just a placeholder for an `IFlagErrorFlags`. Whenever an error occurs, we'd like to pass errorInfo so that we can render ValidationErrors properly
@@ -86,6 +88,9 @@ export interface IAuthActionsContext
 
   fireHttpHeadersChanged?: (state?: IAuthStateContext) => void;
 
+  subscribeOnProfileLoading: (name: string, handler: IProfileLoadedHandler) => void;
+  unSubscribeOnProfileLoading: (name: string) => void;
+
   /* NEW_ACTION_ACTION_DECLARATION_GOES_HERE */
 }
 
@@ -93,6 +98,7 @@ export const AUTH_CONTEXT_INITIAL_STATE: IAuthStateContext = {
   ...EMPTY_FLAGS_STATE,
   isCheckingAuth: false,
   isFetchingUserInfo: false,
+  isLoggedIn: false,
 };
 
 export const AuthStateContext = createContext<IAuthStateContext>(AUTH_CONTEXT_INITIAL_STATE);

@@ -99,7 +99,8 @@ export const AnnotationSettingsForm = new DesignerToolbarSettings()
         parentId: "root",
         hidden: false,
         customEnabled: null,
-        description: "Enter custom enabled code.  You must return true to enable the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
+        description: "Enter custom enabled code.  You must return true to enable the component. " + 
+            "The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
         validate: {},
         settingsValidationErrors: [],
         exposedVariables: [
@@ -118,6 +119,27 @@ export const AnnotationSettingsForm = new DesignerToolbarSettings()
         name: "isOnImage",
         parentId: "root",
         label: "Annotation on Image"
+    })
+    .addCheckbox({
+        id: "3be9da3f-f47k-71ae-b4c3-f5cc36f934d9",
+        name: "allowAddingNotes",
+        parentId: "root",
+        defaultValue: true,
+        label: "Allow adding notes"
+    })
+    .addNumberField({
+        id: "417ee22e-a49d-44f2-a1c7-fef42ec89603",
+        name: "minPoints",
+        parentId: "root",
+        label: "Min number of points",
+        min: 0,
+    })
+    .addNumberField({
+        id: "417ee33e-a49d-44f2-a1c7-fef42ec87503",
+        name: "maxPoints",
+        parentId: "root",
+        label: "Max number of points",
+        min: 0,
     })
     .addSectionSeparator({
         id: "d675bfe4-ee69-431e-931b-b0e0b9ceee6f",
@@ -158,13 +180,19 @@ export const AnnotationSettingsForm = new DesignerToolbarSettings()
         id: "417ee22e-a49d-44f2-a1c7-fef42ec87503",
         name: "height",
         parentId: "root",
-        label: "Height"
+        label: "Height",
+        validate: {
+            required: true
+        }
     })
     .addNumberField({
         id: "c6ecd70c-7419-4ea7-a715-d42699d26e6e",
         name: "width",
         parentId: "root",
-        label: "Width"
+        label: "Width",
+        validate: {
+            required: true
+        }
     })
     .addCodeEditor({
         id: "06ab0599-914d-4d2d-875c-765a495482f8",
@@ -176,4 +204,4 @@ export const AnnotationSettingsForm = new DesignerToolbarSettings()
         description: "A script that returns the image url as a string. This should return a string",
         exposedVariables: [{ id: "fb85d916-39f9-4f88-8d87-c1c53558b078", name: "data", description: "Form values", type: "object" }]
     })
-    .toJson()
+    .toJson();

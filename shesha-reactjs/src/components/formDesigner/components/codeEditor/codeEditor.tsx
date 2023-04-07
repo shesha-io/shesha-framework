@@ -5,7 +5,7 @@ import { ICodeTreeLevel } from '../../../codeEditor/codeCompleter';
 import { IPropertyMetadata } from '../../../../interfaces/metadata';
 import { Alert, Button, Modal, Space, Tabs } from 'antd';
 import { CodeOutlined } from '@ant-design/icons';
-import { ICodeEditorProps } from './models';
+import { ICodeEditorProps } from './interfaces';
 import { CodeVariablesTables } from '../../../codeVariablesTable';
 
 const { TabPane } = Tabs;
@@ -39,7 +39,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
     setInternalValue(null);
     if (props.onChange)
           props.onChange(null);
-  }
+  };
   const meta = useMetadata(false);
 
   const metaItems = useMemo<ICodeTreeLevel>(() => {
@@ -77,7 +77,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
   const onDialogCancel = () => {
     setInternalValue(value);
     setShowDialog(false);
-  }
+  };
   const onDialogSave = () => {
     if (props.onChange)
       props.onChange(internalValue);

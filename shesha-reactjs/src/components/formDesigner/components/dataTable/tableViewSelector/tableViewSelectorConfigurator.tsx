@@ -34,7 +34,7 @@ export const TableViewSelectorConfigurator = forwardRef<
 
   const onSet = (value) => {
     setLocalQueryExpression(value);
-  }
+  };
 
   const onQueryBuilderValueChange = () => {
     // NOTE: we must save even empty filter

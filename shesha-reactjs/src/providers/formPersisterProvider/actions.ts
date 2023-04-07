@@ -1,10 +1,9 @@
 import { createAction } from 'redux-actions';
 import { IErrorInfo } from '../../interfaces/errorInfo';
-import { IFlatComponentsStructure, IFormSettings } from '../form/models';
+import { IFlatComponentsStructure, IFormSettings, IPersistedFormProps } from '../form/models';
 import {
   ILoadRequestPayload,
 } from './contexts';
-import { IPersistedFormProps } from './models';
 
 export enum FormPersisterActionEnums {
   SaveRequest = 'SAVE_REQUEST',

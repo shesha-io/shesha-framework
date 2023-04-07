@@ -11,7 +11,7 @@ import { UrlAutocomplete } from './urlAutocomplete';
 export const Autocomplete = <TValue,>(props: IAutocompleteProps<TValue>) => {
   return props.dataSourceType === 'entitiesList'
     ? <EntityAutocomplete {...props} />
-    : <UrlAutocomplete {...props}  />
+    : <UrlAutocomplete {...props}  />;
 };
 
 export type IDtoType = IEntityReferenceDto | IEntityReferenceDto[];
@@ -96,10 +96,10 @@ AutocompleteInterface.EntityDto = EntityDtoAutocomplete;
 export {
   RawAutocomplete as AutocompleteRaw,
   EntityDtoAutocomplete as AutocompleteDto,
-  IAutocompleteProps,
-  ISelectOption,
-  AutocompleteDataSourceType,
-  CustomLabeledValue
-};
+  type IAutocompleteProps,
+  type ISelectOption,
+  type AutocompleteDataSourceType,
+  type CustomLabeledValue
+}; 
 
 export default AutocompleteInterface;

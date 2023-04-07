@@ -280,6 +280,7 @@ const Checklist: ForwardRefRenderFunction<HierarchicalCheckListHandle, IHierarch
    * Callback function for when the user clicks a treeNode
    *
    * This function only gets called when we're in a dropdown mode. when we're not in dropdown mode, we only use onCheck as we do not show the checkbox
+   *
    * @param incomingSelectedKeys selected keys
    * @param info information about the new selection
    */
@@ -384,6 +385,7 @@ const Checklist: ForwardRefRenderFunction<HierarchicalCheckListHandle, IHierarch
 
   /**
    * Saves the new selections
+   *
    * @param newSelections - new selections
    * @param forceSave - if true, all the newSelections will be saved. It's called by the save handle when saveLocally is true
    */

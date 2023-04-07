@@ -28,13 +28,13 @@ export const useConfigurationItemsExportAction = () => {
 
         const hideModal = () => {
           removeModal(modalId);
-        }
+        };
 
         const onExported = () => {
           console.log('onExported');
           removeModal(modalId);
           resolve(true);
-        }
+        };
 
         const modalProps: ICommonModalProps = {
           ...actionArgs,
@@ -80,7 +80,7 @@ export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterP
       displayNotificationError('Failed to export package', e);
       setInProgress(false);
     });
-  }
+  };
 
   return (
     <>
@@ -88,4 +88,4 @@ export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterP
       <Button type='primary' icon={<ExportOutlined />} onClick={onExport} loading={inProgress}>Export</Button>
     </>
   );
-}
+};

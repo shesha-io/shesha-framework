@@ -1,6 +1,5 @@
 import React from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import FormDesigner from './formDesigner';
 import { MetadataDispatcherProvider } from '../../providers';
 import { addStory } from '../../stories/utils';
@@ -9,7 +8,7 @@ import StoryApp from '../storyBookApp';
 
 export default {
   title: 'Components/Temp/FormDesigner',
-  component: FormDesigner,
+  component: FormDesigner
 } as Meta;
 
 export interface IFormDesignerStoryProps {
@@ -26,7 +25,7 @@ const DesignerTemplate: Story<IFormDesignerStoryProps> = ({ formId }) => (
   </StoryApp>
 );
 
-export const Buigfix = addStory(DesignerTemplate, {
+export const Bugfix = addStory(DesignerTemplate, {
   formId: '456cf5ca-fd15-4a1f-aa07-ec3a66b761d7',
 });
 export const RoleAppointmentForm = addStory(DesignerTemplate, {
@@ -195,7 +194,7 @@ export const Playground = addStory(DesignerTemplate, {
 });
 
 export const TestWizard = addStory(DesignerTemplate, {
-  formId: '3753607d-a768-4b51-ac2a-d7dd873e3d47',
+  formId: '51db0826-1548-4d79-8f2a-4836e3c51e18',
   // formId: {
   //   name: 'test-wizard-form',
   //   module: 'Shesha',
@@ -232,14 +231,14 @@ export const PersonDetails = addStory(DesignerTemplate, {
   formId: {
     name: 'person-details',
     module: 'Test Module',
-    "version": 1
+    version: 1,
   },
 });
 
 export const PersonEdit = addStory(DesignerTemplate, {
   formId: {
     name: 'person-edit',
-    module: 'Test Module'
+    module: 'Test Module',
   },
 });
 
@@ -247,7 +246,7 @@ export const OrganisationEdit = addStory(DesignerTemplate, {
   formId: {
     name: 'organisation-edit',
     module: 'Test Module',
-    "version": 1
+    version: 1,
   },
 });
 

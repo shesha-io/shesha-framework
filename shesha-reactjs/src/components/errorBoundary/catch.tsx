@@ -1,7 +1,7 @@
-import React from "react"
+import React from "react";
 
-type ErrorHandler = (error: Error, info: React.ErrorInfo) => void
-type ErrorHandlingComponent<Props> = (props: Props, error?: Error) => React.ReactNode
+type ErrorHandler = (error: Error, info: React.ErrorInfo) => void;
+type ErrorHandlingComponent<Props> = (props: Props, error?: Error) => React.ReactNode;
 
 interface ErrorState { error?: Error }
 
@@ -12,20 +12,20 @@ export default function Catch<Props extends {}>(
   return class extends React.Component<Props, ErrorState> {
     
     public static getDerivedStateFromError(error: Error) {
-      return { error }
+      return { error };
     }
     public state: ErrorState = {
       error: undefined
-    }
+    };
     
     public componentDidCatch(error: Error, info: React.ErrorInfo) {
       if (errorHandler) {
-        errorHandler(error, info)
+        errorHandler(error, info);
       }
     }
     
     public render() {
-      return component(this.props, this.state.error)
+      return component(this.props, this.state.error);
     }
-  }
+  };
 }

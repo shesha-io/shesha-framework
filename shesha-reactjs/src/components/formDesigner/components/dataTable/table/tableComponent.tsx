@@ -8,11 +8,11 @@ import {
   CollapsibleSidebarContainer,
   IndexTableColumnFilters,
   IndexTableColumnVisibilityToggle,
-  axiosHttp,
   useSheshaApplication,
   useFormData,
   useConfigurableActionDispatcher,
 } from '../../../../../';
+import { axiosHttp } from '../../../../../utils/fetchers';
 import { useDataTableSelection } from '../../../../../providers/dataTableSelection';
 import { useDataTableStore, useGlobalState } from '../../../../../providers';
 import TableSettings from './tableComponent-settings';
@@ -157,9 +157,10 @@ export const TableWrapper: FC<ITableComponentProps> = props => {
   };
 
   const toggleFieldPropertiesSidebar = () => {
-    !isSelectingColumns && !isFiltering
-      ? setIsInProgressFlag({ isFiltering: true })
-      : setIsInProgressFlag({ isFiltering: false, isSelectingColumns: false });
+    if (!isSelectingColumns && !isFiltering)
+      setIsInProgressFlag({ isFiltering: true });
+    else
+      setIsInProgressFlag({ isFiltering: false, isSelectingColumns: false });
   };
 
   if (isDesignMode && !entityType) return <NotConfiguredWarning />;
@@ -190,7 +191,7 @@ export const TableWrapper: FC<ITableComponentProps> = props => {
         onRowDropped={handleOnRowDropped}
         tableStyle={getStyle(tableStyle, formData, globalState)}
         containerStyle={getStyle(containerStyle, formData, globalState)}
-        // crudMode="dialog"
+      // crudMode="dialog"
       />
     </CollapsibleSidebarContainer>
   );

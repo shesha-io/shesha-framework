@@ -17,7 +17,9 @@ import settingsFormJson from './settingsForm.json';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
-const getPageSize = (value?: number) => { return Boolean(value) ? value : 1147489646 /* get all data */; }
+const getPageSize = (value?: number) => { 
+  return Boolean(value) ? value : 1147489646 /* get all data */; 
+};
 
 const DataSourceComponent: IToolboxComponent<IDataSourceComponentProps> = {
   type: 'dataSource',
@@ -74,12 +76,12 @@ export const DataSourceInner: FC<IDataSourceComponentProps> = props => {
   const [selectedRow, setSelectedRow] = useState(-1);
   const isDesignMode = formMode === 'designer';
 
-  if (isDesignMode && ((sourceType == 'Entity' && !entityType) || (sourceType == 'Url' && !endpoint)))
+  if (isDesignMode && ((sourceType === 'Entity' && !entityType) || (sourceType === 'Url' && !endpoint)))
     return (
       <Alert
         className="sha-designer-warning"
         message="DataSource is not configured"
-        description={sourceType == 'Entity' ? "Select entity type on the settings panel" : "Select endpoint on the settings panel"}
+        description={sourceType === 'Entity' ? "Select entity type on the settings panel" : "Select endpoint on the settings panel"}
         type="warning"
         showIcon
       />
@@ -104,7 +106,7 @@ export const DataSourceInner: FC<IDataSourceComponentProps> = props => {
     <DataSourceAccessor {...props} />
   </DataTableProvider>;
 
-  const providerWrapper = sourceType == 'Form'
+  const providerWrapper = sourceType === 'Form'
     ? <FormItem name={props.name}>
         {provider}
       </FormItem>
@@ -135,8 +137,8 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, name, filters, 
   const isDesignMode = formMode === 'designer';
 
   useEffect(() => {
-    changePageSize(getPageSize(maxResultCount))
-  }, [maxResultCount])
+    changePageSize(getPageSize(maxResultCount));
+  }, [maxResultCount]);
 
   useDataSource({ id, name, dataSource, dataSelection }, [id, name, dataSource, dataSelection]);
 
@@ -176,7 +178,7 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, name, filters, 
   );
 
   if (!isDesignMode)
-      return null
+      return null;
 
   return (
     <>

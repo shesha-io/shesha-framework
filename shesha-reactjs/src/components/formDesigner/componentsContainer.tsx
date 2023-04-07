@@ -10,38 +10,10 @@ import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { joinStringValues } from '../../utils';
 import DynamicComponent from './components/dynamicView/dynamicComponent';
 import { useFormDesigner } from '../../providers/formDesigner';
-import { ContainerDirection } from './components/container/containerComponent';
-import {
-  AlignItems,
-  AlignSelf,
-  FlexDirection,
-  FlexWrap,
-  JustifyContent,
-  JustifyItems,
-  JustifySelf,
-  TextJustify,
-} from './components/container/model';
+import { ICommonContainerProps } from './components/container/interfaces';
 import ConditionalWrap from '../conditionalWrapper';
 import { useFormData, useGlobalState } from '../../providers';
 import { executeScriptSync } from '../../utils/publicUtils';
-
-export type Direction = 'horizontal' | 'vertical';
-
-export interface ICommonContainerProps {
-  display?: 'block' | 'flex' | 'grid' | 'inline-grid';
-  direction?: ContainerDirection;
-  flexWrap?: FlexWrap;
-  flexDirection?: FlexDirection;
-  justifyContent?: JustifyContent;
-  alignItems?: AlignItems;
-  alignSelf?: AlignSelf;
-  justifyItems?: JustifyItems;
-  textJustify?: TextJustify;
-  justifySelf?: JustifySelf;
-  noDefaultStyling?: boolean;
-  gridColumnsCount?: number;
-  gap?: string | number;
-}
 
 export interface IComponentsContainerProps extends ICommonContainerProps {
   containerId: string;

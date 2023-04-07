@@ -6,8 +6,8 @@ import {
   FormMarkupWithSettings,
   FormRawMarkup,
   IFormSettings,
+  IPersistedFormProps,
 } from '../form/models';
-import { IPersistedFormProps } from './models';
 
 export interface IFormPersisterStateContext {
   formId: FormIdentifier;

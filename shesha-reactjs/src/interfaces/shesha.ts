@@ -20,4 +20,4 @@ export interface IReferenceListItemValueDto {
 
 export type IDictionary<TItem> = {
   [key: string]: TItem;
-}
+};

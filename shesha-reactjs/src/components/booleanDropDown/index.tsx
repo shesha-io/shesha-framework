@@ -14,7 +14,10 @@ const optionsArr = ['Yes', 'No'];
 
 export const BooleanDropDown: FC<IBooleanDropDownProps> = ({ objectItem, setObjectItem, itemKey, value, ...rest }) => {
   const handleOnSelect = arg => {
-    arg === 1 ? setObjectItem({ ...objectItem, [itemKey]: true }) : setObjectItem({ ...objectItem, [itemKey]: false });
+    if (arg === 1)
+      setObjectItem({ ...objectItem, [itemKey]: true });
+    else
+      setObjectItem({ ...objectItem, [itemKey]: false });
   };
 
   const options = optionsArr.map((a, index) => (

@@ -1,17 +1,15 @@
 import React from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
-import { ShaApplicationProvider, SidebarMenuDefaultsProvider } from '../../providers';
-import AuthContainer from '../authedContainer';
+import { Story, Meta } from '@storybook/react';
+import { SidebarMenuDefaultsProvider } from '../../providers';
 import Page, { IBreadcrumbItem, IPageProps } from './';
-import { GlobalStateProvider, IToolbarItem } from '../..';
+import { IToolbarItem } from '../..';
 import { CloseOutlined, DownloadOutlined, SaveOutlined } from '@ant-design/icons';
 import { ITagProps } from './pageHeaderTag';
 import StoryApp from '../storyBookApp';
 
 export default {
   title: 'Components/Page',
-  component: Page,
+  component: Page
 } as Meta;
 
 const defaultProps: IPageProps = {

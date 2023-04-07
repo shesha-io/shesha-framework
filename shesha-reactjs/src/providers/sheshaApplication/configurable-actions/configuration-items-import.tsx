@@ -28,13 +28,13 @@ export const useConfigurationItemsImportAction = () => {
 
         const hideModal = () => {
           removeModal(modalId);
-        }
+        };
 
         const onImported = () => {
           console.log('onImported');
           removeModal(modalId);
           resolve(true);
-        }
+        };
 
         const modalProps: ICommonModalProps = {
           ...actionArgs,
@@ -80,7 +80,7 @@ export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterP
       displayNotificationError('Failed to import package', e);
       setInProgress(false);
     });
-  }
+  };
 
   return (
     <>
@@ -88,4 +88,4 @@ export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterP
       <Button type='primary' icon={<ImportOutlined />} onClick={onImport} loading={inProgress}>Import</Button>
     </>
   );
-}
+};

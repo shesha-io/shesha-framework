@@ -29,7 +29,7 @@ function DataListSettings(props: IProps) {
     ...props?.model,
   };
 
-  const [state, setState] = useState<IDataListComponentProps>(initialState)
+  const [state, setState] = useState<IDataListComponentProps>(initialState);
   const [formTypesOptions, setFormTypesOptions] = useState<{ value: string }[]>(
     formTypes.map(i => {
       return { value: i };
@@ -85,20 +85,22 @@ function DataListSettings(props: IProps) {
       <SectionSeparator title="Render" />
 
       <Form.Item name="formSelectionMode" label="Form selection mode">
-        <Select disabled={props.readOnly} defaultValue={'none'} onChange={(item) => { setState({...state, formSelectionMode: (item as FormSelectionMode)}); }}>
+        <Select disabled={props.readOnly} defaultValue={'none'} onChange={(item) => {
+ setState({...state, formSelectionMode: (item as FormSelectionMode)}); 
+}}>
           <Option key='name' value='name'>Named form</Option>
           <Option key='view' value='view'>View type</Option>
           <Option key='expression' value='expression'>Expression</Option>
         </Select>
       </Form.Item>
 
-      {state.formSelectionMode == 'name' &&
+      {state.formSelectionMode === 'name' &&
       <Form.Item name="formId" label="Form">
         <FormAutocomplete convertToFullId={true} readOnly={props.readOnly} />
       </Form.Item>
       }
 
-      {state.formSelectionMode == 'view' &&
+      {state.formSelectionMode === 'view' &&
       <Form.Item name="formType" label="formType">
         <AutoComplete
           disabled={props.readOnly}
@@ -119,7 +121,7 @@ function DataListSettings(props: IProps) {
       </Form.Item>
       }
 
-      {state.formSelectionMode == 'expression' && 
+      {state.formSelectionMode === 'expression' && 
       <Form.Item name="formIdExpression" label="Form identifer expression">
         <CodeEditor
           readOnly={props.readOnly}

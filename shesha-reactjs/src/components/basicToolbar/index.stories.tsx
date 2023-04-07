@@ -1,13 +1,12 @@
 import React from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import { ICustomFileProps } from '../customFile';
 import BasicToolbar from '.';
 import { StepBackwardFilled, StepForwardOutlined } from '@ant-design/icons';
 
 export default {
   title: 'Components/BasicToolbar',
-  component: BasicToolbar,
+  component: BasicToolbar
 } as Meta;
 
 const customFileProps: ICustomFileProps = {};

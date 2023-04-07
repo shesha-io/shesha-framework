@@ -77,5 +77,20 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                                                         }));
             return memberPayments.ToList();
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<DynamicDto<MembershipPayment, Guid>>> GetAllMembershipPayments()
+        {
+            var memberPayments = await Task.WhenAll(_membershipPaymentRepo.GetAll().ToList()
+                                                        .Select(async m =>
+                                                        {
+                                                            var result = await MapToDynamicDtoAsync<MembershipPayment, Guid>(m);
+                                                            return result;
+                                                        }));
+            return memberPayments.ToList();
+        }
     }
 }

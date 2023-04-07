@@ -9,7 +9,7 @@ import TableViewSelectorSettingsModal from '../dataTable/tableViewSelector/table
 
 function DataSourceSettings(props: IDataSourceSettingsProps) {
   const [form] = Form.useForm();
-  const [ state, setState ] = useState<IDataSourceComponentProps>(props.model)
+  const [ state, setState ] = useState<IDataSourceComponentProps>(props.model);
 
   const handleValuesChange = (changedValues: any, values: IDataSourceComponentProps) => {
     if (props.onValuesChange) {
@@ -37,7 +37,9 @@ function DataSourceSettings(props: IDataSourceSettingsProps) {
       {(state.sourceType === 'Entity') &&
       <Form.Item key='entityType' name="entityType" label='Entity Type'>
         <RawAutocomplete dataSourceType='url' dataSourceUrl="/api/services/app/Metadata/EntityTypeAutocomplete" 
-          onChange={(item) => { setState({...state, entityType: item}); }}
+          onChange={(item) => { 
+            setState({...state, entityType: item}); 
+          }}
         />
       </Form.Item>
       }
@@ -58,8 +60,8 @@ function DataSourceSettings(props: IDataSourceSettingsProps) {
   );
 
   const meta = useMemo(() => {
-    return <MetadataProvider id={state.id} modelType={state.entityType}>{settings}</MetadataProvider>
-  }, [state.entityType, state.sourceType])
+    return <MetadataProvider id={state.id} modelType={state.entityType}>{settings}</MetadataProvider>;
+  }, [state.entityType, state.sourceType]);
 
   return state.sourceType === 'Entity' && state.entityType ? meta : settings;
 }
