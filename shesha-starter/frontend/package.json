@@ -43,7 +43,6 @@
   },
   "devDependencies": {
     "@testing-library/react": "^11.2.3",
-    "@types/node": "^14.14.13",
     "@types/react": "^17.0.0",
     "@types/redux-actions": "^2.3.1",
     "@types/styled-components": "^5.1.9",
