@@ -1,5 +1,4 @@
-//import typescript from '@rollup/plugin-typescript';
-import typescript from 'rollup-plugin-typescript2';
+import typescript from '@rollup/plugin-typescript';
 import commonjs from '@rollup/plugin-commonjs';
 import postCss from 'rollup-plugin-postcss';
 import multi from '@rollup/plugin-multi-entry';
@@ -92,10 +91,7 @@ export default {
       // browser: false,
       modulesOnly: true,
     }),
-    typescript({
-      rollupCommonJSResolveHack: true,
-      clean: true,
-    }),
+    typescript({}),
     commonjs({
       include: 'node_modules/**',
       defaultIsModuleExports: true,
