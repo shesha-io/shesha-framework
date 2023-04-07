@@ -64,7 +64,7 @@ export const TablePagerBase: FC<ITablePagerBaseProps> = ({
 
   useEffect(() => {
     if (!isNaN(selectedPageSize)) onShowSizeChange(1, selectedPageSize);
-  }, [selectedPageSize]);
+  }, [showSizeChanger]);
 
   if (!isWider) return null;
 

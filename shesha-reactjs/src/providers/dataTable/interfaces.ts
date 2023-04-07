@@ -214,7 +214,6 @@ export interface DataTableColumnDto {
   referenceListName?: string | null;
   referenceListModule?: string | null;
   entityReferenceTypeShortAlias?: string | null;
-  autocompleteUrl?: string | null;
   allowInherited?: boolean;
   isFilterable?: boolean;
   isSortable?: boolean;

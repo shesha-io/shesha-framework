@@ -6,12 +6,16 @@ import { useDataTableSelection, useDataTableStore, useForm } from '../../../../p
 import { DataList } from '../../../dataList';
 import { IDataListComponentProps } from '../../../dataList/models';
 import DataListSettings from './dataListSettings';
+import { useDataSources } from '../../../../providers/dataSourcesProvider';
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
     type: 'datalist',
     name: 'DataList',
     icon: <UnorderedListOutlined />,
     factory: (model: IDataListComponentProps) => {
+
+      //console.log(`DataListComponent render`);
+
       return <DataListWrapper {...model} />;
     },
     migrator:  m => m
@@ -19,6 +23,7 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
         return {
           ...prev,
           formSelectionMode: 'name',
+          selectionMode: 'none',
           items: [],
         };
         }),
@@ -43,6 +48,23 @@ export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
   const { formMode } = useForm();
   const isDesignMode = formMode === 'designer';
 
+  const ds = useDataSources();
+
+  const dts = useDataTableStore(false);
+
+  const dataSource = props.dataSource
+    ? ds.getDataSource(props.dataSource)?.dataSource
+    : dts;
+
+  const dSel = useDataTableSelection(false);
+
+  const dataSelection = props.dataSource
+    ? ds.getDataSource(props.dataSource)?.dataSelection
+    : dSel;
+
+  if (!dataSource || !dataSelection)
+    return null;
+  
   const {
     entityType,
     getDataPath,
@@ -52,9 +74,9 @@ export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
     selectedIds,
     changeSelectedRow,
     changeSelectedIds
-  } = useDataTableStore();
+  } = dataSource;
 
-  const { selectedRow, selectedRows, setSelectedRow, setMultiSelectedRow } = useDataTableSelection();
+  const { selectedRow, selectedRows, setSelectedRow, setMultiSelectedRow } = dataSelection;
 
   if (isDesignMode && (!(entityType || getDataPath || sourceType === "Form") || !(props.formId || props.formType))) return <NotConfiguredWarning />;
 
@@ -73,6 +95,8 @@ export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
   const data = useMemo(() => {
  return isDesignMode ? [{}] : tableData; 
 }, [isDesignMode, tableData]);
+
+  //console.log(`DataListWrapper render, ${data?.length} records`);
 
   return (
       <DataList

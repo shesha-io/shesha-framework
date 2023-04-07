@@ -84,6 +84,7 @@ import ValidationErrors from '../../../components/formDesigner/components/valida
 import Wizard from '../../../components/formDesigner/components/wizard';
 import { IToolboxComponentGroup } from '../../../interfaces/formDesigner';
 import TimelineComponent from '../../../components/formDesigner/components/timeline/timeline';
+import DataSource from '../../../components/formDesigner/components/dataSource/dataSourceComponent';
 
 export const ToolboxComponents: IToolboxComponentGroup[] = [
   {
@@ -181,7 +182,8 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
     name: 'DataList',
     visible: true,
     components: [
-      DataList
+      DataList,
+      DataSource
     ],
   },
   {

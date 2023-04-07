@@ -1,5 +1,6 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
+import { useDebouncedCallback } from 'use-debounce';
 import { DESKTOP_SIZE_QUERY, PHONE_SIZE_QUERY } from '../../constants/media-queries';
 import { useDataTable } from '../../providers';
 import TablePagerBase from '../tablePagerBase';
@@ -13,6 +14,8 @@ export interface ITablePagerProps {
 export const TablePager: FC<ITablePagerProps> = ({ defaultPageSize, showSizeChanger, showTotalItems }) => {
   const { pageSizeOptions, currentPage, totalRows, selectedPageSize, setCurrentPage, changePageSize } = useDataTable();
 
+  const [ pageSize, setPageSize ] = useState<number>(null);
+
   const hideSizeChanger = useMediaQuery({
     query: DESKTOP_SIZE_QUERY,
   });
@@ -21,19 +24,36 @@ export const TablePager: FC<ITablePagerProps> = ({ defaultPageSize, showSizeChan
     query: PHONE_SIZE_QUERY,
   });
 
+  // change page size with delay to debounce fetching data
+  const init = useDebouncedCallback(() => {
+     if (!pageSize) {
+      changePageSize(defaultPageSize);
+      setPageSize(defaultPageSize);
+    } else
+      setPageSize(selectedPageSize);
+  }, 300);
+
+  useEffect(() => { 
+    init();
+  }, [selectedPageSize]);
+
   return (
-    <TablePagerBase
-      {...{
-        pageSizeOptions,
-        currentPage,
-        totalRows,
-        selectedPageSize: defaultPageSize || selectedPageSize,
-        showSizeChanger: hideSizeChanger ? false : showSizeChanger,
-        showTotalItems: hideTotalItems ? false : showTotalItems,
-        setCurrentPage,
-        changePageSize,
-      }}
-    />
+    <>
+      {Boolean(pageSize) &&
+      <TablePagerBase
+        {...{
+          pageSizeOptions,
+          currentPage,
+          totalRows,
+          selectedPageSize: pageSize,
+          showSizeChanger: !hideSizeChanger && showSizeChanger,
+          showTotalItems: !hideTotalItems && showTotalItems,
+          setCurrentPage,
+          changePageSize,
+        }}
+      />
+      }
+    </>
   );
 };
 

@@ -13,7 +13,7 @@ const ErrorMessage: FC<IErrorMessage> = ({ minPoints, maxPoints, isRequired, dat
             <span>
                 {minPoints && isRequired
                     ? `Enter a minimum of ${minPoints} points`
-                    : dataLength == maxPoints
+                    : dataLength === maxPoints
                         ? `Maxmum of ${maxPoints} points has been recorded`
                         : ''}
             </span>

@@ -1,8 +1,8 @@
 import React, { MutableRefObject, useState } from 'react';
 import { FC } from 'react';
 import { Form, Spin, Upload } from 'antd';
-import { useSheshaApplication } from '../../..';
-import { ConfigItemDataNode, IDictionary, ITreeState } from '../models';
+import { IDictionary, useSheshaApplication } from '../../..';
+import { ConfigItemDataNode, ITreeState } from '../models';
 import { RcFile } from 'antd/lib/upload/interface';
 import { DeleteOutlined, FileZipTwoTone, InboxOutlined, LoadingOutlined } from '@ant-design/icons';
 import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
