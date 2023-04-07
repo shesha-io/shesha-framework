@@ -6,11 +6,10 @@ import Router from 'next/router';
 import './styles.ts';
 import { CustomErrorBoundaryContainer } from './styles';
 
-const errorBoundaryErrorHandler = ({ error, componentStack }: FallbackProps) => {
+const errorBoundaryErrorHandler = ({ error }: FallbackProps) => {
   // Do something with the error
   // E.g. log to an error logging client here
   console.log('CustomErrorBoundary error :', error.message);
-  console.log('CustomErrorBoundary componentStack :', componentStack);
 };
 
 const CustomErrorBoundaryFallbackComponent: FC<FallbackProps> = (props) => {
