@@ -95,7 +95,7 @@ export { default as TablePagerBase, type ITablePagerBaseProps } from './tablePag
 export { default as StatusLabel, type IStatusLabelProps } from './statusLabel';
 export { default as ValidationErrors, type IValidationErrorsProps } from './validationErrors';
 export { default as HierarchicalCheckList, type IHierarchicalCheckListProps } from './hierarchicalCheckList';
-export { default as ShaIcon, type IShaIconProps } from './shaIcon';
+export { default as ShaIcon, type IShaIconProps, type IconType } from './shaIcon';
 export { default as IconPicker, type IIconPickerProps } from './iconPicker';
 export {
   default as AppEditModeToggler,
