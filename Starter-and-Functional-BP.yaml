@@ -289,9 +289,9 @@ stages:
           write-host "The current version is: $(versionNo)"
         workingDirectory: 'shesha-functional-tests/adminportal'
     - task: NodeTool@0
-      displayName: 'Use Node 14.21.1'
+      displayName: 'Use Node 18.15.0'
       inputs:
-        versionSpec: 14.21.1
+        versionSpec: 18.15.0
     # - task: Npm@1
     #   displayName: Install Latest Shesha
     #   inputs:
@@ -371,9 +371,9 @@ stages:
           write-host "The current version is: $(versionNo)"
         workingDirectory: 'shesha-starter/frontend'
     - task: NodeTool@0
-      displayName: 'Use Node 14.21.1'
+      displayName: 'Use Node 18.15.0'
       inputs:
-        versionSpec: 14.21.1
+        versionSpec: 18.15.0
     # - task: Npm@1
     #   displayName: Install Latest Shesha
     #   inputs:
