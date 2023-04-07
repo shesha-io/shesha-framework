@@ -72,7 +72,7 @@ jobs:
         working-directory: ./shesha-core
       # Install dependencies for shesha-reactjs
       - name: Install Dependencies
-        run: npm install --legacy-peer-deps
+        run: npm install
         working-directory: ./shesha-reactjs
 
       # ============ PREPARE ===============
