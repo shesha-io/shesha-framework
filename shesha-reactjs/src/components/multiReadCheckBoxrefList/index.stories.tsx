@@ -1,13 +1,12 @@
 import React from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import MultiReadCheckBoxRefList, { IMultiReadCheckBoxRefListProps } from './';
 import { Form } from 'antd';
 import StoryApp from '../storyBookApp';
 
 export default {
   title: 'Components/MultiReadCheckBoxRefList',
-  component: MultiReadCheckBoxRefList,
+  component: MultiReadCheckBoxRefList
 } as Meta;
 
 const multiReadCheckBoxRefListProps: IMultiReadCheckBoxRefListProps = {

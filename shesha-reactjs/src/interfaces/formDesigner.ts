@@ -119,14 +119,14 @@ export interface IToolboxComponents {
   [key: string]: IToolboxComponent;
 }
 
-export { IConfigurableFormComponent, IFormComponentContainer };
+export { type IConfigurableFormComponent, type IFormComponentContainer };
 
 export interface IFieldValidationErrors {
   name: InternalNamePath;
   errors: string[];
 }
 
-export { ValidateErrorEntity } from 'rc-field-form/lib/interface';
+export { type ValidateErrorEntity } from 'rc-field-form/lib/interface';
 
 export interface IAsyncValidationError {
   field: string;
@@ -135,4 +135,4 @@ export interface IAsyncValidationError {
 
 export interface IFormValidationErrors {}
 
-export { ConfigurableFormInstance };
+export { type ConfigurableFormInstance };

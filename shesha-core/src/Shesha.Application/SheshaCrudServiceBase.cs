@@ -388,6 +388,10 @@ namespace Shesha
                 AppendProperty(sb, property);
             }
 
+            sb.AppendLine("id");
+            sb.AppendLine("_className");
+            sb.AppendLine("_displayName");
+
             return sb.ToString();
         }
 

@@ -57,7 +57,7 @@ export interface GetAllResponse<TItem> {
 }
 
 export interface EntityData {
-    id: string | number,
+    id: string | number;
     [key: string]: any;
 }
 

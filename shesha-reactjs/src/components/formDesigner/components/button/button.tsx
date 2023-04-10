@@ -1,25 +1,22 @@
 import React from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
-import { IConfigurableFormComponent } from '../../../../providers/form/models';
 import { BorderOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '../formItem';
 import { getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import ConfigurableButton from './configurableButton';
-import { IButtonGroupButton } from '../../../../providers/buttonGroupConfigurator/models';
 import { useSheshaApplication, useForm, useFormData } from '../../../../providers';
 import { IButtonGroupItemBaseV0, migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
 import { getSettings } from './settingsForm';
+import { IButtonComponentProps } from './interfaces';
 
 export type IActionParameters = [{ key: string; value: string }];
 
-export interface IButtonProps extends IButtonGroupButton, IConfigurableFormComponent {}
-
-const ButtonField: IToolboxComponent<IButtonProps> = {
+const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
   type: 'button',
   name: 'Button',
   icon: <BorderOutlined />,
-  factory: ({ style, ...model }: IButtonProps) => {
+  factory: ({ style, ...model }: IButtonComponentProps) => {
     const { isComponentDisabled, isComponentHidden, formMode } = useForm();
     const { data } = useFormData();
 
@@ -59,7 +56,7 @@ const ButtonField: IToolboxComponent<IButtonProps> = {
   settingsFormMarkup: data => getSettings(data),
   validateSettings: model => validateConfigurableComponentSettings(getSettings(model), model),
   initModel: model => {
-    const buttonModel: IButtonProps = {
+    const buttonModel: IButtonComponentProps = {
       ...model,
       label: 'Submit',
       actionConfiguration: {
@@ -83,8 +80,8 @@ const ButtonField: IToolboxComponent<IButtonProps> = {
         };
         return buttonModel;
       })
-      .add<IButtonProps>(1, migrateV0toV1)
-      .add<IButtonProps>(2, migrateV1toV2),
+      .add<IButtonComponentProps>(1, migrateV0toV1)
+      .add<IButtonComponentProps>(2, migrateV1toV2),
 };
 
-export default ButtonField;
+export default ButtonComponent;

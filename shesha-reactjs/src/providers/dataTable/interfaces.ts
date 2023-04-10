@@ -1,6 +1,5 @@
 import { Moment } from 'moment';
 import { IDataColumnsProps } from '../datatableColumnsConfigurator/models';
-import { IPublicDataTableActions } from './contexts';
 export type ColumnFilter = string[] | number[] | Moment[] | Date[] | string | number | Moment | Date | boolean;
 
 export type IndexColumnDataType =
@@ -192,15 +191,16 @@ export interface ITableDataInternalResponse {
   readonly rows: object[];
 }
 
+export interface IPublicDataTableActions {
+  refreshTable: () => void;
+  exportToExcel?: () => void;
+  deleteRow?: () => void;
+  toggleColumnsSelector?: () => void;
+  toggleAdvancedFilter?: () => void;
+  setToEditMode?: () => void;
+}
+
 export interface IDataTableInstance extends IPublicDataTableActions { }
-
-export interface IFormDataPayload {
-  formData?: any;
-}
-
-export interface IFormDataPayload {
-  crudSettings?: any;
-}
 
 export type ListSortDirection = 0 | 1;
 
@@ -214,7 +214,6 @@ export interface DataTableColumnDto {
   referenceListName?: string | null;
   referenceListModule?: string | null;
   entityReferenceTypeShortAlias?: string | null;
-  autocompleteUrl?: string | null;
   allowInherited?: boolean;
   isFilterable?: boolean;
   isSortable?: boolean;

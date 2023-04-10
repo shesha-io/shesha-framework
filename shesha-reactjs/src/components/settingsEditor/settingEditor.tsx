@@ -50,7 +50,7 @@ export const SettingEditor: FC<ISettingEditorProps> = () => {
                 }
             />
         );
-}
+};
 
 interface ISettingEditorWithValueProps extends ISettingEditorProps {
     selection: ISettingSelection;
@@ -72,7 +72,7 @@ export const GenericSettingEditor: FC<ISettingEditorWithValueProps> = (props) =>
 
             return saveSettingValue(settingId, values.value);
         });
-    }
+    };
 
     const { setEditor, saveSettingValue, editorMode } = useSettingsEditor();
     useEffect(() => {
@@ -133,7 +133,7 @@ export const GenericSettingEditor: FC<ISettingEditorWithValueProps> = (props) =>
             initialValues={model}
         />
     );
-}
+};
 
 export const CostomFormSettingEditor: FC<ISettingEditorWithValueProps> = (props) => {
     const { selection, value } = props;
@@ -150,11 +150,12 @@ export const CostomFormSettingEditor: FC<ISettingEditorWithValueProps> = (props)
                 module: selection.setting.module,
                 appKey: selection.app?.appKey,
             };
-            const { _formFields, ...data } = values ?? {};
+            const data = { ...values ?? {} };
+            delete data._formFields;
 
             return saveSettingValue(settingId, data);
         });
-    }
+    };
 
     const { setEditor, saveSettingValue, editorMode } = useSettingsEditor();
     useEffect(() => {
@@ -170,6 +171,6 @@ export const CostomFormSettingEditor: FC<ISettingEditorWithValueProps> = (props)
             formRef={formRef}
         />
     );
-}
+};
 
 export default SettingEditor;

@@ -11,7 +11,7 @@ const getCurrentStatus = (
     }
     return !refListData?.items?.length || data[name] === null || data[name] === undefined
         ? null
-        : refListData?.items?.find(i => i.itemValue == data[name]);
+        : refListData?.items?.find(i => i.itemValue === data[name]);
 };
 
 export { getCurrentStatus };

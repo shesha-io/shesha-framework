@@ -21,6 +21,6 @@ export const HierarchicalCheckListWrapper: FC<IHierarchicalChecklistWrapperProps
       }}
     />
   );
-}
+};
 
 export default HierarchicalCheckListWrapper;

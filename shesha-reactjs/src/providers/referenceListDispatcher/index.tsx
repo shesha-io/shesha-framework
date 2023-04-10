@@ -25,7 +25,7 @@ const ReferenceListDispatcherProvider: FC<PropsWithChildren<IReferenceListDispat
   const loader = useConfigurationItemsLoader();
   const { configurationItemMode } = useAppConfigurator();
 
-  const [state, _dispatch] = useThunkReducer(metadataReducer, initial);
+  const [state] = useThunkReducer(metadataReducer, initial);
 
   const getReferenceList = (payload: IGetReferenceListPayload): PromisedValue<IReferenceList> => {
     return loader.getRefList({ refListId: payload.refListId, skipCache: false, configurationItemMode: configurationItemMode });
@@ -33,9 +33,9 @@ const ReferenceListDispatcherProvider: FC<PropsWithChildren<IReferenceListDispat
 
   const getReferenceListItem = (moduleName: string, name: string, itemValue?: number): Promise<IReferenceListItem> => {
     return getReferenceList({ refListId: { module: moduleName, name: name } }).promise.then(list => {
-      return list.items.find(i => i.itemValue == itemValue);
+      return list.items.find(i => i.itemValue === itemValue);
     });
-  }
+  };
 
   const referenceListActions: IReferenceListDispatcherActionsContext = {
     getReferenceList,
@@ -87,8 +87,8 @@ function useReferenceListDispatcher(require: boolean = true) {
 const getRefListItemByValue = (list: IReferenceList, itemValue?: number): IReferenceListItem => {
   return !list || itemValue === null || itemValue === undefined
     ? null
-    : list.items.find(i => i.itemValue == itemValue);
-}
+    : list.items.find(i => i.itemValue === itemValue);
+};
 
 const useReferenceList = (refListId: IReferenceListIdentifier): ILoadingState<IReferenceList> => {
   const { getReferenceList } = useReferenceListDispatcher();
@@ -106,7 +106,7 @@ const useReferenceList = (refListId: IReferenceListIdentifier): ILoadingState<IR
       loading: refListPromise.isPending,
       error: refListPromise.error
     });
-  }
+  };
 
   useEffect(() => {
     updateState();
@@ -123,7 +123,7 @@ const useReferenceList = (refListId: IReferenceListIdentifier): ILoadingState<IR
   }, []);
 
   return state;
-}
+};
 
 const useReferenceListItem = (moduleName: string, listName: string, itemValue?: number): ILoadingState<IReferenceListItem> => {
   if (itemValue === null || itemValue === undefined)
@@ -149,7 +149,7 @@ const useReferenceListItem = (moduleName: string, listName: string, itemValue?: 
     error: refListPromise.error
   };
   return result;
-}
+};
 
 export {
   ReferenceListDispatcherProvider,

@@ -52,12 +52,12 @@ import {
   IStoredFilter,
   ITableFilter,
   IColumnSorting,
-  DataTableColumnDtoListAjaxResponse,
   GetColumnsInput,
   IGetDataPayload,
   ITableColumn,
   IExportExcelPayload,
   IExcelColumn,
+  DataTableColumnDto,
 } from './interfaces';
 import { isEmpty, isEqual, sortBy } from 'lodash';
 import { IResult } from '../../interfaces/result';
@@ -73,16 +73,18 @@ import { useGlobalState } from '../globalState';
 import camelCaseKeys from 'camelcase-keys';
 import qs from 'qs';
 import { advancedFilter2JsonLogic } from './utils';
-import { camelcaseDotNotation, convertDotNotationPropertiesToGraphQL } from '../form/utils';
+import { convertDotNotationPropertiesToGraphQL } from '../form/utils';
+import { camelcaseDotNotation } from '../../utils/string';
 import { GENERIC_ENTITIES_ENDPOINT } from '../../constants';
 import { useConfigurableAction } from '../configurableActionsDispatcher';
+import { useMetadataDispatcher } from '../..';
 
 interface IDataTableProviderProps {
-  
+
   value?: any;
 
-  sourceType?: 'Form' | 'Entity' |'Url';
-  
+  sourceType?: 'Form' | 'Entity' | 'Url';
+
   /** Type of entity */
   entityType: string;
   /** Configurable columns. Is used in pair with entityType  */
@@ -126,6 +128,8 @@ interface IDataTableProviderProps {
   getDataPath?: string;
   getExportToExcelPath?: string;
   defaultFilter?: IFilterItem[];
+
+  initialPageSize?: number;
 }
 
 const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
@@ -145,6 +149,7 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
   actionOwnerName,
   onFetchDataSuccess,
   sourceType,
+  initialPageSize,
   ...props
 }) => {
   const [state, dispatch] = useThunkReducer(dataTableReducer, {
@@ -155,6 +160,7 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
     configurableColumns: configurableColumns ?? [],
     title,
     parentEntityId,
+    selectedPageSize: initialPageSize ?? DATA_TABLE_CONTEXT_INITIAL_STATE.selectedPageSize
   });
 
   const { setState: setGlobalState } = useGlobalState();
@@ -298,15 +304,16 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
 
   /**
    * Returns the fetch data table data or null in a case where `skipFetch: true`
+   *
    * @param payload
    * @returns Promise<IResult<ITableDataResponse>> or null
    */
   const fetchDataTableData = (
     payload: IGetDataPayloadInternal
   ): Promise<IResult<ITableDataInternalResponse>> | null => {
-    
+
     // fetch data from the form value
-    if (sourceType == 'Form' ) {
+    if (sourceType === 'Form' ) {
       let filtered = [];
       if (Boolean(props.value) && Array.isArray(props.value)) {
         filtered = props.value.filter((_, index) => {
@@ -318,7 +325,7 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
         });
       }
 
-      return Promise.resolve(convertDataResponse({result:{totalCount: props.value?.length ?? 0, items: filtered}}, payload.pageSize));
+      return Promise.resolve(convertDataResponse({ result: { totalCount: props.value?.length ?? 0, items: filtered } }, payload.pageSize));
     }
 
     // save current user configuration to local storage
@@ -371,7 +378,7 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
 
   // fetch table data when config is ready or something changed (selected filter, changed current page etc.)
   useEffect(() => {
-    if (entityType || getDataPath || sourceType == 'Form') {
+    if (entityType || getDataPath || sourceType === 'Form') {
       // fecth using entity type
       tableIsReady.current = true; // is used to prevent unneeded data fetch by the ReactTable. Any data fetch requests before this line should be skipped
       refreshTable();
@@ -387,6 +394,8 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
     state.columns?.length,
     state.tableSorting,
   ]);
+
+  const metaDispatcher = useMetadataDispatcher();
 
   // fetch table data when config is ready or something changed (selected filter, changed current page etc.)
   const refreshTableWhenAppropriate = () => {
@@ -535,7 +544,7 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
         .filter(c => c.dataType !== 'action')
         .map<IExcelColumn>(c => ({ propertyName: c.propertyName, label: c.caption }));
 
-      if (excelColumns.findIndex(c => c.propertyName == 'id') === -1) {
+      if (excelColumns.findIndex(c => c.propertyName === 'id') === -1) {
         excelColumns = [{ propertyName: 'id', label: 'Id' }, ...excelColumns];
       }
 
@@ -681,47 +690,74 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
     return dataFields.map(f => f.propertyName);
   }, [state?.configurableColumns]);
 
+
+  const getColumnDtos = (payload: GetColumnsInput): Promise<DataTableColumnDto[]> => {
+    const { properties } = payload;
+
+    if (properties.length === 0 || !entityType)
+      return Promise.resolve([]);
+
+    return metaDispatcher.getPropertiesMetadata({ modelType: entityType, properties: properties })
+      .then(response => {
+
+        return properties.map<DataTableColumnDto>(p => {
+
+          const baseProps = {
+            propertyName: p,
+            name: p,
+          };
+          const propMeta = response[p];
+          return propMeta
+            ? {
+              ...baseProps,
+              caption: propMeta.label,
+              description: propMeta.description,
+              dataType: propMeta.dataType,
+              dataFormat: propMeta.dataFormat,
+              referenceListName: propMeta.referenceListName,
+              referenceListModule: propMeta.referenceListModule,
+              entityReferenceTypeShortAlias: propMeta.entityType,
+              allowInherited: false, // todo: add to metadata
+              isFilterable: true, // todo: add to metadata
+              isSortable: true, // todo: add to metadata
+            }
+            : baseProps;
+        });
+      }).catch(e => {
+        // todo: return error and handle on the upper level
+        console.error('Failed to fetch table columns', e);
+        return [];
+      });
+  };
+
+  //#region get columns from back-end
   useEffect(() => {
     const { configurableColumns } = state;
-    if (!entityType) return;
+    if (!entityType || !configurableColumns || configurableColumns?.length === 0) return;
 
     const localProperties = getDataProperties(configurableColumns);
-
-    if (localProperties.length === 0) {
-      // don't fetch data from server when properties is empty
-      dispatch(fetchColumnsSuccessSuccessAction({ columns: [], configurableColumns, userConfig: userDTSettings }));
-      return;
-    }
 
     // fetch columns config from server
     const getColumnsPayload: GetColumnsInput = {
       entityType,
       properties: localProperties,
     };
-
-    axios({
-      method: 'POST',
-      url: `${backendUrl}/api/services/app/DataTable/GetColumns`,
-      data: getColumnsPayload,
-      headers,
-    })
-      .then(response => {
-        const responseData = response.data as DataTableColumnDtoListAjaxResponse;
-
-        if (responseData.success) {
-          dispatch(
-            fetchColumnsSuccessSuccessAction({
-              columns: responseData.result,
-              configurableColumns,
-              userConfig: userDTSettings,
-            })
-          );
-        }
+    getColumnDtos(getColumnsPayload)
+      .then(columns => {
+        dispatch(
+          fetchColumnsSuccessSuccessAction({
+            columns,
+            configurableColumns,
+            userConfig: userDTSettings,
+          })
+        );
       })
       .catch(e => {
         console.log(e);
       });
+
   }, [state.configurableColumns, state.entityType, state.getDataPath]);
+  //#endregion
 
   const registerConfigurableColumns = (ownerId: string, columns: IConfigurableColumnsBase[]) => {
     dispatch(registerConfigurableColumnsAction({ ownerId, columns }));
@@ -884,28 +920,39 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = ({
   );
 };
 
-function useDataTableState() {
+function useDataTableState(require: boolean = true) {
   const context = useContext(DataTableStateContext);
 
-  if (context === undefined) {
+  if (context === undefined && require) {
     throw new Error('useDataTableState must be used within a DataTableProvider');
   }
 
   return context;
 }
 
-function useDataTableActions() {
+function useDataTableActions(require: boolean = true) {
   const context = useContext(DataTableActionsContext);
 
-  if (context === undefined) {
+  if (context === undefined && require) {
     throw new Error('useDataTableActions must be used within a DataTableProvider');
   }
 
   return context;
 }
 
-function useDataTableStore() {
-  return { ...useDataTableState(), ...useDataTableActions() };
+function useDataTableStore(require: boolean = true) {
+  const actionsContext = useDataTableActions(require);
+  const stateContext = useDataTableState(require);
+
+  if ((actionsContext === undefined || actionsContext === undefined) && require) {
+    throw new Error('useDataTableActions must be used within a DataTableProvider');
+  }
+  // useContext() returns initial state when provider is missing
+  // initial context state is useless especially when require == true
+  // so we must return value only when both context are available
+  return actionsContext !== undefined && stateContext !== undefined
+    ? { ...actionsContext, ...stateContext }
+    : undefined;
 }
 
 const useDataTable = useDataTableStore;

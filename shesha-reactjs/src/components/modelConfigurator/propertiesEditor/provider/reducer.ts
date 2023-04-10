@@ -9,27 +9,7 @@ import { ModelActionEnums } from './actions';
 import { handleActions } from 'redux-actions';
 import { getItemPositionById } from './utils';
 import { IModelItem } from '../../../../interfaces/modelConfigurator';
-import { ModelPropertyDto } from '../../../../apis/modelConfigurations';
 import { nanoid } from 'nanoid';
-
-const mapPropertyToModelItem = (property: ModelPropertyDto): IModelItem => {
-  const result = {
-    id: property.id,
-    name: property.name,
-    label: property.label,
-    description: property.description,
-    dataType: property.dataType,
-    dataFormat: property.dataFormat,
-    entityType: property.entityType,
-    referenceListName: property.referenceListName,
-    referenceListModule: property.referenceListModule,
-    source: property.source,
-    suppress: property.suppress,
-    properties: property.properties.map<IModelItem>(p => mapPropertyToModelItem(p)),
-  }
-
-  return result;
-}
 
 const findItemById = (items: IModelItem[], id: string): IModelItem => {
   for (const item of items) {
@@ -43,7 +23,7 @@ const findItemById = (items: IModelItem[], id: string): IModelItem => {
   }
 
   return null;
-}
+};
 
 const modelReducer = handleActions<IPropertiesEditorStateContext, any>(
   {
@@ -51,7 +31,7 @@ const modelReducer = handleActions<IPropertiesEditorStateContext, any>(
       state: IPropertiesEditorStateContext,
       action: ReduxActions.Action<IAddItemPayload | null>
     ) => {
-      const { payload } = action
+      const { payload } = action;
 
       const itemProps: IModelItem = {
         name: `New property`,

@@ -43,11 +43,11 @@ export interface IStoredFilesProviderProps {
   baseUrl?: string;
 }
 
-const filesReducer = (data: IStoredFile[]): IStoredFile[] => data.map(file => fileReducer(file));
-
 const fileReducer = (data: IStoredFile): IStoredFile => {
   return { ...data, uid: data.id };
 };
+
+const filesReducer = (data: IStoredFile[]): IStoredFile[] => data.map(file => fileReducer(file));
 
 const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   children,

@@ -129,37 +129,37 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
   const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (!suggestionRef.current || suggestionRef?.current?.length === 0) return;
 
-    const _suggestions = suggestionRef.current;
+    const suggestions = suggestionRef.current;
 
     const foundIndex = highlightedPlaceId
-      ? _suggestions?.map(({ placeId }) => placeId)?.indexOf(highlightedPlaceId)
+      ? suggestions?.map(({ placeId }) => placeId)?.indexOf(highlightedPlaceId)
       : -1;
 
     const firstIndex = 0;
 
-    const lastIndex = _suggestions?.length - 1;
+    const lastIndex = suggestions?.length - 1;
 
     if (event.keyCode === KeyCodes.ArrowUp || event.keyCode === KeyCodes.ArrowDown) {
       let suggestion: ISuggestion;
 
       if (event.keyCode === KeyCodes.ArrowUp) {
         if (!highlightedPlaceId) {
-          suggestion = _suggestions[lastIndex]; // Return the last one if the highlighted is empty
+          suggestion = suggestions[lastIndex]; // Return the last one if the highlighted is empty
         } else {
           if (foundIndex === firstIndex) {
-            suggestion = _suggestions[lastIndex]; // It's the first one, go to the last one
+            suggestion = suggestions[lastIndex]; // It's the first one, go to the last one
           } else {
-            suggestion = _suggestions[foundIndex - 1]; // Go to the previous one
+            suggestion = suggestions[foundIndex - 1]; // Go to the previous one
           }
         }
       } else if (event.keyCode === KeyCodes.ArrowDown) {
         if (!highlightedPlaceId) {
-          suggestion = _suggestions[firstIndex]; // Return the first one if the highlighted is empty
+          suggestion = suggestions[firstIndex]; // Return the first one if the highlighted is empty
         } else {
           if (foundIndex === lastIndex) {
-            suggestion = _suggestions[firstIndex]; // It's the last element, so select the first one
+            suggestion = suggestions[firstIndex]; // It's the last element, so select the first one
           } else {
-            suggestion = _suggestions[foundIndex + 1]; // Go to the next one
+            suggestion = suggestions[foundIndex + 1]; // Go to the next one
           }
         }
       }
@@ -167,7 +167,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
       setHighlightedPlaceId(suggestion.placeId);
     } else if (event.keyCode === KeyCodes.Enter) {
       if (highlightedPlaceId) {
-        const foundDescription = _suggestions?.find(({ placeId }) => placeId === highlightedPlaceId)?.description;
+        const foundDescription = suggestions?.find(({ placeId }) => placeId === highlightedPlaceId)?.description;
 
         if (foundDescription) {
           handleSelect(ignoreText ? foundDescription?.replace(ignoreText, '') : foundDescription);

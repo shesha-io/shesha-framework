@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '../../../../providers/form/models';
+import { FormMarkup } from '../../../../providers/form/models';
 import { FilterOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '../formItem';
 import settingsFormJson from './settingsForm.json';
@@ -9,22 +9,16 @@ import { useForm, useQueryBuilder, useTableViewSelectorConfigurator } from '../.
 import { validateConfigurableComponentSettings, evaluateString } from '../../../../providers/form/utils';
 import { Alert, Typography } from 'antd';
 import { QueryBuilderWithModelType } from './queryBuilderWithModelType';
-
-export interface IQueryBuilderProps extends IConfigurableFormComponent {
-  jsonExpanded?: boolean;
-  useExpression?: boolean | string;
-  modelType?: string;
-  fieldsUnavailableHint?: string;
-}
+import { IQueryBuilderComponentProps } from './interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
-const QueryBuilderComponent: IToolboxComponent<IQueryBuilderProps> = {
+const QueryBuilderComponent: IToolboxComponent<IQueryBuilderComponentProps> = {
   type: 'queryBuilder',
   name: 'Query Builder',
   icon: <FilterOutlined />,
   //dataTypes: [DataTypes.string],
-  factory: (model: IQueryBuilderProps) => {
+  factory: (model: IQueryBuilderComponentProps) => {
     const { formMode } = useForm();
     return (<QueryBuilder {...model} readOnly={formMode === 'readonly'}></QueryBuilder>);
   },
@@ -32,7 +26,7 @@ const QueryBuilderComponent: IToolboxComponent<IQueryBuilderProps> = {
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
 };
 
-const QueryBuilder: FC<IQueryBuilderProps> = props => {
+const QueryBuilder: FC<IQueryBuilderComponentProps> = props => {
   const queryBuilder = useQueryBuilder(false);
 
   return queryBuilder ? (
@@ -44,15 +38,15 @@ const QueryBuilder: FC<IQueryBuilderProps> = props => {
   );
 };
 
-export const QueryBuilderComponentRenderer: FC<IQueryBuilderProps> = props => {
+export const QueryBuilderComponentRenderer: FC<IQueryBuilderComponentProps> = props => {
   const { formMode, formData } = useForm();
-  const { fieldsUnavailableHint, useExpression: _useExpression } = props;
+  const { fieldsUnavailableHint, useExpression: useExpressionFromProps } = props;
   const { selectedItemId, items } = useTableViewSelectorConfigurator(false) ?? {}; // note: it should be outside the QueryBuilder component!
 
   // TODO: implement combined components which support both expressions/functions and custom values like date/datetime and remove the `useExpression` property
   const useExpression =
-    _useExpression === true ||
-    (typeof _useExpression === 'string' && evaluateString(_useExpression, { data: formData }) === 'true') ||
+    useExpressionFromProps === true ||
+    (typeof useExpressionFromProps === 'string' && evaluateString(useExpressionFromProps, { data: formData }) === 'true') ||
     items?.find(({ id }) => id === selectedItemId)?.useExpression === true;
 
   const queryBuilder = useQueryBuilder(false);

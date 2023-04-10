@@ -2,7 +2,8 @@ import { message } from 'antd';
 import moment from 'moment';
 import React, { FC, Fragment } from 'react';
 import { useGet } from 'restful-react';
-import { axiosHttp, useForm, useGlobalState, useSheshaApplication } from '../../../..';
+import { useForm, useGlobalState, useSheshaApplication } from '../../../..';
+import { axiosHttp } from '../../../../utils/fetchers';
 import GooglePlacesAutocomplete, { IAddressAndCoords } from '../../../googlePlacesAutocomplete';
 import { IOpenCageResponse } from '../../../googlePlacesAutocomplete/models';
 import ValidationErrors from '../../../validationErrors';
@@ -44,7 +45,7 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = model => {
     });
 
   const disableGoogleEvent = (value: string) =>
-    (value?.length || 0) < parseInt((minCharactersSearch as string) || '0') - 1;
+    (value?.length || 0) < parseInt((minCharactersSearch as string) || '0', 10) - 1;
 
   const eventProps = {
     model,

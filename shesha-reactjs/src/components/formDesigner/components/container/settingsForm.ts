@@ -18,7 +18,6 @@ export const getSettings = (data: any) =>
       name: 'separator1',
       parentId: 'root',
       label: 'Display',
-      title: '',
     })
     .addPropertyAutocomplete({
       id: '6d39921b-d20e-49cf-bc54-ec584f63be5c',

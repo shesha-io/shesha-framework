@@ -27,6 +27,7 @@ import { ApplicationActionsProcessor } from './configurable-actions/applicationA
 import { ConfigurationItemsLoaderProvider } from '../configurationItemsLoader';
 import { FRONT_END_APP_HEADER_NAME } from './models';
 import { SettingsProvider } from '../settings';
+import { DataSourcesProvider } from '../dataSourcesProvider';
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;
@@ -132,9 +133,11 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                           <ReferenceListDispatcherProvider>
                             <MetadataDispatcherProvider>
                               <StackedNavigationProvider>
-                                <DynamicModalProvider>
-                                  <ApplicationActionsProcessor>{children}</ApplicationActionsProcessor>
-                                </DynamicModalProvider>
+                                <DataSourcesProvider>
+                                  <DynamicModalProvider>
+                                    <ApplicationActionsProcessor>{children}</ApplicationActionsProcessor>
+                                  </DynamicModalProvider>
+                                </DataSourcesProvider>
                               </StackedNavigationProvider>
                             </MetadataDispatcherProvider>
                           </ReferenceListDispatcherProvider>

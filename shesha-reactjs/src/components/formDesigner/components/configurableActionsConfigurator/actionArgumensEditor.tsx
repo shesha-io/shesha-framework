@@ -78,6 +78,6 @@ export const ActionArgumentsEditor: FC<IActionArgumentsEditorProps> = ({ action,
             </Panel>
         </Collapse>
     );
-}
+};
 
 export default ActionArgumentsEditor;

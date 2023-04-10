@@ -17,4 +17,4 @@ export const migrateV1toV2 = (props: IToolbarProps, context: SettingsMigrationCo
     });
 
     return { ...props, items: newItems };
-}
+};

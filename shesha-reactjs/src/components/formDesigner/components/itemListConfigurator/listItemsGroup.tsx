@@ -1,18 +1,24 @@
 import React, { FC } from 'react';
 import { Button } from 'antd';
 import { DeleteFilled } from '@ant-design/icons';
-import ItemListContainer from './listItemsContainer';
 import DragHandle from './dragHandle';
 import ShaIcon, { IconType } from '../../../shaIcon';
 import classNames from 'classnames';
-import { IConfigurableItemGroup } from '../../../../providers/itemListConfigurator/contexts';
+import { IConfigurableItemBase, IConfigurableItemGroup } from '../../../../providers/itemListConfigurator/contexts';
 import { useItemListConfigurator } from '../../../..';
 
-export interface IItemsGroupProps extends IConfigurableItemGroup {
-  index: number[];
+export interface IContainerRenderArgs {
+  index?: number[];
+  id?: string;
+  items: IConfigurableItemBase[];
 }
 
-export const ListItemsGroup: FC<IItemsGroupProps> = ({ id, label, title, name, childItems, index, icon }) => {
+export interface IListItemsGroupProps extends IConfigurableItemGroup {
+  index: number[];
+  containerRendering: (args: IContainerRenderArgs) => React.ReactNode;
+}
+
+export const ListItemsGroup: FC<IListItemsGroupProps> = ({ id, label, title, name, childItems, index, icon, containerRendering }) => {
   const { deleteGroup, selectedItemId } = useItemListConfigurator();
 
   const onDeleteClick = () => {
@@ -34,7 +40,7 @@ export const ListItemsGroup: FC<IItemsGroupProps> = ({ id, label, title, name, c
       </div>
 
       <div className="sha-button-group-group-container">
-        <ItemListContainer index={index} items={childItems || []} id={id} />
+        {containerRendering({ index: index, items: childItems || [], id: id })}
       </div>
     </div>
   );

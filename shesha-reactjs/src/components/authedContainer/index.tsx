@@ -65,7 +65,7 @@ const AuthContainer: FC<IAuthContainerProps> = ({ children, layout = false }) =>
           ))}
 
         {isLoggedIn ? (
-          <ShaRoutingProvider>
+          <ShaRoutingProvider router={null}>
             <SidebarMenuProvider items={[]}>
               <div className={classNames({ 'sha-storybook-authenticated-container-layout': layout })}>{children}</div>
             </SidebarMenuProvider>

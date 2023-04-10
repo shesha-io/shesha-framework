@@ -54,6 +54,6 @@ export const JoditEditorWrapper: FC<IJoditEditorProps> = (props) => {
             />
         </React.Suspense>
     );
-}
+};
 
 export default JoditEditorWrapper;

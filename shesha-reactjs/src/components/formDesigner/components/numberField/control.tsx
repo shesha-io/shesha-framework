@@ -2,16 +2,16 @@ import { InputNumber, InputNumberProps, message } from 'antd';
 import { FormInstance } from 'antd/es/form/Form';
 import moment from 'moment';
 import React, { FC } from 'react';
-import { axiosHttp } from '../../../../apis/axios';
+import { axiosHttp } from '../../../../utils/fetchers';
 import { useForm, useGlobalState, useSheshaApplication } from '../../../../providers';
 import { getStyle } from '../../../../providers/form/utils';
 import { customInputNumberEventHandler } from '../utils';
-import { INumberFieldProps } from './models';
+import { INumberFieldComponentProps } from './interfaces';
 
 interface IProps {
   disabled: boolean;
   form: FormInstance;
-  model: INumberFieldProps;
+  model: INumberFieldComponentProps;
   onChange?: Function;
   value?: number;
 }

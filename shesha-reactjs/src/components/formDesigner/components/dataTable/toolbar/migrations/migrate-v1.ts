@@ -33,7 +33,7 @@ export const migrateV0toV1 = (model: IToolbarPropsV0, context: SettingsMigration
                 return {
                     ...item,
                     actionConfiguration: getActionConfiguration(buttonProps, context)
-                }
+                };
             }
         }
 
@@ -41,7 +41,7 @@ export const migrateV0toV1 = (model: IToolbarPropsV0, context: SettingsMigration
     });
 
     return { ...model, items: items };
-}
+};
 
 const getActionConfiguration = (buttonProps: IToolbarButtonV0, context: SettingsMigrationContext): IConfigurableActionConfiguration => {
     if (buttonProps['actionConfiguration'])
@@ -54,7 +54,7 @@ const getActionConfiguration = (buttonProps: IToolbarButtonV0, context: Settings
                 actionName: 'Cancel Edit',
                 handleFail: false,
                 handleSuccess: false,
-            }
+            };
         }
         case "reset": {
             return {
@@ -62,7 +62,7 @@ const getActionConfiguration = (buttonProps: IToolbarButtonV0, context: Settings
                 actionName: 'Reset',
                 handleFail: false,
                 handleSuccess: false,
-            }
+            };
         }
         case "submit": {
             return {
@@ -70,7 +70,7 @@ const getActionConfiguration = (buttonProps: IToolbarButtonV0, context: Settings
                 actionName: 'Submit',
                 handleFail: false,
                 handleSuccess: false,
-            }
+            };
         }
         case "startFormEdit": {
             return {
@@ -78,7 +78,7 @@ const getActionConfiguration = (buttonProps: IToolbarButtonV0, context: Settings
                 actionName: 'Start Edit',
                 handleFail: false,
                 handleSuccess: false,
-            }
+            };
         }
         case "navigate": {
             return {
@@ -89,7 +89,7 @@ const getActionConfiguration = (buttonProps: IToolbarButtonV0, context: Settings
                 actionArguments: {
                     target: buttonProps.targetUrl
                 },
-            }
+            };
         }
         case "dialogue": {
             const actionConfig: IConfigurableActionConfiguration = {
@@ -97,7 +97,7 @@ const getActionConfiguration = (buttonProps: IToolbarButtonV0, context: Settings
                 actionName: 'Show Dialog',
                 handleFail: false,
                 handleSuccess: false,
-            }
+            };
 
             const propsWithModal = buttonProps as IToolbarButtonTableDialogPropsV0;
 
@@ -180,15 +180,9 @@ const getActionConfiguration = (buttonProps: IToolbarButtonV0, context: Settings
                 };
             }
         }
-        case "customAction": {
-
-        }
-        // case "dispatchAnEvent": {
-        //     return getDispatchEventReplacement(buttonProps);
-        // }
     }
     return null;
-}
+};
 
 
 //#region 

@@ -1,17 +1,12 @@
 import React, { FC } from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
-import { IConfigurableFormComponent } from '../../../../providers/form/models';
 import { FormatPainterOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '../formItem';
 import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import { iconPickerFormSettings } from './settings';
 import ColorPicker from '../../../colorPicker';
 import { ColorResult } from 'react-color';
-
-export interface IColorPickerComponentProps extends IConfigurableFormComponent {
-  title?: string;
-  color?: ColorResult;
-}
+import { IColorPickerComponentProps } from './interfaces';
 
 const ColorPickerComponent: IToolboxComponent<IColorPickerComponentProps> = {
   type: 'colorPicker',

@@ -94,7 +94,8 @@ export const AnnotationSettingsForm = new DesignerToolbarSettings()
         parentId: "root",
         hidden: false,
         customEnabled: null,
-        description: "Enter custom enabled code.  You must return true to enable the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
+        description: "Enter custom enabled code.  You must return true to enable the component. " + 
+            "The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
         validate: {},
         settingsValidationErrors: [],
         exposedVariables: [
@@ -213,4 +214,4 @@ export const AnnotationSettingsForm = new DesignerToolbarSettings()
             { id: "fb85d916-39f9-4f88-8d87-c1c53558b078", name: "data", description: "Form values", type: "object" },
             { "name": "globalState", "description": "The global state of the application", "type": "object" }]
     })
-    .toJson()
+    .toJson();

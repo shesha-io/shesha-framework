@@ -25,7 +25,7 @@ export class MigratorFluent<TModel = IHasVersion, TDst = IHasVersion, TContext =
         
         const fluent = new MigratorFluent<TNext, TDst, TContext>(this.migrator);
         return fluent;
-    }
+    };
 }
 
 interface IMigrationRegistrationsOwner<TDst = IHasVersion, TContext = any> {
@@ -49,13 +49,13 @@ export class Migrator<TSrc = IHasVersion, TDst = IHasVersion, TContext = any> im
             throw `Migration with version ${payload.version} already registered`;
 
         this.migrations.push((registration as unknown) as MigrationRegistration);
-    }
+    };
 
     add = <TNext = IHasVersion>(version: number, migration: Migration<TSrc, TNext>) => {
         this.addMigration<TSrc, TNext>({ version, migration });
 
         return new MigratorFluent<TNext, TDst, TContext>(this);
-    }
+    };
     
     upgrade = (currentModel: IHasVersion, context: TContext): TDst => {
         const unappliedMigrations = this.migrations
@@ -68,5 +68,5 @@ export class Migrator<TSrc = IHasVersion, TDst = IHasVersion, TContext = any> im
             current.version = migration.version;
         });
         return current as TDst;
-    }
+    };
 }

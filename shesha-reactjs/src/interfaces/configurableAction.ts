@@ -24,8 +24,8 @@ export type IConfigurableActionArgumentsFormFactory<TModel = IConfigurableAction
 
 export interface IHasActionOwner {
   /**
- * Action owner name (component responsible for the action execution)
- */
+   * Action owner name (component responsible for the action execution)
+   */
   owner: string;
 
   /**
@@ -54,8 +54,8 @@ export interface IConfigurableActionDescriptor<TArguments = IConfigurableActionA
    */
   hasArguments: boolean;
   /**
-  * Arguments form factory. Renders the action arguments editor
-  */
+   * Arguments form factory. Renders the action arguments editor
+   */
   argumentsFormFactory?: IConfigurableActionArgumentsFormFactory<TArguments>;
   /**
    * Markup of the arguments editor. Applied when the @argumentsFormFactory is not specified, in this case you can render arguments for in the designer itself

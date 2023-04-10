@@ -17,11 +17,11 @@ interface IGetItemArgs {
   navigate: (url: string) => void;
 }
 
-function getItem({ label, target, key, icon, children, isParent, navigate } : IGetItemArgs): MenuItem {
+function getItem({ label, target, key, icon, children, isParent, navigate }: IGetItemArgs): MenuItem {
   const clickHandler = (event, url) => {
     event.stopPropagation();
     navigate(url);
-  }
+  };
   return {
     key,
     icon,

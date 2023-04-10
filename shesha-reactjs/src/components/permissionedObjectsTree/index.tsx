@@ -8,7 +8,7 @@ import { DatabaseFilled, LoadingOutlined } from '@ant-design/icons';
 import { useForm } from '../..';
 
 export interface IPermissionedObjectsTreeProps {
-  objectsType?: string,
+  objectsType?: string;
 
   /**
    * A callback for when the value of this component changes
@@ -34,16 +34,16 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
 
   useEffect(() => {
     if (Boolean(getAction)){
-      const action = getAction(null,'onChangeId')
+      const action = getAction(null,'onChangeId');
       if (Boolean(action)){
         action(objectId);
       }
     }
-  }, [objectId])
+  }, [objectId]);
 
   useEffect(() => {
     fetcher.refetch();
-  }, [objectsType])
+  }, [objectsType]);
 
   useEffect(() => {
     if (!isFetchingData) {
@@ -53,31 +53,40 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
           setAllItems(fetchedData);
         }
       }
-
-      if (fetchingDataError) {
-      }
     }
-  }, [isFetchingData, fetchingDataError, fetchingDataResponse])
+  }, [isFetchingData, fetchingDataError, fetchingDataResponse]);
 
   const onChangeHandler = (item: PermissionedObjectDto) => {
     setObjectId(item.id);
     if (Boolean(props.onChange))
       props.onChange(item.id);
-  }
+  };
 
   const menu = (
     <Menu>
-      <Menu.Item key={"1"} onClick={() => {setGroupBy("-")}}>Without grouping</Menu.Item>
-      <Menu.Item key={"2"} onClick={() => {setGroupBy("module")}}>Group by Module</Menu.Item>
-      <Menu.Item key={"3"} onClick={() => {setGroupBy("category")}}>Group by Category</Menu.Item>
+      <Menu.Item key={"1"} onClick={() => {
+setGroupBy("-");
+}}>Without grouping</Menu.Item>
+      <Menu.Item key={"2"} onClick={() => {
+setGroupBy("module");
+}}>Group by Module</Menu.Item>
+      <Menu.Item key={"3"} onClick={() => {
+setGroupBy("category");
+}}>Group by Category</Menu.Item>
     </Menu>
   );
 
   const typeMenu = (
     <Menu>
-      <Menu.Item key={"1"} onClick={() => {setObjectsType("Shesha.WebApi")}}>API</Menu.Item>
-      <Menu.Item key={"2"} onClick={() => {setObjectsType("Shesha.WebCrudApi")}}>CRUD API</Menu.Item>
-      <Menu.Item key={"3"} onClick={() => {setObjectsType("Shesha.Entity")}}>Entities</Menu.Item>
+      <Menu.Item key={"1"} onClick={() => {
+setObjectsType("Shesha.WebApi");
+}}>API</Menu.Item>
+      <Menu.Item key={"2"} onClick={() => {
+setObjectsType("Shesha.WebCrudApi");
+}}>CRUD API</Menu.Item>
+      <Menu.Item key={"3"} onClick={() => {
+setObjectsType("Shesha.Entity");
+}}>Entities</Menu.Item>
     </Menu>
   );
 
@@ -101,12 +110,13 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
         defaultSelected={objectId}
         isMatch={(item, searchText) => {
           return item.object.toLowerCase().includes(searchText.toLowerCase()) 
-          || item.name?.toLowerCase().includes(searchText.toLowerCase());}}
+          || item.name?.toLowerCase().includes(searchText.toLowerCase());
+}}
         setOpenedKeys={setOpenedKeys}
         onChange={onChangeHandler}
       />
     </Spin>
   );
-}
+};
 
 export default PermissionedObjectsTree;

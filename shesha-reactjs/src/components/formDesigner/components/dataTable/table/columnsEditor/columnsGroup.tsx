@@ -1,13 +1,18 @@
 import React, { FC } from 'react';
 import { Button } from 'antd';
 import { DeleteFilled } from '@ant-design/icons';
-import { IConfigurableColumnGroup } from '../../../../../../providers/datatableColumnsConfigurator/models';
+import { ColumnsItemProps, IConfigurableColumnGroup } from '../../../../../../providers/datatableColumnsConfigurator/models';
 import { useColumnsConfigurator } from '../../../../../../providers/datatableColumnsConfigurator';
-import ColumnsContainer from './columnsContainer';
 import DragHandle from './dragHandle';
+
+export interface IContainerRenderArgs {
+  index?: number[];
+  items?: ColumnsItemProps[];
+}
 
 export interface IProps extends IConfigurableColumnGroup {
   index: number[];
+  containerRendering: (args: IContainerRenderArgs) => React.ReactNode;
 }
 
 export const ColumnsGroup: FC<IProps> = props => {
@@ -32,7 +37,7 @@ export const ColumnsGroup: FC<IProps> = props => {
         )}
       </div>
       <div className="sha-toolbar-group-container">
-        <ColumnsContainer index={props.index} items={props.childItems || []} />
+        {props.containerRendering({ index: props.index, items: props.childItems || [] })}
       </div>
     </div>
   );

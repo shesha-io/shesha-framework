@@ -9,12 +9,12 @@ import {
 } from '../../../../../../providers/datatableColumnsConfigurator/models';
 import { ReactSortable, ItemInterface } from 'react-sortablejs';
 
-export interface IToolbarItemsSortableProps {
+export interface IColumnsContainerProps {
   index?: number[];
   items: IConfigurableColumnsBase[];
 }
 
-export const ColumnsContainer: FC<IToolbarItemsSortableProps> = props => {
+export const ColumnsContainer: FC<IColumnsContainerProps> = props => {
   const { updateChildItems, readOnly } = useColumnsConfigurator();
 
   const renderItem = (item: IConfigurableColumnsBase, index: number) => {
@@ -25,7 +25,14 @@ export const ColumnsContainer: FC<IToolbarItemsSortableProps> = props => {
 
       case 'group':
         const groupProps = item as IConfigurableColumnGroup;
-        return <ColumnsGroup key={index} {...groupProps} index={[...props.index, index]} />;
+        return (
+          <ColumnsGroup 
+            key={index} 
+            {...groupProps} 
+            index={[...props.index, index]} 
+            containerRendering={args => (<ColumnsContainer index={args.index} items={args.items} />)}
+          />
+        );        
     }
   };
 

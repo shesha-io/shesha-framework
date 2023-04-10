@@ -11,7 +11,7 @@ const CustomInput: FC<ICustomInputProps> = ({ onChange, value: val, onDelete, de
         defaultValue={!val ? `${defaultNumber}.` : val}
         autoFocus
         onChange={({ target: { value } }) => {
-          onChange(value)
+          onChange(value);
         }}
       />
       <Button>
