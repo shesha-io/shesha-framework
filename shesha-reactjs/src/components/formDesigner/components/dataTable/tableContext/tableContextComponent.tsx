@@ -17,6 +17,7 @@ export interface ITableContextComponentProps extends IConfigurableFormComponent 
   entityType?: string;
   endpoint?: string;
   components?: IConfigurableFormComponent[]; // If isDynamic we wanna
+  defaultPageSize?: number;
 }
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -37,6 +38,11 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
     return {
       ...prev,
       sourceType: 'Entity'
+    };
+  }).add<ITableContextComponentProps>(2, prev => {
+    return {
+      ...prev,
+      defaultPageSize: 10
     };
   }),
   settingsFormMarkup: settingsForm,
@@ -92,6 +98,7 @@ export const TableContextInner: FC<ITableContextComponentProps> = props => {
     actionOwnerId={id}
     actionOwnerName={name}
     sourceType={props.sourceType}
+    initialPageSize={props.defaultPageSize ?? 10}
   >
     <TableContextAccessor {...props} />
   </DataTableProvider>;

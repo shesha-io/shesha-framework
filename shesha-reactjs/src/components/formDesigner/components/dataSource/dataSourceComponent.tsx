@@ -1,7 +1,7 @@
 import { LayoutOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
 import FormItem from 'antd/lib/form/FormItem';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import { useDeepCompareEffect } from 'react-use';
 import { IToolboxComponent } from '../../../../interfaces';
 import { MetadataProvider, useDataTableStore, useForm, useGlobalState } from '../../../../providers';
@@ -76,6 +76,36 @@ export const DataSourceInner: FC<IDataSourceComponentProps> = props => {
   const [selectedRow, setSelectedRow] = useState(-1);
   const isDesignMode = formMode === 'designer';
 
+  const onSelectRow = index => {
+    setSelectedRow(index);
+  };
+
+  const provider = useMemo(() => {
+    return (
+      <DataTableProvider
+        userConfigId={id}
+        entityType={entityType}
+        getDataPath={endpoint}
+        title={label}
+        selectedRow={selectedRow}
+        onSelectRow={onSelectRow}
+        actionOwnerId={id}
+        actionOwnerName={name}
+        sourceType={sourceType}
+        initialPageSize={getPageSize(props.maxResultCount)}
+      >
+        <DataSourceAccessor {...props} />
+      </DataTableProvider>);
+  }, [props]);
+
+  const providerWrapper = useMemo(() => {
+    return sourceType === 'Form'
+      ? <FormItem name={props.name}>
+          {provider}
+        </FormItem>
+      : provider;
+  }, [sourceType]);
+
   if (isDesignMode && ((sourceType === 'Entity' && !entityType) || (sourceType === 'Url' && !endpoint)))
     return (
       <Alert
@@ -86,32 +116,6 @@ export const DataSourceInner: FC<IDataSourceComponentProps> = props => {
         showIcon
       />
     );
-
-  const onSelectRow = index => {
-    setSelectedRow(index);
-  };
-
-  const provider = <DataTableProvider
-    userConfigId={props.id}
-    entityType={entityType}
-    getDataPath={endpoint}
-    title={label}
-    selectedRow={selectedRow}
-    onSelectRow={onSelectRow}
-    actionOwnerId={id}
-    actionOwnerName={name}
-    sourceType={props.sourceType}
-    initialPageSize={getPageSize(props.maxResultCount)}
-  >
-    <DataSourceAccessor {...props} />
-  </DataTableProvider>;
-
-  const providerWrapper = sourceType === 'Form'
-    ? <FormItem name={props.name}>
-        {provider}
-      </FormItem>
-    : provider;
-
 
   return (
     <DataTableSelectionProvider>
@@ -131,7 +135,7 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, name, filters, 
   } = dataSource;
 
   const dataSelection = useDataTableSelection();
-  const { selectedRow } = dataSelection;
+  //const { selectedRow } = dataSelection;
   const { globalState } = useGlobalState();
 
   const isDesignMode = formMode === 'designer';
@@ -142,9 +146,9 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, name, filters, 
 
   useDataSource({ id, name, dataSource, dataSelection }, [id, name, dataSource, dataSelection]);
 
-  const deleteRow = () => {
+  /*const deleteRow = () => {
     console.log(`deleteRow ${selectedRow.id}`);
-  };
+  };*/
 
   const debounceEvaluateDynamicFiltersHelper = () => {
     //const data = Boolean(formData) ? camelCaseKeys(formData, { deep: true, pascalCase: true }) : formData;
@@ -172,7 +176,7 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, name, filters, 
     () =>
       registerActions(id, {
         refresh: refreshTable,
-        deleteRow,
+        //deleteRow,
       }),
     [tableConfigLoaded, id]
   );

@@ -20,15 +20,15 @@ const PagerComponent: IToolboxComponent<IPagerComponentProps> = {
 
     return <TablePager {...model} />;
   },
-  initModel: (model: IPagerComponentProps) => {
+  migrator:  m => m
+  .add<IPagerComponentProps>(0, prev => {
     return {
-      ...model,
+      ...prev,
       showSizeChanger: true,
       showTotalItems: true,
-      defaultPageSize: 10,
       items: [],
     };
-  },
+  }),
   settingsFormMarkup: context => getSettings(context),
   validateSettings: model => validateConfigurableComponentSettings(getSettings(model), model),
 };
