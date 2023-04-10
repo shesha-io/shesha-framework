@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC, useCallback, useMemo } from 'react';
 import { UnorderedListOutlined } from "@ant-design/icons";
 import { IToolboxComponent } from "../../../../interfaces";
 import { Alert } from 'antd';
@@ -63,7 +63,7 @@ export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
     : dSel;
 
   if (!dataSource || !dataSelection)
-    return null;
+    return <NotConfiguredWarning />;
   
   const {
     entityType,
@@ -78,23 +78,25 @@ export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
 
   const { selectedRow, selectedRows, setSelectedRow, setMultiSelectedRow } = dataSelection;
 
-  if (isDesignMode && (!(entityType || getDataPath || sourceType === "Form") || !(props.formId || props.formType))) return <NotConfiguredWarning />;
+  if (isDesignMode 
+    && (
+      !(entityType || getDataPath || sourceType === "Form") 
+      || !props.formId && props.formSelectionMode === "name"
+      || !props.formType && props.formSelectionMode === "view"
+      || !props.formIdExpression && props.formSelectionMode === "expression"
+      )) return <NotConfiguredWarning />;
 
-  const onSelectRow = (index: number, row: any) => {
+  const onSelectRow = useCallback((index: number, row: any) => {
     if (row) {
       setSelectedRow(index, row);
       if (changeSelectedRow) 
         changeSelectedRow(row);
     }
-  };
-
-  const onMultiRowSelect = (rows: any[]) => {
-    setMultiSelectedRow(rows);
-  };
+  }, [changeSelectedRow]);
 
   const data = useMemo(() => {
- return isDesignMode ? [{}] : tableData; 
-}, [isDesignMode, tableData]);
+    return isDesignMode ? [{}] : tableData; 
+  }, [isDesignMode, tableData]);
 
   //console.log(`DataListWrapper render, ${data?.length} records`);
 
@@ -103,7 +105,7 @@ export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
         {...props}
         entityType={entityType}
         onSelectRow={onSelectRow}
-        onMultiSelectRows={onMultiRowSelect}
+        onMultiSelectRows={setMultiSelectedRow}
         selectedRow={selectedRow}
         selectedRows={selectedRows}
         records={data}

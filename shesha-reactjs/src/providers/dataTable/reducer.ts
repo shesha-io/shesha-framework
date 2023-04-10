@@ -300,7 +300,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
         columns: cols,
         // user config
         currentPage: userConfig?.currentPage || 1,
-        selectedPageSize: userConfig?.pageSize || DEFAULT_PAGE_SIZE_OPTIONS[1],
+        selectedPageSize: userConfig?.pageSize || state.selectedPageSize || DEFAULT_PAGE_SIZE_OPTIONS[1],
         quickSearch: userConfig?.quickSearch,
         tableFilter: userConfig?.advancedFilter,
         tableFilterDirty: userConfig?.advancedFilter,
