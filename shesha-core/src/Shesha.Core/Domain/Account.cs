@@ -1,8 +1,10 @@
 ﻿using Abp.Domain.Entities.Auditing;
+using Shesha.Domain.Attributes;
 using System;
 
 namespace Shesha.Domain
 {
+    [Discriminator]
     public class Account : FullAuditedEntity<Guid>
     {
         public virtual string Name { get; set; }
