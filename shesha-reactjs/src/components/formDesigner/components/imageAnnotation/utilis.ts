@@ -52,5 +52,22 @@ function getViewData(data: IAnnotation[], allowAddingNotes = false) {
     return viewData;
 }
 
-export { parseIntOrDefault, sortAnnotationData, getViewData, canSubmit };
+
+
+
+function getCustomEnabled(customVisibility: string, name: string, data = {}, globalState = {}, formMode) {
+    if (customVisibility) {
+        const customVisibilityExecutor = new Function('value, data, globalState, formMode', customVisibility);
+
+        return customVisibilityExecutor(data?.[name], data, globalState, formMode);
+
+    } else {
+        return true;
+    }
+
+
+}
+
+
+export { parseIntOrDefault, sortAnnotationData, getViewData, canSubmit, getCustomEnabled };
 

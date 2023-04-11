@@ -16,9 +16,6 @@ const ImageAnnotationComponent: IToolboxComponent<IImageProps> = {
 
   factory: (model: IImageProps) => {
     const { formMode } = useForm();
-    
-
-
 
     if (formMode === 'designer' && !model?.url) {
       return (
@@ -32,7 +29,7 @@ const ImageAnnotationComponent: IToolboxComponent<IImageProps> = {
     }
 
     return (
-      <ConfigurableFormItem model={model}>
+      <ConfigurableFormItem model={model} >
         <ImageAnnotationControl model={model} />
       </ConfigurableFormItem>
     );

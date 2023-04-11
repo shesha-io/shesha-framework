@@ -7,19 +7,22 @@ interface IToolTipProps {
 }
 
 const ToolTipTittle: FC<IToolTipProps> = ({ currentStatus, showReflistName }) => {
+
+  const hasDescription = !!currentStatus?.description;
   return (
     <>
-      {showReflistName ? (
-        <span>Description: {currentStatus?.description}</span>
+      {hasDescription && showReflistName ? (
+        !!currentStatus?.description ? <span>Description: {currentStatus?.description}</span> : null
       ) : (
         <>
-          <span>DisplayName: {currentStatus?.item}</span>
+          {!!currentStatus?.item ? <span>DisplayName: {currentStatus?.item}</span> : null}
           <br />
-          <span>Description: {currentStatus?.description}</span>
+          {hasDescription ? <span>Description: {currentStatus?.description}</span> : null}
         </>
       )}
     </>
   );
 };
+
 
 export default ToolTipTittle;

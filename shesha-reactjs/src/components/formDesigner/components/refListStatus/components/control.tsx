@@ -1,5 +1,5 @@
 import React, { FC, useEffect } from 'react';
-import { FormMode, useForm } from '../../../../../providers';
+import { FormMode, useForm, useGlobalState } from '../../../../../providers';
 import '../styles/index.less';
 import { IRefListStatusProps } from '../models';
 import convertCssColorNameToHex from 'convert-css-color-name-to-hex';
@@ -19,6 +19,7 @@ interface IProps {
 
 const RefListStatusControl: FC<IProps> = ({ model }) => {
   const { formData: data, formMode } = useForm();
+  const { globalState } = useGlobalState();
   const { module, nameSpace, showIcon, solidBackground, style, name, showReflistName } = model;
 
   const {
@@ -57,21 +58,23 @@ const RefListStatusControl: FC<IProps> = ({ model }) => {
         <Tag
           className="sha-status-tag"
           color={memoizedColor}
-          style={{ ...getStyle(style, data) }}
+          style={{ ...getStyle(style, data, globalState) }}
           icon={canShowIcon ? <Icon type={currentStatus?.icon} /> : null}
         >
           {showReflistName && currentStatus?.item}
         </Tag>
-        {currentStatus?.description && (
-          <Tooltip
-            placement="rightTop"
-            title={<ToolTipTittle showReflistName={showReflistName} currentStatus={currentStatus} />}
-          >
+        {(((currentStatus?.description && showReflistName) ||
+          (!showReflistName && (currentStatus?.item || currentStatus?.description))) &&
+          (
+            <Tooltip
+              placement="rightTop"
+              title={<ToolTipTittle showReflistName={showReflistName} currentStatus={currentStatus} />}
+            >
 
-            <QuestionCircleOutlined className='sha-help-icon' />
+              <QuestionCircleOutlined className='sha-help-icon' />
 
-          </Tooltip>
-        )}
+            </Tooltip>
+          ))}
       </div>
     </Skeleton>
   );
