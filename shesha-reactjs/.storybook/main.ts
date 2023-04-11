@@ -3,9 +3,12 @@
 // Replace your-framework with the framework you are using (e.g., react-webpack5, vue3-webpack5)
 import type { StorybookConfig } from '@storybook/react-webpack5';
 
+const path = require('path');
+const tsConfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+
 const config: StorybookConfig = {
   stories: [
-    '../src/**/*.mdx', 
+    '../src/**/*.mdx',
     '../src/**/*.stories.@(ts|tsx)'
   ],
   addons: [
@@ -42,13 +45,13 @@ const config: StorybookConfig = {
 
     // Make whatever fine-grained changes you need
     const rules = config.module?.rules;
-    if (rules){
+    if (rules) {
       rules.push({
         test: /\.scss$/,
         use: ['style-loader', 'css-loader', 'sass-loader'
         ]
       });
-  
+
       rules.push({
         test: /\.less$/,
         use: ['style-loader', 'css-loader', {
@@ -64,9 +67,31 @@ const config: StorybookConfig = {
             }
           }
         }]
-      });    
+      });
     }
 
+    const tsConfigPath = path.resolve(__dirname, '../tsconfig.json');
+    console.log(`Using tsconfig.json path: '${tsConfigPath}'`);
+
+    config.resolve = {...(config.resolve ?? {}), plugins: [
+      new tsConfigPathsPlugin({
+        configFile: tsConfigPath
+      })
+    ]}
+
+    
+    
+    /*
+    const plugins = config.resolve?.plugins;
+    if (plugins) {
+      const tsConfigPath = path.resolve(__dirname, '../tsconfig.json');
+      console.log(`tsconfig.json path is: '${tsConfigPath}'`);
+      plugins.push(new tsConfigPathsPlugin({
+        configFile: tsConfigPath
+      }));
+    } else
+      console.warn('resolve?.plugins is', plugins);
+    */
     return config;
   },
 };

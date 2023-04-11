@@ -30,16 +30,16 @@ interface SettingMenuState {
   allSettings: SettingsDictionary;
 }
 
+const getSettingKey = (config: ISettingConfiguration, app?: IFrontEndApplication) => {
+  return `${config.module}|${config.name}|${app?.appKey}`;
+};
+
 export const SettingsMenu: FC<ISettingsMenuProps> = () => {
   const [openedKeys, setOpenedKeys] = useLocalStorage('settings-editor.openedKeys', ['']);
   const [searchText, setSearchText] = useLocalStorage('settings-editor.search', '');
   const [menuState, setMenuState] = useState<SettingMenuState>({ groups: [], allSettings: {} });
 
   const { settingConfigurations, applications, applicationsLoadingState, selectSetting, settingSelection, configsLoadingState } = useSettingsEditor();
-
-  const getSettingKey = (config: ISettingConfiguration, app?: IFrontEndApplication) => {
-    return app ? `${app.appKey}|${config.name}` : config.name;
-  };
 
   useEffect(() => {
     if (applicationsLoadingState === 'success' && configsLoadingState === 'success') {
@@ -121,7 +121,7 @@ export const SettingsMenu: FC<ISettingsMenuProps> = () => {
                 const visibleSettings = group.settings;
 
                 const menuItems = visibleSettings.map<MenuItem>(item => ({
-                  key: item.app ? `${item.app.appKey}|${item.config.name}` : item.config.name,
+                  key: getSettingKey(item.config, item.app),
                   label: item.config.label
                 }));
 

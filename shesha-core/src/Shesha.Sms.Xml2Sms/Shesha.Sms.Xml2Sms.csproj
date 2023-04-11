@@ -4,6 +4,12 @@
     <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>Shesha.Sms</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Xml2Sms\forms\package20230411_1234.shaconfig" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Xml2Sms\forms\package20230411_1234.shaconfig" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Abp" Version="6.6.2" />
