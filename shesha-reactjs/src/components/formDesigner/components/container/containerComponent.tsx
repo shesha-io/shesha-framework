@@ -57,7 +57,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       ...prev,
       direction: prev['direction'] ?? 'vertical',
       justifyContent: prev['justifyContent'] ?? 'left',
-      display: prev['display'] ?? 'block',
+      display: prev['display']/* ?? 'block'*/,
       flexWrap: prev['flexWrap'] ?? 'wrap',
       components: prev['components'] ?? []
     })),
