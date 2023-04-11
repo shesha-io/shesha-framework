@@ -253,7 +253,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
                         } else if (Boolean(eForm.formId)) {
                             eForm.formConfiguration = formConfigs.find(x => x.name === eForm.formId.name && x.module === eForm.formId.module);
                             if (!Boolean(eForm.formConfiguration) 
-                                && fcFetching.indexOf(`${eForm.formId?.name}_${eForm.formId?.module}`) === -1) {
+                                && fcFetching.indexOf(`${eForm.formId?.name}_${eForm.formId?.module}`) === -1
+                                && Boolean(eForm.formId?.name)) {
                                     fcFetching.push(`${eForm.formId?.name}_${eForm.formId?.module}`);
                                     getFormConfig(eForm);
                             }

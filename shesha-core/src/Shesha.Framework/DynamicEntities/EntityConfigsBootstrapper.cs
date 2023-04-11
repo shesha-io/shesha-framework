@@ -136,7 +136,9 @@ namespace Shesha.DynamicEntities
                         new
                         {
                             db = ec,
-                            code = entitiesConfigs.FirstOrDefault(c => c.Config.EntityType.Name == ec.ClassName && c.Config.EntityType.Namespace == ec.Namespace)
+                            code = entitiesConfigs.FirstOrDefault(c => c.Config.EntityType.Name.Equals(ec.ClassName, StringComparison.InvariantCultureIgnoreCase) &&
+                                    c.Config.EntityType.Namespace.Equals(ec.Namespace, StringComparison.InvariantCultureIgnoreCase)
+                                )
                         })
                 .Select(
                     ec =>
@@ -185,7 +187,9 @@ namespace Shesha.DynamicEntities
             }
 
             // Add news configs
-            var toAdd = entitiesConfigs.Where(c => !dbEntities.Any(ec => ec.ClassName == c.Config.EntityType.Name && ec.Namespace == c.Config.EntityType.Namespace)).ToList();
+            var toAdd = entitiesConfigs.Where(c => !dbEntities.Any(ec => ec.ClassName.Equals(c.Config.EntityType.Name, StringComparison.InvariantCultureIgnoreCase) &&
+                    ec.Namespace.Equals(c.Config.EntityType.Namespace, StringComparison.InvariantCultureIgnoreCase)))
+                .ToList();
             foreach (var config in toAdd)
             {
                 var attr = config.Config.EntityType.GetAttribute<EntityAttribute>();
