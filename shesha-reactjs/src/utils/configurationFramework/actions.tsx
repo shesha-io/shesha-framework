@@ -12,6 +12,38 @@ import { getFileNameFromResponse } from "../fetchers";
 import { getEntityFilterByIds } from "../graphQl";
 import { ConfigurationItemVersionStatus } from "./models";
 
+//#region validation
+
+interface IErrorDetailsProps {
+    error: IErrorInfo;
+}
+export const ErrorDetails: FC<IErrorDetailsProps> = ({ error }) => {
+    return (
+        <div>
+            {/* <strong>{error.details}</strong> */}
+            <ul>
+                {error.validationErrors?.map((e, i) => (
+                    <li key={i}>{e.message}</li>
+                ))}
+            </ul>
+        </div>
+    );
+};
+
+export const showErrorDetails = (error: any) => {
+    const response = (error.response?.data as IAjaxResponseBase);
+    if (response && response.error) {
+        notification.error({
+            message: 'Sorry! An error occurred.',
+            icon: null,
+            description: <ErrorDetails error={response.error} />
+        });
+    } else
+        message.error('An error occurred. Message:' + error);
+};
+
+//#endregion
+
 export interface ItemWithIdPayload {
     id: string;
 }
@@ -49,9 +81,9 @@ export const updateItemStatus = (props: UpdateItemStatusArgs) => {
         })
         .catch(e => {
             message.destroy();
-            message.error('An error occurred. Message:' + e)
+            message.error('An error occurred. Message:' + e);
         });
-}
+};
 
 //#region Publish
 export interface IPublishItemPayload extends IHasHttpSettings {
@@ -76,7 +108,7 @@ export const publishItem = (payload: IPublishItemPayload): Promise<IPublishItemR
                     resolve({ id: payload.id });
                 },
             });
-        }
+        };
         Modal.confirm({
             title: 'Publish Item',
             icon: <ExclamationCircleOutlined />,
@@ -88,7 +120,7 @@ export const publishItem = (payload: IPublishItemPayload): Promise<IPublishItemR
         });
 
     });
-}
+};
 
 //#endregion
 
@@ -114,7 +146,7 @@ export const setItemReady = (payload: ISetItemReadyPayload): Promise<ISetItemRea
                 },
             });
 
-        }
+        };
         Modal.confirm({
             title: 'Set Ready',
             icon: <ExclamationCircleOutlined />,
@@ -125,7 +157,7 @@ export const setItemReady = (payload: ISetItemReadyPayload): Promise<ISetItemRea
             onOk
         });
     });
-}
+};
 
 //#endregion
 
@@ -144,9 +176,9 @@ export const deleteItem = (payload: IDeleteItemPayload): Promise<IDeleteItemResp
         return axios.delete<any, AxiosResponse<IAbpWrappedResponse<string>>>(url, { headers: payload.httpHeaders })
             .then(response => {
                 resolve({ id: response.data.result });
-            })
+            });
     });
-}
+};
 
 //#endregion
 
@@ -163,8 +195,8 @@ export const createNewVersionRequest = (payload: ICreateNewItemVersionPayload): 
     const httpPayload = {
         id: payload.id
     };
-    return axios.post<any, AxiosResponse<IAbpWrappedGetEntityResponse<FormConfigurationDto>>>(url, httpPayload, { headers: payload.httpHeaders })
-}
+    return axios.post<any, AxiosResponse<IAbpWrappedGetEntityResponse<FormConfigurationDto>>>(url, httpPayload, { headers: payload.httpHeaders });
+};
 
 
 export const createNewVersion = (payload: ICreateNewItemVersionPayload): Promise<ICreateNewItemVersionResponse> => {
@@ -181,7 +213,7 @@ export const createNewVersion = (payload: ICreateNewItemVersionPayload): Promise
                     message.destroy();
                     showErrorDetails(e);
                 });
-        }
+        };
         Modal.confirm({
             title: 'Create New Version',
             icon: <ExclamationCircleOutlined />,
@@ -192,7 +224,7 @@ export const createNewVersion = (payload: ICreateNewItemVersionPayload): Promise
             onOk
         });
     });
-}
+};
 
 //#endregion
 
@@ -218,9 +250,9 @@ export const itemCancelVersion = (payload: ICancelItemVersionPayload): Promise<I
                 })
                 .catch(e => {
                     message.destroy();
-                    message.error('An error occurred. Message:' + e)
+                    message.error('An error occurred. Message:' + e);
                 });
-        }
+        };
         Modal.confirm({
             title: 'Cancel form version',
             icon: <ExclamationCircleOutlined />,
@@ -231,7 +263,7 @@ export const itemCancelVersion = (payload: ICancelItemVersionPayload): Promise<I
             onOk
         });
     });
-}
+};
 
 //#endregion
 
@@ -255,34 +287,6 @@ export const downloadAsJson = (payload: IDownloadItemAsJsonPayload): Promise<IDo
             FileSaver.saveAs(new Blob([response.data]), fileName);
             return { id: payload.id };
         });
-}
+};
 
 //#endregion
-
-export const showErrorDetails = (error: any) => {
-    const response = (error.response?.data as IAjaxResponseBase);
-    if (response && response.error) {
-        notification.error({
-            message: 'Sorry! An error occurred.',
-            icon: null,
-            description: <ErrorDetails error={response.error} />
-        });
-    } else
-        message.error('An error occurred. Message:' + error);
-}
-
-interface IErrorDetailsProps {
-    error: IErrorInfo;
-}
-export const ErrorDetails: FC<IErrorDetailsProps> = ({ error }) => {
-    return (
-        <div>
-            {/* <strong>{error.details}</strong> */}
-            <ul>
-                {error.validationErrors?.map((e, i) => (
-                    <li key={i}>{e.message}</li>
-                ))}
-            </ul>
-        </div>
-    );
-}

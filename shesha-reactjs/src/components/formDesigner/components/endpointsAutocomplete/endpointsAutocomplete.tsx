@@ -1,5 +1,5 @@
 import { IToolboxComponent } from '../../../../interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '../../../../providers/form/models';
+import { FormMarkup } from '../../../../providers/form/models';
 import { ApiOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '../formItem';
 import settingsFormJson from './settingsForm.json';
@@ -8,10 +8,7 @@ import { evaluateValue, validateConfigurableComponentSettings } from '../../../.
 import { useForm, useFormData } from '../../../../providers';
 import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
 import { EndpointsAutocomplete } from '../../../endpointsAutocomplete/endpointsAutocomplete';
-
-export interface IEndpointsAutocompleteComponentProps extends IConfigurableFormComponent {
-  httpVerb?: string;
-}
+import { IEndpointsAutocompleteComponentProps } from './interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

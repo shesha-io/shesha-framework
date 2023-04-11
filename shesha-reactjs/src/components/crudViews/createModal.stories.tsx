@@ -1,7 +1,6 @@
 import React from 'react';
 import { GenericCreateModal, IGenericCreateModalProps } from '../..';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import { useAreaCreate } from '../../apis/area';
 import StoryApp from '../storyBookApp';
 
@@ -9,7 +8,7 @@ import StoryApp from '../storyBookApp';
 
 export default {
   title: 'Components/CrudViews/CreateModal',
-  component: GenericCreateModal,
+  component: GenericCreateModal
 } as Meta;
 
 // #endregion
@@ -19,14 +18,14 @@ export default {
 const BaseTemplate: Story<IGenericCreateModalProps> = props => {
   return (
     <StoryApp>
-      <GenericCreateModal title={props.title} formPath={props.formPath} updater={props.updater} />
+      <GenericCreateModal title={props.title} formId={props.formId} updater={props.updater} />
     </StoryApp>
   );
 };
 
 const baseProps: IGenericCreateModalProps = {
   title: 'Create Entity',
-  formPath: '/areas/create',
+  formId: { name: 'area-create' },
   updater: useAreaCreate,
 };
 

@@ -4,6 +4,9 @@ import { ISelectionProps } from "../../providers/dataTableSelection/models";
 export type FormSelectionMode = 'name' | 'view' | 'expression';
 
 export interface IDataListProps {
+
+    dataSource?: string;
+
     formSelectionMode?: FormSelectionMode;
     formId?: FormIdentifier;
     formType?: string;

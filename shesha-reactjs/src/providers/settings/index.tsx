@@ -12,7 +12,7 @@ export interface ISettingsProviderProps {
 }
 
 const SettingsProvider: FC<ISettingsProviderProps> = ({ children }) => {
-    const [state, _dispatch] = useThunkReducer(reducer, SETTINGS_CONTEXT_INITIAL_STATE);
+    const [state] = useThunkReducer(reducer, SETTINGS_CONTEXT_INITIAL_STATE);
     const settings = useRef<ISettingsDictionary>({});
 
     const { backendUrl, httpHeaders } = useSheshaApplication();
@@ -20,7 +20,7 @@ const SettingsProvider: FC<ISettingsProviderProps> = ({ children }) => {
     const makeFormLoadingKey = (payload: ISettingIdentifier): string => {
         const { module, name } = payload;
         return `${module}:${name}`.toLowerCase();
-    }
+    };
 
     const getSetting = (settingId: ISettingIdentifier): Promise<any> => {
         if (!settingId || !settingId.name)
@@ -37,7 +37,7 @@ const SettingsProvider: FC<ISettingsProviderProps> = ({ children }) => {
                 return response.success
                     ? response.result
                     : null;
-            })
+            });
 
         settings.current[key] = settingPromise;
 
@@ -51,7 +51,7 @@ const SettingsProvider: FC<ISettingsProviderProps> = ({ children }) => {
     };
 
     return <SettingsContext.Provider value={contextValue}>{children}</SettingsContext.Provider>;
-}
+};
 
 function useSettings(require: boolean = true) {
     const context = useContext(SettingsContext);
@@ -82,6 +82,6 @@ const useSettingValue = <TValue = any>(settingId: ISettingIdentifier): SettingVa
     }, [settingId?.module, settingId?.name]);
 
     return state;
-}
+};
 
 export { SettingsProvider, useSettings, useSettingValue };

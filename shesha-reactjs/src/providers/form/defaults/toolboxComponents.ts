@@ -54,7 +54,7 @@ import Link from '../../../components/formDesigner/components/link';
 import List from '../../../components/formDesigner/components/listControl';
 import Markdown from '../../../components/formDesigner/components/markdown';
 import Notes from '../../../components/formDesigner/components/notes/notesComponent';
-import NumberField from '../../../components/formDesigner/components/numberField/numberField';
+import NumberFieldComponent from '../../../components/formDesigner/components/numberField/numberField';
 import PasswordCombo from '../../../components/formDesigner/components/passwordCombo';
 import PermissionedObjectsTree from '../../../components/formDesigner/components/permissions/permissionedObjectsTree/permissionedObjectsTree';
 import PermissionsTree from '../../../components/formDesigner/components/permissions/permissionsTree/permissionsTree';
@@ -78,12 +78,13 @@ import Switch from '../../../components/formDesigner/components/switch/switch';
 import Tabs from '../../../components/formDesigner/components/tabs';
 import Text from '../../../components/formDesigner/components/text';
 import TextArea from '../../../components/formDesigner/components/textArea/textArea';
-import TextField from '../../../components/formDesigner/components/textField/textField';
+import TextFieldComponent from '../../../components/formDesigner/components/textField/textField';
 import TimeField from '../../../components/formDesigner/components/timeField';
 import ValidationErrors from '../../../components/formDesigner/components/validationErrors';
 import Wizard from '../../../components/formDesigner/components/wizard';
 import { IToolboxComponentGroup } from '../../../interfaces/formDesigner';
 import TimelineComponent from '../../../components/formDesigner/components/timeline/timeline';
+import DataSource from '../../../components/formDesigner/components/dataSource/dataSourceComponent';
 
 export const ToolboxComponents: IToolboxComponentGroup[] = [
   {
@@ -146,13 +147,13 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
       DisplayFormItem,
       Dropdown,
       Link,
-      NumberField,
+      NumberFieldComponent,
       Rate,
       Radio,
       Section,
       Switch,
       TextArea,
-      TextField,
+      TextFieldComponent,
       Statistic,
       Text,
       TimeField,
@@ -181,7 +182,8 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
     name: 'DataList',
     visible: true,
     components: [
-      DataList
+      DataList,
+      DataSource
     ],
   },
   {

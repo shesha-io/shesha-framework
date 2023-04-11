@@ -4,6 +4,7 @@ const LOCALIZATION = 'LOCALIZATION';
 
 /**
  * Sets the localization for the project
+ *
  * @param localization - localization
  */
 

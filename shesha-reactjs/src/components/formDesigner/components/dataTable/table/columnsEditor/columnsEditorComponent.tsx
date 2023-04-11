@@ -1,15 +1,11 @@
 import { ColumnWidthOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import React, { FC, Fragment, useState } from 'react';
-import { IConfigurableFormComponent, IToolboxComponent } from '../../../../../../interfaces';
+import { IToolboxComponent } from '../../../../../../interfaces';
 import { ColumnsItemProps } from '../../../../../../providers/datatableColumnsConfigurator/models';
-import { ITableComponentBaseProps } from '../models';
 import { ColumnsEditorModal } from './columnsEditorModal';
 import ConfigurableFormItem from '../../../formItem';
-
-export interface IColumnsEditorComponentProps extends ITableComponentBaseProps, IConfigurableFormComponent {
-  items: ColumnsItemProps[];
-}
+import { IColumnsEditorComponentProps } from './interfaces';
 
 /**
  * This component allows the user to configure columns on the settings form

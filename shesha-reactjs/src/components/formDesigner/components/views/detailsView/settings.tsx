@@ -6,7 +6,7 @@ import { CodeEditor } from '../../codeEditor/codeEditor';
 import { ToolbarSettingsModal } from '../../dataTable/toolbar/toolbarSettingsModal';
 
 export interface IDetailsPageSettingsProps {
-  readOnly: boolean;
+  readOnly?: boolean;
   model: IDetailsViewProps;
   onSave: (model: IDetailsViewProps) => void;
   onCancel: () => void;

@@ -45,7 +45,7 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
     hasArguments: true,
     executer: (request) => {
       if (state?.router){
-        return state?.router?.push(request.target)
+        return state?.router?.push(request.target);
       } else {
         window.location.href = request.target;
         return Promise.resolve();

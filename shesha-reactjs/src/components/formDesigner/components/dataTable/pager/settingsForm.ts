@@ -7,7 +7,6 @@ export const getSettings = (data: any) =>
       name: 'separator1',
       parentId: 'root',
       label: 'Display',
-      title: '',
     })
     .addPropertyAutocomplete({
       id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
@@ -21,28 +20,6 @@ export const getSettings = (data: any) =>
       name: 'separatorPageSizes',
       parentId: 'root',
       label: 'Page Sizes',
-      title: 'Page Sizes',
-    })
-    .addDropdown({
-      id: 'f6c3d710-8d98-47fc-9fe2-7c6312e9a03c',
-      name: 'defaultPageSize',
-      parentId: 'root',
-      hidden: false,
-      customVisibility: null,
-      label: 'Default Page Size',
-      useRawValues: false,
-      dataSourceType: 'values',
-      values: [
-        { id: '5', label: '5', value: 5 },
-        { id: '10', label: '10', value: 10 },
-        { id: '20', label: '20', value: 20 },
-        { id: '30', label: '30', value: 30 },
-        { id: '50', label: '50', value: 50 },
-        { id: '100', label: '100', value: 100 },
-        { id: '200', label: '200', value: 200 },
-      ],
-      defaultValue: [10],
-      validate: { required: true },
     })
     .addCheckbox({
       id: 'ff14eada-10f7-4470-8db2-52b543d9d03f',
@@ -63,7 +40,6 @@ export const getSettings = (data: any) =>
       name: 'separatorVisibility',
       parentId: 'root',
       label: 'Visibility',
-      title: 'Visibility',
     })
     .addCodeEditor({
       id: '03959ffd-cadb-496c-bf6d-b742f7f6edc6',

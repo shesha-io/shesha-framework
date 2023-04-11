@@ -65,7 +65,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = props => {
     style,
     headerStyle,
     contentStyle,
-    layoutBackgroundStyle,
+    layoutBackgroundStyle = {},
     footer,
     footerStyle,
     heading,
@@ -161,7 +161,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = props => {
             className={classNames('sha-site-layout-background', headingClass, {
               'sha-site-layout-background-no-padding': noPadding,
             })}
-            style={layoutBackgroundStyle}
+            style={{ ...layoutBackgroundStyle, background: themeFromStorage?.layoutBackground }}
           >
             {toolbar && (
               <div className="sha-site-layout-toolbar">

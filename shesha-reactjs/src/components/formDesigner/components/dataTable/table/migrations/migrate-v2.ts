@@ -18,4 +18,4 @@ export const migrateV1toV2 = (props: ITableComponentProps, context: SettingsMigr
     });
 
     return { ...props, items: newItems ?? [] };
-}
+};

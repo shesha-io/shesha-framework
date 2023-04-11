@@ -5,13 +5,13 @@ import { useToolbarConfigurator } from '../../../../../providers/toolbarConfigur
 import { IButtonGroup, IToolbarButton, ToolbarItemProps } from '../../../../../providers/toolbarConfigurator/models';
 import { ReactSortable, ItemInterface } from 'react-sortablejs';
 
-export interface IToolbarItemsSortableProps {
+export interface IToolbarItemsContainerProps {
   index?: number[];
   id?: string;
   items: ToolbarItemProps[];
 }
 
-export const ToolbarItemsContainer: FC<IToolbarItemsSortableProps> = props => {
+export const ToolbarItemsContainer: FC<IToolbarItemsContainerProps> = props => {
   const { updateChildItems, readOnly } = useToolbarConfigurator();
 
   const renderItem = (item: ToolbarItemProps, index: number) => {
@@ -22,7 +22,14 @@ export const ToolbarItemsContainer: FC<IToolbarItemsSortableProps> = props => {
 
       case 'group':
         const groupProps = item as IButtonGroup;
-        return <ToolbarItemsGroup key={index} {...groupProps} index={[...props.index, index]} />;
+        return (
+          <ToolbarItemsGroup 
+            key={index} 
+            {...groupProps} 
+            index={[...props.index, index]} 
+            containerRendering={(args) => (<ToolbarItemsContainer {...args}/>)}
+          />
+        );
     }
   };
 

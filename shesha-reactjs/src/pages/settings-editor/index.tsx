@@ -10,6 +10,6 @@ const SettingsEditorPage: PageWithLayout<ISettingsEditorPageProps> = () => {
     return (
         <SettingsEditor />
     );
-}
+};
 
 export default SettingsEditorPage;

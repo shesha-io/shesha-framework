@@ -2,8 +2,8 @@ import { Alert, Typography } from 'antd';
 import { ParagraphProps } from 'antd/lib/typography/Paragraph';
 import { TextProps } from 'antd/lib/typography/Text';
 import { TitleProps } from 'antd/lib/typography/Title';
-import React, { FC } from 'react';
-import { useForm, useFormData, useGlobalState } from '../../../../providers';
+import React, { CSSProperties, FC, useMemo } from 'react';
+import { useForm, useFormData, useGlobalState, useTheme } from '../../../../providers';
 import { evaluateString, executeCustomExpression, getStyle } from '../../../../providers/form/utils';
 import { ITextTypographyProps, ITypographyProps } from './models';
 import {
@@ -23,10 +23,49 @@ declare const TITLE_ELE_LIST: [1, 2, 3, 4, 5];
 type LevelType = typeof TITLE_ELE_LIST[number];
 
 const TypographyComponent: FC<ITextTypographyProps> = ({
-  name,
+  contentDisplay = DEFAULT_CONTENT_DISPLAY,
+  dataType,
+  dateFormat,
+  numberFormat,
+  value,
+  style,
+  ...model
+}) => {
+  const { formMode } = useForm();
+  const { data: formData } = useFormData();
+  const { globalState } = useGlobalState();
+
+  const contentEvaluation = contentDisplay === 'name' ? value : evaluateString(model?.content, formData);
+  const content = getContent(contentEvaluation, { dataType, dateFormat, numberFormat });
+
+  const isVisibleByCondition = executeCustomExpression(model.customVisibility, true, formData, globalState);
+
+  if (!isVisibleByCondition && formMode !== 'designer') {
+    return null;
+  }
+
+  if (!content && formMode === 'designer') {
+    return <Alert type="warning" message="Please make sure you enter the content to be displayed here!" />;
+  }
+
+  const computedStyle = getStyle(style, formData) ?? {};
+
+  return (
+    <GenericText style={computedStyle} {...model}>
+      {content}
+    </GenericText>
+  );
+};
+
+interface IGenericTextProps
+  extends Omit<ITextTypographyProps, 'style' | 'contentDisplay' | 'name' | 'id' | 'type' | 'content' | 'value'> {
+  style?: CSSProperties;
+}
+
+export const GenericText: FC<IGenericTextProps> = ({
+  children,
   backgroundColor,
   color,
-  contentDisplay = DEFAULT_CONTENT_DISPLAY,
   contentType,
   dataType,
   dateFormat,
@@ -35,18 +74,25 @@ const TypographyComponent: FC<ITextTypographyProps> = ({
   numberFormat,
   padding = DEFAULT_PADDING_SIZE,
   textType,
-  value,
+  style,
   ...model
 }) => {
-  const { formMode } = useForm();
-  const { data: formData } = useFormData();
-  const { globalState } = useGlobalState();
-
+  const { theme } = useTheme();
   // NOTE: to be replaced with a generic context implementation
   const sizeIdentifier = textType === 'title' ? level : fontSize;
 
   const fontSizeStyle = typeof sizeIdentifier === 'string' ? getFontSizeStyle(sizeIdentifier) : {};
   const paddingStyle = getPaddingSizeStyle(padding);
+
+  const textColor = useMemo(() => {
+    if (!contentType) return theme?.text?.default;
+
+    if (contentType === 'secondary') return theme?.text?.secondary;
+
+    if (contentType === 'custom' && color) return color.hex;
+
+    return null;
+  }, [color, contentType, theme?.text]);
 
   const baseProps: ITypographyProps = {
     code: model?.code,
@@ -58,14 +104,13 @@ const TypographyComponent: FC<ITextTypographyProps> = ({
     keyboard: model?.keyboard,
     italic: model?.italic,
     type: contentType !== 'custom' && contentType !== 'info' && contentType !== 'primary' ? contentType : null,
-
     style: {
       margin: 'unset',
       ...fontSizeStyle,
       ...paddingStyle,
-      ...(getStyle(model.style, formData) || {}),
+      ...(style ?? {}),
       backgroundColor: backgroundColor?.hex,
-      color: contentType === 'custom' && color ? color.hex : null,
+      color: textColor,
     },
   };
 
@@ -84,25 +129,12 @@ const TypographyComponent: FC<ITextTypographyProps> = ({
     level: level ? (Number(level) as LevelType) : 1,
   };
 
-  const contentEvaluation = contentDisplay === 'name' ? value : evaluateString(model?.content, formData);
-  const content = getContent(contentEvaluation, { dataType, dateFormat, numberFormat });
-
-  const isVisibleByCondition = executeCustomExpression(model.customVisibility, true, formData, globalState);
-
-  if (!isVisibleByCondition && formMode !== 'designer') {
-    return null;
-  }
-
-  if (!content && formMode === 'designer') {
-    return <Alert type="warning" message="Please make sure you enter the content to be displayed here!" />;
-  }
-
   const className = classNames('typography-text', { primary: contentType === 'primary', info: contentType === 'info' });
 
   if (textType === 'span') {
     return (
       <Text {...textProps} className={className}>
-        {content}
+        {children}
       </Text>
     );
   }
@@ -110,14 +142,14 @@ const TypographyComponent: FC<ITextTypographyProps> = ({
   if (textType === 'paragraph') {
     return (
       <Paragraph {...paragraphProps} className={className}>
-        {content}
+        {children}
       </Paragraph>
     );
   }
 
   return (
     <Title {...titleProps} className={className}>
-      {content}
+      {children}
     </Title>
   );
 };

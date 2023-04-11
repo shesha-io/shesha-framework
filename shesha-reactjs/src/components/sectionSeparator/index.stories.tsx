@@ -1,12 +1,11 @@
 import React from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import SectionSeparator, { ISectionSeparatorProps } from './';
 import { Form, Input, InputNumber } from 'antd';
 
 export default {
   title: 'Components/SectionSeparator',
-  component: SectionSeparator,
+  component: SectionSeparator
 } as Meta;
 
 const sectionSeparatorProps: ISectionSeparatorProps = {

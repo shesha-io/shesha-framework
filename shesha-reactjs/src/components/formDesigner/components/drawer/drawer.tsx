@@ -1,7 +1,7 @@
 import { Alert, Button, Drawer, DrawerProps, message, Space } from 'antd';
 import moment from 'moment';
 import React, { FC, Fragment, useState } from 'react';
-import { axiosHttp } from '../../../../apis/axios';
+import { axiosHttp } from '../../../../utils/fetchers';
 import { IConfigurableActionConfiguration } from '../../../../interfaces/configurableAction';
 import { useForm, useGlobalState, useSheshaApplication } from '../../../../providers';
 import {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '../../../../providers/form/models';
+import { FormMarkup } from '../../../../providers/form/models';
 import { CheckSquareOutlined } from '@ant-design/icons';
 import { Checkbox } from 'antd';
 import ConfigurableFormItem from '../formItem';
@@ -10,17 +10,16 @@ import { getStyle, validateConfigurableComponentSettings } from '../../../../pro
 import { DataTypes } from '../../../../interfaces/dataTypes';
 import { useForm, useFormData } from '../../../../providers';
 import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
-
-export interface ICheckboxProps extends IConfigurableFormComponent {}
+import { ICheckboxComponentProps } from './interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
-const CheckboxComponent: IToolboxComponent<ICheckboxProps> = {
+const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps> = {
   type: 'checkbox',
   name: 'Checkbox',
   icon: <CheckSquareOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
-  factory: (model: ICheckboxProps) => {
+  factory: (model: ICheckboxComponentProps) => {
     const { formMode, isComponentDisabled } = useForm();
     const { data } = useFormData();
     const isReadOnly = model?.readOnly || formMode === 'readonly';

@@ -251,5 +251,5 @@ export {
   useAppConfiguratorState,
   useAppConfiguratorActions,
   useAppConfigurator,
-  ApplicationMode,
+  type ApplicationMode,
 };

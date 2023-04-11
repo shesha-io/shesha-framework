@@ -1,6 +1,5 @@
 import React, { FC, ReactNode, useMemo } from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
-import { IConfigurableFormComponent } from '../../../../providers/form/models';
 import { ThunderboltOutlined } from '@ant-design/icons';
 import { Collapse, Form, Switch, TreeSelect } from 'antd';
 import { useForm } from '../../../../providers';
@@ -11,19 +10,16 @@ import { IConfigurableActionConfiguration } from '../../../../interfaces/configu
 import { IConfigurableActionGroupDictionary } from '../../../../providers/configurableActionsDispatcher/models';
 import ActionArgumentsEditor from './actionArgumensEditor';
 import HelpTextPopover from '../../../helpTextPopover';
-
-export interface IConfigurableActionNamesComponentProps extends IConfigurableFormComponent {
-
-}
+import { IConfigurableActionConfiguratorComponentProps } from './interfaces';
 
 const { Panel } = Collapse;
 
-const ConfigurableActionConfiguratorComponent: IToolboxComponent<IConfigurableActionNamesComponentProps> = {
+const ConfigurableActionConfiguratorComponent: IToolboxComponent<IConfigurableActionConfiguratorComponentProps> = {
   type: 'configurableActionConfigurator',
   name: 'Configurable Action Configurator',
   icon: <ThunderboltOutlined />,
   isHidden: true,
-  factory: (model: IConfigurableActionNamesComponentProps) => {
+  factory: (model: IConfigurableActionConfiguratorComponentProps) => {
     const { isComponentHidden, formMode } = useForm();
 
     const isHidden = isComponentHidden(model);
@@ -41,7 +37,7 @@ const ConfigurableActionConfiguratorComponent: IToolboxComponent<IConfigurableAc
 };
 
 interface IConfigurableActionConfiguratorProps {
-  editorConfig: IConfigurableActionNamesComponentProps;
+  editorConfig: IConfigurableActionConfiguratorComponentProps;
   value?: IConfigurableActionConfiguration;
   onChange?: (value: IConfigurableActionConfiguration) => void;
   level: number;
@@ -56,7 +52,7 @@ const getActionFullName = (actionOwner: string, actionName: string): string => {
   return actionName
     ? `${actionOwner}:${actionName}`
     : null;
-}
+};
 interface IActionIdentifier {
   actionName: string;
   actionOwner: string;
@@ -66,7 +62,7 @@ const parseActionFullName = (fullName: string): IActionIdentifier => {
   return parts && parts.length === 2
     ? { actionOwner: parts[0], actionName: parts[1] }
     : null;
-}
+};
 
 export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorProps> = props => {
   const [form] = Form.useForm();
@@ -99,7 +95,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
 
       onChange(formValues);
     }
-  }
+  };
 
   const { actionName, actionOwner } = value ?? {};
   const selectedAction = useMemo(() => {
@@ -166,7 +162,7 @@ const getConfigurableActionFullName = (owner: string, name: string) => {
   return owner
     ? `${owner}:${name}`
     : name;
-}
+};
 
 interface IActionSelectProps {
   actions: IConfigurableActionGroupDictionary;
@@ -189,6 +185,8 @@ const ActionSelect: FC<IActionSelectProps> = ({ value, onChange, actions, readOn
     //console.log('build actions', actions)
 
     for (const owner in actions) {
+      if (!actions.hasOwnProperty(owner))
+        continue;
       const ownerActions = actions[owner];
       const ownerNodes: IActionSelectItem[] = [];
       ownerActions.actions.forEach(action => {
@@ -239,6 +237,6 @@ const ActionSelect: FC<IActionSelectProps> = ({ value, onChange, actions, readOn
     >
     </TreeSelect>
   );
-}
+};
 
 export default ConfigurableActionConfiguratorComponent;

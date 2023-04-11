@@ -9,17 +9,17 @@ import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
 import ConfigurableFormItem from '../formItem';
 import FormItemWrapper from '../formItemWrapper';
 import NumberFieldControl from './control';
-import { INumberFieldProps } from './models';
+import { INumberFieldComponentProps } from './interfaces';
 import settingsFormJson from './settingsForm.json';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
-const NumberField: IToolboxComponent<INumberFieldProps> = {
+const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
   type: 'numberField',
   name: 'Number field',
   icon: <NumberOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.number,
-  factory: (model: INumberFieldProps, _c, form) => {
+  factory: (model: INumberFieldComponentProps, _c, form) => {
     const { formMode, isComponentDisabled, formData } = useForm();
     const { globalState } = useGlobalState();
 
@@ -47,7 +47,7 @@ const NumberField: IToolboxComponent<INumberFieldProps> = {
     ...model,
   }),
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
-  linkToModelMetadata: (model, metadata): INumberFieldProps => {
+  linkToModelMetadata: (model, metadata): INumberFieldComponentProps => {
     return {
       ...model,
       label: metadata.label,
@@ -59,4 +59,4 @@ const NumberField: IToolboxComponent<INumberFieldProps> = {
   },
 };
 
-export default NumberField;
+export default NumberFieldComponent;

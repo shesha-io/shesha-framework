@@ -24,7 +24,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
 
   const actions = useRef<IConfigurableActionGroupDictionary>({});
 
-  const [state, _dispatch] = useThunkReducer(metadataReducer, initial);
+  const [state] = useThunkReducer(metadataReducer, initial);
 
   const getConfigurableActionOrNull = (payload: IGetConfigurableActionPayload): IConfigurableActionDescriptor | null => {
     const { owner, name } = payload;
@@ -42,7 +42,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
       return null;
 
     return action;
-  }
+  };
 
   const getConfigurableAction = (payload: IGetConfigurableActionPayload): IConfigurableActionDescriptor => {
     const action = getConfigurableActionOrNull(payload);
@@ -54,7 +54,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
 
   const getActions = () => {
     return actions.current;
-  }
+  };
 
   const registerAction = (payload: IRegisterActionPayload) => {
     const ownerActions = actions.current[payload.ownerUid] ?? { ownerName: payload.owner, actions: [] };
@@ -84,11 +84,11 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
     } else {
       delete actions.current[payload.ownerUid];
     }
-  }
+  };
 
   const prepareArguments = (_actionArguments: any) => {
-
-  }
+    // nop
+  };
 
   const executeAction = (payload: IExecuteActionPayload) => {
     const { actionConfiguration, argumentsEvaluationContext } = payload;

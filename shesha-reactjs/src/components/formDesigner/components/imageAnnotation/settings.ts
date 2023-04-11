@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid';
 import { DesignerToolbarSettings } from '../../../../interfaces/toolbarSettings';
 
 export const AnnotationSettingsForm = new DesignerToolbarSettings()
@@ -74,12 +75,6 @@ export const AnnotationSettingsForm = new DesignerToolbarSettings()
         dataSourceType: "values"
     })
     .addCheckbox({
-        id: "cfd7d45e-c7e3-4a27-987b-dc525c412448",
-        name: "hidden",
-        parentId: "root",
-        label: "Hidden"
-    })
-    .addCheckbox({
         id: "c6885251-96a6-40ce-99b2-4b5209a9e01c",
         name: "hideLabel",
         parentId: "root",
@@ -99,12 +94,15 @@ export const AnnotationSettingsForm = new DesignerToolbarSettings()
         parentId: "root",
         hidden: false,
         customEnabled: null,
-        description: "Enter custom enabled code.  You must return true to enable the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
+        description: "Enter custom enabled code.  You must return true to enable the component. " + 
+            "The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
         validate: {},
         settingsValidationErrors: [],
         exposedVariables: [
             { id: "3be9da3f-f47e-48ae-b4c3-f5cc36e534d7", name: "value", description: "Component current value", type: "string | any" },
-            { id: "3be9da3f-f58e-48ae-b4c3-f5cc36e534d7", name: "data", description: "Selected form values", type: "object" }
+            { id: "3be9da3f-f58e-48ae-b4c3-f5cc36e534d7", name: "data", description: "Selected form values", type: "object" },
+            { "name": "formMode", "description": "The form mode", "type": "'readonly' | 'edit' | 'designer'" },
+            { "name": "globalState", "description": "The global state of the application", "type": "object" },
         ]
     })
     .addSectionSeparator({
@@ -117,7 +115,32 @@ export const AnnotationSettingsForm = new DesignerToolbarSettings()
         id: "3be9da3f-f47e-48ae-b4c3-f5cc36f934d9",
         name: "isOnImage",
         parentId: "root",
+        description: 'This property allows for annotation decriptions to be either on top of the image or on the side of the image.',
         label: "Annotation on Image"
+    })
+    .addCheckbox({
+        id: "3be9da3f-f47k-71ae-b4c3-f5cc36f934d9",
+        name: "allowAddingNotes",
+        parentId: "root",
+        description: 'This property allows notes/comments to be added for each annotation or just have number as annotations.',
+        defaultValue: true,
+        label: "Allow adding notes"
+    })
+    .addNumberField({
+        id: "417ee22e-a49d-44f2-a1c7-fef42ec89603",
+        name: "minPoints",
+        parentId: "root",
+        description: "This property denote least number of marks/points an image must have.",
+        label: "Min number of points",
+        min: 0,
+    })
+    .addNumberField({
+        id: "417ee33e-a49d-44f2-a1c7-fef42ec87503",
+        name: "maxPoints",
+        parentId: "root",
+        description: "This property denote at most possible marks/points an image could have.",
+        label: "Max number of points",
+        min: 0,
     })
     .addSectionSeparator({
         id: "d675bfe4-ee69-431e-931b-b0e0b9ceee6f",
@@ -145,7 +168,10 @@ export const AnnotationSettingsForm = new DesignerToolbarSettings()
         validate: {},
         settingsValidationErrors: [],
         description: "A script that returns the style of the element as an object. This should conform to CSSProperties",
-        exposedVariables: [{ id: "3tg9da3f-f58e-48ae-b4c3-f5cc36e534d7", name: "data", description: "Form values", type: "object" }]
+        exposedVariables: [
+            { id: "3tg9da3f-f58e-48ae-b4c3-f5cc36e534d7", name: "data", description: "Form values", type: "object" },
+            { id: nanoid(), name: "globalState", description: "The global state of the application", type: "object" }
+        ]
     })
 
     .addSectionSeparator({
@@ -158,22 +184,34 @@ export const AnnotationSettingsForm = new DesignerToolbarSettings()
         id: "417ee22e-a49d-44f2-a1c7-fef42ec87503",
         name: "height",
         parentId: "root",
-        label: "Height"
+        description: 'This property determines the height of the image in question.',
+        label: "Height",
+        validate: {
+            required: true
+        }
     })
     .addNumberField({
         id: "c6ecd70c-7419-4ea7-a715-d42699d26e6e",
         name: "width",
         parentId: "root",
-        label: "Width"
+        description: 'This property determines the width of the image in question.',
+        label: "Width",
+        validate: {
+            required: true
+        }
     })
     .addCodeEditor({
         id: "06ab0599-914d-4d2d-875c-765a495482f8",
         name: "url",
         label: "Url",
         parentId: "root",
-        validate: {},
+        validate: {
+            required: true
+        },
         settingsValidationErrors: [],
         description: "A script that returns the image url as a string. This should return a string",
-        exposedVariables: [{ id: "fb85d916-39f9-4f88-8d87-c1c53558b078", name: "data", description: "Form values", type: "object" }]
+        exposedVariables: [
+            { id: "fb85d916-39f9-4f88-8d87-c1c53558b078", name: "data", description: "Form values", type: "object" },
+            { "name": "globalState", "description": "The global state of the application", "type": "object" }]
     })
-    .toJson()
+    .toJson();

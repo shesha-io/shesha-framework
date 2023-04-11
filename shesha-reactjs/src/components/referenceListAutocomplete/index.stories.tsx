@@ -1,18 +1,16 @@
 import React, { FC, useState } from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
-import { FormAutocomplete, IFormAutocompleteRuntimeProps } from './';
+import { Story, Meta } from '@storybook/react';
+import { ReferenceListAutocomplete, IReferenceListAutocompleteRuntimeProps } from './';
 import StoryApp from '../storyBookApp';
 import { Button, Form } from 'antd';
 import { addStory } from '../../stories/utils';
 import { FormFullName, FormIdentifier, FormUid } from '../../providers/form/models';
 
 export default {
-  title: 'Components/Temp/FormAutocomplete',
-  component: FormAutocomplete,
-} as Meta;
+  title: 'Components/Temp/ReferenceListAutocomplete',
+  component: ReferenceListAutocomplete} as Meta;
 
-interface IStoryArgs extends IFormAutocompleteRuntimeProps {
+interface IStoryArgs extends IReferenceListAutocompleteRuntimeProps {
   /**
    * Test Value, is used only by this story for the `Set Test Value Button`
    */
@@ -109,10 +107,10 @@ const BaseTemplate: FC<ITemplateProps> = props => {
 
 // Create a master template for mapping args to render the Button component
 const Template: Story<IStoryArgs> = args => {
-  const { testFullName: testValue, initialValue, ...autocompleteProps } = args;
+  const { ...autocompleteProps } = args;
   return (
     <BaseTemplate {...args}>
-      <FormAutocomplete {...autocompleteProps} />
+      <ReferenceListAutocomplete {...autocompleteProps} />
     </BaseTemplate>
   );
 };
@@ -123,15 +121,5 @@ export const MultipleEntityDto = addStory(Template, {
     module: 'shesha'
   },
   testUid: '80A62EAB-2771-4650-88C9-C8FC676D6A60',
+  convertToFullId: true,
 });
-
-/*
-// Create a master template for mapping args to render the Button component
-const Template: Story<IFormAutocompleteProps> = args => (
-  <StoryApp>
-    <FormAutocomplete {...args}></FormAutocomplete>
-  </StoryApp>
-);
-export const Basic = Template.bind({});
-Basic.args = {  };
-*/

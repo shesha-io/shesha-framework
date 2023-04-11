@@ -1,6 +1,5 @@
 import React, { FC, useState } from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import { FormAutocomplete, IFormAutocompleteRuntimeProps } from './';
 import StoryApp from '../storyBookApp';
 import { Button, Form } from 'antd';
@@ -9,7 +8,7 @@ import { FormFullName, FormIdentifier, FormUid } from '../../providers/form/mode
 
 export default {
   title: 'Components/Temp/FormAutocomplete',
-  component: FormAutocomplete,
+  component: FormAutocomplete
 } as Meta;
 
 interface IStoryArgs extends IFormAutocompleteRuntimeProps {
@@ -123,6 +122,7 @@ export const MultipleEntityDto = addStory(Template, {
     module: 'shesha'
   },
   testUid: '80A62EAB-2771-4650-88C9-C8FC676D6A60',
+  convertToFullId: false,
 });
 
 /*

@@ -30,7 +30,7 @@ export const migrateV0toV1 = (props: IListComponentProps, context: SettingsMigra
         buttons: newButtons,
         formId: formId,
     };
-}
+};
 
 const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: SettingsMigrationContext): IConfigurableActionConfiguration => {
     if (buttonProps['actionConfiguration'])
@@ -43,7 +43,7 @@ const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: Sett
                 actionName: 'Cancel Edit',
                 handleFail: false,
                 handleSuccess: false,
-            }
+            };
         }
         case "reset": {
             return {
@@ -51,7 +51,7 @@ const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: Sett
                 actionName: 'Reset',
                 handleFail: false,
                 handleSuccess: false,
-            }
+            };
         }
         case "submit": {
             return {
@@ -59,7 +59,7 @@ const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: Sett
                 actionName: 'Submit',
                 handleFail: false,
                 handleSuccess: false,
-            }
+            };
         }
         case "startFormEdit": {
             return {
@@ -67,7 +67,7 @@ const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: Sett
                 actionName: 'Start Edit',
                 handleFail: false,
                 handleSuccess: false,
-            }
+            };
         }
         case "navigate": {
             return {
@@ -78,7 +78,7 @@ const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: Sett
                 actionArguments: {
                     target: buttonProps.targetUrl
                 },
-            }
+            };
         }
         case "dialogue": {
             const actionConfig: IConfigurableActionConfiguration = {
@@ -86,7 +86,7 @@ const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: Sett
                 actionName: 'Show Dialog',
                 handleFail: false,
                 handleSuccess: false,
-            }
+            };
 
             const propsWithModal = buttonProps as IToolbarButtonTableDialogPropsV0;
 
@@ -146,14 +146,14 @@ const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: Sett
             }
         }
         case "customAction": {
-
+            /*nop*/
         }
         case "dispatchAnEvent": {
             return getDispatchEventReplacement(buttonProps);
         }
     }
     return null;
-}
+};
 
 //#region old types
 

@@ -1,6 +1,6 @@
 import { Modal, Progress } from 'antd';
 import React, { FC, PropsWithChildren, useState } from 'react';
-import IdleTimer from 'react-idle-timer';
+import { IdleTimerComponent } from 'react-idle-timer';
 import { useInterval } from 'react-use';
 import { useAuth } from '../../providers/auth';
 import { useSettingValue } from '../../providers/settings';
@@ -70,7 +70,7 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
 
   return (
     <div className="sha-idle-timer-renderer">
-      <IdleTimer onAction={onAction} onActive={onActive} onIdle={onIdle} timeout={timeout}>
+      <IdleTimerComponent onAction={onAction} onActive={onActive} onIdle={onIdle} timeout={timeout}>
         {children}
         <Modal
           title="You have been idle"
@@ -91,7 +91,7 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
             </span>
           </div>
         </Modal>
-      </IdleTimer>
+      </IdleTimerComponent>
     </div>
   );
 };

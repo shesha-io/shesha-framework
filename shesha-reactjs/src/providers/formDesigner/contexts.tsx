@@ -7,7 +7,7 @@ import {
   IAsyncValidationError,
   IFormValidationErrors,
 } from '../../interfaces';
-import defaultToolboxComponents from '../form/defaults/toolboxComponents';
+//import defaultToolboxComponents from '../form/defaults/toolboxComponents';
 import {
   IConfigurableFormComponent,
   ROOT_COMPONENT_KEY,
@@ -15,7 +15,7 @@ import {
   DEFAULT_FORM_SETTINGS,
   IFlatComponentsStructure,
 } from '../form/models';
-import { StateWithHistory } from 'redux-undo';
+//import { StateWithHistory } from 'redux-undo';
 import { IDataSource } from '../formDesigner/models';
 import { IPropertyMetadata } from '../../interfaces/metadata';
 
@@ -36,7 +36,8 @@ export type IFlagErrorFlags =
   | 'moveComponent';
 export type IFlagActionedFlags = '__DEFAULT__' /* NEW_ACTIONED_FLAG_GOES_HERE */;
 
-export interface IUndoableFormDesignerStateContext extends StateWithHistory<IFormDesignerStateContext> { }
+//export interface IUndoableFormDesignerStateContext extends StateWithHistory<IFormDesignerStateContext> { }
+export interface IUndoableFormDesignerStateContext extends IFormDesignerStateContext { }
 
 export interface IHasComponentGroups {
   toolboxComponentGroups: IToolboxComponentGroup[];
@@ -156,17 +157,20 @@ export const FORM_DESIGNER_CONTEXT_INITIAL_STATE: IFormDesignerStateContext = {
   isDragging: false,
   isDebug: false,
   formSettings: DEFAULT_FORM_SETTINGS,
-  toolboxComponentGroups: defaultToolboxComponents,
+  toolboxComponentGroups: [],//defaultToolboxComponents,
   dataSources: [],
   activeDataSourceId: null,
   readOnly: true,
 };
 
+/*
 export const UndoableFormDesignerStateContext = createContext<IUndoableFormDesignerStateContext>({
   past: [],
   present: FORM_DESIGNER_CONTEXT_INITIAL_STATE,
   future: [],
 });
+*/
+export const UndoableFormDesignerStateContext = createContext<IUndoableFormDesignerStateContext>(FORM_DESIGNER_CONTEXT_INITIAL_STATE);
 
 export interface ConfigurableFormInstance extends IFormDesignerActionsContext, IFormDesignerStateContext { }
 

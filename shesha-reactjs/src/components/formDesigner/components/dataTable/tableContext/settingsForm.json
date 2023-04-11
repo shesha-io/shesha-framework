@@ -117,6 +117,25 @@
       "validate": {}
     },
     {
+      "id": "f6c3d710-8d98-47fc-9fe2-7c6312e9a03c",
+      "type": "dropdown",
+      "name": "defaultPageSize",
+      "parentId": "root",
+      "label": "Default Page Size",
+      "dataSourceType": "values",
+      "values": [
+        { "id": "5", "label": "5", "value": 5 },
+        { "id": "10", "label": "10", "value": 10 },
+        { "id": "20", "label": "20", "value": 20 },
+        { "id": "30", "label": "30", "value": 30 },
+        { "id": "50", "label": "50", "value": 50 },
+        { "id": "100", "label": "100", "value": 100 },
+        { "id": "200", "label": "200", "value": 200 }
+      ],
+      "defaultValue": [10],
+      "validate": { "required": true }
+    },
+    {
       "id": "41721f44-adbc-42fe-8c70-69b30e36f4ca",
       "type": "sectionSeparator",
       "name": "sectionVisibility",

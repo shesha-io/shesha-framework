@@ -26,6 +26,7 @@ namespace Shesha.DataTables
         /// Returns datatable columns for configurable table. Accepts type of model(entity) and list of properties.
         /// Columns configuration is merged on the client side with configurable values
         /// </summary>
+        [Obsolete]
         [HttpPost]
         public async Task<List<DataTableColumnDto>> GetColumnsAsync(GetColumnsInput input, CancellationToken cancellationToken)
         {

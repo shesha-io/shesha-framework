@@ -17,6 +17,7 @@ export interface ITableContextComponentProps extends IConfigurableFormComponent 
   entityType?: string;
   endpoint?: string;
   components?: IConfigurableFormComponent[]; // If isDynamic we wanna
+  defaultPageSize?: number;
 }
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -37,6 +38,11 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
     return {
       ...prev,
       sourceType: 'Entity'
+    };
+  }).add<ITableContextComponentProps>(2, prev => {
+    return {
+      ...prev,
+      defaultPageSize: 10
     };
   }),
   settingsFormMarkup: settingsForm,
@@ -67,12 +73,12 @@ export const TableContextInner: FC<ITableContextComponentProps> = props => {
   const [selectedRow, setSelectedRow] = useState(-1);
   const isDesignMode = formMode === 'designer';
 
-  if (isDesignMode && ((sourceType == 'Entity' && !entityType) || (sourceType == 'Url' && !endpoint)))
+  if (isDesignMode && ((sourceType === 'Entity' && !entityType) || (sourceType === 'Url' && !endpoint)))
     return (
       <Alert
         className="sha-designer-warning"
         message="Table is not configured"
-        description={sourceType == 'Entity' ? "Select entity type on the settings panel" : "Select endpoint on the settings panel"}
+        description={sourceType === 'Entity' ? "Select entity type on the settings panel" : "Select endpoint on the settings panel"}
         type="warning"
         showIcon
       />
@@ -92,11 +98,12 @@ export const TableContextInner: FC<ITableContextComponentProps> = props => {
     actionOwnerId={id}
     actionOwnerName={name}
     sourceType={props.sourceType}
+    initialPageSize={props.defaultPageSize ?? 10}
   >
     <TableContextAccessor {...props} />
   </DataTableProvider>;
 
-  const providerWrapper = sourceType == 'Form'
+  const providerWrapper = sourceType === 'Form'
     ? <FormItem name={props.name}>
         {provider}
       </FormItem>
@@ -129,8 +136,6 @@ const TableContextAccessor: FC<ITableContextComponentProps> = ({ id }) => {
     setIsInProgressFlag({ isFiltering: true, isSelectingColumns: false });
   };
 
-  const setToEditMode = () => {};
-
   const importConfigs = () => setState(s => ({ ...s, visible: true }));
 
   // register available actions, refresh on every table configuration loading or change of the table Id
@@ -142,7 +147,6 @@ const TableContextAccessor: FC<ITableContextComponentProps> = ({ id }) => {
         toggleAdvancedFilter,
         exportToExcel,
         deleteRow,
-        setToEditMode,
         importConfigs,
       }),
     [tableConfigLoaded, selectedRow]

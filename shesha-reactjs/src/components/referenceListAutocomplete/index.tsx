@@ -43,7 +43,7 @@ const getFilter = (term: string) => {
         and: [...baseItemFilter, ...termFilter]
     };
     return JSON.stringify(filter);
-}
+};
 const REFERENCE_LIST_ENTITY_TYPE = 'Shesha.Framework.ReferenceList';
 const REFERENCE_LIST_PROPERTIES = 'id name module { id name } label description versionNo';
 const getListFetcherQueryParams = (term: string, maxResultCount): IGenericGetAllPayload => {
@@ -79,7 +79,7 @@ const getSelectedValueQueryParams = (value?: IReferenceListIdentifier): IGeneric
             filter: JSON.stringify(expression),
         }
         : null;
-}
+};
 
 interface IResponseItem {
     id: string;
@@ -90,7 +90,7 @@ interface IResponseItem {
     module?: {
         id: string;
         name: string;
-    }
+    };
 }
 
 interface IConfigurationItemProps {
@@ -114,7 +114,7 @@ const RefListLabel: FC<IConfigurationItemProps> = ({ name, description, versionN
             )}
         </div>
     );
-}
+};
 
 const getDisplayText = (item: IResponseItem) => {
     if (!item)
@@ -124,7 +124,7 @@ const getDisplayText = (item: IResponseItem) => {
     return item.module
         ? `${item.module.name}:${fullName}`
         : fullName;
-}
+};
 
 export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProps> = (props) => {
     const selectedValue = useRef(null);
@@ -208,7 +208,7 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
                     };
                     result.push(group);
                 } else
-                    group.options.push(opt)
+                    group.options.push(opt);
 
             });
         }
@@ -227,7 +227,7 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
 
     const onSearch = (term) => {
         debouncedFetchItems(term);
-    }
+    };
 
     const onSelect = (_value, option) => {
         const listId = (option as IOption)?.data;
@@ -235,14 +235,14 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
         if (props.onChange) {
             props.onChange(listId);
         }
-    }
+    };
 
     const onClear = () => {
         selectedValue.current = null;
         if (props.onChange) {
             props.onChange(null);
         }
-    }
+    };
 
     const loading = listFetcher.loading;
 
@@ -263,6 +263,6 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
         >
         </AutoComplete>
     );
-}
+};
 
 export default ReferenceListAutocomplete;

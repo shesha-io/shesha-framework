@@ -95,7 +95,7 @@ const ReactTable: FC<IReactTableProps> = ({
   }, [allColumns, allowRowDragAndDrop]);
 
   const getColumnAccessor = cid => {
-    const column = columns.find(c => c.id == cid);
+    const column = columns.find(c => c.id === cid);
     return column ? column.accessor.toString() : '';
   };
 

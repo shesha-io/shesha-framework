@@ -42,30 +42,24 @@ namespace Shesha.Sms.Clickatell
             // Removing any spaces and any other common characters in a phone number.
             mobileNumber = MobileHelper.CleanupmobileNo(mobileNumber);
 
-            var clickatellHost = await _settings.Host.GetValueAsync();
-            var clickatellUsername = await _settings.ApiUsername.GetValueAsync();
-            var clickatellPassword = await _settings.ApiPassword.GetValueAsync();
-            var clickatellApiId = await _settings.ApiId.GetValueAsync();
-
-            var singleMessageMaxLength = await _settings.SingleMessageMaxLength.GetValueAsync();
-            var messagePartLength = await _settings.MessagePartLength.GetValueAsync();
+            var gatewaySettings = await _settings.GatewaySettings.GetValueAsync();
 
             var sb = new StringBuilder();
-            sb.Append("https://" + clickatellHost + "/http/sendmsg?api_id=");
-            sb.Append(clickatellApiId);
+            sb.Append("https://" + gatewaySettings.Host + "/http/sendmsg?api_id=");
+            sb.Append(gatewaySettings.ApiId);
             sb.Append("&user=");
-            sb.Append(clickatellUsername);
+            sb.Append(gatewaySettings.Username);
             sb.Append("&password=");
-            sb.Append(clickatellPassword);
+            sb.Append(gatewaySettings.Password);
             sb.Append("&to=");
             sb.Append(mobileNumber);
             sb.Append("&text=");
             sb.Append(HttpUtility.UrlEncode(body));
 
-            if (body.Length > singleMessageMaxLength)
+            if (body.Length > gatewaySettings.SingleMessageMaxLength)
             {
-                var splitCount = body.Length / messagePartLength;
-                if (splitCount * messagePartLength < body.Length)
+                var splitCount = body.Length / gatewaySettings.MessagePartLength;
+                if (splitCount * gatewaySettings.MessagePartLength < body.Length)
                     splitCount++;
 
                 sb.Append("&concat=" + splitCount);
@@ -73,7 +67,7 @@ namespace Shesha.Sms.Clickatell
 
             Logger.InfoFormat("Sending SMS to {0}: {1}", mobileNumber, body);
 
-            string response = await DownloadUrlAsync(sb.ToString());
+            string response = await DownloadUrlAsync(sb.ToString(), gatewaySettings);
 
             // If response format is 'ID: XXXXXXXXXXXXXXXX' where XXXXXXXXXXXXXX is a message id then request has been successful.
             if (!response.StartsWith("ID:"))
@@ -87,36 +81,28 @@ namespace Shesha.Sms.Clickatell
             Logger.InfoFormat("SMS successfully sent, response: {0}", response);
         }
 
-        public async Task<string> DownloadUrlAsync(string url)
+        public async Task<string> DownloadUrlAsync(string url, GatewaySettings gatewaySettings)
         {
             #pragma warning disable SYSLIB0014
             var request = WebRequest.Create(url); // todo: replace with HttpClient
             #pragma warning restore SYSLIB0014
 
-            var useProxy = await _settings.UseProxy.GetValueAsync();
-
-            if (useProxy)
+            if (gatewaySettings.UseProxy)
             {
-                var proxyAddress = await _settings.WebProxyAddress.GetValueAsync();
-
                 var proxy = new WebProxy
                 {
-                    Address = new Uri(proxyAddress)
+                    Address = new Uri(gatewaySettings.WebProxyAddress)
                 };
                 request.Proxy = proxy;
 
-                var useDefaultCredentials = await _settings.UseDefaultProxyCredentials.GetValueAsync();
-                if (useDefaultCredentials)
+                if (gatewaySettings.UseDefaultProxyCredentials)
                 {
                     proxy.Credentials = CredentialCache.DefaultCredentials;
                     proxy.UseDefaultCredentials = true;
                 }
                 else
                 {
-                    var username = await _settings.WebProxyUsername.GetValueAsync();
-                    var password = await _settings.WebProxyPassword.GetValueAsync();
-
-                    proxy.Credentials = new NetworkCredential(username, password);
+                    proxy.Credentials = new NetworkCredential(gatewaySettings.WebProxyUsername, gatewaySettings.WebProxyPassword);
                 }
             }
 
@@ -137,20 +123,22 @@ namespace Shesha.Sms.Clickatell
 
         public override async Task<ClickatellSettingDto> GetTypedSettingsAsync()
         {
+            var gatewaySettings = await _settings.GatewaySettings.GetValueAsync();
+
             var settings = new ClickatellSettingDto
             {
-                ClickatellHost = await _settings.Host.GetValueAsync(),
-                ClickatellApiId = await _settings.ApiId.GetValueAsync(),
-                ClickatellApiUsername = await _settings.ApiUsername.GetValueAsync(),
-                ClickatellApiPassword = await _settings.ApiPassword.GetValueAsync(),
-                UseProxy = await _settings.UseProxy.GetValueAsync(),
-                WebProxyAddress = await _settings.WebProxyAddress.GetValueAsync(),
-                UseDefaultProxyCredentials = await _settings.UseDefaultProxyCredentials.GetValueAsync(),
-                WebProxyUsername = await _settings.WebProxyUsername.GetValueAsync(),
-                WebProxyPassword = await _settings.WebProxyPassword.GetValueAsync(),
+                ClickatellHost = gatewaySettings.Host,
+                ClickatellApiId = gatewaySettings.ApiId,
+                ClickatellApiUsername = gatewaySettings.Username,
+                ClickatellApiPassword = gatewaySettings.Password,
+                UseProxy = gatewaySettings.UseProxy,
+                WebProxyAddress = gatewaySettings.WebProxyAddress,
+                UseDefaultProxyCredentials = gatewaySettings.UseDefaultProxyCredentials,
+                WebProxyUsername = gatewaySettings.WebProxyUsername,
+                WebProxyPassword = gatewaySettings.WebProxyPassword,
 
-                SingleMessageMaxLength = await _settings.SingleMessageMaxLength.GetValueAsync(),
-                MessagePartLength = await _settings.MessagePartLength.GetValueAsync(),
+                SingleMessageMaxLength = gatewaySettings.SingleMessageMaxLength,
+                MessagePartLength = gatewaySettings.MessagePartLength,
             };
 
             return settings;
@@ -158,18 +146,20 @@ namespace Shesha.Sms.Clickatell
 
         public override async Task SetTypedSettingsAsync(ClickatellSettingDto settings)
         {
-            await _settings.Host.SetValueAsync(settings.ClickatellHost);
-            await _settings.ApiId.SetValueAsync(settings.ClickatellApiId);
-            await _settings.ApiUsername.SetValueAsync(settings.ClickatellApiUsername);
-            await _settings.ApiPassword.SetValueAsync(settings.ClickatellApiPassword);
-            await _settings.SingleMessageMaxLength.SetValueAsync(settings.SingleMessageMaxLength);
-            await _settings.MessagePartLength.SetValueAsync(settings.MessagePartLength);
+            await _settings.GatewaySettings.SetValueAsync(new GatewaySettings {
+                Host = settings.ClickatellHost,
+                ApiId = settings.ClickatellApiId,
+                Username = settings.ClickatellApiUsername,
+                Password = settings.ClickatellApiPassword,
+                SingleMessageMaxLength = settings.SingleMessageMaxLength,
+                MessagePartLength = settings.MessagePartLength,
 
-            await _settings.UseProxy.SetValueAsync(settings.UseProxy);
-            await _settings.WebProxyAddress.SetValueAsync(settings.WebProxyAddress);
-            await _settings.UseDefaultProxyCredentials.SetValueAsync(settings.UseDefaultProxyCredentials);
-            await _settings.WebProxyUsername.SetValueAsync(settings.WebProxyUsername);
-            await _settings.WebProxyPassword.SetValueAsync(settings.WebProxyPassword);
+                UseProxy = settings.UseProxy,
+                WebProxyAddress = settings.WebProxyAddress,
+                UseDefaultProxyCredentials = settings.UseDefaultProxyCredentials,
+                WebProxyUsername = settings.WebProxyUsername,
+                WebProxyPassword = settings.WebProxyPassword,
+            });
         }
     }
 }

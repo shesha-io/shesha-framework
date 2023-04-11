@@ -34,7 +34,7 @@ interface IAutocompleteState {
 
 const getFullPath = (path: string, prefix: string) => {
   return prefix ? `${prefix}.${camelcase(path)}` : camelcase(path);
-}
+};
 
 const properties2options = (properties: IPropertyMetadata[], prefix: string): IOption[] => {
   return properties.map(p => {
@@ -48,7 +48,7 @@ const properties2options = (properties: IPropertyMetadata[], prefix: string): IO
       label: label
     };
   });
-}
+};
 
 export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 'single', readOnly = false, ...props }) => {
   const { style = { width: '32px' } } = props;
@@ -68,7 +68,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
       properties: properties,
       options: properties2options(properties, prefix)
     });
-  }
+  };
 
   const form = useForm(false);
 
@@ -97,13 +97,13 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
   //    modelType, properties[] (dot notation props list)
   useEffect(() => {
     getContainerProperties({ metadata, containerPath: containerPath ?? containerPathMultiple }).then(properties => {
-      setProperties(properties, containerPath ?? containerPathMultiple)
+      setProperties(properties, containerPath ?? containerPathMultiple);
     });
   }, [metadata?.properties, containerPath, containerPathMultiple]);
 
   const getProperty = (path: string): IPropertyMetadata => {
     return state.properties.find(p => getFullPath(p.path, containerPath ?? containerPathMultiple) === path);
-  }
+  };
 
   const onSelect = (data: string) => {
     if (props.onChange) props.onChange(data);
@@ -114,7 +114,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
   };
 
   const onSelectMultiple = (data: string) => {
-    if (data != multipleValue) {
+    if (data !== multipleValue) {
       setMultipleValue(data);
     } else {
       var list = props.value
@@ -200,13 +200,13 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
           onClose={e => {
             e.preventDefault();
             if (Array.isArray(props.value))
-              if (props.onChange) props.onChange(props.value.filter(item => item != tag));
+              if (props.onChange) props.onChange(props.value.filter(item => item !== tag));
           }}
           onClick={e => {
             e.preventDefault();
             setMultipleValue(tag);
             if (Array.isArray(props.value))
-              if (props.onChange) props.onChange(props.value.filter(item => item != tag));
+              if (props.onChange) props.onChange(props.value.filter(item => item !== tag));
           }}
         >
           {tag}

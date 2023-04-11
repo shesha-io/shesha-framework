@@ -114,7 +114,9 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
         };
       })
       .add<IEntityPickerComponentProps>(1, migrateV0toV1)
-      .add<IEntityPickerComponentProps>(2, prev => { return { ...prev, useRawValues: true }; }),
+      .add<IEntityPickerComponentProps>(2, prev => {
+ return { ...prev, useRawValues: true }; 
+}),
   settingsFormMarkup: entityPickerSettings,
   validateSettings: model => validateConfigurableComponentSettings(entityPickerSettings, model),
 };

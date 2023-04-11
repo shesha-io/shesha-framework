@@ -152,7 +152,7 @@ const ListControl: FC<IListControlProps> = props => {
 
     const localFormData = !isEmpty(formData) ? camelCaseKeys(formData, { deep: true, pascalCase: true }) : formData;
 
-    const _response = evaluateDynamicFilters(
+    const response = evaluateDynamicFilters(
       [{ expression: filters } as any],
       [
         {
@@ -167,15 +167,15 @@ const ListControl: FC<IListControlProps> = props => {
     );
 
     return {
-      ready: !_response.some(f => f?.unevaluatedExpressions?.length),
-      filter: JSON.stringify(_response[0]?.expression) || '',
+      ready: !response.some(f => f?.unevaluatedExpressions?.length),
+      filter: JSON.stringify(response[0]?.expression) || '',
     };
 
     // return JSON.stringify(_response[0]?.expression) || '';
   }, [filters, formData, globalState]);
 
   const queryParams = useMemo(() => {
-    const _queryParams: EntitiesGetAllQueryParams = {
+    const qp: EntitiesGetAllQueryParams = {
       entityType,
       maxResultCount: showPagination ? state?.maxResultCount : DEFAULT_TOTAL_RECORD,
       skipCount: state?.skipCount,
@@ -183,14 +183,14 @@ const ListControl: FC<IListControlProps> = props => {
     };
 
     // _queryParams.properties = Array.from(new Set(['id', properties?.map(p => camelCase(p))])).join(' ');
-    _queryParams.properties =
+    qp.properties =
       typeof properties === 'string' ? `id ${properties}` : ['id', ...Array.from(new Set(properties || []))].join(' '); // Always include the `id` property/. Useful for deleting
 
     if (filters && evaluatedFilters?.filter) {
-      _queryParams.filter = evaluatedFilters?.filter;
+      qp.filter = evaluatedFilters?.filter;
     }
 
-    return _queryParams;
+    return qp;
   }, [properties, showPagination, paginationDefaultPageSize, state, filters, evaluatedFilters, globalState]);
 
   const debouncedRefresh = useDebouncedCallback(
@@ -626,7 +626,7 @@ const ListControl: FC<IListControlProps> = props => {
                       )}
                     >
                       {fields?.map((field, index) => {
-                        const isLastItem = fields.length - 1 == index;
+                        const isLastItem = fields.length - 1 === index;
                         return (
                           <ConditionalWrap
                             key={index}

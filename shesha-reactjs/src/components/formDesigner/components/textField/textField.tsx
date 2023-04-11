@@ -1,5 +1,5 @@
 import { IToolboxComponent } from '../../../../interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '../../../../providers/form/models';
+import { FormMarkup } from '../../../../providers/form/models';
 import { CodeOutlined } from '@ant-design/icons';
 import { Input, message } from 'antd';
 import { InputProps } from 'antd/lib/input';
@@ -11,21 +11,9 @@ import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../.
 import { customEventHandler } from '../utils';
 import { DataTypes, StringFormats } from '../../../../interfaces/dataTypes';
 import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
-import { axiosHttp } from '../../../../apis/axios';
+import { axiosHttp } from '../../../../utils/fetchers';
 import moment from 'moment';
-//import { Migrator, MigratorFluent } from '../../../../utils/fluentMigrator/migrator';
-
-type TextType = 'text' | 'password';
-
-export interface ITextFieldProps extends IConfigurableFormComponent {
-  placeholder?: string;
-  prefix?: string;
-  suffix?: string;
-  hideBorder?: boolean;
-  initialValue?: string;
-  passEmptyStringByDefault?: boolean;
-  textType?: TextType;
-}
+import { ITextFieldComponentProps, TextType } from './interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -38,7 +26,7 @@ const renderInput = (type: TextType) => {
   }
 };
 
-const TextField: IToolboxComponent<ITextFieldProps> = {
+const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
   type: 'textField',
   name: 'Text field',
   icon: <CodeOutlined />,
@@ -48,7 +36,7 @@ const TextField: IToolboxComponent<ITextFieldProps> = {
       dataFormat === StringFormats.emailAddress ||
       dataFormat === StringFormats.phoneNumber ||
       dataFormat === StringFormats.password),
-  factory: (model: ITextFieldProps, _c, form) => {
+  factory: (model: ITextFieldComponentProps, _c, form) => {
     const { formMode, isComponentDisabled, setFormDataAndInstance } = useForm();
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
@@ -109,8 +97,8 @@ const TextField: IToolboxComponent<ITextFieldProps> = {
     textType: 'text',
     ...model,
   }),
-  migrator: m => m.add<ITextFieldProps>(0, prev => ({ ...prev, textType: 'text' })),
-  linkToModelMetadata: (model, metadata): ITextFieldProps => {
+  migrator: m => m.add<ITextFieldComponentProps>(0, prev => ({ ...prev, textType: 'text' })),
+  linkToModelMetadata: (model, metadata): ITextFieldComponentProps => {
     return {
       ...model,
       textType: metadata.dataFormat === StringFormats.password ? 'password' : 'text',
@@ -118,4 +106,4 @@ const TextField: IToolboxComponent<ITextFieldProps> = {
   },
 };
 
-export default TextField;
+export default TextFieldComponent;

@@ -15,7 +15,7 @@ namespace Shesha.Sms.Configuration
         /// SMS Gateway
         /// </summary>
         [Display(Name = "SMS Gateway")]
-        [Setting(SheshaSettingNames.Sms.SmsGateway)]
+        [Setting(SheshaSettingNames.Sms.SmsGateway, false, "sms-settings-gateway")]
         ISettingAccessor<string> SmsGateway { get; }
 
         /// <summary>

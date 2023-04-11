@@ -1,8 +1,7 @@
 import React, { FC } from 'react';
 import { useAppConfigurator, useSheshaApplication } from '../../providers';
-import { FormIdentifier } from '../../providers/form/models';
+import { FormIdentifier, IPersistedFormProps } from '../../providers/form/models';
 import { Card } from 'antd';
-import { IPersistedFormProps } from '../../providers/formPersisterProvider/models';
 import { FORM_STATUS_MAPPING } from '../../utils/configurationFramework/models';
 import { getFormFullName } from '../../utils/form';
 import StatusTag from '../statusTag';

@@ -1,6 +1,7 @@
 import React  from 'react';
 import Icon, { CustomIconComponentProps } from "@ant-design/icons/lib/components/Icon";
 
+/* eslint-disable max-len */
 const ClassOutlinedSvg = () => (
 <svg width="1.2em" height="1.2em" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 318.188 318.188">
     <path d="M123.905,232.637c-7.613,0-13.417,2.106-17.409,6.317c-3.993,4.212-5.989,10.31-5.989,18.295
@@ -27,6 +28,7 @@ const ClassOutlinedSvg = () => (
         h4.299c2.057,0,3.626,0.427,4.709,1.28c1.083,0.853,1.625,2.079,1.625,3.676C179.434,269.655,177.409,271.362,173.362,271.362z"
         />
 </svg>);
+/* eslint-enable max-len */
 
 export const ClassOutlined = (props: Partial<CustomIconComponentProps>) => (
     <Icon component={ClassOutlinedSvg} {...props} />

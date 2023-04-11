@@ -1,6 +1,6 @@
 import React from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '../../../../providers/form/models';
+import { FormMarkup } from '../../../../providers/form/models';
 import { FileSearchOutlined } from '@ant-design/icons';
 import FormItem from '../formItem';
 import settingsFormJson from './settingsForm.json';
@@ -8,13 +8,7 @@ import { getStyle, validateConfigurableComponentSettings } from '../../../../pro
 import { PropertyAutocomplete } from '../../../propertyAutocomplete/propertyAutocomplete';
 import { evaluateString, MetadataProvider, useForm, useFormData } from '../../../..';
 import ConditionalWrap from '../../../conditionalWrapper';
-
-export interface IPropertyAutocompleteComponentProps extends IConfigurableFormComponent {
-  dropdownStyle?: string;
-  mode?: 'single' | 'multiple';
-  modelType?: string;
-  showFillPropsButton?: boolean;
-}
+import { IPropertyAutocompleteComponentProps } from './interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

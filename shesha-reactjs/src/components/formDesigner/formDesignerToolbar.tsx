@@ -16,7 +16,8 @@ import {
 import { useForm } from '../../providers/form';
 import { useFormPersister } from '../../providers/formPersisterProvider';
 import { useFormDesigner } from '../../providers/formDesigner';
-import { componentsFlatStructureToTree, useFormDesignerComponents } from '../../providers/form/utils';
+import { componentsFlatStructureToTree } from '../../providers/form/utils';
+import { useFormDesignerComponents } from '../../providers/form/hooks';
 import { FormMarkupWithSettings } from '../../providers/form/models';
 import FormSettingsEditor from './formSettingsEditor';
 import { ConfigurationItemVersionStatus } from '../../utils/configurationFramework/models';
@@ -42,18 +43,18 @@ export const FormDesignerToolbar: FC<IProps> = () => {
       formSettings: formSettings,
     };
     return saveForm(payload);
-  }
+  };
 
   const onSaveClick = () => {
     message.loading('Saving..', 0);
     saveFormInternal()
       .then(() => {
         message.destroy();
-        message.success('Form saved successfully')
+        message.success('Form saved successfully');
       })
       .catch(() => {
         message.destroy();
-        message.error('Failed to save form')
+        message.error('Failed to save form');
       });
   };
 
@@ -69,7 +70,7 @@ export const FormDesignerToolbar: FC<IProps> = () => {
             status: ConfigurationItemVersionStatus.Ready,
             onSuccess: () => {
               message.destroy();
-              message.success('Form saved and set ready successfully')
+              message.success('Form saved and set ready successfully');
               loadForm({ skipCache: true });
             },
           }).catch(() => {
@@ -81,7 +82,7 @@ export const FormDesignerToolbar: FC<IProps> = () => {
           message.destroy();
           message.error('Failed to save form');
         });
-    }
+    };
     Modal.confirm({
       title: 'Save and Set Ready',
       icon: <ExclamationCircleOutlined />,
@@ -90,7 +91,7 @@ export const FormDesignerToolbar: FC<IProps> = () => {
       cancelText: 'No',
       onOk
     });
-  }
+  };
 
   const onUndoClick = () => {
     undo();
@@ -128,7 +129,7 @@ export const FormDesignerToolbar: FC<IProps> = () => {
           message.destroy();
           showErrorDetails(e);
         });
-    }
+    };
     Modal.confirm({
       title: 'Create New Version',
       icon: <ExclamationCircleOutlined />,
@@ -137,7 +138,7 @@ export const FormDesignerToolbar: FC<IProps> = () => {
       cancelText: 'No',
       onOk
     });
-  }
+  };
 
   const onPublishClick = () => {
     const onOk = () => {
@@ -148,11 +149,11 @@ export const FormDesignerToolbar: FC<IProps> = () => {
         id: formProps.id,
         status: ConfigurationItemVersionStatus.Live,
         onSuccess: () => {
-          message.success('Form published successfully')
+          message.success('Form published successfully');
           loadForm({ skipCache: true });
         },
       });
-    }
+    };
     Modal.confirm({
       title: 'Publish Item',
       icon: <ExclamationCircleOutlined />,
@@ -161,7 +162,7 @@ export const FormDesignerToolbar: FC<IProps> = () => {
       cancelText: 'No',
       onOk
     });
-  }
+  };
 
   const saveMenu = <Menu
     items={[

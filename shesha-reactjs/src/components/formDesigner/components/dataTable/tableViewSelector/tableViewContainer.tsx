@@ -4,14 +4,14 @@ import { useTableViewSelectorConfigurator } from '../../../../../providers/table
 import { ITableViewProps } from '../../../../../providers/tableViewSelectorConfigurator/models';
 import { ReactSortable, ItemInterface } from 'react-sortablejs';
 
-export interface ITableViewSortableProps {
+export interface ITableViewContainerProps {
   index?: number[];
   items: ITableViewProps[];
   onConfigClick?: (selectedItemId: string) => void;
-  readOnly: boolean;
+  readOnly?: boolean;
 }
 
-export const TableViewContainer: FC<ITableViewSortableProps> = ({ onConfigClick, readOnly, ...props }) => {
+export const TableViewContainer: FC<ITableViewContainerProps> = ({ onConfigClick, readOnly, ...props }) => {
   const { updateChildItems } = useTableViewSelectorConfigurator();
 
   const onSetList = (newState: ItemInterface[], _sortable, _store) => {

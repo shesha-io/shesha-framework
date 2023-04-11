@@ -135,8 +135,8 @@ function useSidebarMenuDefaults() {
 //#endregion
 
 export {
-  IHeaderAction,
-  ISidebarMenuItem,
+  type IHeaderAction,
+  type ISidebarMenuItem,
   SidebarMenuProvider,
   useSidebarMenuState,
   useSidebarMenuActions,

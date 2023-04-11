@@ -22,7 +22,6 @@ import {
 import { FormActionEnums } from './actions';
 import { handleActions } from 'redux-actions';
 import {
-  camelcaseDotNotation,
   cloneComponents,
   createComponentModelForDataProperty,
   findToolboxComponent,
@@ -31,7 +30,8 @@ import {
   processRecursive,
   upgradeComponent,
 } from '../form/utils';
-import undoable, { includeAction } from 'redux-undo';
+import { camelcaseDotNotation } from '../../utils/string';
+//import undoable, { includeAction } from 'redux-undo';
 import { IFormValidationErrors } from '../../interfaces';
 import { IDataSource } from '../formDesigner/models';
 import { nanoid } from 'nanoid/non-secure';
@@ -81,7 +81,7 @@ const addComponentToFlatStructure = (
 
 const idArraysEqual = (array1: string[], array2: string[]): boolean => {
   return array1.length === array2.length && array1.every((value, index) => value === array2[index]);
-}
+};
 
 const reducer = handleActions<IFormDesignerStateContext, any>(
   {
@@ -269,7 +269,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
         });
 
         return clone;
-      }
+      };
 
       const srcComponent = state.allComponents[payload.componentId];
 
@@ -514,7 +514,14 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
   FORM_DESIGNER_CONTEXT_INITIAL_STATE
 );
 
-const undoableReducer = undoable(reducer, {
+export default reducer;
+/*
+const undoableType = typeof(undoable);
+console.log('LOG!', undoableType);
+console.log('LOG!!', JSON.stringify(undoable, null, 2));
+
+const undoableReducer = undoable 
+? undoable(reducer, {
   filter: includeAction([
     FormActionEnums.DataPropertyAdd,
     FormActionEnums.ComponentAdd,
@@ -523,6 +530,8 @@ const undoableReducer = undoable(reducer, {
     FormActionEnums.EndDragging,
   ]),
   limit: 20, // set a limit for the size of the history
-});
+})
+: null;
 
 export default undoableReducer;
+*/

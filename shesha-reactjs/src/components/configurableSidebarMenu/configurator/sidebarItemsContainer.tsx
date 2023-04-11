@@ -5,17 +5,25 @@ import { ReactSortable, ItemInterface } from 'react-sortablejs';
 import { ISidebarMenuItem } from '../../../interfaces/sidebar';
 import SidebarMenuGroup from './sidebarMenuGroup';
 
-export interface IToolbarItemsSortableProps {
+export interface ISidebarItemsContainerProps {
   index?: number[];
   items: ISidebarMenuItem[];
 }
 
-export const SidebarItemsContainer: FC<IToolbarItemsSortableProps> = props => {
+export const SidebarItemsContainer: FC<ISidebarItemsContainerProps> = props => {
   const { updateChildItems } = useSidebarMenuConfigurator();
 
+  // <SidebarItemsContainer index={props.index} items={props.childItems || []} />
   const renderItem = (itemProps: ISidebarMenuItem, index: number, key: string) => {
     if (itemProps.itemType === 'group') {
-      return <SidebarMenuGroup id={index} index={[...props.index, index]} {...itemProps} key={key} />;
+      return (
+        <SidebarMenuGroup 
+          id={index} 
+          index={[...props.index, index]} 
+          {...itemProps} 
+          key={key} 
+          containerRendering={(args) => (<SidebarItemsContainer {...args}/>)}
+        />);
     } else {
       return <SidebarMenuItem id={index} index={[...props.index, index]} {...itemProps} key={key} />;
     }
