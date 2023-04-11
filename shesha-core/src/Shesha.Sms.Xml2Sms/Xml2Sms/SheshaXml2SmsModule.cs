@@ -30,7 +30,13 @@ namespace Shesha.Sms.Xml2Sms
         {
             IocManager.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
 
-            IocManager.RegisterSettingAccessor<IXml2SmsSetting>();
+            IocManager.RegisterSettingAccessor<IXml2SmsSetting>(settings => {
+                settings.GatewaySettings.WithDefaultValue(new GatewaySettings
+                {
+                    Host = "www.xml2sms.gsm.co.za",
+                    UseDefaultProxyCredentials = true
+                });
+            });
 
             IocManager.IocContainer.Register(
                 Component.For<IXml2SmsGateway>().Forward<Xml2SmsGateway>().ImplementedBy<Xml2SmsGateway>().LifestyleTransient()

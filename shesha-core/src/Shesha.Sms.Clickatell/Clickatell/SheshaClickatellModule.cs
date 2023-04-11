@@ -34,9 +34,12 @@ namespace Shesha.Sms.Clickatell
             IocManager.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
 
             IocManager.RegisterSettingAccessor<IClickatellSettings>(s => {
-                s.Host.WithDefaultValue("api.clickatell.com");
-                s.SingleMessageMaxLength.WithDefaultValue(DefaultSingleMessageMaxLength);
-                s.MessagePartLength.WithDefaultValue(DefaultMessagePartLength);
+                s.GatewaySettings.WithDefaultValue(new GatewaySettings
+                {
+                    Host = "api.clickatell.com",
+                    SingleMessageMaxLength = DefaultSingleMessageMaxLength,
+                    MessagePartLength = DefaultMessagePartLength
+                });
             });
 
             IocManager.IocContainer.Register(

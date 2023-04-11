@@ -31,7 +31,10 @@ namespace Shesha.Sms.SmsPortal
             IocManager.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
 
             IocManager.RegisterSettingAccessor<ISmsPortalSettings>(s => {
-                s.Host.WithDefaultValue("mymobileapi.com/api5/http5.aspx");
+                s.GatewaySettings.WithDefaultValue(new GatewaySettings { 
+                    Host = "mymobileapi.com/api5/http5.aspx",
+                    UseDefaultProxyCredentials = true
+                });
             });
 
             IocManager.IocContainer.Register(

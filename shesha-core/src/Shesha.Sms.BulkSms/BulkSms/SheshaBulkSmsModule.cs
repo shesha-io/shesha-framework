@@ -31,7 +31,12 @@ namespace Shesha.Sms.BulkSms
             IocManager.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
 
             IocManager.RegisterSettingAccessor<IBulkSmsSettings>(s => {
-                s.ApiUrl.WithDefaultValue("http://bulksms.2way.co.za:5567/eapi/submission/send_sms/2/2.0");
+                s.GatewaySettings.WithDefaultValue(new GatewaySettings
+                {
+                    ApiUrl = "http://bulksms.2way.co.za:5567/eapi/submission/send_sms/2/2.0",
+                    UseProxy = false,
+                    UseDefaultProxyCredentials = true,
+                });
             });
 
             IocManager.IocContainer.Register(
