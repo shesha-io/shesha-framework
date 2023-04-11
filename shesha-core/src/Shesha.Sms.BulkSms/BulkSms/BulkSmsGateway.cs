@@ -32,10 +32,9 @@ namespace Shesha.Sms.BulkSms
             if (string.IsNullOrEmpty(body))
                 throw new Exception("Can't send empty message");
 
-            var bulkSmsUrl = await _settings.ApiUrl.GetValueAsync();
-            var bulkSmsUsername = await _settings.ApiUsername.GetValueAsync();
-            var bulkSmsPassword = await _settings.ApiPassword.GetValueAsync();
-            if (string.IsNullOrWhiteSpace(bulkSmsUrl) || string.IsNullOrWhiteSpace(bulkSmsUsername) || string.IsNullOrWhiteSpace(bulkSmsPassword))
+            var gatewaySettings = await _settings.GatewaySettings.GetValueAsync();
+
+            if (string.IsNullOrWhiteSpace(gatewaySettings.ApiUrl) || string.IsNullOrWhiteSpace(gatewaySettings.Username) || string.IsNullOrWhiteSpace(gatewaySettings.Password))
                 throw new Exception("Bulk SMS Gateway is not configured properly, please check settings");
 
             // Removing any spaces and any other common characters in a phone number.
@@ -43,9 +42,9 @@ namespace Shesha.Sms.BulkSms
 
             Logger.Info($"Sending SMS to {mobileNumber} (converted to: {msisdn}): {body}");
 
-            string data = GetSevenBitMessage(bulkSmsUsername, bulkSmsPassword, msisdn, body);
+            string data = GetSevenBitMessage(gatewaySettings.Username, gatewaySettings.Password, msisdn, body);
 
-            var result = await DoSendSmsAsync(data, bulkSmsUrl);
+            var result = await DoSendSmsAsync(data, gatewaySettings);
             if ((int)result["success"] == 1)
             {
                 var response = GetFormattedServerResponse(result);
@@ -74,9 +73,9 @@ namespace Shesha.Sms.BulkSms
             return retString;
         }
 
-        public async Task<Hashtable> DoSendSmsAsync(string data, string url)
+        public async Task<Hashtable> DoSendSmsAsync(string data, GatewaySettings gatewaySettings)
         {
-            string smsResult = await PostAsync(url, data);
+            string smsResult = await PostAsync(gatewaySettings.ApiUrl, data, gatewaySettings);
 
             Hashtable resultHash = new Hashtable();
 
@@ -118,7 +117,7 @@ namespace Shesha.Sms.BulkSms
             return resultHash;
         }
 
-        private async Task<string> PostAsync(string url, string data)
+        private async Task<string> PostAsync(string url, string data, GatewaySettings gatewaySettings)
         {
             try
             {
@@ -126,30 +125,22 @@ namespace Shesha.Sms.BulkSms
                 var request = (HttpWebRequest)WebRequest.Create(url); // todo: replace with HttpClient
                 #pragma warning restore SYSLIB0014
 
-                var useProxy = await _settings.UseProxy.GetValueAsync();
-
-                if (useProxy)
+                if (gatewaySettings.UseProxy)
                 {
-                    var proxyAddress = await _settings.WebProxyAddress.GetValueAsync();
-
                     var proxy = new WebProxy
                     {
-                        Address = new Uri(proxyAddress)
+                        Address = new Uri(gatewaySettings.WebProxyAddress)
                     };
                     request.Proxy = proxy;
 
-                    var useDefaultCredentials = await _settings.UseDefaultProxyCredentials.GetValueAsync();
-                    if (useDefaultCredentials)
+                    if (gatewaySettings.UseDefaultProxyCredentials)
                     {
                         proxy.Credentials = CredentialCache.DefaultCredentials;
                         proxy.UseDefaultCredentials = true;
                     }
                     else
                     {
-                        var username = await _settings.WebProxyUsername.GetValueAsync();
-                        var password = await _settings.WebProxyPassword.GetValueAsync();
-
-                        proxy.Credentials = new NetworkCredential(username, password);
+                        proxy.Credentials = new NetworkCredential(gatewaySettings.WebProxyUsername, gatewaySettings.WebProxyPassword);
                     }
                 }
 
@@ -250,17 +241,18 @@ namespace Shesha.Sms.BulkSms
 
         public override async Task<BulkSmsSettingsDto> GetTypedSettingsAsync()
         {
+            var gatewaySettings = await _settings.GatewaySettings.GetValueAsync();
             var settings = new BulkSmsSettingsDto
             {
-                ApiUrl = await _settings.ApiUrl.GetValueAsync(),
-                ApiUsername = await _settings.ApiUsername.GetValueAsync(),
-                ApiPassword = await _settings.ApiPassword.GetValueAsync(),
+                ApiUrl = gatewaySettings.ApiUrl,
+                ApiUsername = gatewaySettings.Username,
+                ApiPassword = gatewaySettings.Password,
 
-                UseProxy = await _settings.UseProxy.GetValueAsync(),
-                WebProxyAddress = await _settings.WebProxyAddress.GetValueAsync(),
-                UseDefaultProxyCredentials = await _settings.UseDefaultProxyCredentials.GetValueAsync(),
-                WebProxyUsername = await _settings.WebProxyUsername.GetValueAsync(),
-                WebProxyPassword = await _settings.WebProxyPassword.GetValueAsync(),
+                UseProxy = gatewaySettings.UseProxy,
+                WebProxyAddress = gatewaySettings.WebProxyAddress,
+                UseDefaultProxyCredentials = gatewaySettings.UseDefaultProxyCredentials,
+                WebProxyUsername = gatewaySettings.WebProxyUsername,
+                WebProxyPassword = gatewaySettings.WebProxyPassword,
             };
 
             return settings;
@@ -268,15 +260,17 @@ namespace Shesha.Sms.BulkSms
 
         public override async Task SetTypedSettingsAsync(BulkSmsSettingsDto input)
         {
-            await _settings.ApiUrl.SetValueAsync(input.ApiUrl);
-            await _settings.ApiUsername.SetValueAsync(input.ApiUsername);
-            await _settings.ApiPassword.SetValueAsync(input.ApiPassword);
+            await _settings.GatewaySettings.SetValueAsync(new GatewaySettings {
+                ApiUrl = input.ApiUrl,
+                Username = input.ApiUsername,
+                Password = input.ApiPassword,
 
-            await _settings.UseProxy.SetValueAsync(input.UseProxy);
-            await _settings.WebProxyAddress.SetValueAsync(input.WebProxyAddress);
-            await _settings.UseDefaultProxyCredentials.SetValueAsync(input.UseDefaultProxyCredentials);
-            await _settings.WebProxyUsername.SetValueAsync(input.WebProxyUsername);
-            await _settings.WebProxyPassword.SetValueAsync(input.WebProxyPassword);
+                UseProxy = input.UseProxy,
+                WebProxyAddress = input.WebProxyAddress,
+                UseDefaultProxyCredentials = input.UseDefaultProxyCredentials,
+                WebProxyUsername = input.WebProxyUsername,
+                WebProxyPassword = input.WebProxyPassword
+            });
         }
     }
 }

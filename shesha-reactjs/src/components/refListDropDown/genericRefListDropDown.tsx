@@ -65,7 +65,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
     // Note: we shouldn't process full list and make it unique because by this way we'll hide duplicates received from the back-end
     const selectedItems = selectedItem
       ? (Array.isArray(selectedItem) ? selectedItem : [selectedItem]).filter(
-          i => fetchedItems.findIndex(fi => fi.value == i.value) === -1
+          i => fetchedItems.findIndex(fi => String(fi.value) === String(i.value)) === -1
         )
       : [];
 

@@ -111,7 +111,7 @@ const ChildTableComponent: IToolboxComponent<IChildTableComponentProps> = {
 
 
 
-    const isVisible = !isComponentHidden(model) && (granted || formMode == 'designer');
+    const isVisible = !isComponentHidden(model) && (granted || formMode === 'designer');
 
     return (
       <Fragment>

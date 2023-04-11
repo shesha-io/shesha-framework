@@ -26,7 +26,7 @@ import StackedNavigationModal from './navigation/stackedNavigationModal';
 import { useFormWithData } from '../../providers/form/api';
 import { IErrorInfo } from '../../interfaces/errorInfo';
 import moment from 'moment';
-import { axiosHttp } from '../../apis/axios';
+import { axiosHttp } from '../../utils/fetchers';
 import { DEFAULT_FORM_SETTINGS } from '../../providers/form/models';
 import { useModelApiEndpoint } from '../../components/configurableForm/useActionEndpoint';
 import { StandardEntityActions } from '../../interfaces/metadata';

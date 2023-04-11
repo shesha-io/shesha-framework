@@ -1,4 +1,4 @@
-import { IDictionary } from '../components/configurationFramework/models';
+import { IDictionary } from "..";
 
 export interface IPropertyMetadata {
   isVisible?: boolean;

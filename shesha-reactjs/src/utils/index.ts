@@ -1,6 +1,7 @@
 export type NumberOrString = number | string;
 /**
  * Returns the parameter value, from the url, by name
+ *
  * @param {string} name Parameter name
  * @param {string} url The url
  * @returns {string} The value of this parameter
@@ -51,6 +52,7 @@ export const horizontalMouseScroll = (scrollableId: string) => {
 
 /**
  * Compares two values and returns true if they have changed, else false
+ *
  * @param firstVal - the first value
  * @param secondVal - the second value
  */
@@ -58,6 +60,7 @@ export const compareValues = (firstVal: NumberOrString, secondVal: NumberOrStrin
 
 /**
  * Returns only digits from a given string
+ *
  * @param value - a string to extract digits from
  */
 export const extractDigitsFromString = (value: string) => {
@@ -68,6 +71,7 @@ export const extractDigitsFromString = (value: string) => {
 
 /**
  * The method returns a safely trimmed string
+ *
  * @param value - the string value to trim
  */
 export const getSafelyTrimmedString = (value: string = '') => {
@@ -78,6 +82,7 @@ export const getSafelyTrimmedString = (value: string = '') => {
 
 /**
  * Joins string values, filtering out falsy values
+ *
  * @param values values to join
  * @param delimiter delimiter to use to join the values
  * @returns joined string value

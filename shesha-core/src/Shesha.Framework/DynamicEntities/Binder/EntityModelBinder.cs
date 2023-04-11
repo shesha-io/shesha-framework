@@ -95,7 +95,8 @@ namespace Shesha.DynamicEntities.Binder
             var entityType = entity.GetType().StripCastleProxyType();
 
             var properties = entityType.GetProperties().Where(p => p.CanWrite).ToList();
-            if (entity.GetType().GetProperty("Id")?.GetValue(entity) != null)
+            var entityIdValue = entity.GetType().GetProperty("Id")?.GetValue(entity)?.ToString();
+            if (!entityIdValue.IsNullOrEmpty() && entityIdValue != Guid.Empty.ToString())
                 properties = properties.Where(p => p.Name != "Id").ToList();
 
             var config = _entityConfigRepository.GetAll().FirstOrDefault(x => x.Namespace == entityType.Namespace && x.ClassName == entityType.Name && !x.IsDeleted);
@@ -166,7 +167,7 @@ namespace Shesha.DynamicEntities.Binder
                     {
                         var propConfig = _entityPropertyRepository.GetAll().FirstOrDefault(x => x.EntityConfig == config && x.Name == jName);
 
-                        if (_metadataProvider.IsFrameworkRelatedProperty(property))
+                        if (jName != "id" && _metadataProvider.IsFrameworkRelatedProperty(property))
                             continue;
 
                         var propType = _metadataProvider.GetDataType(property);

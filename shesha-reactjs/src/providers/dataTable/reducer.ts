@@ -27,7 +27,7 @@ import {
   IDataColumnsProps,
 } from '../datatableColumnsConfigurator/models';
 import { getFilterOptions } from '../../components/columnItemFilter';
-import { camelcaseDotNotation } from '../form/utils';
+import { camelcaseDotNotation } from '../../utils/string';
 import { getIncomingSelectedStoredFilterIds } from './utils';
 
 /** get dirty filter if exists and fallback to current filter state */
@@ -242,7 +242,6 @@ const reducer = handleActions<IDataTableStateContext, any>(
                 entityReferenceTypeShortAlias: srvColumn?.entityReferenceTypeShortAlias,
                 referenceListName: srvColumn?.referenceListName,
                 referenceListModule: srvColumn?.referenceListModule,
-                autocompleteUrl: srvColumn?.autocompleteUrl,
                 allowInherited: srvColumn?.allowInherited,
 
                 caption: column.caption,
@@ -301,7 +300,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
         columns: cols,
         // user config
         currentPage: userConfig?.currentPage || 1,
-        selectedPageSize: userConfig?.pageSize || DEFAULT_PAGE_SIZE_OPTIONS[1],
+        selectedPageSize: userConfig?.pageSize || state.selectedPageSize || DEFAULT_PAGE_SIZE_OPTIONS[1],
         quickSearch: userConfig?.quickSearch,
         tableFilter: userConfig?.advancedFilter,
         tableFilterDirty: userConfig?.advancedFilter,

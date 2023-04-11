@@ -29,7 +29,7 @@ const ImageAnnotationComponent: IToolboxComponent<IImageProps> = {
     }
 
     return (
-      <ConfigurableFormItem model={model}>
+      <ConfigurableFormItem model={model} >
         <ImageAnnotationControl model={model} />
       </ConfigurableFormItem>
     );

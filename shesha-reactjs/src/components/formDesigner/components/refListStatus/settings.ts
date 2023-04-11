@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid';
 import { DesignerToolbarSettings } from '../../../../interfaces/toolbarSettings';
 
 export const RefListStatusSettingsForm = new DesignerToolbarSettings()
@@ -71,6 +72,7 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
         id: "3fg9da3f-f47e-48ae-b4c3-f5cc36f934d9",
         name: "showReflistName",
         parentId: "root",
+        description: 'When checked the DisplayName/RefList Name will be shown.',
         defaultValue: true,
         label: "Show Reflist Item Name"
     })
@@ -78,14 +80,17 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
         id: "3be9da3f-f47e-48ae-b4c3-f5cc36f934d9",
         name: "showIcon",
         parentId: "root",
+        description: 'When checked the icon will display on the left side of the DisplayName',
         label: "Show Icon"
     })
     .addCheckbox({
         id: "3be9da3f-f47e-49ae-b8c3-f5cc36f164d9",
         name: "solidBackground",
         parentId: "root",
+        description: 'When checked the component will show a coloured badge and display within it in white font the icon and/or the selected reference list item label.',
         defaultValue: true,
         label: "Show Solid Background"
+
     })
     .addSectionSeparator({
         id: "6befdd49-41aa-41d6-a29e-76fa00590b75",
@@ -101,19 +106,24 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
         validate: {},
         settingsValidationErrors: [],
         description: "A script that returns the style of the element as an object. This should conform to CSSProperties",
-        exposedVariables: [{ id: "3tg9da3f-f58e-48ae-b4c3-f5cc36e534d7", name: "data", description: "Form values", type: "object" }]
+        exposedVariables: [
+            { id: "3tg9da3f-f58e-48ae-b4c3-f5cc36e534d7", name: "data", description: "Form values", type: "object" },
+            { id: nanoid(), name: "globalState", description: "The global state of the application", type: "object" }
+        ]
     })
 
     .addSectionSeparator({
         id: "5478b8f9-ec00-4d0a-9d2a-44a630cb2dcb",
         name: "filesSeparator",
         parentId: "root",
+        description: 'This section is for binding your status tag to a specific RefList Properties',
         label: "RefList Source"
     })
     .addTextField({
         id: "417ee22e-a49d-44f2-a1c7-fef42ec87503",
         name: "module",
         parentId: "root",
+        description: 'This property allows you to specify a module for a required RefList',
         validate: { required: true },
         label: "Module"
     })
@@ -121,15 +131,15 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
         id: "c6ecd70c-7420-4ea7-a715-d42699d26e6e",
         name: "nameSpace",
         parentId: "root",
+        description: 'This property allows you to specify a name for a required RefList',
         validate: { required: true },
-        label: "Name Space"
+        label: "Name"
     })
     .addSectionSeparator({
         id: 'bc67960e-77e3-40f2-89cc-f18f94678cce',
         name: 'separatorVisibility',
         parentId: 'root',
         label: 'Visibility',
-        title: 'Visibility',
     })
     .addCodeEditor({
         id: '03959ffd-cadb-496c-bf6d-b742f7f6edc6',
@@ -137,6 +147,12 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
         parentId: 'root',
         label: 'Custom Visibility',
         description:
-            'Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
+            'Enter custom visibility code.  You must return true to show the component. ' + 
+            'The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
+        exposedVariables: [
+            { id: nanoid(), name: 'value', description: 'Component current value', type: 'string | any' },
+            { id: nanoid(), name: 'data', description: 'Selected form values', type: 'object' },
+            { id: nanoid(), name: "globalState", description: "The global state of the application", type: "object" }
+        ],
     })
-    .toJson()
+    .toJson();

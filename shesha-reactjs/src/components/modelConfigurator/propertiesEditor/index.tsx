@@ -16,7 +16,7 @@ export const PropertiesEditorComponent: FC<IPropertiesEditorComponentProps> = ()
         <PropertiesEditor />
     </Form.Item>
  );   
-}
+};
 
 export interface IPropertiesEditorProps extends IPropertiesEditorComponentProps {
     value?: IModelItem[];
@@ -29,4 +29,4 @@ export const PropertiesEditor: FC<IPropertiesEditorProps> = (props) => {
             <PropertiesEditorRenderer />
         </PropertiesEditorProvider>
     );
-}
+};

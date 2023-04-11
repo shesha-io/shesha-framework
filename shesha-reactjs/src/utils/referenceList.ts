@@ -13,22 +13,20 @@ export interface ICachedRefListItems {
   items: ICachedRefList[];
 }
 
-// const cachedListItems: ICachedRefListItems[] = [
-//   {
-//     namespace: 'namespace',
-//     items: [
-//       {
-//         name: 'string',
-//         list: [
-//           {
-//             item: '',
-//             itemValue: 0,
-//           },
-//         ],
-//       },
-//     ],
-//   },
-// ];
+const getCachedItemsByNamespace = (listNamespace: string, cachedListItems: ICachedRefListItems[]) =>
+  cachedListItems?.find(({ namespace }) => namespace === listNamespace);
+
+const getListItemsFromStorage = () => {
+  const cachedListItems = window?.localStorage?.getItem(CACHED_REF_LIST_ITEMS);
+
+  return cachedListItems ? (JSON.parse(cachedListItems) as ICachedRefListItems[]) : null;
+};
+
+const getNameWithNamespace = (namespace: string, name: string) => {
+  return Boolean(namespace)
+    ? `${namespace}.${name}`
+    : name;
+};
 
 export const saveListItems = (listName: string, listNamespace: string, reflListItems: ReferenceListItemDto[]) => {
   const cachedListItems = getListItemsFromStorage();
@@ -99,15 +97,6 @@ export const getCachedItems = (listName: string, listNamespace: string) => {
   return [];
 };
 
-const getCachedItemsByNamespace = (listNamespace: string, cachedListItems: ICachedRefListItems[]) =>
-  cachedListItems?.find(({ namespace }) => namespace === listNamespace);
-
-const getListItemsFromStorage = () => {
-  const cachedListItems = window?.localStorage?.getItem(CACHED_REF_LIST_ITEMS);
-
-  return cachedListItems ? (JSON.parse(cachedListItems) as ICachedRefListItems[]) : null;
-};
-
 export const getLegacyReferenceListIdentifier = (referenceListNamespace?: string, referenceListName?: string): IReferenceListIdentifier => {
   return !referenceListNamespace && !referenceListName
     ? null
@@ -115,10 +104,4 @@ export const getLegacyReferenceListIdentifier = (referenceListNamespace?: string
       name: getNameWithNamespace(referenceListNamespace, referenceListName),
       module: undefined      
     };
-}
-
-const getNameWithNamespace = (namespace: string, name: string) => {
-  return Boolean(namespace)
-    ? `${namespace}.${name}`
-    : name;
-}
+};

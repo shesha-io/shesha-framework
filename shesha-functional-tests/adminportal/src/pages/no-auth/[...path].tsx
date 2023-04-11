@@ -1,7 +1,7 @@
 import React from 'react';
 import dynamic from 'next/dynamic';
 import { NextPageWithLayout } from 'models';
-import { FormIdentifier } from '@shesha/reactjs/dist/providers/form/models';
+import { FormIdentifier } from '@shesha/reactjs';
 
 type FormMode = 'designer' | 'edit' | 'readonly';
 

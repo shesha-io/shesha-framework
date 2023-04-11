@@ -2,7 +2,6 @@ export {
   validateConfigurableComponentSettings,
   getComponentsAndSettings,
   findToolboxComponent,
-  toolbarGroupsToComponents,
   convertSectionsToList,
   convertActions,
   replaceTags,
@@ -16,3 +15,5 @@ export {
   componentsTreeToFlatStructure,
   evaluateComplexString,
 } from './providers/form/utils';
+
+export { toolbarGroupsToComponents } from './providers/form/hooks';

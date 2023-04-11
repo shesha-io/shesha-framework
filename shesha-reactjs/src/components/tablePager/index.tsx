@@ -5,12 +5,11 @@ import { useDataTable } from '../../providers';
 import TablePagerBase from '../tablePagerBase';
 
 export interface ITablePagerProps {
-  defaultPageSize?: number;
   showSizeChanger?: boolean;
   showTotalItems?: boolean;
 }
 
-export const TablePager: FC<ITablePagerProps> = ({ defaultPageSize, showSizeChanger, showTotalItems }) => {
+export const TablePager: FC<ITablePagerProps> = ({ showSizeChanger, showTotalItems }) => {
   const { pageSizeOptions, currentPage, totalRows, selectedPageSize, setCurrentPage, changePageSize } = useDataTable();
 
   const hideSizeChanger = useMediaQuery({
@@ -22,18 +21,18 @@ export const TablePager: FC<ITablePagerProps> = ({ defaultPageSize, showSizeChan
   });
 
   return (
-    <TablePagerBase
-      {...{
-        pageSizeOptions,
-        currentPage,
-        totalRows,
-        selectedPageSize: defaultPageSize || selectedPageSize,
-        showSizeChanger: hideSizeChanger ? false : showSizeChanger,
-        showTotalItems: hideTotalItems ? false : showTotalItems,
-        setCurrentPage,
-        changePageSize,
-      }}
-    />
+      <TablePagerBase
+        {...{
+          pageSizeOptions,
+          currentPage,
+          totalRows,
+          selectedPageSize,
+          showSizeChanger: !hideSizeChanger && showSizeChanger,
+          showTotalItems: !hideTotalItems && showTotalItems,
+          setCurrentPage,
+          changePageSize,
+        }}
+      />
   );
 };
 

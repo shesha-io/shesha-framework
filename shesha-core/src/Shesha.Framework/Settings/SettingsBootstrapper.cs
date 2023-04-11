@@ -49,7 +49,7 @@ namespace Shesha.Settings
             //var toDelete = configurationsInDb
 
             // check for duplicated settings names
-            var duplicates = definitionsInCode.GroupBy(d => d.Name, 
+            var duplicates = definitionsInCode.GroupBy(d => d.FullName, 
                 d => d, 
                 (name, items) => new { 
                     Name = name, 

@@ -19,7 +19,7 @@ export const PermissionEditorComponent: FC<IPermissionEditorComponentProps> = (p
             <PermissionEditor {...props} />
         </Form.Item>
     );   
-}
+};
 
 interface IPermissionEditorProps extends IPermissionEditorComponentProps {
     value?: PermissionDto;
@@ -40,4 +40,4 @@ const PermissionEditor: FC<IPermissionEditorProps> = (props) => {
         }}
         />
     );
-}
+};

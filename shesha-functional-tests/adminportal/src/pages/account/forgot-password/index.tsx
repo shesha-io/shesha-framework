@@ -13,7 +13,6 @@ import { useMutate } from 'restful-react';
 import { URL_LOGIN_PAGE } from 'routes';
 import { useAuth, ValidationErrors } from '@shesha/reactjs';
 import { ForgotPasswordPage, VerifyOtpModal } from './styles';
-import './styles.ts';
 
 interface IProps {}
 

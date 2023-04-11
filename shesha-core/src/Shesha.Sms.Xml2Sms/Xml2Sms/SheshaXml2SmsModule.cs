@@ -5,6 +5,7 @@ using Castle.MicroKernel.Registration;
 using Shesha.Modules;
 using Shesha.Settings.Ioc;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Shesha.Sms.Xml2Sms
 {
@@ -18,6 +19,11 @@ namespace Shesha.Sms.Xml2Sms
             Publisher = "Boxfusion"
         };
 
+        public override async Task<bool> InitializeConfigurationAsync()
+        {
+            return await ImportConfigurationAsync();
+        }
+
         public override void PreInitialize()
         {
             Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(
@@ -30,7 +36,13 @@ namespace Shesha.Sms.Xml2Sms
         {
             IocManager.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
 
-            IocManager.RegisterSettingAccessor<IXml2SmsSetting>();
+            IocManager.RegisterSettingAccessor<IXml2SmsSetting>(settings => {
+                settings.GatewaySettings.WithDefaultValue(new GatewaySettings
+                {
+                    Host = "www.xml2sms.gsm.co.za",
+                    UseDefaultProxyCredentials = true
+                });
+            });
 
             IocManager.IocContainer.Register(
                 Component.For<IXml2SmsGateway>().Forward<Xml2SmsGateway>().ImplementedBy<Xml2SmsGateway>().LifestyleTransient()

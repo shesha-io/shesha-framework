@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Form, Select, AutoComplete } from 'antd';
-//import { ColumnsEditorModal } from './columnsEditor/columnsEditorModal';
 import SectionSeparator from '../../../sectionSeparator';
 import CodeEditor from '../codeEditor/codeEditor';
 import PropertyAutocomplete from '../../../propertyAutocomplete/propertyAutocomplete';
@@ -21,11 +20,16 @@ const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem'
 function DataListSettings(props: IProps) {
   const [form] = Form.useForm();
 
+  /*const dataSourcesDict = useDataSources()?.getDataSources() ?? {};
+  const dataSources: IDataSourceDescriptor[] = [];
+  for (let key in dataSourcesDict) {
+    dataSources.push(dataSourcesDict[key] as IDataSourceDescriptor);
+  }*/
   const initialState: IDataListComponentProps = {
     ...props?.model,
   };
 
-  const [state, setState] = useState<IDataListComponentProps>(initialState)
+  const [state, setState] = useState<IDataListComponentProps>(initialState);
   const [formTypesOptions, setFormTypesOptions] = useState<{ value: string }[]>(
     formTypes.map(i => {
       return { value: i };
@@ -33,7 +37,7 @@ function DataListSettings(props: IProps) {
   );
 
   const onValuesChange = (changedValues, values: IDataListComponentProps) => {
-    if (props.onValuesChange) props.onValuesChange(changedValues, values as any);
+    if (props.onValuesChange) props.onValuesChange(changedValues, values);
   };
 
   return (
@@ -45,6 +49,15 @@ function DataListSettings(props: IProps) {
       wrapperCol={{ span: 24 }}
       labelCol={{ span: 24 }}
     >
+      {/*<Form.Item name="dataSource" label="Data Source">
+        <Select disabled={props.readOnly}>
+          <Option key='-1' value={null}>Data context</Option>
+          {dataSources.map((item, index) => {
+            return <Option key={index.toString()} value={`${item.id}_${item.name}`}>{item.name}</Option>
+          })}         
+        </Select>
+        </Form.Item>*/}
+
       <Form.Item name="name" label="Name">
         <PropertyAutocomplete readOnly={props.readOnly} showFillPropsButton={false} />
       </Form.Item>
@@ -72,20 +85,22 @@ function DataListSettings(props: IProps) {
       <SectionSeparator title="Render" />
 
       <Form.Item name="formSelectionMode" label="Form selection mode">
-        <Select disabled={props.readOnly} defaultValue={'none'} onChange={(item) => { setState({...state, formSelectionMode: (item as FormSelectionMode)}); }}>
+        <Select disabled={props.readOnly} defaultValue={'none'} onChange={(item) => {
+ setState({...state, formSelectionMode: (item as FormSelectionMode)}); 
+}}>
           <Option key='name' value='name'>Named form</Option>
           <Option key='view' value='view'>View type</Option>
           <Option key='expression' value='expression'>Expression</Option>
         </Select>
       </Form.Item>
 
-      {state.formSelectionMode == 'name' &&
+      {state.formSelectionMode === 'name' &&
       <Form.Item name="formId" label="Form">
         <FormAutocomplete convertToFullId={true} readOnly={props.readOnly} />
       </Form.Item>
       }
 
-      {state.formSelectionMode == 'view' &&
+      {state.formSelectionMode === 'view' &&
       <Form.Item name="formType" label="formType">
         <AutoComplete
           disabled={props.readOnly}
@@ -106,7 +121,7 @@ function DataListSettings(props: IProps) {
       </Form.Item>
       }
 
-      {state.formSelectionMode == 'expression' && 
+      {state.formSelectionMode === 'expression' && 
       <Form.Item name="formIdExpression" label="Form identifer expression">
         <CodeEditor
           readOnly={props.readOnly}

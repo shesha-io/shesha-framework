@@ -1,4 +1,5 @@
 import { DataNode } from "antd/lib/tree";
+import { IDictionary } from "../../interfaces";
 
 export interface ModuleDto {
     id: string;
@@ -21,9 +22,6 @@ export interface ConfigurationItemDto {
     description?: string;
 }
 
-export type IDictionary<TItem> = {
-    [key: string]: TItem;
-}
 export interface IModule {
     id: string;
     name: string;

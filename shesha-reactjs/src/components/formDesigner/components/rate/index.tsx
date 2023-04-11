@@ -2,7 +2,6 @@ import { LikeOutlined, StarFilled } from '@ant-design/icons';
 import { message, Rate } from 'antd';
 import React from 'react';
 import {
-  axiosHttp,
   ConfigurableFormItem,
   IConfigurableFormComponent,
   IToolboxComponent,
@@ -13,6 +12,7 @@ import {
   useSheshaApplication,
   validateConfigurableComponentSettings,
 } from '../../../..';
+import { axiosHttp } from '../../../../utils/fetchers';
 import { getStyle } from '../../../../providers/form/utils';
 import { IconType } from '../../../shaIcon';
 import { getSettings } from './settings';

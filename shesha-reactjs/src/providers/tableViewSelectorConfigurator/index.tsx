@@ -28,7 +28,7 @@ export interface ITableViewSelectorConfiguratorProviderProps {
   items: ITableViewProps[];
   value?: any;
   onChange?: (value: any) => void;
-  readOnly: boolean;
+  readOnly?: boolean;
 }
 
 const TableViewSelectorConfiguratorProvider: FC<PropsWithChildren<
@@ -42,7 +42,7 @@ const TableViewSelectorConfiguratorProvider: FC<PropsWithChildren<
   const [state, dispatch] = useReducer(toolbarReducer, {
     ...TOOLBAR_CONTEXT_INITIAL_STATE,
     items: props.items,
-    readOnly: readOnly,
+    readOnly: readOnly ?? false,
   });
 
   const addItem = () => {

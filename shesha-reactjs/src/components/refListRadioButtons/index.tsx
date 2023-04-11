@@ -44,7 +44,6 @@ const RefListRadioButtons: FC<IRefListRadioButtonsProps> = ({
   filters = [],
   orientation = 'inline',
   optionType = 'default',
-  size,
   onChange,
   onSelectionChange,
   ...rest

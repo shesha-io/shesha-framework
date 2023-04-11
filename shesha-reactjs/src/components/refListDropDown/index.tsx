@@ -2,7 +2,7 @@ import { GenericRefListDropDown } from './genericRefListDropDown';
 import { RawRefListDropDown } from './rawRefListDropDown';
 import { DtoRefListDropDown } from './dtoRefListDropDown';
 
-export { IRefListDropDownProps, IRefListDropDownOption } from './models';
+export { type IRefListDropDownProps, type IRefListDropDownOption } from './models';
 export { RawRefListDropDown } from './rawRefListDropDown';
 export { DtoRefListDropDown } from './dtoRefListDropDown';
 

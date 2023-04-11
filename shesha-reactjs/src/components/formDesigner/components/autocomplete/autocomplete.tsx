@@ -1,12 +1,12 @@
 import { FileSearchOutlined } from '@ant-design/icons';
 import { message } from 'antd';
 import React, { Key, useMemo } from 'react';
-import { axiosHttp } from '../../../../apis/axios';
+import { axiosHttp } from '../../../../utils/fetchers';
 import { IToolboxComponent } from '../../../../interfaces';
 import { DataTypes } from '../../../../interfaces/dataTypes';
-import { FormIdentifier, useFormData, useGlobalState, useSheshaApplication } from '../../../../providers';
+import { useFormData, useGlobalState, useSheshaApplication } from '../../../../providers';
 import { useForm } from '../../../../providers/form';
-import { FormMarkup, IConfigurableFormComponent } from '../../../../providers/form/models';
+import { FormMarkup } from '../../../../providers/form/models';
 import {
   evaluateString,
   evaluateValue,
@@ -14,7 +14,7 @@ import {
   replaceTags,
   validateConfigurableComponentSettings,
 } from '../../../../providers/form/utils';
-import Autocomplete, { AutocompleteDataSourceType, ISelectOption } from '../../../autocomplete';
+import Autocomplete, { ISelectOption } from '../../../autocomplete';
 import ConfigurableFormItem from '../formItem';
 import { customDropDownEventHandler } from '../utils';
 import settingsFormJson from './settingsForm.json';
@@ -22,51 +22,21 @@ import moment from 'moment';
 import { isEmpty } from 'lodash';
 import camelCaseKeys from 'camelcase-keys';
 import { evaluateDynamicFilters } from '../../../../providers/dataTable/utils';
-
-interface IQueryParamProp {
-  id: string;
-  param?: string;
-  value?: Key;
-}
+import { IAutocompleteComponentProps } from './interfaces';
 
 interface IQueryParams {
   // tslint:disable-next-line:typedef-whitespace
   [name: string]: Key;
 }
 
-export interface IAutocompleteProps extends IConfigurableFormComponent {
-  entityTypeShortAlias?: string;
-  entityDisplayProperty?: string;
-  hideBorder?: boolean;
-  dataSourceUrl?: string;
-  dataSourceType: AutocompleteDataSourceType;
-  mode?: 'tags' | 'multiple';
-  useRawValues: boolean;
-  queryParams?: IQueryParamProp[];
-  keyPropName?: string;
-  valuePropName?: string;
-  filter?: string;
-  disableSearch?: boolean;
-  placeholder?: string;
-  quickviewEnabled?: boolean;
-  quickviewFormPath?: FormIdentifier;
-  quickviewDisplayPropertyName?: string;
-  quickviewGetEntityUrl?: string;
-  quickviewWidth?: number;
-  width?: number;
-  minWidth?: number;
-  maxWidth?: number;
-  allowFreeText?: boolean;
-}
-
 const settingsForm = settingsFormJson as FormMarkup;
 
-const AutocompleteComponent: IToolboxComponent<IAutocompleteProps> = {
+const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   type: 'autocomplete',
   name: 'Autocomplete',
   icon: <FileSearchOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
-  factory: (model: IAutocompleteProps, _c, form) => {
+  factory: (model: IAutocompleteComponentProps, _c, form) => {
     const { queryParams, filter } = model;
     const { formMode, isComponentDisabled, setFormDataAndInstance } = useForm();
     const { data } = useFormData();
@@ -82,7 +52,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteProps> = {
 
       const localFormData = !isEmpty(data) ? camelCaseKeys(data, { deep: true, pascalCase: true }) : data;
 
-      const _response = evaluateDynamicFilters(
+      const response = evaluateDynamicFilters(
         [{ expression: filter } as any],
         [
           {
@@ -96,9 +66,9 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteProps> = {
         ]
       );
       //@ts-ignore everything is in place here
-      if (_response.find(f => f?.unevaluatedExpressions?.length)) return '';
+      if (response.find(f => f?.unevaluatedExpressions?.length)) return '';
 
-      return JSON.stringify(_response[0]?.expression) || '';
+      return JSON.stringify(response[0]?.expression) || '';
     }, [filter, data, globalState]);
 
     const getQueryParams = (): IQueryParams => {
@@ -207,14 +177,14 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteProps> = {
   settingsFormMarkup: settingsForm,
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
   initModel: model => {
-    const customProps: IAutocompleteProps = {
+    const customProps: IAutocompleteComponentProps = {
       ...model,
       dataSourceType: 'entitiesList',
       useRawValues: false,
     };
     return customProps;
   },
-  linkToModelMetadata: (model, metadata): IAutocompleteProps => {
+  linkToModelMetadata: (model, metadata): IAutocompleteComponentProps => {
     return {
       ...model,
       useRawValues: true,

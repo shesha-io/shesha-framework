@@ -86,6 +86,7 @@ export interface IFormActionsContext {
   registerActions: (id: string, actions: IFormActions) => void;
   /**
    * Get closest form action by name
+   *
    * @param id: id of the current component
    * @param name: name of the action
    */

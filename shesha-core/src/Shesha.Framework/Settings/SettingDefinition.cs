@@ -42,6 +42,10 @@ namespace Shesha.Settings
         public abstract Type GetValueType();
         
         public string ModuleName { get; set; }
+
+        public string FullName => !string.IsNullOrWhiteSpace(ModuleName)
+            ? $"{ModuleName}.{Name}"
+            : Name;
     }
 
     public class SettingDefinition<TValue>: SettingDefinition

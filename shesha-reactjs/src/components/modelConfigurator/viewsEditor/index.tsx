@@ -6,7 +6,7 @@ import FormAutocomplete from '../../formAutocomplete';
 import { FormIdentifier } from '../../../providers/form/models';
 
 interface IViewsEditorProps {
-    value?: EntityViewConfigurationDto[],
+    value?: EntityViewConfigurationDto[];
     onChange?: (value: EntityViewConfigurationDto[]) => void;    
 }
 
@@ -16,12 +16,12 @@ export const ViewsEditorComponent: FC<IViewsEditorProps> = (props) => {
            <ViewsEditor {...props} />
        </Form.Item>
     );   
-}
+};
 
 const ViewsEditor: FC<IViewsEditorProps> = (props) => {
     const onDeleteClick = (type: string) => {
-        if (props.onChange) props.onChange(props.value.filter(x => x.type != type));
-    }
+        if (props.onChange) props.onChange(props.value.filter(x => x.type !== type));
+    };
 
     const onAddClick = () => {
         if (props.onChange) {
@@ -29,21 +29,21 @@ const ViewsEditor: FC<IViewsEditorProps> = (props) => {
             items.push({isStandard: false, type: '', formId: null});
             props.onChange(items);
         }
-    }
+    };
 
     const onChangeType = (item, value) => {
         item.type = value;
         if (props.onChange) props.onChange([...props.value]);
-    }
+    };
 
     const onChangeForm = (item, value) => {
         item.formId = value;
         if (props.onChange) props.onChange([...props.value]);
-    }
+    };
 
     const allowAdd = useMemo(() => {
         return props.value ? !props.value.find(v => !v?.type) : true;
-    }, [props.value])
+    }, [props.value]);
 
     return (
         <div>
@@ -53,7 +53,9 @@ const ViewsEditor: FC<IViewsEditorProps> = (props) => {
                         <div className='ant-form-item-label'>
                         {item.isStandard 
                             ? <label>{item.type}</label>
-                            : <Input value={item.type} style={{textAlign: 'right'}} onChange={(e) => {onChangeType(item, e.target.value)}}/>
+                            : <Input value={item.type} style={{textAlign: 'right'}} onChange={(e) => {
+onChangeType(item, e.target.value);
+}}/>
                         }
                         </div>
                     </Col>
@@ -65,7 +67,9 @@ const ViewsEditor: FC<IViewsEditorProps> = (props) => {
                             <Col span={2} style={{textAlign:'center'}}>
                             {
                                 !item.isStandard &&
-                                <Button icon={<DeleteFilled color="red" />} onClick={() => {onDeleteClick(item.type)}} size="small" danger />
+                                <Button icon={<DeleteFilled color="red" />} onClick={() => {
+onDeleteClick(item.type);
+}} size="small" danger />
                             }
                             </Col>
                         </Row>
@@ -79,4 +83,4 @@ const ViewsEditor: FC<IViewsEditorProps> = (props) => {
             </Row>
         </div>
     );
-}
+};

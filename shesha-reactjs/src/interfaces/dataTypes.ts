@@ -52,7 +52,7 @@ export const DataTypes = {
     object: 'object',
     objectReference: 'object-reference',
     specification: 'specification',
-}
+};
 
 export const StringFormats = {
     singleline: "singleline",
@@ -64,4 +64,4 @@ export const StringFormats = {
     emailAddress: "email",
     phoneNumber: "phone",
     url: "url",
-}
+};

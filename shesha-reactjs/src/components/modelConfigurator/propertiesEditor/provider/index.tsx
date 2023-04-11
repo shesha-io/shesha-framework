@@ -54,7 +54,7 @@ const PropertiesEditorProvider: FC<PropsWithChildren<IPropertiesEditorProviderPr
         props.onChange(updatedItems);
       }        
     });
-  }
+  };
 
   const addItem = (parentId?: string) => {
     //return dispatchDeferred

@@ -13,7 +13,7 @@ import ReactTable from '../reactTable';
 import { removeUndefinedProperties } from '../../utils/array';
 import { ValidationErrors } from '..';
 import { useDataTableStore } from '../../providers';
-import { camelcaseDotNotation } from '../../providers/form/utils';
+import { camelcaseDotNotation } from '../../utils/string';
 import { IReactTableProps } from '../reactTable/interfaces';
 import { usePrevious } from 'react-use';
 

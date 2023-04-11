@@ -1,6 +1,5 @@
 import React from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import GlobalStateProvider, { useGlobalState } from '.';
 import { Button, notification, Space } from 'antd';
 import { IConfigurableFormProps } from '../../components';
@@ -9,7 +8,7 @@ import StoryApp from '../../components/storyBookApp';
 
 export default {
   title: 'Providers/GlobalState',
-  component: GlobalStateProvider,
+  component: GlobalStateProvider
 } as Meta;
 
 const KEY_ONE = 'KEY_ONE';

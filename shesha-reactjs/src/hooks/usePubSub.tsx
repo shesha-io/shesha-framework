@@ -55,6 +55,7 @@ interface ISubscription<T> {
 
   /**
    * A function for publishing events
+   *
    * @param token - event name
    * @param data - data to publish
    */
@@ -81,7 +82,7 @@ export const usePubSub = (): ISubscription<IPubSubPayload> => {
     window.addEventListener(token, handleEvent, false);
   };
 
-  const unsubscribe = (token: string) => removeEventListener(token, () => {}, false);
+  const unsubscribe = (token: string) => removeEventListener(token, () => { /*nop*/ }, false);
 
   const publish = (token: string, data?: IPubSubPayload) =>
     dispatchEvent(new CustomEvent(token, { detail: data || {} }));
@@ -154,7 +155,7 @@ export function useSubscribedValue<T extends IPubSubPayload>(
     });
 
     return () => {
-      window.removeEventListener(eventName, () => {}, false);
+      window.removeEventListener(eventName, () => { /**/ }, false);
     };
   }, [eventName, deps]);
 

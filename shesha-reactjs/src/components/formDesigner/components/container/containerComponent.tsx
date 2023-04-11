@@ -1,20 +1,12 @@
 import React from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
-import { IConfigurableFormComponent } from '../../../../providers/form/models';
 import { GroupOutlined } from '@ant-design/icons';
-import ComponentsContainer, { ICommonContainerProps } from '../../componentsContainer';
+import ComponentsContainer from '../../componentsContainer';
 import { useForm } from '../../../../providers/form';
 import { getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import { getSettings } from './settingsForm';
 import { useFormData } from '../../../../providers';
-
-export type ContainerDirection = 'horizontal' | 'vertical';
-
-export interface IContainerComponentProps extends IConfigurableFormComponent, ICommonContainerProps {
-  className?: string;
-  wrapperStyle?: string;
-  components: IConfigurableFormComponent[]; // Only important for fluent API
-}
+import { ICommonContainerProps, IContainerComponentProps } from './interfaces';
 
 const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   type: 'container',
@@ -60,17 +52,15 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   },
   settingsFormMarkup: data => getSettings(data),
   validateSettings: model => validateConfigurableComponentSettings(getSettings(model), model),
-  initModel: (model: IContainerComponentProps) => {
-    const customProps: IContainerComponentProps = {
-      ...model,
-      direction: 'vertical',
-      justifyContent: 'left',
-      display: 'block',
-      flexWrap: 'wrap',
-    };
-
-    return customProps;
-  },
+  migrator: m =>
+    m.add<IContainerComponentProps>(0, prev => ({
+      ...prev,
+      direction: prev['direction'] ?? 'vertical',
+      justifyContent: prev['justifyContent'] ?? 'left',
+      display: prev['display']/* ?? 'block'*/,
+      flexWrap: prev['flexWrap'] ?? 'wrap',
+      components: prev['components'] ?? []
+    })),
 };
 
 export default ContainerComponent;

@@ -1,28 +1,30 @@
 import { IAnnotation } from "./model";
 
 
-function canSubmit(data: IAnnotation[], minPoints: number, maxPoints: number,) {
-    const numberOfPoints = data?.length;
-    if (!!minPoints && numberOfPoints < minPoints) {
-        return false;
-    } else if (!!maxPoints && numberOfPoints > maxPoints) {
+function canSubmit(data: IAnnotation[], minPoints: number) {
+
+    const numberOfPoints = data?.filter(({ comment }) => !!comment)?.length;
+
+    if (numberOfPoints < minPoints) {
         return false;
     }
     return true;
 }
 function parseIntOrDefault(input: any, defaultValue: number = 0): number {
-    const parsed = parseInt(input, 0);
+    const parsed = parseInt(input, 10);
     return isNaN(parsed) ? defaultValue : parsed;
 }
 function sortAnnotationData(data: IAnnotation[]) {
+
     let annotationLength = data?.length;
     const arrangedComments = data
         ?.filter(mark => !!mark?.comment)
         ?.sort((a, b) => {
             const order = [...a.comment?.split('.'), ...b.comment?.split('.')];
-            return parseInt(order[0]) - parseInt(order[2]);
+            return parseInt(order[0], 10) - parseInt(order[2], 10);
         })
         ?.map(({ comment, ...rest }, index) => {
+
             const [, commt] = comment?.split('.');
             return {
                 ...rest,
@@ -50,5 +52,22 @@ function getViewData(data: IAnnotation[], allowAddingNotes = false) {
     return viewData;
 }
 
-export { parseIntOrDefault, sortAnnotationData, getViewData, canSubmit };
+
+
+
+function getCustomEnabled(customVisibility: string, name: string, data = {}, globalState = {}, formMode) {
+    if (customVisibility) {
+        const customVisibilityExecutor = new Function('value, data, globalState, formMode', customVisibility);
+
+        return customVisibilityExecutor(data?.[name], data, globalState, formMode);
+
+    } else {
+        return true;
+    }
+
+
+}
+
+
+export { parseIntOrDefault, sortAnnotationData, getViewData, canSubmit, getCustomEnabled };
 

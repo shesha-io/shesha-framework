@@ -3,6 +3,8 @@ const processRecursive = (jsonLogic: object, callback: NodeCallback) => {
     if (!jsonLogic)
         return;
     for (const operator in jsonLogic) {
+        if (!jsonLogic.hasOwnProperty(operator))
+            continue;
         const args = jsonLogic[operator];
 
         callback(operator, args);
@@ -10,13 +12,13 @@ const processRecursive = (jsonLogic: object, callback: NodeCallback) => {
         if (Array.isArray(args)) {
             args.forEach(arg => {
                 if (typeof (arg) === 'object')
-                    processRecursive(arg, callback)
+                    processRecursive(arg, callback);
             });
         } else
             if (typeof (args) === 'object') // note: single arguments may be presented as objects, example: {"!!": {"var": "user.userName"}}
-                processRecursive(args, callback)
+                processRecursive(args, callback);
     }
-}
+};
 
 export const extractVars = (jsonLogic: object): string[] => {
     const result = [];
@@ -30,7 +32,7 @@ export const extractVars = (jsonLogic: object): string[] => {
         });
 
     return result;
-}
+};
 
 export interface IArgumentEvaluationResult {
     handled: boolean;
@@ -64,7 +66,7 @@ export const convertJsonLogicNode = (jsonLogic: object, argumentEvaluator: JsonL
         } else {
             // note: single arguments may be presented as objects, example: {"!!": {"var": "user.userName"}}
             if (typeof (args) === 'object') {
-                convertedArgs = convertJsonLogicNode(args, argumentEvaluator)
+                convertedArgs = convertJsonLogicNode(args, argumentEvaluator);
             } else {
                 const evaluationResult = argumentEvaluator(operator, [args], 0);
                 convertedArgs = evaluationResult.handled
@@ -75,4 +77,4 @@ export const convertJsonLogicNode = (jsonLogic: object, argumentEvaluator: JsonL
         result[operator] = convertedArgs;
     }
     return result;
-}
+};

@@ -21,7 +21,7 @@ import {
 import cleanDeep from 'clean-deep';
 import { getQueryParams } from '../../utils/url';
 import _ from 'lodash';
-import { axiosHttp } from '../../apis/axios';
+import { axiosHttp } from '../../utils/fetchers';
 import qs from 'qs';
 import axios, { AxiosResponse } from 'axios';
 import { FormConfigurationDto, useFormData } from '../../providers/form/api';
@@ -394,8 +394,8 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
           } else {
             doPost();
           }
-        } // note: we pass merged values
-        else if (props.onFinish) props.onFinish(postData, null, options);
+        } else 
+          if (props.onFinish) props.onFinish(postData, null, options);
       })
       .catch(error => console.error(error));
   };

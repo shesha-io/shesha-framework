@@ -5,6 +5,7 @@ using Castle.MicroKernel.Registration;
 using Shesha.Modules;
 using Shesha.Settings.Ioc;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Shesha.Sms.Clickatell
 {
@@ -21,6 +22,11 @@ namespace Shesha.Sms.Clickatell
             Publisher = "Boxfusion"
         };
 
+        public override async Task<bool> InitializeConfigurationAsync()
+        {
+            return await ImportConfigurationAsync();
+        }
+
         public override void PreInitialize()
         {
             Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(
@@ -34,9 +40,12 @@ namespace Shesha.Sms.Clickatell
             IocManager.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
 
             IocManager.RegisterSettingAccessor<IClickatellSettings>(s => {
-                s.Host.WithDefaultValue("api.clickatell.com");
-                s.SingleMessageMaxLength.WithDefaultValue(DefaultSingleMessageMaxLength);
-                s.MessagePartLength.WithDefaultValue(DefaultMessagePartLength);
+                s.GatewaySettings.WithDefaultValue(new GatewaySettings
+                {
+                    Host = "api.clickatell.com",
+                    SingleMessageMaxLength = DefaultSingleMessageMaxLength,
+                    MessagePartLength = DefaultMessagePartLength
+                });
             });
 
             IocManager.IocContainer.Register(

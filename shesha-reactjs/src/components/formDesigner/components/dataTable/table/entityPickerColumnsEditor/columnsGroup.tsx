@@ -1,16 +1,21 @@
 import React, { FC } from 'react';
 import { Button } from 'antd';
 import { DeleteFilled } from '@ant-design/icons';
-import { IConfigurableColumnGroup } from '../../../../../../providers/datatableColumnsConfigurator/models';
+import { ColumnsItemProps, IConfigurableColumnGroup } from '../../../../../../providers/datatableColumnsConfigurator/models';
 import { useColumnsConfigurator } from '../../../../../../providers/datatableColumnsConfigurator';
-import ToolbarItemsContainer from './columnsContainer';
 import DragHandle from './dragHandle';
 
-export interface IProps extends IConfigurableColumnGroup {
-  index: number[];
+export interface IContainerRenderArgs {
+  index?: number[];
+  items: ColumnsItemProps[];
 }
 
-export const ColumnsGroup: FC<IProps> = props => {
+export interface IColumnsGroupProps extends IConfigurableColumnGroup {
+  index: number[];
+  containerRendering: (args: IContainerRenderArgs) => React.ReactNode;
+}
+
+export const ColumnsGroup: FC<IColumnsGroupProps> = props => {
   const { deleteGroup, selectedItemId, readOnly } = useColumnsConfigurator();
 
   const onDeleteClick = () => {
@@ -32,7 +37,7 @@ export const ColumnsGroup: FC<IProps> = props => {
         )}
       </div>
       <div className="sha-toolbar-group-container">
-        <ToolbarItemsContainer index={props.index} items={props.childItems || []} />
+        {props.containerRendering({ index: props.index, items: props.childItems || [] })}
       </div>
     </div>
   );

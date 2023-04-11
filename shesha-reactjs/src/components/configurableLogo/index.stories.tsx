@@ -1,13 +1,12 @@
 import React from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import ConfigurableLogo from './';
 import { AppEditModeToggler } from '../..';
 import StoryApp from '../storyBookApp';
 
 export default {
   title: 'Components/ConfigurableLogo',
-  component: ConfigurableLogo,
+  component: ConfigurableLogo
 } as Meta;
 
 export interface IConfigurableLogoStoryProps {

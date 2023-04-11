@@ -7,8 +7,8 @@ export const getReferenceListFullName = (refListId: IReferenceListIdentifier): s
     return refListId.module
         ? `${refListId.module}/${refListId.name}`
         : refListId.name;
-}
+};
 
-export const isValidRefListId = (refListId: IReferenceListIdentifier):boolean => {
+export const isValidRefListId = (refListId: IReferenceListIdentifier): boolean => {
     return Boolean(refListId && refListId.name /*&& refListId.module note: module can be ampty in legacy reference lists*/);
-}
+};

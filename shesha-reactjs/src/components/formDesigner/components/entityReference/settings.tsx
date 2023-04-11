@@ -24,7 +24,7 @@ export interface IEntityReferenceSettingsProps {
   onValuesChange?: (changedValues: any, values: IEntityReferenceProps) => void;
 }
 
-interface IEntityReferenceSettingsState extends IEntityReferenceProps {}
+interface IEntityReferenceSettingsState extends IEntityReferenceProps { }
 
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 
@@ -45,13 +45,13 @@ export const EntityReferenceSettings: FC<IEntityReferenceSettingsProps> = ({ rea
       layout="vertical"
       onValuesChange={(changedValues, values: IEntityReferenceProps) => {
         //var view = null;
-        /*if (Object.hasOwn(changedValues, 'formSelectionMode') && values.formSelectionMode == 'dynamic'
+        /*if (Object.hasOwn(changedValues, 'formSelectionMode') && values.formSelectionMode === 'dynamic'
           || Object.hasOwn(changedValues, 'entityReferenceType')) {
-          if (values.entityReferenceType == 'Dialog')
+          if (values.entityReferenceType === 'Dialog')
             view = 'Details';
-          if (values.entityReferenceType == 'NavigateLink')
+          if (values.entityReferenceType === 'NavigateLink')
             view = 'Details';
-          if (values.entityReferenceType == 'Quickview')
+          if (values.entityReferenceType === 'Quickview')
             view = 'Quickview';
         }*/
         const incomingState = { ...values/*, formType: view ?? state.formType*/ };
@@ -105,7 +105,7 @@ export const EntityReferenceSettings: FC<IEntityReferenceSettingsProps> = ({ rea
 
       <MetadataProvider modelType={state?.entityType}>
         <FormItem name="displayProperty" label="Display property">
-            <PropertyAutocomplete readOnly={readOnly} showFillPropsButton={false}/>
+          <PropertyAutocomplete readOnly={readOnly} showFillPropsButton={false} />
         </FormItem>
       </MetadataProvider>
 
@@ -124,7 +124,7 @@ export const EntityReferenceSettings: FC<IEntityReferenceSettingsProps> = ({ rea
         </Select>
       </FormItem>
 
-      {state?.formSelectionMode == 'dynamic' && (
+      {state?.formSelectionMode === 'dynamic' && (
         <>
           <FormItem name="formType" label="Form type">
             <AutoComplete
@@ -134,8 +134,8 @@ export const EntityReferenceSettings: FC<IEntityReferenceSettingsProps> = ({ rea
                 setFormTypesOptions(
                   (t
                     ? formTypes.filter(f => {
-                        return f.toLowerCase().includes(t.toLowerCase());
-                      })
+                      return f.toLowerCase().includes(t.toLowerCase());
+                    })
                     : formTypes
                   ).map(i => {
                     return { value: i };
@@ -146,10 +146,10 @@ export const EntityReferenceSettings: FC<IEntityReferenceSettingsProps> = ({ rea
           </FormItem>
         </>
       )}
-      {(state?.formSelectionMode == 'name') && (
-          <FormItem name="formIdentifier" label="Form">
-            <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
-          </FormItem>
+      {(state?.formSelectionMode === 'name') && (
+        <FormItem name="formIdentifier" label="Form">
+          <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
+        </FormItem>
       )}
 
       <Show when={state?.entityReferenceType === 'Quickview'}>
@@ -180,24 +180,26 @@ export const EntityReferenceSettings: FC<IEntityReferenceSettingsProps> = ({ rea
           </FormItem>
         }
         <Form.Item name="additionalProperties" label="Additional properties">
-          <LabelValueEditor 
+          <LabelValueEditor
             labelName='key'
             labelTitle='Key'
             valueName='value'
             valueTitle='Value'
-            description='Additional properties you want to be passed when the form gets submitted like parentId in the case where the modal is used in a childTable. Also note you can use Mustache expression like {{id}} for value property'
+            description={'Additional properties you want to be passed when the form gets submitted like parentId in the case where the modal is used in a childTable. ' +
+              'Also note you can use Mustache expression like {{id}} for value property'
+            }
           />
         </Form.Item>
 
         <FormItem name="modalWidth" label="Dialog Width (%)">
-            <Select disabled={readOnly}>
-              <Option value="40%">Small</Option>
-              <Option value="60%">Medium</Option>
-              <Option value="80%">Large</Option>
-              <Option value="custom">Custom</Option>
-            </Select>
-          </FormItem>
-          {state?.modalWidth == 'custom' &&
+          <Select disabled={readOnly}>
+            <Option value="40%">Small</Option>
+            <Option value="60%">Medium</Option>
+            <Option value="80%">Large</Option>
+            <Option value="custom">Custom</Option>
+          </Select>
+        </FormItem>
+        {state?.modalWidth === 'custom' &&
           <>
             <FormItem name="widthUnits" label="Units">
               <Select disabled={readOnly}>
@@ -209,29 +211,29 @@ export const EntityReferenceSettings: FC<IEntityReferenceSettingsProps> = ({ rea
               <InputNumber min={0} readOnly={readOnly} />
             </FormItem>
           </>
-          }
+        }
 
-          <Form.Item name="handleSuccess" label="Handle Success" valuePropName="checked">
-            <Switch />
-          </Form.Item>
-          {state?.handleSuccess &&
+        <Form.Item name="handleSuccess" label="Handle Success" valuePropName="checked">
+          <Switch />
+        </Form.Item>
+        {state?.handleSuccess &&
           <CollapsiblePanel header="On Success handler">
             <FormItem name="onSuccess" label="On Success">
               <ConfigurableActionConfigurator editorConfig={null} level={0} />
             </FormItem>
           </CollapsiblePanel>
-          }
+        }
 
-          <Form.Item name="handleFail" label="Handle Fail" valuePropName="checked">
-            <Switch />
-          </Form.Item>
-          {state?.handleFail &&
+        <Form.Item name="handleFail" label="Handle Fail" valuePropName="checked">
+          <Switch />
+        </Form.Item>
+        {state?.handleFail &&
           <CollapsiblePanel header="On Fail handler">
             <FormItem name="onFail" label="On Fail">
               <ConfigurableActionConfigurator editorConfig={null} level={0} />
             </FormItem>
           </CollapsiblePanel>
-          }
+        }
       </Show>
 
 
@@ -280,7 +282,9 @@ export const EntityReferenceSettings: FC<IEntityReferenceSettingsProps> = ({ rea
       <FormItem
         label="Custom Visibility"
         name="customVisibility"
-        tooltip="Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
+        tooltip={"Enter custom visibility code.  You must return true to show the component. " + 
+          "The global variable data is provided, and allows you to access the data of any form component, by using its API key."
+        }
       >
         <CodeEditor
           readOnly={readOnly}
@@ -290,7 +294,9 @@ export const EntityReferenceSettings: FC<IEntityReferenceSettingsProps> = ({ rea
           name="customVisibility"
           type={''}
           id={''}
-          description="Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
+          description={"Enter custom visibility code.  You must return true to show the component. " + 
+            "The global variable data is provided, and allows you to access the data of any form component, by using its API key."
+          }
           exposedVariables={[
             {
               id: '788673a5-5eb9-4a9a-a34b-d8cea9cacb3c',

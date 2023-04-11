@@ -1,25 +1,30 @@
-import { getString } from '../../../../providers/form/utils';
 import React, { FC, useEffect, useRef, useState } from 'react';
 import { ReactPictureAnnotation } from 'react-picture-annotation';
-import { FormMode, useForm, useFormData } from '../../../../providers';
+import { usePrevious } from '../../../../hooks';
+import { useForm, useFormData, useGlobalState } from '../../../../providers';
+import { getString, getStyle } from '../../../../providers/form/utils';
+import CustomInput from './components/customAnnotationInput';
+import DescriptionsList from './components/descriptionList';
+import WarningMessage from './components/warningMessage';
+
 import { IAnnotation, IImageAnnotationData, IImageProps } from './model';
 import './styles/index.less';
-import DescriptionsList from './components/descriptionList';
-import CustomInput from './components/customAnnotationInput';
-import { canSubmit, getViewData, parseIntOrDefault, sortAnnotationData } from './utilis';
-import AlertMessage from './components/alertMessage';
+import { canSubmit, getCustomEnabled, getViewData, parseIntOrDefault, sortAnnotationData } from './utilis';
+import { name } from 'pubsub-js';
+
 
 interface IProps {
-  formMode?: FormMode;
   model: IImageProps;
   onChange?: Function;
   value?: any;
 }
 
 const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, value }) => {
-  const { isOnImage, height, width, allowAddingNotes = true, minPoints = 0, maxPoints = 0 } = model;
+  const { isOnImage, height, width, allowAddingNotes = true, minPoints = 0, maxPoints = 0, disabled, customEnabled, style } = model;
 
   const { data: formData } = useFormData();
+
+  const { globalState } = useGlobalState();
 
   const { formMode } = useForm();
 
@@ -35,9 +40,12 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
     viewData: value || [],
   });
 
-  const url: string = getString(model?.url, formData) || formData?.[model.name];
+  const prevLeghth = usePrevious(imageAnnotationData?.viewData?.length);
 
-  const isReadOnly = model?.readOnly || formMode === 'readonly';
+  const isCustomEnabled = getCustomEnabled(customEnabled, name, formData, globalState, formMode);
+
+  const isReadOnly = model?.readOnly || formMode === 'readonly' || disabled || !isCustomEnabled;
+
 
   useEffect(() => {
     window.addEventListener('resize', onResize);
@@ -63,6 +71,9 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
     }));
   }, [height, width]);
 
+
+  const url: string = getString(model?.url, formData, globalState) || formData?.[model.name];
+
   const onResize = () => {
     setPageSize({
       width: parseIntOrDefault(imageFrameRef?.current?.offsetWidth),
@@ -70,28 +81,72 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
     });
   };
 
-  const onSelect = () => {};
+
+  const setIsRequired = (required: boolean) => {
+
+    model.validate.required = required;
+
+    model.validate.message = `Enter a minimum of ${minPoints || 1} points`;
+
+    //This force instant update of the form validation
+    const imageElement = imageFrameRef?.current?.getElementsByClassName('rp-stage')[0]?.getElementsByClassName('rp-shapes')[0] as HTMLDivElement;
+
+    imageElement?.click();
+
+
+  };
+
+  const onSelect = () => { };
+
 
   const onChange = (data: IAnnotation[]) => {
     if (!isReadOnly) {
+
+      if (!!maxPoints && maxPoints < data.length) return;
+      const recordedData = data?.filter(({ comment }) => !!comment);
+
       setImageAnnotationData({
         viewData: allowAddingNotes ? data : getViewData(sortAnnotationData(data), allowAddingNotes),
-        actualData: data,
+        actualData: recordedData,
       });
-      if (canSubmit(data, minPoints, maxPoints)) {
+
+      if (canSubmit(data, minPoints)) {
+
+        setIsRequired(false);
+
         onChangeForm(sortAnnotationData(data));
+
+      } else {
+
+        const recordeddata = data?.filter(({ comment }) => !!comment)?.length;
+
+        if (!!minPoints && minPoints > recordeddata) {
+
+          setIsRequired(true);
+        }
+
+        onChangeForm([]);
       }
     }
   };
 
-  const maxpointReached = !!maxPoints && imageAnnotationData?.actualData?.length - 1 >= maxPoints;
 
-  return (
+  const hasUpdated = prevLeghth != imageAnnotationData?.viewData?.length;
+
+  const maxReached = !!maxPoints && imageAnnotationData?.viewData?.filter(({ comment }) => !!comment).length == maxPoints;
+
+
+  return (<>
+    <WarningMessage
+      isReadonly={isReadOnly}
+      maxPoints={maxPoints}
+      maxReached={maxReached}
+      width={pageSize?.width}
+    />
     <div className="annotation-conatainer">
-      <div className="container-image" ref={imageFrameRef} style={{ ...pageSize }}>
-        {!isReadOnly && (
-          <AlertMessage minPoints={minPoints} maxPoints={maxPoints} data={imageAnnotationData?.actualData} />
-        )}
+
+      <div className="container-image" ref={imageFrameRef} style={{ ...pageSize, ...getStyle(style, formData, globalState) }}>
+
         <ReactPictureAnnotation
           inputElement={(value, onChange, onDelete) => (
             <CustomInput
@@ -101,7 +156,9 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
               onDelete={onDelete}
             />
           )}
-          annotationData={sortAnnotationData(imageAnnotationData.viewData)}
+          annotationData={
+            hasUpdated ? sortAnnotationData(imageAnnotationData.viewData) : imageAnnotationData.viewData
+          }
           image={url}
           onSelect={onSelect}
           onChange={onChange}
@@ -110,19 +167,23 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
           marginWithInput={2}
         />
       </div>
-      {(isReadOnly || maxpointReached) && <div className="container-image-Cover" style={{ ...pageSize }} />}
+      {isReadOnly && <div className="container-image-Cover" style={{ ...pageSize }} />}
 
-      {!isOnImage && allowAddingNotes && (
-        <div
-          className="description-container"
-          style={{
-            height: pageSize.height,
-          }}
-        >
-          <DescriptionsList data={sortAnnotationData(imageAnnotationData?.actualData)} />
-        </div>
-      )}
     </div>
+
+    {!isOnImage && allowAddingNotes && (
+      <div
+        className="description-container"
+        style={{
+          height: pageSize.height,
+        }}
+      >
+        <DescriptionsList data={sortAnnotationData(imageAnnotationData?.actualData)} />
+      </div>
+    )}
+
+
+  </>
   );
 };
 

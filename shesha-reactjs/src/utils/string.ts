@@ -1,3 +1,5 @@
+import camelcase from 'camelcase';
+
 /* tslint:disable:no-empty-character-class */
 
 // This code was copied from https://www.npmjs.com/package/decamelize/v/6.0.0 to fix ERR_REQUIRE_ESM
@@ -131,3 +133,10 @@ export function getNumberFormat(str: any, format: string) {
 
   return str;
 }
+
+/* Convert string to camelCase */
+export const camelcaseDotNotation = str =>
+  str
+    .split('.')
+    .map(s => camelcase(s))
+    .join('.');

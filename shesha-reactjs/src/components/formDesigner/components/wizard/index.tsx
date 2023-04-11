@@ -11,7 +11,7 @@ import WizardSettings from './settings';
 import { IStepProps, IWizardComponentProps } from './models';
 import ShaIcon from '../../../shaIcon';
 import moment from 'moment';
-import { axiosHttp } from '../../../../apis/axios';
+import { axiosHttp } from '../../../../utils/fetchers';
 import { migrateV0toV1, IWizardComponentPropsV0 } from './migrations/migrate-v1';
 import {
   useConfigurableAction,

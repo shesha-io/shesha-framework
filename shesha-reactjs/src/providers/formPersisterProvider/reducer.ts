@@ -5,8 +5,7 @@ import {
 } from './contexts';
 import { FormPersisterActionEnums } from './actions';
 import { handleActions } from 'redux-actions';
-import { IFormSettings } from '../form/models';
-import { IPersistedFormProps } from './models';
+import { IFormSettings, IPersistedFormProps } from '../form/models';
 import { IErrorInfo } from '../../interfaces/errorInfo';
 
 const reducer = handleActions<IFormPersisterStateContext, any>(

@@ -1,6 +1,5 @@
 import React, { FC, useState } from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import Autocomplete from './';
 import { Button, Form } from 'antd';
 import { addStory } from '../../stories/utils';
@@ -9,7 +8,7 @@ import { AutocompleteDataSourceType, IAutocompleteProps } from './models';
 
 export default {
   title: 'Components/Autocomplete',
-  component: Autocomplete,
+  component: Autocomplete
 } as Meta;
 
 interface IStoryArgs extends IAutocompleteProps {

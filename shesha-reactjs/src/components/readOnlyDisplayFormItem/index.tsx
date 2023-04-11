@@ -31,7 +31,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = ({
 }) => {
   const { formSettings, setFormMode, formMode } = useForm(false) ?? {
     formSettings: null,
-    setFormMode: () => {},
+    setFormMode: () => { /*nop*/ },
     formMode: 'readonly',
   };
 

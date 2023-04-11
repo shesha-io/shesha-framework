@@ -17,4 +17,4 @@ export const EMPTY_FLAGS_STATE: IFlagsState<string, string, string, string> = {
   succeeded: {},
   error: {},
   actioned: {},
-}
+};

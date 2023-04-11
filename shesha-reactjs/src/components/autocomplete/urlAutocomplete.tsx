@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Select, Tag } from 'antd';
+import { Select } from 'antd';
 import { AjaxResponseBase, AutocompleteItemDto } from '../../apis/autocomplete';
 import { useGet } from 'restful-react';
 import { useDebouncedCallback } from 'use-debounce';
@@ -25,7 +25,7 @@ export const UrlAutocomplete = <TValue,>(props: IUrlAutocompleteProps<TValue>) =
     getOptionFromFetchedItem,
     getLabeledValue,
     readOnly,
-    readOnlyMultipleMode = 'raw',
+    //readOnlyMultipleMode = 'raw',
     disableSearch,
     subscribedEventNames,
     allowFreeText = false,
@@ -171,6 +171,7 @@ export const UrlAutocomplete = <TValue,>(props: IUrlAutocompleteProps<TValue>) =
     } else onChange(selectedValue);
   };
 
+  /*
   if (readOnly) {
     const wrappedValue = wrapValue(value);
 
@@ -186,7 +187,7 @@ export const UrlAutocomplete = <TValue,>(props: IUrlAutocompleteProps<TValue>) =
       displayValue = (wrappedValue as any)?.label;
     }
   }
-
+  */
   const autocompleteValue = wrapValue(value);
 
   if (readOnly || disabled) {

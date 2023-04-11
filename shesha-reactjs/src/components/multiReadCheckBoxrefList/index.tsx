@@ -16,9 +16,8 @@ export const binaryToList = (val: number) => {
   let currentVal = 1;
 
   while (currentVal <= val) {
-    /* tslint:disable:no-bitwise */
-    if ((val & currentVal) === currentVal) total.push(currentVal);
-    currentVal *= 2;
+    if ((val & currentVal) === currentVal) total.push(currentVal);//eslint-disable-line no-bitwise
+    currentVal *= 2;//eslint-disable-line no-bitwise
   }
 
   return total;
