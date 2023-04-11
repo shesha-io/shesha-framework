@@ -5,6 +5,7 @@ using Castle.MicroKernel.Registration;
 using Shesha.Modules;
 using Shesha.Settings.Ioc;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Shesha.Sms.SmsPortal
 {
@@ -17,6 +18,11 @@ namespace Shesha.Sms.SmsPortal
             FriendlyName = "Shesha SMS Portal",
             Publisher = "Boxfusion"
         };
+
+        public override async Task<bool> InitializeConfigurationAsync()
+        {
+            return await ImportConfigurationAsync();
+        }
 
         public override void PreInitialize()
         {

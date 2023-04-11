@@ -5,6 +5,7 @@ using Castle.MicroKernel.Registration;
 using Shesha.Modules;
 using Shesha.Settings.Ioc;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Shesha.Sms.Clickatell
 {
@@ -20,6 +21,11 @@ namespace Shesha.Sms.Clickatell
             FriendlyName = "Shesha Clickatell",
             Publisher = "Boxfusion"
         };
+
+        public override async Task<bool> InitializeConfigurationAsync()
+        {
+            return await ImportConfigurationAsync();
+        }
 
         public override void PreInitialize()
         {
