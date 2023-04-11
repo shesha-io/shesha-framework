@@ -14,7 +14,7 @@ const AceEditorLazy = React.lazy<typeof ReactAce>(() => new Promise(async resolv
     const reactAce = await import("react-ace");
 
     // prevent warning in console about misspelled props name.
-         await import("ace-builds/src-noconflict/ext-language_tools");
+    await import("ace-builds/src-noconflict/ext-language_tools");
 
     // import your theme/mode here. <AceEditor mode="javascript" theme="monokai" />
     await import("ace-builds/src-noconflict/mode-javascript");
@@ -48,9 +48,9 @@ export const CodeEditor: FC<ICodeEditorProps> = (props) => {
 
     return (
         <React.Suspense fallback={<CodeEditorFallback />}>
-            <AceEditorLazy 
-                mode="javascript" 
-                theme="monokai" 
+            <AceEditorLazy
+                mode="javascript"
+                theme="monokai"
                 {...restProps}
                 value={restProps.value ? restProps.value : ""} // note: have to change null/undefined to empty string to force re-rendering of the editor
             />
