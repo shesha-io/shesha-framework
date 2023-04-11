@@ -33,7 +33,8 @@
     "strict": false,
     "strictNullChecks": false,
     "strictPropertyInitialization": false,
-    "target": "es5"
+    "target": "es5",
+    "baseUrl": "src"
   },
   "exclude": [
     "node_modules",

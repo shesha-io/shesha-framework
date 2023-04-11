@@ -150,7 +150,9 @@ export const CostomFormSettingEditor: FC<ISettingEditorWithValueProps> = (props)
                 module: selection.setting.module,
                 appKey: selection.app?.appKey,
             };
-            const data = { ...values ?? {} };
+            const data = selection.setting.dataType === DataTypes.object
+                ? { ...values ?? {} }
+                : values?.value; // extract scalar value
             delete data._formFields;
 
             return saveSettingValue(settingId, data);
@@ -162,11 +164,18 @@ export const CostomFormSettingEditor: FC<ISettingEditorWithValueProps> = (props)
         setEditor({ save: startSave });
     }, [selection]);
 
+    const initialValues = useMemo(() => {
+        const result = selection.setting.dataType === DataTypes.object
+            ? value
+            : { value }; // for scalar types add `value` property
+        return result;
+    }, [value]);
+    
     return (
         <ConfigurableForm
             mode={editorMode}
             form={form}
-            initialValues={value}
+            initialValues={initialValues}
             formId={editorForm}
             formRef={formRef}
         />
