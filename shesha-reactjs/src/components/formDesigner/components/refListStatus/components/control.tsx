@@ -63,8 +63,8 @@ const RefListStatusControl: FC<IProps> = ({ model }) => {
         >
           {showReflistName && currentStatus?.item}
         </Tag>
-        {((currentStatus?.description && showReflistName) ||
-          (!showReflistName && (currentStatus?.item || currentStatus?.description)) &&
+        {(((currentStatus?.description && showReflistName) ||
+          (!showReflistName && (currentStatus?.item || currentStatus?.description))) &&
           (
             <Tooltip
               placement="rightTop"
