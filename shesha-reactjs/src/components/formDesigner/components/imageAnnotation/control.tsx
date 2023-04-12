@@ -165,25 +165,29 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
           width={parseIntOrDefault(imageFrameRef?.current?.offsetWidth)}
           height={parseIntOrDefault(imageFrameRef?.current?.offsetHeight)}
           marginWithInput={2}
+
         />
       </div>
       {isReadOnly && <div className="container-image-Cover" style={{ ...pageSize }} />}
 
+
+
+      {!isOnImage && allowAddingNotes && (
+        <div
+          className="description-container"
+          style={{
+            height: pageSize.height,
+          }}
+        >
+          <DescriptionsList data={sortAnnotationData(imageAnnotationData?.actualData)} />
+        </div>
+
+      )}
     </div>
-
-    {!isOnImage && allowAddingNotes && (
-      <div
-        className="description-container"
-        style={{
-          height: pageSize.height,
-        }}
-      >
-        <DescriptionsList data={sortAnnotationData(imageAnnotationData?.actualData)} />
-      </div>
-    )}
-
-
   </>
+
+
+
   );
 };
 

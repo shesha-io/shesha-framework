@@ -63,7 +63,7 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = props => {
         <Collapse.Panel
           header={
             <Space>
-              <Button type={ readOnly ? 'default' : 'primary' } onClick={() => setModalVisible(true)} size="small">
+              <Button type={readOnly ? 'default' : 'primary'} onClick={() => setModalVisible(true)} size="small">
                 {`Query Builder ${hasValue ? '(applied)' : ''}`.trim()}
               </Button>
 
@@ -94,8 +94,8 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = props => {
             showGutter={true}
             highlightActiveLine={true}
             setOptions={{
-              enableBasicAutocompletion: true,
-              enableLiveAutocompletion: true,
+              enableBasicAutocompletion: false,
+              enableLiveAutocompletion: false,
               enableSnippets: false,
               showLineNumbers: true,
               tabSize: 2,
@@ -110,12 +110,12 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = props => {
         open={modalVisible}
         width={isSmall ? '90%' : '60%'}
         title="Query Builder"
-        
+
         onOk={onOkClick}
         okButtonProps={{ hidden: readOnly }}
-        
+
         onCancel={() => setModalVisible(false)}
-        cancelText={ readOnly ? 'Close' : undefined }
+        cancelText={readOnly ? 'Close' : undefined}
 
         destroyOnClose
       >

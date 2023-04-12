@@ -32,6 +32,14 @@ export const Bugfix = addStory(DesignerTemplate, {
   formId: '94662a92-5d7e-4e07-9aa5-a14bac64685e'
 });
 
+export const TestWizard = addStory(DesignerTemplate, {
+  formId: '51db0826-1548-4d79-8f2a-4836e3c51e18',
+  // formId: {
+  //   name: 'test-wizard-form',
+  //   module: 'Shesha',
+  // },
+  // mode: 'readonly',
+});
 export const UserManagement = addStory(DesignerTemplate, {
   formId: {
     name: 'user-management-new',

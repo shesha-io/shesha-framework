@@ -38,7 +38,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
   const onClear = () => {
     setInternalValue(null);
     if (props.onChange)
-          props.onChange(null);
+      props.onChange(null);
   };
   const meta = useMetadata(false);
 
@@ -101,8 +101,8 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
       highlightActiveLine={true}
       value={effectiveValue}
       setOptions={{
-        enableBasicAutocompletion: true,
-        enableLiveAutocompletion: true,
+        enableBasicAutocompletion: false,
+        enableLiveAutocompletion: false,
         enableSnippets: false,
         showLineNumbers: true,
         tabSize: 2,

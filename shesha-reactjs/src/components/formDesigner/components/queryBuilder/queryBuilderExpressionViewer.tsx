@@ -9,26 +9,26 @@ export const QueryBuilderExpressionViewer: FC<IQueryBuilderExpressionViewerProps
 
   return (
     <CodeEditor
-          width="100%"
-          readOnly={true}
-          value={props.value ? JSON.stringify(props.value, null, 2) : ''}
-          mode="json"
-          theme="monokai"
-          fontSize={14}
-          showPrintMargin={true}
-          showGutter={true}
-          highlightActiveLine={true}
-          setOptions={{
-            enableBasicAutocompletion: true,
-            enableLiveAutocompletion: true,
-            enableSnippets: false,
-            showLineNumbers: true,
-            tabSize: 2,
-            autoScrollEditorIntoView: true,
-            minLines: 3,
-            maxLines: 100,
-          }}
-        />
+      width="100%"
+      readOnly={true}
+      value={props.value ? JSON.stringify(props.value, null, 2) : ''}
+      mode="json"
+      theme="monokai"
+      fontSize={14}
+      showPrintMargin={true}
+      showGutter={true}
+      highlightActiveLine={true}
+      setOptions={{
+        enableBasicAutocompletion: false,
+        enableLiveAutocompletion: false,
+        enableSnippets: false,
+        showLineNumbers: true,
+        tabSize: 2,
+        autoScrollEditorIntoView: true,
+        minLines: 3,
+        maxLines: 100,
+      }}
+    />
   );
 };
 
