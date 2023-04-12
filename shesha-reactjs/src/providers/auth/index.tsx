@@ -24,7 +24,7 @@ import {
   setIsLoggedInAction,
   /* NEW_ACTION_IMPORT_GOES_HERE */
 } from './actions';
-import { URL_LOGIN_PAGE, URL_HOME_PAGE, URL_CHANGE_PASSWORD, HOME_CACHE_URL } from '../../constants';
+import { URL_LOGIN_PAGE, URL_HOME_PAGE, URL_CHANGE_PASSWORD, HOME_CACHE_URL } from 'shesha-constants';
 import { IAccessToken, IDictionary } from '../../interfaces';
 import { OverlayLoader } from '../../components/overlayLoader';
 import { sessionGetCurrentLoginInformations } from '../../apis/session';

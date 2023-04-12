@@ -48,7 +48,6 @@ export const ToolbarItemProperties: FC<IProps> = () => {
     return (
       <ConfigurableForm
         formRef={formRef}
-        layout="vertical"
         labelCol={{ span: 24 }}
         wrapperCol={{ span: 24 }}
         mode="edit"

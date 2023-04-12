@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { CONFIG_KEY } from '../constants';
+import { CONFIG_KEY } from '../shesha-constants';
 
 export interface IAppConfigType {
   baseUrl: string;

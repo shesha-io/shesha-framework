@@ -11,7 +11,7 @@ import { withAuth } from '../../hocs';
 import { useSidebarMenuDefaults } from '../../providers/sidebarMenu';
 import ConfigurableSidebarMenu from '../configurableSidebarMenu';
 import { useLocalStorage, useTheme } from '../..';
-import { SIDEBAR_MENU_NAME } from '../../constants';
+import { SIDEBAR_MENU_NAME } from '../../shesha-constants';
 
 const { Header, Content, Footer, Sider } = Layout;
 

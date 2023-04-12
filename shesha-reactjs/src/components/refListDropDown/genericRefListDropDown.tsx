@@ -130,8 +130,8 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
       value={wrapValue(value)}
       mode={mode}
     >
-      {options?.map(({ value: localValue, label, data }) => (
-        <Select.Option value={localValue} key={localValue} data={data}>
+      {options?.map(({ value: localValue, label, data }, index) => (
+        <Select.Option value={localValue} key={index} data={data}>
           {label}
         </Select.Option>
       ))}

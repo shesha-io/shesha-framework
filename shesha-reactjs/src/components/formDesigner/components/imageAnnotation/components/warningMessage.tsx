@@ -17,7 +17,7 @@ const WarningMessage: FC<IErrorMessage> = ({ maxReached, maxPoints, isReadonly, 
                 : null
             }
         </>
-    )
+    );
 };
 
 export default WarningMessage;

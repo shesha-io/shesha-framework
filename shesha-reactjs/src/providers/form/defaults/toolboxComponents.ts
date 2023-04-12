@@ -15,22 +15,22 @@ import CodeEditor from '../../../components/formDesigner/components/codeEditor';
 import CollapsiblePanel from '../../../components/formDesigner/components/collapsiblePanel/collapsiblePanelComponent';
 import ColorPickerComponent from '../../../components/formDesigner/components/colorPicker';
 import Columns from '../../../components/formDesigner/components/columns/columns';
-import ConfigurableActionConfigurator from '../../../components/formDesigner/components/configurableActionsConfigurator';
+import ConfigurableActionConfigurator from 'designer-components/configurableActionsConfigurator';
 import ContainerComponent from '../../../components/formDesigner/components/container/containerComponent';
 import DataList from '../../../components/formDesigner/components/dataList/dataListComponent';
-import AdvancedFilterButton from '../../../components/formDesigner/components/dataTable/advancedFilterButton/advancedFilterButtonComponent';
-import ChildTable from '../../../components/formDesigner/components/dataTable/childTable';
-import Filter from '../../../components/formDesigner/components/dataTable/filter/filterComponent';
-import Pager from '../../../components/formDesigner/components/dataTable/pager/pagerComponent';
-import QuickSearch from '../../../components/formDesigner/components/dataTable/quickSearch/quickSearchComponent';
-import SelectColumnsButton from '../../../components/formDesigner/components/dataTable/selectColumnsButton/selectColumnsButtonComponent';
-import ColumnsEditor from '../../../components/formDesigner/components/dataTable/table/columnsEditor/columnsEditorComponent';
-import EntityPickerColumnsEditor from '../../../components/formDesigner/components/dataTable/table/entityPickerColumnsEditor/entityPickerColumnsEditorComponent';
-import DataTable from '../../../components/formDesigner/components/dataTable/table/tableComponent';
-import TableTemplate from '../../../components/formDesigner/components/dataTable/table/tableTemplateComponent';
-import TableContext from '../../../components/formDesigner/components/dataTable/tableContext/tableContextComponent';
-import TableViewSelector from '../../../components/formDesigner/components/dataTable/tableViewSelector/tableViewSelectorComponent';
-import Toolbar from '../../../components/formDesigner/components/dataTable/toolbar/toolbarComponent';
+import AdvancedFilterButton from '../../../designer-components/dataTable/advancedFilterButton/advancedFilterButtonComponent';
+import ChildTable from '../../../designer-components/dataTable/childTable';
+import Filter from '../../../designer-components/dataTable/filter/filterComponent';
+import Pager from '../../../designer-components/dataTable/pager/pagerComponent';
+import QuickSearch from '../../../designer-components/dataTable/quickSearch/quickSearchComponent';
+import SelectColumnsButton from '../../../designer-components/dataTable/selectColumnsButton/selectColumnsButtonComponent';
+import ColumnsEditor from '../../../designer-components/dataTable/table/columnsEditor/columnsEditorComponent';
+import EntityPickerColumnsEditor from '../../../designer-components/dataTable/table/entityPickerColumnsEditor/entityPickerColumnsEditorComponent';
+import DataTable from '../../../designer-components/dataTable/table/tableComponent';
+import TableTemplate from '../../../designer-components/dataTable/table/tableTemplateComponent';
+import TableContext from '../../../designer-components/dataTable/tableContext/tableContextComponent';
+import TableViewSelector from '../../../designer-components/dataTable/tableViewSelector/tableViewSelectorComponent';
+import Toolbar from '../../../designer-components/dataTable/toolbar/toolbarComponent';
 import DateField from '../../../components/formDesigner/components/dateField/dateField';
 import Divider from '../../../components/formDesigner/components/divider';
 import Drawer from '../../../components/formDesigner/components/drawer';
@@ -85,6 +85,7 @@ import Wizard from '../../../components/formDesigner/components/wizard';
 import { IToolboxComponentGroup } from '../../../interfaces/formDesigner';
 import TimelineComponent from '../../../components/formDesigner/components/timeline/timeline';
 import DataSource from '../../../components/formDesigner/components/dataSource/dataSourceComponent';
+import { ComponentSelectorComponent } from 'designer-components';
 
 export const ToolboxComponents: IToolboxComponentGroup[] = [
   {
@@ -99,6 +100,7 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
       ChildEntitiesTagGroup,
       CodeEditor,
       ColorPickerComponent,
+      ComponentSelectorComponent,
       ConfigurableActionConfigurator,
       DynamicView,
       EditableTagGroup,

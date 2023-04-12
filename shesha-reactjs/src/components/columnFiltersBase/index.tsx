@@ -6,6 +6,7 @@ import {
   ColumnFilter,
   ITableFilter,
 } from '../../providers/dataTable/interfaces';
+import { getTableDataColumns } from 'providers/dataTable/utils';
 
 export interface IColumnFiltersBaseProps {
   columns: ITableColumn[];
@@ -24,7 +25,7 @@ export const ColumnFiltersBase: FC<IColumnFiltersBaseProps> = ({
   applyFilters,
   currentFilter,
 }) => {
-  const filterableColumns = columns.filter(c => Boolean(currentFilter.find(f => f.columnId === c.id)));
+  const filterableColumns = getTableDataColumns(columns).filter(c => Boolean(currentFilter.find(f => f.columnId === c.id)));
 
   return (
     <div className="sha-column-filters">

@@ -1,6 +1,6 @@
 import { createContext } from 'react';
 import { IFlagsSetters, IFlagsState } from '../../interfaces';
-import { IConfigurableColumnsBase } from '../datatableColumnsConfigurator/models';
+import { IConfigurableColumnsProps } from '../datatableColumnsConfigurator/models';
 import {
   ITableColumn,
   IStoredFilter,
@@ -8,9 +8,9 @@ import {
   IColumnSorting,
   IndexColumnFilterOption,
   ColumnFilter,
-  IGetDataPayloadInternal,
   IPublicDataTableActions,
 } from './interfaces';
+import { IRepository } from './repository/interfaces';
 
 export type IFlagProgressFlags =
   | 'isFiltering'
@@ -44,7 +44,7 @@ export const DEFAULT_DT_USER_CONFIG: IDataTableUserConfig = {
   tableSorting: undefined,
 };
 
-export interface IDataTableStoredConfig extends IGetDataPayloadInternal {
+export interface IDataTableStoredConfig {
   columns?: ITableColumn[];
   tableFilter?: ITableFilter[];
   // stored filters must also be restored from the local storage after page refresh or navigating away.
@@ -54,25 +54,13 @@ export interface IDataTableStoredConfig extends IGetDataPayloadInternal {
 
 export interface IDataTableStateContext
   extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
-  title?: string;
 
   exportToExcelError?: string;
 
   exportToExcelWarning?: string;
-  /**
-   * Useful for entity picker as the column that has to be used to display when the entity has been selected
-   */
-  displayColumnName?: string;
 
-  sourceType?: 'Form' | 'Entity' | 'Url';
-
-  formData?: any;
-  /** Type of entity */
-  entityType?: string;
-  /** Endpoint URl (if provided) */
-  getDataPath?: string;
   /** Configurable columns. Is used in pair with entityType  */
-  configurableColumns?: IConfigurableColumnsBase[];
+  configurableColumns?: IConfigurableColumnsProps[];
   /** Pre-defined stored filters. configurable in the forms designer */
   predefinedFilters?: IStoredFilter[];
 
@@ -142,8 +130,6 @@ export interface IDataTableStateContext
 export interface IDataTableActionsContext
   extends IFlagsSetters<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags>,
   IPublicDataTableActions {
-  fetchTableData?: (payload: IGetDataPayloadInternal) => void;
-  fetchTableConfig?: (id: string) => void;
   toggleColumnVisibility?: (val: string) => void;
   setCurrentPage?: (page: number) => void;
   changePageSize?: (size: number) => void;
@@ -153,7 +139,6 @@ export interface IDataTableActionsContext
   changeFilter?: (filterColumnId: string, filterValue: ColumnFilter) => void;
   applyFilters?: () => void;
   clearFilters?: () => void; // to be removed
-  getDataPayload?: () => IGetDataPayloadInternal;
   /** change quick search text without refreshing of the table data */
   changeQuickSearch?: (val: string) => void;
   /** change quick search and refresh table data */
@@ -165,13 +150,6 @@ export interface IDataTableActionsContext
 
   setPredefinedFilters: (filters: IStoredFilter[]) => void;
 
-  /**
-   * Sets the form state in the store.
-   *
-   * This function is used to pass the state of the form that can be used to evaluate the filters that are using expression
-   */
-  setFormData?: (formData: any) => void;
-
   onSort?: (sorting: IColumnSorting[]) => void;
 
   changeSelectedIds?: (selectedIds: string[]) => void;
@@ -180,11 +158,19 @@ export interface IDataTableActionsContext
   /**
    * Register columns in the table context. Is used for configurable tables
    */
-  registerConfigurableColumns: (ownerId: string, columns: IConfigurableColumnsBase[]) => void;
+  registerConfigurableColumns: (ownerId: string, columns: IConfigurableColumnsProps[]) => void;
 
   changeDisplayColumn: (displayColumnName: string) => void;
   changePersistedFiltersToggle: (persistSelectedFilters: boolean) => void;
-  /* NEW_ACTION_ACTION_DECLARATIO_GOES_HERE */
+  
+  /**
+   * Get current repository of the datatable
+   */
+  getRepository: () => IRepository;
+  /**
+   * Set row data after inline editing
+   */
+  setRowData: (rowIndex: number, data: any) => void;
 }
 
 export const DATA_TABLE_CONTEXT_INITIAL_STATE: IDataTableStateContext = {

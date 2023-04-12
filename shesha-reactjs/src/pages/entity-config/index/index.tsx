@@ -1,4 +1,4 @@
-import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import React, { useRef, useState } from 'react';
 import { useEntityConfigCreate } from '../../../apis/entityConfig';
 import { GenericCreateModal, SimpleIndexPageDefault } from '../../../components';
@@ -27,7 +27,7 @@ export interface IEntityConfigurationsIndexPageProps {
 }
 
 const EntityConfigurationsIndexPage: PageWithLayout<IEntityConfigurationsIndexPageProps> = ({
-  entityConfigDetailsPageUrl = '/settings/entity-configs/details',
+  //entityConfigDetailsPageUrl = '/settings/entity-configs/details',
   //entityConfigEditPageUrl = '/settings/entity-configs/edit',
   useFormPath = false,
 }) => {
@@ -44,20 +44,6 @@ const EntityConfigurationsIndexPage: PageWithLayout<IEntityConfigurationsIndexPa
 
   const tableProps: IShaDataTableProps = {
     header: 'Entities',
-    actionColumns: [
-      {
-        icon: <SearchOutlined />,
-        onClick: (id: string) => `${entityConfigDetailsPageUrl}?id=${id}`,
-      },
-      // {
-      //   icon: <EditOutlined />,
-      //   onClick: (id: string) => `${reportEditPageUrl}?id=${id}`,
-      // },
-      // {
-      //   icon: <DeleteOutlined />,
-      //   onClick: onDelete,
-      // },
-    ],
   };
 
   const toolbarItems: IToolbarItem[] = [

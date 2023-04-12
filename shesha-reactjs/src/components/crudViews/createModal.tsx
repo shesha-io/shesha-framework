@@ -70,8 +70,6 @@ export interface IGenericCreateModalProps {
    */
   onSuccessUrl?: string | ((data: any) => string);
 
-  onFieldsChange?: (changedFields: any[], allFields: any[]) => void;
-
   beforeSubmit?: (form: any) => boolean;
 
   actions?: IFormActions;
@@ -97,7 +95,6 @@ const GenericCreateModal: FC<IGenericCreateModalProps> = ({
   onSuccessUrl,
   submitButtonLabel = 'Submit',
   cancelButtonLabel = 'Cancel',
-  onFieldsChange,
   beforeSubmit,
   actions,
   sections,
@@ -190,10 +187,8 @@ const GenericCreateModal: FC<IGenericCreateModalProps> = ({
           onFinish={onFinish}
           formId={formId}
           markup={formMarkup}
-          onFieldsChange={onFieldsChange}
           actions={actions}
           sections={sections}
-          skipPostOnFinish
         />
       </Spin>
     </Modal>

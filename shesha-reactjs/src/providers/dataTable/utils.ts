@@ -1,9 +1,12 @@
 import { evaluateComplexStringWithResult, executeExpression } from './../form/utils';
-import { ColumnSorting, IStoredFilter, ITableColumn, ITableFilter, SortDirection } from './interfaces';
+import { ColumnSorting, DataTableColumnDto, IActionColumnProps, ITableActionColumn, IStoredFilter, ITableColumn, ITableFilter, SortDirection, ITableDataColumn } from './interfaces';
 import { IMatchData } from '../form/utils';
 import moment, { Moment, isMoment, isDuration, Duration } from 'moment';
-import { IDataTableUserConfig } from './contexts';
+import { IDataTableUserConfig, MIN_COLUMN_WIDTH } from './contexts';
 import { convertJsonLogicNode, IArgumentEvaluationResult } from '../../utils/jsonLogic';
+import { IConfigurableColumnsProps, IDataColumnsProps } from 'providers/datatableColumnsConfigurator/models';
+import { camelcaseDotNotation } from 'utils/string';
+import { ProperyDataType } from 'interfaces/metadata';
 
 // Filters should read properties as camelCase ?:(
 export const evaluateDynamicFilters = (filters: IStoredFilter[], mappings: IMatchData[]) => {
@@ -24,30 +27,30 @@ export const evaluateDynamicFilters = (filters: IStoredFilter[], mappings: IMatc
         unevaluatedExpressions,
       };
     }
-    
+
     // correct way of processing JsonLogic rules
-    if (typeof filter.expression === 'object'){
+    if (typeof filter.expression === 'object') {
       const evaluator = (operator: string, args: object[], argIndex: number): IArgumentEvaluationResult => {
         const argValue = args[argIndex];
         // special handling for specifications
         // todo: move `is_satisfied` operator name to constant
-        if (operator === 'is_satisfied' && argIndex === 1){
+        if (operator === 'is_satisfied' && argIndex === 1) {
           // second argument is an expression that should be converted to boolean
-          if (typeof(argValue) === 'string'){
-            const evaluationContext = mappings.reduce((acc, item) => ({...acc, [item.match]: item.data}), {});
+          if (typeof (argValue) === 'string') {
+            const evaluationContext = mappings.reduce((acc, item) => ({ ...acc, [item.match]: item.data }), {});
             const evaluatedValue = executeExpression<boolean>(argValue, evaluationContext, false, err => {
               console.error('Failed to convert value', err);
               return null;
             });
 
             return { handled: evaluatedValue !== null, value: Boolean(evaluatedValue) };
-          }          
+          }
         }
 
         // handle strings with mustache syntax
-        if (typeof(argValue) === 'string'){
+        if (typeof (argValue) === 'string') {
           const strArgValue = argValue as string;
-          if (strArgValue?.includes('{{')){
+          if (strArgValue?.includes('{{')) {
             const { result/*, success, unevaluatedExpressions*/ } = evaluateComplexStringWithResult(argValue, mappings);
             return { handled: true, value: result };
           }
@@ -133,7 +136,7 @@ export const columnSorting2SortDirection = (value?: ColumnSorting): SortDirectio
   }
 };
 
-const convertFilterValue = (value: any, column: ITableColumn): any => {
+const convertFilterValue = (value: any, column: ITableDataColumn): any => {
   switch (column?.dataType) {
     case 'date':
       return getMoment(value, ADVANCEDFILTER_DATE_FORMAT)?.format();
@@ -172,7 +175,7 @@ export const advancedFilter2JsonLogic = (advancedFilter: ITableFilter[], columns
   const filterItems = advancedFilter
     .map(f => {
       const property = { var: f.columnId };
-      const column = columns.find(c => c.id === f.columnId);
+      const column = columns.find(c => c.id === f.columnId && c.columnType === 'data') as ITableDataColumn;
       // skip incorrect columns
       if (!column || !column.dataType)
         return null;
@@ -252,4 +255,101 @@ export const getIncomingSelectedStoredFilterIds = (filters: IStoredFilter[], id:
   } catch (_e) {
     return fallback;
   }
+};
+
+export const prepareColumn = (column: IConfigurableColumnsProps, columns: DataTableColumnDto[], userConfig: IDataTableUserConfig): ITableColumn => {
+  const baseProps: ITableColumn = {
+    id: column.id,
+    accessor: column.id,
+    columnId: column.id,
+    columnType: column.columnType,
+
+    header: column.caption,
+    caption: column.caption,
+    minWidth: column.minWidth || MIN_COLUMN_WIDTH,
+    maxWidth: column.maxWidth,
+    isVisible: column.isVisible,
+    show: column.isVisible,
+
+    isFilterable: false,
+    isSortable: false,
+    allowShowHide: false,
+  };
+
+  switch (column.columnType) {
+    case 'data': {
+      const dataProps = column as IDataColumnsProps;
+
+      const userColumn = userConfig?.columns?.find(c => c.id === dataProps.propertyName);
+      const colVisibility = userColumn?.show === null || userColumn?.show === undefined 
+        ? column.isVisible 
+        : userColumn?.show;    
+
+      const srvColumn = dataProps.propertyName
+        ? columns.find(
+          c => camelcaseDotNotation(c.propertyName) === camelcaseDotNotation(dataProps.propertyName)
+        )
+        : {};
+
+      const dataCol: ITableDataColumn = {
+        ...baseProps,
+        id: dataProps?.propertyName,
+        accessor: camelcaseDotNotation(dataProps?.propertyName),
+        propertyName: dataProps?.propertyName,
+
+        createComponent: dataProps.createComponent,
+        editComponent: dataProps.editComponent,
+        displayComponent: dataProps.displayComponent,
+
+        dataType: srvColumn?.dataType as ProperyDataType,
+        dataFormat: srvColumn?.dataFormat,
+        isSortable: srvColumn?.isSortable,
+        isFilterable: srvColumn?.isFilterable,
+        entityReferenceTypeShortAlias: srvColumn?.entityReferenceTypeShortAlias,
+        referenceListName: srvColumn?.referenceListName,
+        referenceListModule: srvColumn?.referenceListModule,
+        allowInherited: srvColumn?.allowInherited,
+
+        allowShowHide: true,
+        show: colVisibility,
+      };
+      return dataCol;
+    }
+    case 'action': {
+      const { icon, actionConfiguration } = column as IActionColumnProps;
+
+      const actionColumn: ITableActionColumn = {
+        ...baseProps,
+        icon,
+        actionConfiguration
+      };
+      
+      return actionColumn;
+    }
+    case 'crud-operations': {
+      return {
+        ...baseProps,
+      };
+    }
+  }
+  return null;
+};
+
+/**
+ * Get data columns from list of columns
+ */
+export const getTableDataColumns = (columns: ITableColumn[]): ITableDataColumn[] => {
+  const result: ITableDataColumn[] = [];
+  columns.forEach(col => {
+    if (col.columnType === 'data')
+      result.push(col as ITableDataColumn);
+  });
+  return result;
+};
+
+export const getTableDataColumn = (columns: ITableColumn[], id: string): ITableDataColumn => {
+  const column = columns.find(c => c.id === id);
+  return column?.columnType === 'data'
+    ? column as ITableDataColumn
+    : null;
 };

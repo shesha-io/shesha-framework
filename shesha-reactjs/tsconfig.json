@@ -3,7 +3,6 @@
     "allowJs": false,
     "allowSyntheticDefaultImports": true,
     "declaration": true,
-    "ignoreDeprecations": "5.0",
     "downlevelIteration": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,

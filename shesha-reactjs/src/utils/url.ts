@@ -1,3 +1,5 @@
+import qs from 'qs';
+
 export const getCurrentUrl = (): string => {
   return typeof window !== 'undefined' ? window.location?.pathname ?? '' : '';
 };
@@ -52,6 +54,16 @@ export const getQueryParam = (name: string) => {
   const result = getQueryParams()[name];
 
   return result;
+};
+
+export const setQueryParam = (url: string, key: string, value: string): string => {
+  const urlObj = new URL(decodeURIComponent(url));
+
+  const urlSearchParams = new URLSearchParams(urlObj.search ?? '');
+  const params = Object.fromEntries(urlSearchParams.entries()) as QueryStringParams;
+  params[key] = encodeURIComponent(value);
+
+  return `${urlObj?.host}${urlObj?.pathname}?${qs.stringify(params)}`;
 };
 
 export const getUrlWithoutQueryParams = (url: string) => {

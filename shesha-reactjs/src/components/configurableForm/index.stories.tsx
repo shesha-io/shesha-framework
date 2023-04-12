@@ -94,7 +94,6 @@ const DualModeForm: Story<IConfigurableFormProps> = ({ formId, mode = 'readonly'
             formRef={formRef}
             formId={formId}
             onFinish={onFinish}
-            onFieldsChange={data => console.log('onFieldsChange data: ', data)}
             onValuesChange={data => console.log('onValuesChange data: ', data)}
             form={form}
             initialValues={{

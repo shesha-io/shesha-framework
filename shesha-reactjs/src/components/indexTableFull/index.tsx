@@ -1,11 +1,11 @@
 import React, { FC, Fragment, ReactNode } from 'react';
 import { IndexTableControls } from '../indexTableControls';
 import CollapsibleSidebarContainer from '../collapsibleSidebarContainer';
-import IndexTable from '../indexTable';
-import { IShaDataTableProps } from '../indexTable/interfaces';
+import DataTable from '../dataTable';
+import { IShaDataTableProps } from '../dataTable/interfaces';
 import { useDataTableStore } from '../../providers';
-import IndexTableColumnFilters from '../indexTableColumnFilters';
-import IndexTableColumnVisibilityToggle from '../indexTableColumnVisibilityToggle';
+import DatatableAdvancedFilter from '../dataTable/advancedFilter';
+import DatatableColumnsSelector from '../dataTable/columnsSelector';
 import TablePager from '../tablePager';
 import { IToolbarItem } from '../../interfaces';
 import IndexToolbar from '../indexToolbar';
@@ -19,10 +19,8 @@ export interface IIndexTableFullProps extends IShaDataTableProps {
 
 export const IndexTableFull: FC<IIndexTableFullProps> = ({
   useMultiselect,
-  actionColumns,
   selectedRowIndex,
   onSelectRow,
-  customTypeRenders,
   disableCustomFilters,
   header,
   paginationPlacement = 'top',
@@ -46,11 +44,11 @@ export const IndexTableFull: FC<IIndexTableFullProps> = ({
 
   const renderSidebarContent = () => {
     if (isFiltering) {
-      return <IndexTableColumnFilters />;
+      return <DatatableAdvancedFilter />;
     }
 
     if (isSelectingColumns) {
-      return <IndexTableColumnVisibilityToggle />;
+      return <DatatableColumnsSelector />;
     }
 
     return <Fragment />;
@@ -88,15 +86,13 @@ export const IndexTableFull: FC<IIndexTableFullProps> = ({
         }}
         allowFullCollapse
       >
-        <IndexTable
+        <DataTable
           useMultiselect={useMultiselect}
-          actionColumns={actionColumns}
           selectedRowIndex={selectedRowIndex}
           onSelectRow={onSelectRow}
           onExportSuccess={onExportSuccess}
           onExportError={onExportError}
           onSelectedIdsChanged={onSelectedIdsChanged}
-          customTypeRenders={customTypeRenders}
           tableRef={tableRef}
         />
 

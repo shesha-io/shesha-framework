@@ -190,10 +190,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     formMarkup: formMarkup,
   };
 
-  // console.log('LOG: initial', initial);
-
   const [state, dispatch] = useThunkReducer(formReducer, initial);
-  // console.log('LOG: state', state);
 
   useEffect(() => {
     if (
@@ -201,14 +198,12 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
       (flatComponents.allComponents !== state.allComponents ||
         flatComponents.componentRelations !== state.componentRelations)
     ) {
-      //console.log('LOG: update flat components');
       setFlatComponents(flatComponents);
     }
   }, [flatComponents]);
 
   useEffect(() => {
     if (formSettings !== state.formSettings) {
-      //console.log('LOG: update flat components');
       setSettings(formSettings);
     }
   }, [formSettings]);

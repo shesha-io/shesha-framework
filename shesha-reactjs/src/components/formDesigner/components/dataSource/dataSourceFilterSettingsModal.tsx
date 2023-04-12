@@ -4,7 +4,7 @@ import {
   TableViewSelectorConfiguratorProvider,
   useTableViewSelectorConfigurator,
 } from '../../../../providers/tableViewSelectorConfigurator';
-import { ITableViewSelectorConfiguratorHandles, TableViewSelectorConfigurator } from '../dataTable/tableViewSelector/tableViewSelectorConfigurator';
+import { ITableViewSelectorConfiguratorHandles, TableViewSelectorConfigurator } from '../../../../designer-components/dataTable/tableViewSelector/tableViewSelectorConfigurator';
 import { ITableViewProps } from '../../../../providers/tableViewSelectorConfigurator/models';
 import { useDeepCompareEffect } from 'react-use';
 import { SettingOutlined } from '@ant-design/icons';

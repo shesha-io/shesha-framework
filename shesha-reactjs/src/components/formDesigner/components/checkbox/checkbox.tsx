@@ -16,6 +16,8 @@ const settingsForm = settingsFormJson as FormMarkup;
 
 const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps> = {
   type: 'checkbox',
+  isInput: true,
+  isOutput: true,
   name: 'Checkbox',
   icon: <CheckSquareOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,

@@ -11,7 +11,6 @@ export interface IIndexViewSelectorProps {
 
 export const IndexViewSelector: FC<IIndexViewSelectorProps> = ({ header }) => {
   const {
-    title,
     changeSelectedStoredFilterIds,
     predefinedFilters,
     selectedStoredFilterIds,
@@ -25,7 +24,7 @@ export const IndexViewSelector: FC<IIndexViewSelectorProps> = ({ header }) => {
 
   return (
     <IndexViewSelectorRenderer
-      header={header || title}
+      header={header}
       filters={allFilters}
       onSelectFilter={changeSelectedFilter}
       selectedFilterId={

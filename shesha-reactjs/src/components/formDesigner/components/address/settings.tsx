@@ -1,7 +1,7 @@
 import { Checkbox, Form, Input, InputNumber, Select } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
 import React, { FC, useState } from 'react';
-import { COUNTRY_CODES } from '../../../../constants/country-codes';
+import { COUNTRY_CODES } from '../../../../shesha-constants/country-codes';
 import PropertyAutocomplete from '../../../propertyAutocomplete/propertyAutocomplete';
 import SectionSeparator from '../../../sectionSeparator';
 import Show from '../../../show';

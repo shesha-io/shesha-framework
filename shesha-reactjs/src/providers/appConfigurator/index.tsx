@@ -27,7 +27,7 @@ import {
 } from '../../utils/configurationFramework/actions';
 import { genericItemActionArgumentsForm } from './configurable-actions/generic-item-arguments';
 import { useLocalStorage } from '../../hooks';
-import { PERM_APP_CONFIGURATOR } from '../../constants';
+import { PERM_APP_CONFIGURATOR } from '../../shesha-constants';
 import { useAuth } from '../auth';
 
 export interface IAppConfiguratorProviderProps { }
@@ -56,8 +56,6 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
     const subscriptionName = 'configurator';
 
     auth.subscribeOnProfileLoading(subscriptionName, () => {
-      //console.log('LOG: subscription!');
-  
       const hasRights = auth.anyOfPermissionsGranted([PERM_APP_CONFIGURATOR]);
 
       const mode = hasRights ? storageConfigItemMode : APP_CONTEXT_INITIAL_STATE.configurationItemMode;

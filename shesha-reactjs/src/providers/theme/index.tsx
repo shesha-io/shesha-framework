@@ -3,7 +3,7 @@ import { uiReducer } from './reducer';
 import { setThemeAction } from './actions';
 import { UiActionsContext, UiStateContext, THEME_CONTEXT_INITIAL_STATE, IConfigurableTheme } from './contexts';
 import { ConfigProvider } from 'antd';
-import { THEME_CONFIG_NAME } from '../../constants';
+import { THEME_CONFIG_NAME } from 'shesha-constants';
 import { useDebouncedCallback } from 'use-debounce';
 import { useConfigurationItemsLoader } from '../configurationItemsLoader';
 

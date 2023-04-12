@@ -26,7 +26,7 @@ export const toolbarGroupsToComponents = (availableComponents: IToolboxComponent
     return allComponents;
 };
 
-export const useFormDesignerComponents = () => {
+export const useFormDesignerComponents = (): IToolboxComponents => {
     const componentGroups = useFormDesignerComponentGroups();
 
     const toolboxComponents = useMemo(() => toolbarGroupsToComponents(componentGroups), [componentGroups]);

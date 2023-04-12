@@ -5,7 +5,7 @@ import {
   TOOLBAR_CONTEXT_INITIAL_STATE,
 } from './contexts';
 import { ColumnsActionEnums } from './actions';
-import { IConfigurableColumnsProps, IConfigurableColumnGroup } from './models';
+import { IDataColumnsProps, IConfigurableColumnGroup, standardCellComponentTypes } from './models';
 import { handleActions } from 'redux-actions';
 import { getItemById, getItemPositionById } from './utils';
 import { nanoid } from 'nanoid/non-secure';
@@ -14,7 +14,7 @@ const toolbarReducer = handleActions<IColumnsConfiguratorStateContext, any>(
   {
     [ColumnsActionEnums.AddColumn]: (state: IColumnsConfiguratorStateContext) => {
       const buttonsCount = state.items.filter(i => i.itemType === 'item').length;
-      const columnProps: IConfigurableColumnsProps = {
+      const columnProps: IDataColumnsProps = {
         id: nanoid(),
         itemType: 'item',
         sortOrder: state.items.length,
@@ -22,6 +22,10 @@ const toolbarReducer = handleActions<IColumnsConfiguratorStateContext, any>(
         columnType: 'data',
         isVisible: true,
         minWidth: 100,
+        propertyName: '',
+        displayComponent: { type: standardCellComponentTypes.defaultDisplay },
+        editComponent: { type: standardCellComponentTypes.notEditable },
+        createComponent: { type: standardCellComponentTypes.notEditable },
       };
 
       const newItems = [...state.items];

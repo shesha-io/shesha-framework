@@ -8,7 +8,7 @@ import settingsFormJson from './settingsForm.json';
 import moment, { isMoment, Moment } from 'moment';
 import { getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import { HiddenFormItem } from '../../../hiddenFormItem';
-import { useForm, useFormData, useGlobalState, useMetadata, useSheshaApplication } from '../../../../providers';
+import { useForm, useFormData, useGlobalState, useMetaProperties, useSheshaApplication } from '../../../../providers';
 import { DataTypes } from '../../../../interfaces/dataTypes';
 import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
 import { getPropertyMetadata, getMoment } from '../../../../utils/date';
@@ -68,6 +68,8 @@ const settingsForm = settingsFormJson as FormMarkup;
 
 const DateField: IToolboxComponent<IDateFieldProps> = {
   type: 'dateField',
+  isInput: true,
+  isOutput: true,
   name: 'Date field',
   icon: <CalendarOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.date || dataType === DataTypes.dateTime,
@@ -127,7 +129,7 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
 };
 
 export const DatePickerWrapper: FC<IDateFieldProps> = props => {
-  const { metadata: { properties = [] } = {} } = useMetadata(false, { filters: META_DATA_FILTERS });
+  const properties = useMetaProperties(META_DATA_FILTERS);
 
   const {
     name,

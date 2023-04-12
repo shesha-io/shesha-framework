@@ -3,10 +3,11 @@ import { Modal, Form } from 'antd';
 import { useDynamicModals } from '../../providers';
 import { ConfigurableForm, IConfigurableFormProps } from '../';
 import { IModalWithConfigurableFormProps, IModalWithContentProps } from '../../providers/dynamicModal/models';
-import { evaluateString, MODAL_DATA, useGlobalState, useShaRouting } from '../..';
+import { evaluateString, useGlobalState, useShaRouting } from '../..';
 import _ from 'lodash';
 import { useMedia } from 'react-use';
 import { StandardEntityActions } from '../../interfaces/metadata';
+import { MODAL_DATA } from 'shesha-constants';
 
 export interface IDynamicModalWithFormProps extends Omit<IModalWithConfigurableFormProps, 'fetchUrl'> {
   isVisible: boolean;
@@ -39,7 +40,6 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = props => {
   const { clearState } = useGlobalState();
 
   const onOk = () => {
-    //console.log('LOG:onOk')
     if (submitLocally) {
       const formValues = form?.getFieldsValue();
 
@@ -63,7 +63,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = props => {
     });
   };
 
-  const onSubmitted = (_: any, response: any) => {
+  const onSubmitted = (_values: any, response: any) => {
     if (onSuccessRedirectUrl) {
       const computedRedirectUrl = evaluateString(onSuccessRedirectUrl, response);
 
@@ -105,7 +105,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = props => {
     actions: {
       close: handleCancel,
     },
-    onFinish: onSubmitted,
+    onSubmitted: onSubmitted,
     prepareInitialValues: prepareInitialValues,
     onFinishFailed: onFailed,
     beforeSubmit: beforeSubmit,

@@ -13,12 +13,12 @@ import { INumberFieldComponentProps } from '../components/formDesigner/component
 import { IQueryBuilderComponentProps } from '../components/formDesigner/components/queryBuilder/interfaces';
 import { ICodeEditorComponentProps } from '../components/formDesigner/components/codeEditor/interfaces';
 import { IContainerComponentProps } from '../components/formDesigner/components/container/interfaces';
-import { ICustomFilterComponentProps } from '../components/formDesigner/components/dataTable/filter/interfaces';
+import { ICustomFilterComponentProps } from '../designer-components/dataTable/filter/interfaces';
 import { IFormAutocompleteComponentProps } from '../components/formDesigner/components/formAutocomplete/interfaces';
-import { IConfigurableActionConfiguratorComponentProps } from '../components/formDesigner/components/configurableActionsConfigurator/interfaces';
+import { IConfigurableActionConfiguratorComponentProps } from '../designer-components/configurableActionsConfigurator/interfaces';
 import { IEditableTagGroupComponentProps } from '../components/formDesigner/components/editableTagGroup/interfaces';
 import { IColorPickerComponentProps } from '../components/formDesigner/components/colorPicker/interfaces';
-import { IColumnsEditorComponentProps } from '../components/formDesigner/components/dataTable/table/columnsEditor/interfaces';
+import { IColumnsEditorComponentProps } from '../designer-components/dataTable/table/columnsEditor/interfaces';
 import { ICollapsiblePanelComponentProps } from '../components/formDesigner/components/collapsiblePanel/interfaces';
 import { IPropertyAutocompleteComponentProps } from '../components/formDesigner/components/propertyAutocomplete/interfaces';
 import { ISwitchComponentProps } from '../components/formDesigner/components/switch/interfaces';

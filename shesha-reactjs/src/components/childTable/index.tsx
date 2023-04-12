@@ -1,12 +1,12 @@
 import React, { FC, MutableRefObject, Fragment } from 'react';
 import { useDataTableStore } from '../../providers';
 import { IDataTableInstance } from '../../providers/dataTable/interfaces';
-import IndexTable from '../indexTable';
-import { ITableActionColumns, ITableCustomTypeEditor } from '../indexTable/interfaces';
+import DataTable from '../dataTable';
+import { ITableCustomTypeEditor } from '../dataTable/interfaces';
 import CollapsiblePanel from '../panel';
 import { ChildTableControls } from '../childTableControls';
-import IndexTableColumnFilters from '../indexTableColumnFilters';
-import IndexTableColumnVisibilityToggle from '../indexTableColumnVisibilityToggle';
+import DatatableAdvancedFilter from '../dataTable/advancedFilter';
+import DatatableColumnsSelector from '../dataTable/columnsSelector';
 import { Alert, Drawer } from 'antd';
 import { IToolbarItem } from '../../interfaces';
 
@@ -14,7 +14,6 @@ export interface IChildTableProps {
   //entityType: string;
   toolbarItems?: IToolbarItem[];
   header?: string;
-  actionColumns?: ITableActionColumns[];
   customTypeEditors?: ITableCustomTypeEditor[];
   tableRef?: MutableRefObject<IDataTableInstance | null>;
   onRowsChanged?: (rows: object[]) => void;
@@ -40,7 +39,6 @@ export interface IChildTableProps {
 
 export const ChildDataTable: FC<IChildTableProps> = ({
   header,
-  actionColumns,
   tableRef,
   onRowsChanged,
   onDblClick,
@@ -68,11 +66,11 @@ export const ChildDataTable: FC<IChildTableProps> = ({
 
   const renderSidebarContent = () => {
     if (isFiltering) {
-      return <IndexTableColumnFilters />;
+      return <DatatableAdvancedFilter />;
     }
 
     if (isSelectingColumns) {
-      return <IndexTableColumnVisibilityToggle />;
+      return <DatatableColumnsSelector />;
     }
 
     return <Fragment />;
@@ -95,8 +93,7 @@ export const ChildDataTable: FC<IChildTableProps> = ({
       >
         {alert && <Alert type="info" message={alert} />}
 
-        <IndexTable
-          actionColumns={actionColumns}
+        <DataTable
           tableRef={tableRef}
           onRowsChanged={onRowsChanged}
           onDblClick={onDblClick}

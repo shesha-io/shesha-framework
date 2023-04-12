@@ -1,7 +1,7 @@
 import { LayoutOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
 import FormItem from 'antd/lib/form/FormItem';
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import React, { FC, useEffect, useMemo } from 'react';
 import { useDeepCompareEffect } from 'react-use';
 import { IToolboxComponent } from '../../../../interfaces';
 import { MetadataProvider, useDataTableStore, useForm, useGlobalState } from '../../../../providers';
@@ -71,14 +71,9 @@ export const DataSource: FC<IDataSourceComponentProps> = props => {
 };
 
 export const DataSourceInner: FC<IDataSourceComponentProps> = props => {
-  const { sourceType, entityType, endpoint, label, id, name } = props;
+  const { sourceType, entityType, endpoint, id, name } = props;
   const { formMode } = useForm();
-  const [selectedRow, setSelectedRow] = useState(-1);
   const isDesignMode = formMode === 'designer';
-
-  const onSelectRow = index => {
-    setSelectedRow(index);
-  };
 
   const provider = useMemo(() => {
     return (
@@ -86,9 +81,6 @@ export const DataSourceInner: FC<IDataSourceComponentProps> = props => {
         userConfigId={id}
         entityType={entityType}
         getDataPath={endpoint}
-        title={label}
-        selectedRow={selectedRow}
-        onSelectRow={onSelectRow}
         actionOwnerId={id}
         actionOwnerName={name}
         sourceType={sourceType}

@@ -8,14 +8,14 @@ import { EntityPicker } from '../../..';
 import { Alert } from 'antd';
 import { useForm } from '../../../../providers';
 import { DataTypes } from '../../../../interfaces/dataTypes';
-import { IConfigurableColumnsBase } from '../../../../providers/datatableColumnsConfigurator/models';
+import { IConfigurableColumnsProps } from '../../../../providers/datatableColumnsConfigurator/models';
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { ITableViewProps } from '../../../../providers/tableViewSelectorConfigurator/models';
 import { entityPickerSettings } from './settingsForm';
 
 export interface IEntityPickerComponentProps extends IConfigurableFormComponent {
   placeholder?: string;
-  items?: IConfigurableColumnsBase[];
+  items?: IConfigurableColumnsProps[];
   hideBorder?: boolean;
   disabled?: boolean;
   useRawValues?: boolean;
@@ -37,6 +37,8 @@ export interface IEntityPickerComponentProps extends IConfigurableFormComponent 
 
 const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
   type: 'entityPicker',
+  isInput: true,
+  isOutput: true,
   name: 'Entity Picker',
   icon: <EllipsisOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,

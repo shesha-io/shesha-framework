@@ -33,6 +33,8 @@ const settingsForm = settingsFormJson as FormMarkup;
 
 const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   type: 'autocomplete',
+  isInput: true,
+  isOutput: true,
   name: 'Autocomplete',
   icon: <FileSearchOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,

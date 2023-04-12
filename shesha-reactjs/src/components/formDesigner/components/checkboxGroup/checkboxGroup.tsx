@@ -20,6 +20,8 @@ interface IEnhancedICheckboxGoupProps extends Omit<ICheckboxGroupProps, 'style'>
 
 const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGoupProps> = {
   type: 'checkboxGroup',
+  isInput: true,
+  isOutput: true,
   name: 'Checkbox group',
   icon: <ProfileOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.referenceListItem,

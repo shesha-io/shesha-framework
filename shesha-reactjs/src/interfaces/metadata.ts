@@ -40,7 +40,10 @@ export type ProperyDataType =
   | 'number'
   | 'reference-list-item'
   | 'boolean'
-  | 'list';
+  | 'array'
+  | 'object'
+  | 'object-reference'
+  | 'guid';
 
 export enum MetadataSourceType {
   ApplicationCode = 1,
@@ -50,20 +53,6 @@ export enum MetadataSourceType {
 export enum EntityConfigType {
   Class = 1,
   Interface = 2,
-}
-
-export enum DataTypes {
-  string = 'string',
-  date = 'date',
-  datetime = 'datetime',
-  time = 'time',
-  entity = 'entity',
-  file = 'file',
-  number = 'number',
-  reflist = 'reflist',
-  boolean = 'boolean',
-  list = 'list',
-  objectReference = 'object-reference',
 }
 
 export enum StandardEntityActions {

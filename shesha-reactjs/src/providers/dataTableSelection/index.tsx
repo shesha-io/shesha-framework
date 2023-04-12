@@ -20,7 +20,13 @@ const DataTableSelectionProvider: FC<PropsWithChildren<IDataTableSelectionProvid
   });
 
   const setSelectedRow = (index: number, row: any) => {
-    dispatch(setSelectedRowAction({ index, row, id: row?.id }));
+    const selectedId = state.selectedRow?.id;
+    const currentId = row?.id;
+
+    // change selection only when the id differs
+    if (selectedId !== currentId){
+      dispatch(setSelectedRowAction({ index, row, id: row?.id }));
+    }
   };
 
   const setMultiSelectedRow = (rows: Row[] | Row) => {

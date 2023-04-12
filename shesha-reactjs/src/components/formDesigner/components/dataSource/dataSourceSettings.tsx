@@ -5,7 +5,7 @@ import { MetadataProvider } from '../../../../providers/metadata';
 import { SectionSeparator } from '../../../../';
 import EndpointsAutocomplete from '../../../endpointsAutocomplete/endpointsAutocomplete';
 import { RawAutocomplete } from '../../../autocomplete';
-import TableViewSelectorSettingsModal from '../dataTable/tableViewSelector/tableViewSelectorSettingsModal';
+import TableViewSelectorSettingsModal from '../../../../designer-components/dataTable/tableViewSelector/tableViewSelectorSettingsModal';
 
 function DataSourceSettings(props: IDataSourceSettingsProps) {
   const [form] = Form.useForm();

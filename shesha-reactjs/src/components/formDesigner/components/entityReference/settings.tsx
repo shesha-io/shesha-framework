@@ -11,7 +11,7 @@ import EndpointsAutocomplete from '../../../endpointsAutocomplete/endpointsAutoc
 import { MetadataProvider } from '../../../../providers';
 import LabelValueEditor from '../labelValueEditor/labelValueEditor';
 import CollapsiblePanel from '../../../collapsiblePanel';
-import { ConfigurableActionConfigurator } from '../configurableActionsConfigurator';
+import { ConfigurableActionConfigurator } from '../../../../designer-components/configurableActionsConfigurator';
 import { Option } from 'antd/lib/mentions';
 
 const FormItem = Form.Item;

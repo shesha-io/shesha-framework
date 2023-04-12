@@ -16,13 +16,14 @@ import _ from 'lodash';
 import { IReactTableProps } from './interfaces';
 import { nanoid } from 'nanoid/non-secure';
 import { useDeepCompareEffect, usePrevious } from 'react-use';
-import { RowHandler, SortableRow, TableRow } from './tableRow';
+import { RowDragHandle, SortableRow, TableRow } from './tableRow';
 import ConditionalWrap from '../conditionalWrapper';
 import { SortableContainer } from './sortableContainer';
 import { arrayMove } from 'react-sortable-hoc';
 import { IndeterminateCheckbox } from './indeterminateCheckbox';
 import camelCaseKeys from 'camelcase-keys';
 import { getPlainValue } from '../../utils';
+import NewTableRowEditor from './newTableRowEditor';
 
 interface IReactTableState {
   allRows: any[];
@@ -56,6 +57,14 @@ const ReactTable: FC<IReactTableProps> = ({
   containerStyle,
   omitClick,
   tableStyle,
+
+  canDeleteInline = false,
+  deleteAction,
+  canEditInline = false,
+  updateAction,
+  canAddInline = false,
+  newRowCapturePosition,
+  createAction,
 }) => {
   const [componentState, setComponentState] = useState<IReactTableState>({
     allRows: data,
@@ -75,10 +84,10 @@ const ReactTable: FC<IReactTableProps> = ({
   );
 
   const preparedColumns = useMemo(() => {
-    const localColumn = [...allColumns];
+    const localColumns = [...allColumns];
 
     if (allowRowDragAndDrop) {
-      localColumn.unshift({
+      localColumns.unshift({
         accessor: nanoid(),
         // id: accessor, // This needs to be fixed
         Header: '',
@@ -87,11 +96,11 @@ const ReactTable: FC<IReactTableProps> = ({
         maxWidth: 35,
         disableSortBy: true,
         disableResizing: true,
-        Cell: () => <RowHandler />,
+        Cell: () => <RowDragHandle />,
       });
     }
 
-    return localColumn;
+    return localColumns;
   }, [allColumns, allowRowDragAndDrop]);
 
   const getColumnAccessor = cid => {
@@ -137,7 +146,7 @@ const ReactTable: FC<IReactTableProps> = ({
     }
   };
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow, state } = useTable(
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow, state, columns: tableColumns } = useTable(
     {
       columns: preparedColumns,
       data: allRows,
@@ -250,7 +259,7 @@ const ReactTable: FC<IReactTableProps> = ({
   const onResizeClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => event?.stopPropagation();
 
   const handleSelectRow = (row: Row<object>) => {
-    if (!omitClick) {
+    if (!omitClick && !(canEditInline || canDeleteInline)) {
       onSelectRow(row?.index, row?.original);
     }
   };
@@ -269,6 +278,8 @@ const ReactTable: FC<IReactTableProps> = ({
 
   const Row = useMemo(() => (allowRowDragAndDrop ? SortableRow : TableRow), [allowRowDragAndDrop]);
 
+  const renderNewRowEditor = () => <NewTableRowEditor columns={tableColumns} creater={createAction} headerGroups={headerGroups} />;
+
   return (
     <Spin
       spinning={loading}
@@ -280,20 +291,19 @@ const ReactTable: FC<IReactTableProps> = ({
       }
     >
       <div className="sha-react-table" style={containerStyle}>
-        <table {...getTableProps()} className="sha-table" style={tableStyle}>
+        <div {...getTableProps()} className="sha-table" style={tableStyle}>
           {columns?.length > 0 &&
             headerGroups.map(headerGroup => (
-              <span
+              <div
                 {...headerGroup.getHeaderGroupProps({
                   // style: { paddingRight: '15px' },
                 })}
                 className={classNames('tr tr-head')}
               >
-                {headerGroup?.headers?.map(column => {
+                {headerGroup?.headers?.map((column, index) => {
                   return (
-                    <span
-                      key={nanoid()}
-                      // {...column.getHeaderProps(headerProps)}
+                    <div
+                      key={index}
                       {...column.getHeaderProps(column.getSortByToggleProps())}
                       className={classNames('th', {
                         'sorted-asc': column.isSorted && column.isSortedDesc,
@@ -304,18 +314,18 @@ const ReactTable: FC<IReactTableProps> = ({
 
                       {/* Use column.getResizerProps to hook up the events correctly */}
                       {column.canResize && (
-                        <span
+                        <div
                           {...column.getResizerProps()}
                           className={classNames('resizer', { isResizing: column.isResizing })}
                           onClick={onResizeClick}
                         />
                       )}
-                    </span>
+                    </div>
                   );
                 })}
-              </span>
+              </div>
             ))}
-
+          { canAddInline && newRowCapturePosition === 'top' && (renderNewRowEditor()) }
           <ConditionalWrap
             condition={allowRowDragAndDrop}
             wrap={children => (
@@ -332,7 +342,7 @@ const ReactTable: FC<IReactTableProps> = ({
               </SortableContainer>
             )}
           >
-            <span
+            <div
               className="tbody"
               style={{
                 height: scrollBodyHorizontally ? height || 250 : 'unset',
@@ -341,9 +351,9 @@ const ReactTable: FC<IReactTableProps> = ({
               {...getTableBodyProps()}
             >
               {rows?.length === 0 && !loading && (
-                <span className="sha-table-empty">
+                <div className="sha-table-empty">
                   <Empty description="There is no data for this table" />
-                </span>
+                </div>
               )}
 
               {rows.map((row, rowIndex) => {
@@ -357,12 +367,19 @@ const ReactTable: FC<IReactTableProps> = ({
                     index={rowIndex}
                     allowSort={allowRowDragAndDrop}
                     selectedRowIndex={selectedRowIndex}
+
+                    allowEdit={canEditInline}
+                    updater={(rowData) => updateAction(rowIndex, rowData)}
+
+                    allowDelete={canDeleteInline}
+                    deleter={() => deleteAction(rowIndex, row.original)}
                   />
                 );
               })}
-            </span>
+            </div>
+            { canAddInline && newRowCapturePosition === 'bottom' && (renderNewRowEditor()) }
           </ConditionalWrap>
-        </table>
+        </div>
       </div>
     </Spin>
   );

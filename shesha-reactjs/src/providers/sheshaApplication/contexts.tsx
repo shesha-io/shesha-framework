@@ -6,11 +6,15 @@ export interface ISheshaRutes {
   formsDesigner: string;
 }
 
+export interface IHttpHeadersDictionary {
+  [key: string]: string;
+}
+
 export interface ISheshaApplicationStateContext {
   applicationName?: string;
   applicationKey?: string;
   backendUrl: string;
-  httpHeaders: { [key: string]: string };
+  httpHeaders: IHttpHeadersDictionary;
   toolboxComponentGroups?: IToolboxComponentGroup[];
   routes: ISheshaRutes;
 }

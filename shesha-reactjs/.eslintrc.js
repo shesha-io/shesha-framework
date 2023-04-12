@@ -16,13 +16,13 @@ module.exports = {
     "browser": true
   },
   "ignorePatterns": [
-    "/.next/**", 
-    "/dist/**", 
-    "/.out/**", 
-    "/node_modules/**", 
-    "/example/**", 
-    "/src/apis/*", 
-    "**/__tests__/**", 
+    "/.next/**",
+    "/dist/**",
+    "/.out/**",
+    "/node_modules/**",
+    "/example/**",
+    "/src/apis/*",
+    "**/__tests__/**",
     "/.storybook/**",
     ".eslintrc.js",
     "rollup.config.mjs",
@@ -36,23 +36,30 @@ module.exports = {
   "plugins": ["eslint-plugin-jsdoc", "@typescript-eslint", "@typescript-eslint/tslint"],
   "root": true,
   "rules": {
+    "sort-imports": ["off", { /* todo: enable and auto-fix */
+      "ignoreCase": false,
+      "ignoreDeclarationSort": false,
+      "ignoreMemberSort": false,
+      "memberSyntaxSortOrder": ["none", "all", "multiple", "single"],
+      "allowSeparatedGroups": false
+    }],
     "@typescript-eslint/dot-notation": "off",
     /*error*/
     "@typescript-eslint/explicit-function-return-type": ["off", /*error*/
-    {
-      "allowExpressions": false,
-      "allowTypedFunctionExpressions": false,
-      "allowHigherOrderFunctions": false,
-      "allowDirectConstAssertionInArrowFunctions": true,
-      "allowConciseArrowFunctionExpressionsStartingWithVoid": true
-    }],
+      {
+        "allowExpressions": false,
+        "allowTypedFunctionExpressions": false,
+        "allowHigherOrderFunctions": false,
+        "allowDirectConstAssertionInArrowFunctions": true,
+        "allowConciseArrowFunctionExpressionsStartingWithVoid": true
+      }],
     "@typescript-eslint/explicit-module-boundary-types": ["off", /*error*/
-    {
-      "allowArgumentsExplicitlyTypedAsAny": true,
-      "allowDirectConstAssertionInArrowFunctions": true,
-      "allowHigherOrderFunctions": false,
-      "allowTypedFunctionExpressions": false
-    }],
+      {
+        "allowArgumentsExplicitlyTypedAsAny": true,
+        "allowDirectConstAssertionInArrowFunctions": true,
+        "allowHigherOrderFunctions": false,
+        "allowTypedFunctionExpressions": false
+      }],
     "@typescript-eslint/indent": "off",
     /*error*/
     "@typescript-eslint/member-delimiter-style": ["error", {
@@ -82,18 +89,18 @@ module.exports = {
     "@typescript-eslint/no-use-before-define": "off",
     /*error*/
     "@typescript-eslint/quotes": ["off", /*error*/
-    "double"],
+      "double"],
     "@typescript-eslint/semi": ["error", "always"],
     "@typescript-eslint/type-annotation-spacing": "error",
     "@typescript-eslint/typedef": ["off", /*error*/
-    {
-      "parameter": true,
-      "propertyDeclaration": true,
-      "variableDeclaration": true
-    }],
+      {
+        "parameter": true,
+        "propertyDeclaration": true,
+        "variableDeclaration": true
+      }],
     "brace-style": ["error", "1tbs"],
     "capitalized-comments": ["off", /*error*/
-    "never"],
+      "never"],
     "curly": "off",
     /*error*/
     "dot-notation": "off",
@@ -133,9 +140,9 @@ module.exports = {
     "radix": "error",
     "semi": "off",
     "spaced-comment": ["off", /*error*/
-    "always", {
-      "markers": ["/"]
-    }],
+      "always", {
+        "markers": ["/"]
+      }],
     "@typescript-eslint/tslint/config": ["error", {
       "rules": {
         "ban": [true, ["_", "extend"], ["_", "isNull"], ["_", "isDefined"]] /*,
@@ -164,20 +171,20 @@ module.exports = {
       "property": "freeze",
       "object": "Object"
     }, {
-      "property": "myFavoriteWrapper"
-    }, {
-      "property": "forbidExtraProps",
-      "exact": true
-    }],
+        "property": "myFavoriteWrapper"
+      }, {
+        "property": "forbidExtraProps",
+        "exact": true
+      }],
     "componentWrapperFunctions": ["observer", {
       "property": "styled"
     }, {
-      "property": "observer",
-      "object": "Mobx"
-    }, {
-      "property": "observer",
-      "object": "<pragma>"
-    }],
+        "property": "observer",
+        "object": "Mobx"
+      }, {
+        "property": "observer",
+        "object": "<pragma>"
+      }],
     "formComponents": ["CustomForm", {
       "name": "Form",
       "formAttribute": "endpoint"

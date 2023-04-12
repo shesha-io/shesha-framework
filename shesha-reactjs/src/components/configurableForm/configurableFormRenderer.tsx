@@ -4,7 +4,6 @@ import ComponentsContainer from '../formDesigner/componentsContainer';
 import { ROOT_COMPONENT_KEY } from '../../providers/form/models';
 import { useForm } from '../../providers/form';
 import { IConfigurableFormRendererProps, IDataSourceComponent } from './models';
-import { useMutate } from 'restful-react';
 import { IAnyObject, ValidateErrorEntity } from '../../interfaces';
 import { addFormFieldsList, hasFiles, jsonToFormData, removeGhostKeys } from '../../utils/form';
 import { useGlobalState, useSheshaApplication } from '../../providers';
@@ -17,23 +16,23 @@ import {
   getComponentNames,
   getObjectWithOnlyIncludedKeys,
   IMatchData,
-} from '../../providers/form/utils';
+} from 'providers/form/utils';
 import cleanDeep from 'clean-deep';
-import { getQueryParams } from '../../utils/url';
+import { getQueryParams } from 'utils/url';
 import _ from 'lodash';
-import { axiosHttp } from '../../utils/fetchers';
+import { axiosHttp } from 'utils/fetchers';
 import qs from 'qs';
 import axios, { AxiosResponse } from 'axios';
-import { FormConfigurationDto, useFormData } from '../../providers/form/api';
-import { IAbpWrappedGetEntityResponse } from '../../interfaces/gql';
+import { FormConfigurationDto, useFormData } from 'providers/form/api';
+import { IAbpWrappedGetEntityResponse } from 'interfaces/gql';
 import { nanoid } from 'nanoid/non-secure';
-import { useFormDesigner } from '../../providers/formDesigner';
+import { useFormDesigner } from 'providers/formDesigner';
 import { useModelApiEndpoint } from './useActionEndpoint';
-import { StandardEntityActions } from '../../interfaces/metadata';
+import { StandardEntityActions } from 'interfaces/metadata';
+import { useMutate } from 'hooks/useMutate';
 
 export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
   children,
-  skipPostOnFinish,
   form,
   submitAction = StandardEntityActions.create,
   parentFormValues,
@@ -122,12 +121,6 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
   }, [formData]);
   //#endregion
 
-  const onFieldsChange = (changedFields: any[], allFields: any[]) => {
-    if (props.onFieldsChange) props.onFieldsChange(changedFields, allFields);
-
-    // custom handling here...
-  };
-
   const onValuesChangeInternal = (changedValues: any, values: any) => {
     if (props.onValuesChange) props.onValuesChange(changedValues, values);
 
@@ -141,21 +134,21 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
     formSettings?.initialValues?.forEach(({ key, value }) => {
       const evaluatedValue = value?.includes('{{')
         ? evaluateComplexString(value, [
-            { match: 'data', data: formData },
-            { match: 'parentFormValues', data: parentFormValues },
-            { match: 'globalState', data: globalState },
-            { match: 'query', data: queryParamsFromAddressBar },
-            { match: 'initialValues', data: initialValues },
-          ])
+          { match: 'data', data: formData },
+          { match: 'parentFormValues', data: parentFormValues },
+          { match: 'globalState', data: globalState },
+          { match: 'query', data: queryParamsFromAddressBar },
+          { match: 'initialValues', data: initialValues },
+        ])
         : value?.includes('{')
-        ? evaluateValue(value, {
+          ? evaluateValue(value, {
             data: formData,
             parentFormValues: parentFormValues,
             globalState: globalState,
             query: queryParamsFromAddressBar,
             initialValues: initialValues,
           })
-        : value;
+          : value;
       _.set(computedInitialValues, key, evaluatedValue);
     });
 
@@ -224,10 +217,7 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
     }
   }, [fetchedFormEntity, lastTruthyPersistedValue, initialValuesFromSettings, uniqueFormId]);
 
-  const { mutate: doSubmit, loading: submitting } = useMutate({
-    verb: submitEndpoint?.httpVerb?.toUpperCase() as 'POST' | 'PUT' | 'PATCH' | 'DELETE',
-    path: submitEndpoint?.url,
-  });
+  const { mutate: doSubmit, loading: submitting } = useMutate();
 
   const sheshaUtils = {
     prepareTemplate: (templateId: string, replacements: object): Promise<string> => {
@@ -313,14 +303,14 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
 
   const options = { setValidationErrors };
 
-  const prepareDataToSubmit = (data: any) => {
+  const convertToFormDataIfRequired = (data: any) => {
     return data && hasFiles(data) ? jsonToFormData(data) : data;
   };
 
-  const onFinish = () => {
+  const prepareDataForSubmit = (): Promise<object> => {
     const initialValuesFromFormSettings = getInitialValuesFromFormSettings();
 
-    getDynamicPreparedValues()
+    return getDynamicPreparedValues()
       .then(dynamicValues => {
         const initialValues = getInitialValuesFromFormSettings();
         const nonFormValues = { ...dynamicValues, ...initialValues };
@@ -357,50 +347,50 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
           }
         }
 
-        if (skipPostOnFinish) {
-          if (props?.onFinish) {
-            props?.onFinish(postData, null, options);
-          }
-
-          return;
-        }
-
-        if (submitEndpoint?.url) {
-          setValidationErrors(null);
-
-          const preparedData = prepareDataToSubmit(postData);
-
-          const doPost = () =>
-            doSubmit(preparedData)
-              .then(response => {
-                // note: we pass merged values
-                if (props.onFinish) props.onFinish(postData, response?.result, options);
-              })
-              .catch(e => {
-                setValidationErrors(e?.data?.error || e);
-                console.log('ConfigurableFormRenderer onFinish e: ', e);
-              }); // todo: test and show server-side validation
-
-          if (typeof beforeSubmit === 'function') {
-            beforeSubmit(postData)
-              .then(() => {
-                console.log('beforeSubmit then');
-
-                doPost();
-              })
-              .catch(() => {
-                console.log('beforeSubmit catch');
-              });
-          } else {
-            doPost();
-          }
-        } else 
-          if (props.onFinish) props.onFinish(postData, null, options);
+        return postData;
       })
       .catch(error => console.error(error));
   };
 
-  const onFinishFailed = (errorInfo: ValidateErrorEntity) => {
+  const onFinishInternal = () => {
+    prepareDataForSubmit().then(postData => {
+      if (props.onFinish) {
+        props.onFinish(postData, options);
+      } else {
+        if (submitEndpoint?.url) {
+          setValidationErrors(null);
+
+          const preparedData = convertToFormDataIfRequired(postData);
+
+          const doPost = () =>
+            doSubmit(submitEndpoint, preparedData)
+              .then(response => {
+                // note: we pass merged values
+                if (props.onSubmitted) props.onSubmitted(postData, response?.result, options);
+              })
+              .catch(e => {
+                setValidationErrors(e?.data?.error || e);
+                console.error('Submit failed: ', e);
+              });
+
+          if (typeof beforeSubmit === 'function') {
+            beforeSubmit(postData)
+              .then(() => {
+                doPost();
+              })
+              .catch(e => {
+                console.error('`beforeSubmit` handler failed', e);
+              });
+          } else {
+            doPost();
+          }
+        } else
+          throw 'failed to determine a submit endpoint';
+      }
+    });
+  };
+
+  const onFinishFailedInternal = (errorInfo: ValidateErrorEntity) => {
     setValidationErrors(null);
     if (props.onFinishFailed) props.onFinishFailed(errorInfo);
   };
@@ -421,11 +411,9 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
       <Form
         form={form}
         size={props.size}
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
+        onFinish={onFinishInternal}
+        onFinishFailed={onFinishFailedInternal}
         onValuesChange={onValuesChangeInternal}
-        onFieldsChange={onFieldsChange}
-        fields={props.fields}
         initialValues={initialValues}
         className={`sha-form sha-form-${formMode} ${isDragging ? 'sha-dragging' : ''}`}
         {...mergedProps}
