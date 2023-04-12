@@ -13,7 +13,7 @@ namespace Shesha.Migrations
     {
         public override void Up()
         {
-            Alter.Table("Core_Accounts").AddColumn("Frwk_Discriminator").AsString(SheshaDatabaseConsts.DiscriminatorMaxSize).NotNullable();
+            Alter.Table("Core_Accounts").AddColumn("Frwk_Discriminator").AsString(SheshaDatabaseConsts.DiscriminatorMaxSize).NotNullable().WithDefaultValue("Core.Account");
 
         }
 
