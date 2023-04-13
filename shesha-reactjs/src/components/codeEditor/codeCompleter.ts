@@ -1,4 +1,5 @@
 import { Ace } from 'ace-builds';
+import { toCamelCase } from 'utils/string';
 
 /**
  * Gets token at current cursor posistion. Returns null if none
@@ -32,8 +33,8 @@ const treeLevel2Completions = (level: ICodeTreeLevel, prefix: string = ''): Ace.
         if (level.hasOwnProperty(key)) {
             const item = level[key];
             completions.push({
-                caption: prefix + item.value,
-                value: prefix + item.value,
+                caption: prefix + toCamelCase(item.value),
+                value: prefix + toCamelCase(item.value),
                 meta: item.caption,
                 score: 1,
             });
