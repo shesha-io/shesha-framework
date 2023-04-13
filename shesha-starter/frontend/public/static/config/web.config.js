@@ -2,7 +2,7 @@
 if (typeof window) {
   window.__APP_CONFIG__ = {
     appInsightsInstrumentationKey: null,
-    baseUrl: 'https://shesha-functionaltests-mainline-api-test.azurewebsites.net',
+    baseUrl: 'https://localhost:44362',
     googleMapsApiKey: null,
   };
 }
