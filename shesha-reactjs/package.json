@@ -148,7 +148,7 @@
   ],
   "dependencies": {
     "@types/react-beautiful-dnd": "^13.1.2",
-    "ace-builds": "^1.12.2",
+    "ace-builds": "^1.17.0",
     "async-validator": "^3.5.2",
     "babel-plugin-module-resolver": "^5.0.0",
     "camelcase-keys": "^2.1.0",
@@ -159,7 +159,7 @@
     "ibm-openapi-validator": "^1.0.1",
     "immer": "^9.0.21",
     "invert-color": "^2.0.0",
-    "jodit-react": "^1.3.27",
+    "jodit-react": "^1.3.39",
     "js-encoding-utils": "^0.6.2",
     "js-to-json-logic": "^0.1.3",
     "less-compiler": "^0.2.4",
