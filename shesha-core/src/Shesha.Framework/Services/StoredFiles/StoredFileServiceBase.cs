@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using JetBrains.Annotations;
-using NHibernate.Linq;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
+using Shesha.EntityReferences;
 using Shesha.Extensions;
 
 namespace Shesha.Services.StoredFiles
@@ -132,9 +132,9 @@ namespace Shesha.Services.StoredFiles
                 FileType = file.FileType,
                 Folder = file.Folder,
                 IsVersionControlled = file.IsVersionControlled,
-                Category = file.Category
+                Category = file.Category,
+                Owner = new GenericEntityReference(newOwner)
             };
-            newFile.SetOwner(newOwner);
             await FileRepository.InsertAsync(newFile);
 
             // copy versions
@@ -191,10 +191,25 @@ namespace Shesha.Services.StoredFiles
 
         private IQueryable<StoredFile> GetAttachmentsQuery<TId>(TId id, string typeShortAlias, Expression<Func<StoredFile, bool>> filterPredicate = null)
         {
-            var query = FileRepository.GetAll()
-                .Where(e => e.OwnerId == id.ToString() && e.OwnerType == typeShortAlias);
-            if (filterPredicate != null)
-                query = query.Where(filterPredicate);
+            IQueryable<StoredFile> query = null;
+            var ecs = StaticContext.IocManager.Resolve<IEntityConfigurationStore>();
+            var config = ecs.Get(typeShortAlias);
+            if (config != null)
+            {
+                var className = config.EntityType.FullName;
+                query = FileRepository.GetAll()
+                    .Where(e => e.Owner.Id == id.ToString() 
+                                && (e.Owner._className == className || e.Owner._className == config.TypeShortAlias));
+                if (filterPredicate != null)
+                    query = query.Where(filterPredicate);
+            }
+            else
+            {
+                query = FileRepository.GetAll()
+                    .Where(e => e.Owner.Id == id.ToString() && e.Owner._className == typeShortAlias);
+                if (filterPredicate != null)
+                    query = query.Where(filterPredicate);
+            }
 
             return query;
         }
@@ -354,7 +369,7 @@ namespace Shesha.Services.StoredFiles
         /// <returns></returns>
         public async Task<bool> FileExistsAsync(Guid id)
         {
-            return await FileRepository.GetAll().AnyAsync(f => f.Id == id);
+            return await Task.FromResult(FileRepository.GetAll().Any(f => f.Id == id));
         }
 
         /// <summary>

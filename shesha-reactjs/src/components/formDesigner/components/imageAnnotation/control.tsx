@@ -101,7 +101,9 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
     imageElement?.click();
   };
 
-  const onSelect = () => {};
+  const onSelect = () => {
+    console.log('');
+  };
 
   const onChange = (data: IAnnotation[]) => {
     if (!isReadOnly) {

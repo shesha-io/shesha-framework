@@ -30,6 +30,7 @@ import { nanoid } from 'nanoid/non-secure';
 import { useFormDesigner } from '../../providers/formDesigner';
 import { useModelApiEndpoint } from './useActionEndpoint';
 import { StandardEntityActions } from '../../interfaces/metadata';
+import { useDelayedUpdate } from 'providers/delayedUpdateProvider';
 
 export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
   children,
@@ -89,6 +90,8 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
     urlEvaluationData: urlEvaluationData,
     // data: formData, NOTE: form data must not be used here!
   });
+
+  const { getPayload: getDelayedUpdate } = useDelayedUpdate();
 
   const queryParamsFromAddressBar = useMemo(() => getQueryParams(), []);
 
@@ -328,6 +331,10 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
         const postData = excludeFormFieldsInPayload
           ? removeGhostKeys({ ...formData, ...nonFormValues })
           : removeGhostKeys(addFormFieldsList(formData, nonFormValues, form));
+
+        const delayedUpdate = getDelayedUpdate();
+        if (Boolean(delayedUpdate))
+          postData._delayedUpdate = delayedUpdate;
 
         const subFormNamesToIgnore = getComponentNames(
           allComponents,

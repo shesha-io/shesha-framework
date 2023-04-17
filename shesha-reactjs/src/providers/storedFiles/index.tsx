@@ -34,6 +34,8 @@ import { useStoredFileFilesList } from '../../apis/storedFile';
 import { useSignalR } from '../signalR';
 import { useApplicationConfiguration } from '../../hooks';
 import { useSheshaApplication } from '../sheshaApplication';
+import { useDelayedUpdate } from 'providers/delayedUpdateProvider';
+import { STORED_FILES_DELAYED_UPDATE } from 'providers/delayedUpdateProvider/models';
 export interface IStoredFilesProviderProps {
   ownerId: string;
   ownerType: string;
@@ -69,8 +71,8 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
   const { connection } = useSignalR(false) ?? {};
   const { httpHeaders: headers } = useSheshaApplication();
-
   const { config } = useApplicationConfiguration();
+  const { addItem: addDelayedUpdate, removeItem: removeDelayedUpdate } = useDelayedUpdate();
 
   const { loading: isFetchingFileList, refetch: fetchFileListHttp, data: fileListResponse } = useStoredFileFilesList({
     queryParams: {
@@ -149,10 +151,11 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     uploadFileHttp(formData)
       .then(response => {
         const responseFile = response.result as IStoredFile;
-
         responseFile.uid = newFile.uid;
-
         dispatch(uploadFileSuccessAction({ ...responseFile }));
+
+        if (responseFile.temporary)
+          addDelayedUpdate(STORED_FILES_DELAYED_UPDATE, responseFile.id);
       })
       .catch(e => {
         console.error(e);
@@ -176,6 +179,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     deleteFileHttp('', { queryParams: { Id: fileIdToDelete } })
       .then(() => {
         deleteFileSuccess(fileIdToDelete);
+        removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, fileIdToDelete);
       })
       .catch(() => deleteFileError());
   };

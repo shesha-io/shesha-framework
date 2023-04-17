@@ -44,3 +44,11 @@ export const FormsIndex = addStory(DesignerTemplate, {
     module: 'shesha',
   }
 });
+
+export const OrganisationEdit = addStory(DesignerTemplate, {
+  formId: {
+    name: 'organisation-edit',
+    module: 'Test Module',
+    version: 1
+  }
+});

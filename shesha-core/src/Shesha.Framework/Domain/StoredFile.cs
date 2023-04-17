@@ -8,7 +8,9 @@ using Abp.Domain.Entities.Auditing;
 using JetBrains.Annotations;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain.Attributes;
+using Shesha.EntityReferences;
 using Shesha.Extensions;
+using Shesha.Reflection;
 using Shesha.Services;
 
 namespace Shesha.Domain
@@ -17,7 +19,7 @@ namespace Shesha.Domain
     /// Stored file
     /// </summary>
     [Entity(TypeShortAlias = "Shesha.Framework.StoredFile", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
-    public class StoredFile : FullAuditedEntity<Guid>, IHasOwningEntityLink, IMayHaveTenant
+    public class StoredFile : FullAuditedEntity<Guid>, IMayHaveTenant
     {
         /// <summary>
         /// Default constructor
@@ -68,7 +70,10 @@ namespace Shesha.Domain
         /// </summary>
         public virtual bool IsVersionControlled { get; set; }
 
-        #region IEntityWithMultipleOwnerTypes Members
+        /// <summary>
+        /// Owner of file
+        /// </summary>
+        public GenericEntityReference Owner { get; set; }
 
         /// <summary>
         /// Creates new file for the specified owner
@@ -84,26 +89,11 @@ namespace Shesha.Domain
 
             var file = new StoredFile(entityConfigurationStore)
             {
-                OwnerId = owner.Id.ToString(CultureInfo.InvariantCulture),
-                OwnerType = owner.GetTypeShortAlias()
+                Owner = new GenericEntityReference(owner)
             };
             
             return file;
         }
-
-        /// <summary>
-        /// The Id of the enity this audit entry relates to.
-        /// </summary>
-        [Column("Frwk_OwnerId")]
-        [StringLength(40)]
-        public virtual string OwnerId { get; protected set; }
-
-        /// <summary>
-        /// The Type of entity this audit entry relates to.
-        /// </summary>
-        [Column("Frwk_OwnerType")]
-        [StringLength(100)]
-        public virtual string OwnerType { get; protected set; }
 
         /// <summary>
         /// Set owner of the file
@@ -112,13 +102,7 @@ namespace Shesha.Domain
         /// <param name="entity">Owner entity</param>
         public virtual void SetOwner<TId>(IEntity<TId> entity)
         {
-            var config = (_entityConfigurationStore ?? StaticContext.IocManager.Resolve<IEntityConfigurationStore>()).Get(entity.GetType());
-            if (string.IsNullOrEmpty(config.TypeShortAlias))
-                throw new InvalidOperationException(
-                    $"Owner cannot be set to entity '{entity.GetType().FullName}' as a TypeShortAlias has not been defined. Tip: Set the TypeShortAlias through the Entity attribute on the entity in question.");
-
-            OwnerType = config.TypeShortAlias;
-            OwnerId = entity.Id.ToString();
+            Owner = new GenericEntityReference(entity.Id.ToString(), entity.GetType().StripCastleProxyType().FullName);
         }
 
         /// <summary>
@@ -126,16 +110,27 @@ namespace Shesha.Domain
         /// </summary>
         public virtual void SetOwner(string ownerType, string ownerId)
         {
-            OwnerType = ownerType;
-            OwnerId = ownerId;
+            Owner = new GenericEntityReference(ownerId, ownerType);
         }
-
-        #endregion
 
         /// <summary>
         /// Tenant Id
         /// </summary>
         public virtual int? TenantId { get; set; }
+
+        #region Delayed Binding Feature
+
+        /// <summary>
+        ///  True - This file is temporary and required delayed binding to Owner
+        /// </summary>
+        public virtual bool Temporary { get; set; }
+
+        /// <summary>
+        /// Property of Owner for delayed binding
+        /// </summary>
+        public virtual string TemporaryOwnerProperty { get; set; }
+
+        #endregion
 
         /*
          potentially unneeded properties/methods
