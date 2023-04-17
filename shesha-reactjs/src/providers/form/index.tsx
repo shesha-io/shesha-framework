@@ -47,6 +47,7 @@ import { useConfigurableAction } from '../configurableActionsDispatcher';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { useGlobalState } from '../globalState';
 import { useDeepCompareEffect } from 'react-use';
+import { DelayedUpdateProvider } from 'providers/delayedUpdateProvider';
 
 export interface IFormProviderProps {
   name: string;
@@ -416,7 +417,11 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
 
   return (
     <FormStateContext.Provider value={state}>
-      <FormActionsContext.Provider value={configurableFormActions}>{children}</FormActionsContext.Provider>
+      <FormActionsContext.Provider value={configurableFormActions}>
+        <DelayedUpdateProvider>
+          {children}
+        </DelayedUpdateProvider>
+      </FormActionsContext.Provider>
     </FormStateContext.Provider>
   );
 };

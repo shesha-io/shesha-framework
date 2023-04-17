@@ -1,6 +1,6 @@
 import React, { FC, PropsWithChildren, useContext, useEffect, useRef, useState } from "react";
-import { DataSourcesProviderActionsContext, DataSourcesProviderStateContext, IDataSourcesProviderActionsContext, IDataSourcesProviderStateContext, IGetDataSourcePayload, IRegisterDataSourcePayload } from "./contexts";
-import { IDataSourceDictionary } from "./models";
+import { DataSourcesProviderActionsContext, DataSourcesProviderStateContext, IDataSourcesProviderActionsContext, IDataSourcesProviderStateContext } from "./contexts";
+import { IDataSourceDictionary, IGetDataSourcePayload, IRegisterDataSourcePayload } from "./models";
 
 export interface IDataSourcesProviderProps { }
 

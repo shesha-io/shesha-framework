@@ -96,8 +96,9 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
 
   };
 
-  const onSelect = () => { };
-
+  const onSelect = () => {
+    console.log('');
+  };
 
   const onChange = (data: IAnnotation[]) => {
     if (!isReadOnly) {
@@ -131,9 +132,9 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
   };
 
 
-  const hasUpdated = prevLeghth != imageAnnotationData?.viewData?.length;
+  const hasUpdated = prevLeghth !== imageAnnotationData?.viewData?.length;
 
-  const maxReached = !!maxPoints && imageAnnotationData?.viewData?.filter(({ comment }) => !!comment).length == maxPoints;
+  const maxReached = !!maxPoints && imageAnnotationData?.viewData?.filter(({ comment }) => !!comment).length === maxPoints;
 
 
   return (<>

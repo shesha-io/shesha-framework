@@ -168,10 +168,17 @@
     },
     {
       "id": "0009bf13-04a3-49d5-a9d8-1b23df20b97c",
-      "type": "textField",
+      "type": "autocomplete",
       "name": "ownerType",
+      "label": "Owner Type",
+      "labelAlign": "right",
       "parentId": "root",
-      "label": "Owner Type"
+      "hidden": false,
+      "dataSourceType": "url",
+      "validate": {},
+      "dataSourceUrl": "/api/services/app/Metadata/EntityTypeAutocomplete",
+      "settingsValidationErrors": [],
+      "useRawValues": true
     },
     {
       "id": "db913b1b-3b25-46c9-afef-21854d917ba7",
