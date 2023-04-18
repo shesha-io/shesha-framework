@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Migrations
 {
-    [Migration(20230411130200)]
-    public class M20230411130200 : Migration
+    [Migration(20230418112000)]
+    public class M20230418112000 : Migration
     {
         public override void Down()
         {
@@ -18,7 +18,8 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Migrations
 
         public override void Up()
         {
-            Rename.Table("SheshaFunctionalTests_Accounts").To("SheshaFunctionalTests_TestAccounts");
+            Alter.Table("Core_Persons")
+                .AddForeignKeyColumn("SheshaFunctionalTests_BankId", "SheshaFunctionalTests_Banks").Nullable();
         }
     }
 }
