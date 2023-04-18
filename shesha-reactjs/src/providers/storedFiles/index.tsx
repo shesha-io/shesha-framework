@@ -164,7 +164,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   };
 
   const { mutate: deleteFileHttp } = useMutate({
-    queryParams: { Id: state.fileIdToDelete }, // Important if you'll be calling this as a side-effect
+    //queryParams: { id: state.fileIdToDelete }, // Important if you'll be calling this as a side-effect
     path: '/api/StoredFile',
     verb: 'DELETE',
     requestOptions: {
@@ -176,7 +176,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   const deleteFile = (fileIdToDelete: string) => {
     dispatch(deleteFileRequestAction(fileIdToDelete));
 
-    deleteFileHttp('', { queryParams: { Id: fileIdToDelete } })
+    deleteFileHttp('', {queryParams: { id: fileIdToDelete }})
       .then(() => {
         deleteFileSuccess(fileIdToDelete);
         removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, fileIdToDelete);

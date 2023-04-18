@@ -82,6 +82,9 @@ namespace Shesha.StoredFiles
             if (input.File == null)
                 ModelState.AddModelError(nameof(input.File), $"{nameof(input.File)} must not be null");
 
+            if (string.IsNullOrWhiteSpace(input.OwnerType) && !string.IsNullOrWhiteSpace(input.OwnerId))
+                ModelState.AddModelError(nameof(input.OwnerType), $"{nameof(input.OwnerType)} must not be null when {nameof(input.OwnerId)} is specified");
+
             if (!ModelState.IsValid)
                 throw new AbpValidationException("An error occured");//, ModelState.Keys.Select(k => new ValidationResult(ModelState.Values[k], new List<string>() { k })));
 
@@ -494,9 +497,6 @@ namespace Shesha.StoredFiles
             var ownerSpecified =
                 !string.IsNullOrWhiteSpace(input.OwnerType) && !string.IsNullOrWhiteSpace(input.OwnerId);
 
-            if (string.IsNullOrWhiteSpace(input.OwnerId) && !string.IsNullOrWhiteSpace(input.OwnerType))
-                ModelState.AddModelError(nameof(input.OwnerId), $"{nameof(input.OwnerId)} must not be null when {nameof(input.OwnerType)} is specified");
-
             if (string.IsNullOrWhiteSpace(input.OwnerType) && !string.IsNullOrWhiteSpace(input.OwnerId))
                 ModelState.AddModelError(nameof(input.OwnerType), $"{nameof(input.OwnerType)} must not be null when {nameof(input.OwnerId)} is specified");
 
@@ -558,6 +558,11 @@ namespace Shesha.StoredFiles
                     {
                         property.SetValue(owner, storedFile, null);
                         await _dynamicRepository.SaveOrUpdateAsync(owner);
+                    } 
+                    else if (owner == null && !input.PropertyName.IsNullOrEmpty())
+                    {
+                        storedFile.Temporary = true;
+                        storedFile.TemporaryOwnerProperty = input.PropertyName;
                     }
                 }
             }
