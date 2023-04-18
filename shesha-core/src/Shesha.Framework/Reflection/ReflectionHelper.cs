@@ -155,9 +155,10 @@ namespace Shesha.Reflection
             {
                 PropertyInfo propInfo;
                 var entityType = StripCastleProxyType(currentType);
+                var properties = entityType.GetProperties();
                 try
                 {
-                    propInfo = entityType.GetProperty(propTokens[i]);
+                    propInfo = properties.FirstOrDefault(x => x.Name.ToCamelCase() ==  propTokens[i].ToCamelCase());
                 }
                 catch (AmbiguousMatchException)
                 {
