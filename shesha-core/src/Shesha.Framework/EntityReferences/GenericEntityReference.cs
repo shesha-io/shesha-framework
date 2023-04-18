@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Entities;
+using Abp.Extensions;
 using Shesha.Extensions;
 using Shesha.Services;
 using System;
@@ -18,9 +19,14 @@ namespace Shesha.EntityReferences
 
         public GenericEntityReference(object entity)
         {
-            if (entity == null) throw new ArgumentNullException(nameof(entity));
+            if (entity == null) 
+                throw new ArgumentNullException(nameof(entity));
             _entity = entity;
+            if (_entity.GetType().GetProperty("Id") == null)
+                throw new NullReferenceException($"entity.{nameof(GenericEntityReference.Id)} not found");
             Id = _entity.GetType().GetProperty("Id")?.GetValue(_entity)?.ToString();
+            if (Id.IsNullOrEmpty())
+                throw new NullReferenceException($"entity.{nameof(GenericEntityReference.Id)} can not be NULL");
             _className = _entity.GetType().FullName;
             _displayName = _entity.GetDisplayName();
         }

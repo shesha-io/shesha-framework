@@ -8,6 +8,7 @@ using Abp.AspNetCore.Mvc.Authorization;
 using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
+using Abp.Extensions;
 using Abp.ObjectMapping;
 using Abp.Runtime.Validation;
 using Abp.UI;
@@ -15,6 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using NHibernate.Linq;
 using Shesha.Domain;
+using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.Services;
 using Shesha.StoredFiles.Dto;
@@ -77,25 +79,25 @@ namespace Shesha.StoredFiles
         [Consumes("multipart/form-data")]
         public async Task<StoredFileDto> UploadAsync([FromForm] UploadFileInput input)
         {
-            if (string.IsNullOrWhiteSpace(input.OwnerType))
-                ModelState.AddModelError(nameof(input.OwnerType), $"{nameof(input.OwnerType)} must not be null");
-            if (string.IsNullOrWhiteSpace(input.OwnerId))
-                ModelState.AddModelError(nameof(input.OwnerId), $"{nameof(input.OwnerId)} must not be null");
-
             if (input.File == null)
                 ModelState.AddModelError(nameof(input.File), $"{nameof(input.File)} must not be null");
 
             if (!ModelState.IsValid)
                 throw new AbpValidationException("An error occured");//, ModelState.Keys.Select(k => new ValidationResult(ModelState.Values[k], new List<string>() { k })));
 
-            var owner = await _dynamicRepository.GetAsync(input.OwnerType, input.OwnerId);
-            if (owner == null)
-                throw new Exception($"Owner not found (type = '{input.OwnerType}', id = '{input.OwnerId}')");
+            object owner = null;
+
+            if (!input.OwnerType.IsNullOrEmpty() && !input.OwnerId.IsNullOrEmpty())
+            {
+                owner = await _dynamicRepository.GetAsync(input.OwnerType, input.OwnerId);
+                if (owner == null)
+                    throw new Exception($"Owner not found (type = '{input.OwnerType}', id = '{input.OwnerId}')");
+            }
 
             var uploadedFile = new StoredFileDto();
             var fileName = input.File.FileName.CleanupFileName();
 
-            if (!string.IsNullOrWhiteSpace(input.PropertyName))
+            if (owner != null && !input.PropertyName.IsNullOrWhiteSpace())
             {
                 // single file upload (stored as a property of an entity)
                 var property = ReflectionHelper.GetProperty(owner, input.PropertyName);
@@ -126,7 +128,6 @@ namespace Shesha.StoredFiles
                     await using (var fileStream = input.File.OpenReadStream())
                     {
                         storedFile = await _fileService.SaveFileAsync(fileStream, fileName);
-
                         property.SetValue(owner, storedFile, null);
                     }
                 }
@@ -141,7 +142,15 @@ namespace Shesha.StoredFiles
                 {
                     var storedFile = await _fileService.SaveFileAsync(fileStream, fileName, file =>
                     {
-                        file.SetOwner(input.OwnerType, input.OwnerId);
+                        if (owner != null)
+                            // Set owner
+                            file.Owner = new GenericEntityReference(owner); 
+                        else
+                        {
+                            // otherwise - mark as temporary
+                            file.Temporary = true; 
+                            file.TemporaryOwnerProperty = input.PropertyName;
+                        }
                         file.Category = input.FilesCategory;
                     });
 
@@ -302,6 +311,7 @@ namespace Shesha.StoredFiles
             fileDto.Type = !string.IsNullOrWhiteSpace(file.FileName)
                 ? Path.GetExtension(file.FileName)
                 : null;
+            fileDto.Temporary = file.Temporary;
         }
 
         /// <summary>

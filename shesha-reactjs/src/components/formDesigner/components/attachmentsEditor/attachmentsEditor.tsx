@@ -27,13 +27,14 @@ const settingsForm = settingsFormJson as FormMarkup;
 
 const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
   type: 'attachmentsEditor',
-  name: 'Attachments editor',
+  name: 'File list',
   icon: <FolderAddOutlined />,
   factory: (model: IAttachmentsEditorProps) => {
     const { backendUrl } = useSheshaApplication();
-    const { formMode } = useForm();
+    const { formMode, formSettings } = useForm();
     const { data } = useFormData();
     const { globalState } = useGlobalState();
+
     const ownerId = evaluateValue(model.ownerId, { data: data, globalState });
 
     const isEnabledByCondition = executeCustomExpression(model.customEnabled, true, data, globalState);
@@ -41,8 +42,8 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     return (
       <ConfigurableFormItem model={model}>
         <StoredFilesProvider
-          ownerId={ownerId}
-          ownerType={model.ownerType}
+          ownerId={Boolean(ownerId) ? ownerId : (Boolean(data?.id) ? data?.id : '')}
+          ownerType={Boolean(model.ownerType) ? model.ownerType : (Boolean(formSettings?.modelType) ? formSettings?.modelType : '')}
           filesCategory={model.filesCategory}
           baseUrl={backendUrl}
         >
@@ -66,7 +67,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       allowDelete: true,
       allowReplace: true,
       allowRename: true,
-      ownerId: '{data.id}',
+      ownerId: '',
       ownerType: '',
     };
     return customModel;

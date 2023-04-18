@@ -1,23 +1,8 @@
 import { createContext } from 'react';
-import { DataTableFullInstance } from '../dataTable/contexts';
-import { IDataTableSelectionActionsContext } from '../dataTableSelection/contexts';
-import { IDataSourceDescriptor, IDataSourceDictionary } from './models';
+import { IDataSourceDescriptor, IDataSourceDictionary, IGetDataSourcePayload, IRegisterDataSourcePayload } from './models';
 
 export interface IDataSourcesProviderStateContext {
 }
-
-export interface IGetDataSourcePayload {
-  id: string;
-  name: string;
-}
-
-export interface IRegisterDataSourcePayload {
-  id: string;
-  name: string;
-  dataSource: DataTableFullInstance;
-  dataSelection: IDataTableSelectionActionsContext;
-}
-
 
 export interface IDataSourcesProviderActionsContext {
   registerDataSource: (payload: IRegisterDataSourcePayload) => void;

@@ -5,6 +5,7 @@ using Abp.Domain.Repositories;
 using Abp.Runtime.Validation;
 using Shesha.Application.Services.Dto;
 using Shesha.Attributes;
+using Shesha.DelayedUpdate;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.GraphQL.Mvc;
@@ -58,6 +59,11 @@ namespace Shesha
                 var result = await MapJObjectToEntityAsync<TEntity, TPrimaryKey>(jObject, entity, validationResults);
                 if (!result)
                     throw new AbpValidationException("Please correct the errors and try again", validationResults);
+
+                await DelayedUpdateAsync<TEntity, TPrimaryKey>(jObject, entity, validationResults);
+
+                if (validationResults.Any<ValidationResult>())
+                    throw new AbpValidationException("Please correct the errors and try again", validationResults);
             }
             else
             {
@@ -72,6 +78,15 @@ namespace Shesha
 
                 if (!Validator.TryValidateObject(entity, new ValidationContext(entity), validationResults))
                     throw new AbpValidationException("Please correct the errors and try again", validationResults);
+
+                var _delayedUpdate = (input as IHasDelayedUpdateField)._delayedUpdate;
+                if (_delayedUpdate?.Any() ?? false)
+                {
+                    await DelayedUpdateAsync<TEntity, TPrimaryKey>(_delayedUpdate, entity, validationResults);
+
+                    if (validationResults.Any<ValidationResult>())
+                        throw new AbpValidationException("Please correct the errors and try again", validationResults);
+                }
             }
 
             await Repository.UpdateAsync(entity);
@@ -120,6 +135,13 @@ namespace Shesha
                 var result = await MapJObjectToEntityAsync<TEntity, TPrimaryKey>(jObject, entity, validationResults);
                 if (!result)
                     throw new AbpValidationException("Please correct the errors and try again", validationResults);
+
+                await Repository.InsertAsync(entity);
+
+                await DelayedUpdateAsync<TEntity, TPrimaryKey>(jObject, entity, validationResults);
+
+                if (validationResults.Any<ValidationResult>())
+                    throw new AbpValidationException("Please correct the errors and try again", validationResults);
             }
             else
             {
@@ -134,9 +156,18 @@ namespace Shesha
 
                 if (!Validator.TryValidateObject(entity, new ValidationContext(entity), validationResults))
                     throw new AbpValidationException("Please correct the errors and try again", validationResults);
-            }
 
-            await Repository.InsertAsync(entity);
+                await Repository.InsertAsync(entity);
+
+                var _delayedUpdate = (input as IHasDelayedUpdateField)._delayedUpdate;
+                if (_delayedUpdate?.Any() ?? false)
+                {
+                    await DelayedUpdateAsync<TEntity, TPrimaryKey>(_delayedUpdate, entity, validationResults);
+
+                    if (validationResults.Any<ValidationResult>())
+                        throw new AbpValidationException("Please correct the errors and try again", validationResults);
+                }
+            }
 
             await UnitOfWorkManager.Current.SaveChangesAsync();
 

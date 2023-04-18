@@ -254,12 +254,15 @@ namespace Shesha.NHibernate.Maps
                     member.LocalMember.GetMemberType() == typeof(GenericEntityReference))
                 {
                     var attr = member.LocalMember.GetCustomAttribute<EntityReferenceAttribute>();
+                    var idn = attr?.IdColumnName ?? $"{member.LocalMember.Name}Id";
+                    var cnn = attr?.ClassNameColumnName ?? $"{member.LocalMember.Name}ClassName";
+                    var dnn = attr?.DisplayNameColumnName ?? $"{member.LocalMember.Name}DisplayName";
                     if (attr?.StoreDisplayName ?? false)
                     {
                         propertyCustomizer.Columns(
-                            c => { c.Name($"{member.LocalMember.Name}Id"); c.SqlType("nvarchar(100)"); },
-                            c => { c.Name($"{member.LocalMember.Name}ClassName"); c.SqlType("nvarchar(1000)"); },
-                            c => { c.Name($"{member.LocalMember.Name}DisplayName"); c.SqlType("nvarchar(1000)"); }
+                            c => { c.Name(idn); c.SqlType("nvarchar(100)"); },
+                            c => { c.Name(cnn); c.SqlType("nvarchar(1000)"); },
+                            c => { c.Name(dnn); c.SqlType("nvarchar(1000)"); }
                             );
                         var gtype = typeof(EntityReferenceWithDisplayUserType);
                         propertyCustomizer.Type(gtype, null);
@@ -267,8 +270,8 @@ namespace Shesha.NHibernate.Maps
                     else
                     {
                         propertyCustomizer.Columns(
-                            c => { c.Name($"{member.LocalMember.Name}Id"); c.SqlType("nvarchar(100)"); },
-                            c => { c.Name($"{member.LocalMember.Name}ClassName"); c.SqlType("nvarchar(1000)"); }
+                            c => { c.Name(idn); c.SqlType("nvarchar(100)"); },
+                            c => { c.Name(cnn); c.SqlType("nvarchar(1000)"); }
                             );
                         var gtype = typeof(EntityReferenceUserType);
                         propertyCustomizer.Type(gtype, null);
