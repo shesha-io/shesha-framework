@@ -125,11 +125,6 @@ namespace Shesha.Domain
         /// </summary>
         public virtual bool Temporary { get; set; }
 
-        /// <summary>
-        /// Property of Owner for delayed binding
-        /// </summary>
-        public virtual string TemporaryOwnerProperty { get; set; }
-
         #endregion
 
         /*

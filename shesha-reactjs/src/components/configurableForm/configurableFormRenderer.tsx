@@ -91,7 +91,7 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
     // data: formData, NOTE: form data must not be used here!
   });
 
-  const { getPayload: getDelayedUpdate } = useDelayedUpdate();
+  const { getPayload: getDelayedUpdate } = useDelayedUpdate(false) ?? {};
 
   const queryParamsFromAddressBar = useMemo(() => getQueryParams(), []);
 
@@ -332,7 +332,7 @@ export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
           ? removeGhostKeys({ ...formData, ...nonFormValues })
           : removeGhostKeys(addFormFieldsList(formData, nonFormValues, form));
 
-        const delayedUpdate = getDelayedUpdate();
+        const delayedUpdate = typeof getDelayedUpdate === 'function' ? getDelayedUpdate() : null;
         if (Boolean(delayedUpdate))
           postData._delayedUpdate = delayedUpdate;
 

@@ -15,7 +15,6 @@ using Newtonsoft.Json.Linq;
 using NHibernate.Linq;
 using Shesha.Authorization.Users;
 using Shesha.DelayedUpdate;
-using Shesha.Domain.Interfaces;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Binder;
 using Shesha.DynamicEntities.Dtos;
@@ -441,7 +440,7 @@ namespace Shesha
                     {
                         if (manager.IsApplicable(group.Name))
                         {
-                            await manager.ExecuteAsync(entity, group.Items, validationResult);
+                            await manager.ExecuteUpdateAsync(entity, group.Items, validationResult);
                         }
                     }
                 }

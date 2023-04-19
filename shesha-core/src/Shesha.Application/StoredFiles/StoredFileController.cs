@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Abp.AspNetCore.Mvc.Authorization;
+﻿using Abp.AspNetCore.Mvc.Authorization;
 using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
@@ -21,6 +15,12 @@ using Shesha.Extensions;
 using Shesha.Services;
 using Shesha.StoredFiles.Dto;
 using Shesha.Utilities;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using ReflectionHelper = Shesha.Reflection.ReflectionHelper;
 
 namespace Shesha.StoredFiles
@@ -152,7 +152,6 @@ namespace Shesha.StoredFiles
                         {
                             // otherwise - mark as temporary
                             file.Temporary = true; 
-                            file.TemporaryOwnerProperty = input.PropertyName;
                         }
                         file.Category = input.FilesCategory;
                     });
@@ -562,7 +561,6 @@ namespace Shesha.StoredFiles
                     else if (owner == null && !input.PropertyName.IsNullOrEmpty())
                     {
                         storedFile.Temporary = true;
-                        storedFile.TemporaryOwnerProperty = input.PropertyName;
                     }
                 }
             }
