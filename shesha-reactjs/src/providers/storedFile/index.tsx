@@ -100,7 +100,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = prop
     ? fileFetcher
     : propertyFetcher;
 
-  const { addItem: addDelayedUpdate, removeItem: removeDelayedUpdate } = useDelayedUpdate();
+  const { addItem: addDelayedUpdate, removeItem: removeDelayedUpdate } = useDelayedUpdate(false) ?? {};
 
   const doFetchFileInfo = () => {
     if (fileId) fileFetcher.refetch({ queryParams: { id: fileId } });
@@ -221,6 +221,12 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = prop
       originFileObj: null,
     };
 
+    if (!(Boolean(state.fileId)) && !(Boolean(state.ownerId) && Boolean(state.propertyName)) && typeof addDelayedUpdate !== 'function') {
+      console.error('File component is not configured');
+      dispatch(uploadFileErrorAction({ ...newFile, uid: '-1', status: 'error', error: 'File component is not configured' }));
+      return;
+    }
+
     dispatch(uploadFileRequestAction(newFile));
 
     axios
@@ -237,7 +243,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = prop
           onChange(responseFile?.id);
         if (callback) 
           callback(responseFile);
-        if (responseFile.temporary)
+        if (responseFile.temporary &&  typeof addDelayedUpdate === 'function')
           addDelayedUpdate(STORED_FILES_DELAYED_UPDATE, responseFile.id, { propertyName });
       })
       .catch(e => {
@@ -286,7 +292,8 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = prop
         deleteFileSuccess();
         if (typeof onChange === 'function') 
           onChange(null);
-        removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, deleteFileInput.fileId);
+        if (typeof removeDelayedUpdate === 'function')
+          removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, deleteFileInput.fileId);
       })
       .catch(() => deleteFileError());
   };

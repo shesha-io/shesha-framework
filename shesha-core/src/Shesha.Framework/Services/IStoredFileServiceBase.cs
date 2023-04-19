@@ -58,6 +58,13 @@ namespace Shesha.Services
         /// <returns></returns>
         T GetOrNull(Guid id);
 
+        /// <summary>
+        /// Get file by id or null if missing
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<T> GetOrNullAsync(Guid id);
+
         Dictionary<string, StoredFile> MakeUniqueFileNames(IList<StoredFile> files);
 
 
