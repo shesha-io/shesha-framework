@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-using Abp.Domain.Entities;
+﻿using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using JetBrains.Annotations;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace Shesha.Services.StoredFiles
 {
@@ -380,6 +380,16 @@ namespace Shesha.Services.StoredFiles
         public StoredFile GetOrNull(Guid id)
         {
             return FileRepository.FirstOrDefault(f => f.Id == id);
+        }
+
+        /// <summary>
+        /// Get file by id or null if missing
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<StoredFile> GetOrNullAsync(Guid id)
+        {
+            return await FileRepository.FirstOrDefaultAsync(f => f.Id == id);
         }
 
         /// <summary>

@@ -72,7 +72,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   const { connection } = useSignalR(false) ?? {};
   const { httpHeaders: headers } = useSheshaApplication();
   const { config } = useApplicationConfiguration();
-  const { addItem: addDelayedUpdate, removeItem: removeDelayedUpdate } = useDelayedUpdate();
+  const { addItem: addDelayedUpdate, removeItem: removeDelayedUpdate } = useDelayedUpdate(false) ?? {};
 
   const { loading: isFetchingFileList, refetch: fetchFileListHttp, data: fileListResponse } = useStoredFileFilesList({
     queryParams: {
@@ -146,6 +146,12 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     // @ts-ignore
     const newFile: IStoredFile = { uid: '', ...file, status: 'uploading', name: file.name };
 
+    if (!(Boolean(payload.ownerId || state.ownerId)) && typeof addDelayedUpdate !== 'function') {
+      console.error('File list component is not configured');
+      dispatch(uploadFileErrorAction({ ...newFile, uid: '-1', status: 'error', error: 'File list component is not configured' }));
+      return;
+    }
+
     dispatch(uploadFileRequestAction(newFile));
 
     uploadFileHttp(formData)
@@ -154,7 +160,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         responseFile.uid = newFile.uid;
         dispatch(uploadFileSuccessAction({ ...responseFile }));
 
-        if (responseFile.temporary)
+        if (responseFile.temporary && typeof addDelayedUpdate === 'function')
           addDelayedUpdate(STORED_FILES_DELAYED_UPDATE, responseFile.id);
       })
       .catch(e => {
@@ -164,7 +170,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   };
 
   const { mutate: deleteFileHttp } = useMutate({
-    queryParams: { Id: state.fileIdToDelete }, // Important if you'll be calling this as a side-effect
+    //queryParams: { id: state.fileIdToDelete }, // Important if you'll be calling this as a side-effect
     path: '/api/StoredFile',
     verb: 'DELETE',
     requestOptions: {
@@ -176,10 +182,11 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   const deleteFile = (fileIdToDelete: string) => {
     dispatch(deleteFileRequestAction(fileIdToDelete));
 
-    deleteFileHttp('', { queryParams: { Id: fileIdToDelete } })
+    deleteFileHttp('', {queryParams: { id: fileIdToDelete }})
       .then(() => {
         deleteFileSuccess(fileIdToDelete);
-        removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, fileIdToDelete);
+        if (typeof addDelayedUpdate === 'function')
+          removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, fileIdToDelete);
       })
       .catch(() => deleteFileError());
   };

@@ -131,10 +131,10 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
     }
   };
 
-  const hasUpdated = prevLeghth != imageAnnotationData?.viewData?.length;
+  const hasUpdated = prevLeghth !== imageAnnotationData?.viewData?.length;
 
   const maxReached =
-    !!maxPoints && imageAnnotationData?.viewData?.filter(({ comment }) => !!comment).length == maxPoints;
+    !!maxPoints && imageAnnotationData?.viewData?.filter(({ comment }) => !!comment).length === maxPoints;
 
   return (
     <>
