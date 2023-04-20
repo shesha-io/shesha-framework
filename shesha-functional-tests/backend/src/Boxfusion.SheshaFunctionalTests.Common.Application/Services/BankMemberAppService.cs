@@ -25,20 +25,14 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
         public async Task<DynamicDto<Bank, Guid>> CreateBankWithMembersAsync (BankMemberDto input)
         {
             var bank = ObjectMapper.Map<Bank>(input);
-            var bankEntity = await _bankRepo.InsertAsync(bank);
-
-            input.Members.ForEach(async member =>
+            await _bankRepo.InsertAsync(bank);
+            foreach (var memberId in input.Members)
             {
-                using (var uow = UnitOfWorkManager.Begin())
-                {
-                    await SaveOrUpdateEntityAsync<Member>(member, async item =>
-                    {
-                        item.Bank = bankEntity;
-                    });
-                    await uow.CompleteAsync();
-                }
-            });
-            return await MapToDynamicDtoAsync<Bank, Guid>(bankEntity);
+                var member = await _memberRepo.GetAsync(memberId);
+                member.Bank = bank;
+                await _memberRepo.UpdateAsync(member);
+            }
+            return await MapToDynamicDtoAsync<Bank, Guid>(bank);
         }
 
         public async Task<BankMemberDto> GetBankWithMembers (Guid id)
