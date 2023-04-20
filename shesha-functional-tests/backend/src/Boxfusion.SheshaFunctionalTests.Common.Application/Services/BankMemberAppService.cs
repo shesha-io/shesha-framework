@@ -14,10 +14,12 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
     public class BankMemberAppService: SheshaAppServiceBase
     {
         private readonly IRepository<Bank, Guid> _bankRepo;
+        private readonly IRepository<Member, Guid> _memberRepo;
 
-        public BankMemberAppService(IRepository<Bank, Guid> bankRepo)
+        public BankMemberAppService(IRepository<Bank, Guid> bankRepo, IRepository<Member, Guid> memberRepo)
         {
             _bankRepo = bankRepo;
+            _memberRepo = memberRepo;
         }
 
         public async Task<DynamicDto<Bank, Guid>> CreateBankWithMembersAsync (BankMemberDto input)
@@ -27,13 +29,30 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
 
             input.Members.ForEach(async member =>
             {
-                await SaveOrUpdateEntityAsync<Member>(member, async item =>
+                using (var uow = UnitOfWorkManager.Begin())
                 {
-                    item.Bank = bankEntity;
-                });
+                    await SaveOrUpdateEntityAsync<Member>(member, async item =>
+                    {
+                        item.Bank = bankEntity;
+                    });
+                    await uow.CompleteAsync();
+                }
             });
             return await MapToDynamicDtoAsync<Bank, Guid>(bankEntity);
         }
 
+        public async Task<BankMemberDto> GetBankWithMembers (Guid id)
+        {
+            var bank = await _bankRepo.GetAsync(id);
+            var bankMembers = new BankMemberDto()
+            {
+                Address = bank.Address.Id,
+                Description = bank.Description,
+                Id = bank.Id,
+                Name = bank.Name,
+                Members = _memberRepo.GetAll().Where(x => x.Bank.Id == bank.Id).Select(x => x.Id).ToList()
+            };
+            return ObjectMapper.Map<BankMemberDto>(bankMembers);
+        }
     }
 }
