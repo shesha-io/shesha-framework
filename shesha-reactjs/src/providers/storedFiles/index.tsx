@@ -39,6 +39,7 @@ import { STORED_FILES_DELAYED_UPDATE } from 'providers/delayedUpdateProvider/mod
 export interface IStoredFilesProviderProps {
   ownerId: string;
   ownerType: string;
+  ownerName?: string;
   filesCategory?: number;
   propertyName?: string;
   allCategories?: boolean;
@@ -55,6 +56,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   children,
   ownerId,
   ownerType,
+  ownerName,
   filesCategory,
   propertyName,
   baseUrl,
@@ -64,6 +66,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     ...STORED_FILES_CONTEXT_INITIAL_STATE,
     ownerId,
     ownerType,
+    ownerName,
     filesCategory,
     propertyName,
     allCategories,
@@ -78,6 +81,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     queryParams: {
       ownerId,
       ownerType,
+      ownerName,
       filesCategory,
       propertyName,
       allCategories,
@@ -139,6 +143,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
     formData.append('ownerId', payload.ownerId || state.ownerId);
     formData.append('ownerType', payload.ownerType || state.ownerType);
+    formData.append('ownerName', payload.ownerName || state.ownerName);
     formData.append('file', file);
     formData.append('filesCategory', `${filesCategory}`);
     formData.append('propertyName', '');
@@ -161,7 +166,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         dispatch(uploadFileSuccessAction({ ...responseFile }));
 
         if (responseFile.temporary && typeof addDelayedUpdate === 'function')
-          addDelayedUpdate(STORED_FILES_DELAYED_UPDATE, responseFile.id);
+          addDelayedUpdate(STORED_FILES_DELAYED_UPDATE, responseFile.id, { ownerName: payload.ownerName || state.ownerName });
       })
       .catch(e => {
         console.error(e);

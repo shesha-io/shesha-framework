@@ -37,6 +37,7 @@ export interface IRequestFilePayload {
   file: File;
   ownerId?: string;
   ownerType?: string;
+  ownerName?: string;
 }
 
 export interface IUploadFilePayload extends IRequestFilePayload {}
@@ -53,6 +54,7 @@ export interface IStoredFilesStateContext
   extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
   ownerId?: string;
   ownerType?: string;
+  ownerName?: string;
   filesCategory?: number;
   propertyName?: string;
   allCategories?: boolean;

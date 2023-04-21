@@ -30,5 +30,11 @@ namespace Shesha.StoredFiles.Dto
         /// </summary>
         [BindProperty(Name = "propertyName")]
         public string PropertyName { get; set; }
+
+        /// <summary>
+        /// Property name of the owner entity. Is used for assign file to the nested entities
+        /// </summary>
+        [BindProperty(Name = "ownerName")]
+        public string OwnerName { get; set; }
     }
 }

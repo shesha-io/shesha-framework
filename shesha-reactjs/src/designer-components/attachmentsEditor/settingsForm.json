@@ -9,7 +9,7 @@
     },
     {
       "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
-      "type": "textField",
+      "type": "propertyAutocomplete",
       "name": "name",
       "parentId": "root",
       "label": "Name",
@@ -158,6 +158,16 @@
       "name": "separator3",
       "parentId": "root",
       "label": "Files"
+    },
+    {
+      "id": "3fe73b1a-04c5-4658-ac0f-cbcbae6b3bd4",
+      "type": "propertyAutocomplete",
+      "name": "ownerName",
+      "parentId": "root",
+      "label": "Owner",
+      "validate": {
+        "required": true
+      }
     },
     {
       "id": "1c03863c-880d-4308-8667-c3d996619cb7",

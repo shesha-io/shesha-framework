@@ -78,7 +78,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = prop
     ownerId,
     ownerType,
     propertyName,
-    fileId,
+    fileId: fileId ?? (typeof value === 'string' ? value : null),
   });
 
   const { httpHeaders: headers } = useSheshaApplication();
@@ -96,21 +96,21 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = prop
       headers,
     },
   });
-  const { loading: isFetchingFileInfo, error: fetchingFileInfoError, data: fetchingFileInfoResponse } = fileId
+  const { loading: isFetchingFileInfo, error: fetchingFileInfoError, data: fetchingFileInfoResponse } = state.fileId
     ? fileFetcher
     : propertyFetcher;
 
   const { addItem: addDelayedUpdate, removeItem: removeDelayedUpdate } = useDelayedUpdate(false) ?? {};
 
   const doFetchFileInfo = () => {
-    if (fileId) fileFetcher.refetch({ queryParams: { id: fileId } });
+    if (state.fileId) fileFetcher.refetch({ queryParams: { id: state.fileId } });
     else if (ownerId && ownerType && propertyName)
       propertyFetcher.refetch({ queryParams: { ownerId, ownerType, propertyName } });
   };
 
   useEffect(() => {
     if (uploadMode === 'async') doFetchFileInfo();
-  }, [uploadMode, ownerId, ownerType, propertyName, fileId]);
+  }, [uploadMode, ownerId, ownerType, propertyName, fileId, value]);
 
   useEffect(() => {
     if (uploadMode === 'sync' && value) {
@@ -282,7 +282,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = prop
     dispatch(deleteFileRequestAction());
 
     const deleteFileInput: StoredFileDeleteQueryParams = {
-      fileId: fileId ?? state.fileInfo?.id,
+      fileId: state.fileId ?? state.fileInfo?.id,
       ownerId,
       ownerType,
       propertyName,

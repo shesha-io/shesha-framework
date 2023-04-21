@@ -5,9 +5,21 @@ import { Get, GetProps, useGet, UseGetProps, Mutate, MutateProps, useMutate, Use
 
 import * as RestfulShesha from '../utils/fetchers';
 export const SPEC_VERSION = 'v1';
-export interface ValidationErrorInfo {
-  message?: string | null;
-  members?: string[] | null;
+export interface AjaxResponseBase {
+  targetUrl?: string | null;
+  success?: boolean;
+  error?: ErrorInfo;
+  unAuthorizedRequest?: boolean;
+  __abp?: boolean;
+}
+
+export interface BooleanAjaxResponse {
+  targetUrl?: string | null;
+  success?: boolean;
+  error?: ErrorInfo;
+  unAuthorizedRequest?: boolean;
+  __abp?: boolean;
+  result?: boolean;
 }
 
 export interface ErrorInfo {
@@ -26,14 +38,6 @@ export interface FileStreamResultAjaxResponse {
   result?: string | null;
 }
 
-export interface AjaxResponseBase {
-  targetUrl?: string | null;
-  success?: boolean;
-  error?: ErrorInfo;
-  unAuthorizedRequest?: boolean;
-  __abp?: boolean;
-}
-
 export interface StoredFileDto {
   error?: string | null;
   id?: string | null;
@@ -42,6 +46,7 @@ export interface StoredFileDto {
   url?: string | null;
   size?: number;
   type?: string | null;
+  temporary?: boolean;
 }
 
 export interface StoredFileDtoAjaxResponse {
@@ -51,15 +56,6 @@ export interface StoredFileDtoAjaxResponse {
   unAuthorizedRequest?: boolean;
   __abp?: boolean;
   result?: StoredFileDto;
-}
-
-export interface BooleanAjaxResponse {
-  targetUrl?: string | null;
-  success?: boolean;
-  error?: ErrorInfo;
-  unAuthorizedRequest?: boolean;
-  __abp?: boolean;
-  result?: boolean;
 }
 
 export interface StoredFileDtoListAjaxResponse {
@@ -111,9 +107,18 @@ export interface StoredFileVersionInfoDtoListAjaxResponse {
   result?: StoredFileVersionInfoDto[] | null;
 }
 
+export interface ValidationErrorInfo {
+  message?: string | null;
+  members?: string[] | null;
+}
+
 export interface StoredFileDownloadQueryParams {
   id?: string;
-  versionNo?: number | null;
+  versionNo?: number;
+  /**
+   * The requested API version
+   */
+  'api-version'?: string;
 }
 
 export type StoredFileDownloadProps = Omit<
@@ -150,13 +155,20 @@ export const storedFileDownload = (queryParams: StoredFileDownloadQueryParams, p
     props
   );
 
+export interface StoredFileUploadQueryParams {
+  /**
+   * The requested API version
+   */
+  'api-version'?: string;
+}
+
 export type StoredFileUploadProps = Omit<
-  MutateProps<StoredFileDtoAjaxResponse, AjaxResponseBase, void, void, void>,
+  MutateProps<StoredFileDtoAjaxResponse, AjaxResponseBase, StoredFileUploadQueryParams, void, void>,
   'path' | 'verb'
 >;
 
 export const StoredFileUpload = (props: StoredFileUploadProps) => (
-  <Mutate<StoredFileDtoAjaxResponse, AjaxResponseBase, void, void, void>
+  <Mutate<StoredFileDtoAjaxResponse, AjaxResponseBase, StoredFileUploadQueryParams, void, void>
     verb="POST"
     path={`/api/StoredFile/Upload`}
     {...props}
@@ -164,32 +176,87 @@ export const StoredFileUpload = (props: StoredFileUploadProps) => (
 );
 
 export type UseStoredFileUploadProps = Omit<
-  UseMutateProps<StoredFileDtoAjaxResponse, AjaxResponseBase, void, void, void>,
+  UseMutateProps<StoredFileDtoAjaxResponse, AjaxResponseBase, StoredFileUploadQueryParams, void, void>,
   'path' | 'verb'
 >;
 
 export const useStoredFileUpload = (props: UseStoredFileUploadProps) =>
-  useMutate<StoredFileDtoAjaxResponse, AjaxResponseBase, void, void, void>('POST', `/api/StoredFile/Upload`, props);
+  useMutate<StoredFileDtoAjaxResponse, AjaxResponseBase, StoredFileUploadQueryParams, void, void>(
+    'POST',
+    `/api/StoredFile/Upload`,
+    props
+  );
 
 export type storedFileUploadProps = Omit<
-  RestfulShesha.MutateProps<StoredFileDtoAjaxResponse, AjaxResponseBase, void, void, void>,
+  RestfulShesha.MutateProps<StoredFileDtoAjaxResponse, AjaxResponseBase, StoredFileUploadQueryParams, void, void>,
   'data'
 >;
 export const storedFileUpload = (props: storedFileUploadProps) =>
-  RestfulShesha.mutate<StoredFileDtoAjaxResponse, AjaxResponseBase, void, void, void>(
+  RestfulShesha.mutate<StoredFileDtoAjaxResponse, AjaxResponseBase, StoredFileUploadQueryParams, void, void>(
     'POST',
     `/api/StoredFile/Upload`,
     undefined,
     props
   );
 
+export interface StoredFileUploadStaticQueryParams {
+  /**
+   * The requested API version
+   */
+  'api-version'?: string;
+}
+
+export type StoredFileUploadStaticProps = Omit<
+  MutateProps<StoredFileDtoAjaxResponse, AjaxResponseBase, StoredFileUploadStaticQueryParams, void, void>,
+  'path' | 'verb'
+>;
+
+export const StoredFileUploadStatic = (props: StoredFileUploadStaticProps) => (
+  <Mutate<StoredFileDtoAjaxResponse, AjaxResponseBase, StoredFileUploadStaticQueryParams, void, void>
+    verb="POST"
+    path={`/api/StoredFile/UploadStatic`}
+    {...props}
+  />
+);
+
+export type UseStoredFileUploadStaticProps = Omit<
+  UseMutateProps<StoredFileDtoAjaxResponse, AjaxResponseBase, StoredFileUploadStaticQueryParams, void, void>,
+  'path' | 'verb'
+>;
+
+export const useStoredFileUploadStatic = (props: UseStoredFileUploadStaticProps) =>
+  useMutate<StoredFileDtoAjaxResponse, AjaxResponseBase, StoredFileUploadStaticQueryParams, void, void>(
+    'POST',
+    `/api/StoredFile/UploadStatic`,
+    props
+  );
+
+export type storedFileUploadStaticProps = Omit<
+  RestfulShesha.MutateProps<StoredFileDtoAjaxResponse, AjaxResponseBase, StoredFileUploadStaticQueryParams, void, void>,
+  'data'
+>;
+export const storedFileUploadStatic = (props: storedFileUploadStaticProps) =>
+  RestfulShesha.mutate<StoredFileDtoAjaxResponse, AjaxResponseBase, StoredFileUploadStaticQueryParams, void, void>(
+    'POST',
+    `/api/StoredFile/UploadStatic`,
+    undefined,
+    props
+  );
+
+export interface StoredFileUploadNewVersionQueryParams {
+  /**
+   * The requested API version
+   */
+  'api-version'?: string;
+}
+
 export type StoredFileUploadNewVersionProps = Omit<
-  MutateProps<StoredFileDtoAjaxResponse, AjaxResponseBase, void, void, void>,
+  MutateProps<StoredFileDtoAjaxResponse, AjaxResponseBase, StoredFileUploadNewVersionQueryParams, void, void>,
   'path' | 'verb'
 >;
 
 export const StoredFileUploadNewVersion = (props: StoredFileUploadNewVersionProps) => (
-  <Mutate<StoredFileDtoAjaxResponse, AjaxResponseBase, void, void, void>
+  <Mutate<StoredFileDtoAjaxResponse, AjaxResponseBase, StoredFileUploadNewVersionQueryParams, void, void>
     verb="POST"
     path={`/api/StoredFile/UploadNewVersion`}
     {...props}
@@ -197,23 +264,29 @@ export const StoredFileUploadNewVersion = (props: StoredFileUploadNewVersionProp
 );
 
 export type UseStoredFileUploadNewVersionProps = Omit<
-  UseMutateProps<StoredFileDtoAjaxResponse, AjaxResponseBase, void, void, void>,
+  UseMutateProps<StoredFileDtoAjaxResponse, AjaxResponseBase, StoredFileUploadNewVersionQueryParams, void, void>,
   'path' | 'verb'
 >;
 
 export const useStoredFileUploadNewVersion = (props: UseStoredFileUploadNewVersionProps) =>
-  useMutate<StoredFileDtoAjaxResponse, AjaxResponseBase, void, void, void>(
+  useMutate<StoredFileDtoAjaxResponse, AjaxResponseBase, StoredFileUploadNewVersionQueryParams, void, void>(
     'POST',
     `/api/StoredFile/UploadNewVersion`,
     props
   );
 
 export type storedFileUploadNewVersionProps = Omit<
-  RestfulShesha.MutateProps<StoredFileDtoAjaxResponse, AjaxResponseBase, void, void, void>,
+  RestfulShesha.MutateProps<
+    StoredFileDtoAjaxResponse,
+    AjaxResponseBase,
+    StoredFileUploadNewVersionQueryParams,
+    void,
+    void
+  >,
   'data'
 >;
 export const storedFileUploadNewVersion = (props: storedFileUploadNewVersionProps) =>
-  RestfulShesha.mutate<StoredFileDtoAjaxResponse, AjaxResponseBase, void, void, void>(
+  RestfulShesha.mutate<StoredFileDtoAjaxResponse, AjaxResponseBase, StoredFileUploadNewVersionQueryParams, void, void>(
     'POST',
     `/api/StoredFile/UploadNewVersion`,
     undefined,
@@ -228,15 +301,19 @@ export interface StoredFileDeleteQueryParams {
   /**
    * Id of the owner entity
    */
-  ownerId?: string | null;
+  ownerId?: string;
   /**
    * Type short alias of the owner entity
    */
-  ownerType?: string | null;
+  ownerType?: string;
   /**
    * Property name of the owner entity. Is used for direct links only (when owner references file using foreign key)
    */
-  propertyName?: string | null;
+  propertyName?: string;
+  /**
+   * The requested API version
+   */
+  'api-version'?: string;
 }
 
 export type StoredFileDeleteProps = Omit<
@@ -301,11 +378,19 @@ export interface StoredFileDownloadZipQueryParams {
   /**
    * Category of the file. Is used to split attachments into groups
    */
-  filesCategory?: number | null;
+  filesCategory?: number;
   /**
    * Property name of the owner entity. Is used for direct links only (when owner references file using foreign key)
    */
-  propertyName?: string | null;
+  propertyName?: string;
+  /**
+   * Property name of the owner entity. Is used for assign file to the nested entities
+   */
+  ownerName?: string;
+  /**
+   * The requested API version
+   */
+  'api-version'?: string;
 }
 
 export type StoredFileDownloadZipProps = Omit<
@@ -366,15 +451,23 @@ export interface StoredFileFilesListQueryParams {
   /**
    * Category of the file. Is used to split attachments into groups
    */
-  filesCategory?: number | null;
+  filesCategory?: number;
   /**
    * Property name of the owner entity. Is used for direct links only (when owner references file using foreign key)
    */
-  propertyName?: string | null;
+  propertyName?: string;
+  /**
+   * Property name of the owner entity. Is used for assign file to the nested entities
+   */
+  ownerName?: string;
   /**
    * Set to true to get files of all categories
    */
   allCategories?: boolean;
+  /**
+   * The requested API version
+   */
+  'api-version'?: string;
 }
 
 export type StoredFileFilesListProps = Omit<
@@ -420,8 +513,15 @@ export const storedFileFilesList = (queryParams: StoredFileFilesListQueryParams,
     props
   );
 
+export interface StoredFileCreateOrUpdateQueryParams {
+  /**
+   * The requested API version
+   */
+  'api-version'?: string;
+}
+
 export type StoredFileCreateOrUpdateProps = Omit<
-  MutateProps<StoredFileDtoAjaxResponse, AjaxResponseBase, void, void, void>,
+  MutateProps<StoredFileDtoAjaxResponse, AjaxResponseBase, StoredFileCreateOrUpdateQueryParams, void, void>,
   'path' | 'verb'
 >;
 
@@ -429,7 +529,7 @@ export type StoredFileCreateOrUpdateProps = Omit<
  * Update existing file
  */
 export const StoredFileCreateOrUpdate = (props: StoredFileCreateOrUpdateProps) => (
-  <Mutate<StoredFileDtoAjaxResponse, AjaxResponseBase, void, void, void>
+  <Mutate<StoredFileDtoAjaxResponse, AjaxResponseBase, StoredFileCreateOrUpdateQueryParams, void, void>
     verb="PUT"
     path={`/api/StoredFile`}
     {...props}
@@ -437,7 +537,7 @@ export const StoredFileCreateOrUpdate = (props: StoredFileCreateOrUpdateProps) =
 );
 
 export type UseStoredFileCreateOrUpdateProps = Omit<
-  UseMutateProps<StoredFileDtoAjaxResponse, AjaxResponseBase, void, void, void>,
+  UseMutateProps<StoredFileDtoAjaxResponse, AjaxResponseBase, StoredFileCreateOrUpdateQueryParams, void, void>,
   'path' | 'verb'
 >;
 
@@ -445,17 +545,27 @@ export type UseStoredFileCreateOrUpdateProps = Omit<
  * Update existing file
  */
 export const useStoredFileCreateOrUpdate = (props: UseStoredFileCreateOrUpdateProps) =>
-  useMutate<StoredFileDtoAjaxResponse, AjaxResponseBase, void, void, void>('PUT', `/api/StoredFile`, props);
+  useMutate<StoredFileDtoAjaxResponse, AjaxResponseBase, StoredFileCreateOrUpdateQueryParams, void, void>(
+    'PUT',
+    `/api/StoredFile`,
+    props
+  );
 
 export type storedFileCreateOrUpdateProps = Omit<
-  RestfulShesha.MutateProps<StoredFileDtoAjaxResponse, AjaxResponseBase, void, void, void>,
+  RestfulShesha.MutateProps<
+    StoredFileDtoAjaxResponse,
+    AjaxResponseBase,
+    StoredFileCreateOrUpdateQueryParams,
+    void,
+    void
+  >,
   'data'
 >;
 /**
  * Update existing file
  */
 export const storedFileCreateOrUpdate = (props: storedFileCreateOrUpdateProps) =>
-  RestfulShesha.mutate<StoredFileDtoAjaxResponse, AjaxResponseBase, void, void, void>(
+  RestfulShesha.mutate<StoredFileDtoAjaxResponse, AjaxResponseBase, StoredFileCreateOrUpdateQueryParams, void, void>(
     'PUT',
     `/api/StoredFile`,
     undefined,
@@ -464,6 +574,10 @@ export const storedFileCreateOrUpdate = (props: storedFileCreateOrUpdateProps) =
 
 export interface StoredFileGetQueryParams {
   id?: string;
+  /**
+   * The requested API version
+   */
+  'api-version'?: string;
 }
 
 export type StoredFileGetProps = Omit<
@@ -508,6 +622,10 @@ export const storedFileGet = (queryParams: StoredFileGetQueryParams, props: stor
 
 export interface StoredFileDeleteFileQueryParams {
   id?: string;
+  /**
+   * The requested API version
+   */
+  'api-version'?: string;
 }
 
 export type StoredFileDeleteFileProps = Omit<
@@ -560,7 +678,7 @@ export interface StoredFileGetEntityPropertyQueryParams {
   /**
    * Property name of the owner entity. Is used for direct links only (when owner references file using foreign key)
    */
-  propertyName?: string | null;
+  propertyName?: string;
   /**
    * Id of the owner entity
    */
@@ -569,6 +687,10 @@ export interface StoredFileGetEntityPropertyQueryParams {
    * Type short alias of the owner entity
    */
   ownerType: string;
+  /**
+   * The requested API version
+   */
+  'api-version'?: string;
 }
 
 export type StoredFileGetEntityPropertyProps = Omit<
@@ -617,6 +739,13 @@ export const storedFileGetEntityProperty = (
     props
   );
 
+export interface StoredFileGetFileVersionsQueryParams {
+  /**
+   * The requested API version
+   */
+  'api-version'?: string;
+}
+
 export interface StoredFileGetFileVersionsPathParams {
   /**
    * Id of the file
@@ -625,7 +754,12 @@ export interface StoredFileGetFileVersionsPathParams {
 }
 
 export type StoredFileGetFileVersionsProps = Omit<
-  GetProps<StoredFileVersionInfoDtoListAjaxResponse, AjaxResponseBase, void, StoredFileGetFileVersionsPathParams>,
+  GetProps<
+    StoredFileVersionInfoDtoListAjaxResponse,
+    AjaxResponseBase,
+    StoredFileGetFileVersionsQueryParams,
+    StoredFileGetFileVersionsPathParams
+  >,
   'path'
 > &
   StoredFileGetFileVersionsPathParams;
@@ -634,14 +768,24 @@ export type StoredFileGetFileVersionsProps = Omit<
  * Get versions of the file with specified Id
  */
 export const StoredFileGetFileVersions = ({ fileId, ...props }: StoredFileGetFileVersionsProps) => (
-  <Get<StoredFileVersionInfoDtoListAjaxResponse, AjaxResponseBase, void, StoredFileGetFileVersionsPathParams>
+  <Get<
+    StoredFileVersionInfoDtoListAjaxResponse,
+    AjaxResponseBase,
+    StoredFileGetFileVersionsQueryParams,
+    StoredFileGetFileVersionsPathParams
+  >
     path={`/api/StoredFile/StoredFile/${fileId}/Versions`}
     {...props}
   />
 );
 
 export type UseStoredFileGetFileVersionsProps = Omit<
-  UseGetProps<StoredFileVersionInfoDtoListAjaxResponse, AjaxResponseBase, void, StoredFileGetFileVersionsPathParams>,
+  UseGetProps<
+    StoredFileVersionInfoDtoListAjaxResponse,
+    AjaxResponseBase,
+    StoredFileGetFileVersionsQueryParams,
+    StoredFileGetFileVersionsPathParams
+  >,
   'path'
 > &
   StoredFileGetFileVersionsPathParams;
@@ -650,7 +794,12 @@ export type UseStoredFileGetFileVersionsProps = Omit<
  * Get versions of the file with specified Id
  */
 export const useStoredFileGetFileVersions = ({ fileId, ...props }: UseStoredFileGetFileVersionsProps) =>
-  useGet<StoredFileVersionInfoDtoListAjaxResponse, AjaxResponseBase, void, StoredFileGetFileVersionsPathParams>(
+  useGet<
+    StoredFileVersionInfoDtoListAjaxResponse,
+    AjaxResponseBase,
+    StoredFileGetFileVersionsQueryParams,
+    StoredFileGetFileVersionsPathParams
+  >(
     (paramsInPath: StoredFileGetFileVersionsPathParams) => `/api/StoredFile/StoredFile/${paramsInPath.fileId}/Versions`,
     { pathParams: { fileId }, ...props }
   );
@@ -659,7 +808,7 @@ export type storedFileGetFileVersionsProps = Omit<
   RestfulShesha.GetProps<
     StoredFileVersionInfoDtoListAjaxResponse,
     AjaxResponseBase,
-    void,
+    StoredFileGetFileVersionsQueryParams,
     StoredFileGetFileVersionsPathParams
   > & {
     /**
@@ -672,10 +821,13 @@ export type storedFileGetFileVersionsProps = Omit<
 /**
  * Get versions of the file with specified Id
  */
-export const storedFileGetFileVersions = ({ fileId, ...props }: storedFileGetFileVersionsProps) =>
+export const storedFileGetFileVersions = (
+  queryParams: StoredFileGetFileVersionsQueryParams,
+  { fileId, ...props }: storedFileGetFileVersionsProps
+) =>
   RestfulShesha.get<
     StoredFileVersionInfoDtoListAjaxResponse,
     AjaxResponseBase,
-    void,
+    StoredFileGetFileVersionsQueryParams,
     StoredFileGetFileVersionsPathParams
-  >(`/api/StoredFile/StoredFile/${fileId}/Versions`, undefined, props);
+  >(`/api/StoredFile/StoredFile/${fileId}/Versions`, queryParams, props);

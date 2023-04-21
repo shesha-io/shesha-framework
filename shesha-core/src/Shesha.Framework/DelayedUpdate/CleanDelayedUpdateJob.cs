@@ -1,6 +1,6 @@
 ﻿namespace Shesha.DelayedUpdate
 {
-    internal class CleanDelayedUpdateJob
+    public class CleanDelayedUpdateJob
     {
     }
 }
