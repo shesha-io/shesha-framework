@@ -60,7 +60,12 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ formMode: fMode, model, onCh
     lazy: true,
   });
 
-  const { data: metadata, loading: isFetchingMetada, refetch: refetchMetada, error: metadatError } = useMetadataGet({
+  const {
+    data: metadata,
+    loading: isFetchingMetada,
+    refetch: refetchMetada,
+    error: metadatError,
+  } = useMetadataGet({
     lazy: true,
   });
 
@@ -68,7 +73,7 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ formMode: fMode, model, onCh
     const data = form?.[name] || value;
 
     if (data && metadata) {
-      setState(s => ({
+      setState((s) => ({
         ...s,
         options: getTagOptions(data, labelFromatExecutor, getLabelKeys(metadata)),
         origin: data,
@@ -85,7 +90,7 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ formMode: fMode, model, onCh
     }
   }, [formId]);
 
-  const container = formConfiguration?.modelType;
+  const container = formConfiguration?.settings?.modelType;
 
   useEffect(() => {
     if (container) {
@@ -93,16 +98,16 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ formMode: fMode, model, onCh
     }
   }, [container]);
 
-  const setOpen = (open: boolean) => setState(s => ({ ...s, open, activeValue: null }));
+  const setOpen = (open: boolean) => setState((s) => ({ ...s, open, activeValue: null }));
 
   const setOption = (option: IChildEntitiesTagGroupSelectOptions) => {
-    setState(s => ({ ...s, options: addTagGroupOption(s.options, option) }));
+    setState((s) => ({ ...s, options: addTagGroupOption(s.options, option) }));
 
     onChange(morphTagGroup(addTagGroupOption(options, option), origin, capturedProperties));
   };
 
   const onClickTag = (value: string) => () => {
-    setState(s => ({ ...s, activeValue: value, open: true }));
+    setState((s) => ({ ...s, activeValue: value, open: true }));
   };
 
   const onCloseTag = (item: string) => (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -115,7 +120,7 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ formMode: fMode, model, onCh
       okText: 'Yes',
       okType: 'danger',
       cancelText: 'No',
-      onOk: () => setState(s => ({ ...s, options: s.options.filter(({ value }) => value !== item) })),
+      onOk: () => setState((s) => ({ ...s, options: s.options.filter(({ value }) => value !== item) })),
     });
 
     onChange(
