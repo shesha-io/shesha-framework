@@ -20,7 +20,7 @@ export interface ISubFormSettingsProps {
   onValuesChange?: (changedValues: any, values: ISubFormProps) => void;
 }
 
-interface ISubFormSettingsState extends ISubFormProps { }
+interface ISubFormSettingsState extends ISubFormProps {}
 
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 
@@ -66,7 +66,7 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
         ...model,
         properties: typeof model?.properties === 'string' ? model?.properties : model?.properties?.join(' '),
       }}
-    // initialValues={initialValues}
+      // initialValues={initialValues}
     >
       <SectionSeparator title="Display" />
 
@@ -107,8 +107,8 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
                 setFormTypesOptions(
                   (t
                     ? formTypes.filter((f) => {
-                      return f.toLowerCase().includes(t.toLowerCase());
-                    })
+                        return f.toLowerCase().includes(t.toLowerCase());
+                      })
                     : formTypes
                   ).map((i) => {
                     return { value: i };
@@ -267,7 +267,7 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
             </Show>
 
             <FormItem
-              label="POST Unnrl"
+              label="POST Url"
               name="postUrl"
               tooltip="The API url that will be used to update data. Write the code that returns the string"
             >
@@ -522,8 +522,9 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
       <FormItem
         label="Custom Visibility"
         name="customVisibility"
-        tooltip={"Enter custom visibility code.  You must return true to show the component. " +
-          "The global variable data is provided, and allows you to access the data of any form component, by using its API key."
+        tooltip={
+          'Enter custom visibility code.  You must return true to show the component. ' +
+          'The global variable data is provided, and allows you to access the data of any form component, by using its API key.'
         }
       >
         <CodeEditor
@@ -534,8 +535,9 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
           name="customVisibility"
           type={''}
           id={''}
-          description={"Enter custom visibility code.  You must return true to show the component. " +
-            "The global variable data is provided, and allows you to access the data of any form component, by using its API key."
+          description={
+            'Enter custom visibility code.  You must return true to show the component. ' +
+            'The global variable data is provided, and allows you to access the data of any form component, by using its API key.'
           }
           exposedVariables={[
             {
