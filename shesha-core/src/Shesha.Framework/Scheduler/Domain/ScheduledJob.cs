@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Abp.Domain.Entities.Auditing;
 using Shesha.Domain.Attributes;
 using Shesha.Scheduler.Domain.Enums;
@@ -7,6 +8,7 @@ using Shesha.Scheduler.Domain.Enums;
 namespace Shesha.Scheduler.Domain
 {
     [Entity(TypeShortAlias = "Shesha.Scheduler.ScheduledJob")]
+    [Table("Core_ScheduledJobs")]
     public class ScheduledJob: FullAuditedEntity<Guid>
     {
         /// <summary>

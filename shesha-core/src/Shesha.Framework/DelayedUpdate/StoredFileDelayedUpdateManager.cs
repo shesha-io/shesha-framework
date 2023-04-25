@@ -35,16 +35,29 @@ namespace Shesha.DelayedUpdate
                 var file = await _fileService.GetOrNullAsync(Guid.Parse(id.ToString()));
 
                 if (data?.PropertyName?.IsNullOrEmpty() ?? true)
-                    file.Owner = new GenericEntityReference(entity);
+                {
+                    object owner = entity;
+                    if (!data?.OwnerName?.IsNullOrEmpty() ?? false)
+                    {
+                        var prop = ReflectionHelper.GetProperty(owner, data.OwnerName);
+                        owner = prop.GetValue(owner);
+                        if (owner == null)
+                        {
+                            validationResult.Add(new ValidationResult($"Entity '{data.OwnerName}' not found for {entity.GetType().FullName}"));
+                            return;
+                        }
+                    }
+                    file.Owner = new GenericEntityReference(owner);
+                }
                 else
                 {
-                    var property = ReflectionHelper.GetProperty(entity, data.PropertyName);
+                    var property = ReflectionHelper.GetProperty(entity, data.PropertyName, out var owner);
                     if (property == null)
                     {
                         validationResult.Add(new ValidationResult($"Property '{data.PropertyName}' not found for {entity.GetType().FullName}"));
                         return;
                     }
-                    property.SetValue(entity, file);
+                    property.SetValue(owner, file);
                 }
 
                 file.Temporary = false;

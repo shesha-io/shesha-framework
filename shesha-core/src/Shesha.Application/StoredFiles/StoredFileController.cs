@@ -12,6 +12,7 @@ using NHibernate.Linq;
 using Shesha.Domain;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
+using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.StoredFiles.Dto;
 using Shesha.Utilities;
@@ -103,7 +104,7 @@ namespace Shesha.StoredFiles
             if (owner != null && !input.PropertyName.IsNullOrWhiteSpace())
             {
                 // single file upload (stored as a property of an entity)
-                var property = ReflectionHelper.GetProperty(owner, input.PropertyName);
+                var property = ReflectionHelper.GetProperty(owner, input.PropertyName, out owner);
                 if (property == null || property.PropertyType != typeof(StoredFile))
                     throw new Exception(
                         $"Property '{input.PropertyName}' not found in class '{owner.GetType().FullName}'");
@@ -146,14 +147,27 @@ namespace Shesha.StoredFiles
                     var storedFile = await _fileService.SaveFileAsync(fileStream, fileName, file =>
                     {
                         if (owner != null)
+                        {
                             // Set owner
-                            file.Owner = new GenericEntityReference(owner); 
+                            if (!input.OwnerName.IsNullOrEmpty())
+                            {
+                                var prop = ReflectionHelper.GetProperty(owner, input.OwnerName);
+                                if (prop == null)
+                                    throw new Exception($"Property '{input.OwnerName}' not found in class '{owner.GetType().FullName}'");
+                                owner = prop.GetValue(owner);
+                            }
+
+                            if (owner != null)
+                                file.Owner = new GenericEntityReference(owner);
+                            else
+                                file.Temporary = true;
+                        }
                         else
                         {
                             // otherwise - mark as temporary
-                            file.Temporary = true; 
+                            file.Temporary = true;
                         }
-                        file.Category = input.FilesCategory;
+                        file.Category = input.FilesCategory.ToCamelCase();
                     });
 
                     await _unitOfWorkManager.Current.SaveChangesAsync();
@@ -207,7 +221,7 @@ namespace Shesha.StoredFiles
                     {
                         if (input.Id.HasValue && input.Id.Value != Guid.Empty)
                             file.Id = input.Id.Value;
-                        file.Category = input.FilesCategory;
+                        file.Category = input.FilesCategory.ToCamelCase();
                     });
 
                     await _unitOfWorkManager.Current.SaveChangesAsync();
@@ -346,7 +360,7 @@ namespace Shesha.StoredFiles
 
             var processAsProperty = owner != null && !string.IsNullOrWhiteSpace(input.PropertyName);
             var property = processAsProperty
-                ? ReflectionHelper.GetProperty(owner, input.PropertyName)
+                ? ReflectionHelper.GetProperty(owner, input.PropertyName, out owner)
                 : null;
             if (processAsProperty)
             {
@@ -389,7 +403,7 @@ namespace Shesha.StoredFiles
         {
             var files = input.AllCategories
                 ? await _fileService.GetAttachmentsAsync(input.OwnerId, input.OwnerType)
-                : await _fileService.GetAttachmentsOfCategoryAsync(input.OwnerId, input.OwnerType, input.FilesCategory);
+                : await _fileService.GetAttachmentsOfCategoryAsync(input.OwnerId, input.OwnerType, input.FilesCategory.ToCamelCase());
 
             // todo: move zip support to the FileService, current implementation doesn't support Azure
             var list = _fileService.MakeUniqueFileNames(files);
@@ -411,9 +425,24 @@ namespace Shesha.StoredFiles
             if (string.IsNullOrEmpty(input.OwnerId))
                 throw new Exception($"`{nameof(input.OwnerId)}` must not be null");
 
+            var owner = await _dynamicRepository.GetAsync(input.OwnerType, input.OwnerId);
+
+            if (owner == null)
+                throw new Exception($"Entity `{input.OwnerType}` `{input.OwnerId}` not found");
+
+            if (!input.OwnerName.IsNullOrEmpty())
+            {
+                var prop = ReflectionHelper.GetProperty(owner, input.OwnerName);
+                owner = prop.GetValue(owner);
+                if (owner == null)
+                    return new List<StoredFileDto>();
+            }
+
+            var id = owner.GetId();
+            var type = owner.GetType().StripCastleProxyType().FullName;
             var files = input.AllCategories
-                ? await _fileService.GetAttachmentsAsync(input.OwnerId, input.OwnerType)
-                : await _fileService.GetAttachmentsOfCategoryAsync(input.OwnerId, input.OwnerType, input.FilesCategory);
+                ? await _fileService.GetAttachmentsAsync(id, type)
+                : await _fileService.GetAttachmentsOfCategoryAsync(id, type, input.FilesCategory.ToCamelCase());
 
             var list = files.Select(sf => GetFileDto(sf)).ToList();
             return list;
@@ -514,7 +543,7 @@ namespace Shesha.StoredFiles
 
             var uploadAsProperty = owner != null && !string.IsNullOrWhiteSpace(input.PropertyName);
             var property = uploadAsProperty
-                ? ReflectionHelper.GetProperty(owner, input.PropertyName)
+                ? ReflectionHelper.GetProperty(owner, input.PropertyName, out owner)
                 : null;
             if (uploadAsProperty)
             {
@@ -534,7 +563,7 @@ namespace Shesha.StoredFiles
             {
                 storedFile = input.Id != null
                     ? await _fileRepository.GetAll().FirstOrDefaultAsync(f => f.Id == input.Id.Value)
-                    : property != null
+                    : property != null && owner != null
                         ? property.GetValue(owner) as StoredFile
                         : null;
             }
@@ -553,7 +582,7 @@ namespace Shesha.StoredFiles
                     });
 
                     // set property if needed
-                    if (property != null)
+                    if (property != null && owner != null)
                     {
                         property.SetValue(owner, storedFile, null);
                         await _dynamicRepository.SaveOrUpdateAsync(owner);
@@ -617,11 +646,11 @@ namespace Shesha.StoredFiles
                 string.IsNullOrWhiteSpace(input.PropertyName))
                 return null;
 
-            var owner = await _dynamicRepository.GetAsync(input.OwnerType, input.OwnerId);
-            if (owner == null)
+            var entity = await _dynamicRepository.GetAsync(input.OwnerType, input.OwnerId);
+            if (entity == null)
                 return null;
 
-            var property = ReflectionHelper.GetProperty(owner, input.PropertyName);
+            var property = ReflectionHelper.GetProperty(entity, input.PropertyName, out var owner);
             if (property == null)
                 throw new Exception($"Property '{input.PropertyName}' not found in the class {owner.GetType().Name}");
 

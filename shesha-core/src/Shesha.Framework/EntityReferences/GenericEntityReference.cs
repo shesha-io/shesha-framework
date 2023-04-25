@@ -1,6 +1,7 @@
 ﻿using Abp.Domain.Entities;
 using Abp.Extensions;
 using Shesha.Extensions;
+using Shesha.Reflection;
 using Shesha.Services;
 using System;
 
@@ -27,7 +28,8 @@ namespace Shesha.EntityReferences
             Id = _entity.GetType().GetProperty("Id")?.GetValue(_entity)?.ToString();
             if (Id.IsNullOrEmpty())
                 throw new NullReferenceException($"entity.{nameof(GenericEntityReference.Id)} can not be NULL");
-            _className = _entity.GetType().FullName;
+
+            _className = _entity.GetType().StripCastleProxyType().FullName;
             _displayName = _entity.GetDisplayName();
         }
 

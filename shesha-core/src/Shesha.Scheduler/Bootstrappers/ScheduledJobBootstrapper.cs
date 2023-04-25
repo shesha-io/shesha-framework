@@ -1,11 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Reflection;
-using Cronos;
 using NHibernate.Linq;
 using Shesha.Bootstrappers;
 using Shesha.Reflection;
@@ -13,6 +9,9 @@ using Shesha.Scheduler.Attributes;
 using Shesha.Scheduler.Domain;
 using Shesha.Scheduler.Domain.Enums;
 using Shesha.Scheduler.Utilities;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Shesha.Scheduler.Bootstrappers
 {
@@ -102,7 +101,7 @@ namespace Shesha.Scheduler.Bootstrappers
                         JobDescription = jobInfo.Attribute.Description,
                         LogMode = jobInfo.Attribute.LogMode,
                         LogFolder = jobInfo.Attribute.LogFolder,
-                        JobType = jobInfo.Class.BaseType?.ToString()
+                        JobType = jobInfo.Class.FullName
                     };
 
                     await _jobRepo.InsertAsync(job);

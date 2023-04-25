@@ -1,22 +1,23 @@
 import React from 'react';
-import { IToolboxComponent } from '../../../../interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '../../../../providers/form/models';
+import { IToolboxComponent } from '../../interfaces';
+import { FormMarkup, IConfigurableFormComponent } from '../../providers/form/models';
 import { FolderAddOutlined } from '@ant-design/icons';
-import ConfigurableFormItem from '../formItem';
+import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
-import StoredFilesProvider from '../../../../providers/storedFiles';
-import { CustomFile } from '../../../';
-import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../../../../providers';
+import StoredFilesProvider from '../../providers/storedFiles';
+import { CustomFile } from '../../components';
+import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../../providers';
 import {
   evaluateValue,
   executeCustomExpression,
   validateConfigurableComponentSettings,
-} from '../../../../providers/form/utils';
+} from '../../providers/form/utils';
 
 export interface IAttachmentsEditorProps extends IConfigurableFormComponent {
   ownerId: string;
   ownerType: string;
-  filesCategory?: number;
+  filesCategory?: string;
+  ownerName?: string;
   allowAdd: boolean;
   allowDelete: boolean;
   allowReplace: boolean;
@@ -44,7 +45,9 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         <StoredFilesProvider
           ownerId={Boolean(ownerId) ? ownerId : (Boolean(data?.id) ? data?.id : '')}
           ownerType={Boolean(model.ownerType) ? model.ownerType : (Boolean(formSettings?.modelType) ? formSettings?.modelType : '')}
+          ownerName={model.ownerName}
           filesCategory={model.filesCategory}
+          allCategories={!Boolean(model.filesCategory)}
           baseUrl={backendUrl}
         >
           <CustomFile
@@ -60,18 +63,18 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
   },
   settingsFormMarkup: settingsForm,
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
-  initModel: model => {
-    const customModel: IAttachmentsEditorProps = {
-      ...model,
+  migrator: m => m.add<IAttachmentsEditorProps>(0, prev => {
+    return {
+      ...prev,
       allowAdd: true,
       allowDelete: true,
       allowReplace: true,
       allowRename: true,
       ownerId: '',
       ownerType: '',
+      ownerName: ''
     };
-    return customModel;
-  },
+  })
 };
 
 export default AttachmentsEditor;

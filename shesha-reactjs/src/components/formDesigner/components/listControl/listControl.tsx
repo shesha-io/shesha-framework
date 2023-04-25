@@ -42,6 +42,7 @@ import { DEFAULT_CONFIRM_MESSAGE, DEFAULT_TOTAL_RECORD } from './constants';
 import { ConfigurationItemVersionStatusMap } from '../../../../utils/configurationFramework/models';
 import FormInfo from '../../../configurableForm/formInfo';
 
+/** @deprecated: Use DataList instead */
 const ListControl: FC<IListControlProps> = props => {
   const {
     containerId,
