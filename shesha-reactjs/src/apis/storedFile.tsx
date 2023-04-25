@@ -42,7 +42,7 @@ export interface StoredFileDto {
   error?: string | null;
   id?: string | null;
   name?: string | null;
-  fileCategory?: number | null;
+  fileCategory?: string | null;
   url?: string | null;
   size?: number;
   type?: string | null;
@@ -378,7 +378,7 @@ export interface StoredFileDownloadZipQueryParams {
   /**
    * Category of the file. Is used to split attachments into groups
    */
-  filesCategory?: number;
+  filesCategory?: string;
   /**
    * Property name of the owner entity. Is used for direct links only (when owner references file using foreign key)
    */
@@ -451,7 +451,7 @@ export interface StoredFileFilesListQueryParams {
   /**
    * Category of the file. Is used to split attachments into groups
    */
-  filesCategory?: number;
+  filesCategory?: string;
   /**
    * Property name of the owner entity. Is used for direct links only (when owner references file using foreign key)
    */

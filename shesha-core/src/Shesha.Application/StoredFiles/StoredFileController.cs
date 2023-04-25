@@ -167,7 +167,7 @@ namespace Shesha.StoredFiles
                             // otherwise - mark as temporary
                             file.Temporary = true;
                         }
-                        file.Category = input.FilesCategory;
+                        file.Category = input.FilesCategory.ToCamelCase();
                     });
 
                     await _unitOfWorkManager.Current.SaveChangesAsync();
@@ -221,7 +221,7 @@ namespace Shesha.StoredFiles
                     {
                         if (input.Id.HasValue && input.Id.Value != Guid.Empty)
                             file.Id = input.Id.Value;
-                        file.Category = input.FilesCategory;
+                        file.Category = input.FilesCategory.ToCamelCase();
                     });
 
                     await _unitOfWorkManager.Current.SaveChangesAsync();
@@ -403,7 +403,7 @@ namespace Shesha.StoredFiles
         {
             var files = input.AllCategories
                 ? await _fileService.GetAttachmentsAsync(input.OwnerId, input.OwnerType)
-                : await _fileService.GetAttachmentsOfCategoryAsync(input.OwnerId, input.OwnerType, input.FilesCategory);
+                : await _fileService.GetAttachmentsOfCategoryAsync(input.OwnerId, input.OwnerType, input.FilesCategory.ToCamelCase());
 
             // todo: move zip support to the FileService, current implementation doesn't support Azure
             var list = _fileService.MakeUniqueFileNames(files);
@@ -442,7 +442,7 @@ namespace Shesha.StoredFiles
             var type = owner.GetType().StripCastleProxyType().FullName;
             var files = input.AllCategories
                 ? await _fileService.GetAttachmentsAsync(id, type)
-                : await _fileService.GetAttachmentsOfCategoryAsync(id, type, input.FilesCategory);
+                : await _fileService.GetAttachmentsOfCategoryAsync(id, type, input.FilesCategory.ToCamelCase());
 
             var list = files.Select(sf => GetFileDto(sf)).ToList();
             return list;

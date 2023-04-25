@@ -42,7 +42,7 @@ namespace Shesha.Services.StoredFiles
         /// <summary>
         /// Returns list of files attached to the specified entity with the specified <paramref name="fileCategory"/>
         /// </summary>
-        public async Task<IList<StoredFile>> GetAttachmentsOfCategoryAsync<TId>([NotNull]IEntity<TId> owner, Int64? fileCategory)
+        public async Task<IList<StoredFile>> GetAttachmentsOfCategoryAsync<TId>([NotNull]IEntity<TId> owner, string fileCategory)
         {
             return await GetAttachmentsInternalAsync(owner.Id, owner.GetTypeShortAlias(), f => f.Category == fileCategory);
         }
@@ -50,7 +50,7 @@ namespace Shesha.Services.StoredFiles
         /// <summary>
         /// Returns list of files attached to the entity with the specified <paramref name="id"/>, <paramref name="typeShortAlias"/> and <paramref name="fileCategory"/>
         /// </summary>
-        public async Task<IList<StoredFile>> GetAttachmentsOfCategoryAsync<TId>(TId id, string typeShortAlias, Int64? fileCategory)
+        public async Task<IList<StoredFile>> GetAttachmentsOfCategoryAsync<TId>(TId id, string typeShortAlias, string fileCategory)
         {
             return await GetAttachmentsInternalAsync(id, typeShortAlias, f => f.Category == fileCategory);
         }
@@ -80,12 +80,12 @@ namespace Shesha.Services.StoredFiles
 
         #region HasAttachments
 
-        public async Task<bool> HasAttachmentsOfCategoryAsync<TId>(IEntity<TId> owner, Int64? fileCategory)
+        public async Task<bool> HasAttachmentsOfCategoryAsync<TId>(IEntity<TId> owner, string fileCategory)
         {
             return await HasAttachmentsOfCategoryAsync(owner.Id, owner.GetTypeShortAlias(), fileCategory);
         }
 
-        public async Task<bool> HasAttachmentsOfCategoryAsync<TId>(TId id, string typeShortAlias, Int64? fileCategory)
+        public async Task<bool> HasAttachmentsOfCategoryAsync<TId>(TId id, string typeShortAlias, string fileCategory)
         {
             return await GetAttachmentsQuery(id, typeShortAlias, f => f.Category == fileCategory).AnyAsync();
         }
@@ -227,7 +227,7 @@ namespace Shesha.Services.StoredFiles
         /// <typeparam name="TId"></typeparam>
         /// <param name="owner"></param>
         /// <returns></returns>
-        public async Task<IList<Int64?>> GetAttachmentsCategoriesAsync<TId>(IEntity<TId> owner)
+        public async Task<IList<string>> GetAttachmentsCategoriesAsync<TId>(IEntity<TId> owner)
         {
             return await GetAttachmentsQuery(owner.Id, owner.GetTypeShortAlias()).Select(f => f.Category).Distinct()
                 .ToListAsync();

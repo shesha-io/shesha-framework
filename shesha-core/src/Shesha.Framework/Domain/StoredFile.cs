@@ -44,8 +44,7 @@ namespace Shesha.Domain
 
         public virtual string FileType { get; set; }
 
-        [ReferenceList("Shesha.Framework", "StoredFileCategory")]
-        public virtual Int64? Category { get; set; }
+        public virtual string Category { get; set; }
 
         [DataType(DataType.MultilineText)]
         public virtual string Description { get; set; }

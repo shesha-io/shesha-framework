@@ -28,7 +28,7 @@ export type IFlagActionedFlags = '__DEFAULT__'; /* NEW_ACTIONED_FLAG_GOES_HERE *
 export interface IStoredFile extends UploadFile {
   error?: string | null;
   id?: string | null;
-  fileCategory?: number | null;
+  fileCategory?: string | null;
   url?: string | null;
   temporary?: boolean | null;
 }
@@ -55,7 +55,7 @@ export interface IStoredFilesStateContext
   ownerId?: string;
   ownerType?: string;
   ownerName?: string;
-  filesCategory?: number;
+  filesCategory?: string;
   propertyName?: string;
   allCategories?: boolean;
   fileList?: IStoredFile[];

@@ -59,9 +59,9 @@ namespace Shesha.Scheduler
             return Task.CompletedTask;
         }
 
-        public override void OnLog(object sender, ScheduledJobOnLogEventArgs e)
+        /*public override void OnLog(object sender, ScheduledJobOnLogEventArgs e)
         {
             Log.Info("TestJob.OnLog executed");
-        }
+        }*/
     }
 }

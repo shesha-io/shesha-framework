@@ -40,7 +40,7 @@ export interface IStoredFilesProviderProps {
   ownerId: string;
   ownerType: string;
   ownerName?: string;
-  filesCategory?: number;
+  filesCategory?: string;
   propertyName?: string;
   allCategories?: boolean;
   baseUrl?: string;
