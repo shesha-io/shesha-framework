@@ -6,6 +6,7 @@ using Abp.Auditing;
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using Shesha.Domain.Attributes;
+using Shesha.DynamicEntities;
 
 namespace Shesha.Domain
 {
@@ -64,6 +65,7 @@ namespace Shesha.Domain
         /// Primary contact
         /// </summary>
         [Audited]
+        [CascadeUpdateRules(true, true)]
         public virtual TPerson PrimaryContact { get; set; }
 
     }

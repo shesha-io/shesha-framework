@@ -37,6 +37,7 @@
     <PackageReference Include="Abp.ZeroCore" Version="6.6.2" />
     <PackageReference Include="Azure.Storage.Blobs" Version="12.4.4" />
     <PackageReference Include="ConcurrentHashSet" Version="1.1.0" />
+    <PackageReference Include="Cronos" Version="0.7.0" />
     <PackageReference Include="EasyNetQ" Version="5.1.2" />
     <PackageReference Include="FluentMigrator" Version="3.2.1" />
     <PackageReference Include="FluentValidation" Version="10.3.3" />

@@ -29,10 +29,9 @@ namespace Shesha.Scheduler
         /// <param name="executionId">executionId</param>
         /// <param name="startedById">Id of the started user</param>
         /// <param name="cancellationToken">Cancellation token</param>
-        /// <param name="jobName"></param>
         /// <returns></returns>
         [JobDisplayName("{4}")]
-        Task RunJobAsync(Guid jobId, Guid executionId, Int64? startedById, CancellationToken cancellationToken, string jobName);
+        Task RunJobAsync(Guid jobId, Guid executionId, Int64? startedById, CancellationToken cancellationToken);
 
         /// <summary>
         /// 
@@ -42,10 +41,9 @@ namespace Shesha.Scheduler
         /// <param name="executionId"></param>
         /// <param name="startedById"></param>
         /// <param name="cancellationToken"></param>
-        /// <param name="jobName"></param>
         /// <returns></returns>
         [JobDisplayName("{5}")]
-        Task RunJobAsync(Guid jobId, string jobType, Guid executionId, Int64? startedById, CancellationToken cancellationToken, string jobName);
+        Task RunJobAsync(Guid jobId, string jobType, Guid executionId, Int64? startedById, CancellationToken cancellationToken);
 
         /// <summary>
         /// 
@@ -70,6 +68,5 @@ namespace Shesha.Scheduler
         /// <param name="id"></param>
         /// <returns></returns>
         ScheduledJobBase GetJobInstanceById(Guid id);
-
     }
 }

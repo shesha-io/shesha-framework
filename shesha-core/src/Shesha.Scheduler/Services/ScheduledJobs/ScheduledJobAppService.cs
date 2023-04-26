@@ -53,34 +53,7 @@ namespace Shesha.Scheduler.Services.ScheduledJobs
 
             var executionId = Guid.NewGuid();
 
-            if (job == null)
-            {
-                var action = (ScheduledJobExecution ex) =>
-                {
-                    ex.Status = Domain.Enums.ExecutionStatus.Enqueued;
-                    ex.StartedBy = AbpSession.UserId.HasValue
-                    ? UserRepository.Get(AbpSession.UserId.Value)
-                    : null;
-                };
-
-                await _jobManager.ExecuteJobMethodAsync(id, scheduledJob.JobType, "CreateExecutionRecordAsync", new object[] { executionId, action });
-
-                BackgroundJob.Enqueue<IScheduledJobManager>(manager => manager.RunJobAsync(id, scheduledJob.JobType, executionId, AbpSession.UserId, cancellationToken, scheduledJob.JobName));
-
-            }
-            else
-            {
-                await job.CreateExecutionRecordAsync(executionId,
-                    execution =>
-                    {
-                        execution.Status = Domain.Enums.ExecutionStatus.Enqueued;
-                        execution.StartedBy = AbpSession.UserId.HasValue
-                            ? UserRepository.Get(AbpSession.UserId.Value)
-                            : null;
-                    }
-                );
-                BackgroundJob.Enqueue<IScheduledJobManager>(manager => manager.RunJobAsync(id, executionId, AbpSession.UserId, cancellationToken, scheduledJob.JobName));
-            }
+            BackgroundJob.Enqueue<IScheduledJobManager>(manager => manager.RunJobAsync(id, executionId, AbpSession.UserId, cancellationToken));
 
             return new StartJobResponse(executionId);
         }
@@ -135,18 +108,12 @@ namespace Shesha.Scheduler.Services.ScheduledJobs
                 await uow.CompleteAsync();
             }
 
-            var job = _jobManager.GetJobInstanceById(jobId);
-            
-            if (job == null)
-            {
-                await _jobManager.ExecuteJobMethodAsync(jobId, jobType, "ExecuteAsync", new object[] { Guid.NewGuid(), AbpSession.UserId, cancellationToken });
-            }
-            else
-            {
-                job.TriggerId = triggerId;
+            var executionId = Guid.NewGuid();
 
-                await job.ExecuteAsync(Guid.NewGuid(), AbpSession.UserId, cancellationToken);
-            }
+            var job = _jobManager.GetJobInstanceById(jobId);
+            job.TriggerId = triggerId;
+            await job.AddStartExecutionRecordAsync(executionId, AbpSession.UserId);
+            await job.ExecuteAsync(executionId, AbpSession.UserId, cancellationToken);
         }
 
         /// <summary>

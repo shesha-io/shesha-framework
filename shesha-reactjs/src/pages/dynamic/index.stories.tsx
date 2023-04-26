@@ -150,12 +150,12 @@ export const PersonDetailsPage = addStory(Template, {
 export const PersonEdit = addStory(Template, {
   formId: { name: 'person-edit', module: 'Test Module' },
   mode: 'edit',
-  //id: '1D5CEB7F-0013-4AE4-8B12-4044D8C5C6D4',
+  id: '9B3CA718-B61B-495D-B1C9-B2DE50EBA130',
 });
 
 export const OrganisationEdit = addStory(Template, {
   formId: { name: 'organisation-edit', module: 'Test Module' },
-  //id: '0CA1A087-D0DD-4780-82B1-CD29F474E29D',
+  id: '9A6C74F5-0EA0-432B-90BE-79F72CC71778',
   mode: 'edit',
 });
 

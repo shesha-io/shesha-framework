@@ -12,12 +12,12 @@ namespace Shesha.Services
     {
         Task MarkDownloadedAsync(StoredFileVersion fileVersion);
 
-        Task<IList<StoredFile>> GetAttachmentsOfCategoryAsync<TId>([NotNull] IEntity<TId> owner, Int64? fileCategory);
-        Task<IList<StoredFile>> GetAttachmentsOfCategoryAsync<TId>(TId id, string typeShortAlias, Int64? fileCategory);
+        Task<IList<StoredFile>> GetAttachmentsOfCategoryAsync<TId>([NotNull] IEntity<TId> owner, string fileCategory);
+        Task<IList<StoredFile>> GetAttachmentsOfCategoryAsync<TId>(TId id, string typeShortAlias, string fileCategory);
         Task<IList<StoredFile>> GetAttachmentsAsync<TId>(IEntity<TId> owner);
         Task<IList<StoredFile>> GetAttachmentsAsync<TId>(TId id, string typeShortAlias);
-        Task<bool> HasAttachmentsOfCategoryAsync<TId>(IEntity<TId> owner, Int64? fileCategory);
-        Task<bool> HasAttachmentsOfCategoryAsync<TId>(TId id, string typeShortAlias, Int64? fileCategory);
+        Task<bool> HasAttachmentsOfCategoryAsync<TId>(IEntity<TId> owner, string fileCategory);
+        Task<bool> HasAttachmentsOfCategoryAsync<TId>(TId id, string typeShortAlias, string fileCategory);
         Task<Stream> GetStreamAsync(StoredFileVersion fileVersion);
         Task<Stream> GetStreamAsync(StoredFile file);
         Task<Stream> GetStreamAsync(string filePath);
@@ -26,7 +26,7 @@ namespace Shesha.Services
 
         Task CopyAttachmentsToAsync<TSourceId, TDestinationId>(IEntity<TSourceId> source, IEntity<TDestinationId> destination);
 
-        Task<IList<Int64?>> GetAttachmentsCategoriesAsync<TId>(IEntity<TId> owner);
+        Task<IList<string>> GetAttachmentsCategoriesAsync<TId>(IEntity<TId> owner);
         Task<StoredFileVersion> GetNewOrDefaultVersionAsync([NotNull] StoredFile file);
         Task RenameFileAsync(StoredFile file, string fileName);
         Task<StoredFileVersion> GetLastVersionAsync(StoredFile file);
