@@ -16,7 +16,7 @@ export interface IAppConfigManager {
 
 const defaultConfig: IAppConfigManager = {
   baseUrl: '',
-  googleMapsApiKey: null,
+  googleMapsApiKey: 'AIzaSyAQv3UvXzYNUlwB-0LCuS7toLdl_z1j2l8',
   appInsightsInstrumentationKey: null,
 };
 
