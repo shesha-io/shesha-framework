@@ -1,4 +1,5 @@
-﻿using Abp.Dependency;
+﻿using Abp.Authorization;
+using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Castle.DynamicProxy;
 using Microsoft.AspNetCore.Mvc;
@@ -83,9 +84,9 @@ namespace Shesha.Test
         }
 
         [HttpGet]
+        [AbpAuthorize("Test")]
         public Task CheckData()
         {
-            var obj = Repository.GetAll().ToList();
             return Task.CompletedTask;
         }
 

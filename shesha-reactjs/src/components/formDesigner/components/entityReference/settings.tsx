@@ -10,7 +10,7 @@ import { IEntityReferenceProps } from '../../../entityReference';
 import EndpointsAutocomplete from '../../../endpointsAutocomplete/endpointsAutocomplete';
 import { MetadataProvider } from '../../../../providers';
 import LabelValueEditor from '../labelValueEditor/labelValueEditor';
-import CollapsiblePanel from '../../../collapsiblePanel';
+import CollapsiblePanel from '../../../panel';
 import { ConfigurableActionConfigurator } from '../configurableActionsConfigurator';
 import { Option } from 'antd/lib/mentions';
 

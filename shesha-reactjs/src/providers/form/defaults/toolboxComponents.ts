@@ -12,7 +12,7 @@ import CheckboxGroup from '../../../components/formDesigner/components/checkboxG
 import ChildDataTable from '../../../components/formDesigner/components/childDataTable/childDataTableComponent';
 import ChildEntitiesTagGroup from '../../../components/formDesigner/components/childEntitiesTagGroup';
 import CodeEditor from '../../../components/formDesigner/components/codeEditor';
-import CollapsiblePanel from '../../../components/formDesigner/components/collapsiblePanel/collapsiblePanelComponent';
+import CollapsiblePanel from '../../../designer-components/collapsiblePanel/collapsiblePanelComponent';
 import ColorPickerComponent from '../../../components/formDesigner/components/colorPicker';
 import Columns from '../../../components/formDesigner/components/columns/columns';
 import ConfigurableActionConfigurator from '../../../components/formDesigner/components/configurableActionsConfigurator';
