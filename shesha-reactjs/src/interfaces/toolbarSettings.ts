@@ -19,7 +19,7 @@ import { IConfigurableActionConfiguratorComponentProps } from '../components/for
 import { IEditableTagGroupComponentProps } from '../components/formDesigner/components/editableTagGroup/interfaces';
 import { IColorPickerComponentProps } from '../components/formDesigner/components/colorPicker/interfaces';
 import { IColumnsEditorComponentProps } from '../components/formDesigner/components/dataTable/table/columnsEditor/interfaces';
-import { ICollapsiblePanelComponentProps } from '../components/formDesigner/components/collapsiblePanel/interfaces';
+import { ICollapsiblePanelComponentProps } from '../designer-components/collapsiblePanel/interfaces';
 import { IPropertyAutocompleteComponentProps } from '../components/formDesigner/components/propertyAutocomplete/interfaces';
 import { ISwitchComponentProps } from '../components/formDesigner/components/switch/interfaces';
 import { IAlertComponentProps } from '../components/formDesigner/components/alert/interfaces';

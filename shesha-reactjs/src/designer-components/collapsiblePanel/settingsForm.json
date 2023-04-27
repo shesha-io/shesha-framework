@@ -33,17 +33,51 @@
       "type": "dropdown",
       "name": "expandIconPosition",
       "parentId": "root",
-      "label": "Expand Icon position",
+      "label": "Icon position",
       "values": [
         {
-          "label": "left",
+          "label": "Hide",
+          "value": "hide",
+          "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
+        },
+        {
+          "label": "Left",
           "value": "left",
           "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
         },
         {
-          "label": "right",
+          "label": "Right",
           "value": "right",
           "id": "b920ef96-ae27-4a01-bfad-b5b7d07218da"
+        }
+      ],
+      "dataSourceType": "values",
+      "validate": {},
+      "version": 1,
+      "useRawValues": false,
+      "referenceListId": null
+    },
+    {
+      "id": "-wshDLo-lK468vwxVVBDMh",
+      "type": "dropdown",
+      "name": "collapsible",
+      "label": "Collapsible",
+      "parentId": "root",
+      "values": [
+        {
+          "label": "Header",
+          "value": "header",
+          "id": "111e54aa-a1a4-4bd6-ba73-c395e48af8ce"
+        },
+        {
+          "label": "Icon",
+          "value": "icon",
+          "id": "2220ef96-ae27-4a01-bfad-b5b7d07218da"
+        },
+        {
+          "label": "Disabled",
+          "value": "disabled",
+          "id": "3330ef96-ae27-4a01-bfad-b5b7d07218da"
         }
       ],
       "dataSourceType": "values",
