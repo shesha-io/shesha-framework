@@ -1,4 +1,4 @@
-import { BaseWidget, BasicConfig, SelectFieldSettings } from 'react-awesome-query-builder';
+import { BaseWidget, BasicConfig, SelectFieldSettings } from '@react-awesome-query-builder/antd';
 import React from 'react';
 import { Input, Row, Col } from 'antd';
 

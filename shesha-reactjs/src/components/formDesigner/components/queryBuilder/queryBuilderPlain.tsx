@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
-import { JsonLogicResult } from 'react-awesome-query-builder';
-import { IProperty } from '../../../../providers/queryBuilder/models';
+import { JsonLogicResult } from '@react-awesome-query-builder/antd';
+import { IProperty } from 'providers/queryBuilder/models';
 import QueryBuilder from '../../../queryBuilder';
 import './styles/queryBuilderPlain.less';
 

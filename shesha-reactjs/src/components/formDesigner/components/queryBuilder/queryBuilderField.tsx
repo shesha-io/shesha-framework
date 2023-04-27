@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { JsonLogicResult } from 'react-awesome-query-builder';
+import { JsonLogicResult } from '@react-awesome-query-builder/antd';
 import { Modal, Button, Collapse, Space } from 'antd';
 import QueryBuilder from '../../../queryBuilder';
 import { CodeEditor, Show } from '../../..';

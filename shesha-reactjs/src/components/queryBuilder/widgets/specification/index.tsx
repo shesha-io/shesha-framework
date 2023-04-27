@@ -1,5 +1,4 @@
-import { BaseWidget, BasicConfig, SelectFieldSettings } from 'react-awesome-query-builder';
-//import { CustomFieldSettings } from '../../../../providers/queryBuilder/models';
+import { BaseWidget, BasicConfig, SelectFieldSettings } from '@react-awesome-query-builder/antd';
 import React from 'react';
 import { CodeEditor } from '../../../formDesigner/components/codeEditor/codeEditor';
 

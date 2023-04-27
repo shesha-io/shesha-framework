@@ -10,7 +10,7 @@ import {
   FieldSettings,
   Widgets,
   Fields,
-} from 'react-awesome-query-builder';
+} from '@react-awesome-query-builder/antd';
 import classNames from 'classnames';
 import { ITableColumn } from '../../interfaces';
 import { IProperty } from '../../providers/queryBuilder/models';

@@ -1,6 +1,6 @@
 // For AntDesign widgets only:
-import { Type, Config, BasicConfig } from 'react-awesome-query-builder';
-import AntdConfig from 'react-awesome-query-builder/lib/config/antd';
+import { Type, Config, BasicConfig } from '@react-awesome-query-builder/antd';
+import { AntdConfig } from '@react-awesome-query-builder/antd';
 import EntityAutocompleteWidget from './widgets/entityAutocomplete';
 import RefListDropdownWidget from './widgets/refListDropDown';
 import DateTimeDynamicWidget from './widgets/dateTimeDynamic';
