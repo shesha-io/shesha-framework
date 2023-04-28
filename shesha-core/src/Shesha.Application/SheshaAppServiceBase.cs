@@ -14,10 +14,12 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Newtonsoft.Json.Linq;
 using NHibernate.Linq;
 using Shesha.Authorization.Users;
+using Shesha.DelayedUpdate;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Binder;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.DynamicEntities.Mapper;
+using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.MultiTenancy;
 using Shesha.Services;
@@ -411,6 +413,38 @@ namespace Shesha
 
             // ToDo: Add validations
             return true;
+        }
+
+        protected async Task DelayedUpdateAsync<TEntity, TPrimaryKey>(
+            JObject jObject,
+            TEntity entity,
+            List<ValidationResult> validationResult)
+            where TEntity : class, IEntity<TPrimaryKey>
+        {
+            var delayedUpdate = jObject.Property(nameof(IHasDelayedUpdateField._delayedUpdate))?.Value?.ToObject<List<DelayedUpdateGroup>>();
+            await DelayedUpdateAsync<TEntity, TPrimaryKey>(delayedUpdate, entity, validationResult);
+        }
+
+        protected async Task DelayedUpdateAsync<TEntity, TPrimaryKey>(
+            List<DelayedUpdateGroup> delayedUpdateGroups,
+            TEntity entity,
+            List<ValidationResult> validationResult)
+            where TEntity : class, IEntity<TPrimaryKey>
+        {
+            if (delayedUpdateGroups?.Any() ?? false)
+            {
+                var managers = StaticContext.IocManager.ResolveAll<IDelayedUpdateManager>();
+                foreach (var group in delayedUpdateGroups)
+                {
+                    foreach (var manager in managers)
+                    {
+                        if (manager.IsApplicable(group.Name))
+                        {
+                            await manager.ExecuteUpdateAsync(entity, group.Items, validationResult);
+                        }
+                    }
+                }
+            }
         }
 
         protected async Task<bool> DeleteCascadeAsync<TEntity>(TEntity entity)

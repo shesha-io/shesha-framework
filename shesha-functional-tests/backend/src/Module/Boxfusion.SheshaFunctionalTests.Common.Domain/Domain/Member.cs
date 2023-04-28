@@ -80,5 +80,9 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
         /// </summary>
         [ReferenceList("SheshaFunctionalTests", "MaritalStatus")]
         public virtual RefListMaritalStatus? MaritalStatus { get; set; }
+        /// <summary>
+        /// The bank that the Member belongs to
+        /// </summary>
+        public virtual Bank Bank { get; set; }
     }
 }

@@ -15,10 +15,12 @@ import { migrateV1toV2 } from './migrations/migrate-v2';
 import classNames from 'classnames';
 import { DEFAULT_CONFIRM_MESSAGE } from './constants';
 
+/** @deprecated: Use DataListComponent instead */
 const ListComponent: IToolboxComponent<IListComponentProps> = {
   type: 'list',
   name: 'List',
   icon: <OrderedListOutlined />,
+  isHidden: true, /* Use DataList instead */
   factory: ({ ...model }: IListComponentProps) => {
     const { isComponentHidden, formMode } = useForm();
 

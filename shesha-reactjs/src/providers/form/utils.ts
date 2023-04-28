@@ -84,7 +84,12 @@ export const componentsTreeToFlatStructure = (
       const customContainerNames = componentRegistration?.customContainerNames || [];
       let subContainers: IComponentsContainer[] = [];
       customContainerNames.forEach(containerName => {
-        const containers = component[containerName] as IComponentsContainer[];
+
+        const containers = component[containerName]
+          ? Array.isArray(component[containerName])
+            ? component[containerName] as IComponentsContainer[]
+            : [component[containerName] as IComponentsContainer]
+          : undefined;
         if (containers) subContainers = [...subContainers, ...containers];
       });
       if (component['components']) subContainers.push({ id: component.id, components: component['components'] });
@@ -194,8 +199,12 @@ export const componentsFlatStructureToTree = (
 
         const customContainers = componentRegistration?.customContainerNames || [];
         customContainers.forEach(containerName => {
-          const childContainers = component[containerName] as IComponentsContainer[];
 
+          const childContainers = component[containerName]
+            ? Array.isArray(component[containerName])
+              ? component[containerName] as IComponentsContainer[]
+              : [component[containerName] as IComponentsContainer]
+            : undefined;
           if (childContainers) {
             childContainers.forEach(c => {
               const childComponents: IConfigurableFormComponent[] = [];
@@ -919,7 +928,11 @@ export const processRecursive = (
 
   if (containers) {
     containers.forEach(containerName => {
-      const containerComponents = component[containerName] as IConfigurableFormComponent[];
+      const containerComponents = component[containerName]
+        ? Array.isArray(component[containerName])
+          ? component[containerName] as IConfigurableFormComponent[]
+          : [component[containerName] as IConfigurableFormComponent]
+        : undefined;
       if (containerComponents) {
         containerComponents.forEach(child => {
           func(child, component.id);

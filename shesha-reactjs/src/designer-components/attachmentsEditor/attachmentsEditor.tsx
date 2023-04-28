@@ -1,22 +1,23 @@
 import React from 'react';
-import { IToolboxComponent } from '../../../../interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '../../../../providers/form/models';
+import { IToolboxComponent } from '../../interfaces';
+import { FormMarkup, IConfigurableFormComponent } from '../../providers/form/models';
 import { FolderAddOutlined } from '@ant-design/icons';
-import ConfigurableFormItem from '../formItem';
+import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
-import StoredFilesProvider from '../../../../providers/storedFiles';
-import { CustomFile } from '../../../';
-import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../../../../providers';
+import StoredFilesProvider from '../../providers/storedFiles';
+import { CustomFile } from '../../components';
+import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../../providers';
 import {
   evaluateValue,
   executeCustomExpression,
   validateConfigurableComponentSettings,
-} from '../../../../providers/form/utils';
+} from '../../providers/form/utils';
 
 export interface IAttachmentsEditorProps extends IConfigurableFormComponent {
   ownerId: string;
   ownerType: string;
-  filesCategory?: number;
+  filesCategory?: string;
+  ownerName?: string;
   allowAdd: boolean;
   allowDelete: boolean;
   allowReplace: boolean;
@@ -27,13 +28,14 @@ const settingsForm = settingsFormJson as FormMarkup;
 
 const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
   type: 'attachmentsEditor',
-  name: 'Attachments editor',
+  name: 'File list',
   icon: <FolderAddOutlined />,
   factory: (model: IAttachmentsEditorProps) => {
     const { backendUrl } = useSheshaApplication();
-    const { formMode } = useForm();
+    const { formMode, formSettings } = useForm();
     const { data } = useFormData();
     const { globalState } = useGlobalState();
+
     const ownerId = evaluateValue(model.ownerId, { data: data, globalState });
 
     const isEnabledByCondition = executeCustomExpression(model.customEnabled, true, data, globalState);
@@ -41,9 +43,11 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     return (
       <ConfigurableFormItem model={model}>
         <StoredFilesProvider
-          ownerId={ownerId}
-          ownerType={model.ownerType}
+          ownerId={Boolean(ownerId) ? ownerId : (Boolean(data?.id) ? data?.id : '')}
+          ownerType={Boolean(model.ownerType) ? model.ownerType : (Boolean(formSettings?.modelType) ? formSettings?.modelType : '')}
+          ownerName={model.ownerName}
           filesCategory={model.filesCategory}
+          allCategories={!Boolean(model.filesCategory)}
           baseUrl={backendUrl}
         >
           <CustomFile
@@ -59,18 +63,18 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
   },
   settingsFormMarkup: settingsForm,
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
-  initModel: model => {
-    const customModel: IAttachmentsEditorProps = {
-      ...model,
+  migrator: m => m.add<IAttachmentsEditorProps>(0, prev => {
+    return {
+      ...prev,
       allowAdd: true,
       allowDelete: true,
       allowReplace: true,
       allowRename: true,
-      ownerId: '{data.id}',
+      ownerId: '',
       ownerType: '',
+      ownerName: ''
     };
-    return customModel;
-  },
+  })
 };
 
 export default AttachmentsEditor;

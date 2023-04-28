@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Story, Meta } from '@storybook/react';
 import CollapsibleSidebarContainer, { ICollapsibleSidebarContainerProps } from './';
 import { Alert, Col, Row } from 'antd';
-import CollapsiblePanel from '../collapsiblePanel';
+import CollapsiblePanel from '../panel';
 // import './styles/index.less';
 
 export default {

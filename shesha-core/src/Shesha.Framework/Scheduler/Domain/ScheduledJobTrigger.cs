@@ -11,10 +11,12 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Linq;
 using Shesha.Extensions;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shesha.Scheduler.Domain
 {
     [Entity(FriendlyName = "Scheduled Job Trigger")]
+    [Table("Core_ScheduledJobTriggers")]
     public class ScheduledJobTrigger : FullAuditedEntity<Guid>
     {
         [StringLength(100)]

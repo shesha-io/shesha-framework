@@ -5,6 +5,7 @@ using Abp.Domain.Repositories;
 using Abp.Runtime.Validation;
 using Shesha.Application.Services.Dto;
 using Shesha.Attributes;
+using Shesha.DelayedUpdate;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.GraphQL.Mvc;
@@ -44,27 +45,25 @@ namespace Shesha
 
         private async Task<TEntity> InternalUpdateAsync(TDynamicDto input)
         {
-
             var entity = await Repository.GetAsync(input.Id);
-
             var jObject = (input as IHasJObjectField)._jObject;
+            List<DelayedUpdateGroup> delayedUpdate = null;
+            var validationResults = new List<ValidationResult>();
 
             if (jObject != null)
             {
                 // Update the Jobject from the input because it might have changed
                 ObjectToJsonExtension.ObjectToJObject(input, jObject);
 
-                var validationResults = new List<ValidationResult>();
                 var result = await MapJObjectToEntityAsync<TEntity, TPrimaryKey>(jObject, entity, validationResults);
                 if (!result)
                     throw new AbpValidationException("Please correct the errors and try again", validationResults);
+
+                delayedUpdate = jObject.Property(nameof(IHasDelayedUpdateField._delayedUpdate))?.Value?.ToObject<List<DelayedUpdateGroup>>();
             }
             else
             {
                 await MapDynamicDtoToEntityAsync<TDynamicDto, TEntity, TPrimaryKey>(input, entity);
-
-                var validationResults = new List<ValidationResult>();
-
                 await FluentValidationsOnEntityAsync(entity, validationResults);
 
                 if (validationResults.Any<ValidationResult>())
@@ -72,9 +71,19 @@ namespace Shesha
 
                 if (!Validator.TryValidateObject(entity, new ValidationContext(entity), validationResults))
                     throw new AbpValidationException("Please correct the errors and try again", validationResults);
+
+                delayedUpdate = (input as IHasDelayedUpdateField)._delayedUpdate;
             }
 
             await Repository.UpdateAsync(entity);
+            await UnitOfWorkManager.Current.SaveChangesAsync();
+
+            if (delayedUpdate?.Any() ?? false)
+            {
+                await DelayedUpdateAsync<TEntity, TPrimaryKey>(delayedUpdate, entity, validationResults);
+                if (validationResults.Any<ValidationResult>())
+                    throw new AbpValidationException("Please correct the errors and try again", validationResults);
+            }
 
             return entity;
         }
@@ -120,6 +129,13 @@ namespace Shesha
                 var result = await MapJObjectToEntityAsync<TEntity, TPrimaryKey>(jObject, entity, validationResults);
                 if (!result)
                     throw new AbpValidationException("Please correct the errors and try again", validationResults);
+
+                await Repository.InsertAsync(entity);
+
+                await DelayedUpdateAsync<TEntity, TPrimaryKey>(jObject, entity, validationResults);
+
+                if (validationResults.Any<ValidationResult>())
+                    throw new AbpValidationException("Please correct the errors and try again", validationResults);
             }
             else
             {
@@ -134,9 +150,18 @@ namespace Shesha
 
                 if (!Validator.TryValidateObject(entity, new ValidationContext(entity), validationResults))
                     throw new AbpValidationException("Please correct the errors and try again", validationResults);
-            }
 
-            await Repository.InsertAsync(entity);
+                await Repository.InsertAsync(entity);
+
+                var _delayedUpdate = (input as IHasDelayedUpdateField)._delayedUpdate;
+                if (_delayedUpdate?.Any() ?? false)
+                {
+                    await DelayedUpdateAsync<TEntity, TPrimaryKey>(_delayedUpdate, entity, validationResults);
+
+                    if (validationResults.Any<ValidationResult>())
+                        throw new AbpValidationException("Please correct the errors and try again", validationResults);
+                }
+            }
 
             await UnitOfWorkManager.Current.SaveChangesAsync();
 

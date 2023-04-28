@@ -27,6 +27,7 @@ export interface IStoredFile extends UploadFile {
   error?: string | null;
   id?: string | null;
   url?: string | null;
+  temporary?: boolean | null;
 }
 
 interface IRequestFilePayload {

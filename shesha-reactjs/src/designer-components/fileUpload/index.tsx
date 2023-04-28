@@ -1,16 +1,16 @@
-import { IFormItem, IToolboxComponent } from '../../../../interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '../../../../providers/form/models';
+import { IFormItem, IToolboxComponent } from 'interfaces';
+import { FormMarkup, IConfigurableFormComponent } from 'providers/form/models';
 import { FileAddOutlined } from '@ant-design/icons';
-import ConfigurableFormItem from '../formItem';
+import ConfigurableFormItem from 'components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
-import { FileUpload } from '../../..';
-import { StoredFileProvider, useFormData, useGlobalState, useSheshaApplication } from '../../../../providers';
-import { useForm } from '../../../../providers/form';
+import { FileUpload } from 'components';
+import { StoredFileProvider, useFormData, useGlobalState, useSheshaApplication } from 'providers';
+import { useForm } from 'providers/form';
 import {
   evaluateValue,
   executeCustomExpression,
   validateConfigurableComponentSettings,
-} from '../../../../providers/form/utils';
+} from '../../providers/form/utils';
 import React from 'react';
 
 export interface IFileUploadProps extends IConfigurableFormComponent, IFormItem {
@@ -26,7 +26,7 @@ const settingsForm = settingsFormJson as FormMarkup;
 
 const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
   type: 'fileUpload',
-  name: 'File Upload',
+  name: 'File',
   icon: <FileAddOutlined />,
 
   factory: (model: IFileUploadProps) => {
@@ -34,26 +34,30 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
 
     // todo: refactor and implement a generic way for values evaluation
     const { data: formData } = useFormData();
-    const { formMode } = useForm();
+    const { formMode, formSettings } = useForm();
+    const { data } = useFormData();
     const { globalState } = useGlobalState();
     const ownerId = evaluateValue(model.ownerId, { data: formData, globalState });
 
+    const readonly = formMode === 'readonly';
     const isEnabledByCondition = executeCustomExpression(model.customEnabled, true, formData, globalState);
+    const enabled = !readonly && !model.disabled && isEnabledByCondition;
 
     return (
       <ConfigurableFormItem model={model}>
         <StoredFileProvider
+          fileId={model.value?.Id ?? model.value}
           baseUrl={backendUrl}
-          ownerId={ownerId}
-          ownerType={model.ownerType}
-          propertyName={model.propertyName}
-          uploadMode={ownerId ? 'async' : 'sync'}
+          ownerId={Boolean(ownerId) ? ownerId : (Boolean(data?.id) ? data?.id : '')}
+          ownerType={Boolean(model.ownerType) ? model.ownerType : (Boolean(formSettings?.modelType) ? formSettings?.modelType : '')}
+          propertyName={Boolean(model.propertyName) ? model.propertyName : model.name}
+          uploadMode={'async'}
         >
           <FileUpload
             isStub={formMode === 'designer'}
-            allowUpload={!model.disabled && model.allowUpload && isEnabledByCondition}
-            allowDelete={!model.disabled && model.allowDelete && isEnabledByCondition}
-            allowReplace={!model.disabled && model.allowReplace && isEnabledByCondition}
+            allowUpload={enabled && model.allowUpload}
+            allowDelete={enabled && model.allowDelete}
+            allowReplace={enabled && model.allowReplace}
           />
         </StoredFileProvider>
       </ConfigurableFormItem>
@@ -65,7 +69,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
       allowReplace: true,
       allowDelete: true,
       allowUpload: true,
-      ownerId: '{data.id}',
+      ownerId: '',
       ownerType: '',
       propertyName: '',
     };

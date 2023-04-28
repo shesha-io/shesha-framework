@@ -9,7 +9,6 @@ interface IErrorMessage {
 }
 
 const WarningMessage: FC<IErrorMessage> = ({ maxReached, maxPoints, isReadonly, width }) => {
-
     return (
         <>
             {(!isReadonly && maxReached) ?

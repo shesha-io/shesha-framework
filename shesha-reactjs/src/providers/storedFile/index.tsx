@@ -30,6 +30,8 @@ import FileSaver from 'file-saver';
 import qs from 'qs';
 import { useMutate } from 'restful-react';
 import { useSheshaApplication } from '../..';
+import { useDelayedUpdate } from 'providers/delayedUpdateProvider';
+import { STORED_FILES_DELAYED_UPDATE } from 'providers/delayedUpdateProvider/models';
 
 export interface IStoredFileProviderPropsBase {
   baseUrl?: string;
@@ -76,7 +78,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = prop
     ownerId,
     ownerType,
     propertyName,
-    fileId,
+    fileId: fileId ?? (typeof value === 'string' ? value : null),
   });
 
   const { httpHeaders: headers } = useSheshaApplication();
@@ -94,19 +96,21 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = prop
       headers,
     },
   });
-  const { loading: isFetchingFileInfo, error: fetchingFileInfoError, data: fetchingFileInfoResponse } = fileId
+  const { loading: isFetchingFileInfo, error: fetchingFileInfoError, data: fetchingFileInfoResponse } = state.fileId
     ? fileFetcher
     : propertyFetcher;
 
+  const { addItem: addDelayedUpdate, removeItem: removeDelayedUpdate } = useDelayedUpdate(false) ?? {};
+
   const doFetchFileInfo = () => {
-    if (fileId) fileFetcher.refetch({ queryParams: { id: fileId } });
+    if (state.fileId) fileFetcher.refetch({ queryParams: { id: state.fileId } });
     else if (ownerId && ownerType && propertyName)
       propertyFetcher.refetch({ queryParams: { ownerId, ownerType, propertyName } });
   };
 
   useEffect(() => {
     if (uploadMode === 'async') doFetchFileInfo();
-  }, [uploadMode, ownerId, ownerType, propertyName, fileId]);
+  }, [uploadMode, ownerId, ownerType, propertyName, fileId, value]);
 
   useEffect(() => {
     if (uploadMode === 'sync' && value) {
@@ -217,6 +221,12 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = prop
       originFileObj: null,
     };
 
+    if (!(Boolean(state.fileId)) && !(Boolean(state.ownerId) && Boolean(state.propertyName)) && typeof addDelayedUpdate !== 'function') {
+      console.error('File component is not configured');
+      dispatch(uploadFileErrorAction({ ...newFile, uid: '-1', status: 'error', error: 'File component is not configured' }));
+      return;
+    }
+
     dispatch(uploadFileRequestAction(newFile));
 
     axios
@@ -229,8 +239,12 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = prop
         responseFile.uid = newFile.uid;
 
         dispatch(uploadFileSuccessAction({ ...responseFile }));
-        onChange(responseFile?.id);
-        if (callback) callback(responseFile);
+        if (typeof onChange === 'function')
+          onChange(responseFile?.id);
+        if (callback) 
+          callback(responseFile);
+        if (responseFile.temporary &&  typeof addDelayedUpdate === 'function')
+          addDelayedUpdate(STORED_FILES_DELAYED_UPDATE, responseFile.id, { propertyName });
       })
       .catch(e => {
         console.error(e);
@@ -242,13 +256,16 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = prop
   const uploadFileSync = (payload: IUploadFilePayload, callback?: (...args: any) => any) => {
     if (typeof onChange === 'function') {
       onChange(payload.file);
-      if (typeof callback === 'function') callback();
+      if (typeof callback === 'function') 
+        callback();
     }
   };
 
   const uploadFile = (payload: IUploadFilePayload, callback?: (...args: any) => any) => {
-    if (uploadMode === 'async') return uploadFileAsync(payload, callback);
-    if (uploadMode === 'sync') return uploadFileSync(payload, callback);
+    if (uploadMode === 'async') 
+      return uploadFileAsync(payload, callback);
+    if (uploadMode === 'sync') 
+      return uploadFileSync(payload, callback);
   };
 
   const { mutate: deleteFileHttp } = useMutate({
@@ -265,7 +282,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = prop
     dispatch(deleteFileRequestAction());
 
     const deleteFileInput: StoredFileDeleteQueryParams = {
-      fileId,
+      fileId: state.fileId ?? state.fileInfo?.id,
       ownerId,
       ownerType,
       propertyName,
@@ -273,6 +290,10 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = prop
     deleteFileHttp('Delete', { queryParams: deleteFileInput })
       .then(() => {
         deleteFileSuccess();
+        if (typeof onChange === 'function') 
+          onChange(null);
+        if (typeof removeDelayedUpdate === 'function')
+          removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, deleteFileInput.fileId);
       })
       .catch(() => deleteFileError());
   };

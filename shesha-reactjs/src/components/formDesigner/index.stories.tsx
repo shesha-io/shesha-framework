@@ -45,3 +45,19 @@ export const FormsIndex = addStory(DesignerTemplate, {
     module: 'shesha',
   }
 });
+
+export const OrganisationEdit = addStory(DesignerTemplate, {
+  formId: {
+    name: 'organisation-edit',
+    module: 'Test Module',
+    version: 1
+  }
+});
+
+export const PersonEdit = addStory(DesignerTemplate, {
+  formId: {
+    name: 'person-edit',
+    module: 'Test Module',
+    version: 7
+  }
+});

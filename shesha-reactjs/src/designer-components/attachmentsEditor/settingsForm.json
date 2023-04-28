@@ -9,7 +9,7 @@
     },
     {
       "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
-      "type": "textField",
+      "type": "propertyAutocomplete",
       "name": "name",
       "parentId": "root",
       "label": "Name",
@@ -160,6 +160,14 @@
       "label": "Files"
     },
     {
+      "id": "3fe73b1a-04c5-4658-ac0f-cbcbae6b3bd4",
+      "type": "propertyAutocomplete",
+      "showFillPropsButton": false,
+      "name": "ownerName",
+      "parentId": "root",
+      "label": "Owner"
+    },
+    {
       "id": "1c03863c-880d-4308-8667-c3d996619cb7",
       "type": "textField",
       "name": "ownerId",
@@ -168,14 +176,21 @@
     },
     {
       "id": "0009bf13-04a3-49d5-a9d8-1b23df20b97c",
-      "type": "textField",
+      "type": "autocomplete",
       "name": "ownerType",
+      "label": "Owner Type",
+      "labelAlign": "right",
       "parentId": "root",
-      "label": "Owner Type"
+      "hidden": false,
+      "dataSourceType": "url",
+      "validate": {},
+      "dataSourceUrl": "/api/services/app/Metadata/EntityTypeAutocomplete",
+      "settingsValidationErrors": [],
+      "useRawValues": true
     },
     {
       "id": "db913b1b-3b25-46c9-afef-21854d917ba7",
-      "type": "numberField",
+      "type": "textField",
       "name": "filesCategory",
       "parentId": "root",
       "label": "Files Category"

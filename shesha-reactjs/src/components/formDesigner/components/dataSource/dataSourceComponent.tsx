@@ -9,13 +9,8 @@ import { useDataSource } from '../../../../providers/dataSourcesProvider';
 import DataTableProvider from '../../../../providers/dataTable';
 import { evaluateDynamicFilters } from '../../../../providers/dataTable/utils';
 import { DataTableSelectionProvider, useDataTableSelection } from '../../../../providers/dataTableSelection';
-import { FormMarkup } from '../../../../providers/form/models';
-import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import DataSourceSettings from './dataSourceSettings';
 import { IDataSourceComponentProps } from './models';
-import settingsFormJson from './settingsForm.json';
-
-const settingsForm = settingsFormJson as FormMarkup;
 
 const getPageSize = (value?: number) => { 
   return Boolean(value) ? value : 1147489646 /* get all data */; 
@@ -45,8 +40,7 @@ const DataSourceComponent: IToolboxComponent<IDataSourceComponentProps> = {
         onValuesChange={onValuesChange}
       />
     );
-  },
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  }
 };
 
 export const DataSource: FC<IDataSourceComponentProps> = props => {

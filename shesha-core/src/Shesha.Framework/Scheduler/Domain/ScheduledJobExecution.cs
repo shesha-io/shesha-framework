@@ -5,6 +5,7 @@ using Shesha.Domain.Attributes;
 using Shesha.Scheduler.Domain.Enums;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shesha.Scheduler.Domain
 {
@@ -12,6 +13,7 @@ namespace Shesha.Scheduler.Domain
     /// Contains info about scheduled job execution
     /// </summary>
     [Entity(TypeShortAlias = "Shesha.Scheduler.ScheduledJobExecution", FriendlyName = "Scheduled Job Execution")]
+    [Table("Core_ScheduledJobExecutions")]
     public class ScheduledJobExecution : FullAuditedEntity<Guid>
     {
         /// <summary>

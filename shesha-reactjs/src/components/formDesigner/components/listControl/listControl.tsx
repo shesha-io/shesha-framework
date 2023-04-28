@@ -23,7 +23,7 @@ import {
   Space,
 } from 'antd';
 import SubForm from '../subForm/subForm';
-import CollapsiblePanel from '../../../collapsiblePanel';
+import CollapsiblePanel from '../../../panel';
 import Show from '../../../show';
 import { ButtonGroup } from '../button/buttonGroup/buttonGroupComponent';
 import ComponentsContainer from '../../componentsContainer';
@@ -42,6 +42,7 @@ import { DEFAULT_CONFIRM_MESSAGE, DEFAULT_TOTAL_RECORD } from './constants';
 import { ConfigurationItemVersionStatusMap } from '../../../../utils/configurationFramework/models';
 import FormInfo from '../../../configurableForm/formInfo';
 
+/** @deprecated: Use DataList instead */
 const ListControl: FC<IListControlProps> = props => {
   const {
     containerId,
@@ -542,7 +543,7 @@ const ListControl: FC<IListControlProps> = props => {
   return (
     <CollapsiblePanel
       header={title}
-      extraClass="sha-list-component-extra"
+      extraClassName="sha-list-component-extra"
       className="sha-list-component-panel"
       extra={
         <div className="sha-list-component-extra-space">

@@ -1,5 +1,5 @@
 import { DataTableFullInstance } from "../dataTable/contexts";
-import { DataTableSelectionFullInstance } from "../dataTableSelection/contexts";
+import { DataTableSelectionFullInstance, IDataTableSelectionActionsContext } from "../dataTableSelection/contexts";
 
 export interface IDataSourceDescriptor {
   id: string;
@@ -10,4 +10,16 @@ export interface IDataSourceDescriptor {
 
 export interface IDataSourceDictionary {
   [key: string]: IDataSourceDescriptor;
+}
+
+export interface IGetDataSourcePayload {
+  id: string;
+  name: string;
+}
+
+export interface IRegisterDataSourcePayload {
+  id: string;
+  name: string;
+  dataSource: DataTableFullInstance;
+  dataSelection: IDataTableSelectionActionsContext;
 }
