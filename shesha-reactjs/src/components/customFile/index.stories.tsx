@@ -19,7 +19,7 @@ const Template: Story<ICustomFileProps> = args => (
     <StoredFilesProvider
       ownerId="32e2b3dd-4d99-4542-af71-134ec7c0e2ce"
       ownerType="Shesha.Core.Person"
-      filesCategory={1}
+      filesCategory={'1'}
       baseUrl={backendUrl}
       {...args}
     >

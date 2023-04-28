@@ -225,7 +225,7 @@ export const entityPickerSettings = new DesignerToolbarSettings()
     label: 'Allow New Record',
   })
   .addCollapsiblePanel({
-    id: '2a5acbcf-cd52-487e-9cd7-09594a04793a',
+    id: '1234d45e-c7e3-4a27-987b-dc525c412448',
     name: 'pnlModalSettings',
     label: 'Dialogue settings',
     labelAlign: 'right',
@@ -235,128 +235,131 @@ export const entityPickerSettings = new DesignerToolbarSettings()
     validate: {
       required: false,
     },
-    components: new DesignerToolbarSettings()
-      .addTextField({
-        id: '4b3b0da0-f126-4e37-b5f5-568367dc008f',
-        name: 'modalTitle',
-        label: 'Title',
-        labelAlign: 'right',
-        parentId: '2a5acbcf-cd52-487e-9cd7-09594a04793a',
-        hidden: false,
-        customVisibility: null,
-        validate: {
-          required: true,
-        },
-        version: 0,
-        textType: 'text',
-      })
-      .addFormAutocomplete({
-        id: 'fd3d4ef4-be06-40e9-9815-118754707d0e',
-        name: 'modalFormId',
-        label: 'Modal form',
-        labelAlign: 'right',
-        parentId: '2a5acbcf-cd52-487e-9cd7-09594a04793a',
-        hidden: false,
-        customVisibility: null,
-        validate: {
-          required: true,
-        },
-        convertToFullId: false,
-      })
-      .addCheckbox({
-        id: '43c5fcb7-a2d4-46d7-b671-6eac73e8d95c',
-        name: 'showModalFooter',
-        parentId: '2a5acbcf-cd52-487e-9cd7-09594a04793a',
-        label: 'Show Modal Buttons',
-        // "defaultChecked":false
-      })
-      .addDropdown({
-        id: 'ea60aee4-a7aa-4fd6-a641-638a5a609157',
-        name: 'submitHttpVerb',
-        parentId: '2a5acbcf-cd52-487e-9cd7-09594a04793a',
-        label: 'Submit Http Verb',
-        values: [
-          {
-            label: 'POST',
-            value: 'POST',
-            id: '8418606a-d85d-4795-a2ee-4a69fcc656f9',
+    content: {
+      id: '2a5acbcf-cd52-487e-9cd7-09594a04793a',
+      components: new DesignerToolbarSettings()
+        .addTextField({
+          id: '4b3b0da0-f126-4e37-b5f5-568367dc008f',
+          name: 'modalTitle',
+          label: 'Title',
+          labelAlign: 'right',
+          parentId: '2a5acbcf-cd52-487e-9cd7-09594a04793a',
+          hidden: false,
+          customVisibility: null,
+          validate: {
+            required: true,
           },
-          {
-            label: 'PUT',
-            value: 'PUT',
-            id: '64bbca8a-2fb1-4448-ab71-3db077233bd2',
+          version: 0,
+          textType: 'text',
+        })
+        .addFormAutocomplete({
+          id: 'fd3d4ef4-be06-40e9-9815-118754707d0e',
+          name: 'modalFormId',
+          label: 'Modal form',
+          labelAlign: 'right',
+          parentId: '2a5acbcf-cd52-487e-9cd7-09594a04793a',
+          hidden: false,
+          customVisibility: null,
+          validate: {
+            required: true,
           },
-        ],
-        dataSourceType: 'values',
-        customVisibility: 'return data.showModalFooter === true',
-        defaultValue: 'POST',
-      })
-      .addTextField({
-        id: 'e669632e-55e0-46f4-9585-9e81ef0ae174',
-        name: 'onSuccessRedirectUrl',
-        parentId: '2a5acbcf-cd52-487e-9cd7-09594a04793a',
-        label: 'Success Redirect URL',
-        customVisibility: 'return data.showModalFooter === true',
-        version: 0,
-        textType: 'text',
-      })
-      .addDropdown({
-        id: '264903ff-b525-4a6e-893f-d560b219df9d',
-        name: 'modalWidth',
-        label: 'Dialog Width (%)',
-        allowClear: true,
-        values: [
-          {
-            label: 'Small',
-            value: '40%',
-            id: '2f56ae38-e5f3-40ff-9830-bc048736ddb4',
-          },
-          {
-            label: 'Medium',
-            value: '60%',
-            id: '470d820b-7cd7-439c-8e95-1f5b3134f80c',
-          },
-          {
-            label: 'Large',
-            value: '80%',
-            id: '1f2ac3db-3b3f-486c-991f-ad703088ab2d',
-          },
-          {
-            label: 'Custom',
-            value: 'custom',
-            id: 'fde460b0-1f84-4b64-9a6a-e02ba862937d',
-          },
-        ],
-        dataSourceType: 'values',
-      })
-      .addDropdown({
-        id: nanoid(),
-        name: 'widthUnits',
-        label: 'Units',
-        allowClear: true,
-        values: [
-          {
-            label: 'Percentage (%)',
-            value: '%',
-            id: '2f56ae38-e5f3-40ff-9830-bc048736ddb4',
-          },
-          {
-            label: 'Pixels (px)',
-            value: 'px',
-            id: '470d820b-7cd7-439c-8e95-1f5b3134f80c',
-          },
-        ],
-        dataSourceType: 'values',
-        customVisibility: 'return data.modalWidth === "custom"',
-      })
-      .addNumberField({
-        id: nanoid(),
-        name: 'customWidth',
-        label: 'Enter Custom Width',
-        customVisibility: 'return data.modalWidth === "custom" && data.widthUnits',
-        min: 0,
-      })
-      .toJson(),
+          convertToFullId: false,
+        })
+        .addCheckbox({
+          id: '43c5fcb7-a2d4-46d7-b671-6eac73e8d95c',
+          name: 'showModalFooter',
+          parentId: '2a5acbcf-cd52-487e-9cd7-09594a04793a',
+          label: 'Show Modal Buttons',
+          // "defaultChecked":false
+        })
+        .addDropdown({
+          id: 'ea60aee4-a7aa-4fd6-a641-638a5a609157',
+          name: 'submitHttpVerb',
+          parentId: '2a5acbcf-cd52-487e-9cd7-09594a04793a',
+          label: 'Submit Http Verb',
+          values: [
+            {
+              label: 'POST',
+              value: 'POST',
+              id: '8418606a-d85d-4795-a2ee-4a69fcc656f9',
+            },
+            {
+              label: 'PUT',
+              value: 'PUT',
+              id: '64bbca8a-2fb1-4448-ab71-3db077233bd2',
+            },
+          ],
+          dataSourceType: 'values',
+          customVisibility: 'return data.showModalFooter === true',
+          defaultValue: 'POST',
+        })
+        .addTextField({
+          id: 'e669632e-55e0-46f4-9585-9e81ef0ae174',
+          name: 'onSuccessRedirectUrl',
+          parentId: '2a5acbcf-cd52-487e-9cd7-09594a04793a',
+          label: 'Success Redirect URL',
+          customVisibility: 'return data.showModalFooter === true',
+          version: 0,
+          textType: 'text',
+        })
+        .addDropdown({
+          id: '264903ff-b525-4a6e-893f-d560b219df9d',
+          name: 'modalWidth',
+          label: 'Dialog Width (%)',
+          allowClear: true,
+          values: [
+            {
+              label: 'Small',
+              value: '40%',
+              id: '2f56ae38-e5f3-40ff-9830-bc048736ddb4',
+            },
+            {
+              label: 'Medium',
+              value: '60%',
+              id: '470d820b-7cd7-439c-8e95-1f5b3134f80c',
+            },
+            {
+              label: 'Large',
+              value: '80%',
+              id: '1f2ac3db-3b3f-486c-991f-ad703088ab2d',
+            },
+            {
+              label: 'Custom',
+              value: 'custom',
+              id: 'fde460b0-1f84-4b64-9a6a-e02ba862937d',
+            },
+          ],
+          dataSourceType: 'values',
+        })
+        .addDropdown({
+          id: nanoid(),
+          name: 'widthUnits',
+          label: 'Units',
+          allowClear: true,
+          values: [
+            {
+              label: 'Percentage (%)',
+              value: '%',
+              id: '2f56ae38-e5f3-40ff-9830-bc048736ddb4',
+            },
+            {
+              label: 'Pixels (px)',
+              value: 'px',
+              id: '470d820b-7cd7-439c-8e95-1f5b3134f80c',
+            },
+          ],
+          dataSourceType: 'values',
+          customVisibility: 'return data.modalWidth === "custom"',
+        })
+        .addNumberField({
+          id: nanoid(),
+          name: 'customWidth',
+          label: 'Enter Custom Width',
+          customVisibility: 'return data.modalWidth === "custom" && data.widthUnits',
+          min: 0,
+        })
+        .toJson()
+    }
   })
   .addSectionSeparator({
     id: 'd675bfe4-ee69-431e-931b-b0e0b9ceee6f',
