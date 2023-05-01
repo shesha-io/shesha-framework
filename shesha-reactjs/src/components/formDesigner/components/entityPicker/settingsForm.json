@@ -126,16 +126,6 @@
       "label": "Filters"
     },
     {
-      "id": "3ef48a94-a16a-4e89-a514-7713348b560e",
-      "type": "checkbox",
-      "name": "useExpression",
-      "label": "Use Expression",
-      "parentId": "root",
-      "hidden": false,
-      "customVisibility": "return Boolean(data.entityType);",
-      "validate": {}
-    },
-    {
       "id": "n4enebtmhFgvkP5ukQK1f",
       "type": "queryBuilder",
       "name": "filters",
@@ -147,7 +137,6 @@
       "isDynamic": false,
       "validate": {},
       "settingsValidationErrors": [],
-      "useExpression": "{{data.useExpression}}",
       "modelType": "{{data.entityType}}",
       "fieldsUnavailableHint": "Please select `Entity Type` to be able to configure this filter."
     },

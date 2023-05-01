@@ -4,7 +4,7 @@ import { FilterOutlined } from '@ant-design/icons';
 import { FilterTarget, ICustomFilterComponentProps } from './interfaces';
 import { ConfigurableFormItem } from '../../../components';
 import { Button, Modal } from 'antd';
-import { QueryBuilderWrapper } from '../../../components/formDesigner/components/queryBuilder/queryBuilderWrapper';
+import { QueryBuilderWrapper } from 'designer-components/queryBuilder/queryBuilderWrapper';
 import { TableViewSelectorConfiguratorProvider, useTableViewSelectorConfigurator } from '../../../providers';
 import FilterConfigurator from './filterConfigurator';
 import { ITableViewProps } from '../../../providers/tableViewSelectorConfigurator/models';

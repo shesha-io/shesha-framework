@@ -7,8 +7,8 @@ import { IListItemsProps } from './models';
 import CodeEditor from '../codeEditor/codeEditor';
 import Show from '../../../show';
 import { AutocompleteRaw } from '../../../autocomplete';
-import { QueryBuilderWithModelType } from '../queryBuilder/queryBuilderWithModelType';
-import { QueryBuilderComponentRenderer } from '../queryBuilder/queryBuilderComponent';
+import { QueryBuilderWithModelType } from 'designer-components/queryBuilder/queryBuilderWithModelType';
+import { QueryBuilderComponentRenderer } from 'designer-components/queryBuilder/queryBuilderComponent';
 import FormAutocomplete from '../../../formAutocomplete';
 
 const Option = Select.Option;
@@ -203,10 +203,6 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
 
           <SectionSeparator title="Query builder" />
 
-          <FormItem name="useExpression" label="Use Expression" valuePropName="checked">
-            <Checkbox disabled={readOnly} />
-          </FormItem>
-
           <QueryBuilderWithModelType modelType={state?.entityType}>
             <QueryBuilderComponentRenderer
               readOnly={readOnly}
@@ -214,7 +210,6 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
               type={''}
               id={''}
               label="Query builder"
-              useExpression={state?.useExpression}
             />
           </QueryBuilderWithModelType>
         </Show>

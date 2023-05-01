@@ -65,7 +65,6 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       {
         defaultSelected: true,
         expression: { ...filters },
-        filterType: 'queryBuilder',
         id: 'uZ4sjEhzO7joxO6kUvwdb',
         name: 'entity Picker',
         selected: true,

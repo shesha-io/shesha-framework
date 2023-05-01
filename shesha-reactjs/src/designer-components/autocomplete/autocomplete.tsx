@@ -1,27 +1,27 @@
 import { FileSearchOutlined } from '@ant-design/icons';
 import { message } from 'antd';
 import React, { Key, useMemo } from 'react';
-import { axiosHttp } from '../../../../utils/fetchers';
-import { IToolboxComponent } from '../../../../interfaces';
-import { DataTypes } from '../../../../interfaces/dataTypes';
-import { useFormData, useGlobalState, useSheshaApplication } from '../../../../providers';
-import { useForm } from '../../../../providers/form';
-import { FormMarkup } from '../../../../providers/form/models';
+import { axiosHttp } from '../../utils/fetchers';
+import { IToolboxComponent } from '../../interfaces';
+import { DataTypes } from '../../interfaces/dataTypes';
+import { useFormData, useGlobalState, useSheshaApplication } from '../../providers';
+import { useForm } from '../../providers/form';
+import { FormMarkup } from '../../providers/form/models';
 import {
   evaluateString,
   evaluateValue,
   getStyle,
   replaceTags,
   validateConfigurableComponentSettings,
-} from '../../../../providers/form/utils';
-import Autocomplete, { ISelectOption } from '../../../autocomplete';
-import ConfigurableFormItem from '../formItem';
-import { customDropDownEventHandler } from '../utils';
+} from '../../providers/form/utils';
+import Autocomplete, { ISelectOption } from '../../components/autocomplete';
+import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
+import { customDropDownEventHandler } from '../../components/formDesigner/components/utils';
 import settingsFormJson from './settingsForm.json';
 import moment from 'moment';
 import { isEmpty } from 'lodash';
 import camelCaseKeys from 'camelcase-keys';
-import { evaluateDynamicFilters } from '../../../../providers/dataTable/utils';
+import { evaluateDynamicFilters } from '../../providers/dataTable/utils';
 import { IAutocompleteComponentProps } from './interfaces';
 
 interface IQueryParams {

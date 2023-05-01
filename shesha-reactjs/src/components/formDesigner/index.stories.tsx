@@ -33,11 +33,10 @@ export const ColumnSettings = addStory(DesignerTemplate, {
   formId: 'e56015be-ea87-4d6a-8f67-d69462d4a94e'
 });
 
-export const UserManagement = addStory(DesignerTemplate, {
-  formId: {
-    name: 'user-management-new',
-  },
+export const BedFilter = addStory(DesignerTemplate, {
+  formId: '7065cf3a-a8ec-494e-b2c8-273274b86d1f',
 });
+
 
 export const FormsIndex = addStory(DesignerTemplate, {
   formId: {

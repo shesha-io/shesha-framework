@@ -2,10 +2,10 @@ import React, { FC } from 'react';
 import {
   MetadataProvider,
   useForm,
-} from '../../../../providers';
-import { evaluateString } from '../../../../providers/form/utils';
-import ConditionalWrap from '../../../conditionalWrapper';
+} from 'providers';
+import { evaluateString } from 'providers/form/utils';
 import { QueryBuilderWrapper } from './queryBuilderWrapper';
+import ConditionalWrap from 'components/conditionalWrapper';
 
 export interface IQueryBuilderWithModelType {
   modelType?: string;

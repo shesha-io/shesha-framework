@@ -1,15 +1,15 @@
 import React, { FC } from 'react';
-import { IToolboxComponent } from '../../../../interfaces';
-import { FormMarkup } from '../../../../providers/form/models';
+import { IToolboxComponent } from 'interfaces';
+import { FormMarkup } from 'providers/form/models';
 import { FilterOutlined } from '@ant-design/icons';
-import ConfigurableFormItem from '../formItem';
 import settingsFormJson from './settingsForm.json';
 import QueryBuilderField from './queryBuilderField';
-import { useForm, useQueryBuilder, useTableViewSelectorConfigurator } from '../../../../providers';
-import { validateConfigurableComponentSettings, evaluateString } from '../../../../providers/form/utils';
+import { useForm, useQueryBuilder } from 'providers';
+import { validateConfigurableComponentSettings } from 'providers/form/utils';
 import { Alert, Typography } from 'antd';
 import { QueryBuilderWithModelType } from './queryBuilderWithModelType';
 import { IQueryBuilderComponentProps } from './interfaces';
+import ConfigurableFormItem from 'components/formDesigner/components/formItem';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -39,15 +39,8 @@ const QueryBuilder: FC<IQueryBuilderComponentProps> = props => {
 };
 
 export const QueryBuilderComponentRenderer: FC<IQueryBuilderComponentProps> = props => {
-  const { formMode, formData } = useForm();
-  const { fieldsUnavailableHint, useExpression: useExpressionFromProps } = props;
-  const { selectedItemId, items } = useTableViewSelectorConfigurator(false) ?? {}; // note: it should be outside the QueryBuilder component!
-
-  // TODO: implement combined components which support both expressions/functions and custom values like date/datetime and remove the `useExpression` property
-  const useExpression =
-    useExpressionFromProps === true ||
-    (typeof useExpressionFromProps === 'string' && evaluateString(useExpressionFromProps, { data: formData }) === 'true') ||
-    items?.find(({ id }) => id === selectedItemId)?.useExpression === true;
+  const { formMode } = useForm();
+  const { fieldsUnavailableHint } = props;
 
   const queryBuilder = useQueryBuilder(false);
 
@@ -75,7 +68,6 @@ export const QueryBuilderComponentRenderer: FC<IQueryBuilderComponentProps> = pr
         fields={fields}
         fetchFields={fetchFields}
         jsonExpanded={props.jsonExpanded}
-        useExpression={useExpression}
         readOnly={props.readOnly}
       />
     </ConfigurableFormItem>

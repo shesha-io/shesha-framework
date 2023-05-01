@@ -1,4 +1,4 @@
-import { evaluateComplexStringWithResult, executeExpression } from './../form/utils';
+import { executeExpression } from './../form/utils';
 import { ColumnSorting, DataTableColumnDto, IActionColumnProps, ITableActionColumn, IStoredFilter, ITableColumn, ITableFilter, SortDirection, ITableDataColumn } from './interfaces';
 import { IMatchData } from '../form/utils';
 import moment, { Moment, isMoment, isDuration, Duration } from 'moment';
@@ -9,10 +9,13 @@ import { camelcaseDotNotation } from 'utils/string';
 import { ProperyDataType } from 'interfaces/metadata';
 
 // Filters should read properties as camelCase ?:(
-export const evaluateDynamicFilters = (filters: IStoredFilter[], mappings: IMatchData[]) => {
+export const evaluateDynamicFilters = (filters: IStoredFilter[], mappings: IMatchData[]): IStoredFilter[] => {
+  console.log('LOG: evaluateDynamicFilters', { filters, mappings });
+
   if (filters?.length === 0 || !mappings?.length) return filters;
 
-  return filters.map(filter => {
+  return filters.map<IStoredFilter>(filter => {
+    /*
     const expressionString = JSON.stringify(filter?.expression);
 
     // todo: review. We MUST NOT process JsonLogic as string
@@ -27,10 +30,12 @@ export const evaluateDynamicFilters = (filters: IStoredFilter[], mappings: IMatc
         unevaluatedExpressions,
       };
     }
-
+    */
     // correct way of processing JsonLogic rules
     if (typeof filter.expression === 'object') {
       const evaluator = (operator: string, args: object[], argIndex: number): IArgumentEvaluationResult => {
+        console.log('LOG: evaluator', { operator, args, argIndex });
+
         const argValue = args[argIndex];
         // special handling for specifications
         // todo: move `is_satisfied` operator name to constant
@@ -47,18 +52,9 @@ export const evaluateDynamicFilters = (filters: IStoredFilter[], mappings: IMatc
           }
         }
 
-        // handle strings with mustache syntax
-        if (typeof (argValue) === 'string') {
-          const strArgValue = argValue as string;
-          if (strArgValue?.includes('{{')) {
-            const { result/*, success, unevaluatedExpressions*/ } = evaluateComplexStringWithResult(argValue, mappings);
-            return { handled: true, value: result };
-          }
-        }
-
         return { handled: false };
       };
-      const convertedExpression = convertJsonLogicNode(filter.expression, evaluator);
+      const convertedExpression = convertJsonLogicNode(filter.expression, { argumentEvaluator: evaluator, mappings });
       return {
         ...filter,
         expression: convertedExpression,
@@ -66,40 +62,6 @@ export const evaluateDynamicFilters = (filters: IStoredFilter[], mappings: IMatc
     }
 
     return filter;
-    /* commented out buggy code, will be removed/reviewed after refactoring of the `use expressions` functionality
-    //Evaluates the straight values
-    let filterHolder;
-    let ruleJoin;
-    let sterilizedResult = filter.expression;
-    if (!!sterilizedResult) {
-      ruleJoin =
-        typeof filter.expression === 'string'
-          ? Object.keys(JSON.parse(filter.expression))[0]
-          : Object.keys(filter.expression)[0];
-      if (ruleJoin) {
-        filterHolder = sterilizedResult[ruleJoin]?.map(flt => {
-          let operator = Object.keys(flt)[0];
-          let mutated = flt[operator]?.map((vr, index) => {
-            if (index) {
-              if (hasBoolen(vr)) {
-                return getBoolen(vr);
-              }
-              return isNaN(vr) ? vr.replace(/("|')/g, '') : parseInt(vr);
-            } else {
-              return vr;
-            }
-          });
-          return {
-            [operator]: mutated,
-          };
-        });
-      }
-    }
-
-    filterHolder = !!filterHolder ? { [ruleJoin]: filterHolder } : filter.expression;
-
-    return { ...filter, expression: filterHolder };
-    */
   });
 };
 
@@ -281,9 +243,9 @@ export const prepareColumn = (column: IConfigurableColumnsProps, columns: DataTa
       const dataProps = column as IDataColumnsProps;
 
       const userColumn = userConfig?.columns?.find(c => c.id === dataProps.propertyName);
-      const colVisibility = userColumn?.show === null || userColumn?.show === undefined 
-        ? column.isVisible 
-        : userColumn?.show;    
+      const colVisibility = userColumn?.show === null || userColumn?.show === undefined
+        ? column.isVisible
+        : userColumn?.show;
 
       const srvColumn = dataProps.propertyName
         ? columns.find(
@@ -323,7 +285,7 @@ export const prepareColumn = (column: IConfigurableColumnsProps, columns: DataTa
         icon,
         actionConfiguration
       };
-      
+
       return actionColumn;
     }
     case 'crud-operations': {

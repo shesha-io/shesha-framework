@@ -1,12 +1,12 @@
 import React, { forwardRef, useImperativeHandle, useMemo, useState } from 'react';
 import { Alert, Tabs } from 'antd';
-import { SidebarContainer } from '../../../components';
+import { SidebarContainer } from 'components';
 import { TableViewProperties } from './tableViewProperties';
-import { useTableViewSelectorConfigurator } from '../../../providers/tableViewSelectorConfigurator';
-import { CodeVariablesTables } from '../../../components/codeVariablesTable';
+import { useTableViewSelectorConfigurator } from 'providers/tableViewSelectorConfigurator';
+import { CodeVariablesTables } from 'components/codeVariablesTable';
 import { QueryBuilderProvider, useMetadataFields } from '../../../providers';
-import { QueryBuilderPlainRenderer } from '../../../components/formDesigner/components/queryBuilder/queryBuilderFieldPlain';
-import QueryBuilderExpressionViewer from '../../../components/formDesigner/components/queryBuilder/queryBuilderExpressionViewer';
+import { QueryBuilderPlainRenderer } from 'designer-components/queryBuilder/queryBuilderFieldPlain';
+import QueryBuilderExpressionViewer from 'designer-components/queryBuilder/queryBuilderExpressionViewer';
 
 const { TabPane } = Tabs;
 

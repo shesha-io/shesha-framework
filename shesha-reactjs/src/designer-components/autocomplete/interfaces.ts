@@ -1,7 +1,7 @@
 import { Key } from 'react';
-import { FormIdentifier } from '../../../../providers';
-import { IConfigurableFormComponent } from '../../../../providers/form/models';
-import { AutocompleteDataSourceType } from '../../../autocomplete';
+import { FormIdentifier } from '../../providers';
+import { IConfigurableFormComponent } from '../../providers/form/models';
+import { AutocompleteDataSourceType } from '../../components/autocomplete';
 
 interface IQueryParamProp {
     id: string;

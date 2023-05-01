@@ -1,8 +1,7 @@
 import React, { FC, useState } from 'react';
 import { JsonLogicResult } from '@react-awesome-query-builder/antd';
 import { Modal, Button, Collapse, Space } from 'antd';
-import QueryBuilder from '../../../queryBuilder';
-import { CodeEditor, Show } from '../../..';
+import { QueryBuilder, CodeEditor, Show } from 'components';
 import { CaretRightOutlined } from '@ant-design/icons';
 import { useMedia } from 'react-use';
 import { IQueryBuilderFieldProps } from './models';
@@ -126,7 +125,6 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = props => {
           onChange={onChange}
           fields={props.fields}
           fetchFields={props.fetchFields}
-          useExpression={props?.useExpression}
           readOnly={readOnly}
         />
       </Modal>

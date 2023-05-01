@@ -137,8 +137,6 @@ export interface IStoredFilter {
 
   expression?: string | object;
 
-  onlyFetchWhenFullyEvaluated?: boolean;
-
   selected?: boolean;
 
   defaultSelected?: boolean;

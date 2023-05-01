@@ -1,3 +1,5 @@
+import { evaluateComplexStringWithResult, IMatchData } from "./publicUtils";
+
 type NodeCallback = (operator: string, args: object[]) => void;
 const processRecursive = (jsonLogic: object, callback: NodeCallback) => {
     if (!jsonLogic)
@@ -40,25 +42,45 @@ export interface IArgumentEvaluationResult {
 }
 export type JsonLogicContainerProcessingCallback = (operator: string, args: object[], argIndex: number) => IArgumentEvaluationResult;
 
-export const convertJsonLogicNode = (jsonLogic: object, argumentEvaluator: JsonLogicContainerProcessingCallback): object => {
+export interface IJsonLogicConversionOptions {
+    argumentEvaluator: JsonLogicContainerProcessingCallback;
+    mappings: IMatchData[];
+}
+
+export const convertJsonLogicNode = (jsonLogic: object, options: IJsonLogicConversionOptions): object => {
     if (!jsonLogic)
         return null;
 
+    const { argumentEvaluator, mappings } = options;
+
+    const parseNestedNode = (node: object, nestedOptions: IJsonLogicConversionOptions): object | string => {
+        // special handling for evaluation nodes
+        const evaluationNodeParsing = tryParseAsEvaluationOperation(node);
+        if (evaluationNodeParsing.isEvaluationNode) {
+            const { result/*, success, unevaluatedExpressions*/ } = evaluateComplexStringWithResult(evaluationNodeParsing.evaluationArguments.expression, mappings);
+
+            return result;
+        } else
+            return convertJsonLogicNode(node, nestedOptions);
+    };
+
     const result = {};
-    for (const operator in jsonLogic) {
-        if (!jsonLogic.hasOwnProperty(operator))
+    for (const operatorName in jsonLogic) {
+        if (!jsonLogic.hasOwnProperty(operatorName))
             continue;
 
-        const args = jsonLogic[operator];
-        
+        const args = jsonLogic[operatorName];
+
+        console.log('LOG: convertJsonLogicNode', { operatorName, args, jsonLogic });
+
         let convertedArgs = null;
 
         if (Array.isArray(args)) {
             convertedArgs = args.map((arg, argIdx) => {
                 if (typeof (arg) === 'object')
-                return convertJsonLogicNode(arg, argumentEvaluator);
+                    return parseNestedNode(arg, options);
 
-                const evaluationResult = argumentEvaluator(operator, args, argIdx);
+                const evaluationResult = argumentEvaluator(operatorName, args, argIdx);
                 return evaluationResult.handled
                     ? evaluationResult.value
                     : arg;
@@ -66,15 +88,42 @@ export const convertJsonLogicNode = (jsonLogic: object, argumentEvaluator: JsonL
         } else {
             // note: single arguments may be presented as objects, example: {"!!": {"var": "user.userName"}}
             if (typeof (args) === 'object') {
-                convertedArgs = convertJsonLogicNode(args, argumentEvaluator);
+                convertedArgs = parseNestedNode(args, options);
             } else {
-                const evaluationResult = argumentEvaluator(operator, [args], 0);
+                const evaluationResult = argumentEvaluator(operatorName, [args], 0);
                 convertedArgs = evaluationResult.handled
                     ? evaluationResult.value
                     : args;
-            }                
+            }
         }
-        result[operator] = convertedArgs;
+        result[operatorName] = convertedArgs;
     }
     return result;
+};
+
+export interface IEvaluateNodeArgs {
+    expression: string;
+    type: string;
+};
+
+export interface IEvaluateNode {
+    evaluate: IEvaluateNodeArgs[];
+};
+
+export interface IEvaluationNodeParsingResult {
+    isEvaluationNode: boolean;
+    evaluationArguments?: IEvaluateNodeArgs;
+}
+export const tryParseAsEvaluationOperation = (node: object): IEvaluationNodeParsingResult => {
+    if (!node)
+        return undefined;
+
+    const typedNode = node as IEvaluateNode;
+    const evaluationArguments = typedNode?.evaluate && Array.isArray(typedNode.evaluate) && typedNode.evaluate.length === 1
+        ? typedNode.evaluate[0]
+        : null;
+    return {
+        isEvaluationNode: Boolean(evaluationArguments),
+        evaluationArguments
+    };
 };

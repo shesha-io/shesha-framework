@@ -12,7 +12,6 @@ export interface ITimelineItemProps {
 }
 
 export interface ITimelineProps extends IConfigurableFormComponent, ICommonContainerProps {
-  useExpression: string | boolean;
   entityType: string;
   permissions?: any;
   properties?: string[];

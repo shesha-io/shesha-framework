@@ -6,7 +6,6 @@ export type FilterTarget = 'model' | 'table';
 
 export interface ICustomFilterComponentProps extends IConfigurableFormComponent {
   filters: ITableViewProps[];
-  useExpression?: boolean;
   componentRef: MutableRefObject<any>;
   target?: FilterTarget;
 }
