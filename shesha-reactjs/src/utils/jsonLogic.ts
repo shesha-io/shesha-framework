@@ -1,4 +1,4 @@
-import { evaluateComplexStringWithResult, IMatchData } from "./publicUtils";
+import { evaluateComplexStringWithResult, IEvaluateComplexStringResult, IMatchData } from "./publicUtils";
 
 type NodeCallback = (operator: string, args: object[]) => void;
 const processRecursive = (jsonLogic: object, callback: NodeCallback) => {
@@ -42,22 +42,35 @@ export interface IArgumentEvaluationResult {
 }
 export type JsonLogicContainerProcessingCallback = (operator: string, args: object[], argIndex: number) => IArgumentEvaluationResult;
 
+
+export interface OnEvaluatedArguments extends IEvaluateComplexStringResult {
+    expression: string;
+}
 export interface IJsonLogicConversionOptions {
     argumentEvaluator: JsonLogicContainerProcessingCallback;
     mappings: IMatchData[];
+    onEvaluated?: (args: OnEvaluatedArguments) => void;
 }
 
 export const convertJsonLogicNode = (jsonLogic: object, options: IJsonLogicConversionOptions): object => {
     if (!jsonLogic)
         return null;
 
-    const { argumentEvaluator, mappings } = options;
+    const { argumentEvaluator, mappings, onEvaluated: onEvaluation } = options;
 
     const parseNestedNode = (node: object, nestedOptions: IJsonLogicConversionOptions): object | string => {
         // special handling for evaluation nodes
         const evaluationNodeParsing = tryParseAsEvaluationOperation(node);
         if (evaluationNodeParsing.isEvaluationNode) {
-            const { result/*, success, unevaluatedExpressions*/ } = evaluateComplexStringWithResult(evaluationNodeParsing.evaluationArguments.expression, mappings);
+            const { result, success, unevaluatedExpressions } = evaluateComplexStringWithResult(evaluationNodeParsing.evaluationArguments.expression, mappings);
+
+            if (onEvaluation)
+                onEvaluation({
+                    expression: evaluationNodeParsing.evaluationArguments.expression,
+                    result, 
+                    success,
+                    unevaluatedExpressions
+                });
 
             return result;
         } else
@@ -70,8 +83,6 @@ export const convertJsonLogicNode = (jsonLogic: object, options: IJsonLogicConve
             continue;
 
         const args = jsonLogic[operatorName];
-
-        console.log('LOG: convertJsonLogicNode', { operatorName, args, jsonLogic });
 
         let convertedArgs = null;
 

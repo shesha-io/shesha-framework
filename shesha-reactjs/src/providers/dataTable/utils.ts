@@ -10,31 +10,14 @@ import { ProperyDataType } from 'interfaces/metadata';
 
 // Filters should read properties as camelCase ?:(
 export const evaluateDynamicFilters = (filters: IStoredFilter[], mappings: IMatchData[]): IStoredFilter[] => {
-  console.log('LOG: evaluateDynamicFilters', { filters, mappings });
 
   if (filters?.length === 0 || !mappings?.length) return filters;
 
-  return filters.map<IStoredFilter>(filter => {
-    /*
-    const expressionString = JSON.stringify(filter?.expression);
-
-    // todo: review. We MUST NOT process JsonLogic as string
-    // this code will be replaced with the code below
-    if (expressionString?.includes('{{')) {
-      const { result, success, unevaluatedExpressions } = evaluateComplexStringWithResult(expressionString, mappings);
-
-      return {
-        ...filter,
-        expression: JSON.parse(result),
-        allFieldsEvaluatedSuccessfully: success,
-        unevaluatedExpressions,
-      };
-    }
-    */
+  const convertedFilters = filters.map<IStoredFilter>(filter => {
+   
     // correct way of processing JsonLogic rules
     if (typeof filter.expression === 'object') {
       const evaluator = (operator: string, args: object[], argIndex: number): IArgumentEvaluationResult => {
-        console.log('LOG: evaluator', { operator, args, argIndex });
 
         const argValue = args[argIndex];
         // special handling for specifications
@@ -54,15 +37,34 @@ export const evaluateDynamicFilters = (filters: IStoredFilter[], mappings: IMatc
 
         return { handled: false };
       };
-      const convertedExpression = convertJsonLogicNode(filter.expression, { argumentEvaluator: evaluator, mappings });
+
+      const evaluationData = {
+        hasDynamicExpression: false,
+        allFieldsEvaluatedSuccessfully: true,
+        unevaluatedExpressions: [],
+      };
+
+      const convertedExpression = convertJsonLogicNode(filter.expression, {
+        argumentEvaluator: evaluator,
+        mappings,
+        onEvaluated: args => {
+          evaluationData.hasDynamicExpression = true;
+          evaluationData.allFieldsEvaluatedSuccessfully = evaluationData.allFieldsEvaluatedSuccessfully && args.success;
+          if (args.unevaluatedExpressions && args.unevaluatedExpressions.length)
+            evaluationData.unevaluatedExpressions.push(...args.unevaluatedExpressions);
+        }
+      });
       return {
         ...filter,
+        ...evaluationData,
         expression: convertedExpression,
       };
     }
 
     return filter;
   });
+
+  return convertedFilters;
 };
 
 export const hasDynamicFilter = (filters: IStoredFilter[]) => {

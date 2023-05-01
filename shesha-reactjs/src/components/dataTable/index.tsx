@@ -157,7 +157,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       enabled: result.canAdd || result.canDelete || result.canEdit,
     };
   }, [props.canDeleteInline, props.canEditInline, props.canAddInline]);
-    
+
   const preparedColumns = useMemo(() => {
     const localPreparedColumns = columns
       .filter(column => {
@@ -185,7 +185,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         };
         return removeUndefinedProperties(column) as DataTableColumn;
       });
-    //console.log('LOG: prepare columns in table', { columns, localPreparedColumns });
+
     return localPreparedColumns;
   }, [columns, crudOptions.enabled]);
 

@@ -56,6 +56,7 @@ import { withBackendRepository } from './repository/backendRepository';
 import { withInMemoryRepository } from './repository/inMemoryRepository';
 import { advancedFilter2JsonLogic, getTableDataColumns } from './utils';
 import { useLocalStorage } from 'hooks';
+import { withNullRepository } from './repository/nullRepository';
 
 interface IDataTableProviderBaseProps {
   /** Configurable columns. Is used in pair with entityType  */
@@ -113,8 +114,10 @@ const getTableProviderComponent = (props: IDataTableProviderProps): FC<IDataTabl
     };
     // todo: check `url` and implement
     // case 'Url': return null; 
+    default: {
+      return withNullRepository(DataTableProviderWithRepository, { });
+    }
   }
-  throw `Unsupported 'sourceType': '${sourceType}'`;
 };
 
 const getFilter = (state: IDataTableStateContext): string => {

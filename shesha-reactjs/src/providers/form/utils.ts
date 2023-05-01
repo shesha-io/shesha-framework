@@ -364,7 +364,7 @@ export const evaluateComplexString = (expression: string, mappings: IMatchData[]
   return result;
 };
 
-interface IEvaluateComplexStringResult {
+export interface IEvaluateComplexStringResult {
   result: string;
   unevaluatedExpressions?: string[];
   success?: boolean;
