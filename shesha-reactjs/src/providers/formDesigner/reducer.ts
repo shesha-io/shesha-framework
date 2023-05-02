@@ -163,7 +163,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
         if (toolboxComponent.initModel) formComponent = toolboxComponent.initModel(formComponent);
         if (toolboxComponent.migrator) {
 
-          formComponent = upgradeComponent(formComponent, toolboxComponent, { allComponents: state.allComponents, componentRelations: state.componentRelations });
+          formComponent = upgradeComponent(formComponent, toolboxComponent, state.formSettings, { allComponents: state.allComponents, componentRelations: state.componentRelations });
 
           // run migrations if available
           // todo: convert components to clases and run migrations there to check types properly

@@ -20,6 +20,7 @@ export interface IFileUploadProps extends IConfigurableFormComponent, IFormItem 
   allowUpload?: boolean;
   allowReplace?: boolean;
   allowDelete?: boolean;
+  useSync?: boolean;
 }
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -51,7 +52,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
           ownerId={Boolean(ownerId) ? ownerId : (Boolean(data?.id) ? data?.id : '')}
           ownerType={Boolean(model.ownerType) ? model.ownerType : (Boolean(formSettings?.modelType) ? formSettings?.modelType : '')}
           propertyName={Boolean(model.propertyName) ? model.propertyName : model.name}
-          uploadMode={'async'}
+          uploadMode={model.useSync ? 'sync' : 'async'}
         >
           <FileUpload
             isStub={formMode === 'designer'}
@@ -63,9 +64,9 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
       </ConfigurableFormItem>
     );
   },
-  initModel: model => {
-    const customModel: IFileUploadProps = {
-      ...model,
+  migrator: m => m.add<IFileUploadProps>(0, prev => {
+    return {
+      ...prev,
       allowReplace: true,
       allowDelete: true,
       allowUpload: true,
@@ -73,8 +74,13 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
       ownerType: '',
       propertyName: '',
     };
-    return customModel;
-  },
+  })
+  .add<IFileUploadProps>(1, (prev, context) => {
+    return {
+      ...prev,
+      useSync: !Boolean(context.formSettings?.modelType)
+    };
+  }),
   settingsFormMarkup: settingsForm,
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
 };
