@@ -37,6 +37,9 @@ export const BedFilter = addStory(DesignerTemplate, {
   formId: '7065cf3a-a8ec-494e-b2c8-273274b86d1f',
 });
 
+export const CustomFunctions = addStory(DesignerTemplate, {
+  formId: '30c5cd95-e96d-4023-b213-94b1531ec6d9',
+});
 
 export const FormsIndex = addStory(DesignerTemplate, {
   formId: {

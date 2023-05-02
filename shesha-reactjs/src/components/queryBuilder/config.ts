@@ -120,15 +120,20 @@ const widgets = {
 const evaluateTypes = ['boolean', 'date', 'datetime', 'time', 'number', 'text', 'entityReference', 'refList'];
 const evaluateFunctions = {};
 evaluateTypes.forEach(type => {
-  evaluateFunctions[`evaluate_${type}`] = getEvaluateFunc(type);
+  evaluateFunctions[`evaluate_${type}`.toUpperCase()] = getEvaluateFunc(type);
+});
+
+const knownFuncNames = ['NOW', 'LOWER', 'NOW', 'UPPER', 'RELATIVE_DATETIME'];
+const knownFuncs: Funcs = {};
+knownFuncNames.forEach(funcName => {
+  if (BasicFuncs.hasOwnProperty(funcName))
+  knownFuncs[funcName] = BasicFuncs[funcName];
 });
 
 const funcs: Funcs = {
-  ...BasicFuncs,
+  ...knownFuncs,
   ...evaluateFunctions,
-  //'evaluate': evaluateFunc,
 };
-
 
 export const config: Config = {
   ...AntdConfig,

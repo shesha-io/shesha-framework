@@ -14,7 +14,7 @@ const args2JsonLogic: JsonLogicFormatFunc = (funcArgs: TypedMap<JsonLogicValue>)
 const jsonLogic2Args: JsonLogicImportFunc = (val): RuleValue[] => {
     const typedNode = val as IEvaluateNode;
     if (!typedNode?.evaluate)
-        return [];
+        throw `Can't parse 'evaluate' function`; // throw exception to skip current function and try to parse others
 
     const args: IEvaluateNodeArgs = Array.isArray(typedNode.evaluate) && typedNode.evaluate.length === 1
         ? typedNode.evaluate[0] as IEvaluateNodeArgs
