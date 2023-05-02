@@ -54,7 +54,7 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = props => {
     const showFormInfo = Boolean(persistedFormProps) && formInfoBlockVisible && formStatusInfo;
 
     return (
-      <FormMarkupConverter markup={providedMarkup}>
+      <FormMarkupConverter markup={providedMarkup} formSettings={formSettings}>
         {flatComponents => (
           <FormProvider
             name="Form"
