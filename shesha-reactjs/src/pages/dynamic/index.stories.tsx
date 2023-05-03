@@ -31,3 +31,27 @@ export const TableInlineEditing = addStory(Template, {
 export const FormsIndex = addStory(Template, {
   formId: { name: 'forms', module: 'shesha' }
 });
+
+export const OrganisationEdit = addStory(Template, {
+  formId: {
+    name: 'organisation-edit',
+    module: 'Test Module',
+    version: 1
+  }  
+});
+
+export const PersonEdit = addStory(Template, {
+  formId: {
+    name: 'person-edit',
+    module: 'Test Module',
+    version: 7
+  }
+});
+
+export const PersonDetails = addStory(Template, {
+  formId: {
+    name: 'person-details',
+    module: 'Test Module',
+    version: 1
+  }
+});

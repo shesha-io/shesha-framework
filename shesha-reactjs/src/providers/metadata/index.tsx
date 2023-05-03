@@ -65,6 +65,7 @@ function useMetadata(require: boolean) {
 
 /**
  * Get list of properties filtered by data type
+ * 
  * @param dataTypes data types filter
  * @returns 
  */
