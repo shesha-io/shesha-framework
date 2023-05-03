@@ -1,10 +1,10 @@
 import React, { FC, useState } from 'react';
-import { Checkbox, Form, Input, Select } from 'antd';
+import { Form, Input, Select } from 'antd';
 import SectionSeparator from '../../../sectionSeparator';
 import Show from '../../../show';
 import { AutocompleteRaw } from '../../../autocomplete';
-import { QueryBuilderComponentRenderer } from '../queryBuilder/queryBuilderComponent';
-import { QueryBuilderWithModelType } from '../queryBuilder/queryBuilderWithModelType';
+import { QueryBuilderComponentRenderer } from 'designer-components/queryBuilder/queryBuilderComponent';
+import { QueryBuilderWithModelType } from 'designer-components/queryBuilder/queryBuilderWithModelType';
 import Properties from '../../../properties';
 import { ITimelineProps } from '../../../timeline/models';
 
@@ -92,10 +92,6 @@ const TimelineSettings: FC<ITabSettingsProps> = (props) => {
 
           <SectionSeparator title="Query builder" />
 
-          <Form.Item name="useExpression" label="Use Expression" valuePropName="checked">
-            <Checkbox disabled={state.readOnly} />
-          </Form.Item>
-
           <QueryBuilderWithModelType modelType={state?.entityType}>
             <QueryBuilderComponentRenderer
               readOnly={state.readOnly}
@@ -103,7 +99,6 @@ const TimelineSettings: FC<ITabSettingsProps> = (props) => {
               type={''}
               id={''}
               label="Query builder"
-              useExpression={state?.useExpression}
             />
           </QueryBuilderWithModelType>
         </Show>

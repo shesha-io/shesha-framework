@@ -1,4 +1,4 @@
-import { FieldSettings } from 'react-awesome-query-builder';
+import { FieldSettings } from '@react-awesome-query-builder/antd';
 
 //Fields
 

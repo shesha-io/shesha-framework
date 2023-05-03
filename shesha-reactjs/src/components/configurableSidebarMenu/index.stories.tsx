@@ -4,7 +4,7 @@ import ConfigurableSidebarMenu from './';
 import { AppEditModeToggler } from '../..';
 import SidebarConfigurator from './configurator';
 import { SidebarMenuConfiguratorProvider } from '../../providers/sidebarMenuConfigurator';
-import { SIDEBAR_MENU_NAME } from '../../constants';
+import { SIDEBAR_MENU_NAME } from '../../shesha-constants';
 import StoryApp from '../storyBookApp';
 
 export default {

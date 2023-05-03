@@ -1,6 +1,6 @@
 import React, { FC, useState } from 'react';
 import { GenericCreateModal, IGenericCreateModalProps, Page, Show } from '../';
-import { PlusOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import { FormInstance } from 'antd/lib/form';
 import IndexTableFull, { IIndexTableFullProps } from '../indexTableFull';
 import { IToolbarItem } from '../../interfaces';
@@ -91,10 +91,6 @@ const TableWithControls: FC<IGenericIndexPageProps> = props => {
         // entityType={props.entityType}
         // configurableColumns={configurableColumns}
         header={props.title}
-        actionColumns={[
-          { icon: <SearchOutlined />, onClick: props.detailsUrl },
-          { icon: <EditOutlined />, onClick: props.editUrl },
-        ]}
         tableRef={props?.tableProps?.tableRef}
         {...extraTableProps}
         toolbarItems={[...toolbarItems, ...(props?.tableProps?.toolbarItems || [])]}
@@ -117,6 +113,7 @@ const GenericIndexPagePlain: FC<IGenericIndexPageProps> = props => {
   const configurableColumns = useDataTableFluentColumns(props.columns);
   return (
     <DataTableProvider
+      sourceType='Entity'
       entityType={props.entityType}
       configurableColumns={configurableColumns}
     >

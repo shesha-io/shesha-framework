@@ -310,7 +310,6 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
                   actions={{ onChangeId, onChangeFormData }}
                   onFinish={onFinish}
                   initialValues={formWithData.fetchedData}
-                  skipPostOnFinish
                   skipFetchData
                   refetchData={() => refetchFormData()}
                   className="sha-dynamic-page"

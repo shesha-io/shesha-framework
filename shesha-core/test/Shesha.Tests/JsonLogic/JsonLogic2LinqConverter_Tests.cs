@@ -1,6 +1,8 @@
-﻿using Abp.Domain.Entities;
+﻿using Abp;
+using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Linq;
+using Abp.Timing;
 using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using Shesha.Authorization.Users;
@@ -9,6 +11,8 @@ using Shesha.Domain.Enums;
 using Shesha.Extensions;
 using Shesha.JsonLogic;
 using Shesha.Services;
+using Shesha.Tests.TestingUtils;
+using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -1248,6 +1252,99 @@ namespace Shesha.Tests.JsonLogic
 
         #endregion
 
+        #region Custom date functions
+
+        private readonly string _custom_date_funcs_Convert_expression = @"{""and"":[{""<="":[{""date_add"":[{""now"":[]},-5,""day""]},{""var"":""user.lastLoginDate""},{""now"":[]}]}]}         ";
+
+        [Fact]
+        public void Custom_Date_Funcs_Convert()
+        {
+            using (FreezeTime()) 
+            {
+                var expression = ConvertToExpression<Person>(_custom_date_funcs_Convert_expression);
+
+                // todo: find a way to use start of the minute here
+                var now = Expression.Constant(Clock.Now).ToString();
+                // note: use end of minute because we skip seconds for datetime values
+                var nowEom = Expression.Constant(Clock.Now.EndOfTheMinute()).ToString();
+                
+                var expected = $@"ent => ((Convert({now}.Add(-5.00:00:00), Nullable`1) <= ent.User.LastLoginDate) AndAlso (ent.User.LastLoginDate <= Convert({nowEom}, Nullable`1)))";
+                Assert.Equal(expected, expression.ToString());
+            }
+        }
+
+        [Fact]
+        public async Task Custom_Date_Funcs_Fetch()
+        {
+            var data = await TryFetchData<Person, Guid>(_custom_date_funcs_Convert_expression);
+            Assert.NotNull(data);
+        }
+
+        #endregion
+
+        #region Custom string functions
+
+        private readonly string _custom_string_funcs_Convert_expression = @"{
+  ""and"": [
+    {
+      ""=="": [
+        {
+          ""var"": ""firstName""
+        },
+        {
+          ""toLowerCase"": [
+            ""TeSt""
+          ]
+        }
+      ]
+    },
+    {
+      ""=="": [
+        {
+          ""var"": ""lastName""
+        },
+        {
+          ""toUpperCase"": [
+            ""VaLuE""
+          ]
+        }
+      ]
+    },
+    {
+      ""=="": [
+        {
+          ""var"": ""emailAddress1""
+        },
+        {
+          ""toLowerCase"": [
+            {
+              ""var"": ""emailAddress2""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}";
+
+        [Fact]
+        public void Custom_String_Funcs_Convert()
+        {
+            var expression = ConvertToExpression<Person>(_custom_string_funcs_Convert_expression);
+
+            var expected = $@"ent => (((ent.FirstName == ""TeSt"".ToLower()) AndAlso (ent.LastName == ""VaLuE"".ToUpper())) AndAlso (ent.EmailAddress1 == ent.EmailAddress2.ToLower()))";
+            Assert.Equal(expected, expression.ToString());
+        }
+
+        [Fact]
+        public async Task Custom_String_Funcs_Fetch()
+        {
+            var data = await TryFetchData<Person, Guid>(_custom_string_funcs_Convert_expression);
+            Assert.NotNull(data);
+        }
+
+        #endregion
+
         public class EntityWithRefListrops : Entity<Guid> 
         { 
             public virtual RefListPersonTitle Title { get; set; }
@@ -1271,6 +1368,20 @@ namespace Shesha.Tests.JsonLogic
             public virtual TimeSpan TimeProp { get; set; }
             public virtual int IntProp { get; set; }
             public virtual int? NullableIntProp { get; set; }
+        }
+
+        private IDisposable FreezeTime() 
+        {
+            // save current provider
+            var prevProvider = Clock.Provider;
+
+            // change current provider to static
+            Clock.Provider = new StaticClockProvider();
+
+            // return compensation logic
+            return new DisposeAction(() => {
+                Clock.Provider = prevProvider;
+            });            
         }
     }
 }

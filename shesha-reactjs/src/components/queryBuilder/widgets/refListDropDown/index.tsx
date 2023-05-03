@@ -1,5 +1,5 @@
-import { BaseWidget, BasicConfig, SelectFieldSettings } from 'react-awesome-query-builder';
-import { CustomFieldSettings } from '../../../../providers/queryBuilder/models';
+import { BaseWidget, BasicConfig, SelectFieldSettings } from '@react-awesome-query-builder/antd';
+import { CustomFieldSettings } from 'providers/queryBuilder/models';
 import RefListDropDown from '../../../refListDropDown';
 import React from 'react';
 

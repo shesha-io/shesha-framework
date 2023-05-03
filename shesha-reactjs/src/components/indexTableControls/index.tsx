@@ -20,7 +20,6 @@ export const IndexTableControls: FC<IIndexTableControlsProps> = ({
   showPagination = true,
 }) => {
   const {
-    title,
     isInProgress: { isFiltering, isSelectingColumns },
     setIsInProgressFlag,
     refreshTable,
@@ -35,7 +34,7 @@ export const IndexTableControls: FC<IIndexTableControlsProps> = ({
     <div className="sha-index-table-controls">
       <div className="index-table-controls-left">
         <div className="index-view-selector">
-          <h1 className="title">{header || title}</h1>
+          <h1 className="title">{header}</h1>
         </div>
       </div>
 

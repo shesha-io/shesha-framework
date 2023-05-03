@@ -59,12 +59,12 @@ export { default as GooglePlacesAutocomplete, type IGooglePlacesAutocompleteProp
 export { default as HtmlHead, type IHtmlHeadProps } from './htmlHead';
 export { default as IdleTimerRenderer, type IIdleTimerRendererProps } from './idleTimerRenderer';
 export { default as ChildTable, type IChildTableProps } from './childTable';
-export { default as IndexTable, type IIndexTableProps, type IExtendedModalProps } from './indexTable';
-export { default as IndexTableColumnFilters, type IIndexTableColumnFiltersProps } from './indexTableColumnFilters';
+export { default as DataTable, type IIndexTableProps, type IExtendedModalProps } from './dataTable';
+export { default as DatatableAdvancedFilter, type IDatatableAdvancedFilterProps as IIndexTableColumnFiltersProps } from './dataTable/advancedFilter';
 export {
-  default as IndexTableColumnVisibilityToggle,
-  type IIndexTableColumnVisibilityToggleProps,
-} from './indexTableColumnVisibilityToggle';
+  default as DatatableColumnsSelector,
+  type IDatatableColumnsSelectorProps as IIndexTableColumnVisibilityToggleProps,
+} from './dataTable/columnsSelector';
 export { default as IndexTableControls, type IIndexTableControlsProps } from './indexTableControls';
 export { default as IndexTableFull, type IIndexTableFullProps } from './indexTableFull';
 export { default as IndexToolbar, type IIndexToolbarProps } from './indexToolbar';
@@ -140,10 +140,11 @@ export { default as EditableTagGroup, type IEditableTagGroupProps } from './edit
 export { default as QuickView, type IQuickViewProps } from './quickView';
 export { default as CurrencyConverter, type ICurrencyConverterProps } from './currencyConverter';
 
-export { default as ToolbarSettingsModal } from './formDesigner/components/dataTable/toolbar/toolbarSettingsModal';
+export { default as ToolbarSettingsModal } from '../designer-components/dataTable/toolbar/toolbarSettingsModal';
 export { default as SidebarConfigurator } from './configurableSidebarMenu/configurator';
 export { default as ButtonGroupConfigurator } from './formDesigner/components/button/buttonGroup/configurator';
 export { default as CodeEditorModal } from './formDesigner/components/codeEditor/codeEditor';
 export { default as LabelValueEditor } from './formDesigner/components/labelValueEditor/labelValueEditor';
 export { default as RichTextEditor, type IRichTextEditorProps } from './richTextEditor';
 export { default as SettingsEditor, type ISettingsEditorProps } from './settingsEditor';
+export { FormComponentSelector, type IFormComponentSelectorProps } from './formComponentSelector';

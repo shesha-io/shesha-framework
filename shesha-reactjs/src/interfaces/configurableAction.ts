@@ -46,6 +46,10 @@ export interface IConfigurableActionIdentifier extends IHasActionOwner {
  */
 export interface IConfigurableActionDescriptor<TArguments = IConfigurableActionArguments, TReponse = any> extends IConfigurableActionIdentifier {
   /**
+   * User friendly name of the action. Action name is displayed if the label is not specified
+   */
+   label?: string;
+  /**
    * Action description
    */
   description?: string;

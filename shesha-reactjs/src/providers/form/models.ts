@@ -57,15 +57,40 @@ export type ConfigurableFormComponentTypes =
   | 'queryBuilder'
   | 'labelValueEditor';
 
+export interface IComponentLabelProps {
+  /** The label for this field that will appear next to it. */
+  label?: string;
+  /** Hide label of the field */
+  hideLabel?: boolean;
+
+  /** Position of the label */
+  labelAlign?: LabelAlign;
+}
+
+export interface IComponentRuntimeProps {
+  visibilityFunc?: (data: any, globalState: any, formMode: FormMode) => boolean;
+
+  enabledFunc?: (data: any, globalState: any, formMode: FormMode) => boolean;
+
+  /**/
+  settingsValidationErrors?: IAsyncValidationError[];
+
+  /** Custom onBlur handler */
+  onBlurCustom?: string;
+
+  /** Custom onChange handler */
+  onChangeCustom?: string;
+
+  /** Custom onFocus handler */
+  onFocusCustom?: string;
+}
+
 /**
  * Base model of the configurable component
  */
-export interface IConfigurableFormComponent extends IFormComponentContainer, IHasVersion {
+export interface IConfigurableFormComponent extends IFormComponentContainer, IHasVersion, IComponentLabelProps, IComponentRuntimeProps {
   /** component name */
   name: string;
-
-  /** The label for this field that will appear next to it. */
-  label?: string;
 
   /** Type of the component */
   type: string;
@@ -82,16 +107,13 @@ export interface IConfigurableFormComponent extends IFormComponentContainer, IHa
   /** Add an enhanced Visibility property to cater for the 3 options Yes (To display both to user and payload) No (To only display on the payload)  Removed (To remove from both user and payload) */
   visibility?: VisibilityType;
 
-  /** Hide label of the field */
-  hideLabel?: boolean;
-
-  /** Position of the label */
-  labelAlign?: LabelAlign;
+  /** Custom visibility code */
+  customVisibility?: string;
 
   disabled?: boolean; // todo: move to the model level
 
-  /** Custom visibility code */
-  customVisibility?: string;
+  /** Whether the component is read-only */
+  readOnly?: boolean;
 
   /** Custom visibility code */
   customEnabled?: string;
@@ -99,45 +121,14 @@ export interface IConfigurableFormComponent extends IFormComponentContainer, IHa
   /** Default value of the field */
   defaultValue?: any;
 
-  //#region runtime properties
-  visibilityFunc?: (data: any, globalState: any, formMode: FormMode) => boolean;
-
-  //#region runtime properties
-  enabledFunc?: (data: any, globalState: any, formMode: FormMode) => boolean;
-  /**/
-  settingsValidationErrors?: IAsyncValidationError[];
-
-  /** Custom onBlur handler */
-  onBlurCustom?: string;
-
-  /** Custom onChange handler */
-  onChangeCustom?: string;
-
-  /** Custom onFocus handler */
-  onFocusCustom?: string;
-  //#endregion
-
-  /** Whether the component is read-only */
-  readOnly?: boolean;
-
   /** Control size */
   size?: SizeType;
 
   /** If true, indicates that component is rendered dynamically and some of rules (e.g. visibility) shouldn't be applied to this component */
   isDynamic?: boolean;
 
-  /**
-   * This allows a component to display a quickview popover with entity details.
-   * The quickview is only displayed in readonly mode
-   */
-  enableQuickview?: boolean;
-
   subscribedEventNames?: string[];
-  dispatchedEventNames?: string[];
-  dispatchedEventDebouncedMilliseconds?: number;
   style?: string;
-
-  tooltip?: string;
 }
 
 export interface IComponentsContainer {

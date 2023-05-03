@@ -1,6 +1,6 @@
 import React, { FC, Fragment } from 'react';
 import { ProperyDataType } from '../../../interfaces/metadata';
-import { useMetadata } from '../../../providers';
+import { useMetaProperties } from '../../../providers';
 import { getPropertyMetadata } from '../../../utils/date';
 import { getNumberFormat } from '../../../utils/string';
 
@@ -10,7 +10,7 @@ interface IFormItemWrapper {
 }
 
 const FormItemWrapper: FC<IFormItemWrapper> = ({ children, mutate, formType, ...props }) => {
-  const { metadata: { properties = [] } = {} } = useMetadata(false, { filters: [formType] });
+  const properties = useMetaProperties([formType]);
 
   const { value, id } = props as any;
 

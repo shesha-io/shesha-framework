@@ -2,11 +2,11 @@ import React, { FC } from "react";
 import { Tooltip, Select } from "antd";
 import { BUILT_IN_PLACEMENTS, SELECT_WIDTH_OFFSET_RIGHT, calcTextWidth } from "../domUtils";
 const { Option, OptGroup } = Select;
-import { Config } from 'react-awesome-query-builder';
+import { BasicConfig } from '@react-awesome-query-builder/antd';
 
 
 export interface IFieldSelectProps {
-    config: Config;
+    config: BasicConfig;
     customProps?: { [key: string]: any };
     items: [];
     placeholder?: string;

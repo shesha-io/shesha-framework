@@ -109,15 +109,6 @@ export const entityPickerSettings = new DesignerToolbarSettings()
     parentId: 'root',
     label: 'Filters',
   })
-  .addCheckbox({
-    id: '3ef48a94-a16a-4e89-a514-7713348b560e',
-    name: 'useExpression',
-    label: 'Use Expression',
-    parentId: 'root',
-    hidden: false,
-    customVisibility: 'return Boolean(data.entityType);',
-    validate: {},
-  })
   .addQueryBuilder({
     id: 'n4enebtmhFgvkP5ukQK1f',
     name: 'filters',
@@ -129,7 +120,6 @@ export const entityPickerSettings = new DesignerToolbarSettings()
     isDynamic: false,
     validate: {},
     settingsValidationErrors: [],
-    useExpression: '{{data.useExpression}}',
     modelType: '{{data.entityType}}',
     fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
   })

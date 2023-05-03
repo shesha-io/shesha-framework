@@ -26,16 +26,23 @@ const DesignerTemplate: Story<IFormDesignerStoryProps> = ({ formId }) => (
 );
 
 export const Bugfix = addStory(DesignerTemplate, {
-  //formId: '4686a0f4-c187-46c7-9ff6-cb5ddaeca712',
-  //formId: '7c4a88d0-2b13-44a7-9f85-41b8b58fe489'
-  //formId: '9e7d2dc5-cda8-4fc0-8dbc-ccba8c3e654e'
-  formId: '94662a92-5d7e-4e07-9aa5-a14bac64685e'
+  formId: '7065cf3a-a8ec-494e-b2c8-273274b86d1f'
 });
 
-export const UserManagement = addStory(DesignerTemplate, {
-  formId: {
-    name: 'user-management-new',
-  },
+export const ColumnSettings = addStory(DesignerTemplate, {
+  formId: 'e56015be-ea87-4d6a-8f67-d69462d4a94e'
+});
+
+export const BedFilter = addStory(DesignerTemplate, {
+  formId: '7065cf3a-a8ec-494e-b2c8-273274b86d1f',
+});
+
+export const CustomFunctions = addStory(DesignerTemplate, {
+  formId: '30c5cd95-e96d-4023-b213-94b1531ec6d9',
+});
+
+export const FormDetails = addStory(DesignerTemplate, {
+  formId: 'ac80013a-c02b-433b-b813-877422747a74',
 });
 
 export const FormsIndex = addStory(DesignerTemplate, {

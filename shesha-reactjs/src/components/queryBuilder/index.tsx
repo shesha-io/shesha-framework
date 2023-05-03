@@ -10,7 +10,7 @@ import {
   FieldSettings,
   Widgets,
   Fields,
-} from 'react-awesome-query-builder';
+} from '@react-awesome-query-builder/antd';
 import classNames from 'classnames';
 import { ITableColumn } from '../../interfaces';
 import { IProperty } from '../../providers/queryBuilder/models';
@@ -38,12 +38,11 @@ export interface IQueryBuilderProps {
   fields: IProperty[];
   fetchFields: (fieldNames: string[]) => void;
   showActionBtnOnHover?: boolean;
-  useExpression?: boolean;
   readOnly?: boolean;
 }
 
 export const QueryBuilder: FC<IQueryBuilderProps> = props => {
-  const { value, fields, fetchFields, useExpression } = props;
+  const { value, fields, fetchFields } = props;
 
   const missingFields = useMemo(() => {
     const vars = extractVars(value);
@@ -56,17 +55,6 @@ export const QueryBuilder: FC<IQueryBuilderProps> = props => {
       fetchFields(missingFields);
     }
   }, [missingFields]);
-
-  // In dynamic mode, we want all the widgets to to text so that they can be passed Mustache string templates
-  // TODO: Add a dynamic component for type: 'slider' and number as that also can be a range, which would have to receive 2 value - {{start}} and {{end}}
-  const allFields = useMemo(() => {
-    return useExpression
-      ? fields?.map(({ dataType, ...field }) => ({
-        ...field,
-        dataType: ['date-time', 'date', 'time'].includes(dataType) ? 'dateTimeDynamic' : 'text',
-      }))
-      : fields;
-  }, [useExpression, fields, fields?.length]);
 
   // pre-parse tree and extract all used fields
   // load all fields which are missing
@@ -116,7 +104,7 @@ export const QueryBuilder: FC<IQueryBuilderProps> = props => {
           case 'entityReference':
           case DataTypes.entityReference:
             type = 'entityReference';
-            defaultPreferWidgets = ['entityAutocomplete'];
+            //defaultPreferWidgets = ['entityAutocomplete'];
             break;
 
           case 'refList':
@@ -130,10 +118,6 @@ export const QueryBuilder: FC<IQueryBuilderProps> = props => {
           case '!struct':
             type = dataType;
             break;
-          case 'dateTimeDynamic':
-            type = 'dateTimeDynamic';
-            defaultPreferWidgets = ['dateTimeDynamic'];
-            break;
           default:
             break;
         }
@@ -142,7 +126,6 @@ export const QueryBuilder: FC<IQueryBuilderProps> = props => {
         confFields[propertyName] = {
           label,
           type,
-          valueSources: ['value'],
           // @ts-ignore note: types are wrong in the library, they doesn't allow to extend
           fieldSettings,
           preferWidgets: fieldPreferWidgets.length > 0 ? fieldPreferWidgets : undefined,
@@ -156,7 +139,7 @@ export const QueryBuilder: FC<IQueryBuilderProps> = props => {
     const conf: Config = {
       ...InitialConfig,
       settings: qbSettings,
-      fields: convertFields(allFields),
+      fields: convertFields(fields),
     };
     if (props.readOnly) {
       conf.settings.immutableGroupsMode = true;
@@ -166,8 +149,9 @@ export const QueryBuilder: FC<IQueryBuilderProps> = props => {
       conf.settings.canReorder = false;
       conf.settings.canRegroup = false;
     }
+
     return conf;
-  }, [allFields, props.readOnly]);
+  }, [fields, props.readOnly]);
 
   return missingFields.length > 0 ? <Skeleton></Skeleton> : <QueryBuilderContent {...props} qbConfig={qbConfig} />;
 };
@@ -178,9 +162,7 @@ interface IQueryBuilderContentProps extends IQueryBuilderProps {
 
 const loadJsonLogic = (jlValue: object, config: Config) => {
   try {
-    const result = QbUtils.loadFromJsonLogic(jlValue, config);
-    //console.log('JsonLogic converted:', result);
-    return result;
+    return QbUtils.loadFromJsonLogic(jlValue, config);
   } catch (error) {
     console.error('failed to parse JsonLogic expression', { error, jlValue, config });
     return null;
@@ -214,7 +196,8 @@ const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
 
   const handleChange = (_tree: ImmutableTree, _config: Config) => {
     if (onChange) {
-      onChange(QbUtils.jsonLogicFormat(_tree, _config));
+      const jsonLogic = QbUtils.jsonLogicFormat(_tree, _config);
+      onChange(jsonLogic);
     }
   };
 

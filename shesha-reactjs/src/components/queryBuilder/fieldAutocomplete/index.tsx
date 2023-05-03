@@ -1,11 +1,12 @@
 import React, { FC, useState } from "react";
-import { Config } from 'react-awesome-query-builder';
+import { BasicConfig } from '@react-awesome-query-builder/antd';
+import {  } from '@react-awesome-query-builder/ui';
 import { SELECT_WIDTH_OFFSET_RIGHT, calcTextWidth } from "../domUtils";
 import { PropertySelect } from "../../propertyAutocomplete/propertySelect";
-import { IPropertyMetadata } from "../../../interfaces/metadata";
+import { IPropertyMetadata } from "interfaces/metadata";
 
 export interface IFieldSelectProps {
-    config: Config;
+    config: BasicConfig;
     customProps?: { [key: string]: any };
     items: [];
     placeholder?: string;

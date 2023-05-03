@@ -13,7 +13,7 @@ import { IModalProps } from '../../providers/dynamicModal/models';
 import { useEntitySelectionData } from '../../utils/entity';
 import GlobalTableFilter from '../globalTableFilter';
 import camelCaseKeys from 'camelcase-keys';
-import IndexTable from '../indexTable';
+import DataTable from '../dataTable';
 import ReadOnlyDisplayFormItem from '../readOnlyDisplayFormItem';
 import TablePager from '../tablePager';
 import { IEntityPickerProps, IEntityPickerState } from './models';
@@ -344,7 +344,7 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
             <TablePager />
           </div>
 
-          <IndexTable onSelectRow={onSelectRow} onDblClick={onDblClick} options={{ omitClick: true }} />
+          <DataTable onSelectRow={onSelectRow} onDblClick={onDblClick} options={{ omitClick: true }} />
         </>
       </Modal>
     </div>
@@ -355,7 +355,11 @@ export const EntityPickerEditable = (props: IEntityPickerProps) => {
   const { parentEntityId, entityType, displayEntityKey } = props;
 
   return (
-    <DataTableProvider parentEntityId={parentEntityId} entityType={entityType}>
+    <DataTableProvider 
+      sourceType='Entity'
+      parentEntityId={parentEntityId} 
+      entityType={entityType}
+    >
       <EntityPickerEditableInner {...props} displayEntityKey={displayEntityKey} />
     </DataTableProvider>
   );

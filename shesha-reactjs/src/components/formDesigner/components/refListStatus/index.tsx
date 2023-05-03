@@ -12,7 +12,8 @@ import { Alert } from 'antd';
 
 const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
   type: 'refListStatus',
-  name: 'RefListStatus',
+  isOutput: true,
+  name: 'Reference list status',
   icon: <FileSearchOutlined />,
 
   factory: (model: IRefListStatusProps) => {

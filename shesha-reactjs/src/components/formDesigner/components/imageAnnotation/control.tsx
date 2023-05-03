@@ -49,7 +49,7 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
     viewData: value || [],
   });
 
-  const prevLeghth = usePrevious(imageAnnotationData?.viewData?.length);
+  const prevLength = usePrevious(imageAnnotationData?.viewData?.length);
 
   const isCustomEnabled = getCustomEnabled(customEnabled, name, formData, globalState, formMode);
 
@@ -101,9 +101,7 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
     imageElement?.click();
   };
 
-  const onSelect = () => {
-    console.log('');
-  };
+  const onSelect = () => { /*nop*/ };
 
   const onChange = (data: IAnnotation[]) => {
     if (!isReadOnly) {
@@ -131,54 +129,58 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
     }
   };
 
-  const hasUpdated = prevLeghth !== imageAnnotationData?.viewData?.length;
+  const hasUpdated = prevLength !== imageAnnotationData?.viewData?.length;
 
-  const maxReached =
-    !!maxPoints && imageAnnotationData?.viewData?.filter(({ comment }) => !!comment).length === maxPoints;
+  const maxReached = !!maxPoints && imageAnnotationData?.viewData?.filter(({ comment }) => !!comment).length === maxPoints;
 
-  return (
-    <>
-      <WarningMessage isReadonly={isReadOnly} maxPoints={maxPoints} maxReached={maxReached} width={pageSize?.width} />
-      <div className="annotation-conatainer">
+
+  return (<>
+    <WarningMessage
+      isReadonly={isReadOnly}
+      maxPoints={maxPoints}
+      maxReached={maxReached}
+      width={pageSize?.width}
+    />
+    <div className="annotation-conatainer">
         <div
           className="container-image"
           ref={imageFrameRef}
           style={{ ...pageSize, ...getStyle(style, formData, globalState) }}
         >
-          <ReactPictureAnnotation
-            inputElement={(value, onChange, onDelete) => (
-              <CustomInput
-                value={value}
-                defaultNumber={imageAnnotationData?.viewData?.length}
-                onChange={onChange}
-                onDelete={onDelete}
-              />
-            )}
-            annotationData={
-              hasUpdated ? sortAnnotationData(imageAnnotationData.viewData) : imageAnnotationData.viewData
-            }
-            image={url}
-            onSelect={onSelect}
-            onChange={onChange}
-            width={parseIntOrDefault(imageFrameRef?.current?.offsetWidth)}
-            height={parseIntOrDefault(imageFrameRef?.current?.offsetHeight)}
-            marginWithInput={2}
-          />
-        </div>
-        {isReadOnly && <div className="container-image-Cover" style={{ ...pageSize }} />}
-
-        {!isOnImage && allowAddingNotes && (
-          <div
-            className="description-container"
-            style={{
-              height: pageSize.height,
-            }}
-          >
-            <DescriptionsList data={sortAnnotationData(imageAnnotationData?.actualData)} />
-          </div>
-        )}
+        <ReactPictureAnnotation
+          inputElement={(value, onChange, onDelete) => (
+            <CustomInput
+              value={value}
+              defaultNumber={imageAnnotationData?.viewData?.length}
+              onChange={onChange}
+              onDelete={onDelete}
+            />
+          )}
+          annotationData={
+            hasUpdated ? sortAnnotationData(imageAnnotationData.viewData) : imageAnnotationData.viewData
+          }
+          image={url}
+          onSelect={onSelect}
+          onChange={onChange}
+          width={parseIntOrDefault(imageFrameRef?.current?.offsetWidth)}
+          height={parseIntOrDefault(imageFrameRef?.current?.offsetHeight)}
+          marginWithInput={2}
+        />
       </div>
-    </>
+      {isReadOnly && <div className="container-image-Cover" style={{ ...pageSize }} />}
+
+    {!isOnImage && allowAddingNotes && (
+      <div
+        className="description-container"
+        style={{
+          height: pageSize.height,
+        }}
+      >
+        <DescriptionsList data={sortAnnotationData(imageAnnotationData?.actualData)} />
+      </div>
+    )}
+      </div>
+  </>
   );
 };
 

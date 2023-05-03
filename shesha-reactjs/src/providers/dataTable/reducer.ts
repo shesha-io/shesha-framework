@@ -2,7 +2,6 @@ import {
   DATA_TABLE_CONTEXT_INITIAL_STATE,
   DEFAULT_PAGE_SIZE_OPTIONS,
   IDataTableStateContext,
-  MIN_COLUMN_WIDTH,
 } from './contexts';
 import {
   DataTableActionEnums,
@@ -10,25 +9,20 @@ import {
   IChangeFilterOptionPayload,
   IFetchColumnsSuccessSuccessPayload,
   IRegisterConfigurableColumnsPayload,
+  ISetRowDataPayload,
 } from './actions';
 import flagsReducer from '../utils/flagsReducer';
 import {
   IColumnSorting,
-  IGetDataPayloadInternal,
-  IndexColumnDataType,
+  IGetListDataPayload,
+  IStoredFilter,
   ITableColumn,
   ITableDataInternalResponse,
   ITableFilter,
 } from './interfaces';
 import { handleActions } from 'redux-actions';
-import {
-  IConfigurableActionColumnsProps,
-  IConfigurableColumnsProps,
-  IDataColumnsProps,
-} from '../datatableColumnsConfigurator/models';
 import { getFilterOptions } from '../../components/columnItemFilter';
-import { camelcaseDotNotation } from '../../utils/string';
-import { getIncomingSelectedStoredFilterIds } from './utils';
+import { getTableDataColumn, getTableDataColumns, prepareColumn } from './utils';
 
 /** get dirty filter if exists and fallback to current filter state */
 const getDirtyFilter = (state: IDataTableStateContext): ITableFilter[] => {
@@ -47,7 +41,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
     },
     [DataTableActionEnums.ChangeSelectedRow]: (state: IDataTableStateContext, action: ReduxActions.Action<any>) => {
       const { payload } = action;
-
+      
       return {
         ...state,
         selectedRow: payload?.id === state?.selectedRow?.id ? null : payload,
@@ -156,24 +150,25 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
     [DataTableActionEnums.FetchTableData]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<IGetDataPayloadInternal>
+      action: ReduxActions.Action<IGetListDataPayload>
     ) => {
       const { payload } = action;
 
-      const selectedStoredFilterIds = state?.selectedStoredFilterIds?.length
-        ? state?.selectedStoredFilterIds
-        : payload.selectedFilterIds ?? [];
+      // const selectedStoredFilterIds = state?.selectedStoredFilterIds?.length
+      //   ? state?.selectedStoredFilterIds
+      //   : payload.selectedFilterIds ?? [];
 
-      return {
+      const newState: IDataTableStateContext = {
         ...state,
         isFetchingTableData: true,
         tableSorting: payload.sorting,
         currentPage: payload.currentPage,
         selectedPageSize: payload.pageSize,
-        parentEntityId: payload.parentEntityId,
-        selectedStoredFilterIds, // TODO: Review the saving of filters
-        // selectedStoredFilterIds: payload.selectedStoredFilterIds ?? [],
+        //parentEntityId: payload.parentEntityId,
+        //selectedStoredFilterIds, // TODO: Review the saving of filters
       };
+
+      return newState;
     },
 
     [DataTableActionEnums.FetchTableDataError]: (state: IDataTableStateContext) => {
@@ -211,78 +206,11 @@ const reducer = handleActions<IDataTableStateContext, any>(
       } = action;
 
       const cols = configurableColumns
-        .map<ITableColumn>(column => {
-          const dataProps = column as IDataColumnsProps;
-          const colProps = column as IConfigurableColumnsProps;
-          const userColumn = userConfig?.columns?.find(c => c.id === dataProps?.propertyName);
-          const colVisibility =
-            userColumn?.show === null || userColumn?.show === undefined ? column.isVisible : userColumn?.show;
-
-          switch (colProps.columnType) {
-            case 'data': {
-              const srvColumn = dataProps.propertyName
-                ? columns.find(
-                  c => camelcaseDotNotation(c.propertyName) === camelcaseDotNotation(dataProps.propertyName)
-                )
-                : {};
-
-              return {
-                id: dataProps?.propertyName,
-                columnId: column.id,
-                accessor: camelcaseDotNotation(dataProps?.propertyName),
-                propertyName: dataProps?.propertyName,
-                minWidth: column.minWidth || MIN_COLUMN_WIDTH,
-                maxWidth: column.maxWidth,
-                isEditable: colProps.isEditable,
-
-                dataType: srvColumn?.dataType as IndexColumnDataType,
-                dataFormat: srvColumn?.dataFormat,
-                isSortable: srvColumn?.isSortable,
-                isFilterable: srvColumn?.isFilterable,
-                entityReferenceTypeShortAlias: srvColumn?.entityReferenceTypeShortAlias,
-                referenceListName: srvColumn?.referenceListName,
-                referenceListModule: srvColumn?.referenceListModule,
-                allowInherited: srvColumn?.allowInherited,
-
-                caption: column.caption,
-                header: column.caption,
-                isVisible: column.isVisible,
-                allowShowHide: true,
-
-                show: colVisibility,
-              };
-            }
-            case 'action': {
-              const actionProps = column as IConfigurableActionColumnsProps;
-
-              return {
-                id: column.id,
-                columnId: column.id,
-                accessor: column.id,
-                propertyName: column.id,
-                minWidth: column.minWidth,
-                maxWidth: column.maxWidth,
-
-                dataType: 'action',
-                actionProps, // todo: review and add to interface
-
-                isSortable: false,
-                isFilterable: false,
-
-                caption: column.caption,
-                header: column.caption,
-                isVisible: column.isVisible,
-                allowShowHide: false,
-
-                show: column.isVisible,
-              };
-            }
-          }
-          return null;
-        })
+        .map<ITableColumn>(col => prepareColumn(col, columns, userConfig))     
         .filter(c => c !== null);
 
-      const configuredTableSorting = cols
+      const dataCols = getTableDataColumns(cols);
+      const configuredTableSorting = dataCols
         .filter(c => c.defaultSorting !== null && c.defaultSorting !== undefined && c.propertyName)
         .map<IColumnSorting>(c => ({ id: c.id, desc: c.defaultSorting === 1 }));
 
@@ -292,8 +220,11 @@ const reducer = handleActions<IDataTableStateContext, any>(
           : configuredTableSorting;
 
       const selectedStoredFilterIds = state?.selectedStoredFilterIds?.length
-        ? state?.selectedStoredFilterIds
-        : userConfig.selectedFilterIds ?? [];
+        ? [...state.selectedStoredFilterIds]
+        : [...userConfig?.selectedFilterIds ?? []];
+
+      if (selectedStoredFilterIds.length === 0 && state.predefinedFilters?.length > 0)
+        selectedStoredFilterIds.push(state.predefinedFilters[0].id);
 
       return {
         ...state,
@@ -320,7 +251,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
         const existingFilter = currentFilter.find(f => f.columnId === id);
         if (existingFilter) return existingFilter;
 
-        const column = state.columns.find(c => c.id === id);
+        const column = getTableDataColumn(state.columns, id);
         const filterOptions = getFilterOptions(column?.dataType);
         return {
           columnId: id,
@@ -400,23 +331,13 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
     [DataTableActionEnums.SetPredefinedFilters]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<Pick<IDataTableStateContext, 'predefinedFilters' | 'userConfigId'>>
+      action: ReduxActions.Action<IStoredFilter[]>
     ) => {
       const { payload } = action;
-      const { selectedStoredFilterIds } = state;
-      const { predefinedFilters: filters, userConfigId } = payload;
-
-      // Make sure that whenever you set the `predefinedFilters` the first one is the selected
-      // This is because the logic for displaying the title is that it should be a part of the filters
-      // So that, by default, the first filter is the selected one
-      const incomingSelectedStoredFilterIds = getIncomingSelectedStoredFilterIds(filters, userConfigId);
-
+      
       return {
         ...state,
-        predefinedFilters: filters || [],
-        selectedStoredFilterIds: selectedStoredFilterIds?.length
-          ? selectedStoredFilterIds
-          : incomingSelectedStoredFilterIds,
+        predefinedFilters: payload || [],
       };
     },
 
@@ -460,11 +381,27 @@ const reducer = handleActions<IDataTableStateContext, any>(
         exportToExcelWarning: payload,
       };
     },
+
+    [DataTableActionEnums.SetRowData]: (
+      state: IDataTableStateContext,
+      action: ReduxActions.Action<ISetRowDataPayload>
+    ) => {
+      const { payload: { rowData, rowIndex } } = action;
+      const { tableData } = state;
+
+      const newData = [...tableData];
+      newData.splice(rowIndex, 1, rowData);
+
+      return {
+        ...state,
+        tableData: newData,
+      };
+    },
   },
   DATA_TABLE_CONTEXT_INITIAL_STATE
 );
 
-export function dataTableReducer(
+export function dataTableReducerInternal(
   incomingState: IDataTableStateContext,
   action: ReduxActions.Action<any>
 ): IDataTableStateContext {
@@ -473,3 +410,16 @@ export function dataTableReducer(
 
   return newState;
 }
+
+/*
+const withTrace = <State, Payload>(initial: ReduxCompatibleReducer<State, Payload>): ReduxCompatibleReducer<State, Payload> => {
+  return (state, action) => {
+    console.log('TRACE: DT action', action);
+    return initial(state, action);
+  };
+};
+
+export const dataTableReducer = withTrace(dataTableReducerInternal);
+*/
+
+export { dataTableReducerInternal as dataTableReducer };

@@ -17,7 +17,6 @@ const toolbarReducer = handleActions<ITableViewSelectorConfiguratorStateContext,
         id: nanoid(),
         sortOrder: state.items.length,
         name: `Filter ${state.items.length + 1}`,
-        filterType: 'queryBuilder',
       };
 
       const newItems = [...state.items, itemProps];

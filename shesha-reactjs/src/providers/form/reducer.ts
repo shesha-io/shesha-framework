@@ -25,8 +25,6 @@ const reducer = handleActions<IFormStateContext, any>(
     [FormActionEnums.SetFlatComponentsAction]: (state: IFormStateContext, action: ReduxActions.Action<IFlatComponentsStructure>) => {
       const { payload } = action;
       
-      //console.log('LOG: SetFlatComponentsAction', payload);
-
       return {
         ...state,
         allComponents: payload.allComponents,
@@ -125,5 +123,14 @@ const reducer = handleActions<IFormStateContext, any>(
 
   FORM_CONTEXT_INITIAL_STATE
 );
+/*
+const withTrace = <State, Payload>(initial: ReduxCompatibleReducer<State, Payload>): ReduxCompatibleReducer<State, Payload> => {
+  return (state, action) => {
+    console.log('TRACE: action', action);
+    return initial(state, action);
+  };
+};
 
+export default withTrace(reducer);
+*/
 export default reducer;

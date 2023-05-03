@@ -6,6 +6,8 @@ export interface IColumnWidth {
   value: number;
 }
 
+export type NewRowCapturePosition = 'top' | 'bottom';
+
 export interface IColumnResizing {
   startX?: number;
   columnWidth: number;
@@ -160,15 +162,6 @@ export interface IReactTableProps extends ITableRowDragProps {
   /** Called when a user clicks on a resizing component (the right edge of a column header) */
   onResizedChange?: (columnSizes: IColumnResizing) => void;
 
-  /**
-   * column debounce delay in milliseconds
-   */
-  // resizeDebounceDelay?: number;
-
-  // rememberColumnWidths?: boolean;
-
-  tableId?: string;
-
   scrollBodyHorizontally?: boolean; // If true, specify the height, else it will default to 250px
 
   /**
@@ -185,4 +178,16 @@ export interface IReactTableProps extends ITableRowDragProps {
   containerStyle?: CSSProperties;
 
   tableStyle?: CSSProperties;
+
+  canDeleteInline?: boolean;
+  deleteAction?: (rowIndex: number, data: any) => Promise<any>;
+
+  canEditInline?: boolean;
+  updateAction?: (rowIndex: number, data: any) => Promise<any>;
+
+  canAddInline?: boolean;
+  newRowCapturePosition?: NewRowCapturePosition;
+  newRowInsertPosition?: NewRowCapturePosition;
+  createAction?: (data: any) => Promise<any>;
 }
+

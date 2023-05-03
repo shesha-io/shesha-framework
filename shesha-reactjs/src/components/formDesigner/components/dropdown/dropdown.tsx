@@ -21,6 +21,8 @@ const settingsForm = settingsFormJson as FormMarkup;
 
 const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
   type: 'dropdown',
+  isInput: true,
+  isOutput: true,
   name: 'Dropdown',
   icon: <DownSquareOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.referenceListItem,

@@ -27,7 +27,6 @@ import {
 } from './models';
 import Mustache from 'mustache';
 import {
-  ITableColumn,
   IToolboxComponent,
   IToolboxComponentGroup,
   IToolboxComponents,
@@ -371,7 +370,7 @@ export const evaluateComplexString = (expression: string, mappings: IMatchData[]
   return result;
 };
 
-interface IEvaluateComplexStringResult {
+export interface IEvaluateComplexStringResult {
   result: string;
   unevaluatedExpressions?: string[];
   success?: boolean;
@@ -1164,7 +1163,7 @@ export const filterFormData = (data: any) => {
  * @param properties
  * @returns
  */
-export const convertDotNotationPropertiesToGraphQL = (properties: string[], columns: ITableColumn[]): string => {
+export const convertDotNotationPropertiesToGraphQL = (properties: string[]): string => {
   const tree = {};
 
   const makeProp = (container: object, name: string) => {
@@ -1187,17 +1186,8 @@ export const convertDotNotationPropertiesToGraphQL = (properties: string[], colu
   };
 
   const expandedProps = [...properties];
-  // add id if missing only if any other peropties
+  // add id if missing only if there are any other properties
   if (expandedProps?.length > 0 && !expandedProps.includes('id')) expandedProps.push('id');
-
-  // special handling for entity references: expand properties list to include `id` and `_displayName`
-  const entityColumns = columns.filter(c => c.dataType === 'entity');
-  entityColumns.forEach(c => {
-    const requiredProps = [`${c.propertyName}.Id`, `${c.propertyName}._displayName`];
-    requiredProps.forEach(rp => {
-      if (!expandedProps.includes(rp)) expandedProps.push(rp);
-    });
-  });
 
   // build properties tree
   expandedProps.forEach(p => {

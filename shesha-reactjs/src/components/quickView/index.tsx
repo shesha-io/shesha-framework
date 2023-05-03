@@ -30,17 +30,17 @@ export interface IQuickViewProps {
 
 export const GenericQuickView: FC<IQuickViewProps> = (props) => {
     const { getEntityFormId } = useConfigurationItemsLoader();
-    const [ formConfig, setFormConfig ] = useState<FormIdentifier>(props.formIdentifier);
+    const [formConfig, setFormConfig] = useState<FormIdentifier>(props.formIdentifier);
 
     useEffect(() => {
         if (props.className && !formConfig)
             getEntityFormId(props.className, props.formType ?? 'Quickview', (f) => {
-setFormConfig(f);
-});
+                setFormConfig(f);
+            });
     }, [props.className, props.formType, formConfig]);
 
     return formConfig
-        ? <QuickView {...props} formIdentifier={formConfig}  />
+        ? <QuickView {...props} formIdentifier={formConfig} />
         : <Button type="link"><span><Spin size="small" /> Loading...</span></Button>;
 };
 
@@ -54,18 +54,18 @@ const QuickView: FC<Omit<IQuickViewProps, 'children' | 'formType'>> = ({
     initialFormData,
     width = 600
 }) => {
-    const [ formData, setFormData ] = useState(initialFormData);
-    const [ formTitle, setFormTitle ] = useState(displayName);
-    const [ formSettings, setFormSettings ] = useState<FormMarkupWithSettings>(null);
+    const [formData, setFormData] = useState(initialFormData);
+    const [formTitle, setFormTitle] = useState(displayName);
+    const [formSettings, setFormSettings] = useState<FormMarkupWithSettings>(null);
     const { backendUrl, httpHeaders } = useSheshaApplication();
-    const [ form ] = Form.useForm();
+    const [form] = Form.useForm();
     const { formItemLayout } = useUi();
-    const { refetch: fetchForm } = useFormConfiguration({ formId: formIdentifier,  lazy: true});
-    
+    const { refetch: fetchForm } = useFormConfiguration({ formId: formIdentifier, lazy: true });
+
     useEffect(() => {
         if (formIdentifier) {
-            fetchForm().then(response => { 
-                setFormSettings(response); 
+            fetchForm().then(response => {
+                setFormSettings(response);
             });
         }
     }, [formIdentifier]);
@@ -73,17 +73,17 @@ const QuickView: FC<Omit<IQuickViewProps, 'children' | 'formType'>> = ({
     useEffect(() => {
         if (!formData && entityId && formSettings) {
             const getUrl = getEntityUrl ?? formSettings?.formSettings?.getUrl;
-            const fetcher = getUrl 
-                ? get(getUrl, { id: entityId }, { base: backendUrl, headers: httpHeaders})
-                : entitiesGet({ id: entityId, entityType: className }, { base: backendUrl, headers: httpHeaders} );
-            
-            fetcher.then(resp => { 
-                    setFormData(resp.result);
-                    if (resp.result[displayProperty])
-                        setFormTitle(resp.result[displayProperty]);
-                })
+            const fetcher = getUrl
+                ? get(getUrl, { id: entityId }, { base: backendUrl, headers: httpHeaders })
+                : entitiesGet({ id: entityId, entityType: className }, { base: backendUrl, headers: httpHeaders });
+
+            fetcher.then(resp => {
+                setFormData(resp.result);
+                if (resp.result[displayProperty])
+                    setFormTitle(resp.result[displayProperty]);
+            })
                 .catch(reason => {
-                     notification.error({ message: <ValidationErrors error={reason} renderMode="raw" /> }); 
+                    notification.error({ message: <ValidationErrors error={reason} renderMode="raw" /> });
                 });
         }
     }, [entityId, getEntityUrl, formSettings]);
@@ -91,7 +91,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'children' | 'formType'>> = ({
     const formContent = formSettings && formData
         ? <ConfigurableForm mode="readonly" {...formItemLayout} markup={formSettings} form={form} initialValues={formData} skipFetchData={true} />
         : <></>
-    ;
+        ;
 
     return (
         <Popover content={<div style={{ width }}>{formContent}</div>} title={formTitle ?? "Quickview not configured properly"} >

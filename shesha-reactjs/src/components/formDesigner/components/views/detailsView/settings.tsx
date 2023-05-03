@@ -3,7 +3,7 @@ import { Button, Form, Input } from 'antd';
 import { SectionSeparator } from '../../../..';
 import { IDetailsViewProps } from './models';
 import { CodeEditor } from '../../codeEditor/codeEditor';
-import { ToolbarSettingsModal } from '../../dataTable/toolbar/toolbarSettingsModal';
+import { ToolbarSettingsModal } from '../../../../../designer-components/dataTable/toolbar/toolbarSettingsModal';
 
 export interface IDetailsPageSettingsProps {
   readOnly?: boolean;

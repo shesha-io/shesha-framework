@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import { FC } from 'react';
-import useThunkReducer from '../../../hooks/thunkReducer';
-import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '../../../interfaces/gql';
+import useThunkReducer from 'hooks/thunkReducer';
+import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from 'interfaces/gql';
 import { IEditorBridge, ISettingsEditorContext, ISettingsEditorStateContext, SettingsEditorContext, SETTINGS_EDITOR_STATE_CONTEXT_INITIAL_STATE } from './contexts';
 import { settingsEditorReducer } from './reducer';
 import {
@@ -13,12 +13,12 @@ import {
     selectSettingAction,
     setEditorBridgeAction,
     setEditorModeAction } from './actions';
-import * as RestfulShesha from '../../../utils/fetchers';
-import { GENERIC_ENTITIES_ENDPOINT } from '../../../constants';
-import { useSheshaApplication } from '../../..';
+import * as RestfulShesha from 'utils/fetchers';
+import { GENERIC_ENTITIES_ENDPOINT } from 'shesha-constants';
+import { useSheshaApplication } from 'providers';
 import { FrontEndApplicationDto, IFrontEndApplication, ISettingConfiguration, ISettingIdentifier, SettingValue } from './models';
-import { settingsGetValue, settingsUpdateValue } from '../../../apis/settings';
-import { ConfigurationItemVersionStatus } from '../../../utils/configurationFramework/models';
+import { settingsGetValue, settingsUpdateValue } from 'apis/settings';
+import { ConfigurationItemVersionStatus } from 'utils/configurationFramework/models';
 
 export interface ISettingsEditorProviderProps {
 

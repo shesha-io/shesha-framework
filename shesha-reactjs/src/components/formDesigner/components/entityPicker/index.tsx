@@ -8,14 +8,15 @@ import { EntityPicker } from '../../..';
 import { Alert } from 'antd';
 import { useForm } from '../../../../providers';
 import { DataTypes } from '../../../../interfaces/dataTypes';
-import { IConfigurableColumnsBase } from '../../../../providers/datatableColumnsConfigurator/models';
+import { IConfigurableColumnsProps } from '../../../../providers/datatableColumnsConfigurator/models';
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { ITableViewProps } from '../../../../providers/tableViewSelectorConfigurator/models';
 import { entityPickerSettings } from './settingsForm';
+import { migrateDynamicExpression } from 'designer-components/_common-migrations/migrateUseExpression';
 
 export interface IEntityPickerComponentProps extends IConfigurableFormComponent {
   placeholder?: string;
-  items?: IConfigurableColumnsBase[];
+  items?: IConfigurableColumnsProps[];
   hideBorder?: boolean;
   disabled?: boolean;
   useRawValues?: boolean;
@@ -37,6 +38,8 @@ export interface IEntityPickerComponentProps extends IConfigurableFormComponent 
 
 const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
   type: 'entityPicker',
+  isInput: true,
+  isOutput: true,
   name: 'Entity Picker',
   icon: <EllipsisOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
@@ -63,7 +66,6 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       {
         defaultSelected: true,
         expression: { ...filters },
-        filterType: 'queryBuilder',
         id: 'uZ4sjEhzO7joxO6kUvwdb',
         name: 'entity Picker',
         selected: true,
@@ -87,13 +89,13 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
           addNewRecordsProps={
             model?.allowNewRecord
               ? {
-                  modalFormId: model?.modalFormId,
-                  modalTitle: model?.modalTitle,
-                  showModalFooter: model?.showModalFooter,
-                  submitHttpVerb: model?.submitHttpVerb,
-                  onSuccessRedirectUrl: model?.onSuccessRedirectUrl,
-                  modalWidth: customWidth ? `${customWidth}${widthUnits}` : modalWidth,
-                }
+                modalFormId: model?.modalFormId,
+                modalTitle: model?.modalTitle,
+                showModalFooter: model?.showModalFooter,
+                submitHttpVerb: model?.submitHttpVerb,
+                onSuccessRedirectUrl: model?.onSuccessRedirectUrl,
+                modalWidth: customWidth ? `${customWidth}${widthUnits}` : modalWidth,
+              }
               : undefined
           }
           name={model?.name}
@@ -115,8 +117,20 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       })
       .add<IEntityPickerComponentProps>(1, migrateV0toV1)
       .add<IEntityPickerComponentProps>(2, prev => {
- return { ...prev, useRawValues: true }; 
-}),
+        return { ...prev, useRawValues: true };
+      })
+      .add<IEntityPickerComponentProps>(3, prev => {
+        const result = {...prev};
+        const useExpression = Boolean(result['useExpression']);
+        delete result['useExpression'];
+    
+        if (useExpression){
+          const migratedExpression = migrateDynamicExpression(prev.filters);
+          result.filters = migratedExpression;
+        }
+    
+        return result;
+      }),
   settingsFormMarkup: entityPickerSettings,
   validateSettings: model => validateConfigurableComponentSettings(entityPickerSettings, model),
 };

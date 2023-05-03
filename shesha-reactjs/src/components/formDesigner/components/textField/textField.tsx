@@ -28,6 +28,8 @@ const renderInput = (type: TextType) => {
 
 const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
   type: 'textField',
+  isInput: true,
+  isOutput: true,
   name: 'Text field',
   icon: <CodeOutlined />,
   dataTypeSupported: ({ dataType, dataFormat }) =>

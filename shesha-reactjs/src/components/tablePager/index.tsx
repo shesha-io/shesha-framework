@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { useMediaQuery } from 'react-responsive';
-import { DESKTOP_SIZE_QUERY, PHONE_SIZE_QUERY } from '../../constants/media-queries';
+import { DESKTOP_SIZE_QUERY, PHONE_SIZE_QUERY } from '../../shesha-constants/media-queries';
 import { useDataTable } from '../../providers';
 import TablePagerBase from '../tablePagerBase';
 

@@ -53,7 +53,11 @@ const ChildDataTableComponent: IToolboxComponent<IChildDataTableProps> = {
     if (isComponentHidden(model)) return null;
 
     return (
-      <DataTableProvider entityType={entityType} parentEntityId={currentParentEntityId || evaluatedParentEntityId}>
+      <DataTableProvider 
+        sourceType='Entity'
+        entityType={entityType} 
+        parentEntityId={currentParentEntityId || evaluatedParentEntityId}
+      >
         <ChildTable {...tableProps} tableRef={tableRef} />
       </DataTableProvider>
     );

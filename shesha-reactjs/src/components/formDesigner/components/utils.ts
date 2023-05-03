@@ -93,6 +93,9 @@ export const customEventHandler = <T = any>({
     onBlur: event => onCustomEvent(event, 'onBlurCustom'),
     onChange: event => onCustomEvent(event, 'onChangeCustom'),
     onFocus: event => onCustomEvent(event, 'onFocusCustom'),
+    onClick: event => {
+      event.stopPropagation();
+    }
   };
 };
 

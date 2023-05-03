@@ -7,9 +7,9 @@ import { MenuTheme } from 'antd/lib/menu/MenuContext';
 import { useSidebarMenuDefaults } from '../../providers/sidebarMenu';
 import ConfigurableSidebarMenu from '../configurableSidebarMenu';
 import { Show, useLocalStorage, useTheme } from '../..';
-import { SIDEBAR_MENU_NAME } from '../../constants';
+import { SIDEBAR_MENU_NAME } from '../../shesha-constants';
 import { useMediaQuery } from 'react-responsive';
-import { TABLET_MD_SIZE_QUERY } from '../../constants/media-queries';
+import { TABLET_MD_SIZE_QUERY } from '../../shesha-constants/media-queries';
 
 const { Header, Content, Sider } = Layout;
 

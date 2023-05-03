@@ -12,6 +12,11 @@ import { IPropertyMetadata } from './metadata';
 import { ConfigurableFormInstance } from '../providers/form/contexts';
 import { Migrator, MigratorFluent } from '../utils/fluentMigrator/migrator';
 
+export interface ISettingsFormInstance {
+  submit: () => void;
+  reset: () => void;
+}
+
 export interface ISettingsFormFactoryArgs<TModel = IConfigurableFormComponent> {
   readOnly: boolean;
   model: TModel;
@@ -19,6 +24,7 @@ export interface ISettingsFormFactoryArgs<TModel = IConfigurableFormComponent> {
   onCancel: () => void;
   onValuesChange?: (changedValues: any, values: TModel) => void;
   toolboxComponent: IToolboxComponent;
+  formRef?: MutableRefObject<ISettingsFormInstance | null>;
 }
 
 export type ISettingsFormFactory<TModel = IConfigurableFormComponent> = (
@@ -30,6 +36,14 @@ export interface IToolboxComponent<T extends IConfigurableFormComponent = any> {
    * Type of the component. Must be unique in the project.
    */
   type: string;
+  /**
+   * If true, indicates that the component has data bindings and can be used as an input. Note: not all form components can be bound to the model (layout components etc.)
+   */
+  isInput?: boolean;
+  /**
+   * If true, indicates that the component has data bindings and can be used as an output.
+   */
+   isOutput?: boolean;
   /**
    * Component name. This name is displayed on the components toolbox
    */
@@ -52,8 +66,7 @@ export interface IToolboxComponent<T extends IConfigurableFormComponent = any> {
     componentRef: MutableRefObject<any>,
     form: FormInstance<any>,
     children?: JSX.Element
-  ) => //settings: AuthorizationSettingsDto
-  ReactNode;
+  ) => ReactNode;
   /**
    * @deprecated - use `migrator` instead
    * Fills the component properties with some default values. Fired when the user drops a component to the form
@@ -135,6 +148,11 @@ export interface IAsyncValidationError {
   message: string;
 }
 
-export interface IFormValidationErrors {}
+export interface IFormValidationErrors { }
 
 export { type ConfigurableFormInstance };
+
+export interface IEditorAdapter<T extends IConfigurableFormComponent = IConfigurableFormComponent> {
+  fillSettings: (customSettings: Partial<T>) => T;
+  settingsFormFactory?: ISettingsFormFactory<T>;
+};

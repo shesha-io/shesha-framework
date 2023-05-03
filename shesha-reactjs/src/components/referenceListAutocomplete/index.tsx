@@ -3,7 +3,7 @@ import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { FC } from 'react';
 import { useGet } from 'restful-react';
 import { useDebouncedCallback } from 'use-debounce';
-import { GENERIC_ENTITIES_ENDPOINT, LEGACY_REFERENCE_LISTS_MODULE_NAME } from '../../constants';
+import { GENERIC_ENTITIES_ENDPOINT, LEGACY_REFERENCE_LISTS_MODULE_NAME } from '../../shesha-constants';
 import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '../../interfaces/gql';
 import { IReferenceListIdentifier } from '../../providers/referenceListDispatcher/models';
 import HelpTextPopover from '../helpTextPopover';

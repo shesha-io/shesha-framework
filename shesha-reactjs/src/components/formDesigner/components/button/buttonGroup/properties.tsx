@@ -55,7 +55,6 @@ export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = () => {
     return (
       <ConfigurableForm
         formRef={formRef}
-        layout="vertical"
         labelCol={{ span: 24 }}
         wrapperCol={{ span: 24 }}
         mode={ readOnly ? 'readonly' : 'edit' }
