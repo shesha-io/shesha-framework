@@ -42,7 +42,7 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
   }, [loading]);
 
   const updatedComponents = useMemo(() => {
-    return upgradeComponentsTree(designerComponents, components);
+    return upgradeComponentsTree(designerComponents, formSettings, components);
   }, [components]);
 
   const persistedFormProps: IPersistedFormProps = { id, module, versionNo, description, versionStatus, name };

@@ -168,6 +168,13 @@
       "label": "Files"
     },
     {
+      "id": "af3d9a3f-f47e-48ae-b4c3-f5cc36e534d9",
+      "type": "checkbox",
+      "name": "useSync",
+      "parentId": "root",
+      "label": "Synchronous upload"
+    },
+    {
       "id": "417ee22e-a49d-44f2-a1c7-fef32ec87503",
       "type": "textField",
       "name": "ownerId",
