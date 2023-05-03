@@ -87,7 +87,6 @@ namespace Shesha.Metadata
                 : null;
             var epc = entityConfig?[property.Name];
 
-
             var dataType = GetDataType(property);
             var cascadeAttribute = property.GetAttribute<CascadeUpdateRulesAttribute>()
                 ?? property.PropertyType.GetCustomAttribute<CascadeUpdateRulesAttribute>();
@@ -131,6 +130,8 @@ namespace Shesha.Metadata
                 IsFrameworkRelated = IsFrameworkRelatedProperty(property),
                 //ConfigurableByUser = property.GetAttribute<BindableAttribute>()?.Bindable ?? true,
                 //GroupName = ReflectionHelper.get(declaredProperty ?? property),
+                IsFilterable = epc != null && epc.IsMapped,
+                IsSortable = epc != null && epc.IsMapped,
             };
             if (!context.ProcessedTypes.Contains(property.PropertyType) && property.PropertyType.IsNotAnyEntityAndSystemType())
             {
