@@ -1,6 +1,6 @@
 import { Button, Input, Select } from 'antd';
 import { DefaultOptionType } from 'antd/lib/select';
-import { IConfigurableFormComponent, IToolboxComponent } from 'interfaces';
+import { DEFAULT_FORM_SETTINGS, IConfigurableFormComponent, IToolboxComponent } from 'interfaces';
 import { nanoid } from 'nanoid';
 import { useFormDesignerComponents } from 'providers/form/hooks';
 import { upgradeComponent } from 'providers/form/utils';
@@ -75,7 +75,7 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
         if (toolboxComponent.initModel)
             componentModel = toolboxComponent.initModel(componentModel);
         if (toolboxComponent.migrator) {
-            componentModel = upgradeComponent(componentModel, toolboxComponent, { allComponents: {}, componentRelations: {} });
+            componentModel = upgradeComponent(componentModel, toolboxComponent, DEFAULT_FORM_SETTINGS, { allComponents: {}, componentRelations: {} });
         }
         return componentModel;
     };
