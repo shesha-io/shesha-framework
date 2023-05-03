@@ -67,3 +67,11 @@ export const PersonEdit = addStory(DesignerTemplate, {
     version: 7
   }
 });
+
+export const PersonDetails = addStory(DesignerTemplate, {
+  formId: {
+    name: 'person-details',
+    module: 'Test Module',
+    version: 1
+  }
+});

@@ -81,6 +81,15 @@ export interface IColumnSorting {
   readonly desc: boolean;
 }
 
+export interface IGetDataFromUrlPayload {
+  readonly maxResultCount: number;
+  readonly skipCount: number;
+  readonly properties: string;
+  readonly sorting?: string;
+  readonly filter?: string;
+  readonly quickSearch?: string;
+}
+
 export interface IGetDataFromBackendPayload {
   readonly entityType: string;
   readonly maxResultCount: number;

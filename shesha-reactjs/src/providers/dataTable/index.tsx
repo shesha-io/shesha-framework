@@ -57,6 +57,7 @@ import { withInMemoryRepository } from './repository/inMemoryRepository';
 import { advancedFilter2JsonLogic, getTableDataColumns } from './utils';
 import { useLocalStorage } from 'hooks';
 import { withNullRepository } from './repository/nullRepository';
+import { withUrlRepository } from './repository/urlRepository';
 
 interface IDataTableProviderBaseProps {
   /** Configurable columns. Is used in pair with entityType  */
@@ -112,9 +113,10 @@ const getTableProviderComponent = (props: IDataTableProviderProps): FC<IDataTabl
       const { value } = props as IHasFormDataSourceConfig;
       return withInMemoryRepository(DataTableProviderWithRepository, { value });
     };
-    // todo: check `url` and implement
-    // case 'Url': return null; 
-    default: {
+    case 'Url': 
+      const { getDataPath } = props as IHasEntityDataSourceConfig;
+      return withUrlRepository(DataTableProviderWithRepository, { getListUrl: getDataPath });
+  default: {
       return withNullRepository(DataTableProviderWithRepository, { });
     }
   }
