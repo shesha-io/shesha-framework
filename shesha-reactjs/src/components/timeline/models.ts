@@ -22,4 +22,5 @@ export interface ITimelineProps extends IConfigurableFormComponent, ICommonConta
   dataSource?: 'form' | 'api';
   customApiUrl?: string;
   apiSource?: 'entity' | 'custom';
+  filters?: object;
 }

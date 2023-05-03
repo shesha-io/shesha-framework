@@ -18,6 +18,7 @@ import _, { isEmpty } from 'lodash';
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
 import { useDeepCompareEffect } from 'react-use';
+import { migrateV2toV3 } from './migrations/migrate-v3';
 
 export interface IChildTableComponentProps extends IChildTableSettingsProps, IConfigurableFormComponent {
   components?: IConfigurableFormComponent[];
@@ -185,10 +186,6 @@ const ChildTableComponent: IToolboxComponent<IChildTableComponentProps> = {
     );
   },
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
-  initModel: model => ({
-    ...model,
-    isNotWrapped: true,
-  }),
   migrator: m =>
     m
       .add<IChildTableComponentProps>(0, prev => {
@@ -199,7 +196,8 @@ const ChildTableComponent: IToolboxComponent<IChildTableComponentProps> = {
         };
       })
       .add<IChildTableComponentProps>(1, migrateV0toV1)
-      .add<IChildTableComponentProps>(2, migrateV1toV2),
+      .add<IChildTableComponentProps>(2, migrateV1toV2)
+      .add<IChildTableComponentProps>(3, migrateV2toV3),
 };
 
 export default ChildTableComponent;

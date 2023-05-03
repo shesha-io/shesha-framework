@@ -23,6 +23,7 @@ import { isEmpty } from 'lodash';
 import camelCaseKeys from 'camelcase-keys';
 import { evaluateDynamicFilters } from '../../providers/dataTable/utils';
 import { IAutocompleteComponentProps } from './interfaces';
+import { migrateDynamicExpression } from 'designer-components/_common-migrations/migrateUseExpression';
 
 interface IQueryParams {
   // tslint:disable-next-line:typedef-whitespace
@@ -178,14 +179,23 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   },
   settingsFormMarkup: settingsForm,
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
-  initModel: model => {
-    const customProps: IAutocompleteComponentProps = {
-      ...model,
-      dataSourceType: 'entitiesList',
-      useRawValues: false,
-    };
-    return customProps;
-  },
+  migrator: m => m.add<IAutocompleteComponentProps>(0, prev => ({
+    ...prev,
+    dataSourceType: prev['dataSourceType'] ?? 'entitiesList',
+    useRawValues: prev['useRawValues'] ?? false,
+  }))
+  .add<IAutocompleteComponentProps>(1, prev => {
+    const result = {...prev};
+    const useExpression = Boolean(result['useExpression']);
+    delete result['useExpression'];
+
+    if (useExpression){
+      const migratedExpression = migrateDynamicExpression(prev.filter);
+      result.filter = migratedExpression;
+    }
+
+    return result;
+  }),
   linkToModelMetadata: (model, metadata): IAutocompleteComponentProps => {
     return {
       ...model,

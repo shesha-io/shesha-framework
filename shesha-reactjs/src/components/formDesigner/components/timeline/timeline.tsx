@@ -11,6 +11,7 @@ import TimelineSettings from './settings';
 import { evaluateValue } from '../../../../providers/form/utils';
 import { ShaTimeline } from '../../../timeline/index';
 import { ITimelineProps } from '../../../timeline/models';
+import { migrateDynamicExpression } from 'designer-components/_common-migrations/migrateUseExpression';
 
 const TimelineComponent: IToolboxComponent<ITimelineProps> = {
   type: 'timeline',
@@ -40,6 +41,22 @@ const TimelineComponent: IToolboxComponent<ITimelineProps> = {
       />
     );
   },
+  migrator: m =>
+    m.add<ITimelineProps>(0, prev => {
+      const result: ITimelineProps = {
+        ...prev,
+        entityType: prev['entityType'],
+      };
+      const useExpression = Boolean(result['useExpression']);
+      delete result['useExpression'];
+  
+      if (useExpression){
+        const migratedExpression = migrateDynamicExpression(prev['filters'] ?? {});
+        result.filters = migratedExpression;
+      }
+  
+      return result;
+    }),
 };
 
 export default TimelineComponent;

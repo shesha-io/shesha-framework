@@ -12,6 +12,7 @@ import { IConfigurableColumnsProps } from '../../../../providers/datatableColumn
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { ITableViewProps } from '../../../../providers/tableViewSelectorConfigurator/models';
 import { entityPickerSettings } from './settingsForm';
+import { migrateDynamicExpression } from 'designer-components/_common-migrations/migrateUseExpression';
 
 export interface IEntityPickerComponentProps extends IConfigurableFormComponent {
   placeholder?: string;
@@ -88,13 +89,13 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
           addNewRecordsProps={
             model?.allowNewRecord
               ? {
-                  modalFormId: model?.modalFormId,
-                  modalTitle: model?.modalTitle,
-                  showModalFooter: model?.showModalFooter,
-                  submitHttpVerb: model?.submitHttpVerb,
-                  onSuccessRedirectUrl: model?.onSuccessRedirectUrl,
-                  modalWidth: customWidth ? `${customWidth}${widthUnits}` : modalWidth,
-                }
+                modalFormId: model?.modalFormId,
+                modalTitle: model?.modalTitle,
+                showModalFooter: model?.showModalFooter,
+                submitHttpVerb: model?.submitHttpVerb,
+                onSuccessRedirectUrl: model?.onSuccessRedirectUrl,
+                modalWidth: customWidth ? `${customWidth}${widthUnits}` : modalWidth,
+              }
               : undefined
           }
           name={model?.name}
@@ -116,8 +117,20 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       })
       .add<IEntityPickerComponentProps>(1, migrateV0toV1)
       .add<IEntityPickerComponentProps>(2, prev => {
- return { ...prev, useRawValues: true }; 
-}),
+        return { ...prev, useRawValues: true };
+      })
+      .add<IEntityPickerComponentProps>(3, prev => {
+        const result = {...prev};
+        const useExpression = Boolean(result['useExpression']);
+        delete result['useExpression'];
+    
+        if (useExpression){
+          const migratedExpression = migrateDynamicExpression(prev.filters);
+          result.filters = migratedExpression;
+        }
+    
+        return result;
+      }),
   settingsFormMarkup: entityPickerSettings,
   validateSettings: model => validateConfigurableComponentSettings(entityPickerSettings, model),
 };

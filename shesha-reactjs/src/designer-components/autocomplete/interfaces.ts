@@ -20,7 +20,7 @@ export interface IAutocompleteComponentProps extends IConfigurableFormComponent 
     queryParams?: IQueryParamProp[];
     keyPropName?: string;
     valuePropName?: string;
-    filter?: string;
+    filter?: object;
     disableSearch?: boolean;
     placeholder?: string;
     quickviewEnabled?: boolean;

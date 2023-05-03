@@ -2,7 +2,7 @@ import React, { FC, MutableRefObject } from 'react';
 import { IToolboxComponent } from '../../../interfaces';
 import { SelectOutlined } from '@ant-design/icons';
 import TableViewSelectorSettings from './tableViewSelectorSettings';
-import { ITableViewSelectorProps } from './models';
+import { ITableViewSelectorComponentProps } from './models';
 import { useForm } from '../../..';
 import { useDataTableStore, useGlobalState } from '../../../providers';
 import { evaluateDynamicFilters } from '../../../providers/dataTable/utils';
@@ -11,26 +11,31 @@ import _ from 'lodash';
 import { Alert } from 'antd';
 import { useDeepCompareEffect } from 'react-use';
 import TableViewSelectorRenderer from '../../../components/tableViewSelectorRenderer';
+import { migrateFilterMustacheExpressions } from 'designer-components/_common-migrations/migrateUseExpression';
 
-const TableViewSelectorComponent: IToolboxComponent<ITableViewSelectorProps> = {
+const TableViewSelectorComponent: IToolboxComponent<ITableViewSelectorComponentProps> = {
   type: 'tableViewSelector',
   name: 'Table view selector',
   icon: <SelectOutlined />,
-  factory: (model: ITableViewSelectorProps, componentRef: MutableRefObject<any>) => {
-    return <TableViewSelector componentRef={componentRef} {...model} />;
+  factory: (model: ITableViewSelectorComponentProps, componentRef: MutableRefObject<any>) => {
+    return <TableViewSelector {...model} componentRef={componentRef}/>;
   },
-  initModel: (model: ITableViewSelectorProps) => {
+  migrator: m => m.add<ITableViewSelectorComponentProps>(0, prev => {
     return {
-      ...model,
-      title: 'Title',
-      filters: [],
+      ...prev,
+      title: prev['title'] ?? 'Title',
+      filters: prev['filters'] ?? [],
+      componentRef: prev['componentRef'],
     };
-  },
+  })
+  .add(1, prev => (
+    {...prev, filters: prev.filters.map(filter => migrateFilterMustacheExpressions(filter))}
+  )),
   settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
     return (
       <TableViewSelectorSettings
         readOnly={readOnly}
-        model={model as ITableViewSelectorProps}
+        model={model as ITableViewSelectorComponentProps}
         onSave={onSave}
         onCancel={onCancel}
         onValuesChange={onValuesChange}
@@ -38,6 +43,10 @@ const TableViewSelectorComponent: IToolboxComponent<ITableViewSelectorProps> = {
     );
   },
 };
+
+interface ITableViewSelectorProps extends ITableViewSelectorComponentProps {
+  componentRef: MutableRefObject<any>;
+}
 
 export const TableViewSelector: FC<ITableViewSelectorProps> = ({ filters, componentRef, persistSelectedFilters }) => {
   const {

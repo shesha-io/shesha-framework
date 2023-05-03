@@ -1,21 +1,21 @@
 import React from 'react';
 import { Form } from 'antd';
-import { ITableViewSelectorProps } from './models';
+import { ITableViewSelectorComponentProps } from './models';
 import TableViewSelectorSettingsModal from './tableViewSelectorSettingsModal';
 import { SectionSeparator } from '../../..';
 
 export interface ITableViewSelectorSettingsProps {
   readOnly: boolean;
-  model: ITableViewSelectorProps;
-  onSave: (model: ITableViewSelectorProps) => void;
+  model: ITableViewSelectorComponentProps;
+  onSave: (model: ITableViewSelectorComponentProps) => void;
   onCancel: () => void;
-  onValuesChange?: (changedValues: any, values: ITableViewSelectorProps) => void;
+  onValuesChange?: (changedValues: any, values: ITableViewSelectorComponentProps) => void;
 }
 
 function TableViewSelectorSettings(props: ITableViewSelectorSettingsProps) {
   const [form] = Form.useForm();
 
-  const handleValuesChange = (changedValues: any, values: ITableViewSelectorProps) => {
+  const handleValuesChange = (changedValues: any, values: ITableViewSelectorComponentProps) => {
     if (props.onValuesChange) {
       props.onValuesChange(changedValues, values);
     }
