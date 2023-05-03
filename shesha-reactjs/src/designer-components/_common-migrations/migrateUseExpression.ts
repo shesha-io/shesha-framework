@@ -54,7 +54,7 @@ export const migrateDynamicExpression = (expression: any): object => {
             if (argValue && typeof(argValue) === 'string' && (argValue as string).includes('{{')){
                 return {
                     handled: true,
-                    value: { evaluate: [ { expression: argValue, type: 'text' } ] },
+                    value: { evaluate: [ { expression: argValue } ] },
                 };
             }
             return {

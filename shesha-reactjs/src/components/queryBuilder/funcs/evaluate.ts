@@ -4,7 +4,7 @@ import { IEvaluateNode, IEvaluateNodeArgs } from 'utils/jsonLogic';
 const args2JsonLogic: JsonLogicFormatFunc = (funcArgs: TypedMap<JsonLogicValue>): JsonLogicTree => {
     const node: IEvaluateNode = {
         evaluate: [
-            { expression: funcArgs.expression, type: 'string' }
+            { expression: funcArgs.expression }
         ]
     };
 
@@ -18,7 +18,7 @@ const jsonLogic2Args: JsonLogicImportFunc = (val): RuleValue[] => {
 
     const args: IEvaluateNodeArgs = Array.isArray(typedNode.evaluate) && typedNode.evaluate.length === 1
         ? typedNode.evaluate[0] as IEvaluateNodeArgs
-        : { expression: null, type: null };
+        : { expression: null };
 
     return [args.expression];
 };

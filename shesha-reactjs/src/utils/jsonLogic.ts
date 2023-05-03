@@ -114,7 +114,6 @@ export const convertJsonLogicNode = (jsonLogic: object, options: IJsonLogicConve
 
 export interface IEvaluateNodeArgs {
     expression: string;
-    type: string;
 };
 
 export interface IEvaluateNode {
