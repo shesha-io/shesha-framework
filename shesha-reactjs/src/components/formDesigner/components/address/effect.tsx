@@ -6,7 +6,7 @@ interface IProps {
 
 const AddressEffect: FC<IProps> = ({ children, externalApiKey }) => {
   useEffect(() => {
-    if (externalApiKey) {
+    if (externalApiKey && !window.google) {
       const script = document.createElement('script');
 
       script.src = `https://maps.googleapis.com/maps/api/js?key=${externalApiKey}&v=3.exp&libraries=geometry,drawing,places`;
