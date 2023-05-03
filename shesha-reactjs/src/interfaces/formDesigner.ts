@@ -4,6 +4,7 @@ import {
   IFormComponentContainer,
   FormMarkup,
   IFlatComponentsStructure,
+  IFormSettings,
 } from '../providers/form/models';
 import { FormInstance } from 'antd';
 import { InternalNamePath } from 'rc-field-form/lib/interface';
@@ -111,6 +112,7 @@ export interface IToolboxComponent<T extends IConfigurableFormComponent = any> {
 }
 
 export interface SettingsMigrationContext {
+  formSettings?: IFormSettings;
   flatStructure: IFlatComponentsStructure;
   componentId: string;
 }

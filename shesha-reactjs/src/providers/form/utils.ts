@@ -113,7 +113,11 @@ export const componentsTreeToFlatStructure = (
   return result;
 };
 
-export const upgradeComponents = (toolboxComponents: IToolboxComponents, flatStructure: IFlatComponentsStructure) => {
+export const upgradeComponents = (
+  toolboxComponents: IToolboxComponents,
+  formSettings: IFormSettings,
+  flatStructure: IFlatComponentsStructure
+) => {
   const { allComponents } = flatStructure;
   for (const key in allComponents) {
     if (allComponents.hasOwnProperty(key)) {
@@ -121,7 +125,7 @@ export const upgradeComponents = (toolboxComponents: IToolboxComponents, flatStr
 
       const componentDefinition = toolboxComponents[component.type];
       if (componentDefinition) {
-        allComponents[key] = upgradeComponent(component, componentDefinition, flatStructure);
+        allComponents[key] = upgradeComponent(component, componentDefinition, formSettings, flatStructure);
       }
     }
   }
@@ -129,16 +133,18 @@ export const upgradeComponents = (toolboxComponents: IToolboxComponents, flatStr
 
 export const upgradeComponentsTree = (
   toolboxComponents: IToolboxComponents,
+  formSettings: IFormSettings,
   components: IConfigurableFormComponent[]
 ): IConfigurableFormComponent[] => {
   const flatStructure = componentsTreeToFlatStructure(toolboxComponents, components);
-  upgradeComponents(toolboxComponents, flatStructure);
+  upgradeComponents(toolboxComponents, formSettings, flatStructure);
   return componentsFlatStructureToTree(toolboxComponents, flatStructure);
 };
 
 export const upgradeComponent = (
   componentModel: IConfigurableFormComponent,
   definition: IToolboxComponent,
+  formSettings: IFormSettings,
   flatStructure: IFlatComponentsStructure
 ) => {
   if (!definition.migrator) return componentModel;
@@ -146,7 +152,7 @@ export const upgradeComponent = (
   const migrator = new Migrator<IConfigurableFormComponent, IConfigurableFormComponent>();
   const fluent = definition.migrator(migrator);
   if (componentModel.version === undefined) componentModel.version = -1;
-  const model = fluent.migrator.upgrade(componentModel, { flatStructure, componentId: componentModel.id });
+  const model = fluent.migrator.upgrade(componentModel, {formSettings, flatStructure, componentId: componentModel.id });
   return model;
 };
 

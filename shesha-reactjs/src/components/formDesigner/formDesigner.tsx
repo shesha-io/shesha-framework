@@ -25,7 +25,7 @@ export const FormDesigner: FC<IFormDesignerProps> = ({ formId }) => {
 
           if (formStore.loaded && formStore.markup)
             return (
-              <FormMarkupConverter markup={formStore.markup}>
+              <FormMarkupConverter markup={formStore.markup} formSettings={formStore.formSettings}>
                 {flatComponents => (
                   <FormDesignerProvider
                     flatComponents={flatComponents}
