@@ -32,7 +32,7 @@ module.exports = {
   parserOptions: {
     project: 'tsconfig.json',
     sourceType: 'module',
-    // tsconfigRootDir: __dirname,
+    tsconfigRootDir: __dirname,
   },
   plugins: ['eslint-plugin-jsdoc', '@typescript-eslint', '@typescript-eslint/tslint'],
   root: true,
