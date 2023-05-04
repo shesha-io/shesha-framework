@@ -9,7 +9,8 @@
   .sha-table {
     border-spacing: 0;
     border: 1px solid #ddd;
-    width: 100%;
+    display: inline-block;
+    min-width: 100%;
 
     .thead {
       /* These styles are required for a scrollable body to align with the header properly */
@@ -18,11 +19,8 @@
     }
 
     .tbody {
-      /* These styles are required for a scrollable table body */
-      /* overflow-y: scroll;
-      height: 250px; */
       overflow-x: hidden;
-
+      
       .sha-table-empty {
         display: flex;
         height: 250px;
