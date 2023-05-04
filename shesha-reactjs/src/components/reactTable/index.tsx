@@ -203,16 +203,16 @@ const ReactTable: FC<IReactTableProps> = ({
           },
           ...localColumns,
         ]);
-      }
-      useInstanceBeforeDimensions?.push(({ headerGroups: localHeaderGroups }) => {
-        if (Array.isArray(localHeaderGroups)) {
-          // fix the parent group of the selection button to not be resizable
-          const selectionGroupHeader = localHeaderGroups[0]?.headers[0];
-          if (selectionGroupHeader) {
-            selectionGroupHeader.canResize = false;
+        useInstanceBeforeDimensions?.push(({ headerGroups: localHeaderGroups }) => {
+          if (Array.isArray(localHeaderGroups)) {
+            // fix the parent group of the selection button to not be resizable
+            const selectionGroupHeader = localHeaderGroups[0]?.headers[0];
+            if (selectionGroupHeader) {
+              selectionGroupHeader.canResize = false;
+            }
           }
-        }
-      });
+        });
+      }
     }
   );
 
@@ -325,7 +325,7 @@ const ReactTable: FC<IReactTableProps> = ({
                 })}
               </div>
             ))}
-          { canAddInline && newRowCapturePosition === 'top' && (renderNewRowEditor()) }
+          {canAddInline && newRowCapturePosition === 'top' && (renderNewRowEditor())}
           <ConditionalWrap
             condition={allowRowDragAndDrop}
             wrap={children => (
@@ -377,7 +377,7 @@ const ReactTable: FC<IReactTableProps> = ({
                 );
               })}
             </div>
-            { canAddInline && newRowCapturePosition === 'bottom' && (renderNewRowEditor()) }
+            {canAddInline && newRowCapturePosition === 'bottom' && (renderNewRowEditor())}
           </ConditionalWrap>
         </div>
       </div>
