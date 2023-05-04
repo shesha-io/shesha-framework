@@ -103,26 +103,33 @@ export const entityPickerSettings = new DesignerToolbarSettings()
     showFillPropsButton: false,
     settingsValidationErrors: [],
   })
-  .addSectionSeparator({
-    id: '14413162-429e-451c-b3e6-b3f0ab6d7b09',
-    name: 'sectionFilters',
-    parentId: 'root',
-    label: 'Filters',
-  })
-  .addQueryBuilder({
-    id: 'n4enebtmhFgvkP5ukQK1f',
+  .addContainer({
+    id: nanoid(),
     name: 'filters',
-    label: 'Entity Filter',
-    labelAlign: 'right',
-    parentId: 'root',
-    hidden: false,
     customVisibility: 'return Boolean(data.entityType);',
-    isDynamic: false,
-    validate: {},
-    settingsValidationErrors: [],
-    modelType: '{{data.entityType}}',
-    fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
+    components: new DesignerToolbarSettings()
+      .addSectionSeparator({
+        id: '14413162-429e-451c-b3e6-b3f0ab6d7b09',
+        name: 'sectionFilters',
+        parentId: 'root',
+        label: 'Filters',
+      })
+      .addQueryBuilder({
+        id: 'n4enebtmhFgvkP5ukQK1f',
+        name: 'filters',
+        label: 'Entity Filter',
+        labelAlign: 'right',
+        parentId: 'root',
+        hidden: false,
+        isDynamic: false,
+        validate: {},
+        settingsValidationErrors: [],
+        modelType: '{{data.entityType}}',
+        fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
+      })
+      .toJson(),
   })
+
   .addSectionSeparator({
     id: '253ee0fd-9916-4728-9f93-16ecc1ca3bb9',
     name: 'sectionFilters',
@@ -136,12 +143,6 @@ export const entityPickerSettings = new DesignerToolbarSettings()
     parentId: 'root',
     hidden: false,
     validate: {},
-  })
-  .addSectionSeparator({
-    id: '253ee0fd-9916-4728-9f93-16ecc1ca3bb9',
-    name: 'sectionFilters',
-    parentId: 'root',
-    label: '',
   })
   .addEntityPickerColumnsEditor({
     id: '2a6ee3b0-15f1-4521-cc6e-6a1c9d192ce2',

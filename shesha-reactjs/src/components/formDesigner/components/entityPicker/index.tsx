@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
 import { FormIdentifier, IConfigurableFormComponent } from '../../../../providers/form/models';
 import { EllipsisOutlined } from '@ant-design/icons';
@@ -16,7 +16,7 @@ import { migrateDynamicExpression } from 'designer-components/_common-migrations
 
 export interface IEntityPickerComponentProps extends IConfigurableFormComponent {
   placeholder?: string;
-  items?: IConfigurableColumnsProps[];
+  items: IConfigurableColumnsProps[];
   hideBorder?: boolean;
   disabled?: boolean;
   useRawValues?: boolean;
@@ -47,60 +47,62 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
     const { filters, modalWidth, customWidth, widthUnits } = model;
     const { formMode, isComponentDisabled } = useForm();
 
-    const isReadOnly = model?.readOnly || formMode === 'readonly';
+    const isReadOnly = model.readOnly || formMode === 'readonly';
 
     const disabled = isComponentDisabled(model);
 
-    if (formMode === 'designer' && !model?.entityType) {
+    if (formMode === 'designer' && !model.entityType) {
       return (
         <Alert
           showIcon
           message="EntityPicker not configured properly"
-          description="Please make sure that you've specified either the 'tableId' or 'entityType' property."
+          description="Please make sure that you've specified 'entityType' property."
           type="warning"
         />
       );
     }
 
-    const entityPickerFilter: ITableViewProps[] = [
-      {
-        defaultSelected: true,
-        expression: { ...filters },
-        id: 'uZ4sjEhzO7joxO6kUvwdb',
-        name: 'entity Picker',
-        selected: true,
-        sortOrder: 0,
-      },
-    ];
+    const entityPickerFilter = useMemo<ITableViewProps[]>(() => {
+      return [
+        {
+          defaultSelected: true,
+          expression: { ...filters },
+          id: 'uZ4sjEhzO7joxO6kUvwdb',
+          name: 'entity Picker',
+          selected: true,
+          sortOrder: 0,
+        },
+      ];
+    }, [filters]);
 
     const width = modalWidth === 'custom' && customWidth ? `${customWidth}${widthUnits}` : modalWidth;
 
     return (
-      <ConfigurableFormItem model={model} initialValue={model?.defaultValue}>
+      <ConfigurableFormItem model={model} initialValue={model.defaultValue}>
         <EntityPicker
-          formId={model?.id}
+          formId={model.id}
           disabled={disabled}
           readOnly={isReadOnly}
-          displayEntityKey={model?.displayEntityKey}
-          entityType={model?.entityType}
+          displayEntityKey={model.displayEntityKey}
+          entityType={model.entityType}
           filters={entityPickerFilter}
-          useRawValues={model?.useRawValues}
-          mode={model?.mode}
+          useRawValues={model.useRawValues}
+          mode={model.mode}
           addNewRecordsProps={
-            model?.allowNewRecord
+            model.allowNewRecord
               ? {
-                modalFormId: model?.modalFormId,
-                modalTitle: model?.modalTitle,
-                showModalFooter: model?.showModalFooter,
-                submitHttpVerb: model?.submitHttpVerb,
-                onSuccessRedirectUrl: model?.onSuccessRedirectUrl,
+                modalFormId: model.modalFormId,
+                modalTitle: model.modalTitle,
+                showModalFooter: model.showModalFooter,
+                submitHttpVerb: model.submitHttpVerb,
+                onSuccessRedirectUrl: model.onSuccessRedirectUrl,
                 modalWidth: customWidth ? `${customWidth}${widthUnits}` : modalWidth,
               }
               : undefined
           }
           name={model?.name}
           width={width}
-          configurableColumns={model?.items}
+          configurableColumns={model.items ?? []}
         />
       </ConfigurableFormItem>
     );
@@ -120,19 +122,26 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
         return { ...prev, useRawValues: true };
       })
       .add<IEntityPickerComponentProps>(3, prev => {
-        const result = {...prev};
+        const result = { ...prev };
         const useExpression = Boolean(result['useExpression']);
         delete result['useExpression'];
-    
-        if (useExpression){
+
+        if (useExpression) {
           const migratedExpression = migrateDynamicExpression(prev.filters);
           result.filters = migratedExpression;
         }
-    
+
         return result;
       }),
   settingsFormMarkup: entityPickerSettings,
   validateSettings: model => validateConfigurableComponentSettings(entityPickerSettings, model),
+  linkToModelMetadata: (model, metadata): IEntityPickerComponentProps => {
+    return {
+      ...model,
+      entityType: metadata.entityType,
+      useRawValues: true,
+    };
+  },
 };
 
 export default EntityPickerComponent;
