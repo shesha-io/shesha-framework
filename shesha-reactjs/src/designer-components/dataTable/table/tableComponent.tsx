@@ -23,10 +23,14 @@ import { getOnRowDroppedAction } from './utils';
 
 const TableComponent: IToolboxComponent<ITableComponentProps> = {
   type: 'datatable',
-  name: 'DataTable',
+  name: 'Data Table',
   icon: <TableOutlined />,
   factory: (model: ITableComponentProps) => {
-    return <TableWrapper {...model} />;
+    const store = useDataTableStore(false);
+
+    return store
+      ? <TableWrapper {...model} />
+      : <Alert className="sha-designer-warning" message="Data Table must be used within a Data Table Context" type="warning" />;
   },
   initModel: (model: ITableComponentProps) => {
     return {
@@ -90,8 +94,7 @@ export const TableWrapper: FC<ITableComponentProps> = props => {
   const { formMode, form, setFormDataAndInstance } = useForm();
   const { data: formData } = useFormData();
   const { globalState, setState: setGlobalState } = useGlobalState();
-  const { anyOfPermissionsGranted } = useSheshaApplication();
-  const { backendUrl } = useSheshaApplication();
+  const { backendUrl, anyOfPermissionsGranted } = useSheshaApplication();
   const { executeAction } = useConfigurableActionDispatcher();
 
   const isDesignMode = formMode === 'designer';

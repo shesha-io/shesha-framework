@@ -907,7 +907,7 @@ export function listComponentToModelMetadata<TModel extends IConfigurableFormCom
   if (metadata.validationMessage) mappedModel.validate.message = metadata.validationMessage;
 
   // map component-specific properties
-  if (component.linkToModelMetadata) mappedModel = component.linkToModelMetadata(model, metadata);
+  if (component.linkToModelMetadata) mappedModel = component.linkToModelMetadata(mappedModel, metadata);
 
   return mappedModel;
 }

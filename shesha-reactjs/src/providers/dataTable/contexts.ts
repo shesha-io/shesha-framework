@@ -67,9 +67,6 @@ export interface IDataTableStateContext
   /** table columns */
   columns?: ITableColumn[];
 
-  /** Id of the parent entity. Is used for child tables */
-  parentEntityId?: string;
-
   /** Datatable data (fetched from the back-end) */
   tableData?: object[];
   /** Selected page size */
@@ -192,7 +189,6 @@ export const DATA_TABLE_CONTEXT_INITIAL_STATE: IDataTableStateContext = {
   tableConfigLoaded: false,
   tableSorting: [],
   tableFilter: [],
-  parentEntityId: null,
   saveFilterModalVisible: false,
   selectedIds: [],
   configurableColumns: [],

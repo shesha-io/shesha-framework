@@ -65,7 +65,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     onSelectRow: onSelectRowDeprecated,
     onDblClick: onDblClickDeprecated,
     selectedRow,
-    parentEntityId,
     selectedIds,
     tableSorting,
     quickSearch,
@@ -133,7 +132,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     selectedPageSize,
     tableFilter,
     selectedRow,
-    parentEntityId,
     quickSearch,
     tableSorting,
   ]);

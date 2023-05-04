@@ -74,9 +74,6 @@ interface IDataTableProviderBaseProps {
 
   initialPageSize?: number;
 
-  /** Id of the parent entity */
-  parentEntityId?: string;
-
   /** Id of the user config, is used for saving of the user settings (sorting, paging etc) to the local storage. */
   userConfigId?: string;
 }
@@ -182,7 +179,6 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     actionOwnerId,
     actionOwnerName,
     initialPageSize,
-    parentEntityId,
     repository,
     userConfigId,
   } = props;
@@ -190,7 +186,6 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   const [state, dispatch] = useThunkReducer(dataTableReducer, {
     ...DATA_TABLE_CONTEXT_INITIAL_STATE,
     configurableColumns: configurableColumns ?? [],
-    parentEntityId,
     selectedPageSize: initialPageSize ?? DATA_TABLE_CONTEXT_INITIAL_STATE.selectedPageSize
   });
 
