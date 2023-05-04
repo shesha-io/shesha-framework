@@ -6,6 +6,7 @@ import { EntitiesGetAllQueryParams, useEntitiesGetAll } from '../../apis/entitie
 import { useGlobalState } from '../../providers';
 import { ITimelineProps } from './models';
 import { TimelineItem } from './timelineItem';
+import moment from 'moment';
 
 export const ShaTimeline: FC<ITimelineProps> = ({ properties, ownerId, entityType, customApiUrl, apiSource }) => {
   const useGetAll = apiSource === 'custom' ? useGet : useEntitiesGetAll;
@@ -54,7 +55,7 @@ export const ShaTimeline: FC<ITimelineProps> = ({ properties, ownerId, entityTyp
                 title={title}
                 toPerson={toPerson?._displayName}
                 type={type}
-                actionDate={actionDate}
+                actionDate={moment(actionDate).format('DD/MM/YYYY HH:mm')}
                 body={body}
               />
             );
