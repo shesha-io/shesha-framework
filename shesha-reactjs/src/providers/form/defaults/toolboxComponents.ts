@@ -9,7 +9,6 @@ import ButtonGroup from 'components/formDesigner/components/button/buttonGroup/b
 import Buttons from 'components/formDesigner/components/button/buttonGroup/buttonsComponent';
 import Checkbox from 'components/formDesigner/components/checkbox/checkbox';
 import CheckboxGroup from 'components/formDesigner/components/checkboxGroup/checkboxGroup';
-import ChildDataTable from 'components/formDesigner/components/childDataTable/childDataTableComponent';
 import ChildEntitiesTagGroup from 'components/formDesigner/components/childEntitiesTagGroup';
 import CodeEditor from 'components/formDesigner/components/codeEditor';
 import CollapsiblePanel from 'designer-components/collapsiblePanel/collapsiblePanelComponent';
@@ -96,7 +95,6 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
       AttachmentsEditor,
       AutocompleteTagGroup,
       TimelineComponent,
-      ChildDataTable,
       ChildEntitiesTagGroup,
       CodeEditor,
       ColorPickerComponent,

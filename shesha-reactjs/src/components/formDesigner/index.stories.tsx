@@ -25,8 +25,8 @@ const DesignerTemplate: Story<IFormDesignerStoryProps> = ({ formId }) => (
   </StoryApp>
 );
 
-export const Bugfix = addStory(DesignerTemplate, {
-  formId: '7065cf3a-a8ec-494e-b2c8-273274b86d1f'
+export const OrderDetails = addStory(DesignerTemplate, {
+  formId: 'a9624689-59f5-45fd-9185-c82037b8fe25'
 });
 
 export const ColumnSettings = addStory(DesignerTemplate, {
