@@ -7,14 +7,8 @@ const path = require('path');
 const tsConfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 const config: StorybookConfig = {
-  stories: [
-    '../src/**/*.mdx',
-    '../src/**/*.stories.@(ts|tsx)'
-  ],
-  addons: [
-    '@storybook/addon-links',
-    '@storybook/addon-essentials',
-  ],
+  stories: ['../src/**/*.mdx', '../src/**/*.stories.@(ts|tsx)'],
+  addons: ['@storybook/addon-links', '@storybook/addon-essentials'],
   docs: {
     autodocs: false,
   },
@@ -31,11 +25,32 @@ const config: StorybookConfig = {
       // Update your babel configuration here
       ...options,
       //sourceType: "unambiguous",
-      presets: [
-        "@babel/preset-env",
-        "@babel/preset-typescript",
-        "@babel/preset-react"
-      ]
+      presets: ['@babel/preset-env', '@babel/preset-typescript', '@babel/preset-react'],
+      plugins: [
+        [
+          'module-resolver',
+          {
+            root: ['../src/'],
+            alias: {
+              apis: './src/apis',
+              appConstants: './src/appConstants',
+              components: './src/components',
+              enums: './src/enums',
+              hocs: './src/hocs',
+              hooks: './src/hooks',
+              icons: './src/icons',
+              interfaces: './src/interfaces',
+              pages: './src/pages',
+              providers: './src/providers',
+              'shesha-constants': './src/shesha-constants',
+              stories: './src/stories',
+              styles: './src/styles',
+              typings: './src/typings',
+              utils: './src/utils',
+            },
+          },
+        ],
+      ],
     };
   },
 
@@ -48,39 +63,43 @@ const config: StorybookConfig = {
     if (rules) {
       rules.push({
         test: /\.scss$/,
-        use: ['style-loader', 'css-loader', 'sass-loader'
-        ]
+        use: ['style-loader', 'css-loader', 'sass-loader'],
       });
 
       rules.push({
         test: /\.less$/,
-        use: ['style-loader', 'css-loader', {
-          loader: 'less-loader',
-          options: {
-            lessOptions: {
-              javascriptEnabled: true,
-              strictMath: false,
-              noIeCompat: true,
-              modifyVars: {
-                'form-item-margin-bottom': '8px'
-              }
-            }
-          }
-        }]
+        use: [
+          'style-loader',
+          'css-loader',
+          {
+            loader: 'less-loader',
+            options: {
+              lessOptions: {
+                javascriptEnabled: true,
+                strictMath: false,
+                noIeCompat: true,
+                modifyVars: {
+                  'form-item-margin-bottom': '8px',
+                },
+              },
+            },
+          },
+        ],
       });
     }
 
     const tsConfigPath = path.resolve(__dirname, '../tsconfig.json');
     console.log(`Using tsconfig.json path: '${tsConfigPath}'`);
 
-    config.resolve = {...(config.resolve ?? {}), plugins: [
-      new tsConfigPathsPlugin({
-        configFile: tsConfigPath
-      })
-    ]}
+    config.resolve = {
+      ...(config.resolve ?? {}),
+      plugins: [
+        new tsConfigPathsPlugin({
+          configFile: tsConfigPath,
+        }),
+      ],
+    };
 
-    
-    
     /*
     const plugins = config.resolve?.plugins;
     if (plugins) {
