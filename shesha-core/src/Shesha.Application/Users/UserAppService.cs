@@ -561,7 +561,7 @@ namespace Shesha.Users
                 throw new UserFriendlyException("Your token is invalid or has expired, try to reset password again");
 
             // todo: add new setting for the PasswordRegex and error message
-            if (!new Regex(AccountAppService.PasswordRegex).IsMatch(input.NewPassword))
+            if (!new Regex(SystemAccountAppService.PasswordRegex).IsMatch(input.NewPassword))
             {
                 throw new UserFriendlyException("Passwords must be at least 8 characters, contain a lowercase, uppercase, and number.");
             }
@@ -629,7 +629,7 @@ namespace Shesha.Users
                 throw new UserFriendlyException("Your 'Existing Password' did not match the one on record.  Please try again or contact an administrator for assistance in resetting your password.");
             }
             // todo: add new setting for the PasswordRegex and error message
-            if (!new Regex(AccountAppService.PasswordRegex).IsMatch(input.NewPassword))
+            if (!new Regex(SystemAccountAppService.PasswordRegex).IsMatch(input.NewPassword))
             {
                 throw new UserFriendlyException("Passwords must be at least 8 characters, contain a lowercase, uppercase, and number.");
             }

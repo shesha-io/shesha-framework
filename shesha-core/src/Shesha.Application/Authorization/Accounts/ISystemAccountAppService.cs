@@ -4,7 +4,7 @@ using Shesha.Authorization.Accounts.Dto;
 
 namespace Shesha.Authorization.Accounts
 {
-    public interface IAccountAppService : IApplicationService
+    public interface ISystemAccountAppService : IApplicationService
     {
         Task<IsTenantAvailableOutput> IsTenantAvailable(IsTenantAvailableInput input);
 
