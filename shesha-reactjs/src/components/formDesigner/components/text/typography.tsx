@@ -3,15 +3,15 @@ import { ParagraphProps } from 'antd/lib/typography/Paragraph';
 import { TextProps } from 'antd/lib/typography/Text';
 import { TitleProps } from 'antd/lib/typography/Title';
 import React, { CSSProperties, FC, useMemo } from 'react';
-import { useForm, useFormData, useGlobalState, useTheme } from '../../../../providers';
-import { evaluateString, executeCustomExpression, getStyle } from '../../../../providers/form/utils';
+import { useForm, useFormData, useGlobalState, useTheme } from 'providers';
+import { evaluateString, executeCustomExpression, getStyle } from 'providers/form/utils';
 import { ITextTypographyProps, ITypographyProps } from './models';
 import {
   DEFAULT_CONTENT_DISPLAY,
   DEFAULT_PADDING_SIZE,
   getContent,
   getFontSizeStyle,
-  getPaddingSizeStyle,
+  getPaddingSizeStyle, 
 } from './utils';
 import './styles/index.less';
 import classNames from 'classnames';
