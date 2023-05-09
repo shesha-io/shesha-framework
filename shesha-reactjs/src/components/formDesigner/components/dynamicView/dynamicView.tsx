@@ -48,7 +48,7 @@ export const DynamicView: FC<DynamicViewProps> = (model) => {
             return component;
         }).filter(c => Boolean(c));
         return components;
-    }, [propsToRender]);
+    }, [propsToRender, toolboxComponentGroups]);
 
     if (isComponentHidden(model)) return null;
 

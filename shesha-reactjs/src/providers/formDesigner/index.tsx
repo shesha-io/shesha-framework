@@ -39,13 +39,20 @@ import {
   setActiveDataSourceAction,
   dataPropertyAddAction,
   componentAddFromTemplateAction,
+  updateToolboxComponentGroupsAction,
 } from './actions';
 import { useFormDesignerComponentGroups, useFormDesignerComponents } from '../form/hooks';
 //import { ActionCreators } from 'redux-undo';
 import useThunkReducer from '../../hooks/thunkReducer';
-import { IAsyncValidationError, IFormValidationErrors, IToolboxComponent } from '../../interfaces';
+import {
+  IAsyncValidationError,
+  IFormValidationErrors,
+  IToolboxComponent,
+  IToolboxComponentGroup,
+} from '../../interfaces';
 import { IDataSource } from '../formDesigner/models';
 import { useMetadataDispatcher } from '../../providers';
+import { useDeepCompareEffect } from 'react-use';
 
 export interface IFormDesignerProviderProps {
   flatComponents: IFlatComponentsStructure;
@@ -67,7 +74,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   const initial: IFormDesignerStateContext = {
     ...FORM_DESIGNER_CONTEXT_INITIAL_STATE,
     readOnly: readOnly,
-    toolboxComponentGroups: toolboxComponentGroups,
+    toolboxComponentGroups,
     ...flatComponents,
     formSettings: formSettings,
   };
@@ -99,7 +106,15 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
     setReadOnly(readOnly);
   }, [readOnly]);
 
+  useDeepCompareEffect(() => {
+    updateToolboxComponentGroups(toolboxComponentGroups);
+  }, [toolboxComponentGroups]);
+
   /* NEW_ACTION_DECLARATION_GOES_HERE */
+
+  const updateToolboxComponentGroups = (payload: IToolboxComponentGroup[]) => {
+    dispatch(updateToolboxComponentGroupsAction(payload));
+  };
 
   const setReadOnly = (value: boolean) => {
     dispatch(setReadOnlyAction(value));
@@ -125,7 +140,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
     dispatch(componentDuplicateAction(payload));
   };
 
-  const getComponentModel = componentId => {
+  const getComponentModel = (componentId) => {
     return statePresent.allComponents[componentId];
   };
 
@@ -155,7 +170,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   const getChildComponents = (componentId: string) => {
     const childIds = statePresent.componentRelations[componentId];
     if (!childIds) return [];
-    const components = childIds.map(childId => {
+    const components = childIds.map((childId) => {
       return statePresent.allComponents[childId];
     });
     return components;
@@ -227,7 +242,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
 
   const getActiveDataSource = () => {
     return statePresent.activeDataSourceId
-      ? statePresent.dataSources.find(ds => ds.id === statePresent.activeDataSourceId)
+      ? statePresent.dataSources.find((ds) => ds.id === statePresent.activeDataSourceId)
       : null;
   };
   //#endregion
@@ -264,11 +279,11 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
 
   return (
     // <UndoableFormDesignerStateContext.Provider value={state}>
-      <FormDesignerStateContext.Provider value={statePresent}>
-        <FormDesignerActionsContext.Provider value={configurableFormActions}>
-          {children}
-        </FormDesignerActionsContext.Provider>
-      </FormDesignerStateContext.Provider>
+    <FormDesignerStateContext.Provider value={statePresent}>
+      <FormDesignerActionsContext.Provider value={configurableFormActions}>
+        {children}
+      </FormDesignerActionsContext.Provider>
+    </FormDesignerStateContext.Provider>
     // </UndoableFormDesignerStateContext.Provider>
   );
 };
@@ -301,8 +316,8 @@ function useUndoableState(require: boolean = true) {
   }
 
   return {
-    canUndo: false,//context.past.length > 0,
-    canRedo: false,//context.future.length > 0,
+    canUndo: false, //context.past.length > 0,
+    canRedo: false, //context.future.length > 0,
   };
 }
 
