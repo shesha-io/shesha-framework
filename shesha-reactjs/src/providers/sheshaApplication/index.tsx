@@ -85,7 +85,9 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
   const authRef = useRef<IAuthProviderRefProps>();
 
   useDeepCompareEffect(() => {
-    updateToolboxComponentGroups(toolboxComponentGroups);
+    if(toolboxComponentGroups?.length !== 0) {
+      updateToolboxComponentGroups(toolboxComponentGroups);
+    }
   }, [toolboxComponentGroups]);
 
   const updateToolboxComponentGroups = (payload: IToolboxComponentGroup[]) => {

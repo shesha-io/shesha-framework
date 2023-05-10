@@ -107,7 +107,9 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   }, [readOnly]);
 
   useDeepCompareEffect(() => {
-    updateToolboxComponentGroups(toolboxComponentGroups);
+    if(toolboxComponentGroups?.length !== 0) {
+      updateToolboxComponentGroups(toolboxComponentGroups);
+    }
   }, [toolboxComponentGroups]);
 
   /* NEW_ACTION_DECLARATION_GOES_HERE */
