@@ -42,9 +42,7 @@
       "placeholder": "",
       "description": "",
       "defaultValue": "",
-      "mode": [
-        "single"
-      ],
+      "mode": ["single"],
       "entityTypeShortAlias": "",
       "dataSourceUrl": ""
     },
@@ -307,8 +305,63 @@
       "settingsValidationErrors": [],
       "version": 1,
       "referenceListId": null,
-      "mode": [
-        "single"
+      "mode": ["single"]
+    },
+    {
+      "id": "52c604d6-0183-4331-a960-0b9551e88b09",
+      "type": "sectionSeparator",
+      "name": "sectionVisibility",
+      "parentId": "root",
+      "label": "Visibility"
+    },
+    {
+      "id": "eda790c5-3cea-4755-9c75-039eca9318f3",
+      "type": "codeEditor",
+      "name": "customVisibility",
+      "label": "Custom Visibility",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
+      "validate": {},
+      "settingsValidationErrors": [],
+      "exposedVariables": [
+        {
+          "name": "value",
+          "description": "Component current value",
+          "type": "string | any"
+        },
+        {
+          "name": "data",
+          "description": "Selected form values",
+          "type": "object"
+        }
+      ]
+    },
+    {
+      "id": "39ea3382-22b2-4800-bdb7-83cf3616d48c",
+      "type": "codeEditor",
+      "name": "customEnabled",
+      "label": "Custom Enabled",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customEnabled": null,
+      "description": "Enter custom enabled code.  You must return true to enable the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
+      "validate": {},
+      "settingsValidationErrors": [],
+      "exposedVariables": [
+        {
+          "name": "value",
+          "description": "Component current value",
+          "type": "string | any"
+        },
+        {
+          "name": "data",
+          "description": "Selected form values",
+          "type": "object"
+        }
       ]
     }
   ],
