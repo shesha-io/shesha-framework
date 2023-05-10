@@ -425,7 +425,8 @@ export interface IEvaluateComplexStringResult {
 //newer versions
 export const evaluateComplexStringWithResult = (
   expression: string,
-  mappings: IMatchData[]
+  mappings: IMatchData[],
+  requireNonEmptyResult: boolean,
 ): IEvaluateComplexStringResult => {
   const matches = new Set([...expression?.matchAll(/\{\{(?:(?!}}).)*\}\}/g)].flat());
 
@@ -444,7 +445,7 @@ export const evaluateComplexStringWithResult = (
         // But dynamic expression now can use formData and globalState, so as a result the expressions need to use dot notation
         const evaluatedValue = evaluateString(template, match ? { [match]: data } : data);
 
-        if (!evaluatedValue?.trim()) {
+        if (requireNonEmptyResult && !evaluatedValue?.trim()) {
           success = false;
           unevaluatedExpressions?.push(template);
         } else {

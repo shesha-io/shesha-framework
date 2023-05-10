@@ -1,5 +1,5 @@
 import { createAction } from 'redux-actions';
-import { IFormValidationErrors } from '../../interfaces';
+import { IFormValidationErrors, IToolboxComponentGroup } from '../../interfaces';
 import { IDataSource } from '../formDesigner/models';
 import {
   IComponentAddPayload,
@@ -45,57 +45,59 @@ export enum FormActionEnums {
   RemoveDataSource = 'REMOVE_DATA_SOURCE',
   SetActiveDataSource = 'SET_ACTIVE_DATA_SOURCE',
 
+  UpdateToolboxComponentGroups = 'UPDATE_TOOLBOX_COMPONENT_GROUPS',
+
   /* NEW_ACTION_TYPE_GOES_HERE */
 }
 
-export const setReadOnlyAction = createAction<boolean, boolean>(
-  FormActionEnums.SetReadOnly,
-  p => p
-);
+export const setReadOnlyAction = createAction<boolean, boolean>(FormActionEnums.SetReadOnly, (p) => p);
 
 export const dataPropertyAddAction = createAction<IAddDataPropertyPayload, IAddDataPropertyPayload>(
   FormActionEnums.DataPropertyAdd,
-  p => p
+  (p) => p
 );
 
 export const componentAddAction = createAction<IComponentAddPayload, IComponentAddPayload>(
   FormActionEnums.ComponentAdd,
-  p => p
+  (p) => p
 );
 
 export const componentAddFromTemplateAction = createAction<
   IComponentAddFromTemplatePayload,
   IComponentAddFromTemplatePayload
->(FormActionEnums.ComponentAddFromTemplate, p => p);
+>(FormActionEnums.ComponentAddFromTemplate, (p) => p);
 
 export const componentDeleteAction = createAction<IComponentDeletePayload, IComponentDeletePayload>(
   FormActionEnums.ComponentDelete,
-  p => p
+  (p) => p
 );
 
 export const componentDuplicateAction = createAction<IComponentDuplicatePayload, IComponentDuplicatePayload>(
   FormActionEnums.ComponentDuplicate,
-  p => p
+  (p) => p
 );
 
 export const componentUpdateAction = createAction<IComponentUpdatePayload, IComponentUpdatePayload>(
   FormActionEnums.ComponentUpdate,
-  p => p
+  (p) => p
 );
 
 export const componentUpdateSettingsValidationAction = createAction<
   IComponentUpdateSettingsValidationPayload,
   IComponentUpdateSettingsValidationPayload
->(FormActionEnums.ComponentUpdateSettingsValidation, p => p);
+>(FormActionEnums.ComponentUpdateSettingsValidation, (p) => p);
 
 export const changeMarkupAction = createAction<IFlatComponentsStructure, IFlatComponentsStructure>(
   FormActionEnums.ChangeMarkup,
-  p => p
+  (p) => p
 );
 
-export const setFlatComponentsAction = createAction<IFlatComponentsStructure, IFlatComponentsStructure>(FormActionEnums.SetFlatComponentsAction, p => p);
+export const setFlatComponentsAction = createAction<IFlatComponentsStructure, IFlatComponentsStructure>(
+  FormActionEnums.SetFlatComponentsAction,
+  (p) => p
+);
 
-export const setDebugModeAction = createAction<boolean, boolean>(FormActionEnums.SetDebugMode, p => p);
+export const setDebugModeAction = createAction<boolean, boolean>(FormActionEnums.SetDebugMode, (p) => p);
 
 export const startDraggingNewItemAction = createAction(FormActionEnums.StartDraggingNewItem);
 export const endDraggingNewItemAction = createAction(FormActionEnums.EndDraggingNewItem);
@@ -105,28 +107,34 @@ export const endDraggingAction = createAction(FormActionEnums.EndDragging);
 
 export const setValidationErrorsAction = createAction<IFormValidationErrors, IFormValidationErrors>(
   FormActionEnums.SetValidationErrors,
-  p => p
+  (p) => p
 );
 
 export const updateChildComponentsAction = createAction<IUpdateChildComponentsPayload, IUpdateChildComponentsPayload>(
   FormActionEnums.UpdateChildComponents,
-  p => p
+  (p) => p
 );
 
 export const setSelectedComponentAction = createAction<ISetSelectedComponentPayload, ISetSelectedComponentPayload>(
   FormActionEnums.SetSelectedComponent,
-  p => p
+  (p) => p
 );
 
 export const updateFormSettingsAction = createAction<IFormSettings, IFormSettings>(
   FormActionEnums.UpdateFormSettings,
-  p => p
+  (p) => p
 );
 
 //#region
-export const addDataSourceAction = createAction<IDataSource, IDataSource>(FormActionEnums.AddDataSource, p => p);
+export const addDataSourceAction = createAction<IDataSource, IDataSource>(FormActionEnums.AddDataSource, (p) => p);
 
-export const removeDataSourceAction = createAction<string, string>(FormActionEnums.RemoveDataSource, p => p);
+export const removeDataSourceAction = createAction<string, string>(FormActionEnums.RemoveDataSource, (p) => p);
 
-export const setActiveDataSourceAction = createAction<string, string>(FormActionEnums.SetActiveDataSource, p => p);
+export const setActiveDataSourceAction = createAction<string, string>(FormActionEnums.SetActiveDataSource, (p) => p);
+
+export const updateToolboxComponentGroupsAction = createAction<IToolboxComponentGroup[], IToolboxComponentGroup[]>(
+  FormActionEnums.UpdateToolboxComponentGroups,
+  (p) => p
+);
+
 //#endregion

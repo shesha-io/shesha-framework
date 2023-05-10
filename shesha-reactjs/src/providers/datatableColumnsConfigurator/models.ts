@@ -5,9 +5,7 @@ type ColumnsItemType = 'item' | 'group';
 
 export type ColumnsItemProps = IConfigurableColumnsProps | IConfigurableColumnGroup;
 
-export interface IColumnEditorProps extends IConfigurableFormComponent {
-
-}
+export interface IColumnEditorProps extends IConfigurableFormComponent {}
 
 export interface IFieldComponentProps {
   type: string;
@@ -23,7 +21,7 @@ export interface IEditableColumnProps {
 /**
  * Base properties of configurable column
  */
-export interface  IConfigurableColumnsBase {
+export interface IConfigurableColumnsBase {
   id: string;
   caption: string;
   sortOrder: number;
@@ -40,6 +38,8 @@ export interface  IConfigurableColumnsBase {
  */
 export interface IConfigurableColumnsProps extends IConfigurableColumnsBase {
   columnType: DatatableColumnType;
+  customVisibility?: string;
+  customEnabled?: string;
 }
 
 /**
@@ -52,8 +52,7 @@ export interface IDataColumnsProps extends IConfigurableColumnsProps, IEditableC
 /**
  * Configurable action column
  */
-export interface IConfigurableActionColumnsProps extends IConfigurableColumnsProps, IActionColumnProps {
-}
+export interface IConfigurableActionColumnsProps extends IConfigurableColumnsProps, IActionColumnProps {}
 
 /**
  * Configurable columns group

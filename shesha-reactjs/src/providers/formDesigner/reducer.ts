@@ -32,7 +32,7 @@ import {
 } from '../form/utils';
 import { camelcaseDotNotation } from '../../utils/string';
 //import undoable, { includeAction } from 'redux-undo';
-import { IFormValidationErrors } from '../../interfaces';
+import { IFormValidationErrors, IToolboxComponentGroup } from '../../interfaces';
 import { IDataSource } from '../formDesigner/models';
 import { nanoid } from 'nanoid/non-secure';
 
@@ -47,7 +47,7 @@ const addComponentToFlatStructure = (
 
   const childRelations: IComponentRelations = {};
 
-  formComponents.forEach(component => {
+  formComponents.forEach((component) => {
     processRecursive(structure.toolboxComponentGroups, containerId, component, (cmp, parentId) => {
       allComponents[cmp.id] = cmp;
 
@@ -64,7 +64,7 @@ const addComponentToFlatStructure = (
   const containerComponents = structure.componentRelations[currentLevel]
     ? [...structure.componentRelations[currentLevel]]
     : [];
-  formComponents.forEach(component => {
+  formComponents.forEach((component) => {
     containerComponents.splice(index, 0, component.id);
   });
   const componentRelations = {
@@ -93,7 +93,10 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
         readOnly: payload,
       };
     },
-    [FormActionEnums.SetFlatComponentsAction]: (state: IFormDesignerStateContext, action: ReduxActions.Action<IFlatComponentsStructure>) => {
+    [FormActionEnums.SetFlatComponentsAction]: (
+      state: IFormDesignerStateContext,
+      action: ReduxActions.Action<IFlatComponentsStructure>
+    ) => {
       const { payload } = action;
 
       return {
@@ -124,14 +127,17 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
         selectedComponentId: formComponent.id,
       };
     },
-    [FormActionEnums.ComponentAdd]: (state: IFormDesignerStateContext, action: ReduxActions.Action<IComponentAddPayload>) => {
+    [FormActionEnums.ComponentAdd]: (
+      state: IFormDesignerStateContext,
+      action: ReduxActions.Action<IComponentAddPayload>
+    ) => {
       const { payload } = action;
 
       // create component instance
       const { componentType, index, containerId } = payload;
 
       // access to the list of toolbox  components
-      const toolboxComponent = findToolboxComponent(state.toolboxComponentGroups, c => c.type === componentType);
+      const toolboxComponent = findToolboxComponent(state.toolboxComponentGroups, (c) => c.type === componentType);
 
       if (!toolboxComponent) return state;
 
@@ -156,14 +162,16 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
           hidden: false,
           visibility: 'Yes',
           customVisibility: null,
-          visibilityFunc: _data => true,
-          enabledFunc: _data => true,
+          visibilityFunc: (_data) => true,
+          enabledFunc: (_data) => true,
           isDynamic: false,
         };
         if (toolboxComponent.initModel) formComponent = toolboxComponent.initModel(formComponent);
         if (toolboxComponent.migrator) {
-
-          formComponent = upgradeComponent(formComponent, toolboxComponent, state.formSettings, { allComponents: state.allComponents, componentRelations: state.componentRelations });
+          formComponent = upgradeComponent(formComponent, toolboxComponent, state.formSettings, {
+            allComponents: state.allComponents,
+            componentRelations: state.componentRelations,
+          });
 
           // run migrations if available
           // todo: convert components to clases and run migrations there to check types properly
@@ -223,13 +231,17 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
     ) => {
       const { payload } = action;
 
-      const cloneComponent = (component: IConfigurableFormComponent, nestedComponents: IComponentsDictionary, nestedRelations: IComponentRelations): IConfigurableFormComponent => {
+      const cloneComponent = (
+        component: IConfigurableFormComponent,
+        nestedComponents: IComponentsDictionary,
+        nestedRelations: IComponentRelations
+      ): IConfigurableFormComponent => {
         const newId = nanoid();
         const clone = { ...component, id: newId };
 
         nestedComponents[clone.id] = clone;
 
-        const toolboxComponent = findToolboxComponent(state.toolboxComponentGroups, c => c.type === component.type);
+        const toolboxComponent = findToolboxComponent(state.toolboxComponentGroups, (c) => c.type === component.type);
         const containers = toolboxComponent?.customContainerNames ?? [];
 
         // handle nested components by id of the parent
@@ -239,7 +251,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
           nestedRelations[clone.id] = [];
           const relations = nestedRelations[clone.id];
 
-          srcNestedComponents.forEach(childId => {
+          srcNestedComponents.forEach((childId) => {
             const child = state.allComponents[childId];
             const childClone = cloneComponent(child, nestedComponents, nestedRelations);
             childClone.parentId = clone.id;
@@ -249,7 +261,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
         }
 
         // handle containers
-        containers.forEach(cntName => {
+        containers.forEach((cntName) => {
           const srcContainer = component[cntName];
           if (srcContainer) {
             // add clone recursively
@@ -259,8 +271,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
             const cloneChild = (c) => {
               // child may be component or any object with id
               const childClone = cloneComponent(c, nestedComponents, nestedRelations);
-              if (childClone.hasOwnProperty('parentId'))
-                childClone.parentId = clone.id;
+              if (childClone.hasOwnProperty('parentId')) childClone.parentId = clone.id;
 
               relations.push(childClone.id);
 
@@ -316,7 +327,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
       newComponent.visibilityFunc = getCustomVisibilityFunc(newComponent);
       newComponent.enabledFunc = getCustomEnabledFunc(newComponent);
 
-      const toolboxComponent = findToolboxComponent(state.toolboxComponentGroups, c => c.type === component.type);
+      const toolboxComponent = findToolboxComponent(state.toolboxComponentGroups, (c) => c.type === component.type);
 
       const newComponents = { ...state.allComponents, [payload.componentId]: newComponent };
       const componentRelations = { ...state.componentRelations };
@@ -328,8 +339,8 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
         const newContainers = toolboxComponent.getContainers(newComponent);
 
         // remove deleted containers
-        oldContainers.forEach(oldContainer => {
-          if (!newContainers.find(nc => nc.id === oldContainer.id)) {
+        oldContainers.forEach((oldContainer) => {
+          if (!newContainers.find((nc) => nc.id === oldContainer.id)) {
             delete newComponents[oldContainer.id];
 
             delete componentRelations[oldContainer.id];
@@ -337,13 +348,13 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
         });
 
         // create or update new containers
-        newContainers.forEach(c => {
+        newContainers.forEach((c) => {
           const existingContainer = newComponents[c.id] || { name: '', type: '', isDynamic: false };
           newComponents[c.id] = { ...existingContainer, ...c };
         });
 
         // update component child ids
-        componentRelations[payload.componentId] = newContainers.map(c => c.id);
+        componentRelations[payload.componentId] = newContainers.map((c) => c.id);
       }
 
       return {
@@ -361,7 +372,6 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
         isDebug: payload,
       };
     },
-
 
     [FormActionEnums.StartDraggingNewItem]: (state: IFormDesignerStateContext) => {
       return {
@@ -405,13 +415,11 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
       state: IFormDesignerStateContext,
       action: ReduxActions.Action<IUpdateChildComponentsPayload>
     ) => {
-
       const { payload } = action;
 
       const oldChilds = state.componentRelations[payload.containerId] ?? [];
       // if not changed - return state as is
-      if (idArraysEqual(oldChilds, payload.componentIds))
-        return state;
+      if (idArraysEqual(oldChilds, payload.componentIds)) return state;
 
       // 2. update parentId in new components list
       const updatedComponents = {};
@@ -419,12 +427,12 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
         [payload.containerId]: payload.componentIds,
       };
 
-      payload.componentIds.forEach(id => {
+      payload.componentIds.forEach((id) => {
         const component = state.allComponents[id];
         if (component.parentId !== payload.containerId) {
           // update old parent
           const oldParentKey = component.parentId || ROOT_COMPONENT_KEY;
-          updatedRelations[oldParentKey] = state.componentRelations[oldParentKey].filter(i => i !== id);
+          updatedRelations[oldParentKey] = state.componentRelations[oldParentKey].filter((i) => i !== id);
 
           // update parent in the current component
           const newComponent: IConfigurableFormComponent = { ...component, parentId: payload.containerId };
@@ -468,7 +476,10 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
       };
     },
 
-    [FormActionEnums.UpdateFormSettings]: (state: IFormDesignerStateContext, action: ReduxActions.Action<IFormSettings>) => {
+    [FormActionEnums.UpdateFormSettings]: (
+      state: IFormDesignerStateContext,
+      action: ReduxActions.Action<IFormSettings>
+    ) => {
       const { payload } = action;
 
       return {
@@ -507,13 +518,25 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
     [FormActionEnums.RemoveDataSource]: (state: IFormDesignerStateContext, action: ReduxActions.Action<string>) => {
       const { payload } = action;
 
-      const newDataSources = state.dataSources.filter(ds => ds.id !== payload);
+      const newDataSources = state.dataSources.filter((ds) => ds.id !== payload);
 
       return {
         ...state,
         dataSources: [...newDataSources],
       };
     },
+
+    [FormActionEnums.UpdateToolboxComponentGroups]: (
+      state: IFormDesignerStateContext,
+      action: ReduxActions.Action<IToolboxComponentGroup[]>
+    ) => {
+      const { payload } = action;
+
+      return {
+        ...state,
+        toolboxComponentGroups: payload,
+      };
+  },
   },
 
   FORM_DESIGNER_CONTEXT_INITIAL_STATE
