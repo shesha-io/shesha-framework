@@ -18,13 +18,19 @@ const executeScriptArgumentsForm = new DesignerToolbarSettings()
     label: 'Expression',
     mode: 'dialog',
     exposedVariables: [
-      { id: '724f460e-a121-44f0-ac6e-db4bb42d39c4', name: 'data', description: 'Selected form values', type: 'object' },
       {
-        id: '3d001ce9-c9ae-4eff-b992-86141f9d3e6e',
-        name: 'event',
-        description: 'Event callback when user input',
+        id: '3b19a708-e81a-4625-bcbb-3fe8451d0491',
+        name: 'actionError',
+        description: 'Error action response',
         type: 'object',
       },
+      {
+        id: '3ae3beb8-7d6b-44af-90ea-d23339a3b6b2',
+        name: 'actionResponse',
+        description: 'Success action response',
+        type: 'object',
+      },
+      { id: '724f460e-a121-44f0-ac6e-db4bb42d39c4', name: 'data', description: 'Selected form values', type: 'object' },
       { id: '67dbff99-f11c-4b77-b6ba-61042e7fafe5', name: 'form', description: 'Form instance', type: 'FormInstance' },
       {
         id: '21682825-2764-4640-8ca0-98cf6d0c051f',
