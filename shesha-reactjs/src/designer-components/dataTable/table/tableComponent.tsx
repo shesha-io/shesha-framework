@@ -15,7 +15,7 @@ import {
 } from 'providers';
 import TableSettings from './tableComponent-settings';
 import { ITableComponentProps } from './models';
-import { executeScriptSync, getStyle } from 'providers/form/utils';
+import { getStyle } from 'providers/form/utils';
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
 import moment from 'moment';
