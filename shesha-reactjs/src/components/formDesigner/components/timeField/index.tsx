@@ -41,7 +41,6 @@ export interface ITimePickerProps extends IConfigurableFormComponent {
   range?: boolean; // Use
   allowClear?: boolean;
   autoFocus?: boolean;
-  bordered?: boolean;
   inputReadOnly?: boolean;
   showNow?: boolean;
   hideDisabledOptions?: boolean;

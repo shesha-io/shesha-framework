@@ -174,7 +174,7 @@
           }
         ]
       },
-      "collapsible": "icon",
+      "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
       "settingsValidationErrors": [],
@@ -597,7 +597,7 @@
           }
         ]
       },
-      "collapsible": "icon",
+      "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
       "settingsValidationErrors": [],
@@ -945,7 +945,7 @@
           }
         ]
       },
-      "collapsible": "icon",
+      "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
       "settingsValidationErrors": [],
@@ -1069,7 +1069,7 @@
           }
         ]
       },
-      "collapsible": "icon",
+      "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
       "settingsValidationErrors": [],
@@ -1158,7 +1158,7 @@
           }
         ]
       },
-      "collapsible": "icon",
+      "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
       "settingsValidationErrors": [],
@@ -1286,7 +1286,7 @@
           }
         ]
       },
-      "collapsible": "icon",
+      "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
       "settingsValidationErrors": [],
@@ -1417,7 +1417,7 @@
           }
         ]
       },
-      "collapsible": "icon",
+      "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
       "settingsValidationErrors": [],

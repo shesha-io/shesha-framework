@@ -1,482 +1,1323 @@
 {
   "components": [
     {
-      "id": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
-      "type": "sectionSeparator",
-      "name": "separator1",
-      "parentId": "root",
-      "label": "Display"
-    },
-    {
-      "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
-      "type": "propertyAutocomplete",
-      "name": "name",
-      "parentId": "root",
-      "label": "Name",
-      "validate": {
-        "required": true
-      }
-    },
-    {
-      "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
-      "type": "textField",
-      "name": "label",
-      "parentId": "root",
-      "label": "Label"
-    },
-    {
-      "id": "563a0f3b-bd6f-4af3-a4dd-23d821e68cb4",
-      "type": "checkbox",
-      "name": "range",
-      "parentId": "root",
-      "label": "Range?"
-    },
-    {
-      "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
-      "type": "dropdown",
-      "name": "labelAlign",
-      "parentId": "root",
-      "label": "Label align",
-      "values": [
-        {
-          "label": "left",
-          "value": "left",
-          "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
-        },
-        {
-          "label": "right",
-          "value": "right",
-          "id": "b920ef96-ae27-4a01-bfad-b5b7d07218da"
-        }
-      ],
-      "dataSourceType": "values"
-    },
-    {
-      "id": "7bddaaf5-d880-4438-9fb0-159791bc210e",
-      "type": "dropdown",
-      "name": "picker",
-      "parentId": "root",
-      "label": "picker",
-      "values": [
-        {
-          "label": "date",
-          "value": "date",
-          "id": "e8321f5d-f96d-4101-84d4-6c02ea7fc7e6"
-        },
-        {
-          "label": "week",
-          "value": "week",
-          "id": "d846cd16-d7f1-4501-92ea-ca8c685c4c87"
-        },
-        {
-          "label": "month",
-          "value": "month",
-          "id": "fecc571b-8ae7-4c47-b690-7b0da10e7e1d"
-        },
-        {
-          "label": "quarter",
-          "value": "quarter",
-          "id": "3580b2e6-0cfd-4e74-a497-a256741b8224"
-        },
-        {
-          "label": "year",
-          "value": "year",
-          "id": "2ff6cbb0-3c3e-4530-9a9b-d09c1f04ac3d"
-        }
-      ],
-      "dataSourceType": "values",
-      "value": "date"
-    },
-    {
-      "id": "d32ddbd5-cff0-4f04-8afd-f767760e1da8",
-      "type": "sectionSeparator",
-      "name": "formats",
-      "parentId": "root",
-      "label": "Formats"
-    },
-    {
-      "id": "26ef465a-b1da-464d-a8e7-59211bc4c68a",
-      "type": "textField",
-      "name": "dateFormat",
-      "parentId": "root",
-      "label": "Date Format",
-      "defaultValue": "DD/MM/YYYY"
-    },
-    {
-      "id": "aa619384-f071-4e6c-a472-77c16f55a0d9",
-      "type": "textField",
-      "name": "timeFormat",
-      "parentId": "root",
-      "label": "Time Format",
-      "defaultValue": "HH:mm:ss"
-    },
-    {
-      "id": "13baec80-15ca-439d-98ab-a339a0952928",
-      "type": "textField",
-      "name": "yearFormat",
-      "parentId": "root",
-      "label": "Year Format",
-      "defaultValue": "YYYY"
-    },
-    {
-      "id": "34302bf1a-0b77-4662-bbd1-278da0f87f72",
-      "type": "textField",
-      "name": "quarterFormat",
-      "parentId": "root",
-      "label": "Quarter Format",
-      "defaultValue": "YYYY-\\QQ"
-    },
-    {
-      "id": "1ebdb12b-89c6-44f0-a372-5b6a31537150",
-      "type": "textField",
-      "name": "monthFormat",
-      "parentId": "root",
-      "label": "Month Format",
-      "defaultValue": "YYYY-MM"
-    },
-    {
-      "id": "07686226-6322-404f-a32a-cae3f98a5602",
-      "type": "textField",
-      "name": "weekFormat",
-      "parentId": "root",
-      "label": "Week Format",
-      "defaultValue": "YYYY-wo"
-    },
-    {
-      "id": "fbdb6bb1-5994-4205-86b4-236ca61ae54e",
-      "type": "textField",
-      "name": "placeholder",
-      "parentId": "root",
-      "label": "Placeholder"
-    },
-    {
-      "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
-      "type": "textArea",
-      "name": "description",
-      "parentId": "root",
-      "label": "Description"
-    },
-    {
-      "id": "df8a8f35-a50b-42f9-9642-73d390ceddbf",
-      "type": "dropdown",
-      "name": "visibility",
-      "parentId": "root",
-      "label": "Visibility",
-      "description": "This property will eventually replace the 'hidden' property and other properties that toggle visibility on the UI and payload",
-      "allowClear": true,
-      "values": [
-        {
-          "label": "Yes (Display in UI and include in payload)",
-          "value": "Yes",
-          "id": "53cd10ce-26af-474b-af75-8e7b1f19e51d"
-        },
-        {
-          "label": "No (Only include in payload)",
-          "value": "No",
-          "id": "f07a228c-cb9c-4da7-a8bc-bc2be518a058"
-        },
-        {
-          "label": "Removed (Remove from UI and exlude from payload)",
-          "value": "Removed",
-          "id": "3b6282ee-2eee-47ec-bab9-4cba52b970a0"
-        }
-      ],
-      "dataSourceType": "values"
-    },
-    {
-      "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
-      "type": "checkbox",
-      "name": "hidden",
-      "parentId": "root",
-      "label": "Hidden"
-    },
-    {
-      "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
-      "type": "checkbox",
-      "name": "hideLabel",
-      "parentId": "root",
-      "label": "Hide Label"
-    },
-    {
-      "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
-      "type": "checkbox",
-      "name": "disabled",
-      "parentId": "root",
-      "label": "Disabled"
-    },
-    {
-      "id": "1ceb3851-f15e-437b-98b6-84d6a1fbf801",
-      "type": "checkbox",
-      "name": "readOnly",
-      "parentId": "root",
-      "label": "Read Only"
-    },
-    {
-      "id": "c67b7404-d980-437a-a544-74e4e816f6cd",
-      "type": "checkbox",
-      "name": "hideBorder",
-      "label": "Hide border",
+      "id": "YdG427sm65_Ww47MFVdxA",
+      "type": "collapsiblePanel",
+      "name": "pnlDisplay",
+      "label": "Display",
+      "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
+      "visibility": "Yes",
       "customVisibility": null,
-      "validate": {}
+      "isDynamic": false,
+      "version": 1,
+      "expandIconPosition": "left",
+      "header": {
+        "id": "IIBBWlI-XuHjKQs6d00tO",
+        "components": []
+      },
+      "content": {
+        "id": "VmAusRlLZo3cYRFk88xnf",
+        "components": [
+          {
+            "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
+            "type": "propertyAutocomplete",
+            "name": "name",
+            "parentId": "VmAusRlLZo3cYRFk88xnf",
+            "label": "Name",
+            "validate": {
+              "required": true
+            }
+          },
+          {
+            "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
+            "type": "textField",
+            "name": "label",
+            "parentId": "VmAusRlLZo3cYRFk88xnf",
+            "label": "Label",
+            "version": 0,
+            "textType": "text"
+          },
+          {
+            "id": "563a0f3b-bd6f-4af3-a4dd-23d821e68cb4",
+            "type": "checkbox",
+            "name": "range",
+            "parentId": "VmAusRlLZo3cYRFk88xnf",
+            "label": "Range?"
+          },
+          {
+            "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
+            "type": "dropdown",
+            "name": "labelAlign",
+            "parentId": "VmAusRlLZo3cYRFk88xnf",
+            "label": "Label align",
+            "values": [
+              {
+                "label": "left",
+                "value": "left",
+                "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
+              },
+              {
+                "label": "right",
+                "value": "right",
+                "id": "b920ef96-ae27-4a01-bfad-b5b7d07218da"
+              }
+            ],
+            "dataSourceType": "values",
+            "version": 1,
+            "useRawValues": false,
+            "referenceListId": null
+          },
+          {
+            "id": "7bddaaf5-d880-4438-9fb0-159791bc210e",
+            "type": "dropdown",
+            "name": "picker",
+            "parentId": "VmAusRlLZo3cYRFk88xnf",
+            "label": "Picker",
+            "values": [
+              {
+                "label": "date",
+                "value": "date",
+                "id": "e8321f5d-f96d-4101-84d4-6c02ea7fc7e6"
+              },
+              {
+                "label": "week",
+                "value": "week",
+                "id": "d846cd16-d7f1-4501-92ea-ca8c685c4c87"
+              },
+              {
+                "label": "month",
+                "value": "month",
+                "id": "fecc571b-8ae7-4c47-b690-7b0da10e7e1d"
+              },
+              {
+                "label": "quarter",
+                "value": "quarter",
+                "id": "3580b2e6-0cfd-4e74-a497-a256741b8224"
+              },
+              {
+                "label": "year",
+                "value": "year",
+                "id": "2ff6cbb0-3c3e-4530-9a9b-d09c1f04ac3d"
+              }
+            ],
+            "dataSourceType": "values",
+            "value": "date",
+            "version": 1,
+            "useRawValues": false,
+            "referenceListId": null,
+            "placeholder": "",
+            "description": "",
+            "defaultValue": "",
+            "mode": [
+              "single"
+            ],
+            "entityTypeShortAlias": "",
+            "dataSourceUrl": "",
+            "validate": {},
+            "settingsValidationErrors": []
+          },
+          {
+            "id": "fbdb6bb1-5994-4205-86b4-236ca61ae54e",
+            "type": "textField",
+            "name": "placeholder",
+            "parentId": "VmAusRlLZo3cYRFk88xnf",
+            "label": "Placeholder",
+            "version": 0,
+            "textType": "text"
+          },
+          {
+            "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
+            "type": "textArea",
+            "name": "description",
+            "parentId": "VmAusRlLZo3cYRFk88xnf",
+            "label": "Description"
+          },
+          {
+            "id": "df8a8f35-a50b-42f9-9642-73d390ceddbf",
+            "type": "dropdown",
+            "name": "visibility",
+            "parentId": "VmAusRlLZo3cYRFk88xnf",
+            "label": "Visibility",
+            "description": "This property will eventually replace the 'hidden' property and other properties that toggle visibility on the UI and payload",
+            "allowClear": true,
+            "values": [
+              {
+                "label": "Yes (Display in UI and include in payload)",
+                "value": "Yes",
+                "id": "53cd10ce-26af-474b-af75-8e7b1f19e51d"
+              },
+              {
+                "label": "No (Only include in payload)",
+                "value": "No",
+                "id": "f07a228c-cb9c-4da7-a8bc-bc2be518a058"
+              },
+              {
+                "label": "Removed (Remove from UI and exlude from payload)",
+                "value": "Removed",
+                "id": "3b6282ee-2eee-47ec-bab9-4cba52b970a0"
+              }
+            ],
+            "dataSourceType": "values",
+            "version": 1,
+            "useRawValues": false,
+            "referenceListId": null
+          },
+          {
+            "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
+            "type": "checkbox",
+            "name": "hidden",
+            "parentId": "VmAusRlLZo3cYRFk88xnf",
+            "label": "Hidden"
+          },
+          {
+            "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
+            "type": "checkbox",
+            "name": "hideLabel",
+            "parentId": "VmAusRlLZo3cYRFk88xnf",
+            "label": "Hide Label"
+          },
+          {
+            "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
+            "type": "checkbox",
+            "name": "disabled",
+            "parentId": "VmAusRlLZo3cYRFk88xnf",
+            "label": "Disabled"
+          },
+          {
+            "id": "1ceb3851-f15e-437b-98b6-84d6a1fbf801",
+            "type": "checkbox",
+            "name": "readOnly",
+            "parentId": "VmAusRlLZo3cYRFk88xnf",
+            "label": "Read Only"
+          },
+          {
+            "id": "c67b7404-d980-437a-a544-74e4e816f6cd",
+            "type": "checkbox",
+            "name": "hideBorder",
+            "label": "Hide border",
+            "parentId": "VmAusRlLZo3cYRFk88xnf",
+            "hidden": false,
+            "customVisibility": null,
+            "validate": {}
+          }
+        ]
+      },
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": [],
+      "components": [
+        {
+          "id": "IIBBWlI-XuHjKQs6d00tO",
+          "components": []
+        },
+        {
+          "id": "VmAusRlLZo3cYRFk88xnf",
+          "components": [
+            {
+              "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
+              "type": "propertyAutocomplete",
+              "name": "name",
+              "parentId": "VmAusRlLZo3cYRFk88xnf",
+              "label": "Name",
+              "validate": {
+                "required": true
+              }
+            },
+            {
+              "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
+              "type": "textField",
+              "name": "label",
+              "parentId": "VmAusRlLZo3cYRFk88xnf",
+              "label": "Label",
+              "version": 0,
+              "textType": "text"
+            },
+            {
+              "id": "563a0f3b-bd6f-4af3-a4dd-23d821e68cb4",
+              "type": "checkbox",
+              "name": "range",
+              "parentId": "VmAusRlLZo3cYRFk88xnf",
+              "label": "Range?"
+            },
+            {
+              "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
+              "type": "dropdown",
+              "name": "labelAlign",
+              "parentId": "VmAusRlLZo3cYRFk88xnf",
+              "label": "Label align",
+              "values": [
+                {
+                  "label": "left",
+                  "value": "left",
+                  "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
+                },
+                {
+                  "label": "right",
+                  "value": "right",
+                  "id": "b920ef96-ae27-4a01-bfad-b5b7d07218da"
+                }
+              ],
+              "dataSourceType": "values",
+              "version": 1,
+              "useRawValues": false,
+              "referenceListId": null
+            },
+            {
+              "id": "7bddaaf5-d880-4438-9fb0-159791bc210e",
+              "type": "dropdown",
+              "name": "picker",
+              "parentId": "VmAusRlLZo3cYRFk88xnf",
+              "label": "Picker",
+              "values": [
+                {
+                  "label": "date",
+                  "value": "date",
+                  "id": "e8321f5d-f96d-4101-84d4-6c02ea7fc7e6"
+                },
+                {
+                  "label": "week",
+                  "value": "week",
+                  "id": "d846cd16-d7f1-4501-92ea-ca8c685c4c87"
+                },
+                {
+                  "label": "month",
+                  "value": "month",
+                  "id": "fecc571b-8ae7-4c47-b690-7b0da10e7e1d"
+                },
+                {
+                  "label": "quarter",
+                  "value": "quarter",
+                  "id": "3580b2e6-0cfd-4e74-a497-a256741b8224"
+                },
+                {
+                  "label": "year",
+                  "value": "year",
+                  "id": "2ff6cbb0-3c3e-4530-9a9b-d09c1f04ac3d"
+                }
+              ],
+              "dataSourceType": "values",
+              "value": "date",
+              "version": 1,
+              "useRawValues": false,
+              "referenceListId": null,
+              "placeholder": "",
+              "description": "",
+              "defaultValue": "",
+              "mode": [
+                "single"
+              ],
+              "entityTypeShortAlias": "",
+              "dataSourceUrl": "",
+              "validate": {},
+              "settingsValidationErrors": []
+            },
+            {
+              "id": "fbdb6bb1-5994-4205-86b4-236ca61ae54e",
+              "type": "textField",
+              "name": "placeholder",
+              "parentId": "VmAusRlLZo3cYRFk88xnf",
+              "label": "Placeholder",
+              "version": 0,
+              "textType": "text"
+            },
+            {
+              "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
+              "type": "textArea",
+              "name": "description",
+              "parentId": "VmAusRlLZo3cYRFk88xnf",
+              "label": "Description"
+            },
+            {
+              "id": "df8a8f35-a50b-42f9-9642-73d390ceddbf",
+              "type": "dropdown",
+              "name": "visibility",
+              "parentId": "VmAusRlLZo3cYRFk88xnf",
+              "label": "Visibility",
+              "description": "This property will eventually replace the 'hidden' property and other properties that toggle visibility on the UI and payload",
+              "allowClear": true,
+              "values": [
+                {
+                  "label": "Yes (Display in UI and include in payload)",
+                  "value": "Yes",
+                  "id": "53cd10ce-26af-474b-af75-8e7b1f19e51d"
+                },
+                {
+                  "label": "No (Only include in payload)",
+                  "value": "No",
+                  "id": "f07a228c-cb9c-4da7-a8bc-bc2be518a058"
+                },
+                {
+                  "label": "Removed (Remove from UI and exlude from payload)",
+                  "value": "Removed",
+                  "id": "3b6282ee-2eee-47ec-bab9-4cba52b970a0"
+                }
+              ],
+              "dataSourceType": "values",
+              "version": 1,
+              "useRawValues": false,
+              "referenceListId": null
+            },
+            {
+              "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
+              "type": "checkbox",
+              "name": "hidden",
+              "parentId": "VmAusRlLZo3cYRFk88xnf",
+              "label": "Hidden"
+            },
+            {
+              "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
+              "type": "checkbox",
+              "name": "hideLabel",
+              "parentId": "VmAusRlLZo3cYRFk88xnf",
+              "label": "Hide Label"
+            },
+            {
+              "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
+              "type": "checkbox",
+              "name": "disabled",
+              "parentId": "VmAusRlLZo3cYRFk88xnf",
+              "label": "Disabled"
+            },
+            {
+              "id": "1ceb3851-f15e-437b-98b6-84d6a1fbf801",
+              "type": "checkbox",
+              "name": "readOnly",
+              "parentId": "VmAusRlLZo3cYRFk88xnf",
+              "label": "Read Only"
+            },
+            {
+              "id": "c67b7404-d980-437a-a544-74e4e816f6cd",
+              "type": "checkbox",
+              "name": "hideBorder",
+              "label": "Hide border",
+              "parentId": "VmAusRlLZo3cYRFk88xnf",
+              "hidden": false,
+              "customVisibility": null,
+              "validate": {}
+            }
+          ]
+        }
+      ]
     },
     {
-      "id": "6befdd49-41aa-41d6-a29e-76fa00590b75",
-      "type": "sectionSeparator",
-      "name": "sectionStyle",
+      "id": "oP0uMf56z-zs32j-jCAhx",
+      "type": "collapsiblePanel",
+      "name": "pnlFormats",
+      "label": "Formats",
+      "labelAlign": "right",
       "parentId": "root",
-      "label": "Style"
+      "hidden": false,
+      "visibility": "Yes",
+      "customVisibility": null,
+      "isDynamic": false,
+      "version": 1,
+      "expandIconPosition": "left",
+      "header": {
+        "id": "G3I8ozdzmOKbUhuYbs68k",
+        "components": []
+      },
+      "content": {
+        "id": "95KYYLKf3eLe-Y2WL5M8x",
+        "components": [
+          {
+            "id": "26ef465a-b1da-464d-a8e7-59211bc4c68a",
+            "type": "textField",
+            "name": "dateFormat",
+            "parentId": "95KYYLKf3eLe-Y2WL5M8x",
+            "label": "Date Format",
+            "defaultValue": "DD/MM/YYYY",
+            "version": 0,
+            "textType": "text"
+          },
+          {
+            "id": "aa619384-f071-4e6c-a472-77c16f55a0d9",
+            "type": "textField",
+            "name": "timeFormat",
+            "parentId": "95KYYLKf3eLe-Y2WL5M8x",
+            "label": "Time Format",
+            "defaultValue": "HH:mm:ss",
+            "version": 0,
+            "textType": "text"
+          },
+          {
+            "id": "13baec80-15ca-439d-98ab-a339a0952928",
+            "type": "textField",
+            "name": "yearFormat",
+            "parentId": "95KYYLKf3eLe-Y2WL5M8x",
+            "label": "Year Format",
+            "defaultValue": "YYYY",
+            "version": 0,
+            "textType": "text"
+          },
+          {
+            "id": "34302bf1a-0b77-4662-bbd1-278da0f87f72",
+            "type": "textField",
+            "name": "quarterFormat",
+            "parentId": "95KYYLKf3eLe-Y2WL5M8x",
+            "label": "Quarter Format",
+            "defaultValue": "YYYY-\\QQ",
+            "version": 0,
+            "textType": "text"
+          },
+          {
+            "id": "1ebdb12b-89c6-44f0-a372-5b6a31537150",
+            "type": "textField",
+            "name": "monthFormat",
+            "parentId": "95KYYLKf3eLe-Y2WL5M8x",
+            "label": "Month Format",
+            "defaultValue": "YYYY-MM",
+            "version": 0,
+            "textType": "text"
+          },
+          {
+            "id": "07686226-6322-404f-a32a-cae3f98a5602",
+            "type": "textField",
+            "name": "weekFormat",
+            "parentId": "95KYYLKf3eLe-Y2WL5M8x",
+            "label": "Week Format",
+            "defaultValue": "YYYY-wo",
+            "version": 0,
+            "textType": "text"
+          }
+        ]
+      },
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": [],
+      "components": [
+        {
+          "id": "95KYYLKf3eLe-Y2WL5M8x",
+          "components": [
+            {
+              "id": "26ef465a-b1da-464d-a8e7-59211bc4c68a",
+              "type": "textField",
+              "name": "dateFormat",
+              "parentId": "95KYYLKf3eLe-Y2WL5M8x",
+              "label": "Date Format",
+              "defaultValue": "DD/MM/YYYY",
+              "version": 0,
+              "textType": "text"
+            },
+            {
+              "id": "aa619384-f071-4e6c-a472-77c16f55a0d9",
+              "type": "textField",
+              "name": "timeFormat",
+              "parentId": "95KYYLKf3eLe-Y2WL5M8x",
+              "label": "Time Format",
+              "defaultValue": "HH:mm:ss",
+              "version": 0,
+              "textType": "text"
+            },
+            {
+              "id": "13baec80-15ca-439d-98ab-a339a0952928",
+              "type": "textField",
+              "name": "yearFormat",
+              "parentId": "95KYYLKf3eLe-Y2WL5M8x",
+              "label": "Year Format",
+              "defaultValue": "YYYY",
+              "version": 0,
+              "textType": "text"
+            },
+            {
+              "id": "34302bf1a-0b77-4662-bbd1-278da0f87f72",
+              "type": "textField",
+              "name": "quarterFormat",
+              "parentId": "95KYYLKf3eLe-Y2WL5M8x",
+              "label": "Quarter Format",
+              "defaultValue": "YYYY-\\QQ",
+              "version": 0,
+              "textType": "text"
+            },
+            {
+              "id": "1ebdb12b-89c6-44f0-a372-5b6a31537150",
+              "type": "textField",
+              "name": "monthFormat",
+              "parentId": "95KYYLKf3eLe-Y2WL5M8x",
+              "label": "Month Format",
+              "defaultValue": "YYYY-MM",
+              "version": 0,
+              "textType": "text"
+            },
+            {
+              "id": "07686226-6322-404f-a32a-cae3f98a5602",
+              "type": "textField",
+              "name": "weekFormat",
+              "parentId": "95KYYLKf3eLe-Y2WL5M8x",
+              "label": "Week Format",
+              "defaultValue": "YYYY-wo",
+              "version": 0,
+              "textType": "text"
+            }
+          ]
+        }
+      ]
     },
     {
-      "id": "06ab0599-914d-4d2d-875c-765a495472f8",
-      "type": "codeEditor",
-      "name": "style",
+      "id": "gCBUNeJjyMzcs1G2RRAK8",
+      "type": "collapsiblePanel",
+      "name": "pnlStyle",
       "label": "Style",
-      "parentId": "root",
-      "validate": {},
-      "settingsValidationErrors": [],
-      "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
-      "exposedVariables": [
-        { "name": "data", "description": "Form values", "type": "object" },
-        { "name": "globalState", "description": "The global state", "type": "object" }
-      ]
-    },
-    {
-      "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
-      "type": "dropdown",
-      "name": "size",
-      "parentId": "root",
-      "label": "Size",
-      "allowClear": true,
-      "values": [
-        {
-          "label": "Small",
-          "value": "small",
-          "id": "4f11403c-95fd-4e49-bb60-cb8c25f0f3c3"
-        },
-        {
-          "label": "Middle",
-          "value": "middle",
-          "id": "8f85c476-e632-4fa7-89ad-2be6cfb7f1f1"
-        },
-        {
-          "label": "Large",
-          "value": "large",
-          "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
-        }
-      ],
-      "dataSourceType": "values"
-    },
-    {
-      "id": "75e9d871-570e-45b1-93c9-8979b63d6e94",
-      "type": "sectionSeparator",
-      "name": "separatorVisibility",
-      "parentId": "root",
-      "label": "Control Visibility"
-    },
-    {
-      "id": "9fa24c62-8c89-4c84-b96f-44fbca26a69b",
-      "type": "checkbox",
-      "name": "showTime",
-      "parentId": "root",
-      "label": "Show Time",
-      "defaultValue": false
-    },
-    {
-      "id": "cae2b4ed-c957-43e1-90b4-8ac491fb9a16",
-      "type": "checkbox",
-      "name": "defaultToMidnight",
-      "parentId": "root",
-      "label": "Default time to midnight",
-      "customVisibility": "return data.showTime",
-      "description": "If checked the default time will be '00:00:00', else it will be the current time on the machine",
-      "defaultValue": true
-    },
-    {
-      "id": "88266ea0-4ba5-49d1-8f13-b34d684989c0",
-      "type": "checkbox",
-      "name": "showNow",
-      "parentId": "root",
-      "label": "Show Now",
-      "defaultValue": false
-    },
-    {
-      "id": "640a5ce5-7ca9-4ea8-b960-be74faf65ba1",
-      "type": "checkbox",
-      "name": "showToday",
-      "parentId": "root",
-      "label": "Show Today",
-      "defaultValue": false
-    },
-    {
-      "id": "ac88293a-af3b-45a2-a57c-7703d882b473",
-      "type": "dropdown",
-      "name": "disabledDateMode",
-      "label": "Disabled date mode",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
+      "visibility": "Yes",
       "customVisibility": null,
-      "dataSourceType": "values",
-      "defaultValue": "none",
-      "values": [
-        {
-          "id": "cedee63a-8679-4cc0-97a0-1814afa08b86",
-          "label": "None",
-          "value": "none"
-        },
-        {
-          "id": "db823427-ee53-4c62-9032-911da93dee9a",
-          "label": "Function template",
-          "value": "functionTemplate"
-        },
-        {
-          "id": "3e402036-63ac-434e-a399-c1551fc32890",
-          "label": "Custom function",
-          "value": "customFunction"
-        }
-      ],
-      "description": ""
-    },
-    {
-      "id": "ebbd2969-f7d5-4e28-9a7c-56695ed09e59",
-      "type": "dropdown",
-      "name": "disabledDateTemplate",
-      "label": "Disabled date templates",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "customVisibility": "return data.disabledDateMode === 'functionTemplate'",
-      "dataSourceType": "values",
-      "values": [
-        {
-          "id": "ec349b3e-ef29-467c-96fb-265320ac37a0",
-          "label": "Disable past dates",
-          "value": "return current && current < moment().endOf('day');"
-        },
-        {
-          "id": "41db4d59-249d-4ba2-8049-db0fd9fbde14",
-          "label": "Disable future dates",
-          "value": "return current && current > moment().endOf('day');"
-        }
-      ],
-      "description": ""
-    },
-    {
-      "id": "a0143f52-5bdd-418a-9e22-89f2c5d4162d",
-      "type": "codeEditor",
-      "name": "disabledDateFunc",
-      "label": "Disabled Date Func",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "customVisibility": "return data.disabledDateMode === 'customFunction'",
-      "description": "Enter disabled date code. You must return true to hide the date. Two objects are exposed to work with, namely 'current' and 'moment'. Use these variables to write the code that will hide the dates you want.",
-      "validate": {},
+      "isDynamic": false,
+      "version": 1,
+      "expandIconPosition": "left",
+      "header": {
+        "id": "d8nBKM4Ft50LTL1Supx8N",
+        "components": []
+      },
+      "content": {
+        "id": "Fd2QdtLi2FOTaZJZvFz3Q",
+        "components": [
+          {
+            "id": "06ab0599-914d-4d2d-875c-765a495472f8",
+            "type": "codeEditor",
+            "name": "style",
+            "label": "Style",
+            "parentId": "Fd2QdtLi2FOTaZJZvFz3Q",
+            "validate": {},
+            "settingsValidationErrors": [],
+            "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
+            "exposedVariables": [
+              {
+                "name": "data",
+                "description": "Form values",
+                "type": "object"
+              },
+              {
+                "name": "globalState",
+                "description": "The global state",
+                "type": "object"
+              }
+            ]
+          },
+          {
+            "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
+            "type": "dropdown",
+            "name": "size",
+            "parentId": "Fd2QdtLi2FOTaZJZvFz3Q",
+            "label": "Size",
+            "allowClear": true,
+            "values": [
+              {
+                "label": "Small",
+                "value": "small",
+                "id": "4f11403c-95fd-4e49-bb60-cb8c25f0f3c3"
+              },
+              {
+                "label": "Middle",
+                "value": "middle",
+                "id": "8f85c476-e632-4fa7-89ad-2be6cfb7f1f1"
+              },
+              {
+                "label": "Large",
+                "value": "large",
+                "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
+              }
+            ],
+            "dataSourceType": "values",
+            "version": 1,
+            "useRawValues": false,
+            "referenceListId": null
+          }
+        ]
+      },
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
       "settingsValidationErrors": [],
-      "exposedVariables": [
-        { "name": "current", "description": "Component current value", "type": "FormInstance" },
-        { "name": "moment", "description": "Instance of moment.js", "type": "object" }
+      "components": [
+        {
+          "id": "Fd2QdtLi2FOTaZJZvFz3Q",
+          "components": [
+            {
+              "id": "06ab0599-914d-4d2d-875c-765a495472f8",
+              "type": "codeEditor",
+              "name": "style",
+              "label": "Style",
+              "parentId": "Fd2QdtLi2FOTaZJZvFz3Q",
+              "validate": {},
+              "settingsValidationErrors": [],
+              "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
+              "exposedVariables": [
+                {
+                  "name": "data",
+                  "description": "Form values",
+                  "type": "object"
+                },
+                {
+                  "name": "globalState",
+                  "description": "The global state",
+                  "type": "object"
+                }
+              ]
+            },
+            {
+              "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
+              "type": "dropdown",
+              "name": "size",
+              "parentId": "Fd2QdtLi2FOTaZJZvFz3Q",
+              "label": "Size",
+              "allowClear": true,
+              "values": [
+                {
+                  "label": "Small",
+                  "value": "small",
+                  "id": "4f11403c-95fd-4e49-bb60-cb8c25f0f3c3"
+                },
+                {
+                  "label": "Middle",
+                  "value": "middle",
+                  "id": "8f85c476-e632-4fa7-89ad-2be6cfb7f1f1"
+                },
+                {
+                  "label": "Large",
+                  "value": "large",
+                  "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
+                }
+              ],
+              "dataSourceType": "values",
+              "version": 1,
+              "useRawValues": false,
+              "referenceListId": null
+            }
+          ]
+        }
       ]
     },
     {
-      "id": "8a685f10-7e2b-49b6-a090-5e9bf2d03218",
-      "type": "sectionSeparator",
-      "name": "sectionEvent",
-      "parentId": "root",
-      "label": "Events"
-    },
-    {
-      "id": "26347fb3-4c52-4d24-9fb7-54d266b18ea4",
-      "type": "codeEditor",
-      "name": "onChangeCustom",
-      "label": "On Change",
+      "id": "kE28pclZaV8tpOab8iJyl",
+      "type": "collapsiblePanel",
+      "name": "pnlControlVisibility",
+      "label": "Control Visibility",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
+      "visibility": "Yes",
       "customVisibility": null,
-      "description": "Enter custom even handler on changing of event. (form, value, dateString) are exposed",
-      "validate": {},
+      "isDynamic": false,
+      "version": 1,
+      "expandIconPosition": "left",
+      "header": {
+        "id": "_DiUNfu1EtZNRRpjO7eHB",
+        "components": []
+      },
+      "content": {
+        "id": "nU7UhIr28XCaiEFbzhB0n",
+        "components": [
+          {
+            "id": "9fa24c62-8c89-4c84-b96f-44fbca26a69b",
+            "type": "checkbox",
+            "name": "showTime",
+            "parentId": "nU7UhIr28XCaiEFbzhB0n",
+            "label": "Show Time",
+            "defaultValue": false
+          },
+          {
+            "id": "cae2b4ed-c957-43e1-90b4-8ac491fb9a16",
+            "type": "checkbox",
+            "name": "defaultToMidnight",
+            "parentId": "nU7UhIr28XCaiEFbzhB0n",
+            "label": "Default time to midnight",
+            "customVisibility": "return data.showTime",
+            "description": "If checked the default time will be '00:00:00', else it will be the current time on the machine",
+            "defaultValue": true
+          },
+          {
+            "id": "88266ea0-4ba5-49d1-8f13-b34d684989c0",
+            "type": "checkbox",
+            "name": "showNow",
+            "parentId": "nU7UhIr28XCaiEFbzhB0n",
+            "label": "Show Now",
+            "defaultValue": false
+          },
+          {
+            "id": "640a5ce5-7ca9-4ea8-b960-be74faf65ba1",
+            "type": "checkbox",
+            "name": "showToday",
+            "parentId": "nU7UhIr28XCaiEFbzhB0n",
+            "label": "Show Today",
+            "defaultValue": false
+          },
+          {
+            "id": "ac88293a-af3b-45a2-a57c-7703d882b473",
+            "type": "dropdown",
+            "name": "disabledDateMode",
+            "label": "Disabled date mode",
+            "labelAlign": "right",
+            "parentId": "nU7UhIr28XCaiEFbzhB0n",
+            "hidden": false,
+            "customVisibility": null,
+            "dataSourceType": "values",
+            "defaultValue": "none",
+            "values": [
+              {
+                "id": "cedee63a-8679-4cc0-97a0-1814afa08b86",
+                "label": "None",
+                "value": "none"
+              },
+              {
+                "id": "db823427-ee53-4c62-9032-911da93dee9a",
+                "label": "Function template",
+                "value": "functionTemplate"
+              },
+              {
+                "id": "3e402036-63ac-434e-a399-c1551fc32890",
+                "label": "Custom function",
+                "value": "customFunction"
+              }
+            ],
+            "description": "",
+            "version": 1,
+            "useRawValues": false,
+            "referenceListId": null
+          },
+          {
+            "id": "ebbd2969-f7d5-4e28-9a7c-56695ed09e59",
+            "type": "dropdown",
+            "name": "disabledDateTemplate",
+            "label": "Disabled date templates",
+            "labelAlign": "right",
+            "parentId": "nU7UhIr28XCaiEFbzhB0n",
+            "hidden": false,
+            "customVisibility": "return data.disabledDateMode === 'functionTemplate'",
+            "dataSourceType": "values",
+            "values": [
+              {
+                "id": "ec349b3e-ef29-467c-96fb-265320ac37a0",
+                "label": "Disable past dates",
+                "value": "return current && current < moment().endOf('day');"
+              },
+              {
+                "id": "41db4d59-249d-4ba2-8049-db0fd9fbde14",
+                "label": "Disable future dates",
+                "value": "return current && current > moment().endOf('day');"
+              }
+            ],
+            "description": "",
+            "version": 1,
+            "useRawValues": false,
+            "referenceListId": null
+          },
+          {
+            "id": "a0143f52-5bdd-418a-9e22-89f2c5d4162d",
+            "type": "codeEditor",
+            "name": "disabledDateFunc",
+            "label": "Disabled Date Func",
+            "labelAlign": "right",
+            "parentId": "nU7UhIr28XCaiEFbzhB0n",
+            "hidden": false,
+            "customVisibility": "return data.disabledDateMode === 'customFunction'",
+            "description": "Enter disabled date code. You must return true to hide the date. Two objects are exposed to work with, namely 'current' and 'moment'. Use these variables to write the code that will hide the dates you want.",
+            "validate": {},
+            "settingsValidationErrors": [],
+            "exposedVariables": [
+              {
+                "name": "current",
+                "description": "Component current value",
+                "type": "FormInstance"
+              },
+              {
+                "name": "moment",
+                "description": "Instance of moment.js",
+                "type": "object"
+              }
+            ]
+          }
+        ]
+      },
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
       "settingsValidationErrors": [],
-      "exposedVariables": [
-        { "name": "data", "description": "Selected form values", "type": "object" },
-        { "name": "dateString", "description": "Date string of current value", "type": "string" },
-        { "name": "form", "description": "Form instance", "type": "FormInstance" },
-        { "name": "formMode", "description": "The form mode", "type": "'readonly' | 'edit' | 'designer'" },
-        { "name": "globalState", "description": "The global state of the application", "type": "object" },
-        { "name": "http", "description": "axios instance used to make http requests", "type": "object" },
+      "components": [
         {
-          "name": "message",
-          "description": "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
-          "type": "object"
-        },
-        { "name": "moment", "description": "The moment.js object", "type": "object" },
-        { "name": "value", "description": "Component current value", "type": "object" },
-        {
-          "name": "setFormData",
-          "description": "A function used to update the form data",
-          "type": "({ values: object, mergeValues: boolean}) => void"
-        },{
-          "name": "setGlobalState",
-          "description": "Setting the global state of the application",
-          "type": "(payload: { key: string, data: any } ) => void"
+          "id": "nU7UhIr28XCaiEFbzhB0n",
+          "components": [
+            {
+              "id": "9fa24c62-8c89-4c84-b96f-44fbca26a69b",
+              "type": "checkbox",
+              "name": "showTime",
+              "parentId": "nU7UhIr28XCaiEFbzhB0n",
+              "label": "Show Time",
+              "defaultValue": false
+            },
+            {
+              "id": "cae2b4ed-c957-43e1-90b4-8ac491fb9a16",
+              "type": "checkbox",
+              "name": "defaultToMidnight",
+              "parentId": "nU7UhIr28XCaiEFbzhB0n",
+              "label": "Default time to midnight",
+              "customVisibility": "return data.showTime",
+              "description": "If checked the default time will be '00:00:00', else it will be the current time on the machine",
+              "defaultValue": true
+            },
+            {
+              "id": "88266ea0-4ba5-49d1-8f13-b34d684989c0",
+              "type": "checkbox",
+              "name": "showNow",
+              "parentId": "nU7UhIr28XCaiEFbzhB0n",
+              "label": "Show Now",
+              "defaultValue": false
+            },
+            {
+              "id": "640a5ce5-7ca9-4ea8-b960-be74faf65ba1",
+              "type": "checkbox",
+              "name": "showToday",
+              "parentId": "nU7UhIr28XCaiEFbzhB0n",
+              "label": "Show Today",
+              "defaultValue": false
+            },
+            {
+              "id": "ac88293a-af3b-45a2-a57c-7703d882b473",
+              "type": "dropdown",
+              "name": "disabledDateMode",
+              "label": "Disabled date mode",
+              "labelAlign": "right",
+              "parentId": "nU7UhIr28XCaiEFbzhB0n",
+              "hidden": false,
+              "customVisibility": null,
+              "dataSourceType": "values",
+              "defaultValue": "none",
+              "values": [
+                {
+                  "id": "cedee63a-8679-4cc0-97a0-1814afa08b86",
+                  "label": "None",
+                  "value": "none"
+                },
+                {
+                  "id": "db823427-ee53-4c62-9032-911da93dee9a",
+                  "label": "Function template",
+                  "value": "functionTemplate"
+                },
+                {
+                  "id": "3e402036-63ac-434e-a399-c1551fc32890",
+                  "label": "Custom function",
+                  "value": "customFunction"
+                }
+              ],
+              "description": "",
+              "version": 1,
+              "useRawValues": false,
+              "referenceListId": null
+            },
+            {
+              "id": "ebbd2969-f7d5-4e28-9a7c-56695ed09e59",
+              "type": "dropdown",
+              "name": "disabledDateTemplate",
+              "label": "Disabled date templates",
+              "labelAlign": "right",
+              "parentId": "nU7UhIr28XCaiEFbzhB0n",
+              "hidden": false,
+              "customVisibility": "return data.disabledDateMode === 'functionTemplate'",
+              "dataSourceType": "values",
+              "values": [
+                {
+                  "id": "ec349b3e-ef29-467c-96fb-265320ac37a0",
+                  "label": "Disable past dates",
+                  "value": "return current && current < moment().endOf('day');"
+                },
+                {
+                  "id": "41db4d59-249d-4ba2-8049-db0fd9fbde14",
+                  "label": "Disable future dates",
+                  "value": "return current && current > moment().endOf('day');"
+                }
+              ],
+              "description": "",
+              "version": 1,
+              "useRawValues": false,
+              "referenceListId": null
+            },
+            {
+              "id": "a0143f52-5bdd-418a-9e22-89f2c5d4162d",
+              "type": "codeEditor",
+              "name": "disabledDateFunc",
+              "label": "Disabled Date Func",
+              "labelAlign": "right",
+              "parentId": "nU7UhIr28XCaiEFbzhB0n",
+              "hidden": false,
+              "customVisibility": "return data.disabledDateMode === 'customFunction'",
+              "description": "Enter disabled date code. You must return true to hide the date. Two objects are exposed to work with, namely 'current' and 'moment'. Use these variables to write the code that will hide the dates you want.",
+              "validate": {},
+              "settingsValidationErrors": [],
+              "exposedVariables": [
+                {
+                  "name": "current",
+                  "description": "Component current value",
+                  "type": "FormInstance"
+                },
+                {
+                  "name": "moment",
+                  "description": "Instance of moment.js",
+                  "type": "object"
+                }
+              ]
+            }
+          ]
         }
       ]
     },
     {
-      "id": "d675bfe4-ee69-431e-931b-b0e0b9ceee6f",
-      "type": "sectionSeparator",
-      "name": "separator2",
-      "parentId": "root",
-      "label": "Validation"
-    },
-    {
-      "id": "3be9da3f-f47e-48ae-b4c3-f5cc36e534d9",
-      "type": "checkbox",
-      "name": "validate.required",
-      "parentId": "root",
-      "label": "Required"
-    },
-    {
-      "id": "34417571-0535-42f7-8661-7579d969ca78",
-      "type": "sectionSeparator",
-      "name": "separatorVisibility",
-      "parentId": "root",
-      "label": "Visibility"
-    },
-    {
-      "id": "6585c7f1-8f55-4bd7-9fd5-40341f732df9",
-      "type": "codeEditor",
-      "name": "customVisibility",
-      "label": "Custom Visibility",
+      "id": "WJlrXoQpXXzHVvk-VGn-z",
+      "type": "collapsiblePanel",
+      "name": "pnlEvents",
+      "label": "Events",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
+      "visibility": "Yes",
       "customVisibility": null,
-      "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-      "validate": {},
+      "isDynamic": false,
+      "version": 1,
+      "expandIconPosition": "left",
+      "header": {
+        "id": "i8dLAW_jVLivqO6nDxhaD",
+        "components": []
+      },
+      "content": {
+        "id": "_m7e9WBdpkz4CsCrpVx8d",
+        "components": [
+          {
+            "id": "26347fb3-4c52-4d24-9fb7-54d266b18ea4",
+            "type": "codeEditor",
+            "name": "onChangeCustom",
+            "label": "On Change",
+            "labelAlign": "right",
+            "parentId": "_m7e9WBdpkz4CsCrpVx8d",
+            "hidden": false,
+            "customVisibility": null,
+            "description": "Enter custom even handler on changing of event. (form, value, dateString) are exposed",
+            "validate": {},
+            "settingsValidationErrors": [],
+            "exposedVariables": [
+              {
+                "name": "data",
+                "description": "Selected form values",
+                "type": "object"
+              },
+              {
+                "name": "dateString",
+                "description": "Date string of current value",
+                "type": "string"
+              },
+              {
+                "name": "form",
+                "description": "Form instance",
+                "type": "FormInstance"
+              },
+              {
+                "name": "formMode",
+                "description": "The form mode",
+                "type": "'readonly' | 'edit' | 'designer'"
+              },
+              {
+                "name": "globalState",
+                "description": "The global state of the application",
+                "type": "object"
+              },
+              {
+                "name": "http",
+                "description": "axios instance used to make http requests",
+                "type": "object"
+              },
+              {
+                "name": "message",
+                "description": "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
+                "type": "object"
+              },
+              {
+                "name": "moment",
+                "description": "The moment.js object",
+                "type": "object"
+              },
+              {
+                "name": "value",
+                "description": "Component current value",
+                "type": "object"
+              },
+              {
+                "name": "setFormData",
+                "description": "A function used to update the form data",
+                "type": "({ values: object, mergeValues: boolean}) => void"
+              },
+              {
+                "name": "setGlobalState",
+                "description": "Setting the global state of the application",
+                "type": "(payload: { key: string, data: any } ) => void"
+              }
+            ]
+          }
+        ]
+      },
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
       "settingsValidationErrors": [],
-      "exposedVariables": [
-        { "name": "value", "description": "Component current value", "type": "string | any" },
-        { "name": "data", "description": "Selected form values", "type": "object" }
+      "components": [
+        {
+          "id": "_m7e9WBdpkz4CsCrpVx8d",
+          "components": [
+            {
+              "id": "26347fb3-4c52-4d24-9fb7-54d266b18ea4",
+              "type": "codeEditor",
+              "name": "onChangeCustom",
+              "label": "On Change",
+              "labelAlign": "right",
+              "parentId": "_m7e9WBdpkz4CsCrpVx8d",
+              "hidden": false,
+              "customVisibility": null,
+              "description": "Enter custom even handler on changing of event. (form, value, dateString) are exposed",
+              "validate": {},
+              "settingsValidationErrors": [],
+              "exposedVariables": [
+                {
+                  "name": "data",
+                  "description": "Selected form values",
+                  "type": "object"
+                },
+                {
+                  "name": "dateString",
+                  "description": "Date string of current value",
+                  "type": "string"
+                },
+                {
+                  "name": "form",
+                  "description": "Form instance",
+                  "type": "FormInstance"
+                },
+                {
+                  "name": "formMode",
+                  "description": "The form mode",
+                  "type": "'readonly' | 'edit' | 'designer'"
+                },
+                {
+                  "name": "globalState",
+                  "description": "The global state of the application",
+                  "type": "object"
+                },
+                {
+                  "name": "http",
+                  "description": "axios instance used to make http requests",
+                  "type": "object"
+                },
+                {
+                  "name": "message",
+                  "description": "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
+                  "type": "object"
+                },
+                {
+                  "name": "moment",
+                  "description": "The moment.js object",
+                  "type": "object"
+                },
+                {
+                  "name": "value",
+                  "description": "Component current value",
+                  "type": "object"
+                },
+                {
+                  "name": "setFormData",
+                  "description": "A function used to update the form data",
+                  "type": "({ values: object, mergeValues: boolean}) => void"
+                },
+                {
+                  "name": "setGlobalState",
+                  "description": "Setting the global state of the application",
+                  "type": "(payload: { key: string, data: any } ) => void"
+                }
+              ]
+            }
+          ]
+        }
       ]
     },
     {
-      "id": "4b5e5951-4998-4635-b1c8-0b6d3940c300",
-      "type": "codeEditor",
-      "name": "customEnabled",
-      "label": "Custom Enabled",
+      "id": "UgwgMBSPX2eKVlZKWGtcc",
+      "type": "collapsiblePanel",
+      "name": "pnlValidation",
+      "label": "Validation",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customEnabled": null,
-      "description": "Enter custom enabled code.  You must return true to enable the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-      "validate": {},
+      "visibility": "Yes",
+      "customVisibility": null,
+      "isDynamic": false,
+      "version": 1,
+      "expandIconPosition": "left",
+      "header": {
+        "id": "2S9VA8QkefAxCRQG-Ua3A",
+        "components": []
+      },
+      "content": {
+        "id": "WQ3g0fIWQ9XjijBUSolq6",
+        "components": [
+          {
+            "id": "3be9da3f-f47e-48ae-b4c3-f5cc36e534d9",
+            "type": "checkbox",
+            "name": "validate.required",
+            "parentId": "WQ3g0fIWQ9XjijBUSolq6",
+            "label": "Required"
+          }
+        ]
+      },
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
       "settingsValidationErrors": [],
-      "exposedVariables": [
-        { "name": "value", "description": "Component current value", "type": "string | any" },
-        { "name": "data", "description": "Selected form values", "type": "object" }
+      "components": [
+        {
+          "id": "WQ3g0fIWQ9XjijBUSolq6",
+          "components": [
+            {
+              "id": "3be9da3f-f47e-48ae-b4c3-f5cc36e534d9",
+              "type": "checkbox",
+              "name": "validate.required",
+              "parentId": "WQ3g0fIWQ9XjijBUSolq6",
+              "label": "Required"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tsje8e90sMxz9W4Gut_An",
+      "type": "collapsiblePanel",
+      "name": "pnlVisibility",
+      "label": "Visibility",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "visibility": "Yes",
+      "customVisibility": null,
+      "isDynamic": false,
+      "version": 1,
+      "expandIconPosition": "left",
+      "header": {
+        "id": "aKZ4VhhO1L-J-9y8PoLT8",
+        "components": []
+      },
+      "content": {
+        "id": "2mi2NM7b1tFyvjlj8U4Hn",
+        "components": [
+          {
+            "id": "6585c7f1-8f55-4bd7-9fd5-40341f732df9",
+            "type": "codeEditor",
+            "name": "customVisibility",
+            "label": "Custom Visibility",
+            "labelAlign": "right",
+            "parentId": "2mi2NM7b1tFyvjlj8U4Hn",
+            "hidden": false,
+            "customVisibility": null,
+            "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
+            "validate": {},
+            "settingsValidationErrors": [],
+            "exposedVariables": [
+              {
+                "name": "value",
+                "description": "Component current value",
+                "type": "string | any"
+              },
+              {
+                "name": "data",
+                "description": "Selected form values",
+                "type": "object"
+              }
+            ]
+          },
+          {
+            "id": "4b5e5951-4998-4635-b1c8-0b6d3940c300",
+            "type": "codeEditor",
+            "name": "customEnabled",
+            "label": "Custom Enabled",
+            "labelAlign": "right",
+            "parentId": "2mi2NM7b1tFyvjlj8U4Hn",
+            "hidden": false,
+            "customEnabled": null,
+            "description": "Enter custom enabled code.  You must return true to enable the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
+            "validate": {},
+            "settingsValidationErrors": [],
+            "exposedVariables": [
+              {
+                "name": "value",
+                "description": "Component current value",
+                "type": "string | any"
+              },
+              {
+                "name": "data",
+                "description": "Selected form values",
+                "type": "object"
+              }
+            ]
+          }
+        ]
+      },
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": [],
+      "components": [
+        {
+          "id": "2mi2NM7b1tFyvjlj8U4Hn",
+          "components": [
+            {
+              "id": "6585c7f1-8f55-4bd7-9fd5-40341f732df9",
+              "type": "codeEditor",
+              "name": "customVisibility",
+              "label": "Custom Visibility",
+              "labelAlign": "right",
+              "parentId": "2mi2NM7b1tFyvjlj8U4Hn",
+              "hidden": false,
+              "customVisibility": null,
+              "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
+              "validate": {},
+              "settingsValidationErrors": [],
+              "exposedVariables": [
+                {
+                  "name": "value",
+                  "description": "Component current value",
+                  "type": "string | any"
+                },
+                {
+                  "name": "data",
+                  "description": "Selected form values",
+                  "type": "object"
+                }
+              ]
+            },
+            {
+              "id": "4b5e5951-4998-4635-b1c8-0b6d3940c300",
+              "type": "codeEditor",
+              "name": "customEnabled",
+              "label": "Custom Enabled",
+              "labelAlign": "right",
+              "parentId": "2mi2NM7b1tFyvjlj8U4Hn",
+              "hidden": false,
+              "customEnabled": null,
+              "description": "Enter custom enabled code.  You must return true to enable the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
+              "validate": {},
+              "settingsValidationErrors": [],
+              "exposedVariables": [
+                {
+                  "name": "value",
+                  "description": "Component current value",
+                  "type": "string | any"
+                },
+                {
+                  "name": "data",
+                  "description": "Selected form values",
+                  "type": "object"
+                }
+              ]
+            }
+          ]
+        }
       ]
     }
   ],
