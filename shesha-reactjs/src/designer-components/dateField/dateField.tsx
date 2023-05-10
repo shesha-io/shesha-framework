@@ -1,20 +1,20 @@
 import React, { FC, Fragment } from 'react';
-import { IToolboxComponent } from '../../../../interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '../../../../providers/form/models';
+import { IToolboxComponent } from '../../interfaces';
+import { FormMarkup, IConfigurableFormComponent } from '../../providers/form/models';
 import { CalendarOutlined } from '@ant-design/icons';
 import { DatePicker, message } from 'antd';
-import ConfigurableFormItem from '../formItem';
+import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
 import moment, { isMoment, Moment } from 'moment';
-import { getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import { HiddenFormItem } from '../../../hiddenFormItem';
-import { useForm, useFormData, useGlobalState, useMetaProperties, useSheshaApplication } from '../../../../providers';
-import { DataTypes } from '../../../../interfaces/dataTypes';
-import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
-import { getPropertyMetadata, getMoment } from '../../../../utils/date';
-import { customDateEventHandler } from '../utils';
-import { axiosHttp } from '../../../../utils/fetchers';
-import { ProperyDataType } from '../../../../interfaces/metadata';
+import { getStyle, validateConfigurableComponentSettings } from '../../providers/form/utils';
+import { HiddenFormItem } from '../../components/hiddenFormItem';
+import { useForm, useFormData, useGlobalState, useMetaProperties, useSheshaApplication } from '../../providers';
+import { DataTypes } from '../../interfaces/dataTypes';
+import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
+import { getPropertyMetadata, getMoment } from '../../utils/date';
+import { customDateEventHandler } from '../../components/formDesigner/components/utils';
+import { axiosHttp } from '../../utils/fetchers';
+import { ProperyDataType } from '../../interfaces/metadata';
 
 const DATE_TIME_FORMATS = {
   time: 'HH:mm:ss',

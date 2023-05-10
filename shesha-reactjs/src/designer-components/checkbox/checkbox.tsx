@@ -1,15 +1,15 @@
 import React from 'react';
-import { IToolboxComponent } from '../../../../interfaces';
-import { FormMarkup } from '../../../../providers/form/models';
+import { IToolboxComponent } from '../../interfaces';
+import { FormMarkup } from '../../providers/form/models';
 import { CheckSquareOutlined } from '@ant-design/icons';
 import { Checkbox } from 'antd';
-import ConfigurableFormItem from '../formItem';
+import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
-import { getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
+import { getStyle, validateConfigurableComponentSettings } from '../../providers/form/utils';
 
-import { DataTypes } from '../../../../interfaces/dataTypes';
-import { useForm, useFormData } from '../../../../providers';
-import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
+import { DataTypes } from '../../interfaces/dataTypes';
+import { useForm, useFormData } from '../../providers';
+import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
 import { ICheckboxComponentProps } from './interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;

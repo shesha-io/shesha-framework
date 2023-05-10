@@ -1,17 +1,17 @@
-import { IToolboxComponent } from '../../../../interfaces';
-import { FormMarkup } from '../../../../providers/form/models';
+import { IToolboxComponent } from '../../interfaces';
+import { FormMarkup } from '../../providers/form/models';
 import { CodeOutlined } from '@ant-design/icons';
 import { Input, message } from 'antd';
 import { InputProps } from 'antd/lib/input';
-import ConfigurableFormItem from '../formItem';
+import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
 import React from 'react';
-import { evaluateString, getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../../../../providers';
-import { customEventHandler } from '../utils';
-import { DataTypes, StringFormats } from '../../../../interfaces/dataTypes';
-import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
-import { axiosHttp } from '../../../../utils/fetchers';
+import { evaluateString, getStyle, validateConfigurableComponentSettings } from '../../providers/form/utils';
+import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../../providers';
+import { customEventHandler } from '../../components/formDesigner/components/utils';
+import { DataTypes, StringFormats } from '../../interfaces/dataTypes';
+import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
+import { axiosHttp } from '../../utils/fetchers';
 import moment from 'moment';
 import { ITextFieldComponentProps, TextType } from './interfaces';
 

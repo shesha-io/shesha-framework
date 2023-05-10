@@ -1,18 +1,18 @@
 import React, { FC, Fragment } from 'react';
-import { IToolboxComponent } from '../../../../interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '../../../../providers/form/models';
+import { IToolboxComponent } from '../../interfaces';
+import { FormMarkup, IConfigurableFormComponent } from '../../providers/form/models';
 import { ClockCircleOutlined } from '@ant-design/icons';
 import { TimePicker } from 'antd';
-import ConfigurableFormItem from '../formItem';
+import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
 import moment, { Moment, isMoment } from 'moment';
 
-import { getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import { useForm, useFormData } from '../../../../providers';
-import { HiddenFormItem } from '../../../hiddenFormItem';
-import { DataTypes } from '../../../../interfaces/dataTypes';
-import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
-import { getNumericValue } from '../../../../utils/string';
+import { getStyle, validateConfigurableComponentSettings } from '../../providers/form/utils';
+import { useForm, useFormData } from '../../providers';
+import { HiddenFormItem } from '../../components/hiddenFormItem';
+import { DataTypes } from '../../interfaces/dataTypes';
+import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
+import { getNumericValue } from '../../utils/string';
 
 type RangeType = 'start' | 'end';
 // tslint:disable-next-line:interface-over-type-literal

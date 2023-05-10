@@ -1,21 +1,21 @@
 import React, { FC } from 'react';
-import { IToolboxComponent } from '../../../../interfaces';
-import { FormMarkup } from '../../../../providers/form/models';
+import { IToolboxComponent } from '../../interfaces';
+import { FormMarkup } from '../../providers/form/models';
 import { DownSquareOutlined } from '@ant-design/icons';
 import { message, Select } from 'antd';
-import ConfigurableFormItem from '../formItem';
+import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
 import { IDropdownComponentProps, ILabelValue } from './interfaces';
 import settingsFormJson from './settingsForm.json';
-import { getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import RefListDropDown from '../../../refListDropDown';
-import { DataTypes } from '../../../../interfaces/dataTypes';
-import { evaluateString } from '../../../..';
-import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../../../../providers';
-import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
-import { customDropDownEventHandler } from '../utils';
-import { axiosHttp } from '../../../../utils/fetchers';
+import { getStyle, validateConfigurableComponentSettings } from '../../providers/form/utils';
+import RefListDropDown from '../../components/refListDropDown';
+import { DataTypes } from '../../interfaces/dataTypes';
+import { evaluateString } from '../..';
+import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../../providers';
+import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
+import { customDropDownEventHandler } from '../../components/formDesigner/components/utils';
+import { axiosHttp } from '../../utils/fetchers';
 import moment from 'moment';
-import { getLegacyReferenceListIdentifier } from '../../../../utils/referenceList';
+import { getLegacyReferenceListIdentifier } from '../../utils/referenceList';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

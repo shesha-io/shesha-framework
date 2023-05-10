@@ -2,10 +2,10 @@ import { InputNumber, InputNumberProps, message } from 'antd';
 import { FormInstance } from 'antd/es/form/Form';
 import moment from 'moment';
 import React, { FC } from 'react';
-import { axiosHttp } from '../../../../utils/fetchers';
-import { useForm, useGlobalState, useSheshaApplication } from '../../../../providers';
-import { getStyle } from '../../../../providers/form/utils';
-import { customInputNumberEventHandler } from '../utils';
+import { axiosHttp } from '../../utils/fetchers';
+import { useForm, useGlobalState, useSheshaApplication } from '../../providers';
+import { getStyle } from '../../providers/form/utils';
+import { customInputNumberEventHandler } from '../../components/formDesigner/components/utils';
 import { INumberFieldComponentProps } from './interfaces';
 
 interface IProps {
