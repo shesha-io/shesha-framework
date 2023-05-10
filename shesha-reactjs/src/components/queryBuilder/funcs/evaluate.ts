@@ -1,10 +1,10 @@
-import { Func, JsonLogicFormatFunc, JsonLogicImportFunc, JsonLogicTree, JsonLogicValue, RuleValue, TypedMap } from '@react-awesome-query-builder/antd';
+import { FieldSettings, Func, JsonLogicFormatFunc, JsonLogicImportFunc, JsonLogicTree, JsonLogicValue, RuleValue, TypedMap } from '@react-awesome-query-builder/antd';
 import { IEvaluateNode, IEvaluateNodeArgs } from 'utils/jsonLogic';
 
 const args2JsonLogic: JsonLogicFormatFunc = (funcArgs: TypedMap<JsonLogicValue>): JsonLogicTree => {
     const node: IEvaluateNode = {
         evaluate: [
-            { expression: funcArgs.expression }
+            { expression: funcArgs.expression, required: funcArgs.required }
         ]
     };
 
@@ -18,29 +18,31 @@ const jsonLogic2Args: JsonLogicImportFunc = (val): RuleValue[] => {
 
     const args: IEvaluateNodeArgs = Array.isArray(typedNode.evaluate) && typedNode.evaluate.length === 1
         ? typedNode.evaluate[0] as IEvaluateNodeArgs
-        : { expression: null };
+        : { expression: null, required: true };
 
-    return [args.expression];
+    return [args.expression, args.required ?? true];
 };
 
-export const evaluateFunc: Func = {
-    returnType: 'entityReference',
-    label: 'Evaluate',
-    jsonLogic: args2JsonLogic,
-    jsonLogicImport: jsonLogic2Args,
-    args: {
-        expression: {
-            label: "Expression",
-            type: 'text',
-            valueSources: ['value'],
-        }
-    }
+type CustomFieldSettings = FieldSettings & {
+    customProps: {
+        checkedChildren?: string;
+        unCheckedChildren?: string;
+        title?: string;
+    };
+};
+
+const requiredFieldSettings: CustomFieldSettings = {
+    customProps: {
+        checkedChildren: "Required",
+        unCheckedChildren: "Optional",
+        title: 'Whole filter will be marked as `unevaluated` if the expression is marked as `required` and the evaluation result is empty'
+    }             
 };
 
 export const getEvaluateFunc = (type: string): Func => {
     return {
         returnType: type,
-        label: 'Evaluate',
+        label: 'Evaluate (mustache)',
         jsonLogic: args2JsonLogic,
         jsonLogicImport: jsonLogic2Args,
         args: {
@@ -48,7 +50,13 @@ export const getEvaluateFunc = (type: string): Func => {
                 label: "Expression",
                 type: 'text',
                 valueSources: ['value'],
-            }
+            },
+            required: {
+                label: 'Allow empty',
+                type: 'boolean',
+                valueSources: ['value'],
+                fieldSettings: requiredFieldSettings
+            }            
         }
     };
 };
