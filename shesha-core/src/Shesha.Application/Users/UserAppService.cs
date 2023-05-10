@@ -42,6 +42,9 @@ namespace Shesha.Users
 
     public class UserAppService : AsyncCrudAppService<User, UserDto, long, PagedUserResultRequestDto, CreateUserDto, UpdateUserDto>, IUserAppService
     {
+        // from: http://regexlib.com/REDetails.aspx?regexp_id=1923
+        public const string PasswordRegex = "(?=^.{8,}$)(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\\s)[0-9a-zA-Z!@#$%^&*()]*$";
+
         private readonly UserManager _userManager;
         private readonly RoleManager _roleManager;
         private readonly IRepository<Role> _roleRepository;
@@ -561,7 +564,7 @@ namespace Shesha.Users
                 throw new UserFriendlyException("Your token is invalid or has expired, try to reset password again");
 
             // todo: add new setting for the PasswordRegex and error message
-            if (!new Regex(AccountAppService.PasswordRegex).IsMatch(input.NewPassword))
+            if (!new Regex(PasswordRegex).IsMatch(input.NewPassword))
             {
                 throw new UserFriendlyException("Passwords must be at least 8 characters, contain a lowercase, uppercase, and number.");
             }
@@ -629,7 +632,7 @@ namespace Shesha.Users
                 throw new UserFriendlyException("Your 'Existing Password' did not match the one on record.  Please try again or contact an administrator for assistance in resetting your password.");
             }
             // todo: add new setting for the PasswordRegex and error message
-            if (!new Regex(AccountAppService.PasswordRegex).IsMatch(input.NewPassword))
+            if (!new Regex(PasswordRegex).IsMatch(input.NewPassword))
             {
                 throw new UserFriendlyException("Passwords must be at least 8 characters, contain a lowercase, uppercase, and number.");
             }
