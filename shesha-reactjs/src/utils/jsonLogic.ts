@@ -62,7 +62,7 @@ export const convertJsonLogicNode = (jsonLogic: object, options: IJsonLogicConve
         // special handling for evaluation nodes
         const evaluationNodeParsing = tryParseAsEvaluationOperation(node);
         if (evaluationNodeParsing.isEvaluationNode) {
-            const { result, success, unevaluatedExpressions } = evaluateComplexStringWithResult(evaluationNodeParsing.evaluationArguments.expression, mappings);
+            const { result, success, unevaluatedExpressions } = evaluateComplexStringWithResult(evaluationNodeParsing.evaluationArguments.expression, mappings, evaluationNodeParsing.evaluationArguments.required);
 
             if (onEvaluation)
                 onEvaluation({
@@ -114,6 +114,7 @@ export const convertJsonLogicNode = (jsonLogic: object, options: IJsonLogicConve
 
 export interface IEvaluateNodeArgs {
     expression: string;
+    required: boolean;
 };
 
 export interface IEvaluateNode {
