@@ -1,17 +1,16 @@
 using System.Threading.Tasks;
 using Abp.Configuration;
 using Abp.Zero.Configuration;
+using Microsoft.AspNetCore.Mvc;
 using Shesha.Authorization.Accounts.Dto;
 using Shesha.Authorization.Users;
 using Shesha.Services;
 
 namespace Shesha.Authorization.Accounts
 {
+    /*
     public class AccountAppService : SheshaAppServiceBase, IAccountAppService
     {
-        // from: http://regexlib.com/REDetails.aspx?regexp_id=1923
-        public const string PasswordRegex = "(?=^.{8,}$)(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\\s)[0-9a-zA-Z!@#$%^&*()]*$";
-
         private readonly UserRegistrationManager _userRegistrationManager;
 
         public AccountAppService(UserRegistrationManager userRegistrationManager)
@@ -54,4 +53,5 @@ namespace Shesha.Authorization.Accounts
             };
         }
     }
+    */
 }
