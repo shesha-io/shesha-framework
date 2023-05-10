@@ -112,6 +112,22 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
         return Promise.resolve();
     };
 
+    const hiddenProperties = [
+        // label props
+        'label', 'hideLabel', 'labelAlign', 
+
+        // bindings
+        'name', 'description', 'hidden', 'disabled', 'readOnly', 'style', 'size', 'visibility',
+
+        'hideBorder', 
+        //autocompleteProps
+        'mode', 'dataSourceType', 'dataSourceUrl', 'entityTypeShortAlias'
+    ];
+
+    const propertyFilter = (name: string): boolean => {
+        return hiddenProperties.indexOf(name) === -1;
+    };
+
     return (
         <Input.Group>
             <Select<string>
@@ -131,6 +147,7 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
                 model={value?.settings}
                 onSave={onSettingsSaveClick}
                 onCancel={onCancelConfigureClick}
+                propertyFilter={propertyFilter}
             />
         </Input.Group>
     );

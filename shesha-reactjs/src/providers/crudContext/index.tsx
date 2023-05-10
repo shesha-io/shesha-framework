@@ -125,6 +125,14 @@ const CrudProvider: FC<ICrudProviderProps> = ({ children, data, updater, creater
         setLastError(null);
     };
 
+    const getFormData = () => {
+        return form.getFieldsValue();
+    };
+    const getInitialData = () => {
+        return data;
+    };
+    
+
     const contextValue: ICrudContext = {
         ...state,
         switchMode,
@@ -133,6 +141,8 @@ const CrudProvider: FC<ICrudProviderProps> = ({ children, data, updater, creater
         performDelete,
         reset,
         setLastError,
+        getFormData,
+        getInitialData,
     };
 
     return (

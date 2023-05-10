@@ -6,15 +6,22 @@ import {
   IFlatComponentsStructure,
   IFormSettings,
 } from '../providers/form/models';
-import { FormInstance } from 'antd';
+import { ColProps, FormInstance } from 'antd';
 import { InternalNamePath } from 'rc-field-form/lib/interface';
 import { IPropertyMetadata } from './metadata';
 import { ConfigurableFormInstance } from '../providers/form/contexts';
 import { Migrator, MigratorFluent } from '../utils/fluentMigrator/migrator';
+import { FormLayout } from 'antd/lib/form/Form';
 
 export interface ISettingsFormInstance {
   submit: () => void;
   reset: () => void;
+}
+
+export interface IFormLayoutSettings {
+  labelCol?: ColProps;
+  wrapperCol?: ColProps;
+  layout?: FormLayout;
 }
 
 export interface ISettingsFormFactoryArgs<TModel = IConfigurableFormComponent> {
@@ -25,6 +32,8 @@ export interface ISettingsFormFactoryArgs<TModel = IConfigurableFormComponent> {
   onValuesChange?: (changedValues: any, values: TModel) => void;
   toolboxComponent: IToolboxComponent;
   formRef?: MutableRefObject<ISettingsFormInstance | null>;
+  propertyFilter?: (name: string) => boolean;
+  layoutSettings?: IFormLayoutSettings;
 }
 
 export type ISettingsFormFactory<TModel = IConfigurableFormComponent> = (

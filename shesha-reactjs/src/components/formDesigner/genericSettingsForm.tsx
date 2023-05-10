@@ -2,7 +2,7 @@ import React, { MutableRefObject, useEffect } from 'react';
 import { Form } from 'antd';
 import { ConfigurableForm } from '../../components';
 import { IConfigurableFormComponent, FormMarkup } from '../../providers/form/models';
-import { ISettingsFormInstance, IToolboxComponent } from '../../interfaces';
+import { IFormLayoutSettings, ISettingsFormInstance, IToolboxComponent } from '../../interfaces';
 import { IPropertyMetadata } from '../../interfaces/metadata';
 import { listComponentToModelMetadata } from '../../providers/form/utils';
 
@@ -15,7 +15,14 @@ export interface IProps<TModel extends IConfigurableFormComponent> {
   onValuesChange?: (changedValues: any, values: TModel) => void;
   toolboxComponent: IToolboxComponent;
   formRef?: MutableRefObject<ISettingsFormInstance | null>;
+  propertyFilter?: (name: string) => boolean;
+  layoutSettings?: IFormLayoutSettings;
 }
+
+const DEFAULT_FORM_LAYOUT: IFormLayoutSettings = {
+  labelCol: { span: 24 },
+  wrapperCol: { span: 24 },
+};
 
 function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
   readonly,
@@ -25,6 +32,8 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
   onValuesChange,
   toolboxComponent,
   formRef,
+  propertyFilter,
+  layoutSettings = DEFAULT_FORM_LAYOUT,
 }: IProps<TModel>) {
   const [form] = Form.useForm();
 
@@ -61,8 +70,10 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
 
   return (
     <ConfigurableForm
-      labelCol={{ span: 24 }}
-      wrapperCol={{ span: 24 }}
+      labelCol={layoutSettings?.labelCol}
+      wrapperCol={layoutSettings?.wrapperCol}
+      layout={layoutSettings?.layout}
+
       mode={readonly ? "readonly" : "edit"}
       form={form}
       onFinish={onSave}
@@ -73,6 +84,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
         linkToModelMetadata
       }}
       onFinishFailed={onFinishFailed}
+      propertyFilter={propertyFilter}
     />
   );
 }

@@ -226,15 +226,16 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
       const cloneComponent = (component: IConfigurableFormComponent, nestedComponents: IComponentsDictionary, nestedRelations: IComponentRelations): IConfigurableFormComponent => {
         const newId = nanoid();
         const clone = { ...component, id: newId };
-        
+
         nestedComponents[clone.id] = clone;
-        
+
         const toolboxComponent = findToolboxComponent(state.toolboxComponentGroups, c => c.type === component.type);
         const containers = toolboxComponent?.customContainerNames ?? [];
 
         // handle nested components by id of the parent
         const srcNestedComponents = state.componentRelations[component.id];
-        if (srcNestedComponents){
+        if (srcNestedComponents) {
+
           nestedRelations[clone.id] = [];
           const relations = nestedRelations[clone.id];
 
@@ -255,7 +256,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
             nestedRelations[clone.id] = [];
             const relations = nestedRelations[clone.id];
 
-            clone[cntName] = srcContainer.map(c => {
+            const cloneChild = (c) => {
               // child may be component or any object with id
               const childClone = cloneComponent(c, nestedComponents, nestedRelations);
               if (childClone.hasOwnProperty('parentId'))
@@ -264,7 +265,11 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
               relations.push(childClone.id);
 
               return childClone;
-            });            
+            };
+
+            clone[cntName] = Array.isArray(srcContainer)
+              ? srcContainer.map(c => cloneChild(c))
+              : cloneChild(srcContainer);
           }
         });
 
@@ -277,17 +282,17 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
       const nestedRelations: IComponentRelations = {};
       const clone = cloneComponent(srcComponent, nestedComponents, nestedRelations);
 
-      const parentRelations = [...state.componentRelations[srcComponent.parentId]]; 
+      const parentRelations = [...state.componentRelations[srcComponent.parentId]];
       const cloneIndex = parentRelations.indexOf(srcComponent.id) + 1;
       parentRelations.splice(cloneIndex, 0, clone.id);
 
-      const componentRelations = { 
-        ...state.componentRelations, 
+      const componentRelations = {
+        ...state.componentRelations,
         [srcComponent.parentId]: parentRelations,
-        ...nestedRelations, 
+        ...nestedRelations,
       };
-      const allComponents = { 
-        ...state.allComponents, 
+      const allComponents = {
+        ...state.allComponents,
         [clone.id]: clone,
         ...nestedComponents,
       };
@@ -357,7 +362,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
       };
     },
 
-    
+
     [FormActionEnums.StartDraggingNewItem]: (state: IFormDesignerStateContext) => {
       return {
         ...state,
@@ -368,7 +373,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
       return {
         ...state,
       };
-    },    
+    },
 
     [FormActionEnums.StartDragging]: (state: IFormDesignerStateContext) => {
       return {
@@ -400,14 +405,14 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
       state: IFormDesignerStateContext,
       action: ReduxActions.Action<IUpdateChildComponentsPayload>
     ) => {
-       
+
       const { payload } = action;
 
       const oldChilds = state.componentRelations[payload.containerId] ?? [];
       // if not changed - return state as is
       if (idArraysEqual(oldChilds, payload.componentIds))
         return state;
-      
+
       // 2. update parentId in new components list
       const updatedComponents = {};
       const updatedRelations: { [index: string]: string[] } = {

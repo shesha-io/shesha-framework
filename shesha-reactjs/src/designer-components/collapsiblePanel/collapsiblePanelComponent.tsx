@@ -18,10 +18,16 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
   name: 'Panel',
   icon: <GroupOutlined />,
   factory: (model: ICollapsiblePanelComponentProps) => {
-    const { isComponentHidden, formMode } = useForm();
-    const { label, expandIconPosition, collapsedByDefault, collapsible } = model;
+    const { isComponentHidden, formMode, hasVisibleChilds } = useForm();
+    const { label, expandIconPosition, collapsedByDefault, collapsible, ghost } = model;
 
     if (isComponentHidden(model)) return null;
+
+    if (model.hideWhenEmpty && formMode !== 'designer'){
+      const childsVisible = hasVisibleChilds(model.content.id);
+      if (!childsVisible)
+        return null;
+    }
 
     const headerComponents = model?.header.components?.map(c => ({ ...c, readOnly: model?.readOnly })) ?? [];
     const extra = headerComponents?.length > 0 || formMode === 'designer'
@@ -29,12 +35,13 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       : null;
 
     return (
-      <CollapsiblePanel 
+      <CollapsiblePanel
         header={label}
         expandIconPosition={expandIconPosition !== 'hide' ? expandIconPosition as ExpandIconPosition : 'left'}
         collapsedByDefault={collapsedByDefault}
-        extra={extra} 
+        extra={extra}
         collapsible={collapsible === 'header' ? 'header' : 'icon'} showArrow={collapsible !== 'disabled' && expandIconPosition !== 'hide'}
+        ghost={ghost}
       >
         <ComponentsContainer
           containerId={model.content.id}
@@ -51,26 +58,26 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       expandIconPosition: 'right',
     };
   })
-  .add<ICollapsiblePanelComponentProps>(1, (prev, struct) => {
-    const header = { id: nanoid(), components: [] };
-    const content = { id: nanoid(), components: [] };
+    .add<ICollapsiblePanelComponentProps>(1, (prev, struct) => {
+      const header = { id: nanoid(), components: [] };
+      const content = { id: nanoid(), components: [] };
 
-    delete(struct.flatStructure.componentRelations[struct.componentId]);
-    struct.flatStructure.componentRelations[content.id] = [];
-    content.components = prev.components?.map(x => {
-      struct.flatStructure.allComponents[x.id].parentId = content.id;
-      struct.flatStructure.componentRelations[content.id].push(x.id);
-      return {...x, parentId: content.id};
-    }) ?? [];
+      delete (struct.flatStructure.componentRelations[struct.componentId]);
+      struct.flatStructure.componentRelations[content.id] = [];
+      content.components = prev.components?.map(x => {
+        struct.flatStructure.allComponents[x.id].parentId = content.id;
+        struct.flatStructure.componentRelations[content.id].push(x.id);
+        return { ...x, parentId: content.id };
+      }) ?? [];
 
-    return {
-      ...prev,
-      components: [{...header}, {...content}],
-      header,
-      content,
-      collapsible: 'icon'
-    };
-  }),
+      return {
+        ...prev,
+        //components: [{ ...header }, { ...content }],
+        header,
+        content,
+        collapsible: 'icon'
+      };
+    }),
   customContainerNames: ['header', 'content'],
 };
 
