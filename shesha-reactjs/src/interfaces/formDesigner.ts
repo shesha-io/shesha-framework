@@ -160,8 +160,3 @@ export interface IAsyncValidationError {
 export interface IFormValidationErrors { }
 
 export { type ConfigurableFormInstance };
-
-export interface IEditorAdapter<T extends IConfigurableFormComponent = IConfigurableFormComponent> {
-  fillSettings: (customSettings: Partial<T>) => T;
-  settingsFormFactory?: ISettingsFormFactory<T>;
-};

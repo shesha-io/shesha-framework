@@ -10,7 +10,7 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
         labelAlign: "right",
         expandIconPosition: "left",
         ghost: true,
-        hideWhenEmpty: false,
+        hideWhenEmpty: true,
         header: {
             id: '3342DA1C-DA07-46F6-8026-E8B9A93F094A',
             components: []
@@ -83,7 +83,7 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
         labelAlign: "right",
         expandIconPosition: "left",
         ghost: true,
-        hideWhenEmpty: false,
+        hideWhenEmpty: true,
         header: {
             id: nanoid(),
             components: []
@@ -126,7 +126,7 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
         labelAlign: "right",
         expandIconPosition: "left",
         ghost: true,
-        hideWhenEmpty: false,
+        hideWhenEmpty: true,
         header: {
             id: nanoid(),
             components: []
@@ -159,7 +159,7 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
         labelAlign: "right",
         expandIconPosition: "left",
         ghost: true,
-        hideWhenEmpty: false,
+        hideWhenEmpty: true,
         header: {
             id: nanoid(),
             components: []
@@ -167,21 +167,10 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
         content: {
             id: 'B30AECE7-4EEB-4E35-813B-F5BE13C7B1B1',
             components: new DesignerToolbarSettings()
-                .addTextField({
-                    id: "417ee22e-a49d-44f2-a1c7-fef42ec87503",
-                    name: "module",
-                    parentId: "B30AECE7-4EEB-4E35-813B-F5BE13C7B1B1",
-                    description: 'This property allows you to specify a module for a required RefList',
-                    validate: { required: true },
-                    label: "Module"
-                })
-                .addTextField({
-                    id: "c6ecd70c-7420-4ea7-a715-d42699d26e6e",
-                    name: "nameSpace",
-                    parentId: "B30AECE7-4EEB-4E35-813B-F5BE13C7B1B1",
-                    description: 'This property allows you to specify a name for a required RefList',
-                    validate: { required: true },
-                    label: "Name"
+                .addRefListAutocomplete({
+                    id: nanoid(),
+                    name: 'referenceListId',
+                    label: 'Reference list'
                 })
                 .toJson()
         }
@@ -195,7 +184,7 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
         labelAlign: "right",
         expandIconPosition: "left",
         ghost: true,
-        hideWhenEmpty: false,
+        hideWhenEmpty: true,
         header: {
             id: nanoid(),
             components: []

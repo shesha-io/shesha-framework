@@ -23,6 +23,7 @@ import { ICollapsiblePanelComponentProps } from 'designer-components/collapsible
 import { IPropertyAutocompleteComponentProps } from 'components/formDesigner/components/propertyAutocomplete/interfaces';
 import { ISwitchComponentProps } from 'components/formDesigner/components/switch/interfaces';
 import { IAlertComponentProps } from 'components/formDesigner/components/alert/interfaces';
+import { IReferenceListAutocompleteProps } from 'components/formDesigner/components/referenceListAutocomplete';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'type'> {}
 
@@ -43,6 +44,8 @@ type AutocompleteType = ToolbarSettingsProp & Omit<IAutocompleteComponentProps, 
 type EndpointsAutocompleteType = ToolbarSettingsProp & Omit<IEndpointsAutocompleteComponentProps, 'type'>;
 
 type FormAutocompleteType = ToolbarSettingsProp & Omit<IFormAutocompleteComponentProps, 'type'>;
+
+type ReferenceListAutocompleteType = ToolbarSettingsProp & Omit<IReferenceListAutocompleteProps, 'type'>;
 
 type CheckboxType = ToolbarSettingsProp & Omit<ICheckboxComponentProps, 'type'>;
 
@@ -143,6 +146,10 @@ export class DesignerToolbarSettings<T> {
 
   public addFormAutocomplete(props: FormAutocompleteType | ((data: T) => FormAutocompleteType)) {
     return this.addProperty(props, 'formAutocomplete');
+  }
+
+  public addRefListAutocomplete(props: ReferenceListAutocompleteType | ((data: T) => ReferenceListAutocompleteType)) {
+    return this.addProperty(props, 'referenceListAutocomplete');
   }
 
   public addCheckbox(props: CheckboxType | ((data: T) => CheckboxType)) {

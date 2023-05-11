@@ -1,14 +1,13 @@
-import React, { FC, useEffect } from 'react';
-import { FormMode, useForm, useGlobalState } from '../../../providers';
+import React, { FC } from 'react';
+import { FormMode, useForm, useGlobalState } from 'providers';
 import '../styles/index.less';
 import { IRefListStatusProps } from '../models';
 import convertCssColorNameToHex from 'convert-css-color-name-to-hex';
 import { Alert, Skeleton, Tag, Tooltip } from 'antd';
-import { getStyle } from '../../../utils/publicUtils';
-import { useReferenceListGetByName } from '../../../apis/referenceList';
-import { getCurrentStatus } from '../utilis';
+import { getStyle } from 'utils/publicUtils';
 import ToolTipTittle from './tooltip';
 import { QuestionCircleOutlined } from '@ant-design/icons';
+import { useReferenceListItem } from 'providers/referenceListDispatcher';
 
 interface IProps {
   formMode?: FormMode;
@@ -17,58 +16,52 @@ interface IProps {
   value?: any;
 }
 
-const RefListStatusControl: FC<IProps> = ({ model }) => {
-  const { formData: data, formMode } = useForm();
+const RefListStatusControl: FC<IProps> = ({ model, value }) => {
+  const { formData: data } = useForm();
   const { globalState } = useGlobalState();
-  const { module, nameSpace, showIcon, solidBackground, style, name, showReflistName } = model;
+  const { referenceListId, showIcon, solidBackground, style, showReflistName } = model;
 
-  const {
-    data: refListData,
-    error: RefListError,
-    loading: isFetchingRefListData,
-    refetch: getRefListHttp,
-  } = useReferenceListGetByName({
-    lazy: true,
-    queryParams: { module, name: nameSpace },
-  });
+  const listItem = useReferenceListItem(referenceListId?.module, referenceListId?.name, value);  
 
-  useEffect(() => {
-    getRefListHttp();
-  }, []);
-
-  if (!!RefListError && !isFetchingRefListData) {
+  if (listItem?.error && !listItem?.loading) {
     return (
-      <Alert showIcon message="Something went during Reflists fetch" description={RefListError.message} type="error" />
+      <Alert showIcon message="Something went during Reflists fetch" description={listItem.error.message} type="error" />
     );
   }
 
-  const currentStatus = getCurrentStatus(refListData?.result, data, formMode, name);
+  console.log('LOG: listItem', {
+    listItem,
+    value, 
+    referenceListId
+  });
+
+  const itemData = listItem?.data;
 
   const memoizedColor = solidBackground
-    ? convertCssColorNameToHex(currentStatus?.color ?? '')
-    : currentStatus?.color?.toLowerCase();
+    ? convertCssColorNameToHex(itemData?.color ?? '')
+    : itemData?.color?.toLowerCase();
 
-  const canShowIcon = showIcon && currentStatus?.icon;
+  const canShowIcon = showIcon && itemData?.icon;
 
-  if (!currentStatus?.itemValue && refListData?.success) return null;
+  if (!itemData?.itemValue && !listItem?.loading) return null;
 
   return (
-    <Skeleton loading={isFetchingRefListData}>
+    <Skeleton loading={listItem?.loading}>
       <div className='sha-status-tag-container'>
         <Tag
           className="sha-status-tag"
           color={memoizedColor}
           style={{ ...getStyle(style, data, globalState) }}
-          icon={canShowIcon ? <Icon type={currentStatus?.icon} /> : null}
+          icon={canShowIcon ? <Icon type={itemData?.icon} /> : null}
         >
-          {showReflistName && currentStatus?.item}
+          {showReflistName && itemData?.item}
         </Tag>
-        {(((currentStatus?.description && showReflistName) ||
-          (!showReflistName && (currentStatus?.item || currentStatus?.description))) &&
+        {(((itemData?.description && showReflistName) ||
+          (!showReflistName && (itemData?.item || itemData?.description))) &&
           (
             <Tooltip
               placement="rightTop"
-              title={<ToolTipTittle showReflistName={showReflistName} currentStatus={currentStatus} />}
+              title={<ToolTipTittle showReflistName={showReflistName} currentStatus={itemData} />}
             >
 
               <QuestionCircleOutlined className='sha-help-icon' />
