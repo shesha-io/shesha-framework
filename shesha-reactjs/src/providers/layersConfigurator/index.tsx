@@ -5,8 +5,15 @@ import {
   LayerGroupConfiguratorActionsContext,
   LayerGroupConfiguratorStateContext,
   LAYER_GROUP_CONTEXT_INITIAL_STATE,
+  IUpdateChildItemsPayload,
 } from './contexts';
-import { addLayerAction, deleteLayerAction, selectItemAction, updateItemAction } from './actions';
+import {
+  addLayerAction,
+  deleteLayerAction,
+  selectItemAction,
+  updateChildItemsAction,
+  updateItemAction,
+} from './actions';
 import { LayerGroupItemProps } from './models';
 import { getItemById } from './utils';
 
@@ -49,6 +56,10 @@ const LayerGroupConfiguratorProvider: FC<PropsWithChildren<ILayerGroupConfigurat
     return getItemById(state.items, uid);
   };
 
+  const updateChildItems = (payload: IUpdateChildItemsPayload) => {
+    if (!state.readOnly) dispatch(updateChildItemsAction(payload));
+  };
+
   return (
     <LayerGroupConfiguratorStateContext.Provider value={state}>
       <LayerGroupConfiguratorActionsContext.Provider
@@ -58,6 +69,7 @@ const LayerGroupConfiguratorProvider: FC<PropsWithChildren<ILayerGroupConfigurat
           selectItem,
           updateItem,
           getItem,
+          updateChildItems,
         }}
       >
         {children}

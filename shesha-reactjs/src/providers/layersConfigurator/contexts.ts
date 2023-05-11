@@ -4,7 +4,7 @@ import { LayerGroupItemProps } from './models';
 export interface IUpdateChildItemsPayload {
   index: number[];
   id?: string;
-  children: LayerGroupItemProps[];
+  childs: LayerGroupItemProps[];
 }
 
 export interface IUpdateItemSettingsPayload {
@@ -24,6 +24,7 @@ export interface ILayerGroupConfiguratorActionsContext {
   selectItem: (uid: string) => void;
   updateItem: (payload: IUpdateItemSettingsPayload) => void;
   getItem: (uid: string) => LayerGroupItemProps;
+  updateChildItems: (payload: IUpdateChildItemsPayload) => void;
 }
 
 export const LAYER_GROUP_CONTEXT_INITIAL_STATE: ILayerGroupConfiguratorStateContext = {

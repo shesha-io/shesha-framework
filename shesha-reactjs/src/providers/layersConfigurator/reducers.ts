@@ -1,5 +1,6 @@
 import {
     ILayerGroupConfiguratorStateContext,
+    IUpdateChildItemsPayload,
     IUpdateItemSettingsPayload,
     LAYER_GROUP_CONTEXT_INITIAL_STATE,
 } from './contexts';
@@ -74,6 +75,38 @@ const LayerGroupReducer = handleActions<ILayerGroupConfiguratorStateContext, any
                 ...newArray[position.index],
                 ...payload.settings,
             };
+
+            return {
+                ...state,
+                items: newItems,
+            };
+        },
+
+        [LayerGroupActionEnums.UpdateChildItems]: (
+            state: ILayerGroupConfiguratorStateContext,
+            action: ReduxActions.Action<IUpdateChildItemsPayload>
+        ) => {
+            const {
+                payload: { index, childs: childIds },
+            } = action;
+            if (!Boolean(index) || index.length === 0) {
+                return {
+                    ...state,
+                    items: childIds,
+                };
+            }
+            // copy all items
+            const newItems = [...state.items];
+            // blockIndex - full index of the current container
+            const blockIndex = [...index];
+            // lastIndex - index of the current element in its' parent
+            const lastIndex = blockIndex.pop();
+
+            // search for a parent item
+            const lastArr = blockIndex.reduce((arr, i) => arr[i]['childItems'], newItems);
+
+            // and set a list of childs
+            lastArr[lastIndex]['childItems'] = childIds;
 
             return {
                 ...state,

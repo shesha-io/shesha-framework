@@ -13,14 +13,14 @@ export interface ILayerItemsContainerProps {
 }
 
 export const LayerItemsContainer: FC<ILayerItemsContainerProps> = (props) => {
-  const { readOnly } = useLayerGroupConfigurator();
+  const { readOnly, updateChildItems } = useLayerGroupConfigurator();
 
   const onSetList = (newState: ItemInterface[], _sortable, _store) => {
-    // temporary commented out, the behavoiur of the sortablejs differs sometimes
     const listChanged = true; //!newState.some(item => item.chosen !== null && item.chosen !== undefined);
 
     if (listChanged) {
-      newState.map<LayerGroupItemProps>((item) => item as LayerGroupItemProps);
+      const newChilds = newState.map<LayerGroupItemProps>((item) => item as LayerGroupItemProps);
+      updateChildItems({ index: props.index, childs: newChilds });
     }
 
     return;

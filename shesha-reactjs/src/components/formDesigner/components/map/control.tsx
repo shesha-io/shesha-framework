@@ -83,7 +83,7 @@ export const Map: FC<IMapProps> = ({
           ?.filter((i) => {
             return !Object.values(i).includes(null);
           })
-          .map((j) => JSON.parse(j.comments)),
+          .map((j) => JSON.parse(j?.comments)),
       };
     }
 
