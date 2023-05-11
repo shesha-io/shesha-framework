@@ -48,9 +48,6 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
         if (noSelectionItem)
             result.splice(0, 0, noSelectionItem);
 
-        const componentTypes = result.map(c => c.value);
-        console.log('LOG: inline components', componentTypes);
-
         return result;
     }, [editors]);
 

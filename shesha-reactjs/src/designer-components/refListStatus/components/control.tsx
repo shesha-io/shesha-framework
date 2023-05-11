@@ -29,12 +29,6 @@ const RefListStatusControl: FC<IProps> = ({ model, value }) => {
     );
   }
 
-  console.log('LOG: listItem', {
-    listItem,
-    value, 
-    referenceListId
-  });
-
   const itemData = listItem?.data;
 
   const memoizedColor = solidBackground
