@@ -1,11 +1,11 @@
 import React, { FC, useEffect } from 'react';
-import { FormMode, useForm, useGlobalState } from '../../../../../providers';
+import { FormMode, useForm, useGlobalState } from '../../../providers';
 import '../styles/index.less';
 import { IRefListStatusProps } from '../models';
 import convertCssColorNameToHex from 'convert-css-color-name-to-hex';
 import { Alert, Skeleton, Tag, Tooltip } from 'antd';
-import { getStyle } from '../../../../../utils/publicUtils';
-import { useReferenceListGetByName } from '../../../../../apis/referenceList';
+import { getStyle } from '../../../utils/publicUtils';
+import { useReferenceListGetByName } from '../../../apis/referenceList';
 import { getCurrentStatus } from '../utilis';
 import ToolTipTittle from './tooltip';
 import { QuestionCircleOutlined } from '@ant-design/icons';

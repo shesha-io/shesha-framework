@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { ReferenceListItemDto } from '../../../../../apis/referenceList';
+import { ReferenceListItemDto } from '../../../apis/referenceList';
 
 interface IToolTipProps {
   currentStatus: ReferenceListItemDto;

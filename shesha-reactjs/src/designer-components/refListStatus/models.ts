@@ -1,5 +1,5 @@
-import { IFormItem } from "../../../..";
-import { IConfigurableFormComponent } from "../../../../providers";
+import { IFormItem } from "../..";
+import { IConfigurableFormComponent } from "../../providers";
 
 
 export interface IRefListStatusProps extends IConfigurableFormComponent, IFormItem {

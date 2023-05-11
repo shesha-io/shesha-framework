@@ -1,4 +1,4 @@
-import { ReferenceListItemDto, ReferenceListWithItemsDto } from '../../../../apis/referenceList';
+import { ReferenceListItemDto, ReferenceListWithItemsDto } from '../../apis/referenceList';
 
 const getCurrentStatus = (
     refListData: ReferenceListWithItemsDto,

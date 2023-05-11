@@ -64,7 +64,7 @@ import QueryBuilderComponent from 'designer-components/queryBuilder/queryBuilder
 import Radio from 'components/formDesigner/components/radio/radio';
 import Rate from 'components/formDesigner/components/rate';
 import ReferenceListAutocompleteComponent from 'components/formDesigner/components/referenceListAutocomplete';
-import RefListStatusComponent from 'components/formDesigner/components/refListStatus';
+import RefListStatusComponent from 'designer-components/refListStatus';
 import RichTextEditor from 'components/formDesigner/components/richTextEditor';
 import ScheduledJobExecutionLog from 'components/formDesigner/components/scheduledJobExecutionLog/scheduledJobExecutionLog';
 import Section from 'components/formDesigner/components/section';
