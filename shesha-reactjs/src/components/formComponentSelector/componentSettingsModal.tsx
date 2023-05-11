@@ -12,6 +12,7 @@ export interface IProps<T extends IConfigurableFormComponent> {
   onCancel: () => void;
   formComponent: IToolboxComponent;
   readOnly: boolean;
+  propertyFilter?: (name: string) => boolean;
 }
 
 function ComponentSettingsModal<T extends IConfigurableFormComponent>({
@@ -21,6 +22,7 @@ function ComponentSettingsModal<T extends IConfigurableFormComponent>({
   onCancel,
   readOnly,
   model,
+  propertyFilter,
 }: IProps<T>) {
   const isSmall = useMedia('(max-width: 480px)');
   const formRef = useRef<ISettingsFormInstance>();  
@@ -61,6 +63,12 @@ function ComponentSettingsModal<T extends IConfigurableFormComponent>({
           autoSave={false}
           toolboxComponent={formComponent}
           formRef={formRef}
+          propertyFilter={propertyFilter}
+          layoutSettings={{
+            labelCol: { span: 8 },
+            wrapperCol: { span: 16 },
+            layout: 'horizontal'
+          }}
         />
       </Spin>
     </Modal>

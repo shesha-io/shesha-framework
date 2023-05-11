@@ -1,5 +1,5 @@
 import React, { FC, MutableRefObject, ReactNode, useEffect, useState } from 'react';
-import { ISettingsFormFactory, ISettingsFormInstance, IToolboxComponent } from 'interfaces';
+import { IFormLayoutSettings, ISettingsFormFactory, ISettingsFormInstance, IToolboxComponent } from 'interfaces';
 import { Empty } from 'antd';
 import { useDebouncedCallback } from 'use-debounce';
 import { FormMarkup } from 'providers/form/models';
@@ -14,10 +14,12 @@ export interface IComponentPropertiesEditorProps {
   readOnly: boolean;
   autoSave: boolean;
   formRef?: MutableRefObject<ISettingsFormInstance | null>;
+  propertyFilter?: (name: string) => boolean;
+  layoutSettings?: IFormLayoutSettings;
 }
 
 const getDefaultFactory = (markup: FormMarkup): ISettingsFormFactory => {
-  return ({ readOnly: readonly, model, onSave, onCancel, onValuesChange, toolboxComponent, formRef }) => {
+  return ({ readOnly: readonly, model, onSave, onCancel, onValuesChange, toolboxComponent, formRef, propertyFilter, layoutSettings }) => {
     return (
       <GenericSettingsForm
         readonly={readonly}
@@ -28,13 +30,15 @@ const getDefaultFactory = (markup: FormMarkup): ISettingsFormFactory => {
         onValuesChange={onValuesChange}
         toolboxComponent={toolboxComponent}
         formRef={formRef}
+        propertyFilter={propertyFilter}
+        layoutSettings={layoutSettings}
       />
     );
   };
 };
 
 export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (props) => {
-  const { toolboxComponent, componentModel, readOnly, autoSave, formRef } = props;
+  const { toolboxComponent, componentModel, readOnly, autoSave, formRef, propertyFilter, layoutSettings } = props;
   // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus
   const [editor, setEditor] = useState<ReactNode>(<></>);
 
@@ -96,6 +100,8 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
           onValuesChange,
           toolboxComponent,
           formRef: formRef,
+          propertyFilter,
+          layoutSettings,
         })}
       </React.Fragment>
     ));

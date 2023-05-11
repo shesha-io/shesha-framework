@@ -562,12 +562,19 @@ export const getVisibleComponentIds = (
   components: IComponentsDictionary,
   values: any,
   globalState: any,
-  formMode: FormMode
+  formMode: FormMode,
+  propertyFilter?: (name: string) => boolean
 ): string[] => {
   const visibleComponents: string[] = [];
   for (const key in components) {
     if (components.hasOwnProperty(key)) {
       const component = components[key] as IConfigurableFormComponent;
+
+      if (propertyFilter && component.name){
+        const filteredOut = propertyFilter(component.name);
+        if (filteredOut === false)
+          continue;
+      };
 
       if (!component || component.hidden || component.visibility === 'No' || component.visibility === 'Removed')
         continue;

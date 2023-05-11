@@ -68,7 +68,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
           },
         ]
       );
-      //@ts-ignore everything is in place here
+      
       if (response.find(f => f?.unevaluatedExpressions?.length)) return '';
 
       return JSON.stringify(response[0]?.expression) || '';
@@ -87,12 +87,9 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       }
 
       if (filter) queryParamObj['filter'] = typeof filter === 'string' ? filter : evaluatedFilters;
-      // if (filter) queryParamObj['filter'] = typeof filter === 'string' ? filter : JSON.stringify(filter);
 
       return queryParamObj;
     };
-
-    //console.log('LOGS:: filter, evaluatedFilters, getQueryParams(): ', filter, evaluatedFilters, getQueryParams());
 
     const getFetchedItemData = (
       item: object,
@@ -199,7 +196,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   linkToModelMetadata: (model, metadata): IAutocompleteComponentProps => {
     return {
       ...model,
-      useRawValues: true,
+      //useRawValues: true,
       dataSourceType: 'entitiesList',
       entityTypeShortAlias: metadata.entityType,
       mode: undefined,

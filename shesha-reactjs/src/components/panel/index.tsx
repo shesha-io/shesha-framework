@@ -33,7 +33,8 @@ export const CollapsiblePanel: FC<ICollapsiblePanelProps> = ({
   style,
   collapsedByDefault = false,
   showArrow,
-  collapsible
+  collapsible,
+  ghost,
 }) => {
   // Prevent the CollapsiblePanel from collapsing every time you click anywhere on the extra and header
   const onContainerClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => event?.stopPropagation();
@@ -45,6 +46,7 @@ export const CollapsiblePanel: FC<ICollapsiblePanelProps> = ({
       expandIconPosition={expandIconPosition}
       className={classNames('sha-collapsible-panel', className, { 'no-content-padding': noContentPadding })}
       style={style}
+      ghost={ghost}
     >
       <Panel
         key="1"

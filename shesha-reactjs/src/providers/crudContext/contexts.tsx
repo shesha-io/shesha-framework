@@ -20,6 +20,8 @@ export interface ICrudContext extends ICrudStateContext, ICrudActionsContext {
   performCreate: () => Promise<void>;
   performDelete: () => Promise<void>;
   reset: () => Promise<void>;
+  getInitialData: () => object;
+  getFormData: () => object;
 }
 
 /** initial state */
