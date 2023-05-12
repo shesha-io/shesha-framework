@@ -7,6 +7,7 @@ import { MarkerContent } from './markers';
 import { MapContent, evaluateFilters, getData, getPolgonAndMarkerData, mapClicked, markerClicked } from './utils';
 import { Checkbox, Dropdown, Menu } from 'antd';
 import { useFormData, useGlobalState } from 'providers';
+import { ILayerFormModel } from 'providers/layersConfigurator/models';
 
 export const Map: FC<IMapProps> = ({
   icon,
