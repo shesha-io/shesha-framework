@@ -34,6 +34,7 @@ const createRepository = (_args: IWithNullRepositoryArgs): IRepository => {
     };
 
     const repository: IRepository = {
+        repositoryType: 'null-repository',
         fetch,
         exportToExcel,
         prepareColumns,

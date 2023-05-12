@@ -24,6 +24,11 @@ const Template: Story<IDynamicPageProps> = args => (
 // Reuse that template for creating different stories
 export const Basic = Template.bind({});
 
+export const OrderDetails = addStory(Template, {
+  formId: { name: 'order-details', module: 'boxfusion.inventory' },
+  id: 'da4d3320-7c71-4df4-9d20-0ce51d9c1a66'
+});
+
 export const TableInlineEditing = addStory(Template, {
   formId: { name: 'table-inline', module: 'test' }
 });

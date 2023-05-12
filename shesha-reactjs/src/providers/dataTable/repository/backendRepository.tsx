@@ -13,7 +13,7 @@ import { convertDotNotationPropertiesToGraphQL } from "providers/form/utils";
 import { IConfigurableColumnsProps, IDataColumnsProps } from "providers/datatableColumnsConfigurator/models";
 import { IMetadataDispatcherActionsContext } from "providers/metadataDispatcher/contexts";
 import { IEntityEndpointsEvaluator, useModelApiHelper } from "components/configurableForm/useActionEndpoint";
-import { StandardEntityActions } from "interfaces/metadata";
+import { IApiEndpoint, StandardEntityActions } from "interfaces/metadata";
 import { IUseMutateResponse, useMutate } from "hooks/useMutate";
 import { IErrorInfo } from "interfaces/errorInfo";
 import { IAjaxResponseBase } from "interfaces/ajaxResponse";
@@ -22,9 +22,24 @@ import FileSaver from "file-saver";
 export interface IWithBackendRepositoryArgs {
     entityType: string;
     getListUrl: string;
+    customCreateUrl?: string;
+    customUpdateUrl?: string;
+    customDeleteUrl?: string;
 }
 
-export interface IBackendRepository extends IRepository {
+export const BackendRepositoryType = 'backend-repository';
+
+export interface ICreateOptions {
+    customUrl?: string;
+}
+export interface IUpdateOptions {
+    customUrl?: string;
+}
+export interface IDeleteOptions {
+    customUrl?: string;
+}
+
+export interface IBackendRepository extends IRepository<ICreateOptions, IUpdateOptions, IDeleteOptions> {
     entityType: string;
 }
 
@@ -175,9 +190,12 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
         return ajaxResponse?.error ?? error;
     };
 
-    const performUpdate = (_rowIndex: number, data: any): Promise<any> => {
-        // todo: add support of custom endpoint
-        return apiHelper.getDefaultActionUrl({ modelType: entityType, actionName: StandardEntityActions.update }).then(endpoint => {
+    const performUpdate = (_rowIndex: number, data: any, options: IUpdateOptions): Promise<any> => {
+        const endpointResolver: Promise<IApiEndpoint> = options?.customUrl
+            ? Promise.resolve({ httpVerb: 'PUT', url: options.customUrl })
+            : apiHelper.getDefaultActionUrl({ modelType: entityType, actionName: StandardEntityActions.update });
+
+        return endpointResolver.then(endpoint => {
             return mutator.mutate(endpoint, data).then(response => {
                 return response;
             }).catch(error => {
@@ -186,12 +204,16 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
         });
     };
 
-    const performDelete = (_rowIndex: number, data: any): Promise<any> => {
+    const performDelete = (_rowIndex: number, data: any, options: IDeleteOptions): Promise<any> => {
         const id = data['id'];
         if (!id)
             return Promise.reject('Failed to determine `Id` of the object');
 
-        return apiHelper.getDefaultActionUrl({ modelType: entityType, actionName: StandardEntityActions.delete }).then(endpoint => {
+        const endpointResolver: Promise<IApiEndpoint> = options?.customUrl
+            ? Promise.resolve({ httpVerb: 'DELETE', url: options.customUrl })
+            : apiHelper.getDefaultActionUrl({ modelType: entityType, actionName: StandardEntityActions.delete });
+
+        return endpointResolver.then(endpoint => {
             const useQueryString = endpoint.httpVerb?.toUpperCase() === 'DELETE';
 
             const url = useQueryString
@@ -209,8 +231,12 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
         });
     };
 
-    const performCreate = (_rowIndex: number, data: any): Promise<any> => {
-        return apiHelper.getDefaultActionUrl({ modelType: entityType, actionName: StandardEntityActions.create }).then(endpoint => {
+    const performCreate = (_rowIndex: number, data: any, options: ICreateOptions): Promise<any> => {
+        const endpointResolver: Promise<IApiEndpoint> = options?.customUrl
+            ? Promise.resolve({ httpVerb: 'POST', url: options.customUrl })
+            : apiHelper.getDefaultActionUrl({ modelType: entityType, actionName: StandardEntityActions.create });
+
+        return endpointResolver.then(endpoint => {
             return mutator.mutate(endpoint, data).then(response => {
                 return response;
             }).catch(error => {
@@ -251,6 +277,7 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
     };
 
     const repository: IBackendRepository = {
+        repositoryType: BackendRepositoryType,
         entityType: args.entityType,
         fetch,
         exportToExcel,

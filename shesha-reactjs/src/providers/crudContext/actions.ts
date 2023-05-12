@@ -8,12 +8,24 @@ export enum CrudActionEnums {
   SetAllowEdit = 'SET_ALLOW_EDIT',
   SetAllowDelete = 'SET_ALLOW_DELETE',
   SetLastError = 'SET_LAST_ERROR',
+  SetInitialValuesLoading = 'SET_INITIAL_VALUES_LOADING',
+  SetInitialValues = 'SET_INITIAL_VALUES',
 }
 
 /* NEW_ACTION_GOES_HERE */
 
 export const switchModeAction = createAction<CrudMode, CrudMode>(
   CrudActionEnums.SwitchMode,
+  p => p
+);
+
+export const setInitialValuesLoadingAction = createAction<boolean, boolean>(
+  CrudActionEnums.SetInitialValuesLoading,
+  p => p
+);
+
+export const setInitialValuesAction = createAction<object, object>(
+  CrudActionEnums.SetInitialValues,
   p => p
 );
 

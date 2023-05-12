@@ -40,6 +40,7 @@ export type InlineSaveMode = 'auto' | 'manual';
 
 export interface IShaDataTableInlineEditableProps {
   canDeleteInline?: YesNoInherit;
+  customDeleteUrl?: string;
   canEditInline?: YesNoInherit;
   inlineEditMode?: InlineEditMode;
   inlineSaveMode?: InlineSaveMode;
@@ -94,3 +95,5 @@ export interface ITableCustomTypesRender<D extends object, V = any> {
   //render: (cellProps: ITableCellRenderingArgs, router: any) => JSX.Element;
   render: (cellProps: CellProps<D, V>, router: any) => JSX.Element;
 }
+
+export type OnSaveHandler = (data: object, formData: object, globalState: object) => Promise<object>;

@@ -53,6 +53,7 @@ function TableSettings(props: IProps) {
   const [form] = Form.useForm();
   const canEditInline = Form.useWatch('canEditInline', form);
   const canAddInline = Form.useWatch('canAddInline', form);
+  const canDeleteInline = Form.useWatch('canDeleteInline', form);  
 
   const toggleColumnsModal = () => setState(prev => ({ ...prev, showColumnsModal: !prev?.showColumnsModal }));
 
@@ -162,6 +163,10 @@ function TableSettings(props: IProps) {
       <Form.Item name="canDeleteInline" label="Can delete inline">
         <Select disabled={props.readOnly} options={yesNoInheritOptions} />
       </Form.Item>
+      <Form.Item name="customDeleteUrl" label="Custom delete url" hidden={canDeleteInline === 'no'}>
+        <Input readOnly={props.readOnly} />
+      </Form.Item>
+
       <SectionSeparator title="Row drag and drop" />
 
       <Form.Item

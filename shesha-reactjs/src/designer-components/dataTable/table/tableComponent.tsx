@@ -202,10 +202,19 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
         onRowDropped={handleOnRowDropped}
         tableStyle={getStyle(tableStyle, formData, globalState)}
         containerStyle={getStyle(containerStyle, formData, globalState)}
-        canDeleteInline={props.canDeleteInline}
-        canEditInline={props.canEditInline}
+        
         canAddInline={props.canAddInline}
+        customCreateUrl={props.customCreateUrl}
         newRowCapturePosition={props.newRowCapturePosition}
+        onNewRowInitialize={props.onNewRowInitialize}
+
+        canEditInline={props.canEditInline}
+        customUpdateUrl={props.customUpdateUrl}
+
+        canDeleteInline={props.canDeleteInline}
+        customDeleteUrl={props.customDeleteUrl}
+
+        onRowSave={props.onRowSave}
       />
     </CollapsibleSidebarContainer>
   );
