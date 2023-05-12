@@ -126,10 +126,8 @@ const useReferenceList = (refListId: IReferenceListIdentifier): ILoadingState<IR
 };
 
 const useReferenceListItem = (moduleName: string, listName: string, itemValue?: number): ILoadingState<IReferenceListItem> => {
-  if (itemValue === null || itemValue === undefined)
-    return null;
-
   const { getReferenceList } = useReferenceListDispatcher();
+
   const refListPromise = getReferenceList({ refListId: { module: moduleName, name: listName } });
   const loadedItem = refListPromise.isResolved
     ? getRefListItemByValue(refListPromise.value, itemValue)
@@ -142,6 +140,13 @@ const useReferenceListItem = (moduleName: string, listName: string, itemValue?: 
       const item = getRefListItemByValue(list, itemValue);
       setData(item);
     });
+
+  useEffect(() => {
+    refListPromise.promise.then(list => {
+      const item = getRefListItemByValue(list, itemValue);
+      setData(item);
+    });
+  }, [itemValue]);
 
   const result: ILoadingState<IReferenceListItem> = {
     data,

@@ -195,6 +195,9 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       .map<SortingRule<string>>(c => ({ id: c.id, desc: c.defaultSorting === 1 }));
 
   const updater = (rowIndex: number, rowData: any): Promise<any> => {
+
+    //console.log('LOG: updater', { rowIndex, rowData });
+
     const repository = store.getRepository();
     if (!repository)
       return Promise.reject('Repository is not specified');

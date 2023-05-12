@@ -247,6 +247,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
         // handle nested components by id of the parent
         const srcNestedComponents = state.componentRelations[component.id];
         if (srcNestedComponents) {
+
           nestedRelations[clone.id] = [];
           const relations = nestedRelations[clone.id];
 
@@ -267,7 +268,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
             nestedRelations[clone.id] = [];
             const relations = nestedRelations[clone.id];
 
-            clone[cntName] = srcContainer.map((c) => {
+            const cloneChild = (c) => {
               // child may be component or any object with id
               const childClone = cloneComponent(c, nestedComponents, nestedRelations);
               if (childClone.hasOwnProperty('parentId')) childClone.parentId = clone.id;
@@ -275,7 +276,11 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
               relations.push(childClone.id);
 
               return childClone;
-            });
+            };
+
+            clone[cntName] = Array.isArray(srcContainer)
+              ? srcContainer.map(c => cloneChild(c))
+              : cloneChild(srcContainer);
           }
         });
 
@@ -531,7 +536,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
         ...state,
         toolboxComponentGroups: payload,
       };
-    },
+  },
   },
 
   FORM_DESIGNER_CONTEXT_INITIAL_STATE

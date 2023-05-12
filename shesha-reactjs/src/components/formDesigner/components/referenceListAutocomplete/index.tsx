@@ -1,15 +1,14 @@
-import { IToolboxComponent } from '../../../../interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '../../../../providers/form/models';
+import { IToolboxComponent } from 'interfaces';
+import { FormMarkup, IConfigurableFormComponent } from 'providers/form/models';
 import { FileSearchOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '../formItem';
 import settingsFormJson from './settingsForm.json';
 import React from 'react';
-import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import { useForm } from '../../../../providers';
+import { validateConfigurableComponentSettings } from 'providers/form/utils';
+import { useForm } from 'providers';
 import ReferenceListAutocomplete from '../../../referenceListAutocomplete';
 
 export interface IReferenceListAutocompleteProps extends IConfigurableFormComponent {
-    convertToFullId: boolean;
 }
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -28,7 +27,6 @@ const ReferenceListAutocompleteComponent: IToolboxComponent<IReferenceListAutoco
       >
         <ReferenceListAutocomplete 
             readOnly={formMode === 'readonly'}
-            convertToFullId={model.convertToFullId}
         />
       </ConfigurableFormItem>
     );

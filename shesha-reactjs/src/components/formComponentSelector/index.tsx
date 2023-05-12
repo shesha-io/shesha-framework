@@ -5,6 +5,7 @@ import { nanoid } from 'nanoid';
 import { useFormDesignerComponents } from 'providers/form/hooks';
 import { upgradeComponent } from 'providers/form/utils';
 import React, { FC, useMemo, useState } from 'react';
+import { editorAdapters } from './adapters';
 import ComponentSettingsModal from './componentSettingsModal';
 
 export type ComponentType = 'input' | 'output';
@@ -31,6 +32,8 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
         const result: IToolboxComponent[] = [];
         for (const key in allComponents) {
             if (allComponents.hasOwnProperty(key)) {
+                if (!editorAdapters[key])
+                    continue; // skip components without adapters, will be changed later after review of the all components
                 const component = allComponents[key];
                 if (component.isHidden !== true && (component.isInput === true && componentType === 'input' || component.isOutput === true && componentType === 'output'))
                     result.push(allComponents[key]);
@@ -44,6 +47,7 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
         const result = editors.map<DefaultOptionType>(editor => ({ label: editor.name, value: editor.type }));
         if (noSelectionItem)
             result.splice(0, 0, noSelectionItem);
+
         return result;
     }, [editors]);
 
@@ -112,6 +116,16 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
         return Promise.resolve();
     };
 
+    const propertyFilter = (name: string): boolean => {
+        const adapter = value?.type
+            ? editorAdapters[value.type]
+            : null;
+        if (!adapter)
+            return false;
+        
+        return !adapter.propertiesFilter || adapter.propertiesFilter(name);
+    };
+
     return (
         <Input.Group>
             <Select<string>
@@ -131,6 +145,7 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
                 model={value?.settings}
                 onSave={onSettingsSaveClick}
                 onCancel={onCancelConfigureClick}
+                propertyFilter={propertyFilter}
             />
         </Input.Group>
     );

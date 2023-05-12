@@ -13,7 +13,6 @@ export interface IReferenceListAutocompleteRuntimeProps {
     onChange?: (value?: IReferenceListIdentifier) => void;
     readOnly?: boolean;
     maxResultCount?: number;
-    convertToFullId: boolean;
 }
 
 interface IOption {

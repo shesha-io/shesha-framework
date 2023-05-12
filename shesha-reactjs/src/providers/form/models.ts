@@ -85,12 +85,32 @@ export interface IComponentRuntimeProps {
   onFocusCustom?: string;
 }
 
+export interface IComponentBindingProps {
+  /** component name */
+  name: string;
+}
+
+export interface IComponentVisibilityProps {
+  /** Hidden field is still a part of the form but not visible on it */
+  hidden?: boolean;
+
+  /** Add an enhanced Visibility property to cater for the 3 options Yes (To display both to user and payload) No (To only display on the payload)  Removed (To remove from both user and payload) */
+  visibility?: VisibilityType;
+
+  /** Custom visibility code */
+  customVisibility?: string;
+}
+
 /**
  * Base model of the configurable component
  */
-export interface IConfigurableFormComponent extends IFormComponentContainer, IHasVersion, IComponentLabelProps, IComponentRuntimeProps {
-  /** component name */
-  name: string;
+export interface IConfigurableFormComponent extends 
+  IFormComponentContainer, 
+  IHasVersion, 
+  IComponentBindingProps,
+  IComponentLabelProps, 
+  IComponentVisibilityProps,
+  IComponentRuntimeProps {
 
   /** Type of the component */
   type: string;
@@ -100,15 +120,6 @@ export interface IConfigurableFormComponent extends IFormComponentContainer, IHa
 
   /** Validation rules */
   validate?: IComponentValidationRules;
-
-  /** Hidden field is still a part of the form but not visible on it */
-  hidden?: boolean;
-
-  /** Add an enhanced Visibility property to cater for the 3 options Yes (To display both to user and payload) No (To only display on the payload)  Removed (To remove from both user and payload) */
-  visibility?: VisibilityType;
-
-  /** Custom visibility code */
-  customVisibility?: string;
 
   disabled?: boolean; // todo: move to the model level
 
