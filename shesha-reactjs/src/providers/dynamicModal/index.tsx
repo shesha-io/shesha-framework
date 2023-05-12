@@ -113,7 +113,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
       hasArguments: false,
       executer: () => {
         return new Promise((resolve, reject) => {
-          const latestInstance = getLatestInstance();
+          const latestInstance = getLatestVisibleInstance();
 
           if (latestInstance) {
             removeModal(latestInstance?.id);
@@ -131,21 +131,21 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
 
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
-  const getLatestInstance = () => {
-    const { instances } = state;
-    const keys = Object.keys(instances ?? {});
+  const getLatestVisibleInstance = () => {
+    const { instances = {} } = state;
+    const keys = Object.keys(instances);
+    let highestIndexKey = null;
 
-    if (!keys?.length) return null;
-
-    let highestIndexKey = keys[0];
-
-    for (let i = 1; i < keys.length; i++) {
-      if (instances[keys[i]].index > instances[highestIndexKey].index) {
+    for (let i = 0; i < keys.length; i++) {
+      if (
+        instances[keys[i]]?.isVisible &&
+        (highestIndexKey === null || instances[keys[i]]?.index > instances[highestIndexKey]?.index)
+      ) {
         highestIndexKey = keys[i];
       }
     }
 
-    return instances[highestIndexKey];
+    return highestIndexKey ? instances[highestIndexKey] : null;
   };
 
   const toggle = (id: string, isVisible: boolean) => {

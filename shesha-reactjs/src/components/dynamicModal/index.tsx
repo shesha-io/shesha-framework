@@ -1,18 +1,19 @@
 import React, { FC } from 'react';
 import { Modal, Form } from 'antd';
 import { useDynamicModals } from '../../providers';
-import { ConfigurableForm, IConfigurableFormProps } from '../';
+import { ConfigurableForm, IConfigurableFormProps, Show } from '../';
 import { IModalWithConfigurableFormProps, IModalWithContentProps } from '../../providers/dynamicModal/models';
 import { evaluateString, useGlobalState, useShaRouting } from '../..';
 import _ from 'lodash';
 import { useMedia } from 'react-use';
 import { StandardEntityActions } from '../../interfaces/metadata';
 import { MODAL_DATA } from 'shesha-constants';
+import { ButtonGroup } from 'components/formDesigner/components/button/buttonGroup/buttonGroupComponent';
 
 export interface IDynamicModalWithFormProps extends Omit<IModalWithConfigurableFormProps, 'fetchUrl'> {
   isVisible: boolean;
 }
-export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = props => {
+export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
   const {
     id,
     title,
@@ -32,6 +33,8 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = props => {
     skipFetchData,
     submitLocally,
     onCancel,
+    buttons = [],
+    footerButtons = 'default',
   } = props;
 
   const [form] = Form.useForm();
@@ -124,8 +127,16 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = props => {
       isVisible={isVisible}
       onOk={onOk}
       onCancel={closeModal}
-      footer={showModalFooter ? undefined : null}
-      content={<ConfigurableForm {...formProps} />}
+      footer={showModalFooter || footerButtons === 'default' ? undefined : null}
+      content={
+        <ConfigurableForm {...formProps}>
+          <Show when={footerButtons === 'custom' && Boolean(buttons?.length)}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <ButtonGroup items={buttons || []} name={''} type={''} id={''} size="middle" isInline noStyles />
+            </div>
+          </Show>
+        </ConfigurableForm>
+      }
     />
   );
 };
@@ -136,7 +147,7 @@ export interface IDynamicModalWithContentProps extends IModalWithContentProps {
   onCancel?: () => void;
   onOk?: () => void;
 }
-export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = props => {
+export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props) => {
   const { id, title, isVisible, destroyOnClose, width, onCancel, onOk, content, footer } = props;
 
   const { hide, removeModal } = useDynamicModals();
@@ -173,7 +184,7 @@ export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = props 
 };
 
 type DynamicModalProps = IDynamicModalWithContentProps | IDynamicModalWithFormProps;
-export const DynamicModal: FC<DynamicModalProps> = props => {
+export const DynamicModal: FC<DynamicModalProps> = (props) => {
   const withFormProps = props as IDynamicModalWithFormProps;
   if (withFormProps.formId) {
     return <DynamicModalWithForm {...withFormProps} />;

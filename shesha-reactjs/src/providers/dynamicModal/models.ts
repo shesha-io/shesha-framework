@@ -2,6 +2,7 @@ import { FormIdentifier, FormMode } from './../form/models';
 import { ValidateErrorEntity } from '../../interfaces';
 import { IKeyValue } from '../../interfaces/keyValue';
 import { ReactNode } from 'react';
+import { ButtonGroupItemProps } from 'providers/buttonGroupConfigurator/models';
 
 export interface IModalBaseProps {
   /**
@@ -68,7 +69,10 @@ export interface IModalWithConfigurableFormProps extends IModalBaseProps {
    * Whether the modal footer should be shown. The modal footer shows default buttons Submit and Cancel.
    *
    * The url to use will be found in the form settings and the correct verb to use is specified by submitHttpVerb
+   *
+   * @deprecated - use `footerButtons` instead
    */
+
   showModalFooter?: boolean;
 
   /**
@@ -93,6 +97,10 @@ export interface IModalWithConfigurableFormProps extends IModalBaseProps {
    * If passed, the user will be redirected to this url on success
    */
   onSuccessRedirectUrl?: string;
+
+  footerButtons?: 'default' | 'custom' | 'none';
+
+  buttons?: ButtonGroupItemProps[];
 }
 
 export interface IModalWithContentProps extends IModalBaseProps {
