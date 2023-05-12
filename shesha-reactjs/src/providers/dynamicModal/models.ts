@@ -112,6 +112,11 @@ export interface IModalInstance {
   id: string;
   isVisible: boolean;
   props: ICommonModalProps;
+
+  /**
+   * Useful if you want to close the latest dialog using an action
+   */
+  index?: number;
 }
 
 /**

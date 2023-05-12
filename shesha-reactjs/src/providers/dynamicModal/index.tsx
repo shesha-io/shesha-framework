@@ -26,7 +26,7 @@ import { evaluateKeyValuesToObject } from '../form/utils';
 import { Modal } from 'antd';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 
-export interface IDynamicModalProviderProps { }
+export interface IDynamicModalProviderProps {}
 
 const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = ({ children }) => {
   const [state, dispatch] = useReducer(DynamicModalReducer, {
@@ -88,7 +88,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
             initialValues: initialValues,
             parentFormValues: parentFormValues,
             isVisible: true,
-            onSubmitted: values => {
+            onSubmitted: (values) => {
               removeModal(modalId);
 
               console.log('dialog success:', { values });
@@ -104,7 +104,49 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
     actionDependencies
   );
 
+  //#region Close the latest Dialog
+  useConfigurableAction<IShowModalActionArguments>(
+    {
+      name: 'Close Dialog',
+      owner: 'Common',
+      ownerUid: SheshaActionOwners.Common,
+      hasArguments: false,
+      executer: () => {
+        return new Promise((resolve, reject) => {
+          const latestInstance = getLatestInstance();
+
+          if (latestInstance) {
+            removeModal(latestInstance?.id);
+            resolve({});
+          } else {
+            reject('There is no open dialog to close');
+          }
+        });
+      },
+      // argumentsFormMarkup: {},
+    },
+    actionDependencies
+  );
+  //#endregion
+
   /* NEW_ACTION_DECLARATION_GOES_HERE */
+
+  const getLatestInstance = () => {
+    const { instances } = state;
+    const keys = Object.keys(instances ?? {});
+
+    if (!keys?.length) return null;
+
+    let highestIndexKey = keys[0];
+
+    for (let i = 1; i < keys.length; i++) {
+      if (instances[keys[i]].index > instances[highestIndexKey].index) {
+        highestIndexKey = keys[i];
+      }
+    }
+
+    return instances[highestIndexKey];
+  };
 
   const toggle = (id: string, isVisible: boolean) => {
     dispatch(toggleAction({ id, isVisible }));

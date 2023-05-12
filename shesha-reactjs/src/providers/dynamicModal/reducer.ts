@@ -55,11 +55,13 @@ export default handleActions<IDynamicModalStateContext, any>(
       action: ReduxActions.Action<ICreateModalPayload>
     ) => {
       const { payload } = action;
+      const { instances } = state;
 
       const instance: IModalInstance = {
         id: payload.modalProps.id,
         props: payload.modalProps,
         isVisible: payload.modalProps.isVisible,
+        index: Object.keys(instances ?? {})?.length
       };
 
       return {
