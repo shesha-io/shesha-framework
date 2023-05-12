@@ -64,7 +64,14 @@ const MapSettings: FC<ITabSettingsProps> = (props) => {
         </Select>
       </Form.Item>
 
-      <Show when={state?.mapType === 'single' || state.mapType === 'layers'}>
+      <Show when={state?.mapType === 'layers'}>
+        <SectionSeparator title="Layers" />
+        <Form.Item name="layers">
+          <TestSelectorSettingsModal readOnly={props.readOnly} />
+        </Form.Item>
+      </Show>
+
+      <Show when={!!state?.mapType}>
         <Form.Item name="latitude" label="Latitude" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
@@ -109,13 +116,6 @@ const MapSettings: FC<ITabSettingsProps> = (props) => {
       <Form.Item name="defaultViewPortZoom" label="Default View Port Zoom" initialValue={6}>
         <Input type="number" />
       </Form.Item>
-
-      <Show when={state?.mapType === 'layers'}>
-        <SectionSeparator title="Layers" />
-        <Form.Item name="layers">
-          <TestSelectorSettingsModal readOnly={props.readOnly} />
-        </Form.Item>
-      </Show>
 
       <SectionSeparator title="Visibility" />
 

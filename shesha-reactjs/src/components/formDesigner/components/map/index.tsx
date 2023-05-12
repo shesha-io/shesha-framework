@@ -1,12 +1,11 @@
-import { IToolboxComponent } from 'interfaces';
-import { IMapProps } from './interfaces';
 import { MehOutlined } from '@ant-design/icons';
-import React from 'react';
+import { evaluateString } from 'formDesignerUtils';
+import { IToolboxComponent } from 'interfaces';
 import { useForm, useFormData, useGlobalState } from 'providers';
-import MapSettings from './settings';
-import { evaluateString, evaluateValue } from 'formDesignerUtils';
+import React from 'react';
 import { Map } from './control';
-import { evaluateFilters } from './utils';
+import { IMapProps } from './interfaces';
+import MapSettings from './settings';
 
 const MapComponent: IToolboxComponent<IMapProps> = {
   type: 'map',
@@ -17,8 +16,6 @@ const MapComponent: IToolboxComponent<IMapProps> = {
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
 
-    const ownerId = evaluateValue(model?.ownerId, { data: formData });
-
     const evaluatedDefaultLat = evaluateString(model?.defaultViewPortLat as string, { data: formData, globalState });
 
     const evaluatedDefaultLng = evaluateString(model?.defaultViewPortLng as string, { data: formData, globalState });
@@ -26,10 +23,6 @@ const MapComponent: IToolboxComponent<IMapProps> = {
     const evaluatedLat = evaluateString(model?.latitude as string, { data: formData, globalState });
 
     const evaluatedLng = evaluateString(model?.longitude as string, { data: formData, globalState });
-
-    console.log('LOG:: MODEL', model);
-
-    const evaluatedFilters = evaluateFilters(model, formData, globalState);
 
     if (isComponentHidden(model)) return null;
 
@@ -40,9 +33,6 @@ const MapComponent: IToolboxComponent<IMapProps> = {
         defaultViewPortLng={evaluatedDefaultLng}
         longitude={evaluatedLng}
         latitude={evaluatedLat}
-        ownerId={ownerId}
-        filters={evaluatedFilters}
-        entityType={model?.entityType}
       />
     );
   },
