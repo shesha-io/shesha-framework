@@ -42,6 +42,7 @@ const createRepository = (_args: IWithInMemoryRepositoryArgs): IRepository => {
     };
 
     const repository: IRepository = {
+        repositoryType: 'inMemory-repository',
         fetch,
         exportToExcel,
         prepareColumns,

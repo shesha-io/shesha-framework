@@ -34,11 +34,7 @@ const ActionButton: FC<IActionButtonProps> = ({ icon, title, executer, confirmat
       style={{ margin: '0 5px' }}
     />
   );
-  /*
-  <a className="sha-link" onClick={e => onCancelEditClick(e)} title="Reset">
-      <CloseOutlined />
-    </a>  
-  */
+  
   return confirmationText
     ? <Popconfirm title={confirmationText} onConfirm={() => executer()}>{button}</Popconfirm>
     : button;
@@ -131,8 +127,8 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
       },
     ];
     return allButtons.filter(b => b.isVisible);
-  }, [isNewObject, allowDelete, allowEdit, mode]);
-
+  }, [isNewObject, allowDelete, allowEdit, mode, performCreate]);
+  
   return (
     <div style={{ width: '100%', textAlign: 'center' }}>
       {buttons.map((btn, idx) => (<ActionButton {...btn} key={idx} />))}

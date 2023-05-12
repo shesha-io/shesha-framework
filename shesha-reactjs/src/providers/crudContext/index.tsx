@@ -2,32 +2,76 @@ import React, { FC, useContext, useEffect } from 'react';
 import useThunkReducer from '../../hooks/thunkReducer';
 import { CRUD_CONTEXT_INITIAL_STATE, CrudContext, ICrudContext } from './contexts';
 import reducer from './reducer';
-import { setAllowDeleteAction, setIsReadonlyAction as setAllowEditAction, setLastErrorAction, switchModeAction } from './actions';
+import { setAllowDeleteAction, setIsReadonlyAction as setAllowEditAction, setLastErrorAction, setInitialValuesLoadingAction, switchModeAction, setInitialValuesAction } from './actions';
 import { CrudMode } from './models';
 import { Form, message } from 'antd';
 import { FormProvider } from 'providers/form';
 import { IErrorInfo } from 'interfaces/errorInfo';
+import { RowDataInitializer } from 'components/reactTable/interfaces';
 
 export interface ICrudProviderProps {
     isNewObject: boolean;
     allowEdit: boolean;
     allowDelete: boolean;
     mode?: CrudMode;
-    data: any;
+    data: object | RowDataInitializer;
     updater?: (data: any) => Promise<any>;
     creater?: (data: any) => Promise<any>;
     deleter?: () => Promise<any>;
+    onSave?: (data: any) => Promise<any>;
 }
 
-const CrudProvider: FC<ICrudProviderProps> = ({ children, data, updater, creater, deleter, isNewObject, mode = 'read', allowEdit, allowDelete }) => {
+const CrudProvider: FC<ICrudProviderProps> = (props) => {
+    const { 
+        children, 
+        data, 
+        updater, 
+        creater, 
+        deleter, 
+        isNewObject, 
+        mode = 'read', 
+        allowEdit, 
+        allowDelete,
+        onSave,
+    } = props;
     const [state, dispatch] = useThunkReducer(reducer, {
         ...CRUD_CONTEXT_INITIAL_STATE,
         isNewObject,
         allowEdit,
         allowDelete,
-        mode
+        mode,
+        initialValues: typeof(data) !== 'function' ? data : undefined,
     });
+
+    //console.log('LOG: CRUD render', { initialValues: state.initialValues });
+
     const [form] = Form.useForm();
+
+    const setInitialValuesLoading = (loading: boolean) => {
+        dispatch(setInitialValuesLoadingAction(loading));
+    };
+    
+    const setInitialValues = (values: object) => {
+        dispatch(setInitialValuesAction(values));
+    };
+
+    useEffect(() => {
+        if (typeof(data) === 'function'){
+            setInitialValuesLoading(true);
+            const dataResponse = data();
+            //console.log('LOG: CRUD init called', dataResponse);
+
+            Promise.resolve(dataResponse).then(response => {
+                //console.log('LOG: CRUD init resolved', response);
+                setInitialValues(response);
+                form.setFieldsValue(response);
+            });
+        } else {
+            //console.log('LOG: data changed', data);
+            setInitialValues(data);
+            form.setFieldsValue(data);
+        }
+    }, [data]);
 
     //#region Allow Edit/Delete/Create
 
@@ -74,39 +118,53 @@ const CrudProvider: FC<ICrudProviderProps> = ({ children, data, updater, creater
         if (!updater)
             throw 'CrudProvider: `updater` property is not specified';
 
+        const updateInternal = async (finalData: any) => {
+            try {
+                await updater(finalData);
+                setLastError(null);
+            } catch (error) {
+                setLastError(getErrorInfo(error, 'Update failed'));
+                throw error;
+            }
+        };
+
         const values = await form.validateFields();
 
         // todo: call common data preparation code (check configurableFormRenderer)
+        const mergedData = { ...state.initialValues, ...values };
 
-        const mergedData = { ...data, ...values };
-
-        try {
-            await updater(mergedData);
-            setLastError(null);
-        } catch (error) {
-            setLastError(getErrorInfo(error, 'Update failed'));
-            throw error;
-        }
+        const finalData = onSave
+                ? await onSave(mergedData)
+                : mergedData;
+        
+        updateInternal(finalData);
     };
 
     const performCreate = async () => {
         if (!creater)
             throw 'CrudProvider: `creater` property is not specified';
 
+        const createInternal = async (finalData: any) => {
+            try {
+                await creater(finalData);
+                setLastError(null);
+            } catch (error) {
+                console.log('LOG: error', error);
+                setLastError(getErrorInfo(error, 'Create failed'));
+                throw error;
+            }
+        };
+        
         const values = await form.validateFields();
 
         // todo: call common data preparation code (check configurableFormRenderer)
+        const mergedData = { ...state.initialValues, ...values };
 
-        const mergedData = { ...data, ...values };
-
-        try {
-            await creater(mergedData);
-            setLastError(null);
-        } catch (error) {
-            console.log('LOG: error', error);
-            setLastError(getErrorInfo(error, 'Create failed'));
-            throw error;
-        }
+        const finalData = onSave
+                ? await onSave(mergedData)
+                : mergedData;
+        
+        createInternal(finalData);
     };
 
     const performDelete = async () => {
@@ -129,7 +187,7 @@ const CrudProvider: FC<ICrudProviderProps> = ({ children, data, updater, creater
         return form.getFieldsValue();
     };
     const getInitialData = () => {
-        return data;
+        return state.initialValues;
     };
     
 
@@ -161,7 +219,7 @@ const CrudProvider: FC<ICrudProviderProps> = ({ children, data, updater, creater
                 <Form
                     component={false}
                     form={form}
-                    initialValues={data}
+                    initialValues={state.initialValues}
                 >
                     {children}
                 </Form>

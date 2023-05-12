@@ -22,6 +22,8 @@ export interface ITableRowDragProps {
   onRowDropped?: (row: any, oldIndex: number, newIndex: number) => void;
 }
 
+export type RowDataInitializer = () => Promise<object>;
+
 export interface IReactTableProps extends ITableRowDragProps {
   /**
    * @deprecated - use scrollBodyHorizontally
@@ -189,5 +191,6 @@ export interface IReactTableProps extends ITableRowDragProps {
   newRowCapturePosition?: NewRowCapturePosition;
   newRowInsertPosition?: NewRowCapturePosition;
   createAction?: (data: any) => Promise<any>;
+  newRowInitData?: RowDataInitializer;
 }
 

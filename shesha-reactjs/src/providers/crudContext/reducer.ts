@@ -18,6 +18,25 @@ import { IErrorInfo } from 'interfaces/errorInfo';
         };
       },
 
+      [CrudActionEnums.SetInitialValuesLoading]: (state: ICrudStateContext, action: ReduxActions.Action<boolean>) => {
+        const { payload } = action;
+        
+        return {
+          ...state,
+          initialValuesLoading: payload,
+        };
+      },
+
+      [CrudActionEnums.SetInitialValues]: (state: ICrudStateContext, action: ReduxActions.Action<object>) => {
+        const { payload } = action;
+        
+        return {
+          ...state,
+          initialValuesLoading: false,
+          initialValues: payload,
+        };
+      },
+
       [CrudActionEnums.SetAllowEdit]: (state: ICrudStateContext, action: ReduxActions.Action<boolean>) => {
         const { payload } = action;
         
