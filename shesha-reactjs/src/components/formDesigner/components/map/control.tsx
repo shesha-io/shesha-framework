@@ -1,13 +1,13 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
-import 'leaflet/dist/leaflet.css';
-import { MapContainer, Polygon, TileLayer } from 'react-leaflet';
-import { ICoordinates, ILayerMarker, IMapProps } from './interfaces';
 import { DownOutlined } from '@ant-design/icons';
-import { MarkerContent } from './markers';
-import { MapContent, evaluateFilters, getData, getPolgonAndMarkerData, mapClicked, markerClicked } from './utils';
 import { Checkbox, Dropdown, Menu } from 'antd';
+import 'leaflet/dist/leaflet.css';
 import { useFormData, useGlobalState } from 'providers';
-import { ILayerFormModel } from 'providers/layersConfigurator/models';
+import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
+import { MapContainer, Polygon, TileLayer } from 'react-leaflet';
+import { useMetaMapMarker } from './hooks';
+import { ICoordinates, ILayerMarker, IMapProps } from './interfaces';
+import { MarkerContent } from './markers';
+import { MapContent, evaluateFilters, getPolgonAndMarkerData, mapClicked, markerClicked } from './utils';
 
 export const Map: FC<IMapProps> = ({
   icon,
@@ -22,6 +22,7 @@ export const Map: FC<IMapProps> = ({
   layers,
 }) => {
   const mapRef = useRef();
+  const { fetchData } = useMetaMapMarker();
   const { data: formData } = useFormData();
   const { globalState } = useGlobalState();
   const [{ layerMarkers, polygonData }, setCoordinates] = useState<ICoordinates>({
@@ -59,53 +60,56 @@ export const Map: FC<IMapProps> = ({
     });
   }
 
-  let layerMarker: ILayerMarker[] = layers?.map((item, index) => {
-    console.log(`LOG:: layer ${index}`, item);
-    const evaluatedFilters = evaluateFilters(item, formData, globalState);
-    console.log('LOG:: filters', evaluatedFilters);
-    const layerData = getData(
-      item.dataSource,
-      item.entityType,
-      item.longitude,
-      item.latitude,
-      evaluatedFilters,
-      item.customUrl,
-      item.ownerId,
-      item.layertype,
-      item.boundary
-    );
+  const layerMarker = useMemo(
+    () =>
+      layers?.map(async (item) => {
+        const evaluatedFilters = evaluateFilters(item, formData, globalState);
 
-    console.log(`LOG:: layer check  ${index}`, layerData);
+        const { dataSource, entityType, longitude, latitude, customUrl, ownerId, layertype, boundary } = item;
 
-    if (item.layertype === 'polygon') {
-      return {
-        ...item,
-        markers: layerData
-          ?.filter((i) => {
-            return !Object.values(i).includes(null);
-          })
-          .map((j) => JSON.parse(j?.comments)),
-      };
-    }
+        const layerData = await fetchData({
+          dataSource,
+          entityType,
+          longitude,
+          latitude,
+          evaluatedFilters,
+          customUrl,
+          ownerId,
+          layertype,
+          boundary,
+        });
 
-    return {
-      ...item,
-      markers: Array.isArray(layerData)
-        ? layerData
-            ?.filter((i) => {
-              return !Object.values(i).includes(null);
-            })
-            .map((j) => ({
-              color: item.iconColor,
-              icon: item.icon,
-              position: {
-                lat: j.latitude,
-                lng: j.longitude,
-              },
-            }))
-        : [{ position: { lat: layerData?.latitude, lng: layerData?.longitude } }],
-    };
-  });
+        if (item.layertype === 'polygon') {
+          return {
+            ...item,
+            markers: (layerData as any[])
+              ?.filter((i) => {
+                return !Object.values(i).includes(null);
+              })
+              .map((j) => JSON.parse(j?.comments)),
+          } as ILayerMarker;
+        }
+
+        return {
+          ...item,
+          markers: Array.isArray(layerData)
+            ? layerData
+                ?.filter((i) => {
+                  return !Object.values(i).includes(null);
+                })
+                .map((j) => ({
+                  color: item.iconColor,
+                  icon: item.icon,
+                  position: {
+                    lat: j?.[latitude],
+                    lng: j?.[longitude],
+                  },
+                }))
+            : [{ position: { lat: layerData?.[latitude], lng: layerData?.[longitude] } }],
+        } as ILayerMarker;
+      }),
+    []
+  );
 
   console.log('LOG:: LAYER DATA', layerMarker);
 
