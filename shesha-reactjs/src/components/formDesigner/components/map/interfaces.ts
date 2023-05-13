@@ -1,90 +1,60 @@
-import { LatLngLiteral } from 'leaflet';
+import { IColor, ICoords } from 'index';
+import { LatLngExpression } from 'leaflet';
 import { IConfigurableFormComponent } from '../../../../providers/form/models';
-import { ILayerFormModel } from 'providers/layersConfigurator/models';
 
 export interface IMapProps extends IConfigurableFormComponent {
-  text?: string;
   description?: string;
   customIcon?: boolean;
   icon?: string;
-  color?: IconColor;
-  height?: number;
-  width?: number;
-  defaultZoom?: number;
+  color?: IColor;
+  height?: string;
+  width?: string;
   mapType?: 'single' | 'layers';
-  defaultViewPortLat?: string | number;
-  defaultViewPortLng?: string | number;
-  defaultViewPortZoom?: number;
+  defaultLat?: string;
+  defaultLng?: string;
+  defaultZoom?: string;
+  latitude?: string;
+  longitude?: string;
+  text?: string;
   onConfirm?: () => void;
   onCancel?: () => void;
-  latitude?: number | string;
-  longitude?: number | string;
   placeholder?: string;
-  layers?: ILayerFormModel[];
+  layers?: ILayersEntity[];
 }
 
-export interface IMapMarker {
-  size?: number | string;
-  color: string;
-  icon: string | IconColor;
-  position: IPosition;
-}
-
-export interface IPosition {
-  lat: number;
-  lng: number;
-}
-
-export interface ILayerMarker {
+export interface ILayersEntity {
   id: string;
   sortOrder: number;
   name: string;
   label: string;
-  dataSource: string;
-  layertype: string;
-  icon: string;
-  iconColor: IconColor | string;
-  visible: boolean;
-  allowChangeVisibility: boolean;
-  entityType: string;
+  layertype: LayerTypeKeys;
+  description: string;
+  icon?: string;
+  iconColor?: IColor;
+  iconSize?: number;
+  visible?: boolean;
+  allowChangeVisibility?: boolean;
+  dataSource: 'entity' | 'custom';
+  entityType?: string;
+  latitude?: string;
+  longitude?: string;
+  customUrl?: string;
+  ownerId?: string;
   filters: { [key in string]: any };
-  chosen: boolean;
-  selected: boolean;
-  iconSize: number;
-  properties?: string[];
-  markers?: IMapMarker[] | IMapMarker;
+  boundary?: string;
+  markers?: IMapMarker[] | LatLngExpression[];
 }
 
-export interface IconColor {
-  hsl: Hsl;
-  hex: string;
-  rgb: Rgb;
-  hsv: Hsv;
-  oldHue: number;
-  source: string;
-}
-export interface Hsl {
-  h: number;
-  s: number;
-  l: number;
-  a: number;
-}
-export interface Rgb {
-  r: number;
-  g: number;
-  b: number;
-  a: number;
-}
-export interface Hsv {
-  h: number;
-  s: number;
-  v: number;
-  a: number;
+export interface IMapMarker {
+  size?: string;
+  color: string | IColor;
+  icon: string;
+  position: ICoords;
 }
 
 export type LayerTypeKeys = 'polygon' | 'points';
 
 export interface ICoordinates {
-  polygonData: LatLngLiteral[][];
-  layerMarkers: IMapMarker[];
+  polygonPoints: LatLngExpression[];
+  markerPoints: IMapMarker[];
 }

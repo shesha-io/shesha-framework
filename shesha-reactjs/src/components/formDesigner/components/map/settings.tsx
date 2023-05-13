@@ -8,7 +8,7 @@ import ColorPicker from 'components/colorPicker';
 import { IMapProps } from './interfaces';
 import CodeEditor from '../codeEditor/codeEditor';
 import { IconPickerWrapper } from '../iconPicker';
-import TestSelectorSettingsModal from './layers/modal';
+import TestSelectorSettingsModal from './components/layers/modal';
 
 const { Option } = Select;
 
@@ -105,15 +105,15 @@ const MapSettings: FC<ITabSettingsProps> = (props) => {
 
       <SectionSeparator title="Default View Port" />
 
-      <Form.Item name="defaultViewPortLat" label="Default View Port Latitude">
+      <Form.Item name="defaultLat" label="Default View Port Latitude">
         <Input type="number" />
       </Form.Item>
 
-      <Form.Item name="defaultViewPortLng" label="Default View Port Longitude">
+      <Form.Item name="defaultLng" label="Default View Port Longitude">
         <Input type="number" />
       </Form.Item>
 
-      <Form.Item name="defaultViewPortZoom" label="Default View Port Zoom" initialValue={6}>
+      <Form.Item name="defaultZoom" label="Default View Port Zoom" initialValue={6}>
         <Input type="number" />
       </Form.Item>
 

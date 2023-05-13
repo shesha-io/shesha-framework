@@ -3,36 +3,37 @@ import { evaluateString } from 'formDesignerUtils';
 import { IToolboxComponent } from 'interfaces';
 import { useForm, useFormData, useGlobalState } from 'providers';
 import React from 'react';
-import { Map } from './control';
+import { MapControl } from './control';
 import { IMapProps } from './interfaces';
 import MapSettings from './settings';
 
-const MapComponent: IToolboxComponent<IMapProps> = {
+const Map: IToolboxComponent<IMapProps> = {
   type: 'map',
   name: 'map',
   icon: <MehOutlined />,
   factory: (model: IMapProps) => {
+    const { defaultLat, defaultLng, latitude, longitude, ...mapProps } = model;
+
     const { isComponentHidden } = useForm();
+
     const { data: formData } = useFormData();
+
     const { globalState } = useGlobalState();
 
-    const evaluatedDefaultLat = evaluateString(model?.defaultViewPortLat as string, { data: formData, globalState });
+    const evalDefaultLat = evaluateString(defaultLat as string, { data: formData, globalState });
+    const evalDefaultLng = evaluateString(defaultLng as string, { data: formData, globalState });
+    const evalLat = evaluateString(latitude as string, { data: formData, globalState });
+    const evalLng = evaluateString(longitude as string, { data: formData, globalState });
 
-    const evaluatedDefaultLng = evaluateString(model?.defaultViewPortLng as string, { data: formData, globalState });
-
-    const evaluatedLat = evaluateString(model?.latitude as string, { data: formData, globalState });
-
-    const evaluatedLng = evaluateString(model?.longitude as string, { data: formData, globalState });
-
-    if (isComponentHidden(model)) return null;
+    if (isComponentHidden(mapProps)) return null;
 
     return (
-      <Map
-        {...model}
-        defaultViewPortLat={evaluatedDefaultLat}
-        defaultViewPortLng={evaluatedDefaultLng}
-        longitude={evaluatedLng}
-        latitude={evaluatedLat}
+      <MapControl
+        {...mapProps}
+        defaultLat={evalDefaultLat}
+        defaultLng={evalDefaultLng}
+        longitude={evalLng}
+        latitude={evalLat}
       />
     );
   },
@@ -49,4 +50,4 @@ const MapComponent: IToolboxComponent<IMapProps> = {
   },
 };
 
-export default MapComponent;
+export default Map;

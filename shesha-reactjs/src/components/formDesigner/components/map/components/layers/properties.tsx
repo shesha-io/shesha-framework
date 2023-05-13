@@ -1,9 +1,9 @@
 import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
 import { Empty, Form } from 'antd';
-import { ConfigurableForm } from '../../../..';
-import { FormMarkup } from '../../../../../providers/form/models';
+import { ConfigurableForm } from '../../../../..';
+import { FormMarkup } from '../../../../../../providers/form/models';
 import { useDebouncedCallback } from 'use-debounce';
-import { ConfigurableFormInstance } from '../../../../../providers/form/contexts';
+import { ConfigurableFormInstance } from '../../../../../../providers/form/contexts';
 import { useLayerGroupConfigurator } from 'providers/layersConfigurator';
 import itemSettingsJson from './layerSettings.json';
 

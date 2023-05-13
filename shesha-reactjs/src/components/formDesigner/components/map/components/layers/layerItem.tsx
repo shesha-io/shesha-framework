@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { Button } from 'antd';
 import { DeleteFilled, SettingOutlined } from '@ant-design/icons';
-import ShaIcon, { IconType } from '../../../../shaIcon';
+import ShaIcon, { IconType } from '../../../../../shaIcon';
 import DragHandle from './dragHandle';
 import { ILayerFormModel } from 'providers/layersConfigurator/models';
 import { useLayerGroupConfigurator } from 'providers/layersConfigurator';
