@@ -15,10 +15,6 @@ export interface IMapProps extends IConfigurableFormComponent {
   defaultZoom?: string;
   latitude?: string;
   longitude?: string;
-  text?: string;
-  onConfirm?: () => void;
-  onCancel?: () => void;
-  placeholder?: string;
   layers?: ILayersEntity[];
 }
 

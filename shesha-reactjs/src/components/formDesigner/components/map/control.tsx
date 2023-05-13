@@ -32,12 +32,10 @@ export const MapControl: FC<IMapProps> = (props) => {
     });
   }, [layerMarkers]);
 
-  const [state, setPoints] = useState<ICoordinates>({
+  const [{ markerPoints, polygonPoints }, setPoints] = useState<ICoordinates>({
     markerPoints: [],
     polygonPoints: [],
   });
-
-  const { markerPoints, polygonPoints } = state;
 
   const onChange = (checked: string[]) => {
     setPoints({
