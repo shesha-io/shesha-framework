@@ -1,6 +1,5 @@
 import { MoreOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
-import { nanoid } from 'nanoid/non-secure';
 import React, { FC } from 'react';
 import { SortableElement, SortableHandle } from 'react-sortable-hoc';
 import { Row } from 'react-table';
@@ -71,7 +70,6 @@ export const TableRow: FC<ISortableRowProps> = props => {
       autoSave={inlineSaveMode === 'auto'}
     >
       <div
-        key={nanoid()}
         onClick={handleRowClick}
         onDoubleClick={handleRowDoubleClick}
         {...row.getRowProps()}
@@ -81,8 +79,8 @@ export const TableRow: FC<ISortableRowProps> = props => {
           { 'sha-tr-selected': selectedRowIndex === row?.index }
         )}
       >
-        {row.cells.map(cell => {
-          return <RowCell cell={cell} key={nanoid()} />;
+        {row.cells.map((cell, index) => {
+          return <RowCell cell={cell} key={index} />;
         })}
       </div>
     </CrudProvider>

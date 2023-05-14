@@ -160,7 +160,6 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
   return (
     <div style={{ width: '100%', textAlign: 'center' }}>
       {buttons.map((btn, idx) => (<ActionButton {...btn} key={idx} />))}
-      {/* <ValidationErrorsIcon error={saveError} /> */}
     </div>
   );
 };

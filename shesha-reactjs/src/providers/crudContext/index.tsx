@@ -1,26 +1,28 @@
-import React, { FC, useContext, useEffect } from 'react';
+import React, { FC, useContext, useEffect, useRef } from 'react';
 import useThunkReducer from '../../hooks/thunkReducer';
 import { CRUD_CONTEXT_INITIAL_STATE, CrudContext, ICrudContext } from './contexts';
 import reducer from './reducer';
-import { 
-    setAllowDeleteAction, 
-    setAllowEditAction, 
-    resetErrorsAction, 
-    setInitialValuesLoadingAction, 
-    switchModeAction, 
-    setInitialValuesAction, 
-    setAutoSaveAction, 
-    saveStartedAction, 
-    saveFailedAction, 
-    saveSuccessAction, 
-    deleteStartedAction, 
-    deleteSuccessAction, 
-    deleteFailedAction } from './actions';
+import {
+    setAllowDeleteAction,
+    setAllowEditAction,
+    resetErrorsAction,
+    setInitialValuesLoadingAction,
+    switchModeAction,
+    setInitialValuesAction,
+    setAutoSaveAction,
+    saveStartedAction,
+    saveFailedAction,
+    saveSuccessAction,
+    deleteStartedAction,
+    deleteSuccessAction,
+    deleteFailedAction
+} from './actions';
 import { CrudMode } from './models';
 import { Form } from 'antd';
 import { FormProvider } from 'providers/form';
 import { IErrorInfo } from 'interfaces/errorInfo';
 import { RowDataInitializer } from 'components/reactTable/interfaces';
+import { useDebouncedCallback } from 'use-debounce';
 
 export type DataProcessor = (data: any) => Promise<any>;
 
@@ -64,8 +66,6 @@ const CrudProvider: FC<ICrudProviderProps> = (props) => {
         initialValues: typeof (data) !== 'function' ? data : undefined,
     });
 
-    //console.log('LOG: CRUD render', { initialValues: state.initialValues });
-
     const switchModeInternal = (mode: CrudMode, allowChangeMode: boolean) => {
         dispatch(switchModeAction({ mode, allowChangeMode }));
     };
@@ -103,15 +103,12 @@ const CrudProvider: FC<ICrudProviderProps> = (props) => {
         if (typeof (data) === 'function') {
             setInitialValuesLoading(true);
             const dataResponse = data();
-            //console.log('LOG: CRUD init called', dataResponse);
 
             Promise.resolve(dataResponse).then(response => {
-                //console.log('LOG: CRUD init resolved', response);
                 setInitialValues(response);
                 form.setFieldsValue(response);
             });
         } else {
-            //console.log('LOG: data changed', data);
             setInitialValues(data);
             form.setFieldsValue(data);
         }
@@ -144,7 +141,6 @@ const CrudProvider: FC<ICrudProviderProps> = (props) => {
     };
 
     const getErrorInfo = (error: any, message: string): IErrorInfo => {
-        console.log('LOG: failed', { error, message })
         return {
             message: message,
             ...error,
@@ -186,6 +182,14 @@ const CrudProvider: FC<ICrudProviderProps> = (props) => {
         return performSave(updater, 'Update');
     };
 
+    const debouncedUpdate = useDebouncedCallback(
+        () => {
+            performUpdate();
+        },
+        // delay in ms
+        300
+    );
+
     const performCreate = () => {
         if (!creater)
             return Promise.reject('CrudProvider: `creater` property is not specified');
@@ -220,6 +224,34 @@ const CrudProvider: FC<ICrudProviderProps> = (props) => {
         return state.initialValues;
     };
 
+    const autoSaveEnqueued = useRef<boolean>(false);
+    const onValuesChange = () => {
+        if (!state.autoSave || state.mode !== 'update')
+            return;
+
+        if (!form.isFieldsTouched())
+            return;
+
+        autoSaveEnqueued.current = true;
+    };
+    
+    const handleFocusIn = () => {
+        if (autoSaveEnqueued.current === true) {
+            autoSaveEnqueued.current = false;
+            // auto save
+            debouncedUpdate();
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener('focusin', handleFocusIn);
+        return () => {
+            document.removeEventListener('focusin', handleFocusIn);
+        };
+    }, []);
+    useEffect(() => {
+        form.resetFields();
+    }, [state.initialValues]);
 
     const contextValue: ICrudContext = {
         ...state,
@@ -249,6 +281,7 @@ const CrudProvider: FC<ICrudProviderProps> = (props) => {
                     component={false}
                     form={form}
                     initialValues={state.initialValues}
+                    onValuesChange={onValuesChange}
                 >
                     {children}
                 </Form>
