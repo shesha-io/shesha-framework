@@ -46,6 +46,15 @@ import { IErrorInfo } from 'interfaces/errorInfo';
         };
       },
 
+      [CrudActionEnums.SetAutoSave]: (state: ICrudStateContext, action: ReduxActions.Action<boolean>) => {
+        const { payload } = action;
+        
+        return {
+          ...state,
+          autoSave: payload,
+        };
+      },
+
       [CrudActionEnums.SetAllowDelete]: (state: ICrudStateContext, action: ReduxActions.Action<boolean>) => {
         const { payload } = action;
         
@@ -55,14 +64,66 @@ import { IErrorInfo } from 'interfaces/errorInfo';
         };
       },
 
-      [CrudActionEnums.SetLastError]: (state: ICrudStateContext, action: ReduxActions.Action<IErrorInfo>) => {
+      [CrudActionEnums.ResetErrors]: (state: ICrudStateContext) => {
+        return {
+          ...state,
+          saveError: null,
+          deletingError: null,
+        };
+      },
+
+      [CrudActionEnums.SaveStarted]: (state: ICrudStateContext) => {
+        return {
+          ...state,
+          isSaving: true,
+          saveError: null,
+        };
+      },
+
+      [CrudActionEnums.SaveFailed]: (state: ICrudStateContext, action: ReduxActions.Action<IErrorInfo>) => {
         const { payload } = action;
         
         return {
           ...state,
-          lastError: payload,
+          saveError: payload,
+          isSaving: false,
         };
       },
+
+      [CrudActionEnums.SaveSuccess]: (state: ICrudStateContext) => {
+        return {
+          ...state,
+          isSaving: false,
+          saveError: null, 
+        };
+      },
+
+      [CrudActionEnums.DeleteStarted]: (state: ICrudStateContext) => {
+        return {
+          ...state,
+          isDeleting: true,
+          deletingError: null,
+        };
+      },
+
+      [CrudActionEnums.DeleteFailed]: (state: ICrudStateContext, action: ReduxActions.Action<IErrorInfo>) => {
+        const { payload } = action;
+        
+        return {
+          ...state,
+          deletingError: payload,
+          isDeleting: false,
+        };
+      },
+
+      [CrudActionEnums.DeleteSuccess]: (state: ICrudStateContext) => {
+        return {
+          ...state,
+          isDeleting: false,
+          deletingError: null, 
+        };
+      },
+
     },
 
     CRUD_CONTEXT_INITIAL_STATE

@@ -6,6 +6,7 @@ import { SortableElement, SortableHandle } from 'react-sortable-hoc';
 import { Row } from 'react-table';
 import { RowCell } from './rowCell';
 import { CrudProvider } from 'providers/crudContext';
+import { InlineSaveMode } from './interfaces';
 
 export type RowEditMode = 'read' | 'edit';
 
@@ -23,6 +24,7 @@ export interface ISortableRowProps {
   deleter?: () => Promise<any>;
   editMode?: RowEditMode;
   allowChangeEditMode: boolean;
+  inlineSaveMode?: InlineSaveMode;
 }
 
 export const SortableRow = SortableElement<ISortableRowProps>(props => <TableRow {...props} />);
@@ -47,6 +49,7 @@ export const TableRow: FC<ISortableRowProps> = props => {
     allowDelete,
     editMode,
     allowChangeEditMode,
+    inlineSaveMode,
   } = props;
 
   const handleRowClick = () => onClick(row);
@@ -65,6 +68,7 @@ export const TableRow: FC<ISortableRowProps> = props => {
       deleter={deleter}
       mode={editMode === 'edit' ? 'update' : 'read'}
       allowChangeMode={allowChangeEditMode}
+      autoSave={inlineSaveMode === 'auto'}
     >
       <div
         key={nanoid()}

@@ -69,7 +69,7 @@ const ReactTable: FC<IReactTableProps> = ({
   newRowInitData,
   createAction,
   inlineEditMode,
-  //inlineSaveMode,
+  inlineSaveMode,
 }) => {
   const [componentState, setComponentState] = useState<IReactTableState>({
     allRows: data,
@@ -382,6 +382,7 @@ const ReactTable: FC<IReactTableProps> = ({
                     
                     allowChangeEditMode={inlineEditMode === 'one-by-one'}
                     editMode={inlineEditMode === 'all-at-once' ? 'edit' : undefined}
+                    inlineSaveMode={inlineSaveMode}
                   />
                 );
               })}
