@@ -249,9 +249,6 @@ const CrudProvider: FC<ICrudProviderProps> = (props) => {
             document.removeEventListener('focusin', handleFocusIn);
         };
     }, []);
-    useEffect(() => {
-        form.resetFields();
-    }, [state.initialValues]);
 
     const contextValue: ICrudContext = {
         ...state,
