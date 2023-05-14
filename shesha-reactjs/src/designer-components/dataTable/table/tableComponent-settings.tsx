@@ -118,7 +118,7 @@ function TableSettings(props: IProps) {
       <Form.Item name="newRowCapturePosition" label="New row capture position" hidden={canAddInline === 'no'}>
         <Select disabled={props.readOnly} options={rowCapturePositions} />
       </Form.Item>
-      <Form.Item name="newRowInsertPosition" label="New row insert position" hidden={canAddInline === 'no'}>
+      <Form.Item name="newRowInsertPosition" label="New row insert position" /*hidden={canAddInline === 'no'}*/ hidden={true} /* note: hidden until review of rows drag&drop */>
         <Select disabled={props.readOnly} options={rowCapturePositions} />
       </Form.Item>
       <Form.Item name="customCreateUrl" label="Custom create url" hidden={canEditInline === 'no'}>
