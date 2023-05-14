@@ -7,8 +7,8 @@ import SectionSeparator from '../../../components/sectionSeparator';
 import CodeEditor from '../../../components/formDesigner/components/codeEditor/codeEditor';
 import PropertyAutocomplete from '../../../components/propertyAutocomplete/propertyAutocomplete';
 import { ConfigurableActionConfigurator } from '../../configurableActionsConfigurator';
-import { InlineEditMode, InlineSaveMode, YesNoInherit } from 'components/dataTable/interfaces';
-import { NewRowCapturePosition } from 'components/reactTable/interfaces';
+import { YesNoInherit } from 'components/dataTable/interfaces';
+import { InlineEditMode, InlineSaveMode, NewRowCapturePosition } from 'components/reactTable/interfaces';
 
 interface ITypedOption<T = string> {
   label: React.ReactNode;

@@ -215,6 +215,8 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
         customDeleteUrl={props.customDeleteUrl}
 
         onRowSave={props.onRowSave}
+        inlineSaveMode={props.inlineSaveMode}
+        inlineEditMode={props.inlineEditMode}
       />
     </CollapsibleSidebarContainer>
   );

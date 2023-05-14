@@ -14,7 +14,12 @@ export enum CrudActionEnums {
 
 /* NEW_ACTION_GOES_HERE */
 
-export const switchModeAction = createAction<CrudMode, CrudMode>(
+export interface ISwitchModeActionPayload {
+  mode: CrudMode;
+  allowChangeMode: boolean;
+}
+
+export const switchModeAction = createAction<ISwitchModeActionPayload, ISwitchModeActionPayload>(
   CrudActionEnums.SwitchMode,
   p => p
 );

@@ -1,4 +1,4 @@
-import { ITableRowDragProps, NewRowCapturePosition } from '../reactTable/interfaces';
+import { InlineEditMode, InlineSaveMode, ITableRowDragProps, NewRowCapturePosition } from '../reactTable/interfaces';
 import { MutableRefObject, ReactNode } from 'react';
 import { IDataTableInstance, ITableColumn } from '../../providers/dataTable/interfaces';
 import { DataTableFullInstance } from '../../providers/dataTable/contexts';
@@ -35,8 +35,6 @@ export interface IColumnEditFieldProps {
 }
 
 export type YesNoInherit = 'yes' | 'no' | 'inherit';
-export type InlineEditMode = 'one-by-one' | 'all-at-once';
-export type InlineSaveMode = 'auto' | 'manual';
 
 export interface IShaDataTableInlineEditableProps {
   canDeleteInline?: YesNoInherit;

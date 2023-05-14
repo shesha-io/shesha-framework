@@ -311,6 +311,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     newRowCapturePosition: props.newRowCapturePosition,
     createAction: creater,
     newRowInitData: crudOptions.onNewRowInitialize,
+    inlineEditMode: props.inlineEditMode,
+    inlineSaveMode: props.inlineSaveMode,
   };
 
   return (

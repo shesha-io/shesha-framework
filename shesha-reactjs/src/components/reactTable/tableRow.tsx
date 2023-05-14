@@ -7,6 +7,8 @@ import { Row } from 'react-table';
 import { RowCell } from './rowCell';
 import { CrudProvider } from 'providers/crudContext';
 
+export type RowEditMode = 'read' | 'edit';
+
 export interface ISortableRowProps {
   prepareRow: (row: Row<any>) => void;
   onClick: (row: Row<any>) => void;
@@ -19,6 +21,8 @@ export interface ISortableRowProps {
   updater?: (data: any) => Promise<any>;
   allowDelete: boolean;
   deleter?: () => Promise<any>;
+  editMode?: RowEditMode;
+  allowChangeEditMode: boolean;
 }
 
 export const SortableRow = SortableElement<ISortableRowProps>(props => <TableRow {...props} />);
@@ -30,7 +34,20 @@ export const RowDragHandle = SortableHandle(() => (
 ));
 
 export const TableRow: FC<ISortableRowProps> = props => {
-  const { row, prepareRow, onClick, onDoubleClick, index, selectedRowIndex, updater, deleter, allowEdit, allowDelete } = props;
+  const { 
+    row, 
+    prepareRow, 
+    onClick, 
+    onDoubleClick, 
+    index, 
+    selectedRowIndex, 
+    updater, 
+    deleter, 
+    allowEdit, 
+    allowDelete,
+    editMode,
+    allowChangeEditMode,
+  } = props;
 
   const handleRowClick = () => onClick(row);
 
@@ -46,6 +63,8 @@ export const TableRow: FC<ISortableRowProps> = props => {
       updater={updater}
       allowDelete={allowDelete}
       deleter={deleter}
+      mode={editMode === 'edit' ? 'update' : 'read'}
+      allowChangeMode={allowChangeEditMode}
     >
       <div
         key={nanoid()}

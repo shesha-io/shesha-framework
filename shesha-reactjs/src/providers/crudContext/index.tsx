@@ -14,6 +14,7 @@ export interface ICrudProviderProps {
     allowEdit: boolean;
     allowDelete: boolean;
     mode?: CrudMode;
+    allowChangeMode: boolean;
     data: object | RowDataInitializer;
     updater?: (data: any) => Promise<any>;
     creater?: (data: any) => Promise<any>;
@@ -33,6 +34,7 @@ const CrudProvider: FC<ICrudProviderProps> = (props) => {
         allowEdit, 
         allowDelete,
         onSave,
+        allowChangeMode,
     } = props;
     const [state, dispatch] = useThunkReducer(reducer, {
         ...CRUD_CONTEXT_INITIAL_STATE,
@@ -40,11 +42,30 @@ const CrudProvider: FC<ICrudProviderProps> = (props) => {
         allowEdit,
         allowDelete,
         mode,
+        allowChangeMode,
         initialValues: typeof(data) !== 'function' ? data : undefined,
     });
 
     //console.log('LOG: CRUD render', { initialValues: state.initialValues });
 
+    const switchModeInternal = (mode: CrudMode, allowChangeMode: boolean) => {
+        dispatch(switchModeAction({ mode, allowChangeMode }));
+    };
+
+    const switchMode = (mode: CrudMode) => {
+        if (state.allowChangeMode)
+            switchModeInternal(mode, state.allowChangeMode);
+    };
+
+    useEffect(() => {
+        const modeToUse = allowChangeMode
+            ? state.mode
+            : mode;
+        
+        if (state.allowChangeMode !== allowChangeMode || state.mode !== modeToUse)
+            switchModeInternal(modeToUse, allowChangeMode);
+    }, [mode, allowChangeMode]);
+    
     const [form] = Form.useForm();
 
     const setInitialValuesLoading = (loading: boolean) => {
@@ -94,10 +115,6 @@ const CrudProvider: FC<ICrudProviderProps> = (props) => {
     }, [allowDelete]);
 
     //#endregion
-
-    const switchMode = (mode: CrudMode) => {
-        dispatch(switchModeAction(mode));
-    };
 
     const setLastError = (error?: IErrorInfo) => {
         // skip unneeded update when new error and current error is empty

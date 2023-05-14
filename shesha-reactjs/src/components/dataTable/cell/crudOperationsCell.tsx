@@ -53,6 +53,7 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
     allowEdit,
     allowDelete,
     lastError,
+    allowChangeMode,
   } = useCrud();
 
   const onEditClick = () => {
@@ -95,23 +96,10 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
         isVisible: isNewObject
       },
       {
-        title: "Reset",
-        executer: onCancelEditClick,
-        icon: <CloseOutlined />,
-        isVisible: isNewObject
-      },
-      {
         title: "Edit",
         executer: onEditClick,
         icon: <EditOutlined />,
         isVisible: allowEdit && mode === 'read'
-      },
-      {
-        title: "Delete",
-        confirmationText: 'Are you sure want to delete this item?',
-        executer: onDeleteClick,
-        icon: <DeleteOutlined />,
-        isVisible: allowDelete && mode === 'read'
       },
       {
         title: "Save",
@@ -123,11 +111,24 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
         title: "Cancel edit",
         executer: onCancelEditClick,
         icon: <CloseOutlined />,
-        isVisible: allowEdit && mode === 'update'
+        isVisible: allowEdit && mode === 'update' && allowChangeMode
+      },
+      {
+        title: "Reset",
+        executer: onCancelEditClick,
+        icon: <CloseOutlined />,
+        isVisible: isNewObject || mode === 'update' && !allowChangeMode
+      },
+      {
+        title: "Delete",
+        confirmationText: 'Are you sure want to delete this item?',
+        executer: onDeleteClick,
+        icon: <DeleteOutlined />,
+        isVisible: allowDelete && (mode === 'read' || mode === 'update' && !allowChangeMode),
       },
     ];
     return allButtons.filter(b => b.isVisible);
-  }, [isNewObject, allowDelete, allowEdit, mode, performCreate]);
+  }, [isNewObject, allowDelete, allowEdit, mode, performCreate, allowChangeMode]);
   
   return (
     <div style={{ width: '100%', textAlign: 'center' }}>

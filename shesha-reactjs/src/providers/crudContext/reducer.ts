@@ -3,18 +3,18 @@ import {
     ICrudStateContext,
   } from './contexts';
   import { handleActions } from 'redux-actions';
-  import { CrudActionEnums } from './actions';
-import { CrudMode } from './models';
+  import { CrudActionEnums, ISwitchModeActionPayload } from './actions';
 import { IErrorInfo } from 'interfaces/errorInfo';
   
   const reducer = handleActions<ICrudStateContext, any>(
     {
-      [CrudActionEnums.SwitchMode]: (state: ICrudStateContext, action: ReduxActions.Action<CrudMode>) => {
+      [CrudActionEnums.SwitchMode]: (state: ICrudStateContext, action: ReduxActions.Action<ISwitchModeActionPayload>) => {
         const { payload } = action;
         
         return {
           ...state,
-          mode: payload,
+          mode: payload.mode,
+          allowChangeMode: payload.allowChangeMode,
         };
       },
 

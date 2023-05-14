@@ -60,12 +60,16 @@ const ReactTable: FC<IReactTableProps> = ({
 
   canDeleteInline = false,
   deleteAction,
+
   canEditInline = false,
   updateAction,
+  
   canAddInline = false,
   newRowCapturePosition,
   newRowInitData,
   createAction,
+  inlineEditMode,
+  //inlineSaveMode,
 }) => {
   const [componentState, setComponentState] = useState<IReactTableState>({
     allRows: data,
@@ -375,6 +379,9 @@ const ReactTable: FC<IReactTableProps> = ({
 
                     allowDelete={canDeleteInline}
                     deleter={() => deleteAction(rowIndex, row.original)}
+                    
+                    allowChangeEditMode={inlineEditMode === 'one-by-one'}
+                    editMode={inlineEditMode === 'all-at-once' ? 'edit' : undefined}
                   />
                 );
               })}
