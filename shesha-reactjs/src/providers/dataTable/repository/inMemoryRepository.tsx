@@ -36,7 +36,7 @@ const createRepository = (_args: IWithInMemoryRepositoryArgs): IRepository => {
     };
 
     const exportToExcel = (payload: IGetListDataPayload): Promise<void> => {
-        console.log('LOG: useBackendRepository.exportToExcel()', payload);
+        console.log('LOG: useInMemoryRepository.exportToExcel()', payload);
 
         return  Promise.reject('Export to Excel not implemented');
     };

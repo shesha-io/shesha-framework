@@ -1,11 +1,13 @@
 import { MoreOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
-import { nanoid } from 'nanoid/non-secure';
 import React, { FC } from 'react';
 import { SortableElement, SortableHandle } from 'react-sortable-hoc';
 import { Row } from 'react-table';
 import { RowCell } from './rowCell';
 import { CrudProvider } from 'providers/crudContext';
+import { InlineSaveMode } from './interfaces';
+
+export type RowEditMode = 'read' | 'edit';
 
 export interface ISortableRowProps {
   prepareRow: (row: Row<any>) => void;
@@ -19,6 +21,9 @@ export interface ISortableRowProps {
   updater?: (data: any) => Promise<any>;
   allowDelete: boolean;
   deleter?: () => Promise<any>;
+  editMode?: RowEditMode;
+  allowChangeEditMode: boolean;
+  inlineSaveMode?: InlineSaveMode;
 }
 
 export const SortableRow = SortableElement<ISortableRowProps>(props => <TableRow {...props} />);
@@ -30,7 +35,21 @@ export const RowDragHandle = SortableHandle(() => (
 ));
 
 export const TableRow: FC<ISortableRowProps> = props => {
-  const { row, prepareRow, onClick, onDoubleClick, index, selectedRowIndex, updater, deleter, allowEdit, allowDelete } = props;
+  const { 
+    row, 
+    prepareRow, 
+    onClick, 
+    onDoubleClick, 
+    index, 
+    selectedRowIndex, 
+    updater, 
+    deleter, 
+    allowEdit, 
+    allowDelete,
+    editMode,
+    allowChangeEditMode,
+    inlineSaveMode,
+  } = props;
 
   const handleRowClick = () => onClick(row);
 
@@ -46,9 +65,11 @@ export const TableRow: FC<ISortableRowProps> = props => {
       updater={updater}
       allowDelete={allowDelete}
       deleter={deleter}
+      mode={editMode === 'edit' ? 'update' : 'read'}
+      allowChangeMode={allowChangeEditMode}
+      autoSave={inlineSaveMode === 'auto'}
     >
       <div
-        key={nanoid()}
         onClick={handleRowClick}
         onDoubleClick={handleRowDoubleClick}
         {...row.getRowProps()}
@@ -58,8 +79,8 @@ export const TableRow: FC<ISortableRowProps> = props => {
           { 'sha-tr-selected': selectedRowIndex === row?.index }
         )}
       >
-        {row.cells.map(cell => {
-          return <RowCell cell={cell} key={nanoid()} />;
+        {row.cells.map((cell, index) => {
+          return <RowCell cell={cell} key={index} />;
         })}
       </div>
     </CrudProvider>

@@ -24,6 +24,9 @@ export interface ITableRowDragProps {
 
 export type RowDataInitializer = () => Promise<object>;
 
+export type InlineEditMode = 'one-by-one' | 'all-at-once';
+export type InlineSaveMode = 'auto' | 'manual';
+
 export interface IReactTableProps extends ITableRowDragProps {
   /**
    * @deprecated - use scrollBodyHorizontally
@@ -192,5 +195,7 @@ export interface IReactTableProps extends ITableRowDragProps {
   newRowInsertPosition?: NewRowCapturePosition;
   createAction?: (data: any) => Promise<any>;
   newRowInitData?: RowDataInitializer;
+  inlineEditMode?: InlineEditMode;
+  inlineSaveMode?: InlineSaveMode;
 }
 

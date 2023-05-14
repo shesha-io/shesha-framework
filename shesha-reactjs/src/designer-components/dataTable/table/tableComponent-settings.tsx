@@ -7,8 +7,8 @@ import SectionSeparator from '../../../components/sectionSeparator';
 import CodeEditor from '../../../components/formDesigner/components/codeEditor/codeEditor';
 import PropertyAutocomplete from '../../../components/propertyAutocomplete/propertyAutocomplete';
 import { ConfigurableActionConfigurator } from '../../configurableActionsConfigurator';
-import { InlineEditMode, InlineSaveMode, YesNoInherit } from 'components/dataTable/interfaces';
-import { NewRowCapturePosition } from 'components/reactTable/interfaces';
+import { YesNoInherit } from 'components/dataTable/interfaces';
+import { InlineEditMode, InlineSaveMode, NewRowCapturePosition } from 'components/reactTable/interfaces';
 
 interface ITypedOption<T = string> {
   label: React.ReactNode;
@@ -118,7 +118,7 @@ function TableSettings(props: IProps) {
       <Form.Item name="newRowCapturePosition" label="New row capture position" hidden={canAddInline === 'no'}>
         <Select disabled={props.readOnly} options={rowCapturePositions} />
       </Form.Item>
-      <Form.Item name="newRowInsertPosition" label="New row insert position" hidden={canAddInline === 'no'}>
+      <Form.Item name="newRowInsertPosition" label="New row insert position" /*hidden={canAddInline === 'no'}*/ hidden={true} /* note: hidden until review of rows drag&drop */>
         <Select disabled={props.readOnly} options={rowCapturePositions} />
       </Form.Item>
       <Form.Item name="customCreateUrl" label="Custom create url" hidden={canEditInline === 'no'}>

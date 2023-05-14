@@ -1,10 +1,10 @@
 import { CloseOutlined, DeleteOutlined, EditOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
-import { Button, Popconfirm } from 'antd';
+import { Button, Popconfirm, Popover } from 'antd';
+import { IErrorInfo } from 'interfaces/errorInfo';
 import { useCrud } from 'providers/crudContext';
 import { ITableCrudOperationsColumn } from 'providers/dataTable/interfaces';
 import React, { FC, useMemo } from 'react';
 import { IHasColumnConfig } from './interfaces';
-import ValidationErrorsIcon from './validationErrorsIcon/validationErrorsIcon';
 
 export interface ICrudOperationsCellProps extends IHasColumnConfig<ITableCrudOperationsColumn> {
 }
@@ -15,9 +15,11 @@ interface IActionButtonProps {
   executer: () => void;
   confirmationText?: string;
   isVisible: boolean;
+  loading?: boolean;
+  error?: IErrorInfo;
 }
 
-const ActionButton: FC<IActionButtonProps> = ({ icon, title, executer, confirmationText }) => {
+const ActionButton: FC<IActionButtonProps> = ({ icon, title, executer, confirmationText, loading, error }) => {
   const mustConfirm = Boolean(confirmationText);
   const button = (
     <Button
@@ -31,13 +33,30 @@ const ActionButton: FC<IActionButtonProps> = ({ icon, title, executer, confirmat
         }}
       title={title}
       size='small'
-      style={{ margin: '0 5px' }}
+      style={{ margin: '0 3px' }}
+      loading={loading}
+      danger={Boolean(error)}
     />
   );
-  
-  return confirmationText
+
+  const withConfirmation = confirmationText
     ? <Popconfirm title={confirmationText} onConfirm={() => executer()}>{button}</Popconfirm>
     : button;
+
+  return error
+    ? (
+      <Popover
+        title={error.message}
+        content={
+          <>{error.details}</>
+        }
+        trigger="hover"
+        placement="topLeft"
+      >
+        {withConfirmation}
+      </Popover>
+    )
+    : <>{withConfirmation}</>;
 };
 
 export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
@@ -52,7 +71,12 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
     isNewObject,
     allowEdit,
     allowDelete,
-    lastError,
+    saveError,
+    allowChangeMode,
+    autoSave,
+    isSaving,
+    isDeleting,
+    deletingError,
   } = useCrud();
 
   const onEditClick = () => {
@@ -95,44 +119,47 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
         isVisible: isNewObject
       },
       {
-        title: "Reset",
-        executer: onCancelEditClick,
-        icon: <CloseOutlined />,
-        isVisible: isNewObject
-      },
-      {
         title: "Edit",
         executer: onEditClick,
         icon: <EditOutlined />,
         isVisible: allowEdit && mode === 'read'
       },
       {
-        title: "Delete",
-        confirmationText: 'Are you sure want to delete this item?',
-        executer: onDeleteClick,
-        icon: <DeleteOutlined />,
-        isVisible: allowDelete && mode === 'read'
-      },
-      {
         title: "Save",
         executer: onSaveUpdateClick,
         icon: <SaveOutlined />,
-        isVisible: allowEdit && mode === 'update'
+        isVisible: /*!autoSave &&*/ allowEdit && mode === 'update',
+        loading: isSaving,
+        error: saveError,
       },
       {
         title: "Cancel edit",
         executer: onCancelEditClick,
         icon: <CloseOutlined />,
-        isVisible: allowEdit && mode === 'update'
+        isVisible: /*!autoSave &&*/ (allowEdit && mode === 'update' && allowChangeMode)
+      },
+      {
+        title: "Reset",
+        executer: onCancelEditClick,
+        icon: <CloseOutlined />,
+        isVisible: /*!autoSave &&*/ (isNewObject || mode === 'update' && !allowChangeMode)
+      },
+      {
+        title: "Delete",
+        confirmationText: 'Are you sure want to delete this item?',
+        executer: onDeleteClick,
+        icon: <DeleteOutlined />,
+        isVisible: allowDelete && (mode === 'read' || mode === 'update' && !allowChangeMode),
+        loading: isDeleting,
+        error: deletingError,
       },
     ];
     return allButtons.filter(b => b.isVisible);
-  }, [isNewObject, allowDelete, allowEdit, mode, performCreate]);
-  
+  }, [isNewObject, allowDelete, allowEdit, mode, performCreate, allowChangeMode, autoSave, isSaving, saveError, isDeleting, deletingError]);
+
   return (
     <div style={{ width: '100%', textAlign: 'center' }}>
       {buttons.map((btn, idx) => (<ActionButton {...btn} key={idx} />))}
-      <ValidationErrorsIcon error={lastError} />
     </div>
   );
 };
