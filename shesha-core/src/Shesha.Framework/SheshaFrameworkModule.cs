@@ -2,6 +2,7 @@
 using Abp.AutoMapper;
 using Abp.Dependency;
 using Abp.Modules;
+using Abp.Runtime.Validation.Interception;
 using Abp.Web.Models;
 using Castle.MicroKernel.Registration;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -24,6 +25,7 @@ using Shesha.Services.Settings.Distribution;
 using Shesha.Services.StoredFiles;
 using Shesha.Settings;
 using Shesha.Settings.Ioc;
+using Shesha.Validations;
 using System.Reflection;
 
 namespace Shesha
@@ -50,6 +52,9 @@ namespace Shesha
                 {
                     IocManager.Register<IExceptionFilter, SheshaExceptionFilter>(DependencyLifeStyle.Transient);
                 });
+
+            // register validator to check IValidatableObject from AbpValidationActionFilter
+            Configuration.Validation.Validators.Add<ShaValidatableObjectValidator>();
         }
 
         public override void Initialize()

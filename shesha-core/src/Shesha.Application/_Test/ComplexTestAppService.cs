@@ -1,26 +1,46 @@
-﻿using Abp.Authorization;
+﻿using Abp.Application.Services;
 using Abp.Dependency;
 using Abp.Domain.Repositories;
-using Castle.DynamicProxy;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
-using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
-using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Dtos;
-using Shesha.EntityReferences;
-using Shesha.Extensions;
-using Shesha.JsonEntities;
 using Shesha.NHibernate.Utilites;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.Test
 {
-    public class ComplexTestHardAppService : DynamicCrudAppService<ComplexTest, DynamicDto<ComplexTest, Guid>, Guid>, ITransientDependency
+    public class ValidateDto : IValidatableObject
+    {
+        public string Name { get; set; }
+
+        public string Description { get; set; }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            return new List<ValidationResult>() { new ValidationResult("Test error") };
+        }
+    }
+
+    public interface IComplexTestHardAppService: IApplicationService
+    {
+        Task CheckData(ValidateDto dto);
+    }
+
+    public class Aaaaaaa : ApplicationService, IComplexTestHardAppService, ITransientDependency
+    {
+        public virtual Task CheckData(ValidateDto dto)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class ComplexTestHardAppService : DynamicCrudAppService<ComplexTest, DynamicDto<ComplexTest, Guid>, Guid>, IComplexTestHardAppService, ITransientDependency
     {
 
         private readonly IRepository<Person, Guid> _personRepository;
@@ -84,8 +104,7 @@ namespace Shesha.Test
         }
 
         [HttpGet]
-        [AbpAuthorize("Test")]
-        public Task CheckData()
+        public virtual Task CheckData(ValidateDto dto)
         {
             return Task.CompletedTask;
         }
