@@ -24,8 +24,8 @@ export const useMetaMapMarker = (layers: ILayersEntity[]): IGetData => {
   const layerMarkers = getLayerMarkers(layers, layerData);
 
   const fetchData = () => {
-    layers.forEach((item) => {
-      const filter = evaluateFilters(item, formData, globalState);
+    layers.forEach(async (item) => {
+      const filter = evaluateFilters(item, formData, globalState, null);
 
       refetch(getMapRefetchParams(item, filter)).then((resp) =>
         setState((s) => ({ ...s, layerData: [...s.layerData, getResponseToState(item, resp?.result)] }))

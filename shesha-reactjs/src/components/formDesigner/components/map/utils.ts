@@ -1,13 +1,19 @@
 import camelCaseKeys from 'camelcase-keys';
 import { IAnyObject, ICoords } from 'interfaces';
+import { LatLngExpression } from 'leaflet';
 import { isEmpty } from 'lodash';
 import { evaluateDynamicFilters } from 'providers/dataTable/utils';
+import { NestedPropertyMetadatAccessor } from 'providers/metadataDispatcher/contexts';
 import { parseIntOrDefault } from '../imageAnnotation/utilis';
 import { DEFAULT_LAT, DEFAULT_LNG } from './constants';
 import { ILayersEntity, IMapMarker, IMapProps } from './interfaces';
-import { LatLngExpression } from 'leaflet';
 
-export const evaluateFilters = (item: any, formData: any, globalState: IAnyObject) => {
+export const evaluateFilters = (
+  item: any,
+  formData: any,
+  globalState: IAnyObject,
+  propertyMetadataAccessor: NestedPropertyMetadatAccessor
+) => {
   if (!item.filters) return '';
 
   const localFormData = !isEmpty(formData) ? camelCaseKeys(formData, { deep: true, pascalCase: true }) : formData;
@@ -23,7 +29,8 @@ export const evaluateFilters = (item: any, formData: any, globalState: IAnyObjec
         match: 'globalState',
         data: globalState,
       },
-    ]
+    ],
+    propertyMetadataAccessor
   );
   //@ts-ignore everything is in place here
   if (response.find((f) => f?.unevaluatedExpressions?.length)) return '';
