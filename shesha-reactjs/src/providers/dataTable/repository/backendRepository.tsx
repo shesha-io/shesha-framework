@@ -8,7 +8,7 @@ import React, { ComponentType, useMemo } from "react";
 import { FC } from "react";
 import { camelcaseDotNotation } from "utils/string";
 import { DataTableColumnDto, IExcelColumn, IExportExcelPayload, IGetDataFromBackendPayload, IGetListDataPayload, ITableDataColumn, ITableDataInternalResponse, ITableDataResponse } from "../interfaces";
-import { IRepository, IHasRepository } from "./interfaces";
+import { IRepository, IHasRepository, IHasModelType } from "./interfaces";
 import { convertDotNotationPropertiesToGraphQL } from "providers/form/utils";
 import { IConfigurableColumnsProps, IDataColumnsProps } from "providers/datatableColumnsConfigurator/models";
 import { IMetadataDispatcherActionsContext } from "providers/metadataDispatcher/contexts";
@@ -309,9 +309,9 @@ export const useBackendRepository = (args: IWithBackendRepositoryArgs): IBackend
     return repository;
 };
 
-export function withBackendRepository<WrappedProps>(WrappedComponent: ComponentType<WrappedProps & IHasRepository>, args: IWithBackendRepositoryArgs): FC<WrappedProps> {
+export function withBackendRepository<WrappedProps>(WrappedComponent: ComponentType<WrappedProps & IHasRepository & IHasModelType>, args: IWithBackendRepositoryArgs): FC<WrappedProps> {
     return props => {
         const repository = useBackendRepository(args);
-        return (<WrappedComponent {...props} repository={repository} />);
+        return (<WrappedComponent {...props} repository={repository} modelType={args.entityType}/>);
     };
 };

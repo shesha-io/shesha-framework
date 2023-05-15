@@ -7,7 +7,6 @@ import { DataList } from '../../../dataList';
 import { IDataListComponentProps } from '../../../dataList/models';
 import DataListSettings from './dataListSettings';
 import { useDataSources } from '../../../../providers/dataSourcesProvider';
-import { IBackendRepository } from 'providers/dataTable/repository/backendRepository';
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
     type: 'datalist',
@@ -73,13 +72,12 @@ export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
     changeSelectedRow,
     changeSelectedIds,
     getRepository,
+    modelType
   } = dataSource;
 
   const { selectedRow, selectedRows, setSelectedRow, setMultiSelectedRow } = dataSelection;
 
   const repository = getRepository();
-  // todo: find a better way to pass entity type, it should be generic
-  const entityType = (repository as IBackendRepository)?.entityType;
 
   if (isDesignMode 
     && (
@@ -106,7 +104,7 @@ export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
   return (
       <DataList
         {...props}
-        entityType={entityType}
+        entityType={modelType}
         onSelectRow={onSelectRow}
         onMultiSelectRows={setMultiSelectedRow}
         selectedRow={selectedRow}

@@ -53,7 +53,7 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = model => {
     <Checkbox.Group value={value} onChange={onChange} style={model?.style}>
       <Row>
         {options.map(({ id, label, value: v }) => (
-          <Col id={id} span={getSpan(direction, options.length)}>
+          <Col id={id} span={getSpan(direction, options.length)} key={id}>
             <Checkbox id={id} value={v} disabled={isReadOnly}>
               {label}
             </Checkbox>

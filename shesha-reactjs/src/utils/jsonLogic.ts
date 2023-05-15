@@ -1,3 +1,4 @@
+import { DataTypes } from "interfaces/dataTypes";
 import { evaluateComplexStringWithResult, IEvaluateComplexStringResult, IMatchData } from "./publicUtils";
 
 type NodeCallback = (operator: string, args: object[]) => void;
@@ -50,31 +51,73 @@ export interface IJsonLogicConversionOptions {
     argumentEvaluator: JsonLogicContainerProcessingCallback;
     mappings: IMatchData[];
     onEvaluated?: (args: OnEvaluatedArguments) => void;
+    getVariableDataType?: (variable: string) => Promise<string>;
 }
 
-export const convertJsonLogicNode = (jsonLogic: object, options: IJsonLogicConversionOptions): object => {
+interface IJsonLogicVarNode {
+    var: string;
+}
+const asVarNode = (node: object): IJsonLogicVarNode => {
+    const typed = node as IJsonLogicVarNode;
+    return typeof (typed?.var) === 'string'
+        ? typed : null;
+};
+
+export const convertJsonLogicNode = async (jsonLogic: object, options: IJsonLogicConversionOptions): Promise<object> => {
     if (!jsonLogic)
         return null;
 
     const { argumentEvaluator, mappings, onEvaluated: onEvaluation } = options;
 
-    const parseNestedNode = (node: object, nestedOptions: IJsonLogicConversionOptions): object | string => {
+    const parseNestedNode = async (node: object, allArgs: any[], nestedOptions: IJsonLogicConversionOptions): Promise<object | string> => {
         // special handling for evaluation nodes
         const evaluationNodeParsing = tryParseAsEvaluationOperation(node);
         if (evaluationNodeParsing.isEvaluationNode) {
             const { result, success, unevaluatedExpressions } = evaluateComplexStringWithResult(evaluationNodeParsing.evaluationArguments.expression, mappings, evaluationNodeParsing.evaluationArguments.required);
 
+            let convertedResult: any = result;
+            if (success && options.getVariableDataType) {
+                let dataType: string = null;
+                for (const arg of allArgs) {
+                    const varNode = asVarNode(arg);
+                    if (!varNode)
+                        continue;
+
+                    const varDataType = await options.getVariableDataType(varNode.var);
+                    if (dataType && dataType !== varDataType) {
+                        // data types of arguments are different, we can't convert it them automatically
+                        dataType = null;
+                        break;
+                    } else
+                        dataType = varDataType;
+                }
+
+                switch (dataType) {
+                    case DataTypes.number:
+                    case DataTypes.referenceListItem: {
+                        convertedResult = convertedResult
+                            ? parseInt(convertedResult, 10)
+                            : null;
+                    }
+                    case DataTypes.boolean: {
+                        convertedResult = typeof(convertedResult) === 'string'
+                            ? convertedResult?.toLowerCase() === 'true'
+                            : convertedResult;
+                    }
+                }
+            };
+
             if (onEvaluation)
                 onEvaluation({
                     expression: evaluationNodeParsing.evaluationArguments.expression,
-                    result, 
+                    result: convertedResult,
                     success,
                     unevaluatedExpressions
                 });
 
-            return result;
+            return convertedResult;
         } else
-            return convertJsonLogicNode(node, nestedOptions);
+            return await convertJsonLogicNode(node, nestedOptions);
     };
 
     const result = {};
@@ -87,19 +130,19 @@ export const convertJsonLogicNode = (jsonLogic: object, options: IJsonLogicConve
         let convertedArgs = null;
 
         if (Array.isArray(args)) {
-            convertedArgs = args.map((arg, argIdx) => {
+            convertedArgs = await Promise.all(args.map(async (arg, argIdx) => {
                 if (typeof (arg) === 'object')
-                    return parseNestedNode(arg, options);
+                    return await parseNestedNode(arg, args, options);
 
                 const evaluationResult = argumentEvaluator(operatorName, args, argIdx);
                 return evaluationResult.handled
                     ? evaluationResult.value
                     : arg;
-            });
+            }));
         } else {
             // note: single arguments may be presented as objects, example: {"!!": {"var": "user.userName"}}
             if (typeof (args) === 'object') {
-                convertedArgs = parseNestedNode(args, options);
+                convertedArgs = await parseNestedNode(args, [], options);
             } else {
                 const evaluationResult = argumentEvaluator(operatorName, [args], 0);
                 convertedArgs = evaluationResult.handled
