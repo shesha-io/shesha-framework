@@ -67,9 +67,9 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
   labelCol,
   wrapperCol,
   queryParams,
-  entityType,
   onChange,
   defaultValue,
+  ...props
 }) => {
   const [state, dispatch] = useReducer(subFormReducer, SUB_FORM_CONTEXT_INITIAL_STATE);
   const { publish } = usePubSub();
@@ -116,6 +116,26 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
     }
   }, [value, name]);
 
+  const [entityType, setEntityType] = useState(props.entityType);
+
+  useEffect(() => {
+    if (!Boolean(entityType)) {
+      if (Boolean(props.entityType)) {
+        setEntityType(props.entityType);
+      } else 
+      if (value && typeof value === 'object' && value['_className']) {
+        setEntityType(value['_className']);
+      }
+    } else {
+      if (Boolean(props.entityType) && entityType !== props.entityType) {
+        setEntityType(props.entityType);
+      } else
+      if (value && typeof value === 'object' && value['_className'] && entityType !== value['_className']) {
+        setEntityType(value['_className']);
+      }
+    }
+  }, [props.entityType, value]);
+
   const urlHelper = useModelApiHelper();
   const getReadUrl = (): Promise<string> => {
     if (dataSource !== 'api') return Promise.reject('`getUrl` is available only when `dataSource` = `api`');
@@ -145,14 +165,13 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
 
   // show form based on the entity type
   useEffect(() => {
-    if (formData && formSelectionMode === 'dynamic') {
-      const obj = formData[name];
-      if (obj && typeof obj === 'object' && obj['_className'] && !formConfig?.formId)
-        getEntityFormId(obj['_className'], formType, formid => {
+    if (value && formSelectionMode === 'dynamic') {
+      if (value && typeof value === 'object' && value['_className'] && !formConfig?.formId)
+        getEntityFormId(value['_className'], formType, formid => {
           setFormConfig({ formId: { name: formid.name, module: formid.module }, lazy: true });
         });
     }
-  }, [formData]);
+  }, [value]);
 
   const { mutate: postHttp, loading: isPosting, error: postError } = useMutate({
     path: evaluateUrlFromJsExpression(postUrl),
@@ -241,6 +260,11 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
 
     dispatch(fetchDataRequestAction());
     getReadUrl().then(getUrl => {
+      if (!Boolean(getUrl)) {
+        dispatch(fetchDataSuccessAction());
+        return;
+      }
+
       RestfulShesha.get<EntityAjaxResponse, any, any, any>(
         getUrl,
         finalQueryParams,
