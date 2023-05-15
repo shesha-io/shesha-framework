@@ -53,7 +53,7 @@ const getMoment = (value: any, dateFormat: string): Moment => {
 
   const values = [isMoment(value) ? value : null, moment(value as string, dateFormat), moment(value as string)];
 
-  const parsed = values.find(i => isMoment(i) && i.isValid());
+  const parsed = values.find((i) => isMoment(i) && i.isValid());
 
   return parsed;
 };
@@ -63,6 +63,8 @@ const settingsForm = settingsFormJson as FormMarkup;
 const TimeField: IToolboxComponent<ITimePickerProps> = {
   type: 'timePicker',
   name: 'Time Picker',
+  isInput: true,
+  isOutput: true,
   icon: <ClockCircleOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.time,
   factory: (model: ITimePickerProps) => {
@@ -82,8 +84,8 @@ const TimeField: IToolboxComponent<ITimePickerProps> = {
     );
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
-  initModel: model => {
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  initModel: (model) => {
     const customModel: ITimePickerProps = {
       ...model,
       format: DATE_TIME_FORMAT,
@@ -126,7 +128,7 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
 
   const getDefaultRangePickerValues = () =>
     Array.isArray(defaultValue) && defaultValue?.length === 2
-      ? defaultValue?.map(v => moment(new Date(v), format))
+      ? defaultValue?.map((v) => moment(new Date(v), format))
       : [null, null];
 
   const handleTimePickerChange = (localValue: moment.Moment, dateString: string) => {

@@ -13,6 +13,7 @@ import { IRefListStatusPropsV0 } from './migrations/models';
 
 const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
   type: 'refListStatus',
+  isInput: true,
   isOutput: true,
   name: 'Reference list status',
   icon: <FileSearchOutlined />,
@@ -46,30 +47,34 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
     );
   },
 
-  initModel: model => {
+  initModel: (model) => {
     const customModel: IRefListStatusProps = {
       ...model,
     };
     return customModel;
   },
-  migrator: m => m.add<IRefListStatusPropsV0>(0, prev => {
-    const result: IRefListStatusPropsV0 = {
-      ...prev,
-      module: '',
-      nameSpace: ''
-    };
-    return result;
-  })
-    .add<IRefListStatusProps>(1, prev => {
-      const { module, nameSpace, ...restProps } = prev;
-      const result: IRefListStatusProps = {
-        ...restProps,
-        referenceListId: nameSpace ? { module: module, name: nameSpace /* note the property was named wrong initially */ } : null,
-      };
-      return result;
-    }),
+  migrator: (m) =>
+    m
+      .add<IRefListStatusPropsV0>(0, (prev) => {
+        const result: IRefListStatusPropsV0 = {
+          ...prev,
+          module: '',
+          nameSpace: '',
+        };
+        return result;
+      })
+      .add<IRefListStatusProps>(1, (prev) => {
+        const { module, nameSpace, ...restProps } = prev;
+        const result: IRefListStatusProps = {
+          ...restProps,
+          referenceListId: nameSpace
+            ? { module: module, name: nameSpace /* note the property was named wrong initially */ }
+            : null,
+        };
+        return result;
+      }),
   settingsFormMarkup: RefListStatusSettingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(RefListStatusSettingsForm, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(RefListStatusSettingsForm, model),
 };
 
 export default RefListStatusComponent;
