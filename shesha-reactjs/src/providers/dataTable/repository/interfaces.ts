@@ -7,9 +7,13 @@ export interface IRepository<TCreateOptions = any, TUpdateOptions = any, TDelete
     fetch: (payload: IGetListDataPayload) => Promise<ITableDataInternalResponse>;
     exportToExcel: (payload: IGetListDataPayload) => Promise<void>;
     performCreate: (rowIndex: number, data: any, options: TCreateOptions) => Promise<any>;
-    performUpdate: (rowIndex: number, data: any, options: TUpdateOptions) => Promise<any>;    
-    performDelete: (rowIndex: number, data: any, options: TDeleteOptions) => Promise<any>;    
+    performUpdate: (rowIndex: number, data: any, options: TUpdateOptions) => Promise<any>;
+    performDelete: (rowIndex: number, data: any, options: TDeleteOptions) => Promise<any>;
 };
+
+export interface IHasModelType {
+    modelType: string;
+}
 
 export interface IHasRepository {
     repository: IRepository;

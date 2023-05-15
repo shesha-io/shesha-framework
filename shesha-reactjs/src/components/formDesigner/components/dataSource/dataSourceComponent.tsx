@@ -3,12 +3,12 @@ import { Alert } from 'antd';
 import FormItem from 'antd/lib/form/FormItem';
 import React, { FC, useEffect, useMemo } from 'react';
 import { useDeepCompareEffect } from 'react-use';
-import { IToolboxComponent } from '../../../../interfaces';
-import { MetadataProvider, useDataTableStore, useForm, useGlobalState } from '../../../../providers';
-import { useDataSource } from '../../../../providers/dataSourcesProvider';
-import DataTableProvider from '../../../../providers/dataTable';
-import { evaluateDynamicFilters } from '../../../../providers/dataTable/utils';
-import { DataTableSelectionProvider, useDataTableSelection } from '../../../../providers/dataTableSelection';
+import { IToolboxComponent } from 'interfaces';
+import { MetadataProvider, useDataTableStore, useForm, useGlobalState, useNestedPropertyMetadatAccessor } from 'providers';
+import { useDataSource } from 'providers/dataSourcesProvider';
+import DataTableProvider from 'providers/dataTable';
+import { evaluateDynamicFilters } from 'providers/dataTable/utils';
+import { DataTableSelectionProvider, useDataTableSelection } from 'providers/dataTableSelection';
 import DataSourceSettings from './dataSourceSettings';
 import { IDataSourceComponentProps } from './models';
 
@@ -117,7 +117,8 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, name, filters, 
     refreshTable, 
     tableConfigLoaded, 
     setPredefinedFilters,
-    changePageSize
+    changePageSize,
+    modelType,
   } = dataSource;
 
   const dataSelection = useDataTableSelection();
@@ -136,21 +137,21 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, name, filters, 
     console.log(`deleteRow ${selectedRow.id}`);
   };*/
 
+  const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(modelType);
+
   const debounceEvaluateDynamicFiltersHelper = () => {
     //const data = Boolean(formData) ? camelCaseKeys(formData, { deep: true, pascalCase: true }) : formData;
 
-    const evaluatedFilters = evaluateDynamicFilters(filters, [
-      {
-        match: 'data',
-        data: formData,
-      },
-      {
-        match: 'globalState',
-        data: globalState,
-      },
-    ]);
-
-    setPredefinedFilters(evaluatedFilters);
+    evaluateDynamicFilters(
+      filters, 
+      [
+        { match: 'data', data: formData },
+        { match: 'globalState', data: globalState }
+      ],
+      propertyMetadataAccessor
+    ).then(evaluatedFilters => {
+      setPredefinedFilters(evaluatedFilters);
+    });
   };
 
   useDeepCompareEffect(() => {

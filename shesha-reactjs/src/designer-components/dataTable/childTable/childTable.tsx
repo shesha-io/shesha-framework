@@ -1,57 +1,57 @@
 import { Alert, Space } from 'antd';
 import React, { FC, Fragment, MutableRefObject } from 'react';
-import { CollapsiblePanel, GlobalTableFilter, Show, TablePager } from '../../../components';
-import { evaluateString, useDataTable, useForm, useGlobalState, useSheshaApplication } from '../../..';
-import ComponentsContainer from '../../../components/formDesigner/componentsContainer';
-import { evaluateDynamicFilters, hasDynamicFilter } from '../../../providers/dataTable/utils';
+import { CollapsiblePanel, GlobalTableFilter, Show, TablePager } from 'components';
+import { useDataTable, useForm, useGlobalState, useNestedPropertyMetadatAccessor, useSheshaApplication } from 'providers';
+import ComponentsContainer from 'components/formDesigner/componentsContainer';
+import { evaluateDynamicFilters, hasDynamicFilter } from 'providers/dataTable/utils';
 import './styles/index.less';
-import { ButtonGroup } from '../../../components/formDesigner/components/button/buttonGroup/buttonGroupComponent';
+import { ButtonGroup } from 'components/formDesigner/components/button/buttonGroup/buttonGroupComponent';
 import camelCaseKeys from 'camelcase-keys';
 import _, { isEmpty } from 'lodash';
 import { useDeepCompareEffect } from 'react-use';
 import { IChildTableComponentProps } from '.';
+import { evaluateString } from 'providers/form/utils';
 
 export interface IChildTableProps extends IChildTableComponentProps {
-    componentRef: MutableRefObject<any>;
+  componentRef: MutableRefObject<any>;
 };
 
 export const ChildTable: FC<IChildTableProps> = (props) => {
-    const { formData, formMode, isComponentHidden } = useForm();
-    const { columns, setPredefinedFilters } = useDataTable();
+  const { formData, formMode, isComponentHidden } = useForm();
+  const { columns, setPredefinedFilters, modelType } = useDataTable();
 
-    const { globalState } = useGlobalState();
-    const { anyOfPermissionsGranted } = useSheshaApplication();
+  const { globalState } = useGlobalState();
+  const { anyOfPermissionsGranted } = useSheshaApplication();
 
-    const { defaultSelectedFilterId, filters, permissions, componentRef } = props;
+  const { defaultSelectedFilterId, filters, permissions, componentRef } = props;
 
-    componentRef.current = {
-      columns,
-    };
+  componentRef.current = {
+    columns,
+  };
 
-    //#region Filters
-    const hasFilters = filters?.length > 0;
+  //#region Filters
+  const hasFilters = filters?.length > 0;
 
-    const foundDynamicFilter = hasDynamicFilter(filters);
+  const foundDynamicFilter = hasDynamicFilter(filters);
 
-    const hasManyFiltersButNoSelected = hasFilters && !defaultSelectedFilterId;
+  const hasManyFiltersButNoSelected = hasFilters && !defaultSelectedFilterId;
 
-    const hasFormData = !isEmpty(formData);
-    const hasGlobalState = !isEmpty(formData);
+  const hasFormData = !isEmpty(formData);
+  const hasGlobalState = !isEmpty(formData);
 
-    const evaluateDynamicFiltersHelper = () => {
-      const data = !isEmpty(formData) ? camelCaseKeys(formData, { deep: true, pascalCase: true }) : formData;
+  const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(modelType);
 
-      const evaluatedFilters = evaluateDynamicFilters(filters, [
-        {
-          match: 'data',
-          data: data,
-        },
-        {
-          match: 'globalState',
-          data: globalState,
-        },
-      ]);
+  const evaluateDynamicFiltersHelper = () => {
+    const data = !isEmpty(formData) ? camelCaseKeys(formData, { deep: true, pascalCase: true }) : formData;
 
+    evaluateDynamicFilters(
+      filters,
+      [
+        { match: 'data', data: data },
+        { match: 'globalState', data: globalState },
+      ],
+      propertyMetadataAccessor
+    ).then(evaluatedFilters => {
       let parsedFilters = evaluatedFilters;
 
       if (defaultSelectedFilterId) {
@@ -83,78 +83,79 @@ export const ChildTable: FC<IChildTableProps> = (props) => {
         // Here we do not need dynamic filters
         setPredefinedFilters(parsedFilters);
       }
-    };
+    });
+  };
 
-    useDeepCompareEffect(() => {
-      if (hasFilters) {
-        evaluateDynamicFiltersHelper();
-      }
-    }, [props?.filters, formData, globalState]);
-    //#endregion
+  useDeepCompareEffect(() => {
+    if (hasFilters) {
+      evaluateDynamicFiltersHelper();
+    }
+  }, [props?.filters, formData, globalState]);
+  //#endregion
 
-    const granted = anyOfPermissionsGranted(permissions || []);
+  const granted = anyOfPermissionsGranted(permissions || []);
 
-    const isVisible = !isComponentHidden(props) && (granted || formMode === 'designer');
+  const isVisible = !isComponentHidden(props) && (granted || formMode === 'designer');
 
-    return (
-      <Fragment>
-        <Show when={formMode === 'designer'}>
-          <Show when={!hasFormData && foundDynamicFilter}>
-            <Alert
-              style={{ marginBottom: 6 }}
-              type="warning"
-              message="Found dynamic filters but no state"
-              description="Please note that you have dynamic filter(s) but there is no state to evaluate the filter. The table will not be filtered as a result."
-            />
-          </Show>
-
-          <Show when={hasManyFiltersButNoSelected}>
-            <Alert
-              style={{ marginBottom: 6 }}
-              type="warning"
-              message="No selected filter"
-              description="Please note you more than one filter and no one is selected. The first one will be used by default"
-            />
-          </Show>
+  return (
+    <Fragment>
+      <Show when={formMode === 'designer'}>
+        <Show when={!hasFormData && foundDynamicFilter}>
+          <Alert
+            style={{ marginBottom: 6 }}
+            type="warning"
+            message="Found dynamic filters but no state"
+            description="Please note that you have dynamic filter(s) but there is no state to evaluate the filter. The table will not be filtered as a result."
+          />
         </Show>
 
-        <Show when={isVisible}>
-          <CollapsiblePanel
-            key={undefined}
-            header={evaluateString(props?.title, formData)}
-            extra={
-              <div onClick={e => e?.stopPropagation()}>
-                <Space size="middle">
-                  <Show when={props?.allowQuickSearch}>
-                    <GlobalTableFilter />
-                  </Show>
+        <Show when={hasManyFiltersButNoSelected}>
+          <Alert
+            style={{ marginBottom: 6 }}
+            type="warning"
+            message="No selected filter"
+            description="Please note you more than one filter and no one is selected. The first one will be used by default"
+          />
+        </Show>
+      </Show>
 
-                  <TablePager />
+      <Show when={isVisible}>
+        <CollapsiblePanel
+          key={undefined}
+          header={evaluateString(props?.title, formData)}
+          extra={
+            <div onClick={e => e?.stopPropagation()}>
+              <Space size="middle">
+                <Show when={props?.allowQuickSearch}>
+                  <GlobalTableFilter />
+                </Show>
 
-                  <ButtonGroup
-                    items={props?.toolbarItems || []}
-                    name={''}
-                    type={''}
-                    id={props.id}
-                    isInline={props?.isInline}
-                  />
-                </Space>
-              </div>
+                <TablePager />
+
+                <ButtonGroup
+                  items={props?.toolbarItems || []}
+                  name={''}
+                  type={''}
+                  id={props.id}
+                  isInline={props?.isInline}
+                />
+              </Space>
+            </div>
+          }
+          noContentPadding
+          className="sha-form-designer-child-table"
+        >
+          <ComponentsContainer
+            containerId={props.id}
+            dynamicComponents={
+              props?.isDynamic ? props?.components?.map(c => ({ ...c, readOnly: props?.readOnly })) : []
             }
-            noContentPadding
-            className="sha-form-designer-child-table"
-          >
-            <ComponentsContainer
-              containerId={props.id}
-              dynamicComponents={
-                props?.isDynamic ? props?.components?.map(c => ({ ...c, readOnly: props?.readOnly })) : []
-              }
-            />
-          </CollapsiblePanel>
-        </Show>
-      </Fragment>
-    );
-    
+          />
+        </CollapsiblePanel>
+      </Show>
+    </Fragment>
+  );
+
 };
 
 export default ChildTable;
