@@ -11,6 +11,7 @@ import moment from 'moment';
 export const ShaTimeline: FC<ITimelineProps> = ({ properties, ownerId, entityType, customApiUrl, apiSource }) => {
   const useGetAll = apiSource === 'custom' ? useGet : useEntitiesGetAll;
 
+  //timeline icons
   const { globalState } = useGlobalState();
   const getAllProps =
     apiSource === 'custom' ? { path: customApiUrl + `?id=${ownerId}` || '', lazy: true } : { lazy: true };
@@ -39,7 +40,20 @@ export const ShaTimeline: FC<ITimelineProps> = ({ properties, ownerId, entityTyp
     fetchEntities({ queryParams });
   }, 300);
 
-  const timelineData = apiSource === 'custom' ? data?.result : data?.result?.items;
+  const timelineData: any[] = apiSource === 'custom' ? data?.result : data?.result?.items;
+
+  const sortedTimelineData = timelineData.sort((a, b) => {
+    const actionDataA = a?.actionData;
+    const actionDataB = b?.actionData;
+
+    if (actionDataA < actionDataB) {
+      return -1;
+    }
+    if (actionDataA > actionDataB) {
+      return 1;
+    }
+    return 0;
+  });
 
   useEffect(() => {
     debouncedRefresh();
@@ -49,7 +63,7 @@ export const ShaTimeline: FC<ITimelineProps> = ({ properties, ownerId, entityTyp
     <Spin spinning={isFetchingEntities}>
       {(!timelineData?.length && <Empty description="Empty timeline" />) || (
         <Timeline>
-          {timelineData?.map(({ title, body, toPerson, actionDate, type }) => {
+          {sortedTimelineData?.map(({ title, body, toPerson, actionDate, type }) => {
             return (
               <TimelineItem
                 title={title}
