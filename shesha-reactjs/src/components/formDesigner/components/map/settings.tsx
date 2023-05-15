@@ -64,13 +64,6 @@ const MapSettings: FC<ITabSettingsProps> = (props) => {
         </Select>
       </Form.Item>
 
-      <Show when={state?.mapType === 'layers'}>
-        <SectionSeparator title="Layers" />
-        <Form.Item name="layers">
-          <TestSelectorSettingsModal readOnly={props.readOnly} />
-        </Form.Item>
-      </Show>
-
       <Show when={!!state?.mapType}>
         <Form.Item name="latitude" label="Latitude" rules={[{ required: true }]}>
           <Input />
@@ -79,6 +72,13 @@ const MapSettings: FC<ITabSettingsProps> = (props) => {
         <Form.Item name="longitude" label="Longitude" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
+
+        <Show when={state?.mapType === 'layers'}>
+          <SectionSeparator title="Layers" />
+          <Form.Item name="layers">
+            <TestSelectorSettingsModal readOnly={props.readOnly} />
+          </Form.Item>
+        </Show>
 
         <Form.Item name="customIcon" label="Use Cusom Icon" valuePropName="checked">
           <Checkbox disabled={state.readOnly} />
