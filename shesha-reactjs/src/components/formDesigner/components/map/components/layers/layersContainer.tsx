@@ -15,15 +15,13 @@ export interface ILayerItemsContainerProps {
 export const LayerItemsContainer: FC<ILayerItemsContainerProps> = (props) => {
   const { readOnly, updateChildItems } = useLayerGroupConfigurator();
 
-  const onSetList = (newState: ItemInterface[], _sortable, _store) => {
-    const listChanged = true; //!newState.some(item => item.chosen !== null && item.chosen !== undefined);
+  const onSetList = (newState: ItemInterface[]) => {
+    const listChanged = true;
 
     if (listChanged) {
       const newChilds = newState.map<LayerGroupItemProps>((item) => item as LayerGroupItemProps);
       updateChildItems({ index: props.index, childs: newChilds });
     }
-
-    return;
   };
 
   return (
@@ -46,7 +44,7 @@ export const LayerItemsContainer: FC<ILayerItemsContainerProps> = (props) => {
       bubbleScroll={true}
     >
       {props.items.map((item, index) => (
-        <LayerItem index={[index]} key={index} {...item} onConfigClick={props.onConfigClick} />
+        <LayerItem index={[index]} {...item} onConfigClick={props.onConfigClick} />
       ))}
     </ReactSortable>
   );
