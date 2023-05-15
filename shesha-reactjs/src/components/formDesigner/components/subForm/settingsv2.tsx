@@ -121,10 +121,10 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
       )}
 
       {(!state?.formSelectionMode || state?.formSelectionMode === 'name') && (
-        <>
           <FormItem name="formId" label="Form">
             <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
           </FormItem>
+      )}
 
           <SectionSeparator title="Data" />
 
@@ -340,8 +340,7 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
               />
             </FormItem>
           </Show>
-        </>
-      )}
+
       <SectionSeparator title="Actions" />
 
       <FormItem
