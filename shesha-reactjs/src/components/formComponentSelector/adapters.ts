@@ -8,6 +8,7 @@ import RefListStatusComponent from 'designer-components/refListStatus/index';
 import TextFieldComponent from 'designer-components/textField/textField';
 
 import { IDictionary } from 'interfaces';
+import EntityReferenceComponent from 'components/formDesigner/components/entityReference/entityReference';
 
 /*
 export interface IEditorAdapter<T extends IConfigurableFormComponent = IConfigurableFormComponent> {
@@ -70,4 +71,9 @@ export const editorAdapters: IDictionary<IEditorAdapter> = {
       'textType',
     ]),
   },
+  [EntityReferenceComponent.type]: {
+    propertiesFilter: getAllExceptPredicate([
+      ...allBaseProperties,
+    ]),
+  },  
 };

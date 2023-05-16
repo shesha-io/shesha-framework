@@ -14,6 +14,8 @@ export interface IEntityReferenceControlProps extends IEntityReferenceProps, ICo
 const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> = {
   type: 'entityReference',
   name: 'EntityReference',
+  isInput: true,
+  isOutput: true,
   icon: <LinkExternalOutlined />,
   factory: ({ style, ...model }: IEntityReferenceControlProps) => {
     const { isComponentDisabled, isComponentHidden } = useForm();
