@@ -33,6 +33,7 @@ import {
   changePersistedFiltersToggleAction,
   fetchColumnsSuccessSuccessAction,
   setRowDataAction,
+  setModelTypeAction,
 } from './actions';
 import {
   IndexColumnFilterOption,
@@ -51,7 +52,7 @@ import {
 import { useGlobalState } from '../globalState';
 import camelCaseKeys from 'camelcase-keys';
 import { useConfigurableAction } from '../configurableActionsDispatcher';
-import { IHasRepository, IRepository } from './repository/interfaces';
+import { IHasModelType, IHasRepository, IRepository } from './repository/interfaces';
 import { withBackendRepository } from './repository/backendRepository';
 import { withInMemoryRepository } from './repository/inMemoryRepository';
 import { advancedFilter2JsonLogic, getTableDataColumns } from './utils';
@@ -78,7 +79,7 @@ interface IDataTableProviderBaseProps {
   userConfigId?: string;
 }
 
-interface IDataTableProviderWithRepositoryProps extends IDataTableProviderBaseProps, IHasRepository {
+interface IDataTableProviderWithRepositoryProps extends IDataTableProviderBaseProps, IHasRepository, IHasModelType {
 
 }
 
@@ -110,11 +111,11 @@ const getTableProviderComponent = (props: IDataTableProviderProps): FC<IDataTabl
       const { value } = props as IHasFormDataSourceConfig;
       return withInMemoryRepository(DataTableProviderWithRepository, { value });
     };
-    case 'Url': 
+    case 'Url':
       const { getDataPath } = props as IHasEntityDataSourceConfig;
       return withUrlRepository(DataTableProviderWithRepository, { getListUrl: getDataPath });
-  default: {
-      return withNullRepository(DataTableProviderWithRepository, { });
+    default: {
+      return withNullRepository(DataTableProviderWithRepository, {});
     }
   }
 };
@@ -138,9 +139,9 @@ const getFilter = (state: IDataTableStateContext): string => {
     }
   });
 
-  if (state.tableFilter){
+  if (state.tableFilter) {
     const advancedFilter = advancedFilter2JsonLogic(state.tableFilter, state.columns);
-    if (advancedFilter && advancedFilter.length > 0) 
+    if (advancedFilter && advancedFilter.length > 0)
       expressions = expressions.concat(advancedFilter);
   }
 
@@ -181,12 +182,14 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     initialPageSize,
     repository,
     userConfigId,
+    modelType,
   } = props;
 
   const [state, dispatch] = useThunkReducer(dataTableReducer, {
     ...DATA_TABLE_CONTEXT_INITIAL_STATE,
     configurableColumns: configurableColumns ?? [],
-    selectedPageSize: initialPageSize ?? DATA_TABLE_CONTEXT_INITIAL_STATE.selectedPageSize
+    selectedPageSize: initialPageSize ?? DATA_TABLE_CONTEXT_INITIAL_STATE.selectedPageSize,
+    modelType: modelType,
   });
 
   const { setState: setGlobalState } = useGlobalState();
@@ -196,6 +199,11 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     userConfigId,
     null,
   );
+
+  useEffect(() => {
+    if (modelType !== state.modelType)
+      dispatch(setModelTypeAction(modelType));
+  }, [modelType]);
 
   // fetch table data when config is ready or something changed (selected filter, changed current page etc.)
   useEffect(() => {
@@ -304,10 +312,10 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   const toggleColumnVisibility = (columnId: string) => {
     dispatch((dispatchThunk, getState) => {
       dispatchThunk(toggleColumnVisibilityAction(columnId));
-      
+
       // note: column visibility doesn't trigger data fetching, so we should save user settings manually here
       saveUserSettings(getState());
-    });    
+    });
   };
 
   const changeFilterOption = (filterColumnId: string, filterOptionValue: IndexColumnFilterOption) =>
@@ -415,23 +423,23 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     const { isInProgress: { isFiltering } } = state;
     flagSetters?.setIsInProgressFlag({ isFiltering: !isFiltering, isSelectingColumns: false });
   };
-/*
-  const addNewInlineRow = () => {
-    return Promise.reject('addNewInlineRow not implemented');
-  };
-
-  const startInlineEditing = () => {
-    return Promise.reject('startInlineEditing not implemented');
-  };
-
-  const saveInlineEditing = () => {
-    return Promise.reject('saveInlineEditing not implemented');
-  };
-
-  const cancelInlineEditing = () => {
-    return Promise.reject('cancelInlineEditing not implemented');
-  };
-*/
+  /*
+    const addNewInlineRow = () => {
+      return Promise.reject('addNewInlineRow not implemented');
+    };
+  
+    const startInlineEditing = () => {
+      return Promise.reject('startInlineEditing not implemented');
+    };
+  
+    const saveInlineEditing = () => {
+      return Promise.reject('saveInlineEditing not implemented');
+    };
+  
+    const cancelInlineEditing = () => {
+      return Promise.reject('cancelInlineEditing not implemented');
+    };
+  */
   const changeDisplayColumn = (displayColumnName: string) => {
     dispatch(changeDisplayColumnAction(displayColumnName));
   };
@@ -457,60 +465,60 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
       });
     }
   }, [state, actionOwnerName]);
-/*
-  useConfigurableAction(
-    {
-      name: 'inline.add',
-      label: 'Inline: add new row',
-      owner: actionOwnerName,
-      ownerUid: actionOwnerId,
-      hasArguments: false,
-      executer: () => {
-        return addNewInlineRow();
+  /*
+    useConfigurableAction(
+      {
+        name: 'inline.add',
+        label: 'Inline: add new row',
+        owner: actionOwnerName,
+        ownerUid: actionOwnerId,
+        hasArguments: false,
+        executer: () => {
+          return addNewInlineRow();
+        },
       },
-    },
-    [state]
-  );
-  useConfigurableAction(
-    {
-      name: 'inline.edit',
-      label: 'Inline: edit all',
-      owner: actionOwnerName,
-      ownerUid: actionOwnerId,
-      hasArguments: false,
-      executer: () => {
-        return startInlineEditing();
+      [state]
+    );
+    useConfigurableAction(
+      {
+        name: 'inline.edit',
+        label: 'Inline: edit all',
+        owner: actionOwnerName,
+        ownerUid: actionOwnerId,
+        hasArguments: false,
+        executer: () => {
+          return startInlineEditing();
+        },
       },
-    },
-    [state]
-  );
-  useConfigurableAction(
-    {
-      name: 'inline.save',
-      label: 'Inline: save all',
-      owner: actionOwnerName,
-      ownerUid: actionOwnerId,
-      hasArguments: false,
-      executer: () => {
-        return saveInlineEditing();
+      [state]
+    );
+    useConfigurableAction(
+      {
+        name: 'inline.save',
+        label: 'Inline: save all',
+        owner: actionOwnerName,
+        ownerUid: actionOwnerId,
+        hasArguments: false,
+        executer: () => {
+          return saveInlineEditing();
+        },
       },
-    },
-    [state]
-  );
-  useConfigurableAction(
-    {
-      name: 'inline.cancel',
-      label: 'Inline: cancel edit',
-      owner: actionOwnerName,
-      ownerUid: actionOwnerId,
-      hasArguments: false,
-      executer: () => {
-        return cancelInlineEditing();
+      [state]
+    );
+    useConfigurableAction(
+      {
+        name: 'inline.cancel',
+        label: 'Inline: cancel edit',
+        owner: actionOwnerName,
+        ownerUid: actionOwnerId,
+        hasArguments: false,
+        executer: () => {
+          return cancelInlineEditing();
+        },
       },
-    },
-    [state]
-  );
-*/
+      [state]
+    );
+  */
   useConfigurableAction(
     {
       name: 'Refresh table',

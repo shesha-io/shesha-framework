@@ -1,29 +1,30 @@
 import { FileSearchOutlined } from '@ant-design/icons';
 import { message } from 'antd';
-import React, { Key, useMemo } from 'react';
-import { axiosHttp } from '../../utils/fetchers';
-import { IToolboxComponent } from '../../interfaces';
-import { DataTypes } from '../../interfaces/dataTypes';
-import { useFormData, useGlobalState, useSheshaApplication } from '../../providers';
-import { useForm } from '../../providers/form';
-import { FormMarkup } from '../../providers/form/models';
+import React, { Key } from 'react';
+import { axiosHttp } from 'utils/fetchers';
+import { IToolboxComponent } from 'interfaces';
+import { DataTypes } from 'interfaces/dataTypes';
+import { useFormData, useGlobalState, useNestedPropertyMetadatAccessor, useSheshaApplication } from 'providers';
+import { useForm } from 'providers/form';
+import { FormMarkup } from 'providers/form/models';
 import {
   evaluateString,
   evaluateValue,
   getStyle,
   replaceTags,
   validateConfigurableComponentSettings,
-} from '../../providers/form/utils';
-import Autocomplete, { ISelectOption } from '../../components/autocomplete';
-import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
-import { customDropDownEventHandler } from '../../components/formDesigner/components/utils';
+} from 'providers/form/utils';
+import Autocomplete, { ISelectOption } from 'components/autocomplete';
+import ConfigurableFormItem from 'components/formDesigner/components/formItem';
+import { customDropDownEventHandler } from 'components/formDesigner/components/utils';
 import settingsFormJson from './settingsForm.json';
 import moment from 'moment';
 import { isEmpty } from 'lodash';
 import camelCaseKeys from 'camelcase-keys';
-import { evaluateDynamicFilters } from '../../providers/dataTable/utils';
+import { evaluateDynamicFilters } from 'providers/dataTable/utils';
 import { IAutocompleteComponentProps } from './interfaces';
 import { migrateDynamicExpression } from 'designer-components/_common-migrations/migrateUseExpression';
+import { useAsyncMemo } from 'hooks/useAsyncMemo';
 
 interface IQueryParams {
   // tslint:disable-next-line:typedef-whitespace
@@ -45,17 +46,18 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     const { data } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
+    const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(model.dataSourceType === 'entitiesList' ? model.entityTypeShortAlias : null);
 
     const dataSourceUrl = model.dataSourceUrl ? replaceTags(model.dataSourceUrl, { data: data }) : model.dataSourceUrl;
 
     const disabled = isComponentDisabled(model);
 
-    const evaluatedFilters = useMemo(() => {
+    const evaluatedFilters = useAsyncMemo(async () => {
       if (!filter) return '';
 
       const localFormData = !isEmpty(data) ? camelCaseKeys(data, { deep: true, pascalCase: true }) : data;
 
-      const response = evaluateDynamicFilters(
+      const response = await evaluateDynamicFilters(
         [{ expression: filter } as any],
         [
           {
@@ -66,7 +68,8 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
             match: 'globalState',
             data: globalState,
           },
-        ]
+        ],
+        propertyMetadataAccessor
       );
       
       if (response.find(f => f?.unevaluatedExpressions?.length)) return '';

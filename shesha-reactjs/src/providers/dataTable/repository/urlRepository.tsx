@@ -18,6 +18,8 @@ export interface IWithUrlRepositoryArgs {
     getListUrl: string;
 }
 
+export const UrlRepositoryType = 'url-repository';
+
 export interface IUrlRepository extends IRepository {
 }
 
@@ -128,6 +130,7 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
     };
 
     const repository: IUrlRepository = {
+        repositoryType: UrlRepositoryType,
         fetch,
         exportToExcel,
         prepareColumns,

@@ -11,6 +11,7 @@ import {
   IGetNestedPropertiesPayload,
   IGetPropertyMetadataPayload,
   IGetPropertiesMetadataPayload,
+  NestedPropertyMetadatAccessor,
 } from './contexts';
 import {
   activateProviderAction,
@@ -284,4 +285,14 @@ function useMetadataDispatcher(require: boolean = true) {
     : undefined;
 }
 
-export { MetadataDispatcherProvider, useMetadataDispatcherState, useMetadataDispatcherActions, useMetadataDispatcher };
+const useNestedPropertyMetadatAccessor = (modelType: string): NestedPropertyMetadatAccessor => {
+  const dispatcher = useMetadataDispatcher();
+  
+  const accessor: NestedPropertyMetadatAccessor = (propertyPath: string) => modelType
+    ? dispatcher.getPropertyMetadata({ modelType, propertyPath })
+    : Promise.resolve(null);
+  
+  return accessor;
+};
+
+export { MetadataDispatcherProvider, useMetadataDispatcherState, useMetadataDispatcherActions, useMetadataDispatcher, useNestedPropertyMetadatAccessor };

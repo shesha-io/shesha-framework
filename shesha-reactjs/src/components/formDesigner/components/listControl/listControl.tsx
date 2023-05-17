@@ -1,14 +1,14 @@
 import { isEmpty } from 'lodash';
 import React, { FC, useCallback, useMemo, useState } from 'react';
 import { useGet, useMutate } from 'restful-react';
-import { EntitiesGetAllQueryParams, useEntitiesGetAll } from '../../../../apis/entities';
-import { FormItemProvider, SubFormProvider, useAppConfigurator, useForm, useGlobalState } from '../../../../providers';
-import { getQueryParams } from '../../../../utils/url';
+import { EntitiesGetAllQueryParams, useEntitiesGetAll } from 'apis/entities';
+import { FormItemProvider, SubFormProvider, useAppConfigurator, useForm, useGlobalState, useNestedPropertyMetadatAccessor } from 'providers';
+import { getQueryParams } from 'utils/url';
 import camelCaseKeys from 'camelcase-keys';
 import { IListControlProps, IListComponentRenderState, IEvaluatedFilters } from './models';
-import { evaluateDynamicFilters } from '../../../../providers/dataTable/utils';
+import { evaluateDynamicFilters } from 'providers/dataTable/utils';
 import { useDebouncedCallback } from 'use-debounce';
-import { useDelete } from '../../../../hooks';
+import { useDelete } from 'hooks';
 import {
   Button,
   Checkbox,
@@ -41,6 +41,7 @@ import { useDeepCompareEffect, useMeasure } from 'react-use';
 import { DEFAULT_CONFIRM_MESSAGE, DEFAULT_TOTAL_RECORD } from './constants';
 import { ConfigurationItemVersionStatusMap } from '../../../../utils/configurationFramework/models';
 import FormInfo from '../../../configurableForm/formInfo';
+import { useAsyncMemo } from 'hooks/useAsyncMemo';
 
 /** @deprecated: Use DataList instead */
 const ListControl: FC<IListControlProps> = props => {
@@ -144,7 +145,9 @@ const ListControl: FC<IListControlProps> = props => {
     verb: submitHttpVerb,
   });
 
-  const evaluatedFilters = useMemo<IEvaluatedFilters>(() => {
+  const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityType);
+
+  const evaluatedFilters = useAsyncMemo<IEvaluatedFilters>(async () => {
     if (!filters)
       return {
         ready: true,
@@ -153,7 +156,7 @@ const ListControl: FC<IListControlProps> = props => {
 
     const localFormData = !isEmpty(formData) ? camelCaseKeys(formData, { deep: true, pascalCase: true }) : formData;
 
-    const response = evaluateDynamicFilters(
+    const response = await evaluateDynamicFilters(
       [{ expression: filters } as any],
       [
         {
@@ -164,15 +167,14 @@ const ListControl: FC<IListControlProps> = props => {
           match: 'globalState',
           data: globalState,
         },
-      ]
+      ],
+      propertyMetadataAccessor
     );
 
     return {
       ready: !response.some(f => f?.unevaluatedExpressions?.length),
       filter: JSON.stringify(response[0]?.expression) || '',
     };
-
-    // return JSON.stringify(_response[0]?.expression) || '';
   }, [filters, formData, globalState]);
 
   const queryParams = useMemo(() => {

@@ -68,9 +68,9 @@ const settingsForm = settingsFormJson as FormMarkup;
 
 const DateField: IToolboxComponent<IDateFieldProps> = {
   type: 'dateField',
+  name: 'Date field',
   isInput: true,
   isOutput: true,
-  name: 'Date field',
   icon: <CalendarOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.date || dataType === DataTypes.dateTime,
   factory: (model: IDateFieldProps, _c, form) => {
@@ -108,8 +108,8 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
     );
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
-  initModel: model => {
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  initModel: (model) => {
     const customModel: IDateFieldProps = {
       ...model,
       picker: 'date',
@@ -128,7 +128,7 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
   },
 };
 
-export const DatePickerWrapper: FC<IDateFieldProps> = props => {
+export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
   const properties = useMetaProperties(META_DATA_FILTERS);
 
   const {
@@ -190,7 +190,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = props => {
 
   const getRangePickerValues = (valueToUse: any) =>
     (Array.isArray(valueToUse) && valueToUse?.length === 2
-      ? valueToUse?.map(v => moment(new Date(v), pickerFormat))
+      ? valueToUse?.map((v) => moment(new Date(v), pickerFormat))
       : [null, null]) as RangeValue;
 
   const handleDatePickerChange = (localValue: any | null, dateString: string) => {

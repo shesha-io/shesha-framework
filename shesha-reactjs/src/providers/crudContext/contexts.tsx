@@ -7,12 +7,20 @@ export interface ICrudStateContext {
   allowEdit: boolean;
   allowDelete: boolean;
   mode: CrudMode;
-  lastError?: IErrorInfo;
+  initialValuesLoading: boolean;
+  initialValues?: object;
+  allowChangeMode: boolean;
+  
+  autoSave: boolean;
+  isSaving: boolean;
+  saveError?: IErrorInfo;
+
+  isDeleting: boolean;
+  deletingError?: IErrorInfo;
 }
 
 export interface ICrudActionsContext {
   switchMode: (mode: CrudMode) => void;
-  setLastError: (error?: IErrorInfo) => void;
 }
 
 export interface ICrudContext extends ICrudStateContext, ICrudActionsContext {
@@ -30,6 +38,11 @@ export const CRUD_CONTEXT_INITIAL_STATE: ICrudStateContext = {
   allowEdit: true,
   allowDelete: true,
   mode: 'read',
+  initialValuesLoading: false,
+  allowChangeMode: true,
+  autoSave: false,
+  isSaving: false,
+  isDeleting: false,
 };
 
 export const CrudContext = createContext<ICrudContext>(undefined);

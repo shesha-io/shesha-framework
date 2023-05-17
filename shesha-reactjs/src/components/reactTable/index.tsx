@@ -60,11 +60,16 @@ const ReactTable: FC<IReactTableProps> = ({
 
   canDeleteInline = false,
   deleteAction,
+
   canEditInline = false,
   updateAction,
+  
   canAddInline = false,
   newRowCapturePosition,
+  newRowInitData,
   createAction,
+  inlineEditMode,
+  inlineSaveMode,
 }) => {
   const [componentState, setComponentState] = useState<IReactTableState>({
     allRows: data,
@@ -276,9 +281,9 @@ const ReactTable: FC<IReactTableProps> = ({
     }
   };
 
-  const Row = useMemo(() => (allowRowDragAndDrop ? SortableRow : TableRow), [allowRowDragAndDrop]);
+  const Row = useMemo(() => (allowRowDragAndDrop ? SortableRow : TableRow), [allowRowDragAndDrop]);  
 
-  const renderNewRowEditor = () => <NewTableRowEditor columns={tableColumns} creater={createAction} headerGroups={headerGroups} />;
+  const renderNewRowEditor = () => <NewTableRowEditor columns={tableColumns} creater={createAction} headerGroups={headerGroups} onInitData={newRowInitData}/>;
 
   return (
     <Spin
@@ -357,9 +362,10 @@ const ReactTable: FC<IReactTableProps> = ({
               )}
 
               {rows.map((row, rowIndex) => {
+                const id = row.original?.id;
                 return (
                   <Row
-                    key={rowIndex}
+                    key={id ?? rowIndex}
                     prepareRow={prepareRow}
                     onClick={handleSelectRow}
                     onDoubleClick={handleDoubleClickRow}
@@ -373,6 +379,10 @@ const ReactTable: FC<IReactTableProps> = ({
 
                     allowDelete={canDeleteInline}
                     deleter={() => deleteAction(rowIndex, row.original)}
+                    
+                    allowChangeEditMode={inlineEditMode === 'one-by-one'}
+                    editMode={inlineEditMode === 'all-at-once' ? 'edit' : undefined}
+                    inlineSaveMode={inlineSaveMode}
                   />
                 );
               })}

@@ -10,7 +10,7 @@ import {
   ColumnFilter,
   IPublicDataTableActions,
 } from './interfaces';
-import { IRepository } from './repository/interfaces';
+import { IHasModelType, IRepository } from './repository/interfaces';
 
 export type IFlagProgressFlags =
   | 'isFiltering'
@@ -53,7 +53,7 @@ export interface IDataTableStoredConfig {
 }
 
 export interface IDataTableStateContext
-  extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
+  extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags>, IHasModelType {
 
   exportToExcelError?: string;
 
@@ -195,6 +195,7 @@ export const DATA_TABLE_CONTEXT_INITIAL_STATE: IDataTableStateContext = {
   tableFilterDirty: null,
   persistSelectedFilters: true, // Persist by default
   userConfigId: null,
+  modelType: null,
 };
 
 export interface DataTableFullInstance extends IDataTableStateContext, IDataTableActionsContext { }

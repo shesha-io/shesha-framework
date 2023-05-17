@@ -8,12 +8,13 @@ using Shesha.EntityReferences;
 using Shesha.JsonEntities;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 
 namespace Shesha.Test
 {
-    public class ComplexTestDto : DynamicDto<ComplexTest, Guid>
+    public class ComplexTestDto : DynamicDto<ComplexTest, Guid>//, IValidatableObject
     {
         public virtual string Name { get; set; }
         public virtual string Description { get; set; }
@@ -25,6 +26,10 @@ namespace Shesha.Test
 
         public virtual JsonEntity Any { get; set; }
 
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     [Table("Test_ComplexTest")]

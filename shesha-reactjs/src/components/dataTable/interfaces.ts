@@ -1,4 +1,4 @@
-import { ITableRowDragProps, NewRowCapturePosition } from '../reactTable/interfaces';
+import { InlineEditMode, InlineSaveMode, ITableRowDragProps, NewRowCapturePosition } from '../reactTable/interfaces';
 import { MutableRefObject, ReactNode } from 'react';
 import { IDataTableInstance, ITableColumn } from '../../providers/dataTable/interfaces';
 import { DataTableFullInstance } from '../../providers/dataTable/contexts';
@@ -35,11 +35,10 @@ export interface IColumnEditFieldProps {
 }
 
 export type YesNoInherit = 'yes' | 'no' | 'inherit';
-export type InlineEditMode = 'one-by-one' | 'all-at-once';
-export type InlineSaveMode = 'auto' | 'manual';
 
 export interface IShaDataTableInlineEditableProps {
   canDeleteInline?: YesNoInherit;
+  customDeleteUrl?: string;
   canEditInline?: YesNoInherit;
   inlineEditMode?: InlineEditMode;
   inlineSaveMode?: InlineSaveMode;
@@ -94,3 +93,5 @@ export interface ITableCustomTypesRender<D extends object, V = any> {
   //render: (cellProps: ITableCellRenderingArgs, router: any) => JSX.Element;
   render: (cellProps: CellProps<D, V>, router: any) => JSX.Element;
 }
+
+export type OnSaveHandler = (data: object, formData: object, globalState: object) => Promise<object>;

@@ -85,6 +85,7 @@ import { IToolboxComponentGroup } from '../../../interfaces/formDesigner';
 import TimelineComponent from 'components/formDesigner/components/timeline/timeline';
 import DataSource from 'components/formDesigner/components/dataSource/dataSourceComponent';
 import { ComponentSelectorComponent } from 'designer-components';
+import Map from 'components/formDesigner/components/map';
 
 export const ToolboxComponents: IToolboxComponentGroup[] = [
   {
@@ -130,6 +131,7 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
       ScheduledJobExecutionLog,
       StatusTag,
       SubForm,
+      Map,
     ],
   },
   {
@@ -181,10 +183,7 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
   {
     name: 'DataList',
     visible: true,
-    components: [
-      DataList,
-      DataSource
-    ],
+    components: [DataList, DataSource],
   },
   {
     name: 'Layout',
