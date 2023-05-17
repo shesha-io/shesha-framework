@@ -6,13 +6,7 @@ import {
   DynamicModalStateContext,
   DYNAMIC_MODAL_CONTEXT_INITIAL_STATE,
 } from './contexts';
-import {
-  openAction,
-  toggleAction,
-  createModalAction,
-  removeModalAction,
-  /* NEW_ACTION_IMPORT_GOES_HERE */
-} from './actions';
+import { openAction, createModalAction, removeModalAction } from './actions';
 import { IModalProps } from './models';
 import { DynamicModal } from '../../components/dynamicModal';
 import { useConfigurableAction } from '../configurableActionsDispatcher';
@@ -129,8 +123,6 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
   );
   //#endregion
 
-  /* NEW_ACTION_DECLARATION_GOES_HERE */
-
   const getLatestVisibleInstance = () => {
     const { instances = {} } = state;
     const keys = Object.keys(instances);
@@ -146,16 +138,6 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
     }
 
     return highestIndexKey ? instances[highestIndexKey] : null;
-  };
-
-  const toggle = (id: string, isVisible: boolean) => {
-    dispatch(toggleAction({ id, isVisible }));
-  };
-  const show = (id: string) => {
-    toggle(id, true);
-  };
-  const hide = (id: string) => {
-    toggle(id, false);
   };
 
   const open = (modalProps: IModalProps) => {
@@ -186,8 +168,8 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
             key={instance.id}
             value={{
               instance,
-              show: () => show(instance.id),
-              hide: () => hide(instance.id),
+              // show: () => show(instance.id),
+              // hide: () => hide(instance.id),
               close: () => removeModal(instance.id),
             }}
           >
@@ -203,14 +185,10 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
     <DynamicModalStateContext.Provider value={state}>
       <DynamicModalActionsContext.Provider
         value={{
-          toggle,
-          show,
-          hide,
           open,
           createModal,
           removeModal,
           modalExists,
-          /* NEW_ACTION_GOES_HERE */
         }}
       >
         {renderInstances()}
@@ -252,13 +230,10 @@ function useModal(modalProps: IModalProps) {
   const instance = {
     open: () => {
       if (!context.modalExists(modalProps.id)) context.createModal({ ...modalProps, isVisible: true });
-      else context.show(modalProps.id);
     },
     close: () => {
       context.removeModal(modalProps.id);
     },
-    show: () => context.show(modalProps.id),
-    hide: () => context.hide(modalProps.id),
   };
 
   return instance;

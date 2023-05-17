@@ -23,7 +23,6 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
     submitHttpVerb,
     onSuccessRedirectUrl,
     initialValues,
-    destroyOnClose,
     parentFormValues,
     width,
     modalConfirmDialogMessage,
@@ -38,7 +37,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
   } = props;
 
   const [form] = Form.useForm();
-  const { hide, removeModal } = useDynamicModals();
+  const { removeModal } = useDynamicModals();
   const { router } = useShaRouting();
   const { clearState } = useGlobalState();
 
@@ -92,11 +91,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
 
   const closeModal = () => {
     clearState(MODAL_DATA);
-    hide(id);
-
-    if (destroyOnClose) {
-      removeModal(id);
-    }
+    removeModal(id);
   };
 
   const formProps: IConfigurableFormProps = {
@@ -148,20 +143,16 @@ export interface IDynamicModalWithContentProps extends IModalWithContentProps {
   onOk?: () => void;
 }
 export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props) => {
-  const { id, title, isVisible, destroyOnClose, width, onCancel, onOk, content, footer } = props;
+  const { id, title, isVisible, width, onCancel, onOk, content, footer } = props;
 
-  const { hide, removeModal } = useDynamicModals();
+  const { removeModal } = useDynamicModals();
   const isSmall = useMedia('(max-width: 480px)');
 
   const hideForm = () => {
     if (Boolean(onCancel)) {
       onCancel();
     } else {
-      hide(id);
-
-      if (destroyOnClose) {
-        removeModal(id);
-      }
+      removeModal(id);
     }
   };
 

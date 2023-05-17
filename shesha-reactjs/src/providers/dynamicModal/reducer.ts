@@ -1,4 +1,4 @@
-import { DYNAMIC_MODAL_CONTEXT_INITIAL_STATE, IDynamicModalStateContext, IToggleModalPayload } from './contexts';
+import { DYNAMIC_MODAL_CONTEXT_INITIAL_STATE, IDynamicModalStateContext } from './contexts';
 import { DynamicModalActionEnums, ICreateModalPayload } from './actions';
 import { handleActions } from 'redux-actions';
 import { IModalInstance, IModalProps } from './models';
@@ -6,35 +6,6 @@ import { nanoid } from 'nanoid/non-secure';
 
 export default handleActions<IDynamicModalStateContext, any>(
   {
-    [DynamicModalActionEnums.Toggle]: (
-      state: IDynamicModalStateContext,
-      action: ReduxActions.Action<IToggleModalPayload>
-    ) => {
-      const { payload } = action;
-
-      const instance = state.instances[payload.id] as IModalInstance;
-      if (!instance) {
-        console.warn(`dynamic modal instance ${payload.id} not found`);
-        return state;
-      }
-
-      const newInstance: IModalInstance = { ...instance, isVisible: payload.isVisible };
-
-      /*
-      const instances = [...state.instances];
-      const instance = instances.find(inst => inst.id === payload.id);
-      if (instance)
-      {
-        console.warn(`dynamic modal instance ${payload.id} not found`);
-        return state;
-      }
-      */
-      return {
-        ...state,
-        instances: { ...state.instances, [payload.id]: newInstance },
-      };
-    },
-
     [DynamicModalActionEnums.Open]: (state: IDynamicModalStateContext, action: ReduxActions.Action<IModalProps>) => {
       const { payload } = action;
 
@@ -61,7 +32,7 @@ export default handleActions<IDynamicModalStateContext, any>(
         id: payload.modalProps.id,
         props: payload.modalProps,
         isVisible: payload.modalProps.isVisible,
-        index: Object.keys(instances ?? {})?.length
+        index: Object.keys(instances ?? {})?.length,
       };
 
       return {
