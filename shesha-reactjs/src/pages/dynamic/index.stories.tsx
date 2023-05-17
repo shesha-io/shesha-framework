@@ -70,3 +70,36 @@ export const TestMap = addStory(Template, {
   // mode: 'readonly',
   id: 'dc7f6c47-d537-418f-8eda-d0b7f796ea67',
 });
+
+export const OrganisationEdit = addStory(Template, {
+  formId: {
+    name: 'organisation-edit',
+    module: 'Test Module',
+    version: 1
+  },
+  id: "5BC9A277-63ED-4A71-919F-0B4064363BBC"
+});
+
+export const PersonEdit = addStory(Template, {
+  formId: {
+    name: 'person-edit',
+    module: 'Test Module',
+    version: 7
+  }
+});
+
+export const PersonDetails = addStory(Template, {
+  formId: {
+    name: 'person-details',
+    module: 'Test Module',
+    version: 1
+  }
+});
+
+export const PermissionEdit = addStory(Template, {
+  formId: {
+    name: 'permission-edit',
+    module: 'Test Module',
+    version: 2
+  }
+});
