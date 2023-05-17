@@ -6,13 +6,7 @@ import {
   DynamicModalStateContext,
   DYNAMIC_MODAL_CONTEXT_INITIAL_STATE,
 } from './contexts';
-import {
-  openAction,
-  toggleAction,
-  createModalAction,
-  removeModalAction,
-  /* NEW_ACTION_IMPORT_GOES_HERE */
-} from './actions';
+import { openAction, createModalAction, removeModalAction } from './actions';
 import { IModalProps } from './models';
 import { DynamicModal } from '../../components/dynamicModal';
 import { useConfigurableAction } from '../configurableActionsDispatcher';
@@ -26,7 +20,7 @@ import { evaluateKeyValuesToObject } from '../form/utils';
 import { Modal } from 'antd';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 
-export interface IDynamicModalProviderProps { }
+export interface IDynamicModalProviderProps {}
 
 const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = ({ children }) => {
   const [state, dispatch] = useReducer(DynamicModalReducer, {
@@ -88,7 +82,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
             initialValues: initialValues,
             parentFormValues: parentFormValues,
             isVisible: true,
-            onSubmitted: values => {
+            onSubmitted: (values) => {
               removeModal(modalId);
 
               console.log('dialog success:', { values });
@@ -104,16 +98,46 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
     actionDependencies
   );
 
-  /* NEW_ACTION_DECLARATION_GOES_HERE */
+  //#region Close the latest Dialog
+  useConfigurableAction<IShowModalActionArguments>(
+    {
+      name: 'Close Dialog',
+      owner: 'Common',
+      ownerUid: SheshaActionOwners.Common,
+      hasArguments: false,
+      executer: () => {
+        return new Promise((resolve, reject) => {
+          const latestInstance = getLatestVisibleInstance();
 
-  const toggle = (id: string, isVisible: boolean) => {
-    dispatch(toggleAction({ id, isVisible }));
-  };
-  const show = (id: string) => {
-    toggle(id, true);
-  };
-  const hide = (id: string) => {
-    toggle(id, false);
+          if (latestInstance) {
+            removeModal(latestInstance?.id);
+            resolve({});
+          } else {
+            reject('There is no open dialog to close');
+          }
+        });
+      },
+      // argumentsFormMarkup: {},
+    },
+    actionDependencies
+  );
+  //#endregion
+
+  const getLatestVisibleInstance = () => {
+    const { instances = {} } = state;
+    const keys = Object.keys(instances);
+    let highestIndexKey = null;
+
+    for (let i = 0; i < keys.length; i++) {
+      if (
+        instances[keys[i]]?.isVisible &&
+        (highestIndexKey === null || instances[keys[i]]?.index > instances[highestIndexKey]?.index)
+      ) {
+        highestIndexKey = keys[i];
+      }
+    }
+
+    return highestIndexKey ? instances[highestIndexKey] : null;
   };
 
   const open = (modalProps: IModalProps) => {
@@ -144,8 +168,8 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
             key={instance.id}
             value={{
               instance,
-              show: () => show(instance.id),
-              hide: () => hide(instance.id),
+              // show: () => show(instance.id),
+              // hide: () => hide(instance.id),
               close: () => removeModal(instance.id),
             }}
           >
@@ -161,14 +185,10 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
     <DynamicModalStateContext.Provider value={state}>
       <DynamicModalActionsContext.Provider
         value={{
-          toggle,
-          show,
-          hide,
           open,
           createModal,
           removeModal,
           modalExists,
-          /* NEW_ACTION_GOES_HERE */
         }}
       >
         {renderInstances()}
@@ -210,13 +230,10 @@ function useModal(modalProps: IModalProps) {
   const instance = {
     open: () => {
       if (!context.modalExists(modalProps.id)) context.createModal({ ...modalProps, isVisible: true });
-      else context.show(modalProps.id);
     },
     close: () => {
       context.removeModal(modalProps.id);
     },
-    show: () => context.show(modalProps.id),
-    hide: () => context.hide(modalProps.id),
   };
 
   return instance;

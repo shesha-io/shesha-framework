@@ -48,12 +48,26 @@ export const dialogArgumentsForm = new DesignerToolbarSettings()
     values: [
       { id: nanoid(), label: 'Edit', value: 'edit' },
       { id: nanoid(), label: 'Readonly', value: 'readonly' },
-    ]
+    ],
+  })
+  .addSectionSeparator({ id: nanoid(), name: 'separatorModalFooterStart', label: 'Modal footer' })
+  .addDropdown({
+    id: nanoid(),
+    name: 'footerButtons',
+    label: 'Buttons type',
+    dataSourceType: 'values',
+    values: [
+      { id: nanoid(), label: 'Default', value: 'default' },
+      { id: nanoid(), label: 'Custom', value: 'custom' },
+      { id: nanoid(), label: 'None', value: 'none' },
+    ],
+    defaultValue: 'default',
   })
   .addCheckbox({
     id: 'c815c322-ba5d-4062-9736-e5d03c724134',
     name: 'showModalFooter',
     label: 'Show Modal Buttons',
+    hidden: true,
   })
   .addDropdown({
     id: 'f15848e8-87fa-4d76-b5a4-8548b8c2dd8b',
@@ -72,10 +86,17 @@ export const dialogArgumentsForm = new DesignerToolbarSettings()
       },
     ],
     dataSourceType: 'values',
-    customVisibility: 'return data.showModalFooter === true',
+    customVisibility: 'return data.showModalFooter === true || data.footerButtons === "default" || !data.footerButtons',
     defaultValue: 'POST',
     useRawValues: true,
   })
+  .addButtons({
+    id: nanoid(),
+    name: 'buttons',
+    customVisibility: 'return data.footerButtons === "custom"',
+    label: 'Configure Modal Buttons',
+  })
+  .addSectionSeparator({ id: nanoid(), name: 'separatorModalFooterEnd' })
   .addLabelValueEditor({
     id: 'b395c0e9-dbc1-44f1-8fef-c18a49442871',
     name: 'additionalProperties',
@@ -85,7 +106,7 @@ export const dialogArgumentsForm = new DesignerToolbarSettings()
     valueTitle: 'Value',
     valueName: 'value',
     description:
-      'Additional properties you want to be passed when the form gets submitted like parentId in the case where the modal is used in a childTable.' + 
+      'Additional properties you want to be passed when the form gets submitted like parentId in the case where the modal is used in a childTable.' +
       'Also note you can use Mustache expression like {{id}} for value property',
   })
   .addDropdown({

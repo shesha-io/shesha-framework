@@ -8,4 +8,5 @@ export interface IButtonGroupProps extends IConfigurableFormComponent {
   permissions?: string[];
   spaceSize?: SizeType;
   isInline?: boolean;
+  noStyles?: boolean;
 }
