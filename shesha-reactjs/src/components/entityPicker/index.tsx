@@ -5,12 +5,12 @@ import _, { isEmpty } from 'lodash';
 import { nanoid } from 'nanoid/non-secure';
 import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { useMedia } from 'react-use';
-import { IAnyObject, IEntityReferenceDto } from '../../interfaces';
-import { useForm, useGlobalState, useModal } from '../../providers';
-import DataTableProvider, { useDataTable } from '../../providers/dataTable';
-import { evaluateDynamicFilters, hasDynamicFilter } from '../../providers/dataTable/utils';
-import { IModalProps } from '../../providers/dynamicModal/models';
-import { useEntitySelectionData } from '../../utils/entity';
+import { IAnyObject, IEntityReferenceDto } from 'interfaces';
+import { useForm, useGlobalState, useModal, useNestedPropertyMetadatAccessor } from '../../providers';
+import DataTableProvider, { useDataTable } from 'providers/dataTable';
+import { evaluateDynamicFilters, hasDynamicFilter } from 'providers/dataTable/utils';
+import { IModalProps } from 'providers/dynamicModal/models';
+import { useEntitySelectionData } from 'utils/entity';
 import GlobalTableFilter from '../globalTableFilter';
 import camelCaseKeys from 'camelcase-keys';
 import DataTable from '../dataTable';
@@ -35,8 +35,8 @@ const getIdFromValue = (value: string | IEntityReferenceDto) => {
 const getSelectionFromValue = (value: string | string[] | IEntityReferenceDto | IEntityReferenceDto[]) => {
   return Array.isArray(value)
     ? value.map<string>(item => {
-        return getIdFromValue(item);
-      })
+      return getIdFromValue(item);
+    })
     : getIdFromValue(value);
 };
 
@@ -138,39 +138,38 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
 
   const hasFormData = !isEmpty(formData);
   const hasGlobalState = !isEmpty(formData);
+  const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityType);
 
   const evaluateDynamicFiltersHelper = () => {
     const data = !isEmpty(formData) ? camelCaseKeys(formData, { deep: true, pascalCase: true }) : formData;
 
-    const evaluatedFilters = evaluateDynamicFilters(filters, [
-      {
-        match: 'data',
-        data: data,
-      },
-      {
-        match: 'globalState',
-        data: globalState,
-      },
-    ]);
+    evaluateDynamicFilters(
+      filters,
+      [
+        { match: 'data', data: data },
+        { match: 'globalState', data: globalState },
+      ],
+      propertyMetadataAccessor
+    ).then(evaluatedFilters => {
+      let parsedFilters = evaluatedFilters;
 
-    let parsedFilters = evaluatedFilters;
+      const firstElement = evaluatedFilters[0];
 
-    const firstElement = evaluatedFilters[0];
+      firstElement.defaultSelected = true;
+      firstElement.selected = true;
 
-    firstElement.defaultSelected = true;
-    firstElement.selected = true;
+      evaluatedFilters[0] = firstElement;
 
-    evaluatedFilters[0] = firstElement;
+      if (hasFormData || hasGlobalState) {
+        // Here we know we have evaluated our filters
 
-    if (hasFormData || hasGlobalState) {
-      // Here we know we have evaluated our filters
-
-      // TODO: Deal with the situation whereby the expression value evaluated to empty string because the action GetData will fail
-      setPredefinedFilters(parsedFilters);
-    } else if (!foundDynamicFilter) {
-      // Here we do not need dynamic filters
-      setPredefinedFilters(parsedFilters);
-    }
+        // TODO: Deal with the situation whereby the expression value evaluated to empty string because the action GetData will fail
+        setPredefinedFilters(parsedFilters);
+      } else if (!foundDynamicFilter) {
+        // Here we do not need dynamic filters
+        setPredefinedFilters(parsedFilters);
+      }
+    });
   };
 
   useEffect(() => {
@@ -352,12 +351,11 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
 };
 
 export const EntityPickerEditable = (props: IEntityPickerProps) => {
-  const { parentEntityId, entityType, displayEntityKey } = props;
+  const { entityType, displayEntityKey } = props;
 
   return (
-    <DataTableProvider 
+    <DataTableProvider
       sourceType='Entity'
-      parentEntityId={parentEntityId} 
       entityType={entityType}
     >
       <EntityPickerEditableInner {...props} displayEntityKey={displayEntityKey} />

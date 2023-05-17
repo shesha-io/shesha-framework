@@ -64,6 +64,16 @@ namespace Shesha.Metadata.Dtos
         public bool IsFrameworkRelated { get; set; }
 
         /// <summary>
+        /// If true, indicates that the property is filterable
+        /// </summary>
+        public bool IsFilterable { get; set; }
+
+        /// <summary>
+        /// If true, indicates that the property is sortable
+        /// </summary>
+        public bool IsSortable { get; set; }
+
+        /// <summary>
         /// Child properties (applicable for complex objects)
         /// </summary>
         public List<PropertyMetadataDto> Properties { get; set; } = new List<PropertyMetadataDto>();

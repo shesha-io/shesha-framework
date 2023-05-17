@@ -59,7 +59,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
         /// 
         /// </summary>
         [SaveAsJson]
-        public virtual IList<ImageAnnotation> ImageAnnotation { get; set; }
+        public virtual ImageAnnotationStorage ImageAnnotation { get; set; }
         /// <summary>
         /// 
         /// </summary>

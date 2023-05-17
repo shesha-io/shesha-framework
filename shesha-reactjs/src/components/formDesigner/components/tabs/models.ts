@@ -3,23 +3,6 @@ import { TabPaneProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { IConfigurableFormComponent } from '../../../../interfaces';
 
-// export interface TabPaneProps {
-//   tab?: React.ReactNode;
-//   className?: string;
-//   style?: React.CSSProperties;
-//   disabled?: boolean;
-//   children?: React.ReactNode;
-//   forceRender?: boolean;
-//   closable?: boolean;
-//   closeIcon?: React.ReactNode;
-//   prefixCls?: string;
-//   tabKey?: string;
-//   id?: string;
-//   animated?: boolean;
-//   active?: boolean;
-//   destroyInactiveTabPane?: boolean;
-// }
-
 export interface ITabPaneProps
   extends IConfigurableItemBase,
     Omit<TabPaneProps, 'children' | 'tab' | 'style' | 'tabKey'> {

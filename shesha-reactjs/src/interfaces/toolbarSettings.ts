@@ -1,15 +1,15 @@
 import { IButtonsProps } from './../components/formDesigner/components/button/buttonGroup/buttonsComponent/interfaces';
-import { IDropdownComponentProps } from 'components/formDesigner/components/dropdown/interfaces';
+import { IDropdownComponentProps } from 'designer-components/dropdown/interfaces';
 import { ITextAreaComponentProps } from './../components/formDesigner/components/textArea/interfaces';
 import { ILabelValueEditorComponentProps } from './../components/formDesigner/components/labelValueEditor/interfaces';
-import { ITextFieldComponentProps } from './../components/formDesigner/components/textField/interfaces';
+import { ITextFieldComponentProps } from '../designer-components/textField/interfaces';
 import { IConfigurableFormComponent } from '.';
 import { ISectionSeparatorComponentProps } from 'components/formDesigner/components/sectionSeprator/interfaces';
 import { IIconPickerComponentProps } from 'components/formDesigner/components/iconPicker/interfaces';
 import { IAutocompleteComponentProps } from 'designer-components/autocomplete/interfaces';
 import { IEndpointsAutocompleteComponentProps } from 'components/formDesigner/components/endpointsAutocomplete/interfaces';
-import { ICheckboxComponentProps } from 'components/formDesigner/components/checkbox/interfaces';
-import { INumberFieldComponentProps } from 'components/formDesigner/components/numberField/interfaces';
+import { ICheckboxComponentProps } from 'designer-components/checkbox/interfaces';
+import { INumberFieldComponentProps } from 'designer-components/numberField/interfaces';
 import { IQueryBuilderComponentProps } from 'designer-components/queryBuilder/interfaces';
 import { ICodeEditorComponentProps } from 'components/formDesigner/components/codeEditor/interfaces';
 import { IContainerComponentProps } from 'components/formDesigner/components/container/interfaces';
@@ -23,6 +23,7 @@ import { ICollapsiblePanelComponentProps } from 'designer-components/collapsible
 import { IPropertyAutocompleteComponentProps } from 'components/formDesigner/components/propertyAutocomplete/interfaces';
 import { ISwitchComponentProps } from 'components/formDesigner/components/switch/interfaces';
 import { IAlertComponentProps } from 'components/formDesigner/components/alert/interfaces';
+import { IReferenceListAutocompleteProps } from 'components/formDesigner/components/referenceListAutocomplete';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'type'> {}
 
@@ -43,6 +44,8 @@ type AutocompleteType = ToolbarSettingsProp & Omit<IAutocompleteComponentProps, 
 type EndpointsAutocompleteType = ToolbarSettingsProp & Omit<IEndpointsAutocompleteComponentProps, 'type'>;
 
 type FormAutocompleteType = ToolbarSettingsProp & Omit<IFormAutocompleteComponentProps, 'type'>;
+
+type ReferenceListAutocompleteType = ToolbarSettingsProp & Omit<IReferenceListAutocompleteProps, 'type'>;
 
 type CheckboxType = ToolbarSettingsProp & Omit<ICheckboxComponentProps, 'type'>;
 
@@ -145,6 +148,10 @@ export class DesignerToolbarSettings<T> {
     return this.addProperty(props, 'formAutocomplete');
   }
 
+  public addRefListAutocomplete(props: ReferenceListAutocompleteType | ((data: T) => ReferenceListAutocompleteType)) {
+    return this.addProperty(props, 'referenceListAutocomplete');
+  }
+
   public addCheckbox(props: CheckboxType | ((data: T) => CheckboxType)) {
     return this.addProperty(props, 'checkbox');
   }
@@ -190,7 +197,7 @@ export class DesignerToolbarSettings<T> {
   private addProperty(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp), type: string) {
     const obj = typeof props !== 'function' ? props : props(this.data);
 
-    this.form.push({ ...obj, type });
+    this.form.push({ ...obj, type, version: 'latest' });
 
     return this;
   }

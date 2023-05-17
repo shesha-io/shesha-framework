@@ -69,6 +69,8 @@ export interface IFormProviderProps {
    * If true, form should register configurable actions. Should be enabled for main forms only
    */
   isActionsOwner: boolean;
+
+  propertyFilter?: (name: string) => boolean;
 }
 
 const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
@@ -85,6 +87,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   formMarkup,
   refetchData,
   isActionsOwner,
+  propertyFilter,
 }) => {
   const toolboxComponents = useFormDesignerComponents();
 
@@ -264,7 +267,8 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
       formContext.allComponents,
       formContext.formData,
       globalState,
-      formContext?.formMode
+      formContext?.formMode,
+      propertyFilter,
     );
     setVisibleComponents({ componentIds: visibleComponents });
   };
@@ -391,6 +395,13 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     return null;
   };
 
+  const hasVisibleChilds = (id: string): boolean => {
+    const childs = getChildComponents(id);
+    const visibleChildIndex = childs.findIndex(component => !isComponentHidden(component));
+    
+    return visibleChildIndex !== -1;
+  };
+
   const configurableFormActions: IFormActionsContext = {
     ...getFlagSetters(dispatch),
     getComponentModel,
@@ -407,6 +418,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     getSection,
     getToolboxComponent,
     setFormDataAndInstance,
+    hasVisibleChilds,
   };
   if (formRef) formRef.current = { ...configurableFormActions, ...state };
 

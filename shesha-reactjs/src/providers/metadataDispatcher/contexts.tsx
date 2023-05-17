@@ -58,3 +58,5 @@ export const METADATA_DISPATCHER_CONTEXT_INITIAL_STATE: IMetadataDispatcherState
 export const MetadataDispatcherStateContext = createContext<IMetadataDispatcherStateContext>(METADATA_DISPATCHER_CONTEXT_INITIAL_STATE);
 
 export const MetadataDispatcherActionsContext = createContext<IMetadataDispatcherActionsContext>(undefined);
+
+export type NestedPropertyMetadatAccessor = (propertyPath: string) => Promise<IPropertyMetadata>;

@@ -34,6 +34,8 @@ export { type IStylable } from './stylable';
 export { type ITableColumn, type IDataTableInstance } from '../providers/dataTable/interfaces';
 export type { PageWithLayout } from './pageWithLayout';
 export type { InsertMode } from './insertMode';
+export type { IColor, IHsl, IHsv, IRgb } from './color';
+
 export * from './formDesigner';
 export * from './shesha';
 export * from '../providers/form/models';

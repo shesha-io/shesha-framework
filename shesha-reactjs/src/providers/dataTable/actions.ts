@@ -44,11 +44,17 @@ export enum DataTableActionEnums {
   RegisterConfigurableColumns = 'REGISTER_CONFIGURABLE_COLUMNS',
   OnSelectRow = 'ON_SELECT_ROW',
   OnSort = 'ON_SORT',
+  SetModelType = 'SET_MODEL_TYPE',
 
   ChangeDisplayColumn = 'CHANGE_DISPLAY_COLUMN',
   ChangePersistedFiltersToggle = 'CHANGE_PERSISTED_FILTERS_TOGGLE',
   /* NEW_ACTION_TYPE_GOES_HERE */
 }
+
+export const setModelTypeAction = createAction<string, string>(
+  DataTableActionEnums.SetModelType,
+  p => p
+);
 
 export const fetchTableDataAction = createAction<IGetListDataPayload, IGetListDataPayload>(
   DataTableActionEnums.FetchTableData,

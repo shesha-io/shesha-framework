@@ -292,10 +292,16 @@ namespace Shesha.DynamicEntities
                     }
                     else
                     {
-                        if (MapProperty(cp, dbp, true) || dbp.Source != Domain.Enums.MetadataSourceType.ApplicationCode)
+                        if (MapProperty(cp, dbp, true) || dbp.Source != Domain.Enums.MetadataSourceType.ApplicationCode || dbp.IsDeleted)
                         {
                             // update hardcoded part
                             dbp.Source = Domain.Enums.MetadataSourceType.ApplicationCode;
+                            
+                            // restore property
+                            dbp.IsDeleted = false;
+                            dbp.DeletionTime = null;
+                            dbp.DeleterUserId = null;
+
                             await _entityPropertyRepository.UpdateAsync(dbp);
                         }
                     }

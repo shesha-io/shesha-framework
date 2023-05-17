@@ -10,7 +10,6 @@ interface IWrappedEntityPickerProps {
   entityType?: string;
   filters?: ITableViewProps[];
   allowNewRecord?: boolean;
-  parentEntityId?: string;
   onDblClick?: (data: any) => void;
 }
 

@@ -23,8 +23,8 @@ export const ToolboxComponents: FC<IToolboxComponentsProps> = () => {
 
     const result: IToolboxComponentGroup[] = [];
 
-    toolboxComponentGroups.forEach(group => {
-      const filteredComponents = group.components.filter(c =>
+    toolboxComponentGroups.forEach((group) => {
+      const filteredComponents = group.components.filter((c) =>
         c.name?.toLowerCase().includes(searchText?.toLowerCase())
       );
       if (filteredComponents.length > 0) result.push({ ...group, components: filteredComponents });
@@ -40,7 +40,7 @@ export const ToolboxComponents: FC<IToolboxComponentsProps> = () => {
     startDraggingNewItem();
   };
 
-  const onDragEnd = _evt => {
+  const onDragEnd = (_evt) => {
     endDraggingNewItem();
   };
 
@@ -53,9 +53,9 @@ export const ToolboxComponents: FC<IToolboxComponentsProps> = () => {
           {filteredGroups
             .filter(({ visible }) => visible)
             .map((group, groupIndex) => {
-              const visibleComponents = group.components.filter(c => c.isHidden !== true);
+              const visibleComponents = group.components.filter((c) => c.isHidden !== true);
 
-              const sortableItems = visibleComponents.map<ItemInterface>(component => {
+              const sortableItems = visibleComponents.map<ItemInterface>((component) => {
                 return {
                   id: component.type,
                   parent_id: null,

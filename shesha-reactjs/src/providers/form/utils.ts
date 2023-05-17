@@ -425,7 +425,8 @@ export interface IEvaluateComplexStringResult {
 //newer versions
 export const evaluateComplexStringWithResult = (
   expression: string,
-  mappings: IMatchData[]
+  mappings: IMatchData[],
+  requireNonEmptyResult: boolean,
 ): IEvaluateComplexStringResult => {
   const matches = new Set([...expression?.matchAll(/\{\{(?:(?!}}).)*\}\}/g)].flat());
 
@@ -444,7 +445,7 @@ export const evaluateComplexStringWithResult = (
         // But dynamic expression now can use formData and globalState, so as a result the expressions need to use dot notation
         const evaluatedValue = evaluateString(template, match ? { [match]: data } : data);
 
-        if (!evaluatedValue?.trim()) {
+        if (requireNonEmptyResult && !evaluatedValue?.trim()) {
           success = false;
           unevaluatedExpressions?.push(template);
         } else {
@@ -561,12 +562,19 @@ export const getVisibleComponentIds = (
   components: IComponentsDictionary,
   values: any,
   globalState: any,
-  formMode: FormMode
+  formMode: FormMode,
+  propertyFilter?: (name: string) => boolean
 ): string[] => {
   const visibleComponents: string[] = [];
   for (const key in components) {
     if (components.hasOwnProperty(key)) {
       const component = components[key] as IConfigurableFormComponent;
+
+      if (propertyFilter && component.name){
+        const filteredOut = propertyFilter(component.name);
+        if (filteredOut === false)
+          continue;
+      };
 
       if (!component || component.hidden || component.visibility === 'No' || component.visibility === 'Removed')
         continue;
@@ -907,7 +915,7 @@ export function listComponentToModelMetadata<TModel extends IConfigurableFormCom
   if (metadata.validationMessage) mappedModel.validate.message = metadata.validationMessage;
 
   // map component-specific properties
-  if (component.linkToModelMetadata) mappedModel = component.linkToModelMetadata(model, metadata);
+  if (component.linkToModelMetadata) mappedModel = component.linkToModelMetadata(mappedModel, metadata);
 
   return mappedModel;
 }
