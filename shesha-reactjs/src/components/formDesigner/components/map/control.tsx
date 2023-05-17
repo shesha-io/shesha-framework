@@ -102,3 +102,5 @@ export const MapControl: FC<IMapProps> = (props) => {
     </>
   );
 };
+
+export default MapControl;
