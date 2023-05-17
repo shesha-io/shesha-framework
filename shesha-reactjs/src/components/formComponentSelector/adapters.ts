@@ -8,7 +8,7 @@ import RefListStatusComponent from 'designer-components/refListStatus/index';
 import TextFieldComponent from 'designer-components/textField/textField';
 
 import { IDictionary } from 'interfaces';
-import EntityReferenceComponent from 'components/formDesigner/components/entityReference/entityReference';
+import EntityReferenceComponent from 'designer-components/entityReference/entityReference';
 
 /*
 export interface IEditorAdapter<T extends IConfigurableFormComponent = IConfigurableFormComponent> {
