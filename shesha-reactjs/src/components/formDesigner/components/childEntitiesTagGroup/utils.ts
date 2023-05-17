@@ -1,8 +1,8 @@
 import { nanoid } from 'nanoid';
-import { IFormDto } from '../../../..';
-import { MetadataDtoAjaxResponse } from '../../../../apis/metadata';
-import { IPersistedFormProps } from '../../../../providers/form/models';
-import { toCamelCase } from '../../../../utils/string';
+import { IFormDto } from 'interfaces';
+import { MetadataDtoAjaxResponse } from 'apis/metadata';
+import { IPersistedFormProps } from 'providers/form/models';
+import { toCamelCase } from 'utils/string';
 import { IChildEntitiesTagGroupSelectOptions } from './models';
 
 export const addChildEntitiesTagGroupOption = (

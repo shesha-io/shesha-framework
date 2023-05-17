@@ -1,4 +1,4 @@
-import React, { FC, useContext } from 'react';
+import React, { FC, PropsWithChildren, useContext } from 'react';
 import { StackedNavigationModalStateContext } from './contexts';
 
 export interface StackedNavigationModalProviderProps {
@@ -6,7 +6,7 @@ export interface StackedNavigationModalProviderProps {
   parentId?: string;
 }
 
-const StackedNavigationModalProvider: FC<StackedNavigationModalProviderProps> = ({
+const StackedNavigationModalProvider: FC<PropsWithChildren<StackedNavigationModalProviderProps>> = ({
   children,
   isMaxWidth,
   parentId,

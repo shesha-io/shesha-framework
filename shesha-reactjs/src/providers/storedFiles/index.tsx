@@ -29,13 +29,13 @@ import {
 import axios from 'axios';
 import FileSaver from 'file-saver';
 import qs from 'qs';
-import { useMutate } from 'restful-react';
-import { useStoredFileFilesList } from '../../apis/storedFile';
+import { useGet, useMutate } from 'hooks';
 import { useSignalR } from '../signalR';
 import { useApplicationConfiguration } from '../../hooks';
 import { useSheshaApplication } from '../sheshaApplication';
 import { useDelayedUpdate } from 'providers/delayedUpdateProvider';
 import { STORED_FILES_DELAYED_UPDATE } from 'providers/delayedUpdateProvider/models';
+import { IApiEndpoint } from 'interfaces/metadata';
 export interface IStoredFilesProviderProps {
   ownerId: string;
   ownerType: string;
@@ -51,6 +51,11 @@ const fileReducer = (data: IStoredFile): IStoredFile => {
 };
 
 const filesReducer = (data: IStoredFile[]): IStoredFile[] => data.map(file => fileReducer(file));
+
+const uploadFileEndpoint: IApiEndpoint = { url: '/api/StoredFile/Upload', httpVerb: 'POST' };
+const deleteFileEndpoint: IApiEndpoint = { url: '/api/StoredFile', httpVerb: 'DELETE' };
+const filesListEndpoint: IApiEndpoint = { url: '/api/StoredFile/FilesList', httpVerb: 'GET' };
+
 
 const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   children,
@@ -77,28 +82,21 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   const { config } = useApplicationConfiguration();
   const { addItem: addDelayedUpdate, removeItem: removeDelayedUpdate } = useDelayedUpdate(false) ?? {};
 
-  const { loading: isFetchingFileList, refetch: fetchFileListHttp, data: fileListResponse } = useStoredFileFilesList({
-    queryParams: {
-      ownerId,
-      ownerType,
-      ownerName,
-      filesCategory,
-      propertyName,
-      allCategories,
-    },
-    lazy: true,
-    requestOptions: {
-      headers,
-    },
-  });
+  const { loading: isFetchingFileList, refetch: fetchFileListHttp, data: fileListResponse } = useGet(
+    {
+      path: filesListEndpoint.url,
+      queryParams: {
+        ownerId,
+        ownerType,
+        ownerName,
+        filesCategory,
+        propertyName,
+        allCategories,
+      },
+      lazy: true,
+    });
 
-  const { mutate: uploadFileHttp } = useMutate({
-    path: '/api/StoredFile/Upload',
-    verb: 'POST',
-    requestOptions: {
-      headers,
-    },
-  });
+  const { mutate: uploadFileHttp } = useMutate();
 
   useEffect(() => {
     if ((ownerId || '') !== '' && (ownerType || '') !== '') {
@@ -159,7 +157,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
     dispatch(uploadFileRequestAction(newFile));
 
-    uploadFileHttp(formData)
+    uploadFileHttp(uploadFileEndpoint, formData)
       .then(response => {
         const responseFile = response.result as IStoredFile;
         responseFile.uid = newFile.uid;
@@ -174,20 +172,13 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       });
   };
 
-  const { mutate: deleteFileHttp } = useMutate({
-    //queryParams: { id: state.fileIdToDelete }, // Important if you'll be calling this as a side-effect
-    path: '/api/StoredFile',
-    verb: 'DELETE',
-    requestOptions: {
-      headers,
-    },
-  });
+  const { mutate: deleteFileHttp } = useMutate();
 
   //#region delete file
   const deleteFile = (fileIdToDelete: string) => {
     dispatch(deleteFileRequestAction(fileIdToDelete));
 
-    deleteFileHttp('', {queryParams: { id: fileIdToDelete }})
+    deleteFileHttp(deleteFileEndpoint, { queryParams: { id: fileIdToDelete } })
       .then(() => {
         deleteFileSuccess(fileIdToDelete);
         if (typeof addDelayedUpdate === 'function')

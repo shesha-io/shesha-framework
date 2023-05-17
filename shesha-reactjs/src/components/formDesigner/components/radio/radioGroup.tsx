@@ -1,6 +1,6 @@
 import { Radio, Space } from 'antd';
 import React, { FC, useEffect, useMemo } from 'react';
-import { useGet } from 'restful-react';
+import { useGet } from 'hooks';
 import { useFormData, useGlobalState } from '../../../../providers';
 import { useForm } from '../../../../providers/form';
 import { useReferenceList } from '../../../../providers/referenceListDispatcher';

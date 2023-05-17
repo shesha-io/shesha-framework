@@ -1,15 +1,15 @@
 import { DeleteOutlined, MergeCellsOutlined, SaveOutlined } from '@ant-design/icons';
 import { Alert, Checkbox, Col, Form, message, Modal, Row } from 'antd';
 import React, { useMemo, useRef, useState } from 'react';
-import { Autocomplete, ModelConfigurator, Page } from '../../../components';
-import IndexToolbar from '../../../components/indexToolbar';
-import EntityConfigTree, { IEntityConfigTreeInstance } from '../../../components/entityConfigTree';
-import { IToolbarItem, PageWithLayout } from '../../../interfaces';
-import { IModelConfiguratorInstance } from '../../../providers/modelConfigurator/interfaces';
-import { EntityConfigDto } from '../../../apis/entityConfig';
-import { MetadataSourceType } from '../../../interfaces/metadata';
-import { useLocalStorage } from '../../../hooks';
-import { modelConfigurationsMerge } from '../../../apis/modelConfigurations';
+import { Autocomplete, ModelConfigurator, Page } from 'components';
+import IndexToolbar from 'components/indexToolbar';
+import EntityConfigTree, { IEntityConfigTreeInstance } from 'components/entityConfigTree';
+import { IToolbarItem, PageWithLayout } from 'interfaces';
+import { IModelConfiguratorInstance } from 'providers/modelConfigurator/interfaces';
+import { EntityConfigDto } from 'apis/entityConfig';
+import { MetadataSourceType } from 'interfaces/metadata';
+import { useLocalStorage } from 'hooks';
+import { modelConfigurationsMerge } from 'apis/modelConfigurations';
 import { useSheshaApplication, ValidationErrors } from '../../..';
 
 export interface IEntityConfiguratorPageProps {

@@ -1,6 +1,5 @@
 import React, { useEffect, ReactNode, MutableRefObject, forwardRef, useImperativeHandle } from 'react';
 import { Form, Spin } from 'antd';
-import { requestHeaders } from '../../utils/requestHeaders';
 import { IToolbarItem } from '../../interfaces';
 import { ValidationErrors, ConfigurableForm } from '..';
 import { useUi } from '../../providers';
@@ -116,7 +115,6 @@ const GenericDetailsPagePlain = forwardRef<CommonCrudHandles, IGenericDetailsPag
 
   const { loading: isFetchingData, refetch: fetchData, error: fetchError, data: serverData } = useFetcher({
     lazy: true,
-    requestOptions: { headers: requestHeaders() },
     queryParams: { id },
   });
 

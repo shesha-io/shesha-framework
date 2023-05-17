@@ -86,7 +86,12 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
         ) : isReadOnly ? (
           <ReadOnlyDisplayFormItem disabled={disabled} />
         ) : (
-          <Input.TextArea rows={2} {...textAreaProps} disabled={disabled ? disabled : undefined} {...customEventHandler(eventProps)} />
+          <Input.TextArea 
+            rows={2} 
+            {...textAreaProps} 
+            disabled={disabled ? disabled : undefined} 
+            {...customEventHandler(eventProps)} 
+          />
         )}
       </ConfigurableFormItem>
     );

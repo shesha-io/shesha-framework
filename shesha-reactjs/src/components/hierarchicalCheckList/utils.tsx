@@ -1,9 +1,8 @@
-import { CheckSquareOutlined, CloseSquareOutlined } from '@ant-design/icons';
 import React, { Key } from 'react';
 import _ from 'lodash';
 import { CheckListSelectionType, ICheckListItemSelection, IDataNode, ISaveSelectionsInput } from './interface';
-import { CheckListItemModel } from '../../apis/checkList';
-import { treeToList } from '../../utils/tree';
+import { CheckListItemModel } from 'apis/checkList';
+import { treeToList } from 'utils/tree';
 
 // We do not want clicking anywhere on the tree to trigger the visibility of the overlay
 // By default, when you focus the text area, because this is part of the tree title, it'll trigger onSelect.
@@ -84,6 +83,7 @@ export const getFirstSelectedLeaf = (tree: CheckListItemModel[], selectedKeys: s
 };
 
 // It's just a simple demo. You can use tree map to optimize update perf.
+/*
 export function updateTreeData(list: IDataNode[], key: React.Key, children: IDataNode[]): IDataNode[] {
   return list.map(localNode => {
     const node = {
@@ -109,7 +109,7 @@ export function updateTreeData(list: IDataNode[], key: React.Key, children: IDat
     return node;
   });
 }
-
+*/
 export function deepFlattenTree<T>(r: T[], a: T[], key: keyof T) {
   const b = {};
   Object.keys(a).forEach(k => {

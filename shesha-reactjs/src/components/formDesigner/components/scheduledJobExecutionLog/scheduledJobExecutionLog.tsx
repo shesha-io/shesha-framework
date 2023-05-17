@@ -1,10 +1,10 @@
 import { SmallDashOutlined } from '@ant-design/icons';
 import { Skeleton } from 'antd';
 import React from 'react';
-import { IToolboxComponent } from '../../../../interfaces';
-import { ScheduledJobExecutionProvider, useShaRouting } from '../../../../providers';
-import { FormMarkup, IConfigurableFormComponent } from '../../../../providers/form/models';
-import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';
+import { IToolboxComponent } from 'interfaces';
+import { ScheduledJobExecutionProvider, useShaRouting } from 'providers';
+import { FormMarkup, IConfigurableFormComponent } from 'providers/form/models';
+import { validateConfigurableComponentSettings } from 'providers/form/utils';
 import ConfigurableFormItem from '../formItem';
 import ScheduledJobExecution from './scheduledJobExecution';
 import settingsFormJson from './settingsForm.json';

@@ -1,17 +1,17 @@
-import React, { FC, useContext, useEffect, useRef, useState } from 'react';
-import useThunkReducer from '../../hooks/thunkReducer';
+import React, { FC, PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
+import useThunkReducer from 'hooks/thunkReducer';
 import { SETTINGS_CONTEXT_INITIAL_STATE, SettingsContext, ISettingsContext } from './contexts';
 import { ISettingIdentifier, ISettingsDictionary } from './models';
 import reducer from './reducer';
-import { settingsGetValue } from '../../apis/settings';
-import { useSheshaApplication } from '../..';
-import { IErrorInfo } from '../../interfaces/errorInfo';
+import { settingsGetValue } from 'apis/settings';
+import { useSheshaApplication } from 'providers';
+import { IErrorInfo } from 'interfaces/errorInfo';
 
 export interface ISettingsProviderProps {
 
 }
 
-const SettingsProvider: FC<ISettingsProviderProps> = ({ children }) => {
+const SettingsProvider: FC<PropsWithChildren<ISettingsProviderProps>> = ({ children }) => {
     const [state] = useThunkReducer(reducer, SETTINGS_CONTEXT_INITIAL_STATE);
     const settings = useRef<ISettingsDictionary>({});
 

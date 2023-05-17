@@ -196,7 +196,7 @@ function useConfigurableAction<TArguments = IConfigurableActionArguments, TRespo
 
   useEffect(() => {
     if (!payload.owner || !payload.ownerUid)
-      return null;
+      return undefined;
       
     registerAction(payload);
     return () => {

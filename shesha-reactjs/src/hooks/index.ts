@@ -14,3 +14,5 @@ export { useDeepCompareMemoKeepReference } from './useDeepCompareMemo';
 export { usePubSub, useSubscribe, useSubscribedValue, usePublish } from './usePubSub';
 export { useDataTableFluentColumns } from './useDataTableFluentColumns';
 export { useDelete } from './useDelete';
+export { useGet, GetDataError } from './restful/get';
+export { useMutate } from './useMutate';

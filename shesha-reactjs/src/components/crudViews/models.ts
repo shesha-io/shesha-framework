@@ -1,14 +1,15 @@
-import { GetDataError, UseGetProps, UseMutateReturn } from 'restful-react';
+import { GetDataError, UseGetProps } from 'hooks/restful/get';
+import { UseMutateReturn } from 'hooks/restful/mutate';
 
-export type UseGenericGetProps = Omit<UseGetProps<any, any, any, any>, 'path'>;
+export type UseGenericGetProps = Omit<UseGetProps<any, any, any>, 'path'>;
 
-declare type RefetchOptions<TData, TError, TQueryParams, TPathParams> = Partial<
-  Omit<UseGetProps<TData, TError, TQueryParams, TPathParams>, 'lazy'>
+declare type RefetchOptions<TData, TQueryParams, TPathParams> = Partial<
+  Omit<UseGetProps<TData, TQueryParams, TPathParams>, 'lazy'>
 >;
 
 export interface IDataFetcher<TData = any, TError = any, TQueryParams = any, TPathParams = any> {
   loading: boolean;
-  refetch: (options?: RefetchOptions<TData, TError, TQueryParams, TPathParams>) => Promise<TData | null>;
+  refetch: (options?: RefetchOptions<TData, TQueryParams, TPathParams>) => Promise<TData | null>;
   error: GetDataError<TError> | null;
   data: TData | null;
 }

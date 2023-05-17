@@ -1,7 +1,6 @@
 import { MoreOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 import React, { FC } from 'react';
-import { SortableElement, SortableHandle } from 'react-sortable-hoc';
 import { Row } from 'react-table';
 import { RowCell } from './rowCell';
 import { CrudProvider } from 'providers/crudContext';
@@ -26,6 +25,7 @@ export interface ISortableRowProps {
   inlineSaveMode?: InlineSaveMode;
 }
 
+/*
 export const SortableRow = SortableElement<ISortableRowProps>(props => <TableRow {...props} />);
 
 export const RowDragHandle = SortableHandle(() => (
@@ -33,6 +33,14 @@ export const RowDragHandle = SortableHandle(() => (
     <MoreOutlined />
   </div>
 ));
+*/
+export const SortableRow: FC<ISortableRowProps> = (props) => (<TableRow {...props} />);
+
+export const RowDragHandle = () => (
+  <div className="row-handle" style={{ cursor: 'grab' }}>
+    <MoreOutlined />
+  </div>
+);
 
 export const TableRow: FC<ISortableRowProps> = props => {
   const { 

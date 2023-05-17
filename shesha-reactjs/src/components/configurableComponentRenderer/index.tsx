@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, PropsWithChildren, useState } from 'react';
 import { useAppConfigurator } from '../../providers';
 import { IConfigurableComponentContext } from '../../providers/configurableComponent/contexts';
 import { ISettingsEditor } from '../configurableComponent';
@@ -33,7 +33,7 @@ export interface IBlockOverlayProps {
   onClick?: () => void;
 }
 
-const BlockOverlay: FC<IBlockOverlayProps> = ({ onClick, children, visible }) => {
+const BlockOverlay: FC<PropsWithChildren<IBlockOverlayProps>> = ({ onClick, children, visible }) => {
   if (!visible) return null;
 
   return (

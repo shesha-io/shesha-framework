@@ -70,3 +70,8 @@ export const TestMap = addStory(Template, {
   // mode: 'readonly',
   id: 'dc7f6c47-d537-418f-8eda-d0b7f796ea67',
 });
+
+export const EmptyForm = addStory(Template, {
+  formId: { name: 'empty', module: 'test' },
+  mode: 'edit'
+});

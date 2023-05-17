@@ -1,6 +1,6 @@
 import { useFormData, useGlobalState } from 'providers';
 import { useState } from 'react';
-import { useGet } from 'restful-react';
+import { useGet } from 'hooks';
 import { ILayersEntity } from './interfaces';
 import { evaluateFilters, getLayerMarkers, getMapRefetchParams, getResponseToState } from './utils';
 

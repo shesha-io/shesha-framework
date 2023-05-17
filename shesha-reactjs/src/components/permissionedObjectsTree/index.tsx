@@ -3,7 +3,7 @@ import { Dropdown, Menu, Spin } from 'antd';
 import { useLocalStorage } from '../../hooks';
 import SearchBox from '../formDesigner/toolboxSearchBox';
 import GrouppedObjectsTree from '../grouppedObjectsTree';
-import { PermissionedObjectDto, usePermissionedObjectGetAllTree } from '../../apis/permissionedObject';
+import { PermissionedObjectDto, usePermissionedObjectGetAllTree } from 'apis/permissionedObject';
 import { DatabaseFilled, LoadingOutlined } from '@ant-design/icons';
 import { useForm } from '../..';
 

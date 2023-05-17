@@ -3,15 +3,15 @@ import {
   ResetPasswordVerifyOtpInput,
   ResetPasswordVerifyOtpResponse,
   ResetPasswordUsingTokenInput,
-  AjaxResponseBase,
   UserResetPasswordSendOtpQueryParams,
-} from '../../apis/user';
-import { UserLoginInfoDto } from '../../apis/session';
+} from 'apis/user';
 import { IErrorInfo } from '../../interfaces/errorInfo';
-import { AuthenticateModel } from '../../apis/tokenAuth';
 import IRequestHeaders from '../../interfaces/requestHeaders';
 import { IFlagsSetters, IFlagsState } from '../../interfaces';
 import { EMPTY_FLAGS_STATE } from '../../interfaces/flagsState';
+import { AuthenticateModel } from 'apis/tokenAuth';
+import { UserLoginInfoDto } from 'apis/session';
+import { IAjaxResponseBase } from 'interfaces/ajaxResponse';
 
 export type IFlagProgressFlags =
   | 'isIdle'
@@ -64,7 +64,7 @@ export interface IAuthStateContext
   isResetPasswordUsingTokenSuccessful?: boolean;
   resetPasswordUsingTokenError?: string;
   resetPasswordUsingTokenReqPayload?: ResetPasswordUsingTokenInput;
-  resetPasswordUsingTokenResPayload?: AjaxResponseBase;
+  resetPasswordUsingTokenResPayload?: IAjaxResponseBase;
   resetPasswordVerifyOtpPayload?: UserResetPasswordSendOtpQueryParams;
   //#endregion
 }

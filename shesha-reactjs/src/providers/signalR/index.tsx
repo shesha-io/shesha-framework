@@ -38,7 +38,7 @@ function SignalRProvider({
 
   useEffect(() => {
     if (state.connection || (previousBaseUrl && previousBaseUrl === baseUrl)) {
-      return null;
+      return undefined;
     }
 
     const connection: ISignalRConnection = new signalR.HubConnectionBuilder()

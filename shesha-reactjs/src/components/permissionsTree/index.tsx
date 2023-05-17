@@ -10,8 +10,8 @@ import {
   usePermissionGetAllTree,
   usePermissionUpdateParent,
   usePermissionDelete,
-} from '../../apis/permission';
-import { DynamicFormPubSubConstants } from '../../pages/dynamic/pubSub';
+} from 'apis/permission';
+import { DynamicFormPubSubConstants } from 'pages/dynamic/pubSub';
 import SearchBox from '../formDesigner/toolboxSearchBox';
 
 export interface IDataNode {
@@ -78,9 +78,9 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
 
   const fetcher = usePermissionGetAllTree({ queryParams: {}, lazy: true });
   const { loading: isFetchingData, error: fetchingDataError, data: fetchingDataResponse } = fetcher;
-  const updateParentRequest = usePermissionUpdateParent({ queryParams: {} });
+  const updateParentRequest = usePermissionUpdateParent();
   const { loading: isParentUpdating, error: updateParentDataError } = updateParentRequest;
-  const deleteRequest = usePermissionDelete({ queryParams: {} });
+  const deleteRequest = usePermissionDelete();
   const { loading: isDeleting, error: deleteDataError } = deleteRequest;
 
   const { getAction, registerActions, formData, setFormMode } = useForm(false);
@@ -361,7 +361,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
         if (s.id === emptyId) {
           deleteInternal();
         } else {
-          deleteRequest.mutate(null, { queryParams: { name: s.name } });
+          deleteRequest.mutate({ name: s.name });
         }
       }
       setDoDelete(false);

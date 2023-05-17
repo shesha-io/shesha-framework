@@ -45,7 +45,6 @@ export default {
     'util',
     'os',
     'axios',
-    'restful-react',
     '@microsoft/signalr',
     'react-beautiful-dnd',
     'react-sortablejs',

@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { Form, message, Spin } from 'antd';
 import ComponentsContainer from '../formDesigner/componentsContainer';
 import { ROOT_COMPONENT_KEY } from '../../providers/form/models';
@@ -32,7 +32,7 @@ import { StandardEntityActions } from 'interfaces/metadata';
 import { useMutate } from 'hooks/useMutate';
 import { useDelayedUpdate } from 'providers/delayedUpdateProvider';
 
-export const ConfigurableFormRenderer: FC<IConfigurableFormRendererProps> = ({
+export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRendererProps>> = ({
   children,
   form,
   submitAction = StandardEntityActions.create,
