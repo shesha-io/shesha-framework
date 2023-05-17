@@ -259,6 +259,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
   if (range) {
     return (
       <RangePicker
+        className="sha-range-picker"
         disabledDate={disabledDate}
         onCalendarChange={onCalendarChange}
         onChange={handleRangePicker}
@@ -278,6 +279,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
 
   return (
     <DatePicker
+      className="sha-date-picker"
       value={formattedValue}
       disabledDate={disabledDate}
       disabled={isDisabled}

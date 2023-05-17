@@ -6,7 +6,7 @@ import { useReferenceList } from '../../../../providers/referenceListDispatcher'
 import { getDataSourceList } from '../radio/utils';
 import { getSpan, ICheckboxGroupProps } from './utils';
 
-const MultiCheckbox: FC<ICheckboxGroupProps> = model => {
+const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
   const { formMode } = useForm();
   const { data: formData } = useFormData();
   const { globalState } = useGlobalState();
@@ -40,17 +40,15 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = model => {
   }, [data?.result, model?.reducerFunc]);
   //#endregion
 
-  const options = useMemo(() => getDataSourceList(model?.dataSourceType, items, refList?.items, reducedData) || [], [
-    model?.dataSourceType,
-    items,
-    refList?.items,
-    reducedData,
-  ]);
+  const options = useMemo(
+    () => getDataSourceList(model?.dataSourceType, items, refList?.items, reducedData) || [],
+    [model?.dataSourceType, items, refList?.items, reducedData]
+  );
 
   const isReadOnly = model?.readOnly || formMode === 'readonly';
 
   return (
-    <Checkbox.Group value={value} onChange={onChange} style={model?.style}>
+    <Checkbox.Group className="sha-multi-checkbox" value={value} onChange={onChange} style={model?.style}>
       <Row>
         {options.map(({ id, label, value: v }) => (
           <Col id={id} span={getSpan(direction, options.length)} key={id}>

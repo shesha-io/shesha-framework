@@ -53,15 +53,15 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
     );
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
-  migrator: m =>
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  migrator: (m) =>
     m
-      .add<IDropdownComponentProps>(0, prev => ({
+      .add<IDropdownComponentProps>(0, (prev) => ({
         ...prev,
         dataSourceType: prev['dataSourceType'] ?? 'values',
         useRawValues: prev['useRawValues'] ?? false,
       }))
-      .add<IDropdownComponentProps>(1, prev => {
+      .add<IDropdownComponentProps>(1, (prev) => {
         return {
           ...prev,
           referenceListId: getLegacyReferenceListIdentifier(prev.referenceListNamespace, prev.referenceListName),
@@ -106,7 +106,7 @@ export const Dropdown: FC<IDropdownComponentProps> = ({
   const { globalState } = useGlobalState();
 
   const getOptions = (): ILabelValue[] => {
-    return value && typeof value === 'number' ? values?.map(i => ({ ...i, value: parseInt(i.value, 10) })) : values;
+    return value && typeof value === 'number' ? values?.map((i) => ({ ...i, value: parseInt(i.value, 10) })) : values;
   };
 
   const selectedMode = mode === 'single' ? undefined : mode;
@@ -125,6 +125,7 @@ export const Dropdown: FC<IDropdownComponentProps> = ({
   if (dataSourceType === 'referenceList') {
     return useRawValues ? (
       <RefListDropDown.Raw
+        className="sha-reflist-dropdown"
         onChange={onChange}
         referenceListId={referenceListId}
         disabled={isDisabled}
@@ -142,6 +143,7 @@ export const Dropdown: FC<IDropdownComponentProps> = ({
       />
     ) : (
       <RefListDropDown.Dto
+        className="sha-reflist-dropdown"
         onChange={onChange}
         referenceListId={referenceListId}
         disabled={isDisabled}
