@@ -12,23 +12,24 @@ import {
   IGetComponentPayload,
   IUpdateComponentPayload,
 } from './contexts';
-import useThunkReducer from '../../hooks/thunkReducer';
+import useThunkReducer from 'hooks/thunkReducer';
 import { IComponentsDictionary, IFormsDictionary, IReferenceListsDictionary } from './models';
 import { FormIdentifier, useSheshaApplication } from '../../providers';
 import { asFormFullName, asFormRawId } from '../form/utils';
 import { FormMarkupWithSettings, IFormDto, FormFullName } from '../form/models';
-import { FormConfigurationDto, formConfigurationGet, formConfigurationGetByName } from '../../apis/formConfiguration';
 import { getFormNotFoundMessage, getReferenceListNotFoundMessage } from './utils';
 import { ConfigurationItemsViewMode, IComponentSettings } from '../appConfigurator/models';
-import { IReferenceList } from '../../interfaces/referenceList';
-import { referenceListGetByName } from '../../apis/referenceList';
-import { configurableComponentGetByName, useConfigurableComponentUpdateSettings } from '../../apis/configurableComponent';
-import { MakePromiseWithState, PromisedValue } from '../../utils/promises';
+import { IReferenceList } from 'interfaces/referenceList';
+import { MakePromiseWithState, PromisedValue } from 'utils/promises';
 import { isValidRefListId } from '../referenceListDispatcher/utils';
 import { IReferenceListIdentifier } from '../referenceListDispatcher/models';
-import { entityConfigGetEntityConfigForm } from '../../apis/entityConfig';
 import localForage from 'localforage';
-import { IDictionary } from '../../interfaces';
+import { IDictionary } from 'interfaces';
+
+import { FormConfigurationDto, formConfigurationGet, formConfigurationGetByName } from 'apis/formConfiguration';
+import { referenceListGetByName } from 'apis/referenceList';
+import { configurableComponentGetByName, configurableComponentUpdateSettings } from 'apis/configurableComponent';
+import { entityConfigGetEntityConfigForm } from 'apis/entityConfig';
 
 type LocalForage = ReturnType<typeof localForage.createInstance>;
 type StoragesDictionary = IDictionary<LocalForage>;
@@ -382,17 +383,17 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
     return promiseWithState;
   };
 
-  const { mutate: updateComponentSettings } = useConfigurableComponentUpdateSettings({});
   const updateComponent = (payload: IUpdateComponentPayload) => {
     const jsonSettings = payload.settings
       ? JSON.stringify(payload.settings)
       : null;
-    return updateComponentSettings({
+      
+    return configurableComponentUpdateSettings({
       module: null,
       name: payload.name,
       isApplicationSpecific: payload.isApplicationSpecific,
       settings: jsonSettings
-    }).then(response => {
+    }, { base: backendUrl, headers: httpHeaders }).then(response => {
       clearComponentCache(payload.name);
       return response;
     });

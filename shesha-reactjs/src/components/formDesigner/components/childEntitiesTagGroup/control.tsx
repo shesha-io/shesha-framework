@@ -9,8 +9,8 @@ import {
   useForm,
   useGlobalState,
 } from '../../../..';
-import { useMetadataGet } from '../../../../apis/metadata';
-import { useFormConfiguration } from '../../../../providers/form/api';
+import { useMetadataGet } from 'apis/metadata';
+import { useFormConfiguration } from 'providers/form/api';
 import ChildEntitiesTagGroupModal from './modal';
 import { IChildEntitiesTagGroupProps, IChildEntitiesTagGroupSelectOptions } from './models';
 import './styles/index.less';

@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useCallback, useState, useRef, ChangeEvent } from 'react';
+import React, { FC, useEffect, useMemo, useState, useRef, ChangeEvent } from 'react';
 import classNames from 'classnames';
 import {
   useResizeColumns,
@@ -18,10 +18,7 @@ import { nanoid } from 'nanoid/non-secure';
 import { useDeepCompareEffect, usePrevious } from 'react-use';
 import { RowDragHandle, SortableRow, TableRow } from './tableRow';
 import ConditionalWrap from '../conditionalWrapper';
-import { SortableContainer } from './sortableContainer';
-import { arrayMove } from 'react-sortable-hoc';
 import { IndeterminateCheckbox } from './indeterminateCheckbox';
-import camelCaseKeys from 'camelcase-keys';
 import { getPlainValue } from '../../utils';
 import NewTableRowEditor from './newTableRowEditor';
 
@@ -52,7 +49,7 @@ const ReactTable: FC<IReactTableProps> = ({
   scrollBodyHorizontally = false,
   height = 250,
   allowRowDragAndDrop = false,
-  onRowDropped,
+  //onRowDropped,
   selectedRowIndex,
   containerStyle,
   omitClick,
@@ -247,12 +244,14 @@ const ReactTable: FC<IReactTableProps> = ({
     }
   }, [selectedRowIds]);
 
+  /*
   const onSortEnd = useCallback(({ oldIndex, newIndex }) => {
     if (onRowDropped) {
       onRowDropped(camelCaseKeys(allRowsRef?.current[oldIndex], { deep: true, pascalCase: true }), oldIndex, newIndex);
     }
     setComponentState(prev => ({ ...prev, allRows: arrayMove(prev?.allRows, oldIndex, newIndex) }));
   }, []);
+  */
 
   // Listen for changes in pagination and use the state to fetch our new data
   useEffect(() => {
@@ -334,17 +333,18 @@ const ReactTable: FC<IReactTableProps> = ({
           <ConditionalWrap
             condition={allowRowDragAndDrop}
             wrap={children => (
-              <SortableContainer
-                onSortEnd={onSortEnd}
-                axis="y"
-                lockAxis="y"
-                lockToContainerEdges={true}
-                lockOffset={['30%', '50%']}
-                helperClass="helperContainerClass"
-                useDragHandle={true}
-              >
-                {children}
-              </SortableContainer>
+              <>{children}</>
+              // <SortableContainer
+              //   onSortEnd={onSortEnd}
+              //   axis="y"
+              //   lockAxis="y"
+              //   lockToContainerEdges={true}
+              //   lockOffset={['30%', '50%']}
+              //   helperClass="helperContainerClass"
+              //   useDragHandle={true}
+              // >
+              //   {children}
+              // </SortableContainer>
             )}
           >
             <div

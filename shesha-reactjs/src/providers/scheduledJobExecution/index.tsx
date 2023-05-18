@@ -18,13 +18,13 @@ import {
   downloadLogFileErrorAction,
   /* NEW_ACTION_IMPORT_GOES_HERE */
 } from './actions';
-import { useScheduledJobExecutionGetEventLogItems } from '../../apis/scheduledJobExecution';
+import { useScheduledJobExecutionGetEventLogItems } from 'apis/scheduledJobExecution';
 import moment from 'moment';
 import { HubConnectionBuilder } from '@microsoft/signalr';
 import axios from 'axios';
 import FileSaver from 'file-saver';
 import { useSheshaApplication } from '../sheshaApplication';
-import { getFileNameFromResponse } from '../../utils/fetchers';
+import { getFileNameFromResponse } from 'utils/fetchers';
 
 export interface IScheduledJobExecutionProviderProps {
   id: string;

@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { nanoid } from 'nanoid/non-secure';
 import Link from 'next/link';
 import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react';
-import { useMutate } from 'restful-react';
+import { useMutate } from 'hooks';
 import { ConfigurableForm, ValidationErrors } from '../../components';
 import { usePubSub, usePrevious } from '../../hooks';
 import { PageWithLayout } from '../../interfaces';
@@ -64,10 +64,7 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
     ],
   });
 
-  const { mutate: postData, loading: isPostingData } = useMutate({
-    path: submitEndpoint?.url,
-    verb: submitEndpoint?.httpVerb as 'POST' | 'PUT',
-  });
+  const { mutate: postData, loading: isPostingData } = useMutate();
 
   //#region routing
   const { setCurrentNavigator, navigator } = useStackedNavigation();
@@ -168,7 +165,10 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
   //#endregion
 
   const onFinish = (values: any, _response?: any, options?: any) => {
-    postData(values)
+    if (!submitEndpoint)
+      throw new Error('Submit endpoint is not specified');
+
+    postData(submitEndpoint, values)
       .then(() => {
         message.success('Data saved successfully!');
 

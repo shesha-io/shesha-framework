@@ -19,7 +19,7 @@ import {
 } from '../../interfaces/configurableAction';
 import { genericActionArgumentsEvaluator } from '../form/utils';
 
-export interface IConfigurableActionDispatcherProviderProps {}
+export interface IConfigurableActionDispatcherProviderProps { }
 
 const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableActionDispatcherProviderProps>> = ({
   children,
@@ -78,7 +78,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
     if (!ownerActions) return;
 
     const newActions = ownerActions.actions.filter((action) => action.name !== payload.name);
-    if (newActions.length > 0) {
+    if (newActions.length > 0){
       actions.current = {
         ...actions.current,
         [payload.ownerUid]: { ...ownerActions, actions: newActions },
@@ -196,8 +196,9 @@ function useConfigurableAction<TArguments = IConfigurableActionArguments, TRespo
   const { registerAction, unregisterAction } = useConfigurableActionDispatcher();
 
   useEffect(() => {
-    if (!payload.owner || !payload.ownerUid) return null;
-
+    if (!payload.owner || !payload.ownerUid)
+      return undefined;
+      
     registerAction(payload);
     return () => {
       unregisterAction(payload);

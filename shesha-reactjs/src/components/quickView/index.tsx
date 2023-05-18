@@ -6,7 +6,7 @@ import ValidationErrors from '../validationErrors';
 import { FormIdentifier } from '../../providers/form/models';
 import { useFormConfiguration } from '../../providers/form/api';
 import { useConfigurationItemsLoader } from '../../providers/configurationItemsLoader';
-import { entitiesGet } from '../../apis/entities';
+import { entitiesGet } from 'apis/entities';
 import { get } from '../../utils/fetchers';
 
 export interface IQuickViewProps {

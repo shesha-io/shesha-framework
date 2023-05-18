@@ -37,8 +37,6 @@ const FormsDesignerPage: NextPageWithLayout<IFormsDesignerPageProps> = (props) =
             module: props.module
         };
 
-    //console.log('formId', formId, props)
-
     return <LazyLoadedPage {...props} formId={formId} />;
 };
 

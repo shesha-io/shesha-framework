@@ -103,3 +103,11 @@ export const PermissionEdit = addStory(Template, {
     version: 2,
   },
 });
+
+export const Fetchers = addStory(Template, {
+  formId: {
+    name: 'fetchers',
+    module: 'TestModule'
+  },
+  mode: 'edit'
+});

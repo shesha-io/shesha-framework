@@ -1,7 +1,7 @@
 import { Tree } from 'antd';
 import { DataNode } from 'antd/lib/tree';
 import React, { FC, useMemo, useState, useEffect } from 'react';
-import { PermissionedObjectDto } from '../../../apis/permissionedObject';
+import { PermissionedObjectDto } from 'apis/permissionedObject';
 import ShaIcon, { IconType } from '../../shaIcon';
 
 export interface IProps {

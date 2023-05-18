@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, PropsWithChildren } from 'react';
 import {
   MetadataProvider,
   useForm,
@@ -11,7 +11,7 @@ export interface IQueryBuilderWithModelType {
   modelType?: string;
 }
 
-export const QueryBuilderWithModelType: FC<IQueryBuilderWithModelType> = props => {
+export const QueryBuilderWithModelType: FC<PropsWithChildren<IQueryBuilderWithModelType>> = props => {
   const { formData } = useForm();
   const { modelType: modelTypeExpression } = props;
   const modelType = evaluateString(modelTypeExpression, { data: formData });

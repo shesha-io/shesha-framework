@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, ReactNode, useCallback } from 'react';
+import React, { CSSProperties, FC, PropsWithChildren, ReactNode, useCallback } from 'react';
 import ConfigurableFormComponent from './configurableFormComponent';
 import { useForm } from '../../providers/form';
 import {
@@ -128,7 +128,7 @@ const getAlignmentStyle = ({
   return style;
 };
 
-const ComponentsContainerDesigner: FC<IComponentsContainerProps> = props => {
+const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContainerProps>> = props => {
   const {
     containerId,
     children,
@@ -261,7 +261,7 @@ const ComponentsContainerDesigner: FC<IComponentsContainerProps> = props => {
   );
 };
 
-const ComponentsContainerLive: FC<IComponentsContainerProps> = props => {
+const ComponentsContainerLive: FC<PropsWithChildren<IComponentsContainerProps>> = props => {
   const {
     containerId,
     children,
