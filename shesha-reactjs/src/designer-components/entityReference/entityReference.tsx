@@ -1,10 +1,10 @@
 import React from 'react';
-import { IToolboxComponent } from '../../../../interfaces';
-import { IConfigurableFormComponent } from '../../../../providers/form/models';
-import ConfigurableFormItem from '../formItem';
-import { useForm } from '../../../..';
-import { EntityReference, IEntityReferenceProps } from '../../../entityReference';
-import { LinkExternalOutlined } from '../../../../icons/linkExternalOutlined';
+import { IToolboxComponent } from 'interfaces';
+import { IConfigurableFormComponent } from 'providers/form/models';
+import ConfigurableFormItem from 'components/formDesigner/components/formItem';
+import { useForm } from '../..';
+import { EntityReference, IEntityReferenceProps } from 'components/entityReference';
+import { LinkExternalOutlined } from 'icons/linkExternalOutlined';
 import { EntityReferenceSettings } from './settings';
 
 export type IActionParameters = [{ key: string; value: string }];
@@ -14,6 +14,8 @@ export interface IEntityReferenceControlProps extends IEntityReferenceProps, ICo
 const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> = {
   type: 'entityReference',
   name: 'EntityReference',
+  isInput: true,
+  isOutput: true,
   icon: <LinkExternalOutlined />,
   factory: ({ style, ...model }: IEntityReferenceControlProps) => {
     const { isComponentDisabled, isComponentHidden } = useForm();
@@ -34,16 +36,8 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
       </ConfigurableFormItem>
     );
   },
-  settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
-    return (
-      <EntityReferenceSettings
-        readOnly={readOnly}
-        model={model as any}
-        onSave={onSave as any}
-        onCancel={onCancel}
-        onValuesChange={onValuesChange as any}
-      />
-    );
+  settingsFormFactory: (props) => {
+    return <EntityReferenceSettings {...props}/>;
   },
   initModel: model => {
     const buttonModel: IEntityReferenceControlProps = {
