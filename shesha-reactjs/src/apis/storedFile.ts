@@ -1,4 +1,4 @@
-import { useGet, UseGetProps } from "hooks/restful/get";
+import { useGet, UseGetProps } from "hooks/useGet";
 import { IAjaxResponse, IAjaxResponseBase } from "interfaces/ajaxResponse";
 
 export interface StoredFileDeleteQueryParams {
