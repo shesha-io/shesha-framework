@@ -37,30 +37,6 @@ export const FormsIndex = addStory(Template, {
   formId: { name: 'forms', module: 'shesha' },
 });
 
-export const OrganisationEdit = addStory(Template, {
-  formId: {
-    name: 'organisation-edit',
-    module: 'Test Module',
-    version: 1,
-  },
-});
-
-export const PersonEdit = addStory(Template, {
-  formId: {
-    name: 'person-edit',
-    module: 'Test Module',
-    version: 7,
-  },
-});
-
-export const PersonDetails = addStory(Template, {
-  formId: {
-    name: 'person-details',
-    module: 'Test Module',
-    version: 1,
-  },
-});
-
 export const TestMap = addStory(Template, {
   // formId: '21ca7d2c-6b26-4434-8df0-55523ab1827d',
   formId: {
