@@ -160,21 +160,4 @@ export const useCheckListGetCheckListTree = ({ id, ...props }: UseCheckListGetCh
         { pathParams: { id }, ...props }
     );
 
-
-// export type UseCheckListSaveSelectionProps = Omit<
-//     UseMutateProps<void, unknown, void, SaveSelectionInput, CheckListSaveSelectionPathParams>,
-//     'path' | 'verb'
-// > &
-//     CheckListSaveSelectionPathParams;
-
-// /**
-//  * Save user selection
-//  */
-// export const useCheckListSaveSelection = ({ id, ...props }: UseCheckListSaveSelectionProps) =>
-//     useMutate<void, unknown, void, SaveSelectionInput, CheckListSaveSelectionPathParams>(
-//         'POST',
-//         (paramsInPath: CheckListSaveSelectionPathParams) => `/checkList/${paramsInPath.id}/selection`,
-//         { pathParams: { id }, ...props }
-//     );
-
 export const useCheckListSaveSelection = () => getUseMutateForEndpoint<SaveSelectionInput>({ url: (data) => (`/checkList/${data.id}/selection`), httpVerb: 'POST' });

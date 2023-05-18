@@ -1,3 +1,4 @@
+import { getUseMutateForEndpoint } from "hooks";
 import { useGet, UseGetProps } from "hooks/useGet";
 import { IAjaxResponse, IAjaxResponseBase } from "interfaces/ajaxResponse";
 
@@ -159,3 +160,8 @@ export const useStoredFileGetFileVersions = ({ fileId, ...props }: UseStoredFile
         (paramsInPath: StoredFileGetFileVersionsPathParams) => `/api/StoredFile/StoredFile/${paramsInPath.fileId}/Versions`,
         { pathParams: { fileId }, ...props }
     );
+
+export interface DeleteFileByIdInput {
+    id: string;
+}
+export const useDeleteFileById = () => getUseMutateForEndpoint<DeleteFileByIdInput>({ url: (data) => (`/api/StoredFile?id=${data.id}`), httpVerb: 'DELETE' });

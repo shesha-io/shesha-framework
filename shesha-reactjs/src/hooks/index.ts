@@ -15,4 +15,4 @@ export { usePubSub, useSubscribe, useSubscribedValue, usePublish } from './usePu
 export { useDataTableFluentColumns } from './useDataTableFluentColumns';
 export { useDelete } from './useDelete';
 export { useGet, GetDataError } from './useGet';
-export { useMutate } from './useMutate';
+export { useMutate, getUseMutateForEndpoint, IUseMutateResponse, IUseMutateResponseFixedEndpoint } from './useMutate';

@@ -52,14 +52,6 @@ type RefetchOptions<TData, /*TError,*/ TQueryParams, TPathParams> = Partial<
 
 export interface UseGetReturn<TData, TError, TQueryParams = {}, TPathParams = unknown> extends GetState<TData, TError> {
     /**
-     * Absolute path resolved from `base` and `path` (context & local)
-     */
-    //absolutePath: string;
-    /**
-     * Cancel the current fetch
-     */
-    //cancel: () => void;
-    /**
      * Refetch
      */
     refetch: (options?: RefetchOptions<TData, /*TError,*/ TQueryParams, TPathParams>) => Promise<TData | null>;
@@ -81,8 +73,6 @@ export const useGetInternal = <TData = any, TError = any, TQueryParams = IQueryP
         setState(prev => ({ ...prev, loading: true }));
 
         const finalOptions = { ...props, ...options, httpHeaders: httpHeaders, };
-
-        console.log('LOG: queryParams', finalOptions.queryParams);
 
         const path = typeof (finalOptions.path) === 'string'
             ? finalOptions.path

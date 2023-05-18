@@ -274,7 +274,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = prop
       ownerType,
       propertyName,
     };
-    deleteFileHttp({ url: '/api/StoredFile', httpVerb: 'DELETE' }, deleteFileInput)
+    deleteFileHttp({ url: '/api/StoredFile/Delete?' + qs.stringify(deleteFileInput), httpVerb: 'DELETE' }, {})
       .then(() => {
         deleteFileSuccess();
         if (typeof onChange === 'function') 

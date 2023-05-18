@@ -36,6 +36,7 @@ import { useSheshaApplication } from '../sheshaApplication';
 import { useDelayedUpdate } from 'providers/delayedUpdateProvider';
 import { STORED_FILES_DELAYED_UPDATE } from 'providers/delayedUpdateProvider/models';
 import { IApiEndpoint } from 'interfaces/metadata';
+import { useDeleteFileById } from 'apis/storedFile';
 export interface IStoredFilesProviderProps {
   ownerId: string;
   ownerType: string;
@@ -53,7 +54,6 @@ const fileReducer = (data: IStoredFile): IStoredFile => {
 const filesReducer = (data: IStoredFile[]): IStoredFile[] => data.map(file => fileReducer(file));
 
 const uploadFileEndpoint: IApiEndpoint = { url: '/api/StoredFile/Upload', httpVerb: 'POST' };
-const deleteFileEndpoint: IApiEndpoint = { url: '/api/StoredFile', httpVerb: 'DELETE' };
 const filesListEndpoint: IApiEndpoint = { url: '/api/StoredFile/FilesList', httpVerb: 'GET' };
 
 
@@ -172,13 +172,13 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       });
   };
 
-  const { mutate: deleteFileHttp } = useMutate();
+  const { mutate: deleteFileHttp } = useDeleteFileById();
 
   //#region delete file
   const deleteFile = (fileIdToDelete: string) => {
     dispatch(deleteFileRequestAction(fileIdToDelete));
 
-    deleteFileHttp(deleteFileEndpoint, { queryParams: { id: fileIdToDelete } })
+    deleteFileHttp({ id: fileIdToDelete })
       .then(() => {
         deleteFileSuccess(fileIdToDelete);
         if (typeof addDelayedUpdate === 'function')
