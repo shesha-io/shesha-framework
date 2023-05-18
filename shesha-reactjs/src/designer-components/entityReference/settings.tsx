@@ -20,7 +20,7 @@ interface IEntityReferenceSettingsState extends IEntityReferenceControlProps { }
 
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 
-export const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceControlProps>> = ({ readOnly, onSave, model, onValuesChange, propertyFilter, formRef}) => {
+export const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceControlProps>> = ({ readOnly, onSave, model, onValuesChange, propertyFilter, formRef, layoutSettings }) => {
   const [state, setState] = useState<IEntityReferenceSettingsState>(model);
   const [form] = Form.useForm();
 
@@ -40,7 +40,7 @@ export const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferen
     <Form
       form={form}
       onFinish={onSave}
-      layout="vertical"
+      {...layoutSettings}
       onValuesChange={(changedValues, values: IEntityReferenceControlProps) => {
         //var view = null;
         /*if (Object.hasOwn(changedValues, 'formSelectionMode') && values.formSelectionMode === 'dynamic'

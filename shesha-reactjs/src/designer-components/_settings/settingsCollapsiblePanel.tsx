@@ -35,7 +35,7 @@ const SettingsCollapsiblePanel: FC<ISettingsCollapsiblePanelProps> = (props) => 
             return props.propertyFilter(x);
         }));
     }
-    return show ? <CollapsiblePanel {...props}>{children}</CollapsiblePanel> : null;
+    return show ? <CollapsiblePanel  ghost={true} expandIconPosition='left' {...props}>{children}</CollapsiblePanel> : null;
 };
 
 export default SettingsCollapsiblePanel;
