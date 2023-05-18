@@ -186,8 +186,19 @@ export const EntityReferenceSettings: FC<IEntityReferenceSettingsProps> = ({ rea
             valueName='value'
             valueTitle='Value'
             description={'Additional properties you want to be passed when the form gets submitted like parentId in the case where the modal is used in a childTable. ' +
-              'Also note you can use Mustache expression like {{id}} for value property'
+              'Also note you can use Mustache expression like {{id}} for value property. \n\n' +
+              'Id initial value is already initialised with {{entityReference.id}} but you can override it'
             }
+            exposedVariables={[
+              {name: 'data', description: 'This form data', type: 'object'},
+              {name: 'form', description: 'Form instance', type: 'object'},
+              {name: 'formMode', description: 'Current form mode', type: "'designer' | 'edit' | 'readonly'"},
+              {name: 'globalState', description: 'Global state', type: 'object'},
+              {name: 'entityReference.id', description: 'Id of entity reference entity', type: 'object'},
+              {name: 'entityReference.entity', description: 'Entity', type: 'object'},
+              {name: 'moment', description: 'moment', type: ''},
+              {name: 'http', description: 'axiosHttp', type: ''},
+            ]}
           />
         </Form.Item>
 

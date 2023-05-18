@@ -35,6 +35,7 @@ const NumberFieldControl: FC<IProps> = ({ disabled, form, model, onChange, value
   };
 
   const inputProps: InputNumberProps = {
+    className: 'sha-number-field',
     disabled: disabled,
     bordered: !model.hideBorder,
     min: model?.min,

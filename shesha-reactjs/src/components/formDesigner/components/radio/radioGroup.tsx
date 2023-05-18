@@ -7,7 +7,7 @@ import { useReferenceList } from '../../../../providers/referenceListDispatcher'
 import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
 import { getDataSourceList, IRadioProps } from './utils';
 
-const RadioGroup: FC<IRadioProps> = model => {
+const RadioGroup: FC<IRadioProps> = (model) => {
   const { formMode, isComponentDisabled } = useForm();
   const { data: formData } = useFormData();
   const { globalState } = useGlobalState();
@@ -50,7 +50,13 @@ const RadioGroup: FC<IRadioProps> = model => {
   const disabled = isComponentDisabled(model);
 
   const renderCheckGroup = () => (
-    <Radio.Group disabled={isReadOnly} value={value} onChange={onChange} style={model?.style}>
+    <Radio.Group
+      className="sha-radio-group"
+      disabled={isReadOnly}
+      value={value}
+      onChange={onChange}
+      style={model?.style}
+    >
       <Space direction={model?.direction}>
         {options?.map((checkItem, index) => (
           <Radio key={index} value={checkItem.value}>

@@ -46,7 +46,9 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     const { data } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
-    const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(model.dataSourceType === 'entitiesList' ? model.entityTypeShortAlias : null);
+    const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(
+      model.dataSourceType === 'entitiesList' ? model.entityTypeShortAlias : null
+    );
 
     const dataSourceUrl = model.dataSourceUrl ? replaceTags(model.dataSourceUrl, { data: data }) : model.dataSourceUrl;
 
@@ -71,8 +73,8 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
         ],
         propertyMetadataAccessor
       );
-      
-      if (response.find(f => f?.unevaluatedExpressions?.length)) return '';
+
+      if (response.find((f) => f?.unevaluatedExpressions?.length)) return '';
 
       return JSON.stringify(response[0]?.expression) || '';
     }, [filter, data, globalState]);
@@ -140,6 +142,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     };
 
     const autocompleteProps = {
+      className: 'sha-autocomplete',
       typeShortAlias: model.entityTypeShortAlias,
       entityDisplayProperty: model.entityDisplayProperty,
       allowInherited: true /*hardcoded for now*/,
@@ -178,24 +181,26 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     );
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
-  migrator: m => m.add<IAutocompleteComponentProps>(0, prev => ({
-    ...prev,
-    dataSourceType: prev['dataSourceType'] ?? 'entitiesList',
-    useRawValues: prev['useRawValues'] ?? false,
-  }))
-  .add<IAutocompleteComponentProps>(1, prev => {
-    const result = {...prev};
-    const useExpression = Boolean(result['useExpression']);
-    delete result['useExpression'];
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  migrator: (m) =>
+    m
+      .add<IAutocompleteComponentProps>(0, (prev) => ({
+        ...prev,
+        dataSourceType: prev['dataSourceType'] ?? 'entitiesList',
+        useRawValues: prev['useRawValues'] ?? false,
+      }))
+      .add<IAutocompleteComponentProps>(1, (prev) => {
+        const result = { ...prev };
+        const useExpression = Boolean(result['useExpression']);
+        delete result['useExpression'];
 
-    if (useExpression){
-      const migratedExpression = migrateDynamicExpression(prev.filter);
-      result.filter = migratedExpression;
-    }
+        if (useExpression) {
+          const migratedExpression = migrateDynamicExpression(prev.filter);
+          result.filter = migratedExpression;
+        }
 
-    return result;
-  }),
+        return result;
+      }),
   linkToModelMetadata: (model, metadata): IAutocompleteComponentProps => {
     return {
       ...model,

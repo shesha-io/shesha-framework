@@ -49,6 +49,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const readOnly = model?.readOnly || (formMode === 'readonly' && model.textType !== 'password');
 
     const inputProps: InputProps = {
+      className: 'sha-input',
       placeholder: model.placeholder,
       prefix: model.prefix,
       suffix: model.suffix,
@@ -92,12 +93,12 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     );
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
-  initModel: model => ({
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  initModel: (model) => ({
     textType: 'text',
     ...model,
   }),
-  migrator: m => m.add<ITextFieldComponentProps>(0, prev => ({ ...prev, textType: 'text' })),
+  migrator: (m) => m.add<ITextFieldComponentProps>(0, (prev) => ({ ...prev, textType: 'text' })),
   linkToModelMetadata: (model, metadata): ITextFieldComponentProps => {
     return {
       ...model,

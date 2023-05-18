@@ -73,14 +73,22 @@ export const PersonEdit = addStory(DesignerTemplate, {
   formId: {
     name: 'person-edit',
     module: 'Test Module',
-    version: 7,
-  },
+    version: 7
+  }
 });
 
 export const PersonDetails = addStory(DesignerTemplate, {
   formId: {
     name: 'person-details',
     module: 'Test Module',
-    version: 1,
-  },
+    version: 1
+  }
+});
+
+export const PermissionEdit = addStory(DesignerTemplate, {
+  formId: 'AFF750FD-1AC6-45C9-B478-B98DB7DE8CD0'
+  /*{
+    name: 'permission-edit',
+    module: 'Test Module'
+  }*/
 });

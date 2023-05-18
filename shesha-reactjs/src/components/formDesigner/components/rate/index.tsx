@@ -19,6 +19,7 @@ import { getSettings } from './settings';
 import moment from 'moment';
 import { customRateEventHandler } from '../utils';
 import _ from 'lodash';
+import classNames from 'classnames';
 
 export interface IRateProps extends IConfigurableFormComponent {
   value?: number;
@@ -73,15 +74,15 @@ const RateComponent: IToolboxComponent<IRateProps> = {
           disabled={disabled}
           count={localCount}
           tooltips={tooltips}
-          className={className}
+          className={classNames(className, 'sha-rate')}
           style={getStyle(style, formData)} // Temporary. Make it configurable
           {...customRateEventHandler(eventProps)}
         />
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: data => getSettings(data),
-  validateSettings: model => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 };
 
 export default RateComponent;

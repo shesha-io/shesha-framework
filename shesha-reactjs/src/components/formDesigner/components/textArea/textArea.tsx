@@ -22,7 +22,7 @@ interface IJsonTextAreaProps {
   textAreaProps?: TextAreaProps;
   customEventHandler?: any;
 }
-const JsonTextArea: React.FC<IJsonTextAreaProps> = props => {
+const JsonTextArea: React.FC<IJsonTextAreaProps> = (props) => {
   const valuedString = !!props.value ? JSON.stringify(props.value, null, 2) : '';
   return (
     <Input.TextArea value={valuedString} rows={2} {...props.textAreaProps} disabled {...props.customEventHandler} />
@@ -42,6 +42,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
     const { backendUrl } = useSheshaApplication();
 
     const textAreaProps: TextAreaProps = {
+      className: 'sha-text-area',
       placeholder: model.placeholder,
       disabled: model.disabled,
       autoSize: model.autoSize ? { minRows: 2 } : false,
@@ -86,17 +87,17 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
         ) : isReadOnly ? (
           <ReadOnlyDisplayFormItem disabled={disabled} />
         ) : (
-          <Input.TextArea 
-            rows={2} 
-            {...textAreaProps} 
-            disabled={disabled ? disabled : undefined} 
-            {...customEventHandler(eventProps)} 
+          <Input.TextArea
+            rows={2}
+            {...textAreaProps}
+            disabled={disabled ? disabled : undefined}
+            {...customEventHandler(eventProps)}
           />
         )}
       </ConfigurableFormItem>
     );
   },
-  initModel: model => {
+  initModel: (model) => {
     const textAreaModel: ITextAreaComponentProps = {
       ...model,
       label: 'Text Area',
@@ -108,7 +109,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
     return textAreaModel;
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
 };
 
 export default TextAreaComponent;

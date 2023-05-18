@@ -27,6 +27,7 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
 
     return (
       <Alert
+        className="sha-alert"
         message={evaluatedMessage}
         type={alertType}
         description={evaluatedDescription}
