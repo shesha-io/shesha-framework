@@ -2,7 +2,6 @@ import React from 'react';
 import dynamic from 'next/dynamic';
 import { getLayout } from 'src/components/layouts';
 import { NextPageWithLayout } from 'models';
-import { FormIdentifier } from '@shesha/reactjs/dist/providers/form/models';
 
 const LazyLoadedPage = dynamic(
     async () => {
