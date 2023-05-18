@@ -13,7 +13,7 @@ export interface IEntityReferenceControlProps extends IEntityReferenceProps, ICo
 
 const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> = {
   type: 'entityReference',
-  name: 'EntityReference',
+  name: 'Entity Reference',
   isInput: true,
   isOutput: true,
   icon: <LinkExternalOutlined />,
