@@ -41,13 +41,16 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
   const { router } = useShaRouting();
   const { clearState } = useGlobalState();
 
+  // `showModalFooter` for now is for backward compatibility
+  const showDefaultSubmitButtons = showModalFooter || footerButtons === 'default';
+
   const onOk = () => {
     if (submitLocally) {
       const formValues = form?.getFieldsValue();
 
       onSubmitted(null, formValues);
     } else {
-      if (showModalFooter) {
+      if (showDefaultSubmitButtons) {
         form?.submit();
       } else {
         closeModal();
@@ -122,7 +125,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
       isVisible={isVisible}
       onOk={onOk}
       onCancel={closeModal}
-      footer={showModalFooter || footerButtons === 'default' ? undefined : null}
+      footer={showDefaultSubmitButtons ? undefined : null}
       content={
         <ConfigurableForm {...formProps}>
           <Show when={footerButtons === 'custom' && Boolean(buttons?.length)}>
