@@ -36,14 +36,14 @@ if ("$PipeSourceBranch" -like "*/pull/*"){
     }              
 }  
 elseif ("$PipeSourceBranch" -like "*/releases/*"){
-write-host "Source Branch should be releases here: $PipeSourceBranch"            
-write-host "##vso[task.setvariable variable=currentBranch]$PipeSourceBranch"
+    write-host "Source Branch should be releases here: $PipeSourceBranch"            
+    write-host "##vso[task.setvariable variable=currentBranch]$PipeSourceBranch"
 
-$path = "$PipeSourceBranch"
-$version = Split-Path $path -Leaf
-Write-Host $version
+    $path = "$PipeSourceBranch"
+    $version = Split-Path $path -Leaf
+    Write-Host $version
 
-write-host "##vso[task.setvariable variable=versionNo]$version"
+    write-host "##vso[task.setvariable variable=versionNo]$version"
 }
 elseif ("$PipeSourceBranch" -like "*/tags/release-*"){
     write-host "Source Branch should be tags here: $PipeSourceBranch"
@@ -62,5 +62,5 @@ elseif ("$PipeSourceBranch" -like "*/tags/release-*"){
 elseif ("$PipeSourceBranch" -like "*/main"){
    write-host "Source Branch should be main here: $PipeSourceBranch"
    write-host "##vso[task.setvariable variable=currentBranch]$PipeSourceBranch"
-   write-host "##vso[task.setvariable variable=versionNo]$PipeSourceBranch"
+   write-host "##vso[task.setvariable variable=versionNo]$PipeBuildNumber"
 }
