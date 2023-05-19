@@ -4,15 +4,15 @@ import { DataNode, EventDataNode } from 'antd/lib/tree';
 import React, { Key, ReactNode, useEffect, useState } from 'react';
 import { FC } from 'react';
 import { useLocalStorage } from 'react-use';
-import { useForm, useSubscribe } from '../..';
+import { useConfigurableAction, useForm } from '../..';
 import {
   PermissionDto,
   usePermissionGetAllTree,
   usePermissionUpdateParent,
   usePermissionDelete,
 } from '../../apis/permission';
-import { DynamicFormPubSubConstants } from '../../pages/dynamic/pubSub';
 import SearchBox from '../formDesigner/toolboxSearchBox';
+import { IUpdateItemArguments, updateItemArgumentsForm } from './update-item-arguments';
 
 export interface IDataNode {
   title: JSX.Element;
@@ -42,6 +42,7 @@ export type PermissionsTreeMode = 'Edit' | 'Select' | 'View';
 
 interface IPermissionsTreeProps {
   formComponentId: string;
+  formComponentName: string;
   value?: string[];
   updateKey?: string;
   onChange?: (values?: string[]) => void;
@@ -70,9 +71,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
   const [selected, setSelected] = useState<string[]>([]);
   const [dragInfo, setDragInfo] = useState<any>();
 
-  const [doUpdateTree, setDoUpdateTree] = useState<Boolean>(false);
   const [doCreate, setDoCreate] = useState<Boolean>(false);
-  const [doCreateRoot, setDoCreateRoot] = useState<Boolean>(false);
   const [doDelete, setDoDelete] = useState<Boolean>(false);
   const [doSelect, setDoSelect] = useState<string>(null);
 
@@ -83,7 +82,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
   const deleteRequest = usePermissionDelete({ queryParams: {} });
   const { loading: isDeleting, error: deleteDataError } = deleteRequest;
 
-  const { getAction, registerActions, formData, setFormMode } = useForm(false);
+  const { getAction, registerActions, setFormMode } = useForm(false);
 
   useEffect(() => {
     if (rest.mode === 'Select' && allItems !== null) return; // skip refetch for selectmode if fetched
@@ -133,7 +132,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
         if (fetchedData) {
           setAllItems(fetchedData);
           if (rest.mode !== 'Select')
-            registerActions(null, { createRootPermission, createPermission, deletePermission });
+            registerActions(null, { createPermission, deletePermission });
         }
       }
 
@@ -189,8 +188,8 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
     const ids = keys.map(item => {
       return item.toString();
     });
-    const item = findItem(allItems, ids[0]);
     if (rest.mode === 'Edit' && Boolean(getAction)) {
+      const item = findItem(allItems, ids[0]);
       if (!item.isDbPermission) {
         setFormMode('readonly');
       }
@@ -254,48 +253,57 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
     }
   };
 
-  useEffect(() => {
-    if (doUpdateTree && Boolean(formData)) {
-      const item = findItem(allItems, selected[0]);
-      if (rest.mode === 'Edit' && item !== null) {
-        item.id = formData.name;
-        item.name = formData.name;
-        item.displayName = formData.displayName;
-        item.description = formData.description;
-        setAllItems([...allItems]);
-        setDoSelect(item.id);
-        setDoUpdateTree(false);
+  useConfigurableAction(
+    {
+      name: 'Update item',
+      description: 'Update Permission Tree item',
+      owner: rest.formComponentName,
+      ownerUid: rest.formComponentId,
+      hasArguments: true,
+      argumentsFormMarkup: updateItemArgumentsForm,
+      executer: (arg: IUpdateItemArguments) => {
+        const item = findItem(allItems, selected[0]);
+        if (rest.mode === 'Edit' && item !== null) {
+          item.id = arg.name;
+          item.name = arg.name;
+          item.displayName = arg.displayName;
+          item.description = arg.description;
+          setAllItems([...allItems]);
+          setSelected([item.id])
+          setSearchText('');
+        }
+  
+        return Promise.resolve();
+      },
+    }
+  );
+
+  useConfigurableAction(
+    {
+      name: 'Create root',
+      description: 'Create root Permission Tree item',
+      owner: rest.formComponentName,
+      ownerUid: rest.formComponentId,
+      hasArguments: false,
+      executer: () => {
+        let s = findItem(allItems, emptyId);
+        if (s === null) {
+          setAllItems(prev => {
+            addPermission(null, prev);
+            return [...prev];
+          });
+        } else {
+          message.warning('A new permission is already added! Please edit it first.');
+          expandParent(s);
+        }
+        setDoSelect(emptyId);
         setSearchText('');
-      }
+        setFormMode('edit');
+  
+        return Promise.resolve();
+      },
     }
-  }, [doUpdateTree]);
-
-  useSubscribe(DynamicFormPubSubConstants.DataSaved, () => {
-    if (rest.mode === 'Edit') setDoUpdateTree(true);
-  });
-
-  useEffect(() => {
-    if (doCreateRoot) {
-      let s = findItem(allItems, emptyId);
-      if (s === null) {
-        setAllItems(prev => {
-          addPermission(null, prev);
-          return [...prev];
-        });
-      } else {
-        message.warning('A new permission is already added! Please edit it first.');
-        expandParent(s);
-      }
-      setDoSelect(emptyId);
-      setDoCreateRoot(false);
-      setSearchText('');
-      setFormMode('edit');
-    }
-  }, [doCreateRoot]);
-
-  const createRootPermission = () => {
-    setDoCreateRoot(true);
-  };
+  );
 
   useEffect(() => {
     if (doCreate) {
