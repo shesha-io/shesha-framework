@@ -43,20 +43,40 @@ interface IUseAppConfiguratorSettingsResponse extends IAppConfiguratorModesState
   setMode: (mode: ConfigurationItemsViewMode) => void;
   setIsInformerVisible: (isInformerVisible: boolean) => void;
 }
+
+const ITEM_MODE_HEADER = 'sha-config-item-mode';
+
 const useAppConfiguratorSettings = (): IUseAppConfiguratorSettingsResponse => {
   const [itemMode, setItemMode] = useLocalStorage<ConfigurationItemsViewMode>('CONFIGURATION_ITEM_MODE', AppConfiguratorModeDefaults.mode);
   const [isFormInfoVisible, setIsFormInfoVisible] = useLocalStorage<boolean>('FORM_INFO_VISIBLE', AppConfiguratorModeDefaults.isInformerVisible);
   const auth = useAuth();
+  const { httpHeaders, setRequestHeaders } = useSheshaApplication();
+
+  const setHeaderValue = (mode: ConfigurationItemsViewMode) => {
+    const currentHeaderValue = httpHeaders[ITEM_MODE_HEADER];
+    if (currentHeaderValue !== mode)
+      setRequestHeaders({ [ITEM_MODE_HEADER]: mode });
+  };
 
   const hasRights = useMemo(() => {
-    return auth && auth.anyOfPermissionsGranted([PERM_APP_CONFIGURATOR]);
+    const result = auth && auth.anyOfPermissionsGranted([PERM_APP_CONFIGURATOR]);
+
+    return result;
   }, [auth, auth?.isLoggedIn]);
+
+  useEffect(() => {
+    // sync headers
+    setHeaderValue(hasRights ? itemMode : 'live');
+  }, [itemMode, hasRights]);
 
   const result: IUseAppConfiguratorSettingsResponse = hasRights
     ? {
       mode: itemMode,
       isInformerVisible: isFormInfoVisible,
-      setMode: setItemMode,
+      setMode: mode => {
+        setRequestHeaders({ [ITEM_MODE_HEADER]: mode });
+        setItemMode(mode);
+      },
       setIsInformerVisible: setIsFormInfoVisible,
     }
     : {
@@ -79,7 +99,6 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
   const {
     backendUrl,
     httpHeaders,
-    setRequestHeaders,
   } = useSheshaApplication();
 
   //#region Configuration Framework
@@ -198,7 +217,6 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
   };
 
   const switchConfigurationItemMode = (mode: ConfigurationItemsViewMode) => {
-    setRequestHeaders({ 'sha-config-item-mode': mode });
     configuratorSettings.setMode(mode);
     dispatch(switchConfigurationItemModeAction(mode));
   };
@@ -219,11 +237,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
           toggleEditModeConfirmation,
           toggleCloseEditModeConfirmation,
           switchConfigurationItemMode,
-          // fetchSettings,
-          // getSettings,
-          // invalidateSettings,
           toggleShowInfoBlock,
-          /* NEW_ACTION_GOES_HERE */
         }}
       >
         {children}
