@@ -23,6 +23,7 @@ import { FormProvider, useForm } from 'providers/form';
 import { IErrorInfo } from 'interfaces/errorInfo';
 import { RowDataInitializer } from 'components/reactTable/interfaces';
 import { useDebouncedCallback } from 'use-debounce';
+import { IFlatComponentsStructure } from 'providers/form/models';
 
 export type DataProcessor = (data: any) => Promise<any>;
 
@@ -38,6 +39,7 @@ export interface ICrudProviderProps {
     deleter?: () => Promise<any>;
     onSave?: DataProcessor;
     autoSave?: boolean;
+    components?: IFlatComponentsStructure;
 }
 
 const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
@@ -267,22 +269,11 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
                 <FormProvider
                     form={form}
                     name={''}
-                    flatComponents={undefined}
+                    flatComponents={props.components}
                     formSettings={undefined}
-                    mode={'designer'}
-                    // NOTE: components are visible just because we use designer mode. 
-                    // implement custom FormProvider or a new mode that will work for tables
-                    //mode={ state.mode === 'read' ? 'readonly' : 'edit' }
+                    mode={ state.mode === 'read' ? 'readonly' : 'edit' }
                     isActionsOwner={false}
                 >
-                    {/* <Form
-                        component={false}
-                        form={form}
-                        initialValues={state.initialValues}
-                        onValuesChange={onValuesChange}
-                    >
-                        {children}
-                    </Form> */}
                     <FormWrapper
                         form={form}
                         initialValues={state.initialValues}

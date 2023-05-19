@@ -5,6 +5,7 @@ import { Row } from 'react-table';
 import { RowCell } from './rowCell';
 import { CrudProvider } from 'providers/crudContext';
 import { InlineSaveMode } from './interfaces';
+import { IFlatComponentsStructure } from 'providers/form/models';
 
 export type RowEditMode = 'read' | 'edit';
 
@@ -23,6 +24,7 @@ export interface ISortableRowProps {
   editMode?: RowEditMode;
   allowChangeEditMode: boolean;
   inlineSaveMode?: InlineSaveMode;
+  inlineEditorComponents?: IFlatComponentsStructure;
 }
 
 /*
@@ -57,6 +59,7 @@ export const TableRow: FC<ISortableRowProps> = props => {
     editMode,
     allowChangeEditMode,
     inlineSaveMode,
+    inlineEditorComponents,
   } = props;
 
   const handleRowClick = () => onClick(row);
@@ -76,6 +79,7 @@ export const TableRow: FC<ISortableRowProps> = props => {
       mode={editMode === 'edit' ? 'update' : 'read'}
       allowChangeMode={allowChangeEditMode}
       autoSave={inlineSaveMode === 'auto'}
+      components={inlineEditorComponents}
     >
       <div
         onClick={handleRowClick}

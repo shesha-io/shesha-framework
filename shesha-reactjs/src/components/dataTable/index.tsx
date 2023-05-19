@@ -9,12 +9,16 @@ import { ModalProps } from 'antd/lib/modal';
 import ReactTable from '../reactTable';
 import { removeUndefinedProperties } from 'utils/array';
 import { ValidationErrors } from '..';
-import { useDataTableStore, useForm, useGlobalState, useMetadata } from 'providers';
-import { camelcaseDotNotation } from 'utils/string';
+import { IFlatComponentsStructure, ROOT_COMPONENT_KEY, useDataTableStore, useForm, useGlobalState, useMetadata } from 'providers';
+import { camelcaseDotNotation, toCamelCase } from 'utils/string';
 import { IReactTableProps, RowDataInitializer } from '../reactTable/interfaces';
 import { usePrevious } from 'react-use';
 import { getCellRenderer } from './cell';
 import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions } from 'providers/dataTable/repository/backendRepository';
+import { ITableDataColumn } from 'providers/dataTable/interfaces';
+import { IColumnEditorProps, standardCellComponentTypes } from 'providers/datatableColumnsConfigurator/models';
+import { useFormDesignerComponents } from 'providers/form/hooks';
+import { getCustomEnabledFunc, getCustomVisibilityFunc } from 'providers/form/utils';
 
 export interface IIndexTableOptions {
   omitClick?: boolean;
@@ -150,7 +154,9 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   }, [tableData]);
 
   const metadata = useMetadata(false)?.metadata;
-
+  
+  const toolboxComponents = useFormDesignerComponents();
+  
   const crudOptions = useMemo(() => {
 
     const onNewRowInitializeExecuter = props.onNewRowInitialize
@@ -274,6 +280,57 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     });
   };
 
+  const inlineEditorComponents = useMemo<IFlatComponentsStructure>(() => {
+    const result: IFlatComponentsStructure = {
+      allComponents: {},
+      componentRelations: {}
+    };
+    // don't calculate components settings when it's not required
+    if (!crudOptions.canEdit)
+      return result;
+
+    const componentIds: string[] = [];
+    columns?.forEach(col => {
+      if (col.columnType === 'data') {
+        const dataCol = col as ITableDataColumn;
+        const customComponent = dataCol.editComponent;
+        const componentType = customComponent?.type ?? standardCellComponentTypes.notEditable;
+        if (componentType && componentType !== standardCellComponentTypes.notEditable) {
+          // component found
+          const component = toolboxComponents[customComponent.type];
+          if (!component){
+            console.error(`Datatable: component '${customComponent.type}' not found - skipped`);
+            return;
+          }
+
+          const propertyMeta = metadata?.properties?.find(({ path }) => toCamelCase(path) === dataCol.id);
+
+          let model: IColumnEditorProps = {
+            ...customComponent.settings,
+            type: customComponent.type,
+            name: dataCol.propertyName,
+            label: null,
+            hideLabel: true,
+          };
+
+          if (component.linkToModelMetadata && propertyMeta) {
+            model = component.linkToModelMetadata(model, propertyMeta);
+          }
+
+          model.visibilityFunc = getCustomVisibilityFunc(model);
+          model.enabledFunc = getCustomEnabledFunc(model);
+
+          result.allComponents[model.id] = model;
+          componentIds.push(model.id);
+        };
+      };
+    });
+
+    result.componentRelations[ROOT_COMPONENT_KEY] = componentIds;   
+
+    return result;
+  }, [columns, metadata, crudOptions.canEdit]);
+
   const tableProps: IReactTableProps = {
     data: tableData,
     // Disable sorting if we're in create mode so that the new row is always the first
@@ -313,6 +370,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     newRowInitData: crudOptions.onNewRowInitialize,
     inlineEditMode: props.inlineEditMode,
     inlineSaveMode: props.inlineSaveMode,
+    inlineEditorComponents,
   };
 
   return (
