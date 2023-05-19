@@ -41,8 +41,6 @@ export interface ILoginForm extends AuthenticateModel {
   rememberMe?: boolean;
 }
 
-export type IProfileLoadedHandler = () => Promise<void>;
-
 export interface IAuthStateContext
   extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
   isCheckingAuth?: boolean;
@@ -87,9 +85,6 @@ export interface IAuthActionsContext
   checkAuth?: () => void;
 
   fireHttpHeadersChanged?: (state?: IAuthStateContext) => void;
-
-  subscribeOnProfileLoading: (name: string, handler: IProfileLoadedHandler) => void;
-  unSubscribeOnProfileLoading: (name: string) => void;
 
   /* NEW_ACTION_ACTION_DECLARATION_GOES_HERE */
 }
