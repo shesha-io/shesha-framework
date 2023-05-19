@@ -111,3 +111,11 @@ export const Fetchers = addStory(Template, {
   },
   mode: 'edit'
 });
+
+export const BugFix = addStory(Template, {
+  formId: {
+    name: 'auto-complete-component-table',
+    module: 'Shesha'
+  },
+  mode: 'edit'
+});
