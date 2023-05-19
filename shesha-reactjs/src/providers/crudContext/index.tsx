@@ -18,8 +18,8 @@ import {
     deleteFailedAction
 } from './actions';
 import { CrudMode } from './models';
-import { Form } from 'antd';
-import { FormProvider } from 'providers/form';
+import { Form, FormInstance, FormProps } from 'antd';
+import { FormProvider, useForm } from 'providers/form';
 import { IErrorInfo } from 'interfaces/errorInfo';
 import { RowDataInitializer } from 'components/reactTable/interfaces';
 import { useDebouncedCallback } from 'use-debounce';
@@ -234,7 +234,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
 
         autoSaveEnqueued.current = true;
     };
-    
+
     const handleFocusIn = () => {
         if (autoSaveEnqueued.current === true) {
             autoSaveEnqueued.current = false;
@@ -263,27 +263,34 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
 
     return (
         <CrudContext.Provider value={contextValue}>
-            { true && 
-            <FormProvider
-                form={form}
-                name={''}
-                flatComponents={undefined}
-                formSettings={undefined}
-                mode={'designer'}
-                // NOTE: components are visible just because we use designer mode. 
-                // implement custom FormProvider or a new mode that will work for tables
-                //mode={ state.mode === 'read' ? 'readonly' : 'edit' }
-                isActionsOwner={false}
-            >
-                <Form
-                    component={false}
+            {true &&
+                <FormProvider
                     form={form}
-                    initialValues={state.initialValues}
-                    onValuesChange={onValuesChange}
+                    name={''}
+                    flatComponents={undefined}
+                    formSettings={undefined}
+                    mode={'designer'}
+                    // NOTE: components are visible just because we use designer mode. 
+                    // implement custom FormProvider or a new mode that will work for tables
+                    //mode={ state.mode === 'read' ? 'readonly' : 'edit' }
+                    isActionsOwner={false}
                 >
-                    {children}
-                </Form>
-            </FormProvider>
+                    {/* <Form
+                        component={false}
+                        form={form}
+                        initialValues={state.initialValues}
+                        onValuesChange={onValuesChange}
+                    >
+                        {children}
+                    </Form> */}
+                    <FormWrapper
+                        form={form}
+                        initialValues={state.initialValues}
+                        onValuesChange={onValuesChange}
+                    >
+                        {children}
+                    </FormWrapper>
+                </FormProvider>
             }
         </CrudContext.Provider>
     );
@@ -298,5 +305,34 @@ function useCrud(require: boolean = true) {
 
     return context;
 }
+
+interface FormWrapperProps {
+    initialValues: object;
+    onValuesChange: FormProps['onValuesChange'];
+    form: FormInstance;
+}
+
+const FormWrapper: FC<PropsWithChildren<FormWrapperProps>> = ({ initialValues, onValuesChange, form, children }) => {
+    const { setFormData } = useForm();
+
+    const onValuesChangeInternal = (changedValues: any, values: any) => {
+        // recalculate components visibility
+        setFormData({ values, mergeValues: true });
+
+        if (onValuesChange)
+            onValuesChange(changedValues, values);
+    };
+
+    return (
+        <Form
+            component={false}
+            form={form}
+            initialValues={initialValues}
+            onValuesChange={onValuesChangeInternal}
+        >
+            {children}
+        </Form>
+    );
+};
 
 export { CrudProvider, useCrud };

@@ -35,7 +35,6 @@ export const ForgotPassword: FC<IProps> = () => {
     if (mobileNo) {
       sendOtpHttp({ mobileNo })
         .then((response) => {
-          console.log('LOG: resolved', response);
           setOperationId(response?.result?.operationId);
           toggleVerifyOtpModalVisibility();
         })
