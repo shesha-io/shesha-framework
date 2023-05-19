@@ -8,6 +8,7 @@ using Abp.Authorization;
 using Abp.Collections.Extensions;
 using Abp.Configuration.Startup;
 using Abp.Dependency;
+using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Localization;
@@ -99,8 +100,11 @@ namespace Shesha.Authorization
         {
             var dbPermission = _permissionDefinitionRepository.GetAll().FirstOrDefault(x => x.Name == oldName);
 
-            // ToDo: Add NotFound exception or something else
-            if (dbPermission == null) return null;
+            if (dbPermission == null)
+            {
+                DeleteMissedDbPermissionAsync(oldName);
+                throw new EntityNotFoundException("Permission 'name' not found");
+            }
 
             if (dbPermission.Name != permission.Name
                 || dbPermission.DisplayName != permission.DisplayName
@@ -135,8 +139,11 @@ namespace Shesha.Authorization
         {
             var dbPermission = _permissionDefinitionRepository.GetAll().FirstOrDefault(x => x.Name == name);
 
-            // ToDo: Add NotFound exception or something else
-            if (dbPermission == null) return;
+            if (dbPermission == null)
+            {
+                DeleteMissedDbPermissionAsync(name);
+                throw new EntityNotFoundException("Permission 'name' not found");
+            }
 
             InternalDeletePermission(dbPermission);
 
@@ -155,20 +162,60 @@ namespace Shesha.Authorization
                 parent?.RemoveChildPermission(permission.Name);
             }
 
-            RemovePermission(permission.Name);
-
+            var p = GetPermissionOrNull(permission.Name);
+            if (p != null) 
+                RemovePermission(permission.Name);
         }
 
         public async Task DeletePermissionAsync(string name)
         {
             var dbPermission = _permissionDefinitionRepository.GetAll().FirstOrDefault(x => x.Name == name);
 
-            // ToDo: Add NotFound exception or something else
-            if (dbPermission == null) return;
+            if (dbPermission == null)
+            {
+                DeleteMissedDbPermissionAsync(name);
+                throw new EntityNotFoundException("Permission 'name' not found");
+            }
 
             InternalDeletePermission(dbPermission);
 
-            await _permissionDefinitionRepository.DeleteAsync(dbPermission);
+            if (dbPermission != null)
+                await _permissionDefinitionRepository.DeleteAsync(dbPermission);
+        }
+
+        private void DeleteMissedDbPermissionAsync(string name)
+        {
+            var permission = GetPermissionOrNull(name);
+            if (permission != null
+                && permission.Properties != null 
+                && permission.Properties.ContainsKey("IsDbPermission") 
+                && (bool)permission.Properties["IsDbPermission"])
+            {
+                RemovePermission(name);
+            }
+        }
+
+        public override void RemovePermission(string name)
+        {
+            Abp.Authorization.Permission parent = null;
+            var permissions = GetAllPermissions();
+            foreach (var permission in permissions)
+            {
+                if (permission.Children.Any(x => x.Name == name))
+                {
+                    parent = permission;
+                    break;
+                }
+            }
+
+            if (parent != null)
+            {
+                parent?.RemoveChildPermission(name);
+            }
+
+            var p = GetPermissionOrNull(name);
+            if (p != null)
+                base.RemovePermission(name);
         }
     }
 }
