@@ -148,7 +148,7 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
           onCancelEditClick(); 
         },
         icon: <CloseOutlined />,
-        isVisible: /*!autoSave &&*/ (isNewObject || mode === 'update' && !allowChangeMode)
+        isVisible: /*!autoSave &&*/ (isNewObject || allowEdit && mode === 'update' && !allowChangeMode)
       },
       {
         title: "Delete",

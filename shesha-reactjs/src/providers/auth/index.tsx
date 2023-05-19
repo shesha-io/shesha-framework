@@ -1,4 +1,4 @@
-import React, { FC, useContext, useEffect, PropsWithChildren, useMemo, MutableRefObject, useRef } from 'react';
+import React, { FC, useContext, useEffect, PropsWithChildren, useMemo, MutableRefObject } from 'react';
 import { authReducer } from './reducer';
 import useThunkReducer from 'hooks/thunkReducer';
 import {
@@ -7,7 +7,6 @@ import {
   AUTH_CONTEXT_INITIAL_STATE,
   ILoginForm,
   IAuthStateContext,
-  IProfileLoadedHandler,
 } from './contexts';
 import {
   loginUserAction,
@@ -25,8 +24,8 @@ import {
   /* NEW_ACTION_IMPORT_GOES_HERE */
 } from './actions';
 import { URL_LOGIN_PAGE, URL_HOME_PAGE, URL_CHANGE_PASSWORD, HOME_CACHE_URL } from 'shesha-constants';
-import { IAccessToken, IDictionary } from '../../interfaces';
-import { OverlayLoader } from '../../components/overlayLoader';
+import { IAccessToken } from 'interfaces';
+import { OverlayLoader } from 'components/overlayLoader';
 import {
   removeAccessToken as removeTokenFromStorage,
   saveUserToken as saveUserTokenToStorage,
@@ -86,11 +85,6 @@ interface IAuthProviderProps {
    */
   homePageUrl?: string;
 
-  /**
-   * @deprecated - use `withAuth` instead. Any page that doesn't require Auth will be rendered without being wrapped inside `withAuth`
-   */
-  whitelistUrls?: string[];
-
   authRef?: MutableRefObject<IAuthProviderRefProps>;
 }
 
@@ -103,7 +97,6 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
   unauthorizedRedirectUrl = URL_LOGIN_PAGE,
   changePasswordUrl = URL_CHANGE_PASSWORD,
   homePageUrl = URL_HOME_PAGE,
-  whitelistUrls,
   authRef,
 }) => {
   const { router } = useShaRouting();
@@ -111,7 +104,6 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
 
   const storedToken = getAccessTokenFromStorage(tokenName);
 
-  //const { [AUTHORIZATION_HEADER_NAME]: __auth = null, ...headersWithoutAuth } = { ...(httpHeaders ?? {}) };
   const headersWithoutAuth = { ...(httpHeaders ?? {}) };
   delete headersWithoutAuth[AUTHORIZATION_HEADER_NAME];
 
@@ -127,28 +119,6 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
 
   //#region Fetch user login info
 
-  const profileLoadedSubscriptions = useRef<IDictionary<IProfileLoadedHandler>>({});
-  const subscribeOnProfileLoading = (name: string, handler: IProfileLoadedHandler) => {
-    profileLoadedSubscriptions.current[name] = handler;
-  };
-  const unSubscribeOnProfileLoading = (name: string) => {
-    delete profileLoadedSubscriptions.current[name];
-  };
-
-  const processSubscriptions = (): Promise<void> => {
-    const handlers = profileLoadedSubscriptions.current;
-    const promises: Promise<void>[] = [];
-    for (const handlerName in handlers) {
-      if (!handlers.hasOwnProperty(handlerName))
-        continue;
-
-      const handler = handlers[handlerName];
-      promises.push(handler());
-    }
-
-    return Promise.all(promises).then();
-  };
-
   const fetchUserInfo = (headers: IHttpHeaders) => {
     if (state.isFetchingUserInfo || Boolean(state.loginInfo)) return;
 
@@ -160,24 +130,22 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
         if (response.result.user) {
           dispatch(fetchUserDataActionSuccessAction(response.result.user));
 
-          processSubscriptions().then(() => {
-            dispatch(setIsLoggedInAction(true));
+          dispatch(setIsLoggedInAction(true));
 
-            if (state.requireChangePassword && Boolean(changePasswordUrl)) {
-              redirect(changePasswordUrl);
-            } else {
-              const currentUrl = getCurrentUrl();
+          if (state.requireChangePassword && Boolean(changePasswordUrl)) {
+            redirect(changePasswordUrl);
+          } else {
+            const currentUrl = getCurrentUrl();
 
-              // if we are on the login page - redirect to the returnUrl or home page
-              if (isSameUrls(currentUrl, unauthorizedRedirectUrl)) {
-                const returnUrl = getQueryParam('returnUrl')?.toString();
+            // if we are on the login page - redirect to the returnUrl or home page
+            if (isSameUrls(currentUrl, unauthorizedRedirectUrl)) {
+              const returnUrl = getQueryParam('returnUrl')?.toString();
 
-                cacheHomeUrl(response.result?.user?.homeUrl || homePageUrl);
+              cacheHomeUrl(response.result?.user?.homeUrl || homePageUrl);
 
-                redirect(returnUrl ?? response.result?.user?.homeUrl ?? homePageUrl ?? DEFAULT_HOME_PAGE);
-              }
+              redirect(returnUrl ?? response.result?.user?.homeUrl ?? homePageUrl ?? DEFAULT_HOME_PAGE);
             }
-          });
+          }
         } else {
           // user may be null in some cases
           clearAccessToken();
@@ -283,7 +251,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
     const currentUrl = getCurrentUrl();
 
     if (!httpHeaders) {
-      if (currentUrl !== unauthorizedRedirectUrl && !whitelistUrls?.includes(currentUrl)) {
+      if (currentUrl !== unauthorizedRedirectUrl) {
         redirectToUnauthorized();
       }
     } else {
@@ -425,8 +393,6 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
           verifyOtpSuccess,
           resetPasswordSuccess,
           fireHttpHeadersChanged,
-          subscribeOnProfileLoading,
-          unSubscribeOnProfileLoading,
           /* NEW_ACTION_GOES_HERE */
         }}
       >

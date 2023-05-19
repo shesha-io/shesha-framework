@@ -42,7 +42,6 @@ export interface IShaApplicationProviderProps {
   router?: Router; // todo: replace with IRouter
   toolboxComponentGroups?: IToolboxComponentGroup[];
   unauthorizedRedirectUrl?: string;
-  whitelistUrls?: string[];
   themeProps?: ThemeProviderProps;
   routes?: ISheshaRutes;
   noAuth?: boolean;
@@ -65,7 +64,6 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
     router,
     toolboxComponentGroups = [],
     unauthorizedRedirectUrl,
-    whitelistUrls,
     themeProps,
     routes,
     getFormUrlFunc,
@@ -129,7 +127,6 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                       tokenName={accessTokenName || DEFAULT_ACCESS_TOKEN_NAME}
                       onSetRequestHeaders={setRequestHeaders}
                       unauthorizedRedirectUrl={unauthorizedRedirectUrl}
-                      whitelistUrls={whitelistUrls}
                       authRef={authRef}
                       homePageUrl={homePageUrl}
                     >

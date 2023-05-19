@@ -1,4 +1,4 @@
-import React, { FC, useReducer, useContext, PropsWithChildren, useEffect } from 'react';
+import React, { FC, useReducer, useContext, PropsWithChildren, useEffect, useMemo } from 'react';
 import appConfiguratorReducer from './reducer';
 import { AppConfiguratorActionsContext, AppConfiguratorStateContext, APP_CONTEXT_INITIAL_STATE } from './contexts';
 import {
@@ -32,43 +32,74 @@ import { useAuth } from '../auth';
 
 export interface IAppConfiguratorProviderProps { }
 
+interface IAppConfiguratorModesState {
+  mode: ConfigurationItemsViewMode;
+  isInformerVisible: boolean;
+}
+
+const AppConfiguratorModeDefaults: IAppConfiguratorModesState = { mode: 'live', isInformerVisible: false };
+
+interface IUseAppConfiguratorSettingsResponse extends IAppConfiguratorModesState {
+  setMode: (mode: ConfigurationItemsViewMode) => void;
+  setIsInformerVisible: (isInformerVisible: boolean) => void;
+}
+
+const ITEM_MODE_HEADER = 'sha-config-item-mode';
+
+const useAppConfiguratorSettings = (): IUseAppConfiguratorSettingsResponse => {
+  const [itemMode, setItemMode] = useLocalStorage<ConfigurationItemsViewMode>('CONFIGURATION_ITEM_MODE', AppConfiguratorModeDefaults.mode);
+  const [isFormInfoVisible, setIsFormInfoVisible] = useLocalStorage<boolean>('FORM_INFO_VISIBLE', AppConfiguratorModeDefaults.isInformerVisible);
+  const auth = useAuth();
+  const { httpHeaders, setRequestHeaders } = useSheshaApplication();
+
+  const setHeaderValue = (mode: ConfigurationItemsViewMode) => {
+    const currentHeaderValue = httpHeaders[ITEM_MODE_HEADER];
+    if (currentHeaderValue !== mode)
+      setRequestHeaders({ [ITEM_MODE_HEADER]: mode });
+  };
+
+  const hasRights = useMemo(() => {
+    const result = auth && auth.anyOfPermissionsGranted([PERM_APP_CONFIGURATOR]);
+
+    return result;
+  }, [auth, auth?.isLoggedIn]);
+
+  useEffect(() => {
+    // sync headers
+    setHeaderValue(hasRights ? itemMode : 'live');
+  }, [itemMode, hasRights]);
+
+  const result: IUseAppConfiguratorSettingsResponse = hasRights
+    ? {
+      mode: itemMode,
+      isInformerVisible: isFormInfoVisible,
+      setMode: mode => {
+        setRequestHeaders({ [ITEM_MODE_HEADER]: mode });
+        setItemMode(mode);
+      },
+      setIsInformerVisible: setIsFormInfoVisible,
+    }
+    : {
+      ...AppConfiguratorModeDefaults,
+      setMode: () => { /*nop*/ },
+      setIsInformerVisible: () => { /*nop*/ },
+    };
+  return result;
+};
+
 const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProps>> = ({ children }) => {
-  const [storageFormInfoVisible, setStorageFormInfoVisible] = useLocalStorage<boolean>('FORM_INFO_VISIBLE', false);
+  const configuratorSettings = useAppConfiguratorSettings();
+
   const [state, dispatch] = useReducer(appConfiguratorReducer, {
     ...APP_CONTEXT_INITIAL_STATE,
-    formInfoBlockVisible: storageFormInfoVisible,
+    formInfoBlockVisible: configuratorSettings.isInformerVisible,
+    configurationItemMode: configuratorSettings.mode,
   });
 
   const {
     backendUrl,
     httpHeaders,
-    setRequestHeaders,
   } = useSheshaApplication();
-
-  // read configurationItemsMode on start and check availability
-  const [storageConfigItemMode, setStorageConfigItemMode] = useLocalStorage<ConfigurationItemsViewMode>(
-    'CONFIGURATION_ITEM_MODE',
-    'live'
-  );
-  
-  const auth = useAuth(false);
-  if (auth){
-    const subscriptionName = 'configurator';
-
-    auth.subscribeOnProfileLoading(subscriptionName, () => {
-      const hasRights = auth.anyOfPermissionsGranted([PERM_APP_CONFIGURATOR]);
-
-      const mode = hasRights ? storageConfigItemMode : APP_CONTEXT_INITIAL_STATE.configurationItemMode;
-
-      if (mode !== state.configurationItemMode) 
-        switchConfigurationItemMode(mode);
-
-      if (state.formInfoBlockVisible && !hasRights) 
-        toggleShowInfoBlock(false);
-
-      return Promise.resolve();
-    });
-  }
 
   //#region Configuration Framework
 
@@ -177,7 +208,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
   const toggleShowInfoBlock = (visible: boolean) => {
-    setStorageFormInfoVisible(visible);
+    configuratorSettings.setIsInformerVisible(visible);
     dispatch(toggleShowInfoBlockAction(visible));
   };
 
@@ -186,8 +217,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
   };
 
   const switchConfigurationItemMode = (mode: ConfigurationItemsViewMode) => {
-    setRequestHeaders({ 'sha-config-item-mode': mode });
-    setStorageConfigItemMode(mode);
+    configuratorSettings.setMode(mode);
     dispatch(switchConfigurationItemModeAction(mode));
   };
 
@@ -207,11 +237,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
           toggleEditModeConfirmation,
           toggleCloseEditModeConfirmation,
           switchConfigurationItemMode,
-          // fetchSettings,
-          // getSettings,
-          // invalidateSettings,
           toggleShowInfoBlock,
-          /* NEW_ACTION_GOES_HERE */
         }}
       >
         {children}
