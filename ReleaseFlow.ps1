@@ -59,8 +59,8 @@ elseif ("$PipeSourceBranch" -like "*/tags/release-*"){
     write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
     write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
 }
-# elseif ("$PipeSourceBranch" -like "*/main"){
-#    write-host "Source Branch should be main here: $PipeSourceBranch"
-#    write-host "##vso[task.setvariable variable=currentBranch]$PipeSourceBranch"
-#    write-host "##vso[task.setvariable variable=versionNo]$PipeSourceBranch"
-# }
+elseif ("$PipeSourceBranch" -like "*/main"){
+   write-host "Source Branch should be main here: $PipeSourceBranch"
+   write-host "##vso[task.setvariable variable=currentBranch]$PipeSourceBranch"
+   write-host "##vso[task.setvariable variable=versionNo]$PipeSourceBranch"
+}
