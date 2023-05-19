@@ -33,13 +33,13 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps> = {
         {isReadOnly ? (
           <ReadOnlyDisplayFormItem type="checkbox" disabled={disabled} />
         ) : (
-          <Checkbox disabled={disabled} style={getStyle(model?.style, data)} />
+          <Checkbox className="sha-checkbox" disabled={disabled} style={getStyle(model?.style, data)} />
         )}
       </ConfigurableFormItem>
     );
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
 };
 
 export default CheckboxComponent;

@@ -51,13 +51,13 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
   });
 
   const [imageAnnotationData, setImageAnnotationData] = useState<IImageAnnotationData>({
-    actualData: value || [],
-    viewData: value || [],
+    actualData: value?.data || [],
+    viewData: value?.data || [],
   });
 
   const prevLength = usePrevious(imageAnnotationData?.viewData?.length);
 
-  const [urlBits, setBits] = useState<string>();
+  const [urlBits, setBits] = useState<string>(value?.bit64Url);
 
   const isCustomEnabled = getCustomEnabled(customEnabled, name, formData, globalState, formMode);
 
@@ -113,7 +113,7 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
     /*nop*/
   };
 
-  if (url) {
+  if (url && !urlBits) {
     getImageBits(url)
       .then((binaryString) => {
         setBits(`data:image/jpeg;base64,${btoa(binaryString as string)}`);
@@ -167,7 +167,7 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
         maxReached={maxReached}
         width={pageSize?.width}
         notFoundUrl={!newUrl}
-        url={url}
+        url={newUrl}
       />
       <div className="annotation-conatainer">
         <div

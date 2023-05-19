@@ -1,10 +1,10 @@
-import React, { FC, useReducer, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { GetDataError, useMutate } from 'restful-react';
+import React, { FC, useReducer, useContext, useEffect, useMemo, useRef, useState, PropsWithChildren } from 'react';
+import { GetDataError, useMutate } from 'hooks';
 import { useForm } from '../form';
 import { SubFormActionsContext, SubFormContext, SUB_FORM_CONTEXT_INITIAL_STATE } from './contexts';
 import { useDeepCompareMemoKeepReference, usePubSub } from '../../hooks';
 import { subFormReducer } from './reducer';
-import { getQueryParams } from '../../utils/url';
+import { getQueryParams } from 'utils/url';
 import { DEFAULT_FORM_SETTINGS, FormMarkupWithSettings } from '../form/models';
 import {
   setMarkupWithSettingsAction,
@@ -15,17 +15,17 @@ import {
 import { ISubFormProps } from './interfaces';
 import { ColProps, message, notification } from 'antd';
 import { useGlobalState } from '../globalState';
-import { EntitiesGetQueryParams } from '../../apis/entities';
+import { EntitiesGetQueryParams } from 'apis/entities';
 import { useDebouncedCallback } from 'use-debounce';
 import { useDeepCompareEffect } from 'react-use';
-import { EntityAjaxResponse } from '../../pages/dynamic/interfaces';
+import { EntityAjaxResponse } from 'pages/dynamic/interfaces';
 import { UseFormConfigurationArgs } from '../form/api';
 import { useConfigurableAction } from '../configurableActionsDispatcher';
 import { useConfigurationItemsLoader } from '../configurationItemsLoader';
 import { executeScript, IAnyObject, QueryStringParams, useAppConfigurator, useSheshaApplication } from '../..';
-import * as RestfulShesha from '../../utils/fetchers';
-import { useModelApiHelper } from '../../components/configurableForm/useActionEndpoint';
-import { StandardEntityActions } from '../../interfaces/metadata';
+import * as RestfulShesha from 'utils/fetchers';
+import { useModelApiHelper } from 'components/configurableForm/useActionEndpoint';
+import { StandardEntityActions } from 'interfaces/metadata';
 
 export interface SubFormProviderProps extends Omit<ISubFormProps, 'name' | 'value'> {
   actionsOwnerId?: string;
@@ -47,7 +47,7 @@ interface QueryParamsEvaluatorArguments {
 }
 type QueryParamsEvaluator = (args: QueryParamsEvaluatorArguments) => object;
 
-const SubFormProvider: FC<SubFormProviderProps> = ({
+const SubFormProvider: FC<PropsWithChildren<SubFormProviderProps>> = ({
   formSelectionMode,
   formType,
   children,
@@ -173,15 +173,15 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
     }
   }, [value]);
 
-  const { mutate: postHttp, loading: isPosting, error: postError } = useMutate({
-    path: evaluateUrlFromJsExpression(postUrl),
-    verb: 'POST',
-  });
+  const { mutate: postHttpInternal, loading: isPosting, error: postError } = useMutate();
+  const postHttp = (data) => {
+    return postHttpInternal({ url: evaluateUrlFromJsExpression(postUrl), httpVerb: 'POST' }, data);
+  };
 
-  const { mutate: putHttp, loading: isUpdating, error: updateError } = useMutate({
-    path: evaluateUrlFromJsExpression(putUrl),
-    verb: 'PUT',
-  });
+  const { mutate: putHttpInternal, loading: isUpdating, error: updateError } = useMutate();
+  const putHttp = (data) => {
+    return putHttpInternal({ url: evaluateUrlFromJsExpression(putUrl), httpVerb: 'PUT' }, data);
+  };
 
   /**
    * Memoized query params evaluator. It executes `queryParams` (javascript defined on the component settings) to get query params

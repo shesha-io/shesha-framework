@@ -1,0 +1,75 @@
+{
+  "name": "shesha-reactjs-starter",
+  "version": "0.0.1",
+  "private": false,
+  "postinstall": "next",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "export": "next export",
+    "start": "NODE_ENV=production node --max-old-space-size=8192 server.js",
+    "build:analyze": "ANALYZE=true npm run build",
+    "lint": "eslint **/*.{js,jsx,ts,tsx}",
+    "prettier": "prettier --write **/*.{js,jsx,ts,tsx}",
+    "test": "jest -c test/jest.config.js"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^4.8.0",
+    "@microsoft/applicationinsights-react-js": "^3.1.2",
+    "@microsoft/applicationinsights-web": "^2.6.2",
+    "@microsoft/signalr": "^5.0.6",
+    "@shesha/reactjs": "^4.11.81",
+    "@types/react-dom": "^18.2.4",
+    "antd": "^4.24.0",
+    "axios": "^0.21.1",
+    "camelcase": "^6.2.0",
+    "config": "^3.3.6",
+    "file-saver": "^2.0.5",
+    "history": "^5.3.0",
+    "htmlescape": "^1.1.1",
+    "nanoid": "^3.1.23",
+    "next": "^12.2.2",
+    "next-compose-plugins": "^2.2.1",
+    "next-plugin-antd-less": "^1.4.3",
+    "npm": "^9.5.0",
+    "nprogress": "^0.2.0",
+    "prettier": "^2.2.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-error-boundary": "^3.1.4",
+    "react-responsive": "^9.0.2",
+    "react-sortablejs": "^6.1.4",
+    "react-use": "^17.4.0",
+    "sortablejs": "^1.14.0",
+    "styled-components": "^5.2.1"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^11.2.3",
+    "@types/react": "^18.2.6",
+    "@types/redux-actions": "^2.3.1",
+    "@types/styled-components": "^5.1.9",
+    "@typescript-eslint/eslint-plugin": "^4.9.1",
+    "@typescript-eslint/parser": "^4.9.1",
+    "dotenv": "^8.2.0",
+    "eslint": "^7.15.0",
+    "eslint-config-prettier": "^7.0.0",
+    "husky": "^4.3.7",
+    "isomorphic-unfetch": "^3.1.0",
+    "jest": "^26.6.3",
+    "lint-staged": "^10.5.3",
+    "nock": "^13.0.6",
+    "redux-actions": "^2.6.5",
+    "ts-jest": "^26.4.4",
+    "typescript": "^4.3.2"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "npm run lint -- --quiet --fix"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  }
+}

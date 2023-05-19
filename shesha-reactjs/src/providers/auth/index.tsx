@@ -1,6 +1,6 @@
 import React, { FC, useContext, useEffect, PropsWithChildren, useMemo, MutableRefObject, useRef } from 'react';
 import { authReducer } from './reducer';
-import useThunkReducer from '../../hooks/thunkReducer';
+import useThunkReducer from 'hooks/thunkReducer';
 import {
   AuthStateContext,
   AuthActionsContext,
@@ -27,31 +27,31 @@ import {
 import { URL_LOGIN_PAGE, URL_HOME_PAGE, URL_CHANGE_PASSWORD, HOME_CACHE_URL } from 'shesha-constants';
 import { IAccessToken, IDictionary } from '../../interfaces';
 import { OverlayLoader } from '../../components/overlayLoader';
-import { sessionGetCurrentLoginInformations } from '../../apis/session';
-import { ResetPasswordVerifyOtpResponse } from '../../apis/user';
 import {
   removeAccessToken as removeTokenFromStorage,
   saveUserToken as saveUserTokenToStorage,
   getAccessToken as getAccessTokenFromStorage,
   getHttpHeaders as getHttpHeadersFromToken,
   AUTHORIZATION_HEADER_NAME,
-} from '../../utils/auth';
-import {
-  useTokenAuthAuthenticate,
-  AuthenticateResultModelAjaxResponse,
-  useTokenAuthSignOff,
-} from '../../apis/tokenAuth';
-import { getLocalizationOrDefault } from '../../utils/localization';
-import { getCustomHeaders, getTenantId } from '../../utils/multitenancy';
+} from 'utils/auth';
+import { getLocalizationOrDefault } from 'utils/localization';
+import { getCustomHeaders, getTenantId } from 'utils/multitenancy';
 import { useShaRouting } from '../shaRouting';
-import IRequestHeaders from '../../interfaces/requestHeaders';
-import { IHttpHeaders } from '../../interfaces/accessToken';
+import IRequestHeaders from 'interfaces/requestHeaders';
+import { IHttpHeaders } from 'interfaces/accessToken';
 import { useSheshaApplication } from '../sheshaApplication';
-import { getCurrentUrl, getLoginUrlWithReturn, getQueryParam, isSameUrls } from '../../utils/url';
+import { getCurrentUrl, getLoginUrlWithReturn, getQueryParam, isSameUrls } from 'utils/url';
 import { getFlagSetters } from '../utils/flagsSetters';
-import { IErrorInfo } from '../../interfaces/errorInfo';
+import { IErrorInfo } from 'interfaces/errorInfo';
+import { useMutate } from 'hooks';
+import { IApiEndpoint } from 'interfaces/metadata';
+import { sessionGetCurrentLoginInformations } from 'apis/session';
+import { AuthenticateModel, AuthenticateResultModelAjaxResponse } from 'apis/tokenAuth';
+import { ResetPasswordVerifyOtpResponse } from 'apis/user';
 
 const DEFAULT_HOME_PAGE = '/';
+const loginEndpoint: IApiEndpoint = { url: '/api/TokenAuth/Authenticate', httpVerb: 'POST' };
+const logoffEndpoint: IApiEndpoint = { url: '/api/TokenAuth/SignOff', httpVerb: 'POST' };
 
 export interface IAuthProviderRefProps {
   anyOfPermissionsGranted?: (permissions: string[]) => boolean;
@@ -295,7 +295,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
   }, []);
 
   //#region  Login
-  const { mutate: loginUserHttp } = useTokenAuthAuthenticate({});
+  const { mutate: loginUserHttp } = useMutate<AuthenticateModel, AuthenticateResultModelAjaxResponse>();
 
   const loginUser = (loginFormData: ILoginForm) => {
     dispatch((dispatchThunk, getState) => {
@@ -323,7 +323,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
         }
       };
 
-      loginUserHttp(loginFormData)
+      loginUserHttp(loginEndpoint, loginFormData)
         .then(loginSuccessHandler)
         .catch(err => {
           dispatchThunk(loginUserErrorAction(err?.data));
@@ -333,7 +333,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
   //#endregion
 
   //#region Logout user
-  const { mutate: signOffRequest } = useTokenAuthSignOff({});
+  const { mutate: signOffRequest } = useMutate();
 
   /**
    * Logout success
@@ -350,7 +350,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
    */
   const logoutUser = () =>
     new Promise((resolve, reject) =>
-      signOffRequest(null)
+      signOffRequest(logoffEndpoint)
         .then(() => logoutSuccess(resolve))
         .catch(() => reject())
     );

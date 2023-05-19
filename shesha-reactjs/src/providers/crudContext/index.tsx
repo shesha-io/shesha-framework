@@ -1,4 +1,4 @@
-import React, { FC, useContext, useEffect, useRef } from 'react';
+import React, { FC, PropsWithChildren, useContext, useEffect, useRef } from 'react';
 import useThunkReducer from '../../hooks/thunkReducer';
 import { CRUD_CONTEXT_INITIAL_STATE, CrudContext, ICrudContext } from './contexts';
 import reducer from './reducer';
@@ -40,7 +40,7 @@ export interface ICrudProviderProps {
     autoSave?: boolean;
 }
 
-const CrudProvider: FC<ICrudProviderProps> = (props) => {
+const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     const {
         children,
         data,
@@ -263,6 +263,7 @@ const CrudProvider: FC<ICrudProviderProps> = (props) => {
 
     return (
         <CrudContext.Provider value={contextValue}>
+            { true && 
             <FormProvider
                 form={form}
                 name={''}
@@ -283,6 +284,7 @@ const CrudProvider: FC<ICrudProviderProps> = (props) => {
                     {children}
                 </Form>
             </FormProvider>
+            }
         </CrudContext.Provider>
     );
 };

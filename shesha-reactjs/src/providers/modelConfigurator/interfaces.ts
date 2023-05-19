@@ -1,4 +1,4 @@
-import { ModelConfigurationDto } from "../../apis/modelConfigurations";
+import { ModelConfigurationDto } from "apis/modelConfigurations";
 
 export interface IModelConfiguratorInstance {
     save: () => Promise<ModelConfigurationDto>;

@@ -1,9 +1,7 @@
 import '../src/styles/index.less';
 import './compiled.antd.variable.css';
 
-
 import React from 'react';
-import { RestfulProvider } from 'restful-react';
 
 export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },
@@ -19,8 +17,6 @@ export const parameters = {
 
 export const decorators = [
   Story => (
-    <RestfulProvider base={process.env.STORYBOOK_BASE_URL}>
-      <Story />
-    </RestfulProvider>
+    <Story />
   ),
 ];

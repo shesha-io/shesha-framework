@@ -2,7 +2,7 @@ import { Alert, Typography } from 'antd';
 import { ParagraphProps } from 'antd/lib/typography/Paragraph';
 import { TextProps } from 'antd/lib/typography/Text';
 import { TitleProps } from 'antd/lib/typography/Title';
-import React, { CSSProperties, FC, useMemo } from 'react';
+import React, { CSSProperties, FC, PropsWithChildren, useMemo } from 'react';
 import { useForm, useFormData, useGlobalState, useTheme } from 'providers';
 import { evaluateString, executeCustomExpression, getStyle } from 'providers/form/utils';
 import { ITextTypographyProps, ITypographyProps } from './models';
@@ -62,7 +62,7 @@ interface IGenericTextProps
   style?: CSSProperties;
 }
 
-export const GenericText: FC<IGenericTextProps> = ({
+export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
   children,
   backgroundColor,
   color,

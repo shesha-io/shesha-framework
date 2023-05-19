@@ -5,7 +5,7 @@ import SearchBox from '../formDesigner/toolboxSearchBox';
 import GrouppedObjectsTree from '../grouppedObjectsTree';
 import { DatabaseFilled, EyeInvisibleOutlined, LoadingOutlined, QuestionCircleOutlined, UserAddOutlined } from '@ant-design/icons';
 import { useForm } from '../..';
-import { EntityConfigDto, EntityConfigDtoPagedResultDto, useEntityConfigGetMainDataList } from '../../apis/entityConfig';
+import { EntityConfigDto, EntityConfigDtoPagedResultDto, useEntityConfigGetMainDataList } from 'apis/entityConfig';
 import { EntityConfigType, MetadataSourceType } from '../../interfaces/metadata';
 import { InterfaceOutlined } from '../../icons/interfaceOutlined';
 import { ClassOutlined } from '../../icons/classOutlined';

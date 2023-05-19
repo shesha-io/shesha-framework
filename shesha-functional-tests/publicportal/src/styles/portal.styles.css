@@ -1,0 +1,109 @@
+:root {
+  --borderGrey: #d8d8d8;
+  --danger: #ff7171;
+  --grey: #c1c1c1;
+  --info: #2b78e4;
+  --success: #14a38b;
+  --warning: #f2ac57;
+  --white: #fff;
+}
+
+.ant-layout .ant-layout-header {
+  height: 80px;
+  line-height: 80px;
+  padding: 0 10%;
+}
+
+.ant-layout .ant-layout-content {
+  margin-left: 0;
+  margin-top: 80px;
+}
+
+.ant-alert {
+  border: none;
+  border-radius: 8px;
+  padding: 18px 36px;
+}
+
+.ant-alert .ant-alert-content .ant-alert-message {
+  color: var(--white);
+  font-size: 16px;
+}
+
+.ant-alert .anticon {
+  font-size: 20px;
+  color: var(--white);
+}
+
+.ant-alert-error {
+  background: var(--danger);
+}
+
+.ant-alert-info {
+  background: var(--info);
+}
+
+.ant-alert-success {
+  background: var(--success);
+}
+
+.ant-alert-warning {
+  background: var(--warning);
+}
+
+.ant-btn {
+  border: none;
+  border-radius: 5px;
+  box-shadow: 0px 3px 4px 0px var(--grey);
+  font-size: 18px;
+  height: 60px;
+  width: 200px;
+}
+
+.ant-btn span {
+  font-weight: bold;
+}
+
+.ant-btn-dangerous {
+  border: 1px solid var(--danger);
+}
+
+.ant-btn-dangerous span {
+  color: var(--danger);
+}
+
+.ant-input {
+  border: 2px solid var(--borderGrey);
+  border-radius: 5px;
+  height: 50px;
+  width: 250px;
+}
+
+.ant-form-item-label > label {
+  font-size: 16px;
+}
+
+.ant-select.ant-select-in-form-item {
+  width: 250px;
+}
+
+.ant-select-single:not(.ant-select-customize-input) .ant-select-selector {
+  border: 2px solid var(--borderGrey);
+  border-radius: 5px;
+  height: 50px;
+}
+
+.ant-select-single:not(.ant-select-customize-input)
+  .ant-select-selector
+  .ant-select-selection-search-input {
+  height: 50px;
+}
+
+.ant-select-single .ant-select-selector .ant-select-selection-placeholder {
+  line-height: 50px;
+}
+
+.ant-select .ant-select-arrow {
+  color: black;
+  font-size: 16px;
+}

@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { GenericRefListDropDown } from './genericRefListDropDown';
-import { ReferenceListItemDto } from '../../apis/referenceList';
+import { ReferenceListItemDto } from 'apis/referenceList';
 import { IRefListDropDownProps, ISelectOption } from './models';
 
 export const RawRefListDropDown: FC<IRefListDropDownProps> = props => {

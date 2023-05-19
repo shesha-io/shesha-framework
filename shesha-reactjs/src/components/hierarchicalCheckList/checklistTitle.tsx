@@ -5,7 +5,7 @@ import { onPreventDefaultClickClick } from './utils';
 import { Button } from 'antd';
 import { CheckListItemType, CheckListSelectionType } from './interface';
 import { CloseOutlined } from '@ant-design/icons';
-import { CheckListItemSelectionDto } from '../../apis/checkList';
+import { CheckListItemSelectionDto } from 'apis/checkList';
 
 interface IChecklistTitle extends CheckListItemSelectionDto {
   title: string;

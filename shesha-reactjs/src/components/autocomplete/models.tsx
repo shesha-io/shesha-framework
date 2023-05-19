@@ -184,3 +184,11 @@ export interface IUrlFetcherQueryParams {
   term?: string | null;
   selectedValue?: string | null;
 }
+
+/**
+ * Generic DTO of the simple autocomplete item
+ */
+ export interface AutocompleteItemDto {
+  value?: string | null;
+  displayText?: string | null;
+}

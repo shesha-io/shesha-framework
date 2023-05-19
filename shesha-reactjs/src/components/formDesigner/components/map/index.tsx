@@ -20,10 +20,10 @@ const Map: IToolboxComponent<IMapProps> = {
 
     const { globalState } = useGlobalState();
 
-    const evalDefaultLat = evaluateString(defaultLat as string, { data: formData, globalState });
-    const evalDefaultLng = evaluateString(defaultLng as string, { data: formData, globalState });
-    const evalLat = evaluateString(latitude as string, { data: formData, globalState });
-    const evalLng = evaluateString(longitude as string, { data: formData, globalState });
+    const evalDefaultLat = evaluateString(defaultLat, { data: formData, globalState });
+    const evalDefaultLng = evaluateString(defaultLng, { data: formData, globalState });
+    const evalLat = evaluateString(latitude, { data: formData, globalState });
+    const evalLng = evaluateString(longitude, { data: formData, globalState });
 
     if (isComponentHidden(mapProps)) return null;
 

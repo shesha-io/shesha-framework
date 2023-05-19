@@ -52,7 +52,7 @@ const CurrencyConverter: FC<ICurrencyConverterProps> = ({
 
     const onCheckCache = () => {
         const state = getGlobalStateByKey(ECHANGE_GLOBAL_KEY);
-        message.info(state);
+        message.info(state?.toString());
     };
 
     const onClearCache = () => {

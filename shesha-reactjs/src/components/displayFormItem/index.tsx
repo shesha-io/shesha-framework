@@ -43,41 +43,42 @@ export const DisplayFormItem: FC<IDisplayFormItemProps> = ({
 
   return (
     <FormItem
-      className={`display-form-item ${mode === 'autocomplete' ? 'autocomplete-form-item' : ''} ${
-        className ? className : ''
-      }`}
+      className={`display-form-item ${mode === 'autocomplete' ? 'autocomplete-form-item' : ''} ${className ? className : ''
+        }`}
       {...rest}
     >
-      {!state.isEdit && renderChildren()}
-      {state.isEdit && (
-        <>
-          {mode === 'edit' && <Input value={value} onChange={({ target: { value: val } }) => onValueChange(val)} />}
-          {mode === 'autocomplete' && (
-            <AutoCompletePlaces
-              value={value}
-              onChange={onValueChange}
+      <>
+        {!state.isEdit && renderChildren()}
+        {state.isEdit && (
+          <>
+            {mode === 'edit' && <Input value={value} onChange={({ target: { value: val } }) => onValueChange(val)} />}
+            {mode === 'autocomplete' && (
+              <AutoCompletePlaces
+                value={value}
+                onChange={onValueChange}
               //extra={<Extra onExtraChange={() => {}} />}
-            />
-          )}
-        </>
-      )}
-      {(mode === 'edit' || mode === 'autocomplete') && (
-        <>
-          {!state.isEdit && (
-            <Button
-              className="ant-blend-btn"
-              icon={<EditOutlined />}
-              type="ghost"
-              onClick={() => setState({ ...state, isEdit: true })}
-            />
-          )}
-          {state.isEdit && (
-            <Button className="ant-save-btn" type="primary" onClick={onSave} size="small">
-              Save
-            </Button>
-          )}
-        </>
-      )}
+              />
+            )}
+          </>
+        )}
+        {(mode === 'edit' || mode === 'autocomplete') && (
+          <>
+            {!state.isEdit && (
+              <Button
+                className="ant-blend-btn"
+                icon={<EditOutlined />}
+                type="ghost"
+                onClick={() => setState({ ...state, isEdit: true })}
+              />
+            )}
+            {state.isEdit && (
+              <Button className="ant-save-btn" type="primary" onClick={onSave} size="small">
+                Save
+              </Button>
+            )}
+          </>
+        )}
+      </>
     </FormItem>
   );
 };

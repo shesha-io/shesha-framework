@@ -2,7 +2,7 @@ import { Button, message, notification, Spin } from 'antd';
 import moment from 'moment';
 import React, { FC, useEffect, useState } from 'react';
 import { FormIdentifier, ShaLink, useConfigurableActionDispatcher, useForm, useGlobalState, useSheshaApplication, ValidationErrors } from "../..";
-import { entitiesGet } from '../../apis/entities';
+import { entitiesGet } from 'apis/entities';
 import { IConfigurableActionConfiguration } from '../../interfaces/configurableAction';
 import { IKeyValue } from '../../interfaces/keyValue';
 import { useConfigurationItemsLoader } from '../../providers/configurationItemsLoader';
@@ -87,7 +87,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
         // fetch data only for NavigateLink and Dialog mode. Quickview will fetch data later
         if (!fetched && props.entityReferenceType !== 'Quickview' && props.value) {
             //
-            const queryParams = { id: entityId, properties: `id ${props.displayProperty}` };
+            const queryParams = { id: entityId, properties: `id ${Boolean(props.displayProperty) ? props.displayProperty : ''}` };
             const fetcher = props.getEntityUrl 
                 ? get(props.getEntityUrl, queryParams, { base: backendUrl, headers: httpHeaders})
                 : entitiesGet({...queryParams, entityType: entityType }, { base: backendUrl, headers: httpHeaders} );
@@ -118,7 +118,9 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
                 formId: formIdentifier,
                 modalTitle: props.modalTitle,
                 showModalFooter: props.showModalFooter ?? true,
-                additionalProperties: props.additionalProperties ?? [],
+                additionalProperties: Boolean(props.additionalProperties) && props.additionalProperties?.length > 0
+                    ? props.additionalProperties
+                    : [{key: 'id', value: '{{entityReference.id}}'}],
                 modalWidth: props.modalWidth,
                 customWidth: props.customWidth,
                 widthUnits: props.widthUnits,
@@ -165,6 +167,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
                             getEntityUrl={props.getEntityUrl}
                             width={props.quickviewWidth}
                             formIdentifier={formIdentifier}
+                            formType={formType}
                         />
                         : <Button type="link" onClick={dialogExecute}>{displayText}</Button>;
 };

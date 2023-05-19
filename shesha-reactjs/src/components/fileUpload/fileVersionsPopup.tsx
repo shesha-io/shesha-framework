@@ -2,17 +2,15 @@ import React, { FC } from 'react';
 import { HistoryOutlined } from '@ant-design/icons';
 import { Popover, Skeleton, Button } from 'antd';
 import { DateDisplay } from '../';
-import { useStoredFileGetFileVersions, StoredFileVersionInfoDto } from '../../apis/storedFile';
+import { useStoredFileGetFileVersions, StoredFileVersionInfoDto } from 'apis/storedFile';
 import filesize from 'filesize';
-import { useSheshaApplication, useStoredFile } from '../../providers';
+import { useStoredFile } from 'providers';
 
 interface IProps {
   readonly fileId: string;
 }
 
 export const FileVersionsPopup: FC<IProps> = ({ fileId }) => {
-  const { httpHeaders } = useSheshaApplication();
-
   const {
     loading: loading,
     refetch: fetchHistory,
@@ -20,9 +18,6 @@ export const FileVersionsPopup: FC<IProps> = ({ fileId }) => {
   } = useStoredFileGetFileVersions({
     fileId,
     lazy: true,
-    requestOptions: {
-      headers: httpHeaders,
-    },
   });
 
   const { downloadFile } = useStoredFile();

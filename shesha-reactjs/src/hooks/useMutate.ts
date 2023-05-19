@@ -10,13 +10,13 @@ interface IMutateState {
     error: any;
 }
 
-export interface IUseMutateResponse<TData = any> extends IMutateState {
-    mutate: (endpoint: IApiEndpoint, data?: TData) => Promise<TData>;
+export interface IUseMutateResponse<TData = any, TResponse = any> extends IMutateState {
+    mutate: (endpoint: IApiEndpoint, data?: TData) => Promise<TResponse>;
 }
 
 const ENDPOINT_NOT_SPECIFIED_ERROR = 'Endpoint is not specified';
 
-export const useMutate = <TData = any>(): IUseMutateResponse<TData> => {
+export const useMutate = <TData = any, TResponse = any>(): IUseMutateResponse<TData, TResponse> => {
     const { backendUrl, httpHeaders } = useSheshaApplication();
     const [state, setState] = useState<IMutateState>({ error: null, loading: false });
 
@@ -28,7 +28,7 @@ export const useMutate = <TData = any>(): IUseMutateResponse<TData> => {
 
         setState(prev => ({ ...prev, loading: true }));
 
-        return new Promise<TData>((resolve, reject) => {
+        return new Promise<TResponse>((resolve, reject) => {
             axios({
                 baseURL: backendUrl,
                 url: endpoint.url,
@@ -59,4 +59,32 @@ export const useMutate = <TData = any>(): IUseMutateResponse<TData> => {
         ...state,
         mutate,
     };
+};
+
+export interface IUseMutateResponseFixedEndpoint<TData = any, TResponse = any> extends IMutateState {
+    mutate: (data?: TData) => Promise<TResponse>;
+}
+
+export interface IApiEndpointWithPathParams<TData> {
+    /**
+     * Http verb (get/post/put etc)
+     */
+    httpVerb: string;
+    /**
+     * Url
+     */
+    url: string | ((data: TData) => string);
+}
+
+export const getUseMutateForEndpoint = <TData = any, TResponse = any>(endpoint: IApiEndpointWithPathParams<TData>): IUseMutateResponseFixedEndpoint<TData, TResponse> => {
+    const response = useMutate<TData, TResponse>();
+
+    const mutate = (data?: TData) => {
+        const url = typeof (endpoint.url) === 'string'
+            ? endpoint.url
+            : endpoint.url(data);
+        return response.mutate({ url, httpVerb: endpoint.httpVerb }, data);
+    };
+
+    return { ...response, mutate };
 };

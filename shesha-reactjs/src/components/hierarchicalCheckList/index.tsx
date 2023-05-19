@@ -31,7 +31,7 @@ import {
 } from './interface';
 import _ from 'lodash';
 import { nanoid } from 'nanoid/non-secure';
-import { CheckListItemModel, useCheckListGetCheckListTree, useCheckListSaveSelection } from '../../apis/checkList';
+import { CheckListItemModel, useCheckListGetCheckListTree, useCheckListSaveSelection } from 'apis/checkList';
 import { useChecklistTreeSelections } from './useChecklistTreeSelections';
 import ValidationErrors from '../validationErrors';
 import SectionSeparator from '../sectionSeparator';
@@ -198,7 +198,7 @@ const Checklist: ForwardRefRenderFunction<HierarchicalCheckListHandle, IHierarch
   // This property is set when a selection is being made
   const [disableTree, setDisableTree] = useState(false);
   const [isDropdownTreeOverlayVisible, setIsDropdownTreeOverlayVisible] = useState(false);
-  const { mutate: saveSelection, error: saveSelectionError } = useCheckListSaveSelection({ id });
+  const { mutate: saveSelection, error: saveSelectionError } = useCheckListSaveSelection();
   const {
     refetch: getCheckListTree,
     loading: isFetchingChecklistTree,

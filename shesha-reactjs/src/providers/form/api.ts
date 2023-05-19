@@ -1,6 +1,6 @@
 import { nanoid } from "nanoid";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { GetDataError, useGet } from "restful-react";
+import { GetDataError, useGet } from "hooks";
 import { componentsTreeToFlatStructure, getMatchData, IMatchData, IToolboxComponents, useAppConfigurator, useMetadataDispatcher, useSheshaApplication } from "../..";
 import { IAjaxResponseBase } from "../../interfaces/ajaxResponse";
 import { IErrorInfo } from "../../interfaces/errorInfo";

@@ -18,7 +18,7 @@ export const ResetPassword: FC = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const router = useRouter();
 
-  const { mutate, loading, error } = useUserResetPasswordUsingToken({});
+  const { mutate, loading, error } = useUserResetPasswordUsingToken();
 
   if (!verifyOtpResPayload || (verifyOtpResPayload && !verifyOtpResPayload.token) || !verifyOtpResPayload.username) {
     return (

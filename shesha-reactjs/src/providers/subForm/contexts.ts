@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { GetDataError } from 'restful-react';
+import { GetDataError } from 'hooks';
 import { IConfigurableFormComponent } from '../../interfaces';
 import { IFormSettings, IPersistedFormProps } from '../form/models';
 

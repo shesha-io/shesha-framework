@@ -38,7 +38,7 @@ import DynamicView from 'components/formDesigner/components/dynamicView';
 import EditableTagGroup from 'components/formDesigner/components/editableTagGroup';
 import EndpointsAutocompleteComponent from 'components/formDesigner/components/endpointsAutocomplete/endpointsAutocomplete';
 import EntityPickerComponent from 'components/formDesigner/components/entityPicker';
-import EntityReferenceComponent from 'components/formDesigner/components/entityReference/entityReference';
+import EntityReferenceComponent from 'designer-components/entityReference/entityReference';
 import EventNames from 'components/formDesigner/components/eventNamesList';
 import FileUpload from 'designer-components/fileUpload';
 import FormAutocompleteComponent from 'components/formDesigner/components/formAutocomplete';
@@ -85,7 +85,6 @@ import { IToolboxComponentGroup } from '../../../interfaces/formDesigner';
 import TimelineComponent from 'components/formDesigner/components/timeline/timeline';
 import DataSource from 'components/formDesigner/components/dataSource/dataSourceComponent';
 import { ComponentSelectorComponent } from 'designer-components';
-import Map from 'components/formDesigner/components/map';
 
 export const ToolboxComponents: IToolboxComponentGroup[] = [
   {
@@ -131,7 +130,6 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
       ScheduledJobExecutionLog,
       StatusTag,
       SubForm,
-      Map,
     ],
   },
   {

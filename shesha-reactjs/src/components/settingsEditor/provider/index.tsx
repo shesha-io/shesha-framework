@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { PropsWithChildren, useContext, useEffect } from 'react';
 import { FC } from 'react';
 import useThunkReducer from 'hooks/thunkReducer';
 import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from 'interfaces/gql';
@@ -52,7 +52,7 @@ interface SettingConfigurationDto {
     };
 }
 
-const SettingsEditorProvider: FC<ISettingsEditorProviderProps> = ({ children }) => {
+const SettingsEditorProvider: FC<PropsWithChildren<ISettingsEditorProviderProps>> = ({ children }) => {
     const initial: ISettingsEditorStateContext = {
         ...SETTINGS_EDITOR_STATE_CONTEXT_INITIAL_STATE,
     };

@@ -26,11 +26,11 @@ export const ColumnsContainer: FC<IColumnsContainerProps> = props => {
       case 'group':
         const groupProps = item as IConfigurableColumnGroup;
         return (
-          <ColumnsGroup 
-            key={index} 
-            {...groupProps} 
-            index={[...props.index, index]} 
-            containerRendering={(args) => (<ColumnsContainer {...args}/>)}
+          <ColumnsGroup
+            key={index}
+            {...groupProps}
+            index={[...props.index, index]}
+            containerRendering={(args) => (<ColumnsContainer {...args} />)}
           />
         );
     }
@@ -49,8 +49,6 @@ export const ColumnsContainer: FC<IColumnsContainerProps> = props => {
 
   return (
     <ReactSortable
-      // onStart={onDragStart}
-      // onEnd={onDragEnd}
       list={props.items}
       setList={onSetList}
       fallbackOnBody={true}

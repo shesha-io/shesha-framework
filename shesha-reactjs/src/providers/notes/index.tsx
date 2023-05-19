@@ -24,11 +24,11 @@ import {
   setSettingsAction,
   /* NEW_ACTION_IMPORT_GOES_HERE */
 } from './actions';
-import { useNoteGetList, useNoteCreate, CreateNoteDto, NoteDto } from '../../apis/note';
-import { useMutate } from 'restful-react';
+import { useNoteGetList, useNoteCreate } from 'apis/note';
+import { CreateNoteDto, NoteDto } from 'apis/note';
+import { useMutate } from 'hooks';
 import { useSignalR } from '../signalR';
 import { IShaHttpResponse } from '../../interfaces/shaHttpResponse';
-import { useSheshaApplication } from '../..';
 
 const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
   children,
@@ -40,7 +40,6 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
   const [state, dispatch] = useReducer(notesReducer, COMMENTS_CONTEXT_INITIAL_STATE);
 
   const { connection } = useSignalR(false) ?? {};
-  const { httpHeaders: headers } = useSheshaApplication();
 
   //#region Register signal r events
   useEffect(() => {
@@ -66,9 +65,6 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
   const { refetch: refetchNotesHttp, loading: fetchingNotes, data, error: fetchNotesResError } = useNoteGetList({
     queryParams: { ownerId, ownerType, category, allCategories },
     lazy: true,
-    requestOptions: {
-      headers,
-    },
   });
 
   // Refetch notes when the main parameters change
@@ -108,11 +104,7 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
   //#endregion
 
   //#region Save notes
-  const { mutate: saveNotesHttp, error: saveNotesResError } = useNoteCreate({
-    requestOptions: {
-      headers,
-    },
-  });
+  const { mutate: saveNotesHttp, error: saveNotesResError } = useNoteCreate();
   const postNotesRequest = (newNotes: ICreateNotePayload) => {
     if (newNotes) {
       dispatch(postNotesRequestAction(newNotes));
@@ -151,19 +143,12 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
   //#endregion
 
   //#region Delete notes
-  const { mutate: deleteNotesHttp, error: deleteNotesResError } = useMutate({
-    queryParams: { Id: state.commentIdToBeDeleted }, // Important if you'll be calling this as a side-effect
-    path: '/api/services/app/Note',
-    verb: 'DELETE',
-    requestOptions: {
-      headers,
-    },
-  });
+  const { mutate: deleteNotesHttp, error: deleteNotesResError } = useMutate();
 
   const deleteNotesRequest = (commentIdToBeDeleted: string) => {
     dispatch(deleteNotesRequestAction(commentIdToBeDeleted));
 
-    deleteNotesHttp('Delete', { queryParams: { Id: commentIdToBeDeleted } })
+    deleteNotesHttp({ url: '/api/services/app/Note', httpVerb: 'DELETE' }, { Id: commentIdToBeDeleted })
       .then(() => {
         dispatch(deleteNotesSuccessAction(commentIdToBeDeleted));
       })
