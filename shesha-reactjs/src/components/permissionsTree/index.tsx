@@ -4,15 +4,15 @@ import { DataNode, EventDataNode } from 'antd/lib/tree';
 import React, { Key, ReactNode, useEffect, useState } from 'react';
 import { FC } from 'react';
 import { useLocalStorage } from 'react-use';
-import { useForm, useSubscribe } from '../..';
+import { useConfigurableAction, useForm } from '../..';
 import {
   PermissionDto,
   usePermissionGetAllTree,
   usePermissionUpdateParent,
   usePermissionDelete,
-} from 'apis/permission';
-import { DynamicFormPubSubConstants } from 'pages/dynamic/pubSub';
+} from '../../apis/permission';
 import SearchBox from '../formDesigner/toolboxSearchBox';
+import { IUpdateItemArguments, updateItemArgumentsForm } from './update-item-arguments';
 
 export interface IDataNode {
   title: JSX.Element;
@@ -42,6 +42,7 @@ export type PermissionsTreeMode = 'Edit' | 'Select' | 'View';
 
 interface IPermissionsTreeProps {
   formComponentId: string;
+  formComponentName: string;
   value?: string[];
   updateKey?: string;
   onChange?: (values?: string[]) => void;
@@ -70,10 +71,6 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
   const [selected, setSelected] = useState<string[]>([]);
   const [dragInfo, setDragInfo] = useState<any>();
 
-  const [doUpdateTree, setDoUpdateTree] = useState<Boolean>(false);
-  const [doCreate, setDoCreate] = useState<Boolean>(false);
-  const [doCreateRoot, setDoCreateRoot] = useState<Boolean>(false);
-  const [doDelete, setDoDelete] = useState<Boolean>(false);
   const [doSelect, setDoSelect] = useState<string>(null);
 
   const fetcher = usePermissionGetAllTree({ queryParams: {}, lazy: true });
@@ -83,7 +80,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
   const deleteRequest = usePermissionDelete();
   const { loading: isDeleting, error: deleteDataError } = deleteRequest;
 
-  const { getAction, registerActions, formData, setFormMode } = useForm(false);
+  const { getAction, setFormMode } = useForm(false);
 
   useEffect(() => {
     if (rest.mode === 'Select' && allItems !== null) return; // skip refetch for selectmode if fetched
@@ -130,11 +127,8 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
     if (!isFetchingData) {
       if (fetchingDataResponse) {
         const fetchedData = fetchingDataResponse?.result;
-        if (fetchedData) {
+        if (fetchedData)
           setAllItems(fetchedData);
-          if (rest.mode !== 'Select')
-            registerActions(null, { createRootPermission, createPermission, deletePermission });
-        }
       }
 
       if (fetchingDataError) {
@@ -189,8 +183,8 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
     const ids = keys.map(item => {
       return item.toString();
     });
-    const item = findItem(allItems, ids[0]);
     if (rest.mode === 'Edit' && Boolean(getAction)) {
+      const item = findItem(allItems, ids[0]);
       if (!item.isDbPermission) {
         setFormMode('readonly');
       }
@@ -236,103 +230,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
     return o;
   };
 
-  const expandParent = item => {
-    if (Boolean(item.parentName)) {
-      const parent = findItem(allItems, item.parentName);
-      if (parent !== null) {
-        if (
-          expanded.find(x => {
-            return x === parent.id;
-          }) === null
-        ) {
-          setExpanded(prev => {
-            return [...prev, parent.id];
-          });
-        }
-        expandParent(parent);
-      }
-    }
-  };
-
-  useEffect(() => {
-    if (doUpdateTree && Boolean(formData)) {
-      const item = findItem(allItems, selected[0]);
-      if (rest.mode === 'Edit' && item !== null) {
-        item.id = formData.name;
-        item.name = formData.name;
-        item.displayName = formData.displayName;
-        item.description = formData.description;
-        setAllItems([...allItems]);
-        setDoSelect(item.id);
-        setDoUpdateTree(false);
-        setSearchText('');
-      }
-    }
-  }, [doUpdateTree]);
-
-  useSubscribe(DynamicFormPubSubConstants.DataSaved, () => {
-    if (rest.mode === 'Edit') setDoUpdateTree(true);
-  });
-
-  useEffect(() => {
-    if (doCreateRoot) {
-      let s = findItem(allItems, emptyId);
-      if (s === null) {
-        setAllItems(prev => {
-          addPermission(null, prev);
-          return [...prev];
-        });
-      } else {
-        message.warning('A new permission is already added! Please edit it first.');
-        expandParent(s);
-      }
-      setDoSelect(emptyId);
-      setDoCreateRoot(false);
-      setSearchText('');
-      setFormMode('edit');
-    }
-  }, [doCreateRoot]);
-
-  const createRootPermission = () => {
-    setDoCreateRoot(true);
-  };
-
-  useEffect(() => {
-    if (doCreate) {
-      let s = findItem(allItems, emptyId);
-      if (s === null) {
-        s = findItem(allItems, selected[0]);
-        if (s !== null) {
-          if (s.child === null) s.child = [];
-          s = addPermission(s, s.child);
-          setAllItems([...allItems]);
-        }
-      } else {
-        message.warning('A new permission is already added! Please edit it first.');
-      }
-      expandParent(s);
-      setDoSelect(emptyId);
-      setDoCreate(false);
-      setSearchText('');
-      setFormMode('edit');
-    }
-  }, [doCreate]);
-
-  const createPermission = () => {
-    setDoCreate(true);
-  };
-
-  useEffect(() => {
-    if (!isDeleting && Boolean(selected[0]) && selected.length > 0) {
-      if (deleteDataError) {
-        message.error(deleteDataError.message);
-      } else {
-        deleteInternal();
-      }
-    }
-  }, [isDeleting, deleteDataError]);
-
-  const deleteInternal = () => {
+  const deletePermission = () => {
     const s = findItem(allItems, selected[0]);
     if (Boolean(s.parentName)) {
       setDoSelect(s.parentName);
@@ -350,63 +248,177 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
     setAllItems([...allItems]);
   };
 
-  useEffect(() => {
-    if (doDelete) {
-      const s = findItem(allItems, selected[0]);
-      if (s !== null) {
-        if (!s.isDbPermission) {
-          message.warning('Permission "' + s.displayName + '" is a system permission and can not be deleted!');
-          return;
+  const expandParent = (items, item) => {
+    if (Boolean(item.parentName)) {
+      const parent = findItem(items, item.parentName);
+      if (parent !== null) {
+        if (expanded.length === 0 || expanded.find(x => {
+            return x === parent.id;
+          }) === null
+        ) {
+          setExpanded(prev => {
+            return [...prev, parent.id];
+          });
         }
-        if (s.id === emptyId) {
-          deleteInternal();
-        } else {
-          deleteRequest.mutate({ name: s.name });
-        }
+        expandParent(items, parent);
       }
-      setDoDelete(false);
-      setSearchText('');
     }
-  }, [doDelete]);
-
-  const deletePermission = () => {
-    setDoDelete(true);
   };
+
+  useConfigurableAction(
+    {
+      name: 'Update item',
+      description: 'Update Permission Tree item',
+      owner: rest.formComponentName,
+      ownerUid: rest.formComponentId,
+      hasArguments: true,
+      argumentsFormMarkup: updateItemArgumentsForm,
+      executer: (arg: IUpdateItemArguments) => {
+        const item = findItem(allItems, selected[0]);
+        if (rest.mode === 'Edit' && item !== null) {
+          item.id = arg.name;
+          item.name = arg.name;
+          item.displayName = arg.displayName;
+          item.description = arg.description;
+          setAllItems([...allItems]);
+          setSelected([item.id]);
+          setSearchText('');
+        }
+  
+        return Promise.resolve();
+      },
+    }
+  );
+
+  useConfigurableAction(
+    {
+      name: 'Create root',
+      description: 'Create root Permission Tree item',
+      owner: rest.formComponentName,
+      ownerUid: rest.formComponentId,
+      hasArguments: false,
+      executer: () => {
+        let s = findItem(allItems, emptyId);
+        if (s === null) {
+          setAllItems(prev => {
+            addPermission(null, prev);
+            return [...prev];
+          });
+        } else {
+          message.warning('A new permission is already added! Please edit it first.');
+          expandParent(allItems, s);
+        }
+        setDoSelect(emptyId);
+        setSearchText('');
+        setFormMode('edit');
+  
+        return Promise.resolve();
+      },
+    }
+  );
+
+  useConfigurableAction(
+    {
+      name: 'Create child',
+      description: 'Create child Permission Tree item',
+      owner: rest.formComponentName,
+      ownerUid: rest.formComponentId,
+      hasArguments: false,
+      executer: () => {
+        const newItems = [...allItems];
+        let s = findItem(newItems, emptyId);
+        if (s === null) {
+          s = findItem(newItems, selected[0]);
+          if (s !== null) {
+            if (s.child === null) s.child = [];
+            s = addPermission(s, s.child);
+            setAllItems([...newItems]);
+          }
+        } else {
+          message.warning('A new permission is already added! Please edit it first.');
+        }
+        expandParent(newItems, s);
+        setDoSelect(emptyId);
+        setSearchText('');
+        setFormMode('edit');
+  
+        return Promise.resolve();
+      },
+    }
+  );
+
+  useConfigurableAction(
+    {
+      name: 'Delete item',
+      description: 'Delete Permission Tree item',
+      owner: rest.formComponentName,
+      ownerUid: rest.formComponentId,
+      hasArguments: false,
+      executer: () => {
+        const s = findItem(allItems, selected[0]);
+        if (s !== null) {
+          if (!s.isDbPermission) {
+            message.warning('Permission "' + s.displayName + '" is a system permission and can not be deleted!');
+            return Promise.resolve();
+          }
+          if (s.id === emptyId) {
+            deletePermission();
+          } else {
+            deleteRequest.mutate(null, { queryParams: { name: s.name } });
+          }
+        }
+        setSearchText('');
+  
+        return Promise.resolve();
+      },
+    }
+  );
+
+  useEffect(() => {
+    if (!isDeleting && Boolean(selected[0]) && selected.length > 0) {
+      if (deleteDataError) {
+        message.error(deleteDataError.message);
+      } else {
+        deletePermission();
+      }
+    }
+  }, [isDeleting, deleteDataError]);
 
   useEffect(() => {
     if (!isParentUpdating && Boolean(dragInfo)) {
       if (updateParentDataError) {
         message.error(updateParentDataError.message);
       } else {
-        const dropItem = findItem(allItems, dragInfo.node.key);
-        const dragItem = findItem(allItems, dragInfo.dragNode.key);
+        const newItems = [...allItems];
+        const dropItem = findItem(newItems, dragInfo.node.key);
+        const dragItem = findItem(newItems, dragInfo.dragNode.key);
 
         // remove from the old place
         if (Boolean(dragItem.parentName)) {
-          const parent = findItem(allItems, dragItem.parentName);
+          const parent = findItem(newItems, dragItem.parentName);
           const index = parent.child.indexOf(dragItem);
           if (index > -1) {
             parent.child.splice(index, 1);
           }
         } else {
-          const index = allItems.indexOf(dragItem);
+          const index = newItems.indexOf(dragItem);
           if (index > -1) {
-            allItems.splice(index, 1);
+            newItems.splice(index, 1);
           }
         }
 
         // add to the new place
         if (dragInfo.dropToGap) {
-          allItems.push(dragItem);
+          newItems.push(dragItem);
           dragItem.parentName = null;
         } else {
           dropItem.child.push(dragItem);
           dragItem.parentName = dropItem.name;
         }
 
-        expandParent(dragItem);
+        expandParent(newItems, dragItem);
         setDragInfo(null);
-        setAllItems([...allItems]);
+        setAllItems([...newItems]);
         setDoSelect(dragItem.id);
       }
     }

@@ -69,7 +69,7 @@ const SubFormProvider: FC<PropsWithChildren<SubFormProviderProps>> = ({
   queryParams,
   onChange,
   defaultValue,
-  ...props
+  entityType
 }) => {
   const [state, dispatch] = useReducer(subFormReducer, SUB_FORM_CONTEXT_INITIAL_STATE);
   const { publish } = usePubSub();
@@ -116,25 +116,25 @@ const SubFormProvider: FC<PropsWithChildren<SubFormProviderProps>> = ({
     }
   }, [value, name]);
 
-  const [entityType, setEntityType] = useState(props.entityType);
+  const [internalEntityType, setInternalEntityType] = useState(entityType);
 
   useEffect(() => {
-    if (!Boolean(entityType)) {
-      if (Boolean(props.entityType)) {
-        setEntityType(props.entityType);
+    if (!Boolean(internalEntityType)) {
+      if (Boolean(entityType)) {
+        setInternalEntityType(entityType);
       } else 
       if (value && typeof value === 'object' && value['_className']) {
-        setEntityType(value['_className']);
+        setInternalEntityType(value['_className']);
       }
     } else {
-      if (Boolean(props.entityType) && entityType !== props.entityType) {
-        setEntityType(props.entityType);
+      if (Boolean(entityType) && internalEntityType !== entityType) {
+        setInternalEntityType(entityType);
       } else
-      if (value && typeof value === 'object' && value['_className'] && entityType !== value['_className']) {
-        setEntityType(value['_className']);
+      if (value && typeof value === 'object' && value['_className'] && internalEntityType !== value['_className']) {
+        setInternalEntityType(value['_className']);
       }
     }
-  }, [props.entityType, value]);
+  }, [entityType, value]);
 
   const urlHelper = useModelApiHelper();
   const getReadUrl = (): Promise<string> => {
@@ -143,10 +143,10 @@ const SubFormProvider: FC<PropsWithChildren<SubFormProviderProps>> = ({
     return getUrl
       ? // if getUrl is specified - evaluate value using JS
         evaluateUrl(getUrl)
-      : entityType
+      : internalEntityType
       ? // if entityType is specified - get default url for the entity
         urlHelper
-          .getDefaultActionUrl({ modelType: entityType, actionName: StandardEntityActions.read })
+          .getDefaultActionUrl({ modelType: internalEntityType, actionName: StandardEntityActions.read })
           .then(endpoint => endpoint.url)
       : // return empty string
         Promise.resolve('');
@@ -213,9 +213,7 @@ const SubFormProvider: FC<PropsWithChildren<SubFormProviderProps>> = ({
   const getFinalQueryParams = () => {
     if (formMode === 'designer' || dataSource !== 'api') return {};
 
-    let params: EntitiesGetQueryParams = {
-      entityType,
-    };
+    let params: EntitiesGetQueryParams = { entityType: internalEntityType };
 
     params.properties =
       typeof properties === 'string' ? `id ${properties}` : ['id', ...Array.from(new Set(properties || []))].join(' '); // Always include the `id` property/. Useful for deleting
@@ -248,7 +246,7 @@ const SubFormProvider: FC<PropsWithChildren<SubFormProviderProps>> = ({
     if (dataRequestAbortController.current) dataRequestAbortController.current.abort('out of date');
 
     // Skip loading if we work with entity and the `id` is not specified
-    if (entityType && !finalQueryParams?.id) {
+    if (internalEntityType && !finalQueryParams?.id) {
       onChange({});
       return;
     }
@@ -297,9 +295,8 @@ const SubFormProvider: FC<PropsWithChildren<SubFormProviderProps>> = ({
 
   // fetch data on first rendering and on change of some properties
   useDeepCompareEffect(() => {
-    if (dataSource !== 'api') return;
-
-    fetchData();
+    if (dataSource === 'api')
+      fetchData();
   }, [dataSource, finalQueryParams]); // todo: memoize final getUrl and add as a dependency
 
   const postData = useDebouncedCallback(() => {
