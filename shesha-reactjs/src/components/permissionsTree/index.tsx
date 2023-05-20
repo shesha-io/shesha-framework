@@ -281,7 +281,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
           item.displayName = arg.displayName;
           item.description = arg.description;
           setAllItems([...allItems]);
-          setSelected([item.id])
+          setSelected([item.id]);
           setSearchText('');
         }
   

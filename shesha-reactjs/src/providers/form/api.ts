@@ -280,7 +280,7 @@ export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse
 
         setState(prev => ({ ...prev, loaderHint: 'Fetching data...', dataFetcher: dataFetcher }));
         dataFetcher();
-    }
+    };
 
     useEffect(() => {
         const requestId = nanoid();
@@ -290,7 +290,7 @@ export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse
             // fetch only data if dataId if changed
             if (Boolean(state.form) &&
                     ((typeof formId === 'string' && formId === state.form.id)
-                    || (typeof formId === 'object' && formId.module === state.form.module && formId.name == state.form.name 
+                    || (typeof formId === 'object' && formId.module === state.form.module && formId.name === state.form.name 
                         && (!Boolean(formId.version) || formId.version === state.form.versionNo)))) {
 
                 if (dataId !== state.fetchedData?.id) {
@@ -338,7 +338,8 @@ export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse
                                     } else {
                                         // data loading is not required
                                         setState(prev => ({ ...prev, loadingState: 'ready', loaderHint: null }));
-                                    }                                });
+                                    }                                
+                                });
                             } else {
                                 // data loading is not required
                                 setState(prev => ({ ...prev, loadingState: 'ready', loaderHint: null }));
