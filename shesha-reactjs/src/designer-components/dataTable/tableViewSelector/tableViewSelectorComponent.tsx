@@ -1,16 +1,15 @@
 import React, { FC, MutableRefObject } from 'react';
-import { IToolboxComponent } from '../../../interfaces';
+import { IToolboxComponent } from 'interfaces';
 import { SelectOutlined } from '@ant-design/icons';
 import TableViewSelectorSettings from './tableViewSelectorSettings';
 import { ITableViewSelectorComponentProps } from './models';
-import { useForm } from '../../..';
-import { useDataTableStore, useGlobalState } from '../../../providers';
-import { evaluateDynamicFilters } from '../../../providers/dataTable/utils';
+import { useDataTableStore, useGlobalState, useForm, useNestedPropertyMetadatAccessor } from 'providers';
+import { evaluateDynamicFilters } from 'providers/dataTable/utils';
 import camelCaseKeys from 'camelcase-keys';
 import _ from 'lodash';
 import { Alert } from 'antd';
 import { useDeepCompareEffect } from 'react-use';
-import TableViewSelectorRenderer from '../../../components/tableViewSelectorRenderer';
+import TableViewSelectorRenderer from 'components/tableViewSelectorRenderer';
 import { migrateFilterMustacheExpressions } from 'designer-components/_common-migrations/migrateUseExpression';
 
 const TableViewSelectorComponent: IToolboxComponent<ITableViewSelectorComponentProps> = {
@@ -18,7 +17,7 @@ const TableViewSelectorComponent: IToolboxComponent<ITableViewSelectorComponentP
   name: 'Table view selector',
   icon: <SelectOutlined />,
   factory: (model: ITableViewSelectorComponentProps, componentRef: MutableRefObject<any>) => {
-    return <TableViewSelector {...model} componentRef={componentRef}/>;
+    return <TableViewSelector {...model} componentRef={componentRef} />;
   },
   migrator: m => m.add<ITableViewSelectorComponentProps>(0, prev => {
     return {
@@ -28,9 +27,9 @@ const TableViewSelectorComponent: IToolboxComponent<ITableViewSelectorComponentP
       componentRef: prev['componentRef'],
     };
   })
-  .add(1, prev => (
-    {...prev, filters: prev.filters.map(filter => migrateFilterMustacheExpressions(filter))}
-  )),
+    .add(1, prev => (
+      { ...prev, filters: prev.filters.map(filter => migrateFilterMustacheExpressions(filter)) }
+    )),
   settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
     return (
       <TableViewSelectorSettings
@@ -56,9 +55,11 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({ filters, compon
     setPredefinedFilters,
     predefinedFilters,
     changePersistedFiltersToggle,
+    modelType,
   } = useDataTableStore();
   const { globalState } = useGlobalState();
   const { formData, formMode } = useForm();
+  const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(modelType);
 
   componentRef.current = {
     columns,
@@ -71,18 +72,16 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({ filters, compon
   const debounceEvaluateDynamicFiltersHelper = () => {
     const data = !_.isEmpty(formData) ? camelCaseKeys(formData, { deep: true, pascalCase: true }) : formData;
 
-    const evaluatedFilters = evaluateDynamicFilters(filters, [
-      {
-        match: 'data',
-        data: data,
-      },
-      {
-        match: 'globalState',
-        data: globalState,
-      },
-    ]);
-
-    setPredefinedFilters(evaluatedFilters);
+    evaluateDynamicFilters(
+      filters,
+      [
+        { match: 'data', data: data },
+        { match: 'globalState', data: globalState },
+      ],
+      propertyMetadataAccessor
+    ).then(evaluatedFilters => {
+      setPredefinedFilters(evaluatedFilters);
+    });
   };
 
   useDeepCompareEffect(() => {

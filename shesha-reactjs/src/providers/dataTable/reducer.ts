@@ -31,6 +31,14 @@ const getDirtyFilter = (state: IDataTableStateContext): ITableFilter[] => {
 
 const reducer = handleActions<IDataTableStateContext, any>(
   {
+    [DataTableActionEnums.SetModelType]: (state: IDataTableStateContext, action: ReduxActions.Action<string>) => {
+      const { payload } = action;
+
+      return {
+        ...state,
+        modelType: payload,
+      };
+    },
     [DataTableActionEnums.ChangeUserConfigId]: (state: IDataTableStateContext, action: ReduxActions.Action<string>) => {
       const { payload } = action;
 

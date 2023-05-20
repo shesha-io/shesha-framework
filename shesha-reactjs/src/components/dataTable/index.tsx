@@ -3,17 +3,18 @@ import { Column, SortingRule, TableProps } from 'react-table';
 import {
   LoadingOutlined,
 } from '@ant-design/icons';
-import { DataTableColumn, IShaDataTableProps } from './interfaces';
+import { DataTableColumn, IShaDataTableProps, OnSaveHandler } from './interfaces';
 import { DataTableFullInstance } from 'providers/dataTable/contexts';
 import { ModalProps } from 'antd/lib/modal';
 import ReactTable from '../reactTable';
 import { removeUndefinedProperties } from 'utils/array';
 import { ValidationErrors } from '..';
-import { useDataTableStore, useMetadata } from 'providers';
+import { useDataTableStore, useForm, useGlobalState, useMetadata } from 'providers';
 import { camelcaseDotNotation } from 'utils/string';
-import { IReactTableProps } from '../reactTable/interfaces';
+import { IReactTableProps, RowDataInitializer } from '../reactTable/interfaces';
 import { usePrevious } from 'react-use';
 import { getCellRenderer } from './cell';
+import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions } from 'providers/dataTable/repository/backendRepository';
 
 export interface IIndexTableOptions {
   omitClick?: boolean;
@@ -47,9 +48,15 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   options,
   containerStyle,
   tableStyle,
+  customCreateUrl,
+  customUpdateUrl,
+  customDeleteUrl,
+  onRowSave,
   ...props
 }) => {
   const store = useDataTableStore();
+  const { formMode, formData } = useForm(false) ?? { formMode: 'readonly', formData: {} };
+  const { globalState } = useGlobalState();
 
   if (tableRef) tableRef.current = store;
 
@@ -65,7 +72,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     onSelectRow: onSelectRowDeprecated,
     onDblClick: onDblClickDeprecated,
     selectedRow,
-    parentEntityId,
     selectedIds,
     tableSorting,
     quickSearch,
@@ -133,7 +139,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     selectedPageSize,
     tableFilter,
     selectedRow,
-    parentEntityId,
     quickSearch,
     tableSorting,
   ]);
@@ -147,16 +152,33 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const metadata = useMetadata(false)?.metadata;
 
   const crudOptions = useMemo(() => {
+
+    const onNewRowInitializeExecuter = props.onNewRowInitialize
+      ? new Function('data, globalState', props.onNewRowInitialize)
+      : null;
+
+    const onNewRowInitialize: RowDataInitializer = props.onNewRowInitialize
+      ? () => {
+        // todo: replace formData and globalState with accessors (e.g. refs) and remove hooks to prevent unneeded re-rendering
+        //return onNewRowInitializeExecuter(formData, globalState);
+        const result = onNewRowInitializeExecuter(formData ?? {}, globalState);
+        return Promise.resolve(result);
+      }
+      : () => {
+        return Promise.resolve({});
+      };
+
     const result = {
-      canDelete: props.canDeleteInline === 'yes',
-      canEdit: props.canEditInline === 'yes',
-      canAdd: props.canAddInline === 'yes',
+      canDelete: props.canDeleteInline === 'yes' || props.canDeleteInline === 'inherit' && formMode === 'edit',
+      canEdit: props.canEditInline === 'yes' || props.canEditInline === 'inherit' && formMode === 'edit',
+      canAdd: props.canAddInline === 'yes' || props.canAddInline === 'inherit' && formMode === 'edit',
+      onNewRowInitialize,
     };
     return {
       ...result,
       enabled: result.canAdd || result.canDelete || result.canEdit,
     };
-  }, [props.canDeleteInline, props.canEditInline, props.canAddInline]);
+  }, [props.canDeleteInline, props.canEditInline, props.canAddInline, formMode]);
 
   const preparedColumns = useMemo(() => {
     const localPreparedColumns = columns
@@ -196,14 +218,31 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       .filter(c => c.defaultSorting !== null)
       .map<SortingRule<string>>(c => ({ id: c.id, desc: c.defaultSorting === 1 }));
 
+  const performOnRowSave = useMemo<OnSaveHandler>(() => {
+    if (!onRowSave)
+      return data => Promise.resolve(data);
+
+    const executer = new Function('data, formData, globalState', onRowSave);
+    return (data, formData, globalState) => {
+      const preparedData = executer(data, formData, globalState);
+      return Promise.resolve(preparedData);
+    };
+  }, [onRowSave]);
+
   const updater = (rowIndex: number, rowData: any): Promise<any> => {
     const repository = store.getRepository();
     if (!repository)
       return Promise.reject('Repository is not specified');
 
-    return repository.performUpdate(rowIndex, rowData).then(response => {
-      setRowData(rowIndex, rowData/*, response*/);
-      return response;
+    return performOnRowSave(rowData, formData ?? {}, globalState).then(preparedData => {
+      const options = repository.repositoryType === BackendRepositoryType
+        ? { customUrl: customUpdateUrl } as IUpdateOptions
+        : undefined;
+
+      return repository.performUpdate(rowIndex, preparedData, options).then(response => {
+        setRowData(rowIndex, preparedData/*, response*/);
+        return response;
+      });
     });
   };
 
@@ -212,7 +251,11 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     if (!repository)
       return Promise.reject('Repository is not specified');
 
-    return repository.performCreate(0, rowData).then(() => {
+    const options = repository.repositoryType === BackendRepositoryType
+      ? { customUrl: customCreateUrl } as ICreateOptions
+      : undefined;
+
+    return repository.performCreate(0, rowData, options).then(() => {
       store.refreshTable();
     });
   };
@@ -222,7 +265,11 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     if (!repository)
       return Promise.reject('Repository is not specified');
 
-    return repository.performDelete(rowIndex, rowData).then(() => {
+    const options = repository.repositoryType === BackendRepositoryType
+      ? { customUrl: customDeleteUrl } as IDeleteOptions
+      : undefined;
+
+    return repository.performDelete(rowIndex, rowData, options).then(() => {
       store.refreshTable();
     });
   };
@@ -263,6 +310,9 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     canAddInline: crudOptions.canAdd,
     newRowCapturePosition: props.newRowCapturePosition,
     createAction: creater,
+    newRowInitData: crudOptions.onNewRowInitialize,
+    inlineEditMode: props.inlineEditMode,
+    inlineSaveMode: props.inlineSaveMode,
   };
 
   return (

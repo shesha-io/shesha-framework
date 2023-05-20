@@ -2,7 +2,7 @@ import { IConfigurableColumnsProps } from "providers/datatableColumnsConfigurato
 import React, { ComponentType, useMemo } from "react";
 import { FC } from "react";
 import { DataTableColumnDto, IGetListDataPayload, ITableDataInternalResponse } from "../interfaces";
-import { IHasRepository, IRepository } from "./interfaces";
+import { IHasModelType, IHasRepository, IRepository } from "./interfaces";
 
 export interface IWithInMemoryRepositoryArgs {
     value?: object;
@@ -36,12 +36,13 @@ const createRepository = (_args: IWithInMemoryRepositoryArgs): IRepository => {
     };
 
     const exportToExcel = (payload: IGetListDataPayload): Promise<void> => {
-        console.log('LOG: useBackendRepository.exportToExcel()', payload);
+        console.log('LOG: useInMemoryRepository.exportToExcel()', payload);
 
         return  Promise.reject('Export to Excel not implemented');
     };
 
     const repository: IRepository = {
+        repositoryType: 'inMemory-repository',
         fetch,
         exportToExcel,
         prepareColumns,
@@ -54,13 +55,13 @@ const createRepository = (_args: IWithInMemoryRepositoryArgs): IRepository => {
 
 export const useInMemoryRepository = (args: IWithInMemoryRepositoryArgs): IRepository => useMemo<IRepository>(() => createRepository(args), []);
 
-export function withInMemoryRepository<WrappedProps>(WrappedComponent: ComponentType<WrappedProps & IHasRepository>, args: IWithInMemoryRepositoryArgs): FC<WrappedProps> {
+export function withInMemoryRepository<WrappedProps>(WrappedComponent: ComponentType<WrappedProps & IHasRepository & IHasModelType>, args: IWithInMemoryRepositoryArgs): FC<WrappedProps> {
     const { value } = args;
 
     return props => {
         const repository = useInMemoryRepository({ value });
 
-        return (<WrappedComponent {...props} repository={repository} />);
+        return (<WrappedComponent {...props} repository={repository} modelType={null}/>);
     };
 };
 

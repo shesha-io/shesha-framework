@@ -7,8 +7,8 @@ import SectionSeparator from '../../../components/sectionSeparator';
 import CodeEditor from '../../../components/formDesigner/components/codeEditor/codeEditor';
 import PropertyAutocomplete from '../../../components/propertyAutocomplete/propertyAutocomplete';
 import { ConfigurableActionConfigurator } from '../../configurableActionsConfigurator';
-import { InlineEditMode, InlineSaveMode, YesNoInherit } from 'components/dataTable/interfaces';
-import { NewRowCapturePosition } from 'components/reactTable/interfaces';
+import { YesNoInherit } from 'components/dataTable/interfaces';
+import { InlineEditMode, InlineSaveMode, NewRowCapturePosition } from 'components/reactTable/interfaces';
 
 interface ITypedOption<T = string> {
   label: React.ReactNode;
@@ -53,6 +53,7 @@ function TableSettings(props: IProps) {
   const [form] = Form.useForm();
   const canEditInline = Form.useWatch('canEditInline', form);
   const canAddInline = Form.useWatch('canAddInline', form);
+  const canDeleteInline = Form.useWatch('canDeleteInline', form);  
 
   const toggleColumnsModal = () => setState(prev => ({ ...prev, showColumnsModal: !prev?.showColumnsModal }));
 
@@ -117,7 +118,7 @@ function TableSettings(props: IProps) {
       <Form.Item name="newRowCapturePosition" label="New row capture position" hidden={canAddInline === 'no'}>
         <Select disabled={props.readOnly} options={rowCapturePositions} />
       </Form.Item>
-      <Form.Item name="newRowInsertPosition" label="New row insert position" hidden={canAddInline === 'no'}>
+      <Form.Item name="newRowInsertPosition" label="New row insert position" /*hidden={canAddInline === 'no'}*/ hidden={true} /* note: hidden until review of rows drag&drop */>
         <Select disabled={props.readOnly} options={rowCapturePositions} />
       </Form.Item>
       <Form.Item name="customCreateUrl" label="Custom create url" hidden={canEditInline === 'no'}>
@@ -162,6 +163,10 @@ function TableSettings(props: IProps) {
       <Form.Item name="canDeleteInline" label="Can delete inline">
         <Select disabled={props.readOnly} options={yesNoInheritOptions} />
       </Form.Item>
+      <Form.Item name="customDeleteUrl" label="Custom delete url" hidden={canDeleteInline === 'no'}>
+        <Input readOnly={props.readOnly} />
+      </Form.Item>
+
       <SectionSeparator title="Row drag and drop" />
 
       <Form.Item

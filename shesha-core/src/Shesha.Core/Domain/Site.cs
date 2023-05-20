@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Domain
 {
+    [Discriminator]
     public class Site : FullAuditedEntity<Guid>
     {
         public virtual string Name { get; set; }

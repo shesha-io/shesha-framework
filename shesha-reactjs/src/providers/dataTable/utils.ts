@@ -7,16 +7,17 @@ import { convertJsonLogicNode, IArgumentEvaluationResult } from '../../utils/jso
 import { IConfigurableColumnsProps, IDataColumnsProps } from 'providers/datatableColumnsConfigurator/models';
 import { camelcaseDotNotation } from 'utils/string';
 import { ProperyDataType } from 'interfaces/metadata';
+import { NestedPropertyMetadatAccessor } from 'providers/metadataDispatcher/contexts';
 
 // Filters should read properties as camelCase ?:(
-export const evaluateDynamicFilters = (filters: IStoredFilter[], mappings: IMatchData[]): IStoredFilter[] => {
+export const evaluateDynamicFilters = async (filters: IStoredFilter[], mappings: IMatchData[], propertyMetadataAccessor: NestedPropertyMetadatAccessor): Promise<IStoredFilter[]> => {
+  if (filters?.length === 0 || !mappings?.length) 
+    return filters;
 
-  if (filters?.length === 0 || !mappings?.length) return filters;
-
-  const convertedFilters = filters.map<IStoredFilter>(filter => {
-   
+  const convertedFilters = await Promise.all(filters.map(async (filter) => {
     // correct way of processing JsonLogic rules
     if (typeof filter.expression === 'object') {
+
       const evaluator = (operator: string, args: object[], argIndex: number): IArgumentEvaluationResult => {
 
         const argValue = args[argIndex];
@@ -44,9 +45,16 @@ export const evaluateDynamicFilters = (filters: IStoredFilter[], mappings: IMatc
         unevaluatedExpressions: [],
       };
 
-      const convertedExpression = convertJsonLogicNode(filter.expression, {
+      const getVariableDataType = (variable: string): Promise<string> => {
+        return propertyMetadataAccessor
+          ? propertyMetadataAccessor(variable).then(m => m.dataType)
+          : Promise.resolve('string');
+      };
+
+      const convertedExpression = await convertJsonLogicNode(filter.expression, {
         argumentEvaluator: evaluator,
         mappings,
+        getVariableDataType,
         onEvaluated: args => {
           evaluationData.hasDynamicExpression = true;
           evaluationData.allFieldsEvaluatedSuccessfully = evaluationData.allFieldsEvaluatedSuccessfully && args.success;
@@ -58,11 +66,11 @@ export const evaluateDynamicFilters = (filters: IStoredFilter[], mappings: IMatc
         ...filter,
         ...evaluationData,
         expression: convertedExpression,
-      };
+      } as IStoredFilter;
     }
 
-    return filter;
-  });
+    return Promise.resolve(filter);
+  }));
 
   return convertedFilters;
 };

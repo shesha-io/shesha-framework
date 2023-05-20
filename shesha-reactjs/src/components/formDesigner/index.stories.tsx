@@ -8,7 +8,7 @@ import StoryApp from '../storyBookApp';
 
 export default {
   title: 'Components/Temp/FormDesigner',
-  component: FormDesigner
+  component: FormDesigner,
 } as Meta;
 
 export interface IFormDesignerStoryProps {
@@ -25,12 +25,21 @@ const DesignerTemplate: Story<IFormDesignerStoryProps> = ({ formId }) => (
   </StoryApp>
 );
 
-export const Bugfix = addStory(DesignerTemplate, {
-  formId: '7065cf3a-a8ec-494e-b2c8-273274b86d1f'
+export const TestMap = addStory(DesignerTemplate, {
+  formId: 'a91902be-ca79-4230-a7a5-9084db9b2295',
+  // formId: {
+  //   name: 'test-wizard-form',
+  //   module: 'Shesha',
+  // },
+  // mode: 'readonly',
+});
+
+export const OrderDetails = addStory(DesignerTemplate, {
+  formId: 'a9624689-59f5-45fd-9185-c82037b8fe25',
 });
 
 export const ColumnSettings = addStory(DesignerTemplate, {
-  formId: 'e56015be-ea87-4d6a-8f67-d69462d4a94e'
+  formId: 'e56015be-ea87-4d6a-8f67-d69462d4a94e',
 });
 
 export const BedFilter = addStory(DesignerTemplate, {
@@ -49,15 +58,15 @@ export const FormsIndex = addStory(DesignerTemplate, {
   formId: {
     name: 'forms',
     module: 'shesha',
-  }
+  },
 });
 
 export const OrganisationEdit = addStory(DesignerTemplate, {
   formId: {
     name: 'organisation-edit',
     module: 'Test Module',
-    version: 1
-  }
+    version: 1,
+  },
 });
 
 export const PersonEdit = addStory(DesignerTemplate, {

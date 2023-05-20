@@ -34,19 +34,19 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps> = {
         {isReadOnly ? (
           <ReadOnlyDisplayFormItem type="switch" disabled={disabled} />
         ) : (
-          <Switch disabled={disabled} style={style} size={size as SwitchSize} />
+          <Switch className="sha-switch" disabled={disabled} style={style} size={size as SwitchSize} />
         )}
       </ConfigurableFormItem>
     );
   },
-  initModel: model => {
+  initModel: (model) => {
     return {
       ...model,
       label: 'Switch',
     };
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
 };
 
 export default SwitchComponent;

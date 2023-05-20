@@ -1,16 +1,16 @@
 name: publish-nuget-npm
 
-# This workflow is designed to build the shesha-core and shesha-reactjs applications 
+# This workflow is designed to build the shesha-core and shesha-reactjs applications
 # and then publish them to their respective repositories i.e. nuget and npmjs
 
 on:
   push:
-    branches: 
+    branches:
       - main
 env:
-  NODE_VERSION: '18'
+  NODE_VERSION: "18"
   #PYTHON_VERSOIN: '2.7.18'
-  DOTNET_VERSION: '6.x'
+  DOTNET_VERSION: "6.x"
 
 jobs:
   # build the project
@@ -33,7 +33,7 @@ jobs:
         uses: mathieudutour/github-tag-action@v6.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          tag_prefix: ''
+          tag_prefix: ""
 
       # ============ SETUP ENVIRONMENTS ===============
 
@@ -42,7 +42,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
-          registry-url: 'https://registry.npmjs.org'
+          registry-url: "https://registry.npmjs.org"
       # Setup Python for for shesha-reactjs (solution currently needs python2 to run)
       #- uses: actions/setup-python@v4
       #  with:
@@ -52,7 +52,7 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-      
+
       # ============ RESOLVE DEPENDENCIES ===============
 
       # DOTNET restore for shesha-core
@@ -78,8 +78,8 @@ jobs:
         uses: reedyuk/npm-version@1.1.1
         with:
           version: ${{ steps.tag_version.outputs.new_tag }}
-          package: 'shesha-reactjs/'
-      
+          package: "shesha-reactjs/"
+
       # ============ BUILD ===============
 
       # Build shesha-core (Solution) for production

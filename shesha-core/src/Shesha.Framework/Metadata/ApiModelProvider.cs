@@ -3,6 +3,7 @@ using Abp.Runtime.Caching;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Controllers;
+using Shesha.Extensions;
 using Shesha.Metadata.Dtos;
 using Shesha.Reflection;
 using System;
@@ -55,7 +56,9 @@ namespace Shesha.Metadata
                     !t.IsArray &&
                     t != typeof(string) &&
                     t != typeof(object) &&
-                    !t.Namespace.StartsWith("Abp"))
+                    !t.Namespace.StartsWith("Abp") &&
+                    // skip entity types, they shouldn't be returned by the application service at all
+                    !t.IsEntityType())
                 .OrderBy(t => t.Name)
                 .ToList();
 

@@ -10,7 +10,7 @@ import {
   ColumnFilter,
   IPublicDataTableActions,
 } from './interfaces';
-import { IRepository } from './repository/interfaces';
+import { IHasModelType, IRepository } from './repository/interfaces';
 
 export type IFlagProgressFlags =
   | 'isFiltering'
@@ -53,7 +53,7 @@ export interface IDataTableStoredConfig {
 }
 
 export interface IDataTableStateContext
-  extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
+  extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags>, IHasModelType {
 
   exportToExcelError?: string;
 
@@ -66,9 +66,6 @@ export interface IDataTableStateContext
 
   /** table columns */
   columns?: ITableColumn[];
-
-  /** Id of the parent entity. Is used for child tables */
-  parentEntityId?: string;
 
   /** Datatable data (fetched from the back-end) */
   tableData?: object[];
@@ -192,13 +189,13 @@ export const DATA_TABLE_CONTEXT_INITIAL_STATE: IDataTableStateContext = {
   tableConfigLoaded: false,
   tableSorting: [],
   tableFilter: [],
-  parentEntityId: null,
   saveFilterModalVisible: false,
   selectedIds: [],
   configurableColumns: [],
   tableFilterDirty: null,
   persistSelectedFilters: true, // Persist by default
   userConfigId: null,
+  modelType: null,
 };
 
 export interface DataTableFullInstance extends IDataTableStateContext, IDataTableActionsContext { }

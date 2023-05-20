@@ -2,8 +2,8 @@ import React from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
-import { evaluateString, getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import { useForm, useFormData, useGlobalState } from '../../../../providers';
+import { evaluateString, getStyle, validateConfigurableComponentSettings } from 'providers/form/utils';
+import { useForm, useFormData, useGlobalState } from 'providers';
 import { getSettings } from './settings';
 import ShaIcon from '../../../shaIcon';
 import { IAlertComponentProps } from './interfaces';
@@ -27,6 +27,7 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
 
     return (
       <Alert
+        className="sha-alert"
         message={evaluatedMessage}
         type={alertType}
         description={evaluatedDescription}
@@ -37,12 +38,12 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
       />
     );
   },
-  initModel: model => ({
+  initModel: (model) => ({
     alertType: 'info',
     ...model,
   }),
-  settingsFormMarkup: data => getSettings(data),
-  validateSettings: model => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 };
 
 export default AlertComponent;
