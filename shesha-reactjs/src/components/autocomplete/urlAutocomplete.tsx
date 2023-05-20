@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Select } from 'antd';
-import { AjaxResponseBase, AutocompleteItemDto } from '../../apis/autocomplete';
-import { useGet } from 'restful-react';
+import { useGet } from 'hooks';
 import { useDebouncedCallback } from 'use-debounce';
 import { useSubscribe } from '../..';
 import { ReadOnlyDisplayFormItem } from './../readOnlyDisplayFormItem';
-import { CustomLabeledValue, ISelectOption, IUrlAutocompleteProps, IUrlFetcherQueryParams } from './models';
+import { AutocompleteItemDto, CustomLabeledValue, ISelectOption, IUrlAutocompleteProps, IUrlFetcherQueryParams } from './models';
 import { getQueryString, trimQueryString } from './utils';
+import { IAjaxResponseBase } from 'interfaces/ajaxResponse';
 
 export const UrlAutocomplete = <TValue,>(props: IUrlAutocompleteProps<TValue>) => {
   const {
@@ -31,7 +31,7 @@ export const UrlAutocomplete = <TValue,>(props: IUrlAutocompleteProps<TValue>) =
     allowFreeText = false,
   } = props;
 
-  const urlFetcher = useGet<any, AjaxResponseBase, IUrlFetcherQueryParams, void>(
+  const urlFetcher = useGet<any, IAjaxResponseBase, IUrlFetcherQueryParams, void>(
     decodeURI(trimQueryString(dataSourceUrl)) || '',
     {
       lazy: true,

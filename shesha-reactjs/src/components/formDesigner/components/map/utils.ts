@@ -14,6 +14,7 @@ export const evaluateFilters = (
   globalState: IAnyObject,
   propertyMetadataAccessor: NestedPropertyMetadatAccessor
 ) => {
+  return '';
   if (!item.filters) return '';
 
   const localFormData = !isEmpty(formData) ? camelCaseKeys(formData, { deep: true, pascalCase: true }) : formData;

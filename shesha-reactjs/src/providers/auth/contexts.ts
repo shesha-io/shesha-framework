@@ -3,15 +3,15 @@ import {
   ResetPasswordVerifyOtpInput,
   ResetPasswordVerifyOtpResponse,
   ResetPasswordUsingTokenInput,
-  AjaxResponseBase,
   UserResetPasswordSendOtpQueryParams,
-} from '../../apis/user';
-import { UserLoginInfoDto } from '../../apis/session';
+} from 'apis/user';
 import { IErrorInfo } from '../../interfaces/errorInfo';
-import { AuthenticateModel } from '../../apis/tokenAuth';
 import IRequestHeaders from '../../interfaces/requestHeaders';
 import { IFlagsSetters, IFlagsState } from '../../interfaces';
 import { EMPTY_FLAGS_STATE } from '../../interfaces/flagsState';
+import { AuthenticateModel } from 'apis/tokenAuth';
+import { UserLoginInfoDto } from 'apis/session';
+import { IAjaxResponseBase } from 'interfaces/ajaxResponse';
 
 export type IFlagProgressFlags =
   | 'isIdle'
@@ -41,8 +41,6 @@ export interface ILoginForm extends AuthenticateModel {
   rememberMe?: boolean;
 }
 
-export type IProfileLoadedHandler = () => Promise<void>;
-
 export interface IAuthStateContext
   extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
   isCheckingAuth?: boolean;
@@ -64,7 +62,7 @@ export interface IAuthStateContext
   isResetPasswordUsingTokenSuccessful?: boolean;
   resetPasswordUsingTokenError?: string;
   resetPasswordUsingTokenReqPayload?: ResetPasswordUsingTokenInput;
-  resetPasswordUsingTokenResPayload?: AjaxResponseBase;
+  resetPasswordUsingTokenResPayload?: IAjaxResponseBase;
   resetPasswordVerifyOtpPayload?: UserResetPasswordSendOtpQueryParams;
   //#endregion
 }
@@ -87,9 +85,6 @@ export interface IAuthActionsContext
   checkAuth?: () => void;
 
   fireHttpHeadersChanged?: (state?: IAuthStateContext) => void;
-
-  subscribeOnProfileLoading: (name: string, handler: IProfileLoadedHandler) => void;
-  unSubscribeOnProfileLoading: (name: string) => void;
 
   /* NEW_ACTION_ACTION_DECLARATION_GOES_HERE */
 }

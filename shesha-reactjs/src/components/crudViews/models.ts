@@ -1,14 +1,47 @@
-import { GetDataError, UseGetProps, UseMutateReturn } from 'restful-react';
+import { GetDataError, GetState, UseGetProps } from 'hooks/useGet';
 
-export type UseGenericGetProps = Omit<UseGetProps<any, any, any, any>, 'path'>;
+export interface MutateState<TData, TError> {
+  error: GetState<TData, TError>["error"];
+  loading: boolean;
+}
 
-declare type RefetchOptions<TData, TError, TQueryParams, TPathParams> = Partial<
-  Omit<UseGetProps<TData, TError, TQueryParams, TPathParams>, 'lazy'>
+export interface MutateRequestOptions<TQueryParams, TPathParams> extends RequestInit {
+  /**
+   * Query parameters
+   */
+  queryParams?: TQueryParams;
+  /**
+   * Path parameters
+   */
+  pathParams?: TPathParams;
+}
+
+export type MutateMethod<TData, TRequestBody, TQueryParams, TPathParams> = (
+  data: TRequestBody,
+  mutateRequestOptions?: MutateRequestOptions<TQueryParams, TPathParams>,
+) => Promise<TData>;
+
+export interface UseMutateReturn<TData, TError, TRequestBody, TQueryParams, TPathParams>
+extends MutateState<TData, TError> {
+/**
+ * Cancel the current fetch
+ */
+cancel: () => void;
+/**
+ * Call the mutate endpoint
+ */
+mutate: MutateMethod<TData, TRequestBody, TQueryParams, TPathParams>;
+}
+
+export type UseGenericGetProps = Omit<UseGetProps<any, any, any>, 'path'>;
+
+declare type RefetchOptions<TData, TQueryParams, TPathParams> = Partial<
+  Omit<UseGetProps<TData, TQueryParams, TPathParams>, 'lazy'>
 >;
 
 export interface IDataFetcher<TData = any, TError = any, TQueryParams = any, TPathParams = any> {
   loading: boolean;
-  refetch: (options?: RefetchOptions<TData, TError, TQueryParams, TPathParams>) => Promise<TData | null>;
+  refetch: (options?: RefetchOptions<TData, TQueryParams, TPathParams>) => Promise<TData | null>;
   error: GetDataError<TError> | null;
   data: TData | null;
 }

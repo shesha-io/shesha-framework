@@ -1,7 +1,7 @@
-import React, { FC, useContext } from 'react';
+import React, { FC, PropsWithChildren, useContext } from 'react';
 import { IListItemState, ListItemContext } from './context';
 
-const ListItemProvider: FC<IListItemState> = ({ children, ...props }) => {
+const ListItemProvider: FC<PropsWithChildren<IListItemState>> = ({ children, ...props }) => {
   return <ListItemContext.Provider value={props}>{children}</ListItemContext.Provider>;
 };
 

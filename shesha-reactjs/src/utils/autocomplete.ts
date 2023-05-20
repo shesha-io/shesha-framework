@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useGet } from 'restful-react';
+import { useGet } from 'hooks';
 import { GENERIC_ENTITIES_ENDPOINT } from 'shesha-constants';
 import { IAbpWrappedGetEntityListResponse, EntityData, IGenericGetAllPayload } from 'interfaces/gql';
 import { convertDotNotationPropertiesToGraphQL } from 'providers/form/utils';

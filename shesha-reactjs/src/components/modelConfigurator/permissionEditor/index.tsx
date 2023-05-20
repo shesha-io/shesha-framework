@@ -3,7 +3,7 @@ import permissionSettingsMarkup from '../permissionSettings.json';
 import ConfigurableForm from '../../configurableForm';
 import { FormMarkup } from '../../../providers/form/models';
 import { Form } from 'antd';
-import { PermissionDto } from '../../../apis/permission';
+import { PermissionDto } from 'apis/permission';
 
 interface IPermissionEditorComponentProps {
     name: string;

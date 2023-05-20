@@ -152,25 +152,27 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = props => {
           <LayoutHeader collapsed={collapsed} customComponent={customComponent} />
         </Header>
         <Content className={classNames({ collapsed })} style={contentStyle}>
-          {breadcrumb}
-          <div className={classNames('sha-layout-heading', headingClass)}>
-            {renderPageTitle()} {renderPageControls()}
-          </div>
+          <>
+            {breadcrumb}
+            <div className={classNames('sha-layout-heading', headingClass)}>
+              {renderPageTitle()} {renderPageControls()}
+            </div>
 
-          <div
-            className={classNames('sha-site-layout-background', headingClass, {
-              'sha-site-layout-background-no-padding': noPadding,
-            })}
-            style={{ ...layoutBackgroundStyle, background: themeFromStorage?.layoutBackground }}
-          >
-            {toolbar && (
-              <div className="sha-site-layout-toolbar">
-                <NodeOrFuncRenderer>{toolbar}</NodeOrFuncRenderer>
-              </div>
-            )}
+            <div
+              className={classNames('sha-site-layout-background', headingClass, {
+                'sha-site-layout-background-no-padding': noPadding,
+              })}
+              style={{ ...layoutBackgroundStyle, background: themeFromStorage?.layoutBackground }}
+            >
+              {toolbar && (
+                <div className="sha-site-layout-toolbar">
+                  <NodeOrFuncRenderer>{toolbar}</NodeOrFuncRenderer>
+                </div>
+              )}
 
-            {children}
-          </div>
+              {children}
+            </div>
+          </>
         </Content>
 
         {footer && (

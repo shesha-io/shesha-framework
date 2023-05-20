@@ -1,9 +1,9 @@
 import { Layout } from "antd";
-import { FC } from "react";
+import { FC, PropsWithChildren } from "react";
 
 const { Header, Footer, Content } = Layout;
 
-const PortalLayout: FC = ({ children }) => {
+const PortalLayout: FC<PropsWithChildren> = ({ children }) => {
   return (
     <Layout>
       <Header>Header</Header>

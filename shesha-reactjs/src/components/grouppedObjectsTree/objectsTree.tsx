@@ -132,7 +132,6 @@ export const ObjectsTree = <TItem,>(props: IProps<TItem>) => {
                 clearTimeout(timeout);
             }, 500);
         }
-        return null;
     }, [scrollId]);
 
     useEffect(() => {

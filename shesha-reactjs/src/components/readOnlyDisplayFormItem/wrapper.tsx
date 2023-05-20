@@ -1,4 +1,4 @@
-import React, { FC, Fragment } from 'react';
+import React, { FC, Fragment, PropsWithChildren } from 'react';
 import ReadOnlyDisplayFormItem from '.';
 import { IReadOnlyDisplayFormItemProps } from './models';
 
@@ -6,7 +6,7 @@ interface IProps extends IReadOnlyDisplayFormItemProps {
   readOnly: boolean;
 }
 
-const ReadOnlyDisplayFormItemWrapper: FC<IProps> = ({ children, readOnly, ...props }) => {
+const ReadOnlyDisplayFormItemWrapper: FC<PropsWithChildren<IProps>> = ({ children, readOnly, ...props }) => {
   if (readOnly) {
     return <ReadOnlyDisplayFormItem {...props} />;
   }

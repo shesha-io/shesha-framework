@@ -7,7 +7,7 @@ export function useAsyncMemo<T>(factory: () => Promise<T> | undefined | null, de
     let cancel = false;
     const promise = factory();
     if (promise === undefined || promise === null) 
-        return undefined;
+        return () => { /*nop*/ };
     
     promise.then((val) => {
       if (!cancel) {

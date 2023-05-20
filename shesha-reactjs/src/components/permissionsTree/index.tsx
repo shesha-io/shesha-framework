@@ -75,9 +75,9 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
 
   const fetcher = usePermissionGetAllTree({ queryParams: {}, lazy: true });
   const { loading: isFetchingData, error: fetchingDataError, data: fetchingDataResponse } = fetcher;
-  const updateParentRequest = usePermissionUpdateParent({ queryParams: {} });
+  const updateParentRequest = usePermissionUpdateParent();
   const { loading: isParentUpdating, error: updateParentDataError } = updateParentRequest;
-  const deleteRequest = usePermissionDelete({ queryParams: {} });
+  const deleteRequest = usePermissionDelete();
   const { loading: isDeleting, error: deleteDataError } = deleteRequest;
 
   const { getAction, setFormMode } = useForm(false);

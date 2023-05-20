@@ -35,6 +35,8 @@ export { type ITableColumn, type IDataTableInstance } from '../providers/dataTab
 export type { PageWithLayout } from './pageWithLayout';
 export type { InsertMode } from './insertMode';
 export type { IColor, IHsl, IHsv, IRgb } from './color';
+export type { IApiEndpoint } from './metadata';
+export type { IAjaxResponse, IAjaxResponseBase } from './ajaxResponse';
 
 export * from './formDesigner';
 export * from './shesha';

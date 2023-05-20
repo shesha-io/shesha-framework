@@ -1,5 +1,5 @@
 import { ColProps } from 'antd';
-import React, { FC, useContext } from 'react';
+import React, { FC, PropsWithChildren, useContext } from 'react';
 import { FormItemActionsContext, FormItemStateContext } from './contexts';
 
 export interface FormItemProviderProps {
@@ -8,7 +8,7 @@ export interface FormItemProviderProps {
   namePrefix?: string;
 }
 
-const FormItemProvider: FC<FormItemProviderProps> = ({ children, labelCol, wrapperCol, namePrefix }) => {
+const FormItemProvider: FC<PropsWithChildren<FormItemProviderProps>> = ({ children, labelCol, wrapperCol, namePrefix }) => {
   return (
     <FormItemStateContext.Provider
       value={{

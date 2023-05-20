@@ -4,7 +4,7 @@ import {
 } from './contexts';
 import { ModelActionEnums } from './actions';
 import { handleActions } from 'redux-actions';
-import { ModelConfigurationDto } from '../../apis/modelConfigurations';
+import { ModelConfigurationDto } from 'apis/modelConfigurations';
 
 const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
   {

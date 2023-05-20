@@ -1,11 +1,11 @@
 import { MoreOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 import React, { FC } from 'react';
-import { SortableElement, SortableHandle } from 'react-sortable-hoc';
 import { Row } from 'react-table';
 import { RowCell } from './rowCell';
 import { CrudProvider } from 'providers/crudContext';
 import { InlineSaveMode } from './interfaces';
+import { IFlatComponentsStructure } from 'providers/form/models';
 
 export type RowEditMode = 'read' | 'edit';
 
@@ -24,8 +24,10 @@ export interface ISortableRowProps {
   editMode?: RowEditMode;
   allowChangeEditMode: boolean;
   inlineSaveMode?: InlineSaveMode;
+  inlineEditorComponents?: IFlatComponentsStructure;
 }
 
+/*
 export const SortableRow = SortableElement<ISortableRowProps>(props => <TableRow {...props} />);
 
 export const RowDragHandle = SortableHandle(() => (
@@ -33,6 +35,14 @@ export const RowDragHandle = SortableHandle(() => (
     <MoreOutlined />
   </div>
 ));
+*/
+export const SortableRow: FC<ISortableRowProps> = (props) => (<TableRow {...props} />);
+
+export const RowDragHandle = () => (
+  <div className="row-handle" style={{ cursor: 'grab' }}>
+    <MoreOutlined />
+  </div>
+);
 
 export const TableRow: FC<ISortableRowProps> = props => {
   const { 
@@ -49,6 +59,7 @@ export const TableRow: FC<ISortableRowProps> = props => {
     editMode,
     allowChangeEditMode,
     inlineSaveMode,
+    inlineEditorComponents,
   } = props;
 
   const handleRowClick = () => onClick(row);
@@ -68,6 +79,7 @@ export const TableRow: FC<ISortableRowProps> = props => {
       mode={editMode === 'edit' ? 'update' : 'read'}
       allowChangeMode={allowChangeEditMode}
       autoSave={inlineSaveMode === 'auto'}
+      components={inlineEditorComponents}
     >
       <div
         onClick={handleRowClick}

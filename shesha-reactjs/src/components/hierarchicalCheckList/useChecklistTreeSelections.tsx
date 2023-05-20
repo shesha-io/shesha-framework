@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
-import { CheckListItemModel, useCheckListGetSelection } from '../../apis/checkList';
+import { CheckListItemModel, useCheckListGetSelection } from 'apis/checkList';
 import { treeToList } from '../../utils/tree';
 import { ICheckListItemSelection } from './interface';
 

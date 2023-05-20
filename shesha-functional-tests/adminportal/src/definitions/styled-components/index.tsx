@@ -2,7 +2,7 @@ export * from "./common";
 export * from "./dark";
 export * from "./light";
 
-import React, { FC } from "react";
+import React, { FC, PropsWithChildren } from "react";
 import { ThemeProvider } from "styled-components";
 
 import { dark } from "./dark";
@@ -23,7 +23,7 @@ export const useTheme = () => {
     };
 };
 
-export const StyledThemeProvider: FC = ({ children }) => {
+export const StyledThemeProvider: FC<PropsWithChildren> = ({ children }) => {
     const [theme, setTheme] = React.useState("light");
 
     const toggle = () => {

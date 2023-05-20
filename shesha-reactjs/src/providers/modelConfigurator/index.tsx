@@ -7,27 +7,22 @@ import {
 } from './contexts';
 import {
   createNewAction,
-
   changeModelIdAction,
-
   loadRequestAction,
   loadSuccessAction,
   loadErrorAction,
-
   saveRequestAction,
   saveSuccessAction,
   saveErrorAction,
-
   deleteRequestAction,
   deleteSuccessAction,
   deleteErrorAction,
   /* NEW_ACTION_IMPORT_GOES_HERE */
 } from './actions';
-import { ModelConfigurationDto, modelConfigurationsGetById, modelConfigurationsUpdate, modelConfigurationsCreate } from '../../apis/modelConfigurations';
 import { useSheshaApplication } from '../../providers';
 import { FormInstance } from 'antd';
 import { IModelConfiguratorInstance } from './interfaces';
-import { entityConfigDelete } from '../../apis/entityConfig';
+import { ModelConfigurationDto, modelConfigurationsGetById, modelConfigurationsUpdate, modelConfigurationsCreate, entityConfigDelete } from 'apis/modelConfigurations';
 
 export interface IModelConfiguratorProviderPropsBase {
   baseUrl?: string;

@@ -1,6 +1,5 @@
 import React, { useEffect, ReactNode, MutableRefObject, forwardRef, useImperativeHandle } from 'react';
 import { Form, Spin } from 'antd';
-import { requestHeaders } from '../../utils/requestHeaders';
 import { IToolbarItem } from '../../interfaces';
 import { MainLayout, IndexToolbar, ValidationErrors, ConfigurableForm } from '../';
 import { useUi } from '../../providers';
@@ -94,7 +93,6 @@ const GenericDetailsPage = forwardRef<CommonCrudHandles, IGenericDetailsPageProp
 
   const { loading: loading, refetch: fetchData, error: fetchError, data: serverData } = props?.fetcher({
     lazy: true,
-    requestOptions: { headers: requestHeaders() },
     queryParams: { id: props?.id },
   });
 
