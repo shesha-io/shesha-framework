@@ -7,7 +7,6 @@ import { FormItemProvider, SubFormProvider, useAppConfigurator, useForm, useGlob
 import { getQueryParams } from 'utils/url';
 import camelCaseKeys from 'camelcase-keys';
 import { IListControlProps, IListComponentRenderState, IEvaluatedFilters } from './models';
-import { evaluateDynamicFilters } from 'providers/dataTable/utils';
 import { useDebouncedCallback } from 'use-debounce';
 import { useDelete } from 'hooks';
 import {
@@ -43,6 +42,7 @@ import { DEFAULT_CONFIRM_MESSAGE, DEFAULT_TOTAL_RECORD } from './constants';
 import { ConfigurationItemVersionStatusMap } from '../../../../utils/configurationFramework/models';
 import FormInfo from '../../../configurableForm/formInfo';
 import { useAsyncMemo } from 'hooks/useAsyncMemo';
+import { evaluateDynamicFilters } from 'utils';
 
 /** @deprecated: Use DataList instead */
 const ListControl: FC<IListControlProps> = props => {

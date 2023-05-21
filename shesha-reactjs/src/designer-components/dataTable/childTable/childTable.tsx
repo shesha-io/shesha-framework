@@ -3,7 +3,7 @@ import React, { FC, Fragment, MutableRefObject } from 'react';
 import { CollapsiblePanel, GlobalTableFilter, Show, TablePager } from 'components';
 import { useDataTable, useForm, useGlobalState, useNestedPropertyMetadatAccessor, useSheshaApplication } from 'providers';
 import ComponentsContainer from 'components/formDesigner/componentsContainer';
-import { evaluateDynamicFilters, hasDynamicFilter } from 'providers/dataTable/utils';
+import { hasDynamicFilter } from 'providers/dataTable/utils';
 import './styles/index.less';
 import { ButtonGroup } from 'components/formDesigner/components/button/buttonGroup/buttonGroupComponent';
 import camelCaseKeys from 'camelcase-keys';
@@ -11,6 +11,7 @@ import _, { isEmpty } from 'lodash';
 import { useDeepCompareEffect } from 'react-use';
 import { IChildTableComponentProps } from '.';
 import { evaluateString } from 'providers/form/utils';
+import { evaluateDynamicFilters } from 'utils';
 
 export interface IChildTableProps extends IChildTableComponentProps {
   componentRef: MutableRefObject<any>;

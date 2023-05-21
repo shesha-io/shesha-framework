@@ -1,80 +1,11 @@
-import { executeExpression } from './../form/utils';
-import { ColumnSorting, DataTableColumnDto, IActionColumnProps, ITableActionColumn, IStoredFilter, ITableColumn, ITableFilter, SortDirection, ITableDataColumn } from './interfaces';
-import { IMatchData } from '../form/utils';
-import moment, { Moment, isMoment, isDuration, Duration } from 'moment';
-import { IDataTableUserConfig, MIN_COLUMN_WIDTH } from './contexts';
-import { convertJsonLogicNode, IArgumentEvaluationResult } from '../../utils/jsonLogic';
+import { ProperyDataType } from 'interfaces/metadata';
+import moment, { Duration, Moment, isDuration, isMoment } from 'moment';
 import { IConfigurableColumnsProps, IDataColumnsProps } from 'providers/datatableColumnsConfigurator/models';
 import { camelcaseDotNotation } from 'utils/string';
-import { ProperyDataType } from 'interfaces/metadata';
-import { NestedPropertyMetadatAccessor } from 'providers/metadataDispatcher/contexts';
+import { IDataTableUserConfig, MIN_COLUMN_WIDTH } from './contexts';
+import { ColumnSorting, DataTableColumnDto, IActionColumnProps, IStoredFilter, ITableActionColumn, ITableColumn, ITableDataColumn, ITableFilter, SortDirection } from './interfaces';
 
 // Filters should read properties as camelCase ?:(
-export const evaluateDynamicFilters = async (filters: IStoredFilter[], mappings: IMatchData[], propertyMetadataAccessor: NestedPropertyMetadatAccessor): Promise<IStoredFilter[]> => {
-  if (filters?.length === 0 || !mappings?.length) 
-    return filters;
-
-  const convertedFilters = await Promise.all(filters.map(async (filter) => {
-    // correct way of processing JsonLogic rules
-    if (typeof filter.expression === 'object') {
-
-      const evaluator = (operator: string, args: object[], argIndex: number): IArgumentEvaluationResult => {
-
-        const argValue = args[argIndex];
-        // special handling for specifications
-        // todo: move `is_satisfied` operator name to constant
-        if (operator === 'is_satisfied' && argIndex === 1) {
-          // second argument is an expression that should be converted to boolean
-          if (typeof (argValue) === 'string') {
-            const evaluationContext = mappings.reduce((acc, item) => ({ ...acc, [item.match]: item.data }), {});
-            const evaluatedValue = executeExpression<boolean>(argValue, evaluationContext, false, err => {
-              console.error('Failed to convert value', err);
-              return null;
-            });
-
-            return { handled: evaluatedValue !== null, value: Boolean(evaluatedValue) };
-          }
-        }
-
-        return { handled: false };
-      };
-
-      const evaluationData = {
-        hasDynamicExpression: false,
-        allFieldsEvaluatedSuccessfully: true,
-        unevaluatedExpressions: [],
-      };
-
-      const getVariableDataType = (variable: string): Promise<string> => {
-        return propertyMetadataAccessor
-          ? propertyMetadataAccessor(variable).then(m => m.dataType)
-          : Promise.resolve('string');
-      };
-
-      const convertedExpression = await convertJsonLogicNode(filter.expression, {
-        argumentEvaluator: evaluator,
-        mappings,
-        getVariableDataType,
-        onEvaluated: args => {
-          evaluationData.hasDynamicExpression = true;
-          evaluationData.allFieldsEvaluatedSuccessfully = evaluationData.allFieldsEvaluatedSuccessfully && args.success;
-          if (args.unevaluatedExpressions && args.unevaluatedExpressions.length)
-            evaluationData.unevaluatedExpressions.push(...args.unevaluatedExpressions);
-        }
-      });
-      return {
-        ...filter,
-        ...evaluationData,
-        expression: convertedExpression,
-      } as IStoredFilter;
-    }
-
-    return Promise.resolve(filter);
-  }));
-
-  return convertedFilters;
-};
-
 export const hasDynamicFilter = (filters: IStoredFilter[]) => {
   if (filters?.length === 0) return false;
 

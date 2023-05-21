@@ -8,7 +8,7 @@ import { useMedia } from 'react-use';
 import { IAnyObject, IEntityReferenceDto } from 'interfaces';
 import { useForm, useGlobalState, useModal, useNestedPropertyMetadatAccessor } from '../../providers';
 import DataTableProvider, { useDataTable } from 'providers/dataTable';
-import { evaluateDynamicFilters, hasDynamicFilter } from 'providers/dataTable/utils';
+import { hasDynamicFilter } from 'providers/dataTable/utils';
 import { IModalProps } from 'providers/dynamicModal/models';
 import { useEntitySelectionData } from 'utils/entity';
 import GlobalTableFilter from '../globalTableFilter';
@@ -17,6 +17,7 @@ import DataTable from '../dataTable';
 import ReadOnlyDisplayFormItem from '../readOnlyDisplayFormItem';
 import TablePager from '../tablePager';
 import { IEntityPickerProps, IEntityPickerState } from './models';
+import { evaluateDynamicFilters } from 'utils';
 
 const UNIQUE_ID = 'HjHi0UVD27o8Ub8zfz6dH';
 
