@@ -1,6 +1,10 @@
 export { default as BasicDisplayFormItem, type IBasicDisplayFormItemProps } from './basicDisplayFormItem';
 export { default as ConfigurableLogo } from './configurableLogo';
-export { default as GenericCreateModal, type IGenericCreateModalProps, OnSuccessActionType } from './crudViews/createModal';
+export {
+  default as GenericCreateModal,
+  type IGenericCreateModalProps,
+  OnSuccessActionType,
+} from './crudViews/createModal';
 export { default as GenericEditModal, type IGenericEditModalProps } from './crudViews/editModal';
 export { default as GenericDetailsPage, type IGenericDetailsPageProps } from './crudViews/detailsPage';
 export {
@@ -60,7 +64,10 @@ export { default as HtmlHead, type IHtmlHeadProps } from './htmlHead';
 export { default as IdleTimerRenderer, type IIdleTimerRendererProps } from './idleTimerRenderer';
 export { default as ChildTable, type IChildTableProps } from './childTable';
 export { default as DataTable, type IIndexTableProps, type IExtendedModalProps } from './dataTable';
-export { default as DatatableAdvancedFilter, type IDatatableAdvancedFilterProps as IIndexTableColumnFiltersProps } from './dataTable/advancedFilter';
+export {
+  default as DatatableAdvancedFilter,
+  type IDatatableAdvancedFilterProps as IIndexTableColumnFiltersProps,
+} from './dataTable/advancedFilter';
 export {
   default as DatatableColumnsSelector,
   type IDatatableColumnsSelectorProps as IIndexTableColumnVisibilityToggleProps,
@@ -69,7 +76,10 @@ export { default as IndexTableControls, type IIndexTableControlsProps } from './
 export { default as IndexTableFull, type IIndexTableFullProps } from './indexTableFull';
 export { default as IndexToolbar, type IIndexToolbarProps } from './indexToolbar';
 export { default as IndexViewSelector, type IIndexViewSelectorProps } from './indexViewSelector';
-export { default as IndexViewSelectorRenderer, type IIndexViewSelectorRendererProps } from './indexViewSelectorRenderer';
+export {
+  default as IndexViewSelectorRenderer,
+  type IIndexViewSelectorRendererProps,
+} from './indexViewSelectorRenderer';
 export { default as LayoutHeading, type ILayoutHeadingProps } from './layoutHeading';
 export { default as MainLayout, type IMainLayoutProps } from './mainLayout';
 export { default as NodeOrFuncRenderer } from './nodeOrFuncRenderer';
@@ -148,3 +158,6 @@ export { default as LabelValueEditor } from './formDesigner/components/labelValu
 export { default as RichTextEditor, type IRichTextEditorProps } from './richTextEditor';
 export { default as SettingsEditor, type ISettingsEditorProps } from './settingsEditor';
 export { FormComponentSelector, type IFormComponentSelectorProps } from './formComponentSelector';
+
+export { default as IconPickerWrapper } from './formDesigner/components/iconPicker';
+export { default as ColorPicker } from '../../src/components/colorPicker';
