@@ -1,7 +1,13 @@
 import { Alert, Space } from 'antd';
 import React, { FC, Fragment, MutableRefObject } from 'react';
 import { CollapsiblePanel, GlobalTableFilter, Show, TablePager } from 'components';
-import { useDataTable, useForm, useGlobalState, useNestedPropertyMetadatAccessor, useSheshaApplication } from 'providers';
+import {
+  useDataTable,
+  useForm,
+  useGlobalState,
+  useNestedPropertyMetadatAccessor,
+  useSheshaApplication,
+} from 'providers';
 import ComponentsContainer from 'components/formDesigner/componentsContainer';
 import { hasDynamicFilter } from 'providers/dataTable/utils';
 import './styles/index.less';
@@ -11,11 +17,11 @@ import _, { isEmpty } from 'lodash';
 import { useDeepCompareEffect } from 'react-use';
 import { IChildTableComponentProps } from '.';
 import { evaluateString } from 'providers/form/utils';
-import { evaluateDynamicFilters } from 'utils';
+import { evaluateDynamicFilters, getValidDefaultBool } from 'utils';
 
 export interface IChildTableProps extends IChildTableComponentProps {
   componentRef: MutableRefObject<any>;
-};
+}
 
 export const ChildTable: FC<IChildTableProps> = (props) => {
   const { formData, formMode, isComponentHidden } = useForm();
@@ -52,11 +58,11 @@ export const ChildTable: FC<IChildTableProps> = (props) => {
         { match: 'globalState', data: globalState },
       ],
       propertyMetadataAccessor
-    ).then(evaluatedFilters => {
+    ).then((evaluatedFilters) => {
       let parsedFilters = evaluatedFilters;
 
       if (defaultSelectedFilterId) {
-        parsedFilters = evaluatedFilters?.map(filter => {
+        parsedFilters = evaluatedFilters?.map((filter) => {
           const localFilter = { ...filter };
 
           if (localFilter.id === defaultSelectedFilterId) {
@@ -125,13 +131,13 @@ export const ChildTable: FC<IChildTableProps> = (props) => {
           key={undefined}
           header={evaluateString(props?.title, formData)}
           extra={
-            <div onClick={e => e?.stopPropagation()}>
+            <div onClick={(e) => e?.stopPropagation()}>
               <Space size="middle">
                 <Show when={props?.allowQuickSearch}>
                   <GlobalTableFilter />
                 </Show>
 
-                <TablePager />
+                {getValidDefaultBool(props.showPagination) && <TablePager />}
 
                 <ButtonGroup
                   items={props?.toolbarItems || []}
@@ -149,14 +155,13 @@ export const ChildTable: FC<IChildTableProps> = (props) => {
           <ComponentsContainer
             containerId={props.id}
             dynamicComponents={
-              props?.isDynamic ? props?.components?.map(c => ({ ...c, readOnly: props?.readOnly })) : []
+              props?.isDynamic ? props?.components?.map((c) => ({ ...c, readOnly: props?.readOnly })) : []
             }
           />
         </CollapsiblePanel>
       </Show>
     </Fragment>
   );
-
 };
 
 export default ChildTable;

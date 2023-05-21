@@ -11,4 +11,5 @@ export interface IChildTableSettingsProps {
   defaultSelectedFilterId: string;
   customVisibility?: string;
   permissions?: string[];
+  showPagination?: boolean;
 }

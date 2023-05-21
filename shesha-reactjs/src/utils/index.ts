@@ -109,6 +109,9 @@ export const getCircularReplacer = () => {
   };
 };
 
+export const getValidDefaultBool = (value: any, defalutValue: boolean = true) =>
+  typeof value === 'boolean' ? value : defalutValue;
+
 export const getPlainValue = <T = object | any[]>(value: T): T => {
   try {
     return JSON.parse(JSON.stringify(value, getCircularReplacer()));

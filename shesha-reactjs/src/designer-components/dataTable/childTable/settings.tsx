@@ -5,6 +5,7 @@ import { IChildTableSettingsProps } from './models';
 import CodeEditor from '../../../components/formDesigner/components/codeEditor/codeEditor';
 import { CustomFilter } from '../filter/filterComponent';
 import ButtonGroupSettingsModal from '../../../components/formDesigner/components/button/buttonGroup/buttonGroupSettingsModal';
+import { getValidDefaultBool } from 'utils';
 
 export interface IChildDataTableSettingsProps {
   readOnly: boolean;
@@ -29,7 +30,7 @@ export const ChildDataTableSettings: FC<IChildDataTableSettingsProps> = ({
   const [state, setState] = useState<IChildDataTableSettingsState>({ data: model });
   const [form] = Form.useForm();
 
-  const initialValues = {
+  const initialValues: IChildTableSettingsProps = {
     title: model?.title,
     parentEntityId: model?.parentEntityId,
     allowQuickSearch: model?.allowQuickSearch,
@@ -38,6 +39,7 @@ export const ChildDataTableSettings: FC<IChildDataTableSettingsProps> = ({
     filters: model?.filters,
     defaultSelectedFilterId: model?.defaultSelectedFilterId,
     customVisibility: model?.customVisibility,
+    showPagination: getValidDefaultBool(model?.showPagination),
   };
 
   return (
@@ -46,7 +48,7 @@ export const ChildDataTableSettings: FC<IChildDataTableSettingsProps> = ({
       onFinish={onSave}
       layout="vertical"
       onValuesChange={(changedValues, values) => {
-        setState(prev => ({ ...prev, data: values }));
+        setState((prev) => ({ ...prev, data: values }));
 
         onValuesChange(changedValues, values);
       }}
@@ -69,6 +71,10 @@ export const ChildDataTableSettings: FC<IChildDataTableSettingsProps> = ({
       </Form.Item>
 
       <Form.Item name="isInline" label="Is Button Inline" valuePropName="checked">
+        <Checkbox disabled={readOnly} />
+      </Form.Item>
+
+      <Form.Item name="showPagination" label="Show Pagination" valuePropName="checked">
         <Checkbox disabled={readOnly} />
       </Form.Item>
 
@@ -117,8 +123,6 @@ export const ChildDataTableSettings: FC<IChildDataTableSettingsProps> = ({
       >
         <EditableTagGroup />
       </Form.Item>
-
-
     </Form>
   );
 };
