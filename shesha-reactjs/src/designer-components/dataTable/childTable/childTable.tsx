@@ -1,5 +1,5 @@
 import { Alert, Space } from 'antd';
-import React, { FC, Fragment, MutableRefObject } from 'react';
+import React, { FC, Fragment, MutableRefObject, useEffect } from 'react';
 import { CollapsiblePanel, GlobalTableFilter, Show, TablePager } from 'components';
 import {
   useDataTable,
@@ -18,6 +18,7 @@ import { useDeepCompareEffect } from 'react-use';
 import { IChildTableComponentProps } from '.';
 import { evaluateString } from 'providers/form/utils';
 import { evaluateDynamicFilters, getValidDefaultBool } from 'utils';
+import { DEFAULT_DT_USER_CONFIG } from 'providers/dataTable/contexts';
 
 export interface IChildTableProps extends IChildTableComponentProps {
   componentRef: MutableRefObject<any>;
@@ -25,12 +26,25 @@ export interface IChildTableProps extends IChildTableComponentProps {
 
 export const ChildTable: FC<IChildTableProps> = (props) => {
   const { formData, formMode, isComponentHidden } = useForm();
-  const { columns, setPredefinedFilters, modelType } = useDataTable();
+  const { columns, setPredefinedFilters, modelType, changePageSize, totalRows } = useDataTable();
 
   const { globalState } = useGlobalState();
   const { anyOfPermissionsGranted } = useSheshaApplication();
 
-  const { defaultSelectedFilterId, filters, permissions, componentRef } = props;
+  const { defaultSelectedFilterId, filters, permissions, componentRef, defaultPageSize, totalRecords, showPagination } =
+    props;
+
+  useEffect(() => {
+    if (getValidDefaultBool(showPagination) && defaultPageSize && defaultPageSize !== DEFAULT_DT_USER_CONFIG.pageSize) {
+      changePageSize(defaultPageSize);
+    }
+  }, [defaultPageSize]);
+
+  useEffect(() => {
+    if (!getValidDefaultBool(showPagination) && totalRecords) {
+      changePageSize(totalRecords);
+    }
+  }, [totalRecords]);
 
   componentRef.current = {
     columns,
@@ -100,6 +114,9 @@ export const ChildTable: FC<IChildTableProps> = (props) => {
   }, [props?.filters, formData, globalState]);
   //#endregion
 
+  const showTablePager =
+    getValidDefaultBool(showPagination) || (!getValidDefaultBool(showPagination) && totalRows > totalRecords);
+
   const granted = anyOfPermissionsGranted(permissions || []);
 
   const isVisible = !isComponentHidden(props) && (granted || formMode === 'designer');
@@ -137,7 +154,7 @@ export const ChildTable: FC<IChildTableProps> = (props) => {
                   <GlobalTableFilter />
                 </Show>
 
-                {getValidDefaultBool(props.showPagination) && <TablePager />}
+                {showTablePager && <TablePager />}
 
                 <ButtonGroup
                   items={props?.toolbarItems || []}

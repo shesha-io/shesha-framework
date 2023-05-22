@@ -1,11 +1,12 @@
 import React, { FC, useState } from 'react';
-import { Checkbox, Form, Input, Select } from 'antd';
-import { EditableTagGroup, SectionSeparator } from '../../../components';
+import { Checkbox, Form, Input, InputNumber, Select } from 'antd';
+import { EditableTagGroup, SectionSeparator, Show } from '../../../components';
 import { IChildTableSettingsProps } from './models';
 import CodeEditor from '../../../components/formDesigner/components/codeEditor/codeEditor';
 import { CustomFilter } from '../filter/filterComponent';
 import ButtonGroupSettingsModal from '../../../components/formDesigner/components/button/buttonGroup/buttonGroupSettingsModal';
 import { getValidDefaultBool } from 'utils';
+import { DEFAULT_PAGE_SIZE_OPTIONS } from 'providers/dataTable/contexts';
 
 export interface IChildDataTableSettingsProps {
   readOnly: boolean;
@@ -38,8 +39,10 @@ export const ChildDataTableSettings: FC<IChildDataTableSettingsProps> = ({
     toolbarItems: model?.toolbarItems,
     filters: model?.filters,
     defaultSelectedFilterId: model?.defaultSelectedFilterId,
+    defaultPageSize: model?.defaultPageSize || 10,
     customVisibility: model?.customVisibility,
     showPagination: getValidDefaultBool(model?.showPagination),
+    totalRecords: model?.totalRecords,
   };
 
   return (
@@ -77,6 +80,24 @@ export const ChildDataTableSettings: FC<IChildDataTableSettingsProps> = ({
       <Form.Item name="showPagination" label="Show Pagination" valuePropName="checked">
         <Checkbox disabled={readOnly} />
       </Form.Item>
+
+      <Show when={getValidDefaultBool(state?.data?.showPagination)}>
+        <Form.Item name="defaultPageSize" label="Default Page Size">
+          <Select value={state?.data?.defaultPageSize} showSearch disabled={readOnly}>
+            {DEFAULT_PAGE_SIZE_OPTIONS.map((value) => (
+              <Select.Option value={value} key={value}>
+                {value} / page
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
+      </Show>
+
+      <Show when={!getValidDefaultBool(state?.data?.showPagination)}>
+        <Form.Item name="totalRecords" label="Total Records">
+          <InputNumber style={{ width: '100%' }} />
+        </Form.Item>
+      </Show>
 
       <SectionSeparator title="Toolbar" />
 

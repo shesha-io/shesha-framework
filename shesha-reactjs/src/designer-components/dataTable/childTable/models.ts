@@ -9,7 +9,9 @@ export interface IChildTableSettingsProps {
   toolbarItems?: ButtonGroupItemProps[];
   filters?: ITableViewProps[];
   defaultSelectedFilterId: string;
+  defaultPageSize?: number;
   customVisibility?: string;
   permissions?: string[];
   showPagination?: boolean;
+  totalRecords?: number;
 }

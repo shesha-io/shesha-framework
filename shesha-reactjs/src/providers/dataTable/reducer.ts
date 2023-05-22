@@ -171,7 +171,6 @@ const reducer = handleActions<IDataTableStateContext, any>(
         isFetchingTableData: true,
         tableSorting: payload.sorting,
         currentPage: payload.currentPage,
-        selectedPageSize: payload.pageSize,
         //parentEntityId: payload.parentEntityId,
         //selectedStoredFilterIds, // TODO: Review the saving of filters
       };
