@@ -82,7 +82,7 @@ export {
 } from './indexViewSelectorRenderer';
 export { default as LayoutHeading, type ILayoutHeadingProps } from './layoutHeading';
 export { default as MainLayout, type IMainLayoutProps } from './mainLayout';
-export { default as NodeOrFuncRenderer } from './nodeOrFuncRenderer';
+export { default as NodeOrFuncRenderer, ReactNodeOrFunc } from './nodeOrFuncRenderer';
 export { default as NotAuthorized, type INotAuthorizedProps } from './notAuthorized';
 export { default as NotesRenderer, type INotesRendererProps } from './notesRenderer';
 export { default as NotesRendererBase, type INotesRendererBaseProps } from './notesRendererBase';

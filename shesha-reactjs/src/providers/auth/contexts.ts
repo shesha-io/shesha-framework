@@ -9,7 +9,6 @@ import { IErrorInfo } from '../../interfaces/errorInfo';
 import IRequestHeaders from '../../interfaces/requestHeaders';
 import { IFlagsSetters, IFlagsState } from '../../interfaces';
 import { EMPTY_FLAGS_STATE } from '../../interfaces/flagsState';
-import { AuthenticateModel } from 'apis/tokenAuth';
 import { UserLoginInfoDto } from 'apis/session';
 import { IAjaxResponseBase } from 'interfaces/ajaxResponse';
 
@@ -37,7 +36,13 @@ export type IFlagErrorFlags =
   | 'sendOtp' /* NEW_ERROR_FLAG_GOES_HERE */;
 export type IFlagActionedFlags = 'hasCheckedAuth' /* NEW_ACTIONED_FLAG_GOES_HERE */;
 
-export interface ILoginForm extends AuthenticateModel {
+export interface ILoginForm {
+  userNameOrEmailAddress: string;
+  password: string;
+  /**
+   * Optional IMEI number. Is used for mobile applications
+   */
+  imei?: string | null;  
   rememberMe?: boolean;
 }
 
