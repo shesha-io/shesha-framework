@@ -164,7 +164,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
                 : Promise.resolve(mergedData);
 
             return finalDataPromise.then(finalData => {
-                return updater(finalData).then(() => {
+                return processor(finalData).then(() => {
                     dispatch(saveSuccessAction());
                 }).catch(error => {
                     dispatch(saveFailedAction(getErrorInfo(error, `${updateType} failed`)));
