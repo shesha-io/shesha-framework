@@ -68,6 +68,7 @@ const ReactTable: FC<IReactTableProps> = ({
   inlineEditMode,
   inlineSaveMode,
   inlineEditorComponents,
+  inlineCreatorComponents,
 }) => {
   const [componentState, setComponentState] = useState<IReactTableState>({
     allRows: data,
@@ -283,7 +284,15 @@ const ReactTable: FC<IReactTableProps> = ({
 
   const Row = useMemo(() => (allowRowDragAndDrop ? SortableRow : TableRow), [allowRowDragAndDrop]);  
 
-  const renderNewRowEditor = () => <NewTableRowEditor columns={tableColumns} creater={createAction} headerGroups={headerGroups} onInitData={newRowInitData}/>;
+  const renderNewRowEditor = () => (
+    <NewTableRowEditor 
+      columns={tableColumns} 
+      creater={createAction} 
+      headerGroups={headerGroups} 
+      onInitData={newRowInitData}
+      components={inlineCreatorComponents}
+    />
+  );
 
   return (
     <Spin

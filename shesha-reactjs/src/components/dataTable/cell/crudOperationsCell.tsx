@@ -116,7 +116,9 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
         title: "Add",
         executer: onSaveCreateClick,
         icon: <PlusOutlined />,
-        isVisible: isNewObject
+        isVisible: isNewObject,
+        loading: isSaving,
+        error: saveError,
       },
       {
         title: "Edit",

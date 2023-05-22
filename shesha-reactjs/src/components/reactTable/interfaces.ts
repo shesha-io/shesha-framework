@@ -199,5 +199,6 @@ export interface IReactTableProps extends ITableRowDragProps {
   inlineEditMode?: InlineEditMode;
   inlineSaveMode?: InlineSaveMode;
   inlineEditorComponents?: IFlatComponentsStructure;
+  inlineCreatorComponents?: IFlatComponentsStructure;
 }
 

@@ -1,3 +1,4 @@
+import { IFlatComponentsStructure } from 'interfaces';
 import { CrudProvider } from 'providers/crudContext';
 import React from 'react';
 import { FC } from 'react';
@@ -9,10 +10,11 @@ export interface INewRowEditorProps {
     headerGroups: HeaderGroup<any>[];
     creater: (data: any) => Promise<any>;
     onInitData?: () => Promise<object>;
+    components?: IFlatComponentsStructure;
 }
 
 export const NewTableRowEditor: FC<INewRowEditorProps> = (props) => {
-    const { creater, columns, headerGroups, onInitData } = props;
+    const { creater, columns, headerGroups, onInitData, components } = props;
 
     const headerGroupProps = headerGroups.length > 0
         ? headerGroups[0].getHeaderGroupProps()
@@ -31,6 +33,7 @@ export const NewTableRowEditor: FC<INewRowEditorProps> = (props) => {
                 allowDelete={false}
                 deleter={null}
                 allowChangeMode={false}
+                components={components}
             >
                 <div
                     className='tr tr-body'

@@ -16,7 +16,7 @@ import { usePrevious } from 'react-use';
 import { getCellRenderer } from './cell';
 import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions } from 'providers/dataTable/repository/backendRepository';
 import { ITableDataColumn } from 'providers/dataTable/interfaces';
-import { IColumnEditorProps, standardCellComponentTypes } from 'providers/datatableColumnsConfigurator/models';
+import { IColumnEditorProps, IFieldComponentProps, standardCellComponentTypes } from 'providers/datatableColumnsConfigurator/models';
 import { useFormDesignerComponents } from 'providers/form/hooks';
 import { getCustomEnabledFunc, getCustomVisibilityFunc } from 'providers/form/utils';
 
@@ -280,20 +280,20 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     });
   };
 
-  const inlineEditorComponents = useMemo<IFlatComponentsStructure>(() => {
+  const getCrudComponents = (allowEdit: boolean, componentAccessor: (col: ITableDataColumn) => IFieldComponentProps): IFlatComponentsStructure => {
     const result: IFlatComponentsStructure = {
       allComponents: {},
       componentRelations: {}
     };
     // don't calculate components settings when it's not required
-    if (!crudOptions.canEdit)
+    if (!allowEdit)
       return result;
 
     const componentIds: string[] = [];
     columns?.forEach(col => {
       if (col.columnType === 'data') {
         const dataCol = col as ITableDataColumn;
-        const customComponent = dataCol.editComponent;
+        const customComponent = componentAccessor(dataCol);
         const componentType = customComponent?.type ?? standardCellComponentTypes.notEditable;
         if (componentType && componentType !== standardCellComponentTypes.notEditable) {
           // component found
@@ -325,11 +325,18 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         };
       };
     });
-
     result.componentRelations[ROOT_COMPONENT_KEY] = componentIds;   
 
     return result;
+  };
+
+  const inlineEditorComponents = useMemo<IFlatComponentsStructure>(() => {
+    return getCrudComponents(crudOptions.canEdit, col => col.editComponent);
   }, [columns, metadata, crudOptions.canEdit]);
+
+  const inlineCreatorComponents = useMemo<IFlatComponentsStructure>(() => {
+    return getCrudComponents(crudOptions.canAdd, col => col.createComponent);
+  }, [columns, metadata, crudOptions.canAdd]);
 
   const tableProps: IReactTableProps = {
     data: tableData,
@@ -371,6 +378,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     inlineEditMode: props.inlineEditMode,
     inlineSaveMode: props.inlineSaveMode,
     inlineEditorComponents,
+    inlineCreatorComponents,
   };
 
   return (
