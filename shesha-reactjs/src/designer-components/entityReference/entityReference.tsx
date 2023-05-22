@@ -39,12 +39,17 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
   settingsFormFactory: (props) => {
     return <EntityReferenceSettings {...props}/>;
   },
-  initModel: model => {
-    const buttonModel: IEntityReferenceControlProps = {
-      ...model,
+  migrator: m => m.add<IEntityReferenceControlProps>(0, prev => {
+    return {
+      ...prev,
+      formSelectionMode: 'name',
+      entityReferenceType: 'Quickview',
+      quickviewWidth: 600,
+      displayProperty: '',
+      handleFail: false,
+      handleSuccess: false
     };
-    return buttonModel;
-  },
+  })
 };
 
 export default EntityReferenceComponent;

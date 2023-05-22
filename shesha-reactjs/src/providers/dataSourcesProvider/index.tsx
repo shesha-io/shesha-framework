@@ -59,7 +59,7 @@ function useDataSources(require: boolean = true) {
     const actionsContext = useContext(DataSourcesProviderActionsContext);
     const stateContext = useContext(DataSourcesProviderStateContext);
   
-    if ((actionsContext === undefined || actionsContext === undefined) && require) {
+    if ((actionsContext === undefined || stateContext === undefined) && require) {
       throw new Error('useDataSources must be used within a DataSourcesProvider');
     }
     // useContext() returns initial state when provider is missing

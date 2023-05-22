@@ -432,9 +432,9 @@ namespace Shesha.DynamicEntities
                 dst.ReadOnly = src.Readonly;
                 dst.RegExp = src.RegExp;
                 dst.ValidationMessage = src.ValidationMessage;
-                dst.CascadeCreate = src.CascadeCreate;
-                dst.CascadeUpdate = src.CascadeUpdate;
-                dst.CascadeDeleteUnreferenced = src.CascadeDeleteUnreferenced;
+                dst.CascadeCreate = src.CascadeCreate ?? dst.CascadeCreate;
+                dst.CascadeUpdate = src.CascadeUpdate ?? dst.CascadeUpdate;
+                dst.CascadeDeleteUnreferenced = src.CascadeDeleteUnreferenced ?? dst.CascadeDeleteUnreferenced;
                 res = true;
             }
 

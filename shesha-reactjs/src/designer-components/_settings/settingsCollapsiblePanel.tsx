@@ -1,41 +1,58 @@
-import React, { FC } from 'react';
+import React, { createContext, FC, useContext, useState } from 'react';
 import { CollapsiblePanel, ICollapsiblePanelProps } from 'components';
 
 interface ISettingsCollapsiblePanelProps extends ICollapsiblePanelProps {
     propertyFilter: (name: string) => boolean;
 }
 
-const SettingsCollapsiblePanel: FC<ISettingsCollapsiblePanelProps> = (props) => {
-    let show = true;
-    let children = props.children;
+/*export interface IRegisterFieldPayload {
 
-    if (typeof props.propertyFilter === 'function') {
-        const fileds: string[] = [];
-        const childrenWithProps = (children)  => {
-            return React.Children.map(children, child => {
-                if (React.isValidElement(child)) {
-                    const p = child['props'];
-                    if (child.type['name'] === 'SettingsFormItem') {
-                        fileds.push(p['name']);
-                        if (!Boolean(p['propertyFilter'])) {
-                            return React.cloneElement<any>(child, { propertyFilter: props.propertyFilter });
-                        }
-                        return child;
-                    }
-                    if (p['children']) {
-                        const c = childrenWithProps(p['children']);
-                        return React.cloneElement<any>(child, { children: c });
-                    }
-                }
-                return child;
-            });
-        };
-        children = childrenWithProps(children);
-        show = Boolean(fileds.find(x => {
-            return props.propertyFilter(x);
-        }));
+}*/
+
+export interface ISettingsCollapsiblePanelActionsContext {
+    registerField: (name: string) => void;
+    getPropertyFilter: () => (name: string) => boolean;
+}
+  
+export const SettingsCollapsiblePanelActionsContext = createContext<ISettingsCollapsiblePanelActionsContext>(undefined);
+
+const SettingsCollapsiblePanel: FC<ISettingsCollapsiblePanelProps> = (props) => {
+    const [fields, setFields] = useState([]);
+
+    const registerField = (name: string) => {
+        if (!Boolean(fields.find(x => {return x === name})))
+            setFields(prev => {return [...prev, name]});
+    };
+
+    const getPropertyFilter = () => {
+        return props.propertyFilter;
     }
-    return show ? <CollapsiblePanel  ghost={true} expandIconPosition='left' {...props}>{children}</CollapsiblePanel> : null;
+
+    const settingsCollapsiblePanelActions: ISettingsCollapsiblePanelActionsContext =
+    {
+        registerField,
+        getPropertyFilter
+    };
+
+    const show = !fields || fields.length === 0  || typeof props.propertyFilter !== 'function'
+        || Boolean(fields.find(x => {
+                return props.propertyFilter(x);
+            }));
+
+    return (
+        <SettingsCollapsiblePanelActionsContext.Provider value={settingsCollapsiblePanelActions}>
+            {show
+            ? <CollapsiblePanel ghost={true} expandIconPosition='left' {...props} />
+            : null}
+        </SettingsCollapsiblePanelActionsContext.Provider>
+    );
 };
+
+export function useSettingsPanel() {
+    const actionsContext = useContext(SettingsCollapsiblePanelActionsContext);
+    return actionsContext !== undefined
+        ? actionsContext
+        : undefined;
+}
 
 export default SettingsCollapsiblePanel;

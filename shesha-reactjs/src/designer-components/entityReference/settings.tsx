@@ -10,7 +10,6 @@ import { MetadataProvider } from 'providers';
 import LabelValueEditor from 'components/formDesigner/components/labelValueEditor/labelValueEditor';
 import CollapsiblePanel from 'components/panel';
 import { ConfigurableActionConfigurator } from '../configurableActionsConfigurator';
-import { Option } from 'antd/lib/mentions';
 import { ISettingsFormFactoryArgs } from 'interfaces';
 import { IEntityReferenceControlProps } from './entityReference';
 import SettingsFormItem from 'designer-components/_settings/settingsFormItem';
@@ -73,8 +72,8 @@ export const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferen
 
         <SettingsFormItem name="labelAlign" label="Label align">
           <Select disabled={readOnly}>
-            <Option value="left">left</Option>
-            <Option value="right">right</Option>
+            <Select.Option value="left">left</Select.Option>
+            <Select.Option value="right">right</Select.Option>
           </Select>
         </SettingsFormItem>
 
@@ -108,16 +107,16 @@ export const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferen
 
         <SettingsFormItem name="entityReferenceType" initialValue={'Quickview'} label="Entity Reference Type">
           <Select disabled={readOnly}>
-            <Option value="Quickview">Quickview</Option>
-            <Option value="NavigateLink">Navigate Link</Option>
-            <Option value="Dialog">Modal dialog box</Option>
+            <Select.Option value="Quickview">Quickview</Select.Option>
+            <Select.Option value="NavigateLink">Navigate Link</Select.Option>
+            <Select.Option value="Dialog">Modal dialog box</Select.Option>
           </Select>
         </SettingsFormItem>
 
         <SettingsFormItem name="formSelectionMode" initialValue={'name'} label="Form selection mode">
           <Select disabled={readOnly}>
-            <Option value="name">Name</Option>
-            <Option value="dynamic">Dynamic</Option>
+            <Select.Option value="name">Name</Select.Option>
+            <Select.Option value="dynamic">Dynamic</Select.Option>
           </Select>
         </SettingsFormItem>
 
@@ -169,8 +168,8 @@ export const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferen
           {state?.showModalFooter &&
             <SettingsFormItem name="submitHttpVerb" initialValue={'POST'} label="Submit Http Verb">
               <Select disabled={readOnly}>
-                <Option value="POST">POST</Option>
-                <Option value="PUT">PUT</Option>
+                <Select.Option value="POST">POST</Select.Option>
+                <Select.Option value="PUT">PUT</Select.Option>
               </Select>
             </SettingsFormItem>
           }
@@ -199,18 +198,18 @@ export const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferen
 
           <SettingsFormItem name="modalWidth" label="Dialog Width (%)">
             <Select disabled={readOnly}>
-              <Option value="40%">Small</Option>
-              <Option value="60%">Medium</Option>
-              <Option value="80%">Large</Option>
-              <Option value="custom">Custom</Option>
+              <Select.Option value="40%">Small</Select.Option>
+              <Select.Option value="60%">Medium</Select.Option>
+              <Select.Option value="80%">Large</Select.Option>
+              <Select.Option value="custom">Custom</Select.Option>
             </Select>
           </SettingsFormItem>
           {state?.modalWidth === 'custom' &&
             <>
               <SettingsFormItem name="widthUnits" label="Units">
                 <Select disabled={readOnly}>
-                  <Option value="%">Percentage (%)</Option>
-                  <Option value="px">Pixels (px)</Option>
+                  <Select.Option value="%">Percentage (%)</Select.Option>
+                  <Select.Option value="px">Pixels (px)</Select.Option>
                 </Select>
               </SettingsFormItem>
               <SettingsFormItem name="customWidth" label="Enter Custom Width">
