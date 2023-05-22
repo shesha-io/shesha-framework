@@ -5,7 +5,7 @@ import { useApiCallAction } from './api-call';
 import { useConfigurationItemsExportAction } from './configuration-items-export';
 import { useConfigurationItemsImportAction } from './configuration-items-import';
 
-export const ApplicationActionsProcessor: FC<PropsWithChildren> = ({ children }) => {
+export const ApplicationActionsProcessor: FC<PropsWithChildren<{}>> = ({ children }) => {
   useExecuteScriptAction();
   useApiCallAction();
   useConfigurationItemsExportAction();

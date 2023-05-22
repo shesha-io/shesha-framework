@@ -1,6 +1,7 @@
 import * as RestfulShesha from 'utils/fetchers';
 import { useEffect, useState } from 'react';
 import { useSheshaApplication } from 'providers';
+import { IHttpHeadersDictionary } from 'providers/sheshaApplication/contexts';
 
 export interface GetDataError<TError> {
     message: string;
@@ -44,6 +45,8 @@ export interface UseGetProps<TData, /*TError,*/ TQueryParams, TPathParams> {
      *
      */
     base?: string;
+
+    headers?: IHttpHeadersDictionary;
 }
 
 type RefetchOptions<TData, /*TError,*/ TQueryParams, TPathParams> = Partial<
@@ -77,7 +80,10 @@ export const useGetInternal = <TData = any, TError = any, TQueryParams = IQueryP
         const path = typeof (finalOptions.path) === 'string'
             ? finalOptions.path
             : finalOptions.path(finalOptions.pathParams);
-        return RestfulShesha.get<TData, TError, TQueryParams, TPathParams>(path, finalOptions.queryParams, { base: backendUrl, headers: httpHeaders })
+
+        const finalHeaders = { ...httpHeaders, ...(options?.headers ?? {}) };
+
+        return RestfulShesha.get<TData, TError, TQueryParams, TPathParams>(path, finalOptions.queryParams, { base: backendUrl, headers: finalHeaders })
             .then(data => {
                 setState(prev => ({ ...prev, loading: false, error: null, data: data }));
                 return data;

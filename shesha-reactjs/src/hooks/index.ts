@@ -14,5 +14,5 @@ export { useDeepCompareMemoKeepReference } from './useDeepCompareMemo';
 export { usePubSub, useSubscribe, useSubscribedValue, usePublish } from './usePubSub';
 export { useDataTableFluentColumns } from './useDataTableFluentColumns';
 export { useDelete } from './useDelete';
-export { useGet, GetDataError } from './useGet';
+export { useGet, GetDataError, UseGetProps } from './useGet';
 export { useMutate, getUseMutateForEndpoint, IUseMutateResponse, IUseMutateResponseFixedEndpoint } from './useMutate';

@@ -1,5 +1,6 @@
 export * from './utils';
 export * from './utils/publicUtils';
+export { mutate, MutateProps, get, GetProps } from './utils/fetchers';
 export * from './interfaces';
 export * from './providers';
 export * from './components';
