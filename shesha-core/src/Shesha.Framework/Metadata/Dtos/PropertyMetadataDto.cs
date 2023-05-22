@@ -10,9 +10,9 @@ namespace Shesha.Metadata.Dtos
 {
     public class PropertyMetadataDto
     {
-        public bool CascadeCreate { get; set; }
-        public bool CascadeUpdate { get; set; }
-        public bool CascadeDeleteUnreferenced { get; set; }
+        public bool? CascadeCreate { get; set; }
+        public bool? CascadeUpdate { get; set; }
+        public bool? CascadeDeleteUnreferenced { get; set; }
 
         public bool IsVisible { get; set; }
         public bool Required { get; set; }

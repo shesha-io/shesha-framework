@@ -171,8 +171,8 @@ const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps> = ({
             </Row>
             <div>{contextHolder}</div>
             <Modal title="Merge entity confifurations" open={isModalOpen} onOk={handleOk} onCancel={() => {
-setIsModalOpen(false);
-}}>
+                setIsModalOpen(false);
+            }}>
                 <ValidationErrors error={mergeError}/>
                 <Alert type="warning" showIcon
                     description={"This will merge this entity configuration '" + 
@@ -222,8 +222,9 @@ setIsModalOpen(false);
                             <Checkbox 
                                 checked={isDeleteAfterMerge} 
                                 onChange={(e) => {
-setIsDeleteAfterMerge(e.target.checked);
-}} />
+                                    setIsDeleteAfterMerge(e.target.checked);
+                                }}
+                            />
                         </Form.Item>
                     </Col>
                 </Row>
