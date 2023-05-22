@@ -391,7 +391,7 @@ const ReactTable: FC<IReactTableProps> = ({
                     deleter={() => deleteAction(rowIndex, row.original)}
                     
                     allowChangeEditMode={inlineEditMode === 'one-by-one'}
-                    editMode={inlineEditMode === 'all-at-once' ? 'edit' : undefined}
+                    editMode={canEditInline && inlineEditMode === 'all-at-once' ? 'edit' : undefined}
                     inlineSaveMode={inlineSaveMode}
                     inlineEditorComponents={inlineEditorComponents}
                   />
