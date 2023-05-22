@@ -6,8 +6,10 @@ import PropertyAutocomplete from '../../../propertyAutocomplete/propertyAutocomp
 import SectionSeparator from '../../../sectionSeparator';
 import Show from '../../../show';
 import CodeEditor from '../codeEditor/codeEditor';
+import { Option } from 'antd/lib/mentions';
 import { IAddressCompomentProps } from './models';
 import { EXPOSED_VARIABLES } from './utils';
+import SettingsFormItem from 'designer-components/_settings/settingsFormItem';
 
 export interface IButtonGroupSettingsProps {
   readOnly?: boolean;
@@ -26,7 +28,7 @@ const AddressSettings: FC<IButtonGroupSettingsProps> = ({ readOnly, model, onSav
 
     form?.setFieldsValue(changedValues);
 
-    setState(s => ({ ...s, ...changedValues }));
+    setState((s) => ({ ...s, ...changedValues }));
 
     onValuesChange(changedValues, values);
   };
@@ -42,6 +44,13 @@ const AddressSettings: FC<IButtonGroupSettingsProps> = ({ readOnly, model, onSav
       <Form.Item name="label" label="Label">
         <Input readOnly={readOnly} />
       </Form.Item>
+
+      <SettingsFormItem name="labelAlign" label="Label align">
+        <Select disabled={readOnly}>
+          <Option value="left">left</Option>
+          <Option value="right">right</Option>
+        </Select>
+      </SettingsFormItem>
 
       <Form.Item name="placeholder" label="Placeholder">
         <Input readOnly={readOnly} />
@@ -192,7 +201,6 @@ const AddressSettings: FC<IButtonGroupSettingsProps> = ({ readOnly, model, onSav
           exposedVariables={EXPOSED_VARIABLES}
         />
       </Form.Item>
-
       <SectionSeparator title="Visibility" />
 
       <Form.Item
