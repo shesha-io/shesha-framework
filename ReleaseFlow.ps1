@@ -43,7 +43,7 @@ elseif ("$PipeSourceBranch" -like "*/releases/*"){
     $version = Split-Path $path -Leaf
     Write-Host $version
 
-    write-host "##vso[task.setvariable variable=versionNo]$version"
+    write-host "##vso[task.setvariable variable=versionNo]$version.$build""
 }
 elseif ("$PipeSourceBranch" -like "*/tags/release-*"){
     write-host "Source Branch should be tags here: $PipeSourceBranch"
