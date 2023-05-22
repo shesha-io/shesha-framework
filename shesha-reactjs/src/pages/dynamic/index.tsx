@@ -32,7 +32,7 @@ import { useModelApiEndpoint } from '../../components/configurableForm/useAction
 import { StandardEntityActions } from '../../interfaces/metadata';
 import { getInitialValues } from '../../components/configurableForm/useInitialValues';
 
-const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
+const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
   const { backendUrl } = useSheshaApplication();
   const [state, setState] = useState<IDynamicPageState>({});
   const formRef = useRef<ConfigurableFormInstance>();
@@ -101,7 +101,7 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
       setNavigationState(null);
       setCurrentNavigator(state?.stackId);
 
-      setState(prev => ({ ...prev, ...router?.query }));
+      setState((prev) => ({ ...prev, ...router?.query }));
       closing.current = false;
       return;
     }
@@ -144,7 +144,7 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
   const onStackedDialogClose = () => {
     closing.current = true;
 
-    setNavigationState(prev => ({ ...prev, closing: true }));
+    setNavigationState((prev) => ({ ...prev, closing: true }));
     setCurrentNavigator(state?.stackId);
   };
 
@@ -154,7 +154,7 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
   //#region get form data
 
   const onChangeId = (localId: string) => {
-    setState(prev => ({ ...prev, id: localId }));
+    setState((prev) => ({ ...prev, id: localId }));
   };
 
   const onChangeFormData = (payload: ISetFormDataPayload) => {
@@ -165,8 +165,7 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
   //#endregion
 
   const onFinish = (values: any, _response?: any, options?: any) => {
-    if (!submitEndpoint)
-      throw new Error('Submit endpoint is not specified');
+    if (!submitEndpoint) throw new Error('Submit endpoint is not specified');
 
     postData(submitEndpoint, values)
       .then(() => {
@@ -176,7 +175,7 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
 
         formRef?.current?.setFormMode('readonly');
       })
-      .catch(error => {
+      .catch((error) => {
         if (options?.setValidationErrors) {
           options.setValidationErrors(error);
         }
@@ -226,7 +225,7 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
     if (formWithData.loadingState === 'ready') {
       const onDataLoaded = formWithData.form?.settings?.onDataLoaded;
       const initialValues = formWithData.form?.settings?.initialValues;
-      if (onDataLoaded && formWithData.fetchedData) {
+      if (onDataLoaded) {
         executeExpression(onDataLoaded, {
           data: formWithData.fetchedData,
           initialValues: getInitialValues(initialValues, globalState),
