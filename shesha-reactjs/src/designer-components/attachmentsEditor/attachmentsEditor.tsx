@@ -1,9 +1,8 @@
 import React from 'react';
 import { IToolboxComponent } from '../../interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '../../providers/form/models';
+import { IConfigurableFormComponent } from '../../providers/form/models';
 import { FolderAddOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
-import settingsFormJson from './settingsForm.json';
 import StoredFilesProvider from '../../providers/storedFiles';
 import { CustomFile } from '../../components';
 import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../../providers';
@@ -12,19 +11,19 @@ import {
   executeCustomExpression,
   validateConfigurableComponentSettings,
 } from '../../providers/form/utils';
+import { getSettings } from './settings';
 
 export interface IAttachmentsEditorProps extends IConfigurableFormComponent {
   ownerId: string;
   ownerType: string;
   filesCategory?: string;
+  allowedFileTypes?: string[];
   ownerName?: string;
   allowAdd: boolean;
   allowDelete: boolean;
   allowReplace: boolean;
   allowRename: boolean;
 }
-
-const settingsForm = settingsFormJson as FormMarkup;
 
 const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
   type: 'attachmentsEditor',
@@ -43,8 +42,10 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     return (
       <ConfigurableFormItem model={model}>
         <StoredFilesProvider
-          ownerId={Boolean(ownerId) ? ownerId : (Boolean(data?.id) ? data?.id : '')}
-          ownerType={Boolean(model.ownerType) ? model.ownerType : (Boolean(formSettings?.modelType) ? formSettings?.modelType : '')}
+          ownerId={Boolean(ownerId) ? ownerId : Boolean(data?.id) ? data?.id : ''}
+          ownerType={
+            Boolean(model.ownerType) ? model.ownerType : Boolean(formSettings?.modelType) ? formSettings?.modelType : ''
+          }
           ownerName={model.ownerName}
           filesCategory={model.filesCategory}
           allCategories={!Boolean(model.filesCategory)}
@@ -56,25 +57,27 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
             allowDelete={!model.disabled && model.allowDelete && isEnabledByCondition}
             allowReplace={!model.disabled && model.allowReplace && isEnabledByCondition}
             allowRename={!model.disabled && model.allowRename && isEnabledByCondition}
+            allowedFileTypes={model.allowedFileTypes}
           />
         </StoredFilesProvider>
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
-  migrator: m => m.add<IAttachmentsEditorProps>(0, prev => {
-    return {
-      ...prev,
-      allowAdd: true,
-      allowDelete: true,
-      allowReplace: true,
-      allowRename: true,
-      ownerId: '',
-      ownerType: '',
-      ownerName: ''
-    };
-  })
+  settingsFormMarkup: getSettings(),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
+  migrator: (m) =>
+    m.add<IAttachmentsEditorProps>(0, (prev) => {
+      return {
+        ...prev,
+        allowAdd: true,
+        allowDelete: true,
+        allowReplace: true,
+        allowRename: true,
+        ownerId: '',
+        ownerType: '',
+        ownerName: '',
+      };
+    }),
 };
 
 export default AttachmentsEditor;
