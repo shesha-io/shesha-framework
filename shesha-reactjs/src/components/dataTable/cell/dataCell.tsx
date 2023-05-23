@@ -112,6 +112,7 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
     const componentModel = useMemo(() => {
         let model: IColumnEditorProps = {
             ...customComponent.settings,
+            id: props.columnConfig.columnId,
             type: customComponent.type,
             name: columnConfig.propertyName,
             label: null,

@@ -49,7 +49,13 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
       handleFail: false,
       handleSuccess: false
     };
-  })
+  }),
+  linkToModelMetadata: (model, metadata): IEntityReferenceControlProps => {
+    return {
+      ...model,
+      entityType: metadata.entityType,
+    };
+  },
 };
 
 export default EntityReferenceComponent;

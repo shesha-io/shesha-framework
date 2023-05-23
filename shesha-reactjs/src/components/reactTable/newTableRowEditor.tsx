@@ -33,7 +33,7 @@ export const NewTableRowEditor: FC<INewRowEditorProps> = (props) => {
                 allowDelete={false}
                 deleter={null}
                 allowChangeMode={false}
-                components={components}
+                editorComponents={components}
             >
                 <div
                     className='tr tr-body'
