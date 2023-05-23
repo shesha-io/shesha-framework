@@ -10,6 +10,7 @@ export interface IStoredFilesRendererProps {
   uploadBtnProps?: ButtonProps;
   disabled?: boolean;
   noFilesCaption?: ReactNode;
+  accept?: string[];
 }
 
 export const StoredFilesRenderer: FC<IStoredFilesRendererProps> = ({
@@ -18,6 +19,7 @@ export const StoredFilesRenderer: FC<IStoredFilesRendererProps> = ({
   isDragger,
   uploadBtnProps,
   disabled,
+  accept = [],
 }) => {
   const {
     fileList,
@@ -43,6 +45,7 @@ export const StoredFilesRenderer: FC<IStoredFilesRendererProps> = ({
       isDragger={isDragger}
       uploadBtnProps={uploadBtnProps}
       disabled={disabled}
+      allowedFileTypes={accept}
       // noFilesCaption={noFilesCaption}
     />
   );

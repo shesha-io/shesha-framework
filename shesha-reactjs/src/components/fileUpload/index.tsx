@@ -12,13 +12,12 @@ export interface IFileUploadProps {
   allowUpload?: boolean;
   allowReplace?: boolean;
   allowDelete?: boolean;
-  accept?: string;
   callback?: (...args: any) => any;
-
   value?: any;
   onChange?: any;
   /* isStub is used just to fix strange error when the user is reordering components on the form */
   isStub?: boolean;
+  allowedFileTypes?: string[];
 }
 
 export const FileUpload: FC<IFileUploadProps> = ({
@@ -26,9 +25,9 @@ export const FileUpload: FC<IFileUploadProps> = ({
   allowReplace = true,
   allowDelete = true,
   //uploadMode = 'async',
-  accept,
   callback,
-  isStub = false, 
+  isStub = false,
+  allowedFileTypes = [],
 }) => {
   const {
     fileInfo,
@@ -41,7 +40,6 @@ export const FileUpload: FC<IFileUploadProps> = ({
     */
   } = useStoredFile();
   const uploadButtonRef = useRef(null);
-  //console.log(uploadMode);
 
   const onCustomRequest = ({ file /*, onError, onSuccess*/ }: RcCustomRequestOptions) => {
     // call action from context
@@ -89,7 +87,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
   const fileProps: UploadProps = {
     name: 'file',
-    accept,
+    accept: allowedFileTypes?.join(','),
     multiple: false,
     fileList: fileInfo ? [fileInfo] : [],
     customRequest: onCustomRequest,
@@ -121,23 +119,24 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
   const showUploadButton = allowUpload && !fileInfo && !isUploading;
   const classes = fileInfo || isUploading ? 'sha-upload sha-upload-has-file' : 'sha-upload';
-  
+
   const uploadButton = (
-    <Button icon={<UploadOutlined />} type="link" ref={uploadButtonRef} style={{ display: !showUploadButton ? 'none' : '' }} >
+    <Button
+      icon={<UploadOutlined />}
+      type="link"
+      ref={uploadButtonRef}
+      style={{ display: !showUploadButton ? 'none' : '' }}
+    >
       (press to upload)
     </Button>
   );
-  return isStub
-    ? (
-      <div className={classes}>
-        {uploadButton}
-      </div>
-    )
-    : (
-      <Upload {...fileProps} className={classes}>
-        {uploadButton}
-      </Upload>
-    );
+  return isStub ? (
+    <div className={classes}>{uploadButton}</div>
+  ) : (
+    <Upload {...fileProps} className={classes}>
+      {uploadButton}
+    </Upload>
+  );
 };
 
 export default FileUpload;

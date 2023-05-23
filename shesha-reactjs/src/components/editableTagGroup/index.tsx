@@ -102,7 +102,7 @@ export const EditableTagGroup: FC<IEditableTagGroupProps> = ({ value = [], onCha
 
   return (
     <>
-      <div style={{ marginBottom: 16 }}>
+      <div style={{ marginBottom: value?.length ? 16 : 0 }}>
         {tagChild}
         {/* <TweenOneGroup
           enter={{
