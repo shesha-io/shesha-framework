@@ -16,4 +16,5 @@ export interface ICodeEditorProps extends IConfigurableFormComponent {
 export interface ICodeEditorComponentProps extends IConfigurableFormComponent {
   mode?: 'dialog' | 'inline';
   exposedVariables?: ICodeExposedVariable[];
+  language?: EditorModes;
 }
