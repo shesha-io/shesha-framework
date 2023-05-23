@@ -364,7 +364,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
           if (s.id === emptyId) {
             deletePermission();
           } else {
-            deleteRequest.mutate(null, { queryParams: { name: s.name } });
+            deleteRequest.mutate({ name: s.name });
           }
         }
         setSearchText('');

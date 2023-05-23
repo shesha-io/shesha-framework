@@ -36,4 +36,10 @@ export interface PermissionDeleteQueryParams {
     name?: string;
     'api-version'?: string;
 }
-export const usePermissionDelete = () => getUseMutateForEndpoint<PermissionDeleteQueryParams>({ url: `/api/services/app/Permission/Delete`, httpVerb: 'DELETE' });
+export const usePermissionDelete = () => getUseMutateForEndpoint<PermissionDeleteQueryParams>({
+    url: (data) => { 
+        const params = `name=${data.name}` + (Boolean(data["api-version"]) ? `&api-version=${data["api-version"]}` : '');
+        return `/api/services/app/Permission/Delete?${params}`; 
+    },
+    httpVerb: 'DELETE' 
+});
