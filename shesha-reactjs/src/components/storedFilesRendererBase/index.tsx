@@ -32,6 +32,7 @@ export interface IStoredFilesRendererBaseProps {
   uploadBtnProps?: ButtonProps;
   /* isStub is used just to fix strange error when the user is reordering components on the form */
   isStub?: boolean;
+  allowedFileTypes?: string[];
 }
 
 export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
@@ -53,6 +54,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   isDragger = true,
   disabled,
   isStub = false,
+  allowedFileTypes = [],
 }) => {
   const hasFiles = !!fileList.length;
 
@@ -64,6 +66,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
   const props: DraggerProps = {
     name: 'file',
+    accept: allowedFileTypes?.join(','),
     multiple,
     fileList,
     disabled,
@@ -145,30 +148,15 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   return (
     <div className="sha-stored-files-renderer">
       {isDragger ? (
-        isStub
-          ? (
-            <div>
-              {renderDraggerContent()}
-            </div>
-          )
-          : (
-            <Dragger {...props}>
-              {renderDraggerContent()}
-            </Dragger>
-          )
+        isStub ? (
+          <div>{renderDraggerContent()}</div>
+        ) : (
+          <Dragger {...props}>{renderDraggerContent()}</Dragger>
+        )
+      ) : isStub ? (
+        <div>{renderUploadContent()}</div>
       ) : (
-        isStub
-          ? (
-            <div>
-              {renderUploadContent()}
-            </div>
-          )
-          : (
-            <Upload {...props}>
-              {renderUploadContent()}
-            </Upload>
-          )
-
+        <Upload {...props}>{renderUploadContent()}</Upload>
       )}
 
       {fetchFilesError && (
