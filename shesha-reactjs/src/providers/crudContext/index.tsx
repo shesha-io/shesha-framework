@@ -39,7 +39,8 @@ export interface ICrudProviderProps {
     deleter?: () => Promise<any>;
     onSave?: DataProcessor;
     autoSave?: boolean;
-    components?: IFlatComponentsStructure;
+    editorComponents?: IFlatComponentsStructure;
+    displayComponents?: IFlatComponentsStructure;
 }
 
 const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
@@ -267,9 +268,10 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
         <CrudContext.Provider value={contextValue}>
             {true &&
                 <FormProvider
+                    key={state.mode} /* important for re-rendering of the provider after mode change */
                     form={form}
                     name={''}
-                    flatComponents={props.components}
+                    flatComponents={state.mode === 'read' ? props.displayComponents : props.editorComponents}
                     formSettings={undefined}
                     mode={ state.mode === 'read' ? 'readonly' : 'edit' }
                     isActionsOwner={false}

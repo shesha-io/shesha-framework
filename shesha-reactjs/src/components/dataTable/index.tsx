@@ -160,7 +160,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const crudOptions = useMemo(() => {
 
     const onNewRowInitializeExecuter = props.onNewRowInitialize
-      ? new Function('data, globalState', props.onNewRowInitialize)
+      ? new Function('formData, globalState', props.onNewRowInitialize)
       : null;
 
     const onNewRowInitialize: RowDataInitializer = props.onNewRowInitialize
@@ -307,6 +307,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
           let model: IColumnEditorProps = {
             ...customComponent.settings,
+            id: dataCol.columnId,
             type: customComponent.type,
             name: dataCol.propertyName,
             label: null,
@@ -337,6 +338,11 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const inlineCreatorComponents = useMemo<IFlatComponentsStructure>(() => {
     return getCrudComponents(crudOptions.canAdd, col => col.createComponent);
   }, [columns, metadata, crudOptions.canAdd]);
+
+  const inlineDisplayComponents = useMemo<IFlatComponentsStructure>(() => {
+    const result = getCrudComponents(true, col => col.displayComponent);
+    return result;
+  }, [columns, metadata]);
 
   const tableProps: IReactTableProps = {
     data: tableData,
@@ -379,6 +385,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     inlineSaveMode: props.inlineSaveMode,
     inlineEditorComponents,
     inlineCreatorComponents,
+    inlineDisplayComponents,
   };
 
   return (
