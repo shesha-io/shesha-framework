@@ -154,9 +154,9 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   }, [tableData]);
 
   const metadata = useMetadata(false)?.metadata;
-  
+
   const toolboxComponents = useFormDesignerComponents();
-  
+
   const crudOptions = useMemo(() => {
 
     const onNewRowInitializeExecuter = props.onNewRowInitialize
@@ -257,12 +257,14 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     if (!repository)
       return Promise.reject('Repository is not specified');
 
-    const options = repository.repositoryType === BackendRepositoryType
-      ? { customUrl: customCreateUrl } as ICreateOptions
-      : undefined;
+    return performOnRowSave(rowData, formData ?? {}, globalState).then(preparedData => {
+      const options = repository.repositoryType === BackendRepositoryType
+        ? { customUrl: customCreateUrl } as ICreateOptions
+        : undefined;
 
-    return repository.performCreate(0, rowData, options).then(() => {
-      store.refreshTable();
+      return repository.performCreate(0, preparedData, options).then(() => {
+        store.refreshTable();
+      });
     });
   };
 
@@ -298,7 +300,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         if (componentType && componentType !== standardCellComponentTypes.notEditable) {
           // component found
           const component = toolboxComponents[customComponent.type];
-          if (!component){
+          if (!component) {
             console.error(`Datatable: component '${customComponent.type}' not found - skipped`);
             return;
           }
@@ -326,7 +328,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         };
       };
     });
-    result.componentRelations[ROOT_COMPONENT_KEY] = componentIds;   
+    result.componentRelations[ROOT_COMPONENT_KEY] = componentIds;
 
     return result;
   };
