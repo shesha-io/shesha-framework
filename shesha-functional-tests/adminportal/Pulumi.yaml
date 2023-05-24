@@ -60,12 +60,12 @@ resources:
             resources:
               cpu: 2.0
               memory: "4Gi"
-            probes:
-              - httpGet:
-                  port: 80
-                initialDelaySeconds: 60
-                periodSeconds: 60
-                type: Liveness
+            # probes:
+            #   - httpGet:
+            #       port: 80
+            #     initialDelaySeconds: 60
+            #     periodSeconds: 60
+            #     type: Liveness
         scale:
           maxReplicas: 1
           minReplicas: 1
