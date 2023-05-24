@@ -124,16 +124,16 @@ resources:
             resources: 
                 cpu: 2.0
                 memory: "4Gi"
-            probes:
-              - httpGet:
-                  httpHeaders:
-                    - name: Custom-Header
-                      value: Awesome
-                  path: /health
-                  port: 8080
-                initialDelaySeconds: 3
-                periodSeconds: 3
-                type: Liveness
+            # probes:
+            #   - httpGet:
+            #       httpHeaders:
+            #         - name: Custom-Header
+            #           value: Awesome
+            #       path: /health
+            #       port: 8080
+            #     initialDelaySeconds: 3
+            #     periodSeconds: 3
+            #     type: Liveness
         scale:
           maxReplicas: 1
           minReplicas: 1
