@@ -2,6 +2,7 @@ import * as RestfulShesha from 'utils/fetchers';
 import { useEffect, useState } from 'react';
 import { useSheshaApplication } from 'providers';
 import { IHttpHeadersDictionary } from 'providers/sheshaApplication/contexts';
+import { useDeepCompareCallback } from './useDeepCompareEffect';
 
 export interface GetDataError<TError> {
     message: string;
@@ -72,7 +73,7 @@ export const useGetInternal = <TData = any, TError = any, TQueryParams = IQueryP
         response: null
     });
 
-    const refetch = (options?: RefetchOptions<TData, /*TError,*/ TQueryParams, TPathParams>): Promise<TData | null> => {
+    const refetch = useDeepCompareCallback((options?: RefetchOptions<TData, /*TError,*/ TQueryParams, TPathParams>): Promise<TData | null> => {
         setState(prev => ({ ...prev, loading: true }));
 
         const finalOptions = { ...props, ...options, httpHeaders: httpHeaders, };
@@ -92,7 +93,13 @@ export const useGetInternal = <TData = any, TError = any, TQueryParams = IQueryP
                 setState(prev => ({ ...prev, loading: false, error: error, data: null }));
                 throw error;
             });
-    };
+    }, [props.lazy,
+        props.path,
+        props.base,
+        props.resolve,
+        props.queryParams,
+        props.pathParams,
+    ]);
 
     useEffect(() => {
         if (!props.lazy)
@@ -121,10 +128,3 @@ export function useGet<TData = any, TError = any, TQueryParams = IQueryParams, T
 
     return useGetInternal<TData, TError, TQueryParams, TPathParams>({ ...props, path });
 };
-
-// export const useGet = <TData = any, TError = any, TQueryParams = IQueryParams, TPathParams = unknown>(
-//     path: UseGetProps<TData, /*TError,*/ TQueryParams, TPathParams>["path"],
-//     props: Omit<UseGetProps<TData, /*TError,*/ TQueryParams, TPathParams>, "path">): UseGetReturn<TData, TError, TQueryParams, TPathParams> => {
-
-//     return useGetInternal({ ...props, path });
-// };
