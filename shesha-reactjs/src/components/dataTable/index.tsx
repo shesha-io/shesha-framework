@@ -9,7 +9,7 @@ import { ModalProps } from 'antd/lib/modal';
 import ReactTable from '../reactTable';
 import { removeUndefinedProperties } from 'utils/array';
 import { ValidationErrors } from '..';
-import { IFlatComponentsStructure, ROOT_COMPONENT_KEY, useDataTableStore, useForm, useGlobalState, useMetadata } from 'providers';
+import { IFlatComponentsStructure, ROOT_COMPONENT_KEY, useDataTableStore, useForm, useGlobalState, useMetadata, useSheshaApplication } from 'providers';
 import { camelcaseDotNotation, toCamelCase } from 'utils/string';
 import { IReactTableProps, RowDataInitializer } from '../reactTable/interfaces';
 import { usePrevious } from 'react-use';
@@ -19,6 +19,9 @@ import { ITableDataColumn } from 'providers/dataTable/interfaces';
 import { IColumnEditorProps, IFieldComponentProps, standardCellComponentTypes } from 'providers/datatableColumnsConfigurator/models';
 import { useFormDesignerComponents } from 'providers/form/hooks';
 import { getCustomEnabledFunc, getCustomVisibilityFunc } from 'providers/form/utils';
+import moment from 'moment';
+import { axiosHttp } from 'utils/fetchers';
+
 
 export interface IIndexTableOptions {
   omitClick?: boolean;
@@ -154,26 +157,32 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   }, [tableData]);
 
   const metadata = useMetadata(false)?.metadata;
+  const { backendUrl } = useSheshaApplication();
 
   const toolboxComponents = useFormDesignerComponents();
 
-  const crudOptions = useMemo(() => {
-
-    const onNewRowInitializeExecuter = props.onNewRowInitialize
-      ? new Function('formData, globalState', props.onNewRowInitialize)
+  const onNewRowInitializeExecuter = useMemo<Function>(() => {
+    return props.onNewRowInitialize
+      ? new Function('formData, globalState, http, moment', props.onNewRowInitialize)
       : null;
+  }, [props.onNewRowInitialize]);
 
-    const onNewRowInitialize: RowDataInitializer = props.onNewRowInitialize
+  const onNewRowInitialize = useMemo<RowDataInitializer>(() => {
+    const result: RowDataInitializer = props.onNewRowInitialize
       ? () => {
         // todo: replace formData and globalState with accessors (e.g. refs) and remove hooks to prevent unneeded re-rendering
         //return onNewRowInitializeExecuter(formData, globalState);
-        const result = onNewRowInitializeExecuter(formData ?? {}, globalState);
+        const result = onNewRowInitializeExecuter(formData ?? {}, globalState, axiosHttp(backendUrl), moment);
         return Promise.resolve(result);
       }
       : () => {
         return Promise.resolve({});
       };
 
+      return result;
+  }, [onNewRowInitializeExecuter, formData, globalState]);
+
+  const crudOptions = useMemo(() => {
     const result = {
       canDelete: props.canDeleteInline === 'yes' || props.canDeleteInline === 'inherit' && formMode === 'edit',
       canEdit: props.canEditInline === 'yes' || props.canEditInline === 'inherit' && formMode === 'edit',
@@ -224,16 +233,17 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       .filter(c => c.defaultSorting !== null)
       .map<SortingRule<string>>(c => ({ id: c.id, desc: c.defaultSorting === 1 }));
 
+      // http, moment, setFormData
   const performOnRowSave = useMemo<OnSaveHandler>(() => {
     if (!onRowSave)
       return data => Promise.resolve(data);
 
-    const executer = new Function('data, formData, globalState', onRowSave);
+    const executer = new Function('data, formData, globalState, http, moment', onRowSave);
     return (data, formData, globalState) => {
-      const preparedData = executer(data, formData, globalState);
+      const preparedData = executer(data, formData, globalState, axiosHttp(backendUrl), moment);
       return Promise.resolve(preparedData);
     };
-  }, [onRowSave]);
+  }, [onRowSave, backendUrl]);
 
   const updater = (rowIndex: number, rowData: any): Promise<any> => {
     const repository = store.getRepository();
