@@ -8287,7 +8287,7 @@ _:-ms-fullscreen .ant-picker-range-wrapper .ant-picker-year-panel .ant-picker-ce
   display: inline-flex;
   align-items: center;
   max-width: 100%;
-  height: 32px;
+  height: 100%;
   color: rgba(0, 0, 0, 0.85);
   font-size: 14px;
 }
