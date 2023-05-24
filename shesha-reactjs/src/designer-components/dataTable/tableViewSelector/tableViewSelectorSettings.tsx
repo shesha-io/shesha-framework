@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form } from 'antd';
+import { Checkbox, Form } from 'antd';
 import { ITableViewSelectorComponentProps } from './models';
 import TableViewSelectorSettingsModal from './tableViewSelectorSettingsModal';
 import { SectionSeparator } from '../../..';
@@ -26,6 +26,9 @@ function TableViewSelectorSettings(props: ITableViewSelectorSettingsProps) {
       <SectionSeparator title="Filters" />
       <Form.Item name="filters">
         <TableViewSelectorSettingsModal readOnly={props.readOnly} />
+      </Form.Item>
+      <Form.Item name="hidden" label="Hidden" valuePropName="checked">
+        <Checkbox disabled={props.readOnly} />
       </Form.Item>
     </Form>
   );

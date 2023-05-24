@@ -19,12 +19,14 @@ const TooltipIcon: FC<ITooltipIconProps> = ({ tooltip }) => {
 
 export interface ITableViewSelectorRendererProps {
   filters?: IStoredFilter[];
+  hidden?: boolean;
   selectedFilterId?: string;
   onSelectFilter: (id?: string) => void;
 }
 
 export const TableViewSelectorRenderer: FC<ITableViewSelectorRendererProps> = ({
   filters,
+  hidden,
   selectedFilterId,
   onSelectFilter,
 }) => {
@@ -106,15 +108,16 @@ export const TableViewSelectorRenderer: FC<ITableViewSelectorRendererProps> = ({
   return (
     <div className="table-view-selector">
       <Space>
-        <Show when={filters?.length === 1}>{renderTitle()}</Show>
-
-        <Show when={filters?.length > 1}>
-          <Dropdown overlay={menu} trigger={['click']}>
-            <Space>
-              {renderTitle()}
-              <DownOutlined />
-            </Space>
-          </Dropdown>
+        <Show when={!hidden}>
+          <Show when={filters?.length === 1}>{renderTitle()}</Show>
+          <Show when={filters?.length > 1}>
+            <Dropdown overlay={menu} trigger={['click']}>
+              <Space>
+                {renderTitle()}
+                <DownOutlined />
+              </Space>
+            </Dropdown>
+          </Show>
         </Show>
 
         <Show when={Boolean(unevaluatedExpressions?.length)}>

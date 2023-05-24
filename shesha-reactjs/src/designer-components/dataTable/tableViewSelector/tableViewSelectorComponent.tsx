@@ -24,7 +24,7 @@ const TableViewSelectorComponent: IToolboxComponent<ITableViewSelectorComponentP
       ...prev,
       title: prev['title'] ?? 'Title',
       filters: prev['filters'] ?? [],
-      componentRef: prev['componentRef'],
+      componentRef: prev['componentRef']
     };
   })
     .add(1, prev => (
@@ -47,7 +47,7 @@ interface ITableViewSelectorProps extends ITableViewSelectorComponentProps {
   componentRef: MutableRefObject<any>;
 }
 
-export const TableViewSelector: FC<ITableViewSelectorProps> = ({ filters, componentRef, persistSelectedFilters }) => {
+export const TableViewSelector: FC<ITableViewSelectorProps> = ({ filters, hidden, componentRef, persistSelectedFilters }) => {
   const {
     columns,
     changeSelectedStoredFilterIds,
@@ -99,8 +99,10 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({ filters, compon
 
   const defaultTitle = predefinedFilters?.length ? predefinedFilters[0]?.name : null;
 
+  const isDesignerMode = formMode === 'designer';
+
   if (!defaultTitle) {
-    if (formMode === 'designer') {
+    if (isDesignerMode) {
       return <Alert message="Please make sure that you have at least 1 filter" type="warning" showIcon />;
     }
 
@@ -109,6 +111,7 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({ filters, compon
 
   return (
     <TableViewSelectorRenderer
+      hidden={hidden && !isDesignerMode}
       filters={predefinedFilters || []}
       onSelectFilter={changeSelectedFilter}
       selectedFilterId={selectedFilterId}

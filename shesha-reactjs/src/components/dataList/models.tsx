@@ -2,6 +2,8 @@ import { FormIdentifier, IConfigurableFormComponent } from "../..";
 import { ISelectionProps } from "../../providers/dataTableSelection/models";
 
 export type FormSelectionMode = 'name' | 'view' | 'expression';
+export type Orientation = 'vertical' | 'horizontal';
+export type ListItemWidth = number | 'custom';
 
 export interface IDataListProps {
 
@@ -31,6 +33,10 @@ export interface IDataListProps {
     entityType?: string;
     selectedIds?: string[];
     changeSelectedIds?: (selectedIds: string[]) => void;
+
+    orientation?: Orientation;
+    listItemWidth?: ListItemWidth;
+    customListItemWidth?: number;
 }
 
 export interface IDataListComponentProps extends IDataListProps, IConfigurableFormComponent {

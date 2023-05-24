@@ -7,6 +7,8 @@ import { DataList } from '../../../dataList';
 import { IDataListComponentProps } from '../../../dataList/models';
 import DataListSettings from './dataListSettings';
 import { useDataSources } from '../../../../providers/dataSourcesProvider';
+import ConfigurableFormItem from '../formItem';
+import classNames from 'classnames';
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
     type: 'datalist',
@@ -26,8 +28,15 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
           selectionMode: 'none',
           items: [],
         };
+        })
+      .add<IDataListComponentProps>(1, prev => {
+        return {
+          ...prev,
+          orientation: 'vertical',
+          listItemWidth: 1
+        };
         }),
-    settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
+      settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
       return (
         <DataListSettings
           readOnly={readOnly}
@@ -96,12 +105,25 @@ export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
   }, [changeSelectedRow]);
 
   const data = useMemo(() => {
-    return isDesignMode ? [{}] : tableData; 
-  }, [isDesignMode, tableData]);
+    return isDesignMode 
+      ? props.orientation === 'vertical'
+        ? [{}] 
+        : [{}, {}, {}, {}]
+      : tableData; 
+  }, [isDesignMode, tableData, props.orientation]);
 
   //console.log(`DataListWrapper render, ${data?.length} records`);
 
   return (
+    <ConfigurableFormItem
+      model={{ ...props }}
+      className={classNames(
+        'sha-list-component',
+        { horizontal: props?.orientation === 'horizontal' && formMode !== 'designer' } //
+      )}
+      labelCol={{ span: 0 }}
+      wrapperCol={{ span: 24 }}
+    >
       <DataList
         {...props}
         entityType={modelType}
@@ -114,6 +136,7 @@ export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
         selectedIds={selectedIds}
         changeSelectedIds={changeSelectedIds}
       />
+    </ConfigurableFormItem>
   );
 };
 
