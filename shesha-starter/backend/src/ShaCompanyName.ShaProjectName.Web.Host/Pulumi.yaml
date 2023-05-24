@@ -122,8 +122,8 @@ resources:
           - image: ${containerAppRevisionImage}
             name: #{projectName}#-#{role}#-#{env}#
             resources: 
-                cpu: 1.5
-                memory: "3Gi"
+                cpu: 2.0
+                memory: "4Gi"
             probes:
               - httpGet:
                   httpHeaders:
@@ -135,8 +135,8 @@ resources:
                 periodSeconds: 3
                 type: Liveness
         scale:
-          maxReplicas: 5
-          minReplicas: 0
+          maxReplicas: 1
+          minReplicas: 1
           rules:
             - custom:
                 metadata:
