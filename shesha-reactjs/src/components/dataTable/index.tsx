@@ -154,13 +154,13 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   }, [tableData]);
 
   const metadata = useMetadata(false)?.metadata;
-  
+
   const toolboxComponents = useFormDesignerComponents();
-  
+
   const crudOptions = useMemo(() => {
 
     const onNewRowInitializeExecuter = props.onNewRowInitialize
-      ? new Function('data, globalState', props.onNewRowInitialize)
+      ? new Function('formData, globalState', props.onNewRowInitialize)
       : null;
 
     const onNewRowInitialize: RowDataInitializer = props.onNewRowInitialize
@@ -257,12 +257,14 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     if (!repository)
       return Promise.reject('Repository is not specified');
 
-    const options = repository.repositoryType === BackendRepositoryType
-      ? { customUrl: customCreateUrl } as ICreateOptions
-      : undefined;
+    return performOnRowSave(rowData, formData ?? {}, globalState).then(preparedData => {
+      const options = repository.repositoryType === BackendRepositoryType
+        ? { customUrl: customCreateUrl } as ICreateOptions
+        : undefined;
 
-    return repository.performCreate(0, rowData, options).then(() => {
-      store.refreshTable();
+      return repository.performCreate(0, preparedData, options).then(() => {
+        store.refreshTable();
+      });
     });
   };
 
@@ -298,7 +300,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         if (componentType && componentType !== standardCellComponentTypes.notEditable) {
           // component found
           const component = toolboxComponents[customComponent.type];
-          if (!component){
+          if (!component) {
             console.error(`Datatable: component '${customComponent.type}' not found - skipped`);
             return;
           }
@@ -307,6 +309,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
           let model: IColumnEditorProps = {
             ...customComponent.settings,
+            id: dataCol.columnId,
             type: customComponent.type,
             name: dataCol.propertyName,
             label: null,
@@ -325,7 +328,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         };
       };
     });
-    result.componentRelations[ROOT_COMPONENT_KEY] = componentIds;   
+    result.componentRelations[ROOT_COMPONENT_KEY] = componentIds;
 
     return result;
   };
@@ -337,6 +340,11 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const inlineCreatorComponents = useMemo<IFlatComponentsStructure>(() => {
     return getCrudComponents(crudOptions.canAdd, col => col.createComponent);
   }, [columns, metadata, crudOptions.canAdd]);
+
+  const inlineDisplayComponents = useMemo<IFlatComponentsStructure>(() => {
+    const result = getCrudComponents(true, col => col.displayComponent);
+    return result;
+  }, [columns, metadata]);
 
   const tableProps: IReactTableProps = {
     data: tableData,
@@ -379,6 +387,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     inlineSaveMode: props.inlineSaveMode,
     inlineEditorComponents,
     inlineCreatorComponents,
+    inlineDisplayComponents,
   };
 
   return (

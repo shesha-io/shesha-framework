@@ -25,6 +25,7 @@ export interface ISortableRowProps {
   allowChangeEditMode: boolean;
   inlineSaveMode?: InlineSaveMode;
   inlineEditorComponents?: IFlatComponentsStructure;
+  inlineDisplayComponents?: IFlatComponentsStructure;
 }
 
 /*
@@ -60,6 +61,7 @@ export const TableRow: FC<ISortableRowProps> = props => {
     allowChangeEditMode,
     inlineSaveMode,
     inlineEditorComponents,
+    inlineDisplayComponents,
   } = props;
 
   const handleRowClick = () => onClick(row);
@@ -79,7 +81,8 @@ export const TableRow: FC<ISortableRowProps> = props => {
       mode={editMode === 'edit' ? 'update' : 'read'}
       allowChangeMode={allowChangeEditMode}
       autoSave={inlineSaveMode === 'auto'}
-      components={inlineEditorComponents}
+      editorComponents={inlineEditorComponents}
+      displayComponents={inlineDisplayComponents}
     >
       <div
         onClick={handleRowClick}
