@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Form, Select, AutoComplete } from 'antd';
+import { Form, Select, AutoComplete, InputNumber } from 'antd';
 import SectionSeparator from '../../../sectionSeparator';
 import CodeEditor from '../codeEditor/codeEditor';
 import PropertyAutocomplete from '../../../propertyAutocomplete/propertyAutocomplete';
-import { FormSelectionMode, IDataListComponentProps } from '../../../dataList/models';
-import { Option } from 'antd/lib/mentions';
+import { FormSelectionMode, IDataListComponentProps, ListItemWidth, Orientation } from '../../../dataList/models';
 import FormAutocomplete from '../../../formAutocomplete';
+import Show from 'components/show';
 
 export interface IProps {
   readOnly: boolean;
@@ -36,15 +36,11 @@ function DataListSettings(props: IProps) {
     })
   );
 
-  const onValuesChange = (changedValues, values: IDataListComponentProps) => {
-    if (props.onValuesChange) props.onValuesChange(changedValues, values);
-  };
-
   return (
     <Form
       form={form}
       onFinish={props.onSave}
-      onValuesChange={onValuesChange}
+      onValuesChange={props.onValuesChange}
       initialValues={initialState}
       wrapperCol={{ span: 24 }}
       labelCol={{ span: 24 }}
@@ -76,9 +72,9 @@ function DataListSettings(props: IProps) {
 
       <Form.Item name="selectionMode" label="Selection mode">
         <Select disabled={props.readOnly} defaultValue={'none'}>
-          <Option key='1' value='none'>None</Option>
-          <Option key='2' value='single'>Single</Option>
-          <Option key='3' value='multiple'>Multiple</Option>
+          <Select.Option key='1' value='none'>None</Select.Option>
+          <Select.Option key='2' value='single'>Single</Select.Option>
+          <Select.Option key='3' value='multiple'>Multiple</Select.Option>
         </Select>
       </Form.Item>
 
@@ -86,11 +82,11 @@ function DataListSettings(props: IProps) {
 
       <Form.Item name="formSelectionMode" label="Form selection mode">
         <Select disabled={props.readOnly} defaultValue={'none'} onChange={(item) => {
- setState({...state, formSelectionMode: (item as FormSelectionMode)}); 
-}}>
-          <Option key='name' value='name'>Named form</Option>
-          <Option key='view' value='view'>View type</Option>
-          <Option key='expression' value='expression'>Expression</Option>
+          setState({...state, formSelectionMode: (item as FormSelectionMode)}); 
+        }}>
+          <Select.Option key='name' value='name'>Named form</Select.Option>
+          <Select.Option key='view' value='view'>View type</Select.Option>
+          <Select.Option key='expression' value='expression'>Expression</Select.Option>
         </Select>
       </Form.Item>
 
@@ -101,43 +97,72 @@ function DataListSettings(props: IProps) {
       }
 
       {state.formSelectionMode === 'view' &&
-      <Form.Item name="formType" label="formType">
-        <AutoComplete
-          disabled={props.readOnly}
-          options={formTypesOptions}
-          onSearch={t =>
-            setFormTypesOptions(
-              (t
-                ? formTypes.filter(f => {
-                    return f.toLowerCase().includes(t.toLowerCase());
-                  })
-                : formTypes
-              ).map(i => {
-                return { value: i };
-              })
-            )
-          }
-        />
-      </Form.Item>
+        <Form.Item name="formType" label="formType">
+          <AutoComplete
+            disabled={props.readOnly}
+            options={formTypesOptions}
+            onSearch={t =>
+              setFormTypesOptions(
+                (t
+                  ? formTypes.filter(f => {
+                      return f.toLowerCase().includes(t.toLowerCase());
+                    })
+                  : formTypes
+                ).map(i => {
+                  return { value: i };
+                })
+              )
+            }
+          />
+        </Form.Item>
       }
 
       {state.formSelectionMode === 'expression' && 
-      <Form.Item name="formIdExpression" label="Form identifer expression">
-        <CodeEditor
-          readOnly={props.readOnly}
-          mode="dialog"
-          setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          name="formIdExpression"
-          type={''}
-          id={''}
-          label="Form identifer expression"
-          description="Enter code to get form identifier. You must return { name: string; module?: string; version?: number; } object. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
-          exposedVariables={[
-            { "name": "item", "description": "List item", "type": "object" },
-          ]}
-        />
-    </Form.Item>
-    }
+        <Form.Item name="formIdExpression" label="Form identifer expression">
+          <CodeEditor
+            readOnly={props.readOnly}
+            mode="dialog"
+            setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
+            name="formIdExpression"
+            type={''}
+            id={''}
+            label="Form identifer expression"
+            description="Enter code to get form identifier. You must return { name: string; module?: string; version?: number; } object. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
+            exposedVariables={[
+              { "name": "item", "description": "List item", "type": "object" },
+            ]}
+          />
+        </Form.Item>
+      }
+
+      <Form.Item name="orientation" label="Orientation">
+        <Select disabled={props.readOnly} defaultValue="vertical" onChange={(item) => {
+          setState({...state, orientation: (item as Orientation)}); 
+        }}>
+          <Select.Option key={1} value="vertical">Vertical</Select.Option>
+          <Select.Option key={2} value="horizontal">Horizontal</Select.Option>
+        </Select>
+      </Form.Item>
+
+      <Show when={state?.orientation === 'horizontal'}>
+        <Form.Item name="listItemWidth" label="List Item Width">
+          <Select disabled={props.readOnly} defaultValue={1} onChange={(item) => {
+            setState({...state, listItemWidth: (item as ListItemWidth)}); 
+          }}>
+            <Select.Option key={1} value={1}>100%</Select.Option>
+            <Select.Option key={2} value={0.5}>50%</Select.Option>
+            <Select.Option key={3} value={0.33}>33%</Select.Option>
+            <Select.Option key={4} value={0.25}>25%</Select.Option>
+            <Select.Option key={5} value="custom">(Custom)</Select.Option>
+          </Select>
+        </Form.Item>
+
+        <Show when={state?.listItemWidth === 'custom'}>
+          <Form.Item name="customListItemWidth" label="Custom List Item Width (px)">
+            <InputNumber />
+          </Form.Item>
+        </Show>
+      </Show>
 
       <Form.Item name="customVisibility" label="Custom visibility">
         <CodeEditor

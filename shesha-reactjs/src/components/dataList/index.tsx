@@ -37,6 +37,9 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     entityType,
     selectedIds,
     changeSelectedIds,
+    orientation,
+    listItemWidth,
+    customListItemWidth,
     ...props
 }) => {
     const { backendUrl, httpHeaders } = useSheshaApplication();
@@ -129,22 +132,20 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
     const [ref, measured] = useMeasure();
     
-    const listItemWidth = 1;
-
     const itemWidth = useMemo(() => {
         if (!measured) return 0;
         //ensures that vertical landscape is always 100% of measured width
-        if (!listItemWidth /*|| orientation === 'vertical'*/) {
+        if (!listItemWidth || orientation === 'vertical') {
           return measured?.width;
         }
     
-        /*if (listItemWidth === 'custom') {
+        if (listItemWidth === 'custom') {
           if (!customListItemWidth) return measured?.width;
           else return customListItemWidth;
-        }*/
+        }
     
         return measured?.width * listItemWidth;
-    }, [measured?.width, listItemWidth/*, customListItemWidth, orientation*/]);
+    }, [measured?.width, listItemWidth, customListItemWidth, orientation]);
 
     const getFormConfig = (entityForm: EntityForm) => {
         entityForm.isFetchingFormConfiguration = true;
@@ -386,7 +387,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
                     ref={ref}
                     className={classNames('sha-list-component-body', {
                         loading: (isFetchingTableData) && records?.length === 0,
-                        //horizontal: orientation === 'horizontal',
+                        horizontal: orientation === 'horizontal',
                     })}
                 >
                     <Show when={Boolean(records) /*&& Boolean(formConfiguration?.markup)*/}>

@@ -226,9 +226,17 @@ const reducer = handleActions<IDataTableStateContext, any>(
           ? userConfig.tableSorting
           : configuredTableSorting;
 
+      const userFilters = userConfig?.selectedFilterIds?.length > 0 && state.predefinedFilters?.length > 0
+        ? userConfig?.selectedFilterIds?.filter(x => {
+            return state.predefinedFilters?.find(f => {
+              return f.id = x;
+            });
+          }) ?? []
+        : [];
+
       const selectedStoredFilterIds = state?.selectedStoredFilterIds?.length
         ? [...state.selectedStoredFilterIds]
-        : [...userConfig?.selectedFilterIds ?? []];
+        : [...userFilters];
 
       if (selectedStoredFilterIds.length === 0 && state.predefinedFilters?.length > 0)
         selectedStoredFilterIds.push(state.predefinedFilters[0].id);
