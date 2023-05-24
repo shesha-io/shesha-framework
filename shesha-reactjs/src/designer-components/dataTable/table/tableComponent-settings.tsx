@@ -45,6 +45,18 @@ const NEW_ROW_EXPOSED_VARIABLES = [
     name: 'globalState',
     description: 'The global state of the application',
     type: 'object',
+  },
+  {
+    id: nanoid(),
+    name: 'http',
+    description: 'axios instance used to make http requests',
+    type: 'object',
+  },
+  {
+    id: nanoid(),
+    name: 'moment',
+    description: 'The moment.js object',
+    type: 'object',
   }
 ];
 
@@ -65,6 +77,18 @@ const ROW_SAVE_EXPOSED_VARIABLES = [
     id: nanoid(),
     name: 'globalState',
     description: 'The global state of the application',
+    type: 'object',
+  },
+  {
+    id: nanoid(),
+    name: 'http',
+    description: 'axios instance used to make http requests',
+    type: 'object',
+  },
+  {
+    id: nanoid(),
+    name: 'moment',
+    description: 'The moment.js object',
     type: 'object',
   }
 ];
@@ -90,7 +114,7 @@ function TableSettings(props: IProps) {
   const [form] = Form.useForm();
   const canEditInline = Form.useWatch('canEditInline', form);
   const canAddInline = Form.useWatch('canAddInline', form);
-  const canDeleteInline = Form.useWatch('canDeleteInline', form);  
+  const canDeleteInline = Form.useWatch('canDeleteInline', form);
 
   const toggleColumnsModal = () => setState(prev => ({ ...prev, showColumnsModal: !prev?.showColumnsModal }));
 
@@ -216,7 +240,7 @@ function TableSettings(props: IProps) {
       </Form.Item>
 
       <Form.Item name="rowDroppedActionConfiguration">
-        <ConfigurableActionConfigurator editorConfig={null} level={1} label="On Row Dropped Action"/>
+        <ConfigurableActionConfigurator editorConfig={null} level={1} label="On Row Dropped Action" />
       </Form.Item>
 
       <SectionSeparator title="Layout" />
