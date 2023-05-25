@@ -1,4 +1,4 @@
-import React, { FC, MutableRefObject } from 'react';
+import React, { FC, MutableRefObject, useEffect } from 'react';
 import { IToolboxComponent } from 'interfaces';
 import { SelectOutlined } from '@ant-design/icons';
 import TableViewSelectorSettings from './tableViewSelectorSettings';
@@ -88,7 +88,7 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({ filters, hidden
     debounceEvaluateDynamicFiltersHelper();
   }, [filters, formData, globalState]);
 
-  useDeepCompareEffect(() => {
+  useEffect(() => {
     changePersistedFiltersToggle(persistSelectedFilters);
   }, [persistSelectedFilters]);
   //#endregion
