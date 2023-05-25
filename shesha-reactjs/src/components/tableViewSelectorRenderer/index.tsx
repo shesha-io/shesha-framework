@@ -91,7 +91,7 @@ export const TableViewSelectorRenderer: FC<ITableViewSelectorRendererProps> = ({
             key: filter?.id,
             label: (
               <Space>
-                {filter?.name} : {filter?.id}
+                {filter?.name}
                 <Show when={Boolean(filter?.tooltip)}>
                   <TooltipIcon tooltip={filter?.tooltip}></TooltipIcon>
                 </Show>
