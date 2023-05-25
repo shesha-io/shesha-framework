@@ -175,7 +175,7 @@ export const evaluateDynamicFilters = async (
 
         const getVariableDataType = (variable: string): Promise<string> => {
           return propertyMetadataAccessor
-            ? propertyMetadataAccessor(variable).then((m) => m.dataType)
+            ? propertyMetadataAccessor(variable).then((m) => m?.dataType)
             : Promise.resolve('string');
         };
 
