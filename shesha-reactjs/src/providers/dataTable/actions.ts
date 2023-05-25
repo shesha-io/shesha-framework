@@ -139,7 +139,11 @@ export const changeSelectedStoredFilterIdsAction = createAction<string[], string
   p => p
 );
 
-export const setPredefinedFiltersAction = createAction<IStoredFilter[], IStoredFilter[]>(DataTableActionEnums.SetPredefinedFilters, p => p);
+export interface ISetPredefinedFiltersPayload {
+  predefinedFilters: IStoredFilter[];
+  userConfig: IDataTableUserConfig;
+}
+export const setPredefinedFiltersAction = createAction<ISetPredefinedFiltersPayload, ISetPredefinedFiltersPayload>(DataTableActionEnums.SetPredefinedFilters, p => p);
 
 export const changeSelectedIdsAction = createAction<string[], string[]>(DataTableActionEnums.ChangeSelectedIds, p => p);
 

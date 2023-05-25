@@ -384,7 +384,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     const filtersChanged = !isEqual(sortBy(state?.predefinedFilters), sortBy(predefinedFilters));
 
     if (filtersChanged) {
-      dispatch(setPredefinedFiltersAction(predefinedFilters));
+      dispatch(setPredefinedFiltersAction({predefinedFilters, userConfig}));
     }
   };
 
