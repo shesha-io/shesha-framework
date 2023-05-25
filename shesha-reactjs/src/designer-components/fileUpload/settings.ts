@@ -94,15 +94,6 @@ export const getSettings = () =>
       parentId: 'root',
       label: 'Disabled',
     })
-    .addCheckbox({
-      id: 'f4193290-3bc7-441a-92be-cfaf25d57c28',
-      name: 'allowUpload',
-      label: 'Allow Upload',
-      parentId: 'root',
-      hidden: false,
-      customVisibility: 'return !data.disabled',
-      validate: {},
-    })
     .addCodeEditor({
       id: '4b5e5951-4998-4635-b1c8-0b6d3940c300',
       name: 'customEnabled',
@@ -119,6 +110,15 @@ export const getSettings = () =>
         { name: 'value', description: 'Component current value', type: 'string | any' },
         { name: 'data', description: 'Selected form values', type: 'object' },
       ],
+    })    
+    .addCheckbox({
+      id: 'f4193290-3bc7-441a-92be-cfaf25d57c28',
+      name: 'allowUpload',
+      label: 'Allow Upload',
+      parentId: 'root',
+      hidden: false,
+      customVisibility: 'return !data.disabled',
+      validate: {},
     })
     .addCheckbox({
       id: 'b0d75145-3f7c-424d-a1ac-c65990b4f749',
