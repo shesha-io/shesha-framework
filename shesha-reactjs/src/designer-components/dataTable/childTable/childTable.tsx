@@ -1,9 +1,15 @@
 import { Alert, Space } from 'antd';
-import React, { FC, Fragment, MutableRefObject } from 'react';
+import React, { FC, Fragment, MutableRefObject, useEffect } from 'react';
 import { CollapsiblePanel, GlobalTableFilter, Show, TablePager } from 'components';
-import { useDataTable, useForm, useGlobalState, useNestedPropertyMetadatAccessor, useSheshaApplication } from 'providers';
+import {
+  useDataTable,
+  useForm,
+  useGlobalState,
+  useNestedPropertyMetadatAccessor,
+  useSheshaApplication,
+} from 'providers';
 import ComponentsContainer from 'components/formDesigner/componentsContainer';
-import { evaluateDynamicFilters, hasDynamicFilter } from 'providers/dataTable/utils';
+import { hasDynamicFilter } from 'providers/dataTable/utils';
 import './styles/index.less';
 import { ButtonGroup } from 'components/formDesigner/components/button/buttonGroup/buttonGroupComponent';
 import camelCaseKeys from 'camelcase-keys';
@@ -11,19 +17,34 @@ import _, { isEmpty } from 'lodash';
 import { useDeepCompareEffect } from 'react-use';
 import { IChildTableComponentProps } from '.';
 import { evaluateString } from 'providers/form/utils';
+import { evaluateDynamicFilters, getValidDefaultBool } from 'utils';
+import { DEFAULT_DT_USER_CONFIG } from 'providers/dataTable/contexts';
 
 export interface IChildTableProps extends IChildTableComponentProps {
   componentRef: MutableRefObject<any>;
-};
+}
 
 export const ChildTable: FC<IChildTableProps> = (props) => {
   const { formData, formMode, isComponentHidden } = useForm();
-  const { columns, setPredefinedFilters, modelType } = useDataTable();
+  const { columns, setPredefinedFilters, modelType, changePageSize, totalRows } = useDataTable();
 
   const { globalState } = useGlobalState();
   const { anyOfPermissionsGranted } = useSheshaApplication();
 
-  const { defaultSelectedFilterId, filters, permissions, componentRef } = props;
+  const { defaultSelectedFilterId, filters, permissions, componentRef, defaultPageSize, totalRecords, showPagination } =
+    props;
+
+  useEffect(() => {
+    if (getValidDefaultBool(showPagination) && defaultPageSize && defaultPageSize !== DEFAULT_DT_USER_CONFIG.pageSize) {
+      changePageSize(defaultPageSize);
+    }
+  }, [defaultPageSize]);
+
+  useEffect(() => {
+    if (!getValidDefaultBool(showPagination) && totalRecords) {
+      changePageSize(totalRecords);
+    }
+  }, [totalRecords]);
 
   componentRef.current = {
     columns,
@@ -51,11 +72,11 @@ export const ChildTable: FC<IChildTableProps> = (props) => {
         { match: 'globalState', data: globalState },
       ],
       propertyMetadataAccessor
-    ).then(evaluatedFilters => {
+    ).then((evaluatedFilters) => {
       let parsedFilters = evaluatedFilters;
 
       if (defaultSelectedFilterId) {
-        parsedFilters = evaluatedFilters?.map(filter => {
+        parsedFilters = evaluatedFilters?.map((filter) => {
           const localFilter = { ...filter };
 
           if (localFilter.id === defaultSelectedFilterId) {
@@ -93,6 +114,9 @@ export const ChildTable: FC<IChildTableProps> = (props) => {
   }, [props?.filters, formData, globalState]);
   //#endregion
 
+  const showTablePager =
+    getValidDefaultBool(showPagination) || (!getValidDefaultBool(showPagination) && totalRows > totalRecords);
+
   const granted = anyOfPermissionsGranted(permissions || []);
 
   const isVisible = !isComponentHidden(props) && (granted || formMode === 'designer');
@@ -124,13 +148,13 @@ export const ChildTable: FC<IChildTableProps> = (props) => {
           key={undefined}
           header={evaluateString(props?.title, formData)}
           extra={
-            <div onClick={e => e?.stopPropagation()}>
+            <div onClick={(e) => e?.stopPropagation()}>
               <Space size="middle">
                 <Show when={props?.allowQuickSearch}>
                   <GlobalTableFilter />
                 </Show>
 
-                <TablePager />
+                {showTablePager && <TablePager />}
 
                 <ButtonGroup
                   items={props?.toolbarItems || []}
@@ -148,14 +172,13 @@ export const ChildTable: FC<IChildTableProps> = (props) => {
           <ComponentsContainer
             containerId={props.id}
             dynamicComponents={
-              props?.isDynamic ? props?.components?.map(c => ({ ...c, readOnly: props?.readOnly })) : []
+              props?.isDynamic ? props?.components?.map((c) => ({ ...c, readOnly: props?.readOnly })) : []
             }
           />
         </CollapsiblePanel>
       </Show>
     </Fragment>
   );
-
 };
 
 export default ChildTable;

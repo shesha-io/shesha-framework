@@ -17,11 +17,6 @@
           "value": "action"
         },
         {
-          "id": "jEvoRL2b4tdbqGmRMBy8q",
-          "label": "Calculated",
-          "value": "calculated"
-        },
-        {
           "id": "Owj_p4rSgOh3u5WPXv9Ba",
           "label": "CRUD Operations",
           "value": "crud-operations"

@@ -8,7 +8,6 @@ import {
   SheshaApplicationStateContext,
   SHESHA_APPLICATION_CONTEXT_INITIAL_STATE,
 } from './contexts';
-import { RestfulProvider } from 'restful-react';
 import IRequestHeaders from '../../interfaces/requestHeaders';
 import { setBackendUrlAction, setHeadersAction, updateToolboxComponentGroupsAction } from './actions';
 import { Router } from 'next/router';
@@ -43,7 +42,6 @@ export interface IShaApplicationProviderProps {
   router?: Router; // todo: replace with IRouter
   toolboxComponentGroups?: IToolboxComponentGroup[];
   unauthorizedRedirectUrl?: string;
-  whitelistUrls?: string[];
   themeProps?: ThemeProviderProps;
   routes?: ISheshaRutes;
   noAuth?: boolean;
@@ -66,7 +64,6 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
     router,
     toolboxComponentGroups = [],
     unauthorizedRedirectUrl,
-    whitelistUrls,
     themeProps,
     routes,
     getFormUrlFunc,
@@ -85,7 +82,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
   const authRef = useRef<IAuthProviderRefProps>();
 
   useDeepCompareEffect(() => {
-    if(toolboxComponentGroups?.length !== 0) {
+    if (toolboxComponentGroups?.length !== 0) {
       updateToolboxComponentGroups(toolboxComponentGroups);
     }
   }, [toolboxComponentGroups]);
@@ -119,54 +116,46 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
           anyOfPermissionsGranted: anyOfPermissionsGranted, // NOTE: don't pass ref directly here, it leads to bugs because some of components use old reference even when authRef is updated
         }}
       >
-        <RestfulProvider
-          base={state.backendUrl}
-          requestOptions={{
-            headers: state.httpHeaders,
-          }}
-        >
-          <SettingsProvider>
-            <ConfigurableActionDispatcherProvider>
-              <UiProvider>
-                <ShaRoutingProvider getFormUrlFunc={getFormUrlFunc} router={router}>
-                  <ConditionalWrap
-                    condition={!props?.noAuth}
-                    wrap={(authChildren) => (
-                      <AuthProvider
-                        tokenName={accessTokenName || DEFAULT_ACCESS_TOKEN_NAME}
-                        onSetRequestHeaders={setRequestHeaders}
-                        unauthorizedRedirectUrl={unauthorizedRedirectUrl}
-                        whitelistUrls={whitelistUrls}
-                        authRef={authRef}
-                        homePageUrl={homePageUrl}
-                      >
-                        {authChildren}
-                      </AuthProvider>
-                    )}
-                  >
-                    <ConfigurationItemsLoaderProvider>
-                      <ThemeProvider {...(themeProps || {})}>
-                        <AppConfiguratorProvider>
-                          <ReferenceListDispatcherProvider>
-                            <MetadataDispatcherProvider>
-                              <StackedNavigationProvider>
-                                <DataSourcesProvider>
-                                  <DynamicModalProvider>
-                                    <ApplicationActionsProcessor>{children}</ApplicationActionsProcessor>
-                                  </DynamicModalProvider>
-                                </DataSourcesProvider>
-                              </StackedNavigationProvider>
-                            </MetadataDispatcherProvider>
-                          </ReferenceListDispatcherProvider>
-                        </AppConfiguratorProvider>
-                      </ThemeProvider>
-                    </ConfigurationItemsLoaderProvider>
-                  </ConditionalWrap>
-                </ShaRoutingProvider>
-              </UiProvider>
-            </ConfigurableActionDispatcherProvider>
-          </SettingsProvider>
-        </RestfulProvider>
+        <SettingsProvider>
+          <ConfigurableActionDispatcherProvider>
+            <UiProvider>
+              <ShaRoutingProvider getFormUrlFunc={getFormUrlFunc} router={router}>
+                <ConditionalWrap
+                  condition={!props?.noAuth}
+                  wrap={(authChildren) => (
+                    <AuthProvider
+                      tokenName={accessTokenName || DEFAULT_ACCESS_TOKEN_NAME}
+                      onSetRequestHeaders={setRequestHeaders}
+                      unauthorizedRedirectUrl={unauthorizedRedirectUrl}
+                      authRef={authRef}
+                      homePageUrl={homePageUrl}
+                    >
+                      {authChildren}
+                    </AuthProvider>
+                  )}
+                >
+                  <ConfigurationItemsLoaderProvider>
+                    <ThemeProvider {...(themeProps || {})}>
+                      <AppConfiguratorProvider>
+                        <ReferenceListDispatcherProvider>
+                          <MetadataDispatcherProvider>
+                            <StackedNavigationProvider>
+                              <DataSourcesProvider>
+                                <DynamicModalProvider>
+                                  <ApplicationActionsProcessor>{children}</ApplicationActionsProcessor>
+                                </DynamicModalProvider>
+                              </DataSourcesProvider>
+                            </StackedNavigationProvider>
+                          </MetadataDispatcherProvider>
+                        </ReferenceListDispatcherProvider>
+                      </AppConfiguratorProvider>
+                    </ThemeProvider>
+                  </ConfigurationItemsLoaderProvider>
+                </ConditionalWrap>
+              </ShaRoutingProvider>
+            </UiProvider>
+          </ConfigurableActionDispatcherProvider>
+        </SettingsProvider>
       </SheshaApplicationActionsContext.Provider>
     </SheshaApplicationStateContext.Provider>
   );

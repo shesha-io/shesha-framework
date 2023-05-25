@@ -21,10 +21,10 @@ import settingsFormJson from './settingsForm.json';
 import moment from 'moment';
 import { isEmpty } from 'lodash';
 import camelCaseKeys from 'camelcase-keys';
-import { evaluateDynamicFilters } from 'providers/dataTable/utils';
 import { IAutocompleteComponentProps } from './interfaces';
 import { migrateDynamicExpression } from 'designer-components/_common-migrations/migrateUseExpression';
 import { useAsyncMemo } from 'hooks/useAsyncMemo';
+import { evaluateDynamicFilters } from 'utils';
 
 interface IQueryParams {
   // tslint:disable-next-line:typedef-whitespace

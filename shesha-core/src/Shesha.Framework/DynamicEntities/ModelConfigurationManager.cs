@@ -273,9 +273,9 @@ namespace Shesha.DynamicEntities
                             || hardCodedProp.MinLength.HasValue
                             || hardCodedProp.MaxLength.HasValue;
                         prop.RegExpHardcoded = !string.IsNullOrWhiteSpace(hardCodedProp.RegExp);
-                        prop.CascadeCreateHardcoded = hardCodedProp.CascadeCreate;
-                        prop.CascadeUpdateHardcoded = hardCodedProp.CascadeUpdate;
-                        prop.CascadeDeleteUnreferencedHardcoded = hardCodedProp.CascadeDeleteUnreferenced;
+                        prop.CascadeCreateHardcoded = hardCodedProp.CascadeCreate != null;
+                        prop.CascadeUpdateHardcoded = hardCodedProp.CascadeUpdate != null;
+                        prop.CascadeDeleteUnreferencedHardcoded = hardCodedProp.CascadeDeleteUnreferenced != null;
                     }
                 }
             }

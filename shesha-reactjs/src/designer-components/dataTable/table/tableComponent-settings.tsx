@@ -9,6 +9,7 @@ import PropertyAutocomplete from '../../../components/propertyAutocomplete/prope
 import { ConfigurableActionConfigurator } from '../../configurableActionsConfigurator';
 import { YesNoInherit } from 'components/dataTable/interfaces';
 import { InlineEditMode, InlineSaveMode, NewRowCapturePosition } from 'components/reactTable/interfaces';
+import { nanoid } from 'nanoid';
 
 interface ITypedOption<T = string> {
   label: React.ReactNode;
@@ -32,6 +33,66 @@ const rowCapturePositions: ITypedOption<NewRowCapturePosition>[] = [
   { label: 'Bottom', value: 'bottom' }
 ];
 
+const NEW_ROW_EXPOSED_VARIABLES = [
+  {
+    id: nanoid(),
+    name: 'formData',
+    description: 'Form values',
+    type: 'object',
+  },
+  {
+    id: nanoid(),
+    name: 'globalState',
+    description: 'The global state of the application',
+    type: 'object',
+  },
+  {
+    id: nanoid(),
+    name: 'http',
+    description: 'axios instance used to make http requests',
+    type: 'object',
+  },
+  {
+    id: nanoid(),
+    name: 'moment',
+    description: 'The moment.js object',
+    type: 'object',
+  }
+];
+
+const ROW_SAVE_EXPOSED_VARIABLES = [
+  {
+    id: nanoid(),
+    name: 'data',
+    description: 'Current row data',
+    type: 'object',
+  },
+  {
+    id: nanoid(),
+    name: 'formData',
+    description: 'Form values',
+    type: 'object',
+  },
+  {
+    id: nanoid(),
+    name: 'globalState',
+    description: 'The global state of the application',
+    type: 'object',
+  },
+  {
+    id: nanoid(),
+    name: 'http',
+    description: 'axios instance used to make http requests',
+    type: 'object',
+  },
+  {
+    id: nanoid(),
+    name: 'moment',
+    description: 'The moment.js object',
+    type: 'object',
+  }
+];
+
 export interface IProps {
   readOnly: boolean;
   model: ITableComponentProps;
@@ -53,7 +114,7 @@ function TableSettings(props: IProps) {
   const [form] = Form.useForm();
   const canEditInline = Form.useWatch('canEditInline', form);
   const canAddInline = Form.useWatch('canAddInline', form);
-  const canDeleteInline = Form.useWatch('canDeleteInline', form);  
+  const canDeleteInline = Form.useWatch('canDeleteInline', form);
 
   const toggleColumnsModal = () => setState(prev => ({ ...prev, showColumnsModal: !prev?.showColumnsModal }));
 
@@ -138,14 +199,14 @@ function TableSettings(props: IProps) {
           label="New row init"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           type={''}
-          description="Allows configurators to specify logic to initialise the object bound to a new row."
-          // exposedVariables={EXPOSED_VARIABLES}
+          description="Specify logic to initialise the object bound to a new row. This handler should return an object or a Promise<object>."
+          exposedVariables={NEW_ROW_EXPOSED_VARIABLES}
         />
       </Form.Item>
       <Form.Item
         label="On row save"
         name="onRowSave"
-        tooltip="Allows custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations)."
+        tooltip="Custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations). This handler should return an object or a Promise<object>."
         hidden={canAddInline === 'no' && canEditInline === 'no'}
       >
         <CodeEditor
@@ -157,7 +218,7 @@ function TableSettings(props: IProps) {
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           type={''}
           description="Allows custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations)."
-          // exposedVariables={EXPOSED_VARIABLES}
+          exposedVariables={ROW_SAVE_EXPOSED_VARIABLES}
         />
       </Form.Item>
       <Form.Item name="canDeleteInline" label="Can delete inline">
@@ -179,7 +240,7 @@ function TableSettings(props: IProps) {
       </Form.Item>
 
       <Form.Item name="rowDroppedActionConfiguration">
-        <ConfigurableActionConfigurator editorConfig={null} level={1} label="On Row Dropped Action"/>
+        <ConfigurableActionConfigurator editorConfig={null} level={1} label="On Row Dropped Action" />
       </Form.Item>
 
       <SectionSeparator title="Layout" />

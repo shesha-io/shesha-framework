@@ -18,7 +18,7 @@ import {
   /* NEW_ACTION_IMPORT_GOES_HERE */
 } from './actions';
 import useThunkReducer from '../../hooks/thunkReducer';
-import { metadataGet, PropertyMetadataDto } from '../../apis/metadata';
+import { metadataGet, PropertyMetadataDto } from 'apis/metadata';
 import { IModelsDictionary, IProvidersDictionary } from './models';
 import { useSheshaApplication } from '../../providers';
 import { IModelMetadata, IPropertyMetadata, ISpecification } from '../../interfaces/metadata';

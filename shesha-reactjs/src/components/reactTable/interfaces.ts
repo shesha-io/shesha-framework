@@ -1,3 +1,4 @@
+import { IFlatComponentsStructure } from 'providers/form/models';
 import { ReactNode, CSSProperties } from 'react';
 import { Column, Row, SortingRule, TableState } from 'react-table';
 
@@ -197,5 +198,8 @@ export interface IReactTableProps extends ITableRowDragProps {
   newRowInitData?: RowDataInitializer;
   inlineEditMode?: InlineEditMode;
   inlineSaveMode?: InlineSaveMode;
+  inlineEditorComponents?: IFlatComponentsStructure;
+  inlineCreatorComponents?: IFlatComponentsStructure;
+  inlineDisplayComponents?: IFlatComponentsStructure;
 }
 

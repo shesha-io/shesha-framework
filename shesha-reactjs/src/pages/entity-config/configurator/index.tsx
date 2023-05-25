@@ -1,15 +1,15 @@
 import { DeleteOutlined, MergeCellsOutlined, SaveOutlined } from '@ant-design/icons';
 import { Alert, Checkbox, Col, Form, message, Modal, Row } from 'antd';
 import React, { useMemo, useRef, useState } from 'react';
-import { Autocomplete, ModelConfigurator, Page } from '../../../components';
-import IndexToolbar from '../../../components/indexToolbar';
-import EntityConfigTree, { IEntityConfigTreeInstance } from '../../../components/entityConfigTree';
-import { IToolbarItem, PageWithLayout } from '../../../interfaces';
-import { IModelConfiguratorInstance } from '../../../providers/modelConfigurator/interfaces';
-import { EntityConfigDto } from '../../../apis/entityConfig';
-import { MetadataSourceType } from '../../../interfaces/metadata';
-import { useLocalStorage } from '../../../hooks';
-import { modelConfigurationsMerge } from '../../../apis/modelConfigurations';
+import { Autocomplete, ModelConfigurator, Page } from 'components';
+import IndexToolbar from 'components/indexToolbar';
+import EntityConfigTree, { IEntityConfigTreeInstance } from 'components/entityConfigTree';
+import { IToolbarItem, PageWithLayout } from 'interfaces';
+import { IModelConfiguratorInstance } from 'providers/modelConfigurator/interfaces';
+import { EntityConfigDto } from 'apis/entityConfig';
+import { MetadataSourceType } from 'interfaces/metadata';
+import { useLocalStorage } from 'hooks';
+import { modelConfigurationsMerge } from 'apis/modelConfigurations';
 import { useSheshaApplication, ValidationErrors } from '../../..';
 
 export interface IEntityConfiguratorPageProps {
@@ -171,8 +171,8 @@ const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps> = ({
             </Row>
             <div>{contextHolder}</div>
             <Modal title="Merge entity confifurations" open={isModalOpen} onOk={handleOk} onCancel={() => {
-setIsModalOpen(false);
-}}>
+                setIsModalOpen(false);
+            }}>
                 <ValidationErrors error={mergeError}/>
                 <Alert type="warning" showIcon
                     description={"This will merge this entity configuration '" + 
@@ -222,8 +222,9 @@ setIsModalOpen(false);
                             <Checkbox 
                                 checked={isDeleteAfterMerge} 
                                 onChange={(e) => {
-setIsDeleteAfterMerge(e.target.checked);
-}} />
+                                    setIsDeleteAfterMerge(e.target.checked);
+                                }}
+                            />
                         </Form.Item>
                     </Col>
                 </Row>

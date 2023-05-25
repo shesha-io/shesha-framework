@@ -1,4 +1,4 @@
-import React, { FC, useContext, useEffect, useRef } from 'react';
+import React, { FC, PropsWithChildren, useContext, useEffect, useRef } from 'react';
 import useThunkReducer from '../../hooks/thunkReducer';
 import { CRUD_CONTEXT_INITIAL_STATE, CrudContext, ICrudContext } from './contexts';
 import reducer from './reducer';
@@ -18,11 +18,12 @@ import {
     deleteFailedAction
 } from './actions';
 import { CrudMode } from './models';
-import { Form } from 'antd';
-import { FormProvider } from 'providers/form';
+import { Form, FormInstance, FormProps } from 'antd';
+import { FormProvider, useForm } from 'providers/form';
 import { IErrorInfo } from 'interfaces/errorInfo';
 import { RowDataInitializer } from 'components/reactTable/interfaces';
 import { useDebouncedCallback } from 'use-debounce';
+import { IFlatComponentsStructure } from 'providers/form/models';
 
 export type DataProcessor = (data: any) => Promise<any>;
 
@@ -38,9 +39,11 @@ export interface ICrudProviderProps {
     deleter?: () => Promise<any>;
     onSave?: DataProcessor;
     autoSave?: boolean;
+    editorComponents?: IFlatComponentsStructure;
+    displayComponents?: IFlatComponentsStructure;
 }
 
-const CrudProvider: FC<ICrudProviderProps> = (props) => {
+const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     const {
         children,
         data,
@@ -162,7 +165,7 @@ const CrudProvider: FC<ICrudProviderProps> = (props) => {
                 : Promise.resolve(mergedData);
 
             return finalDataPromise.then(finalData => {
-                return updater(finalData).then(() => {
+                return processor(finalData).then(() => {
                     dispatch(saveSuccessAction());
                 }).catch(error => {
                     dispatch(saveFailedAction(getErrorInfo(error, `${updateType} failed`)));
@@ -234,7 +237,7 @@ const CrudProvider: FC<ICrudProviderProps> = (props) => {
 
         autoSaveEnqueued.current = true;
     };
-    
+
     const handleFocusIn = () => {
         if (autoSaveEnqueued.current === true) {
             autoSaveEnqueued.current = false;
@@ -263,26 +266,25 @@ const CrudProvider: FC<ICrudProviderProps> = (props) => {
 
     return (
         <CrudContext.Provider value={contextValue}>
-            <FormProvider
-                form={form}
-                name={''}
-                flatComponents={undefined}
-                formSettings={undefined}
-                mode={'designer'}
-                // NOTE: components are visible just because we use designer mode. 
-                // implement custom FormProvider or a new mode that will work for tables
-                //mode={ state.mode === 'read' ? 'readonly' : 'edit' }
-                isActionsOwner={false}
-            >
-                <Form
-                    component={false}
+            {true &&
+                <FormProvider
+                    key={state.mode} /* important for re-rendering of the provider after mode change */
                     form={form}
-                    initialValues={state.initialValues}
-                    onValuesChange={onValuesChange}
+                    name={''}
+                    flatComponents={state.mode === 'read' ? props.displayComponents : props.editorComponents}
+                    formSettings={undefined}
+                    mode={ state.mode === 'read' ? 'readonly' : 'edit' }
+                    isActionsOwner={false}
                 >
-                    {children}
-                </Form>
-            </FormProvider>
+                    <FormWrapper
+                        form={form}
+                        initialValues={state.initialValues}
+                        onValuesChange={onValuesChange}
+                    >
+                        {children}
+                    </FormWrapper>
+                </FormProvider>
+            }
         </CrudContext.Provider>
     );
 };
@@ -296,5 +298,34 @@ function useCrud(require: boolean = true) {
 
     return context;
 }
+
+interface FormWrapperProps {
+    initialValues: object;
+    onValuesChange: FormProps['onValuesChange'];
+    form: FormInstance;
+}
+
+const FormWrapper: FC<PropsWithChildren<FormWrapperProps>> = ({ initialValues, onValuesChange, form, children }) => {
+    const { setFormData } = useForm();
+
+    const onValuesChangeInternal = (changedValues: any, values: any) => {
+        // recalculate components visibility
+        setFormData({ values, mergeValues: true });
+
+        if (onValuesChange)
+            onValuesChange(changedValues, values);
+    };
+
+    return (
+        <Form
+            component={false}
+            form={form}
+            initialValues={initialValues}
+            onValuesChange={onValuesChangeInternal}
+        >
+            {children}
+        </Form>
+    );
+};
 
 export { CrudProvider, useCrud };

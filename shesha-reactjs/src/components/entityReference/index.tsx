@@ -2,7 +2,7 @@ import { Button, message, notification, Spin } from 'antd';
 import moment from 'moment';
 import React, { FC, useEffect, useState } from 'react';
 import { FormIdentifier, ShaLink, useConfigurableActionDispatcher, useForm, useGlobalState, useSheshaApplication, ValidationErrors } from "../..";
-import { entitiesGet } from '../../apis/entities';
+import { entitiesGet } from 'apis/entities';
 import { IConfigurableActionConfiguration } from '../../interfaces/configurableAction';
 import { IKeyValue } from '../../interfaces/keyValue';
 import { useConfigurationItemsLoader } from '../../providers/configurationItemsLoader';

@@ -1,20 +1,14 @@
 import { IdcardOutlined } from '@ant-design/icons';
 import { Alert, Button, Form, Input } from 'antd';
 import FormItem from 'antd/lib/form/FormItem';
-import {
-  ResetPasswordSendOtpResponseAjaxResponse,
-  ResetPasswordVerifyOtpInput,
-  UserResetPasswordSendOtpQueryParams,
-  useUserResetPasswordVerifyOtp,
-} from 'api/user';
 import { useRouter } from 'next/router';
 import React, { FC, useState } from 'react';
-import { useMutate } from 'restful-react';
 import { URL_LOGIN_PAGE } from 'routes';
 import { useAuth, ValidationErrors } from '@shesha/reactjs';
 import { ForgotPasswordPage, VerifyOtpModal } from './styles';
+import { ResetPasswordVerifyOtpInput, useResetPasswordSendOtp, useResetPasswordVerifyOtp, UserResetPasswordSendOtpQueryParams } from 'api/user';
 
-interface IProps {}
+interface IProps { }
 
 export const ForgotPassword: FC<IProps> = () => {
   const router = useRouter();
@@ -33,32 +27,34 @@ export const ForgotPassword: FC<IProps> = () => {
     mutate: sendOtpHttp,
     error: sendOtpError,
     loading: isSendingOtp,
-  } = useMutate<ResetPasswordSendOtpResponseAjaxResponse>({
-    verb: 'POST',
-    path: `/api/services/app/User/ResetPasswordSendOtp?mobileNo`,
-  });
+  } = useResetPasswordSendOtp();
 
-  const { mutate: verifyOtpHttp, loading: isVerifyingOtp, error: verifyOtpError } = useUserResetPasswordVerifyOtp({});
+  const { mutate: verifyOtpHttp, loading: isVerifyingOtp, error: verifyOtpError } = useResetPasswordVerifyOtp();
 
   const handleSendOtpFormFinish = ({ mobileNo }: UserResetPasswordSendOtpQueryParams) => {
     if (mobileNo) {
-      sendOtpHttp(null, { queryParams: { mobileNo } })
+      sendOtpHttp({ mobileNo })
         .then((response) => {
           setOperationId(response?.result?.operationId);
           toggleVerifyOtpModalVisibility();
         })
-        .catch(() => {
+        .catch((e) => {
+          console.log('LOG: rejected', e);
           toggleVerifyOtpModalVisibility();
         });
     }
   };
 
   const handleVerifyOtpFormFinish = ({ pin }: ResetPasswordVerifyOtpInput) => {
-    verifyOtpHttp({
-      mobileNo: sentOtpForm?.getFieldValue('mobileNo'),
-      pin,
-      operationId,
-    }).then((response) => verifyOtpSuccess(response?.result));
+    verifyOtpHttp(
+      {
+        mobileNo: sentOtpForm?.getFieldValue('mobileNo'),
+        pin,
+        operationId,
+      }).then((response) => {
+        console.log('LOG: verify response', response);
+        verifyOtpSuccess(response?.result)
+      });
   };
 
   const toggleVerifyOtpModalVisibility = () => setIsVerifyOtpModalVisible((visible) => !visible);

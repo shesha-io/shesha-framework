@@ -1,12 +1,12 @@
 import { isEmpty } from 'lodash';
 import React, { FC, useCallback, useMemo, useState } from 'react';
-import { useGet, useMutate } from 'restful-react';
-import { EntitiesGetAllQueryParams, useEntitiesGetAll } from 'apis/entities';
+import { useGet, useMutate } from 'hooks';
+import { useEntitiesGetAll } from 'apis/entities';
+import { EntitiesGetAllQueryParams } from 'apis/entities';
 import { FormItemProvider, SubFormProvider, useAppConfigurator, useForm, useGlobalState, useNestedPropertyMetadatAccessor } from 'providers';
 import { getQueryParams } from 'utils/url';
 import camelCaseKeys from 'camelcase-keys';
 import { IListControlProps, IListComponentRenderState, IEvaluatedFilters } from './models';
-import { evaluateDynamicFilters } from 'providers/dataTable/utils';
 import { useDebouncedCallback } from 'use-debounce';
 import { useDelete } from 'hooks';
 import {
@@ -42,6 +42,7 @@ import { DEFAULT_CONFIRM_MESSAGE, DEFAULT_TOTAL_RECORD } from './constants';
 import { ConfigurationItemVersionStatusMap } from '../../../../utils/configurationFramework/models';
 import FormInfo from '../../../configurableForm/formInfo';
 import { useAsyncMemo } from 'hooks/useAsyncMemo';
+import { evaluateDynamicFilters } from 'utils';
 
 /** @deprecated: Use DataList instead */
 const ListControl: FC<IListControlProps> = props => {
@@ -140,10 +141,7 @@ const ListControl: FC<IListControlProps> = props => {
 
   const { mutate: deleteHttp, loading: isDeleting, error: deleteError } = useDelete();
 
-  const { mutate: submitHttp, loading: submitting, error: submitError } = useMutate({
-    path: getEvaluatedUrl(submitUrl),
-    verb: submitHttpVerb,
-  });
+  const { mutate: submitHttp, loading: submitting, error: submitError } = useMutate();
 
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityType);
 
@@ -439,9 +437,10 @@ const ListControl: FC<IListControlProps> = props => {
         payload = Boolean(onSubmit) ? getOnSubmitPayload() : value;
       }
 
-      submitHttp(payload).then(() => {
-        message.success('Data saved successfully!');
-      });
+      submitHttp({ url: getEvaluatedUrl(submitUrl), httpVerb: submitHttpVerb }, payload)
+        .then(() => {
+          message.success('Data saved successfully!');
+        });
     }
   }, 500);
 

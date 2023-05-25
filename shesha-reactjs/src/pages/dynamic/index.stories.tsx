@@ -26,7 +26,7 @@ export const Basic = Template.bind({});
 
 export const OrderDetails = addStory(Template, {
   formId: { name: 'order-details', module: 'boxfusion.inventory' },
-  id: 'da4d3320-7c71-4df4-9d20-0ce51d9c1a66'
+  id: 'da4d3320-7c71-4df4-9d20-0ce51d9c1a66',
 });
 
 export const TableInlineEditing = addStory(Template, {
@@ -75,6 +75,22 @@ export const PermissionEdit = addStory(Template, {
   formId: {
     name: 'permission-edit',
     module: 'Test Module',
-    version: 2
-  }
+    version: 2,
+  },
+});
+
+export const Fetchers = addStory(Template, {
+  formId: {
+    name: 'fetchers',
+    module: 'TestModule'
+  },
+  mode: 'edit'
+});
+
+export const BugFix = addStory(Template, {
+  formId: {
+    name: 'auto-complete-component-table',
+    module: 'Shesha'
+  },
+  mode: 'edit'
 });

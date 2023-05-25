@@ -14,6 +14,30 @@ function parseIntOrDefault(input: any, defaultValue: number = 0): number {
   return isNaN(parsed) ? defaultValue : parsed;
 }
 
+function getImageBits(imageUrl: string) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', imageUrl, true);
+    xhr.responseType = 'blob';
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const binaryString = reader.result;
+          resolve(binaryString);
+        };
+        reader.readAsBinaryString(xhr.response);
+      } else {
+        reject(new Error('Failed to load image'));
+      }
+    };
+    xhr.onerror = () => {
+      reject(new Error('Failed to load image'));
+    };
+    xhr.send();
+  });
+}
+
 function sortAnnotationData(data: IAnnotation[]) {
   let annotationLength = data?.length;
   const arrangedComments = data
@@ -59,4 +83,4 @@ function getCustomEnabled(customVisibility: string, name: string, data = {}, glo
   }
 }
 
-export { parseIntOrDefault, sortAnnotationData, getViewData, canSubmit, getCustomEnabled };
+export { parseIntOrDefault, sortAnnotationData, getViewData, canSubmit, getCustomEnabled, getImageBits };

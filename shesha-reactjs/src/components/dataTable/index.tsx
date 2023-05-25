@@ -9,12 +9,19 @@ import { ModalProps } from 'antd/lib/modal';
 import ReactTable from '../reactTable';
 import { removeUndefinedProperties } from 'utils/array';
 import { ValidationErrors } from '..';
-import { useDataTableStore, useForm, useGlobalState, useMetadata } from 'providers';
-import { camelcaseDotNotation } from 'utils/string';
+import { IFlatComponentsStructure, ROOT_COMPONENT_KEY, useDataTableStore, useForm, useGlobalState, useMetadata, useSheshaApplication } from 'providers';
+import { camelcaseDotNotation, toCamelCase } from 'utils/string';
 import { IReactTableProps, RowDataInitializer } from '../reactTable/interfaces';
 import { usePrevious } from 'react-use';
 import { getCellRenderer } from './cell';
 import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions } from 'providers/dataTable/repository/backendRepository';
+import { ITableDataColumn } from 'providers/dataTable/interfaces';
+import { IColumnEditorProps, IFieldComponentProps, standardCellComponentTypes } from 'providers/datatableColumnsConfigurator/models';
+import { useFormDesignerComponents } from 'providers/form/hooks';
+import { getCustomEnabledFunc, getCustomVisibilityFunc } from 'providers/form/utils';
+import moment from 'moment';
+import { axiosHttp } from 'utils/fetchers';
+
 
 export interface IIndexTableOptions {
   omitClick?: boolean;
@@ -150,24 +157,32 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   }, [tableData]);
 
   const metadata = useMetadata(false)?.metadata;
+  const { backendUrl } = useSheshaApplication();
 
-  const crudOptions = useMemo(() => {
+  const toolboxComponents = useFormDesignerComponents();
 
-    const onNewRowInitializeExecuter = props.onNewRowInitialize
-      ? new Function('data, globalState', props.onNewRowInitialize)
+  const onNewRowInitializeExecuter = useMemo<Function>(() => {
+    return props.onNewRowInitialize
+      ? new Function('formData, globalState, http, moment', props.onNewRowInitialize)
       : null;
+  }, [props.onNewRowInitialize]);
 
-    const onNewRowInitialize: RowDataInitializer = props.onNewRowInitialize
+  const onNewRowInitialize = useMemo<RowDataInitializer>(() => {
+    const result: RowDataInitializer = props.onNewRowInitialize
       ? () => {
         // todo: replace formData and globalState with accessors (e.g. refs) and remove hooks to prevent unneeded re-rendering
         //return onNewRowInitializeExecuter(formData, globalState);
-        const result = onNewRowInitializeExecuter(formData ?? {}, globalState);
+        const result = onNewRowInitializeExecuter(formData ?? {}, globalState, axiosHttp(backendUrl), moment);
         return Promise.resolve(result);
       }
       : () => {
         return Promise.resolve({});
       };
 
+      return result;
+  }, [onNewRowInitializeExecuter, formData, globalState]);
+
+  const crudOptions = useMemo(() => {
     const result = {
       canDelete: props.canDeleteInline === 'yes' || props.canDeleteInline === 'inherit' && formMode === 'edit',
       canEdit: props.canEditInline === 'yes' || props.canEditInline === 'inherit' && formMode === 'edit',
@@ -218,16 +233,17 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       .filter(c => c.defaultSorting !== null)
       .map<SortingRule<string>>(c => ({ id: c.id, desc: c.defaultSorting === 1 }));
 
+      // http, moment, setFormData
   const performOnRowSave = useMemo<OnSaveHandler>(() => {
     if (!onRowSave)
       return data => Promise.resolve(data);
 
-    const executer = new Function('data, formData, globalState', onRowSave);
+    const executer = new Function('data, formData, globalState, http, moment', onRowSave);
     return (data, formData, globalState) => {
-      const preparedData = executer(data, formData, globalState);
+      const preparedData = executer(data, formData, globalState, axiosHttp(backendUrl), moment);
       return Promise.resolve(preparedData);
     };
-  }, [onRowSave]);
+  }, [onRowSave, backendUrl]);
 
   const updater = (rowIndex: number, rowData: any): Promise<any> => {
     const repository = store.getRepository();
@@ -251,12 +267,14 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     if (!repository)
       return Promise.reject('Repository is not specified');
 
-    const options = repository.repositoryType === BackendRepositoryType
-      ? { customUrl: customCreateUrl } as ICreateOptions
-      : undefined;
+    return performOnRowSave(rowData, formData ?? {}, globalState).then(preparedData => {
+      const options = repository.repositoryType === BackendRepositoryType
+        ? { customUrl: customCreateUrl } as ICreateOptions
+        : undefined;
 
-    return repository.performCreate(0, rowData, options).then(() => {
-      store.refreshTable();
+      return repository.performCreate(0, preparedData, options).then(() => {
+        store.refreshTable();
+      });
     });
   };
 
@@ -273,6 +291,70 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       store.refreshTable();
     });
   };
+
+  const getCrudComponents = (allowEdit: boolean, componentAccessor: (col: ITableDataColumn) => IFieldComponentProps): IFlatComponentsStructure => {
+    const result: IFlatComponentsStructure = {
+      allComponents: {},
+      componentRelations: {}
+    };
+    // don't calculate components settings when it's not required
+    if (!allowEdit)
+      return result;
+
+    const componentIds: string[] = [];
+    columns?.forEach(col => {
+      if (col.columnType === 'data') {
+        const dataCol = col as ITableDataColumn;
+        const customComponent = componentAccessor(dataCol);
+        const componentType = customComponent?.type ?? standardCellComponentTypes.notEditable;
+        if (componentType && componentType !== standardCellComponentTypes.notEditable) {
+          // component found
+          const component = toolboxComponents[customComponent.type];
+          if (!component) {
+            console.error(`Datatable: component '${customComponent.type}' not found - skipped`);
+            return;
+          }
+
+          const propertyMeta = metadata?.properties?.find(({ path }) => toCamelCase(path) === dataCol.id);
+
+          let model: IColumnEditorProps = {
+            ...customComponent.settings,
+            id: dataCol.columnId,
+            type: customComponent.type,
+            name: dataCol.propertyName,
+            label: null,
+            hideLabel: true,
+          };
+
+          if (component.linkToModelMetadata && propertyMeta) {
+            model = component.linkToModelMetadata(model, propertyMeta);
+          }
+
+          model.visibilityFunc = getCustomVisibilityFunc(model);
+          model.enabledFunc = getCustomEnabledFunc(model);
+
+          result.allComponents[model.id] = model;
+          componentIds.push(model.id);
+        };
+      };
+    });
+    result.componentRelations[ROOT_COMPONENT_KEY] = componentIds;
+
+    return result;
+  };
+
+  const inlineEditorComponents = useMemo<IFlatComponentsStructure>(() => {
+    return getCrudComponents(crudOptions.canEdit, col => col.editComponent);
+  }, [columns, metadata, crudOptions.canEdit]);
+
+  const inlineCreatorComponents = useMemo<IFlatComponentsStructure>(() => {
+    return getCrudComponents(crudOptions.canAdd, col => col.createComponent);
+  }, [columns, metadata, crudOptions.canAdd]);
+
+  const inlineDisplayComponents = useMemo<IFlatComponentsStructure>(() => {
+    const result = getCrudComponents(true, col => col.displayComponent);
+    return result;
+  }, [columns, metadata]);
 
   const tableProps: IReactTableProps = {
     data: tableData,
@@ -313,6 +395,9 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     newRowInitData: crudOptions.onNewRowInitialize,
     inlineEditMode: props.inlineEditMode,
     inlineSaveMode: props.inlineSaveMode,
+    inlineEditorComponents,
+    inlineCreatorComponents,
+    inlineDisplayComponents,
   };
 
   return (

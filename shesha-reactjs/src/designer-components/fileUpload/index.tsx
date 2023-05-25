@@ -1,8 +1,7 @@
 import { IFormItem, IToolboxComponent } from 'interfaces';
-import { FormMarkup, IConfigurableFormComponent } from 'providers/form/models';
+import { IConfigurableFormComponent } from 'providers/form/models';
 import { FileAddOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from 'components/formDesigner/components/formItem';
-import settingsFormJson from './settingsForm.json';
 import { FileUpload } from 'components';
 import { StoredFileProvider, useFormData, useGlobalState, useSheshaApplication } from 'providers';
 import { useForm } from 'providers/form';
@@ -12,6 +11,7 @@ import {
   validateConfigurableComponentSettings,
 } from '../../providers/form/utils';
 import React from 'react';
+import { getSettings } from './settings';
 
 export interface IFileUploadProps extends IConfigurableFormComponent, IFormItem {
   ownerId: string;
@@ -21,9 +21,8 @@ export interface IFileUploadProps extends IConfigurableFormComponent, IFormItem 
   allowReplace?: boolean;
   allowDelete?: boolean;
   useSync?: boolean;
+  allowedFileTypes?: string[];
 }
-
-const settingsForm = settingsFormJson as FormMarkup;
 
 const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
   type: 'fileUpload',
@@ -49,8 +48,10 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
         <StoredFileProvider
           fileId={model.value?.Id ?? model.value}
           baseUrl={backendUrl}
-          ownerId={Boolean(ownerId) ? ownerId : (Boolean(data?.id) ? data?.id : '')}
-          ownerType={Boolean(model.ownerType) ? model.ownerType : (Boolean(formSettings?.modelType) ? formSettings?.modelType : '')}
+          ownerId={Boolean(ownerId) ? ownerId : Boolean(data?.id) ? data?.id : ''}
+          ownerType={
+            Boolean(model.ownerType) ? model.ownerType : Boolean(formSettings?.modelType) ? formSettings?.modelType : ''
+          }
           propertyName={Boolean(model.propertyName) ? model.propertyName : model.name}
           uploadMode={model.useSync ? 'sync' : 'async'}
         >
@@ -59,30 +60,33 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
             allowUpload={enabled && model.allowUpload}
             allowDelete={enabled && model.allowDelete}
             allowReplace={enabled && model.allowReplace}
+            allowedFileTypes={model?.allowedFileTypes}
           />
         </StoredFileProvider>
       </ConfigurableFormItem>
     );
   },
-  migrator: m => m.add<IFileUploadProps>(0, prev => {
-    return {
-      ...prev,
-      allowReplace: true,
-      allowDelete: true,
-      allowUpload: true,
-      ownerId: '',
-      ownerType: '',
-      propertyName: '',
-    };
-  })
-  .add<IFileUploadProps>(1, (prev, context) => {
-    return {
-      ...prev,
-      useSync: !Boolean(context.formSettings?.modelType)
-    };
-  }),
-  settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  migrator: (m) =>
+    m
+      .add<IFileUploadProps>(0, (prev) => {
+        return {
+          ...prev,
+          allowReplace: true,
+          allowDelete: true,
+          allowUpload: true,
+          ownerId: '',
+          ownerType: '',
+          propertyName: '',
+        };
+      })
+      .add<IFileUploadProps>(1, (prev, context) => {
+        return {
+          ...prev,
+          useSync: !Boolean(context.formSettings?.modelType),
+        };
+      }),
+  settingsFormMarkup: getSettings(),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
 };
 
 export default FileUploadComponent;

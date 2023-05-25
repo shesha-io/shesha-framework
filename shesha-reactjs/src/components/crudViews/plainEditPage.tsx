@@ -1,7 +1,6 @@
 import React, { forwardRef, MutableRefObject, useEffect, useImperativeHandle } from 'react';
 import { ValidationErrors, ConfigurableForm, Show } from '..';
 import { Form } from 'antd';
-import { requestHeaders } from '../../utils/requestHeaders';
 import { SaveOutlined, CloseOutlined } from '@ant-design/icons';
 import { useUi } from '../../providers';
 import { FormIdentifier, FormMarkup, IFormActions, IFormSections } from '../../providers/form/models';
@@ -78,7 +77,6 @@ const GenericEditPagePlain = forwardRef<CommonCrudHandles, IGenericEditPageProps
 
   const { loading: isFetchingData, refetch: fetchData, error: fetchError, data: serverData } = useFetcher({
     lazy: true,
-    requestOptions: { headers: requestHeaders() },
     queryParams: { id: props.id },
   });
 

@@ -23,7 +23,7 @@ const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
       ...model,
     };
 
-    const { formMode } = useForm();
+    const { formMode} = useForm();
 
     return (
       <>

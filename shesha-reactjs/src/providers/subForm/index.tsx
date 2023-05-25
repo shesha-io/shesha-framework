@@ -1,10 +1,10 @@
-import React, { FC, useReducer, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { GetDataError, useMutate } from 'restful-react';
+import React, { FC, useReducer, useContext, useEffect, useMemo, useRef, useState, PropsWithChildren } from 'react';
+import { GetDataError, useMutate } from 'hooks';
 import { useForm } from '../form';
 import { SubFormActionsContext, SubFormContext, SUB_FORM_CONTEXT_INITIAL_STATE } from './contexts';
 import { useDeepCompareMemoKeepReference, usePubSub } from '../../hooks';
 import { subFormReducer } from './reducer';
-import { getQueryParams } from '../../utils/url';
+import { getQueryParams } from 'utils/url';
 import { DEFAULT_FORM_SETTINGS, FormMarkupWithSettings } from '../form/models';
 import {
   setMarkupWithSettingsAction,
@@ -15,17 +15,17 @@ import {
 import { ISubFormProps } from './interfaces';
 import { ColProps, message, notification } from 'antd';
 import { useGlobalState } from '../globalState';
-import { EntitiesGetQueryParams } from '../../apis/entities';
+import { EntitiesGetQueryParams } from 'apis/entities';
 import { useDebouncedCallback } from 'use-debounce';
 import { useDeepCompareEffect } from 'react-use';
-import { EntityAjaxResponse } from '../../pages/dynamic/interfaces';
+import { EntityAjaxResponse } from 'pages/dynamic/interfaces';
 import { UseFormConfigurationArgs } from '../form/api';
 import { useConfigurableAction } from '../configurableActionsDispatcher';
 import { useConfigurationItemsLoader } from '../configurationItemsLoader';
 import { executeScript, IAnyObject, QueryStringParams, useAppConfigurator, useSheshaApplication } from '../..';
-import * as RestfulShesha from '../../utils/fetchers';
-import { useModelApiHelper } from '../../components/configurableForm/useActionEndpoint';
-import { StandardEntityActions } from '../../interfaces/metadata';
+import * as RestfulShesha from 'utils/fetchers';
+import { useModelApiHelper } from 'components/configurableForm/useActionEndpoint';
+import { StandardEntityActions } from 'interfaces/metadata';
 
 export interface SubFormProviderProps extends Omit<ISubFormProps, 'name' | 'value'> {
   actionsOwnerId?: string;
@@ -47,7 +47,7 @@ interface QueryParamsEvaluatorArguments {
 }
 type QueryParamsEvaluator = (args: QueryParamsEvaluatorArguments) => object;
 
-const SubFormProvider: FC<SubFormProviderProps> = ({
+const SubFormProvider: FC<PropsWithChildren<SubFormProviderProps>> = ({
   formSelectionMode,
   formType,
   children,
@@ -69,7 +69,7 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
   queryParams,
   onChange,
   defaultValue,
-  ...props
+  entityType
 }) => {
   const [state, dispatch] = useReducer(subFormReducer, SUB_FORM_CONTEXT_INITIAL_STATE);
   const { publish } = usePubSub();
@@ -116,25 +116,25 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
     }
   }, [value, name]);
 
-  const [entityType, setEntityType] = useState(props.entityType);
+  const [internalEntityType, setInternalEntityType] = useState(entityType);
 
   useEffect(() => {
-    if (!Boolean(entityType)) {
-      if (Boolean(props.entityType)) {
-        setEntityType(props.entityType);
+    if (!Boolean(internalEntityType)) {
+      if (Boolean(entityType)) {
+        setInternalEntityType(entityType);
       } else 
       if (value && typeof value === 'object' && value['_className']) {
-        setEntityType(value['_className']);
+        setInternalEntityType(value['_className']);
       }
     } else {
-      if (Boolean(props.entityType) && entityType !== props.entityType) {
-        setEntityType(props.entityType);
+      if (Boolean(entityType) && internalEntityType !== entityType) {
+        setInternalEntityType(entityType);
       } else
-      if (value && typeof value === 'object' && value['_className'] && entityType !== value['_className']) {
-        setEntityType(value['_className']);
+      if (value && typeof value === 'object' && value['_className'] && internalEntityType !== value['_className']) {
+        setInternalEntityType(value['_className']);
       }
     }
-  }, [props.entityType, value]);
+  }, [entityType, value]);
 
   const urlHelper = useModelApiHelper();
   const getReadUrl = (): Promise<string> => {
@@ -143,10 +143,10 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
     return getUrl
       ? // if getUrl is specified - evaluate value using JS
         evaluateUrl(getUrl)
-      : entityType
+      : internalEntityType
       ? // if entityType is specified - get default url for the entity
         urlHelper
-          .getDefaultActionUrl({ modelType: entityType, actionName: StandardEntityActions.read })
+          .getDefaultActionUrl({ modelType: internalEntityType, actionName: StandardEntityActions.read })
           .then(endpoint => endpoint.url)
       : // return empty string
         Promise.resolve('');
@@ -173,15 +173,15 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
     }
   }, [value]);
 
-  const { mutate: postHttp, loading: isPosting, error: postError } = useMutate({
-    path: evaluateUrlFromJsExpression(postUrl),
-    verb: 'POST',
-  });
+  const { mutate: postHttpInternal, loading: isPosting, error: postError } = useMutate();
+  const postHttp = (data) => {
+    return postHttpInternal({ url: evaluateUrlFromJsExpression(postUrl), httpVerb: 'POST' }, data);
+  };
 
-  const { mutate: putHttp, loading: isUpdating, error: updateError } = useMutate({
-    path: evaluateUrlFromJsExpression(putUrl),
-    verb: 'PUT',
-  });
+  const { mutate: putHttpInternal, loading: isUpdating, error: updateError } = useMutate();
+  const putHttp = (data) => {
+    return putHttpInternal({ url: evaluateUrlFromJsExpression(putUrl), httpVerb: 'PUT' }, data);
+  };
 
   /**
    * Memoized query params evaluator. It executes `queryParams` (javascript defined on the component settings) to get query params
@@ -213,9 +213,7 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
   const getFinalQueryParams = () => {
     if (formMode === 'designer' || dataSource !== 'api') return {};
 
-    let params: EntitiesGetQueryParams = {
-      entityType,
-    };
+    let params: EntitiesGetQueryParams = { entityType: internalEntityType };
 
     params.properties =
       typeof properties === 'string' ? `id ${properties}` : ['id', ...Array.from(new Set(properties || []))].join(' '); // Always include the `id` property/. Useful for deleting
@@ -248,7 +246,7 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
     if (dataRequestAbortController.current) dataRequestAbortController.current.abort('out of date');
 
     // Skip loading if we work with entity and the `id` is not specified
-    if (entityType && !finalQueryParams?.id) {
+    if (internalEntityType && !finalQueryParams?.id) {
       onChange({});
       return;
     }
@@ -297,9 +295,8 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
 
   // fetch data on first rendering and on change of some properties
   useDeepCompareEffect(() => {
-    if (dataSource !== 'api') return;
-
-    fetchData();
+    if (dataSource === 'api')
+      fetchData();
   }, [dataSource, finalQueryParams]); // todo: memoize final getUrl and add as a dependency
 
   const postData = useDebouncedCallback(() => {

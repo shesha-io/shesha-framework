@@ -1,7 +1,7 @@
 import { message } from 'antd';
 import moment from 'moment';
 import React, { FC, Fragment } from 'react';
-import { useGet } from 'restful-react';
+import { useGet } from 'hooks';
 import { useForm, useGlobalState, useSheshaApplication } from '../../../..';
 import { axiosHttp } from '../../../../utils/fetchers';
 import GooglePlacesAutocomplete, { IAddressAndCoords } from '../../../googlePlacesAutocomplete';

@@ -24,11 +24,11 @@ import {
   uploadFileRequestAction,
   /* NEW_ACTION_IMPORT_GOES_HERE */
 } from './actions';
-import { useStoredFileGet, useStoredFileGetEntityProperty, StoredFileDeleteQueryParams } from '../../apis/storedFile';
+import { useStoredFileGet, useStoredFileGetEntityProperty, StoredFileDeleteQueryParams } from 'apis/storedFile';
 import axios from 'axios';
 import FileSaver from 'file-saver';
 import qs from 'qs';
-import { useMutate } from 'restful-react';
+import { useMutate } from 'hooks';
 import { useSheshaApplication } from '../..';
 import { useDelayedUpdate } from 'providers/delayedUpdateProvider';
 import { STORED_FILES_DELAYED_UPDATE } from 'providers/delayedUpdateProvider/models';
@@ -84,17 +84,11 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = prop
   const { httpHeaders: headers } = useSheshaApplication();
 
   const fileFetcher = useStoredFileGet({
-    lazy: true,
-    requestOptions: {
-      headers,
-    },
+    lazy: true,    
   });
 
   const propertyFetcher = useStoredFileGetEntityProperty({
-    lazy: true,
-    requestOptions: {
-      headers,
-    },
+    lazy: true,    
   });
   const { loading: isFetchingFileInfo, error: fetchingFileInfoError, data: fetchingFileInfoResponse } = state.fileId
     ? fileFetcher
@@ -268,14 +262,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = prop
       return uploadFileSync(payload, callback);
   };
 
-  const { mutate: deleteFileHttp } = useMutate({
-    queryParams: {}, // Important if you'll be calling this as a side-effect
-    path: '/api/StoredFile',
-    verb: 'DELETE',
-    requestOptions: {
-      headers,
-    },
-  });
+  const { mutate: deleteFileHttp } = useMutate();
 
   //#region delete file
   const deleteFileAsync = () => {
@@ -287,7 +274,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = prop
       ownerType,
       propertyName,
     };
-    deleteFileHttp('Delete', { queryParams: deleteFileInput })
+    deleteFileHttp({ url: '/api/StoredFile/Delete?' + qs.stringify(deleteFileInput), httpVerb: 'DELETE' }, {})
       .then(() => {
         deleteFileSuccess();
         if (typeof onChange === 'function') 

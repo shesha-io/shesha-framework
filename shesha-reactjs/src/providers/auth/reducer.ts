@@ -1,11 +1,11 @@
 import { handleActions } from 'redux-actions';
-import { UserLoginInfoDto } from '../../apis/session';
-import { ResetPasswordVerifyOtpResponse } from '../../apis/user';
-import { IErrorInfo } from '../../interfaces/errorInfo';
+import { UserLoginInfoDto } from 'apis/session';
+import { ResetPasswordVerifyOtpResponse } from 'apis/user';
+import { IErrorInfo } from 'interfaces/errorInfo';
 import { AuthActionEnums } from './actions';
 import { AUTH_CONTEXT_INITIAL_STATE, IAuthStateContext } from './contexts';
 import flagsReducer from '../utils/flagsReducer';
-import { getHttpHeaders } from '../../utils/auth';
+import { getHttpHeaders } from 'utils/auth';
 
 const baseAuthReducer = handleActions<IAuthStateContext, any>(
   {

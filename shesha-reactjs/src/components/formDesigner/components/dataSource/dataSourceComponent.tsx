@@ -7,10 +7,10 @@ import { IToolboxComponent } from 'interfaces';
 import { MetadataProvider, useDataTableStore, useForm, useGlobalState, useNestedPropertyMetadatAccessor } from 'providers';
 import { useDataSource } from 'providers/dataSourcesProvider';
 import DataTableProvider from 'providers/dataTable';
-import { evaluateDynamicFilters } from 'providers/dataTable/utils';
 import { DataTableSelectionProvider, useDataTableSelection } from 'providers/dataTableSelection';
 import DataSourceSettings from './dataSourceSettings';
 import { IDataSourceComponentProps } from './models';
+import { evaluateDynamicFilters } from 'utils';
 
 const getPageSize = (value?: number) => { 
   return Boolean(value) ? value : 1147489646 /* get all data */; 

@@ -62,6 +62,8 @@ export const onCustomEventsHandler = <FormCustomEvent = any>(
   return eventFunc(formData, event, form, formMode, globalState, http, message, moment, setFormData, setGlobalState);
 };
 
+type EventHandlerAttributes<T = any> = Pick<DOMAttributes<T>, 'onBlur' | 'onChange' | 'onFocus' | 'onClick'>;
+
 export const customEventHandler = <T = any>({
   model,
   form,
@@ -73,7 +75,7 @@ export const customEventHandler = <T = any>({
   moment,
   setFormData,
   setGlobalState,
-}: ICustomEventHandler): DOMAttributes<T> => {
+}: ICustomEventHandler): EventHandlerAttributes<T> => {
   const onCustomEvent = (event: any, key: string) =>
     onCustomEventsHandler(
       event,

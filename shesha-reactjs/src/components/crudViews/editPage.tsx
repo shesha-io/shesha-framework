@@ -1,7 +1,6 @@
 import React, { forwardRef, MutableRefObject, ReactNode, useEffect, useImperativeHandle } from 'react';
 import { MainLayout, ValidationErrors, ConfigurableForm, IndexToolbar } from '../';
 import { Form, Spin } from 'antd';
-import { requestHeaders } from '../../utils/requestHeaders';
 import { SaveOutlined, CloseOutlined } from '@ant-design/icons';
 import { useUi } from '../../providers';
 import { FormIdentifier, FormMarkup, IFormActions, IFormSections } from '../../providers/form/models';
@@ -9,11 +8,6 @@ import { UseGenericGetProps, IDataFetcher, IDataMutator } from './models';
 import { IToolbarItem } from '../../interfaces';
 import { useShaRouting } from '../../providers/shaRouting';
 import { CommonCrudHandles } from './interfaces';
-import { MutateRequestOptions } from 'restful-react/dist/Mutate';
-
-export interface IMutateOptions extends Pick<MutateRequestOptions<any, any>, 'headers'>{
-  
-}
 
 export interface IGenericEditPageProps {
   id?: string;
@@ -61,8 +55,7 @@ const GenericEditPage = forwardRef<CommonCrudHandles, IGenericEditPageProps>((pr
 
   const { loading: loading, refetch: fetchData, error: fetchError, data: serverData } = props.fetcher({
     lazy: true,
-    queryParams: { id: props.id },
-    requestOptions: { headers: requestHeaders() },
+    queryParams: { id: props.id }    
   });
 
   const [form] = Form.useForm();

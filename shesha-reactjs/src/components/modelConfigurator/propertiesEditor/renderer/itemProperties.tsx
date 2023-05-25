@@ -6,6 +6,7 @@ import { usePropertiesEditor } from '../provider';
 import { FormMarkup } from '../../../../providers/form/models';
 import { ConfigurableFormInstance } from '../../../../providers/form/contexts';
 import propertySettingsJson from './propertySettings.json';
+import { nanoid } from 'nanoid';
 
 export interface IProps {}
 
@@ -46,6 +47,7 @@ export const ToolbarItemProperties: FC<IProps> = () => {
     return (
       <>
         <ConfigurableForm
+          key={nanoid()}
           size="small"
           formRef={formRef}
           layout="horizontal"

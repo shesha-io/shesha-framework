@@ -1,10 +1,10 @@
-import React, { FC, Fragment, useEffect } from 'react';
+import React, { FC, Fragment, PropsWithChildren, useEffect } from 'react';
 
 interface IProps {
   externalApiKey?: string;
 }
 
-const AddressEffect: FC<IProps> = ({ children, externalApiKey }) => {
+const AddressEffect: FC<PropsWithChildren<IProps>> = ({ children, externalApiKey }) => {
   useEffect(() => {
     if (externalApiKey && !window.google) {
       const script = document.createElement('script');

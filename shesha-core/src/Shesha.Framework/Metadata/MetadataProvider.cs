@@ -109,9 +109,9 @@ namespace Shesha.Metadata
                 ValidationMessage = property.GetAttribute<RangeAttribute>()?.ErrorMessage 
                     ?? property.GetAttribute<StringLengthAttribute>()?.ErrorMessage
                     ?? property.GetAttribute<RegularExpressionAttribute>()?.ErrorMessage,
-                CascadeCreate = cascadeAttribute?.CanCreate ?? false,
-                CascadeUpdate = cascadeAttribute?.CanUpdate ?? false,
-                CascadeDeleteUnreferenced = cascadeAttribute?.DeleteUnreferenced ?? false,
+                CascadeCreate = cascadeAttribute?.CanCreate,
+                CascadeUpdate = cascadeAttribute?.CanUpdate,
+                CascadeDeleteUnreferenced = cascadeAttribute?.DeleteUnreferenced,
 
                 DataType = dataType.DataType,
                 DataFormat = dataType.DataFormat,

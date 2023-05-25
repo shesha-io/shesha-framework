@@ -1,11 +1,10 @@
 import React, { useState, useMemo, useRef } from 'react';
 import { Select } from 'antd';
-import { AutocompleteItemDto } from '../../apis/autocomplete';
 import { useDebouncedCallback } from 'use-debounce';
 import { useSubscribe } from '../..';
 import { ReadOnlyDisplayFormItem } from './../readOnlyDisplayFormItem';
-import { useEntityAutocomplete } from '../../utils/autocomplete';
-import { CustomLabeledValue, IEntityAutocompleteProps, ISelectOption } from './models';
+import { useEntityAutocomplete } from 'utils/autocomplete';
+import { AutocompleteItemDto, CustomLabeledValue, IEntityAutocompleteProps, ISelectOption } from './models';
 
 /**
  * Entity autocomplete

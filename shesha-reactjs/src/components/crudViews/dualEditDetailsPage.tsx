@@ -7,7 +7,6 @@ import { useUi } from '../../providers';
 import { ConfigurableFormInstance } from '../../providers/form/contexts';
 import { FormIdentifier, FormMarkup, IFormActions, IFormSections } from '../../providers/form/models';
 import { useShaRouting } from '../../providers/shaRouting';
-import { requestHeaders } from '../../utils/requestHeaders';
 import { CommonCrudHandles } from './interfaces';
 import { IDataFetcher, IDataMutator, UseGenericGetProps } from './models';
 import { DEFAULT_FILTERS, filterGenericModelData, IGenericFormFilter } from './utils';
@@ -133,7 +132,6 @@ const GenericDualEditDetailsPage = forwardRef<CommonCrudHandles, IGenericDualEdi
 
     const { loading: loading, refetch: fetchData, error: fetchError, data: serverData } = props?.fetcher({
       lazy: true,
-      requestOptions: { headers: requestHeaders() },
       queryParams: { id: props?.id },
     });
 

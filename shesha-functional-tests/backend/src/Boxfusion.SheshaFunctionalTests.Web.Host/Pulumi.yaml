@@ -122,21 +122,21 @@ resources:
           - image: ${containerAppRevisionImage}
             name: #{projectName}#-#{role}#-#{env}#
             resources: 
-                cpu: 1.5
-                memory: "3Gi"
-            probes:
-              - httpGet:
-                  httpHeaders:
-                    - name: Custom-Header
-                      value: Awesome
-                  path: /health
-                  port: 8080
-                initialDelaySeconds: 3
-                periodSeconds: 3
-                type: Liveness
+                cpu: 2.0
+                memory: "4Gi"
+            # probes:
+            #   - httpGet:
+            #       httpHeaders:
+            #         - name: Custom-Header
+            #           value: Awesome
+            #       path: /health
+            #       port: 8080
+            #     initialDelaySeconds: 3
+            #     periodSeconds: 3
+            #     type: Liveness
         scale:
-          maxReplicas: 5
-          minReplicas: 0
+          maxReplicas: 1
+          minReplicas: 1
           rules:
             - custom:
                 metadata:

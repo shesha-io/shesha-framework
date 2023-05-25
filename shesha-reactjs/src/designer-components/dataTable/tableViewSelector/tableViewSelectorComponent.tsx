@@ -4,13 +4,13 @@ import { SelectOutlined } from '@ant-design/icons';
 import TableViewSelectorSettings from './tableViewSelectorSettings';
 import { ITableViewSelectorComponentProps } from './models';
 import { useDataTableStore, useGlobalState, useForm, useNestedPropertyMetadatAccessor } from 'providers';
-import { evaluateDynamicFilters } from 'providers/dataTable/utils';
 import camelCaseKeys from 'camelcase-keys';
 import _ from 'lodash';
 import { Alert } from 'antd';
 import { useDeepCompareEffect } from 'react-use';
 import TableViewSelectorRenderer from 'components/tableViewSelectorRenderer';
 import { migrateFilterMustacheExpressions } from 'designer-components/_common-migrations/migrateUseExpression';
+import { evaluateDynamicFilters } from 'utils';
 
 const TableViewSelectorComponent: IToolboxComponent<ITableViewSelectorComponentProps> = {
   type: 'tableViewSelector',

@@ -1,6 +1,6 @@
 import { DataNode, EventDataNode } from 'antd/lib/tree';
 import { Key, ReactNode } from 'react';
-import { CheckListItemModel, CheckListItemSelectionDto, SaveSelectionInput } from '../../apis/checkList';
+import { CheckListItemModel, CheckListItemSelectionDto, SaveSelectionInput } from 'apis/checkList';
 
 export enum CheckListItemType {
   /**

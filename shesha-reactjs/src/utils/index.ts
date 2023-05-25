@@ -1,3 +1,8 @@
+import { IStoredFilter } from 'providers/dataTable/interfaces';
+import { NestedPropertyMetadatAccessor } from 'providers/metadataDispatcher/contexts';
+import { IMatchData, executeExpression } from './publicUtils';
+import { IArgumentEvaluationResult, convertJsonLogicNode } from './jsonLogic';
+
 export type NumberOrString = number | string;
 /**
  * Returns the parameter value, from the url, by name
@@ -35,10 +40,10 @@ export const horizontalMouseScroll = (scrollableId: string) => {
 
     if (element.addEventListener) {
       // IE9, Chrome, Safari, Opera
-      element.addEventListener('mousewheel', event => scrollHorizontally(event, element), false);
+      element.addEventListener('mousewheel', (event) => scrollHorizontally(event, element), false);
 
       // Firefox
-      element.addEventListener('DOMMouseScroll', event => scrollHorizontally(event, element), false);
+      element.addEventListener('DOMMouseScroll', (event) => scrollHorizontally(event, element), false);
     } else {
       // IE 6/7/8
       // element.attachEvent('onmousewheel', event =>
@@ -104,6 +109,9 @@ export const getCircularReplacer = () => {
   };
 };
 
+export const getValidDefaultBool = (value: any, defalutValue: boolean = true) =>
+  typeof value === 'boolean' ? value : defalutValue;
+
 export const getPlainValue = <T = object | any[]>(value: T): T => {
   try {
     return JSON.parse(JSON.stringify(value, getCircularReplacer()));
@@ -115,7 +123,7 @@ export const getPlainValue = <T = object | any[]>(value: T): T => {
 export const getStaticExecuteExpressionParams = (params: string, dynamicParam?: { [key: string]: any }) => {
   let parameters = params;
 
-  Object.keys(dynamicParam || {}).map(key => {
+  Object.keys(dynamicParam || {}).map((key) => {
     parameters = `${parameters}, ${key}`;
   });
 
@@ -123,7 +131,76 @@ export const getStaticExecuteExpressionParams = (params: string, dynamicParam?: 
 };
 
 export const executeExpressionPayload = (fn: Function, dynamicParam: { [key: string]: any }, ...args: any[]) => {
-  Object.values(dynamicParam || {}).map(key => args.push(key));
+  Object.values(dynamicParam || {}).map((key) => args.push(key));
 
   return fn.apply(null, args);
+};
+
+export const evaluateDynamicFilters = async (
+  filters: IStoredFilter[],
+  mappings: IMatchData[],
+  propertyMetadataAccessor: NestedPropertyMetadatAccessor
+): Promise<IStoredFilter[]> => {
+  if (filters?.length === 0 || !mappings?.length) return filters;
+
+  const convertedFilters = await Promise.all(
+    filters.map(async (filter) => {
+      // correct way of processing JsonLogic rules
+      if (typeof filter.expression === 'object') {
+        const evaluator = (operator: string, args: object[], argIndex: number): IArgumentEvaluationResult => {
+          const argValue = args[argIndex];
+          // special handling for specifications
+          // todo: move `is_satisfied` operator name to constant
+          if (operator === 'is_satisfied' && argIndex === 1) {
+            // second argument is an expression that should be converted to boolean
+            if (typeof argValue === 'string') {
+              const evaluationContext = mappings.reduce((acc, item) => ({ ...acc, [item.match]: item.data }), {});
+              const evaluatedValue = executeExpression<boolean>(argValue, evaluationContext, false, (err) => {
+                console.error('Failed to convert value', err);
+                return null;
+              });
+
+              return { handled: evaluatedValue !== null, value: Boolean(evaluatedValue) };
+            }
+          }
+
+          return { handled: false };
+        };
+
+        const evaluationData = {
+          hasDynamicExpression: false,
+          allFieldsEvaluatedSuccessfully: true,
+          unevaluatedExpressions: [],
+        };
+
+        const getVariableDataType = (variable: string): Promise<string> => {
+          return propertyMetadataAccessor
+            ? propertyMetadataAccessor(variable).then((m) => m.dataType)
+            : Promise.resolve('string');
+        };
+
+        const convertedExpression = await convertJsonLogicNode(filter.expression, {
+          argumentEvaluator: evaluator,
+          mappings,
+          getVariableDataType,
+          onEvaluated: (args) => {
+            evaluationData.hasDynamicExpression = true;
+            evaluationData.allFieldsEvaluatedSuccessfully =
+              evaluationData.allFieldsEvaluatedSuccessfully && args.success;
+            if (args.unevaluatedExpressions && args.unevaluatedExpressions.length)
+              evaluationData.unevaluatedExpressions.push(...args.unevaluatedExpressions);
+          },
+        });
+        return {
+          ...filter,
+          ...evaluationData,
+          expression: convertedExpression,
+        } as IStoredFilter;
+      }
+
+      return Promise.resolve(filter);
+    })
+  );
+
+  return convertedFilters;
 };

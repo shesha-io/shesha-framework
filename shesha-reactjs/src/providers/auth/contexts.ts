@@ -3,15 +3,14 @@ import {
   ResetPasswordVerifyOtpInput,
   ResetPasswordVerifyOtpResponse,
   ResetPasswordUsingTokenInput,
-  AjaxResponseBase,
   UserResetPasswordSendOtpQueryParams,
-} from '../../apis/user';
-import { UserLoginInfoDto } from '../../apis/session';
+} from 'apis/user';
 import { IErrorInfo } from '../../interfaces/errorInfo';
-import { AuthenticateModel } from '../../apis/tokenAuth';
 import IRequestHeaders from '../../interfaces/requestHeaders';
 import { IFlagsSetters, IFlagsState } from '../../interfaces';
 import { EMPTY_FLAGS_STATE } from '../../interfaces/flagsState';
+import { UserLoginInfoDto } from 'apis/session';
+import { IAjaxResponseBase } from 'interfaces/ajaxResponse';
 
 export type IFlagProgressFlags =
   | 'isIdle'
@@ -37,11 +36,15 @@ export type IFlagErrorFlags =
   | 'sendOtp' /* NEW_ERROR_FLAG_GOES_HERE */;
 export type IFlagActionedFlags = 'hasCheckedAuth' /* NEW_ACTIONED_FLAG_GOES_HERE */;
 
-export interface ILoginForm extends AuthenticateModel {
+export interface ILoginForm {
+  userNameOrEmailAddress: string;
+  password: string;
+  /**
+   * Optional IMEI number. Is used for mobile applications
+   */
+  imei?: string | null;  
   rememberMe?: boolean;
 }
-
-export type IProfileLoadedHandler = () => Promise<void>;
 
 export interface IAuthStateContext
   extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
@@ -64,7 +67,7 @@ export interface IAuthStateContext
   isResetPasswordUsingTokenSuccessful?: boolean;
   resetPasswordUsingTokenError?: string;
   resetPasswordUsingTokenReqPayload?: ResetPasswordUsingTokenInput;
-  resetPasswordUsingTokenResPayload?: AjaxResponseBase;
+  resetPasswordUsingTokenResPayload?: IAjaxResponseBase;
   resetPasswordVerifyOtpPayload?: UserResetPasswordSendOtpQueryParams;
   //#endregion
 }
@@ -87,9 +90,6 @@ export interface IAuthActionsContext
   checkAuth?: () => void;
 
   fireHttpHeadersChanged?: (state?: IAuthStateContext) => void;
-
-  subscribeOnProfileLoading: (name: string, handler: IProfileLoadedHandler) => void;
-  unSubscribeOnProfileLoading: (name: string) => void;
 
   /* NEW_ACTION_ACTION_DECLARATION_GOES_HERE */
 }
