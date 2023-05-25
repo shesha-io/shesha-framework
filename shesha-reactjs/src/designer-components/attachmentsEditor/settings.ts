@@ -94,14 +94,6 @@ export const getSettings = () =>
       parentId: 'root',
       label: 'Disabled',
     })
-    .addCheckbox({
-      id: '40024b1c-edd4-4b5d-9c85-1dda6fb8db6c',
-      name: 'allowAdd',
-      parentId: 'root',
-      label: 'Allow Add',
-      validate: {},
-      customVisibility: 'return !data.disabled',
-    })
     .addCodeEditor({
       id: '4b5e5951-4998-4635-b1c8-0b6d3940c300',
       name: 'customEnabled',
@@ -120,26 +112,18 @@ export const getSettings = () =>
       ],
     })
     .addCheckbox({
+      id: '40024b1c-edd4-4b5d-9c85-1dda6fb8db6c',
+      name: 'allowAdd',
+      parentId: 'root',
+      label: 'Allow Add',
+      validate: {},
+      customVisibility: 'return !data.disabled',
+    })
+    .addCheckbox({
       id: '6b3d298a-0e82-4420-ae3c-38bf5a2246d4',
       name: 'allowDelete',
       parentId: 'root',
       label: 'Allow Remove',
-      validate: {},
-      customVisibility: 'return !data.disabled',
-    })
-    .addCheckbox({
-      id: '82900da8-30cc-43ec-9446-07bfe6698d31',
-      name: 'allowReplace',
-      parentId: 'root',
-      label: 'Allow Replace',
-      validate: {},
-      customVisibility: 'return !data.disabled',
-    })
-    .addCheckbox({
-      id: '4474e230-c6ca-4958-a06a-7cef9c7b1078',
-      name: 'allowRename',
-      parentId: 'root',
-      label: 'Allow Rename',
       validate: {},
       customVisibility: 'return !data.disabled',
     })
