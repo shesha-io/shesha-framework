@@ -20,13 +20,17 @@ const SettingsCollapsiblePanel: FC<ISettingsCollapsiblePanelProps> = (props) => 
     const [fields, setFields] = useState([]);
 
     const registerField = (name: string) => {
-        if (!Boolean(fields.find(x => {return x === name})))
-            setFields(prev => {return [...prev, name]});
+        if (!Boolean(fields.find(x => {
+            return x === name;
+        })))
+            setFields(prev => {
+                return [...prev, name];
+            });
     };
 
     const getPropertyFilter = () => {
         return props.propertyFilter;
-    }
+    };
 
     const settingsCollapsiblePanelActions: ISettingsCollapsiblePanelActionsContext =
     {
