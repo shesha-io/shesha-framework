@@ -9,13 +9,13 @@ import {
   IChangeFilterOptionPayload,
   IFetchColumnsSuccessSuccessPayload,
   IRegisterConfigurableColumnsPayload,
+  ISetPredefinedFiltersPayload,
   ISetRowDataPayload,
 } from './actions';
 import flagsReducer from '../utils/flagsReducer';
 import {
   IColumnSorting,
   IGetListDataPayload,
-  IStoredFilter,
   ITableColumn,
   ITableDataInternalResponse,
   ITableFilter,
@@ -229,7 +229,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
       const userFilters = userConfig?.selectedFilterIds?.length > 0 && state.predefinedFilters?.length > 0
         ? userConfig?.selectedFilterIds?.filter(x => {
             return state.predefinedFilters?.find(f => {
-              return f.id = x;
+              return f.id === x;
             });
           }) ?? []
         : [];
@@ -346,13 +346,28 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
     [DataTableActionEnums.SetPredefinedFilters]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<IStoredFilter[]>
+      action: ReduxActions.Action<ISetPredefinedFiltersPayload>
     ) => {
-      const { payload } = action;
-      
+      const { predefinedFilters, userConfig } = action.payload;
+
+      const uc = userConfig?.selectedFilterIds?.filter(x => {
+        return predefinedFilters?.find(f => {
+          return f.id === x;
+        });
+      });
+
+      const selectedStoredFilterIds = 
+        (!Boolean(state.selectedStoredFilterIds) || state.selectedStoredFilterIds.length === 0) 
+        && predefinedFilters?.length > 0
+          ? Boolean(uc) && uc.length > 0
+            ? uc
+            : [predefinedFilters[0].id]
+          : state.selectedStoredFilterIds;
+
       return {
         ...state,
-        predefinedFilters: payload || [],
+        predefinedFilters,
+        selectedStoredFilterIds
       };
     },
 
