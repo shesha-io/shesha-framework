@@ -92,7 +92,6 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
     visible: true,
     components: [
       Address,
-      AttachmentsEditor,
       AutocompleteTagGroup,
       TimelineComponent,
       ChildEntitiesTagGroup,
@@ -107,6 +106,7 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
       EntityReferenceComponent,
       EventNames,
       FileUpload,
+      AttachmentsEditor,
       Filter,
       FormAutocompleteComponent,
       IconPicker,

@@ -100,16 +100,6 @@
       "label": "Disabled"
     },
     {
-      "id": "f4193290-3bc7-441a-92be-cfaf25d57c28",
-      "type": "checkbox",
-      "name": "allowUpload",
-      "label": "Allow Upload",
-      "parentId": "root",
-      "hidden": false,
-      "customVisibility": "return !data.disabled",
-      "validate": {}
-    },
-    {
       "id": "4b5e5951-4998-4635-b1c8-0b6d3940c300",
       "type": "codeEditor",
       "name": "customEnabled",
@@ -125,6 +115,16 @@
         { "name": "value", "description": "Component current value", "type": "string | any" },
         { "name": "data", "description": "Selected form values", "type": "object" }
       ]
+    },
+    {
+      "id": "f4193290-3bc7-441a-92be-cfaf25d57c28",
+      "type": "checkbox",
+      "name": "allowUpload",
+      "label": "Allow Upload",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": "return !data.disabled",
+      "validate": {}
     },
     {
       "id": "b0d75145-3f7c-424d-a1ac-c65990b4f749",
