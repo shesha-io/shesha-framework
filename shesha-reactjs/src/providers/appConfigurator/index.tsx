@@ -49,7 +49,7 @@ const ITEM_MODE_HEADER = 'sha-config-item-mode';
 const useAppConfiguratorSettings = (): IUseAppConfiguratorSettingsResponse => {
   const [itemMode, setItemMode] = useLocalStorage<ConfigurationItemsViewMode>('CONFIGURATION_ITEM_MODE', AppConfiguratorModeDefaults.mode);
   const [isFormInfoVisible, setIsFormInfoVisible] = useLocalStorage<boolean>('FORM_INFO_VISIBLE', AppConfiguratorModeDefaults.isInformerVisible);
-  const auth = useAuth();
+  const auth = useAuth(false);
   const { httpHeaders, setRequestHeaders } = useSheshaApplication();
 
   const setHeaderValue = (mode: ConfigurationItemsViewMode) => {
