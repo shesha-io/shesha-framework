@@ -12,7 +12,7 @@ variables:
   registryLoginServer: boxfusionregistry.azurecr.io
   adminUsername: boxfusionregistry
   adminPasswords: fKSsWcdQ8IbdmJZT3Y7udTZD/jjSQ7dhCwTa1BDgaS+ACRBwxWQ1
-  containerAppName: #{projectName}#-admin-#{env}#
+  containerAppName: #{projectName}#-adminportal-#{env}#
   containerAppCustomerDomainName: #{projectName}#-#{role}#-#{env}#.shesha.dev
   containerAppEnvName: shesha-#{role}#-#{env}#-env
   certificateId: /subscriptions/0e111515-3d91-4650-bd92-dfca52077d62/resourceGroups/containerapps-shesha-#{role}#-#{env}#-rg/providers/Microsoft.App/managedEnvironments/shesha-#{role}#-#{env}#-env/certificates/shesha.dev
