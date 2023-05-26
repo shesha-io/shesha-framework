@@ -123,6 +123,9 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = prop
 
       dispatch(fetchFileInfoSuccessAction(fileInfo));
     }
+    if (uploadMode === 'sync' && !Boolean(value)) {
+      dispatch(deleteFileSuccessAction());
+    }
   }, [uploadMode, value]);
 
   useEffect(() => {
@@ -286,13 +289,15 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = prop
   };
 
   const deleteFileSync = () => {
-    if (typeof onChange === 'function') onChange(null);
+    if (typeof onChange === 'function')
+      onChange(null);
   };
 
   const deleteFile = () => {
-    if (uploadMode === 'async') deleteFileAsync();
-
-    if (uploadMode === 'sync') deleteFileSync();
+    if (uploadMode === 'async') 
+      deleteFileAsync();
+    else
+      deleteFileSync();
   };
 
   const deleteFileSuccess = () => {
