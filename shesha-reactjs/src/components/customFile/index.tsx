@@ -12,6 +12,7 @@ export interface ICustomFileProps {
   allowRename?: boolean;
   isStub?: boolean;
   allowedFileTypes?: string[];
+  maxHeight?: string;
 }
 
 export const CustomFile: FC<ICustomFileProps> = (props) => {
@@ -48,6 +49,7 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
         isDownloadingFileListZip={downloadZip}
         isDownloadZipSucceeded={downloadZipSuccess}
         allowedFileTypes={props?.allowedFileTypes}
+        maxHeight={props?.maxHeight}
       />
     </div>
   );

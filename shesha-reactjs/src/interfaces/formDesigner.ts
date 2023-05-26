@@ -24,6 +24,11 @@ export interface IFormLayoutSettings {
   layout?: FormLayout;
 }
 
+export const DEFAULT_FORM_LAYOUT_SETTINGS: IFormLayoutSettings = {
+  labelCol: { span: 24 },
+  wrapperCol: { span: 24 },
+};
+
 export interface ISettingsFormFactoryArgs<TModel = IConfigurableFormComponent> {
   readOnly: boolean;
   model: TModel;

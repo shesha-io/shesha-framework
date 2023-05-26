@@ -10,7 +10,7 @@ import { MetadataProvider } from 'providers';
 import LabelValueEditor from 'components/formDesigner/components/labelValueEditor/labelValueEditor';
 import CollapsiblePanel from 'components/panel';
 import { ConfigurableActionConfigurator } from '../configurableActionsConfigurator';
-import { ISettingsFormFactoryArgs } from 'interfaces';
+import { DEFAULT_FORM_LAYOUT_SETTINGS, ISettingsFormFactoryArgs } from 'interfaces';
 import { IEntityReferenceControlProps } from './entityReference';
 import SettingsFormItem from 'designer-components/_settings/settingsFormItem';
 import SettingsCollapsiblePanel from 'designer-components/_settings/settingsCollapsiblePanel';
@@ -19,7 +19,15 @@ interface IEntityReferenceSettingsState extends IEntityReferenceControlProps { }
 
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 
-export const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceControlProps>> = ({ readOnly, onSave, model, onValuesChange, propertyFilter, formRef, layoutSettings }) => {
+export const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceControlProps>> = ({
+  readOnly,
+  onSave,
+  model,
+  onValuesChange,
+  propertyFilter,
+  formRef,
+  layoutSettings = DEFAULT_FORM_LAYOUT_SETTINGS
+}) => {
   const [state, setState] = useState<IEntityReferenceSettingsState>(model);
   const [form] = Form.useForm();
 
@@ -62,7 +70,7 @@ export const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferen
       }}
     >
       <SettingsCollapsiblePanel propertyFilter={propertyFilter} header='Display'>
-        <SettingsFormItem name="name" label="Name">
+        <SettingsFormItem name="name" label="Name" required>
           <PropertyAutocomplete id="fb71cb51-884f-4f34-aa77-820c12276c95" readOnly={readOnly} />
         </SettingsFormItem>
 

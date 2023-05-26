@@ -111,6 +111,13 @@ export const getSettings = () =>
         { name: 'data', description: 'Selected form values', type: 'object' },
       ],
     })
+    /*.addTextField({
+      id: '1ad47439-4c18-468c-89e1-60c002ce96c5',
+      name: 'maxHeight',
+      parentId: 'root',
+      label: 'Max height',
+      description: 'Max height of file list (analog)'
+    })*/
     .addCheckbox({
       id: '40024b1c-edd4-4b5d-9c85-1dda6fb8db6c',
       name: 'allowAdd',
