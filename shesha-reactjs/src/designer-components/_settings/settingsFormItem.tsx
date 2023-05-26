@@ -17,7 +17,7 @@ const SettingsFormItem: FC<ISettingsFormItemProps> = (props) => {
     }
 
     return !Boolean(propertyFilter) || typeof propertyFilter === 'function' && propertyFilter(props.name?.toString())
-        ? <Form.Item {...props} labelCol={{md: 24}} labelAlign={'left'}/>
+        ? <Form.Item {...props}/>
         : null;
 };
 

@@ -33,6 +33,7 @@ export interface IStoredFilesRendererBaseProps {
   /* isStub is used just to fix strange error when the user is reordering components on the form */
   isStub?: boolean;
   allowedFileTypes?: string[];
+  maxHeight?: string;  
 }
 
 export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
@@ -55,6 +56,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   disabled,
   isStub = false,
   allowedFileTypes = [],
+  maxHeight
 }) => {
   const hasFiles = !!fileList.length;
 
@@ -146,7 +148,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   };
 
   return (
-    <div className="sha-stored-files-renderer">
+    <div className="sha-stored-files-renderer" style={{maxHeight}}>
       {isDragger ? (
         isStub ? (
           <div>{renderDraggerContent()}</div>

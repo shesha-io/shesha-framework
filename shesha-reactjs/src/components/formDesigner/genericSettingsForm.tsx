@@ -2,7 +2,7 @@ import React, { MutableRefObject, useEffect } from 'react';
 import { Form } from 'antd';
 import { ConfigurableForm } from '../../components';
 import { IConfigurableFormComponent, FormMarkup } from '../../providers/form/models';
-import { IFormLayoutSettings, ISettingsFormInstance, IToolboxComponent } from '../../interfaces';
+import { DEFAULT_FORM_LAYOUT_SETTINGS, IFormLayoutSettings, ISettingsFormInstance, IToolboxComponent } from '../../interfaces';
 import { IPropertyMetadata } from '../../interfaces/metadata';
 import { listComponentToModelMetadata } from '../../providers/form/utils';
 
@@ -19,11 +19,6 @@ export interface IProps<TModel extends IConfigurableFormComponent> {
   layoutSettings?: IFormLayoutSettings;
 }
 
-const DEFAULT_FORM_LAYOUT: IFormLayoutSettings = {
-  labelCol: { span: 24 },
-  wrapperCol: { span: 24 },
-};
-
 function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
   readonly,
   onSave,
@@ -33,7 +28,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
   toolboxComponent,
   formRef,
   propertyFilter,
-  layoutSettings = DEFAULT_FORM_LAYOUT,
+  layoutSettings = DEFAULT_FORM_LAYOUT_SETTINGS,
 }: IProps<TModel>) {
   const [form] = Form.useForm();
 
