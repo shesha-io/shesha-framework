@@ -1,12 +1,13 @@
 import React, { FC, useState } from 'react';
 import { JsonLogicResult } from '@react-awesome-query-builder/antd';
 import { Modal, Button, Collapse, Space } from 'antd';
-import { QueryBuilder, CodeEditor, Show } from 'components';
+import { QueryBuilder, Show } from 'components';
+import CodeEditor from 'components/codeEditor';
 import { CaretRightOutlined } from '@ant-design/icons';
 import { useMedia } from 'react-use';
 import { IQueryBuilderFieldProps } from './models';
 
-export const QueryBuilderField: FC<IQueryBuilderFieldProps> = props => {
+export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [jsonLogicResult, setJsonLogicResult] = useState<JsonLogicResult>(undefined);
   const [jsonExpanded, setJsonExpanded] = useState(props.jsonExpanded ?? false);
@@ -62,7 +63,7 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = props => {
         <Collapse.Panel
           header={
             <Space>
-              <Button type={ readOnly ? 'default' : 'primary' } onClick={() => setModalVisible(true)} size="small">
+              <Button type={readOnly ? 'default' : 'primary'} onClick={() => setModalVisible(true)} size="small">
                 {`Query Builder ${hasValue ? '(applied)' : ''}`.trim()}
               </Button>
 
@@ -109,13 +110,10 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = props => {
         open={modalVisible}
         width={isSmall ? '90%' : '60%'}
         title="Query Builder"
-        
         onOk={onOkClick}
         okButtonProps={{ hidden: readOnly }}
-        
         onCancel={() => setModalVisible(false)}
-        cancelText={ readOnly ? 'Close' : undefined }
-
+        cancelText={readOnly ? 'Close' : undefined}
         destroyOnClose
       >
         <h4>Here you can create your own filter using the query builder below</h4>

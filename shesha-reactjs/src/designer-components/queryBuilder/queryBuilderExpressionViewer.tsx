@@ -1,12 +1,11 @@
-import { CodeEditor } from 'components';
+import CodeEditor from 'components/codeEditor';
 import React, { FC } from 'react';
 
 export interface IQueryBuilderExpressionViewerProps {
   value?: object;
 }
 
-export const QueryBuilderExpressionViewer: FC<IQueryBuilderExpressionViewerProps> = props => {
-
+export const QueryBuilderExpressionViewer: FC<IQueryBuilderExpressionViewerProps> = (props) => {
   return (
     <CodeEditor
       width="100%"

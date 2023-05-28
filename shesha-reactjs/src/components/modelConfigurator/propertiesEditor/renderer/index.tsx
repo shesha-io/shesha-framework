@@ -1,15 +1,15 @@
 import React, { FC, useMemo } from 'react';
 import { Tabs } from 'antd';
-import { CodeEditor, SidebarContainer } from '../../../';
+import { SidebarContainer } from '../../../';
 import { ToolbarItemProperties } from './itemProperties';
 import ItemsContainer from './itemsContainer';
 import { usePropertiesEditor } from '../provider';
+import CodeEditor from 'components/codeEditor';
 
-export interface IModelConfiguratorProps { }
+export interface IModelConfiguratorProps {}
 
 export const PropertiesEditorRenderer: FC<IModelConfiguratorProps> = () => {
-
-  const { items, /*addItem, selectedItemRef*/ } = usePropertiesEditor();
+  const { items /*addItem, selectedItemRef*/ } = usePropertiesEditor();
 
   /*const onAddClick = () => {
     addItem().then(_item => {
@@ -34,28 +34,34 @@ export const PropertiesEditorRenderer: FC<IModelConfiguratorProps> = () => {
   }, [items]);
 
   return (
-    <Tabs items={[
-      { label: "Designer", key: "1",
-      children: <>
-        {/*<div className="sha-action-buttons" style={{ marginBottom: '8px' }}>
+    <Tabs
+      items={[
+        {
+          label: 'Designer',
+          key: '1',
+          children: (
+            <>
+              {/*<div className="sha-action-buttons" style={{ marginBottom: '8px' }}>
           <Button onClick={onAddClick} type="primary">
             Add Property
           </Button>
         </div>*/}
-        <div className="sha-sidebar-configurator">
-          <SidebarContainer
-            rightSidebarProps={{
-              open: true,
-              title: 'Properties',
-              content: <ToolbarItemProperties />,
-            }}
-          >
-            <ItemsContainer items={items} index={[]} />
-          </SidebarContainer>
-        </div>
-        </>
-      },
-      { label: "Schema", key: "2", children: <CodeEditor value={jsonSchema} readOnly={true} width='100%' /> }
-    ]} />
+              <div className="sha-sidebar-configurator">
+                <SidebarContainer
+                  rightSidebarProps={{
+                    open: true,
+                    title: 'Properties',
+                    content: <ToolbarItemProperties />,
+                  }}
+                >
+                  <ItemsContainer items={items} index={[]} />
+                </SidebarContainer>
+              </div>
+            </>
+          ),
+        },
+        { label: 'Schema', key: '2', children: <CodeEditor value={jsonSchema} readOnly={true} width="100%" /> },
+      ]}
+    />
   );
 };

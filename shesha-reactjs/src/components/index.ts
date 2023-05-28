@@ -117,7 +117,7 @@ export { default as QueryBuilder, type IQueryBuilderProps } from './queryBuilder
 export { default as ConfigurableForm } from './configurableForm';
 export { type IConfigurableFormRendererProps, type IConfigurableFormProps } from './configurableForm/models';
 export { default as Show, type IShowProps } from './show';
-export { default as CodeEditor } from './codeEditor';
+export { default as CodeEditor } from './formDesigner/components/codeEditor/codeEditor';
 export { default as ModelConfigurator } from './modelConfigurator';
 
 export {
@@ -159,5 +159,4 @@ export { default as RichTextEditor, type IRichTextEditorProps } from './richText
 export { default as SettingsEditor, type ISettingsEditorProps } from './settingsEditor';
 export { FormComponentSelector, type IFormComponentSelectorProps } from './formComponentSelector';
 
-export { default as IconPickerWrapper } from './formDesigner/components/iconPicker';
 export { default as ColorPicker } from '../../src/components/colorPicker';
