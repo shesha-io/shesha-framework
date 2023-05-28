@@ -125,7 +125,6 @@ export const Dropdown: FC<IDropdownComponentProps> = ({
   if (dataSourceType === 'referenceList') {
     return useRawValues ? (
       <RefListDropDown.Raw
-        className="sha-reflist-dropdown"
         onChange={onChange}
         referenceListId={referenceListId}
         disabled={isDisabled}
@@ -143,7 +142,6 @@ export const Dropdown: FC<IDropdownComponentProps> = ({
       />
     ) : (
       <RefListDropDown.Dto
-        className="sha-reflist-dropdown"
         onChange={onChange}
         referenceListId={referenceListId}
         disabled={isDisabled}

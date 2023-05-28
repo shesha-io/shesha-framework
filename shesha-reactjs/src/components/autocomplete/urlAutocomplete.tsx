@@ -4,7 +4,13 @@ import { useGet } from 'hooks';
 import { useDebouncedCallback } from 'use-debounce';
 import { useSubscribe } from '../..';
 import { ReadOnlyDisplayFormItem } from './../readOnlyDisplayFormItem';
-import { AutocompleteItemDto, CustomLabeledValue, ISelectOption, IUrlAutocompleteProps, IUrlFetcherQueryParams } from './models';
+import {
+  AutocompleteItemDto,
+  CustomLabeledValue,
+  ISelectOption,
+  IUrlAutocompleteProps,
+  IUrlFetcherQueryParams,
+} from './models';
 import { getQueryString, trimQueryString } from './utils';
 import { IAjaxResponseBase } from 'interfaces/ajaxResponse';
 
@@ -50,7 +56,7 @@ export const UrlAutocomplete = <TValue,>(props: IUrlAutocompleteProps<TValue>) =
         ? value
         : /*: isStringArray(value)
           ? value*/
-        undefined;
+          undefined;
 
     if (dataSourceUrl) {
       const queryParams = {
@@ -95,14 +101,14 @@ export const UrlAutocomplete = <TValue,>(props: IUrlAutocompleteProps<TValue>) =
   };
 
   const debouncedFetchItems = useDebouncedCallback<(value: string) => void>(
-    localValue => {
+    (localValue) => {
       doFetchItems(localValue);
     },
     // delay in ms
     200
   );
 
-  const debouncedClear = useDebouncedCallback(localValue => {
+  const debouncedClear = useDebouncedCallback((localValue) => {
     doFetchItems(localValue);
 
     if (onChange) onChange(null);
@@ -112,9 +118,9 @@ export const UrlAutocomplete = <TValue,>(props: IUrlAutocompleteProps<TValue>) =
     if (!Boolean(localValue)) return undefined;
     if (mode === 'multiple' || mode === 'tags') {
       return Array.isArray(localValue)
-        ? (localValue as TValue[]).map<CustomLabeledValue<TValue>>(o => {
-          return getLabeledValue(o, options);
-        })
+        ? (localValue as TValue[]).map<CustomLabeledValue<TValue>>((o) => {
+            return getLabeledValue(o, options);
+          })
         : [getLabeledValue(localValue as TValue, options)];
     } else return getLabeledValue(localValue as TValue, options);
   };
@@ -122,7 +128,7 @@ export const UrlAutocomplete = <TValue,>(props: IUrlAutocompleteProps<TValue>) =
   const options = useMemo<ISelectOption<TValue>[]>(() => {
     const fetchedData = getFetchedItems() || [];
 
-    const fetchedItems = fetchedData.map<ISelectOption<TValue>>(item => {
+    const fetchedItems = fetchedData.map<ISelectOption<TValue>>((item) => {
       const option = Boolean(getOptionFromFetchedItem)
         ? (getOptionFromFetchedItem(item) as ISelectOption<TValue>)
         : (item as ISelectOption<TValue>);
@@ -136,14 +142,14 @@ export const UrlAutocomplete = <TValue,>(props: IUrlAutocompleteProps<TValue>) =
     // Note: we shouldn't process full list and make it unique because by this way we'll hide duplicates received from the back-end
     const selectedItems = selectedItem
       ? (Array.isArray(selectedItem) ? selectedItem : [selectedItem]).filter(
-        i => fetchedItems.findIndex(fi => fi.value === i.value) === -1
-      )
+          (i) => fetchedItems.findIndex((fi) => fi.value === i.value) === -1
+        )
       : [];
 
     const result = [...fetchedItems, ...selectedItems];
 
     if (autocompleteText && allowFreeText && !value) {
-      if (fetchedItems.findIndex(fi => fi.label === autocompleteText) === -1){
+      if (fetchedItems.findIndex((fi) => fi.label === autocompleteText) === -1) {
         result.push({ label: autocompleteText, value: autocompleteText, data: autocompleteText });
       }
     }
@@ -162,7 +168,7 @@ export const UrlAutocomplete = <TValue,>(props: IUrlAutocompleteProps<TValue>) =
     if (!Boolean(onChange)) return;
     const selectedValue = Boolean(option)
       ? Array.isArray(option)
-        ? (option as ISelectOption<TValue>[]).map(o => o.data)
+        ? (option as ISelectOption<TValue>[]).map((o) => o.data)
         : (option as ISelectOption<TValue>).data
       : undefined;
 
@@ -202,6 +208,7 @@ export const UrlAutocomplete = <TValue,>(props: IUrlAutocompleteProps<TValue>) =
 
   return (
     <Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
+      className="sha-dropdown"
       showSearch={!disableSearch}
       labelInValue={true}
       notFoundContent={notFoundContent}

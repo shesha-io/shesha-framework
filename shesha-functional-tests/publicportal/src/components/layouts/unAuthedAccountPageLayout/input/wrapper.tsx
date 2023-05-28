@@ -14,10 +14,10 @@ const ShaInputWrapper: FC<IProps> = ({ label, ...props }) => {
 
   return (
     <Fragment>
-      {label && <label className="sha-input-label">{label}</label>}
+      {label && <label className="sha-input-comp-label">{label}</label>}
 
       <ShaInputRender
-        className={`sha-input ${error ? "sha-input-error" : ""}`}
+        className={`sha-input-comp ${error ? "sha-input-comp-error" : ""}`}
         setError={(error) => setState((s) => ({ ...s, error }))}
         {...props}
       />

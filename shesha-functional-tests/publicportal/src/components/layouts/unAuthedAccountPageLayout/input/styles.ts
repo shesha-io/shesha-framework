@@ -20,16 +20,16 @@ export const ShaInputStyledWrapper = styled(Form.Item)`
     }
   }
 
-  .sha-input {
+  .sha-input-comp {
     border-radius: 5px;
     box-shadow: 0px 2px 4px 0px #ededed;
   }
 
-  .sha-input-error {
+  .sha-input-comp-error {
     border-color: red;
   }
 
-  .sha-input-label {
+  .sha-input-comp-label {
     color: #4a4a4a;
     display: block;
     font-size: 18px;

@@ -47,7 +47,12 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
       */
 
   // todo: move part of logic to the `useEntityAutocomplete`, implement support of multiple mode (it was not supported before because of wrong loading of provided value)
-  const { data: fetchedData, loading, error: fetchError, search: searchEntity } = useEntityAutocomplete({
+  const {
+    data: fetchedData,
+    loading,
+    error: fetchError,
+    search: searchEntity,
+  } = useEntityAutocomplete({
     entityType: typeShortAlias,
     value: rawValue,
     filter,
@@ -68,7 +73,7 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
   };
 
   const getFetchedItems = (): AutocompleteItemDto[] => {
-    return fetchedData.map<AutocompleteItemDto>(e => ({
+    return fetchedData.map<AutocompleteItemDto>((e) => ({
       value: e.id.toString(),
       displayText: extractProperty(e, entityDisplayProperty),
     }));
@@ -79,14 +84,14 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
   };
 
   const debouncedFetchItems = useDebouncedCallback<(value: string) => void>(
-    localValue => {
+    (localValue) => {
       searchEntity(localValue);
     },
     // delay in ms
     200
   );
 
-  const debouncedClear = useDebouncedCallback(localValue => {
+  const debouncedClear = useDebouncedCallback((localValue) => {
     searchEntity(localValue);
 
     if (onChange) onChange(null);
@@ -96,7 +101,7 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
     if (!Boolean(localValue)) return undefined;
     if (mode === 'multiple' || mode === 'tags') {
       return Array.isArray(localValue)
-        ? (localValue as TValue[]).map<CustomLabeledValue<TValue>>(o => {
+        ? (localValue as TValue[]).map<CustomLabeledValue<TValue>>((o) => {
             return getLabeledValue(o, options);
           })
         : [getLabeledValue(localValue as TValue, options)];
@@ -106,7 +111,7 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
   const options = useMemo<ISelectOption<TValue>[]>(() => {
     const localData = getFetchedItems() || [];
 
-    const fetchedItems = localData.map<ISelectOption<TValue>>(item => {
+    const fetchedItems = localData.map<ISelectOption<TValue>>((item) => {
       const option = Boolean(getOptionFromFetchedItem)
         ? (getOptionFromFetchedItem(item) as ISelectOption<TValue>)
         : (item as ISelectOption<TValue>);
@@ -120,7 +125,7 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
     // Note: we shouldn't process full list and make it unique because by this way we'll hide duplicates received from the back-end
     const selectedItems = selectedItem
       ? (Array.isArray(selectedItem) ? selectedItem : [selectedItem]).filter(
-          i => fetchedItems.findIndex(fi => fi.value === i.value) === -1
+          (i) => fetchedItems.findIndex((fi) => fi.value === i.value) === -1
         )
       : [];
 
@@ -139,7 +144,7 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
     if (!Boolean(onChange)) return;
     const selectedValue = Boolean(option)
       ? Array.isArray(option)
-        ? (option as ISelectOption<TValue>[]).map(o => o.data)
+        ? (option as ISelectOption<TValue>[]).map((o) => o.data)
         : (option as ISelectOption<TValue>).data
       : undefined;
 
@@ -192,6 +197,7 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
 
   return (
     <Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
+      className="sha-dropdown"
       showSearch={!disableSearch}
       labelInValue={true}
       notFoundContent={notFoundContent}
