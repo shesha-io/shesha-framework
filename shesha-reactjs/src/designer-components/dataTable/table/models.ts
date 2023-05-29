@@ -25,6 +25,9 @@ export interface ITableComponentBaseProps extends IShaDataTableInlineEditablePro
   tableStyle?: string;
   dialogSubmitHttpVerb?: 'POST' | 'PUT';
   //#endregion
+
+  minHeight?: number;
+  maxHeight?: number;
 }
 
 /** Table component props */

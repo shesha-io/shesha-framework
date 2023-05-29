@@ -101,7 +101,7 @@ export { default as StoredFilesRenderer, type IStoredFilesRendererProps } from '
 export { default as StoredFilesRendererBase, type IStoredFilesRendererBaseProps } from './storedFilesRendererBase';
 export { default as TableControls } from './tableControls';
 export { default as TablePager, type ITablePagerProps } from './tablePager';
-export { default as TablePagerBase, type ITablePagerBaseProps } from './tablePagerBase';
+export { default as TablePaging, type ITablePagerBaseProps } from './tablePager/tablePaging';
 export { default as StatusLabel, type IStatusLabelProps } from './statusLabel';
 export { default as ValidationErrors, type IValidationErrorsProps } from './validationErrors';
 export { default as HierarchicalCheckList, type IHierarchicalCheckListProps } from './hierarchicalCheckList';

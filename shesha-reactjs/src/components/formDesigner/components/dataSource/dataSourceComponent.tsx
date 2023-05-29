@@ -79,6 +79,7 @@ export const DataSourceInner: FC<IDataSourceComponentProps> = props => {
         actionOwnerName={name}
         sourceType={sourceType}
         initialPageSize={getPageSize(props.maxResultCount)}
+        dataFetchingMode='paging'
       >
         <DataSourceAccessor {...props} />
       </DataTableProvider>);

@@ -20,6 +20,8 @@ export type DatatableColumnType = 'data' | 'action' | 'calculated' | 'crud-opera
 export type SortDirection = 0 /*asc*/ | 1 /*desc*/;
 export type ColumnSorting = 'asc' | 'desc';
 
+export type DataFetchingMode = 'paging' | 'fetchAll';
+
 export interface ITableColumn {
   columnType: DatatableColumnType;
 
@@ -110,11 +112,17 @@ export interface IExportExcelPayload extends IGetDataFromBackendPayload {
 }
 
 export interface IGetListDataPayload {
+  /** Page size. Set to -1 to fetch all */
   readonly pageSize: number;
+  /** Page number. Starts from 1 */
   readonly currentPage: number;
+  /** Data columns to fetch  */
   readonly columns: ITableDataColumn[];
+  /** Sorting */
   readonly sorting?: IColumnSorting[];
+  /** Filter in JsonLogic format */
   readonly filter?: string;
+  /** Quick search (simple text search by all text columns) */
   readonly quickSearch?: string;
 }
 

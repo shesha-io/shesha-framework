@@ -9,6 +9,7 @@ import {
   IndexColumnFilterOption,
   ColumnFilter,
   IPublicDataTableActions,
+  DataFetchingMode,
 } from './interfaces';
 import { IHasModelType, IRepository } from './repository/interfaces';
 
@@ -71,6 +72,8 @@ export interface IDataTableStateContext
   tableData?: object[];
   /** Selected page size */
   selectedPageSize?: number;
+  /** Data fetching mode (paging or fetch all) */
+  dataFetchingMode: DataFetchingMode;
   /** Current page number */
   currentPage?: number;
   /** Total number of pages */
@@ -196,6 +199,7 @@ export const DATA_TABLE_CONTEXT_INITIAL_STATE: IDataTableStateContext = {
   persistSelectedFilters: true, // Persist by default
   userConfigId: null,
   modelType: null,
+  dataFetchingMode: 'paging',
 };
 
 export interface DataTableFullInstance extends IDataTableStateContext, IDataTableActionsContext { }

@@ -14,6 +14,7 @@ import {
 } from './actions';
 import flagsReducer from '../utils/flagsReducer';
 import {
+  DataFetchingMode,
   IColumnSorting,
   IGetListDataPayload,
   ITableColumn,
@@ -425,6 +426,18 @@ const reducer = handleActions<IDataTableStateContext, any>(
       return {
         ...state,
         tableData: newData,
+      };
+    },
+    
+    [DataTableActionEnums.SetDataFetchingMode]: (
+      state: IDataTableStateContext,
+      action: ReduxActions.Action<DataFetchingMode>
+    ) => {
+      const { payload } = action;
+
+      return {
+        ...state,
+        dataFetchingMode: payload,
       };
     },
   },

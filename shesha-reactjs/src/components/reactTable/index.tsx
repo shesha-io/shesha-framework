@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useState, useRef, ChangeEvent } from 'react';
+import React, { FC, useEffect, useMemo, useState, useRef, ChangeEvent, CSSProperties } from 'react';
 import classNames from 'classnames';
 import {
   useResizeColumns,
@@ -52,6 +52,8 @@ const ReactTable: FC<IReactTableProps> = ({
   //onRowDropped,
   selectedRowIndex,
   containerStyle,
+  minHeight,
+  maxHeight,
   omitClick,
   tableStyle,
 
@@ -295,6 +297,16 @@ const ReactTable: FC<IReactTableProps> = ({
     />
   );
 
+  const containerStyleFinal = useMemo<CSSProperties>(() => {
+    const result = containerStyle ?? {};
+    if (minHeight)
+      result.minHeight = `${minHeight}px`;
+    if (maxHeight)
+      result.maxHeight = `${maxHeight}px`;
+    
+    return result;
+  }, [containerStyle, minHeight, maxHeight]);
+
   return (
     <Spin
       spinning={loading}
@@ -305,7 +317,7 @@ const ReactTable: FC<IReactTableProps> = ({
         </span>
       }
     >
-      <div className="sha-react-table" style={containerStyle}>
+      <div className="sha-react-table" style={containerStyleFinal}>
         <div {...getTableProps()} className="sha-table" style={tableStyle}>
           {columns?.length > 0 &&
             headerGroups.map(headerGroup => (

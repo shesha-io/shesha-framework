@@ -9,6 +9,7 @@ import {
   ITableDataInternalResponse,
   IGetListDataPayload,
   IStoredFilter,
+  DataFetchingMode,
 } from './interfaces';
 
 export enum DataTableActionEnums {
@@ -45,6 +46,7 @@ export enum DataTableActionEnums {
   OnSelectRow = 'ON_SELECT_ROW',
   OnSort = 'ON_SORT',
   SetModelType = 'SET_MODEL_TYPE',
+  SetDataFetchingMode = 'SET_DATA_FETCHING_MODE',
 
   ChangeDisplayColumn = 'CHANGE_DISPLAY_COLUMN',
   ChangePersistedFiltersToggle = 'CHANGE_PERSISTED_FILTERS_TOGGLE',
@@ -173,5 +175,10 @@ export const changeDisplayColumnAction = createAction<string, string>(DataTableA
 
 export const changePersistedFiltersToggleAction = createAction<boolean, boolean>(
   DataTableActionEnums.ChangePersistedFiltersToggle,
+  p => p
+);
+
+export const setDataFetchingModeAction = createAction<DataFetchingMode, DataFetchingMode>(
+  DataTableActionEnums.SetDataFetchingMode,
   p => p
 );

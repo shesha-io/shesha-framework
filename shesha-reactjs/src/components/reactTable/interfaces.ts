@@ -182,6 +182,8 @@ export interface IReactTableProps extends ITableRowDragProps {
   omitClick?: boolean;
 
   containerStyle?: CSSProperties;
+  minHeight?: number;
+  maxHeight?: number;
 
   tableStyle?: CSSProperties;
 

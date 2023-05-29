@@ -31,7 +31,7 @@ export interface ITablePagerBaseProps {
   changePageSize: (size: number) => void;
 }
 
-export const TablePagerBase: FC<ITablePagerBaseProps> = ({
+export const TablePaging: FC<ITablePagerBaseProps> = ({
   disabled = false,
   pageSizeOptions,
   currentPage,
@@ -85,4 +85,4 @@ export const TablePagerBase: FC<ITablePagerBaseProps> = ({
   );
 };
 
-export default TablePagerBase;
+export default TablePaging;

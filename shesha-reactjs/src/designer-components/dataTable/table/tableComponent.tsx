@@ -218,6 +218,8 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
         onRowSaveSuccess={props.onRowSaveSuccess}
         inlineSaveMode={props.inlineSaveMode}
         inlineEditMode={props.inlineEditMode}
+        minHeight={props.minHeight}
+        maxHeight={props.maxHeight}
       />
     </CollapsibleSidebarContainer>
   );

@@ -2,7 +2,8 @@ import React, { FC } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import { DESKTOP_SIZE_QUERY, PHONE_SIZE_QUERY } from '../../shesha-constants/media-queries';
 import { useDataTable } from '../../providers';
-import TablePagerBase from '../tablePagerBase';
+import TablePaging from './tablePaging';
+import TableNoPaging from './tableNoPaging';
 
 export interface ITablePagerProps {
   showSizeChanger?: boolean;
@@ -10,7 +11,7 @@ export interface ITablePagerProps {
 }
 
 export const TablePager: FC<ITablePagerProps> = ({ showSizeChanger, showTotalItems }) => {
-  const { pageSizeOptions, currentPage, totalRows, selectedPageSize, setCurrentPage, changePageSize } = useDataTable();
+  const { pageSizeOptions, currentPage, totalRows, selectedPageSize, setCurrentPage, changePageSize, dataFetchingMode } = useDataTable();
 
   const hideSizeChanger = useMediaQuery({
     query: DESKTOP_SIZE_QUERY,
@@ -20,8 +21,12 @@ export const TablePager: FC<ITablePagerProps> = ({ showSizeChanger, showTotalIte
     query: PHONE_SIZE_QUERY,
   });
 
-  return (
-      <TablePagerBase
+  if (totalRows === undefined || totalRows === null)
+    return null;
+
+  return dataFetchingMode === 'paging'
+  ? (
+      <TablePaging
         {...{
           pageSizeOptions,
           currentPage,
@@ -31,9 +36,11 @@ export const TablePager: FC<ITablePagerProps> = ({ showSizeChanger, showTotalIte
           showTotalItems: !hideTotalItems && showTotalItems,
           setCurrentPage,
           changePageSize,
+          dataFetchingMode,
         }}
       />
-  );
+  )
+  : <TableNoPaging totalRows={totalRows}/>;
 };
 
 export default TablePager;

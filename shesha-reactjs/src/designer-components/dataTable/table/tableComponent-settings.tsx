@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Button, Select, Input } from 'antd';
+import { Form, Button, Select, Input, InputNumber } from 'antd';
 import { ITableComponentBaseProps, ITableComponentProps, RowDroppedMode } from './models';
 import { ColumnsEditorModal } from './columnsEditor/columnsEditorModal';
 import Checkbox from 'antd/lib/checkbox/Checkbox';
@@ -295,6 +295,14 @@ function TableSettings(props: IProps) {
       </Form.Item>
 
       <SectionSeparator title="Layout" />
+
+      <Form.Item name="minHeight" label="Min Height" tooltip="The minimum height of the table (e.g. even when 0 rows). If blank then minimum height is 0.">
+        <InputNumber />
+      </Form.Item>
+      
+      <Form.Item name="maxHeight" label="Max Height" tooltip="The maximum height of the table. If left blank should grow to display all rows, otherwise should allow for vertical scrolling.">
+        <InputNumber />
+      </Form.Item>
 
       <Form.Item name="containerStyle" label="Table container style">
         <CodeEditor
