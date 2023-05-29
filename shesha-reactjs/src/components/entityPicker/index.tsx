@@ -358,6 +358,7 @@ export const EntityPickerEditable = (props: IEntityPickerProps) => {
     <DataTableProvider
       sourceType='Entity'
       entityType={entityType}
+      dataFetchingMode='paging'
     >
       <EntityPickerEditableInner {...props} displayEntityKey={displayEntityKey} />
     </DataTableProvider>

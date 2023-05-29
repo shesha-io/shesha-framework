@@ -1,7 +1,7 @@
 import { LayoutOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
 import FormItem from 'antd/lib/form/FormItem';
-import React, { FC, Fragment, useEffect, useState } from 'react';
+import React, { FC, Fragment, useEffect, useMemo } from 'react';
 import { IToolboxComponent } from 'interfaces';
 import { MetadataProvider, useDataTableStore, useForm } from 'providers';
 import DataTableProvider from 'providers/dataTable';
@@ -10,12 +10,14 @@ import { FormMarkup, IConfigurableFormComponent } from 'providers/form/models';
 import { validateConfigurableComponentSettings } from 'providers/form/utils';
 import ComponentsContainer from 'components/formDesigner/componentsContainer';
 import settingsFormJson from './settingsForm.json';
+import { DataFetchingMode } from 'providers/dataTable/interfaces';
 
 export interface ITableContextComponentProps extends IConfigurableFormComponent {
-  sourceType?: 'Form' | 'Entity' |'Url';
+  sourceType?: 'Form' | 'Entity' | 'Url';
   entityType?: string;
   endpoint?: string;
   components?: IConfigurableFormComponent[]; // If isDynamic we wanna
+  dataFetchingMode?: DataFetchingMode;
   defaultPageSize?: number;
 }
 
@@ -43,26 +45,29 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
       ...prev,
       defaultPageSize: 10
     };
+  }).add<ITableContextComponentProps>(3, prev => {
+    return {
+      ...prev,
+      dataFetchingMode: 'paging',
+    };
   }),
   settingsFormMarkup: settingsForm,
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
 };
 
 export const TableContext: FC<ITableContextComponentProps> = props => {
-  const [table, setTable] = useState(<></>);
   const { entityType, sourceType } = props;
 
-  useEffect(() => {
-    const uniqueKey = `${props.sourceType}_${props.name}_${props.entityType ?? 'empty'}`; // is used just for re-rendering
-    setTable(<TableContextInner key={uniqueKey} {...props} />);
-  }, [props.entityType]);
+  const uniqueKey = useMemo(() => {
+    return `${props.sourceType}_${props.name}_${props.entityType ?? 'empty'}`; // is used just for re-rendering
+  }, [props.sourceType, props.name, props.entityType]);
 
   return sourceType === 'Entity' && entityType ? (
     <MetadataProvider id={props.id} modelType={entityType}>
-      {table}
+      <TableContextInner key={uniqueKey} {...props} />
     </MetadataProvider>
   ) : (
-    table
+    <TableContextInner key={uniqueKey} {...props} />
   );
 };
 
@@ -90,14 +95,15 @@ export const TableContextInner: FC<ITableContextComponentProps> = props => {
     actionOwnerName={name}
     sourceType={props.sourceType}
     initialPageSize={props.defaultPageSize ?? 10}
+    dataFetchingMode={props.dataFetchingMode ?? 'paging'}
   >
     <TableContextAccessor {...props} />
   </DataTableProvider>;
 
   const providerWrapper = sourceType === 'Form'
     ? <FormItem name={props.name}>
-        {provider}
-      </FormItem>
+      {provider}
+    </FormItem>
     : provider;
 
 

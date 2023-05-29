@@ -32,6 +32,8 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   options?: IIndexTableOptions;
   containerStyle?: CSSProperties;
   tableStyle?: CSSProperties;
+  minHeight?: number;
+  maxHeight?: number;
 }
 
 export interface IExtendedModalProps extends ModalProps {
@@ -411,6 +413,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     inlineEditorComponents,
     inlineCreatorComponents,
     inlineDisplayComponents,
+    minHeight: props.minHeight,
+    maxHeight: props.maxHeight,
   };
 
   return (

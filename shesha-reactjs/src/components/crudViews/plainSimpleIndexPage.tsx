@@ -35,6 +35,7 @@ const SimpleIndexPagePlain: FC<ISimpleIndexPageProps> = props => {
       sourceType='Entity'
       entityType={props.entityType}
       configurableColumns={configurableColumns}
+      dataFetchingMode='paging'
     >
       <TableWithControls {...props} />
     </DataTableProvider>

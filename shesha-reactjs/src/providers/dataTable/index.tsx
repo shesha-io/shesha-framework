@@ -34,6 +34,7 @@ import {
   fetchColumnsSuccessSuccessAction,
   setRowDataAction,
   setModelTypeAction,
+  setDataFetchingModeAction,
 } from './actions';
 import {
   IndexColumnFilterOption,
@@ -43,6 +44,7 @@ import {
   ITableFilter,
   IColumnSorting,
   IGetListDataPayload,
+  DataFetchingMode,
 } from './interfaces';
 import { isEqual, sortBy } from 'lodash';
 import { useDebouncedCallback } from 'use-debounce';
@@ -75,6 +77,8 @@ interface IDataTableProviderBaseProps {
 
   initialPageSize?: number;
 
+  dataFetchingMode: DataFetchingMode;
+
   /** Id of the user config, is used for saving of the user settings (sorting, paging etc) to the local storage. */
   userConfigId?: string;
 }
@@ -98,7 +102,9 @@ interface IHasEntityDataSourceConfig extends IUrlDataSourceConfig {
   entityType: string;
 }
 
-type IDataTableProviderProps = IDataTableProviderBaseProps & IHasDataSourceType & (IHasFormDataSourceConfig | IUrlDataSourceConfig | IHasEntityDataSourceConfig);
+type IDataTableProviderProps = IDataTableProviderBaseProps & IHasDataSourceType & (IHasFormDataSourceConfig | IUrlDataSourceConfig | IHasEntityDataSourceConfig) & {
+  
+};
 
 const getTableProviderComponent = (props: IDataTableProviderProps): FC<IDataTableProviderBaseProps> => {
   const { sourceType } = props;
@@ -158,8 +164,8 @@ const getFetchListDataPayload = (state: IDataTableStateContext): IGetListDataPay
 
   const payload: IGetListDataPayload = {
     columns: dataColumns,
-    pageSize: state.selectedPageSize,
-    currentPage: state.currentPage,
+    pageSize: state.dataFetchingMode === 'paging' ? state.selectedPageSize : -1,
+    currentPage: state.dataFetchingMode === 'paging' ? state.currentPage : 1,
     sorting: state.tableSorting,
     quickSearch: state.quickSearch,
     filter: filter,
@@ -183,17 +189,25 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     repository,
     userConfigId,
     modelType,
+    dataFetchingMode,
   } = props;
 
   const [state, dispatch] = useThunkReducer(dataTableReducer, {
     ...DATA_TABLE_CONTEXT_INITIAL_STATE,
     configurableColumns: configurableColumns ?? [],
     selectedPageSize: initialPageSize ?? DATA_TABLE_CONTEXT_INITIAL_STATE.selectedPageSize,
+    dataFetchingMode: dataFetchingMode,
     modelType: modelType,
   });
 
   const { setState: setGlobalState } = useGlobalState();
   const tableIsReady = useRef(false);
+
+  // sync dataFetchingMode
+  useEffect(() => {
+    if (state.dataFetchingMode !== dataFetchingMode)
+      dispatch(setDataFetchingModeAction(dataFetchingMode));
+  }, [dataFetchingMode]);
 
   const [userConfig, setUserConfig] = useLocalStorage<IDataTableUserConfig>(
     userConfigId,
@@ -213,6 +227,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     state.currentPage,
     state.selectedStoredFilterIds,
     state.selectedPageSize,
+    state.dataFetchingMode,
     state.tableConfigLoaded,
     state.columns?.length,
     state.tableSorting,
