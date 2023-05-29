@@ -8,6 +8,7 @@ import RefListType from './types/refList';
 import SpecificationType from './types/specification';
 import { IDictionary } from 'interfaces';
 import { getEvaluateFunc } from './funcs/evaluate';
+import GuidType from './types/guid';
 
 interface TypeModifier extends Partial<Type> {
   operators?: string[];
@@ -33,6 +34,7 @@ const types = {
   entityReference: EntityReferenceType,
   refList: RefListType,
   specification: SpecificationType,
+  guid: GuidType,
 };
 
 const typeModifiers: IDictionary<TypeModifier> = {
