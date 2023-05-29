@@ -215,6 +215,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
         customDeleteUrl={props.customDeleteUrl}
 
         onRowSave={props.onRowSave}
+        onRowSaveSuccess={props.onRowSaveSuccess}
         inlineSaveMode={props.inlineSaveMode}
         inlineEditMode={props.inlineEditMode}
       />

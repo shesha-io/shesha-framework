@@ -49,6 +49,7 @@ export interface IShaDataTableInlineEditableProps {
   customCreateUrl?: string;
   onNewRowInitialize?: string;
   onRowSave?: string;
+  onRowSaveSuccess?: string;
 }
 
 export interface IShaDataTableProps extends ITableRowDragProps, IShaDataTableInlineEditableProps {
@@ -95,3 +96,4 @@ export interface ITableCustomTypesRender<D extends object, V = any> {
 }
 
 export type OnSaveHandler = (data: object, formData: object, globalState: object) => Promise<object>;
+export type OnSaveSuccessHandler = (data: object, formData: object, globalState: object) => void;

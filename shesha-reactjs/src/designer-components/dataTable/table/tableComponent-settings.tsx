@@ -93,6 +93,39 @@ const ROW_SAVE_EXPOSED_VARIABLES = [
   }
 ];
 
+const ROW_SAVED_SUCCESS_EXPOSED_VARIABLES = [
+  {
+    id: nanoid(),
+    name: 'data',
+    description: 'Current row data',
+    type: 'object',
+  },
+  {
+    id: nanoid(),
+    name: 'formData',
+    description: 'Form values',
+    type: 'object',
+  },
+  {
+    id: nanoid(),
+    name: 'globalState',
+    description: 'The global state of the application',
+    type: 'object',
+  },
+  {
+    id: nanoid(),
+    name: 'http',
+    description: 'axios instance used to make http requests',
+    type: 'object',
+  },
+  {
+    id: nanoid(),
+    name: 'moment',
+    description: 'The moment.js object',
+    type: 'object',
+  }  
+];
+
 export interface IProps {
   readOnly: boolean;
   model: ITableComponentProps;
@@ -219,6 +252,24 @@ function TableSettings(props: IProps) {
           type={''}
           description="Allows custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations)."
           exposedVariables={ROW_SAVE_EXPOSED_VARIABLES}
+        />
+      </Form.Item>
+      <Form.Item
+        label="On row save success"
+        name="onRowSaveSuccess"
+        tooltip="Custom business logic to be executed after successfull saving of new/updated row."
+        hidden={canAddInline === 'no' && canEditInline === 'no'}
+      >
+        <CodeEditor
+          id={''}
+          name="onRowSaveSuccess"
+          readOnly={props.readOnly}
+          mode="dialog"
+          label="On row save success"
+          setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
+          type={''}
+          description="Custom business logic to be executed after successfull saving of new/updated row."
+          exposedVariables={ROW_SAVED_SUCCESS_EXPOSED_VARIABLES}
         />
       </Form.Item>
       <Form.Item name="canDeleteInline" label="Can delete inline">
