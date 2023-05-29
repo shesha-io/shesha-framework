@@ -3,7 +3,7 @@ import { Column, SortingRule, TableProps } from 'react-table';
 import {
   LoadingOutlined,
 } from '@ant-design/icons';
-import { DataTableColumn, IShaDataTableProps, OnSaveHandler } from './interfaces';
+import { DataTableColumn, IShaDataTableProps, OnSaveHandler, OnSaveSuccessHandler } from './interfaces';
 import { DataTableFullInstance } from 'providers/dataTable/contexts';
 import { ModalProps } from 'antd/lib/modal';
 import ReactTable from '../reactTable';
@@ -59,6 +59,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   customUpdateUrl,
   customDeleteUrl,
   onRowSave,
+  onRowSaveSuccess,
   ...props
 }) => {
   const store = useDataTableStore();
@@ -233,7 +234,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       .filter(c => c.defaultSorting !== null)
       .map<SortingRule<string>>(c => ({ id: c.id, desc: c.defaultSorting === 1 }));
 
-      // http, moment, setFormData
+  // http, moment, setFormData
   const performOnRowSave = useMemo<OnSaveHandler>(() => {
     if (!onRowSave)
       return data => Promise.resolve(data);
@@ -244,6 +245,16 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       return Promise.resolve(preparedData);
     };
   }, [onRowSave, backendUrl]);
+
+  const performOnRowSaveSuccess = useMemo<OnSaveSuccessHandler>(() => {
+    if (!onRowSaveSuccess)
+      return () => {  /*nop*/ };
+
+    const executer = new Function('data, formData, globalState, http, moment', onRowSaveSuccess);
+    return (data, formData, globalState) => {
+      executer(data, formData, globalState, axiosHttp(backendUrl), moment);
+    };
+  }, [onRowSaveSuccess, backendUrl]);
 
   const updater = (rowIndex: number, rowData: any): Promise<any> => {
     const repository = store.getRepository();
@@ -257,6 +268,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
       return repository.performUpdate(rowIndex, preparedData, options).then(response => {
         setRowData(rowIndex, preparedData/*, response*/);
+        performOnRowSaveSuccess(preparedData, formData ?? {}, globalState);
         return response;
       });
     });
@@ -274,6 +286,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
       return repository.performCreate(0, preparedData, options).then(() => {
         store.refreshTable();
+        performOnRowSaveSuccess(preparedData, formData ?? {}, globalState);
       });
     });
   };
@@ -307,7 +320,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         const dataCol = col as ITableDataColumn;
         const customComponent = componentAccessor(dataCol);
         const componentType = customComponent?.type ?? standardCellComponentTypes.notEditable;
-        if (componentType && componentType !== standardCellComponentTypes.notEditable) {
+        if (componentType && componentType !== standardCellComponentTypes.notEditable && componentType !== standardCellComponentTypes.defaultDisplay) {
           // component found
           const component = toolboxComponents[customComponent.type];
           if (!component) {
