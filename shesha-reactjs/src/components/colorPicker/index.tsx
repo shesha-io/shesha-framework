@@ -3,7 +3,6 @@ import { Popover } from 'antd';
 import { ColorResult, SketchPicker, SketchPickerProps } from 'react-color';
 import './styles/styles.less';
 import { useDeepCompareEffect } from 'react-use';
-import { Omit } from 'react-beautiful-dnd';
 import classNames from 'classnames';
 
 interface IColorPickerProps extends Omit<SketchPickerProps, 'color'> {

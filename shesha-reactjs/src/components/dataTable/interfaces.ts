@@ -5,6 +5,7 @@ import { DataTableFullInstance } from '../../providers/dataTable/contexts';
 import { IAnyObject } from '../../interfaces';
 import { Column, Row, CellProps } from 'react-table';
 import { ProperyDataType } from 'interfaces/metadata';
+import { IConfigurableActionConfiguration } from 'interfaces/configurableAction';
 
 export interface ITableActionColumns {
   icon?: ReactNode;
@@ -49,7 +50,7 @@ export interface IShaDataTableInlineEditableProps {
   customCreateUrl?: string;
   onNewRowInitialize?: string;
   onRowSave?: string;
-  onRowSaveSuccess?: string;
+  onRowSaveSuccessAction?: IConfigurableActionConfiguration;
 }
 
 export interface IShaDataTableProps extends ITableRowDragProps, IShaDataTableInlineEditableProps {
