@@ -158,7 +158,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       ) : isStub ? (
         <div>{renderUploadContent()}</div>
       ) : (
-        <Upload {...props}>{renderUploadContent()}</Upload>
+        <Upload {...props}>{!props.disabled ? renderUploadContent() : null}</Upload>
       )}
 
       {fetchFilesError && (

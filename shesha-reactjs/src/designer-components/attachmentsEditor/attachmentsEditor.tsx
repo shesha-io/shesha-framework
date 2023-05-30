@@ -38,7 +38,9 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
 
     const ownerId = evaluateValue(model.ownerId, { data: data, globalState });
 
+    const readonly = formMode === 'readonly';
     const isEnabledByCondition = executeCustomExpression(model.customEnabled, true, data, globalState);
+    const enabled = !readonly && !model.disabled && isEnabledByCondition;
 
     return (
       <ConfigurableFormItem model={model}>
@@ -54,10 +56,10 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         >
           <CustomFile
             isStub={formMode === 'designer'}
-            allowAdd={!model.disabled && model.allowAdd && isEnabledByCondition}
-            allowDelete={!model.disabled && model.allowDelete && isEnabledByCondition}
-            allowReplace={!model.disabled && model.allowReplace && isEnabledByCondition}
-            allowRename={!model.disabled && model.allowRename && isEnabledByCondition}
+            allowAdd={enabled && model.allowAdd}
+            allowDelete={enabled && model.allowDelete}
+            allowReplace={enabled && model.allowReplace}
+            allowRename={enabled && model.allowRename}
             allowedFileTypes={model.allowedFileTypes}
             maxHeight={model.maxHeight}
           />
