@@ -123,7 +123,7 @@ const ROW_SAVED_SUCCESS_EXPOSED_VARIABLES = [
     name: 'moment',
     description: 'The moment.js object',
     type: 'object',
-  }  
+  }
 ];
 
 export interface IProps {
@@ -254,20 +254,11 @@ function TableSettings(props: IProps) {
           exposedVariables={ROW_SAVE_EXPOSED_VARIABLES}
         />
       </Form.Item>
-      <Form.Item
-        label="On row save success"
-        name="onRowSaveSuccess"
-        tooltip="Custom business logic to be executed after successfull saving of new/updated row."
-        hidden={canAddInline === 'no' && canEditInline === 'no'}
-      >
-        <CodeEditor
-          id={''}
-          name="onRowSaveSuccess"
-          readOnly={props.readOnly}
-          mode="dialog"
-          label="On row save success"
-          setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          type={''}
+      <Form.Item name="onRowSaveSuccessAction" labelCol={{ span: 0 }} wrapperCol={{ span: 24 }} noStyle>
+        <ConfigurableActionConfigurator 
+          editorConfig={null} 
+          level={1} 
+          label="On row save success" 
           description="Custom business logic to be executed after successfull saving of new/updated row."
           exposedVariables={ROW_SAVED_SUCCESS_EXPOSED_VARIABLES}
         />
@@ -299,7 +290,7 @@ function TableSettings(props: IProps) {
       <Form.Item name="minHeight" label="Min Height" tooltip="The minimum height of the table (e.g. even when 0 rows). If blank then minimum height is 0.">
         <InputNumber />
       </Form.Item>
-      
+
       <Form.Item name="maxHeight" label="Max Height" tooltip="The maximum height of the table. If left blank should grow to display all rows, otherwise should allow for vertical scrolling.">
         <InputNumber />
       </Form.Item>

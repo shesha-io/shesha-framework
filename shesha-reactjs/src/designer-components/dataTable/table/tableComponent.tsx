@@ -21,6 +21,7 @@ import { migrateV1toV2 } from './migrations/migrate-v2';
 import moment from 'moment';
 import { useDeepCompareEffect } from 'react-use';
 import { filterVisibility, getOnRowDroppedAction } from './utils';
+import { SheshaActionOwners } from 'providers/configurableActionsDispatcher/models';
 
 const TableComponent: IToolboxComponent<ITableComponentProps> = {
   type: 'datatable',
@@ -68,8 +69,22 @@ const TableComponent: IToolboxComponent<ITableComponentProps> = {
         newRowCapturePosition: 'top',
         newRowInsertPosition: 'top',
         canDeleteInline: 'no',
-      })),
-
+      }))
+      .add<ITableComponentProps>(4, (prev) => ({
+        ...prev,
+        onRowSaveSuccessAction: prev['onRowSaveSuccess'] && typeof (prev['onRowSaveSuccess']) === 'string'
+          ? {
+            actionOwner: SheshaActionOwners.Common,
+            actionName: 'Execute Script',
+            actionArguments: {
+              expression: prev['onRowSaveSuccess'],
+            },
+            handleFail: false,
+            handleSuccess: false,
+          }
+          : null
+      })
+  ),
   settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
     return (
       <TableSettings
@@ -114,8 +129,8 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     const permissibleColumns = isDesignMode
       ? items
       : items
-          ?.filter(({ permissions }) => anyOfPermissionsGranted(permissions || []))
-          .filter(filterVisibility(filterVisibility({ data: formData, globalState })));
+        ?.filter(({ permissions }) => anyOfPermissionsGranted(permissions || []))
+        .filter(filterVisibility(filterVisibility({ data: formData, globalState })));
 
     registerConfigurableColumns(id, permissibleColumns);
   }, [items, isDesignMode]);
@@ -202,7 +217,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
         onRowDropped={handleOnRowDropped}
         tableStyle={getStyle(tableStyle, formData, globalState)}
         containerStyle={getStyle(containerStyle, formData, globalState)}
-        
+
         canAddInline={props.canAddInline}
         customCreateUrl={props.customCreateUrl}
         newRowCapturePosition={props.newRowCapturePosition}
@@ -215,7 +230,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
         customDeleteUrl={props.customDeleteUrl}
 
         onRowSave={props.onRowSave}
-        onRowSaveSuccess={props.onRowSaveSuccess}
+        onRowSaveSuccessAction={props.onRowSaveSuccessAction}
         inlineSaveMode={props.inlineSaveMode}
         inlineEditMode={props.inlineEditMode}
         minHeight={props.minHeight}

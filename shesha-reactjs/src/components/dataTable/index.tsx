@@ -9,7 +9,7 @@ import { ModalProps } from 'antd/lib/modal';
 import ReactTable from '../reactTable';
 import { removeUndefinedProperties } from 'utils/array';
 import { ValidationErrors } from '..';
-import { IFlatComponentsStructure, ROOT_COMPONENT_KEY, useDataTableStore, useForm, useGlobalState, useMetadata, useSheshaApplication } from 'providers';
+import { IFlatComponentsStructure, ROOT_COMPONENT_KEY, useConfigurableActionDispatcher, useDataTableStore, useForm, useGlobalState, useMetadata, useSheshaApplication } from 'providers';
 import { camelcaseDotNotation, toCamelCase } from 'utils/string';
 import { IReactTableProps, RowDataInitializer } from '../reactTable/interfaces';
 import { usePrevious } from 'react-use';
@@ -61,7 +61,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   customUpdateUrl,
   customDeleteUrl,
   onRowSave,
-  onRowSaveSuccess,
+  onRowSaveSuccessAction: onRowSaveSuccess,
   ...props
 }) => {
   const store = useDataTableStore();
@@ -248,13 +248,24 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     };
   }, [onRowSave, backendUrl]);
 
+  const { executeAction } = useConfigurableActionDispatcher();
   const performOnRowSaveSuccess = useMemo<OnSaveSuccessHandler>(() => {
     if (!onRowSaveSuccess)
       return () => {  /*nop*/ };
 
-    const executer = new Function('data, formData, globalState, http, moment', onRowSaveSuccess);
     return (data, formData, globalState) => {
-      executer(data, formData, globalState, axiosHttp(backendUrl), moment);
+      const evaluationContext = {
+        data: data, 
+        formData: formData, 
+        globalState: globalState, 
+        http: axiosHttp(backendUrl), 
+        moment: moment
+      };
+      // execute the action
+      executeAction({
+        actionConfiguration: onRowSaveSuccess,
+        argumentsEvaluationContext: evaluationContext
+      });
     };
   }, [onRowSaveSuccess, backendUrl]);
 

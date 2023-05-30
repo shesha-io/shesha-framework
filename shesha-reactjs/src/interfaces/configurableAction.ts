@@ -1,3 +1,4 @@
+import { ICodeExposedVariable } from "components/codeVariablesTable";
 import { ReactNode } from "react";
 import { FormMarkup, GenericDictionary } from "../providers/form/models";
 
@@ -16,7 +17,14 @@ export interface ISettingsFormFactoryArgs<TModel = IConfigurableActionArguments>
   onCancel: () => void;
   onValuesChange?: (changedValues: any, values: TModel) => void;
   readOnly?: boolean;
+  exposedVariables?: ICodeExposedVariable[];
 }
+
+export interface FormMarkupFactoryArgs {
+  exposedVariables?: ICodeExposedVariable[];
+}
+export type FormMarkupFactory = (factoryArgs: FormMarkupFactoryArgs) => FormMarkup;
+
 
 export type IConfigurableActionArgumentsFormFactory<TModel = IConfigurableActionArguments> = (
   props: ISettingsFormFactoryArgs<TModel>
@@ -64,7 +72,7 @@ export interface IConfigurableActionDescriptor<TArguments = IConfigurableActionA
   /**
    * Markup of the arguments editor. Applied when the @argumentsFormFactory is not specified, in this case you can render arguments for in the designer itself
    */
-  argumentsFormMarkup?: FormMarkup;
+  argumentsFormMarkup?: FormMarkup | FormMarkupFactory;
 
   /**
    * Argument evaluation function. Default implementation is used when not specified
