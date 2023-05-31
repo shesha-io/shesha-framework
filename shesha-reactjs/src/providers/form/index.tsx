@@ -88,6 +88,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   refetchData,
   isActionsOwner,
   propertyFilter,
+  ...props
 }) => {
   const toolboxComponents = useFormDesignerComponents();
 
@@ -326,6 +327,9 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     dispatch((dispatchThunk, getState) => {
       dispatchThunk(setFormDataAction(payload));
       const newState = getState();
+
+      if (typeof props.onValuesChange === 'function')
+        props.onValuesChange(payload.values, newState.formData);
 
       // Update visible components. Note: debounced version is used to improve performance and prevent unneeded re-rendering
 

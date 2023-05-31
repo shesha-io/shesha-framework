@@ -1,7 +1,8 @@
 import React, { FC, ReactNode, useMemo } from 'react';
 import { FormRawMarkup, IFlatComponentsStructure, IFormSettings } from '../form/models';
-import { componentsTreeToFlatStructure, getComponentsFromMarkup, upgradeComponents } from '../form/utils';
+import { componentsTreeToFlatStructure, getComponentsFromMarkup, updateSettingsComponents, upgradeComponents } from '../form/utils';
 import { useFormDesignerComponents } from '../form/hooks';
+import { nanoid } from 'nanoid/non-secure';
 
 export interface IFormMarkupConverterProps {
     markup: FormRawMarkup;
@@ -17,12 +18,14 @@ const FormMarkupConverter: FC<IFormMarkupConverterProps> = ({
     const designerComponents = useFormDesignerComponents();
 
     const flatComponents = useMemo<IFlatComponentsStructure>(() => {
-        const components = getComponentsFromMarkup(markup);
+        let components = getComponentsFromMarkup(markup);
+        components = updateSettingsComponents(designerComponents, components);
         const newFlatComponents = componentsTreeToFlatStructure(designerComponents, components);
         
         // migrate components to last version
         upgradeComponents(designerComponents, formSettings, newFlatComponents);
         
+        newFlatComponents['id'] = nanoid();
         return newFlatComponents;
     }, [markup]);
 

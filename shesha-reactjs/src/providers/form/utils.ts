@@ -48,6 +48,66 @@ import tableViewMarkup from './defaults/markups/tableView.json';
 import { CSSProperties } from 'react';
 import camelcase from 'camelcase';
 import { Migrator } from '../../utils/fluentMigrator/migrator';
+import { IContainerComponentProps } from 'components/formDesigner/components/container/interfaces';
+
+export const updateSettingsComponents = (
+  toolboxComponents: IToolboxComponents,
+  components: IConfigurableFormComponent[]) => {
+    const processComponent = (component: IConfigurableFormComponent) => {
+
+      const newComponent: IConfigurableFormComponent = {...component};
+
+      if (component.type?.startsWith('setting.')) {
+        newComponent.type = 'setting';
+        newComponent.id = nanoid();
+        newComponent.label = newComponent.label + ' setting';
+      
+        if (Array.isArray(component['components']) && component['components'].length > 0) {
+          newComponent['components'] = [{
+            ...component,
+            //hideLabel: true,
+            
+            type: component.type.replace('setting.', ''),
+            components: component['components'].map(c => {
+              return processComponent(c);
+            }),
+            parentId: newComponent.id
+          }] as IContainerComponentProps[];
+        } else {
+          newComponent['components'] = [{
+            ...component,
+            type: component.type.replace('setting.', ''),
+            parentId: newComponent.id
+          }] as IConfigurableFormComponent[];
+        }
+        return newComponent;
+      } else {
+        const componentRegistration = toolboxComponents[component.type];
+  
+        // custom containers
+        const customContainerNames = componentRegistration?.customContainerNames || [];
+  
+        customContainerNames.forEach(subContainer => {
+          if (Array.isArray(component[subContainer]?.components) && component[subContainer]?.components.length > 0) {
+            newComponent[subContainer].components = component[subContainer]?.components.map(c => {
+              return processComponent(c);
+            })
+          }
+        });
+        if (Array.isArray(component['components']) && component['components'].length > 0) {
+          newComponent['components'] = component['components'].map(c => {
+            return processComponent(c);
+          })
+        }
+        return newComponent;
+      }
+    }
+
+    return components.map(c => {
+      return processComponent(c);
+    });
+}
+
 
 /**
  * Convert components tree to flat structure.
