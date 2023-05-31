@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Result, Skeleton } from 'antd';
+import { Form, Result, Skeleton } from 'antd';
 import { FormProvider } from '../../providers/form';
 import { FormIdentifier } from '../../providers/form/models';
 import { FormPersisterProvider } from '../../providers/formPersisterProvider';
@@ -16,6 +16,8 @@ export interface IFormDesignerProps {
 }
 
 export const FormDesigner: FC<IFormDesignerProps> = ({ formId }) => {
+  const [form] = Form.useForm();
+  
   return (
     <FormPersisterProvider formId={formId} skipCache={true}>
       <FormPersisterStateConsumer>
@@ -40,6 +42,7 @@ export const FormDesigner: FC<IFormDesignerProps> = ({ formId }) => {
                           flatComponents={{ allComponents: designerState.allComponents, componentRelations: designerState.componentRelations }}
                           formSettings={designerState.formSettings}
                           isActionsOwner={true}
+                          form={form}
                         >
                           <FormDesignerRenderer />
                         </FormProvider>

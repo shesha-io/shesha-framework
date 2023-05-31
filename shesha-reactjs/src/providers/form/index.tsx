@@ -453,7 +453,7 @@ function useFormActions(require: boolean = true) {
   return context;
 }
 
-function useForm(require: boolean = true) {
+function useForm(require: boolean = true): ConfigurableFormInstance {
   const actionsContext = useFormActions(require);
   const stateContext = useFormState(require);
 

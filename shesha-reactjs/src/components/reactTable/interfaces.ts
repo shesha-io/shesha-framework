@@ -17,10 +17,14 @@ export interface IColumnResizing {
   isResizingColumn?: string;
 }
 
+export interface OnRowsReorderedArgs {
+  reorderedRows: object[];
+}
+
 export interface ITableRowDragProps {
   allowRowDragAndDrop?: boolean;
 
-  onRowDropped?: (row: any, oldIndex: number, newIndex: number) => void;
+  onRowsReordered?: (payload: OnRowsReorderedArgs) => Promise<void>;
 }
 
 export type RowDataInitializer = () => Promise<object>;

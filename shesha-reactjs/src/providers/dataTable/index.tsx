@@ -61,6 +61,8 @@ import { advancedFilter2JsonLogic, getTableDataColumns } from './utils';
 import { useLocalStorage } from 'hooks';
 import { withNullRepository } from './repository/nullRepository';
 import { withUrlRepository } from './repository/urlRepository';
+import { useForm } from 'providers/form';
+import { ConfigurableFormInstance } from 'interfaces';
 
 interface IDataTableProviderBaseProps {
   /** Configurable columns. Is used in pair with entityType  */
@@ -91,7 +93,7 @@ interface IHasDataSourceType {
   sourceType: 'Form' | 'Entity' | 'Url';
 }
 interface IHasFormDataSourceConfig {
-  value?: any;
+  propertyName: string;
 }
 interface IUrlDataSourceConfig {
   getDataPath?: string;
@@ -106,7 +108,7 @@ type IDataTableProviderProps = IDataTableProviderBaseProps & IHasDataSourceType 
   
 };
 
-const getTableProviderComponent = (props: IDataTableProviderProps): FC<IDataTableProviderBaseProps> => {
+const getTableProviderComponent = (props: IDataTableProviderProps, formInstance: ConfigurableFormInstance): FC<IDataTableProviderBaseProps> => {
   const { sourceType } = props;
   switch (sourceType) {
     case 'Entity': {
@@ -114,8 +116,14 @@ const getTableProviderComponent = (props: IDataTableProviderProps): FC<IDataTabl
       return withBackendRepository(DataTableProviderWithRepository, { entityType, getListUrl: getDataPath });
     };
     case 'Form': {
-      const { value } = props as IHasFormDataSourceConfig;
-      return withInMemoryRepository(DataTableProviderWithRepository, { value });
+      const { propertyName } = props as IHasFormDataSourceConfig;
+      
+      const valueAccessor = () => formInstance.form?.getFieldValue(propertyName);
+      const onChange = (newValue: object[]) => {
+        if (formInstance.form)
+          formInstance.form.setFieldValue(propertyName, newValue);
+      };
+      return withInMemoryRepository(DataTableProviderWithRepository, { valueAccessor, onChange });
     };
     case 'Url':
       const { getDataPath } = props as IHasEntityDataSourceConfig;
@@ -174,7 +182,9 @@ const getFetchListDataPayload = (state: IDataTableStateContext): IGetListDataPay
 };
 
 const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = (props) => {
-  const component = getTableProviderComponent(props);
+  const form = useForm(false);
+  
+  const component = getTableProviderComponent(props, form);
 
   return <>{component(props)}</>;
 };

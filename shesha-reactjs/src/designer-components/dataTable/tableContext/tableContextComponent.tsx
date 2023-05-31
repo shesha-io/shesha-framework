@@ -91,6 +91,7 @@ export const TableContextInner: FC<ITableContextComponentProps> = props => {
     userConfigId={props.id}
     entityType={entityType}
     getDataPath={endpoint}
+    propertyName={name}
     actionOwnerId={id}
     actionOwnerName={name}
     sourceType={props.sourceType}

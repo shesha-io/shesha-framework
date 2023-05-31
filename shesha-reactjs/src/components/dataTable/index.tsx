@@ -52,7 +52,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   onExportError,
   onFetchDataSuccess,
   onSelectedIdsChanged,
-  onRowDropped,
+  onRowsReordered,
   allowRowDragAndDrop,
   options,
   containerStyle,
@@ -403,7 +403,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         <LoadingOutlined /> loading...
       </span>
     ),
-    onRowDropped,
+    onRowsReordered,
     allowRowDragAndDrop,
     containerStyle,
     tableStyle,

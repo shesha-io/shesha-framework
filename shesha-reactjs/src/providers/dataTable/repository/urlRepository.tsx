@@ -7,7 +7,7 @@ import React, { ComponentType, useMemo } from "react";
 import { FC } from "react";
 import { camelcaseDotNotation } from "utils/string";
 import { DataTableColumnDto, IGetDataFromUrlPayload, IGetListDataPayload, ITableDataColumn, ITableDataInternalResponse, ITableDataResponse } from "../interfaces";
-import { IRepository, IHasRepository } from "./interfaces";
+import { IRepository, IHasRepository, RowsReorderPayload } from "./interfaces";
 import { convertDotNotationPropertiesToGraphQL } from "providers/form/utils";
 import { IConfigurableColumnsProps } from "providers/datatableColumnsConfigurator/models";
 import { IMetadataDispatcherActionsContext } from "providers/metadataDispatcher/contexts";
@@ -129,9 +129,14 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
         return Promise.resolve();
     };
 
+    const reorder = (_payload: RowsReorderPayload) => {
+        return Promise.reject(`Reordering is not supported by the repository '${UrlRepositoryType}'`);
+    };
+
     const repository: IUrlRepository = {
         repositoryType: UrlRepositoryType,
         fetch,
+        reorder,
         exportToExcel,
         prepareColumns,
         performCreate,
