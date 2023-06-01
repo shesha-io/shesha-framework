@@ -8,7 +8,7 @@ using Shesha.Users.Dto;
 
 namespace Shesha.Users
 {
-    public interface IUserAppService : IAsyncCrudAppService<UserDto, long, PagedUserResultRequestDto, CreateUserDto, UpdateUserDto>
+    public interface IUserAppService : IAsyncCrudAppService<UserDto, long, PagedUserResultRequestDto, CreateUserDto, UserDto>
     {
         Task<ListResultDto<RoleDto>> GetRoles();
 
