@@ -114,6 +114,18 @@ namespace Shesha.FluentMigrator
                 .WithDeletionAuditColumns();
         }
 
+        public static ICreateTableColumnOptionOrWithColumnSyntax WithFullAuditedEntityWithExternalSyncColumns(this ICreateTableWithColumnSyntax table)
+        {
+            return table
+                .WithFullAuditColumns()
+                .WithColumn(DatabaseConsts.ExtSysFirstSyncDate).AsDateTime().Nullable()
+                .WithColumn(DatabaseConsts.ExtSysId).AsString(50).Nullable()
+                .WithColumn(DatabaseConsts.ExtSysLastSyncDate).AsDateTime().Nullable()
+                .WithColumn(DatabaseConsts.ExtSysSource).AsString(50).Nullable()
+                .WithColumn(DatabaseConsts.ExtSysSyncError).AsStringMax().Nullable()
+                .WithColumn(DatabaseConsts.ExtSysSyncStatusLkp).AsInt32().Nullable();
+        }
+
         /// <summary>
         /// Adds full auditing fields and tenant ID to a table. See <see cref="FullPowerEntity"/>.
         /// </summary>
