@@ -72,7 +72,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
 
       return {
         ...prev,
-        //components: [{ ...header }, { ...content }],
+        components: undefined,
         header,
         content,
         collapsible: 'icon'

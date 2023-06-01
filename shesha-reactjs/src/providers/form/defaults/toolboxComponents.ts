@@ -85,6 +85,7 @@ import { IToolboxComponentGroup } from '../../../interfaces/formDesigner';
 import TimelineComponent from 'components/formDesigner/components/timeline/timeline';
 import DataSource from 'components/formDesigner/components/dataSource/dataSourceComponent';
 import { ComponentSelectorComponent } from 'designer-components';
+import SettingsComponent from 'designer-components/_settings/settingsComponent';
 
 export const ToolboxComponents: IToolboxComponentGroup[] = [
   {
@@ -193,6 +194,11 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
     name: 'Legacy',
     components: [Paragraph, Title],
   },
+  {
+    visible: false,
+    name: 'Settings',
+    components: [SettingsComponent]
+  }
 ];
 
 export default ToolboxComponents;

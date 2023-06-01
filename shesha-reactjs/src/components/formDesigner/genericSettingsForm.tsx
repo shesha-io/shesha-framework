@@ -4,7 +4,7 @@ import { ConfigurableForm } from '../../components';
 import { IConfigurableFormComponent, FormMarkup } from '../../providers/form/models';
 import { DEFAULT_FORM_LAYOUT_SETTINGS, IFormLayoutSettings, ISettingsFormInstance, IToolboxComponent } from '../../interfaces';
 import { IPropertyMetadata } from '../../interfaces/metadata';
-import { listComponentToModelMetadata } from '../../providers/form/utils';
+import { convertToMarkupWithSettings, listComponentToModelMetadata } from '../../providers/form/utils';
 
 export interface IProps<TModel extends IConfigurableFormComponent> {
   readonly: boolean;
@@ -63,6 +63,8 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
       reset: () => form.resetFields(),
     };
 
+  const markupWithSettings = convertToMarkupWithSettings(markup, true);
+
   return (
     <ConfigurableForm
       labelCol={layoutSettings?.labelCol}
@@ -72,7 +74,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
       mode={readonly ? "readonly" : "edit"}
       form={form}
       onFinish={onSave}
-      markup={markup}
+      markup={markupWithSettings}
       initialValues={model}
       onValuesChange={onValuesChange}
       actions={{

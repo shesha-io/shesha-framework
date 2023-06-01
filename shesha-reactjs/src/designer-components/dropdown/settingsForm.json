@@ -482,7 +482,10 @@
             "name": "dataSourceUrl",
             "parentId": "PSXX7u5GWT0W8RXnVW3Ao",
             "label": "Data Source Url",
-            "customVisibility": "return data.dataSourceType === 'url'",
+            "hidden_setting": {
+              "code": "return data.dataSourceType !== 'url'",
+              "mode": "code"
+            },
             "version": 0,
             "textType": "text"
           },
@@ -496,7 +499,10 @@
             "labelName": "label",
             "valueTitle": "Value",
             "valueName": "value",
-            "customVisibility": "return data.dataSourceType === 'values'"
+            "hidden_setting": {
+              "code": "return data.dataSourceType !== 'values'",
+              "mode": "code"
+            }
           }
         ]
       },

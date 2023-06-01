@@ -14,6 +14,7 @@ import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
 import { axiosHttp } from '../../utils/fetchers';
 import moment from 'moment';
 import { ITextFieldComponentProps, TextType } from './interfaces';
+import { migrateDisabled, migrateHidden } from 'designer-components/_settings/utils';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -98,7 +99,15 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     textType: 'text',
     ...model,
   }),
-  migrator: (m) => m.add<ITextFieldComponentProps>(0, (prev) => ({ ...prev, textType: 'text' })),
+  migrator: (m) => m
+    .add<ITextFieldComponentProps>(0, (prev) => ({ ...prev, textType: 'text' }))
+    .add<ITextFieldComponentProps>(1, (prev) => {
+      const newModel = {...prev};
+      migrateHidden(newModel);
+      migrateDisabled(newModel);
+      return newModel;
+    })
+  ,
   linkToModelMetadata: (model, metadata): ITextFieldComponentProps => {
     return {
       ...model,

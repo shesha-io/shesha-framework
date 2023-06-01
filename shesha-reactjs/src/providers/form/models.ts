@@ -19,6 +19,14 @@ export type LabelAlign = 'left' | 'right';
 
 export type VisibilityType = 'Yes' | 'No' | 'Removed';
 
+export type PropertySettingMode = 'value' | 'code';
+
+export interface IPropertySetting {
+  value?: any;
+  mode?: PropertySettingMode;
+  code?: string;
+}
+
 /**
  * Component container
  */
@@ -94,10 +102,13 @@ export interface IComponentVisibilityProps {
   /** Hidden field is still a part of the form but not visible on it */
   hidden?: boolean;
 
+  hidden_setting?: IPropertySetting;
+
   /** Add an enhanced Visibility property to cater for the 3 options Yes (To display both to user and payload) No (To only display on the payload)  Removed (To remove from both user and payload) */
   visibility?: VisibilityType;
 
   /** Custom visibility code */
+  /** @deprecated Use hidden_setting instead */
   customVisibility?: string;
 }
 
@@ -122,11 +133,13 @@ export interface IConfigurableFormComponent extends
   validate?: IComponentValidationRules;
 
   disabled?: boolean; // todo: move to the model level
+  disabled_setting?: IPropertySetting;
 
   /** Whether the component is read-only */
   readOnly?: boolean;
 
   /** Custom visibility code */
+  /** @deprecated Use disabled_setting instead */
   customEnabled?: string;
 
   /** Default value of the field */
@@ -330,6 +343,9 @@ export interface IFormSettings {
   onInitialized?: string;
   onUpdate?: string;
   initialValues?: IKeyValue[];
+
+  /** if true then need to update components structure for using Setting component */
+  isSettingsForm?: boolean;
 }
 
 /** Default form settings */

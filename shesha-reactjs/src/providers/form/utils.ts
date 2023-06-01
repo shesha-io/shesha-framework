@@ -48,66 +48,6 @@ import tableViewMarkup from './defaults/markups/tableView.json';
 import { CSSProperties } from 'react';
 import camelcase from 'camelcase';
 import { Migrator } from '../../utils/fluentMigrator/migrator';
-import { IContainerComponentProps } from 'components/formDesigner/components/container/interfaces';
-
-export const updateSettingsComponents = (
-  toolboxComponents: IToolboxComponents,
-  components: IConfigurableFormComponent[]) => {
-    const processComponent = (component: IConfigurableFormComponent) => {
-
-      const newComponent: IConfigurableFormComponent = {...component};
-
-      if (component.type?.startsWith('setting.')) {
-        newComponent.type = 'setting';
-        newComponent.id = nanoid();
-        newComponent.label = newComponent.label + ' setting';
-      
-        if (Array.isArray(component['components']) && component['components'].length > 0) {
-          newComponent['components'] = [{
-            ...component,
-            //hideLabel: true,
-            
-            type: component.type.replace('setting.', ''),
-            components: component['components'].map(c => {
-              return processComponent(c);
-            }),
-            parentId: newComponent.id
-          }] as IContainerComponentProps[];
-        } else {
-          newComponent['components'] = [{
-            ...component,
-            type: component.type.replace('setting.', ''),
-            parentId: newComponent.id
-          }] as IConfigurableFormComponent[];
-        }
-        return newComponent;
-      } else {
-        const componentRegistration = toolboxComponents[component.type];
-  
-        // custom containers
-        const customContainerNames = componentRegistration?.customContainerNames || [];
-  
-        customContainerNames.forEach(subContainer => {
-          if (Array.isArray(component[subContainer]?.components) && component[subContainer]?.components.length > 0) {
-            newComponent[subContainer].components = component[subContainer]?.components.map(c => {
-              return processComponent(c);
-            })
-          }
-        });
-        if (Array.isArray(component['components']) && component['components'].length > 0) {
-          newComponent['components'] = component['components'].map(c => {
-            return processComponent(c);
-          })
-        }
-        return newComponent;
-      }
-    }
-
-    return components.map(c => {
-      return processComponent(c);
-    });
-}
-
 
 /**
  * Convert components tree to flat structure.
@@ -288,16 +228,19 @@ export const componentsFlatStructureToTree = (
   return tree;
 };
 
-export const getCustomVisibilityFunc = ({ customVisibility, name }: IConfigurableFormComponent) => {
-  if (customVisibility) {
+export const getCustomVisibilityFunc = ({ customVisibility, hidden_setting, name }: IConfigurableFormComponent) => {
+  const inverse = hidden_setting?.mode === 'code' && Boolean(hidden_setting?.code);
+  const f = inverse ? hidden_setting.code : customVisibility;
+  if (Boolean(f)) {
     try {
       /* tslint:disable:function-constructor */
 
-      const customVisibilityExecutor = new Function('value, data, globalState, formMode', customVisibility);
+      const customVisibilityExecutor = new Function('value, data, globalState, formMode', f);
 
       const getIsVisible = (data = {}, globalState = {}, formMode) => {
         try {
-          return customVisibilityExecutor(data?.[name], data, globalState, formMode);
+          const result = customVisibilityExecutor(data?.[name], data, globalState, formMode);
+          return inverse ? !result : result;
         } catch (e) {
           console.warn(`Custom Visibility of field ${name} throws exception: ${e}`);
           return true;
@@ -313,14 +256,17 @@ export const getCustomVisibilityFunc = ({ customVisibility, name }: IConfigurabl
   } else return () => true;
 };
 
-export const getCustomEnabledFunc = ({ customEnabled, name }: IConfigurableFormComponent) => {
-  if (customEnabled) {
+export const getCustomEnabledFunc = ({ customEnabled, disabled_setting, name }: IConfigurableFormComponent) => {
+  const inverse = disabled_setting?.mode === 'code' && Boolean(disabled_setting?.code);
+  const f = inverse ? disabled_setting.code : customEnabled;
+  if (Boolean(f)) {
     try {
-      const customEnabledExecutor = new Function('value, data, globalState, formMode', customEnabled);
+      const customEnabledExecutor = new Function('value, data, globalState, formMode', f);
 
       const getIsEnabled = (data = {}, globalState = {}, formMode) => {
         try {
-          return customEnabledExecutor(data?.[name], data, globalState, formMode);
+          const result = customEnabledExecutor(data?.[name], data, globalState, formMode);
+          return inverse ? !result : result;
         } catch (e) {
           console.error(`Custom Enabled of field ${name} throws exception: ${e}`);
           return true;
@@ -1293,13 +1239,28 @@ export const asFormFullName = (formId: FormIdentifier): FormFullName | undefined
   return formId && Boolean((formId as FormFullName)?.name) ? (formId as FormFullName) : undefined;
 };
 
-export const convertToMarkupWithSettings = (markup: FormMarkup): FormMarkupWithSettings => {
+export const convertToMarkupWithSettings = (markup: FormMarkup, isSettingsForm?: boolean): FormMarkupWithSettings => {
   if (!markup) return null;
   const result = markup as FormMarkupWithSettings;
-  if (result?.components && result.formSettings) return result;
-  if (Array.isArray(markup)) return { components: markup, formSettings: DEFAULT_FORM_SETTINGS };
+  if (result?.components && result.formSettings)
+    if (typeof isSettingsForm === 'undefined')
+      return result;
+    else
+      return {
+        ...result,
+        formSettings: {
+          ...result.formSettings,
+          isSettingsForm: 
+            isSettingsForm === true 
+              ? true 
+              : isSettingsForm === false 
+                ? false 
+                : result.formSettings.isSettingsForm
+        }
+      };
+  if (Array.isArray(markup)) return { components: markup, formSettings: {...DEFAULT_FORM_SETTINGS, isSettingsForm} };
 
-  return { components: [], formSettings: DEFAULT_FORM_SETTINGS };
+  return { components: [], formSettings: {...DEFAULT_FORM_SETTINGS, isSettingsForm} };
 };
 
 const evaluateRecursive = (data: any, evaluationContext: GenericDictionary): any => {
