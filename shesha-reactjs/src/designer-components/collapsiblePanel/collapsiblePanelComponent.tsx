@@ -23,61 +23,72 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
 
     if (isComponentHidden(model)) return null;
 
-    if (model.hideWhenEmpty && formMode !== 'designer'){
+    if (model.hideWhenEmpty && formMode !== 'designer') {
       const childsVisible = hasVisibleChilds(model.content.id);
-      if (!childsVisible)
-        return null;
+      if (!childsVisible) return null;
     }
 
-    const headerComponents = model?.header.components?.map(c => ({ ...c, readOnly: model?.readOnly })) ?? [];
-    const extra = headerComponents?.length > 0 || formMode === 'designer'
-      ? <ComponentsContainer containerId={model.header.id} direction='horizontal' dynamicComponents={model?.isDynamic ? headerComponents : []} />
-      : null;
+    const headerComponents = model?.header?.components?.map((c) => ({ ...c, readOnly: model?.readOnly })) ?? [];
+
+    const extra =
+      headerComponents?.length > 0 || formMode === 'designer' ? (
+        <ComponentsContainer
+          containerId={model.header.id}
+          direction="horizontal"
+          dynamicComponents={model?.isDynamic ? headerComponents : []}
+        />
+      ) : null;
 
     return (
       <CollapsiblePanel
         header={label}
-        expandIconPosition={expandIconPosition !== 'hide' ? expandIconPosition as ExpandIconPosition : 'left'}
+        expandIconPosition={expandIconPosition !== 'hide' ? (expandIconPosition as ExpandIconPosition) : 'left'}
         collapsedByDefault={collapsedByDefault}
         extra={extra}
-        collapsible={collapsible === 'header' ? 'header' : 'icon'} showArrow={collapsible !== 'disabled' && expandIconPosition !== 'hide'}
+        collapsible={collapsible === 'header' ? 'header' : 'icon'}
+        showArrow={collapsible !== 'disabled' && expandIconPosition !== 'hide'}
         ghost={ghost}
       >
         <ComponentsContainer
           containerId={model.content.id}
-          dynamicComponents={model?.isDynamic ? model?.content.components?.map(c => ({ ...c, readOnly: model?.readOnly })) : []}
+          dynamicComponents={
+            model?.isDynamic ? model?.content.components?.map((c) => ({ ...c, readOnly: model?.readOnly })) : []
+          }
         />
       </CollapsiblePanel>
     );
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
-  migrator: m => m.add<ICollapsiblePanelComponentPropsV0>(0, prev => {
-    return {
-      ...prev,
-      expandIconPosition: 'right',
-    };
-  })
-    .add<ICollapsiblePanelComponentProps>(1, (prev, struct) => {
-      const header = { id: nanoid(), components: [] };
-      const content = { id: nanoid(), components: [] };
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  migrator: (m) =>
+    m
+      .add<ICollapsiblePanelComponentPropsV0>(0, (prev) => {
+        return {
+          ...prev,
+          expandIconPosition: 'right',
+        };
+      })
+      .add<ICollapsiblePanelComponentProps>(1, (prev, struct) => {
+        const header = { id: nanoid(), components: [] };
+        const content = { id: nanoid(), components: [] };
 
-      delete (struct.flatStructure.componentRelations[struct.componentId]);
-      struct.flatStructure.componentRelations[content.id] = [];
-      content.components = prev.components?.map(x => {
-        struct.flatStructure.allComponents[x.id].parentId = content.id;
-        struct.flatStructure.componentRelations[content.id].push(x.id);
-        return { ...x, parentId: content.id };
-      }) ?? [];
+        delete struct.flatStructure.componentRelations[struct.componentId];
+        struct.flatStructure.componentRelations[content.id] = [];
+        content.components =
+          prev.components?.map((x) => {
+            struct.flatStructure.allComponents[x.id].parentId = content.id;
+            struct.flatStructure.componentRelations[content.id].push(x.id);
+            return { ...x, parentId: content.id };
+          }) ?? [];
 
-      return {
-        ...prev,
-        //components: [{ ...header }, { ...content }],
-        header,
-        content,
-        collapsible: 'icon'
-      };
-    }),
+        return {
+          ...prev,
+          //components: [{ ...header }, { ...content }],
+          header,
+          content,
+          collapsible: 'icon',
+        };
+      }),
   customContainerNames: ['header', 'content'],
 };
 
