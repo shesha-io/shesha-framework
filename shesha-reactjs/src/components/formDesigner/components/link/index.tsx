@@ -5,7 +5,7 @@ import { LinkOutlined } from '@ant-design/icons';
 import { evaluateString, getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import { useForm, useFormData } from '../../../../providers';
 import settingsFormJson from './settingsForm.json';
-import ComponentsContainer from '../../componentsContainer';
+import ComponentsContainer from '../../containers/componentsContainer';
 import { AlignItems, JustifyContent, JustifyItems } from '../container/interfaces';
 import { ContainerDirection } from '../../common/interfaces';
 

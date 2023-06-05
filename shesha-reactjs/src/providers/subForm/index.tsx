@@ -11,6 +11,7 @@ import {
   fetchDataRequestAction,
   fetchDataSuccessAction,
   fetchDataErrorAction,
+  IPersistedFormPropsWithComponents,
 } from './actions';
 import { ISubFormProps } from './interfaces';
 import { ColProps, message, notification } from 'antd';
@@ -22,17 +23,18 @@ import { EntityAjaxResponse } from 'pages/dynamic/interfaces';
 import { UseFormConfigurationArgs } from '../form/api';
 import { useConfigurableAction } from '../configurableActionsDispatcher';
 import { useConfigurationItemsLoader } from '../configurationItemsLoader';
-import { executeScript, IAnyObject, QueryStringParams, useAppConfigurator, useSheshaApplication } from '../..';
+import { componentsFlatStructureToTree, componentsTreeToFlatStructure, executeScript, IAnyObject, QueryStringParams, upgradeComponents, useAppConfigurator, useSheshaApplication } from '../..';
 import * as RestfulShesha from 'utils/fetchers';
 import { useModelApiHelper } from 'components/configurableForm/useActionEndpoint';
 import { StandardEntityActions } from 'interfaces/metadata';
+import { useFormDesignerComponents } from 'providers/form/hooks';
 
 export interface SubFormProviderProps extends Omit<ISubFormProps, 'name' | 'value'> {
   actionsOwnerId?: string;
   actionOwnerName?: string;
   name?: string;
   markup?: FormMarkupWithSettings;
-  value?: string | { id: string; [key: string]: any };
+  value?: string | { id: string;[key: string]: any };
 }
 
 interface IFormLoadingState {
@@ -122,17 +124,17 @@ const SubFormProvider: FC<PropsWithChildren<SubFormProviderProps>> = ({
     if (!Boolean(internalEntityType)) {
       if (Boolean(entityType)) {
         setInternalEntityType(entityType);
-      } else 
-      if (value && typeof value === 'object' && value['_className']) {
-        setInternalEntityType(value['_className']);
-      }
+      } else
+        if (value && typeof value === 'object' && value['_className']) {
+          setInternalEntityType(value['_className']);
+        }
     } else {
       if (Boolean(entityType) && internalEntityType !== entityType) {
         setInternalEntityType(entityType);
       } else
-      if (value && typeof value === 'object' && value['_className'] && internalEntityType !== value['_className']) {
-        setInternalEntityType(value['_className']);
-      }
+        if (value && typeof value === 'object' && value['_className'] && internalEntityType !== value['_className']) {
+          setInternalEntityType(value['_className']);
+        }
     }
   }, [entityType, value]);
 
@@ -142,13 +144,13 @@ const SubFormProvider: FC<PropsWithChildren<SubFormProviderProps>> = ({
 
     return getUrl
       ? // if getUrl is specified - evaluate value using JS
-        evaluateUrl(getUrl)
+      evaluateUrl(getUrl)
       : internalEntityType
-      ? // if entityType is specified - get default url for the entity
+        ? // if entityType is specified - get default url for the entity
         urlHelper
           .getDefaultActionUrl({ modelType: internalEntityType, actionName: StandardEntityActions.read })
           .then(endpoint => endpoint.url)
-      : // return empty string
+        : // return empty string
         Promise.resolve('');
   };
 
@@ -356,6 +358,20 @@ const SubFormProvider: FC<PropsWithChildren<SubFormProviderProps>> = ({
   }, 300);
   //#endregion
 
+  const designerComponents = useFormDesignerComponents();
+
+  const setMarkup = (payload: IPersistedFormPropsWithComponents) => {
+    const flatStructure = componentsTreeToFlatStructure(designerComponents, payload.components);
+    upgradeComponents(designerComponents, payload.formSettings, flatStructure);
+    const tree = componentsFlatStructureToTree(designerComponents, flatStructure);
+
+    dispatch(setMarkupWithSettingsAction({
+      ...payload,
+      components: tree,
+      ...flatStructure
+    }));
+  };
+
   //#region Fetch Form
   useDeepCompareEffect(() => {
     if (formConfig.formId && !markup) {
@@ -365,18 +381,16 @@ const SubFormProvider: FC<PropsWithChildren<SubFormProviderProps>> = ({
         .then(response => {
           setFormLoadingState({ isLoading: false, error: null });
 
-          dispatch(
-            setMarkupWithSettingsAction({
-              hasFetchedConfig: true,
-              id: response?.id,
-              module: response?.module,
-              components: response.markup,
-              formSettings: response.settings,
-              versionNo: response?.versionNo,
-              versionStatus: response?.versionStatus,
-              description: response?.description,
-            })
-          );
+          setMarkup({
+            hasFetchedConfig: true,
+            id: response?.id,
+            module: response?.module,
+            components: response.markup,
+            formSettings: response.settings,
+            versionNo: response?.versionNo,
+            versionStatus: response?.versionStatus,
+            description: response?.description,
+          });
         })
         .catch(e => {
           setFormLoadingState({ isLoading: false, error: e });
@@ -384,14 +398,23 @@ const SubFormProvider: FC<PropsWithChildren<SubFormProviderProps>> = ({
     }
 
     if (!formConfig.formId && markup) {
-      dispatch(setMarkupWithSettingsAction(markup));
+      setMarkup(markup);
     }
 
     if (!formConfig.formId && !markup) {
-      dispatch(setMarkupWithSettingsAction({ components: [], formSettings: DEFAULT_FORM_SETTINGS }));
+      setMarkup({ components: [], formSettings: DEFAULT_FORM_SETTINGS });
     }
   }, [formConfig.formId, markup]);
   //#endregion
+
+  const getChildComponents = (componentId: string) => {
+    const childIds = state.componentRelations[componentId];
+    if (!childIds) return [];
+    const components = childIds.map(childId => {
+      return state.allComponents[childId];
+    });
+    return components;
+  };
 
   const actionDependencies = [actionsOwnerId];
   useConfigurableAction(
@@ -476,6 +499,7 @@ const SubFormProvider: FC<PropsWithChildren<SubFormProviderProps>> = ({
           getData: debouncedFetchData,
           postData,
           putData,
+          getChildComponents,
         }}
       >
         {children}

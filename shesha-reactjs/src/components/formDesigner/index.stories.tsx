@@ -92,3 +92,7 @@ export const PermissionEdit = addStory(DesignerTemplate, {
     module: 'Test Module'
   }*/
 });
+
+export const SubformBug = addStory(DesignerTemplate, {
+  formId: 'af8885c1-ec7b-42a1-abd0-091a9349baa6'
+});

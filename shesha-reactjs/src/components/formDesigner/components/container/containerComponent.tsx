@@ -1,7 +1,7 @@
 import React from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
 import { GroupOutlined } from '@ant-design/icons';
-import ComponentsContainer from '../../componentsContainer';
+import ComponentsContainer from '../../containers/componentsContainer';
 import { useForm } from '../../../../providers/form';
 import { getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import { getSettings } from './settingsForm';
