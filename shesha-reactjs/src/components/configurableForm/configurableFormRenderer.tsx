@@ -1,6 +1,7 @@
 import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { Form, message, Spin } from 'antd';
-import ComponentsContainer from '../formDesigner/componentsContainer';
+import ComponentsContainer from '../formDesigner/containers/componentsContainer';
+import { ComponentsContainerForm } from '../formDesigner/containers/componentsContainerForm';
 import { ROOT_COMPONENT_KEY } from '../../providers/form/models';
 import { useForm } from '../../providers/form';
 import { IConfigurableFormRendererProps, IDataSourceComponent } from './models';
@@ -31,6 +32,7 @@ import { useModelApiEndpoint } from './useActionEndpoint';
 import { StandardEntityActions } from 'interfaces/metadata';
 import { useMutate } from 'hooks/useMutate';
 import { useDelayedUpdate } from 'providers/delayedUpdateProvider';
+import { ComponentsContainerProvider } from 'providers/form/nesting/containerContext';
 
 export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRendererProps>> = ({
   children,
@@ -425,7 +427,11 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
         className={`sha-form sha-form-${formMode} ${isDragging ? 'sha-dragging' : ''}`}
         {...mergedProps}
       >
-        <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
+        <ComponentsContainerProvider
+          ContainerComponent={ComponentsContainerForm}
+        >
+          <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
+        </ComponentsContainerProvider>
         {children}
       </Form>
     </Spin>

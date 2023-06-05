@@ -3,7 +3,7 @@ import { FormMarkup } from 'providers/form/models';
 import { GroupOutlined } from '@ant-design/icons';
 import settingsFormJson from './settingsForm.json';
 import { CollapsiblePanel } from 'components/panel';
-import ComponentsContainer from 'components/formDesigner/componentsContainer';
+import ComponentsContainer from 'components/formDesigner/containers/componentsContainer';
 import { useForm } from 'providers/form';
 import React from 'react';
 import { validateConfigurableComponentSettings } from 'providers/form/utils';

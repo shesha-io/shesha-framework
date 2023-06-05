@@ -2,7 +2,7 @@ import { IToolboxComponent } from '../../../../interfaces';
 import { IFormComponentContainer } from '../../../../providers/form/models';
 import { DoubleRightOutlined } from '@ant-design/icons';
 import { Steps, Button, Space, message } from 'antd';
-import ComponentsContainer from '../../componentsContainer';
+import ComponentsContainer from '../../containers/componentsContainer';
 import React, { useMemo, useState } from 'react';
 import { useForm, useGlobalState } from '../../../../providers';
 import { IConfigurableFormComponent, useFormData, useSheshaApplication } from '../../../../';

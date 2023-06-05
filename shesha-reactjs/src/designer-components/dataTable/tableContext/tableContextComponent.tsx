@@ -8,7 +8,7 @@ import DataTableProvider from 'providers/dataTable';
 import { DataTableSelectionProvider, useDataTableSelection } from 'providers/dataTableSelection';
 import { FormMarkup, IConfigurableFormComponent } from 'providers/form/models';
 import { validateConfigurableComponentSettings } from 'providers/form/utils';
-import ComponentsContainer from 'components/formDesigner/componentsContainer';
+import ComponentsContainer from 'components/formDesigner/containers/componentsContainer';
 import settingsFormJson from './settingsForm.json';
 import { DataFetchingMode } from 'providers/dataTable/interfaces';
 

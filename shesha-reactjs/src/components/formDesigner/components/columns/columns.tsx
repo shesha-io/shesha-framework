@@ -3,7 +3,7 @@ import { IToolboxComponent } from '../../../../interfaces';
 import { SplitCellsOutlined } from '@ant-design/icons';
 import { Row, Col } from 'antd';
 import ColumnsSettings from './columnsSettings';
-import ComponentsContainer from '../../componentsContainer';
+import ComponentsContainer from '../../containers/componentsContainer';
 import { useForm } from '../../../../providers';
 import { nanoid } from 'nanoid/non-secure';
 import { IColumnsComponentProps } from './interfaces';
