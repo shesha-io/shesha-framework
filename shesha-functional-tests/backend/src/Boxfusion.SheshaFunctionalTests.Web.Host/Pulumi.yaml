@@ -68,7 +68,7 @@ resources:
       elasticPoolName: ${sqlElasticPoolName}
       # sourceDatabaseId: /subscriptions/ad818ed1-a52d-4a5c-8cba-c3e84872abb0/resourceGroups/auto-shared-nonprod-rg/providers/Microsoft.Sql/servers/auto-sql-shared-nonprod/databases/source-shesha
       # sourceDatabaseId: /subscriptions/0e111515-3d91-4650-bd92-dfca52077d62/resourceGroups/containerapps-shared/providers/Microsoft.Sql/servers/containerapps-sql-shared/databases/source-shesha
-      sourceDatabaseId: /subscriptions/0e111515-3d91-4650-bd92-dfca52077d62/resourceGroups/containerapps-shared/providers/Microsoft.Sql/servers/containerapps-sql-shared/databases/shesha-functionaltests-mainline-source
+      sourceDatabaseId: /subscriptions/0e111515-3d91-4650-bd92-dfca52077d62/resourceGroups/containerapps-shared/providers/Microsoft.Sql/servers/containerapps-sql-shared/databases/function-mainline
       name: ${sqlDatabaseName}
       #import:
       #   - administratorLogin: ${sqlAdministratorLogin}
