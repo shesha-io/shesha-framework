@@ -1,13 +1,12 @@
 import {
-  ConfigurableComponent,
+  ConfigurableApplicationComponent,
   ISidebarMenuItem,
   SIDEBAR_MENU_NAME,
 } from "@shesha/reactjs";
 import { Divider, Image, ImageProps, Layout, Space } from "antd";
-import { FC, PropsWithChildren, useEffect } from "react";
+import { FC, PropsWithChildren } from "react";
 import ShaMenuItem from "../unAuthedAccountPageLayout/menuItem";
 import ShaUserIcon from "../unAuthedAccountPageLayout/userIcon";
-import { useIndexedDB } from "./hook";
 import { MainLayoutStyle } from "./styles";
 
 const { Header, Footer, Content } = Layout;
@@ -28,15 +27,6 @@ const PortalLayout: FC<IProps> = ({
   imageProps,
   username,
 }) => {
-  const { getAll } = useIndexedDB<ISidebarMenuItem[]>({
-    defaultValue: [],
-    dbName: "components",
-    recordName: SIDEBAR_MENU_NAME,
-    storeName: "keyvaluepairs",
-  });
-
-  useEffect(getAll, []);
-
   return (
     <MainLayoutStyle className={className}>
       <Header>
@@ -45,21 +35,25 @@ const PortalLayout: FC<IProps> = ({
           preview={false}
           {...imageProps}
         />
-        <ConfigurableComponent<ISideBarMenuProps>
+        <ConfigurableApplicationComponent<ISideBarMenuProps>
           name={SIDEBAR_MENU_NAME}
           isApplicationSpecific={true}
+          defaultSettings={{ items: [] }}
         >
-          {(componentState) => (
-            <Space
-              className="sha-login-space"
-              split={<Divider type="vertical" />}
-            >
-              <ShaMenuItem items={componentState?.settings?.items} />
-
-              <ShaUserIcon username={username} />
-            </Space>
-          )}
-        </ConfigurableComponent>
+          {(componentState) => {
+            console.log('LOG: render', componentState?.settings?.items);
+            return (
+              <Space
+                className="sha-login-space"
+                split={<Divider type="vertical" />}
+              >
+                <ShaMenuItem items={componentState?.settings?.items} />
+  
+                <ShaUserIcon username={username} />
+              </Space>
+            );
+          }}
+        </ConfigurableApplicationComponent>
       </Header>
 
       <Content>{children}</Content>
