@@ -1,32 +1,20 @@
-import React, { CSSProperties, FC, PropsWithChildren, ReactNode, useCallback, useMemo } from 'react';
-import ConfigurableFormComponent from './configurableFormComponent';
-import { useForm } from '../../providers/form';
+import React, { CSSProperties, FC, PropsWithChildren, useCallback, useMemo } from 'react';
+import ConfigurableFormComponent from '../configurableFormComponent';
+import { useForm } from 'providers/form';
 import {
-  IConfigurableFormComponent,
   TOOLBOX_COMPONENT_DROPPABLE_KEY,
   TOOLBOX_DATA_ITEM_DROPPABLE_KEY,
-} from '../../providers/form/models';
+} from 'providers/form/models';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
-import { joinStringValues } from '../../utils';
-import DynamicComponent from './components/dynamicView/dynamicComponent';
-import { useFormDesigner } from '../../providers/formDesigner';
-import { ICommonContainerProps } from '../../designer-components/container/interfaces';
-import ConditionalWrap from '../conditionalWrapper';
-import { useFormData, useGlobalState } from '../../providers';
-import { executeScriptSync } from '../../utils/publicUtils';
+import { joinStringValues } from 'utils';
+import DynamicComponent from '../components/dynamicView/dynamicComponent';
+import { useFormDesigner } from 'providers/formDesigner';
+import ConditionalWrap from '../../conditionalWrapper';
+import { useFormData, useGlobalState } from 'providers';
+import { executeScriptSync } from 'utils/publicUtils';
+import { IComponentsContainerProps } from './componentsContainer';
 
-export interface IComponentsContainerProps extends ICommonContainerProps {
-  containerId: string;
-  className?: string;
-  render?: (components: JSX.Element[]) => ReactNode;
-  itemsLimit?: number;
-  readOnly?: boolean;
-  dynamicComponents?: IConfigurableFormComponent[];
-  wrapperStyle?: CSSProperties;
-  style?: CSSProperties;
-}
-
-const ComponentsContainer: FC<IComponentsContainerProps> = props => {
+export const ComponentsContainerForm: FC<IComponentsContainerProps> = props => {
   const { formMode } = useForm();
   const { data: formData } = useFormData();
   const designer = useFormDesigner(false);
@@ -62,6 +50,8 @@ const ComponentsContainer: FC<IComponentsContainerProps> = props => {
   const useDesigner = formMode === 'designer' && Boolean(designer);
   return useDesigner ? <ComponentsContainerDesigner {...props} /> : <ComponentsContainerLive {...props} />;
 };
+
+ComponentsContainerForm.displayName = "ComponentsContainer(Form)";
 
 type AlignmentProps = Pick<
   IComponentsContainerProps,
@@ -315,5 +305,3 @@ const ComponentsContainerLive: FC<PropsWithChildren<IComponentsContainerProps>> 
     </div>
   );
 };
-
-export default ComponentsContainer;

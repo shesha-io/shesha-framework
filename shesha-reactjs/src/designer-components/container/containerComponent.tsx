@@ -6,7 +6,7 @@ import { getStyle, validateConfigurableComponentSettings } from 'providers/form/
 import { getSettings } from './settingsForm';
 import { useFormData } from 'providers';
 import { ICommonContainerProps, IContainerComponentProps } from './interfaces';
-import ComponentsContainer from 'components/formDesigner/componentsContainer';
+import ComponentsContainer from 'components/formDesigner/containers/componentsContainer';
 
 const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   type: 'container',

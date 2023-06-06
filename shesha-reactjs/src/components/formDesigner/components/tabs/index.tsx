@@ -2,7 +2,7 @@ import { IToolboxComponent } from '../../../../interfaces';
 import { FormMarkup, IFormComponentContainer } from '../../../../providers/form/models';
 import { FolderOutlined } from '@ant-design/icons';
 import { Tabs } from 'antd';
-import ComponentsContainer from '../../componentsContainer';
+import ComponentsContainer from '../../containers/componentsContainer';
 import settingsFormJson from './settingsForm.json';
 import React, { Fragment } from 'react';
 import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';

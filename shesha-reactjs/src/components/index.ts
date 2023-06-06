@@ -35,6 +35,8 @@ export { default as BasicToolbar } from './basicToolbar';
 export { default as BooleanDropDown } from './booleanDropDown';
 export { default as SidebarContainer } from './sidebarContainer';
 export { default as AutoCompletePlaces } from './googlePlacesAutocomplete';
+export { default as EndpointsAutocomplete } from './endpointsAutocomplete/endpointsAutocomplete';
+export { default as FormAutocomplete } from './formAutocomplete';
 export { default as CustomFile } from './customFile';
 export { default as SimplePageToolbar } from './simplePageToolbar';
 export { default as ErrorBoundary } from './errorBoundary/errorBoundary';

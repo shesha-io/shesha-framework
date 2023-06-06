@@ -4,7 +4,7 @@ import React from 'react';
 import { validateConfigurableComponentSettings } from '../../../../formDesignerUtils';
 import { IConfigurableFormComponent, IToolboxComponent } from '../../../../interfaces/formDesigner';
 import { FormMarkup } from '../../../../providers/form/models';
-import ComponentsContainer from '../../componentsContainer';
+import ComponentsContainer from '../../containers/componentsContainer';
 import settingsFormJson from './settingsForm.json';
 
 export interface ISpaceProps extends IConfigurableFormComponent {

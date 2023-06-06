@@ -19,7 +19,7 @@ import {
 } from './actions';
 import { CrudMode } from './models';
 import { Form, FormInstance, FormProps } from 'antd';
-import { FormProvider, useForm } from 'providers/form';
+import { FormProvider, useForm } from 'providers';
 import { IErrorInfo } from 'interfaces/errorInfo';
 import { RowDataInitializer } from 'components/reactTable/interfaces';
 import { useDebouncedCallback } from 'use-debounce';
