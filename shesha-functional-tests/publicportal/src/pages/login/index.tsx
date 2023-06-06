@@ -8,9 +8,7 @@ import Link from "next/link";
 import { FC } from "react";
 import { URL_FORGOT_PASSWORD } from "routes";
 import { LoginPageWrapper } from "./styles";
-
-const IMG_SRC =
-  "https://uploads-ssl.webflow.com/61423df7fefcfd4536b14230/62b0726b03457b202b625d0d_Boxfusion_logo.png";
+import { LOGO } from "src/app-constants/application";
 
 export const Login: FC = () => {
   const { theme } = useTheme();
@@ -28,7 +26,7 @@ export const Login: FC = () => {
   };
 
   return (
-    <LoginPageWrapper imgSrc={IMG_SRC} imgWidth={350} colorTheme={theme}>
+    <LoginPageWrapper imgSrc={LOGO.src} imgWidth={350} colorTheme={theme}>
       <Form form={form} onFinish={handleLogin}>
         <ShaTitle title="Sign In" />
 
