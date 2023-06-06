@@ -47,6 +47,14 @@
             "label": "Range?"
           },
           {
+            "id": "dc6d8703-bba7-49da-8d7c-36e0cd9045a5",
+            "type": "checkbox",
+            "name": "dateOnly",
+            "parentId": "VmAusRlLZo3cYRFk88xnf",
+            "label": "Date Only?",
+            "description": "Send only a date format as a request, otherwise sends a datetime format"
+          },
+          {
             "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
             "type": "dropdown",
             "name": "labelAlign",
@@ -110,9 +118,7 @@
             "placeholder": "",
             "description": "",
             "defaultValue": "",
-            "mode": [
-              "single"
-            ],
+            "mode": ["single"],
             "entityTypeShortAlias": "",
             "dataSourceUrl": "",
             "validate": {},
@@ -306,9 +312,7 @@
               "placeholder": "",
               "description": "",
               "defaultValue": "",
-              "mode": [
-                "single"
-              ],
+              "mode": ["single"],
               "entityTypeShortAlias": "",
               "dataSourceUrl": "",
               "validate": {},
