@@ -16,9 +16,9 @@
         public static string IsDeletedColumn => "IsDeleted";
         public static string DeletionTimeColumn => "DeletionTime";
         public static string DeleterUserIdColumn => "DeleterUserId";
-        
+
         public static string TenantIdColumn => "TenantId";
-        
+
         /// <summary>
         /// Entity link columns (for many-to-many link tables). ID
         /// </summary>
@@ -40,5 +40,14 @@
         #endregion
 
         public static int DiscriminatorMaxSize = 100;
+
+        public static string ExtSysFirstSyncDate = "ExtSysFirstSyncDate";
+        public static string ExtSysId = "ExtSysId";
+        public static string ExtSysLastSyncDate = "ExtSysLastSyncDate";
+        public static string ExtSysSource = "ExtSysSource";
+        public static string ExtSysSyncError = "ExtSysSyncError";
+        public static string ExtSysSyncStatusLkp = "ExtSysSyncStatusLkp";
     }
 }
+
+

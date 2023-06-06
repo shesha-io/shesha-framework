@@ -1,4 +1,4 @@
-import React, { FC, useContext, PropsWithChildren, useEffect, useRef } from 'react';
+import React, { FC, useContext, PropsWithChildren, useEffect, useRef, useMemo } from 'react';
 import { useThunkReducer } from 'hooks/thunkReducer';
 import { dataTableReducer } from './reducer';
 import {
@@ -56,11 +56,13 @@ import camelCaseKeys from 'camelcase-keys';
 import { useConfigurableAction } from '../configurableActionsDispatcher';
 import { IHasModelType, IHasRepository, IRepository } from './repository/interfaces';
 import { withBackendRepository } from './repository/backendRepository';
-import { withInMemoryRepository } from './repository/inMemoryRepository';
+import { withFormFieldRepository } from './repository/inMemoryRepository';
 import { advancedFilter2JsonLogic, getTableDataColumns } from './utils';
 import { useLocalStorage } from 'hooks';
 import { withNullRepository } from './repository/nullRepository';
 import { withUrlRepository } from './repository/urlRepository';
+import { useForm } from 'providers/form';
+import { ConfigurableFormInstance } from 'interfaces';
 
 interface IDataTableProviderBaseProps {
   /** Configurable columns. Is used in pair with entityType  */
@@ -91,7 +93,7 @@ interface IHasDataSourceType {
   sourceType: 'Form' | 'Entity' | 'Url';
 }
 interface IHasFormDataSourceConfig {
-  value?: any;
+  propertyName: string;
 }
 interface IUrlDataSourceConfig {
   getDataPath?: string;
@@ -106,7 +108,7 @@ type IDataTableProviderProps = IDataTableProviderBaseProps & IHasDataSourceType 
   
 };
 
-const getTableProviderComponent = (props: IDataTableProviderProps): FC<IDataTableProviderBaseProps> => {
+const getTableProviderComponent = (props: IDataTableProviderProps, formInstance: ConfigurableFormInstance): FC<IDataTableProviderBaseProps> => {
   const { sourceType } = props;
   switch (sourceType) {
     case 'Entity': {
@@ -114,8 +116,9 @@ const getTableProviderComponent = (props: IDataTableProviderProps): FC<IDataTabl
       return withBackendRepository(DataTableProviderWithRepository, { entityType, getListUrl: getDataPath });
     };
     case 'Form': {
-      const { value } = props as IHasFormDataSourceConfig;
-      return withInMemoryRepository(DataTableProviderWithRepository, { value });
+      const { propertyName } = props as IHasFormDataSourceConfig;
+
+      return withFormFieldRepository(DataTableProviderWithRepository, { propertyName, formInstance: formInstance.form });      
     };
     case 'Url':
       const { getDataPath } = props as IHasEntityDataSourceConfig;
@@ -174,7 +177,11 @@ const getFetchListDataPayload = (state: IDataTableStateContext): IGetListDataPay
 };
 
 const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = (props) => {
-  const component = getTableProviderComponent(props);
+  const form = useForm(false);
+  
+  const component = useMemo(() => {
+    return getTableProviderComponent(props, form);
+  }, [props.sourceType]);
 
   return <>{component(props)}</>;
 };

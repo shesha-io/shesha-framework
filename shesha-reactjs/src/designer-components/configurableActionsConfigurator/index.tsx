@@ -114,6 +114,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
       style={props.level > 1 ? { paddingLeft: 10 } : {}} className="sha-action-props"
     >
       <Form
+        component={false}
         form={form}
         labelCol={{ span: 24 }}
         wrapperCol={{ span: 24 }}

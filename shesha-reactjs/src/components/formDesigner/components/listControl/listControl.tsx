@@ -26,7 +26,7 @@ import SubForm from '../subForm/subForm';
 import CollapsiblePanel from '../../../panel';
 import Show from '../../../show';
 import { ButtonGroup } from '../button/buttonGroup/buttonGroupComponent';
-import ComponentsContainer from '../../componentsContainer';
+import ComponentsContainer from '../../containers/componentsContainer';
 import ValidationErrors from '../../../validationErrors';
 import ShaSpin from '../../../shaSpin';
 import { DeleteFilled } from '@ant-design/icons';

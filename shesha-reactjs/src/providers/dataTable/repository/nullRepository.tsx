@@ -2,7 +2,7 @@ import { IConfigurableColumnsProps } from "providers/datatableColumnsConfigurato
 import React, { ComponentType, useMemo } from "react";
 import { FC } from "react";
 import { DataTableColumnDto, IGetListDataPayload, ITableDataInternalResponse } from "../interfaces";
-import { IHasRepository, IRepository } from "./interfaces";
+import { IHasRepository, IRepository, RowsReorderPayload } from "./interfaces";
 
 export interface IWithNullRepositoryArgs {
     value?: object;
@@ -33,9 +33,14 @@ const createRepository = (_args: IWithNullRepositoryArgs): IRepository => {
         return Promise.reject('NullRepository has no implementation');
     };
 
+    const reorder = (_payload: RowsReorderPayload) => {
+        return Promise.reject('NullRepository has no implementation');
+    };
+
     const repository: IRepository = {
         repositoryType: 'null-repository',
         fetch,
+        reorder,
         exportToExcel,
         prepareColumns,
         performCreate,

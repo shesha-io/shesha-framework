@@ -1,32 +1,20 @@
-import React, { CSSProperties, FC, PropsWithChildren, ReactNode, useCallback } from 'react';
-import ConfigurableFormComponent from './configurableFormComponent';
-import { useForm } from '../../providers/form';
+import React, { CSSProperties, FC, PropsWithChildren, useCallback, useMemo } from 'react';
+import ConfigurableFormComponent from '../configurableFormComponent';
+import { useForm } from 'providers/form';
 import {
-  IConfigurableFormComponent,
   TOOLBOX_COMPONENT_DROPPABLE_KEY,
   TOOLBOX_DATA_ITEM_DROPPABLE_KEY,
-} from '../../providers/form/models';
+} from 'providers/form/models';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
-import { joinStringValues } from '../../utils';
-import DynamicComponent from './components/dynamicView/dynamicComponent';
-import { useFormDesigner } from '../../providers/formDesigner';
-import { ICommonContainerProps } from './components/container/interfaces';
-import ConditionalWrap from '../conditionalWrapper';
-import { useFormData, useGlobalState } from '../../providers';
-import { executeScriptSync } from '../../utils/publicUtils';
+import { joinStringValues } from 'utils';
+import DynamicComponent from '../components/dynamicView/dynamicComponent';
+import { useFormDesigner } from 'providers/formDesigner';
+import ConditionalWrap from '../../conditionalWrapper';
+import { useFormData, useGlobalState } from 'providers';
+import { executeScriptSync } from 'utils/publicUtils';
+import { IComponentsContainerProps } from './componentsContainer';
 
-export interface IComponentsContainerProps extends ICommonContainerProps {
-  containerId: string;
-  className?: string;
-  render?: (components: JSX.Element[]) => ReactNode;
-  itemsLimit?: number;
-  readOnly?: boolean;
-  dynamicComponents?: IConfigurableFormComponent[];
-  wrapperStyle?: CSSProperties;
-  style?: CSSProperties;
-}
-
-const ComponentsContainer: FC<IComponentsContainerProps> = props => {
+export const ComponentsContainerForm: FC<IComponentsContainerProps> = props => {
   const { formMode } = useForm();
   const { data: formData } = useFormData();
   const designer = useFormDesigner(false);
@@ -62,6 +50,8 @@ const ComponentsContainer: FC<IComponentsContainerProps> = props => {
   const useDesigner = formMode === 'designer' && Boolean(designer);
   return useDesigner ? <ComponentsContainerDesigner {...props} /> : <ComponentsContainerLive {...props} />;
 };
+
+ComponentsContainerForm.displayName = "ComponentsContainer(Form)";
 
 type AlignmentProps = Pick<
   IComponentsContainerProps,
@@ -141,7 +131,7 @@ const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContainerProp
     noDefaultStyling,
   } = props;
 
-  const { getChildComponents } = useForm();
+  const { getChildComponentIds } = useForm();
   const {
     updateChildComponents,
     addComponent,
@@ -152,11 +142,12 @@ const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContainerProp
     hasDragged,
   } = useFormDesigner();
 
-  const components = getChildComponents(containerId);
-
-  const componentsMapped = components.map<ItemInterface>(c => ({
-    id: c.id,
-  }));
+  const childIds = getChildComponentIds(containerId);
+  const componentsMapped = useMemo<ItemInterface[]>(() => {
+    return childIds.map<ItemInterface>(id => ({
+      id: id
+    }));
+  }, [childIds]);
 
   const onSetList = (newState: ItemInterface[], _sortable, _store) => {
     if (!hasDragged) return;
@@ -164,6 +155,10 @@ const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContainerProp
     if (!isNaN(itemsLimit) && itemsLimit && newState?.length === Math.round(itemsLimit) + 1) {
       return;
     }
+
+    const chosen = newState.some(item => item.chosen === true);
+    if (chosen)
+      return;
 
     // temporary commented out, the behavoiur of the sortablejs differs sometimes
     const listChanged = true; //!newState.some(item => item.chosen !== null && item.chosen !== undefined);
@@ -192,8 +187,21 @@ const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContainerProp
           });
         } else {
           // reorder existing components
-          const newIds = newState.map<string>(item => item.id.toString());
-          updateChildComponents({ containerId, componentIds: newIds });
+          let isModified = componentsMapped.length !== newState.length;
+
+          if (!isModified) {
+            for (let i = 0; i < componentsMapped.length; i++) {
+              if (componentsMapped[i].id !== newState[i].id) {
+                isModified = true;
+                break;
+              }
+            }
+          }
+
+          if (isModified) {
+            const newIds = newState.map<string>(item => item.id.toString());
+            updateChildComponents({ containerId, componentIds: newIds });
+          }
         }
       }
     }
@@ -209,8 +217,8 @@ const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContainerProp
   };
 
   const renderComponents = () => {
-    const renderedComponents = components.map((c, index) => (
-      <ConfigurableFormComponent id={c.id} index={index} key={c.id} />
+    const renderedComponents = childIds.map((id, index) => (
+      <ConfigurableFormComponent id={id} index={index} key={id} />
     ));
 
     return typeof render === 'function' ? render(renderedComponents) : renderedComponents;
@@ -228,7 +236,7 @@ const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContainerProp
       )}
     >
       <>
-        {components.length === 0 && <div className="sha-drop-hint">Drag and Drop form component</div>}
+        {childIds.length === 0 && <div className="sha-drop-hint">Drag and Drop form component</div>}
         <ReactSortable
           disabled={readOnly}
           onStart={onDragStart}
@@ -297,5 +305,3 @@ const ComponentsContainerLive: FC<PropsWithChildren<IComponentsContainerProps>> 
     </div>
   );
 };
-
-export default ComponentsContainer;

@@ -94,3 +94,27 @@ export const BugFix = addStory(Template, {
   },
   mode: 'edit'
 });
+
+export const Hydration = addStory(Template, {
+  formId: {
+    name: 'flattened-facility-appointment-table',
+    module: 'Boxfusion.His.Bookings'
+  },
+  mode: 'edit'
+});
+
+export const TableLayout = addStory(Template, {
+  formId: {
+    name: 'table-layout',
+    module: 'TestModule'
+  },
+  mode: 'edit'
+});
+
+export const InMemoryTable = addStory(Template, {
+  formId: {
+    name: 'in-memory-table',
+    module: 'TestModule'
+  },
+  mode: 'edit'
+});

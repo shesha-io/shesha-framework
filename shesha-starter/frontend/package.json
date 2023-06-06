@@ -11,9 +11,7 @@
     "build:analyze": "ANALYZE=true npm run build",
     "lint": "eslint **/*.{js,jsx,ts,tsx}",
     "prettier": "prettier --write **/*.{js,jsx,ts,tsx}",
-    "test": "jest -c test/jest.config.js",
-    "generate-fetcher": "restful-react import --config restful-react.config.js",
-    "postgenerate-fetcher": "prettier ./src/api/*.tsx --write"
+    "test": "jest -c test/jest.config.js"
   },
   "dependencies": {
     "@ant-design/icons": "^4.8.0",

@@ -28,11 +28,11 @@ export const NewRowCell: FC<INewRowCellProps> = ({ column }) => {
 
   const metadata = useMetadata(false)?.metadata;
   const propertyMeta = metadata?.properties?.find(({ path }) => toCamelCase(path) === column.id);
-  
+
   return (
     <div className="td" {...column.getHeaderProps(cellProps)}>
-      { columnConfig.columnType === 'data' && (<CreateDataCell columnConfig={columnConfig} propertyMeta={propertyMeta}/>) }
-      { columnConfig.columnType === 'crud-operations' && (<CrudOperationsCell columnConfig={columnConfig} />) }
+      { columnConfig && columnConfig.columnType === 'data' && (<CreateDataCell columnConfig={columnConfig} propertyMeta={propertyMeta}/>) }
+      { columnConfig && columnConfig.columnType === 'crud-operations' && (<CrudOperationsCell columnConfig={columnConfig} />) }
     </div>
   );
 };

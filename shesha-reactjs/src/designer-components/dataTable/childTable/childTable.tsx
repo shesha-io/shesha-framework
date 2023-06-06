@@ -8,7 +8,7 @@ import {
   useNestedPropertyMetadatAccessor,
   useSheshaApplication,
 } from 'providers';
-import ComponentsContainer from 'components/formDesigner/componentsContainer';
+import ComponentsContainer from 'components/formDesigner/containers/componentsContainer';
 import { hasDynamicFilter } from 'providers/dataTable/utils';
 import './styles/index.less';
 import { ButtonGroup } from 'components/formDesigner/components/button/buttonGroup/buttonGroupComponent';
