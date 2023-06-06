@@ -2,11 +2,14 @@ import { Drawer } from "antd";
 import { smSpace } from "src/styles/global";
 import styled from "styled-components";
 
-export const ShaMenuDrawerWrapper = styled(Drawer)`
+export const ShaMenuDrawerStyledWrapper = styled(Drawer)`
   .ant-drawer-body {
     padding: 0;
 
     .menu-item {
+      color: #000;
+      display: flex;
+      justify-content: space-between;
       padding: ${smSpace} 24px;
 
       &:hover {
@@ -14,7 +17,7 @@ export const ShaMenuDrawerWrapper = styled(Drawer)`
         cursor: pointer;
       }
 
-      .anticon {
+      .sha-icon {
         color: #7f959b;
         font-size: 19px;
         font-weight: 200;

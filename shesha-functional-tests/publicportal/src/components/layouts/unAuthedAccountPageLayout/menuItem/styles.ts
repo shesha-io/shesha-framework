@@ -1,7 +1,7 @@
 import { smSpace } from "src/styles/global";
 import styled from "styled-components";
 
-export const ShaMenuItemWrapper = styled.ul`
+export const ShaMenuItemStyledWrapper = styled.ul`
   display: flex;
   height: 100%;
   list-style-type: none;

@@ -1,7 +1,9 @@
 import { ISidebarMenuItem, IconType, ShaIcon } from "@shesha/reactjs";
 import { nanoid } from "nanoid";
-import { FC } from "react";
-import { ShaMenuDrawerWrapper } from "./styles";
+import React, { FC } from "react";
+import ShaMenuDrawerMenuItem from "./menuItem";
+import { ShaMenuDrawerStyledWrapper } from "./styles";
+import ShaMenuDrawerWrapper from "./wrapper";
 
 interface IProps {
   items: ISidebarMenuItem[];
@@ -10,7 +12,7 @@ interface IProps {
 }
 
 const ShaMenuDrawer: FC<IProps> = ({ items = [], open, onClose }) => (
-  <ShaMenuDrawerWrapper
+  <ShaMenuDrawerStyledWrapper
     key={nanoid()}
     title="Menu List"
     placement={"left"}
@@ -18,13 +20,19 @@ const ShaMenuDrawer: FC<IProps> = ({ items = [], open, onClose }) => (
     onClose={onClose}
     open={open}
   >
-    {items.map(({ icon, title }) => (
-      <div className="menu-item">
-        <ShaIcon iconName={icon as IconType} />
-        {title}
-      </div>
+    {items.map(({ childItems, icon, target, title }) => (
+      <ShaMenuDrawerWrapper target={target}>
+        <span>
+          <ShaIcon className="sha-icon" iconName={icon as IconType} />
+          {title}
+        </span>
+
+        {!!childItems.length && (
+          <ShaMenuDrawerMenuItem childItems={childItems} />
+        )}
+      </ShaMenuDrawerWrapper>
     ))}
-  </ShaMenuDrawerWrapper>
+  </ShaMenuDrawerStyledWrapper>
 );
 
 export default ShaMenuDrawer;

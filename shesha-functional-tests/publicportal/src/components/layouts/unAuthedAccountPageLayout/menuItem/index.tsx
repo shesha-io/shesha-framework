@@ -1,9 +1,10 @@
 import { ISidebarMenuItem, IconType, ShaIcon } from "@shesha/reactjs";
-import { FC, Fragment, useState } from "react";
+import React, { FC, Fragment, useState } from "react";
 import ShaMenuDrawer from "../menuDrawer";
-import { ShaMenuItemWrapper } from "./styles";
+import { ShaMenuItemStyledWrapper } from "./styles";
 import { Button } from "antd";
 import { MenuOutlined } from "@ant-design/icons";
+import Link from "next/link";
 
 interface IProps {
   items: ISidebarMenuItem[];
@@ -19,14 +20,16 @@ const ShaMenuItem: FC<IProps> = ({ items = [] }) => {
   return (
     <Fragment>
       {items.length <= 3 && (
-        <ShaMenuItemWrapper>
-          {items.map(({ icon, title }) => (
-            <li className="list-item">
-              <ShaIcon iconName={icon as IconType} />
-              {title}
-            </li>
+        <ShaMenuItemStyledWrapper>
+          {items.map(({ icon, target, title }) => (
+            <Link href={target}>
+              <li className="list-item">
+                <ShaIcon iconName={icon as IconType} />
+                {title}
+              </li>
+            </Link>
           ))}
-        </ShaMenuItemWrapper>
+        </ShaMenuItemStyledWrapper>
       )}
 
       {items.length > 3 && (
