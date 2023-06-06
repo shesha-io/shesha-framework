@@ -38,7 +38,14 @@ const allBaseProperties = [...labelProperties, ...bindingProperties, ...visibili
 
 export const editorAdapters: IDictionary<IEditorAdapter> = {
   [DropdownComponent.type]: {
-    propertiesFilter: getAllExceptPredicate([...allBaseProperties]),
+    propertiesFilter: getAllExceptPredicate([
+      ...allBaseProperties,
+      'mode',
+      'referenceListId',
+      'dataSourceType',
+      'useRawValues',
+      'values',
+    ]),
   },
   [AutocompleteComponent.type]: {
     propertiesFilter: getAllExceptPredicate([
