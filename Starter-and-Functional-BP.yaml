@@ -457,6 +457,12 @@ stages:
           ls
           Remove-Item -Force Starter-and-Functional-BP.yaml          
         workingDirectory: '$(System.DefaultWorkingDirectory)'
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: '$(System.DefaultWorkingDirectory)'
+        Contents: 'ChangeLog.md'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+        OverWrite: true
     - task: ArchiveFiles@2
       inputs:
         rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
