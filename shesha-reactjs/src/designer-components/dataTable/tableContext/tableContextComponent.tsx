@@ -76,12 +76,22 @@ export const TableContextInner: FC<ITableContextComponentProps> = props => {
   const { formMode } = useForm();
   const isDesignMode = formMode === 'designer';
 
-  if (isDesignMode && ((sourceType === 'Entity' && !entityType) || (sourceType === 'Url' && !endpoint)))
+  const configurationWarningMessage = !sourceType
+  ? 'Select `Source type` on the settings panel'
+  : sourceType === 'Entity' && !entityType
+    ? 'Select `Entity Type` on the settings panel'
+    : sourceType === 'Url' && !endpoint
+      ?  'Select `Custom Endpoint` on the settings panel'
+      : sourceType === 'Form' && !name
+        ? 'Select `Name` on the settings panel'
+        : null;
+
+  if (isDesignMode && configurationWarningMessage)
     return (
       <Alert
         className="sha-designer-warning"
         message="Table is not configured"
-        description={sourceType === 'Entity' ? "Select entity type on the settings panel" : "Select endpoint on the settings panel"}
+        description={configurationWarningMessage}
         type="warning"
         showIcon
       />
@@ -91,6 +101,7 @@ export const TableContextInner: FC<ITableContextComponentProps> = props => {
     userConfigId={props.id}
     entityType={entityType}
     getDataPath={endpoint}
+    propertyName={name}
     actionOwnerId={id}
     actionOwnerName={name}
     sourceType={props.sourceType}

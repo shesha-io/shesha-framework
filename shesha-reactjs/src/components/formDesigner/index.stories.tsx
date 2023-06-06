@@ -93,6 +93,28 @@ export const PermissionEdit = addStory(DesignerTemplate, {
   }*/
 });
 
-export const SubformBug = addStory(DesignerTemplate, {
-  formId: 'af8885c1-ec7b-42a1-abd0-091a9349baa6'
+export const DatatableInlineEdit = addStory(DesignerTemplate, {
+  formId: 'd9e57701-5328-4395-8d71-580fd21d2d0e'
 });
+
+export const TableLayout = addStory(DesignerTemplate, {
+  formId: '27961719-f092-4c9c-9617-1af59f1e3c11'
+});
+
+export const IdBug = addStory(DesignerTemplate, {
+  formId: '26a5e494-a632-468e-aec8-401a192c56f0'
+});
+
+export const InMemoryTable = addStory(DesignerTemplate, {
+  formId: 'c2773e2b-6cd8-4892-ad30-7b92e5132229'
+});
+
+export const TableProps = addStory(DesignerTemplate, {
+  formId: 'e9f6a715-cbe2-42c0-844f-fe97b5b8f476'
+});
+
+//TestModule/ivan-test-form
+export const IvanTestForm = addStory(DesignerTemplate, {
+  formId: 'b752f15b-5a26-4c22-9ea1-8ec8b6b4ce5d'
+});
+

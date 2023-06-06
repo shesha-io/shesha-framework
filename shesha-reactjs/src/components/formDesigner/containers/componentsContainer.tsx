@@ -1,8 +1,8 @@
 import React, { CSSProperties, FC, ReactNode } from 'react';
 import { IConfigurableFormComponent } from 'providers/form/models';
-import { ICommonContainerProps } from '../components/container/interfaces';
 import { IComponentsContainerBaseProps } from 'interfaces';
 import { useComponentContainer } from 'providers/form/nesting/containerContext';
+import { ICommonContainerProps } from 'designer-components/container/interfaces';
 
 export interface IComponentsContainerProps extends IComponentsContainerBaseProps, ICommonContainerProps {
   className?: string;

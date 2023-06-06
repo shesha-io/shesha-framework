@@ -545,8 +545,6 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 export default reducer;
 /*
 const undoableType = typeof(undoable);
-console.log('LOG!', undoableType);
-console.log('LOG!!', JSON.stringify(undoable, null, 2));
 
 const undoableReducer = undoable 
 ? undoable(reducer, {

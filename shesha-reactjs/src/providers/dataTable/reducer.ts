@@ -454,15 +454,4 @@ export function dataTableReducerInternal(
   return newState;
 }
 
-/*
-const withTrace = <State, Payload>(initial: ReduxCompatibleReducer<State, Payload>): ReduxCompatibleReducer<State, Payload> => {
-  return (state, action) => {
-    console.log('TRACE: DT action', action);
-    return initial(state, action);
-  };
-};
-
-export const dataTableReducer = withTrace(dataTableReducerInternal);
-*/
-
 export { dataTableReducerInternal as dataTableReducer };

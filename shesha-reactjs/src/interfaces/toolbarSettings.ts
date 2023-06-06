@@ -12,7 +12,7 @@ import { ICheckboxComponentProps } from 'designer-components/checkbox/interfaces
 import { INumberFieldComponentProps } from 'designer-components/numberField/interfaces';
 import { IQueryBuilderComponentProps } from 'designer-components/queryBuilder/interfaces';
 import { ICodeEditorComponentProps } from 'components/formDesigner/components/codeEditor/interfaces';
-import { IContainerComponentProps } from 'components/formDesigner/components/container/interfaces';
+import { IContainerComponentProps } from 'designer-components/container/interfaces';
 import { ICustomFilterComponentProps } from 'designer-components/dataTable/filter/interfaces';
 import { IFormAutocompleteComponentProps } from 'components/formDesigner/components/formAutocomplete/interfaces';
 import { IConfigurableActionConfiguratorComponentProps } from 'designer-components/configurableActionsConfigurator/interfaces';

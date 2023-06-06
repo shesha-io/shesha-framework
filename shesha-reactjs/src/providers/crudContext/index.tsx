@@ -264,6 +264,8 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
         getInitialData,
     };
 
+    const flatComponents = state.mode === 'read' ? props.displayComponents : props.editorComponents;
+
     return (
         <CrudContext.Provider value={contextValue}>
             {true &&
@@ -271,7 +273,8 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
                     key={state.mode} /* important for re-rendering of the provider after mode change */
                     form={form}
                     name={''}
-                    flatComponents={state.mode === 'read' ? props.displayComponents : props.editorComponents}
+                    allComponents={flatComponents.allComponents}
+                    componentRelations={flatComponents.componentRelations}
                     formSettings={undefined}
                     mode={ state.mode === 'read' ? 'readonly' : 'edit' }
                     isActionsOwner={false}
