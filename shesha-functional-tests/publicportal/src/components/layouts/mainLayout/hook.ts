@@ -6,7 +6,8 @@ interface IIndexedDBParams<S> {
   storeName: string;
   recordName?: string;
   defaultValue: S;
-  onError?: (ev: Event) => any;
+  onError?: (ev: Event) => unknown;
+  version: number;
 }
 
 interface IIndexedDB<P> {
@@ -17,12 +18,13 @@ interface IIndexedDB<P> {
 export const useIndexedDB = <T = unknown>(
   params: IIndexedDBParams<T>
 ): IIndexedDB<T> => {
-  const { dbName, defaultValue, onError, recordName, storeName } = params;
+  const { dbName, defaultValue, onError, recordName, storeName, version } =
+    params;
 
   const [{ item }, setState] = useState({ item: defaultValue });
 
   const getAll = () => {
-    const request = indexedDB.open(dbName, 3);
+    const request = indexedDB.open(dbName, version);
 
     request.onsuccess = function () {
       const db = request.result;
@@ -33,7 +35,7 @@ export const useIndexedDB = <T = unknown>(
         objectStore.getAll().onsuccess = function (event) {
           setState((s) => ({
             ...s,
-            item: getIndexItem(recordName, event) as T,
+            item: getIndexItem(event, recordName) as T,
           }));
         };
       }
@@ -44,7 +46,7 @@ export const useIndexedDB = <T = unknown>(
     };
   };
 
-  const getIndexItem = (name: string, event: Event) => {
+  const getIndexItem = (event: Event, name?: string) => {
     const result = (event.target as { [key in string]: any })
       ?.result as IComponentSettings[];
 
