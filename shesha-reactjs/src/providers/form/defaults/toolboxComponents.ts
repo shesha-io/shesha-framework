@@ -15,7 +15,7 @@ import CollapsiblePanel from 'designer-components/collapsiblePanel/collapsiblePa
 import ColorPickerComponent from 'components/formDesigner/components/colorPicker';
 import Columns from 'components/formDesigner/components/columns/columns';
 import ConfigurableActionConfigurator from 'designer-components/configurableActionsConfigurator';
-import ContainerComponent from 'components/formDesigner/components/container/containerComponent';
+import ContainerComponent from 'designer-components/container/containerComponent';
 import DataList from 'components/formDesigner/components/dataList/dataListComponent';
 import AdvancedFilterButton from 'designer-components/dataTable/advancedFilterButton/advancedFilterButtonComponent';
 import ChildTable from 'designer-components/dataTable/childTable';

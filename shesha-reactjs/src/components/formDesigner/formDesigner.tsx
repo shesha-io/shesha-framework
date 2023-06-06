@@ -1,11 +1,10 @@
 import React, { FC } from 'react';
-import { Form, Result, Skeleton } from 'antd';
+import { Form, FormInstance, Result, Skeleton } from 'antd';
 import { FormProvider } from '../../providers/form';
 import { FormIdentifier } from '../../providers/form/models';
 import { FormPersisterProvider } from '../../providers/formPersisterProvider';
 import { FormPersisterStateConsumer } from '../../providers/formPersisterProvider/contexts';
-import { FormDesignerProvider } from '../../providers/formDesigner';
-import { FormDesignerStateConsumer } from '../../providers/formDesigner/contexts';
+import { FormDesignerProvider, useFormDesigner } from '../../providers/formDesigner';
 import { FormMarkupConverter } from '../../providers/formMarkupConverter';
 import { FormDesignerRenderer } from './formDesignerRenderer';
 import { ConfigurationItemVersionStatus } from '../../utils/configurationFramework/models';
@@ -17,7 +16,7 @@ export interface IFormDesignerProps {
 
 export const FormDesigner: FC<IFormDesignerProps> = ({ formId }) => {
   const [form] = Form.useForm();
-  
+
   return (
     <FormPersisterProvider formId={formId} skipCache={true}>
       <FormPersisterStateConsumer>
@@ -34,20 +33,7 @@ export const FormDesigner: FC<IFormDesignerProps> = ({ formId }) => {
                     formSettings={formStore.formSettings}
                     readOnly={formStore.formProps?.versionStatus !== ConfigurationItemVersionStatus.Draft}
                   >
-                    <FormDesignerStateConsumer>
-                      {designerState => (
-                        <FormProvider
-                          name="Form"
-                          mode="designer"
-                          flatComponents={{ allComponents: designerState.allComponents, componentRelations: designerState.componentRelations }}
-                          formSettings={designerState.formSettings}
-                          isActionsOwner={true}
-                          form={form}
-                        >
-                          <FormDesignerRenderer />
-                        </FormProvider>
-                      )}
-                    </FormDesignerStateConsumer>
+                    <FormProviderWrapper form={form}/>
                   </FormDesignerProvider>
                 )}
               </FormMarkupConverter>
@@ -66,6 +52,24 @@ export const FormDesigner: FC<IFormDesignerProps> = ({ formId }) => {
         }}
       </FormPersisterStateConsumer>
     </FormPersisterProvider>
+  );
+};
+
+const FormProviderWrapper: FC<{ form: FormInstance }> = ({ form }) => {
+  const { allComponents, componentRelations, formSettings } = useFormDesigner();
+
+  return (
+    <FormProvider
+      name="Designer Form"
+      mode="designer"
+      allComponents={allComponents}
+      componentRelations={componentRelations}
+      formSettings={formSettings}
+      isActionsOwner={true}
+      form={form}
+    >
+      <FormDesignerRenderer />
+    </FormProvider>
   );
 };
 

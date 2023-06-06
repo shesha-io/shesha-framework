@@ -33,7 +33,7 @@ const Template: Story<IPermissionTreeStoryProps> = (props) => {
     <GlobalStateProvider>
         <ShaApplicationProvider backendUrl={backendUrl}>
             <AuthContainer layout>
-                <FormProvider mode={'edit'} name={''} flatComponents={undefined} formSettings={undefined} isActionsOwner={false}>
+                <FormProvider mode={'edit'} name={''} allComponents={{}} componentRelations={{}} formSettings={undefined} isActionsOwner={false}>
                   <PermissionsTree formComponentName={''} formComponentId={''} {...props} />
                 </FormProvider>
             </AuthContainer>

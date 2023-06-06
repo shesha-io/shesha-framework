@@ -20,7 +20,8 @@ export interface IHasComponentGroups {
   toolboxComponentGroups: IToolboxComponentGroup[];
 }
 
-export interface IFormStateContext extends IFlatComponentsStructure /*IFormProps*/ {
+export interface IFormStateInternalContext {
+  name?: string;
   formSettings: IFormSettings;
   formMarkup?: FormRawMarkup;
   formMode: FormMode;
@@ -41,6 +42,10 @@ export interface IFormStateContext extends IFlatComponentsStructure /*IFormProps
    * If true, indicates that list of visible components are calculated
    */
   visibleComponentIdsIsSet: boolean;
+}
+
+export interface IFormStateContext extends IFormStateInternalContext, IFlatComponentsStructure {
+
 }
 
 export interface ISetVisibleComponentsPayload {
@@ -75,6 +80,7 @@ export interface IRegisterActionsPayload {
 export interface IFormActionsContext {
   setFormMode: (formMode: FormMode) => void;
   getChildComponents: (id: string) => IConfigurableFormComponent[];
+  getChildComponentIds: (containerId: string) => string[];
   getComponentModel: (id: string) => IConfigurableFormComponent;
   isComponentDisabled: (model: Pick<IConfigurableFormComponent, 'id' | 'isDynamic' | 'disabled'>) => boolean;
   isComponentHidden: (model: Pick<IConfigurableFormComponent, 'id' | 'isDynamic' | 'hidden'>) => boolean;
@@ -100,10 +106,11 @@ export interface IFormActionsContext {
 /** Form initial state */
 export const FORM_CONTEXT_INITIAL_STATE: IFormStateContext = {
   allComponents: {},
+  componentRelations: { [ROOT_COMPONENT_KEY]: [] },
+  
   visibleComponentIds: [],
   visibleComponentIdsIsSet: false,
   enabledComponentIds: [],
-  componentRelations: { [ROOT_COMPONENT_KEY]: [] },
   formMode: 'designer',
   actions: [],
   sections: [],

@@ -42,7 +42,6 @@ import {
   updateToolboxComponentGroupsAction,
 } from './actions';
 import { useFormDesignerComponentGroups, useFormDesignerComponents } from '../form/hooks';
-//import { ActionCreators } from 'redux-undo';
 import useThunkReducer from '../../hooks/thunkReducer';
 import {
   IAsyncValidationError,

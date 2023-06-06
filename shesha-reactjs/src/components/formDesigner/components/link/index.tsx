@@ -6,7 +6,7 @@ import { evaluateString, getStyle, validateConfigurableComponentSettings } from 
 import { useForm, useFormData } from '../../../../providers';
 import settingsFormJson from './settingsForm.json';
 import ComponentsContainer from '../../componentsContainer';
-import { AlignItems, JustifyContent, JustifyItems } from '../container/interfaces';
+import { AlignItems, JustifyContent, JustifyItems } from '../../../../designer-components/container/interfaces';
 import { ContainerDirection } from '../../common/interfaces';
 
 export interface IAlertProps extends IConfigurableFormComponent {

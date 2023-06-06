@@ -71,7 +71,7 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = props => {
         {flatComponents => (
           <FormProvider
             name="Form"
-            flatComponents={flatComponents}
+            {...flatComponents}
             formSettings={formSettings}
             formMarkup={providedMarkup}
             mode={mode}

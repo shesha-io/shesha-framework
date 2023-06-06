@@ -1,4 +1,4 @@
-import React, { FC, useContext, PropsWithChildren, useEffect, useRef } from 'react';
+import React, { FC, useContext, PropsWithChildren, useEffect, useRef, useMemo } from 'react';
 import { useThunkReducer } from 'hooks/thunkReducer';
 import { dataTableReducer } from './reducer';
 import {
@@ -56,7 +56,7 @@ import camelCaseKeys from 'camelcase-keys';
 import { useConfigurableAction } from '../configurableActionsDispatcher';
 import { IHasModelType, IHasRepository, IRepository } from './repository/interfaces';
 import { withBackendRepository } from './repository/backendRepository';
-import { withInMemoryRepository } from './repository/inMemoryRepository';
+import { withFormFieldRepository } from './repository/inMemoryRepository';
 import { advancedFilter2JsonLogic, getTableDataColumns } from './utils';
 import { useLocalStorage } from 'hooks';
 import { withNullRepository } from './repository/nullRepository';
@@ -117,13 +117,8 @@ const getTableProviderComponent = (props: IDataTableProviderProps, formInstance:
     };
     case 'Form': {
       const { propertyName } = props as IHasFormDataSourceConfig;
-      
-      const valueAccessor = () => formInstance.form?.getFieldValue(propertyName);
-      const onChange = (newValue: object[]) => {
-        if (formInstance.form)
-          formInstance.form.setFieldValue(propertyName, newValue);
-      };
-      return withInMemoryRepository(DataTableProviderWithRepository, { valueAccessor, onChange });
+
+      return withFormFieldRepository(DataTableProviderWithRepository, { propertyName, formInstance: formInstance.form });      
     };
     case 'Url':
       const { getDataPath } = props as IHasEntityDataSourceConfig;
@@ -184,7 +179,9 @@ const getFetchListDataPayload = (state: IDataTableStateContext): IGetListDataPay
 const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = (props) => {
   const form = useForm(false);
   
-  const component = getTableProviderComponent(props, form);
+  const component = useMemo(() => {
+    return getTableProviderComponent(props, form);
+  }, [props.sourceType]);
 
   return <>{component(props)}</>;
 };

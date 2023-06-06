@@ -181,7 +181,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
     if (form) {
       form.resetFields();
     }
-  }, [allComponents, initialValues]);
+  }, [/*allComponents, */initialValues]); // todo: re-rendering on change of allComponents causes problems in the designer
 
   useEffect(() => {
     let incomingInitialValues = null;
@@ -417,6 +417,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
     <Spin spinning={submitting}>
       <Form
         form={form}
+        //component={false}
         size={props.size}
         onFinish={onFinishInternal}
         onFinishFailed={onFinishFailedInternal}
