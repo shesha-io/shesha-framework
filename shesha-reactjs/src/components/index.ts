@@ -122,6 +122,8 @@ export { default as Show, type IShowProps } from './show';
 export { default as CodeEditor } from './formDesigner/components/codeEditor/codeEditor';
 export { default as ModelConfigurator } from './modelConfigurator';
 
+export { ConfigurableApplicationComponent, IConfigurableApplicationComponentProps } from './configurableComponent';
+
 export {
   //default as GenericRefListDropDown,
   DtoRefListDropDown,

@@ -56,6 +56,7 @@ export interface IDateFieldProps extends IConfigurableFormComponent {
   monthFormat?: string;
   weekFormat?: string;
   range?: boolean;
+  dateOnly?: boolean;
   picker?: 'time' | 'date' | 'week' | 'month' | 'quarter' | 'year';
   disablePastDates?: boolean;
   onChange?: TimePickerChangeEvent | RangePickerChangeEvent;
@@ -136,6 +137,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     disabled,
     hideBorder,
     range,
+    dateOnly,
     value,
     showTime,
     showNow,
@@ -158,6 +160,8 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
   const quarterFormat = props?.quarterFormat || DATE_TIME_FORMATS.quarter;
   const monthFormat = props?.monthFormat || DATE_TIME_FORMATS.month;
   const weekFormat = props?.weekFormat || DATE_TIME_FORMATS.week;
+
+  const defaultFormat = dateOnly ? 'YYYY-MM-DD' : null;
 
   const { form, formMode, isComponentDisabled, formData } = useForm();
 
@@ -199,7 +203,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
       return;
     }
 
-    const newValue = isMoment(localValue) ? localValue.format() : localValue;
+    const newValue = isMoment(localValue) ? localValue.format(defaultFormat) : localValue;
 
     (onChange as TimePickerChangeEvent)(newValue, dateString);
   };
@@ -211,7 +215,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     }
 
     const dates = (values as []).map((val: any) => {
-      if (isMoment(val)) return val.format();
+      if (isMoment(val)) return val.format(defaultFormat);
 
       return val;
     });
