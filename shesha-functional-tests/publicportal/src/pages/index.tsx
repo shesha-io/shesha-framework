@@ -3,6 +3,7 @@ import { Alert, Card, Col, Row } from "antd";
 import { PortalLayout } from "components";
 import data from "public/meta.json";
 import React from "react";
+import { LOGO } from "src/app-constants/application";
 import styled from "styled-components";
 
 const StyledAlert = styled(Alert)`
@@ -11,7 +12,7 @@ const StyledAlert = styled(Alert)`
 
 const Home: React.FC = () => {
   return (
-    <PortalLayout>
+    <PortalLayout imageProps={LOGO} username="Admin">
       <CollapsiblePanel header="Plugins">
         <StyledAlert
           message="This is a list of plugins the boilerplate uses"

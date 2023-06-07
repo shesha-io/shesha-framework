@@ -122,8 +122,8 @@ resources:
           - image: ${containerAppRevisionImage}
             name: #{projectName}#-#{role}#-#{env}#
             resources: 
-                cpu: 2.0
-                memory: "4Gi"
+                cpu: 1.0
+                memory: "2Gi"
             # probes:
             #   - httpGet:
             #       httpHeaders:
@@ -136,11 +136,11 @@ resources:
             #     type: Liveness
         scale:
           maxReplicas: 1
-          minReplicas: 1
+          minReplicas: 0
           rules:
             - custom:
                 metadata:
-                  concurrentRequests: '50'
+                  concurrentRequests: '75'
                 type: http
               name: httpscalingrule  
 outputs:
