@@ -419,6 +419,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
     <Spin spinning={submitting}>
       <Form
         form={form}
+        labelWrap
         //component={false}
         size={props.size}
         onFinish={onFinishInternal}

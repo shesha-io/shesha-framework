@@ -35,16 +35,19 @@ export interface IColumnEditFieldProps {
   onChange: (key: string, value: any) => void;
 }
 
-export type YesNoInherit = 'yes' | 'no' | 'inherit';
+export type YesNoInherit = 'yes' | 'no' | 'inherit' | 'js';
 
 export interface IShaDataTableInlineEditableProps {
   canDeleteInline?: YesNoInherit;
+  canDeleteInlineExpression?: string; // todo: replace with new dynamic JS properties
   customDeleteUrl?: string;
   canEditInline?: YesNoInherit;
+  canEditInlineExpression?: string; // todo: replace with new dynamic JS properties
   inlineEditMode?: InlineEditMode;
   inlineSaveMode?: InlineSaveMode;
   customUpdateUrl?: string;
   canAddInline?: YesNoInherit;
+  canAddInlineExpression?: string; // todo: replace with new dynamic JS properties
   newRowCapturePosition?: NewRowCapturePosition;
   newRowInsertPosition?: NewRowCapturePosition;
   customCreateUrl?: string;
