@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
-using Abp.Domain.Entities;
+﻿using Abp.Domain.Entities;
 using Abp.Domain.Uow;
 using NHibernate;
 using NHibernate.Engine;
 using NHibernate.Type;
+using Shesha.Utilities;
+using System.Collections.Generic;
 
 namespace Shesha.NHibernate.Filters
 {
@@ -20,7 +21,7 @@ namespace Shesha.NHibernate.Filters
 
             var filterDef = new FilterDefinition(
                 AbpDataFilters.MustHaveTenant,
-                $"({nameof(IMustHaveTenant.TenantId)} = :{AbpDataFilters.Parameters.TenantId} or {nameof(IMustHaveTenant.TenantId)} is null and :{AbpDataFilters.Parameters.TenantId} is null)",
+                $"({nameof(IMustHaveTenant.TenantId).DoubleQuote()} = :{AbpDataFilters.Parameters.TenantId} or {nameof(IMustHaveTenant.TenantId).DoubleQuote()} is null and :{AbpDataFilters.Parameters.TenantId} is null)",
                 new Dictionary<string, IType>
                 {
                     { AbpDataFilters.Parameters.TenantId, NHibernateUtil.Int32 }

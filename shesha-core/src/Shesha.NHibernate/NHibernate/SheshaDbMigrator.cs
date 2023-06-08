@@ -72,10 +72,14 @@ namespace Shesha.NHibernate
                     {
                         rb.WithGlobalCommandTimeout(TimeSpan.FromMinutes(30));
 
+                        rb.AddPostgres()
+                        // Set the connection string
+                            .WithGlobalConnectionString(connectionString);
+                        /*
                         rb.AddSqlServer2012()
                             // Set the connection string
                             .WithGlobalConnectionString(connectionString);
-                        
+                        */
                         var assemblies = _assemblyFinder.GetAllAssemblies();
                         foreach (var assembly in assemblies)
                         {

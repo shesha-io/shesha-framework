@@ -40,6 +40,7 @@ using Shesha.Swagger;
 using System.Reflection;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.Swagger;
+using Hangfire.PostgreSql;
 
 namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 {
@@ -119,8 +120,12 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 
 			services.AddHangfire(config =>
 			{
-				config.UseSqlServerStorage(_appConfiguration.GetConnectionString("Default"));
-			});
+				//config.UseSqlServerStorage(_appConfiguration.GetConnectionString("Default"));
+				config.UsePostgreSqlStorage(_appConfiguration.GetConnectionString("Default"));
+
+            });
+			services.AddHangfireServer(config => {
+            });
 
 			// add Shesha GraphQL
 			services.AddSheshaGraphQL();
@@ -199,12 +204,8 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 				options.IndexStream = () => Assembly.GetExecutingAssembly()
 					.GetManifestResourceStream("Boxfusion.SheshaFunctionalTests.Web.Host.wwwroot.swagger.ui.index.html");
 			}); // URL: /swagger​
-			var options = new BackgroundJobServerOptions
-			{
-				//Queues = new[] { "alpha", "beta", "default" }
-			};
-			app.UseHangfireServer(options);
-			app.UseHangfireDashboard("/hangfire",
+			
+            app.UseHangfireDashboard("/hangfire",
 				new DashboardOptions
 				{
 					Authorization = new[] { new HangfireAuthorizationFilter() }

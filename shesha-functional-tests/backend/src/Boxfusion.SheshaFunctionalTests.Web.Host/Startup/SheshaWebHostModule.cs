@@ -1,3 +1,4 @@
+using Abp.AutoMapper;
 using Abp.Hangfire;
 using Abp.Hangfire.Configuration;
 using Abp.Modules;

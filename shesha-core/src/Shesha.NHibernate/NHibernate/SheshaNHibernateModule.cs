@@ -14,7 +14,7 @@ using Castle.MicroKernel.Registration;
 using Microsoft.Extensions.Configuration;
 using NHibernate;
 using NHibernate.Dialect;
-using NHibernate.Driver;
+using NHibernate.Extensions.NpgSql;
 using Shesha.Attributes;
 using Shesha.Bootstrappers;
 using Shesha.Configuration.Startup;
@@ -25,6 +25,7 @@ using Shesha.NHibernate.Filters;
 using Shesha.NHibernate.Interceptors;
 using Shesha.NHibernate.Linq;
 using Shesha.NHibernate.Maps;
+using Shesha.NHibernate.PostgreSql;
 using Shesha.NHibernate.Repositories;
 using Shesha.NHibernate.Session;
 using Shesha.NHibernate.Uow;
@@ -76,21 +77,21 @@ namespace Shesha.NHibernate
                         db.ConnectionString = !string.IsNullOrWhiteSpace(ConnectionString)
                             ? ConnectionString
                             : NHibernateUtilities.ConnectionString;
+
+                        db.Dialect<PostgreSQL83Dialect>();
+                        db.Driver<CitextPostgreSqlDriver>();
                         
+                        /*
                         db.Dialect<MsSql2012Dialect>();
                         db.Driver<Sql2008ClientDriver>();
-                        db.Timeout = 150;
-                        /*
-                        db.Timeout = string.IsNullOrEmpty(ConfigurationManager.AppSettings["SqlTimeoutInSeconds"])
-                            ? (byte)150
-                            : (byte)int.Parse(ConfigurationManager.AppSettings["SqlTimeoutInSeconds"]);
                         */
-
+                        db.Timeout = 150;
                         db.LogFormattedSql = true;
                     })
                     .SetProperty("hbm2ddl.keywords", "auto-quote")
+                    .SetNamingStrategy(QuotedNamingStrategy.Instance)
                     .CurrentSessionContext<UnitOfWorkSessionContext>();
-
+                
                 // register linq extensions
                 _nhConfig.LinqToHqlGeneratorsRegistry<SheshaLinqToHqlGeneratorsRegistry>();
 

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\common.props" />
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
@@ -25,9 +25,9 @@
     <PackageReference Include="Abp" Version="6.6.2" />
     <PackageReference Include="Abp.AspNetCore" Version="6.6.2" />
     <PackageReference Include="Cronos" Version="0.7.0" />
-    <PackageReference Include="FluentMigrator" Version="3.2.1" />
-    <PackageReference Include="Hangfire.Core" Version="1.7.25" />
-	  <PackageReference Include="Hangfire.AspNetCore" Version="1.7.25" />
+    <PackageReference Include="FluentMigrator" Version="3.3.2" />
+    <PackageReference Include="Hangfire.Core" Version="1.8.2" />
+	  <PackageReference Include="Hangfire.AspNetCore" Version="1.8.2" />
     <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
   </ItemGroup>
