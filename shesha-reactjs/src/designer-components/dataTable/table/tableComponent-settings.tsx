@@ -19,6 +19,7 @@ const yesNoInheritOptions: ITypedOption<YesNoInherit>[] = [
   { label: 'Yes', value: 'yes' },
   { label: 'No', value: 'no' },
   { label: 'Inherit', value: 'inherit' },
+  { label: 'Expression', value: 'js' },
 ];
 const inlineEditModes: ITypedOption<InlineEditMode>[] = [
   { label: 'One by one', value: 'one-by-one' },
@@ -126,6 +127,27 @@ const ROW_SAVED_SUCCESS_EXPOSED_VARIABLES = [
   }
 ];
 
+const ENABLE_CRUD_EXPOSED_VARIABLES = [
+  {
+    id: nanoid(),
+    name: 'formData',
+    description: 'Form values',
+    type: 'object',
+  },
+  {
+    id: nanoid(),
+    name: 'globalState',
+    description: 'The global state of the application',
+    type: 'object',
+  },
+  {
+    id: nanoid(),
+    name: 'moment',
+    description: 'The moment.js object',
+    type: 'object',
+  }
+];
+
 export interface IProps {
   readOnly: boolean;
   model: ITableComponentProps;
@@ -193,8 +215,25 @@ function TableSettings(props: IProps) {
 
       <SectionSeparator title="CRUD" />
 
-      <Form.Item name="canEditInline" label="Can edit inline">
+      <Form.Item
+        name="canEditInline"
+        label="Can edit inline"
+      // label={<>Can edit inline <Switch size="small" defaultChecked unCheckedChildren="static" checkedChildren="JS" style={{ marginLeft: '8px' }}/></>}
+      >
         <Select disabled={props.readOnly} options={yesNoInheritOptions} />
+      </Form.Item>
+      <Form.Item name="canEditInlineExpression" label="Can edit inline expression" hidden={canEditInline !== 'js'}>
+        <CodeEditor
+          id={''}
+          name="canEditInlineExpression"
+          readOnly={props.readOnly}
+          mode="dialog"
+          label="Can edit inline expression"
+          setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
+          type={''}
+          description="Return true to enable inline editing and false to disable."
+          exposedVariables={ENABLE_CRUD_EXPOSED_VARIABLES}
+        />
       </Form.Item>
       <Form.Item name="inlineEditMode" label="Row edit mode" hidden={canEditInline === 'no'}>
         <Select disabled={props.readOnly} options={inlineEditModes} />
@@ -208,6 +247,19 @@ function TableSettings(props: IProps) {
 
       <Form.Item name="canAddInline" label="Can add inline">
         <Select disabled={props.readOnly} options={yesNoInheritOptions} />
+      </Form.Item>
+      <Form.Item name="canAddInlineExpression" label="Can add inline expression" hidden={canAddInline !== 'js'}>
+        <CodeEditor
+          id={''}
+          name="canAddInlineExpression"
+          readOnly={props.readOnly}
+          mode="dialog"
+          label="Can add inline expression"
+          setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
+          type={''}
+          description="Return true to enable inline creation of new rows and false to disable."
+          exposedVariables={ENABLE_CRUD_EXPOSED_VARIABLES}
+        />
       </Form.Item>
       <Form.Item name="newRowCapturePosition" label="New row capture position" hidden={canAddInline === 'no'}>
         <Select disabled={props.readOnly} options={rowCapturePositions} />
@@ -255,10 +307,10 @@ function TableSettings(props: IProps) {
         />
       </Form.Item>
       <Form.Item name="onRowSaveSuccessAction" labelCol={{ span: 0 }} wrapperCol={{ span: 24 }} noStyle>
-        <ConfigurableActionConfigurator 
-          editorConfig={null} 
-          level={1} 
-          label="On row save success" 
+        <ConfigurableActionConfigurator
+          editorConfig={null}
+          level={1}
+          label="On row save success"
           description="Custom business logic to be executed after successfull saving of new/updated row."
           exposedVariables={ROW_SAVED_SUCCESS_EXPOSED_VARIABLES}
         />
@@ -266,6 +318,19 @@ function TableSettings(props: IProps) {
       <Form.Item name="canDeleteInline" label="Can delete inline">
         <Select disabled={props.readOnly} options={yesNoInheritOptions} />
       </Form.Item>
+      <Form.Item name="canDeleteInlineExpression" label="Can delete inline expression" hidden={canDeleteInline !== 'js'}>
+        <CodeEditor
+          id={''}
+          name="canDeleteInlineExpression"
+          readOnly={props.readOnly}
+          mode="dialog"
+          label="Can delete inline expression"
+          setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
+          type={''}
+          description="Return true to enable inline deletion and false to disable."
+          exposedVariables={ENABLE_CRUD_EXPOSED_VARIABLES}
+        />
+      </Form.Item>      
       <Form.Item name="customDeleteUrl" label="Custom delete url" hidden={canDeleteInline === 'no'}>
         <Input readOnly={props.readOnly} />
       </Form.Item>
