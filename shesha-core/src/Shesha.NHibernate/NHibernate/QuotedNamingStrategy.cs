@@ -1,5 +1,5 @@
 ﻿using NHibernate.Cfg;
-using Shesha.Utilities;
+using Shesha.NHibernate.Utilites;
 
 namespace Shesha.NHibernate
 {
@@ -29,7 +29,7 @@ namespace Shesha.NHibernate
 
         public string ColumnName(string columnName)
         {
-            return columnName.DoubleQuote();
+            return columnName.EscapeDbObjectName();
         }
 
         public string LogicalColumnName(string columnName, string propertyName)
@@ -49,7 +49,7 @@ namespace Shesha.NHibernate
 
         public string TableName(string tableName)
         {
-            return Wrapped.TableName(tableName).DoubleQuote();
+            return Wrapped.TableName(tableName).EscapeDbObjectName();
         }
     }
 }

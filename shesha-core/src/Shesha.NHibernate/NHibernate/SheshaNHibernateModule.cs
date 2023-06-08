@@ -14,6 +14,7 @@ using Castle.MicroKernel.Registration;
 using Microsoft.Extensions.Configuration;
 using NHibernate;
 using NHibernate.Dialect;
+using NHibernate.Driver;
 using NHibernate.Extensions.NpgSql;
 using Shesha.Attributes;
 using Shesha.Bootstrappers;
@@ -78,13 +79,14 @@ namespace Shesha.NHibernate
                             ? ConnectionString
                             : NHibernateUtilities.ConnectionString;
 
+                        /*
                         db.Dialect<PostgreSQL83Dialect>();
                         db.Driver<CitextPostgreSqlDriver>();
+                        */
                         
-                        /*
                         db.Dialect<MsSql2012Dialect>();
                         db.Driver<Sql2008ClientDriver>();
-                        */
+                        
                         db.Timeout = 150;
                         db.LogFormattedSql = true;
                     })

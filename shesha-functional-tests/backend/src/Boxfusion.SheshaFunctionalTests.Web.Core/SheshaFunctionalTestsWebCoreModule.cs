@@ -1,6 +1,7 @@
 using Abp.Modules;
 using Abp.Reflection.Extensions;
 using Boxfusion.SheshaFunctionalTests.Common;
+using Boxfusion.SheshaFunctionalTests.Common.Authorization;
 using Castle.MicroKernel.Registration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -19,7 +20,6 @@ using Shesha.Sms.Xml2Sms;
 using Shesha.Web.FormsDesigner;
 using System;
 using System.Text;
-using Boxfusion.SheshaFunctionalTests.Common.Authorization;
 
 namespace Boxfusion.SheshaFunctionalTests
 {
@@ -44,7 +44,6 @@ namespace Boxfusion.SheshaFunctionalTests
      )]
     public class SheshaFunctionalTestsWebCoreModule : AbpModule
     {
-        private readonly IWebHostEnvironment _env;
         private readonly IConfigurationRoot _appConfiguration;
 
         /// <summary>
@@ -53,7 +52,6 @@ namespace Boxfusion.SheshaFunctionalTests
         /// <param name="env"></param>
         public SheshaFunctionalTestsWebCoreModule(IWebHostEnvironment env)
         {
-            _env = env;
             _appConfiguration = env.GetAppConfiguration();
         }
 

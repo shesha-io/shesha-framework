@@ -3,7 +3,7 @@ using Abp.Domain.Uow;
 using NHibernate;
 using NHibernate.Engine;
 using NHibernate.Type;
-using Shesha.Utilities;
+using Shesha.NHibernate.Utilites;
 using System.Collections.Generic;
 
 namespace Shesha.NHibernate.Filters
@@ -21,7 +21,7 @@ namespace Shesha.NHibernate.Filters
 
             var filterDef = new FilterDefinition(
                 AbpDataFilters.SoftDelete,
-                $"{nameof(ISoftDelete.IsDeleted).DoubleQuote()} = :{AbpDataFilters.Parameters.IsDeleted}",
+                $"{nameof(ISoftDelete.IsDeleted).EscapeDbObjectName()} = :{AbpDataFilters.Parameters.IsDeleted}",
                 new Dictionary<string, IType>
                 {
                     { AbpDataFilters.Parameters.IsDeleted, NHibernateUtil.Boolean }
