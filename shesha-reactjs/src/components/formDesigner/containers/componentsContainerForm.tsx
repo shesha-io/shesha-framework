@@ -143,6 +143,7 @@ const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContainerProp
   } = useFormDesigner();
 
   const childIds = getChildComponentIds(containerId);
+
   const componentsMapped = useMemo<ItemInterface[]>(() => {
     return childIds.map<ItemInterface>(id => ({
       id: id
