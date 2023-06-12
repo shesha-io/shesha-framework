@@ -52,6 +52,7 @@ import {
 import { IDataSource } from '../formDesigner/models';
 import { useMetadataDispatcher } from '../../providers';
 import { useDeepCompareEffect } from 'react-use';
+import { UndoableActionCreators } from 'utils/undoable';
 
 export interface IFormDesignerProviderProps {
   flatComponents: IFlatComponentsStructure;
@@ -80,16 +81,13 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
 
   const { activateProvider } = useMetadataDispatcher(false) ?? {};
 
-  /*
   const [state, dispatch] = useThunkReducer(formReducer, {
     past: [],
     present: initial,
     future: [],
   });
-  */
-  const [state, dispatch] = useThunkReducer(formReducer, initial);
 
-  const statePresent = state; //state.present;
+  const statePresent = state.present;
 
   useEffect(() => {
     if (
@@ -106,7 +104,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   }, [readOnly]);
 
   useDeepCompareEffect(() => {
-    if(toolboxComponentGroups?.length !== 0) {
+    if (toolboxComponentGroups?.length !== 0) {
       updateToolboxComponentGroups(toolboxComponentGroups);
     }
   }, [toolboxComponentGroups]);
@@ -178,9 +176,10 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   };
 
   const setFlatComponents = (flatComponents: IFlatComponentsStructure) => {
+    console.log('LOG: setFlatComponents');
     dispatch((dispatchThunk, _getState) => {
       dispatchThunk(setFlatComponentsAction(flatComponents));
-      //dispatchThunk(ActionCreators.clearHistory());
+      dispatchThunk(UndoableActionCreators.clearHistory());
     });
   };
 
@@ -213,11 +212,11 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   };
 
   const undo = () => {
-    //dispatch(ActionCreators.undo());
+    dispatch(UndoableActionCreators.undo());
   };
 
   const redo = () => {
-    //dispatch(ActionCreators.redo());
+    dispatch(UndoableActionCreators.redo());
   };
 
   const setSelectedComponent = (componentId: string, dataSourceId: string, componentRef?: MutableRefObject<any>) => {
@@ -279,13 +278,13 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   };
 
   return (
-    // <UndoableFormDesignerStateContext.Provider value={state}>
-    <FormDesignerStateContext.Provider value={statePresent}>
-      <FormDesignerActionsContext.Provider value={configurableFormActions}>
-        {children}
-      </FormDesignerActionsContext.Provider>
-    </FormDesignerStateContext.Provider>
-    // </UndoableFormDesignerStateContext.Provider>
+    <UndoableFormDesignerStateContext.Provider value={state}>
+      <FormDesignerStateContext.Provider value={statePresent}>
+        <FormDesignerActionsContext.Provider value={configurableFormActions}>
+          {children}
+        </FormDesignerActionsContext.Provider>
+      </FormDesignerStateContext.Provider>
+    </UndoableFormDesignerStateContext.Provider>
   );
 };
 
@@ -317,8 +316,8 @@ function useUndoableState(require: boolean = true) {
   }
 
   return {
-    canUndo: false, //context.past.length > 0,
-    canRedo: false, //context.future.length > 0,
+    canUndo: context.past.length > 0,
+    canRedo: context.future.length > 0,
   };
 }
 
