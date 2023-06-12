@@ -12,9 +12,9 @@ namespace Shesha.Domain
     /// <typeparam name="TId">Type of the Id</typeparam>
     public abstract class FullAuditedEntityWithExternalSync<TId>: FullAuditedEntity<TId>
     {
-        [StringLength(50)]
+        [StringLength(100)]
         public virtual string ExtSysId { get; set; }
-        [StringLength(50)]
+        [StringLength(100)]
         public virtual string ExtSysSource { get; set; }
         public virtual RefListExternalSyncStatus? ExtSysSyncStatus { get; set; }
         public virtual DateTime? ExtSysFirstSyncDate { get; set; }
