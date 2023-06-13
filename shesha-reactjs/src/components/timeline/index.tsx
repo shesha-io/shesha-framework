@@ -41,7 +41,7 @@ export const ShaTimeline: FC<ITimelineProps> = ({ properties, ownerId, entityTyp
   }, 300);
 
   const timelineData: any[] = apiSource === 'custom' ? data?.result : data?.result?.items;
-
+  //sort values
   const sortedTimelineData = timelineData?.sort((item1, item2) => {
     const actionDataA = item1?.actionData;
     const actionDataB = item2?.actionData;
