@@ -1,4 +1,21 @@
-Hlayi you add your change log data in here.
-
-Testing Release with latest Shesha React installed.
-Release whatever
+### Features covered in this release
+- Drag and drop of components
+- Implementation of CRUD operations
+- Data table inline editing, creating and deleting
+- Data list
+- Reference list status
+- Panel customization
+- Dynamic address picker
+- Support for entity cascading behaviour (create, update and delete unreferenced)
+- Support for quick view, navigation link and modal dialog view on Entity Reference
+- Dynamic form routing
+- List of Json Entities binding to a child entities tag group component
+- Support for generic entity reference properties
+- Support for file/files component when owner is new entity still to be created
+- Theme page refactoring
+- Sidebar menu customization
+- JavaScript code editors
+- Dynamic Modals
+- Configurable Actions
+- Permissions configurator
+- Entity Configurations
