@@ -5,6 +5,8 @@ using Abp.MultiTenancy;
 using Abp.Reflection;
 using Castle.Core.Logging;
 using FluentMigrator.Runner;
+using FluentMigrator.Runner.Conventions;
+using FluentMigrator.Runner.Initialization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shesha.Configuration;
@@ -12,6 +14,7 @@ using Shesha.Configuration.Startup;
 using Shesha.Exceptions;
 using Shesha.FluentMigrator;
 using Shesha.NHibernate.Exceptions;
+using Shesha.NHibernate.PostgreSql;
 using System;
 using System.Configuration;
 using System.Globalization;
@@ -71,7 +74,7 @@ namespace Shesha.NHibernate
             var services = new ServiceCollection();
             services.TryAddSingleton<IModuleLocator, ModuleLocator>();
 
-            return services
+            services
                 // Add common FluentMigrator services
                 .AddFluentMigratorCore()
                 .ConfigureRunner(rb =>
@@ -94,7 +97,7 @@ namespace Shesha.NHibernate
                                 throw new DbmsTypeNotSpecified();
                         }
                         rb.WithGlobalConnectionString(connectionString);
-                        
+
                         var assemblies = _assemblyFinder.GetAllAssemblies();
                         foreach (var assembly in assemblies)
                         {
@@ -106,8 +109,19 @@ namespace Shesha.NHibernate
 
                 // Enable logging to console in the FluentMigrator way
                 .AddLogging(lb => lb.AddFluentMigratorConsole())
-                // Build the service provider
-                .BuildServiceProvider(false);
+                // Start of type filter configuration
+                .Configure<RunnerOptions>(opt =>
+                {
+                    opt.Tags = new[] { _databaseType.ToString() };
+                });
+
+            if (_databaseType == DbmsType.PostgreSQL) 
+            {
+                // register custom conventions for PostgreSql. It forces to use citext for string columns in the create statements
+                services.AddSingleton<IConventionSet>(new PostgreSqlConventionsSet());
+            }
+
+            return services.BuildServiceProvider(false);            
         }
 
         /// <summary>
