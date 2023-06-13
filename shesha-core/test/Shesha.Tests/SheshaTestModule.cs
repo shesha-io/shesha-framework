@@ -6,18 +6,14 @@ using Abp.Configuration.Startup;
 using Abp.Dependency;
 using Abp.Domain.Uow;
 using Abp.Modules;
-using Abp.MultiTenancy;
 using Abp.Net.Mail;
 using Abp.TestBase;
 using Abp.Zero.Configuration;
-using Castle.Core;
 using Castle.Facilities.Logging;
 using Castle.MicroKernel.Registration;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.Configuration;
-using Moq;
-using NSubstitute;
+using Shesha.Configuration.Startup;
 using Shesha.NHibernate;
 using Shesha.Services;
 using Shesha.Tests.DependencyInjection;
@@ -26,7 +22,6 @@ using Shesha.Tests.Interceptors;
 using Shesha.Web.FormsDesigner;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace Shesha.Tests
@@ -43,19 +38,21 @@ namespace Shesha.Tests
         )]
     public class SheshaTestModule : AbpModule
     {
-        private string ConnectionString;
-
         public SheshaTestModule(SheshaNHibernateModule nhModule)
         {
-            var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-            ConnectionString = config.GetConnectionString("TestDB");
-
-            nhModule.ConnectionString = ConnectionString;
             nhModule.SkipDbSeed = false;    // Set to false to apply DB Migration files on start up
         }
 
         public override void PreInitialize()
         {
+            IocManager.MockWebHostEnvirtonment();
+
+            var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+            var connectionString = config.GetConnectionString("TestDB");
+
+            var nhConfig = Configuration.Modules.ShaNHibernate();
+            nhConfig.UseMsSql(connectionString);
+
             Configuration.UnitOfWork.Timeout = TimeSpan.FromMinutes(30);
             Configuration.UnitOfWork.IsTransactional = false;
 
@@ -65,12 +62,7 @@ namespace Shesha.Tests
             Configuration.BackgroundJobs.IsJobExecutionEnabled = false;
 
             // mock IWebHostEnvironment
-            var hostingEnvironment = Mock.Of<IWebHostEnvironment>(e => e.ApplicationName == "test");
-            IocManager.IocContainer.Register(
-                Component.For<IWebHostEnvironment>()
-                    .UsingFactoryMethod(() => hostingEnvironment)
-                    .LifestyleSingleton()
-            );
+            //var hostingEnvironment = Mock.Of<IWebHostEnvironment>(e => e.ApplicationName == "test");
 
             var inMemorySettings = new Dictionary<string, string> {
                 /* in memory settings:
@@ -92,7 +84,7 @@ namespace Shesha.Tests
             // Use database for language management
             Configuration.Modules.Zero().LanguageManagement.EnableDbLocalization();
 
-            RegisterFakeService<SheshaDbMigrator>();
+            IocManager.RegisterFakeService<SheshaDbMigrator>();
 
             Configuration.ReplaceService<IDynamicRepository, Services.DynamicRepository>(DependencyLifeStyle.Transient);
 
@@ -100,7 +92,7 @@ namespace Shesha.Tests
             Configuration.ReplaceService<IEmailSender, NullEmailSender>(DependencyLifeStyle.Transient);
 
             // replace connection string resolver
-            Configuration.ReplaceService<IDbPerTenantConnectionStringResolver, TestConnectionStringResolver>(DependencyLifeStyle.Transient);
+            //Configuration.ReplaceService<IDbPerTenantConnectionStringResolver, TestConnectionStringResolver>(DependencyLifeStyle.Transient);
 
             Configuration.ReplaceService<ICurrentUnitOfWorkProvider, AsyncLocalCurrentUnitOfWorkProvider>(DependencyLifeStyle.Singleton);
 
@@ -125,15 +117,6 @@ namespace Shesha.Tests
             StaticContext.SetIocManager(IocManager);
 
             ServiceCollectionRegistrar.Register(IocManager);
-        }
-
-        private void RegisterFakeService<TService>() where TService : class
-        {
-            IocManager.IocContainer.Register(
-                Component.For<TService>()
-                    .UsingFactoryMethod(() => Substitute.For<TService>())
-                    .LifestyleSingleton()
-            );
         }
     }
 }

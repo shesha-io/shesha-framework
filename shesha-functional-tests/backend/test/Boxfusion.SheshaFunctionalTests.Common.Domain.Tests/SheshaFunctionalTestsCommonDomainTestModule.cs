@@ -1,31 +1,32 @@
-using System;
 using Abp;
+using Abp.AspNetCore.Configuration;
 using Abp.AutoMapper;
+using Abp.Castle.Logging.Log4Net;
 using Abp.Configuration.Startup;
 using Abp.Dependency;
+using Abp.Domain.Uow;
 using Abp.Modules;
 using Abp.MultiTenancy;
 using Abp.Net.Mail;
 using Abp.TestBase;
 using Abp.Zero.Configuration;
+using Boxfusion.SheshaFunctionalTests.Tests.DependencyInjection;
+using Castle.Facilities.Logging;
 using Castle.MicroKernel.Registration;
 using Hangfire;
 using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Moq;
 using NSubstitute;
-using Boxfusion.SheshaFunctionalTests.Tests.DependencyInjection;
 using Shesha;
+using Shesha.Configuration.Startup;
 using Shesha.NHibernate;
 using Shesha.Services;
-using Abp.Domain.Uow;
+using System;
 using System.Reflection;
-using Castle.Facilities.Logging;
-using Abp.Castle.Logging.Log4Net;
-using Abp.AspNetCore.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Mvc.ApplicationParts;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Tests
 {
@@ -44,10 +45,12 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Tests
 
         public SheshaFunctionalTestsCommonDomainTestModule(SheshaNHibernateModule nhModule)
         {
-            var config = new ConfigurationBuilder().AddJsonFile("appsettings.Test.json").Build();
-            ConnectionString = config.GetConnectionString("TestDB");
+            var appConfig = new ConfigurationBuilder().AddJsonFile("appsettings.Test.json").Build();
+            ConnectionString = appConfig.GetConnectionString("TestDB");
 
-            nhModule.ConnectionString = ConnectionString;
+            var nhConfig = Configuration.Modules.ShaNHibernate();
+            nhConfig.UseMsSql(ConnectionString);
+
             nhModule.SkipDbSeed = false;    // Set to false to apply DB Migration files on start up
         }
 
@@ -105,9 +108,6 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Tests
 
             // replace email sender
             Configuration.ReplaceService<IEmailSender, NullEmailSender>(DependencyLifeStyle.Transient);
-
-            // replace connection string resolver
-            Configuration.ReplaceService<IDbPerTenantConnectionStringResolver, TestConnectionStringResolver>(DependencyLifeStyle.Transient);
 
             Configuration.ReplaceService<ICurrentUnitOfWorkProvider, AsyncLocalCurrentUnitOfWorkProvider>(DependencyLifeStyle.Singleton);
 

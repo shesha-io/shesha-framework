@@ -3,14 +3,17 @@ using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
-using Shesha;
 using Shesha.Domain;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.NHibernate.Utilites;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data.SqlClient;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace Boxfusion.SheshaFunctionalTests.Common.Application._Test
+namespace Shesha.Web.Core._Test
 {
     public class ValidateDto : IValidatableObject
     {

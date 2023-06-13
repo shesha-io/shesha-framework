@@ -80,8 +80,13 @@ namespace Shesha.NHibernate
 
             if (!SkipDbContextRegistration)
             {
-                if (config.DatabaseType == DbmsType.NotSpecified)
-                    throw new DbmsTypeNotSpecified();
+                if (config.DatabaseType == DbmsType.NotSpecified) 
+                {
+                    // backward compatibility
+                    config.UseMsSql();
+
+                    // throw new DbmsTypeNotSpecified();
+                }
 
                 var configProvider = GetConfigProvider(config.DatabaseType);
 

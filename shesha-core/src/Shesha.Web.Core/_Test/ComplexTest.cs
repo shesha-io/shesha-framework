@@ -6,11 +6,13 @@ using Shesha.Domain.Attributes;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.EntityReferences;
 using Shesha.JsonEntities;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 
-namespace Boxfusion.SheshaFunctionalTests.Common.Application._Test
+namespace Shesha.Web.Core._Test
 {
     public class ComplexTestDto : DynamicDto<ComplexTest, Guid>//, IValidatableObject
     {

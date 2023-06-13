@@ -17,7 +17,7 @@ using Shesha.Extensions;
 using Shesha.JsonEntities.Proxy;
 using Shesha.NHibernate.UoW;
 using Shesha.Services;
-using Shesha.Test;
+using Shesha.Web.Core._Test;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
