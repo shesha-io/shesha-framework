@@ -3,17 +3,14 @@ using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
+using Shesha;
 using Shesha.Domain;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.NHibernate.Utilites;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace Shesha.Test
+namespace Boxfusion.SheshaFunctionalTests.Common.Application._Test
 {
     public class ValidateDto : IValidatableObject
     {
@@ -27,7 +24,7 @@ namespace Shesha.Test
         }
     }
 
-    public interface IComplexTestHardAppService: IApplicationService
+    public interface IComplexTestHardAppService : IApplicationService
     {
         Task CheckData(ValidateDto dto);
     }

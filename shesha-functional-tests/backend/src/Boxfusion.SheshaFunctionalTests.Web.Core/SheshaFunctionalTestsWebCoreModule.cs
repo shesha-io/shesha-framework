@@ -11,6 +11,7 @@ using Shesha.Authentication.JwtBearer;
 using Shesha.Authorization;
 using Shesha.AzureAD;
 using Shesha.Configuration;
+using Shesha.Configuration.Startup;
 using Shesha.Import;
 using Shesha.Ldap;
 using Shesha.Sms.BulkSms;
@@ -60,9 +61,11 @@ namespace Boxfusion.SheshaFunctionalTests
         /// </summary>
         public override void PreInitialize()
         {
-            Configuration.DefaultNameOrConnectionString = _appConfiguration.GetConnectionString(
-                SheshaConsts.ConnectionStringName
-            );
+            var config = Configuration.Modules.ShaNHibernate();
+            //config.UseMsSql();
+            //config.UseMsSql(c => c.GetConnectionString("MsSql"));
+
+            config.UsePostgreSql(c => c.GetConnectionString("PostgreSql"));
 
             ConfigureTokenAuth();
         }

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
-namespace Shesha.Test
+namespace Boxfusion.SheshaFunctionalTests.Common.Application._Test
 {
     /*public class ComplexTestValidator : EntityPropertyValidator<ComplexTest, Guid>, ITransientDependency
     {
