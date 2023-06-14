@@ -3,13 +3,13 @@ import { Column, SortingRule, TableProps } from 'react-table';
 import {
   LoadingOutlined,
 } from '@ant-design/icons';
-import { DataTableColumn, IShaDataTableProps, OnSaveHandler, OnSaveSuccessHandler } from './interfaces';
+import { DataTableColumn, IShaDataTableProps, OnSaveHandler, OnSaveSuccessHandler, YesNoInherit } from './interfaces';
 import { DataTableFullInstance } from 'providers/dataTable/contexts';
 import { ModalProps } from 'antd/lib/modal';
 import ReactTable from '../reactTable';
 import { removeUndefinedProperties } from 'utils/array';
 import { ValidationErrors } from '..';
-import { IFlatComponentsStructure, ROOT_COMPONENT_KEY, useConfigurableActionDispatcher, useDataTableStore, useForm, useGlobalState, useMetadata, useSheshaApplication } from 'providers';
+import { FormMode, IFlatComponentsStructure, ROOT_COMPONENT_KEY, useConfigurableActionDispatcher, useDataTableStore, useForm, useGlobalState, useMetadata, useSheshaApplication } from 'providers';
 import { camelcaseDotNotation, toCamelCase } from 'utils/string';
 import { IReactTableProps, RowDataInitializer } from '../reactTable/interfaces';
 import { usePrevious } from 'react-use';
@@ -18,9 +18,10 @@ import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions }
 import { ITableDataColumn } from 'providers/dataTable/interfaces';
 import { IColumnEditorProps, IFieldComponentProps, standardCellComponentTypes } from 'providers/datatableColumnsConfigurator/models';
 import { useFormDesignerComponents } from 'providers/form/hooks';
-import { getCustomEnabledFunc, getCustomVisibilityFunc } from 'providers/form/utils';
+import { executeScriptSync, getCustomEnabledFunc, getCustomVisibilityFunc } from 'providers/form/utils';
 import moment from 'moment';
 import { axiosHttp } from 'utils/fetchers';
+import { IAnyObject } from 'interfaces';
 
 
 export interface IIndexTableOptions {
@@ -182,21 +183,40 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         return Promise.resolve({});
       };
 
-      return result;
+    return result;
   }, [onNewRowInitializeExecuter, formData, globalState]);
+
+  const evaluateYesNoInheritJs = (value: YesNoInherit, jsExpression: string, formMode: FormMode, formData: any, globalState: IAnyObject): boolean => {
+    switch (value) {
+      case 'yes':
+        return true;
+      case 'no':
+        return false;
+      case 'inherit':
+        return formMode === 'edit';
+      case 'js': {
+        return jsExpression && executeScriptSync<boolean>(jsExpression, { 
+          "formData": formData, 
+          "globalState": globalState, 
+          "moment": moment 
+        });
+      }
+    }
+    return false;
+  };
 
   const crudOptions = useMemo(() => {
     const result = {
-      canDelete: props.canDeleteInline === 'yes' || props.canDeleteInline === 'inherit' && formMode === 'edit',
-      canEdit: props.canEditInline === 'yes' || props.canEditInline === 'inherit' && formMode === 'edit',
-      canAdd: props.canAddInline === 'yes' || props.canAddInline === 'inherit' && formMode === 'edit',
+      canDelete: evaluateYesNoInheritJs(props.canDeleteInline, props.canDeleteInlineExpression, formMode, formData, globalState),
+      canEdit: evaluateYesNoInheritJs(props.canEditInline, props.canEditInlineExpression, formMode, formData, globalState),
+      canAdd: evaluateYesNoInheritJs(props.canAddInline, props.canAddInlineExpression, formMode, formData, globalState),
       onNewRowInitialize,
     };
     return {
       ...result,
       enabled: result.canAdd || result.canDelete || result.canEdit,
     };
-  }, [props.canDeleteInline, props.canEditInline, props.canAddInline, formMode]);
+  }, [props.canDeleteInline, props.canEditInline, props.canAddInline, formMode, formData, globalState]);
 
   const preparedColumns = useMemo(() => {
     const localPreparedColumns = columns
@@ -255,10 +275,10 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
     return (data, formData, globalState) => {
       const evaluationContext = {
-        data: data, 
-        formData: formData, 
-        globalState: globalState, 
-        http: axiosHttp(backendUrl), 
+        data: data,
+        formData: formData,
+        globalState: globalState,
+        http: axiosHttp(backendUrl),
         moment: moment
       };
       // execute the action

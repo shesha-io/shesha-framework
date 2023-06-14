@@ -122,8 +122,8 @@ resources:
           - image: ${containerAppRevisionImage}
             name: #{projectName}#-#{role}#-#{env}#
             resources: 
-                cpu: 2.0
-                memory: "4Gi"
+                cpu: 1.0
+                memory: "2Gi"
             # probes:
             #   - httpGet:
             #       httpHeaders:

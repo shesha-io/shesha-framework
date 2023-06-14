@@ -34,3 +34,4 @@ export * from './sidebarMenuConfigurator';
 export * from './buttonGroupConfigurator';
 export * from './configurableActionsDispatcher';
 export * from './settings';
+export * from './configurationItemsLoader';

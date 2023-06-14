@@ -31,10 +31,10 @@ import {
   upgradeComponent,
 } from '../form/utils';
 import { camelcaseDotNotation } from '../../utils/string';
-//import undoable, { includeAction } from 'redux-undo';
 import { IFormValidationErrors, IToolboxComponentGroup } from '../../interfaces';
 import { IDataSource } from '../formDesigner/models';
 import { nanoid } from 'nanoid/non-secure';
+import undoable from 'utils/undoable';
 
 const addComponentToFlatStructure = (
   structure: IFlatComponentsStructure & IHasComponentGroups,
@@ -536,28 +536,22 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
         ...state,
         toolboxComponentGroups: payload,
       };
-  },
+    },
   },
 
   FORM_DESIGNER_CONTEXT_INITIAL_STATE
 );
 
-export default reducer;
-/*
-const undoableType = typeof(undoable);
-
-const undoableReducer = undoable 
-? undoable(reducer, {
-  filter: includeAction([
-    FormActionEnums.DataPropertyAdd,
-    FormActionEnums.ComponentAdd,
-    FormActionEnums.ComponentDelete,
-    FormActionEnums.ComponentUpdate,
-    FormActionEnums.EndDragging,
-  ]),
+const undoableActions: string[] = [
+  FormActionEnums.DataPropertyAdd,
+  FormActionEnums.ComponentAdd,
+  FormActionEnums.ComponentDelete,
+  FormActionEnums.ComponentUpdate,
+  FormActionEnums.EndDragging,
+];
+const undoableReducer = undoable(reducer, {
+  includeAction: action => (undoableActions.indexOf(action) > -1),
   limit: 20, // set a limit for the size of the history
-})
-: null;
+});
 
 export default undoableReducer;
-*/
