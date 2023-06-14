@@ -21,7 +21,7 @@ namespace Shesha.NHibernate.Filters
 
             var filterDef = new FilterDefinition(
                 AbpDataFilters.MayHaveTenant,
-                $"({nameof(IMayHaveTenant.TenantId).EscapeDbObjectName()} = :{AbpDataFilters.Parameters.TenantId} or {nameof(IMayHaveTenant.TenantId).EscapeDbObjectName()} is null and :{AbpDataFilters.Parameters.TenantId} is null)",
+                $"({nameof(IMayHaveTenant.TenantId).EscapeDbObjectNameForNH()} = :{AbpDataFilters.Parameters.TenantId} or {nameof(IMayHaveTenant.TenantId).EscapeDbObjectNameForNH()} is null and :{AbpDataFilters.Parameters.TenantId} is null)",
                 new Dictionary<string, IType>
                 {
                     { AbpDataFilters.Parameters.TenantId, NHibernateUtil.Int32 }

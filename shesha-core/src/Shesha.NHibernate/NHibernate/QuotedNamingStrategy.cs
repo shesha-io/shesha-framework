@@ -29,7 +29,7 @@ namespace Shesha.NHibernate
 
         public string ColumnName(string columnName)
         {
-            return columnName.EscapeDbObjectName();
+            return columnName.EscapeDbObjectNameForNH();
         }
 
         public string LogicalColumnName(string columnName, string propertyName)
@@ -49,7 +49,7 @@ namespace Shesha.NHibernate
 
         public string TableName(string tableName)
         {
-            return Wrapped.TableName(tableName).EscapeDbObjectName();
+            return Wrapped.TableName(tableName).EscapeDbObjectNameForNH();
         }
     }
 }

@@ -21,7 +21,7 @@ namespace Shesha.NHibernate.Filters
 
             var filterDef = new FilterDefinition(
                 AbpDataFilters.SoftDelete,
-                $"{nameof(ISoftDelete.IsDeleted).EscapeDbObjectName()} = :{AbpDataFilters.Parameters.IsDeleted}",
+                $"{nameof(ISoftDelete.IsDeleted).EscapeDbObjectNameForNH()} = :{AbpDataFilters.Parameters.IsDeleted}",
                 new Dictionary<string, IType>
                 {
                     { AbpDataFilters.Parameters.IsDeleted, NHibernateUtil.Boolean }
