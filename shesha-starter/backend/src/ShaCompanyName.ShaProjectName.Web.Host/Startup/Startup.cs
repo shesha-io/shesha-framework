@@ -8,6 +8,7 @@ using ElmahCore;
 using ElmahCore.Mvc;
 using GraphQL;
 using Hangfire;
+using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -97,7 +98,9 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
 			services.AddHangfire(config =>
 			{
 				config.UseSqlServerStorage(_appConfiguration.GetConnectionString("Default"));
-			});
+				// use this line to switch to PostgreSql
+                //config.UsePostgreSqlStorage(_appConfiguration.GetConnectionString("Default"));
+            });
             services.AddHangfireServer(config => {
             });
 

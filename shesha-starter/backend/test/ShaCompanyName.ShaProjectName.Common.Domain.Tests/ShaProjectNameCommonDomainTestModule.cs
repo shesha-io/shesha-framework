@@ -103,9 +103,6 @@ namespace ShaCompanyName.ShaProjectName.Common.Tests
             // replace email sender
             Configuration.ReplaceService<IEmailSender, NullEmailSender>(DependencyLifeStyle.Transient);
 
-            // replace connection string resolver
-            Configuration.ReplaceService<IDbPerTenantConnectionStringResolver, TestConnectionStringResolver>(DependencyLifeStyle.Transient);
-
             Configuration.ReplaceService<ICurrentUnitOfWorkProvider, AsyncLocalCurrentUnitOfWorkProvider>(DependencyLifeStyle.Singleton);
 
             if (!IocManager.IsRegistered<ApplicationPartManager>())

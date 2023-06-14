@@ -96,8 +96,9 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 
 			services.AddHangfire(config =>
 			{
-				//config.UseSqlServerStorage(_appConfiguration.GetConnectionString("Default"));
-				config.UsePostgreSqlStorage(_appConfiguration.GetConnectionString("PostgreSql"));
+				config.UseSqlServerStorage(_appConfiguration.GetConnectionString("Default"));
+                // use this line to switch to PostgreSql
+                //config.UsePostgreSqlStorage(_appConfiguration.GetConnectionString("Default"));
             });
 			services.AddHangfireServer(config => {
             });

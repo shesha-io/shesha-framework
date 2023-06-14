@@ -63,8 +63,8 @@ namespace Boxfusion.SheshaFunctionalTests
         {
             var config = Configuration.Modules.ShaNHibernate();
             config.UseMsSql();
-            //config.UseMsSql(c => c.GetConnectionString("MsSql"));
-            //config.UsePostgreSql(c => c.GetConnectionString("PostgreSql"));
+            // use this line to switch to PostgreSql
+            //config.UsePostgreSql();
 
             ConfigureTokenAuth();
         }
