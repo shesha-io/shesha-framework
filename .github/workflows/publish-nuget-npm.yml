@@ -10,7 +10,7 @@ on:
 env:
   NODE_VERSION: "18"
   #PYTHON_VERSOIN: '2.7.18'
-  DOTNET_VERSION: "6.x"
+  DOTNET_VERSION: "7.x"
 
 jobs:
   # build the project
