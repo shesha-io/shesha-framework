@@ -63,8 +63,10 @@ namespace ShaCompanyName.ShaProjectName
         public override void PreInitialize()
         {
             var config = Configuration.Modules.ShaNHibernate();
-            config.UseMsSql();
-            // use this line to switch to PostgreSql
+            
+            config.UseDbms(c => c.GetValue("DbmsType", DbmsType.SQLServer), c => c.GetConnectionString("Default"));
+
+            //config.UseMsSql();
             //config.UsePostgreSql();
 
             ConfigureTokenAuth();
