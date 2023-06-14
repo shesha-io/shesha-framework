@@ -19,7 +19,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
-using ShaCompanyName.ShaProjectName.Configuration;
 using ShaCompanyName.ShaProjectName.Hangfire;
 using Shesha.Authorization;
 using Shesha.Configuration;
@@ -82,8 +81,7 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
                 .AddNewtonsoftJson(options =>
                 {
                     options.UseCamelCasing(true);
-                })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+                });
 
 			IdentityRegistrar.Register(services);
 			AuthConfigurer.Configure(services, _appConfiguration);
@@ -91,25 +89,7 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
 			services.AddSignalR();
 
 			services.AddCors();
-			/*
-            // Configure CORS for angular2 UI
-            services.AddCors(
-                options => options.AddPolicy(
-                    _defaultCorsPolicyName,
-                    builder => builder
-                        .WithOrigins(
-                            // App:CorsOrigins in appsettings.json can contain more than one address separated by comma.
-                            _appConfiguration["App:CorsOrigins"]
-                                .Split(",", StringSplitOptions.RemoveEmptyEntries)
-                                .Select(o => o.RemovePostFix("/"))
-                                .ToArray()
-                        )
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials()
-                )
-            );
-            */
+			
 			AddApiVersioning(services);
 
 			services.AddHttpContextAccessor();
@@ -147,7 +127,6 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
 
 			// note: already registered in the ABP
 			AppContextHelper.Configure(app.ApplicationServices.GetRequiredService<IHttpContextAccessor>());
-
 
 			app.UseConfigurationFramework();
 

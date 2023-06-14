@@ -62,10 +62,9 @@ namespace Boxfusion.SheshaFunctionalTests
         public override void PreInitialize()
         {
             var config = Configuration.Modules.ShaNHibernate();
-            //config.UseMsSql();
+            config.UseMsSql();
             //config.UseMsSql(c => c.GetConnectionString("MsSql"));
-
-            config.UsePostgreSql(c => c.GetConnectionString("PostgreSql"));
+            //config.UsePostgreSql(c => c.GetConnectionString("PostgreSql"));
 
             ConfigureTokenAuth();
         }
