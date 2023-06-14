@@ -4,11 +4,15 @@ using Castle.MicroKernel.Registration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using ShaCompanyName.ShaProjectName.Application;
+using ShaCompanyName.ShaProjectName.Common.Authorization;
+using ShaCompanyName.ShaProjectName.Domain;
 using Shesha;
 using Shesha.Authentication.JwtBearer;
 using Shesha.Authorization;
 using Shesha.AzureAD;
 using Shesha.Configuration;
+using Shesha.Configuration.Startup;
 using Shesha.Import;
 using Shesha.Ldap;
 using Shesha.Sms.BulkSms;
@@ -18,9 +22,6 @@ using Shesha.Sms.Xml2Sms;
 using Shesha.Web.FormsDesigner;
 using System;
 using System.Text;
-using ShaCompanyName.ShaProjectName.Common.Authorization;
-using ShaCompanyName.ShaProjectName.Domain;
-using ShaCompanyName.ShaProjectName.Application;
 
 namespace ShaCompanyName.ShaProjectName
 {
@@ -61,6 +62,11 @@ namespace ShaCompanyName.ShaProjectName
         /// </summary>
         public override void PreInitialize()
         {
+            var config = Configuration.Modules.ShaNHibernate();
+            config.UseMsSql();
+            // use this line to switch to PostgreSql
+            //config.UsePostgreSql();
+
             ConfigureTokenAuth();
         }
 
