@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\common.props" />
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <AssemblyName>Shesha.Application</AssemblyName>
     <PackageId>Shesha.Application</PackageId>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
@@ -20,16 +20,10 @@
   <ItemGroup>
     <Compile Remove="Dtos\**" />
     <Compile Remove="ObjectMapper\**" />
-    <Compile Remove="_Test\Case\**" />
-    <Compile Remove="_Test\FunctionalTest\**" />
     <EmbeddedResource Remove="Dtos\**" />
     <EmbeddedResource Remove="ObjectMapper\**" />
-    <EmbeddedResource Remove="_Test\Case\**" />
-    <EmbeddedResource Remove="_Test\FunctionalTest\**" />
     <None Remove="Dtos\**" />
     <None Remove="ObjectMapper\**" />
-    <None Remove="_Test\Case\**" />
-    <None Remove="_Test\FunctionalTest\**" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Excel\template.xlsx" />
@@ -43,13 +37,12 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.10.1" />
-    <PackageReference Include="Hangfire.Core" Version="1.7.25" />
+    <PackageReference Include="Hangfire.Core" Version="1.8.2" />
     <PackageReference Include="MediaTypeMap.Core" Version="2.3.3" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
     <PackageReference Include="NETStandard.Library" Version="2.0.3" />
-    <PackageReference Include="NHibernate" Version="5.3.12" />
+    <PackageReference Include="NHibernate" Version="5.4.2" />
     <PackageReference Include="Stubble.Core" Version="1.9.3" />
-    <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Shesha.Core\Shesha.Core.csproj" />

@@ -18,7 +18,6 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
@@ -128,7 +127,7 @@ namespace Shesha.Web.Host.Startup
             );
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app)
         {
             app.UseElmah();
 
@@ -193,10 +192,6 @@ namespace Shesha.Web.Host.Startup
 
             app.UseMiddleware<GraphQLMiddleware>();
 
-            /*
-            app.UseGraphQL<SheshaSchema>(path: "/graphql/person");
-            app.UseGraphQL<EmptySchema>(path: "/graphql/empty");
-            */
             app.UseGraphQLPlayground(); //to explorer API navigate https://*DOMAIN*/ui/playground
         }
 

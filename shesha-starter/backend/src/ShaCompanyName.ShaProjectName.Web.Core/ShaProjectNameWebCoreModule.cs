@@ -45,7 +45,6 @@ namespace ShaCompanyName.ShaProjectName
 	 )]
     public class ShaProjectNameWebCoreModule : AbpModule
     {
-        private readonly IWebHostEnvironment _env;
         private readonly IConfigurationRoot _appConfiguration;
 
         /// <summary>
@@ -54,7 +53,6 @@ namespace ShaCompanyName.ShaProjectName
         /// <param name="env"></param>
         public ShaProjectNameWebCoreModule(IWebHostEnvironment env)
         {
-            _env = env;
             _appConfiguration = env.GetAppConfiguration();
         }
 
@@ -63,10 +61,6 @@ namespace ShaCompanyName.ShaProjectName
         /// </summary>
         public override void PreInitialize()
         {
-            Configuration.DefaultNameOrConnectionString = _appConfiguration.GetConnectionString(
-                SheshaConsts.ConnectionStringName
-            );
-
             ConfigureTokenAuth();
         }
 

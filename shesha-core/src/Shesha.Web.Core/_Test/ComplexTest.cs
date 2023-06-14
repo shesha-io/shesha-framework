@@ -12,7 +12,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 
-namespace Shesha.Test
+namespace Shesha.Web.Core._Test
 {
     public class ComplexTestDto : DynamicDto<ComplexTest, Guid>//, IValidatableObject
     {
@@ -124,8 +124,8 @@ namespace Shesha.Test
         [JsonIgnore]
         public virtual T Entity { get; set; }
 
-        public virtual TId Id => (Entity != null ? Entity.Id : default(TId));
+        public virtual TId Id => Entity != null ? Entity.Id : default;
 
-        public virtual string DisplayName => (Entity != null && _displayNamePropertyInfo != null ? _displayNamePropertyInfo.GetValue(Entity).ToString() : Entity.ToString());
+        public virtual string DisplayName => Entity != null && _displayNamePropertyInfo != null ? _displayNamePropertyInfo.GetValue(Entity).ToString() : Entity.ToString();
     }
 }

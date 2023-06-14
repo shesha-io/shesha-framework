@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <Import Project="..\..\common.props" />
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <AssemblyName>Shesha.Web.Host</AssemblyName>
     <OutputType>Exe</OutputType>
@@ -43,8 +43,8 @@
     <PackageReference Include="GraphQL.NewtonsoftJson" Version="5.3.0" />
     <PackageReference Include="GraphQL.Server.All" Version="6.1.0" />
     <PackageReference Include="GraphQL.Server.Ui.Playground" Version="6.1.0" />
-    <PackageReference Include="Hangfire.Core" Version="1.7.25" />
-    <PackageReference Include="Hangfire.SqlServer" Version="1.7.25" />
+    <PackageReference Include="Hangfire.Core" Version="1.8.2" />
+    <PackageReference Include="Hangfire.SqlServer" Version="1.8.2" />
     <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="3.8.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.8.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.0.0">

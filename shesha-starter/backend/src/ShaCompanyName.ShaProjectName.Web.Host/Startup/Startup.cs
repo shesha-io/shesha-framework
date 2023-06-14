@@ -3,7 +3,6 @@ using Abp.AspNetCore.SignalR.Hubs;
 using Abp.Castle.Logging.Log4Net;
 using Abp.Extensions;
 using Abp.PlugIns;
-using ShaCompanyName.ShaProjectName.Web.Host.Startup;
 using Castle.Facilities.Logging;
 using ElmahCore;
 using ElmahCore.Mvc;
@@ -18,39 +17,37 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using ShaCompanyName.ShaProjectName.Hangfire;
-using ShaCompanyName.ShaProjectName.Configuration;
 using Shesha.Authorization;
 using Shesha.Configuration;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Swagger;
+using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.GraphQL;
 using Shesha.GraphQL.Middleware;
-using Shesha.Exceptions;
-using System;
-using System.IO;
 using Shesha.Identity;
-using Shesha.Web;
 using Shesha.Scheduler.Extensions;
 using Shesha.Swagger;
-using System.Reflection;
-using Swashbuckle.AspNetCore.SwaggerGen;
+using Shesha.Web;
 using Swashbuckle.AspNetCore.Swagger;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using System;
+using System.IO;
+using System.Reflection;
 
 namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
 {
-	public class Startup
+    public class Startup
 	{
 		private readonly IConfigurationRoot _appConfiguration;
 		private readonly IWebHostEnvironment _hostEnvironment;
 
-		public Startup(IWebHostEnvironment hostEnvironment, IHostingEnvironment env)
+		public Startup(IWebHostEnvironment hostEnvironment)
 		{
-			_appConfiguration = env.GetAppConfiguration();
+			_appConfiguration = hostEnvironment.GetAppConfiguration();
 			_hostEnvironment = hostEnvironment;
 		}
 
@@ -84,8 +81,7 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
                 .AddNewtonsoftJson(options =>
                 {
                     options.UseCamelCasing(true);
-                })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+                });
 
 			IdentityRegistrar.Register(services);
 			AuthConfigurer.Configure(services, _appConfiguration);
@@ -93,25 +89,7 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
 			services.AddSignalR();
 
 			services.AddCors();
-			/*
-            // Configure CORS for angular2 UI
-            services.AddCors(
-                options => options.AddPolicy(
-                    _defaultCorsPolicyName,
-                    builder => builder
-                        .WithOrigins(
-                            // App:CorsOrigins in appsettings.json can contain more than one address separated by comma.
-                            _appConfiguration["App:CorsOrigins"]
-                                .Split(",", StringSplitOptions.RemoveEmptyEntries)
-                                .Select(o => o.RemovePostFix("/"))
-                                .ToArray()
-                        )
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials()
-                )
-            );
-            */
+			
 			AddApiVersioning(services);
 
 			services.AddHttpContextAccessor();
@@ -120,9 +98,11 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
 			{
 				config.UseSqlServerStorage(_appConfiguration.GetConnectionString("Default"));
 			});
+            services.AddHangfireServer(config => {
+            });
 
-			// add Shesha GraphQL
-			services.AddSheshaGraphQL();
+            // add Shesha GraphQL
+            services.AddSheshaGraphQL();
 
 			// Add ABP and initialize 
 			// Configure Abp and Dependency Injection
@@ -147,7 +127,6 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
 
 			// note: already registered in the ABP
 			AppContextHelper.Configure(app.ApplicationServices.GetRequiredService<IHttpContextAccessor>());
-
 
 			app.UseConfigurationFramework();
 
@@ -192,17 +171,9 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
 			app.UseSwaggerUI(options =>
 			{
 				options.AddEndpointsPerService();
-				//options.SwaggerEndpoint("swagger/v1/swagger.json", "Shesha API V1");​
-				// todo: add documents per module with summary about `service:xxx` endpoints
-				//options.SwaggerEndpoint(baseUrl + "swagger/service:Meter/swagger.json", "Meter API");​
 				options.IndexStream = () => Assembly.GetExecutingAssembly()
 					.GetManifestResourceStream("ShaCompanyName.ShaProjectName.Web.Host.wwwroot.swagger.ui.index.html");
 			}); // URL: /swagger​
-			var options = new BackgroundJobServerOptions
-			{
-				//Queues = new[] { "alpha", "beta", "default" }
-			};
-			app.UseHangfireServer(options);
 			app.UseHangfireDashboard("/hangfire",
 				new DashboardOptions
 				{

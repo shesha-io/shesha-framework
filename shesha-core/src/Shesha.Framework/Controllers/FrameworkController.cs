@@ -23,6 +23,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.PortableExecutable;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -135,13 +137,21 @@ namespace Shesha.Controllers
                 .Where(a => string.IsNullOrWhiteSpace(searchString) || a.FullName.Contains(searchString, StringComparison.InvariantCultureIgnoreCase))
                 .OrderBy(a => a.FullName);
 
-            var result = assemblies.Select(a => new AssemblyInfoDto
-            { 
+            var result = assemblies.Select(a => {
+                string architecture = "unknown";
+                if (a.Modules.Any()) {
+                    a.Modules.First().GetPEKind(out var pekind, out var machine);
+                    architecture = machine.ToString();
+                }
+
+                return new AssemblyInfoDto
+                {
                     FullName = a.GetName().Name,
                     Location = a.Location,
                     Version = a.GetName().Version.ToString(),
-                    Architecture = a.GetName().ProcessorArchitecture.ToString()
-                })
+                    Architecture = architecture
+                };
+            })
                 .ToList();
             
             return result;

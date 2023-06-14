@@ -5,6 +5,7 @@ using NHibernate;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
+using NHibernate.Mapping.ByCode.Impl.CustomizersImpl;
 using NHibernate.Type;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
@@ -15,6 +16,7 @@ using Shesha.NHibernate.Generators;
 using Shesha.NHibernate.UserTypes;
 using Shesha.Reflection;
 using Shesha.Services;
+using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -240,6 +242,9 @@ namespace Shesha.NHibernate.Maps
 
             mapper.BeforeMapProperty += (modelInspector, member, propertyCustomizer) =>
             {
+                if (member.LocalMember.Name.Equals("Id", StringComparison.InvariantCultureIgnoreCase)) 
+                { 
+                }
                 var propertyType = member.LocalMember.GetPropertyOrFieldType();
 
                 var lazyAttribute = member.LocalMember.GetAttribute<LazyAttribute>(true);
@@ -324,6 +329,8 @@ namespace Shesha.NHibernate.Maps
                 mapper.BeforeMapProperty += customMapper.BeforeMapProperty;
             }
 
+            //mapper.BeforeMapIdBag
+            
             mapper.IsPersistentId((mi, d) =>
             {
                 var isId = mi.Name.Equals("Id", StringComparison.InvariantCultureIgnoreCase);
@@ -487,9 +494,14 @@ namespace Shesha.NHibernate.Maps
                 }
                 else
                 {
-                    if (bagMapper != null && typeof(ISoftDelete).IsAssignableFrom(bagMapper.ElementType))
+                    if (bagMapper != null && typeof(ISoftDelete).IsAssignableFrom(bagMapper.ElementType)) 
+                    {
                         //TODO: Check IsDeletedColumn for Many-To-Many
-                        map.Where($"{SheshaDatabaseConsts.IsDeletedColumn} = 0");
+                        map.Filter("SoftDelete", m =>
+                        {
+                        });
+                        // map.Where($"{SheshaDatabaseConsts.IsDeletedColumn.DoubleQuote()} = 0");
+                    }
                 }
             };
 

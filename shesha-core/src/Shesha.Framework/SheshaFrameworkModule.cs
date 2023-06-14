@@ -2,7 +2,6 @@
 using Abp.AutoMapper;
 using Abp.Dependency;
 using Abp.Modules;
-using Abp.Runtime.Validation.Interception;
 using Abp.Web.Models;
 using Castle.MicroKernel.Registration;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -55,6 +54,13 @@ namespace Shesha
 
             // register validator to check IValidatableObject from AbpValidationActionFilter
             Configuration.Validation.Validators.Add<ShaValidatableObjectValidator>();
+
+            Configuration.Modules.AbpAutoMapper().Configurators.Add(config =>
+            {
+                // disable methods mapping to prevent exception like this: `GenericArguments[0], 'TId', on 'T MaxInteger[T](System.Collections.Generic.IEnumerable`1[T])' violates the constraint of type 'T'.`
+                // https://github.com/AutoMapper/AutoMapper/issues/3988
+                config.ShouldMapMethod = m => false;
+            });
         }
 
         public override void Initialize()

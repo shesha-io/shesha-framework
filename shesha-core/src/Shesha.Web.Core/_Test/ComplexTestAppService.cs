@@ -13,7 +13,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Shesha.Test
+namespace Shesha.Web.Core._Test
 {
     public class ValidateDto : IValidatableObject
     {
@@ -27,7 +27,7 @@ namespace Shesha.Test
         }
     }
 
-    public interface IComplexTestHardAppService: IApplicationService
+    public interface IComplexTestHardAppService : IApplicationService
     {
         Task CheckData(ValidateDto dto);
     }

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\common.props" />
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>Shesha</RootNamespace>
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
@@ -39,7 +39,7 @@
     <PackageReference Include="ConcurrentHashSet" Version="1.1.0" />
     <PackageReference Include="Cronos" Version="0.7.0" />
     <PackageReference Include="EasyNetQ" Version="5.1.2" />
-    <PackageReference Include="FluentMigrator" Version="3.2.1" />
+    <PackageReference Include="FluentMigrator" Version="3.3.2" />
     <PackageReference Include="FluentValidation" Version="10.3.3" />
     <PackageReference Include="JsonLogic.Net" Version="1.1.9" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.4" />
@@ -47,7 +47,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.2" />
-    <PackageReference Include="NHibernate" Version="5.3.12" />
+    <PackageReference Include="NHibernate" Version="5.4.2" />
     <PackageReference Include="PluralizeService.Core" Version="1.2.19339.3" />
     <PackageReference Include="RedLock.net" Version="2.2.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.0" />
