@@ -43,6 +43,16 @@ namespace Shesha.NHibernate.Configuration
             _startupConfig.DefaultNameOrConnectionString = connectionString;
         }
 
+        public void UseDbms(Func<IConfigurationRoot, DbmsType> dbmsTypeGetter, Func<IConfigurationRoot, string> connectionStringGetter) 
+        {
+            var configuration = AppConfigurations.Get(_env.ContentRootPath, _env.EnvironmentName, _env.IsDevelopment());
+            
+            var dbmsType = dbmsTypeGetter.Invoke(configuration);
+            var connectionString = connectionStringGetter.Invoke(configuration);
+
+            SetConnectionOptions(dbmsType, connectionString);
+        }
+
         #region MS SQL
 
         /// inheritedDoc
