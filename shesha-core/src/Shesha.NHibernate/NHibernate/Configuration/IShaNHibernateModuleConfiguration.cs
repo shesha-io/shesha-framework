@@ -59,5 +59,12 @@ namespace Shesha.NHibernate.Configuration
         /// Use PostgreSql with default connection string
         /// </summary>
         void UsePostgreSql();
+
+        /// <summary>
+        /// Set DBMS type and connection string
+        /// </summary>
+        /// <param name="dbmsTypeGetter">DBMS Type factory</param>
+        /// <param name="connectionStringGetter">Connection string factory</param>
+        void UseDbms(Func<IConfigurationRoot, DbmsType> dbmsTypeGetter, Func<IConfigurationRoot, string> connectionStringGetter);
     }
 }
