@@ -62,16 +62,16 @@ export interface IFormDesignerStateContext
   formSettings: IFormSettings;
 }
 
-export interface AddComonentPayloadBase {
+export interface AddComponentPayloadBase {
   index: number;
   containerId: string;
 }
 
-export interface IComponentAddPayload extends AddComonentPayloadBase {
+export interface IComponentAddPayload extends AddComponentPayloadBase {
   componentType: string;
 }
 
-export interface IComponentAddFromTemplatePayload extends AddComonentPayloadBase { }
+export interface IComponentAddFromTemplatePayload extends AddComponentPayloadBase { }
 
 export interface IAddDataPropertyPayload {
   propertyMetadata: IPropertyMetadata;
