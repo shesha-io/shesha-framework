@@ -1,4 +1,4 @@
-import React, { FC, MutableRefObject, useRef } from 'react';
+import React, { FC, MutableRefObject, useEffect, useRef } from 'react';
 import { Button, Tooltip } from 'antd';
 import { DeleteFilled, StopOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import FormComponent from '../formComponent';
@@ -10,6 +10,7 @@ import classNames from 'classnames';
 import CustomErrorBoundary from '../../customErrorBoundary';
 import { useFormDesigner } from '../../../providers/formDesigner';
 import { IConfigurableFormComponent } from '../../../interfaces';
+import { useMetadata } from 'providers';
 
 export interface IConfigurableFormComponentProps {
   id: string;
@@ -62,7 +63,19 @@ const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerPr
     deleteComponent,
     selectedComponentId,
     readOnly,
+    activeDataSourceId,
+    setActiveDataSource,
   } = useFormDesigner();
+
+  const metadata = useMetadata(false);
+  useEffect(() => {
+    if (componentModel.id && selectedComponentId === componentModel.id && metadata && metadata.id !== activeDataSourceId){
+      // set active data source, 
+      // this code is used to correct a current datasource after adding of a  new component to a form
+      setActiveDataSource(metadata.id);
+    }    
+  }, []);
+  
 
   const onDeleteClick = () => {
     deleteComponent({ componentId: componentModel.id });

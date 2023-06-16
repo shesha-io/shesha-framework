@@ -237,6 +237,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   };
 
   const setActiveDataSource = (datasourceId: string) => {
+    if (activateProvider) activateProvider(datasourceId);
     dispatch(setActiveDataSourceAction(datasourceId));
   };
 
