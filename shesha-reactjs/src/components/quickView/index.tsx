@@ -1,8 +1,8 @@
 import { Button, Form, Popover, PopoverProps, Spin, notification } from 'antd';
 import { entitiesGet } from 'apis/entities';
-import React, { FC, PropsWithChildren, useEffect, useState } from 'react';
+import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { ConfigurableForm } from '../';
-import { FormMarkupWithSettings, useSheshaApplication, useUi } from '../../providers';
+import { FormItemProvider, FormMarkupWithSettings, useSheshaApplication, useUi } from '../../providers';
 import { useConfigurationItemsLoader } from '../../providers/configurationItemsLoader';
 import { useFormConfiguration } from '../../providers/form/api';
 import { FormIdentifier } from '../../providers/form/models';
@@ -99,19 +99,22 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
     }
   }, [entityId, getEntityUrl, formSettings]);
 
-  const formContent =
-    formSettings && formData ? (
-      <ConfigurableForm
-        mode="readonly"
-        {...formItemLayout}
-        markup={formSettings}
-        form={form}
-        initialValues={formData}
-        skipFetchData={true}
-      />
-    ) : (
-      <></>
-    );
+  const formContent = useMemo(() => {
+    return formSettings && formData ? (
+      <FormItemProvider namePrefix={undefined}>
+        <ConfigurableForm
+          mode="readonly"
+          {...formItemLayout}
+          markup={formSettings}
+          form={form}
+          initialValues={formData}
+          skipFetchData={true}
+        />
+      </FormItemProvider>
+      ) : (
+        <></>
+      );
+  }, [formSettings, formData]);
 
   const render = () => {
     if (children) {
