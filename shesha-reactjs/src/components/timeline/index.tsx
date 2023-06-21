@@ -61,14 +61,14 @@ export const ShaTimeline: FC<ITimelineProps> = ({ properties, ownerId, entityTyp
 
   return (
     <Spin spinning={isFetchingEntities}>
-      {(!timelineData?.length && <Empty description="Empty timeline" />) || (
+      {(!sortedTimelineData?.length && <Empty description="Empty timeline" />) || (
         <Timeline>
-          {sortedTimelineData?.map(({ title, body, toPerson, actionDate, type }) => {
+          {sortedTimelineData?.map(({ title, body, toPerson, actionDate, channel }) => {
             return (
               <TimelineItem
                 title={title}
                 toPerson={toPerson?._displayName}
-                type={type}
+                channel={channel}
                 actionDate={moment(actionDate).format('DD/MM/YYYY HH:mm')}
                 body={body}
               />

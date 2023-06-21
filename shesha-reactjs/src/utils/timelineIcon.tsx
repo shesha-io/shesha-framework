@@ -1,22 +1,19 @@
-import { CommentOutlined, InboxOutlined, MailOutlined, MessageOutlined, PhoneOutlined } from '@ant-design/icons';
+import { CommentOutlined, InboxOutlined, MailOutlined, MessageOutlined } from '@ant-design/icons';
+import { TimelineChannels } from 'components/timeline/timelineItem/timelineChannels';
 import React from 'react';
 
-export const getTimelineIcon = (type: string) => {
-  switch (type) {
-    case 'phone':
-    case 'call':
-      return <PhoneOutlined />;
-      break;
-    case 'sms':
+export const getTimelineIcon = (channel: number) => {
+  switch (channel) {
+    case TimelineChannels.SMS:
       return <InboxOutlined />;
       break;
-    case 'message':
+    case TimelineChannels.Message:
       return <MessageOutlined />;
       break;
-    case 'email':
+    case TimelineChannels.Email:
       return <MailOutlined />;
       break;
-    case 'note':
+    case TimelineChannels.Note:
       return <CommentOutlined />;
     default:
       return null;

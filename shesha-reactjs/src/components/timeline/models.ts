@@ -5,6 +5,7 @@ import { ICommonContainerProps } from '../../designer-components/container/inter
 export interface ITimelineItemProps {
   toPerson?: string;
   fromPerson?: string;
+  channel?: number;
   body?: string;
   title?: string;
   actionDate?: string;
