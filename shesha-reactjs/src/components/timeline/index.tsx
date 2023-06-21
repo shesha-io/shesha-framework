@@ -42,75 +42,18 @@ export const ShaTimeline: FC<ITimelineProps> = ({ properties, ownerId, entityTyp
 
   const timelineData: any[] = apiSource === 'custom' ? data?.result : data?.result?.items;
   //sort values
-  // const sortedTimelineData = timelineData?.sort((item1, item2) => {
-  //   const actionDataA = item1?.actionData;
-  //   const actionDataB = item2?.actionData;
+  const sortedTimelineData = timelineData?.sort((item1, item2) => {
+    const actionDataA = item1?.actionData;
+    const actionDataB = item2?.actionData;
 
-  //   if (actionDataA < actionDataB) {
-  //     return -1;
-  //   }
-  //   if (actionDataA > actionDataB) {
-  //     return 1;
-  //   }
-  //   return 0;
-  // });
-
-  const sortedTimelineData = [
-    {
-      title: null,
-      body: 'nnnnn',
-      fromPerson: {
-        _displayName: 'System Administrator',
-        _className: 'Shesha.Core.Person',
-        id: '1a7d1b0f-3982-4af5-9fe1-819fd217f0cf',
-      },
-      toPerson: {
-        _displayName: 'Nkosinathi Ndaba',
-        _className: 'Shesha.Core.Person',
-        id: 'fecb1e32-ede3-4c35-bf91-46e75da7ede2',
-      },
-      actionDate: '2023-06-20T11:30:47.817',
-      type: 1,
-      channel: 1,
-      id: '00000000-0000-0000-0000-000000000000',
-    },
-    {
-      title: null,
-      body: 'testing',
-      fromPerson: {
-        _displayName: 'System Administrator',
-        _className: 'Shesha.Core.Person',
-        id: '1a7d1b0f-3982-4af5-9fe1-819fd217f0cf',
-      },
-      toPerson: {
-        _displayName: 'Nkosinathi Ndaba',
-        _className: 'Shesha.Core.Person',
-        id: 'fecb1e32-ede3-4c35-bf91-46e75da7ede2',
-      },
-      actionDate: '2023-06-19T16:38:43.253',
-      type: 1,
-      channel: 1,
-      id: '00000000-0000-0000-0000-000000000000',
-    },
-    {
-      title: null,
-      body: 'Dear Sir/ Madam,\r\n Kindly note that the case you have reported of Ref: {ReferenceNo} is cancelled',
-      fromPerson: {
-        _displayName: 'System Administrator',
-        _className: 'Shesha.Core.Person',
-        id: '1a7d1b0f-3982-4af5-9fe1-819fd217f0cf',
-      },
-      toPerson: {
-        _displayName: 'Nkosinathi Ndaba',
-        _className: 'Shesha.Core.Person',
-        id: 'fecb1e32-ede3-4c35-bf91-46e75da7ede2',
-      },
-      actionDate: '2023-06-19T11:57:59.907',
-      type: 1,
-      channel: 1,
-      id: '00000000-0000-0000-0000-000000000000',
-    },
-  ];
+    if (actionDataA < actionDataB) {
+      return -1;
+    }
+    if (actionDataA > actionDataB) {
+      return 1;
+    }
+    return 0;
+  });
 
   useEffect(() => {
     debouncedRefresh();
