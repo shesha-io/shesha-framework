@@ -124,23 +124,6 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
     return <Fragment />;
   };
 
-  const scrollbarStyle = `
-  ::-webkit-scrollbar {
-    width: 5px;
-    
-    
-  }
-  ::-webkit-scrollbar-thumb {
-    background-color: gray;
-    border-radius : 5px;
-  }
-
-  scrollbarWidth: 'thin',
-
- 
-  
-`;
-
   return (
     <Layout style={style}>
       <Sider
@@ -150,6 +133,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
         trigger={<MenuTrigger collapsed={collapsed} />}
         style={{
           overflowX: 'hidden',
+          scrollbarWidth: 'thin',
           height: '100vh',
           position: 'fixed',
           paddingTop: '48px',
@@ -164,7 +148,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
           defaultSettings={sidebarDefaults}
         />
       </Sider>
-      <style>{scrollbarStyle}</style>
+
       <Layout className="site-layout">
         <Header className="site-layout-background" style={headerStyle}>
           <LayoutHeader collapsed={collapsed} customComponent={customComponent} />
