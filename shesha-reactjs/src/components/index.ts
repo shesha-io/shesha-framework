@@ -162,5 +162,5 @@ export { default as LabelValueEditor } from './formDesigner/components/labelValu
 export { default as RichTextEditor, type IRichTextEditorProps } from './richTextEditor';
 export { default as SettingsEditor, type ISettingsEditorProps } from './settingsEditor';
 export { FormComponentSelector, type IFormComponentSelectorProps } from './formComponentSelector';
-
+export { default as PropertyAutocomplete } from '../../src/components/propertyAutocomplete/propertyAutocomplete';
 export { default as ColorPicker } from '../../src/components/colorPicker';
