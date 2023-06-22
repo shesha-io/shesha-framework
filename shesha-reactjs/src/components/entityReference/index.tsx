@@ -1,6 +1,6 @@
 import { Button, message, notification, Spin } from 'antd';
 import moment from 'moment';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import { FormIdentifier, ShaLink, useConfigurableActionDispatcher, useForm, useGlobalState, useSheshaApplication, ValidationErrors } from "../..";
 import { entitiesGet } from 'apis/entities';
 import { IConfigurableActionConfiguration } from '../../interfaces/configurableAction';
@@ -85,7 +85,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
     useEffect(() => {
         // fetch data only for NavigateLink and Dialog mode. Quickview will fetch data later
-        if (!fetched && props.entityReferenceType !== 'Quickview' && props.value) {
+        if (!fetched && props.entityReferenceType !== 'Quickview' && entityId) {
             //
             const queryParams = { id: entityId, properties: `id ${Boolean(props.displayProperty) ? props.displayProperty : ''}` };
             const fetcher = props.getEntityUrl 
@@ -100,7 +100,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
                      notification.error({ message: <ValidationErrors error={reason} renderMode="raw" /> }); 
                 });
         }
-    }, [fetched]);
+    }, [fetched, entityId, props.entityReferenceType, props.getEntityUrl, entityType]);
 
     /* Dialog */
 
@@ -146,28 +146,36 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
         });
     };
 
+    const content = useMemo(() => {
+        console.log(props.formSelectionMode);
+        console.log('formIdentifier: ', formIdentifier);
+        console.log('displayText: ', displayText);
+        console.log('entityId: ', entityId);
+        return !(props.entityReferenceType === 'Quickview') && !(formIdentifier && displayText && entityId)
+        ? <Button type="link"><span><Spin size="small" /> Loading...</span></Button>
+        : props.disabled
+            ? <Button disabled type="link">{displayText}</Button>
+            : props.entityReferenceType === 'NavigateLink'
+                ? <ShaLink linkToForm={formIdentifier} params={{id: entityId}}>{displayText}</ShaLink>
+                : props.entityReferenceType === 'Quickview'
+                    ? <GenericQuickView
+                        displayProperty={props.displayProperty}
+                        displayName={displayText}
+                        entityId={props.value?.id ?? props.value}
+                        className={entityType}
+                        getEntityUrl={props.getEntityUrl}
+                        width={props.quickviewWidth}
+                        formIdentifier={formIdentifier}
+                        formType={formType}
+                    />
+                    : <Button type="link" onClick={dialogExecute}>{displayText}</Button>;
+    }, [formIdentifier, displayText, entityId]);
+
     if (props.formSelectionMode === 'name' && !Boolean(formIdentifier))
         return <Button type="link" disabled>Form identifier is not configured</Button>;
     
     if (!props.value)
         return <Button type="link" disabled>{displayText}</Button>;
 
-    return !(formIdentifier && displayText && entityId || props.entityReferenceType === 'Quickview')
-            ? <Button type="link"><span><Spin size="small" /> Loading...</span></Button>
-            : props.disabled
-                ? <Button disabled type="link">{displayText}</Button>
-                : props.entityReferenceType === 'NavigateLink'
-                    ? <ShaLink linkToForm={formIdentifier} params={{id: entityId}}>{displayText}</ShaLink>
-                    : props.entityReferenceType === 'Quickview'
-                        ? <GenericQuickView
-                            displayProperty={props.displayProperty}
-                            displayName={displayText}
-                            entityId={props.value?.id ?? props.value}
-                            className={entityType}
-                            getEntityUrl={props.getEntityUrl}
-                            width={props.quickviewWidth}
-                            formIdentifier={formIdentifier}
-                            formType={formType}
-                        />
-                        : <Button type="link" onClick={dialogExecute}>{displayText}</Button>;
+    return content;
 };
