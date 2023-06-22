@@ -54,7 +54,7 @@ export interface IMainLayoutProps extends IHtmlHeadProps {
   headerControls?: ReactNodeOrFunc;
 }
 
-const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = props => {
+const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
   const {
     title,
     // description,
@@ -124,6 +124,23 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = props => {
     return <Fragment />;
   };
 
+  const scrollbarStyle = `
+  ::-webkit-scrollbar {
+    width: 5px;
+    
+    
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: gray;
+    border-radius : 5px;
+  }
+
+  scrollbarWidth: 'thin',
+
+ 
+  
+`;
+
   return (
     <Layout style={style}>
       <Sider
@@ -132,7 +149,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = props => {
         onCollapse={setCollapsed}
         trigger={<MenuTrigger collapsed={collapsed} />}
         style={{
-          overflow: 'auto',
+          overflowX: 'hidden',
           height: '100vh',
           position: 'fixed',
           paddingTop: '48px',
@@ -147,6 +164,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = props => {
           defaultSettings={sidebarDefaults}
         />
       </Sider>
+      <style>{scrollbarStyle}</style>
       <Layout className="site-layout">
         <Header className="site-layout-background" style={headerStyle}>
           <LayoutHeader collapsed={collapsed} customComponent={customComponent} />
