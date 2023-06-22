@@ -127,7 +127,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
       ? items
       : items
         ?.filter(({ permissions }) => anyOfPermissionsGranted(permissions || []))
-        .filter(filterVisibility(filterVisibility({ data: formData, globalState })));
+        .filter(filterVisibility({ data: formData, globalState }));
 
     registerConfigurableColumns(id, permissibleColumns);
   }, [items, isDesignMode]);
