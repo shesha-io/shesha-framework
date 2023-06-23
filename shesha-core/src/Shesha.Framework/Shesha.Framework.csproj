@@ -36,7 +36,10 @@
   <ItemGroup>
     <None Remove="Migrations\PostgreSql\InitialScripts\Core_AddEntityHistoryEvents.sql" />
     <None Remove="Migrations\PostgreSql\InitialScripts\Core_AddSingleEntityHistoryEvent.sql" />
+    <None Remove="Migrations\PostgreSql\InitialScripts\Core_DistanceTo.sql" />
     <None Remove="Migrations\PostgreSql\InitialScripts\Core_EntityHistoryItem.sql" />
+    <None Remove="Migrations\PostgreSql\InitialScripts\Frwk_GetMultiValueRefListItemNames.sql" />
+    <None Remove="Migrations\PostgreSql\InitialScripts\Frwk_GetRefListItem.sql" />
     <None Remove="Migrations\PostgreSql\InitialScripts\log_Core_Persons_UpdateContacts_AU.sql" />
     <None Remove="Migrations\PostgreSql\InitialScripts\log_Frwk_ConfigurationItems_UpdateIsLast_AD.sql" />
     <None Remove="Migrations\PostgreSql\InitialScripts\log_Frwk_ConfigurationItems_UpdateIsLast_AI.sql" />
@@ -69,7 +72,10 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\Core_AddEntityHistoryEvents.sql" />
     <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\Core_AddSingleEntityHistoryEvent.sql" />
+    <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\Core_DistanceTo.sql" />
     <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\Core_EntityHistoryItem.sql" />
+    <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\Frwk_GetMultiValueRefListItemNames.sql" />
+    <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\Frwk_GetRefListItem.sql" />
     <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\log_Core_Persons_UpdateContacts_AU.sql" />
     <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\log_Frwk_ConfigurationItems_UpdateIsLast_AD.sql" />
     <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\log_Frwk_ConfigurationItems_UpdateIsLast_AI.sql" />
