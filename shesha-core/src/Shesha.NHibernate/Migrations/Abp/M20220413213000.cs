@@ -3,7 +3,7 @@ using FluentMigrator;
 
 namespace Shesha.Migrations.Abp
 {
-    [Migration(20220413213000)]
+    [Migration(20220413213000), MsSqlOnly]
     public class M20220413213000 : Migration
     {
         public override void Up()

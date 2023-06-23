@@ -1,6 +1,6 @@
 ﻿using FluentMigrator;
 
-namespace Shesha.FluentMigrator
+namespace FluentMigrator
 {
     /// <summary>
     /// Tag migration that is developed for MS Sql server only

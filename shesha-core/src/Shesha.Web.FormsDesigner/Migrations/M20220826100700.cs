@@ -3,7 +3,7 @@ using System;
 
 namespace Shesha.Web.FormsDesigner.Migrations
 {
-    [Migration(20220826100700)]
+    [Migration(20220826100700), MsSqlOnly]
     public class M20220826100700 : Migration
     {
         public override void Down()

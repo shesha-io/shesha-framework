@@ -2,7 +2,7 @@
 
 namespace Shesha.Web.FormsDesigner.Migrations
 {
-    [Migration(20220209094299)]
+    [Migration(20220209094299), MsSqlOnly]
     public class M20220209094299 : AutoReversingMigration
     {
         public override void Up()

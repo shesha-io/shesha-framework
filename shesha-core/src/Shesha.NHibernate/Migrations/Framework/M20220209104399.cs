@@ -3,7 +3,7 @@ using System;
 
 namespace Shesha.Migrations.Framework
 {
-    [Migration(20220209104399)]
+    [Migration(20220209104399), MsSqlOnly]
     public class M20220209104399 : AutoReversingMigration
     {
         public override void Up()
