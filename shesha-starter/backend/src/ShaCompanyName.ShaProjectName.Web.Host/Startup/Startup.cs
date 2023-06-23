@@ -97,9 +97,22 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
 
 			services.AddHangfire(config =>
 			{
-				config.UseSqlServerStorage(_appConfiguration.GetConnectionString("Default"));
-				// use this line to switch to PostgreSql
-                //config.UsePostgreSqlStorage(_appConfiguration.GetConnectionString("Default"));
+				var dbms = _appConfiguration.GetDbmsType();
+				var connStr = _appConfiguration.GetDefaultConnectionString();
+
+				switch (dbms) 
+				{
+                    case DbmsType.SQLServer:
+                        {
+                            config.UseSqlServerStorage(connStr);
+                            break;
+                        }
+                    case DbmsType.PostgreSQL:
+                        {
+                            config.UsePostgreSqlStorage(connStr);
+                            break;
+                        }
+                }
             });
             services.AddHangfireServer(config => {
             });

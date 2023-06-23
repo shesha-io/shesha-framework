@@ -7,7 +7,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Migrations.PostgreSqlMig
     /// <summary>
     /// This migration is developed for PostgreSql server only
     /// </summary>
-    [Migration(20230613122300)]
+    [Migration(20230613122300), MsSqlOnly]
     [PostgreSqlOnly]
     public class M20230613122300 : OneWayMigration
     {
@@ -24,7 +24,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Migrations.PostgreSqlMig
     /// <summary>
     /// This migration is developed for MS Sql server only
     /// </summary>
-    [Migration(20230613125000)]
+    [Migration(20230613125000), MsSqlOnly]
     [MsSqlOnly]
     public class M20230613125000 : OneWayMigration
     {
@@ -41,7 +41,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Migrations.PostgreSqlMig
     /// <summary>
     /// This migration supports all server types
     /// </summary>
-    [Migration(20230613125100)]
+    [Migration(20230613125100), MsSqlOnly]
     public class M20230613125100 : OneWayMigration
     {
         public override void Up()

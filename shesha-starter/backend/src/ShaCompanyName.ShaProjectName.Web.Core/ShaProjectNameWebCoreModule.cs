@@ -64,7 +64,7 @@ namespace ShaCompanyName.ShaProjectName
         {
             var config = Configuration.Modules.ShaNHibernate();
             
-            config.UseDbms(c => c.GetValue("DbmsType", DbmsType.SQLServer), c => c.GetConnectionString("Default"));
+            config.UseDbms(c => c.GetDbmsType(), c => c.GetDefaultConnectionString());
 
             //config.UseMsSql();
             //config.UsePostgreSql();

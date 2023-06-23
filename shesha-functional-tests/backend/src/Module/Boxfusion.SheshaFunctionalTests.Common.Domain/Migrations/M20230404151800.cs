@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Migrations
 {
-    [Migration(20230404151800)]
+    [Migration(20230404151800), MsSqlOnly]
     public class M20230404151800 : AutoReversingMigration
     {
         public override void Up()

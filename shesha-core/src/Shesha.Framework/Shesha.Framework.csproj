@@ -21,13 +21,82 @@
   <ItemGroup>
     <Compile Remove="Domain\Specifications\**" />
     <Compile Remove="FluentMigrator\**" />
+    <Compile Remove="Migrations\PostgreSql\Scripts\**" />
     <Compile Remove="Services\ApplicationParts\**" />
     <EmbeddedResource Remove="Domain\Specifications\**" />
     <EmbeddedResource Remove="FluentMigrator\**" />
+    <EmbeddedResource Remove="Migrations\PostgreSql\Scripts\**" />
     <EmbeddedResource Remove="Services\ApplicationParts\**" />
     <None Remove="Domain\Specifications\**" />
     <None Remove="FluentMigrator\**" />
+    <None Remove="Migrations\PostgreSql\Scripts\**" />
     <None Remove="Services\ApplicationParts\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Migrations\PostgreSql\InitialScripts\Core_AddEntityHistoryEvents.sql" />
+    <None Remove="Migrations\PostgreSql\InitialScripts\Core_AddSingleEntityHistoryEvent.sql" />
+    <None Remove="Migrations\PostgreSql\InitialScripts\Core_EntityHistoryItem.sql" />
+    <None Remove="Migrations\PostgreSql\InitialScripts\log_Core_Persons_UpdateContacts_AU.sql" />
+    <None Remove="Migrations\PostgreSql\InitialScripts\log_Frwk_ConfigurationItems_UpdateIsLast_AD.sql" />
+    <None Remove="Migrations\PostgreSql\InitialScripts\log_Frwk_ConfigurationItems_UpdateIsLast_AI.sql" />
+    <None Remove="Migrations\PostgreSql\InitialScripts\log_Frwk_ConfigurationItems_UpdateIsLast_AU.sql" />
+    <None Remove="Migrations\PostgreSql\InitialScripts\log_Frwk_StoredFileVersions_UpdateIsLast_AD.sql" />
+    <None Remove="Migrations\PostgreSql\InitialScripts\log_Frwk_StoredFileVersions_UpdateIsLast_AI.sql" />
+    <None Remove="Migrations\PostgreSql\InitialScripts\log_Frwk_StoredFileVersions_UpdateIsLast_AU.sql" />
+    <None Remove="Migrations\PostgreSql\InitialScripts\log_Frwk_UserLoginAttempts_UpdateLastLoginDate_AI.sql" />
+    <None Remove="Migrations\PostgreSql\InitialScripts\log_Frwk_VersionedFieldVersions_UpdateIsLast_AD.sql" />
+    <None Remove="Migrations\PostgreSql\InitialScripts\log_Frwk_VersionedFieldVersions_UpdateIsLast_AI.sql" />
+    <None Remove="Migrations\PostgreSql\InitialScripts\log_Frwk_VersionedFieldVersions_UpdateIsLast_AU.sql" />
+    <None Remove="Migrations\PostgreSql\InitialScripts\trg_Core_Persons_UpdateContacts_AU.sql" />
+    <None Remove="Migrations\PostgreSql\InitialScripts\trg_Frwk_ConfigurationItems_UpdateIsLast_AD.sql" />
+    <None Remove="Migrations\PostgreSql\InitialScripts\trg_Frwk_ConfigurationItems_UpdateIsLast_AI.sql" />
+    <None Remove="Migrations\PostgreSql\InitialScripts\trg_Frwk_ConfigurationItems_UpdateIsLast_AU.sql" />
+    <None Remove="Migrations\PostgreSql\InitialScripts\trg_Frwk_StoredFileVersions_UpdateIsLast_AD.sql" />
+    <None Remove="Migrations\PostgreSql\InitialScripts\trg_Frwk_StoredFileVersions_UpdateIsLast_AI.sql" />
+    <None Remove="Migrations\PostgreSql\InitialScripts\trg_Frwk_StoredFileVersions_UpdateIsLast_AU.sql" />
+    <None Remove="Migrations\PostgreSql\InitialScripts\trg_Frwk_UserLoginAttempts_UpdateLastLoginDate_AI.sql" />
+    <None Remove="Migrations\PostgreSql\InitialScripts\trg_Frwk_VersionedFieldVersions_UpdateIsLast_AD.sql" />
+    <None Remove="Migrations\PostgreSql\InitialScripts\trg_Frwk_VersionedFieldVersions_UpdateIsLast_AI.sql" />
+    <None Remove="Migrations\PostgreSql\InitialScripts\trg_Frwk_VersionedFieldVersions_UpdateIsLast_AU.sql" />
+    <None Remove="Migrations\PostgreSql\InitialScripts\vw_Core_AreasHierarchyItems.sql" />
+    <None Remove="Migrations\PostgreSql\InitialScripts\vw_Core_AreasTreeItem.sql" />
+    <None Remove="Migrations\PostgreSql\InitialScripts\vw_Core_CheckListTreeItems.sql" />
+    <None Remove="Migrations\PostgreSql\InitialScripts\vw_Core_EntityHistoryItems.sql" />
+    <None Remove="Migrations\PostgreSql\InitialScripts\vw_Core_ReferenceListItemvalues.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\Core_AddEntityHistoryEvents.sql" />
+    <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\Core_AddSingleEntityHistoryEvent.sql" />
+    <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\Core_EntityHistoryItem.sql" />
+    <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\log_Core_Persons_UpdateContacts_AU.sql" />
+    <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\log_Frwk_ConfigurationItems_UpdateIsLast_AD.sql" />
+    <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\log_Frwk_ConfigurationItems_UpdateIsLast_AI.sql" />
+    <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\log_Frwk_ConfigurationItems_UpdateIsLast_AU.sql" />
+    <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\log_Frwk_StoredFileVersions_UpdateIsLast_AD.sql" />
+    <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\log_Frwk_StoredFileVersions_UpdateIsLast_AI.sql" />
+    <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\log_Frwk_StoredFileVersions_UpdateIsLast_AU.sql" />
+    <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\log_Frwk_UserLoginAttempts_UpdateLastLoginDate_AI.sql" />
+    <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\log_Frwk_VersionedFieldVersions_UpdateIsLast_AD.sql" />
+    <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\log_Frwk_VersionedFieldVersions_UpdateIsLast_AI.sql" />
+    <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\log_Frwk_VersionedFieldVersions_UpdateIsLast_AU.sql" />
+    <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\trg_Core_Persons_UpdateContacts_AU.sql" />
+    <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\trg_Frwk_ConfigurationItems_UpdateIsLast_AD.sql" />
+    <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\trg_Frwk_ConfigurationItems_UpdateIsLast_AI.sql" />
+    <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\trg_Frwk_ConfigurationItems_UpdateIsLast_AU.sql" />
+    <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\trg_Frwk_StoredFileVersions_UpdateIsLast_AD.sql" />
+    <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\trg_Frwk_StoredFileVersions_UpdateIsLast_AI.sql" />
+    <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\trg_Frwk_StoredFileVersions_UpdateIsLast_AU.sql" />
+    <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\trg_Frwk_UserLoginAttempts_UpdateLastLoginDate_AI.sql" />
+    <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\trg_Frwk_VersionedFieldVersions_UpdateIsLast_AD.sql" />
+    <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\trg_Frwk_VersionedFieldVersions_UpdateIsLast_AI.sql" />
+    <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\trg_Frwk_VersionedFieldVersions_UpdateIsLast_AU.sql" />
+    <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\vw_Core_AreasHierarchyItems.sql" />
+    <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\vw_Core_AreasTreeItem.sql" />
+    <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\vw_Core_CheckListTreeItems.sql" />
+    <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\vw_Core_EntityHistoryItems.sql" />
+    <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\vw_Core_ReferenceListItemvalues.sql" />
   </ItemGroup>
 
   <ItemGroup>
