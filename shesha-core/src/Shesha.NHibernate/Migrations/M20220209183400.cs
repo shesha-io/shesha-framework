@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Shesha.Migrations
 {
-    [Migration(20220209183400)]
+    [Migration(20220209183400), MsSqlOnly]
     public class M20220209183400 : Migration
     {
         public override void Up()

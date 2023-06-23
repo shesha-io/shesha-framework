@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Migrations
 {
-    [Migration(20230328171000)]
+    [Migration(20230328171000), MsSqlOnly]
     public class M20230328171000 : Migration
     {
         public override void Up()

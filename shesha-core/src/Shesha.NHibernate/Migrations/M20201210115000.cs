@@ -6,7 +6,7 @@ namespace Shesha.Migrations
     /// <summary>
     /// 
     /// </summary>
-    [Migration(20201210115000)]
+    [Migration(20201210115000), MsSqlOnly]
     public class M20201210115000: Migration
     {
         public override void Up()

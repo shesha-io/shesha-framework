@@ -2,7 +2,7 @@
 
 namespace Shesha.Migrations.EnterpriseMigration
 {
-    [Migration(20220719125699)]
+    [Migration(20220719125699), MsSqlOnly]
     public class M20220719125699 : AutoReversingMigration
     {
         public override void Up()
