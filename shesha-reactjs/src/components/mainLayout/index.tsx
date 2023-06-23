@@ -54,7 +54,7 @@ export interface IMainLayoutProps extends IHtmlHeadProps {
   headerControls?: ReactNodeOrFunc;
 }
 
-const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = props => {
+const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
   const {
     title,
     // description,
@@ -132,7 +132,8 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = props => {
         onCollapse={setCollapsed}
         trigger={<MenuTrigger collapsed={collapsed} />}
         style={{
-          overflow: 'auto',
+          overflowX: 'hidden',
+          scrollbarWidth: 'thin',
           height: '100vh',
           position: 'fixed',
           paddingTop: '48px',
@@ -147,6 +148,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = props => {
           defaultSettings={sidebarDefaults}
         />
       </Sider>
+
       <Layout className="site-layout">
         <Header className="site-layout-background" style={headerStyle}>
           <LayoutHeader collapsed={collapsed} customComponent={customComponent} />
