@@ -52,6 +52,11 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
 
   const metaProvider = getActiveProvider ? getActiveProvider() : null;
 
+  const onSave = values => {
+    if (!readOnly)
+      props.onSave(values);
+  };
+
   const editor = useMemo(() => {
     const emptyEditor = null;
 
@@ -67,11 +72,6 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
 
     const onCancel = () => {
       //
-    };
-
-    const onSave = values => {
-      if (!readOnly)
-        props.onSave(values);
     };
 
     const onValuesChange = (_changedValues, values) => {
@@ -96,7 +96,7 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
         </React.Fragment>
       </MetadataContext.Provider>
     );
-  }, [toolboxComponent, readOnly, metaProvider, props.onSave]);
+  }, [toolboxComponent, readOnly, metaProvider]);
 
   return Boolean(toolboxComponent)
     ? <>{editor}</>
