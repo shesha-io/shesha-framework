@@ -5,7 +5,7 @@ using Shesha.FluentMigrator;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Migrations
 {
-    [Migration(20230516104216)]
+    [Migration(20230516104216), MsSqlOnly]
     public class M20230516104216 : Migration
     {
         /// <summary>

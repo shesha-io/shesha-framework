@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Migrations
 {
-    [Migration(20230228082800)]
+    [Migration(20230228082800), MsSqlOnly]
     public class M20230228082800 : Migration
     {
         public override void Down()

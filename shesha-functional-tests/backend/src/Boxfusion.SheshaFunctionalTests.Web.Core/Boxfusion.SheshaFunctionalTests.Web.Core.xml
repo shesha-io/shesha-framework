@@ -105,6 +105,23 @@
             <param name="person"></param>
             <returns></returns>
         </member>
+        <member name="T:Boxfusion.SheshaFunctionalTests.DbmsHelper">
+            <summary>
+            Dbms configuration helper
+            </summary>
+        </member>
+        <member name="M:Boxfusion.SheshaFunctionalTests.DbmsHelper.GetDbmsType(Microsoft.Extensions.Configuration.IConfigurationRoot)">
+            <summary>
+            Get current Dbms type
+            </summary>
+        </member>
+        <member name="M:Boxfusion.SheshaFunctionalTests.DbmsHelper.GetDefaultConnectionString(Microsoft.Extensions.Configuration.IConfigurationRoot)">
+            <summary>
+            Get default connection string
+            </summary>
+            <param name="config"></param>
+            <returns></returns>
+        </member>
         <member name="T:Boxfusion.SheshaFunctionalTests.Hangfire.HangfireAuthorizationFilter">
             <summary>
             Hangfire authorization filter

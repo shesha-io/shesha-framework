@@ -62,7 +62,9 @@ namespace Boxfusion.SheshaFunctionalTests
         public override void PreInitialize()
         {
             var config = Configuration.Modules.ShaNHibernate();
-            config.UseMsSql();
+            
+            config.UseDbms(c => c.GetDbmsType(), c => c.GetDefaultConnectionString());
+
             // use this line to switch to PostgreSql
             //config.UsePostgreSql();
 

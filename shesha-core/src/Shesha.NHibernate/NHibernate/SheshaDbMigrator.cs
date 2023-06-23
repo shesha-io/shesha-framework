@@ -102,7 +102,7 @@ namespace Shesha.NHibernate
                         foreach (var assembly in assemblies)
                         {
                             // Define the assembly containing the migrations
-                            rb.ScanIn(assembly).For.Migrations();
+                            rb.ScanIn(assembly).For.Migrations().For.EmbeddedResources();
                         }
                     }
                 )

@@ -73,7 +73,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Shesha.Framework" Version="4.34.1" />
+    <PackageReference Include="Shesha.Framework" Version="4.35.15" />
     <ProjectReference Include="..\ShaCompanyName.ShaProjectName.Web.Core\ShaCompanyName.ShaProjectName.Web.Core.csproj" />
   </ItemGroup>
 
