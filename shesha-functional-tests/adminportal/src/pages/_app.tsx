@@ -1,11 +1,8 @@
 import {
-	AppConfiguratorProvider,
-	DynamicModalProvider,
 	GlobalStateProvider,
 	PageWithLayout,
 	ShaApplicationProvider,
 	StoredFilesProvider,
-	UiProvider,
 } from '@shesha/reactjs';
 import { CustomErrorBoundary, CustomNProgress } from 'components';
 import { AppProps } from 'next/app';
@@ -45,14 +42,10 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element {
 						router={router as any}
 						noAuth={router?.asPath?.includes('/no-auth')}
 					>
-						<AppConfiguratorProvider>
-							<DynamicModalProvider>
-								<CustomNProgress />
-								<StoredFilesProvider baseUrl={BASE_URL} ownerId={''} ownerType={''}>
-									<UiProvider>{getLayout(<Component {...(router?.query || {})} {...pageProps} />)}</UiProvider>
-								</StoredFilesProvider>
-							</DynamicModalProvider>
-						</AppConfiguratorProvider>
+						<CustomNProgress />
+						<StoredFilesProvider baseUrl={BASE_URL} ownerId={''} ownerType={''}>
+							{getLayout(<Component {...(router?.query || {})} {...pageProps} />)}
+						</StoredFilesProvider>
 					</ShaApplicationProvider>
 				</GlobalStateProvider>
 			</StyledThemeProvider>
