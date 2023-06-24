@@ -58,6 +58,7 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
   };
 
   const editor = useMemo(() => {
+
     const emptyEditor = null;
 
     if (!Boolean(toolboxComponent)) return emptyEditor;
@@ -96,7 +97,7 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
         </React.Fragment>
       </MetadataContext.Provider>
     );
-  }, [toolboxComponent, readOnly, metaProvider]);
+  }, [toolboxComponent, readOnly, metaProvider?.modelType]);
 
   return Boolean(toolboxComponent)
     ? <>{editor}</>
