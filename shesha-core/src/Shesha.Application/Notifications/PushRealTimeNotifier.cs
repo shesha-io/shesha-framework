@@ -81,7 +81,7 @@ namespace Shesha.Notifications
         /// inheritedDoc
         protected override async Task DoSendNotificationMessageAsync(NotificationMessage message)
         {
-            if (message.Recipient == null)
+            if (message.Recipient == null && message.RecipientText == null)
                 return;
 
             await _pushNotifier.SendNotificationToPersonAsync(new SendNotificationToPersonInput()
@@ -89,7 +89,7 @@ namespace Shesha.Notifications
                 Title = message.Subject,
                 Body = message.Body,
                 Data = new Dictionary<string, string>(), // todo: copy data
-                PersonId = message.Recipient.Id
+                PersonId = message.Recipient != null? message.Recipient.Id: message.RecipientText.ToGuid(),
             });
         }
 

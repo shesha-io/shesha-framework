@@ -33,13 +33,7 @@ namespace Shesha.Domain
         [ReferenceList("Shesha.Core", "OrganisationUnitType")]
         public virtual int? OrganisationType { get; set; }
         
-        public virtual int? TenantId { get; set; }
-
-        [StringLength(30)]
-        public virtual string CompanyRegistrationNo { get; set; }
-
-        [StringLength(30)]
-        public virtual string VatRegistrationNo { get; set; }
+        public virtual int? TenantId { get; set; }        
 
         [StringLength(200)]
         public virtual string ContactEmail { get; set; }
