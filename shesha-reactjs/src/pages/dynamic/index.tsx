@@ -234,10 +234,12 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
     }
   }, [formWithData.loadingState, formWithData.fetchedData]);
 
+  const previousOnInitialized = usePrevious(formWithData.form?.settings?.onInitialized);
+
   useEffect(() => {
-    // call onInitialized (if specified) if the form already loaded but loading of other parts are still in progress
-    if (formWithData.loadingState === 'loading') {
-      const onInitialized = formWithData.form?.settings?.onInitialized;
+    const onInitialized = formWithData?.form?.settings?.onInitialized;
+
+    if (onInitialized && previousOnInitialized !== onInitialized) {
       const initialValues = formWithData.form?.settings?.initialValues;
 
       if (onInitialized) {
@@ -246,7 +248,7 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
         });
       }
     }
-  }, [formWithData.loadingState, formWithData.form]);
+  }, [formWithData.form]);
 
   //#endregion
 
