@@ -34,6 +34,8 @@ const NumberFieldControl: FC<IProps> = ({ disabled, form, model, onChange, value
     setGlobalState,
   };
 
+  const style = model.style;
+
   const inputProps: InputNumberProps = {
     className: 'sha-number-field',
     disabled: disabled,
@@ -41,13 +43,13 @@ const NumberFieldControl: FC<IProps> = ({ disabled, form, model, onChange, value
     min: model?.min,
     max: model?.max,
     size: model?.size,
-    style: getStyle(model?.style, formData),
+    style: !!style ? getStyle(style, formData) : { width: '100%' },
     step: model?.highPrecision ? model?.stepNumeric : model?.stepNumeric,
     ...customInputNumberEventHandler(eventProps, onChange),
     defaultValue: model?.defaultValue,
   };
 
-  return <InputNumber value={value} {...inputProps} style={{ width: '100%' }} stringMode={model?.highPrecision} />;
+  return <InputNumber value={value} {...inputProps} stringMode={model?.highPrecision} />;
 };
 
 export default NumberFieldControl;
