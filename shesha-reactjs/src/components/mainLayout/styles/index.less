@@ -11,15 +11,8 @@
     margin-left: @sha-sider-collapsed-width;
   }
 }
-::-webkit-scrollbar {
-  width: 5px;
-  
-  
-}
-::-webkit-scrollbar-thumb {
-  background-color: gray;
-  border-radius : 5px;
-}
+
+
 
 
 .ant-layout {
@@ -169,6 +162,21 @@
     }
   }
 
+  .ant-layout-sider {
+    overflow-x: hidden;
+    height: 100vh;
+  }
+
+  .ant-layout-sider, ::-webkit-scrollbar {
+    width: 9px;
+    background-color: black;
+    color: black;
+  }
+
+  .ant-layout-sider, ::-webkit-scrollbar-track {
+    background-color: gray;
+  }
+ 
   // Content
   .ant-layout-content {
     .marginLeftTransition();
