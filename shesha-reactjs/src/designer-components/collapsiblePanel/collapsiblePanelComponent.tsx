@@ -41,7 +41,6 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
 
     return (
       <CollapsiblePanel
-        className="collapse-panel"
         header={label}
         expandIconPosition={expandIconPosition !== 'hide' ? (expandIconPosition as ExpandIconPosition) : 'left'}
         collapsedByDefault={collapsedByDefault}
