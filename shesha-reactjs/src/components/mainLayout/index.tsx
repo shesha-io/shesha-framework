@@ -129,16 +129,8 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
       <Sider
         collapsible
         collapsed={collapsed}
-        className="sidebar"
         onCollapse={setCollapsed}
         trigger={<MenuTrigger collapsed={collapsed} />}
-        style={{
-          overflowX: 'hidden',
-          height: '100vh',
-          position: 'fixed',
-          paddingTop: '48px',
-          left: 0,
-        }}
         theme={sideMenuTheme}
       >
         <ConfigurableSidebarMenu

@@ -12,15 +12,8 @@
   }
 }
 
-::-webkit-scrollbar-thumb {
-  background-color: gray;
-  border-radius : 5px;
-}
 
 
-::-webkit-scrollbar {
-    width: 10px;
-}
 
 .ant-layout {
   min-height: 100vh;
@@ -168,6 +161,30 @@
       }
     }
   }
+
+  .ant-layout-sider {
+    overflow-x: hidden;
+    height: 100vh;
+
+
+  }
+
+
+
+  .ant-layout-sider, ::-webkit-scrollbar {
+    width: 9px;
+    background-color: black;
+    color: black;
+  }
+
+  .ant-layout-sider, ::-webkit-scrollbar-track {
+    background-color: gray;
+  
+  }
+ 
+
+  
+
 
   // Content
   .ant-layout-content {
