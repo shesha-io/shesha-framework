@@ -47,7 +47,7 @@ const NumberFieldControl: FC<IProps> = ({ disabled, form, model, onChange, value
     defaultValue: model?.defaultValue,
   };
 
-  return <InputNumber value={value} {...inputProps} stringMode={model?.highPrecision} />;
+  return <InputNumber value={value} {...inputProps} style={{ width: '100%' }} stringMode={model?.highPrecision} />;
 };
 
 export default NumberFieldControl;
