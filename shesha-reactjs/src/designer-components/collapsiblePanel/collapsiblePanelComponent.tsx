@@ -41,7 +41,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
 
     return (
       <CollapsiblePanel
-        header={label}
+        header={<label style={{ fontWeight: 'bold', fontSize: '18px' }}>{label}</label>}
         expandIconPosition={expandIconPosition !== 'hide' ? (expandIconPosition as ExpandIconPosition) : 'left'}
         collapsedByDefault={collapsedByDefault}
         extra={extra}
