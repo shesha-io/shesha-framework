@@ -304,7 +304,7 @@ namespace Shesha.Notifications
             using (var uow = UowManager.Begin(TransactionScopeOption.RequiresNew))
             {
                 // safe get message and skip if deleted manually
-                var message = await NotificationMessageRepository.GetAll().FirstOrDefaultAsync(m => m.Id == id);
+                var message = await NotificationMessageRepository.GetAsync(id);
 
                 if (message == null)
                     throw new ShaNotificationNotFoundException(id);
