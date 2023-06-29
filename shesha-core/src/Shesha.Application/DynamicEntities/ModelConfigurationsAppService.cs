@@ -296,6 +296,9 @@ namespace Shesha.DynamicEntities
         {
             var modelConfigMapperConfig = new MapperConfiguration(cfg =>
             {
+                // Fix bug of Automapper < 11.0.0 under .net 7 https://stackoverflow.com/questions/74730425/system-datetime-on-t-maxintegertsystem-collections-generic-ienumerable1t
+                cfg.ShouldMapMethod = (m) => { return false; };
+
                 var mapExpression = cfg.CreateMap<ModelConfigurationDto, EntityConfig>()
                     .ForMember(d => d.Id, o => o.Ignore());
 
@@ -314,6 +317,9 @@ namespace Shesha.DynamicEntities
         {
             var propertyMapperConfig = new MapperConfiguration(cfg =>
             {
+                // Fix bug of Automapper < 11.0.0 under .net 7 https://stackoverflow.com/questions/74730425/system-datetime-on-t-maxintegertsystem-collections-generic-ienumerable1t
+                cfg.ShouldMapMethod = (m) => { return false; };
+
                 var mapExpression = cfg.CreateMap<ModelPropertyDto, EntityProperty>()
                     .ForMember(d => d.Id, o => o.Ignore())
                     .ForMember(d => d.EntityConfig, o => o.Ignore())
