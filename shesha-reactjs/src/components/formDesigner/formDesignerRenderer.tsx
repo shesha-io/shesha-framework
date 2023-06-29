@@ -22,9 +22,9 @@ export const FormDesignerRenderer: FC = ({}) => {
   const [fieldPropertiesOpen, setFieldPropertiesOpen] = useState(true);
   const { formProps } = useFormPersister();
 
-  const toggleWidgetSidebar = () => setWidgetOpen(widget => !widget);
+  const toggleWidgetSidebar = () => setWidgetOpen((widget) => !widget);
 
-  const toggleFieldPropertiesSidebar = () => setFieldPropertiesOpen(prop => !prop);
+  const toggleFieldPropertiesSidebar = () => setFieldPropertiesOpen((prop) => !prop);
 
   const { formSettings, form } = useForm();
   const { isDebug, readOnly } = useFormDesigner();
@@ -34,7 +34,7 @@ export const FormDesignerRenderer: FC = ({}) => {
 
   return (
     <div className="sha-page">
-      <div className="sha-page-heading">
+      <div className="sha-page-heading sha-form-heading-fixed">
         <div className="sha-page-title" style={{ justifyContent: 'left' }}>
           <Space>
             {title && (
@@ -50,13 +50,13 @@ export const FormDesignerRenderer: FC = ({}) => {
       <div className="sha-form-designer">
         <ConditionalWrap
           condition={Boolean(formSettings.modelType)}
-          wrap={content => (
+          wrap={(content) => (
             <MetadataProvider id="designer" modelType={formSettings.modelType}>
               {content}
             </MetadataProvider>
           )}
         >
-          <FormDesignerToolbar />
+          <FormDesignerToolbar className="sha-toolbar-fixed" />
           <SidebarContainer
             leftSidebarProps={
               readOnly
@@ -68,6 +68,7 @@ export const FormDesignerRenderer: FC = ({}) => {
                     title: 'Builder Widgets',
                     content: () => <Toolbox />,
                     placeholder: 'Builder Widgets',
+                    fixedPositon: true,
                   }
             }
             rightSidebarProps={{
@@ -77,11 +78,10 @@ export const FormDesignerRenderer: FC = ({}) => {
               title: () => <ComponentPropertiesTitle />,
               content: () => <ComponentPropertiesPanel />,
               placeholder: 'Properties',
+              fixedPositon: true,
             }}
           >
-            <ConfigurableFormRenderer
-              form={form}
-            >
+            <ConfigurableFormRenderer form={form}>
               {isDebug && (
                 <>
                   <Row>
