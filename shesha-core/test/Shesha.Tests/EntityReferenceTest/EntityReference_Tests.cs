@@ -1,9 +1,12 @@
 ﻿using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
+using Abp.Timing;
 using Shesha.Domain;
+using Shesha.Domain.ConfigurationItems;
 using Shesha.DynamicEntities;
 using Shesha.EntityReferences;
+using Shesha.Extensions;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -22,6 +25,7 @@ namespace Shesha.Tests.EntityReferenceTest
         private readonly IRepository<ComplexTestString, Guid> _jsonStringRepository;
         //private readonly IRepository<ComplexPersonTest, Guid> _jsonPersonRepository;
         private readonly IEntityModelBinder _entityModelBinder;
+        private readonly IRepository<Module, Guid> _moduleRepo;
 
         public EntityReference_Tests()
         {
@@ -32,8 +36,42 @@ namespace Shesha.Tests.EntityReferenceTest
             _jsonStringRepository = Resolve<IRepository<ComplexTestString, Guid>>();
             //_jsonPersonRepository = Resolve<IRepository<ComplexPersonTest, Guid>>();
             _entityModelBinder = Resolve<IEntityModelBinder>();
+
+            _moduleRepo = Resolve<IRepository<Module, Guid>>();
         }
 
+        [Fact]
+        public async Task CheckUow()
+        {
+            LoginAsHostAdmin();
+
+            using (var uow = _unitOfWorkManager.Begin(new UnitOfWorkOptions {
+                IsTransactional = true,
+                IsolationLevel = System.Transactions.IsolationLevel.ReadUncommitted
+            }))
+            {
+                var dbModules = await _moduleRepo.GetAll().ToListAsync();
+
+                var dbModule = new Module
+                {
+                    Name = "Test",
+                    FriendlyName = "Test",
+                    Description = "Test",
+                    Publisher = "Test",
+                    IsEditable = true,
+                    IsRootModule = true,
+                    IsEnabled = true,
+
+                    CurrentVersionNo = "1",
+                    FirstInitializedDate = Clock.Now,
+                };
+                await _moduleRepo.InsertAsync(dbModule);
+
+                var dbModules2 = await _moduleRepo.GetAllListAsync();
+
+                await uow.CompleteAsync();
+            }
+        }
 
 /*        [Table("Test_EntityRef")]
         public class EntityRef : Entity<Guid>
