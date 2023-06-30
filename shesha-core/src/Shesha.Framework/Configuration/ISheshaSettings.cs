@@ -14,11 +14,11 @@ namespace Shesha.Configuration
         /// Upload folder for stored files (<see cref="StoredFile"/>) 
         /// </summary>
         [Display(Name = "Upload Folder", Description = "Upload folder for stored files", GroupName = "General")]
-        [SettingAttribute(SheshaSettingNames.UploadFolder)]
+        [Setting(SheshaSettingNames.UploadFolder)]
         ISettingAccessor<string> UploadFolder { get; }
 
         [Display(Name = "ExchangeName", GroupName = "RabbitMQ")]
-        [SettingAttribute(SheshaSettingNames.RabbitMQ.ExchangeName)]
+        [Setting(SheshaSettingNames.RabbitMQ.ExchangeName)]
         ISettingAccessor<string> ExchangeName { get; }
     }
 }

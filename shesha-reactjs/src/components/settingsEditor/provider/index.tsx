@@ -1,15 +1,24 @@
-import React, { useContext, useEffect } from 'react';
+import React, { PropsWithChildren, useContext, useEffect } from 'react';
 import { FC } from 'react';
-import useThunkReducer from 'react-hook-thunk-reducer';
-import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '../../../interfaces/gql';
+import useThunkReducer from 'hooks/thunkReducer';
+import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from 'interfaces/gql';
 import { IEditorBridge, ISettingsEditorContext, ISettingsEditorStateContext, SettingsEditorContext, SETTINGS_EDITOR_STATE_CONTEXT_INITIAL_STATE } from './contexts';
 import { settingsEditorReducer } from './reducer';
-import { fetchApplicationsErrorAction, fetchApplicationsSuccessAction, fetchConfigurationsAction, fetchConfigurationsErrorAction, fetchConfigurationsSuccessAction, selectSettingAction, setEditorBridgeAction, setEditorModeAction } from './actions';
-import * as RestfulShesha from '../../../utils/fetchers';
-import { GENERIC_ENTITIES_ENDPOINT } from '../../../constants';
-import { useSheshaApplication } from '../../..';
+import {
+    fetchApplicationsErrorAction,
+    fetchApplicationsSuccessAction,
+    fetchConfigurationsAction,
+    fetchConfigurationsErrorAction,
+    fetchConfigurationsSuccessAction,
+    selectSettingAction,
+    setEditorBridgeAction,
+    setEditorModeAction } from './actions';
+import * as RestfulShesha from 'utils/fetchers';
+import { GENERIC_ENTITIES_ENDPOINT } from 'shesha-constants';
+import { useSheshaApplication } from 'providers';
 import { FrontEndApplicationDto, IFrontEndApplication, ISettingConfiguration, ISettingIdentifier, SettingValue } from './models';
-import { settingsGetValue, settingsUpdateValue } from '../../../apis/settings';
+import { settingsGetValue, settingsUpdateValue } from 'apis/settings';
+import { ConfigurationItemVersionStatus } from 'utils/configurationFramework/models';
 
 export interface ISettingsEditorProviderProps {
 
@@ -20,9 +29,10 @@ const getListFetcherQueryParams = (maxResultCount): IGenericGetAllPayload => {
         skipCount: 0,
         maxResultCount: maxResultCount ?? -1,
         entityType: 'Shesha.Domain.SettingConfiguration',
-        properties: 'id category dataType editorFormModule editorFormName isClientSpecific configuration { name, module { id name }, label, description, versionNo }',
+        properties: 'id category dataType editorFormModule editorFormName isClientSpecific name, module { id name }, label, description, versionNo',
         quickSearch: null,
-        sorting: 'configuration.module.name, configuration.name',
+        sorting: 'module.name, name',
+        filter: JSON.stringify({ '==': [{ 'var': 'versionStatus' }, ConfigurationItemVersionStatus.Live] }),
     };
 };
 interface SettingConfigurationDto {
@@ -32,19 +42,17 @@ interface SettingConfigurationDto {
     editorFormModule?: string;
     editorFormName?: string;
     isClientSpecific: boolean;
-    configuration: {
+    name: string;
+    label?: string;
+    description?: string;
+    versionNo?: number;
+    module?: {
+        id: string;
         name: string;
-        label?: string;
-        description?: string;
-        versionNo?: number;
-        module?: {
-            id: string;
-            name: string;
-        }
-    }
+    };
 }
 
-const SettingsEditorProvider: FC<ISettingsEditorProviderProps> = ({ children }) => {
+const SettingsEditorProvider: FC<PropsWithChildren<ISettingsEditorProviderProps>> = ({ children }) => {
     const initial: ISettingsEditorStateContext = {
         ...SETTINGS_EDITOR_STATE_CONTEXT_INITIAL_STATE,
     };
@@ -65,12 +73,12 @@ const SettingsEditorProvider: FC<ISettingsEditorProviderProps> = ({ children }) 
                 const settingConfigurations = response.result.items.map<ISettingConfiguration>(item => {
                     return {
                         id: item.id,
-                        name: item.configuration.name,
+                        name: item.name,
                         dataType: item.dataType,
-                        label: item.configuration.label,
-                        description: item.configuration.description,
+                        label: item.label,
+                        description: item.description,
                         category: item.category,
-                        module: item.configuration.module?.name,
+                        module: item.module?.name,
                         editorForm: item.editorFormName ? { name: item.editorFormName, module: item.editorFormModule } : null,
                         isClientSpecific: item.isClientSpecific,
                     };
@@ -103,7 +111,7 @@ const SettingsEditorProvider: FC<ISettingsEditorProviderProps> = ({ children }) 
         }).catch(error => {
             dispatch(fetchApplicationsErrorAction({ error }));
         });
-    }
+    };
 
     useEffect(() => {
         fetchConfigurations();
@@ -111,20 +119,20 @@ const SettingsEditorProvider: FC<ISettingsEditorProviderProps> = ({ children }) 
 
     const selectSetting = (setting: ISettingConfiguration, app: IFrontEndApplication) => {
         dispatch(selectSettingAction({ setting, app }));
-    }
+    };
 
     const saveSetting = () => {
         if (!state.editorBridge)
             return Promise.reject('Setting editor not available');
 
         return state.editorBridge.save();
-    }
+    };
     const startEditSetting = () => {
         dispatch(setEditorModeAction('edit'));
-    }
+    };
     const cancelEditSetting = () => {
         dispatch(setEditorModeAction('readonly'));
-    }
+    };
 
     const fetchSettingValue = (settingId: ISettingIdentifier) => {
         return settingsGetValue({ name: settingId.name, module: settingId.module, appKey: settingId.appKey }, { base: backendUrl, headers: httpHeaders }).then(response => {
@@ -132,7 +140,7 @@ const SettingsEditorProvider: FC<ISettingsEditorProviderProps> = ({ children }) 
         }).catch(error => {
             console.error(error);
         });
-    }
+    };
 
     const saveSettingValue = (settingId: ISettingIdentifier, value: SettingValue) => {
         return settingsUpdateValue({
@@ -145,11 +153,11 @@ const SettingsEditorProvider: FC<ISettingsEditorProviderProps> = ({ children }) 
         }).catch(error => {
             console.error(error);
         });
-    }
+    };
 
     const setEditor = (editorBridge: IEditorBridge) => {
         dispatch(setEditorBridgeAction(editorBridge));
-    }
+    };
 
     const contextValue: ISettingsEditorContext = {
         ...state,
@@ -164,7 +172,7 @@ const SettingsEditorProvider: FC<ISettingsEditorProviderProps> = ({ children }) 
     };
 
     return <SettingsEditorContext.Provider value={contextValue}>{children}</SettingsEditorContext.Provider>;
-}
+};
 
 function useSettingsEditor(require: boolean = true) {
     const context = useContext(SettingsEditorContext);

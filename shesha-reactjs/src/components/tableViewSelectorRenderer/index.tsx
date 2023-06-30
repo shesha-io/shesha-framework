@@ -1,4 +1,4 @@
-import React, { FC, useCallback } from 'react';
+import React, { FC, useCallback, useMemo } from 'react';
 import { BulbTwoTone, DownOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Dropdown, Menu, Popover, Space, Tooltip, Typography } from 'antd';
 import { IStoredFilter } from '../../providers/dataTable/interfaces';
@@ -19,12 +19,14 @@ const TooltipIcon: FC<ITooltipIconProps> = ({ tooltip }) => {
 
 export interface ITableViewSelectorRendererProps {
   filters?: IStoredFilter[];
+  hidden?: boolean;
   selectedFilterId?: string;
   onSelectFilter: (id?: string) => void;
 }
 
 export const TableViewSelectorRenderer: FC<ITableViewSelectorRendererProps> = ({
   filters,
+  hidden,
   selectedFilterId,
   onSelectFilter,
 }) => {
@@ -81,21 +83,24 @@ export const TableViewSelectorRenderer: FC<ITableViewSelectorRendererProps> = ({
     [filters, onSelectFilter]
   );
 
-  const menu = (
-    <Menu onClick={onMenuClickMemoized}>
-      {filters?.map(filter => (
-        <Menu.Item key={filter?.id}>
-          <Space>
-            {filter?.name}
-
-            <Show when={Boolean(filter?.tooltip)}>
-              <TooltipIcon tooltip={filter?.tooltip}></TooltipIcon>
-            </Show>
-          </Space>
-        </Menu.Item>
-      ))}
-    </Menu>
-  );
+  const menu = useMemo(() => {
+    return (
+      <Menu onClick={onMenuClickMemoized} items={
+        filters?.map(filter => {
+          return {
+            key: filter?.id,
+            label: (
+              <Space>
+                {filter?.name}
+                <Show when={Boolean(filter?.tooltip)}>
+                  <TooltipIcon tooltip={filter?.tooltip}></TooltipIcon>
+                </Show>
+              </Space>
+            )
+          };
+        })
+      }/>);
+  }, [filters]);
 
   const renderTitle = () => (
     <Typography.Title className="title" level={4}>
@@ -106,15 +111,16 @@ export const TableViewSelectorRenderer: FC<ITableViewSelectorRendererProps> = ({
   return (
     <div className="table-view-selector">
       <Space>
-        <Show when={filters?.length === 1}>{renderTitle()}</Show>
-
-        <Show when={filters?.length > 1}>
-          <Dropdown overlay={menu} trigger={['click']}>
-            <Space>
-              {renderTitle()}
-              <DownOutlined />
-            </Space>
-          </Dropdown>
+        <Show when={!hidden}>
+          <Show when={filters?.length === 1}>{renderTitle()}</Show>
+          <Show when={filters?.length > 1}>
+            <Dropdown overlay={menu} trigger={['click']}>
+              <Space>
+                {renderTitle()}
+                <DownOutlined />
+              </Space>
+            </Dropdown>
+          </Show>
         </Show>
 
         <Show when={Boolean(unevaluatedExpressions?.length)}>

@@ -21,12 +21,11 @@ import {
   updateFormSettingsAction,
   /* NEW_ACTION_IMPORT_GOES_HERE */
 } from './actions';
-import { useFormConfigurationUpdateMarkup, FormUpdateMarkupInput } from '../../apis/formConfiguration';
-import useThunkReducer from 'react-hook-thunk-reducer';
-import { DEFAULT_FORM_SETTINGS, FormIdentifier, FormMarkupWithSettings, IFormSettings } from '../form/models';
-import { IPersistedFormProps } from './models';
+import { FormUpdateMarkupInput, formConfigurationUpdateMarkup } from 'apis/formConfiguration';
+import useThunkReducer from 'hooks/thunkReducer';
+import { DEFAULT_FORM_SETTINGS, FormIdentifier, FormMarkupWithSettings, IFormSettings, IPersistedFormProps } from '../form/models';
 import { useConfigurationItemsLoader } from '../configurationItemsLoader';
-import { useAppConfigurator } from '../..';
+import { useAppConfigurator, useSheshaApplication } from 'providers';
 
 export interface IFormProviderProps {
   formId: FormIdentifier;
@@ -48,6 +47,7 @@ const FormPersisterProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
 
   const { getForm, clearFormCache } = useConfigurationItemsLoader();
   const { configurationItemMode } = useAppConfigurator();
+  const { backendUrl, httpHeaders } = useSheshaApplication();
 
   const doFetchFormInfo = (payload: ILoadFormPayload) => {
     if (formId) {
@@ -90,9 +90,6 @@ const FormPersisterProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     doFetchFormInfo(payload);
   };
 
-  // todo: review usage of useFormUpdateMarkup after
-  const { mutate: saveFormHttp } = useFormConfigurationUpdateMarkup({});
-
   const saveForm = async (payload: FormMarkupWithSettings): Promise<void> => {
     if (!state.formProps?.id) return Promise.reject();
 
@@ -100,10 +97,10 @@ const FormPersisterProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
 
     const dto: FormUpdateMarkupInput = {
       id: state.formProps.id,
-      markup: JSON.stringify(payload, null, 2),
+      markup: JSON.stringify(payload),
     };
 
-    await saveFormHttp(dto, {})
+    await formConfigurationUpdateMarkup(dto, { base: backendUrl, headers: httpHeaders })
       .then(_response => {
         // clear cache
         clearFormCache({ formId: state.formId });

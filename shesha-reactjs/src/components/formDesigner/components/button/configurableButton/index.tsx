@@ -10,7 +10,7 @@ import {
 import ShaIcon, { IconType } from '../../../../shaIcon';
 import classNames from 'classnames';
 import moment from 'moment';
-import { axiosHttp } from '../../../../../apis/axios';
+import { axiosHttp } from '../../../../../utils/fetchers';
 import { IButtonGroupButton } from '../../../../../providers/buttonGroupConfigurator/models';
 import { CSSProperties } from 'react';
 import { useConfigurableActionDispatcher } from '../../../../../providers/configurableActionsDispatcher';
@@ -58,6 +58,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
   return (
     <Button
       title={props.tooltip}
+      block={props.block}
       onClick={event => onButtonClick(event)}
       type={props.buttonType}
       danger={props.danger}

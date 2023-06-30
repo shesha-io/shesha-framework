@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { nanoid } from 'nanoid/non-secure';
 import Link from 'next/link';
 import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react';
-import { useMutate } from 'restful-react';
+import { useMutate } from 'hooks';
 import { ConfigurableForm, ValidationErrors } from '../../components';
 import { usePubSub, usePrevious } from '../../hooks';
 import { PageWithLayout } from '../../interfaces';
@@ -26,13 +26,13 @@ import StackedNavigationModal from './navigation/stackedNavigationModal';
 import { useFormWithData } from '../../providers/form/api';
 import { IErrorInfo } from '../../interfaces/errorInfo';
 import moment from 'moment';
-import { axiosHttp } from '../../apis/axios';
+import { axiosHttp } from '../../utils/fetchers';
 import { DEFAULT_FORM_SETTINGS } from '../../providers/form/models';
 import { useModelApiEndpoint } from '../../components/configurableForm/useActionEndpoint';
 import { StandardEntityActions } from '../../interfaces/metadata';
 import { getInitialValues } from '../../components/configurableForm/useInitialValues';
 
-const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
+const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
   const { backendUrl } = useSheshaApplication();
   const [state, setState] = useState<IDynamicPageState>({});
   const formRef = useRef<ConfigurableFormInstance>();
@@ -64,10 +64,7 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
     ],
   });
 
-  const { mutate: postData, loading: isPostingData } = useMutate({
-    path: submitEndpoint?.url,
-    verb: submitEndpoint?.httpVerb as 'POST' | 'PUT',
-  });
+  const { mutate: postData, loading: isPostingData } = useMutate();
 
   //#region routing
   const { setCurrentNavigator, navigator } = useStackedNavigation();
@@ -104,7 +101,7 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
       setNavigationState(null);
       setCurrentNavigator(state?.stackId);
 
-      setState(prev => ({ ...prev, ...router?.query }));
+      setState((prev) => ({ ...prev, ...router?.query }));
       closing.current = false;
       return;
     }
@@ -147,7 +144,7 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
   const onStackedDialogClose = () => {
     closing.current = true;
 
-    setNavigationState(prev => ({ ...prev, closing: true }));
+    setNavigationState((prev) => ({ ...prev, closing: true }));
     setCurrentNavigator(state?.stackId);
   };
 
@@ -157,7 +154,7 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
   //#region get form data
 
   const onChangeId = (localId: string) => {
-    setState(prev => ({ ...prev, id: localId }));
+    setState((prev) => ({ ...prev, id: localId }));
   };
 
   const onChangeFormData = (payload: ISetFormDataPayload) => {
@@ -168,7 +165,9 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
   //#endregion
 
   const onFinish = (values: any, _response?: any, options?: any) => {
-    postData(values)
+    if (!submitEndpoint) throw new Error('Submit endpoint is not specified');
+
+    postData(submitEndpoint, values)
       .then(() => {
         message.success('Data saved successfully!');
 
@@ -176,7 +175,7 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
 
         formRef?.current?.setFormMode('readonly');
       })
-      .catch(error => {
+      .catch((error) => {
         if (options?.setValidationErrors) {
           options.setValidationErrors(error);
         }
@@ -226,7 +225,7 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
     if (formWithData.loadingState === 'ready') {
       const onDataLoaded = formWithData.form?.settings?.onDataLoaded;
       const initialValues = formWithData.form?.settings?.initialValues;
-      if (onDataLoaded && formWithData.fetchedData) {
+      if (onDataLoaded) {
         executeExpression(onDataLoaded, {
           data: formWithData.fetchedData,
           initialValues: getInitialValues(initialValues, globalState),
@@ -235,10 +234,12 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
     }
   }, [formWithData.loadingState, formWithData.fetchedData]);
 
+  const previousOnInitialized = usePrevious(formWithData.form?.settings?.onInitialized);
+
   useEffect(() => {
-    // call onInitialized (if specified) if the form already loaded but loading of other parts are still in progress
-    if (formWithData.loadingState === 'loading') {
-      const onInitialized = formWithData.form?.settings?.onInitialized;
+    const onInitialized = formWithData?.form?.settings?.onInitialized;
+
+    if (onInitialized && previousOnInitialized !== onInitialized) {
       const initialValues = formWithData.form?.settings?.initialValues;
 
       if (onInitialized) {
@@ -247,7 +248,7 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
         });
       }
     }
-  }, [formWithData.loadingState, formWithData.form]);
+  }, [formWithData.form]);
 
   //#endregion
 
@@ -310,7 +311,6 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = props => {
                   actions={{ onChangeId, onChangeFormData }}
                   onFinish={onFinish}
                   initialValues={formWithData.fetchedData}
-                  skipPostOnFinish
                   skipFetchData
                   refetchData={() => refetchFormData()}
                   className="sha-dynamic-page"

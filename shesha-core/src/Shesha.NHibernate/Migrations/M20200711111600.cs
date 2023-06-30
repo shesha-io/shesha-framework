@@ -2,7 +2,7 @@
 
 namespace Shesha.NHibernate.Migrations
 {
-    [Migration(20200711111600)]
+    [Migration(20200711111600), MsSqlOnly]
     public class M20200711111600 : AutoReversingMigration
     {
         public override void Up()

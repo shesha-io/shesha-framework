@@ -31,13 +31,13 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
 
   const formItem = useFormItem();
 
-  const { namePrefix, wrapperCol: _wrapperCol, labelCol: _labelCol } = formItem;
+  const { namePrefix, wrapperCol: formItemWrapperCol, labelCol: formItemlabelCol } = formItem;
 
   const isHidden = isComponentHidden(model);
 
   const layout = useMemo(() => {
     // Make sure the `wrapperCol` and `labelCol` from `FormItemProver` override the ones from the main form
-    return { labelCol: _labelCol || labelCol, wrapperCol: _wrapperCol || wrapperCol };
+    return { labelCol: formItemlabelCol || labelCol, wrapperCol: formItemWrapperCol || wrapperCol };
   }, [formItem]);
 
   const getPropName = () => {
@@ -57,7 +57,7 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
   }, [model.name, namePrefix]);
 
   const { hideLabel } = model;
-
+  
   return (
     <Form.Item
       className={classNames(className, { 'form-item-hidden': hideLabel })}
@@ -72,6 +72,9 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
       rules={isHidden ? [] : getValidationRules(model, { formData })}
       labelCol={layout?.labelCol}
       wrapperCol={hideLabel ? { span: 24 } : layout?.wrapperCol}
+
+      //help={''}
+      //hasFeedback
     >
       {children}
     </Form.Item>

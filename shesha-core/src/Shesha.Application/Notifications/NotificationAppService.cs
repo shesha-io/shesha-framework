@@ -3,13 +3,12 @@ using Abp.BackgroundJobs;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Notifications;
-using Microsoft.AspNetCore.Mvc;
-using NHibernate.Linq;
-using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
+using Shesha.DynamicEntities.Dtos;
 using Shesha.Notifications.Dto;
 using Shesha.Services;
+using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,7 +20,7 @@ namespace Shesha.Notifications;
 /// <summary>
 /// Notification application service
 /// </summary>
-public class NotificationAppService: SheshaCrudServiceBase<Notification, NotificationDto, Guid>, INotificationAppService
+public class NotificationAppService: DynamicCrudAppService<Notification, DynamicDto<Notification, Guid>, Guid>, INotificationAppService
 {
     private readonly INotificationPublisher _notificationPublisher;
     private readonly IBackgroundJobManager _backgroundJobManager;
@@ -56,30 +55,6 @@ public class NotificationAppService: SheshaCrudServiceBase<Notification, Notific
             userIds: userIds,
             entityIdentifier: entityIdentifier
         );
-    }
-
-    /// <summary>
-    /// Notifications autocomplete
-    /// </summary>
-    /// <param name="term"></param>
-    /// <returns></returns>
-    [HttpGet]
-    public async Task<List<AutocompleteItemDto>> Autocomplete(string term)
-    {
-        term = (term ?? "").ToLower();
-
-        var notifications = await Repository.GetAll()
-            .Where(p => (p.Name ?? "").ToLower().Contains(term))
-            .OrderBy(p => p.Name)
-            .Take(10)
-            .Select(p => new AutocompleteItemDto
-            {
-                DisplayText = p.Name.Trim(),
-                Value = p.Id.ToString()
-            })
-            .ToListAsync();
-
-        return notifications;
     }
 
     #region Direct email notifications
@@ -219,6 +194,69 @@ public class NotificationAppService: SheshaCrudServiceBase<Notification, Notific
 
     #endregion
 
+    #region Direct Push notifications
+
+    /// <summary>
+    /// Publish Push notification
+    /// </summary>
+    /// <param name="notificationName">Name of the notification. Default push template of the specified notification will be used</param>
+    /// <param name="data">Data that is used to fill template</param>
+    /// <param name="personId">Recipient person id</param>
+    /// <param name="attachments">Notification attachments</param>
+    /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
+    /// <returns></returns>
+    public async Task PublishPushNotificationAsync<TData>(string notificationName,
+        TData data,
+        string personId,
+        List<NotificationAttachmentDto> attachments = null,
+        object sourceEntity = null) where TData : NotificationData
+    {
+        if (string.IsNullOrWhiteSpace(personId))
+            throw new Exception($"{nameof(personId)} must not be null");
+
+        var entityIdentifier = GetEntityIdentifier(sourceEntity);
+
+        var wrappedData = new ShaNotificationData(data)
+        {
+            SendType = RefListNotificationType.Push,
+            RecipientText = personId,
+            Attachments = attachments
+        };
+        await _notificationPublisher.PublishAsync(notificationName, wrappedData, entityIdentifier);
+    }
+
+    /// <summary>
+    /// Publish Push notification using explicitly specified template
+    /// </summary>
+    /// <param name="templateId">Id of the template</param>
+    /// <param name="data">Data that is used to fill template</param>
+    /// <param name="personId">Recipient person id</param>
+    /// <param name="attachments">Attachments</param>
+    /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
+    /// <returns></returns>
+    public async Task PublishPushNotificationAsync<TData>(Guid templateId,
+        TData data,
+        string personId,
+        List<NotificationAttachmentDto> attachments = null,
+        object sourceEntity = null) where TData : NotificationData
+    {
+        if (string.IsNullOrWhiteSpace(personId))
+            throw new Exception($"{nameof(personId)} must not be null");
+
+        var entityIdentifier = GetEntityIdentifier(sourceEntity);
+
+        var wrappedData = new ShaNotificationData(data)
+        {
+            SendType = RefListNotificationType.Push,
+            RecipientText = personId,
+            TemplateId = templateId,
+            Attachments = attachments
+        };
+        await _notificationPublisher.PublishAsync(templateId.ToString(), wrappedData, entityIdentifier);
+    }
+
+    #endregion
+
     /// <summary>
     /// Note: for temporary usage only
     /// </summary>
@@ -248,4 +286,5 @@ public class NotificationAppService: SheshaCrudServiceBase<Notification, Notific
             StoredFileId = file.Id
         };
     }
+
 }

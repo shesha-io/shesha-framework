@@ -7,7 +7,18 @@ export const subFormReducer = handleActions<ISubFormStateContext, any>(
   {
     [SubFormActionEnums.SetMarkupWithSettings]: (state: ISubFormStateContext, action: ReduxActions.Action<ISubFormStateContext>) => {
       const { payload } = action;
-      const { components, formSettings, versionNo, versionStatus, description, hasFetchedConfig, id, module } = payload || {};
+      const { 
+        components, 
+        formSettings, 
+        versionNo, 
+        versionStatus, 
+        description, 
+        hasFetchedConfig, 
+        id, 
+        module,
+        allComponents,
+        componentRelations,
+      } = payload || {};
 
       return {
         ...state,
@@ -19,6 +30,8 @@ export const subFormReducer = handleActions<ISubFormStateContext, any>(
         versionNo,
         versionStatus,
         description,
+        allComponents,
+        componentRelations,
       };
 
     },

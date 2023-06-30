@@ -64,7 +64,7 @@ const GenericConfigurableComponentProvider = <TSettings extends any>({
     loader.promise.then(settings => {
       dispatch(loadSuccessAction({ ...settings }));
     }).catch((error) => {
-      dispatch(loadErrorAction({ error: error?.['message'] || 'Failed to load component' }))
+      dispatch(loadErrorAction({ error: error?.['message'] || 'Failed to load component' }));
     });
   };
 

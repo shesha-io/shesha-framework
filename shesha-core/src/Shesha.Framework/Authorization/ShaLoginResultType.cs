@@ -1,8 +1,10 @@
-﻿using System.ComponentModel;
+﻿using Shesha.Domain.Attributes;
+using System.ComponentModel;
 
 namespace Shesha.Authorization
 {
-    public enum ShaLoginResultType : byte
+    [ReferenceList("ShaLoginResultType")]
+    public enum ShaLoginResultType : int
     {
         Success = 1,
         

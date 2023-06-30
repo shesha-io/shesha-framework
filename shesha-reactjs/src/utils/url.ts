@@ -1,3 +1,5 @@
+import qs from 'qs';
+
 export const getCurrentUrl = (): string => {
   return typeof window !== 'undefined' ? window.location?.pathname ?? '' : '';
 };
@@ -54,6 +56,16 @@ export const getQueryParam = (name: string) => {
   return result;
 };
 
+export const setQueryParam = (url: string, key: string, value: string): string => {
+  const urlObj = new URL(decodeURIComponent(url));
+
+  const urlSearchParams = new URLSearchParams(urlObj.search ?? '');
+  const params = Object.fromEntries(urlSearchParams.entries()) as QueryStringParams;
+  params[key] = encodeURIComponent(value);
+
+  return `${urlObj?.host}${urlObj?.pathname}?${qs.stringify(params)}`;
+};
+
 export const getUrlWithoutQueryParams = (url: string) => {
   const urlObj = new URL(decodeURIComponent(url));
 
@@ -72,8 +84,7 @@ export const joinUrlAndPath = (baseUrl: string, path: string) => {
 };
 
 export function removeURLParameter(url: string, parameter: string) {
-  if (!url)
-    return url;
+  if (!url) return url;
   //prefer to use l.search if you have a location/link object
   const urlParts = url.split('?');
   if (urlParts.length >= 2) {

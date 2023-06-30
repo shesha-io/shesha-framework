@@ -1,7 +1,7 @@
 import { nanoid } from "nanoid";
 import { useMemo } from "react";
 import { ITableColumnsBuilder, TableColumnsFluentSyntax } from "../providers/dataTable/interfaces";
-import { IConfigurableColumnsBase } from "../providers/datatableColumnsConfigurator/models";
+import { IConfigurableColumnsProps } from "../providers/datatableColumnsConfigurator/models";
 
 const getColumnsBuilder = (): ITableColumnsBuilder => {
 
@@ -23,9 +23,9 @@ const getColumnsBuilder = (): ITableColumnsBuilder => {
     };
 
     return builder;
-}
+};
 
-export const useDataTableFluentColumns = (columns: TableColumnsFluentSyntax): IConfigurableColumnsBase[] => {
+export const useDataTableFluentColumns = (columns: TableColumnsFluentSyntax): IConfigurableColumnsProps[] => {
     const configurableColumns = useMemo(() => {
         const builder = getColumnsBuilder();
         columns(builder);
@@ -33,4 +33,4 @@ export const useDataTableFluentColumns = (columns: TableColumnsFluentSyntax): IC
     }, [columns]);
 
     return configurableColumns;
-}
+};

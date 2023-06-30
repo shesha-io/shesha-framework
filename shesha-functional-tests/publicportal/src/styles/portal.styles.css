@@ -1,0 +1,134 @@
+:root {
+  --borderGrey: #d8d8d8;
+  --danger: #ff7171;
+  --grey: #c1c1c1;
+  --info: #2b78e4;
+  --success: #14a38b;
+  --warning: #f2ac57;
+  --white: #fff;
+
+  --input-height: 50px;
+  --input-width: 250px;
+}
+
+/* Main Layout */
+.ant-layout .ant-layout-header {
+  height: 80px;
+  line-height: 80px;
+  padding: 0 10%;
+}
+
+.ant-layout .ant-layout-content {
+  margin-left: 0;
+  margin-top: 80px;
+}
+
+/* Alert Component */
+.sha-component .sha-alert {
+  border: none;
+  border-radius: 8px;
+  padding: 18px 36px;
+}
+
+.sha-component .sha-alert .ant-alert-content .ant-alert-message {
+  color: var(--white);
+  font-size: 16px;
+}
+
+.sha-component .sha-alert .anticon {
+  font-size: 20px;
+  color: var(--white);
+}
+
+.sha-component .ant-alert-error {
+  background: var(--danger);
+}
+
+.sha-component .ant-alert-info {
+  background: var(--info);
+}
+
+.sha-component .ant-alert-success {
+  background: var(--success);
+}
+
+.sha-component .ant-alert-warning {
+  background: var(--warning);
+}
+
+/* Button Component */
+.sha-component .sha-toolbar-btn {
+  border: none;
+  border-radius: 5px;
+  box-shadow: 0px 3px 4px 0px var(--grey);
+  font-size: 18px;
+  height: 60px;
+  width: 200px;
+}
+
+.sha-component .sha-toolbar-btn span {
+  font-weight: bold;
+}
+
+.sha-component .ant-btn-dangerous {
+  border: 1px solid var(--danger);
+}
+
+.sha-component .ant-btn-dangerous span {
+  color: var(--danger);
+}
+
+/* Inut Component */
+.sha-component .sha-input,
+.sha-number-field {
+  width: var(--input-width);
+}
+
+.sha-component .sha-input,
+.sha-component .sha-number-field,
+.sha-component .sha-text-area {
+  border: 2px solid var(--borderGrey);
+  border-radius: 5px;
+  height: var(--input-height);
+}
+
+.sha-component .sha-number-field {
+  line-height: var(--input-height);
+}
+
+/* Label Component */
+.sha-component .ant-form-item-label > label {
+  font-size: 16px;
+}
+
+/* Select Component */
+.sha-component .ant-select.ant-select-in-form-item {
+  width: var(--input-width);
+}
+
+.sha-component
+  .ant-select-single:not(.ant-select-customize-input)
+  .ant-select-selector {
+  border: 2px solid var(--borderGrey);
+  border-radius: 5px;
+  height: var(--input-height);
+}
+
+.sha-component
+  .ant-select-single:not(.ant-select-customize-input)
+  .ant-select-selector
+  .ant-select-selection-search-input {
+  height: var(--input-height);
+}
+
+.sha-component
+  .ant-select-single
+  .ant-select-selector
+  .ant-select-selection-placeholder {
+  line-height: var(--input-height);
+}
+
+.sha-component .ant-select .ant-select-arrow {
+  color: black;
+  font-size: 16px;
+}

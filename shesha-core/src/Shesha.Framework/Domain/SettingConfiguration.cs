@@ -1,4 +1,5 @@
 ﻿using Abp.Auditing;
+using Shesha.Domain.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -6,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace Shesha.Domain
 {
+    [JoinedProperty("Frwk_SettingConfigurations")]
+    [DiscriminatorValue(ItemTypeName)]
     public class SettingConfiguration: ConfigurationItemBase
     {
         public const string ItemTypeName = "setting-configuration";
@@ -51,11 +54,6 @@ namespace Shesha.Domain
         [Column("AccessModeLkp")]
         [Audited]
         public virtual SettingAccessMode AccessMode { get; set; }
-
-        public override Task<IList<ConfigurationItemBase>> GetDependenciesAsync()
-        {
-            return Task.FromResult(new List<ConfigurationItemBase>() as IList<ConfigurationItemBase>);
-        }
     }
 
     /// <summary>

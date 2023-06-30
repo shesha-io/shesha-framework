@@ -18,7 +18,6 @@ export interface IGenericEditModalProps {
   onCancel: (form: FormInstance) => void;
   onSuccess: (form: FormInstance) => void;
   prepareValues?: (values: any) => any;
-  onFieldsChange?: (changedFields: any[], allFields: any[]) => void;
   beforeSubmit?: (form: any) => boolean;
   actions?: IFormActions;
   sections?: IFormSections;
@@ -35,7 +34,6 @@ const GenericEditModal: FC<IGenericEditModalProps> = ({
   title,
   formId,
   prepareValues,
-  onFieldsChange,
   beforeSubmit,
   actions,
   sections,
@@ -103,7 +101,6 @@ const GenericEditModal: FC<IGenericEditModalProps> = ({
             onFinish={handleSubmit}
             formId={formId}
             initialValues={model}
-            onFieldsChange={onFieldsChange}
             actions={actions}
             sections={sections}
           />

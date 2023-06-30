@@ -19,22 +19,22 @@ export type ConfigurableComponentChildrenFn<TSettings = any> = (
 ) => React.ReactNode | null;
 
 export interface ISettingsEditorProps<TSettings = any> {
-  settings: TSettings,
-  onSave: (settings: TSettings) => void,
-  onCancel: () => void,
+  settings: TSettings;
+  onSave: (settings: TSettings) => void;
+  onCancel: () => void;
 };
 
 export interface ISettingsEditor<TSettings = any> {
-  render: (props: ISettingsEditorProps<TSettings>) => ReactNode,
-  save?: () => Promise<TSettings>,
+  render: (props: ISettingsEditorProps<TSettings>) => ReactNode;
+  save?: () => Promise<TSettings>;
 }
 
-export interface IConfigurableComponentProps<TSettings = any> {
+export interface IConfigurableApplicationComponentProps<TSettings = any> {
   canConfigure?: boolean;
   children: ConfigurableComponentChildrenFn<TSettings>;
   onStartEdit?: () => void;
   defaultSettings: TSettings;
-  settingsEditor?: ISettingsEditor<TSettings>,
+  settingsEditor?: ISettingsEditor<TSettings>;
   name: string;
   isApplicationSpecific: boolean;
 }
@@ -44,14 +44,14 @@ export interface IBlockOverlayProps {
   onClick?: () => void;
 }
 
-export const ConfigurableComponent = <TSettings extends any>({ 
+export const ConfigurableApplicationComponent = <TSettings extends any>({ 
   children,
   canConfigure = true,
   defaultSettings,
   settingsEditor,
   name,
   isApplicationSpecific
-}: IConfigurableComponentProps<TSettings>) => {
+}: IConfigurableApplicationComponentProps<TSettings>) => {
   const component = useMemo(() => {
     return createConfigurableComponent<TSettings>(defaultSettings);
   }, [defaultSettings]);
@@ -72,5 +72,3 @@ export const ConfigurableComponent = <TSettings extends any>({
     </ConfigurableComponentProvider>
   );
 };
-
-export default ConfigurableComponent;

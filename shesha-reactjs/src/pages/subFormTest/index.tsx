@@ -1,5 +1,5 @@
 import { Button, Form } from 'antd';
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { FormProvider, Page, PageWithLayout, SubFormProvider } from "../..";
 import SubForm from '../../components/formDesigner/components/subForm/subForm';
 
@@ -9,19 +9,28 @@ export interface ISubFormTestPageProps {
 
 const SubFormTestPage: PageWithLayout<ISubFormTestPageProps> = () => {
 
-    const [ formName, setFormName ] = useState('/organisations/edit');
+    const [formName, setFormName] = useState('/organisations/edit');
 
     return (
         <Page
             title="SubForm Test"
             description=""
-            //loading={loadingState.loading}
-            //loadingText={loadingState.loadingText}
         >
-            <FormProvider mode={'edit'} flatComponents={{ allComponents: {}, componentRelations: {} }} formSettings={{ colon: true, labelCol: {}, wrapperCol: {}, layout: 'vertical' }} name={''} isActionsOwner={false}>
+            <FormProvider
+                mode={'edit'}
+                allComponents={{}}
+                componentRelations={{}}
+                formSettings={{ colon: true, labelCol: {}, wrapperCol: {}, layout: 'vertical' }}
+                name={''}
+                isActionsOwner={false}
+            >
                 <Form.Item>
-                    <Button onClick={() => {setFormName('/organisations/edit');}}>Organisaiont</Button>
-                    <Button onClick={() => {setFormName('person-edit');}}>Person</Button>
+                    <Button onClick={() => {
+                        setFormName('/organisations/edit');
+                    }}>Organisaiont</Button>
+                    <Button onClick={() => {
+                        setFormName('person-edit');
+                    }}>Person</Button>
                 </Form.Item>
                 <Form.Item>
                     <SubFormProvider
@@ -30,8 +39,8 @@ const SubFormTestPage: PageWithLayout<ISubFormTestPageProps> = () => {
                         properties={[]}
                         formId={{ name: formName, version: 1 }}
                         dataSource={'api'}
-                        //labelCol={localLabelCol}
-                        //wrapperCol={localWrapperCol}
+                    //labelCol={localLabelCol}
+                    //wrapperCol={localWrapperCol}
                     >
                         <SubForm />
                     </SubFormProvider>
@@ -39,6 +48,6 @@ const SubFormTestPage: PageWithLayout<ISubFormTestPageProps> = () => {
             </FormProvider>
         </Page>
     );
-}
+};
 
 export default SubFormTestPage;

@@ -36,7 +36,7 @@ export const useModelApiHelper = (): IEntityEndpointsEvaluator => {
         : null;
       return endpoint;
     });
-  }
+  };
 
   const getActionUrlFromFormSettings = (formSettings: IFormSettings, actionName: string): IApiEndpoint => {
     if (!formSettings)
@@ -67,11 +67,12 @@ export const useModelApiHelper = (): IEntityEndpointsEvaluator => {
     return endpoint.url
       ? endpoint
       : null;
-  }
+  };
 
   const getFormActionUrl = (payload: GetFormActionUrlPayload): Promise<IApiEndpoint> => {
     const { formSettings, actionName, mappings } = payload;
     const customEndpoint = getActionUrlFromFormSettings(formSettings, actionName);
+    
     if (customEndpoint) {
       const evaluatedrl = evaluateComplexString(customEndpoint.url, mappings);
 
@@ -82,13 +83,13 @@ export const useModelApiHelper = (): IEntityEndpointsEvaluator => {
       return formSettings?.modelType
         ? getDefaultActionUrl({ modelType: formSettings.modelType, actionName: actionName })
         : Promise.resolve(null);
-  }
+  };
 
   return {
     getDefaultActionUrl,
     getFormActionUrl,
   };
-}
+};
 
 export interface UseEntityEndpointArguments {
   actionName: string;
@@ -103,47 +104,10 @@ export const useModelApiEndpoint = (args: UseEntityEndpointArguments): IApiEndpo
   const endpointsHelper = useModelApiHelper();
 
   useDeepCompareEffect(() => {
-    endpointsHelper.getFormActionUrl({ actionName, formSettings, mappings }).then(e => setEndpoint(e));
+    endpointsHelper.getFormActionUrl({ actionName, formSettings, mappings }).then(e => {
+      setEndpoint(e);
+    });
   }, [args]);
 
   return endpoint;
-}
-
-/*
-const httpVerbToAction = (httpVerb: 'POST' | 'PUT' | 'DELETE'): string => {
-  switch (httpVerb) {
-    case 'POST':
-      return StandardEntityActions.create;
-    case 'PUT':
-      return StandardEntityActions.update;
-    case 'DELETE':
-      return StandardEntityActions.delete;
-  }
-  return null;
-}
-
-export const useSubmitUrlLegacy = (
-  formSettings: IFormSettings,
-  httpVerb: 'POST' | 'PUT' | 'DELETE',
-  formData: any,
-  parentFormValues: any,
-  globalState: any): string => {
-
-  var actionName = httpVerbToAction(httpVerb);
-
-  var endpoint = useModelApiEndpoint({ 
-    actionName: actionName,
-    formSettings: formSettings,
-    mappings: [
-      { match: 'query', data: getQueryParams() },
-      { match: 'data', data: formData },
-      { match: 'parentFormValues', data: parentFormValues },
-      { match: 'globalState', data: globalState },
-    ]
-  });
-
-  return endpoint && endpoint.httpVerb?.toLowerCase() === httpVerb?.toLowerCase()
-    ? endpoint?.url
-    : null;
-}
-*/
+};

@@ -1,49 +1,49 @@
 import React from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
-import { IConfigurableFormComponent } from '../../../../providers/form/models';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
-import { getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import { useForm, useFormData } from '../../../../providers';
+import { evaluateString, getStyle, validateConfigurableComponentSettings } from 'providers/form/utils';
+import { useForm, useFormData, useGlobalState } from 'providers';
 import { getSettings } from './settings';
 import ShaIcon from '../../../shaIcon';
+import { IAlertComponentProps } from './interfaces';
 
-export interface IAlertProps extends IConfigurableFormComponent {
-  text: string;
-  description?: string;
-  showIcon?: boolean;
-  alertType?: 'success' | 'info' | 'warning' | 'error';
-  closable?: boolean;
-  icon?: string;
-}
-
-const AlertComponent: IToolboxComponent<IAlertProps> = {
+const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
   type: 'alert',
   name: 'Alert',
   icon: <ExclamationCircleOutlined />,
-  factory: (model: IAlertProps) => {
+  factory: (model: IAlertComponentProps) => {
     const { isComponentHidden } = useForm();
-    const { data } = useFormData();
+    const { data: formData } = useFormData();
+    const { globalState } = useGlobalState();
+
     const { text, alertType, description, showIcon, closable, icon, style } = model;
 
-    const isHidden = isComponentHidden(model);
+    const evaluatedMessage = evaluateString(text, { data: formData, globalState });
 
-    if (isHidden) return null;
+    const evaluatedDescription = evaluateString(description, formData);
+
+    if (isComponentHidden(model)) return null;
 
     return (
       <Alert
-        message={text}
+        className="sha-alert"
+        message={evaluatedMessage}
         type={alertType}
-        description={description}
+        description={evaluatedDescription}
         showIcon={showIcon}
-        style={getStyle(style, data)} // Temporary. Make it configurable
+        style={getStyle(style, formData)} // Temporary. Make it configurable
         closable={closable}
         icon={icon ? <ShaIcon iconName={icon as any} /> : null}
       />
     );
   },
-  settingsFormMarkup: data => getSettings(data),
-  validateSettings: model => validateConfigurableComponentSettings(getSettings(model), model),
+  initModel: (model) => ({
+    alertType: 'info',
+    ...model,
+  }),
+  settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 };
 
 export default AlertComponent;

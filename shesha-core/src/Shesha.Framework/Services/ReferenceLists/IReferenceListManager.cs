@@ -11,13 +11,6 @@ namespace Shesha.Services.ReferenceLists
     public interface IReferenceListManager: IConfigurationItemManager<ReferenceList>
     {
         /// <summary>
-        /// Create new version of the reference list
-        /// </summary>
-        /// <param name="form">Reference list</param>
-        /// <returns></returns>
-        Task<ReferenceList> CreateNewVersionAsync(ReferenceList form);
-
-        /// <summary>
         /// Create new Reference List
         /// </summary>
         /// <param name="input"></param>
@@ -31,5 +24,10 @@ namespace Shesha.Services.ReferenceLists
         /// <param name="input"></param>
         /// <returns></returns>
         Task UpdateAsync(ReferenceList refList, UpdateReferenceListDto input);
+
+        /// <summary>
+        /// Create new version of the reference listwithout list items
+        /// </summary>
+        Task<ReferenceList> CreateNewVersionWithoutItemsAsync(ReferenceList srcList);
     }
 }

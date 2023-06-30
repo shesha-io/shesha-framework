@@ -1,0 +1,88 @@
+name: shesha-#{role}#-#{env}#
+runtime: yaml
+description: Shesha #{role}# #{env}# for #{projectName}#
+
+config:
+  sqlAdmin:
+    type: string
+    default: pulumi
+
+variables:
+  resourceGroupName: containerapps-shesha-#{role}#-#{env}#-rg
+  registryLoginServer: boxfusionregistry.azurecr.io
+  adminUsername: boxfusionregistry
+  adminPasswords: fKSsWcdQ8IbdmJZT3Y7udTZD/jjSQ7dhCwTa1BDgaS+ACRBwxWQ1
+  containerAppName: #{projectName}#-#{role}#-#{env}#
+  containerAppCustomerDomainName: #{projectName}#-#{role}#-#{env}#.shesha.dev
+  containerAppEnvName: shesha-#{role}#-#{env}#-env
+  certificateId: /subscriptions/0e111515-3d91-4650-bd92-dfca52077d62/resourceGroups/containerapps-shesha-#{role}#-#{env}#-rg/providers/Microsoft.App/managedEnvironments/shesha-#{role}#-#{env}#-env/certificates/shesha.dev
+  containerAppRevisionImage: boxfusionregistry.azurecr.io/shesha-adminportal:47720
+
+resources:
+  containerApp:
+    type: azure-native:app:ContainerApp
+    properties:
+      configuration:
+        # dapr:
+        #   appPort: 3000
+        #   appProtocol: http
+        #   enabled: true
+        ingress:
+          customDomains:
+            - bindingType: SniEnabled
+              certificateId: ${certificateId}
+              name: ${containerAppCustomerDomainName}
+          external: true
+          targetPort: 80
+          transport: auto
+          traffic:
+            - label: "firstrevision-01"
+              # revisionName: ${containerAppName}"-FirstBuild"
+              weight: 100
+              latestRevision: true
+        registries:
+          - server: ${registryLoginServer}
+            username: ${adminUsername}
+            passwordSecretRef: "pwd"
+        secrets:
+          - name: "pwd"
+            value: ${adminPasswords}
+      containerAppName: ${containerAppName}
+      location: southafricanorth
+      tags:
+        shesha: #{projectName}#-shesha-#{role}#-#{env}#
+      managedEnvironmentId: /subscriptions/0e111515-3d91-4650-bd92-dfca52077d62/resourceGroups/containerapps-shesha-#{role}#-#{env}#-rg/providers/Microsoft.App/managedEnvironments/shesha-#{role}#-#{env}#-env
+      resourceGroupName: ${resourceGroupName}
+      template:
+        containers:
+          - image: ${containerAppRevisionImage}
+            name: #{projectName}#-#{role}#-#{env}#
+            resources:
+              cpu: 1.0
+              memory: "2Gi"
+            # probes:
+            #   - httpGet:
+            #       httpHeaders:
+            #         - name: Custom-Header
+            #           value: Awesome
+            #       path: /health
+            #       port: 8080
+            #     initialDelaySeconds: 3
+            #     periodSeconds: 3
+            #     type: Liveness
+        scale:
+          maxReplicas: 1
+          minReplicas: 1
+          rules:
+            - custom:
+                metadata:
+                  concurrentRequests: "50"
+                type: http
+              name: httpscalingrule
+outputs:
+  # endpoint: https://${containerapp.configuration.ingress.fqdn}
+  resourceGroupName: ${resourceGroupName}
+  containerAppCustomerDomainName: ${containerAppCustomerDomainName}
+  containerAppEnvName: ${containerAppEnvName}
+  certificateId: ${certificateId}
+  containerAppRevisionImage: ${containerAppRevisionImage}

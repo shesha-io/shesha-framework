@@ -3,15 +3,14 @@ import {
   ResetPasswordVerifyOtpInput,
   ResetPasswordVerifyOtpResponse,
   ResetPasswordUsingTokenInput,
-  AjaxResponseBase,
   UserResetPasswordSendOtpQueryParams,
-} from '../../apis/user';
-import { UserLoginInfoDto } from '../../apis/session';
+} from 'apis/user';
 import { IErrorInfo } from '../../interfaces/errorInfo';
-import { AuthenticateModel } from '../../apis/tokenAuth';
 import IRequestHeaders from '../../interfaces/requestHeaders';
 import { IFlagsSetters, IFlagsState } from '../../interfaces';
 import { EMPTY_FLAGS_STATE } from '../../interfaces/flagsState';
+import { UserLoginInfoDto } from 'apis/session';
+import { IAjaxResponseBase } from 'interfaces/ajaxResponse';
 
 export type IFlagProgressFlags =
   | 'isIdle'
@@ -37,7 +36,13 @@ export type IFlagErrorFlags =
   | 'sendOtp' /* NEW_ERROR_FLAG_GOES_HERE */;
 export type IFlagActionedFlags = 'hasCheckedAuth' /* NEW_ACTIONED_FLAG_GOES_HERE */;
 
-export interface ILoginForm extends AuthenticateModel {
+export interface ILoginForm {
+  userNameOrEmailAddress: string;
+  password: string;
+  /**
+   * Optional IMEI number. Is used for mobile applications
+   */
+  imei?: string | null;  
   rememberMe?: boolean;
 }
 
@@ -47,7 +52,7 @@ export interface IAuthStateContext
   isFetchingUserInfo?: boolean;
   loginInfo?: UserLoginInfoDto;
   requireChangePassword?: boolean;
-  loginUserSuccessful?: boolean | null;
+  isLoggedIn: boolean;
   token?: string;
   headers?: IRequestHeaders;
   // The below field is just a placeholder for an `IFlagErrorFlags`. Whenever an error occurs, we'd like to pass errorInfo so that we can render ValidationErrors properly
@@ -62,7 +67,7 @@ export interface IAuthStateContext
   isResetPasswordUsingTokenSuccessful?: boolean;
   resetPasswordUsingTokenError?: string;
   resetPasswordUsingTokenReqPayload?: ResetPasswordUsingTokenInput;
-  resetPasswordUsingTokenResPayload?: AjaxResponseBase;
+  resetPasswordUsingTokenResPayload?: IAjaxResponseBase;
   resetPasswordVerifyOtpPayload?: UserResetPasswordSendOtpQueryParams;
   //#endregion
 }
@@ -93,6 +98,7 @@ export const AUTH_CONTEXT_INITIAL_STATE: IAuthStateContext = {
   ...EMPTY_FLAGS_STATE,
   isCheckingAuth: false,
   isFetchingUserInfo: false,
+  isLoggedIn: false,
 };
 
 export const AuthStateContext = createContext<IAuthStateContext>(AUTH_CONTEXT_INITIAL_STATE);

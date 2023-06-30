@@ -5,6 +5,7 @@ import {
   ISetFormDataPayload,
   IRegisterActionsPayload,
   ISetEnabledComponentsPayload,
+  ISetFormControlsDataPayload,
 } from './contexts';
 import { IFlatComponentsStructure, FormMode, IFormSettings } from './models';
 
@@ -14,6 +15,7 @@ export enum FormActionEnums {
   SetFormMode = 'SET_FORM_MODE',
   SetVisibleComponents = 'SET_VISIBLE_COMPONENTS',
   SetEnabledComponents = 'SET_ENABLED_COMPONENTS',
+  SetFormControlsData = 'SET_FORM_CONTROLS_DATA',
   SetFormData = 'SET_FORM_DATA',
   SetValidationErrors = 'SET_VALIDATION_ERRORS',
   RegisterActions = 'REGISTER_ACTIONS',
@@ -32,6 +34,11 @@ export const setVisibleComponentsAction = createAction<ISetVisibleComponentsPayl
 
 export const setEnabledComponentsAction = createAction<ISetEnabledComponentsPayload, ISetEnabledComponentsPayload>(
   FormActionEnums.SetEnabledComponents,
+  p => p
+);
+
+export const setFormControlsDataAction = createAction<ISetFormControlsDataPayload, ISetFormControlsDataPayload>(
+  FormActionEnums.SetFormControlsData,
   p => p
 );
 

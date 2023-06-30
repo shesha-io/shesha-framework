@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, PropsWithChildren } from 'react';
 import { IConfigurableFormComponent } from '../../../../interfaces';
 import DynamicComponent from './dynamicComponent';
 
@@ -9,7 +9,7 @@ export interface IProps {
   justifyContent?: string;
   className?: string;
 }
-const DynamicContainer: FC<IProps> = ({ components, children, direction = 'vertical', className }) => {
+const DynamicContainer: FC<PropsWithChildren<IProps>> = ({ components, children, direction = 'vertical', className }) => {
   const renderComponents = () => {
     return components?.map(component => <DynamicComponent model={component} />);
   };

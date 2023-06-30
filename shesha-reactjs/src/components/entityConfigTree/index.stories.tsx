@@ -1,6 +1,5 @@
 import React from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import EntityConfigTree from '.';
 import { GlobalStateProvider, ShaApplicationProvider } from '../..';
 import AuthContainer from '../authedContainer';
@@ -9,7 +8,7 @@ import './index.less';
 
 export default {
   title: 'Components/EntityConfigTree',
-  component: EntityConfigTree,
+  component: EntityConfigTree
 } as Meta;
 
 export interface IEntityConfigStoryProps {
@@ -30,6 +29,6 @@ const Template: Story<IEntityConfigStoryProps> = () => {
       </ShaApplicationProvider>
     </GlobalStateProvider>
   );
-}
+};
 
 export const Base = addStory(Template, {});

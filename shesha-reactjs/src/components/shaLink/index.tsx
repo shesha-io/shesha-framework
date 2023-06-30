@@ -1,5 +1,5 @@
 import { Button } from 'antd';
-import React, { FC, ReactNode, useMemo } from 'react';
+import React, { FC, PropsWithChildren, ReactNode, useMemo } from 'react';
 import { FormIdentifier } from '../..';
 import { useShaRouting } from '../../providers/shaRouting';
 
@@ -17,7 +17,7 @@ export interface IShaLinkProps {
   displayName?: string;
 }
 
-export const ShaLink: FC<IShaLinkProps> = ({ linkTo, linkToForm, params, icon, displayName, children }) => {
+export const ShaLink: FC<PropsWithChildren<IShaLinkProps>> = ({ linkTo, linkToForm, params, icon, displayName, children }) => {
   const { router, getFormUrl } = useShaRouting();
 
   const paramsStr = useMemo(() => {

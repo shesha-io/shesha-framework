@@ -1,24 +1,36 @@
 import React, { FC } from 'react';
 import ConfigurableFormRenderer from './configurableFormRenderer';
 import { IConfigurableFormProps } from './models';
-import { FormProvider } from '../../providers/form';
+import { FormProvider } from 'providers/form';
 import ConfigurableComponent from '../appConfigurator/configurableComponent';
 import EditViewMsg from '../appConfigurator/editViewMsg';
-import { useAppConfigurator, useShaRouting, useSheshaApplication } from '../../providers';
+import { useAppConfigurator, useShaRouting, useSheshaApplication } from 'providers';
 import classNames from 'classnames';
-import { FormPersisterConsumer, FormPersisterProvider } from '../../providers/formPersisterProvider';
-import { FormMarkupConverter } from '../../providers/formMarkupConverter';
-import { FormIdentifier, FormRawMarkup, IFormSettings } from '../../providers/form/models';
-import { convertToMarkupWithSettings } from '../../providers/form/utils';
-import { IPersistedFormProps } from '../../providers/formPersisterProvider/models';
-import { ConfigurationItemVersionStatusMap } from '../../utils/configurationFramework/models';
+import { FormPersisterConsumer, FormPersisterProvider } from 'providers/formPersisterProvider';
+import { FormMarkupConverter } from 'providers/formMarkupConverter';
+import { FormIdentifier, FormRawMarkup, IFormSettings, IPersistedFormProps } from 'providers/form/models';
+import { convertToMarkupWithSettings } from 'providers/form/utils';
+import { ConfigurationItemVersionStatusMap } from 'utils/configurationFramework/models';
 import Show from '../show';
 import FormInfo from './formInfo';
 import { Result } from 'antd';
-import { getFormNotFoundMessage } from '../../providers/configurationItemsLoader/utils';
+import { getFormNotFoundMessage } from 'providers/configurationItemsLoader/utils';
 
 export const ConfigurableForm: FC<IConfigurableFormProps> = props => {
-  const { formId, markup, mode, actions, sections, context, formRef, refetchData, formProps, ...restProps } = props;
+  const { 
+    formId, 
+    markup, 
+    mode,
+    actions, 
+    sections, 
+    context, 
+    formRef, 
+    refetchData, 
+    formProps, 
+    isActionsOwner,
+    propertyFilter,
+    ...restProps 
+  } = props;
   const { switchApplicationMode, formInfoBlockVisible } = useAppConfigurator();
   const app = useSheshaApplication();
 
@@ -55,11 +67,11 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = props => {
     const showFormInfo = Boolean(persistedFormProps) && formInfoBlockVisible && formStatusInfo;
 
     return (
-      <FormMarkupConverter markup={providedMarkup}>
+      <FormMarkupConverter markup={providedMarkup} formSettings={formSettings}>
         {flatComponents => (
           <FormProvider
             name="Form"
-            flatComponents={flatComponents}
+            {...flatComponents}
             formSettings={formSettings}
             formMarkup={providedMarkup}
             mode={mode}
@@ -70,7 +82,8 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = props => {
             formRef={formRef}
             onValuesChange={restProps.onValuesChange}
             refetchData={refetchData}
-            isActionsOwner={props.isActionsOwner}
+            isActionsOwner={isActionsOwner}
+            propertyFilter={propertyFilter}
           >
             <Show when={Boolean(showFormInfo)}>
               <FormInfo {...persistedFormProps} />
@@ -96,7 +109,7 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = props => {
               <FormPersisterConsumer>
                 {persister => (
                   <>
-                    {persister.loadError?.code == 404 && (
+                    {persister.loadError?.code === 404 && (
                       <Result
                         status="404"
                         //style={{ height: '100vh - 55px' }}

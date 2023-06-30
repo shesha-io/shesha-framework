@@ -1,9 +1,9 @@
 import { AutoComplete, Empty, Spin, Typography } from 'antd';
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { FC } from 'react';
-import { useGet } from 'restful-react';
+import { useGet } from 'hooks';
 import { useDebouncedCallback } from 'use-debounce';
-import { GENERIC_ENTITIES_ENDPOINT, LEGACY_FORMS_MODULE_NAME } from '../../constants';
+import { GENERIC_ENTITIES_ENDPOINT, LEGACY_FORMS_MODULE_NAME } from '../../shesha-constants';
 import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '../../interfaces/gql';
 import { FormFullName, FormIdentifier } from '../../providers/form/models';
 import { asFormFullName, asFormRawId } from '../../providers/form/utils';
@@ -14,7 +14,7 @@ export interface IFormAutocompleteRuntimeProps {
     onChange?: (value?: FormIdentifier) => void;
     readOnly?: boolean;
     maxResultCount?: number;
-    convertToFullId: boolean;
+    convertToFullId?: boolean;
 }
 
 interface IOption {
@@ -26,7 +26,7 @@ interface IOption {
 
 const baseItemFilter = [
     {
-        "==": [{ "var": "configuration.isLast" }, true]
+        "==": [{ "var": "isLast" }, true]
     },
     {
         "==": [{ "var": "isTemplate" }, false]
@@ -37,8 +37,8 @@ const getFilter = (term: string) => {
         ? [
             {
                 or: [
-                    { 'in': [term, { 'var': 'configuration.name' }] },
-                    { 'in': [term, { 'var': 'configuration.module.name' }] },
+                    { 'in': [term, { 'var': 'name' }] },
+                    { 'in': [term, { 'var': 'module.name' }] },
                 ]
             },
         ]
@@ -47,9 +47,9 @@ const getFilter = (term: string) => {
         and: [...baseItemFilter, ...termFilter]
     };
     return JSON.stringify(filter);
-}
+};
 const FORM_CONFIG_ENTITY_TYPE = 'Shesha.Core.FormConfiguration';
-const FORM_CONFIG_PROPERTIES = 'id configuration { name, module { id name }, label, description, versionNo }';
+const FORM_CONFIG_PROPERTIES = 'id name module { id name } label description versionNo';
 const getListFetcherQueryParams = (term: string, maxResultCount): IGenericGetAllPayload => {
     return {
         skipCount: 0,
@@ -58,7 +58,7 @@ const getListFetcherQueryParams = (term: string, maxResultCount): IGenericGetAll
         properties: FORM_CONFIG_PROPERTIES,
         quickSearch: null,
         filter: getFilter(term),
-        sorting: 'configuration.module.name, configuration.name',
+        sorting: 'module.name, name',
     };
 };
 const getSelectedValueQueryParams = (value?: FormIdentifier): IGenericGetAllPayload => {
@@ -74,8 +74,8 @@ const getSelectedValueQueryParams = (value?: FormIdentifier): IGenericGetAllPayl
             ? {
                 and: [
                     ...baseItemFilter,
-                    { '==': [{ 'var': 'configuration.name' }, fullName.name] },
-                    { '==': [{ 'var': 'configuration.module.name' }, fullName.module] },
+                    { '==': [{ 'var': 'name' }, fullName.name] },
+                    { '==': [{ 'var': 'module.name' }, fullName.module] },
                 ]
             }
             : null;
@@ -89,20 +89,18 @@ const getSelectedValueQueryParams = (value?: FormIdentifier): IGenericGetAllPayl
             filter: JSON.stringify(expression),
         }
         : null;
-}
+};
 
 interface IResponseItem {
     id: string;
-    configuration: {
+    name: string;
+    label?: string;
+    description?: string;
+    versionNo?: number;
+    module?: {
+        id: string;
         name: string;
-        label?: string;
-        description?: string;
-        versionNo?: number;
-        module?: {
-            id: string;
-            name: string;
-        }
-    }
+    };
 }
 
 interface IConfigurationItemProps {
@@ -126,21 +124,21 @@ const FormLabel: FC<IConfigurationItemProps> = ({ name, description, versionNo, 
             )}
         </div>
     );
-}
+};
 
 const getFormValue = (item: IResponseItem) => {
-    return item.configuration.module
-        ? `${item.configuration.module.name}:${item.configuration.name}`
-        : item.configuration.name;
-}
+    return item.module
+        ? `${item.module.name}:${item.name}`
+        : item.name;
+};
 
 const getDisplayText = (item: IResponseItem) => {
     return item
-        ? item.configuration.module
-            ? `${item.configuration.module.name}: ${item.configuration.name}`
-            : item.configuration.name
+        ? item.module
+            ? `${item.module.name}: ${item.name}`
+            : item.name
         : null;
-}
+};
 
 export const FormAutocomplete: FC<IFormAutocompleteRuntimeProps> = (props) => {
     const selectedValue = useRef(null);
@@ -197,21 +195,21 @@ export const FormAutocomplete: FC<IFormAutocompleteRuntimeProps> = (props) => {
         const result: IOption[] = [];
         if (fetchedItems) {
             fetchedItems.forEach(item => {
-                const module = item.configuration.module ?? { name: LEGACY_FORMS_MODULE_NAME, id: '-' };
+                const module = item.module ?? { name: LEGACY_FORMS_MODULE_NAME, id: '-' };
 
                 const opt: IOption = {
                     label: (
                         <FormLabel
-                            name={item.configuration.name}
-                            label={item.configuration.label}
-                            description={item.configuration.description}
-                            versionNo={item.configuration.versionNo}
+                            name={item.name}
+                            label={item.label}
+                            description={item.description}
+                            versionNo={item.versionNo}
                         />
                     ),
                     value: getFormValue(item),
                     data: {
-                        name: item.configuration.name,
-                        module: item.configuration.module?.name,
+                        name: item.name,
+                        module: item.module?.name,
                     }
                 };
                 let group = result.find(g => g.value === module.id);
@@ -224,7 +222,7 @@ export const FormAutocomplete: FC<IFormAutocompleteRuntimeProps> = (props) => {
                     };
                     result.push(group);
                 } else
-                    group.options.push(opt)
+                    group.options.push(opt);
 
             });
         }
@@ -243,7 +241,7 @@ export const FormAutocomplete: FC<IFormAutocompleteRuntimeProps> = (props) => {
 
     const onSearch = (term) => {
         debouncedFetchItems(term);
-    }
+    };
 
     const onSelect = (_value, option) => {
         const formId = (option as IOption)?.data;
@@ -251,14 +249,14 @@ export const FormAutocomplete: FC<IFormAutocompleteRuntimeProps> = (props) => {
         if (props.onChange) {
             props.onChange(formId);
         }
-    }
+    };
 
     const onClear = () => {
         selectedValue.current = null;
         if (props.onChange) {
             props.onChange(null);
         }
-    }
+    };
 
     const loading = listFetcher.loading;
 
@@ -279,6 +277,6 @@ export const FormAutocomplete: FC<IFormAutocompleteRuntimeProps> = (props) => {
         >
         </AutoComplete>
     );
-}
+};
 
 export default FormAutocomplete;

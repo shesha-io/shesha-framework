@@ -5,7 +5,6 @@ import { FormLayout } from 'antd/lib/form/Form';
 import { IKeyValue } from '../../interfaces/keyValue';
 import { ColProps } from 'antd';
 import { IHasVersion } from '../../utils/fluentMigrator/migrator';
-import { IPersistedFormProps } from '../formPersisterProvider/models';
 
 export const ROOT_COMPONENT_KEY: string = 'root'; // root key of the flat components structure
 export const TOOLBOX_COMPONENT_DROPPABLE_KEY: string = 'toolboxComponent';
@@ -58,53 +57,21 @@ export type ConfigurableFormComponentTypes =
   | 'queryBuilder'
   | 'labelValueEditor';
 
-/**
- * Base model of the configurable component
- */
-export interface IConfigurableFormComponent extends IFormComponentContainer, IHasVersion {
-  /** component name */
-  name: string;
-
+export interface IComponentLabelProps {
   /** The label for this field that will appear next to it. */
   label?: string;
-
-  /** Type of the component */
-  type: string;
-
-  /** Description of the field, is used for tooltips */
-  description?: string;
-
-  /** Validation rules */
-  validate?: IComponentValidationRules;
-
-  /** Hidden field is still a part of the form but not visible on it */
-  hidden?: boolean;
-
-  /** Add an enhanced Visibility property to cater for the 3 options Yes (To display both to user and payload) No (To only display on the payload)  Removed (To remove from both user and payload) */
-  visibility?: VisibilityType;
-
   /** Hide label of the field */
   hideLabel?: boolean;
 
   /** Position of the label */
   labelAlign?: LabelAlign;
+}
 
-  disabled?: boolean; // todo: move to the model level
-
-  /** Custom visibility code */
-  customVisibility?: string;
-
-  /** Custom visibility code */
-  customEnabled?: string;
-
-  /** Default value of the field */
-  defaultValue?: any;
-
-  //#region runtime properties
+export interface IComponentRuntimeProps {
   visibilityFunc?: (data: any, globalState: any, formMode: FormMode) => boolean;
 
-  //#region runtime properties
   enabledFunc?: (data: any, globalState: any, formMode: FormMode) => boolean;
+
   /**/
   settingsValidationErrors?: IAsyncValidationError[];
 
@@ -116,10 +83,54 @@ export interface IConfigurableFormComponent extends IFormComponentContainer, IHa
 
   /** Custom onFocus handler */
   onFocusCustom?: string;
-  //#endregion
+}
+
+export interface IComponentBindingProps {
+  /** component name */
+  name: string;
+}
+
+export interface IComponentVisibilityProps {
+  /** Hidden field is still a part of the form but not visible on it */
+  hidden?: boolean;
+
+  /** Add an enhanced Visibility property to cater for the 3 options Yes (To display both to user and payload) No (To only display on the payload)  Removed (To remove from both user and payload) */
+  visibility?: VisibilityType;
+
+  /** Custom visibility code */
+  customVisibility?: string;
+}
+
+/**
+ * Base model of the configurable component
+ */
+export interface IConfigurableFormComponent extends 
+  IFormComponentContainer, 
+  IHasVersion, 
+  IComponentBindingProps,
+  IComponentLabelProps, 
+  IComponentVisibilityProps,
+  IComponentRuntimeProps {
+
+  /** Type of the component */
+  type: string;
+
+  /** Description of the field, is used for tooltips */
+  description?: string;
+
+  /** Validation rules */
+  validate?: IComponentValidationRules;
+
+  disabled?: boolean; // todo: move to the model level
 
   /** Whether the component is read-only */
   readOnly?: boolean;
+
+  /** Custom visibility code */
+  customEnabled?: string;
+
+  /** Default value of the field */
+  defaultValue?: any;
 
   /** Control size */
   size?: SizeType;
@@ -127,18 +138,8 @@ export interface IConfigurableFormComponent extends IFormComponentContainer, IHa
   /** If true, indicates that component is rendered dynamically and some of rules (e.g. visibility) shouldn't be applied to this component */
   isDynamic?: boolean;
 
-  /**
-   * This allows a component to display a quickview popover with entity details.
-   * The quickview is only displayed in readonly mode
-   */
-  enableQuickview?: boolean;
-
   subscribedEventNames?: string[];
-  dispatchedEventNames?: string[];
-  dispatchedEventDebouncedMilliseconds?: number;
   style?: string;
-
-  tooltip?: string;
 }
 
 export interface IComponentsContainer {
@@ -190,6 +191,29 @@ export interface FormFullName {
 }
 export type FormUid = string;
 export type FormIdentifier = FormFullName | FormUid;
+
+export interface IPersistedFormProps {
+  id?: string;
+  module?: string;
+  name?: string;
+  label?: string;
+  description?: string;
+  markup?: FormRawMarkup;
+  formSettings?: IFormSettings;
+  /**
+   * Version number
+   */
+  versionNo?: number;
+  /**
+   * Version status
+   */
+  versionStatus?: number;
+
+  /**
+   * If true, indicates that it's the last version of the form
+   */
+  isLastVersion?: boolean;
+}
 
 export interface IConfigurableFormBaseProps {
   formId?: FormIdentifier;

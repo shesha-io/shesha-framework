@@ -5,28 +5,34 @@ import { useGlobalState, useFormData } from '../../../../providers';
 import { evaluateString, validateConfigurableComponentSettings } from '../../../../formDesignerUtils';
 import { IConfigurableFormComponent, IToolboxComponent } from '../../../../interfaces/formDesigner';
 import { useForm } from '../../../../providers/form';
-import { FormMarkup } from '../../../../providers/form/models';
 import { executeCustomExpression } from '../../../../providers/form/utils';
 import StatusTag, { DEFAULT_STATUS_TAG_MAPPINGS, IStatusTagProps as ITagProps } from '../../../statusTag';
-import settingsFormJson from './settingsForm.json';
+import ConfigurableFormItem from '../formItem';
+import { getSettings } from './settings';
+import ConditionalWrap from 'components/conditionalWrapper';
 
 export interface IStatusTagProps extends Omit<ITagProps, 'mappings' | 'style'>, IConfigurableFormComponent {
   colorCodeEvaluator?: string;
   overrideCodeEvaluator?: string;
   valueCodeEvaluator?: string;
   mappings?: string;
+  valueSource?: 'form' | 'manual';
 }
-
-const settingsForm = settingsFormJson as FormMarkup;
 
 const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
   type: 'statusTag',
   name: 'Status Tag',
+  isInput: true,
   icon: <ArrowsAltOutlined />,
   factory: (model: IStatusTagProps) => {
     const { formMode } = useForm();
     const { globalState } = useGlobalState();
     const { data } = useFormData();
+
+    console.log('LOG:: StatusTagComponent data', data);
+    console.log('LOG:: StatusTagComponent globalState', globalState);
+    console.log('LOG:: StatusTagComponent formMode', formMode);
+    console.log('LOG:: StatusTagComponent model', model);
 
     const getExpressionExecutor = (expression: string) => {
       if (!expression) {
@@ -91,11 +97,25 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
 
     if (!isVisibleByCondition && formMode !== 'designer') return null;
 
-    return <StatusTag {...props} />;
+    return (
+      <ConditionalWrap
+        condition={model?.valueSource === 'form'}
+        wrap={(children) => <ConfigurableFormItem model={model}>{children}</ConfigurableFormItem>}
+      >
+        <StatusTag {...props} />
+      </ConditionalWrap>
+    );
   },
-  settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
-  initModel: model => ({
+  settingsFormMarkup: getSettings(),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
+  migrator: (m) =>
+    m.add<IStatusTagProps>(0, (prev) => ({
+      ...prev,
+      valueSource: 'manual',
+      value: null,
+      color: null,
+    })),
+  initModel: (model) => ({
     mappings: JSON.stringify(DEFAULT_STATUS_TAG_MAPPINGS, null, 2) as any,
     ...model,
   }),

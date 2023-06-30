@@ -2,7 +2,7 @@ import { IToolboxComponent } from '../../../../interfaces';
 import { IFormComponentContainer } from '../../../../providers/form/models';
 import { DoubleRightOutlined } from '@ant-design/icons';
 import { Steps, Button, Space, message } from 'antd';
-import ComponentsContainer from '../../componentsContainer';
+import ComponentsContainer from '../../containers/componentsContainer';
 import React, { useMemo, useState } from 'react';
 import { useForm, useGlobalState } from '../../../../providers';
 import { IConfigurableFormComponent, useFormData, useSheshaApplication } from '../../../../';
@@ -11,7 +11,7 @@ import WizardSettings from './settings';
 import { IStepProps, IWizardComponentProps } from './models';
 import ShaIcon from '../../../shaIcon';
 import moment from 'moment';
-import { axiosHttp } from '../../../../apis/axios';
+import { axiosHttp } from '../../../../utils/fetchers';
 import { migrateV0toV1, IWizardComponentPropsV0 } from './migrations/migrate-v1';
 import {
   useConfigurableAction,

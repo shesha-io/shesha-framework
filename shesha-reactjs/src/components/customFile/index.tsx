@@ -11,9 +11,11 @@ export interface ICustomFileProps {
   allowDelete?: boolean;
   allowRename?: boolean;
   isStub?: boolean;
+  allowedFileTypes?: string[];
+  maxHeight?: string;
 }
 
-export const CustomFile: FC<ICustomFileProps> = props => {
+export const CustomFile: FC<ICustomFileProps> = (props) => {
   const {
     fileList,
     //downloadFile,
@@ -22,7 +24,7 @@ export const CustomFile: FC<ICustomFileProps> = props => {
     downloadZipFile,
     downloadFile,
     isInProgress: { downloadZip },
-    succeeded: { downloadZip: downloadZipSuccess },    
+    succeeded: { downloadZip: downloadZipSuccess },
   } = useStoredFilesStore();
 
   const { backendUrl } = useSheshaApplication();
@@ -46,6 +48,8 @@ export const CustomFile: FC<ICustomFileProps> = props => {
         downloadFile={downloadFile}
         isDownloadingFileListZip={downloadZip}
         isDownloadZipSucceeded={downloadZipSuccess}
+        allowedFileTypes={props?.allowedFileTypes}
+        maxHeight={props?.maxHeight}
       />
     </div>
   );

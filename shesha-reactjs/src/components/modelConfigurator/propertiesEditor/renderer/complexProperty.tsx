@@ -4,13 +4,18 @@ import { DeleteFilled, QuestionCircleOutlined, PlusOutlined, EyeInvisibleOutline
 import { usePropertiesEditor } from '../provider';
 import DragHandle from './dragHandle';
 import { IModelItem } from '../../../../interfaces/modelConfigurator';
-import ItemsContainer from './itemsContainer';
 import { getIconByDataType } from '../../../../utils/metadata';
 import { ShaIcon } from '../../..';
 import { MetadataSourceType } from '../../../../interfaces/metadata';
 
+export interface IContainerRenderArgs {
+  index?: number[];
+  items: IModelItem[];
+}
+
 export interface IProps extends IModelItem {
   index: number[];
+  containerRendering: (args: IContainerRenderArgs) => React.ReactNode;
 }
 
 export const ComplexProperty: FC<IProps> = props => {
@@ -29,7 +34,7 @@ export const ComplexProperty: FC<IProps> = props => {
 
   const onAddChildClick = () => {
     addItem(props.id);
-  }
+  };
 
   return (
     <div className={classes.reduce((a, c) => a + ' ' + c)} ref={selectedItemId === props.id ? selectedItemRef : undefined}>
@@ -47,17 +52,14 @@ export const ComplexProperty: FC<IProps> = props => {
 
         <div className="sha-sidebar-item-controls">
           {
-            props.source == MetadataSourceType.UserDefined 
+            props.source === MetadataSourceType.UserDefined
               ? <Button icon={<DeleteFilled color="red" />} onClick={onDeleteClick} size="small" danger />
               : <Tag>APP</Tag>
           }
         </div>
         <div className="sha-sidebar-group-container">
-          <ItemsContainer index={props.index} items={props.properties || []} />
+          {props.containerRendering({ index: props.index, items: props.properties || [] })}
         </div>
-        {/* { props.childItems && props.childItems.map((item, index) => {
-          return <ModelItem {...item} key={index} index={[ ...props.index, index ]} />
-        }) } */}
       </div>
     </div>
   );

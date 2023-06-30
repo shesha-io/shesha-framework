@@ -1,8 +1,8 @@
-﻿using Abp.Collections.Extensions;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Shesha.Bootstrappers;
 using Shesha.ConfigurationItems;
+using Shesha.ConfigurationItems.Specifications;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
@@ -10,7 +10,6 @@ using Shesha.Services.Settings;
 using Shesha.Services.Settings.Dto;
 using Shesha.Settings.Exceptions;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -23,21 +22,18 @@ namespace Shesha.Settings
     public class SettingsBootstrapper : IBootstrapper, ITransientDependency
     {
         private readonly IRepository<SettingConfiguration, Guid> _settingConfigurationRepository;
-        private readonly IRepository<ConfigurationItem, Guid> _configItemRepository;
         private readonly IRepository<Module, Guid> _moduleRepository;
         private readonly ISettingDefinitionManager _settingDefinitionManager;
         private readonly ISettingStore _settingStore;
         private readonly IModuleManager _moduleManager;
 
         public SettingsBootstrapper(ISettingDefinitionManager settingDefinitionManager, ISettingStore settingStore, IRepository<SettingConfiguration, Guid> settingConfigurationRepository, 
-            IRepository<ConfigurationItem, Guid> configItemRepository,
             IModuleManager moduleManager,
             IRepository<Module, Guid> moduleRepository)
         {
             _settingDefinitionManager = settingDefinitionManager;
             _settingStore = settingStore;
             _settingConfigurationRepository = settingConfigurationRepository;
-            _configItemRepository = configItemRepository;
             _moduleManager = moduleManager;
             _moduleRepository = moduleRepository;
         }
@@ -53,7 +49,7 @@ namespace Shesha.Settings
             //var toDelete = configurationsInDb
 
             // check for duplicated settings names
-            var duplicates = definitionsInCode.GroupBy(d => d.Name, 
+            var duplicates = definitionsInCode.GroupBy(d => d.FullName, 
                 d => d, 
                 (name, items) => new { 
                     Name = name, 
@@ -81,7 +77,7 @@ namespace Shesha.Settings
 
                 var dataType = definition.GetSettingDataType();
 
-                await _settingStore.CreateSettingDefinitionAsync(new CreateSettingDefinitionDto
+                await _settingStore.CreateSettingConfigurationAsync(new CreateSettingDefinitionDto
                 {
                     Name = definition.Name,
                     Label = definition.DisplayName,
@@ -105,21 +101,13 @@ namespace Shesha.Settings
                     ? modules.FirstOrDefault(m => m.Name == definition.ModuleName)
                     : null;
 
-                /*
-                if (config.Configuration.Label != definition.DisplayName) 
-                {
-                    config.Configuration.Label = definition.DisplayName;
-
-                    await _configItemRepository.UpdateAsync(config.Configuration);
-                }*/
-                config.Configuration.Label = definition.DisplayName;
-                config.Configuration.Description = definition.Description;
+                config.Label = definition.DisplayName;
+                config.Description = definition.Description;
                 config.Category = definition.Category;
                 config.IsClientSpecific = definition.IsClientSpecific;
                 config.EditorFormModule = definition.EditForm?.Module;
                 config.EditorFormName = definition.EditForm?.Name;
 
-                await _configItemRepository.UpdateAsync(config.Configuration);
                 await _settingConfigurationRepository.UpdateAsync(config);                
             }
         }

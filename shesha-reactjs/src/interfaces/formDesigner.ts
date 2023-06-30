@@ -4,12 +4,30 @@ import {
   IFormComponentContainer,
   FormMarkup,
   IFlatComponentsStructure,
+  IFormSettings,
 } from '../providers/form/models';
-import { FormInstance } from 'antd';
+import { ColProps, FormInstance } from 'antd';
 import { InternalNamePath } from 'rc-field-form/lib/interface';
 import { IPropertyMetadata } from './metadata';
 import { ConfigurableFormInstance } from '../providers/form/contexts';
 import { Migrator, MigratorFluent } from '../utils/fluentMigrator/migrator';
+import { FormLayout } from 'antd/lib/form/Form';
+
+export interface ISettingsFormInstance {
+  submit: () => void;
+  reset: () => void;
+}
+
+export interface IFormLayoutSettings {
+  labelCol?: ColProps;
+  wrapperCol?: ColProps;
+  layout?: FormLayout;
+}
+
+export const DEFAULT_FORM_LAYOUT_SETTINGS: IFormLayoutSettings = {
+  labelCol: { span: 24 },
+  wrapperCol: { span: 24 },
+};
 
 export interface ISettingsFormFactoryArgs<TModel = IConfigurableFormComponent> {
   readOnly: boolean;
@@ -18,6 +36,9 @@ export interface ISettingsFormFactoryArgs<TModel = IConfigurableFormComponent> {
   onCancel: () => void;
   onValuesChange?: (changedValues: any, values: TModel) => void;
   toolboxComponent: IToolboxComponent;
+  formRef?: MutableRefObject<ISettingsFormInstance | null>;
+  propertyFilter?: (name: string) => boolean;
+  layoutSettings?: IFormLayoutSettings;
 }
 
 export type ISettingsFormFactory<TModel = IConfigurableFormComponent> = (
@@ -29,6 +50,14 @@ export interface IToolboxComponent<T extends IConfigurableFormComponent = any> {
    * Type of the component. Must be unique in the project.
    */
   type: string;
+  /**
+   * If true, indicates that the component has data bindings and can be used as an input. Note: not all form components can be bound to the model (layout components etc.)
+   */
+  isInput?: boolean;
+  /**
+   * If true, indicates that the component has data bindings and can be used as an output.
+   */
+   isOutput?: boolean;
   /**
    * Component name. This name is displayed on the components toolbox
    */
@@ -51,8 +80,7 @@ export interface IToolboxComponent<T extends IConfigurableFormComponent = any> {
     componentRef: MutableRefObject<any>,
     form: FormInstance<any>,
     children?: JSX.Element
-  ) => //settings: AuthorizationSettingsDto
-  ReactNode;
+  ) => ReactNode;
   /**
    * @deprecated - use `migrator` instead
    * Fills the component properties with some default values. Fired when the user drops a component to the form
@@ -98,6 +126,7 @@ export interface IToolboxComponent<T extends IConfigurableFormComponent = any> {
 }
 
 export interface SettingsMigrationContext {
+  formSettings?: IFormSettings;
   flatStructure: IFlatComponentsStructure;
   componentId: string;
 }
@@ -119,20 +148,25 @@ export interface IToolboxComponents {
   [key: string]: IToolboxComponent;
 }
 
-export { IConfigurableFormComponent, IFormComponentContainer };
+export { type IConfigurableFormComponent, type IFormComponentContainer };
 
 export interface IFieldValidationErrors {
   name: InternalNamePath;
   errors: string[];
 }
 
-export { ValidateErrorEntity } from 'rc-field-form/lib/interface';
+export { type ValidateErrorEntity } from 'rc-field-form/lib/interface';
 
 export interface IAsyncValidationError {
   field: string;
   message: string;
 }
 
-export interface IFormValidationErrors {}
+export interface IFormValidationErrors { }
 
-export { ConfigurableFormInstance };
+export { type ConfigurableFormInstance };
+
+export interface IComponentsContainerBaseProps {
+  containerId: string;
+  readOnly?: boolean;
+}

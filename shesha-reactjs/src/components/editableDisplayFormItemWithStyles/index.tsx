@@ -7,6 +7,6 @@ export const EditableDisplayFormItemWithStyles: FC<IEditableDisplayLabelProps> =
   return (
     <EditableDisplayFormItem {...props} />
   );
-}
+};
 
 export default EditableDisplayFormItemWithStyles;

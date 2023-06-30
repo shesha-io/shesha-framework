@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
-import { useGet } from 'restful-react';
-import { GENERIC_ENTITIES_ENDPOINT } from '../constants';
-import { IAbpWrappedGetEntityListResponse, EntityData, IGenericGetAllPayload } from '../interfaces/gql';
-import { convertDotNotationPropertiesToGraphQL } from '../providers/form/utils';
+import { useGet } from 'hooks';
+import { GENERIC_ENTITIES_ENDPOINT } from 'shesha-constants';
+import { IAbpWrappedGetEntityListResponse, EntityData, IGenericGetAllPayload } from 'interfaces/gql';
+import { convertDotNotationPropertiesToGraphQL } from 'providers/form/utils';
 import { getEntityFilterByIds } from './graphQl';
 
 interface AutocompleteReturn {
@@ -35,7 +35,7 @@ const buildFilterById = (value: AutocompleteValueType): string => {
  */
 export const useEntityAutocomplete = (props: IAutocompleteProps): AutocompleteReturn => {
   const displayProperty = props.displayProperty || '_displayName';
-  const properties = convertDotNotationPropertiesToGraphQL(['id', displayProperty], []);
+  const properties = convertDotNotationPropertiesToGraphQL(['id', displayProperty]);
   const getListFetcherQueryParams = (term: string): IGenericGetAllPayload => {
     return {
       skipCount: 0,

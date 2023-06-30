@@ -10,12 +10,12 @@ export interface IAutocompleteTagGroupProps extends Omit<InputProps, 'value' | '
   autocompleteUrl: string;
   onChange?: (values?: string[]) => void;
   /**
-  * Whether this control is disabled
-  */
+   * Whether this control is disabled
+   */
   disabled?: boolean;
   /**
-  * If true, the automplete will be in read-only mode. This is not the same sa disabled mode
-  */
+   * If true, the automplete will be in read-only mode. This is not the same sa disabled mode
+   */
   readOnly?: boolean;
 }
 
@@ -137,7 +137,7 @@ export const AutocompleteTagGroup: FC<IAutocompleteTagGroupProps> =
         </Tag>
       </Show>
     </>
-  )
-}
+  );
+};
 
 export default AutocompleteTagGroup;

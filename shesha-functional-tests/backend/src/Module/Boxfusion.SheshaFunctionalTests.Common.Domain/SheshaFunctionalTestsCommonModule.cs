@@ -2,10 +2,13 @@ using System.Reflection;
 using Abp.AspNetCore.Configuration;
 using Abp.AutoMapper;
 using Abp.Modules;
+using Boxfusion.SheshaFunctionalTests.Common.Domain.Configuration;
 using Castle.MicroKernel.Registration;
 using Intent.RoslynWeaver.Attributes;
 using Shesha;
 using Shesha.Authorization;
+using Shesha.Modules;
+using Shesha.Settings.Ioc;
 
 [assembly: DefaultIntentManaged(Mode.Fully)]
 [assembly: IntentTemplate("Boxfusion.Modules.Domain.Module", Version = "1.0")]
@@ -19,8 +22,14 @@ namespace Boxfusion.SheshaFunctionalTests.Common
         typeof(SheshaCoreModule),
         typeof(SheshaApplicationModule)
     )]
-    public class SheshaFunctionalTestsCommonModule : AbpModule
+    public class SheshaFunctionalTestsCommonModule : SheshaModule
     {
+        public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo("Boxfusion.SheshaFunctionalTests.Common")
+        {
+            FriendlyName = "Shesha Functional Tests Common",
+            Publisher = "Boxfusion"
+        };
+
         /// inheritedDoc
         public override void Initialize()
         {
@@ -39,6 +48,16 @@ namespace Boxfusion.SheshaFunctionalTests.Common
         public override void PreInitialize()
         {
             base.PreInitialize();
+
+            IocManager.RegisterSettingAccessor<ITestSetting>(s => {
+                s.UserLockoutItem.WithDefaultValue(100);
+                s.TestComplexSetting.WithDefaultValue(new TestComplexSetting
+                {
+                    SomeNumber = 42,
+                    SomeItem = "Hlayi is awesome",
+                    IsSomething = true
+                });
+            });
         }
 
         /// inheritedDoc

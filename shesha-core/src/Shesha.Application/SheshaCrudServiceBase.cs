@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Shesha.Application.Services;
 using Shesha.Application.Services.Dto;
 using Shesha.Attributes;
+using Shesha.Configuration.Runtime;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Dtos;
@@ -152,6 +153,7 @@ namespace Shesha
         public ISchemaContainer SchemaContainer { get; set; }
         public IGraphQLSerializer Serializer { get; set; }
         public IEntityConfigCache EntityConfigCache { get; set; }
+        public IEntityConfigurationStore EntityConfigurationStore { get; set; }
 
         /// <summary>
         /// Query entity data. 
@@ -290,13 +292,17 @@ namespace Shesha
 
             await AppendPropertiesAsync(sb, typeof(TEntity).FullName, propList.Where(x => !x.IsNullOrWhiteSpace()).ToList());
 
-            return sb.ToString();
+            return "id " + sb.ToString();
         }
 
         private async Task AppendPropertiesAsync(StringBuilder sb, string entityType, List<string> propList)
         {
             int i = 0;
-            var propConfigs = await EntityConfigCache.GetEntityPropertiesAsync(entityType);
+            var entityConfig = EntityConfigurationStore.Get(entityType);
+
+            var propConfigs = entityConfig != null
+                ? await EntityConfigCache.GetEntityPropertiesAsync(entityConfig.EntityType.FullName)
+                : null;
 
             while (i < propList.Count)
             {
@@ -349,11 +355,10 @@ namespace Shesha
 
             switch (property.DataType)
             {
-                /*
+                
                 case DataTypes.Array:
                     // todo: implement and uncomment
                     return;
-                */
                 case DataTypes.EntityReference:
                     if (property.EntityType.IsNullOrWhiteSpace())
                         // GenericEntityReference
@@ -388,6 +393,10 @@ namespace Shesha
             {
                 AppendProperty(sb, property);
             }
+
+            sb.AppendLine("id");
+            sb.AppendLine("_className");
+            sb.AppendLine("_displayName");
 
             return sb.ToString();
         }

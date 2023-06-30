@@ -24,7 +24,13 @@ export const ItemListContainer: FC<IItemListContainerProps> = ({ index, id, item
 
       case 'group':
         const groupProps = item as IConfigurableItemGroup;
-        return <ListItemsGroup key={localIndex} {...groupProps} index={[...index, localIndex]} />;
+        return (
+          <ListItemsGroup 
+            key={localIndex} 
+            {...groupProps} 
+            index={[...index, localIndex]} 
+            containerRendering={(args) => (<ItemListContainer {...args}/>)}
+          />);
     }
   };
 

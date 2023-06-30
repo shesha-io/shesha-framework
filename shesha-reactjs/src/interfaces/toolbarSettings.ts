@@ -1,58 +1,61 @@
-import { IButtonsProps } from './../components/formDesigner/components/button/buttonGroup/buttonsComponent/index';
-import { IDropdownProps } from './../components/formDesigner/components/dropdown/models';
-import { ITextAreaProps } from './../components/formDesigner/components/textArea/textArea';
-import { ILabelValueEditorProps } from './../components/formDesigner/components/labelValueEditor/labelValueEditorComponent';
-import { ITextFieldProps } from './../components/formDesigner/components/textField/textField';
+import { IButtonsProps } from './../components/formDesigner/components/button/buttonGroup/buttonsComponent/interfaces';
+import { IDropdownComponentProps } from 'designer-components/dropdown/interfaces';
+import { ITextAreaComponentProps } from './../components/formDesigner/components/textArea/interfaces';
+import { ILabelValueEditorComponentProps } from './../components/formDesigner/components/labelValueEditor/interfaces';
+import { ITextFieldComponentProps } from '../designer-components/textField/interfaces';
 import { IConfigurableFormComponent } from '.';
-import { ISectionSeparatorProps } from '../components/sectionSeparator';
-import { IIconPickerComponentProps } from '../components/formDesigner/components/iconPicker';
-import { IAutocompleteProps } from '../components/formDesigner/components/autocomplete/autocomplete';
-import { IEndpointsAutocompleteComponentProps } from '../components/formDesigner/components/endpointsAutocomplete/endpointsAutocomplete';
-import { ICheckboxProps } from '../components/formDesigner/components/checkbox/checkbox';
-import { INumberFieldProps } from '../components/formDesigner/components/numberField/models';
-import { IQueryBuilderProps } from '../components/formDesigner/components/queryBuilder/queryBuilderComponent';
-import { ICodeEditorComponentProps } from '../components/formDesigner/components/codeEditor';
-import { IContainerComponentProps } from '../components/formDesigner/components/container/containerComponent';
-import { ICustomFilterProps } from '../components/formDesigner/components/dataTable/filter/models';
-import { IFormAutocompleteProps } from '../components/formDesigner/components/formAutocomplete';
-import { IConfigurableActionNamesComponentProps } from '../components/formDesigner/components/configurableActionsConfigurator';
-import { IEditableTagGroupProps } from '../components/formDesigner/components/editableTagGroup';
-import { IColorPickerComponentProps } from '../components/formDesigner/components/colorPicker';
-import { IColumnsEditorComponentProps } from '../components/formDesigner/components/dataTable/table/columnsEditor/columnsEditorComponent';
-import { ICollapsiblePanelProps } from '../components/formDesigner/components/collapsiblePanel/collapsiblePanelComponent';
-import { IPropertyAutocompleteComponentProps } from '../components/formDesigner/components/propertyAutocomplete';
-import { ISwitchProps } from '../components/formDesigner/components/switch/switch';
-import AlertComponent, { IAlertProps } from '../components/formDesigner/components/alert';
+import { ISectionSeparatorComponentProps } from 'components/formDesigner/components/sectionSeprator/interfaces';
+import { IIconPickerComponentProps } from 'components/formDesigner/components/iconPicker/interfaces';
+import { IAutocompleteComponentProps } from 'designer-components/autocomplete/interfaces';
+import { IEndpointsAutocompleteComponentProps } from 'components/formDesigner/components/endpointsAutocomplete/interfaces';
+import { ICheckboxComponentProps } from 'designer-components/checkbox/interfaces';
+import { INumberFieldComponentProps } from 'designer-components/numberField/interfaces';
+import { IQueryBuilderComponentProps } from 'designer-components/queryBuilder/interfaces';
+import { ICodeEditorComponentProps } from 'components/formDesigner/components/codeEditor/interfaces';
+import { IContainerComponentProps } from 'designer-components/container/interfaces';
+import { ICustomFilterComponentProps } from 'designer-components/dataTable/filter/interfaces';
+import { IFormAutocompleteComponentProps } from 'components/formDesigner/components/formAutocomplete/interfaces';
+import { IConfigurableActionConfiguratorComponentProps } from 'designer-components/configurableActionsConfigurator/interfaces';
+import { IEditableTagGroupComponentProps } from 'components/formDesigner/components/editableTagGroup/interfaces';
+import { IColorPickerComponentProps } from 'components/formDesigner/components/colorPicker/interfaces';
+import { IColumnsEditorComponentProps } from 'designer-components/dataTable/table/columnsEditor/interfaces';
+import { ICollapsiblePanelComponentProps } from 'designer-components/collapsiblePanel/interfaces';
+import { IPropertyAutocompleteComponentProps } from 'components/formDesigner/components/propertyAutocomplete/interfaces';
+import { ISwitchComponentProps } from 'components/formDesigner/components/switch/interfaces';
+import { IAlertComponentProps } from 'components/formDesigner/components/alert/interfaces';
+import { IReferenceListAutocompleteProps } from 'components/formDesigner/components/referenceListAutocomplete';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'type'> {}
 
-type DropdownType = ToolbarSettingsProp & Omit<IDropdownProps, 'type'>;
+type DropdownType = ToolbarSettingsProp & Omit<IDropdownComponentProps, 'type'>;
 
-type SectionSeparatorType = ToolbarSettingsProp & Omit<ISectionSeparatorProps, 'type'>;
+type SectionSeparatorType = ToolbarSettingsProp & Omit<ISectionSeparatorComponentProps, 'type'>;
 
-type TextFieldType = ToolbarSettingsProp & Omit<ITextFieldProps, 'type'>;
+type TextFieldType = ToolbarSettingsProp & Omit<ITextFieldComponentProps, 'type'>;
 
 type PropertyAutocompleteType = ToolbarSettingsProp & Omit<IPropertyAutocompleteComponentProps, 'type'>;
 
-type TextAreaType = ToolbarSettingsProp & Omit<ITextAreaProps, 'type'>;
+type TextAreaType = ToolbarSettingsProp & Omit<ITextAreaComponentProps, 'type'>;
 
 type IconPickerType = ToolbarSettingsProp & Omit<IIconPickerComponentProps, 'type'>;
 
-type AutocompleteType = ToolbarSettingsProp & Omit<IAutocompleteProps, 'type'>;
+type AutocompleteType = ToolbarSettingsProp & Omit<IAutocompleteComponentProps, 'type'>;
 
 type EndpointsAutocompleteType = ToolbarSettingsProp & Omit<IEndpointsAutocompleteComponentProps, 'type'>;
 
-type FormAutocompleteType = ToolbarSettingsProp & Omit<IFormAutocompleteProps, 'type'>;
+type FormAutocompleteType = ToolbarSettingsProp & Omit<IFormAutocompleteComponentProps, 'type'>;
 
-type CheckboxType = ToolbarSettingsProp & Omit<ICheckboxProps, 'type'>;
+type ReferenceListAutocompleteType = ToolbarSettingsProp & Omit<IReferenceListAutocompleteProps, 'type'>;
 
-type SwitchType = ToolbarSettingsProp & Omit<ISwitchProps, 'type'>;
+type CheckboxType = ToolbarSettingsProp & Omit<ICheckboxComponentProps, 'type'>;
 
-type NumberFieldType = ToolbarSettingsProp & Omit<INumberFieldProps, 'type'>;
+type SwitchType = ToolbarSettingsProp & Omit<ISwitchComponentProps, 'type'>;
 
-type LabelValueEditorType = ToolbarSettingsProp & Omit<ILabelValueEditorProps, 'type'>;
+type NumberFieldType = ToolbarSettingsProp & Omit<INumberFieldComponentProps, 'type'>;
 
-type QueryBuilderType = ToolbarSettingsProp & Omit<IQueryBuilderProps, 'type'>;
+type LabelValueEditorType = ToolbarSettingsProp & Omit<ILabelValueEditorComponentProps, 'type'>;
+
+type QueryBuilderType = ToolbarSettingsProp & Omit<IQueryBuilderComponentProps, 'type'>;
 
 type CodeEditorType = ToolbarSettingsProp & Omit<ICodeEditorComponentProps, 'type'>;
 
@@ -60,19 +63,19 @@ type ContainerType = ToolbarSettingsProp & Omit<IContainerComponentProps, 'type'
 
 type ButtonGroupType = ToolbarSettingsProp & Omit<IButtonsProps, 'type'>;
 
-type CustomFilterType = ToolbarSettingsProp & Omit<ICustomFilterProps, 'type'>;
+type CustomFilterType = ToolbarSettingsProp & Omit<ICustomFilterComponentProps, 'type'>;
 
-type ConfigurableActionConfiguratorType = ToolbarSettingsProp & Omit<IConfigurableActionNamesComponentProps, 'type'>;
+type ConfigurableActionConfiguratorType = ToolbarSettingsProp & Omit<IConfigurableActionConfiguratorComponentProps, 'type'>;
 
-type EditableTagGroupType = ToolbarSettingsProp & Omit<IEditableTagGroupProps, 'type'>;
+type EditableTagGroupType = ToolbarSettingsProp & Omit<IEditableTagGroupComponentProps, 'type'>;
 
 type ColorPickerType = ToolbarSettingsProp & Omit<IColorPickerComponentProps, 'type'>;
 
 type EntityPickerColumnsEditorType = ToolbarSettingsProp & Omit<IColumnsEditorComponentProps, 'type'>;
 
-type ICollapsiblePanelPropsEditorType = ToolbarSettingsProp & Omit<ICollapsiblePanelProps, 'type'>;
+type ICollapsiblePanelPropsEditorType = ToolbarSettingsProp & Omit<ICollapsiblePanelComponentProps, 'type'>;
 
-type AlertType = ToolbarSettingsProp & Omit<IAlertProps, 'type'>;
+type AlertType = ToolbarSettingsProp & Omit<IAlertComponentProps, 'type'>;
 
 export class DesignerToolbarSettings<T> {
   protected readonly form: IConfigurableFormComponent[];
@@ -86,7 +89,7 @@ export class DesignerToolbarSettings<T> {
   }
 
   public addAlert(props: AlertType | ((data: T) => AlertType)) {
-    return this.addProperty(props, AlertComponent.type);
+    return this.addProperty(props, 'alert');
   }  
 
   public addButtons(props: ButtonGroupType | ((data: T) => ButtonGroupType)) {
@@ -145,6 +148,10 @@ export class DesignerToolbarSettings<T> {
     return this.addProperty(props, 'formAutocomplete');
   }
 
+  public addRefListAutocomplete(props: ReferenceListAutocompleteType | ((data: T) => ReferenceListAutocompleteType)) {
+    return this.addProperty(props, 'referenceListAutocomplete');
+  }
+
   public addCheckbox(props: CheckboxType | ((data: T) => CheckboxType)) {
     return this.addProperty(props, 'checkbox');
   }
@@ -190,7 +197,7 @@ export class DesignerToolbarSettings<T> {
   private addProperty(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp), type: string) {
     const obj = typeof props !== 'function' ? props : props(this.data);
 
-    this.form.push({ ...obj, type });
+    this.form.push({ ...obj, type, version: 'latest' });
 
     return this;
   }

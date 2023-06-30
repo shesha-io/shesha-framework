@@ -1,16 +1,15 @@
 import { ButtonProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { CSSProperties, ReactNode } from 'react';
-import { IAnyObject, IEntityReferenceDto } from '../../interfaces';
-import { IConfigurableColumnsBase } from '../../providers/datatableColumnsConfigurator/models';
-import { FormIdentifier } from '../../providers/form/models';
-import { ITableViewProps } from '../../providers/tableViewSelectorConfigurator/models';
+import { IAnyObject, IEntityReferenceDto } from 'interfaces';
+import { IConfigurableColumnsProps } from 'providers/datatableColumnsConfigurator/models';
+import { FormIdentifier } from 'providers/form/models';
+import { ITableViewProps } from 'providers/tableViewSelectorConfigurator/models';
 
 interface IWrappedEntityPickerProps {
   entityType?: string;
   filters?: ITableViewProps[];
   allowNewRecord?: boolean;
-  parentEntityId?: string;
   onDblClick?: (data: any) => void;
 }
 
@@ -55,7 +54,7 @@ export interface IEntityPickerProps extends Omit<IWrappedEntityPickerProps, 'onD
   pickerButtonProps?: ButtonProps;
   defaultValue?: string;
   entityFooter?: ReactNode;
-  configurableColumns?: IConfigurableColumnsBase[]; // Type it later
+  configurableColumns?: IConfigurableColumnsProps[]; // Type it later
   addNewRecordsProps?: IAddNewRecordProps;
   style?: CSSProperties;
   readOnly?: boolean;

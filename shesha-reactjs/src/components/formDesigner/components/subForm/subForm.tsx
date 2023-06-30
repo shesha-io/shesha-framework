@@ -1,14 +1,15 @@
 import React, { CSSProperties, FC, useMemo } from 'react';
 import ShaSpin from '../../../shaSpin';
 import ValidationErrors from '../../../validationErrors';
-import { useSubForm } from '../../../../providers/subForm';
-import { SubFormContainer } from './subFormContainer';
-import { FormItemProvider, useAppConfigurator } from '../../../../providers';
-import { upgradeComponentsTree, useFormDesignerComponents } from '../../../../providers/form/utils';
+import { useSubForm } from 'providers/subForm';
+import { FormItemProvider, ROOT_COMPONENT_KEY, useAppConfigurator } from 'providers';
 import Show from '../../../show';
 import FormInfo from '../../../configurableForm/formInfo';
-import { ConfigurationItemVersionStatusMap } from '../../../../utils/configurationFramework/models';
-import { IPersistedFormProps } from '../../../../providers/formPersisterProvider/models';
+import { ConfigurationItemVersionStatusMap } from 'utils/configurationFramework/models';
+import { IPersistedFormProps } from '../../../../providers/form/models';
+import { ComponentsContainerProvider } from 'providers/form/nesting/containerContext';
+import { ComponentsContainerSubForm } from './componentsContainerSubForm';
+import ComponentsContainer from 'components/formDesigner/containers/componentsContainer';
 
 interface ISubFormProps {
   style?: CSSProperties;
@@ -22,7 +23,6 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
     module,
     errors,
     loading,
-    components,
     formSettings,
     name,
     versionStatus,
@@ -30,7 +30,6 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
     versionNo,
     description,
   } = useSubForm();
-  const designerComponents = useFormDesignerComponents();
 
   const formStatusInfo = versionStatus ? ConfigurationItemVersionStatusMap[versionStatus] : null;
 
@@ -39,10 +38,6 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
   const isLoading = useMemo(() => {
     return Object.values(loading).find(l => Boolean(l));
   }, [loading]);
-
-  const updatedComponents = useMemo(() => {
-    return upgradeComponentsTree(designerComponents, components);
-  }, [components]);
 
   const persistedFormProps: IPersistedFormProps = { id, module, versionNo, description, versionStatus, name };
 
@@ -57,9 +52,13 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
         ))}
 
         <div>
-          <FormItemProvider namePrefix={name} labelCol={formSettings?.labelCol} wrapperCol={formSettings?.wrapperCol}>
-            <SubFormContainer components={updatedComponents} readOnly={readOnly} />
-          </FormItemProvider>
+          <ComponentsContainerProvider
+            ContainerComponent={ComponentsContainerSubForm}
+          >
+            <FormItemProvider namePrefix={name} labelCol={formSettings?.labelCol} wrapperCol={formSettings?.wrapperCol}>
+              <ComponentsContainer containerId={ROOT_COMPONENT_KEY} readOnly={readOnly}/>
+            </FormItemProvider>
+          </ComponentsContainerProvider>
         </div>
       </div>
     </ShaSpin>

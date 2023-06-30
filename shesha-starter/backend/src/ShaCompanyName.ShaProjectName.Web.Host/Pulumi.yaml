@@ -1,37 +1,90 @@
-name: #{projectName}#-api-#{env}#
+name: shesha-#{role}#-#{env}#
 runtime: yaml
-description: Shesha backend Api #{env}# for #{projectName}#
+description: Shesha #{role}# #{env}# for #{projectName}#
 
 config:
   sqlAdmin:
     type: string
     default: pulumi
+
 variables:
-  resourceGroupName: containerapps-shesha-api-#{env}#-rg
+  # subscriptionId1: ad818ed1-a52d-4a5c-8cba-c3e84872abb0
+  # subscriptionId2: 0e111515-3d91-4650-bd92-dfca52077d62
+  # providers:
+  #   - ${azure1}
+  #   - ${azure2}  
+  # sqlResourceGroupName: auto-shared-nonprod-rg
+  sqlResourceGroupName: containerapps-shared
+  # sqlAdministratorLogin: boxdbadmin
+  # sqlAdministratorLoginPassword: Gg4ucRwz
+  # sqlServerName: auto-sql-shared-nonprod
+  sqlServerName: containerapps-sql-shared
+  sqlElasticPoolName: auto-pool
+  sqlDatabaseName: #{projectName}#-shesha-#{env}#
+  # dbStorageKey: X9T64IDBYX2PsGUw3gGNhqqOsMiaQlLPJoRgkKLmZCvypnoT86dodg7FtM1zIGZzH6ptOC4yhbO6+AStTN9YyA==
+  # dbStorageKeyType: StorageAccessKey
+  # dbStorageUri: https://autononprodstorage.z1.web.core.windows.net/
+  resourceGroupName: containerapps-shesha-#{role}#-#{env}#-rg
   registryLoginServer: boxfusionregistry.azurecr.io
-  adminUsername:
-    fn::invoke:
-      function: azure-native:containerregistry:listRegistryCredentials
-      arguments:
-        resourceGroupName: containerapps-shared
-        registryName: boxfusionregistry
-      return: username
-  adminPasswords:
-    fn::invoke:
-      function: azure-native:containerregistry:listRegistryCredentials
-      arguments:
-        resourceGroupName: containerapps-shared
-        registryName: boxfusionregistry
-      return: passwords  
-  containerAppName: #{projectName}#-api-#{env}#
-  containerAppCustomerDomainName: #{projectName}#-api-#{env}#.shesha.dev
-  containerAppEnvName: shesha-api-#{env}#-env
-  certificateId: /subscriptions/0e111515-3d91-4650-bd92-dfca52077d62/resourceGroups/containerapps-shesha-api-test-rg/providers/Microsoft.App/managedEnvironments/shesha-api-test-env/certificates/shesha.dev
-  containerAppRevisionImage: boxfusionregistry.azurecr.io/shesha:latest
+  # adminUsername:
+  #   fn::invoke:
+  #     function: azure-native:containerregistry:listRegistryCredentials
+  #     arguments:
+  #       resourceGroupName: containerapps-shared
+  #       registryName: boxfusionregistry
+  #     return: username
+  # adminPasswords:
+  #   fn::invoke:
+  #     function: azure-native:containerregistry:listRegistryCredentials
+  #     arguments:
+  #       resourceGroupName: containerapps-shared
+  #       registryName: boxfusionregistry
+  #     return: passwords
+  adminUsername: boxfusionregistry
+  adminPasswords: fKSsWcdQ8IbdmJZT3Y7udTZD/jjSQ7dhCwTa1BDgaS+ACRBwxWQ1      
+  containerAppName: #{projectName}#-#{role}#-#{env}#
+  containerAppCustomerDomainName: #{projectName}#-#{role}#-#{env}#.shesha.dev
+  containerAppEnvName: shesha-#{role}#-#{env}#
+  certificateId: /subscriptions/0e111515-3d91-4650-bd92-dfca52077d62/resourceGroups/containerapps-shesha-#{role}#-#{env}#-rg/providers/Microsoft.App/managedEnvironments/shesha-#{role}#-#{env}#-env/certificates/shesha.dev
+  containerAppRevisionImage: boxfusionregistry.azurecr.io/shesha-api:47720
   
 resources:
+  # azure1:
+  #   type: pulumi:providers:azure-native
+  #   properties:
+  #     subscriptionId: ${subscriptionId1}
+  # azure2:
+  #   type: pulumi:providers:azure-native
+  #   properties:
+  #     subscriptionId: ${subscriptionId2}      
+  sqlDatabase:
+    type: azure:sql:Database
+    # options:
+    #   provider: ${azure1}    
+    properties:
+      resourceGroupName: ${sqlResourceGroupName}
+      serverName: ${sqlServerName}      
+      createMode: Copy
+      elasticPoolName: ${sqlElasticPoolName}
+      # sourceDatabaseId: /subscriptions/ad818ed1-a52d-4a5c-8cba-c3e84872abb0/resourceGroups/auto-shared-nonprod-rg/providers/Microsoft.Sql/servers/auto-sql-shared-nonprod/databases/source-shesha
+      # sourceDatabaseId: /subscriptions/0e111515-3d91-4650-bd92-dfca52077d62/resourceGroups/containerapps-shared/providers/Microsoft.Sql/servers/containerapps-sql-shared/databases/source-shesha
+      sourceDatabaseId: /subscriptions/0e111515-3d91-4650-bd92-dfca52077d62/resourceGroups/containerapps-shared/providers/Microsoft.Sql/servers/containerapps-sql-shared/databases/starter-mainline
+      name: ${sqlDatabaseName}
+      #import:
+      #   - administratorLogin: ${sqlAdministratorLogin}
+      #     administratorLoginPassword: ${sqlAdministratorLoginPassword}
+      #     authenticationType : SQL
+      #     storageKey: ${dbStorageKey}
+      #     storageKeyType : ${dbStorageKeyType}
+      #     storageUri: ${dbStorageUri}
+      #     operationMode : Import
+      location: southafricanorth
+      tags:
+        shesha: #{projectName}#-shesha-#{role}#-#{env}#
   containerApp:
     type: azure-native:app:ContainerApp
+    # options:
+    #   provider: ${azure2}     
     properties:
       configuration:
         # dapr:
@@ -57,32 +110,33 @@ resources:
             passwordSecretRef: "pwd"           
         secrets:
           - name: "pwd"
-            value: ${adminPasswords[0].value}
+            value: ${adminPasswords}          
       containerAppName: ${containerAppName}
       location: southafricanorth
-
+      tags:
+        shesha: #{projectName}#-shesha-#{role}#-#{env}#
       managedEnvironmentId: /subscriptions/0e111515-3d91-4650-bd92-dfca52077d62/resourceGroups/containerapps-shesha-api-#{env}#-rg/providers/Microsoft.App/managedEnvironments/shesha-api-#{env}#-env
       resourceGroupName: ${resourceGroupName}
       template: 
         containers:
           - image: ${containerAppRevisionImage}
-            name: shesha
-            # resources: 
-            #   cpu: 2
-            #   memory: "4Gi"
-            probes:
-              - httpGet:
-                  httpHeaders:
-                    - name: Custom-Header
-                      value: Awesome
-                  path: /health
-                  port: 8080
-                initialDelaySeconds: 3
-                periodSeconds: 3
-                type: Liveness
+            name: #{projectName}#-#{role}#-#{env}#
+            resources: 
+                cpu: 1.0
+                memory: "2Gi"
+            # probes:
+            #   - httpGet:
+            #       httpHeaders:
+            #         - name: Custom-Header
+            #           value: Awesome
+            #       path: /health
+            #       port: 8080
+            #     initialDelaySeconds: 3
+            #     periodSeconds: 3
+            #     type: Liveness
         scale:
-          maxReplicas: 5
-          minReplicas: 0
+          maxReplicas: 1
+          minReplicas: 1
           rules:
             - custom:
                 metadata:
@@ -95,4 +149,8 @@ outputs:
   containerAppCustomerDomainName: ${containerAppCustomerDomainName}
   containerAppEnvName: ${containerAppEnvName}
   certificateId: ${certificateId}
-  containerAppRevisionImage: ${containerAppRevisionImage}   
+  containerAppRevisionImage: ${containerAppRevisionImage}
+  sqlResourceGroupName: ${containerAppRevisionImage}
+  sqlServerName: ${containerAppRevisionImage}
+  sqlElasticPoolName: ${sqlElasticPoolName}
+  sqlDatabaseName: ${sqlDatabaseName}

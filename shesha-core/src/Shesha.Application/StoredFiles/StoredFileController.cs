@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Abp.AspNetCore.Mvc.Authorization;
+﻿using Abp.AspNetCore.Mvc.Authorization;
 using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
+using Abp.Extensions;
 using Abp.ObjectMapping;
 using Abp.Runtime.Validation;
 using Abp.UI;
@@ -15,10 +10,18 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using NHibernate.Linq;
 using Shesha.Domain;
+using Shesha.EntityReferences;
 using Shesha.Extensions;
+using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.StoredFiles.Dto;
 using Shesha.Utilities;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using ReflectionHelper = Shesha.Reflection.ReflectionHelper;
 
 namespace Shesha.StoredFiles
@@ -77,28 +80,31 @@ namespace Shesha.StoredFiles
         [Consumes("multipart/form-data")]
         public async Task<StoredFileDto> UploadAsync([FromForm] UploadFileInput input)
         {
-            if (string.IsNullOrWhiteSpace(input.OwnerType))
-                ModelState.AddModelError(nameof(input.OwnerType), $"{nameof(input.OwnerType)} must not be null");
-            if (string.IsNullOrWhiteSpace(input.OwnerId))
-                ModelState.AddModelError(nameof(input.OwnerId), $"{nameof(input.OwnerId)} must not be null");
-
             if (input.File == null)
                 ModelState.AddModelError(nameof(input.File), $"{nameof(input.File)} must not be null");
+
+            if (string.IsNullOrWhiteSpace(input.OwnerType) && !string.IsNullOrWhiteSpace(input.OwnerId))
+                ModelState.AddModelError(nameof(input.OwnerType), $"{nameof(input.OwnerType)} must not be null when {nameof(input.OwnerId)} is specified");
 
             if (!ModelState.IsValid)
                 throw new AbpValidationException("An error occured");//, ModelState.Keys.Select(k => new ValidationResult(ModelState.Values[k], new List<string>() { k })));
 
-            var owner = await _dynamicRepository.GetAsync(input.OwnerType, input.OwnerId);
-            if (owner == null)
-                throw new Exception($"Owner not found (type = '{input.OwnerType}', id = '{input.OwnerId}')");
+            object owner = null;
+
+            if (!input.OwnerType.IsNullOrEmpty() && !input.OwnerId.IsNullOrEmpty())
+            {
+                owner = await _dynamicRepository.GetAsync(input.OwnerType, input.OwnerId);
+                if (owner == null)
+                    throw new Exception($"Owner not found (type = '{input.OwnerType}', id = '{input.OwnerId}')");
+            }
 
             var uploadedFile = new StoredFileDto();
             var fileName = input.File.FileName.CleanupFileName();
 
-            if (!string.IsNullOrWhiteSpace(input.PropertyName))
+            if (owner != null && !input.PropertyName.IsNullOrWhiteSpace())
             {
                 // single file upload (stored as a property of an entity)
-                var property = ReflectionHelper.GetProperty(owner, input.PropertyName);
+                var property = ReflectionHelper.GetProperty(owner, input.PropertyName, out owner);
                 if (property == null || property.PropertyType != typeof(StoredFile))
                     throw new Exception(
                         $"Property '{input.PropertyName}' not found in class '{owner.GetType().FullName}'");
@@ -126,7 +132,6 @@ namespace Shesha.StoredFiles
                     await using (var fileStream = input.File.OpenReadStream())
                     {
                         storedFile = await _fileService.SaveFileAsync(fileStream, fileName);
-
                         property.SetValue(owner, storedFile, null);
                     }
                 }
@@ -141,8 +146,28 @@ namespace Shesha.StoredFiles
                 {
                     var storedFile = await _fileService.SaveFileAsync(fileStream, fileName, file =>
                     {
-                        file.SetOwner(input.OwnerType, input.OwnerId);
-                        file.Category = input.FilesCategory;
+                        if (owner != null)
+                        {
+                            // Set owner
+                            if (!input.OwnerName.IsNullOrEmpty())
+                            {
+                                var prop = ReflectionHelper.GetProperty(owner, input.OwnerName);
+                                if (prop == null)
+                                    throw new Exception($"Property '{input.OwnerName}' not found in class '{owner.GetType().FullName}'");
+                                owner = prop.GetValue(owner);
+                            }
+
+                            if (owner != null)
+                                file.Owner = new GenericEntityReference(owner);
+                            else
+                                file.Temporary = true;
+                        }
+                        else
+                        {
+                            // otherwise - mark as temporary
+                            file.Temporary = true;
+                        }
+                        file.Category = input.FilesCategory.ToCamelCase();
                     });
 
                     await _unitOfWorkManager.Current.SaveChangesAsync();
@@ -196,7 +221,7 @@ namespace Shesha.StoredFiles
                     {
                         if (input.Id.HasValue && input.Id.Value != Guid.Empty)
                             file.Id = input.Id.Value;
-                        file.Category = input.FilesCategory;
+                        file.Category = input.FilesCategory.ToCamelCase();
                     });
 
                     await _unitOfWorkManager.Current.SaveChangesAsync();
@@ -302,6 +327,7 @@ namespace Shesha.StoredFiles
             fileDto.Type = !string.IsNullOrWhiteSpace(file.FileName)
                 ? Path.GetExtension(file.FileName)
                 : null;
+            fileDto.Temporary = file.Temporary;
         }
 
         /// <summary>
@@ -313,10 +339,10 @@ namespace Shesha.StoredFiles
             var ownerSpecified =
                 !string.IsNullOrWhiteSpace(input.OwnerType) && !string.IsNullOrWhiteSpace(input.OwnerId);
 
-            if (string.IsNullOrWhiteSpace(input.OwnerId) && !string.IsNullOrWhiteSpace(input.OwnerType))
+            if (input.FileId == null && string.IsNullOrWhiteSpace(input.OwnerId) && !string.IsNullOrWhiteSpace(input.OwnerType))
                 ModelState.AddModelError(nameof(input.OwnerId), $"{nameof(input.OwnerId)} must not be null when {nameof(input.OwnerType)} is specified");
 
-            if (string.IsNullOrWhiteSpace(input.OwnerType) && !string.IsNullOrWhiteSpace(input.OwnerId))
+            if (input.FileId == null && string.IsNullOrWhiteSpace(input.OwnerType) && !string.IsNullOrWhiteSpace(input.OwnerId))
                 ModelState.AddModelError(nameof(input.OwnerType), $"{nameof(input.OwnerType)} must not be null when {nameof(input.OwnerId)} is specified");
 
             if (input.FileId == null && string.IsNullOrWhiteSpace(input.PropertyName))
@@ -334,7 +360,7 @@ namespace Shesha.StoredFiles
 
             var processAsProperty = owner != null && !string.IsNullOrWhiteSpace(input.PropertyName);
             var property = processAsProperty
-                ? ReflectionHelper.GetProperty(owner, input.PropertyName)
+                ? ReflectionHelper.GetProperty(owner, input.PropertyName, out owner)
                 : null;
             if (processAsProperty)
             {
@@ -377,7 +403,7 @@ namespace Shesha.StoredFiles
         {
             var files = input.AllCategories
                 ? await _fileService.GetAttachmentsAsync(input.OwnerId, input.OwnerType)
-                : await _fileService.GetAttachmentsOfCategoryAsync(input.OwnerId, input.OwnerType, input.FilesCategory);
+                : await _fileService.GetAttachmentsOfCategoryAsync(input.OwnerId, input.OwnerType, input.FilesCategory.ToCamelCase());
 
             // todo: move zip support to the FileService, current implementation doesn't support Azure
             var list = _fileService.MakeUniqueFileNames(files);
@@ -399,9 +425,24 @@ namespace Shesha.StoredFiles
             if (string.IsNullOrEmpty(input.OwnerId))
                 throw new Exception($"`{nameof(input.OwnerId)}` must not be null");
 
+            var owner = await _dynamicRepository.GetAsync(input.OwnerType, input.OwnerId);
+
+            if (owner == null)
+                throw new Exception($"Entity `{input.OwnerType}` `{input.OwnerId}` not found");
+
+            if (!input.OwnerName.IsNullOrEmpty())
+            {
+                var prop = ReflectionHelper.GetProperty(owner, input.OwnerName);
+                owner = prop.GetValue(owner);
+                if (owner == null)
+                    return new List<StoredFileDto>();
+            }
+
+            var id = owner.GetId();
+            var type = owner.GetType().StripCastleProxyType().FullName;
             var files = input.AllCategories
-                ? await _fileService.GetAttachmentsAsync(input.OwnerId, input.OwnerType)
-                : await _fileService.GetAttachmentsOfCategoryAsync(input.OwnerId, input.OwnerType, input.FilesCategory);
+                ? await _fileService.GetAttachmentsAsync(id, type)
+                : await _fileService.GetAttachmentsOfCategoryAsync(id, type, input.FilesCategory.ToCamelCase());
 
             var list = files.Select(sf => GetFileDto(sf)).ToList();
             return list;
@@ -484,9 +525,6 @@ namespace Shesha.StoredFiles
             var ownerSpecified =
                 !string.IsNullOrWhiteSpace(input.OwnerType) && !string.IsNullOrWhiteSpace(input.OwnerId);
 
-            if (string.IsNullOrWhiteSpace(input.OwnerId) && !string.IsNullOrWhiteSpace(input.OwnerType))
-                ModelState.AddModelError(nameof(input.OwnerId), $"{nameof(input.OwnerId)} must not be null when {nameof(input.OwnerType)} is specified");
-
             if (string.IsNullOrWhiteSpace(input.OwnerType) && !string.IsNullOrWhiteSpace(input.OwnerId))
                 ModelState.AddModelError(nameof(input.OwnerType), $"{nameof(input.OwnerType)} must not be null when {nameof(input.OwnerId)} is specified");
 
@@ -505,7 +543,7 @@ namespace Shesha.StoredFiles
 
             var uploadAsProperty = owner != null && !string.IsNullOrWhiteSpace(input.PropertyName);
             var property = uploadAsProperty
-                ? ReflectionHelper.GetProperty(owner, input.PropertyName)
+                ? ReflectionHelper.GetProperty(owner, input.PropertyName, out owner)
                 : null;
             if (uploadAsProperty)
             {
@@ -525,7 +563,7 @@ namespace Shesha.StoredFiles
             {
                 storedFile = input.Id != null
                     ? await _fileRepository.GetAll().FirstOrDefaultAsync(f => f.Id == input.Id.Value)
-                    : property != null
+                    : property != null && owner != null
                         ? property.GetValue(owner) as StoredFile
                         : null;
             }
@@ -544,10 +582,14 @@ namespace Shesha.StoredFiles
                     });
 
                     // set property if needed
-                    if (property != null)
+                    if (property != null && owner != null)
                     {
                         property.SetValue(owner, storedFile, null);
                         await _dynamicRepository.SaveOrUpdateAsync(owner);
+                    } 
+                    else if (owner == null && !input.PropertyName.IsNullOrEmpty())
+                    {
+                        storedFile.Temporary = true;
                     }
                 }
             }
@@ -604,11 +646,11 @@ namespace Shesha.StoredFiles
                 string.IsNullOrWhiteSpace(input.PropertyName))
                 return null;
 
-            var owner = await _dynamicRepository.GetAsync(input.OwnerType, input.OwnerId);
-            if (owner == null)
+            var entity = await _dynamicRepository.GetAsync(input.OwnerType, input.OwnerId);
+            if (entity == null)
                 return null;
 
-            var property = ReflectionHelper.GetProperty(owner, input.PropertyName);
+            var property = ReflectionHelper.GetProperty(entity, input.PropertyName, out var owner);
             if (property == null)
                 throw new Exception($"Property '{input.PropertyName}' not found in the class {owner.GetType().Name}");
 

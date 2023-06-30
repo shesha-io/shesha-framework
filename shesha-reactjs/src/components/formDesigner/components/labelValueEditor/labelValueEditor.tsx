@@ -9,7 +9,7 @@ import {
   DroppableProvided,
   DroppableStateSnapshot,
 } from 'react-beautiful-dnd';
-import { ILabelValueEditorPropsBase, IItemProps } from './models';
+import { ILabelValueEditorPropsBase, IItemProps } from './interfaces';
 import { Table, Popconfirm, Button, Form, Input, Modal, Alert, Tabs } from 'antd';
 import { BorderlessTableOutlined, DeleteOutlined, MenuOutlined, PlusOutlined } from '@ant-design/icons';
 import { nanoid } from 'nanoid/non-secure';

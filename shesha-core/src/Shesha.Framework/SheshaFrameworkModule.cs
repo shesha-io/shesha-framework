@@ -1,10 +1,8 @@
 ﻿using Abp.Authorization;
 using Abp.AutoMapper;
 using Abp.Dependency;
-using Abp.Domain.Repositories;
 using Abp.Modules;
 using Abp.Web.Models;
-using Castle.Facilities.TypedFactory;
 using Castle.MicroKernel.Registration;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
@@ -12,6 +10,7 @@ using Shesha.Authorization;
 using Shesha.Configuration;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Distribution;
+using Shesha.Domain;
 using Shesha.DynamicEntities.Distribution;
 using Shesha.Exceptions;
 using Shesha.Extensions;
@@ -20,9 +19,12 @@ using Shesha.Modules;
 using Shesha.Services;
 using Shesha.Services.ReferenceLists;
 using Shesha.Services.ReferenceLists.Distribution;
+using Shesha.Services.Settings;
+using Shesha.Services.Settings.Distribution;
 using Shesha.Services.StoredFiles;
 using Shesha.Settings;
 using Shesha.Settings.Ioc;
+using Shesha.Validations;
 using System.Reflection;
 
 namespace Shesha
@@ -42,7 +44,6 @@ namespace Shesha
 
         public override void PreInitialize()
         {
-            //Configuration.Settings.Providers.Add<SheshaSettingProviderLegacy>();
             IocManager.Register<IPermissionManager, IShaPermissionManager, IPermissionDefinitionContext, ShaPermissionManager>();
 
             Configuration.ReplaceService(typeof(IExceptionFilter),
@@ -51,7 +52,15 @@ namespace Shesha
                     IocManager.Register<IExceptionFilter, SheshaExceptionFilter>(DependencyLifeStyle.Transient);
                 });
 
-            //Configuration.ReplaceService<ISettingDefinitionManager, SheshaSettingDefinitionManager>(DependencyLifeStyle.Singleton);
+            // register validator to check IValidatableObject from AbpValidationActionFilter
+            Configuration.Validation.Validators.Add<ShaValidatableObjectValidator>();
+
+            Configuration.Modules.AbpAutoMapper().Configurators.Add(config =>
+            {
+                // disable methods mapping to prevent exception like this: `GenericArguments[0], 'TId', on 'T MaxInteger[T](System.Collections.Generic.IEnumerable`1[T])' violates the constraint of type 'T'.`
+                // https://github.com/AutoMapper/AutoMapper/issues/3988
+                config.ShouldMapMethod = m => false;
+            });
         }
 
         public override void Initialize()
@@ -83,29 +92,22 @@ namespace Shesha
             );
 
             IocManager.IocContainer.Register(
-                Component.For<IConfigurableItemExport>().Forward<IEntityConfigExport>().ImplementedBy<EntityConfigExport>().LifestyleTransient()
-            );
-            IocManager.IocContainer.Register(
-                Component.For<IConfigurableItemImport>().Forward<IEntityConfigImport>().ImplementedBy<EntityConfigImport>().LifestyleTransient()
-            );
+                Component.For<IConfigurableItemImport>().Forward<IEntityConfigImport>().ImplementedBy<EntityConfigImport>().LifestyleTransient(),
+                Component.For<IConfigurableItemExport>().Forward<IEntityConfigExport>().ImplementedBy<EntityConfigExport>().LifestyleTransient(),
+                
+                Component.For<IConfigurableItemImport>().Forward<IReferenceListImport>().ImplementedBy<ReferenceListImport>().LifestyleTransient(),
+                Component.For<IConfigurableItemExport>().Forward<IReferenceListExport>().ImplementedBy<ReferenceListExport>().LifestyleTransient(),
+                Component.For<IConfigurationItemManager<ReferenceList>>().Forward<IConfigurationItemManager>().Forward<IReferenceListManager>().ImplementedBy<ReferenceListManager>().LifestyleTransient(),
 
-            IocManager.IocContainer.Register(
-                Component.For<IConfigurableItemImport>().Forward<IReferenceListImport>().ImplementedBy<ReferenceListImport>().LifestyleTransient()
-            );
-            IocManager.IocContainer.Register(
-                Component.For<IConfigurableItemExport>().Forward<IReferenceListExport>().ImplementedBy<ReferenceListExport>().LifestyleTransient()
-            );
+                Component.For<IConfigurableItemImport>().Forward<ISettingImport>().ImplementedBy<SettingImport>().LifestyleTransient(),
+                Component.For<IConfigurableItemExport>().Forward<ISettingExport>().ImplementedBy<SettingExport>().LifestyleTransient(),
+                Component.For<IConfigurationItemManager<SettingConfiguration>>().Forward<IConfigurationItemManager>().Forward<ISettingStore>().ImplementedBy<SettingStore>().LifestyleTransient(),
 
-            IocManager.IocContainer.Register(
-                Component.For<IConfigurationItemManager>().Forward<IReferenceListManager>().ImplementedBy<ReferenceListManager>().LifestyleTransient()
+                Component.For(typeof(ISettingAccessor<>)).ImplementedBy(typeof(SettingAccessor<>)).LifestyleTransient()
             );
 
             IocManager.RegisterAssemblyByConvention(thisAssembly);
 
-            IocManager.IocContainer.Register(
-                Component.For(typeof(ISettingAccessor<>)).ImplementedBy(typeof(SettingAccessor<>)).LifestyleTransient()
-            );
-            
             IocManager.RegisterSettingAccessor<IAuthenticationSettings>(s => {
                 s.UserLockOutEnabled.WithDefaultValue(true);
                 s.MaxFailedAccessAttemptsBeforeLockout.WithDefaultValue(5);

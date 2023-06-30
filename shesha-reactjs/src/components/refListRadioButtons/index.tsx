@@ -1,10 +1,10 @@
 import React, { CSSProperties, FC, Key } from 'react';
 import { Radio, RadioChangeEvent, RadioGroupProps } from 'antd';
 import { nanoid } from 'nanoid/non-secure';
-import { ReferenceListItemDto } from '../../apis/referenceList';
+import { ReferenceListItemDto } from 'apis/referenceList';
 import classNames from 'classnames';
-import { useReferenceList } from '../../providers/referenceListDispatcher';
-import { getLegacyReferenceListIdentifier } from '../../utils/referenceList';
+import { useReferenceList } from 'providers/referenceListDispatcher';
+import { getLegacyReferenceListIdentifier } from 'utils/referenceList';
 
 const RadioButton = Radio.Button;
 
@@ -44,7 +44,6 @@ const RefListRadioButtons: FC<IRefListRadioButtonsProps> = ({
   filters = [],
   orientation = 'inline',
   optionType = 'default',
-  size,
   onChange,
   onSelectionChange,
   ...rest

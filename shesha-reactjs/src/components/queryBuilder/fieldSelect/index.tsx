@@ -2,29 +2,29 @@ import React, { FC } from "react";
 import { Tooltip, Select } from "antd";
 import { BUILT_IN_PLACEMENTS, SELECT_WIDTH_OFFSET_RIGHT, calcTextWidth } from "../domUtils";
 const { Option, OptGroup } = Select;
-import { Config } from 'react-awesome-query-builder';
+import { BasicConfig } from '@react-awesome-query-builder/antd';
 
 
 export interface IFieldSelectProps {
-    config: Config,
-    customProps?: { [key: string]: any },
-    items: [],
-    placeholder?: string,
-    selectedKey?: string,
-    selectedKeys?: [],
-    selectedPath?: [],
-    selectedLabel?: string,
-    selectedAltLabel?: string,
-    selectedFullLabel?: string,
-    selectedOpts?: object,
-    readonly?: boolean,
+    config: BasicConfig;
+    customProps?: { [key: string]: any };
+    items: [];
+    placeholder?: string;
+    selectedKey?: string;
+    selectedKeys?: [];
+    selectedPath?: [];
+    selectedLabel?: string;
+    selectedAltLabel?: string;
+    selectedFullLabel?: string;
+    selectedOpts?: object;
+    readonly?: boolean;
     //actions
-    setField: (key: string) => void,
+    setField: (key: string) => void;
 }
 
 export const FieldSelect: FC<IFieldSelectProps> = (props) => {
     const onChange = (key) => {
-        console.log('FieldSelect.onChange', items)
+        console.log('FieldSelect.onChange', items);
         props.setField(key);
     };
 
@@ -50,7 +50,7 @@ export const FieldSelect: FC<IFieldSelectProps> = (props) => {
     const dropdownAlign = dropdownPlacement ? BUILT_IN_PLACEMENTS[dropdownPlacement] : undefined;
     const width = isFieldSelected && !showSearch ? null : selectWidth + SELECT_WIDTH_OFFSET_RIGHT;
     let tooltipText = selectedAltLabel || selectedFullLabel;
-    if (tooltipText == selectedLabel)
+    if (tooltipText === selectedLabel)
         tooltipText = null;
 
     const renderSelectItems = (fields, level = 0) => {
@@ -84,9 +84,9 @@ export const FieldSelect: FC<IFieldSelectProps> = (props) => {
                 </Option>;
             }
         }).flat(Infinity);
-    }
+    };
 
-    console.log('items', items)
+    console.log('items', items);
     const fieldSelectItems = renderSelectItems(items);
 
     let res = (
@@ -95,7 +95,7 @@ export const FieldSelect: FC<IFieldSelectProps> = (props) => {
             dropdownMatchSelectWidth={false}
             style={{ width }}
             placeholder={placeholder}
-            size={ config.settings.renderSize == 'medium' ? 'middle' : config.settings.renderSize }
+            size={ config.settings.renderSize === 'medium' ? 'middle' : config.settings.renderSize }
             onChange={onChange}
             value={selectedKey || undefined}
             filterOption={filterOption}
@@ -109,4 +109,4 @@ export const FieldSelect: FC<IFieldSelectProps> = (props) => {
     // }
 
     return res;
-}
+};

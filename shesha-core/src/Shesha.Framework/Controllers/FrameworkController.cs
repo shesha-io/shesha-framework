@@ -1,4 +1,6 @@
-﻿using Abp.Dependency;
+﻿using Abp.Authorization.Roles;
+using Abp.Authorization.Users;
+using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Reflection;
 using Abp.Web.Models;
@@ -21,6 +23,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.PortableExecutable;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -57,7 +61,11 @@ namespace Shesha.Controllers
                 var sessionFactory = StaticContext.IocManager.Resolve<ISessionFactory>();
                 var migrationGenerator = StaticContext.IocManager.Resolve<IMigrationGenerator>();
 
-                var types = typeFinder.FindAll().Where(t => t.IsEntityType() && t != typeof(AggregateRoot)).ToList();
+                var types = typeFinder.FindAll().Where(t => t.IsEntityType() 
+                    && t != typeof(AggregateRoot)
+                    && t != typeof(UserPermissionSetting)
+                    && t != typeof(RolePermissionSetting)
+                    ).ToList();
 
                 var errors = new Dictionary<Type, Exception>();
 
@@ -129,13 +137,21 @@ namespace Shesha.Controllers
                 .Where(a => string.IsNullOrWhiteSpace(searchString) || a.FullName.Contains(searchString, StringComparison.InvariantCultureIgnoreCase))
                 .OrderBy(a => a.FullName);
 
-            var result = assemblies.Select(a => new AssemblyInfoDto
-            { 
+            var result = assemblies.Select(a => {
+                string architecture = "unknown";
+                if (a.Modules.Any()) {
+                    a.Modules.First().GetPEKind(out var pekind, out var machine);
+                    architecture = machine.ToString();
+                }
+
+                return new AssemblyInfoDto
+                {
                     FullName = a.GetName().Name,
                     Location = a.Location,
                     Version = a.GetName().Version.ToString(),
-                    Architecture = a.GetName().ProcessorArchitecture.ToString()
-                })
+                    Architecture = architecture
+                };
+            })
                 .ToList();
             
             return result;

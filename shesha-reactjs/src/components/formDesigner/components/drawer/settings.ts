@@ -8,7 +8,6 @@ export const getSettings = (data: { readOnly?: boolean }) =>
       name: 'separator1',
       parentId: 'root',
       label: 'Display',
-      title: '',
     })
     .addPropertyAutocomplete({
       id: nanoid(),
@@ -39,7 +38,7 @@ export const getSettings = (data: { readOnly?: boolean }) =>
       id: nanoid(),
       name: 'width',
       label: 'Width',
-      tooltip: 'Width of the Drawer dialog in % or px',
+      description: 'Width of the Drawer dialog in % or px',
       placeholder: '70% or 800px',
       customVisibility: "return data?.placement === 'right' || data?.placement === 'left'",
     })
@@ -47,7 +46,7 @@ export const getSettings = (data: { readOnly?: boolean }) =>
       id: nanoid(),
       name: 'height',
       label: 'Height',
-      tooltip: 'Placement is top or bottom, height of the Drawer dialog',
+      description: 'Placement is top or bottom, height of the Drawer dialog',
       customVisibility: "return data?.placement === 'bottom' || data?.placement === 'top'",
       placeholder: '70% or 800px',
     })
@@ -61,7 +60,7 @@ export const getSettings = (data: { readOnly?: boolean }) =>
       id: nanoid(),
       name: 'showFooter',
       label: 'Show Footer',
-      tooltip: 'Whether Ok and Cancel buttons are shown',
+      description: 'Whether Ok and Cancel buttons are shown',
     })
     .addContainer({
       id: nanoid(),
@@ -79,7 +78,7 @@ export const getSettings = (data: { readOnly?: boolean }) =>
           id: nanoid(),
           name: 'okText',
           label: 'Ok Text',
-          tooltip: 'The text that will be displayed on the Ok button',
+          description: 'The text that will be displayed on the Ok button',
         })
         .addCodeEditor({
           id: nanoid(),
@@ -113,7 +112,7 @@ export const getSettings = (data: { readOnly?: boolean }) =>
           id: nanoid(),
           name: 'cancelText',
           label: 'Cancel Text',
-          tooltip: 'The text that will be displayed on the Cancel button',
+          description: 'The text that will be displayed on the Cancel button',
         })
         .addCodeEditor({
           id: nanoid(),
@@ -143,7 +142,6 @@ export const getSettings = (data: { readOnly?: boolean }) =>
       name: 'separatorVisibility',
       parentId: 'root',
       label: 'Visibility',
-      title: 'Visibility',
     })
     .addCodeEditor({
       id: '03959ffd-cadb-496c-bf6d-b742f7f6edc6',

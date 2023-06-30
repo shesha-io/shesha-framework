@@ -39,12 +39,13 @@ export const StatusTag: FC<IStatusTagProps> = ({
   mappings = DEFAULT_STATUS_TAG_MAPPINGS,
   style,
 }) => {
+
   const memoized = useMemo(() => {
     if (!override && !value && !color) {
       return {};
     }
 
-    let result = mappings?.mapping?.find(item => {
+    let result = mappings?.mapping?.find((item) => {
       const { code, text } = item;
 
       if (typeof value === 'number' || isNumeric(value)) {
@@ -53,7 +54,7 @@ export const StatusTag: FC<IStatusTagProps> = ({
         if (computed === code) {
           return item;
         }
-      } else if (value) {
+      } else if (typeof value === 'string') {
         if (value.match(text)) {
           return item;
         }

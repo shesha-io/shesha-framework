@@ -1,51 +1,90 @@
-// For AntDesign widgets only:
-import { Type, Config } from 'react-awesome-query-builder';
-import AntdConfig from 'react-awesome-query-builder/lib/config/antd';
+import { Type, Config, BasicConfig, AntdConfig, Funcs, BasicFuncs, CoreTypes, ValueSource } from '@react-awesome-query-builder/antd';
 import EntityAutocompleteWidget from './widgets/entityAutocomplete';
 import RefListDropdownWidget from './widgets/refListDropDown';
-import DateTimeDynamicWidget from './widgets/dateTimeDynamic';
 import SpecificationWidget from './widgets/specification';
 import moment from 'moment';
 import EntityReferenceType from './types/entityReference';
 import RefListType from './types/refList';
 import SpecificationType from './types/specification';
-import DateTimeDynamicType from './types/dateTimeDynamic';
+import { IDictionary } from 'interfaces';
+import { getEvaluateFunc } from './funcs/evaluate';
+import GuidType from './types/guid';
 
-const setTypeOperators = (type: Type, operators: string[]): Type => {
-  const result = {
-    ...type, 
-    operators: operators
-  };
-  return result;
-}
-
-const types = {
-  ...AntdConfig.types,
-  entityReference: EntityReferenceType,
-  refList: RefListType,
-  dateTimeDynamic: DateTimeDynamicType,
-  text: setTypeOperators(AntdConfig.types.text, [
-    'equal',
-    'not_equal',
-    'is_empty',
-    'is_not_empty',
-    'like',
-    'not_like',
-    'starts_with',
-    'ends_with',
-    //"proximity"
-  ]),
-  specification: SpecificationType,
+interface TypeModifier extends Partial<Type> {
+  operators?: string[];
+};
+const modifyType = (types: CoreTypes, typeName: string, modifier: TypeModifier) => {
+  const type: Type = types[typeName];
+  if (type){
+    types[typeName] = { ...type, ...modifier };
+  }
 };
 
+const basicConfig = BasicConfig;
+
+const standardTypes = AntdConfig.types ?? basicConfig.types;
+const standardOperators = AntdConfig.operators ?? basicConfig.operators;
+const standardWidgets = AntdConfig.widgets ?? basicConfig.widgets;
+
+const standardSourceTypes: ValueSource[] = ['value', /*'field',*/ 'func'];
+
+const types = {
+  ...standardTypes,
+  // non standard types
+  entityReference: EntityReferenceType,
+  refList: RefListType,
+  specification: SpecificationType,
+  guid: GuidType,
+};
+
+const typeModifiers: IDictionary<TypeModifier> = {
+  'boolean': {
+    valueSources: standardSourceTypes,  
+  },
+  'date': {
+    valueSources: standardSourceTypes,  
+  },
+  'datetime': {
+    valueSources: standardSourceTypes,  
+  },
+  'time': {
+    valueSources: standardSourceTypes,  
+  },
+  'number': {
+    valueSources: standardSourceTypes,  
+  },
+  'text': {
+    valueSources: standardSourceTypes,  
+    operators: [
+      'equal',
+      'not_equal',
+      'is_empty',
+      'is_not_empty',
+      'like',
+      'not_like',
+      'starts_with',
+      'ends_with',
+    ]
+  },
+};
+
+for(const typeName in typeModifiers){
+  if (typeModifiers.hasOwnProperty(typeName)){
+    modifyType(types, typeName, typeModifiers[typeName]);
+  }
+};
+
+// remove proximity search
+delete standardOperators.proximity;
+
 const operators = {
-  ...AntdConfig.operators,
+  ...standardOperators,
   starts_with: {
-    ...AntdConfig.operators.starts_with,
+    ...standardOperators.starts_with,
     jsonLogic: 'startsWith',
   },
   ends_with: {
-    ...AntdConfig.operators.ends_with,
+    ...standardOperators.ends_with,
     jsonLogic: 'endsWith',
   },
   is_satisfied: {
@@ -61,19 +100,18 @@ const operators = {
 };
 
 const widgets = {
-  ...AntdConfig.widgets,
+  ...standardWidgets,
   entityAutocomplete: EntityAutocompleteWidget,
   refListDropdown: RefListDropdownWidget,
-  dateTimeDynamic: DateTimeDynamicWidget,
   datetime: {
-    ...AntdConfig.widgets.datetime,
+    ...standardWidgets.datetime,
     timeFormat: 'HH:mm',
     jsonLogic: (val, _, wgtDef) => {
       return moment(val, wgtDef.valueFormat).format();
     },
   },
   date: {
-    ...AntdConfig.widgets.date,
+    ...standardWidgets.date,
     jsonLogic: (val, _, wgtDef) => {
       return moment(val, wgtDef.valueFormat).format();
     },
@@ -81,10 +119,28 @@ const widgets = {
   specification: SpecificationWidget,
 };
 
+const evaluateTypes = ['boolean', 'date', 'datetime', 'time', 'number', 'text', 'entityReference', 'refList'];
+const evaluateFunctions = {};
+evaluateTypes.forEach(type => {
+  evaluateFunctions[`evaluate_${type}`.toUpperCase()] = getEvaluateFunc(type);
+});
+
+const knownFuncNames = ['NOW', 'LOWER', 'NOW', 'UPPER', 'RELATIVE_DATETIME'];
+const knownFuncs: Funcs = {};
+knownFuncNames.forEach(funcName => {
+  if (BasicFuncs.hasOwnProperty(funcName))
+  knownFuncs[funcName] = BasicFuncs[funcName];
+});
+
+const funcs: Funcs = {
+  ...knownFuncs,
+  ...evaluateFunctions,
+};
+
 export const config: Config = {
   ...AntdConfig,
-  // @ts-ignore
   types,
+  funcs,
   operators,
   widgets, 
 };

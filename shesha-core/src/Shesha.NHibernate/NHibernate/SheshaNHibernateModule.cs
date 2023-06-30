@@ -15,16 +15,21 @@ using Microsoft.Extensions.Configuration;
 using NHibernate;
 using NHibernate.Dialect;
 using NHibernate.Driver;
+using NHibernate.Extensions.NpgSql;
 using Shesha.Attributes;
 using Shesha.Bootstrappers;
+using Shesha.Configuration;
 using Shesha.Configuration.Startup;
 using Shesha.Domain;
+using Shesha.Exceptions;
 using Shesha.Locks;
 using Shesha.NHibernate.Configuration;
 using Shesha.NHibernate.Filters;
 using Shesha.NHibernate.Interceptors;
 using Shesha.NHibernate.Linq;
 using Shesha.NHibernate.Maps;
+using Shesha.NHibernate.MsSql;
+using Shesha.NHibernate.PostgreSql;
 using Shesha.NHibernate.Repositories;
 using Shesha.NHibernate.Session;
 using Shesha.NHibernate.Uow;
@@ -67,27 +72,25 @@ namespace Shesha.NHibernate
                 this.GetType().Assembly,
                 moduleName: "Shesha",
                 useConventionalHttpVerbs: true);
+        }
+
+        public override void Initialize()
+        {
+            var config = Configuration.Modules.ShaNHibernate();
 
             if (!SkipDbContextRegistration)
             {
-                _nhConfig = Configuration.Modules.ShaNHibernate().NhConfiguration
-                    .DataBaseIntegration(db =>
-                    {
-                        db.ConnectionString = !string.IsNullOrWhiteSpace(ConnectionString)
-                            ? ConnectionString
-                            : NHibernateUtilities.ConnectionString;
-                        
-                        db.Dialect<MsSql2012Dialect>();
-                        db.Driver<Sql2008ClientDriver>();
-                        db.Timeout = 150;
-                        /*
-                        db.Timeout = string.IsNullOrEmpty(ConfigurationManager.AppSettings["SqlTimeoutInSeconds"])
-                            ? (byte)150
-                            : (byte)int.Parse(ConfigurationManager.AppSettings["SqlTimeoutInSeconds"]);
-                        */
+                if (config.DatabaseType == DbmsType.NotSpecified) 
+                {
+                    // backward compatibility
+                    config.UseMsSql();
 
-                        db.LogFormattedSql = true;
-                    })
+                    // throw new DbmsTypeNotSpecified();
+                }
+
+                var configProvider = GetConfigProvider(config.DatabaseType);
+
+                _nhConfig = configProvider.Configure(Configuration.Modules.ShaNHibernate().NhConfiguration, config.ConnectionString)
                     .SetProperty("hbm2ddl.keywords", "auto-quote")
                     .CurrentSessionContext<UnitOfWorkSessionContext>();
 
@@ -123,28 +126,21 @@ namespace Shesha.NHibernate
                 }
 
                 conventions.Compile(_nhConfig);
+
+                var cfg = Configuration.Modules.ShaNHibernate().NhConfiguration;
+
+                if (IocManager.IsRegistered<IInterceptor>())
+                    cfg.SetInterceptor(IocManager.Resolve<IInterceptor>());
+
+                cfg.SessionFactory().GenerateStatistics();
+
+                // ToDo: ABP662, some ABP entities (WebhookEvent, DynamicProperty) contain not virtual properties
+                cfg.Properties.Add("use_proxy_validator", "false");
+
+                _sessionFactory = cfg.BuildSessionFactory();
+
+                IocManager.IocContainer.Install(new NhRepositoryInstaller(_sessionFactory));
             }
-        }
-
-        public override void Initialize()
-        {
-            #region  from Abp
-
-            var cfg = Configuration.Modules.ShaNHibernate().NhConfiguration;
-           
-            if (IocManager.IsRegistered<IInterceptor>())
-                cfg.SetInterceptor(IocManager.Resolve<IInterceptor>());
-
-            cfg.SessionFactory().GenerateStatistics();
-
-            // ToDo: ABP662, some ABP entities (WebhookEvent, DynamicProperty) contain not virtual properties
-            cfg.Properties.Add("use_proxy_validator", "false");
-
-            _sessionFactory = cfg.BuildSessionFactory();
-
-            IocManager.IocContainer.Install(new NhRepositoryInstaller(_sessionFactory));
-
-            #endregion
 
             IocManager.IocContainer.Install(new SheshaNHibernateInstaller());
 
@@ -156,6 +152,19 @@ namespace Shesha.NHibernate
             );
 
             IocManager.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
+        }
+
+        private IDbmsSpecificConfigurationProvider GetConfigProvider(DbmsType dbmsType) 
+        {
+            switch (dbmsType) 
+            {
+                case DbmsType.SQLServer:
+                    return new MsSqlConfigurationProvider();
+                case DbmsType.PostgreSQL:
+                    return new PostgreSqlConfigurationProvider();
+                default:
+                    throw new NotSupportedException($"DBMS Type '{dbmsType}' not supported");
+            }
         }
 
         /// inheritedDoc

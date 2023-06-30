@@ -162,31 +162,31 @@ namespace Shesha.Services
             var mayBeLegacy = (refListId.Name ?? "").Contains(".");
             var anyModule = refListId.Module == null && mayBeLegacy;
 
-            var query = _listRepository.GetAll().Where(f => (anyModule || f.Configuration.Module != null && !f.Configuration.Module.IsDeleted && f.Configuration.Module.Name == refListId.Module) && f.Configuration.Name == refListId.Name);
+            var query = _listRepository.GetAll().Where(f => (anyModule || f.Module != null && !f.Module.IsDeleted && f.Module.Name == refListId.Module) && f.Name == refListId.Name);
 
             switch (mode)
             {
-                case ConfigurationItems.Models.ConfigurationItemViewMode.Live:
-                    query = query.Where(f => f.Configuration.VersionStatus == ConfigurationItemVersionStatus.Live);
+                case ConfigurationItemViewMode.Live:
+                    query = query.Where(f => f.VersionStatus == ConfigurationItemVersionStatus.Live);
                     break;
-                case ConfigurationItems.Models.ConfigurationItemViewMode.Ready:
+                case ConfigurationItemViewMode.Ready:
                     {
                         var statuses = new ConfigurationItemVersionStatus[] {
                             ConfigurationItemVersionStatus.Live,
                             ConfigurationItemVersionStatus.Ready
                         };
 
-                        query = query.Where(f => statuses.Contains(f.Configuration.VersionStatus)).OrderByDescending(f => f.Configuration.VersionNo);
+                        query = query.Where(f => statuses.Contains(f.VersionStatus)).OrderByDescending(f => f.VersionNo);
                         break;
                     }
-                case ConfigurationItems.Models.ConfigurationItemViewMode.Latest:
+                case ConfigurationItemViewMode.Latest:
                     {
                         var statuses = new ConfigurationItemVersionStatus[] {
                             ConfigurationItemVersionStatus.Live,
                             ConfigurationItemVersionStatus.Ready,
                             ConfigurationItemVersionStatus.Draft
                         };
-                        query = query.Where(f => f.Configuration.IsLast && statuses.Contains(f.Configuration.VersionStatus));
+                        query = query.Where(f => f.IsLast && statuses.Contains(f.VersionStatus));
                         break;
                     }
             }

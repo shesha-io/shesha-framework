@@ -1,16 +1,16 @@
-﻿using System;
+﻿using Abp.Domain.Entities;
+using Abp.Domain.Repositories;
+using JetBrains.Annotations;
+using Shesha.Configuration.Runtime;
+using Shesha.Domain;
+using Shesha.EntityReferences;
+using Shesha.Extensions;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Abp.Domain.Entities;
-using Abp.Domain.Repositories;
-using JetBrains.Annotations;
-using NHibernate.Linq;
-using Shesha.Configuration.Runtime;
-using Shesha.Domain;
-using Shesha.Extensions;
 
 namespace Shesha.Services.StoredFiles
 {
@@ -42,7 +42,7 @@ namespace Shesha.Services.StoredFiles
         /// <summary>
         /// Returns list of files attached to the specified entity with the specified <paramref name="fileCategory"/>
         /// </summary>
-        public async Task<IList<StoredFile>> GetAttachmentsOfCategoryAsync<TId>([NotNull]IEntity<TId> owner, Int64? fileCategory)
+        public async Task<IList<StoredFile>> GetAttachmentsOfCategoryAsync<TId>([NotNull]IEntity<TId> owner, string fileCategory)
         {
             return await GetAttachmentsInternalAsync(owner.Id, owner.GetTypeShortAlias(), f => f.Category == fileCategory);
         }
@@ -50,7 +50,7 @@ namespace Shesha.Services.StoredFiles
         /// <summary>
         /// Returns list of files attached to the entity with the specified <paramref name="id"/>, <paramref name="typeShortAlias"/> and <paramref name="fileCategory"/>
         /// </summary>
-        public async Task<IList<StoredFile>> GetAttachmentsOfCategoryAsync<TId>(TId id, string typeShortAlias, Int64? fileCategory)
+        public async Task<IList<StoredFile>> GetAttachmentsOfCategoryAsync<TId>(TId id, string typeShortAlias, string fileCategory)
         {
             return await GetAttachmentsInternalAsync(id, typeShortAlias, f => f.Category == fileCategory);
         }
@@ -80,12 +80,12 @@ namespace Shesha.Services.StoredFiles
 
         #region HasAttachments
 
-        public async Task<bool> HasAttachmentsOfCategoryAsync<TId>(IEntity<TId> owner, Int64? fileCategory)
+        public async Task<bool> HasAttachmentsOfCategoryAsync<TId>(IEntity<TId> owner, string fileCategory)
         {
             return await HasAttachmentsOfCategoryAsync(owner.Id, owner.GetTypeShortAlias(), fileCategory);
         }
 
-        public async Task<bool> HasAttachmentsOfCategoryAsync<TId>(TId id, string typeShortAlias, Int64? fileCategory)
+        public async Task<bool> HasAttachmentsOfCategoryAsync<TId>(TId id, string typeShortAlias, string fileCategory)
         {
             return await GetAttachmentsQuery(id, typeShortAlias, f => f.Category == fileCategory).AnyAsync();
         }
@@ -132,9 +132,9 @@ namespace Shesha.Services.StoredFiles
                 FileType = file.FileType,
                 Folder = file.Folder,
                 IsVersionControlled = file.IsVersionControlled,
-                Category = file.Category
+                Category = file.Category,
+                Owner = new GenericEntityReference(newOwner)
             };
-            newFile.SetOwner(newOwner);
             await FileRepository.InsertAsync(newFile);
 
             // copy versions
@@ -191,10 +191,25 @@ namespace Shesha.Services.StoredFiles
 
         private IQueryable<StoredFile> GetAttachmentsQuery<TId>(TId id, string typeShortAlias, Expression<Func<StoredFile, bool>> filterPredicate = null)
         {
-            var query = FileRepository.GetAll()
-                .Where(e => e.OwnerId == id.ToString() && e.OwnerType == typeShortAlias);
-            if (filterPredicate != null)
-                query = query.Where(filterPredicate);
+            IQueryable<StoredFile> query = null;
+            var ecs = StaticContext.IocManager.Resolve<IEntityConfigurationStore>();
+            var config = ecs.Get(typeShortAlias);
+            if (config != null)
+            {
+                var className = config.EntityType.FullName;
+                query = FileRepository.GetAll()
+                    .Where(e => e.Owner.Id == id.ToString() 
+                                && (e.Owner._className == className || e.Owner._className == config.TypeShortAlias));
+                if (filterPredicate != null)
+                    query = query.Where(filterPredicate);
+            }
+            else
+            {
+                query = FileRepository.GetAll()
+                    .Where(e => e.Owner.Id == id.ToString() && e.Owner._className == typeShortAlias);
+                if (filterPredicate != null)
+                    query = query.Where(filterPredicate);
+            }
 
             return query;
         }
@@ -212,7 +227,7 @@ namespace Shesha.Services.StoredFiles
         /// <typeparam name="TId"></typeparam>
         /// <param name="owner"></param>
         /// <returns></returns>
-        public async Task<IList<Int64?>> GetAttachmentsCategoriesAsync<TId>(IEntity<TId> owner)
+        public async Task<IList<string>> GetAttachmentsCategoriesAsync<TId>(IEntity<TId> owner)
         {
             return await GetAttachmentsQuery(owner.Id, owner.GetTypeShortAlias()).Select(f => f.Category).Distinct()
                 .ToListAsync();
@@ -354,7 +369,7 @@ namespace Shesha.Services.StoredFiles
         /// <returns></returns>
         public async Task<bool> FileExistsAsync(Guid id)
         {
-            return await FileRepository.GetAll().AnyAsync(f => f.Id == id);
+            return await Task.FromResult(FileRepository.GetAll().Any(f => f.Id == id));
         }
 
         /// <summary>
@@ -365,6 +380,16 @@ namespace Shesha.Services.StoredFiles
         public StoredFile GetOrNull(Guid id)
         {
             return FileRepository.FirstOrDefault(f => f.Id == id);
+        }
+
+        /// <summary>
+        /// Get file by id or null if missing
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<StoredFile> GetOrNullAsync(Guid id)
+        {
+            return await FileRepository.FirstOrDefaultAsync(f => f.Id == id);
         }
 
         /// <summary>

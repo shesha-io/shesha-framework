@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useCallback, useState, useRef, ChangeEvent } from 'react';
+import React, { FC, useEffect, useMemo, useState, useRef, ChangeEvent, CSSProperties } from 'react';
 import classNames from 'classnames';
 import {
   useResizeColumns,
@@ -13,16 +13,15 @@ import {
 import { LoadingOutlined } from '@ant-design/icons';
 import { Empty, Spin } from 'antd';
 import _ from 'lodash';
-import { IReactTableProps } from './interfaces';
+import { IReactTableProps, OnRowsReorderedArgs } from './interfaces';
 import { nanoid } from 'nanoid/non-secure';
 import { useDeepCompareEffect, usePrevious } from 'react-use';
-import { RowHandler, SortableRow, TableRow } from './tableRow';
+import { RowDragHandle, SortableRow, TableRow } from './tableRow';
 import ConditionalWrap from '../conditionalWrapper';
-import { SortableContainer } from './sortableContainer';
-import { arrayMove } from 'react-sortable-hoc';
 import { IndeterminateCheckbox } from './indeterminateCheckbox';
-import camelCaseKeys from 'camelcase-keys';
 import { getPlainValue } from '../../utils';
+import NewTableRowEditor from './newTableRowEditor';
+import { ItemInterface, ReactSortable } from 'react-sortablejs';
 
 interface IReactTableState {
   allRows: any[];
@@ -51,11 +50,29 @@ const ReactTable: FC<IReactTableProps> = ({
   scrollBodyHorizontally = false,
   height = 250,
   allowRowDragAndDrop = false,
-  onRowDropped,
   selectedRowIndex,
   containerStyle,
+  minHeight,
+  maxHeight,
   omitClick,
   tableStyle,
+
+  canDeleteInline = false,
+  deleteAction,
+
+  canEditInline = false,
+  updateAction,
+
+  canAddInline = false,
+  newRowCapturePosition,
+  newRowInitData,
+  createAction,
+  inlineEditMode,
+  inlineSaveMode,
+  inlineEditorComponents,
+  inlineCreatorComponents,
+  inlineDisplayComponents,
+  onRowsReordered,
 }) => {
   const [componentState, setComponentState] = useState<IReactTableState>({
     allRows: data,
@@ -75,10 +92,10 @@ const ReactTable: FC<IReactTableProps> = ({
   );
 
   const preparedColumns = useMemo(() => {
-    const localColumn = [...allColumns];
+    const localColumns = [...allColumns];
 
     if (allowRowDragAndDrop) {
-      localColumn.unshift({
+      localColumns.unshift({
         accessor: nanoid(),
         // id: accessor, // This needs to be fixed
         Header: '',
@@ -87,15 +104,15 @@ const ReactTable: FC<IReactTableProps> = ({
         maxWidth: 35,
         disableSortBy: true,
         disableResizing: true,
-        Cell: () => <RowHandler />,
+        Cell: () => <RowDragHandle />,
       });
     }
 
-    return localColumn;
+    return localColumns;
   }, [allColumns, allowRowDragAndDrop]);
 
   const getColumnAccessor = cid => {
-    const column = columns.find(c => c.id == cid);
+    const column = columns.find(c => c.id === cid);
     return column ? column.accessor.toString() : '';
   };
 
@@ -137,7 +154,7 @@ const ReactTable: FC<IReactTableProps> = ({
     }
   };
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow, state } = useTable(
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow, state, columns: tableColumns } = useTable(
     {
       columns: preparedColumns,
       data: allRows,
@@ -194,16 +211,16 @@ const ReactTable: FC<IReactTableProps> = ({
           },
           ...localColumns,
         ]);
-      }
-      useInstanceBeforeDimensions?.push(({ headerGroups: localHeaderGroups }) => {
-        if (Array.isArray(localHeaderGroups)) {
-          // fix the parent group of the selection button to not be resizable
-          const selectionGroupHeader = localHeaderGroups[0]?.headers[0];
-          if (selectionGroupHeader) {
-            selectionGroupHeader.canResize = false;
+        useInstanceBeforeDimensions?.push(({ headerGroups: localHeaderGroups }) => {
+          if (Array.isArray(localHeaderGroups)) {
+            // fix the parent group of the selection button to not be resizable
+            const selectionGroupHeader = localHeaderGroups[0]?.headers[0];
+            if (selectionGroupHeader) {
+              selectionGroupHeader.canResize = false;
+            }
           }
-        }
-      });
+        });
+      }
     }
   );
 
@@ -233,12 +250,53 @@ const ReactTable: FC<IReactTableProps> = ({
     }
   }, [selectedRowIds]);
 
+  /*
   const onSortEnd = useCallback(({ oldIndex, newIndex }) => {
     if (onRowDropped) {
       onRowDropped(camelCaseKeys(allRowsRef?.current[oldIndex], { deep: true, pascalCase: true }), oldIndex, newIndex);
     }
     setComponentState(prev => ({ ...prev, allRows: arrayMove(prev?.allRows, oldIndex, newIndex) }));
   }, []);
+  */
+
+  const onSetList = (newState: ItemInterface[], _sortable, _store) => {
+    if (!onRowsReordered){
+      console.error('Datatable: re-ordering logic is not specified');
+      return;
+    }
+
+    const chosen = newState.some(item => item.chosen === true);
+    if (chosen)
+      return;
+
+    //console.log('LOG: onSortEnd', chosen, newState, {_sortable, _store});
+
+    if (rows.length === newState.length){
+      let isModified = false;
+      // detect changes using references
+      const newRows = [];
+      for (let i = 0; i < rows.length; i++){
+        const typedRow = newState[i] as Row<any>;
+        if (rows[i] !== typedRow){
+          isModified = true;
+          //break;
+        }
+        newRows.push(typedRow.original);
+      }
+      
+      if (isModified){
+        const payload: OnRowsReorderedArgs = {
+          reorderedRows: newRows
+        };
+        onRowsReordered(payload).then(() => {
+          // optimistic update
+          setComponentState(prev => ({ ...prev, allRows: newRows }));
+        });
+      }
+    } else
+      console.log('LOG: length differs', { rowsLength: rows.length, newStateLength: newState.length });
+  };
+
 
   // Listen for changes in pagination and use the state to fetch our new data
   useEffect(() => {
@@ -250,7 +308,7 @@ const ReactTable: FC<IReactTableProps> = ({
   const onResizeClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => event?.stopPropagation();
 
   const handleSelectRow = (row: Row<object>) => {
-    if (!omitClick) {
+    if (!omitClick && !(canEditInline || canDeleteInline)) {
       onSelectRow(row?.index, row?.original);
     }
   };
@@ -269,6 +327,54 @@ const ReactTable: FC<IReactTableProps> = ({
 
   const Row = useMemo(() => (allowRowDragAndDrop ? SortableRow : TableRow), [allowRowDragAndDrop]);
 
+  const renderNewRowEditor = () => (
+    <NewTableRowEditor
+      columns={tableColumns}
+      creater={createAction}
+      headerGroups={headerGroups}
+      onInitData={newRowInitData}
+      components={inlineCreatorComponents}
+    />
+  );
+
+  const containerStyleFinal = useMemo<CSSProperties>(() => {
+    const result = containerStyle ?? {};
+    if (minHeight)
+      result.minHeight = `${minHeight}px`;
+    if (maxHeight)
+      result.maxHeight = `${maxHeight}px`;
+
+    return result;
+  }, [containerStyle, minHeight, maxHeight]);
+
+  const renderRow = (row: Row<any>, rowIndex: number) => {
+    const id = row.original?.id;
+    return (
+      <Row
+        key={id ?? rowIndex}
+        prepareRow={prepareRow}
+        onClick={handleSelectRow}
+        onDoubleClick={handleDoubleClickRow}
+        row={row}
+        index={rowIndex}
+        allowSort={allowRowDragAndDrop}
+        selectedRowIndex={selectedRowIndex}
+
+        allowEdit={canEditInline}
+        updater={(rowData) => updateAction(rowIndex, rowData)}
+
+        allowDelete={canDeleteInline}
+        deleter={() => deleteAction(rowIndex, row.original)}
+
+        allowChangeEditMode={inlineEditMode === 'one-by-one'}
+        editMode={canEditInline && inlineEditMode === 'all-at-once' ? 'edit' : undefined}
+        inlineSaveMode={inlineSaveMode}
+        inlineEditorComponents={inlineEditorComponents}
+        inlineDisplayComponents={inlineDisplayComponents}
+      />
+    );
+  };
+
   return (
     <Spin
       spinning={loading}
@@ -279,21 +385,20 @@ const ReactTable: FC<IReactTableProps> = ({
         </span>
       }
     >
-      <div className="sha-react-table" style={containerStyle}>
-        <table {...getTableProps()} className="sha-table" style={tableStyle}>
+      <div className="sha-react-table" style={containerStyleFinal}>
+        <div {...getTableProps()} className="sha-table" style={tableStyle}>
           {columns?.length > 0 &&
             headerGroups.map(headerGroup => (
-              <span
+              <div
                 {...headerGroup.getHeaderGroupProps({
                   // style: { paddingRight: '15px' },
                 })}
                 className={classNames('tr tr-head')}
               >
-                {headerGroup?.headers?.map(column => {
+                {headerGroup?.headers?.map((column, index) => {
                   return (
-                    <span
-                      key={nanoid()}
-                      // {...column.getHeaderProps(headerProps)}
+                    <div
+                      key={index}
                       {...column.getHeaderProps(column.getSortByToggleProps())}
                       className={classNames('th', {
                         'sorted-asc': column.isSorted && column.isSortedDesc,
@@ -304,65 +409,62 @@ const ReactTable: FC<IReactTableProps> = ({
 
                       {/* Use column.getResizerProps to hook up the events correctly */}
                       {column.canResize && (
-                        <span
+                        <div
                           {...column.getResizerProps()}
                           className={classNames('resizer', { isResizing: column.isResizing })}
                           onClick={onResizeClick}
                         />
                       )}
-                    </span>
+                    </div>
                   );
                 })}
-              </span>
+              </div>
             ))}
+          {canAddInline && newRowCapturePosition === 'top' && (renderNewRowEditor())}
 
-          <ConditionalWrap
-            condition={allowRowDragAndDrop}
-            wrap={children => (
-              <SortableContainer
-                onSortEnd={onSortEnd}
-                axis="y"
-                lockAxis="y"
-                lockToContainerEdges={true}
-                lockOffset={['30%', '50%']}
-                helperClass="helperContainerClass"
-                useDragHandle={true}
-              >
-                {children}
-              </SortableContainer>
-            )}
+          <div
+            className="tbody"
+            style={{
+              height: scrollBodyHorizontally ? height || 250 : 'unset',
+              overflowY: scrollBodyHorizontally ? 'auto' : 'unset',
+            }}
+            {...getTableBodyProps()}
           >
-            <span
-              className="tbody"
-              style={{
-                height: scrollBodyHorizontally ? height || 250 : 'unset',
-                overflowY: scrollBodyHorizontally ? 'auto' : 'unset',
-              }}
-              {...getTableBodyProps()}
-            >
-              {rows?.length === 0 && !loading && (
-                <span className="sha-table-empty">
-                  <Empty description="There is no data for this table" />
-                </span>
-              )}
+            {rows?.length === 0 && !loading && (
+              <div className="sha-table-empty">
+                <Empty description="There is no data for this table" />
+              </div>
+            )}
 
-              {rows.map((row, rowIndex) => {
-                return (
-                  <Row
-                    key={rowIndex}
-                    prepareRow={prepareRow}
-                    onClick={handleSelectRow}
-                    onDoubleClick={handleDoubleClickRow}
-                    row={row}
-                    index={rowIndex}
-                    allowSort={allowRowDragAndDrop}
-                    selectedRowIndex={selectedRowIndex}
-                  />
-                );
-              })}
-            </span>
-          </ConditionalWrap>
-        </table>
+            <ConditionalWrap
+              condition={allowRowDragAndDrop}
+              wrap={children => (
+                <ReactSortable
+                  list={rows}
+                  setList={onSetList}
+                  fallbackOnBody={true}
+                  swapThreshold={0.5}
+                  group={{
+                    name: 'rows',
+                  }}
+                  sort={true}
+                  draggable=".tr-body"
+                  animation={75}
+                  ghostClass="tr-body-ghost"
+                  emptyInsertThreshold={20}
+                  handle=".row-handle"
+                  scroll={true}
+                  bubbleScroll={true}
+                >
+                  {children}
+                </ReactSortable>
+              )}
+            >
+              {rows.map((row, rowIndex) => renderRow(row, rowIndex))}
+            </ConditionalWrap>
+          </div>
+          {canAddInline && newRowCapturePosition === 'bottom' && (renderNewRowEditor())}
+        </div>
       </div>
     </Spin>
   );

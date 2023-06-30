@@ -16,16 +16,24 @@ import {
 import { useForm } from '../../providers/form';
 import { useFormPersister } from '../../providers/formPersisterProvider';
 import { useFormDesigner } from '../../providers/formDesigner';
-import { componentsFlatStructureToTree, useFormDesignerComponents } from '../../providers/form/utils';
+import { componentsFlatStructureToTree } from '../../providers/form/utils';
+import { useFormDesignerComponents } from '../../providers/form/hooks';
 import { FormMarkupWithSettings } from '../../providers/form/models';
 import FormSettingsEditor from './formSettingsEditor';
 import { ConfigurationItemVersionStatus } from '../../utils/configurationFramework/models';
-import { createNewVersionRequest, showErrorDetails, updateItemStatus } from '../../utils/configurationFramework/actions';
+import {
+  createNewVersionRequest,
+  showErrorDetails,
+  updateItemStatus,
+} from '../../utils/configurationFramework/actions';
 import { useShaRouting, useSheshaApplication } from '../..';
+import classNames from 'classnames';
 
-export interface IProps { }
+export interface IProps {
+  className?: string;
+}
 
-export const FormDesignerToolbar: FC<IProps> = () => {
+export const FormDesignerToolbar: FC<IProps> = ({ className }) => {
   const { loadForm, saveForm, formProps } = useFormPersister();
   const { backendUrl, httpHeaders, routes } = useSheshaApplication();
   const { router } = useShaRouting(false) ?? {};
@@ -42,18 +50,18 @@ export const FormDesignerToolbar: FC<IProps> = () => {
       formSettings: formSettings,
     };
     return saveForm(payload);
-  }
+  };
 
   const onSaveClick = () => {
     message.loading('Saving..', 0);
     saveFormInternal()
       .then(() => {
         message.destroy();
-        message.success('Form saved successfully')
+        message.success('Form saved successfully');
       })
       .catch(() => {
         message.destroy();
-        message.error('Failed to save form')
+        message.error('Failed to save form');
       });
   };
 
@@ -69,7 +77,7 @@ export const FormDesignerToolbar: FC<IProps> = () => {
             status: ConfigurationItemVersionStatus.Ready,
             onSuccess: () => {
               message.destroy();
-              message.success('Form saved and set ready successfully')
+              message.success('Form saved and set ready successfully');
               loadForm({ skipCache: true });
             },
           }).catch(() => {
@@ -81,16 +89,16 @@ export const FormDesignerToolbar: FC<IProps> = () => {
           message.destroy();
           message.error('Failed to save form');
         });
-    }
+    };
     Modal.confirm({
       title: 'Save and Set Ready',
       icon: <ExclamationCircleOutlined />,
       content: 'Are you sure you want to set this form ready?',
       okText: 'Yes',
       cancelText: 'No',
-      onOk
+      onOk,
     });
-  }
+  };
 
   const onUndoClick = () => {
     undo();
@@ -112,32 +120,30 @@ export const FormDesignerToolbar: FC<IProps> = () => {
         httpHeaders: httpHeaders,
         id: formProps.id,
       })
-        .then(response => {
+        .then((response) => {
           message.destroy();
 
           const newVersionId = response.data.result.id;
           const url = `${routes.formsDesigner}?id=${newVersionId}`;
-          if (router)
-            router.push(url);
-          else
-            console.log('router not available, url: ', url);
+          if (router) router.push(url);
+          else console.log('router not available, url: ', url);
 
           message.info('New version created successfully', 3);
         })
-        .catch(e => {
+        .catch((e) => {
           message.destroy();
           showErrorDetails(e);
         });
-    }
+    };
     Modal.confirm({
       title: 'Create New Version',
       icon: <ExclamationCircleOutlined />,
       content: 'Are you sure you want to create new version of the form?',
       okText: 'Yes',
       cancelText: 'No',
-      onOk
+      onOk,
     });
-  }
+  };
 
   const onPublishClick = () => {
     const onOk = () => {
@@ -148,54 +154,61 @@ export const FormDesignerToolbar: FC<IProps> = () => {
         id: formProps.id,
         status: ConfigurationItemVersionStatus.Live,
         onSuccess: () => {
-          message.success('Form published successfully')
+          message.success('Form published successfully');
           loadForm({ skipCache: true });
         },
       });
-    }
+    };
     Modal.confirm({
       title: 'Publish Item',
       icon: <ExclamationCircleOutlined />,
       content: 'Are you sure you want to publish this form?',
       okText: 'Yes',
       cancelText: 'No',
-      onOk
+      onOk,
     });
-  }
+  };
 
-  const saveMenu = <Menu
-    items={[
-      {
-        label: (<><SaveOutlined /> Save</>),
-        key: 'save',
-        onClick: onSaveClick,
-      },
-      {
-        label: (<><CheckCircleOutlined /> Save and Set Ready</>),
-        key: 'save-set-ready',
-        onClick: onSaveAndSetReadyClick,
-      },
-    ]}
-  />;
+  const saveMenu = (
+    <Menu
+      items={[
+        {
+          label: (
+            <>
+              <SaveOutlined /> Save
+            </>
+          ),
+          key: 'save',
+          onClick: onSaveClick,
+        },
+        {
+          label: (
+            <>
+              <CheckCircleOutlined /> Save and Set Ready
+            </>
+          ),
+          key: 'save-set-ready',
+          onClick: onSaveAndSetReadyClick,
+        },
+      ]}
+    />
+  );
 
   return (
-    <div className="sha-designer-toolbar">
+    <div className={classNames('sha-designer-toolbar', className)}>
       <div className="sha-designer-toolbar-left">
         {!readOnly && (
-          <Dropdown.Button
-            icon={<DownOutlined />}
-            overlay={saveMenu}
-            onClick={onSaveClick}
-            type='primary'
-          >
+          <Dropdown.Button icon={<DownOutlined />} overlay={saveMenu} onClick={onSaveClick} type="primary">
             <SaveOutlined /> Save
           </Dropdown.Button>
         )}
-        {formProps.isLastVersion && (formProps.versionStatus === ConfigurationItemVersionStatus.Live || formProps.versionStatus === ConfigurationItemVersionStatus.Cancelled) && (
-          <Button onClick={onCreateNewVersionClick} type="link">
-            <BranchesOutlined /> Create New Version
-          </Button>
-        )}
+        {formProps.isLastVersion &&
+          (formProps.versionStatus === ConfigurationItemVersionStatus.Live ||
+            formProps.versionStatus === ConfigurationItemVersionStatus.Cancelled) && (
+            <Button onClick={onCreateNewVersionClick} type="link">
+              <BranchesOutlined /> Create New Version
+            </Button>
+          )}
         {formProps.isLastVersion && formProps.versionStatus === ConfigurationItemVersionStatus.Ready && (
           <Button onClick={onPublishClick} type="link">
             <DeploymentUnitOutlined /> Publish
@@ -222,7 +235,7 @@ export const FormDesignerToolbar: FC<IProps> = () => {
           }}
           type={formMode === 'designer' ? 'default' : 'primary'}
           shape="circle"
-          title='Preview'
+          title="Preview"
         >
           <EyeOutlined />
         </Button>

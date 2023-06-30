@@ -1,0 +1,263 @@
+{
+  "components": [
+    {
+      "id": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
+      "type": "sectionSeparator",
+      "name": "separator1",
+      "parentId": "root",
+      "label": "Display"
+    },
+    {
+      "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
+      "type": "textField",
+      "name": "name",
+      "parentId": "root",
+      "label": "Name",
+      "validate": {
+        "required": true
+      },
+      "version": 0,
+      "textType": "text"
+    },
+    {
+      "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
+      "type": "textField",
+      "name": "label",
+      "parentId": "root",
+      "label": "Title",
+      "validate": {},
+      "version": 0,
+      "textType": "text"
+    },
+    {
+      "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
+      "type": "textField",
+      "name": "description",
+      "parentId": "root",
+      "label": "Description",
+      "version": 0,
+      "textType": "text"
+    },
+    {
+      "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
+      "type": "checkbox",
+      "name": "hidden",
+      "parentId": "root",
+      "label": "Hidden"
+    },
+    {
+      "id": "ac45ff35-a50b-42f9-9642-73d390ceddbf",
+      "type": "dropdown",
+      "name": "sourceType",
+      "parentId": "root",
+      "label": "Source type",
+      "allowClear": true,
+      "values": [
+        {
+          "label": "Form",
+          "value": "Form",
+          "id": "11cd10ce-26af-474b-af75-8e7b1f19e51d"
+        },
+        {
+          "label": "Entity",
+          "value": "Entity",
+          "id": "227a228c-cb9c-4da7-a8bc-bc2be518a058"
+        },
+        {
+          "label": "Url",
+          "value": "Url",
+          "id": "336282ee-2eee-47ec-bab9-4cba52b970a0"
+        }
+      ],
+      "dataSourceType": "values",
+      "version": 1,
+      "useRawValues": false,
+      "referenceListId": null
+    },
+    {
+      "id": "6b0bd9c6-6a53-4a05-9de0-ad1b17eb0018",
+      "type": "autocomplete",
+      "name": "entityType",
+      "label": "Entity Type",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": "return data.sourceType == 'Entity';",
+      "dataSourceType": "url",
+      "validate": {},
+      "dataSourceUrl": "/api/services/app/Metadata/EntityTypeAutocomplete",
+      "settingsValidationErrors": [],
+      "useRawValues": true,
+      "version": 1
+    },
+    {
+      "id": "3B19B03F-8568-4125-9CB0-CDEA52BE207D",
+      "type": "endpointsAutocomplete",
+      "name": "endpoint",
+      "parentId": "root",
+      "label": "Custom Endpoint",
+      "customVisibility": "return data.sourceType == 'Entity' || data.sourceType == 'Url';",
+      "validate": {
+        "minLength": "",
+        "maxLength": "",
+        "message": ""
+      },
+      "placeholder": "",
+      "description": "",
+      "prefix": "",
+      "suffix": "",
+      "initialValue": "",
+      "quickviewWidth": "",
+      "settingsValidationErrors": []
+    },
+    {
+      "id": "8fQ68T0MS9Y29Q2oSe_mS",
+      "type": "dropdown",
+      "name": "dataFetchingMode",
+      "label": "Data fetching mode",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "visibility": "Yes",
+      "customVisibility": null,
+      "isDynamic": false,
+      "version": 1,
+      "dataSourceType": "values",
+      "useRawValues": false,
+      "referenceListId": null,
+      "placeholder": "",
+      "description": "",
+      "defaultValue": "",
+      "mode": [
+        "single"
+      ],
+      "dataSourceUrl": "",
+      "values": [
+        {
+          "id": "W3a607KepDecaCa1wjsxz",
+          "label": "Paging",
+          "value": "paging"
+        },
+        {
+          "id": "32JDxfWSdNW1bkPhBHiq1",
+          "label": "Fetch all",
+          "value": "fetchAll"
+        }
+      ],
+      "validate": {
+        "required": true
+      },
+      "settingsValidationErrors": []
+    },
+    {
+      "id": "f6c3d710-8d98-47fc-9fe2-7c6312e9a03c",
+      "type": "dropdown",
+      "name": "defaultPageSize",
+      "parentId": "root",
+      "label": "Default Page Size",
+      "dataSourceType": "values",
+      "values": [
+        {
+          "id": "5",
+          "label": "5",
+          "value": 5
+        },
+        {
+          "id": "10",
+          "label": "10",
+          "value": 10
+        },
+        {
+          "id": "20",
+          "label": "20",
+          "value": 20
+        },
+        {
+          "id": "30",
+          "label": "30",
+          "value": 30
+        },
+        {
+          "id": "50",
+          "label": "50",
+          "value": 50
+        },
+        {
+          "id": "100",
+          "label": "100",
+          "value": 100
+        },
+        {
+          "id": "200",
+          "label": "200",
+          "value": 200
+        }
+      ],
+      "defaultValue": [
+        10
+      ],
+      "validate": {
+        "required": true
+      },
+      "version": 1,
+      "useRawValues": false,
+      "referenceListId": null,
+      "placeholder": "",
+      "description": "",
+      "mode": [
+        "single"
+      ],
+      "dataSourceUrl": "",
+      "customVisibility": "return data.dataFetchingMode === 'paging';",
+      "settingsValidationErrors": []
+    },
+    {
+      "id": "41721f44-adbc-42fe-8c70-69b30e36f4ca",
+      "type": "sectionSeparator",
+      "name": "sectionVisibility",
+      "parentId": "root",
+      "label": "Visibility"
+    },
+    {
+      "id": "6cb29c17-5b6a-40c1-b5a4-373c7a2c9e8f",
+      "type": "codeEditor",
+      "name": "customVisibility",
+      "label": "Custom Visibility",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
+      "validate": {},
+      "settingsValidationErrors": [],
+      "exposedVariables": [
+        {
+          "name": "value",
+          "description": "Component current value",
+          "type": "string | any"
+        },
+        {
+          "name": "data",
+          "description": "Selected form values",
+          "type": "object"
+        }
+      ]
+    }
+  ],
+  "formSettings": {
+    "layout": "horizontal",
+    "colon": true,
+    "labelCol": {
+      "span": 5
+    },
+    "wrapperCol": {
+      "span": 13
+    },
+    "displayName": "DEFAULT_FORM_SETTINGS",
+    "__docgenInfo": {
+      "description": "Default form settings",
+      "displayName": "DEFAULT_FORM_SETTINGS",
+      "props": {}
+    }
+  }
+}

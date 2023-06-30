@@ -11,7 +11,7 @@ import { withAuth } from '../../hocs';
 import { useSidebarMenuDefaults } from '../../providers/sidebarMenu';
 import ConfigurableSidebarMenu from '../configurableSidebarMenu';
 import { useLocalStorage, useTheme } from '../..';
-import { SIDEBAR_MENU_NAME } from '../../constants';
+import { SIDEBAR_MENU_NAME } from '../../shesha-constants';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -54,7 +54,7 @@ export interface IMainLayoutProps extends IHtmlHeadProps {
   headerControls?: ReactNodeOrFunc;
 }
 
-const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = props => {
+const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
   const {
     title,
     // description,
@@ -65,7 +65,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = props => {
     style,
     headerStyle,
     contentStyle,
-    layoutBackgroundStyle,
+    layoutBackgroundStyle = {},
     footer,
     footerStyle,
     heading,
@@ -131,13 +131,6 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = props => {
         collapsed={collapsed}
         onCollapse={setCollapsed}
         trigger={<MenuTrigger collapsed={collapsed} />}
-        style={{
-          overflow: 'auto',
-          height: '100vh',
-          position: 'fixed',
-          paddingTop: '48px',
-          left: 0,
-        }}
         theme={sideMenuTheme}
       >
         <ConfigurableSidebarMenu
@@ -147,30 +140,33 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = props => {
           defaultSettings={sidebarDefaults}
         />
       </Sider>
+
       <Layout className="site-layout">
         <Header className="site-layout-background" style={headerStyle}>
           <LayoutHeader collapsed={collapsed} customComponent={customComponent} />
         </Header>
         <Content className={classNames({ collapsed })} style={contentStyle}>
-          {breadcrumb}
-          <div className={classNames('sha-layout-heading', headingClass)}>
-            {renderPageTitle()} {renderPageControls()}
-          </div>
+          <>
+            {breadcrumb}
+            <div className={classNames('sha-layout-heading', headingClass)}>
+              {renderPageTitle()} {renderPageControls()}
+            </div>
 
-          <div
-            className={classNames('sha-site-layout-background', headingClass, {
-              'sha-site-layout-background-no-padding': noPadding,
-            })}
-            style={layoutBackgroundStyle}
-          >
-            {toolbar && (
-              <div className="sha-site-layout-toolbar">
-                <NodeOrFuncRenderer>{toolbar}</NodeOrFuncRenderer>
-              </div>
-            )}
+            <div
+              className={classNames('sha-site-layout-background', headingClass, {
+                'sha-site-layout-background-no-padding': noPadding,
+              })}
+              style={{ ...layoutBackgroundStyle, background: themeFromStorage?.layoutBackground }}
+            >
+              {toolbar && (
+                <div className="sha-site-layout-toolbar">
+                  <NodeOrFuncRenderer>{toolbar}</NodeOrFuncRenderer>
+                </div>
+              )}
 
-            {children}
-          </div>
+              {children}
+            </div>
+          </>
         </Content>
 
         {footer && (

@@ -17,6 +17,7 @@ using Shesha.Authorization;
 using Shesha.Authorization.Accounts;
 using Shesha.Authorization.Roles;
 using Shesha.Authorization.Users;
+using Shesha.AutoMapper.Dto;
 using Shesha.Configuration;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
@@ -26,6 +27,7 @@ using Shesha.Otp;
 using Shesha.Otp.Dto;
 using Shesha.Roles.Dto;
 using Shesha.SecurityQuestions.Dto;
+using Shesha.Services.ReferenceLists.Dto;
 using Shesha.Users.Dto;
 using Shesha.Utilities;
 using System;
@@ -40,8 +42,11 @@ namespace Shesha.Users
 {
     [AbpAuthorize(PermissionNames.Pages_Users)]
 
-    public class UserAppService : AsyncCrudAppService<User, UserDto, long, PagedUserResultRequestDto, CreateUserDto, UpdateUserDto>, IUserAppService
+    public class UserAppService : AsyncCrudAppService<User, UserDto, long, PagedUserResultRequestDto, CreateUserDto, UserDto>, IUserAppService
     {
+        // from: http://regexlib.com/REDetails.aspx?regexp_id=1923
+        public const string PasswordRegex = "(?=^.{8,}$)(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\\s)[0-9a-zA-Z!@#$%^&*()]*$";
+
         private readonly UserManager _userManager;
         private readonly RoleManager _roleManager;
         private readonly IRepository<Role> _roleRepository;
@@ -106,7 +111,7 @@ namespace Shesha.Users
             return MapToEntityDto(user);
         }
 
-        public override async Task<UserDto> UpdateAsync(UpdateUserDto input)
+        public override async Task<UserDto> UpdateAsync(UserDto input)
         {
             CheckUpdatePermission();
 
@@ -186,7 +191,7 @@ namespace Shesha.Users
             return user;
         }
 
-        protected override void MapToEntity(UpdateUserDto updateInput, User user)
+        protected override void MapToEntity(UserDto updateInput, User user)
         {
             ObjectMapper.Map(updateInput, user);
             user.SupportedPasswordResetMethods = updateInput.SupportedPasswordResetMethods.Sum();
@@ -201,6 +206,7 @@ namespace Shesha.Users
                 var roles = _roleManager.Roles.Where(r => userRoles.Contains(r.Id)).Select(r => r.NormalizedName);
                 var userDto = base.MapToEntityDto(user);
                 userDto.RoleNames = roles.ToArray();
+                userDto.SupportedPasswordResetMethods = EntityExtensions.DecomposeIntoBitFlagComponents(user.SupportedPasswordResetMethods);
                 return userDto;
             }
             catch
@@ -298,6 +304,10 @@ namespace Shesha.Users
             var isEmailLinkEnabled = await _authSettings.UseResetPasswordViaEmailLink.GetValueAsync();
             var isSMSOTPEnabled = await _authSettings.UseResetPasswordViaSmsOtp.GetValueAsync();
             var isSecurityQuestionsEnabled = await _authSettings.UseResetPasswordViaSecurityQuestions.GetValueAsync();
+            
+            var hasPhoneNumber = !string.IsNullOrEmpty(person.PhoneNumber);
+            var hasEmail = !string.IsNullOrEmpty(person.EmailAddress);
+            var hasQuestions = await _questionRepository.GetAll().Where(q => q.User == person).AnyAsync();
 
             if (supportedResetOptions.Length > 0)
             {
@@ -308,7 +318,7 @@ namespace Shesha.Users
                     methodOption.Method = reflistItem;
                     var isAllowed = false;
 
-                    if (reflistItem == RefListPasswordResetMethods.SmsOtp && isSMSOTPEnabled)
+                    if (reflistItem == RefListPasswordResetMethods.SmsOtp && isSMSOTPEnabled && hasPhoneNumber)
                     {
                         var maskedPhoneNumber = person.PhoneNumber.MaskMobileNo();
                         methodOption.Prompt = $"SMS an OTP to {maskedPhoneNumber}";
@@ -316,14 +326,14 @@ namespace Shesha.Users
                         isAllowed = true;
                         
                     }
-                    else if (reflistItem == RefListPasswordResetMethods.EmailLink && isEmailLinkEnabled)
+                    else if (reflistItem == RefListPasswordResetMethods.EmailLink && isEmailLinkEnabled && hasEmail)
                     {
                         var maskedEmail = person.EmailAddress.MaskEmail();
                         methodOption.Prompt = $"Email a link to {maskedEmail}";
                         methodOption.MaskedIdentifier = maskedEmail;
                         isAllowed = true;
                     }
-                    else if (reflistItem == RefListPasswordResetMethods.SecurityQuestions && isSecurityQuestionsEnabled)
+                    else if (reflistItem == RefListPasswordResetMethods.SecurityQuestions && isSecurityQuestionsEnabled && hasQuestions)
                     {
                         methodOption.Prompt = "Answer security questions";
                         isAllowed = true;
@@ -557,7 +567,7 @@ namespace Shesha.Users
                 throw new UserFriendlyException("Your token is invalid or has expired, try to reset password again");
 
             // todo: add new setting for the PasswordRegex and error message
-            if (!new Regex(AccountAppService.PasswordRegex).IsMatch(input.NewPassword))
+            if (!new Regex(PasswordRegex).IsMatch(input.NewPassword))
             {
                 throw new UserFriendlyException("Passwords must be at least 8 characters, contain a lowercase, uppercase, and number.");
             }
@@ -625,7 +635,7 @@ namespace Shesha.Users
                 throw new UserFriendlyException("Your 'Existing Password' did not match the one on record.  Please try again or contact an administrator for assistance in resetting your password.");
             }
             // todo: add new setting for the PasswordRegex and error message
-            if (!new Regex(AccountAppService.PasswordRegex).IsMatch(input.NewPassword))
+            if (!new Regex(PasswordRegex).IsMatch(input.NewPassword))
             {
                 throw new UserFriendlyException("Passwords must be at least 8 characters, contain a lowercase, uppercase, and number.");
             }

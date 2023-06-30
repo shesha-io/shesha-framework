@@ -1,5 +1,6 @@
 ﻿using Abp.Notifications;
 using Shesha.Domain;
+using Shesha.DynamicEntities.Dtos;
 using Shesha.Notifications.Dto;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace Shesha.Notifications
     /// <summary>
     /// Notification service
     /// </summary>
-    public interface INotificationAppService: ISheshaCrudAppService<NotificationDto, Guid>
+    public interface INotificationAppService: IDynamicCrudAppService<Notification, DynamicDto<Notification, Guid>, Guid>
     {
         /// <summary>
         /// Publish new notification
@@ -64,6 +65,29 @@ namespace Shesha.Notifications
         /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
         /// <returns></returns>
         Task PublishSmsNotificationAsync<TData>(Guid templateId, TData data, string mobileNo, object sourceEntity = null) where TData : NotificationData;
+
+        /// <summary>
+        /// Publish email notification
+        /// </summary>
+        /// <param name="notificationName">Name of the notification. Default email template of the specified notification will be used</param>
+        /// <param name="data">Data that is used to fill template</param>
+        /// <param name="personId">Recipient person id</param>
+        /// <param name="attachments">Notification attachments</param>
+        /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
+        /// <returns></returns>
+        Task PublishPushNotificationAsync<TData>(string notificationName, TData data, string personId, List<NotificationAttachmentDto> attachments = null, object sourceEntity = null) where TData : NotificationData;
+
+        /// <summary>
+        /// Publish email notification using explicitly specified template
+        /// </summary>
+        /// <param name="templateId">Id of the template</param>
+        /// <param name="data">Data that is used to fill template</param>
+        /// <param name="personId">Recipient person id</param>
+        /// <param name="attachments">Notification attachments</param>
+        /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
+        /// <returns></returns>
+        Task PublishPushNotificationAsync<TData>(Guid templateId, TData data, string personId, List<NotificationAttachmentDto> attachments = null, object sourceEntity = null) where TData : NotificationData;
+
 
         /// <summary>
         /// Save notification attachment

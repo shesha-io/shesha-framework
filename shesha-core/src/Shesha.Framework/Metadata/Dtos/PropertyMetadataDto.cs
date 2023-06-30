@@ -10,9 +10,9 @@ namespace Shesha.Metadata.Dtos
 {
     public class PropertyMetadataDto
     {
-        public bool CascadeCreate { get; set; }
-        public bool CascadeUpdate { get; set; }
-        public bool CascadeDeleteUnreferenced { get; set; }
+        public bool? CascadeCreate { get; set; }
+        public bool? CascadeUpdate { get; set; }
+        public bool? CascadeDeleteUnreferenced { get; set; }
 
         public bool IsVisible { get; set; }
         public bool Required { get; set; }
@@ -62,6 +62,16 @@ namespace Shesha.Metadata.Dtos
         /// If true, indicates that current property is a framework-related (e.g. <see cref="ISoftDelete.IsDeleted"/>, <see cref="IHasModificationTime.LastModificationTime"/>)
         /// </summary>
         public bool IsFrameworkRelated { get; set; }
+
+        /// <summary>
+        /// If true, indicates that the property is filterable
+        /// </summary>
+        public bool IsFilterable { get; set; }
+
+        /// <summary>
+        /// If true, indicates that the property is sortable
+        /// </summary>
+        public bool IsSortable { get; set; }
 
         /// <summary>
         /// Child properties (applicable for complex objects)

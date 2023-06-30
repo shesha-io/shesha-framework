@@ -42,7 +42,7 @@ export interface IModelItem {
     properties?: IModelItem[];
 
     /**
-    * If true, indicates that current property is a framework-related (e.g. Abp.Domain.Entities.ISoftDelete.IsDeleted, Abp.Domain.Entities.Auditing.IHasModificationTime.LastModificationTime)
-    */
+     * If true, indicates that current property is a framework-related (e.g. Abp.Domain.Entities.ISoftDelete.IsDeleted, Abp.Domain.Entities.Auditing.IHasModificationTime.LastModificationTime)
+     */
     isFrameworkRelated?: boolean;
 }

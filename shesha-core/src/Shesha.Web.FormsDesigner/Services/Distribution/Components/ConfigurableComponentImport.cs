@@ -5,9 +5,12 @@ using Newtonsoft.Json;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
+using Shesha.Extensions;
+using Shesha.Services.ConfigurationItems;
 using Shesha.Web.FormsDesigner.Domain;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.Web.FormsDesigner.Services.Distribution
@@ -15,22 +18,20 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
     /// <summary>
     /// Configurable component import
     /// </summary>
-    public class ConfigurableComponentImport: IConfigurableComponentImport, ITransientDependency
+    public class ConfigurableComponentImport: ConfigurationItemImportBase, IConfigurableComponentImport, ITransientDependency
     {
         private readonly IRepository<ConfigurableComponent, Guid> _componentRepo;
-        private readonly IRepository<ConfigurationItem, Guid> _configItemRepository;
-        private readonly IRepository<Module, Guid> _moduleRepo;
-        private readonly IRepository<FrontEndApp, Guid> _frontendAppRepo;
         private readonly IConfigurableComponentManager _componentManger;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
 
-        public ConfigurableComponentImport(IConfigurableComponentManager componentManger, IRepository<ConfigurableComponent, Guid> formConfigRepo, IRepository<ConfigurationItem, Guid> configItemRepository, IRepository<Module, Guid> moduleRepo, IRepository<FrontEndApp, Guid> frontendAppRepo, IUnitOfWorkManager unitOfWorkManager)
+        public ConfigurableComponentImport(IRepository<Module, Guid> moduleRepo,
+            IRepository<FrontEndApp, Guid> frontEndAppRepo,
+            IConfigurableComponentManager componentManger, 
+            IRepository<ConfigurableComponent, Guid> formConfigRepo, 
+            IUnitOfWorkManager unitOfWorkManager): base(moduleRepo, frontEndAppRepo)
         {
             _componentManger = componentManger;
             _componentRepo = formConfigRepo;
-            _configItemRepository = configItemRepository;
-            _moduleRepo = moduleRepo;
-            _frontendAppRepo = frontendAppRepo;
             _unitOfWorkManager = unitOfWorkManager;
         }
 
@@ -58,21 +59,36 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
             }
         }
 
+        private async Task<ConfigurationItemBase> GetLiveVersionFor(DistributedConfigurableComponent item) 
+        {
+            var query = _componentRepo.GetAll().Where(f => f.Name == item.Name && f.VersionStatus == ConfigurationItemVersionStatus.Live);
+            query = query.Where(!string.IsNullOrWhiteSpace(item.ModuleName) 
+                ? f => f.Module.Name == item.ModuleName
+                : f => f.Module == null
+            );
+            query = query.Where(!string.IsNullOrWhiteSpace(item.FrontEndApplication)
+                ? f => f.Application.AppKey == item.FrontEndApplication
+                : f => f.Application == null
+            );
+
+            return await query.FirstOrDefaultAsync();
+        }
+
         /// inheritedDoc
         protected async Task<ConfigurationItemBase> ImportComponentAsync(DistributedConfigurableComponent item, IConfigurationItemsImportContext context)
         {
             // check if form exists
-            var existingComponent = await _componentRepo.FirstOrDefaultAsync(f => f.Configuration.Name == item.Name && 
-                (f.Configuration.Module == null && item.ModuleName == null || f.Configuration.Module.Name == item.ModuleName) &&
-                (f.Configuration.Application == null && item.FrontEndApplication == null || f.Configuration.Application.AppKey == item.FrontEndApplication) &&
-                f.Configuration.IsLast
+            var existingComponent = await _componentRepo.FirstOrDefaultAsync(f => f.Name == item.Name && 
+                (f.Module == null && item.ModuleName == null || f.Module.Name == item.ModuleName) &&
+                (f.Application == null && item.FrontEndApplication == null || f.Application.AppKey == item.FrontEndApplication) &&
+                f.IsLast
             );
 
             // use status specified in the context with fallback to imported value
             var statusToImport = context.ImportStatusAs ?? item.VersionStatus;
             if (existingComponent != null) 
             {
-                switch (existingComponent.Configuration.VersionStatus) 
+                switch (existingComponent.VersionStatus) 
                 {
                     case ConfigurationItemVersionStatus.Draft:
                     case ConfigurationItemVersionStatus.Ready: 
@@ -85,9 +101,10 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
                 // mark existing live form as retired if we import new form as live
                 if (statusToImport == ConfigurationItemVersionStatus.Live) 
                 {
-                    var liveVersion = existingComponent.Configuration.VersionStatus == ConfigurationItemVersionStatus.Live
+                    var liveVersion = existingComponent.VersionStatus == ConfigurationItemVersionStatus.Live
                         ? existingComponent
-                        : await _componentRepo.FirstOrDefaultAsync(f => f.Configuration.Name == item.Name && (f.Configuration.Module == null && item.ModuleName == null || f.Configuration.Module.Name == item.ModuleName) && f.Configuration.VersionStatus == ConfigurationItemVersionStatus.Live);
+                        : await GetLiveVersionFor(item);
+
                     if (liveVersion != null)
                     {
                         await _componentManger.UpdateStatusAsync(liveVersion, ConfigurationItemVersionStatus.Retired);
@@ -100,14 +117,13 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
                 MapToComponent(item, newComponentVersion);
 
                 // important: set status according to the context
-                newComponentVersion.Configuration.VersionStatus = statusToImport;
-                newComponentVersion.Configuration.CreatedByImport = context.ImportResult;
+                newComponentVersion.VersionStatus = statusToImport;
+                newComponentVersion.CreatedByImport = context.ImportResult;
                 newComponentVersion.Normalize();
 
                 // todo: save external Id
                 // how to handle origin?
 
-                await _configItemRepository.UpdateAsync(newComponentVersion.Configuration);
                 await _componentRepo.UpdateAsync(newComponentVersion);
 
                 return newComponentVersion;
@@ -117,71 +133,29 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
                 MapToComponent(item, newComponent);
 
                 // fill audit?
-                newComponent.Configuration.VersionNo = 1;
-                newComponent.Configuration.Module = await GetModuleAsync(item.ModuleName, context);
-                newComponent.Configuration.Application = await GetFrontEndAppAsync(item.FrontEndApplication, context);                
+                newComponent.VersionNo = 1;
+                newComponent.Module = await GetModuleAsync(item.ModuleName, context);
+                newComponent.Application = await GetFrontEndAppAsync(item.FrontEndApplication, context);                
 
                 // important: set status according to the context
-                newComponent.Configuration.VersionStatus = statusToImport;
-                newComponent.Configuration.CreatedByImport = context.ImportResult;
+                newComponent.VersionStatus = statusToImport;
+                newComponent.CreatedByImport = context.ImportResult;
 
                 newComponent.Normalize();
 
-                await _configItemRepository.InsertAsync(newComponent.Configuration);
                 await _componentRepo.InsertAsync(newComponent);
-                
 
                 return newComponent;
             }
         }
 
-        private async Task<Module> GetModuleAsync(string name, IConfigurationItemsImportContext context) 
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                return null;
-
-            var module = await _moduleRepo.FirstOrDefaultAsync(m => m.Name == name);
-            if (module == null) 
-            {
-                if (context.CreateModules) 
-                {
-                    module = new Module { Name = name, IsEnabled = true };
-                    await _moduleRepo.InsertAsync(module);
-                } else
-                    throw new NotSupportedException($"Module `{name}` is missing in the destination");
-            }
-
-            return module;
-        }
-
-        private async Task<FrontEndApp> GetFrontEndAppAsync(string appKey, IConfigurationItemsImportContext context)
-        {
-            if (string.IsNullOrWhiteSpace(appKey))
-                return null;
-
-            var application = await _frontendAppRepo.FirstOrDefaultAsync(m => m.AppKey == appKey);
-            if (application == null)
-            {
-                if (context.CreateFrontEndApplications)
-                {
-                    application = new FrontEndApp { AppKey = appKey, Name = appKey };
-                    await _frontendAppRepo.InsertAsync(application);
-                }
-                else
-                    throw new NotSupportedException($"Front-end application `{appKey}` is missing in the destination");
-            }
-
-            return application;
-        }
-
         private void MapToComponent(DistributedConfigurableComponent item, ConfigurableComponent component) 
         {
-            component.Configuration.Name = item.Name;
-            component.Configuration.Label = item.Label;
-            component.Configuration.ItemType = item.ItemType;
-            component.Configuration.Description = item.Description;
-            component.Configuration.VersionStatus = item.VersionStatus;
-            component.Configuration.Suppress = item.Suppress;
+            component.Name = item.Name;
+            component.Label = item.Label;
+            component.Description = item.Description;
+            component.VersionStatus = item.VersionStatus;
+            component.Suppress = item.Suppress;
 
             component.Settings = item.Settings;
         }

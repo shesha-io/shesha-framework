@@ -32,6 +32,8 @@ export interface IStoredFilesRendererBaseProps {
   uploadBtnProps?: ButtonProps;
   /* isStub is used just to fix strange error when the user is reordering components on the form */
   isStub?: boolean;
+  allowedFileTypes?: string[];
+  maxHeight?: string;  
 }
 
 export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
@@ -53,6 +55,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   isDragger = true,
   disabled,
   isStub = false,
+  allowedFileTypes = [],
+  maxHeight
 }) => {
   const hasFiles = !!fileList.length;
 
@@ -64,6 +68,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
   const props: DraggerProps = {
     name: 'file',
+    accept: allowedFileTypes?.join(','),
     multiple,
     fileList,
     disabled,
@@ -132,7 +137,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         <p className="ant-upload-text">Click or drag file to this area to upload</p>
       </>
     );
-  }
+  };
 
   const renderUploadContent = () => {
     return (
@@ -140,35 +145,20 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         (press to upload)
       </Button>
     );
-  }
+  };
 
   return (
-    <div className="sha-stored-files-renderer">
+    <div className="sha-stored-files-renderer" style={{maxHeight}}>
       {isDragger ? (
-        isStub
-          ? (
-            <div>
-              {renderDraggerContent()}
-            </div>
-          )
-          : (
-            <Dragger {...props}>
-              {renderDraggerContent()}
-            </Dragger>
-          )
+        isStub ? (
+          <div>{renderDraggerContent()}</div>
+        ) : (
+          <Dragger {...props}>{renderDraggerContent()}</Dragger>
+        )
+      ) : isStub ? (
+        <div>{renderUploadContent()}</div>
       ) : (
-        isStub
-          ? (
-            <div>
-              {renderUploadContent()}
-            </div>
-          )
-          : (
-            <Upload {...props}>
-              {renderUploadContent()}
-            </Upload>
-          )
-
+        <Upload {...props}>{!props.disabled ? renderUploadContent() : null}</Upload>
       )}
 
       {fetchFilesError && (

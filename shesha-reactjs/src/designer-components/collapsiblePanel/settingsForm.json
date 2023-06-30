@@ -1,0 +1,190 @@
+{
+  "components": [
+    {
+      "id": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
+      "type": "sectionSeparator",
+      "name": "separator1",
+      "parentId": "root",
+      "label": "Display"
+    },
+    {
+      "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
+      "type": "textField",
+      "name": "name",
+      "parentId": "root",
+      "label": "Name",
+      "validate": {
+        "required": true
+      },
+      "version": 0,
+      "textType": "text"
+    },
+    {
+      "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
+      "type": "textField",
+      "name": "label",
+      "parentId": "root",
+      "label": "Label",
+      "version": 0,
+      "textType": "text"
+    },
+    {
+      "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
+      "type": "dropdown",
+      "name": "expandIconPosition",
+      "parentId": "root",
+      "label": "Icon position",
+      "values": [
+        {
+          "label": "Hide",
+          "value": "hide",
+          "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
+        },
+        {
+          "label": "Left",
+          "value": "left",
+          "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
+        },
+        {
+          "label": "Right",
+          "value": "right",
+          "id": "b920ef96-ae27-4a01-bfad-b5b7d07218da"
+        }
+      ],
+      "dataSourceType": "values",
+      "validate": {},
+      "version": 1,
+      "useRawValues": false,
+      "referenceListId": null
+    },
+    {
+      "id": "-wshDLo-lK468vwxVVBDMh",
+      "type": "dropdown",
+      "name": "collapsible",
+      "label": "Collapsible",
+      "parentId": "root",
+      "values": [
+        {
+          "label": "Header",
+          "value": "header",
+          "id": "111e54aa-a1a4-4bd6-ba73-c395e48af8ce"
+        },
+        {
+          "label": "Icon",
+          "value": "icon",
+          "id": "2220ef96-ae27-4a01-bfad-b5b7d07218da"
+        },
+        {
+          "label": "Disabled",
+          "value": "disabled",
+          "id": "3330ef96-ae27-4a01-bfad-b5b7d07218da"
+        }
+      ],
+      "dataSourceType": "values",
+      "validate": {},
+      "version": 1,
+      "useRawValues": false,
+      "referenceListId": null
+    },
+    {
+      "id": "-wYzLo-lK468vwxVVBDMh",
+      "type": "checkbox",
+      "name": "collapsedByDefault",
+      "label": "Collapsed by default",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "visibility": "Yes",
+      "customVisibility": null,
+      "isDynamic": false,
+      "description": "",
+      "validate": {},
+      "settingsValidationErrors": []
+    },
+    {
+      "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
+      "type": "checkbox",
+      "name": "hidden",
+      "parentId": "root",
+      "label": "Hidden"
+    },
+    {
+      "id": "41924074-296C-4E4D-820A-DC29EC2C7B92",
+      "type": "checkbox",
+      "name": "ghost",
+      "label": "Ghost",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "visibility": "Yes",
+      "customVisibility": null,
+      "isDynamic": false,
+      "description": "Make the collapse borderless and its background transparent",
+      "validate": {},
+      "settingsValidationErrors": []
+    },
+    {
+      "id": "bc67960e-77e3-40f2-89cc-f18f94678cce",
+      "type": "sectionSeparator",
+      "name": "separatorVisibility",
+      "parentId": "root",
+      "label": "Visibility"
+    },
+    {
+      "id": "BC7507ED-ADB6-4D2E-BD37-F5DD51EFF45D",
+      "type": "checkbox",
+      "name": "hideWhenEmpty",
+      "label": "Hide when empty",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "visibility": "Yes",
+      "customVisibility": null,
+      "isDynamic": false,
+      "description": "Allows to hide the panel when all components are hidden due to some conditions",
+      "validate": {},
+      "settingsValidationErrors": []
+    },
+    {
+      "id": "d92ec2a2-93f4-431d-b143-e2fa2a720a4d",
+      "type": "codeEditor",
+      "name": "customVisibility",
+      "label": "Custom Visibility",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
+      "validate": {},
+      "settingsValidationErrors": [],
+      "exposedVariables": [
+        {
+          "name": "value",
+          "description": "Component current value",
+          "type": "string | any"
+        },
+        {
+          "name": "data",
+          "description": "Selected form values",
+          "type": "object"
+        }
+      ]
+    }
+  ],
+  "formSettings": {
+    "layout": "horizontal",
+    "colon": true,
+    "labelCol": {
+      "span": 5
+    },
+    "wrapperCol": {
+      "span": 13
+    },
+    "displayName": "DEFAULT_FORM_SETTINGS",
+    "__docgenInfo": {
+      "description": "Default form settings",
+      "displayName": "DEFAULT_FORM_SETTINGS",
+      "props": {}
+    }
+  }
+}

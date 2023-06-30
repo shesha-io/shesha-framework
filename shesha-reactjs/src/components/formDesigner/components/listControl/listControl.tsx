@@ -1,14 +1,14 @@
 import { isEmpty } from 'lodash';
 import React, { FC, useCallback, useMemo, useState } from 'react';
-import { useGet, useMutate } from 'restful-react';
-import { EntitiesGetAllQueryParams, useEntitiesGetAll } from '../../../../apis/entities';
-import { FormItemProvider, SubFormProvider, useAppConfigurator, useForm, useGlobalState } from '../../../../providers';
-import { getQueryParams } from '../../../../utils/url';
+import { useGet, useMutate } from 'hooks';
+import { useEntitiesGetAll } from 'apis/entities';
+import { EntitiesGetAllQueryParams } from 'apis/entities';
+import { FormItemProvider, SubFormProvider, useAppConfigurator, useForm, useGlobalState, useNestedPropertyMetadatAccessor } from 'providers';
+import { getQueryParams } from 'utils/url';
 import camelCaseKeys from 'camelcase-keys';
 import { IListControlProps, IListComponentRenderState, IEvaluatedFilters } from './models';
-import { evaluateDynamicFilters } from '../../../../providers/dataTable/utils';
 import { useDebouncedCallback } from 'use-debounce';
-import { useDelete } from '../../../../hooks';
+import { useDelete } from 'hooks';
 import {
   Button,
   Checkbox,
@@ -23,10 +23,10 @@ import {
   Space,
 } from 'antd';
 import SubForm from '../subForm/subForm';
-import CollapsiblePanel from '../../../collapsiblePanel';
+import CollapsiblePanel from '../../../panel';
 import Show from '../../../show';
 import { ButtonGroup } from '../button/buttonGroup/buttonGroupComponent';
-import ComponentsContainer from '../../componentsContainer';
+import ComponentsContainer from '../../containers/componentsContainer';
 import ValidationErrors from '../../../validationErrors';
 import ShaSpin from '../../../shaSpin';
 import { DeleteFilled } from '@ant-design/icons';
@@ -41,7 +41,10 @@ import { useDeepCompareEffect, useMeasure } from 'react-use';
 import { DEFAULT_CONFIRM_MESSAGE, DEFAULT_TOTAL_RECORD } from './constants';
 import { ConfigurationItemVersionStatusMap } from '../../../../utils/configurationFramework/models';
 import FormInfo from '../../../configurableForm/formInfo';
+import { useAsyncMemo } from 'hooks/useAsyncMemo';
+import { evaluateDynamicFilters } from 'utils';
 
+/** @deprecated: Use DataList instead */
 const ListControl: FC<IListControlProps> = props => {
   const {
     containerId,
@@ -101,7 +104,7 @@ const ListControl: FC<IListControlProps> = props => {
     selectedItemIndexes: [],
   });
   const queryParamsFromBrowser = useMemo(() => getQueryParams(), []);
-  const { formData, formMode } = useForm();
+  const { formData, formMode, setFormControlsData } = useForm();
   const { globalState, setState: setGlobalStateState } = useGlobalState();
 
   const useGetAll = apiSource === 'custom' ? useGet : useEntitiesGetAll;
@@ -138,12 +141,11 @@ const ListControl: FC<IListControlProps> = props => {
 
   const { mutate: deleteHttp, loading: isDeleting, error: deleteError } = useDelete();
 
-  const { mutate: submitHttp, loading: submitting, error: submitError } = useMutate({
-    path: getEvaluatedUrl(submitUrl),
-    verb: submitHttpVerb,
-  });
+  const { mutate: submitHttp, loading: submitting, error: submitError } = useMutate();
 
-  const evaluatedFilters = useMemo<IEvaluatedFilters>(() => {
+  const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityType);
+
+  const evaluatedFilters = useAsyncMemo<IEvaluatedFilters>(async () => {
     if (!filters)
       return {
         ready: true,
@@ -152,7 +154,7 @@ const ListControl: FC<IListControlProps> = props => {
 
     const localFormData = !isEmpty(formData) ? camelCaseKeys(formData, { deep: true, pascalCase: true }) : formData;
 
-    const _response = evaluateDynamicFilters(
+    const response = await evaluateDynamicFilters(
       [{ expression: filters } as any],
       [
         {
@@ -163,19 +165,18 @@ const ListControl: FC<IListControlProps> = props => {
           match: 'globalState',
           data: globalState,
         },
-      ]
+      ],
+      propertyMetadataAccessor
     );
 
     return {
-      ready: !_response.some(f => f?.unevaluatedExpressions?.length),
-      filter: JSON.stringify(_response[0]?.expression) || '',
+      ready: !response.some(f => f?.unevaluatedExpressions?.length),
+      filter: JSON.stringify(response[0]?.expression) || '',
     };
-
-    // return JSON.stringify(_response[0]?.expression) || '';
   }, [filters, formData, globalState]);
 
   const queryParams = useMemo(() => {
-    const _queryParams: EntitiesGetAllQueryParams = {
+    const qp: EntitiesGetAllQueryParams = {
       entityType,
       maxResultCount: showPagination ? state?.maxResultCount : DEFAULT_TOTAL_RECORD,
       skipCount: state?.skipCount,
@@ -183,14 +184,14 @@ const ListControl: FC<IListControlProps> = props => {
     };
 
     // _queryParams.properties = Array.from(new Set(['id', properties?.map(p => camelCase(p))])).join(' ');
-    _queryParams.properties =
+    qp.properties =
       typeof properties === 'string' ? `id ${properties}` : ['id', ...Array.from(new Set(properties || []))].join(' '); // Always include the `id` property/. Useful for deleting
 
     if (filters && evaluatedFilters?.filter) {
-      _queryParams.filter = evaluatedFilters?.filter;
+      qp.filter = evaluatedFilters?.filter;
     }
 
-    return _queryParams;
+    return qp;
   }, [properties, showPagination, paginationDefaultPageSize, state, filters, evaluatedFilters, globalState]);
 
   const debouncedRefresh = useDebouncedCallback(
@@ -213,6 +214,17 @@ const ListControl: FC<IListControlProps> = props => {
 
   useDeepCompareEffect(() => {
     if (uniqueStateId && Array.isArray(value) && value.length) {
+      setFormControlsData({
+        name: name,
+        values: {
+          selectedItemIndexes: state?.selectedItemIndexes,
+          selectedItems:
+            selectionMode === 'multiple'
+              ? value?.filter((_, index) => state?.selectedItemIndexes?.includes(index))
+              : null,
+          selectedItem: selectionMode === 'single' ? value[state?.selectedItemIndex] : null,
+        }
+      });
       setGlobalStateState({
         key: uniqueStateId,
         data: {
@@ -226,12 +238,12 @@ const ListControl: FC<IListControlProps> = props => {
       });
     }
 
-    return () => {
+    /*return () => {
       setGlobalStateState({
         key: uniqueStateId,
         data: undefined,
       });
-    };
+    };*/
   }, [state, uniqueStateId, value]);
 
   useDeepCompareEffect(() => {
@@ -425,9 +437,10 @@ const ListControl: FC<IListControlProps> = props => {
         payload = Boolean(onSubmit) ? getOnSubmitPayload() : value;
       }
 
-      submitHttp(payload).then(() => {
-        message.success('Data saved successfully!');
-      });
+      submitHttp({ url: getEvaluatedUrl(submitUrl), httpVerb: submitHttpVerb }, payload)
+        .then(() => {
+          message.success('Data saved successfully!');
+        });
     }
   }, 500);
 
@@ -531,7 +544,7 @@ const ListControl: FC<IListControlProps> = props => {
   return (
     <CollapsiblePanel
       header={title}
-      extraClass="sha-list-component-extra"
+      extraClassName="sha-list-component-extra"
       className="sha-list-component-panel"
       extra={
         <div className="sha-list-component-extra-space">
@@ -615,7 +628,7 @@ const ListControl: FC<IListControlProps> = props => {
                       )}
                     >
                       {fields?.map((field, index) => {
-                        const isLastItem = fields.length - 1 == index;
+                        const isLastItem = fields.length - 1 === index;
                         return (
                           <ConditionalWrap
                             key={index}

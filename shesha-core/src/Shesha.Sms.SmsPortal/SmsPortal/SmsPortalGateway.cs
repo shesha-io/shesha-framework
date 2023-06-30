@@ -60,15 +60,13 @@ namespace Shesha.Sms.SmsPortal
             if (mobileNumber.StartsWith("0"))
                 mobileNumber = "27" + mobileNumber.Substring(1);
 
-            var smsPortalHost = await _settings.Host.GetValueAsync();
-            var smsPortalUsername = await _settings.ApiUsername.GetValueAsync();
-            var smsPortalPassword = await _settings.ApiPassword.GetValueAsync();
+            var gatewaySettings = await _settings.GatewaySettings.GetValueAsync();
 
             var sb = new StringBuilder();
-            sb.Append("http://" + smsPortalHost + "?Type=sendparam&Username=");
-            sb.Append(smsPortalUsername);
+            sb.Append("http://" + gatewaySettings.Host + "?Type=sendparam&Username=");
+            sb.Append(gatewaySettings.Username);
             sb.Append("&password=");
-            sb.Append(smsPortalPassword);
+            sb.Append(gatewaySettings.Password);
             sb.Append("&numto=");
             sb.Append(mobileNumber);
             sb.Append("&data1=");
@@ -76,7 +74,7 @@ namespace Shesha.Sms.SmsPortal
 
             Logger.InfoFormat("Sending SMS to {0}: {1}", mobileNumber, body);
 
-            string response = await DownloadUrlAsync(sb.ToString());
+            string response = await DownloadUrlAsync(sb.ToString(), gatewaySettings);
 
             var xml = new XmlDocument();
             xml.LoadXml(response); // suppose that myXmlString contains "<Names>...</Names>"
@@ -100,31 +98,23 @@ namespace Shesha.Sms.SmsPortal
             Logger.InfoFormat("SMS successfully sent, response: {0}", response);
         }
 
-        private async Task<HttpClient> GetHttpClient() 
+        private HttpClient GetHttpClient(GatewaySettings gatewaySettings) 
         {
-            var useProxy = await _settings.UseProxy.GetValueAsync();
-
-            if (useProxy) 
+            if (gatewaySettings.UseProxy) 
             {
-                var proxyAddress = await _settings.WebProxyAddress.GetValueAsync();
-
                 var proxy = new WebProxy
                 {
-                    Address = new Uri(proxyAddress)
+                    Address = new Uri(gatewaySettings.WebProxyAddress)
                 };
 
-                var useDefaultCredentials = await _settings.UseDefaultProxyCredentials.GetValueAsync();
-                if (useDefaultCredentials)
+                if (gatewaySettings.UseDefaultProxyCredentials)
                 {
                     proxy.Credentials = CredentialCache.DefaultCredentials;
                     proxy.UseDefaultCredentials = true;
                 }
                 else
                 {
-                    var username = await _settings.WebProxyUsername.GetValueAsync();
-                    var password = await _settings.WebProxyPassword.GetValueAsync();
-
-                    proxy.Credentials = new NetworkCredential(username, password);
+                    proxy.Credentials = new NetworkCredential(gatewaySettings.WebProxyUsername, gatewaySettings.WebProxyPassword);
                 }
 
                 return new HttpClient(new HttpClientHandler { Proxy = proxy }, disposeHandler: true);                
@@ -133,9 +123,9 @@ namespace Shesha.Sms.SmsPortal
                 return new HttpClient();
         }
 
-        public async Task<string> DownloadUrlAsync(string url)
+        public async Task<string> DownloadUrlAsync(string url, GatewaySettings gatewaySettings)
         {
-            using (var httpClient = await GetHttpClient())
+            using (var httpClient = GetHttpClient(gatewaySettings))
             {
                 using (var receiveStream = await httpClient.GetStreamAsync(url))
                 {
@@ -152,16 +142,17 @@ namespace Shesha.Sms.SmsPortal
 
         public override async Task<SmsPortalSettingsDto> GetTypedSettingsAsync()
         {
+            var gatewaySettings = await _settings.GatewaySettings.GetValueAsync();
             var settings = new SmsPortalSettingsDto
             {
-                Host = await _settings.Host.GetValueAsync(),
-                Username = await _settings.ApiUsername.GetValueAsync(),
-                Password = await _settings.ApiPassword.GetValueAsync(),
-                UseProxy = await _settings.UseProxy.GetValueAsync(),
-                WebProxyAddress = await _settings.WebProxyAddress.GetValueAsync(),
-                UseDefaultProxyCredentials = await _settings.UseDefaultProxyCredentials.GetValueAsync(),
-                WebProxyUsername = await _settings.WebProxyUsername.GetValueAsync(),
-                WebProxyPassword = await _settings.WebProxyPassword.GetValueAsync()
+                Host = gatewaySettings.Host,
+                Username = gatewaySettings.Username,
+                Password = gatewaySettings.Password,
+                UseProxy = gatewaySettings.UseProxy,
+                WebProxyAddress = gatewaySettings.WebProxyAddress,
+                UseDefaultProxyCredentials = gatewaySettings.UseDefaultProxyCredentials,
+                WebProxyUsername = gatewaySettings.WebProxyUsername,
+                WebProxyPassword = gatewaySettings.WebProxyPassword
             };
 
             return settings;
@@ -169,15 +160,17 @@ namespace Shesha.Sms.SmsPortal
 
         public override async Task SetTypedSettingsAsync(SmsPortalSettingsDto settings)
         {
-            await _settings.Host.SetValueAsync(settings.Host);
-            await _settings.ApiUsername.SetValueAsync(settings.Username);
-            await _settings.ApiPassword.SetValueAsync(settings.Password);
+            await _settings.GatewaySettings.SetValueAsync(new GatewaySettings { 
+                Host = settings.Host,
+                Username = settings.Username,
+                Password = settings.Password,
 
-            await _settings.UseProxy.SetValueAsync(settings.UseProxy);
-            await _settings.WebProxyAddress.SetValueAsync(settings.WebProxyAddress);
-            await _settings.UseDefaultProxyCredentials.SetValueAsync(settings.UseDefaultProxyCredentials);
-            await _settings.WebProxyUsername.SetValueAsync(settings.WebProxyUsername);
-            await _settings.WebProxyPassword.SetValueAsync(settings.WebProxyPassword);
+                UseProxy = settings.UseProxy,
+                WebProxyAddress = settings.WebProxyAddress,
+                UseDefaultProxyCredentials = settings.UseDefaultProxyCredentials,
+                WebProxyUsername = settings.WebProxyUsername,
+                WebProxyPassword = settings.WebProxyPassword
+            });
         }
     }
 }

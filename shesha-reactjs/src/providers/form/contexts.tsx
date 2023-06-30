@@ -20,7 +20,8 @@ export interface IHasComponentGroups {
   toolboxComponentGroups: IToolboxComponentGroup[];
 }
 
-export interface IFormStateContext extends IFlatComponentsStructure /*IFormProps*/ {
+export interface IFormStateInternalContext {
+  name?: string;
   formSettings: IFormSettings;
   formMarkup?: FormRawMarkup;
   formMode: FormMode;
@@ -32,6 +33,7 @@ export interface IFormStateContext extends IFlatComponentsStructure /*IFormProps
 
   // runtime props
   formData?: any;
+  formControlsData?: any;
   validationErrors?: IFormValidationErrors;
   visibleComponentIds?: string[];
   enabledComponentIds?: string[];
@@ -42,12 +44,24 @@ export interface IFormStateContext extends IFlatComponentsStructure /*IFormProps
   visibleComponentIdsIsSet: boolean;
 }
 
+export interface IFormStateContext extends IFormStateInternalContext, IFlatComponentsStructure {
+
+}
+
 export interface ISetVisibleComponentsPayload {
   componentIds: string[];
 }
 
 export interface ISetEnabledComponentsPayload {
   componentIds: string[];
+}
+
+export interface ISetFormControlsDataPayload {
+  /** control name */
+  name: string;
+
+  /** control values */
+  values: any;
 }
 
 export interface ISetFormDataPayload {
@@ -66,16 +80,20 @@ export interface IRegisterActionsPayload {
 export interface IFormActionsContext {
   setFormMode: (formMode: FormMode) => void;
   getChildComponents: (id: string) => IConfigurableFormComponent[];
+  getChildComponentIds: (containerId: string) => string[];
   getComponentModel: (id: string) => IConfigurableFormComponent;
   isComponentDisabled: (model: Pick<IConfigurableFormComponent, 'id' | 'isDynamic' | 'disabled'>) => boolean;
   isComponentHidden: (model: Pick<IConfigurableFormComponent, 'id' | 'isDynamic' | 'hidden'>) => boolean;
+  hasVisibleChilds: (id: string) => boolean;
   setVisibleComponents: (payload: ISetVisibleComponentsPayload) => void;
   setFormData: (payload: ISetFormDataPayload) => void;
+  setFormControlsData: (payload: ISetFormControlsDataPayload) => void;
   setFormDataAndInstance: (payload: ISetFormDataPayload) => void;
   setValidationErrors: (payload: IFormValidationErrors) => void;
   registerActions: (id: string, actions: IFormActions) => void;
   /**
    * Get closest form action by name
+   *
    * @param id: id of the current component
    * @param name: name of the action
    */
@@ -88,10 +106,11 @@ export interface IFormActionsContext {
 /** Form initial state */
 export const FORM_CONTEXT_INITIAL_STATE: IFormStateContext = {
   allComponents: {},
+  componentRelations: { [ROOT_COMPONENT_KEY]: [] },
+  
   visibleComponentIds: [],
   visibleComponentIdsIsSet: false,
   enabledComponentIds: [],
-  componentRelations: { [ROOT_COMPONENT_KEY]: [] },
   formMode: 'designer',
   actions: [],
   sections: [],

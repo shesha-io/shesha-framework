@@ -3,7 +3,7 @@ import { DeleteOutlined, DownOutlined } from '@ant-design/icons';
 import { Input, DatePicker, TimePicker, InputNumber, Checkbox, Menu, Dropdown, Select, Spin } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { Moment } from 'moment';
-import { ColumnFilter, IndexColumnDataType, IndexColumnFilterOption } from '../../providers/dataTable/interfaces';
+import { ColumnFilter, IndexColumnFilterOption } from '../../providers/dataTable/interfaces';
 import { humanizeString } from '../../utils/string';
 import {
   ADVANCEDFILTER_DATE_FORMAT,
@@ -14,6 +14,7 @@ import {
 import { useReferenceList } from '../../providers/referenceListDispatcher';
 import { useEntityAutocomplete } from '../../utils/autocomplete';
 import { EntityData } from '../../interfaces/gql';
+import { ProperyDataType } from 'interfaces/metadata';
 
 const { RangePicker: DateRangePicker } = DatePicker;
 const { RangePicker: TimeRangePicker } = TimePicker;
@@ -38,7 +39,7 @@ export interface IColumnItemFilterProps {
   referenceListModule: string;
   entityReferenceTypeShortAlias: string;
   autocompleteUrl?: string;
-  dataType: IndexColumnDataType;
+  dataType: ProperyDataType;
   filter: ColumnFilter;
   filterOption: IndexColumnFilterOption;
   onRemoveFilter?: (id: string) => void;

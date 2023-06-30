@@ -1,38 +1,40 @@
-import React, { FC, useReducer, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { GetDataError, useMutate } from 'restful-react';
+import React, { FC, useReducer, useContext, useEffect, useMemo, useRef, useState, PropsWithChildren } from 'react';
+import { GetDataError, useMutate } from 'hooks';
 import { useForm } from '../form';
 import { SubFormActionsContext, SubFormContext, SUB_FORM_CONTEXT_INITIAL_STATE } from './contexts';
 import { useDeepCompareMemoKeepReference, usePubSub } from '../../hooks';
 import { subFormReducer } from './reducer';
-import { getQueryParams } from '../../utils/url';
+import { getQueryParams } from 'utils/url';
 import { DEFAULT_FORM_SETTINGS, FormMarkupWithSettings } from '../form/models';
 import {
   setMarkupWithSettingsAction,
   fetchDataRequestAction,
   fetchDataSuccessAction,
   fetchDataErrorAction,
+  IPersistedFormPropsWithComponents,
 } from './actions';
 import { ISubFormProps } from './interfaces';
 import { ColProps, message, notification } from 'antd';
 import { useGlobalState } from '../globalState';
-import { EntitiesGetQueryParams } from '../../apis/entities';
+import { EntitiesGetQueryParams } from 'apis/entities';
 import { useDebouncedCallback } from 'use-debounce';
 import { useDeepCompareEffect } from 'react-use';
-import { EntityAjaxResponse } from '../../pages/dynamic/interfaces';
+import { EntityAjaxResponse } from 'pages/dynamic/interfaces';
 import { UseFormConfigurationArgs } from '../form/api';
 import { useConfigurableAction } from '../configurableActionsDispatcher';
 import { useConfigurationItemsLoader } from '../configurationItemsLoader';
-import { executeScript, IAnyObject, QueryStringParams, useAppConfigurator, useSheshaApplication } from '../..';
-import * as RestfulShesha from '../../utils/fetchers';
-import { useModelApiHelper } from '../../components/configurableForm/useActionEndpoint';
-import { StandardEntityActions } from '../../interfaces/metadata';
+import { componentsFlatStructureToTree, componentsTreeToFlatStructure, executeScript, IAnyObject, QueryStringParams, upgradeComponents, useAppConfigurator, useSheshaApplication } from '../..';
+import * as RestfulShesha from 'utils/fetchers';
+import { useModelApiHelper } from 'components/configurableForm/useActionEndpoint';
+import { StandardEntityActions } from 'interfaces/metadata';
+import { useFormDesignerComponents } from 'providers/form/hooks';
 
 export interface SubFormProviderProps extends Omit<ISubFormProps, 'name' | 'value'> {
   actionsOwnerId?: string;
   actionOwnerName?: string;
   name?: string;
   markup?: FormMarkupWithSettings;
-  value?: string | { id: string; [key: string]: any };
+  value?: string | { id: string;[key: string]: any };
 }
 
 interface IFormLoadingState {
@@ -47,7 +49,7 @@ interface QueryParamsEvaluatorArguments {
 }
 type QueryParamsEvaluator = (args: QueryParamsEvaluatorArguments) => object;
 
-const SubFormProvider: FC<SubFormProviderProps> = ({
+const SubFormProvider: FC<PropsWithChildren<SubFormProviderProps>> = ({
   formSelectionMode,
   formType,
   children,
@@ -67,9 +69,9 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
   labelCol,
   wrapperCol,
   queryParams,
-  entityType,
   onChange,
   defaultValue,
+  entityType
 }) => {
   const [state, dispatch] = useReducer(subFormReducer, SUB_FORM_CONTEXT_INITIAL_STATE);
   const { publish } = usePubSub();
@@ -81,6 +83,7 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
 
   /**
    * Evaluate url using js expression
+   *
    * @urlExpression - javascript expression that returns an url
    */
   const evaluateUrlFromJsExpression = (urlExpression: string): string => {
@@ -115,19 +118,39 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
     }
   }, [value, name]);
 
+  const [internalEntityType, setInternalEntityType] = useState(entityType);
+
+  useEffect(() => {
+    if (!Boolean(internalEntityType)) {
+      if (Boolean(entityType)) {
+        setInternalEntityType(entityType);
+      } else
+        if (value && typeof value === 'object' && value['_className']) {
+          setInternalEntityType(value['_className']);
+        }
+    } else {
+      if (Boolean(entityType) && internalEntityType !== entityType) {
+        setInternalEntityType(entityType);
+      } else
+        if (value && typeof value === 'object' && value['_className'] && internalEntityType !== value['_className']) {
+          setInternalEntityType(value['_className']);
+        }
+    }
+  }, [entityType, value]);
+
   const urlHelper = useModelApiHelper();
   const getReadUrl = (): Promise<string> => {
     if (dataSource !== 'api') return Promise.reject('`getUrl` is available only when `dataSource` = `api`');
 
     return getUrl
       ? // if getUrl is specified - evaluate value using JS
-        evaluateUrl(getUrl)
-      : entityType
-      ? // if entityType is specified - get default url for the entity
+      evaluateUrl(getUrl)
+      : internalEntityType
+        ? // if entityType is specified - get default url for the entity
         urlHelper
-          .getDefaultActionUrl({ modelType: entityType, actionName: StandardEntityActions.read })
+          .getDefaultActionUrl({ modelType: internalEntityType, actionName: StandardEntityActions.read })
           .then(endpoint => endpoint.url)
-      : // return empty string
+        : // return empty string
         Promise.resolve('');
   };
 
@@ -144,27 +167,26 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
 
   // show form based on the entity type
   useEffect(() => {
-    if (formData && formSelectionMode == 'dynamic') {
-      const obj = formData[name];
-      if (obj && typeof obj === 'object' && obj['_className'] && !formConfig?.formId)
-        getEntityFormId(obj['_className'], formType, formid => {
+    if (value && formSelectionMode === 'dynamic') {
+      if (value && typeof value === 'object' && value['_className'] && !formConfig?.formId)
+        getEntityFormId(value['_className'], formType, formid => {
           setFormConfig({ formId: { name: formid.name, module: formid.module }, lazy: true });
         });
     }
-  }, [formData]);
+  }, [value]);
 
-  const { mutate: postHttp, loading: isPosting, error: postError } = useMutate({
-    path: evaluateUrlFromJsExpression(postUrl),
-    verb: 'POST',
-  });
+  const { mutate: postHttpInternal, loading: isPosting, error: postError } = useMutate();
+  const postHttp = (data) => {
+    return postHttpInternal({ url: evaluateUrlFromJsExpression(postUrl), httpVerb: 'POST' }, data);
+  };
 
-  const { mutate: putHttp, loading: isUpdating, error: updateError } = useMutate({
-    path: evaluateUrlFromJsExpression(putUrl),
-    verb: 'PUT',
-  });
+  const { mutate: putHttpInternal, loading: isUpdating, error: updateError } = useMutate();
+  const putHttp = (data) => {
+    return putHttpInternal({ url: evaluateUrlFromJsExpression(putUrl), httpVerb: 'PUT' }, data);
+  };
 
   /**
-   *  Memoized query params evaluator. It executes `queryParams` (javascript defined on the component settings) to get query params
+   * Memoized query params evaluator. It executes `queryParams` (javascript defined on the component settings) to get query params
    */
   const queryParamsEvaluator = useMemo<QueryParamsEvaluator>(() => {
     // tslint:disable-next-line:function-constructor
@@ -193,9 +215,7 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
   const getFinalQueryParams = () => {
     if (formMode === 'designer' || dataSource !== 'api') return {};
 
-    let params: EntitiesGetQueryParams = {
-      entityType,
-    };
+    let params: EntitiesGetQueryParams = { entityType: internalEntityType };
 
     params.properties =
       typeof properties === 'string' ? `id ${properties}` : ['id', ...Array.from(new Set(properties || []))].join(' '); // Always include the `id` property/. Useful for deleting
@@ -228,17 +248,23 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
     if (dataRequestAbortController.current) dataRequestAbortController.current.abort('out of date');
 
     // Skip loading if we work with entity and the `id` is not specified
-    if (entityType && !finalQueryParams?.id) {
+    if (internalEntityType && !finalQueryParams?.id) {
       onChange({});
       return;
     }
 
-    if (!getUrl) return;
+    // NOTE: getUrl may be null and a real URL according to the entity type or other params
+    //if (!getUrl) return; 
 
     dataRequestAbortController.current = new AbortController();
 
     dispatch(fetchDataRequestAction());
     getReadUrl().then(getUrl => {
+      if (!Boolean(getUrl)) {
+        dispatch(fetchDataSuccessAction());
+        return;
+      }
+
       RestfulShesha.get<EntityAjaxResponse, any, any, any>(
         getUrl,
         finalQueryParams,
@@ -271,9 +297,8 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
 
   // fetch data on first rendering and on change of some properties
   useDeepCompareEffect(() => {
-    if (dataSource !== 'api') return;
-
-    fetchData();
+    if (dataSource === 'api')
+      fetchData();
   }, [dataSource, finalQueryParams]); // todo: memoize final getUrl and add as a dependency
 
   const postData = useDebouncedCallback(() => {
@@ -333,6 +358,20 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
   }, 300);
   //#endregion
 
+  const designerComponents = useFormDesignerComponents();
+
+  const setMarkup = (payload: IPersistedFormPropsWithComponents) => {
+    const flatStructure = componentsTreeToFlatStructure(designerComponents, payload.components);
+    upgradeComponents(designerComponents, payload.formSettings, flatStructure);
+    const tree = componentsFlatStructureToTree(designerComponents, flatStructure);
+
+    dispatch(setMarkupWithSettingsAction({
+      ...payload,
+      components: tree,
+      ...flatStructure
+    }));
+  };
+
   //#region Fetch Form
   useDeepCompareEffect(() => {
     if (formConfig.formId && !markup) {
@@ -342,18 +381,16 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
         .then(response => {
           setFormLoadingState({ isLoading: false, error: null });
 
-          dispatch(
-            setMarkupWithSettingsAction({
-              hasFetchedConfig: true,
-              id: response?.id,
-              module: response?.module,
-              components: response.markup,
-              formSettings: response.settings,
-              versionNo: response?.versionNo,
-              versionStatus: response?.versionStatus,
-              description: response?.description,
-            })
-          );
+          setMarkup({
+            hasFetchedConfig: true,
+            id: response?.id,
+            module: response?.module,
+            components: response.markup,
+            formSettings: response.settings,
+            versionNo: response?.versionNo,
+            versionStatus: response?.versionStatus,
+            description: response?.description,
+          });
         })
         .catch(e => {
           setFormLoadingState({ isLoading: false, error: e });
@@ -361,14 +398,23 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
     }
 
     if (!formConfig.formId && markup) {
-      dispatch(setMarkupWithSettingsAction(markup));
+      setMarkup(markup);
     }
 
     if (!formConfig.formId && !markup) {
-      dispatch(setMarkupWithSettingsAction({ components: [], formSettings: DEFAULT_FORM_SETTINGS }));
+      setMarkup({ components: [], formSettings: DEFAULT_FORM_SETTINGS });
     }
   }, [formConfig.formId, markup]);
   //#endregion
+
+  const getChildComponents = (componentId: string) => {
+    const childIds = state.componentRelations[componentId];
+    if (!childIds) return [];
+    const components = childIds.map(childId => {
+      return state.allComponents[childId];
+    });
+    return components;
+  };
 
   const actionDependencies = [actionsOwnerId];
   useConfigurableAction(
@@ -453,6 +499,7 @@ const SubFormProvider: FC<SubFormProviderProps> = ({
           getData: debouncedFetchData,
           postData,
           putData,
+          getChildComponents,
         }}
       >
         {children}

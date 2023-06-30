@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 import { Empty, Select, Spin } from 'antd';
-import { ReferenceListItemDto } from '../../apis/referenceList';
+import { ReferenceListItemDto } from 'apis/referenceList';
 import { CustomLabeledValue, IGenericRefListDropDownProps, ISelectOption } from './models';
 import ReadOnlyDisplayFormItem from '../readOnlyDisplayFormItem';
-import { useReferenceList } from '../../providers/referenceListDispatcher';
-import { ValidationErrors } from '../..';
+import { useReferenceList } from 'providers/referenceListDispatcher';
+import { ValidationErrors } from 'components';
 
 // tslint:disable-next-line:whitespace
 export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownProps<TValue>) => {
@@ -42,7 +42,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
     if (localValue === undefined) return undefined;
     if (mode === 'multiple' || mode === 'tags') {
       return Array.isArray(localValue)
-        ? (localValue as TValue[]).map<CustomLabeledValue<TValue>>(o => {
+        ? (localValue as TValue[]).map<CustomLabeledValue<TValue>>((o) => {
             return getLabeledValue(o, options);
           })
         : [getLabeledValue(localValue as TValue, options)];
@@ -52,7 +52,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
   const options = useMemo<ISelectOption<TValue>[]>(() => {
     const fetchedData = (refList?.items || []).filter(filter);
 
-    const fetchedItems = fetchedData.map<ISelectOption<TValue>>(item => {
+    const fetchedItems = fetchedData.map<ISelectOption<TValue>>((item) => {
       const option = Boolean(getOptionFromFetchedItem)
         ? (getOptionFromFetchedItem(item) as ISelectOption<TValue>)
         : (item as ISelectOption<TValue>);
@@ -65,7 +65,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
     // Note: we shouldn't process full list and make it unique because by this way we'll hide duplicates received from the back-end
     const selectedItems = selectedItem
       ? (Array.isArray(selectedItem) ? selectedItem : [selectedItem]).filter(
-          i => fetchedItems.findIndex(fi => fi.value == i.value) === -1
+          (i) => fetchedItems.findIndex((fi) => String(fi.value) === String(i.value)) === -1
         )
       : [];
 
@@ -78,7 +78,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
     const selectedValue =
       option !== undefined
         ? Array.isArray(option)
-          ? (option as ISelectOption<TValue>[]).map(o => o.data)
+          ? (option as ISelectOption<TValue>[]).map((o) => o.data)
           : (option as ISelectOption<TValue>).data
         : undefined;
 
@@ -99,6 +99,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
 
   return (
     <Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
+      className="sha-dropdown"
       showSearch
       labelInValue={true}
       defaultActiveFirstOption={false}
@@ -130,8 +131,8 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
       value={wrapValue(value)}
       mode={mode}
     >
-      {options?.map(({ value: localValue, label, data }) => (
-        <Select.Option value={localValue} key={localValue} data={data}>
+      {options?.map(({ value: localValue, label, data }, index) => (
+        <Select.Option value={localValue} key={index} data={data}>
           {label}
         </Select.Option>
       ))}

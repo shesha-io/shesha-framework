@@ -1,8 +1,7 @@
 import { createContext } from 'react';
-import { GetDataError } from 'restful-react';
-import { IConfigurableFormComponent } from '../../interfaces';
-import { IFormSettings } from '../form/models';
-import { IPersistedFormProps } from '../formPersisterProvider/models';
+import { GetDataError } from 'hooks';
+import { IConfigurableFormComponent, IFlatComponentsStructure } from '../../interfaces';
+import { IFormSettings, IPersistedFormProps } from '../form/models';
 
 export interface IPersistedFormPayload
   extends Pick<IPersistedFormProps, 'id' | 'versionNo' | 'versionStatus' | 'description' | 'module'> { }
@@ -11,7 +10,7 @@ export interface IFetchDataErrorPayload {
   error: GetDataError<unknown>;
 }
 
-export interface ISubFormStateContext extends IPersistedFormPayload {
+export interface ISubFormStateContext extends IPersistedFormPayload, IFlatComponentsStructure {
   /** True only if the config was fetched from the server using formId
    * If the markup was passed to the sub form, this will be false
    */
@@ -40,10 +39,13 @@ export interface ISubFormActionsContext {
   postData?: () => void;
   putData?: () => void;
   deleteData?: () => void;
+  getChildComponents: (id: string) => IConfigurableFormComponent[];
 }
 
 export const SUB_FORM_CONTEXT_INITIAL_STATE: ISubFormStateContext = {
   components: [],
+  allComponents: {},
+  componentRelations: {},
   formSettings: null,
   loading: {},
   errors: {},

@@ -44,8 +44,9 @@ export const calcTextWidth = function(str, fontFamily = DEFAULT_FONT_FAMILY, fon
     "position": "absolute", "float": "left", "white-space": "nowrap", "visibility": "hidden", 
     "font-size": fontSize, "font-family": fontFamily
   };
-  for (let k in css) {
-    div.style[k] = css[k];
+  for (const k in css) {
+    if (css.hasOwnProperty(k))
+      div.style[k] = css[k];
   }
   div = document.body.appendChild(div);
   var w = div.offsetWidth;

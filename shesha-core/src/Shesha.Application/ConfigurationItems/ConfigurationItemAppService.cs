@@ -3,6 +3,7 @@ using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Runtime.Validation;
+using DocumentFormat.OpenXml.ExtendedProperties;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Application.Services.Dto;
 using Shesha.ConfigurationItems.Cache;
@@ -16,6 +17,7 @@ using Shesha.Domain.ConfigurationItems;
 using Shesha.Dto.Interfaces;
 using Shesha.Extensions;
 using Shesha.Mvc;
+using Shesha.Reflection;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -175,7 +177,7 @@ namespace Shesha.ConfigurationItems
 
             foreach (var item in items)
             {
-                var manager = GetSingleManager(item.ItemType);
+                var manager = GetSingleManager(item);
 
                 await manager.UpdateStatusAsync(item, input.Status);
             }
@@ -183,17 +185,20 @@ namespace Shesha.ConfigurationItems
             await UnitOfWorkManager.Current.SaveChangesAsync();
         }
 
-        private IConfigurationItemManager GetSingleManager(string itemType) 
+        private IConfigurationItemManager GetSingleManager(ConfigurationItemBase item) 
         {
-            var allManagers = IocManager.ResolveAll<IConfigurationItemManager>();
-            var managers = allManagers.Where(m => m.ItemType == itemType).ToList();
-            if (!managers.Any())
-                throw new ConfigurationItemManagerNotFoundException(itemType);
-            if (managers.Count() > 1)
-                throw new AmbiguousConfigurationItemManagersException(itemType);
+            var itemType = item.GetType().StripCastleProxyType();
+            var managerType = typeof(IConfigurationItemManager<>).MakeGenericType(itemType);
+            var manager = IocManager.Resolve(managerType) as IConfigurationItemManager;
 
-            return managers.First();
+            var allManagers = IocManager.Resolve<IConfigurationItemManager>();
+
+            if (manager == null)
+                throw new ConfigurationItemManagerNotFoundException(item.GetType().Name);
+
+            return manager as IConfigurationItemManager;
         }
+
 
         /// <summary>
         /// Copy configuration item
@@ -206,7 +211,7 @@ namespace Shesha.ConfigurationItems
             if (item == null)
                 throw new EntityNotFoundException(typeof(ConfigurationItemBase), input.ItemId);
 
-            var manager = GetSingleManager(item.ItemType);
+            var manager = GetSingleManager(item);
 
             var itemCopy = await manager.CopyAsync(item, input);
 
@@ -228,16 +233,16 @@ namespace Shesha.ConfigurationItems
 
             var validationResults = new List<ValidationResult>();
 
-            if (item.Configuration.VersionStatus != ConfigurationItemVersionStatus.Ready)
+            if (item.VersionStatus != ConfigurationItemVersionStatus.Ready)
                 validationResults.Add(new ValidationResult($"This operation is allowed only for items with '{ConfigurationItemVersionStatus.Ready}' status"));
 
-            if (!item.Configuration.IsLast)
+            if (!item.IsLast)
                 validationResults.Add(new ValidationResult($"This operation is allowed only for last version of form"));
 
             if (validationResults.Any())
                 throw new AbpValidationException("Failed to cancel version", validationResults);
 
-            var manager = GetSingleManager(item.ItemType);
+            var manager = GetSingleManager(item);
 
             await manager.CancelVersoinAsync(item);
 
@@ -256,7 +261,7 @@ namespace Shesha.ConfigurationItems
 
             var item = await GetItemAsync(input.ItemId);
 
-            var manager = GetSingleManager(item.ItemType);
+            var manager = GetSingleManager(item);
 
             await manager.MoveToModuleAsync(item, input);
             
@@ -276,17 +281,17 @@ namespace Shesha.ConfigurationItems
 
             var validationResults = new List<ValidationResult>();
 
-            if (item.Configuration.VersionStatus != ConfigurationItemVersionStatus.Live &&
-                item.Configuration.VersionStatus != ConfigurationItemVersionStatus.Cancelled)
+            if (item.VersionStatus != ConfigurationItemVersionStatus.Live &&
+                item.VersionStatus != ConfigurationItemVersionStatus.Cancelled)
                 validationResults.Add(new ValidationResult($"Creation of new version allowed only for items with '{ConfigurationItemVersionStatus.Live}' or '{ConfigurationItemVersionStatus.Cancelled}' status"));
 
-            if (!item.Configuration.IsLast)
+            if (!item.IsLast)
                 validationResults.Add(new ValidationResult($"Creation of new version allowed only for last version of item"));
 
             if (validationResults.Any())
                 throw new AbpValidationException("Failed to create new version", validationResults);
 
-            var manager = GetSingleManager(item.ItemType);
+            var manager = GetSingleManager(item);
 
             var newVersion = await manager.CreateNewVersionAsync(item);
             await CurrentUnitOfWork.SaveChangesAsync();
@@ -303,7 +308,7 @@ namespace Shesha.ConfigurationItems
 
             var item = await GetItemAsync(input.Id);
 
-            var manager = GetSingleManager(item.ItemType);
+            var manager = GetSingleManager(item);
 
             await manager.DeleteAllVersionsAsync(item);
         }

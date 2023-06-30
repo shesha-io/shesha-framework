@@ -20,15 +20,13 @@ namespace Shesha.Services.ReferenceLists
     /// inheritedDoc
     public class ReferenceListManager : ConfigurationItemManager<ReferenceList>, IReferenceListManager, ITransientDependency
     {
-        public override string ItemType => ReferenceList.ItemTypeName;
-
         private readonly IRepository<ReferenceListItem, Guid> _listItemsRepository;
 
         public ReferenceListManager(IRepository<ReferenceList, Guid> repository, 
             IRepository<ConfigurationItem, Guid> configurationItemRepository, 
             IRepository<Module, Guid> moduleRepository, 
             IUnitOfWorkManager unitOfWorkManager, 
-            IRepository<ReferenceListItem, Guid> listItemsRepository) : base(repository, configurationItemRepository, moduleRepository, unitOfWorkManager)
+            IRepository<ReferenceListItem, Guid> listItemsRepository) : base(repository, moduleRepository, unitOfWorkManager)
         {
             _listItemsRepository = listItemsRepository;
         }
@@ -41,7 +39,7 @@ namespace Shesha.Services.ReferenceLists
 
             var validationResults = new List<ValidationResult>();
 
-            var alreadyExist = await Repository.GetAll().Where(f => f.Configuration.Module == module && f.Configuration.Name == input.Name).AnyAsync();
+            var alreadyExist = await Repository.GetAll().Where(f => f.Module == module && f.Name == input.Name).AnyAsync();
             if (alreadyExist)
                 validationResults.Add(new ValidationResult(
                     module != null
@@ -53,18 +51,17 @@ namespace Shesha.Services.ReferenceLists
                 throw new AbpValidationException("Please correct the errors and try again", validationResults);
 
             var refList = new ReferenceList();
-            refList.Configuration.Name = input.Name;
-            refList.Configuration.Module = module;
-            refList.Configuration.Description = input.Description;
-            refList.Configuration.Label = input.Label;
+            refList.Name = input.Name;
+            refList.Module = module;
+            refList.Description = input.Description;
+            refList.Label = input.Label;
 
-            refList.Configuration.VersionNo = 1;
-            refList.Configuration.VersionStatus = ConfigurationItemVersionStatus.Draft;
-            refList.Configuration.Origin = refList.Configuration;
+            refList.VersionNo = 1;
+            refList.VersionStatus = ConfigurationItemVersionStatus.Draft;
+            refList.Origin = refList;
 
             refList.Normalize();
 
-            await ConfigurationItemRepository.InsertAsync(refList.Configuration);
             await Repository.InsertAsync(refList);
 
             return refList;
@@ -74,18 +71,17 @@ namespace Shesha.Services.ReferenceLists
         {
             await UpdateNameAndModuleAsync(refList, input.ModuleId, input.Name);
 
-            refList.Configuration.Label = input.Label;
-            refList.Configuration.Description = input.Description;
+            refList.Label = input.Label;
+            refList.Description = input.Description;
 
             await Repository.UpdateAsync(refList);
-            await ConfigurationItemRepository.UpdateAsync(refList.Configuration);
         }
 
         private async Task UpdateNameAndModuleAsync(ReferenceList refList, Guid? moduleId, string name)
         {
             var validationResults = new List<ValidationResult>();
 
-            var needUpdate = refList.Configuration.Name != name || refList.Configuration.Module?.Id != moduleId;
+            var needUpdate = refList.Name != name || refList.Module?.Id != moduleId;
             if (!needUpdate)
                 return;
 
@@ -96,12 +92,12 @@ namespace Shesha.Services.ReferenceLists
             if (string.IsNullOrWhiteSpace(name))
                 validationResults.Add(new ValidationResult("Name field is required"));
             else {
-                if (refList.Configuration.Name != name && refList.HardLinkToApplication)
+                if (refList.Name != name && refList.HardLinkToApplication)
                     validationResults.Add(new ValidationResult("Name can't be changed for the Reference List that is hard linked to the application code"));
-                if (refList.Configuration.Module?.Id != moduleId && refList.HardLinkToApplication)
+                if (refList.Module?.Id != moduleId && refList.HardLinkToApplication)
                     validationResults.Add(new ValidationResult("Module can't be changed for the Reference List that is hard linked to the application code"));
 
-                var alreadyExists = await Repository.GetAll().Where(v => v.Configuration.Name == name && v.Configuration.Module == newModule).AnyAsync();
+                var alreadyExists = await Repository.GetAll().Where(v => v.Name == name && v.Module == newModule).AnyAsync();
                 if (alreadyExists)
                     validationResults.Add(new ValidationResult(newModule != null
                         ? $"Reference List with name `{name}` already exists in module `{newModule.Name}`"
@@ -113,25 +109,24 @@ namespace Shesha.Services.ReferenceLists
                 throw new AbpValidationException("Please correct the errors and try again", validationResults);
 
 
-            var allVersions = await Repository.GetAll().Where(v => v.Configuration.Name == refList.Configuration.Name && v.Configuration.Module == refList.Configuration.Module).ToListAsync();
+            var allVersions = await Repository.GetAll().Where(v => v.Name == refList.Name && v.Module == refList.Module).ToListAsync();
 
             foreach (var version in allVersions) 
             {
-                version.Configuration.Module = newModule;
-                version.Configuration.Name = name;
+                version.Module = newModule;
+                version.Name = name;
                 
-                await ConfigurationItemRepository.UpdateAsync(version.Configuration);
                 await Repository.UpdateAsync(version);
             }
         }
 
-        public override Task<IConfigurationItemDto> MapToDtoAsync(ConfigurationItemBase item)
+        public override Task<IConfigurationItemDto> MapToDtoAsync(ReferenceList item)
         {
             var dto = ObjectMapper.Map<ReferenceListDto>(item);
             return Task.FromResult<IConfigurationItemDto>(dto);
         }
 
-        public override async Task<ConfigurationItemBase> CopyAsync(ConfigurationItemBase item, CopyItemInput input)
+        public override async Task<ReferenceList> CopyAsync(ReferenceList item, CopyItemInput input)
         {
             var srcList = item as ReferenceList;
 
@@ -150,7 +145,7 @@ namespace Shesha.Services.ReferenceLists
 
             if (module != null && !string.IsNullOrWhiteSpace(input.Name))
             {
-                var alreadyExist = await Repository.GetAll().Where(f => f.Configuration.Module == module && f.Configuration.Name == input.Name).AnyAsync();
+                var alreadyExist = await Repository.GetAll().Where(f => f.Module == module && f.Name == input.Name).AnyAsync();
                 if (alreadyExist)
                     validationResults.Add(new ValidationResult(
                         module != null
@@ -164,19 +159,18 @@ namespace Shesha.Services.ReferenceLists
                 throw new AbpValidationException("Please correct the errors and try again", validationResults);
 
             var listCopy = new ReferenceList();
-            listCopy.Configuration.Name = input.Name;
-            listCopy.Configuration.Module = module;
-            listCopy.Configuration.Description = input.Description;
-            listCopy.Configuration.Label = input.Label;
+            listCopy.Name = input.Name;
+            listCopy.Module = module;
+            listCopy.Description = input.Description;
+            listCopy.Label = input.Label;
 
-            listCopy.Configuration.VersionNo = 1;
-            listCopy.Configuration.VersionStatus = ConfigurationItemVersionStatus.Draft;
-            listCopy.Configuration.Origin = listCopy.Configuration;
+            listCopy.VersionNo = 1;
+            listCopy.VersionStatus = ConfigurationItemVersionStatus.Draft;
+            listCopy.Origin = listCopy;
 
             listCopy.NoSelectionValue = srcList.NoSelectionValue;
             listCopy.Normalize();
 
-            await ConfigurationItemRepository.InsertAsync(listCopy.Configuration);
             await Repository.InsertAsync(listCopy);
 
             await CopyItemsAsync(srcList, listCopy);
@@ -199,7 +193,6 @@ namespace Shesha.Services.ReferenceLists
                 var dstItem = CloneListItem(srcItem);
                 dstItem.ReferenceList = destination;
                 dstItem.Parent = destinationParent;
-                //dstItem.Id = Guid.NewGuid(); // todo: use generator to generate sequential ids
 
                 await _listItemsRepository.InsertAsync(dstItem);
 
@@ -223,54 +216,33 @@ namespace Shesha.Services.ReferenceLists
             };
         }
 
-        public override async Task<ConfigurationItemBase> CreateNewVersionAsync(ConfigurationItemBase item)
+        public async Task<ReferenceList> CreateNewVersionWithoutItemsAsync(ReferenceList srcList) 
         {
-            var refList = item as ReferenceList;
-            if (refList == null)
-                throw new ArgumentException($"{nameof(item)} must be of type {nameof(ReferenceList)}", nameof(item));
-
-            var result = await CreateNewVersionAsync(refList);
-            return result;
-        }
-
-        public async Task<ReferenceList> CreateNewVersionAsync(ReferenceList srcList)
-        {
-            // todo: check business rules
-
             var newVersion = new ReferenceList();
-            newVersion.Configuration.Origin = srcList.Configuration.Origin;
-            newVersion.Configuration.ItemType = srcList.Configuration.ItemType;
-            newVersion.Configuration.Name = srcList.Configuration.Name;
-            newVersion.Configuration.Module = srcList.Configuration.Module;
-            newVersion.Configuration.Description = srcList.Configuration.Description;
-            newVersion.Configuration.Label = srcList.Configuration.Label;
-            newVersion.Configuration.TenantId = srcList.Configuration.TenantId;
+            newVersion.Origin = srcList.Origin;
+            newVersion.Name = srcList.Name;
+            newVersion.Module = srcList.Module;
+            newVersion.Description = srcList.Description;
+            newVersion.Label = srcList.Label;
+            newVersion.TenantId = srcList.TenantId;
 
-            newVersion.Configuration.ParentVersion = srcList.Configuration; // set parent version
-            newVersion.Configuration.VersionNo = srcList.Configuration.VersionNo + 1; // version + 1
-            newVersion.Configuration.VersionStatus = ConfigurationItemVersionStatus.Draft; // draft
+            newVersion.ParentVersion = srcList; // set parent version
+            newVersion.VersionNo = srcList.VersionNo + 1; // version + 1
+            newVersion.VersionStatus = ConfigurationItemVersionStatus.Draft; // draft
 
-            /*
-            newVersion.Markup = form.Markup;
-            newVersion.ModelType = form.ModelType;
-            newVersion.Type = form.Type;
-            newVersion.IsTemplate = form.IsTemplate;
-            newVersion.Template = form.Template;
-            */
             newVersion.Normalize();
 
-            await ConfigurationItemRepository.InsertAsync(newVersion.Configuration);
             await Repository.InsertAsync(newVersion);
 
+            return newVersion;
+        }
+
+        public override async Task<ReferenceList> CreateNewVersionAsync(ReferenceList srcList)
+        {
+            var newVersion = await CreateNewVersionWithoutItemsAsync(srcList);
+            
             await CopyItemsAsync(srcList, newVersion);
 
-            /* note: we must mark previous version as retired only during publication of the new version
-            if (form.Configuration.VersionStatus == ConfigurationItemVersionStatus.Live) 
-            {
-                form.Configuration.VersionStatus = ConfigurationItemVersionStatus.Retired;
-                await ConfigurationItemRepository.UpdateAsync(form.Configuration);
-            }
-            */
             return newVersion;
         }
     }

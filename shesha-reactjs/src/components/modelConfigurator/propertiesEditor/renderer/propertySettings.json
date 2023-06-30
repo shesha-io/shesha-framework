@@ -455,17 +455,19 @@
       "settingsValidationErrors": [],
       "components": [
         {
-          "id": "t9Ii1vy0dOVj1S2hSnaJD",
+          "id": "6b0bd9c6-6a53-4a05-9de0-ad1b17eb0018",
           "type": "autocomplete",
           "name": "entityType",
           "label": "Entity Type",
           "labelAlign": "right",
+          "hidden": false,
           "parentId": "MwjxidwaPufFS-PixP6_j",
           "customEnabled": "return data.source != 1;",
           "dataSourceType": "url",
           "validate": {},
           "dataSourceUrl": "/api/services/app/Metadata/EntityTypeAutocomplete",
           "settingsValidationErrors": [],
+          "useRawValues": true,
           "textType": "text"
         }
       ]

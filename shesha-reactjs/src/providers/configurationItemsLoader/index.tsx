@@ -12,23 +12,24 @@ import {
   IGetComponentPayload,
   IUpdateComponentPayload,
 } from './contexts';
-import useThunkReducer from 'react-hook-thunk-reducer';
+import useThunkReducer from 'hooks/thunkReducer';
 import { IComponentsDictionary, IFormsDictionary, IReferenceListsDictionary } from './models';
 import { FormIdentifier, useSheshaApplication } from '../../providers';
 import { asFormFullName, asFormRawId } from '../form/utils';
 import { FormMarkupWithSettings, IFormDto, FormFullName } from '../form/models';
-import { FormConfigurationDto, formConfigurationGet, formConfigurationGetByName } from '../../apis/formConfiguration';
 import { getFormNotFoundMessage, getReferenceListNotFoundMessage } from './utils';
 import { ConfigurationItemsViewMode, IComponentSettings } from '../appConfigurator/models';
-import { IReferenceList } from '../../interfaces/referenceList';
-import { referenceListGetByName } from '../../apis/referenceList';
-import { configurableComponentGetByName, useConfigurableComponentUpdateSettings } from '../../apis/configurableComponent';
-import { MakePromiseWithState, PromisedValue } from '../../utils/promises';
+import { IReferenceList } from 'interfaces/referenceList';
+import { MakePromiseWithState, PromisedValue } from 'utils/promises';
 import { isValidRefListId } from '../referenceListDispatcher/utils';
 import { IReferenceListIdentifier } from '../referenceListDispatcher/models';
-import { entityConfigGetEntityConfigForm } from '../../apis/entityConfig';
 import localForage from 'localforage';
-import { IDictionary } from '../../components/configurationFramework/models';
+import { IDictionary } from 'interfaces';
+
+import { FormConfigurationDto, formConfigurationGet, formConfigurationGetByName } from 'apis/formConfiguration';
+import { referenceListGetByName } from 'apis/referenceList';
+import { configurableComponentGetByName, configurableComponentUpdateSettings } from 'apis/configurableComponent';
+import { entityConfigGetEntityConfigForm } from 'apis/entityConfig';
 
 type LocalForage = ReturnType<typeof localForage.createInstance>;
 type StoragesDictionary = IDictionary<LocalForage>;
@@ -53,13 +54,13 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
     }
 
     return storages.current[name];
-  }
+  };
 
   const forms = useRef<IFormsDictionary>({});
   const referenceLists = useRef<IReferenceListsDictionary>({});
   const components = useRef<IComponentsDictionary>({});
 
-  const [state, _dispatch] = useThunkReducer(metadataReducer, initial);
+  const [state] = useThunkReducer(metadataReducer, initial);
 
   const { backendUrl, httpHeaders, applicationKey } = useSheshaApplication();
 
@@ -71,18 +72,18 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
       return null;
 
     const addMode = (key: string): string => {
-      return `${key}:${configurationItemMode}`
-    }
+      return `${key}:${configurationItemMode}`;
+    };
 
     return addMode(`${refListId.module}/${refListId.name}`);
-  }
+  };
 
   const makeFormLoadingKey = (payload: IGetFormPayload): string => {
     const { formId, configurationItemMode } = payload;
 
     const addMode = (key: string): string => {
-      return `${key}:${configurationItemMode}`
-    }
+      return `${key}:${configurationItemMode}`;
+    };
 
     const rawId = asFormRawId(formId);
     if (rawId) {
@@ -94,21 +95,21 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
       return addMode(`${fullName.module}/${fullName.name}`);
     }
     return null;
-  }
+  };
 
   const getMarkupFromResponse = (data: FormConfigurationDto): FormMarkupWithSettings => {
     const markupJson = data.markup;
     return markupJson
       ? JSON.parse(markupJson) as FormMarkupWithSettings
       : null;
-  }
+  };
 
   const getCacheKeyByFullName = (mode: string, module: string, name: string): string => {
     return `${mode}:${module}:${name}`;
-  }
+  };
   const getCacheKeyByRawId = (mode: string, rawId: string): string => {
     return `${mode}:${rawId}`;
-  }
+  };
 
   const getFromCache = <TDto extends any>(itemType: ItemTypes, key: string): Promise<TDto> => {
     const cacheStorage = getStorage(itemType);
@@ -118,7 +119,7 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
         return null;
       })
       : Promise.resolve(null);
-  }
+  };
 
   const addToCache = (itemType: ItemTypes, cacheKey: string, data: any) => {
     if (!cacheKey)
@@ -129,10 +130,9 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
       cacheStorage.setItem(cacheKey, data).catch(e => {
         console.warn(`Failed to cache configuration item with key '${cacheKey}'`, e);
       });
-    }
-    else
+    } else
       cacheStorage.removeItem(cacheKey);
-  }
+  };
 
   const convertFormConfigurationDto2FormDto = (dto: FormConfigurationDto): IFormDto => {
     const markupWithSettings = getMarkupFromResponse(dto);
@@ -157,7 +157,7 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
 
   const configModeOrDefault = (mode?: ConfigurationItemsViewMode): ConfigurationItemsViewMode => {
     return mode ?? 'live';
-  }
+  };
 
   const getFormCacheKey = (formId: FormIdentifier, configurationItemMode?: ConfigurationItemsViewMode): string => {
     const rawId = asFormRawId(formId);
@@ -167,11 +167,11 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
       : rawId
         ? getCacheKeyByRawId(configModeOrDefault(configurationItemMode), rawId)
         : null;
-  }
+  };
 
   const getRefListCacheKey = (listId: IReferenceListIdentifier, configurationItemMode?: ConfigurationItemsViewMode): string => {
     return getCacheKeyByFullName(configModeOrDefault(configurationItemMode), listId.module, listId.name);
-  }
+  };
 
   const getRefList = (payload: IGetRefListPayload): PromisedValue<IReferenceList> => {
     // create a key
@@ -204,7 +204,7 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
               name: responseData.name,
               items: [...responseData.items]
             };
-            addToCache(ItemTypes.ReferenceList, cacheKey, responseData)
+            addToCache(ItemTypes.ReferenceList, cacheKey, responseData);
 
             resolve(dto);
           } else {
@@ -233,7 +233,7 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
     referenceLists.current[key] = promiseWithState;
 
     return promiseWithState;
-  }
+  };
 
   const getForm = (payload: IGetFormPayload): Promise<IFormDto> => {
     // create a key
@@ -256,7 +256,14 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
 
       getFromCache<FormConfigurationDto>(ItemTypes.Form, cacheKey).then(cachedDto => {
         const promise = Boolean(fullName)
-          ? formConfigurationGetByName({ name: fullName.name, module: fullName.module, version: fullName.version, md5: cachedDto?.cacheMd5 }, { base: backendUrl, headers: httpHeaders/*, responseConverter*/ })
+          ? formConfigurationGetByName(
+            {
+              name: fullName.name,
+              module: fullName.module,
+              version: fullName.version,
+              md5: cachedDto?.cacheMd5
+            },
+            { base: backendUrl, headers: httpHeaders/*, responseConverter*/ })
           : Boolean(rawId)
             ? formConfigurationGet({ id: rawId, md5: cachedDto?.cacheMd5 }, { base: backendUrl, headers: httpHeaders/*, responseConverter*/ })
             : Promise.reject("Form identifier must be specified");
@@ -301,18 +308,18 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
     return cacheKey && applicationKey
       ? applicationKey + '/' + cacheKey
       : cacheKey;
-  }
+  };
 
   const getComponentCacheKey = (name: string, isApplicationSpecific: boolean): string => {
     const key = name ? `${name.toLowerCase()}` : null;
     return isApplicationSpecific
       ? prefixWithAppKey(key)
       : key;
-  }
+  };
 
   const clearComponentCache = (name: string) => {
     delete components.current[name.toLocaleLowerCase()];
-  }
+  };
 
   const getComponent = (payload: IGetComponentPayload) => {
 
@@ -374,23 +381,23 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
     components.current[key] = promiseWithState;
 
     return promiseWithState;
-  }
+  };
 
-  const { mutate: updateComponentSettings } = useConfigurableComponentUpdateSettings({});
   const updateComponent = (payload: IUpdateComponentPayload) => {
     const jsonSettings = payload.settings
       ? JSON.stringify(payload.settings)
       : null;
-    return updateComponentSettings({
+      
+    return configurableComponentUpdateSettings({
       module: null,
       name: payload.name,
       isApplicationSpecific: payload.isApplicationSpecific,
       settings: jsonSettings
-    }).then(response => {
+    }, { base: backendUrl, headers: httpHeaders }).then(response => {
       clearComponentCache(payload.name);
       return response;
     });
-  }
+  };
 
   const clearFormCache = (payload: IClearFormCachePayload) => {
     const modes: ConfigurationItemsViewMode[] = ['live', 'ready', 'latest'];
@@ -399,7 +406,7 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
 
       delete forms.current[cacheKey];
     });
-  }
+  };
 
   const getEntityFormId = (className: string, formType: string, action: (formId: FormFullName) => void) => {
     entityConfigGetEntityConfigForm({ entityConfigName: className, typeName: formType }, { base: backendUrl, headers: httpHeaders })
@@ -407,7 +414,7 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
         if (response.success)
           action({ name: response.result.name, module: response.result.module });
       });
-  }
+  };
 
   const loaderActions: IConfigurationItemsLoaderActionsContext = {
     getForm,

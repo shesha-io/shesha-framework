@@ -1,5 +1,7 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Entities;
+using Abp.Timing;
+using Castle.Core;
 using Newtonsoft.Json.Linq;
 using Shesha.Extensions;
 using Shesha.JsonLogic.Exceptions;
@@ -427,15 +429,7 @@ namespace Shesha.JsonLogic
 
                             var name = GetStringValue(@operator.Arguments.First());
 
-                            var expr = ExpressionExtensions.GetMemberExpression(param, name);
-
-                            if (expr.Type.IsEntityType()) 
-                            {
-                                name = $"{name}.{nameof(IEntity.Id)}";
-                                expr = ExpressionExtensions.GetMemberExpression(param, name);
-                            }
-
-                            return expr;
+                            return ExpressionExtensions.GetMemberExpression(param, name);
                         }
 
                     case JsOperators.In:
@@ -562,12 +556,115 @@ namespace Shesha.JsonLogic
 
                             return lambda;
                         }
+                    case JsOperators.Now:
+                        {
+                            if (@operator.Arguments.Any())
+                                throw new Exception($"{JsOperators.Now} operator doesn't support any arguments");
+
+                            return Expression.Constant(Clock.Now);
+                        }
+                    case JsOperators.DateAdd:
+                        {
+                            if (@operator.Arguments.Count() != 3)
+                                throw new Exception($"{JsOperators.DateAdd} operator require 3 arguments: date, number and datepart");
+
+                            var date = ParseTree<T>(@operator.Arguments[0], param);
+                            var number = GetAsInt64(@operator.Arguments[1]);
+                            if (number == null)
+                                throw new ArgumentException($"{JsOperators.DateAdd}: the `number` argument must not be null");
+
+                            var datepart = GetAsString(@operator.Arguments[2]);
+
+                            switch (datepart)
+                            {
+                                case "day": 
+                                    {
+                                        var addMethod = typeof(DateTime).GetMethod(nameof(DateTime.Add), new Type[] { typeof(TimeSpan) });
+                                        var timeSpan = TimeSpan.FromDays(number.Value);
+                                        return Expression.Call(
+                                            date,
+                                            addMethod,
+                                            Expression.Constant(timeSpan)
+                                        );
+                                    }
+                                case "week": 
+                                    {
+                                        var addMethod = typeof(DateTime).GetMethod(nameof(DateTime.Add), new Type[] { typeof(TimeSpan) });
+                                        var timeSpan = TimeSpan.FromDays(number.Value * 7);
+                                        return Expression.Call(
+                                            date,
+                                            addMethod,
+                                            Expression.Constant(timeSpan)
+                                        );
+                                    }
+                                case "month": 
+                                    {
+                                        var addMonthsMethod = typeof(DateTime).GetMethod(nameof(DateTime.AddMonths), new Type[] { typeof(int) });
+                                        return Expression.Call(
+                                            date,
+                                            addMonthsMethod,
+                                            Expression.Constant(number.Value)
+                                        );
+                                    }
+                                case "year":
+                                    {
+                                        var addYearsMethod = typeof(DateTime).GetMethod(nameof(DateTime.AddYears), new Type[] { typeof(int) });
+                                        return Expression.Call(
+                                            date,
+                                            addYearsMethod,
+                                            Expression.Constant(number.Value)
+                                        );
+                                    }
+                                default:
+                                    throw new ArgumentException($"{JsOperators.DateAdd}: the `datepart` = `{datepart}` is not supported");
+                            }
+                        }
+                    case JsOperators.Upper:
+                        {
+                            if (@operator.Arguments.Count() != 1)
+                                throw new Exception($"{JsOperators.Upper} operator require 1 argument");
+
+                            var arg = ParseTree<T>(@operator.Arguments[0], param);
+                            var toUpperMethod = typeof(string).GetMethod(nameof(string.ToUpper), new Type[] { });
+                            return Expression.Call(arg, toUpperMethod);
+                        }
+                    case JsOperators.Lower:
+                        {
+                            if (@operator.Arguments.Count() != 1)
+                                throw new Exception($"{JsOperators.Lower} operator require 1 argument");
+
+                            var arg = ParseTree<T>(@operator.Arguments[0], param);
+                            var toLowerMethod = typeof(string).GetMethod(nameof(string.ToLower), new Type[] { });
+                            return Expression.Call(arg, toLowerMethod);
+                        }
                     default:
                         throw new NotSupportedException($"Operator `{@operator.Name}` is not supported");
                 }
             }
             
             return null;
+        }
+
+        private string GetAsString(JToken token) 
+        {
+            if (token is JValue value)
+            {
+                return value.Value.ToString();
+            }
+            else
+                throw new NotSupportedException();
+        }
+
+        private Int64? GetAsInt64(JToken token)
+        {
+            if (token is JValue value)
+            {
+                return value.Value != null
+                    ? (Int64)value.Value
+                    : null;
+            }
+            else
+                throw new NotSupportedException();
         }
 
         private bool TryCompareMemberAndDateTime(Expression left, Expression right, Func<DateTime, DateTime> dateConverter, Binder binder, out Expression expression)
@@ -652,12 +749,15 @@ namespace Shesha.JsonLogic
 
                     return CombineExpressions<T>(new Expression[]
                         {
-                                            SafeNullable(from, pair.Left, Expression.LessThanOrEqual),
-                                            SafeNullable(pair.Left, to, Expression.LessThanOrEqual),
+                            SafeNullable(from, pair.Left, Expression.LessThanOrEqual),
+                            SafeNullable(pair.Left, to, Expression.LessThanOrEqual),
                         },
                         Expression.AndAlso,
                         param);
                 }
+
+                ConvertEntityReferenceForEquality(param, pair);
+
                 var convertedPair = PrepareExpressionPair(pair);
                 return Expression.Equal(convertedPair.Left, convertedPair.Right);
             });
@@ -768,6 +868,31 @@ namespace Shesha.JsonLogic
         {
             if (ExpressionExtensions.IsNullableExpression(a) && !ExpressionExtensions.IsNullableExpression(b))
                 b = Expression.Convert(b, a.Type);
+        }
+
+        private void ConvertEntityReferenceForEquality(ParameterExpression param, Expression potentialIdExpr, ref Expression potentialEntityRefExpr) 
+        {
+            if (potentialEntityRefExpr is MemberExpression memberExpression &&
+                memberExpression.Type.IsEntityType() &&
+                potentialIdExpr is ConstantExpression idExpr && 
+                idExpr.Value != null /* null values should be processed as references not as Id value*/)
+            {
+                var idName = $"{memberExpression.Member.Name}.{nameof(IEntity.Id)}";
+                var expr = ExpressionExtensions.GetMemberExpression(param, idName);
+                potentialEntityRefExpr = expr;
+            }
+        }        
+
+        private void ConvertEntityReferenceForEquality(ParameterExpression param, ExpressionPair pair)
+        {
+            var left = pair.Left;
+            var right = pair.Right;
+
+            ConvertEntityReferenceForEquality(param, left, ref right);
+            ConvertEntityReferenceForEquality(param, right, ref left);
+
+            pair.Left = left;
+            pair.Right = right;
         }
 
         private Expression Compare<T>(ParameterExpression param, JToken[] tokens, Func<ExpressionPair, ExpressionPair> preparePair, Func<ExpressionPair, Expression> comparator) 
@@ -894,27 +1019,6 @@ namespace Shesha.JsonLogic
             return true;
         }
 
-        private List<string> KnownOperators = new List<string> {
-
-            JsOperators.Equal,
-            JsOperators.StrictEqual,
-            JsOperators.NotEqual,
-            JsOperators.StrictNotEqual,
-            JsOperators.Less,
-            JsOperators.LessOrEqual,
-            JsOperators.Greater,
-            JsOperators.GreaterOrEqual,
-            JsOperators.Var,
-            JsOperators.And,
-            JsOperators.Or,
-            JsOperators.DoubleNegotiation,
-            JsOperators.Negotiation,
-            JsOperators.Not,
-            JsOperators.In,
-            JsOperators.StartsWith,
-            JsOperators.EndsWith
-        };
-
         /// inheritedDoc
         public Expression<Func<T, bool>> ParseExpressionOf<T>(string rule) 
         {
@@ -974,6 +1078,10 @@ namespace Shesha.JsonLogic
         public const string StartsWith = "startsWith";
         public const string EndsWith = "endsWith";
         public const string IsSatisfied = "is_satisfied";
+        public const string DateAdd = "date_add";
+        public const string Now = "now";
+        public const string Upper = "toUpperCase";
+        public const string Lower = "toLowerCase";
     }
 
     public class ExpressionPair 

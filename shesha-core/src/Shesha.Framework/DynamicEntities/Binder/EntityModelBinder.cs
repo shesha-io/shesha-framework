@@ -80,13 +80,26 @@ namespace Shesha.DynamicEntities.Binder
             ).ToList();
         }
 
+        private bool IsFrameworkFields(JProperty prop)
+        {
+            return prop.Name.ToLower() == nameof(IEntity.Id).ToLower()
+                || prop.Name == nameof(IHasFormFieldsList._formFields)
+                || prop.Name == nameof(IHasJObjectField._jObject).ToCamelCase()
+                || prop.Name == nameof(IHasClassNameField._className)
+                || prop.Name == nameof(IHasDisplayNameField._displayName);
+        }
+
         public async Task<bool> BindPropertiesAsync(JObject jobject, object entity, EntityModelBindingContext context,
             string propertyName = null, List<string> formFields = null)
         {
             var entityType = entity.GetType().StripCastleProxyType();
-            var properties = entityType.GetProperties().Where(p => p.CanWrite && p.Name != "Id").ToList();
 
-            var config = _entityConfigRepository.GetAll().FirstOrDefault(x => x.Namespace == entityType.Namespace && x.ClassName == entityType.Name && !x.Configuration.IsDeleted);
+            var properties = entityType.GetProperties().Where(p => p.CanWrite).ToList();
+            var entityIdValue = entity.GetType().GetProperty("Id")?.GetValue(entity)?.ToString();
+            if (!entityIdValue.IsNullOrEmpty() && entityIdValue != Guid.Empty.ToString())
+                properties = properties.Where(p => p.Name != "Id").ToList();
+
+            var config = _entityConfigRepository.GetAll().FirstOrDefault(x => x.Namespace == entityType.Namespace && x.ClassName == entityType.Name && !x.IsDeleted);
 
             context.LocalValidationResult = new List<ValidationResult>();
 
@@ -100,8 +113,7 @@ namespace Shesha.DynamicEntities.Binder
 
             formFieldsInternal = formFieldsInternal.Select(x => x.ToCamelCase()).ToList();
 
-            var jProps = ExcludeFrameworkFields(jobject.Properties().ToList());
-
+            var jProps = jobject.Properties().ToList();
 
             // properties that were added to the _formFields list but not presented in the json should be reset to Null
             var missedFormFields = formFieldsInternal.Select(x => { var parts = x.Split("."); return parts[0]; })
@@ -141,6 +153,7 @@ namespace Shesha.DynamicEntities.Binder
                     var childFormFields = formFieldsInternal
                         .Where(x => x.Equals(jName) || x.StartsWith(jName + "."))
                         .Select(x => x.RemovePrefix(jName).RemovePrefix("."))
+                        .Where(x => !x.IsNullOrWhiteSpace())
                         .ToList();
                     childFormFields = childFormFields.Any() ? childFormFields : null;
 
@@ -154,7 +167,7 @@ namespace Shesha.DynamicEntities.Binder
                     {
                         var propConfig = _entityPropertyRepository.GetAll().FirstOrDefault(x => x.EntityConfig == config && x.Name == jName);
 
-                        if (_metadataProvider.IsFrameworkRelatedProperty(property))
+                        if (jName != "id" && _metadataProvider.IsFrameworkRelatedProperty(property))
                             continue;
 
                         var propType = _metadataProvider.GetDataType(property);
@@ -193,8 +206,8 @@ namespace Shesha.DynamicEntities.Binder
                                                      //case DataTypes.Enum: // Enum binded as integer
                                     object parsedValue = null;
                                     result = Parser.TryParseToValueType(jproperty.Value.ToString(), property.PropertyType, out parsedValue, isDateOnly: propType.DataType == DataTypes.Date);
-                                    if (dbValue?.ToString() != parsedValue.ToString())
-                                        if (result && (await Validate(entity, jFullName, parsedValue, context)))
+                                    if (result && dbValue?.ToString() != parsedValue.ToString())
+                                        if (await Validate(entity, jFullName, parsedValue, context))
                                             property.SetValue(entity, parsedValue);
                                     break;
                                 case DataTypes.DateTime:
@@ -508,7 +521,8 @@ namespace Shesha.DynamicEntities.Binder
                     }
                     else
                     {
-                        context.LocalValidationResult.Add(new ValidationResult($"Property '{jproperty.Path}' not found for '{propertyName ?? entity.GetType().Name}'."));
+                        if (!IsFrameworkFields(jproperty))
+                            context.LocalValidationResult.Add(new ValidationResult($"Property '{jproperty.Path}' not found for '{propertyName ?? entity.GetType().Name}'."));
                     }
                 }
                 catch (CascadeUpdateRuleException ex)

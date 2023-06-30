@@ -1,5 +1,5 @@
 import { IToolboxComponent } from '../../../../interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '../../../../providers/form/models';
+import { FormMarkup } from '../../../../providers/form/models';
 import { FontColorsOutlined } from '@ant-design/icons';
 import { Input, message } from 'antd';
 import ConfigurableFormItem from '../formItem';
@@ -11,18 +11,9 @@ import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../.
 import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
 import { DataTypes, StringFormats } from '../../../../interfaces/dataTypes';
 import { customEventHandler } from '../utils';
-import { axiosHttp } from '../../../../apis/axios';
+import { axiosHttp } from '../../../../utils/fetchers';
 import moment from 'moment';
-
-export interface ITextAreaProps extends IConfigurableFormComponent {
-  placeholder?: string;
-  showCount?: boolean;
-  autoSize?: boolean;
-  allowClear?: boolean;
-  hideBorder?: boolean;
-  initialValue?: string;
-  passEmptyStringByDefault?: boolean;
-}
+import { ITextAreaComponentProps } from './interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -31,26 +22,27 @@ interface IJsonTextAreaProps {
   textAreaProps?: TextAreaProps;
   customEventHandler?: any;
 }
-const JsonTextArea: React.FC<IJsonTextAreaProps> = props => {
+const JsonTextArea: React.FC<IJsonTextAreaProps> = (props) => {
   const valuedString = !!props.value ? JSON.stringify(props.value, null, 2) : '';
   return (
     <Input.TextArea value={valuedString} rows={2} {...props.textAreaProps} disabled {...props.customEventHandler} />
   );
 };
 
-const TextField: IToolboxComponent<ITextAreaProps> = {
+const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
   type: 'textArea',
   name: 'Text Area',
   icon: <FontColorsOutlined />,
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string && dataFormat === StringFormats.multiline,
-  factory: (model: ITextAreaProps, _c, form) => {
+  factory: (model: ITextAreaComponentProps, _c, form) => {
     const { formMode, isComponentDisabled, setFormDataAndInstance } = useForm();
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
 
     const textAreaProps: TextAreaProps = {
+      className: 'sha-text-area',
       placeholder: model.placeholder,
       disabled: model.disabled,
       autoSize: model.autoSize ? { minRows: 2 } : false,
@@ -79,7 +71,9 @@ const TextField: IToolboxComponent<ITextAreaProps> = {
       setGlobalState,
     };
 
-    const isObjectData = typeof form?.getFieldValue(model.name) === 'object';
+    const currentValue = form?.getFieldValue(model.name);
+    const showAsJson = Boolean(currentValue) && typeof currentValue === 'object';
+
     return (
       <ConfigurableFormItem
         model={model}
@@ -88,18 +82,23 @@ const TextField: IToolboxComponent<ITextAreaProps> = {
           evaluateString(model?.initialValue, { formData, formMode, globalState })
         }
       >
-        {isObjectData ? (
+        {showAsJson ? (
           <JsonTextArea textAreaProps={textAreaProps} customEventHandler={customEventHandler(eventProps)} />
         ) : isReadOnly ? (
           <ReadOnlyDisplayFormItem disabled={disabled} />
         ) : (
-          <Input.TextArea rows={2} {...textAreaProps} disabled={disabled} {...customEventHandler(eventProps)} />
+          <Input.TextArea
+            rows={2}
+            {...textAreaProps}
+            disabled={disabled ? disabled : undefined}
+            {...customEventHandler(eventProps)}
+          />
         )}
       </ConfigurableFormItem>
     );
   },
-  initModel: model => {
-    const textAreaModel: ITextAreaProps = {
+  initModel: (model) => {
+    const textAreaModel: ITextAreaComponentProps = {
       ...model,
       label: 'Text Area',
       autoSize: false,
@@ -110,7 +109,7 @@ const TextField: IToolboxComponent<ITextAreaProps> = {
     return textAreaModel;
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
 };
 
-export default TextField;
+export default TextAreaComponent;

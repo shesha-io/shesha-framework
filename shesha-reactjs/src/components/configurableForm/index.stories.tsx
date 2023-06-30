@@ -1,11 +1,9 @@
 import React, { useRef } from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import ConfigurableForm from '.';
 import { Button, Col, Form, Row } from 'antd';
 import { IConfigurableFormProps } from './models';
 import { StoredFilesProvider } from '../../providers';
-import { IndexPageTemplate } from './stories/indexPage';
 import StoredFilesRenderer from '../storedFilesRenderer';
 import { addStory } from '../../stories/utils';
 import { ConfigurableFormInstance } from '../../providers/form/contexts';
@@ -13,7 +11,7 @@ import StoryApp from '../storyBookApp';
 
 export default {
   title: 'Components/ConfigurableForm',
-  component: ConfigurableForm,
+  component: ConfigurableForm
 } as Meta;
 
 const configurableFormProps: IConfigurableFormProps = {
@@ -96,7 +94,6 @@ const DualModeForm: Story<IConfigurableFormProps> = ({ formId, mode = 'readonly'
             formRef={formRef}
             formId={formId}
             onFinish={onFinish}
-            onFieldsChange={data => console.log('onFieldsChange data: ', data)}
             onValuesChange={data => console.log('onValuesChange data: ', data)}
             form={form}
             initialValues={{
@@ -145,7 +142,10 @@ const DualModeForm: Story<IConfigurableFormProps> = ({ formId, mode = 'readonly'
               alerts: false,
               marketingEmails: true,
               message:
-                "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc.",
+                "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable." + 
+                "If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. " + 
+                "All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. " + 
+                "It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc.",
             }}
           />
 
@@ -165,18 +165,13 @@ export const Basic = addStory(BasicTemplate, {
   },
 });
 
-export const ReadOnly = addStory(DualModeForm, {
-  // ...configurableFormProps,
+export const Notifications = addStory(DualModeForm, {
   formId: {
-    name: '/settings/forms/playground',
+    name: 'notifications',
+    module: 'Shesha'
   },
-  mode: 'readonly',
+  mode: 'edit',
 });
-
-export const IndexPage = IndexPageTemplate.bind({});
-IndexPage.args = {
-  formPath: '/indexTable',
-};
 
 export const PersonEditTest = addStory(BasicTemplate, {
   ...configurableFormProps,

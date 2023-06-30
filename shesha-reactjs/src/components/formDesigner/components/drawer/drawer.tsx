@@ -1,7 +1,7 @@
 import { Alert, Button, Drawer, DrawerProps, message, Space } from 'antd';
 import moment from 'moment';
 import React, { FC, Fragment, useState } from 'react';
-import { axiosHttp } from '../../../../apis/axios';
+import { axiosHttp } from '../../../../utils/fetchers';
 import { IConfigurableActionConfiguration } from '../../../../interfaces/configurableAction';
 import { useForm, useGlobalState, useSheshaApplication } from '../../../../providers';
 import {
@@ -9,7 +9,7 @@ import {
   useConfigurableActionDispatcher,
 } from '../../../../providers/configurableActionsDispatcher';
 import { executeScriptSync } from '../../../../providers/form/utils';
-import ComponentsContainer from '../../componentsContainer';
+import ComponentsContainer from '../../containers/componentsContainer';
 import { IDrawerProps } from './models';
 
 export interface IShaDrawerProps extends Omit<IDrawerProps, 'style' | 'size'>, DrawerProps {}

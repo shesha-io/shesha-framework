@@ -1,9 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { MutableRefObject, useEffect } from 'react';
 import { Form } from 'antd';
 import { ConfigurableForm } from '../../components';
 import { IConfigurableFormComponent, FormMarkup } from '../../providers/form/models';
-import { IToolboxComponent } from '../../interfaces';
-import { ConfigurableFormInstance } from '../../providers/form/contexts';
+import { DEFAULT_FORM_LAYOUT_SETTINGS, IFormLayoutSettings, ISettingsFormInstance, IToolboxComponent } from '../../interfaces';
 import { IPropertyMetadata } from '../../interfaces/metadata';
 import { listComponentToModelMetadata } from '../../providers/form/utils';
 
@@ -15,6 +14,9 @@ export interface IProps<TModel extends IConfigurableFormComponent> {
   onCancel: () => void;
   onValuesChange?: (changedValues: any, values: TModel) => void;
   toolboxComponent: IToolboxComponent;
+  formRef?: MutableRefObject<ISettingsFormInstance | null>;
+  propertyFilter?: (name: string) => boolean;
+  layoutSettings?: IFormLayoutSettings;
 }
 
 function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
@@ -24,9 +26,11 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
   markup,
   onValuesChange,
   toolboxComponent,
+  formRef,
+  propertyFilter,
+  layoutSettings = DEFAULT_FORM_LAYOUT_SETTINGS,
 }: IProps<TModel>) {
   const [form] = Form.useForm();
-  const formRef = useRef<ConfigurableFormInstance>(null);
 
   useEffect(() => {
     form.resetFields();
@@ -49,12 +53,22 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
     if (onValuesChange) onValuesChange(newModel, newModel);
   };
 
+  const onFinishFailed = (errorInfo) => {
+    console.error('onFinishFailed', errorInfo);
+  };
+
+  if (formRef)
+    formRef.current = {
+      submit: () => form.submit(),
+      reset: () => form.resetFields(),
+    };
+
   return (
     <ConfigurableForm
-      formRef={formRef}
-      layout="vertical"
-      labelCol={{ span: 24 }}
-      wrapperCol={{ span: 24 }}
+      labelCol={layoutSettings?.labelCol}
+      wrapperCol={layoutSettings?.wrapperCol}
+      layout={layoutSettings?.layout}
+
       mode={readonly ? "readonly" : "edit"}
       form={form}
       onFinish={onSave}
@@ -64,6 +78,8 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
       actions={{
         linkToModelMetadata
       }}
+      onFinishFailed={onFinishFailed}
+      propertyFilter={propertyFilter}
     />
   );
 }

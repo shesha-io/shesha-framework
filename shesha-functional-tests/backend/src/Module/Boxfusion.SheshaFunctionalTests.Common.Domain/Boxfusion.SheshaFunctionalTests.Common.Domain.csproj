@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
 	<GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
 	<GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
@@ -10,19 +10,22 @@
 
   <ItemGroup>
     <PackageReference Include="Abp" Version="6.6.2" />
-    <PackageReference Include="FluentMigrator" Version="3.2.1" />
+    <PackageReference Include="FluentMigrator" Version="3.3.2" />
     <PackageReference Include="IdentityModel" Version="6.0.0" />
     <PackageReference Include="Intent.RoslynWeaver.Attributes" Version="2.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
     <PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.13" />
     <PackageReference Include="PasswordGenerator" Version="2.1.0" />
-    <PackageReference Include="Shesha.Application" Version="4.4.2" />
-    <PackageReference Include="Shesha.AzureAD" Version="4.4.2" />
-    <PackageReference Include="Shesha.Core" Version="4.4.2" />
-    <PackageReference Include="Shesha.Framework" Version="4.4.2" />
-    <PackageReference Include="Shesha.NHibernate" Version="4.4.2" />
-    <PackageReference Include="Shesha.Web.FormsDesigner" Version="4.4.2" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.19.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.27.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\shesha-core\src\Shesha.Application\Shesha.Application.csproj" />
+    <ProjectReference Include="..\..\..\..\..\shesha-core\src\Shesha.AzureAD\Shesha.AzureAD.csproj" />
+    <ProjectReference Include="..\..\..\..\..\shesha-core\src\Shesha.Core\Shesha.Core.csproj" />
+    <ProjectReference Include="..\..\..\..\..\shesha-core\src\Shesha.Framework\Shesha.Framework.csproj" />
+    <ProjectReference Include="..\..\..\..\..\shesha-core\src\Shesha.NHibernate\Shesha.NHibernate.csproj" />
+    <ProjectReference Include="..\..\..\..\..\shesha-core\src\Shesha.Web.FormsDesigner\Shesha.Web.FormsDesigner.csproj" />
   </ItemGroup>
 	
 

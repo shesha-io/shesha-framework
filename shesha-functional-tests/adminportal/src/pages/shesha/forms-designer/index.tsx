@@ -2,7 +2,7 @@ import React from 'react';
 import dynamic from 'next/dynamic';
 import { getLayout } from 'src/components/layouts';
 import { NextPageWithLayout } from 'models';
-import { FormIdentifier } from '@shesha/reactjs/dist/providers/form/models';
+import { FormIdentifier } from '@shesha/reactjs';
 
 interface IFormsDesignerPageProps {
     /**
@@ -36,8 +36,6 @@ const FormsDesignerPage: NextPageWithLayout<IFormsDesignerPageProps> = (props) =
             name: props.name,
             module: props.module
         };
-
-    console.log('formId', formId, props)
 
     return <LazyLoadedPage {...props} formId={formId} />;
 };

@@ -937,5 +937,15 @@ namespace Shesha.Utilities
                     );
             return cleanStr;
         }
+
+        /// <summary>
+        /// Adds double quotes to the specified <paramref name="value"/>
+        /// </summary>
+        public static string DoubleQuote(this string value) 
+        {
+            return !string.IsNullOrWhiteSpace(value)
+                ? "\"" + value + "\""
+                : value;
+        }
     }
 }

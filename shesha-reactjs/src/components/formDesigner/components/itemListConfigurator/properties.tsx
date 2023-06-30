@@ -49,7 +49,6 @@ export const ItemConfigProperties: FC<IItemConfigPropertiesProps> = ({}) => {
     return (
       <ConfigurableForm
         formRef={formRef}
-        layout="vertical"
         labelCol={{ span: 24 }}
         wrapperCol={{ span: 24 }}
         mode="edit"

@@ -1,12 +1,13 @@
 import React, { FC, Fragment, useMemo, useState } from 'react';
 import { useMetadata } from '../../../../providers';
-import { CodeEditor as BaseCodeEditor, Show } from '../../../..';
+import { Show } from '../../../..';
 import { ICodeTreeLevel } from '../../../codeEditor/codeCompleter';
 import { IPropertyMetadata } from '../../../../interfaces/metadata';
-import { Alert, Button, Modal, Tabs } from 'antd';
+import { Alert, Button, Modal, Space, Tabs } from 'antd';
 import { CodeOutlined } from '@ant-design/icons';
-import { ICodeEditorProps } from './models';
+import { ICodeEditorProps } from './interfaces';
 import { CodeVariablesTables } from '../../../codeVariablesTable';
+import { CodeEditor as BaseCodeEditor } from 'components/codeEditor';
 
 const { TabPane } = Tabs;
 
@@ -19,10 +20,24 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
   readOnly = false,
   ...props
 }) => {
+  const [internalValue, setInternalValue] = useState<string>(value); // stores value for the `dialog` mode
   const [showDialog, setShowDialog] = useState(false);
 
-  const onChange = _value => {
-    if (props.onChange) props.onChange(_value);
+  const onChange = (_value) => {
+    switch (mode) {
+      case 'inline': {
+        if (props.onChange) props.onChange(_value);
+        break;
+      }
+      case 'dialog': {
+        setInternalValue(_value);
+        break;
+      }
+    }
+  };
+  const onClear = () => {
+    setInternalValue(null);
+    if (props.onChange) props.onChange(null);
   };
   const meta = useMetadata(false);
 
@@ -31,7 +46,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
 
     const propsToLevel = (properties: IPropertyMetadata[]): ICodeTreeLevel => {
       const result: ICodeTreeLevel = {};
-      properties.forEach(p => {
+      properties.forEach((p) => {
         result[p.path] = {
           value: p.path,
           caption: p.label,
@@ -58,10 +73,18 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
 
   const openEditorDialog = () => setShowDialog(true);
 
-  const closeEditorDialog = () => setShowDialog(false);
+  const onDialogCancel = () => {
+    setInternalValue(value);
+    setShowDialog(false);
+  };
+  const onDialogSave = () => {
+    if (props.onChange) props.onChange(internalValue);
+    setShowDialog(false);
+  };
 
   const aceOptions = props?.setOptions || {};
 
+  const effectiveValue = mode === 'inline' ? value : internalValue;
   const renderCodeEditor = () => (
     <BaseCodeEditor
       name={props.id}
@@ -74,7 +97,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
       showPrintMargin={true}
       showGutter={true}
       highlightActiveLine={true}
-      value={value}
+      value={effectiveValue}
       setOptions={{
         enableBasicAutocompletion: true,
         enableLiveAutocompletion: true,
@@ -91,20 +114,29 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
     />
   );
 
+  const hasValue = Boolean(value?.trim());
+
   return (
     <Fragment>
       <Show when={mode === 'inline'}>{renderCodeEditor()}</Show>
 
       <Show when={mode === 'dialog'}>
-        <Button icon={<CodeOutlined />} onClick={openEditorDialog} size="small">
-          {disabled || readOnly ? 'View Code' : 'Launch Code Editor'}
-        </Button>
+        <Space>
+          <Button icon={<CodeOutlined />} onClick={openEditorDialog} size="small">
+            {disabled || readOnly ? 'View Code' : hasValue ? 'Edit in Code Editor' : 'Create in Code Editor'}
+          </Button>
+          <Show when={hasValue && !readOnly}>
+            <Button type="primary" size="small" danger onClick={onClear}>
+              Clear
+            </Button>
+          </Show>
+        </Space>
       </Show>
 
       <Modal
         open={showDialog}
-        onCancel={closeEditorDialog}
-        onOk={closeEditorDialog}
+        onCancel={onDialogCancel}
+        onOk={onDialogSave}
         width={900}
         title={props.label}
         okButtonProps={{ hidden: disabled || readOnly }}

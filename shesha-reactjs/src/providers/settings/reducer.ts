@@ -8,8 +8,8 @@ import {
   
   const reducer = handleActions<ISettingsStateContext, any>(
     {
-      [SettingsActionEnums.LoadSettingRequest]: (state: ISettingsStateContext, action: ReduxActions.Action<ILoadSettingPayload>) => {
-        const { payload } = action;
+      [SettingsActionEnums.LoadSettingRequest]: (state: ISettingsStateContext, _action: ReduxActions.Action<ILoadSettingPayload>) => {
+        //const { payload } = action;
         
         return {
           ...state,

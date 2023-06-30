@@ -1,14 +1,14 @@
 import {
   FORM_CONTEXT_INITIAL_STATE,
-  IFormStateContext,
+  IFormStateInternalContext,
   ISetVisibleComponentsPayload,
   ISetFormDataPayload,
   IRegisterActionsPayload,
   ISetEnabledComponentsPayload,
+  ISetFormControlsDataPayload,
 } from './contexts';
 import {
   FormMode,
-  IFlatComponentsStructure,
   IFormSettings,
 } from './models';
 import { FormActionEnums } from './actions';
@@ -19,21 +19,9 @@ import {
 } from './utils';
 import { IFormValidationErrors } from '../../interfaces';
 
-const reducer = handleActions<IFormStateContext, any>(
+const reducer = handleActions<IFormStateInternalContext, any>(
   {
-    [FormActionEnums.SetFlatComponentsAction]: (state: IFormStateContext, action: ReduxActions.Action<IFlatComponentsStructure>) => {
-      const { payload } = action;
-      
-      //console.log('LOG: SetFlatComponentsAction', payload);
-
-      return {
-        ...state,
-        allComponents: payload.allComponents,
-        componentRelations: payload.componentRelations,
-      };
-    },
-
-    [FormActionEnums.SetSettingsAction]: (state: IFormStateContext, action: ReduxActions.Action<IFormSettings>) => {
+    [FormActionEnums.SetSettingsAction]: (state: IFormStateInternalContext, action: ReduxActions.Action<IFormSettings>) => {
       const { payload } = action;
       
       return {
@@ -42,7 +30,7 @@ const reducer = handleActions<IFormStateContext, any>(
       };
     },    
 
-    [FormActionEnums.SetFormMode]: (state: IFormStateContext, action: ReduxActions.Action<FormMode>) => {
+    [FormActionEnums.SetFormMode]: (state: IFormStateInternalContext, action: ReduxActions.Action<FormMode>) => {
       const { payload } = action;
 
       return {
@@ -52,7 +40,7 @@ const reducer = handleActions<IFormStateContext, any>(
     },
 
     [FormActionEnums.SetVisibleComponents]: (
-      state: IFormStateContext,
+      state: IFormStateInternalContext,
       action: ReduxActions.Action<ISetVisibleComponentsPayload>
     ) => {
       const { payload } = action;
@@ -65,7 +53,7 @@ const reducer = handleActions<IFormStateContext, any>(
     },
 
     [FormActionEnums.SetEnabledComponents]: (
-      state: IFormStateContext,
+      state: IFormStateInternalContext,
       action: ReduxActions.Action<ISetEnabledComponentsPayload>
     ) => {
       const { payload } = action;
@@ -76,7 +64,11 @@ const reducer = handleActions<IFormStateContext, any>(
       };
     },
 
-    [FormActionEnums.SetFormData]: (state: IFormStateContext, action: ReduxActions.Action<ISetFormDataPayload>) => {
+    [FormActionEnums.SetFormControlsData]: (state: IFormStateInternalContext, action: ReduxActions.Action<ISetFormControlsDataPayload>) => {
+      return { ...state, formControlsData: { ...state.formControlsData, ...action.payload?.values } };
+    },
+
+    [FormActionEnums.SetFormData]: (state: IFormStateInternalContext, action: ReduxActions.Action<ISetFormDataPayload>) => {
       const { payload } = action;
 
       // note: merge is used to keep initial values of fields which have no corresponding components on the form (e.g. id, parentId)
@@ -89,7 +81,7 @@ const reducer = handleActions<IFormStateContext, any>(
     },
 
     [FormActionEnums.SetValidationErrors]: (
-      state: IFormStateContext,
+      state: IFormStateInternalContext,
       action: ReduxActions.Action<IFormValidationErrors>
     ) => {
       const { payload } = action;
@@ -101,7 +93,7 @@ const reducer = handleActions<IFormStateContext, any>(
     },
 
     [FormActionEnums.RegisterActions]: (
-      state: IFormStateContext,
+      state: IFormStateInternalContext,
       action: ReduxActions.Action<IRegisterActionsPayload>
     ) => {
       const {
@@ -109,7 +101,7 @@ const reducer = handleActions<IFormStateContext, any>(
       } = action;
 
       const componentActions = convertActions(id, actionsToRegister);
-      const otherActions = state.actions.filter(a => a.owner !== id || !componentActions.find(ca => ca.name == a.name));
+      const otherActions = state.actions.filter(a => a.owner !== id || !componentActions.find(ca => ca.name === a.name));
 
       return {
         ...state,

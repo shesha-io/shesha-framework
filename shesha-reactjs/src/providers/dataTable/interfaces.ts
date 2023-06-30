@@ -1,20 +1,8 @@
+import { IConfigurableActionConfiguration } from 'interfaces/configurableAction';
+import { ProperyDataType } from 'interfaces/metadata';
 import { Moment } from 'moment';
-import { IDataColumnsProps } from '../datatableColumnsConfigurator/models';
-import { IPublicDataTableActions } from './contexts';
+import { IDataColumnsProps, IEditableColumnProps } from '../datatableColumnsConfigurator/models';
 export type ColumnFilter = string[] | number[] | Moment[] | Date[] | string | number | Moment | Date | boolean;
-
-export type IndexColumnDataType =
-  | 'string'
-  | 'number'
-  | 'date'
-  | 'date-time'
-  | 'time'
-  | 'boolean'
-  | 'reference-list-item'
-  | 'multiValueRefList'
-  | 'entity'
-  | 'action'
-  | 'other';
 
 export type IndexColumnFilterOption =
   | 'contains'
@@ -27,36 +15,55 @@ export type IndexColumnFilterOption =
   | 'before'
   | 'after';
 
+export type DatatableColumnType = 'data' | 'action' | 'calculated' | 'crud-operations';
+
 export type SortDirection = 0 /*asc*/ | 1 /*desc*/;
 export type ColumnSorting = 'asc' | 'desc';
 
+export type DataFetchingMode = 'paging' | 'fetchAll';
+
 export interface ITableColumn {
-  dataFormat?: string;
+  columnType: DatatableColumnType;
+
   id?: string;
+  columnId?: string;
   accessor: string;
   header: string;
+  caption?: string;
+  
   isVisible: boolean; // is visible in the table (including columns selector, filter etc.)
   show?: boolean; // is visible on client
-  dataType?: IndexColumnDataType;
-  filterOption?: IndexColumnFilterOption;
-  filter?: any;
   isFilterable: boolean;
   isSortable: boolean;
-  isEditable?: boolean;
+
+  minWidth?: number;
+  maxWidth?: number;
+
+  filterOption?: IndexColumnFilterOption;
+  filter?: any;
+  
   defaultSorting?: SortDirection;
-  columnId?: string;
-  propertyName?: string;
   name?: string;
-  caption?: string;
   allowShowHide?: boolean;
-  //width?: string;
+}
+
+export interface ITableDataColumn extends ITableColumn, IEditableColumnProps {
+  propertyName?: string;
+  dataType?: ProperyDataType;
+  dataFormat?: string;
+  
   referenceListName?: string;
   referenceListModule?: string;
   entityReferenceTypeShortAlias?: string;
   allowInherited?: boolean;
+}
 
-  minWidth?: number;
-  maxWidth?: number;
+export interface ITableActionColumn extends ITableColumn, IActionColumnProps {
+
+}
+
+export interface ITableCrudOperationsColumn extends ITableColumn {
+
 }
 
 export interface ICustomFilterOptions {
@@ -76,7 +83,16 @@ export interface IColumnSorting {
   readonly desc: boolean;
 }
 
-export interface IGetDataPayload {
+export interface IGetDataFromUrlPayload {
+  readonly maxResultCount: number;
+  readonly skipCount: number;
+  readonly properties: string;
+  readonly sorting?: string;
+  readonly filter?: string;
+  readonly quickSearch?: string;
+}
+
+export interface IGetDataFromBackendPayload {
   readonly entityType: string;
   readonly maxResultCount: number;
   readonly skipCount: number;
@@ -91,29 +107,23 @@ export interface IExcelColumn {
   readonly label: string;
 }
 
-export interface IExportExcelPayload extends IGetDataPayload {
+export interface IExportExcelPayload extends IGetDataFromBackendPayload {
   columns: IExcelColumn[];
 }
 
-export interface IGetDataPayloadInternal {
-  readonly entityType: string;
-  readonly properties: string[];
+export interface IGetListDataPayload {
+  /** Page size. Set to -1 to fetch all */
   readonly pageSize: number;
+  /** Page number. Starts from 1 */
   readonly currentPage: number;
-  readonly sorting: IColumnSorting[];
-  readonly quickSearch: string;
-  readonly advancedFilter?: IFilterItem[];
-  readonly parentEntityId?: string;
-  selectedFilterIds?: string[];
-  selectedFilters?: IStoredFilter[];
-
-  /**
-   * If this is true, the data table will be cleared
-   *
-   * This is useful in a case where the payload has filters which have not been fully evaluated and `onlyFetchWhenFullyEvaluated` is `true`
-   * the wouldn't wat to fetch the data at this stage and they don't want any data to be displayed on the table view as that would be misleading
-   */
-  skipFetch?: boolean;
+  /** Data columns to fetch  */
+  readonly columns: ITableDataColumn[];
+  /** Sorting */
+  readonly sorting?: IColumnSorting[];
+  /** Filter in JsonLogic format */
+  readonly filter?: string;
+  /** Quick search (simple text search by all text columns) */
+  readonly quickSearch?: string;
 }
 
 export interface ITableConfigResponse {
@@ -133,15 +143,6 @@ export interface IQuickFilter {
   readonly selected?: boolean;
 }
 
-export interface ICustomFilter {
-  readonly id: string;
-  readonly name: string;
-  readonly columns: ITableColumn[];
-  readonly isPrivate: boolean;
-  readonly isApplied?: boolean;
-}
-
-export type FilterExpressionType = 'jsonLogic' | 'hql';
 export type FilterType = 'predefined' | 'user-defined' | 'quick';
 export interface IStoredFilter {
   id: string;
@@ -151,20 +152,7 @@ export interface IStoredFilter {
   tooltip?: string;
   // Exclusive filters cannot be applied on top of other filters. Only one can be selected
 
-  isExclusive?: boolean;
-  // Private filters are managed within the data table control
-  isPrivate?: boolean;
-
-  expressionType?: FilterExpressionType | string;
-
   expression?: string | object;
-
-  filterType?: string;
-
-  // use
-  useExpression?: boolean;
-
-  onlyFetchWhenFullyEvaluated?: boolean;
 
   selected?: boolean;
 
@@ -181,7 +169,6 @@ export interface IStoredFilter {
 
 export interface ITableDataResponse {
   readonly totalCount: number;
-  //readonly totalRowsBeforeFilter: number;
   readonly items: object[];
 }
 
@@ -192,15 +179,12 @@ export interface ITableDataInternalResponse {
   readonly rows: object[];
 }
 
+export interface IPublicDataTableActions {
+  refreshTable: () => void;
+  exportToExcel?: () => void;
+}
+
 export interface IDataTableInstance extends IPublicDataTableActions { }
-
-export interface IFormDataPayload {
-  formData?: any;
-}
-
-export interface IFormDataPayload {
-  crudSettings?: any;
-}
 
 export type ListSortDirection = 0 | 1;
 
@@ -214,7 +198,6 @@ export interface DataTableColumnDto {
   referenceListName?: string | null;
   referenceListModule?: string | null;
   entityReferenceTypeShortAlias?: string | null;
-  autocompleteUrl?: string | null;
   allowInherited?: boolean;
   isFilterable?: boolean;
   isSortable?: boolean;
@@ -254,3 +237,15 @@ export interface ITableColumnsBuilder {
 }
 
 export type TableColumnsFluentSyntax = (builder: ITableColumnsBuilder) => void;
+
+export interface IActionColumnProps {
+  /**
+   * Icon, is used for action columns
+   */
+   icon?: string;
+
+   /**
+    * Configurable action configuration
+    */
+   actionConfiguration?: IConfigurableActionConfiguration;  
+}

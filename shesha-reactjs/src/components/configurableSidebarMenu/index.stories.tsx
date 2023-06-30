@@ -1,17 +1,15 @@
 import React from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import ConfigurableSidebarMenu from './';
 import { AppEditModeToggler } from '../..';
 import SidebarConfigurator from './configurator';
 import { SidebarMenuConfiguratorProvider } from '../../providers/sidebarMenuConfigurator';
-import { SIDEBAR_MENU_NAME } from '../../constants';
+import { SIDEBAR_MENU_NAME } from '../../shesha-constants';
 import StoryApp from '../storyBookApp';
 
 export default {
   title: 'Components/ConfigurableSidebarMenu',
-  component: ConfigurableSidebarMenu,
-} as Meta;
+  component: ConfigurableSidebarMenu} as Meta;
 
 export interface IConfigurableSidebarMenuProps {
   backendUrl: string;

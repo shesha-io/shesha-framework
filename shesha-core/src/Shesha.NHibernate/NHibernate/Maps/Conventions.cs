@@ -5,6 +5,7 @@ using NHibernate;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
+using NHibernate.Mapping.ByCode.Impl.CustomizersImpl;
 using NHibernate.Type;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
@@ -15,6 +16,7 @@ using Shesha.NHibernate.Generators;
 using Shesha.NHibernate.UserTypes;
 using Shesha.Reflection;
 using Shesha.Services;
+using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -240,7 +242,14 @@ namespace Shesha.NHibernate.Maps
 
             mapper.BeforeMapProperty += (modelInspector, member, propertyCustomizer) =>
             {
+                if (member.LocalMember.Name.Equals("Id", StringComparison.InvariantCultureIgnoreCase)) 
+                { 
+                }
                 var propertyType = member.LocalMember.GetPropertyOrFieldType();
+
+                var lazyAttribute = member.LocalMember.GetAttribute<LazyAttribute>(true);
+                if (lazyAttribute != null)
+                    propertyCustomizer.Lazy(true);
 
                 var columnName = MappingHelper.GetColumnName(member.LocalMember);
                 string sqlType = null;
@@ -250,12 +259,15 @@ namespace Shesha.NHibernate.Maps
                     member.LocalMember.GetMemberType() == typeof(GenericEntityReference))
                 {
                     var attr = member.LocalMember.GetCustomAttribute<EntityReferenceAttribute>();
+                    var idn = attr?.IdColumnName ?? $"{member.LocalMember.Name}Id";
+                    var cnn = attr?.ClassNameColumnName ?? $"{member.LocalMember.Name}ClassName";
+                    var dnn = attr?.DisplayNameColumnName ?? $"{member.LocalMember.Name}DisplayName";
                     if (attr?.StoreDisplayName ?? false)
                     {
                         propertyCustomizer.Columns(
-                            c => { c.Name($"{member.LocalMember.Name}Id"); c.SqlType("nvarchar(100)"); },
-                            c => { c.Name($"{member.LocalMember.Name}ClassName"); c.SqlType("nvarchar(1000)"); },
-                            c => { c.Name($"{member.LocalMember.Name}DisplayName"); c.SqlType("nvarchar(1000)"); }
+                            c => { c.Name(idn); c.SqlType("nvarchar(100)"); },
+                            c => { c.Name(cnn); c.SqlType("nvarchar(1000)"); },
+                            c => { c.Name(dnn); c.SqlType("nvarchar(1000)"); }
                             );
                         var gtype = typeof(EntityReferenceWithDisplayUserType);
                         propertyCustomizer.Type(gtype, null);
@@ -263,8 +275,8 @@ namespace Shesha.NHibernate.Maps
                     else
                     {
                         propertyCustomizer.Columns(
-                            c => { c.Name($"{member.LocalMember.Name}Id"); c.SqlType("nvarchar(100)"); },
-                            c => { c.Name($"{member.LocalMember.Name}ClassName"); c.SqlType("nvarchar(1000)"); }
+                            c => { c.Name(idn); c.SqlType("nvarchar(100)"); },
+                            c => { c.Name(cnn); c.SqlType("nvarchar(1000)"); }
                             );
                         var gtype = typeof(EntityReferenceUserType);
                         propertyCustomizer.Type(gtype, null);
@@ -317,6 +329,8 @@ namespace Shesha.NHibernate.Maps
                 mapper.BeforeMapProperty += customMapper.BeforeMapProperty;
             }
 
+            //mapper.BeforeMapIdBag
+            
             mapper.IsPersistentId((mi, d) =>
             {
                 var isId = mi.Name.Equals("Id", StringComparison.InvariantCultureIgnoreCase);
@@ -480,9 +494,14 @@ namespace Shesha.NHibernate.Maps
                 }
                 else
                 {
-                    if (bagMapper != null && typeof(ISoftDelete).IsAssignableFrom(bagMapper.ElementType))
+                    if (bagMapper != null && typeof(ISoftDelete).IsAssignableFrom(bagMapper.ElementType)) 
+                    {
                         //TODO: Check IsDeletedColumn for Many-To-Many
-                        map.Where($"{SheshaDatabaseConsts.IsDeletedColumn} = 0");
+                        map.Filter("SoftDelete", m =>
+                        {
+                        });
+                        // map.Where($"{SheshaDatabaseConsts.IsDeletedColumn.DoubleQuote()} = 0");
+                    }
                 }
             };
 

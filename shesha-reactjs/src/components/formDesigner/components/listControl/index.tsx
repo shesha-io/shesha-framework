@@ -14,11 +14,14 @@ import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
 import classNames from 'classnames';
 import { DEFAULT_CONFIRM_MESSAGE } from './constants';
+import { migrateDynamicExpression } from 'designer-components/_common-migrations/migrateUseExpression';
 
+/** @deprecated: Use DataListComponent instead */
 const ListComponent: IToolboxComponent<IListComponentProps> = {
   type: 'list',
   name: 'List',
   icon: <OrderedListOutlined />,
+  isHidden: true, /* Use DataList instead */
   factory: ({ ...model }: IListComponentProps) => {
     const { isComponentHidden, formMode } = useForm();
 
@@ -92,7 +95,19 @@ const ListComponent: IToolboxComponent<IListComponentProps> = {
         return customProps;
       })
       .add<IListComponentProps>(1, migrateV0toV1)
-      .add<IListComponentProps>(2, migrateV1toV2),
+      .add<IListComponentProps>(2, migrateV1toV2)
+      .add<IListComponentProps>(3, prev => {
+        const result = {...prev};
+        const useExpression = Boolean(result['useExpression']);
+        delete result['useExpression'];
+    
+        if (useExpression){
+          const migratedExpression = migrateDynamicExpression(prev.filters);
+          result.filters = migratedExpression;
+        }
+    
+        return result;
+      }),
   validateSettings: model => validateConfigurableComponentSettings(listSettingsForm, model),
 };
 

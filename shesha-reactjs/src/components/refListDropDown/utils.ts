@@ -1,4 +1,4 @@
-import { ReferenceListItemDto } from '../../apis/referenceList';
+import { ReferenceListItemDto } from 'apis/referenceList';
 
 export const CACHED_REF_LIST_ITEMS = 'CACHED_REF_LIST_ITEMS';
 
@@ -11,23 +11,6 @@ export interface ICachedRefListItems {
   namespace: string;
   items: ICachedRefList[];
 }
-
-// const cachedListItems: ICachedRefListItems[] = [
-//   {
-//     namespace: 'namespace',
-//     items: [
-//       {
-//         name: 'string',
-//         list: [
-//           {
-//             item: '',
-//             itemValue: 0,
-//           },
-//         ],
-//       },
-//     ],
-//   },
-// ];
 
 export const saveListItems = (listName: string, listNamespace: string, reflListItems: ReferenceListItemDto[]) => {
   const cachedListItems = getListItemsFromStorage();

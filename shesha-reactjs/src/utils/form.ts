@@ -7,6 +7,24 @@ interface IDataWithFields {
 
 export const GHOST_PAYLOAD_KEY = '_&@#GH0ST';
 
+export const getFieldNames = (data: object): string[] => {
+  const processContainer = (container: any, containerName: string, fieldsList: string[]) => {
+    if (!container) return;
+    if (containerName) fieldsList.push(containerName);
+
+    if (container && typeof container === 'object' && !(container instanceof Date) && !(container instanceof File)) {
+      Object.keys(container).forEach(key => {
+        if (container.hasOwnProperty(key))
+          processContainer(container[key], containerName ? `${containerName}.${key}` : key, fieldsList);
+      });
+    }
+  };
+
+  const result: string[] = [];
+  processContainer(data, null, result);
+  return result;
+};
+
 export function addFormFieldsList<TData = any>(
   formData: TData,
   nonFormData: object,
@@ -28,24 +46,6 @@ export function addFormFieldsList<TData = any>(
   return { _formFields: allFields, ...formData, ...nonFormData };
 }
 
-export const getFieldNames = (data: object): string[] => {
-  const processContainer = (container: any, containerName: string, fieldsList: string[]) => {
-    if (!container) return;
-    if (containerName) fieldsList.push(containerName);
-
-    if (container && typeof container === 'object' && !(container instanceof Date) && !(container instanceof File)) {
-      Object.keys(container).forEach(key => {
-        if (container.hasOwnProperty(key))
-          processContainer(container[key], containerName ? `${containerName}.${key}` : key, fieldsList);
-      });
-    }
-  };
-
-  const result: string[] = [];
-  processContainer(data, null, result);
-  return result;
-};
-
 export const getFormFullName = (moduleName: string, name: string) => {
   return moduleName ? `${moduleName}/${name}` : name;
 };
@@ -53,7 +53,9 @@ export const getFormFullName = (moduleName: string, name: string) => {
 export const appendFormData = (formData: FormData, key: string, data: any) => {
   if (data === Object(data) || Array.isArray(data)) {
     for (var i in data) {
-      appendFormData(formData, key + '[' + i + ']', data[i]);
+      if (data.hasOwnProperty(i)){
+        appendFormData(formData, key + '[' + i + ']', data[i]);
+      }
     }
   } else {
     formData.append(key, data);

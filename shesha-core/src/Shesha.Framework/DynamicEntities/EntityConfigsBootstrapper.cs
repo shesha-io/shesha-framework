@@ -29,7 +29,6 @@ namespace Shesha.DynamicEntities
     public class EntityConfigsBootstrapper : IBootstrapper, ITransientDependency
     {
         private readonly IUnitOfWorkManager _unitOfWorkManager;
-        private readonly IRepository<ConfigurationItem, Guid> _configItemRepository;
         private readonly IRepository<EntityConfig, Guid> _entityConfigRepository;
         private readonly IRepository<EntityProperty, Guid> _entityPropertyRepository;
         private readonly IModuleManager _moduleManager;
@@ -39,7 +38,6 @@ namespace Shesha.DynamicEntities
         private readonly IMetadataProvider _metadataProvider;
 
         public EntityConfigsBootstrapper(
-            IRepository<ConfigurationItem, Guid> configItemRepository,
             IRepository<EntityConfig, Guid> entityConfigRepository,
             IEntityConfigurationStore entityConfigurationStore,
             IAssemblyFinder assembleFinder,
@@ -48,7 +46,6 @@ namespace Shesha.DynamicEntities
             IModuleManager moduleManager,
             IUnitOfWorkManager unitOfWorkManager)
         {
-            _configItemRepository = configItemRepository;
             _entityConfigRepository = entityConfigRepository;
             _entityConfigurationStore = entityConfigurationStore;
             _assembleFinder = assembleFinder;
@@ -139,7 +136,9 @@ namespace Shesha.DynamicEntities
                         new
                         {
                             db = ec,
-                            code = entitiesConfigs.FirstOrDefault(c => c.Config.EntityType.Name == ec.ClassName && c.Config.EntityType.Namespace == ec.Namespace)
+                            code = entitiesConfigs.FirstOrDefault(c => c.Config.EntityType.Name.Equals(ec.ClassName, StringComparison.InvariantCultureIgnoreCase) &&
+                                    c.Config.EntityType.Namespace.Equals(ec.Namespace, StringComparison.InvariantCultureIgnoreCase)
+                                )
                         })
                 .Select(
                     ec =>
@@ -161,7 +160,7 @@ namespace Shesha.DynamicEntities
                         c.db.TypeShortAlias != c.code.Config.SafeTypeShortAlias ||
                         c.db.DiscriminatorValue != c.code.Config.DiscriminatorValue ||
                         c.db.PropertiesMD5 != c.code.PropertiesMD5 ||
-                        c.db.Configuration.Module != module ||
+                        c.db.Module != module ||
                         c.attr != null
                             && c.attr.GenerateApplicationService != GenerateApplicationServiceState.UseConfiguration
                             && c.attr.GenerateApplicationService == GenerateApplicationServiceState.AlwaysGenerateApplicationService ^ c.db.GenerateAppService
@@ -177,12 +176,8 @@ namespace Shesha.DynamicEntities
                 if (config.attr != null && config.attr.GenerateApplicationService != GenerateApplicationServiceState.UseConfiguration)
                     config.db.GenerateAppService = config.attr.GenerateApplicationService == GenerateApplicationServiceState.AlwaysGenerateApplicationService;
 
-                if (config.db.Configuration.Module != module)
-                {
-                    config.db.Configuration.Module = module;
-
-                    await _configItemRepository.UpdateAsync(config.db.Configuration);
-                }
+                if (config.db.Module != module)
+                    config.db.Module = module;
 
                 await _entityConfigRepository.UpdateAsync(config.db);
 
@@ -192,7 +187,9 @@ namespace Shesha.DynamicEntities
             }
 
             // Add news configs
-            var toAdd = entitiesConfigs.Where(c => !dbEntities.Any(ec => ec.ClassName == c.Config.EntityType.Name && ec.Namespace == c.Config.EntityType.Namespace)).ToList();
+            var toAdd = entitiesConfigs.Where(c => !dbEntities.Any(ec => ec.ClassName.Equals(c.Config.EntityType.Name, StringComparison.InvariantCultureIgnoreCase) &&
+                    ec.Namespace.Equals(c.Config.EntityType.Namespace, StringComparison.InvariantCultureIgnoreCase)))
+                .ToList();
             foreach (var config in toAdd)
             {
                 var attr = config.Config.EntityType.GetAttribute<EntityAttribute>();
@@ -215,19 +212,18 @@ namespace Shesha.DynamicEntities
                 };
 
                 // ToDo: AS - Get Module, Description and Suppress
-                ec.Configuration.Module = module;
-                ec.Configuration.Name = ec.FullClassName;
-                ec.Configuration.Label = ec.FriendlyName ?? ec.ClassName;
-                ec.Configuration.Description = null;
-                ec.Configuration.Suppress = false;
+                ec.Module = module;
+                ec.Name = ec.FullClassName;
+                ec.Label = ec.FriendlyName ?? ec.ClassName;
+                ec.Description = null;
+                ec.Suppress = false;
 
                 // ToDo: Temporary
-                ec.Configuration.VersionNo = 1;
-                ec.Configuration.VersionStatus = ConfigurationItemVersionStatus.Live;
+                ec.VersionNo = 1;
+                ec.VersionStatus = ConfigurationItemVersionStatus.Live;
 
                 ec.Normalize();
 
-                await _configItemRepository.InsertAsync(ec.Configuration);
                 await _entityConfigRepository.InsertAsync(ec);
 
                 await UpdatePropertiesAsync(ec, config.Config.EntityType, config.Properties, config.PropertiesMD5);
@@ -296,10 +292,16 @@ namespace Shesha.DynamicEntities
                     }
                     else
                     {
-                        if (MapProperty(cp, dbp, true) || dbp.Source != Domain.Enums.MetadataSourceType.ApplicationCode)
+                        if (MapProperty(cp, dbp, true) || dbp.Source != Domain.Enums.MetadataSourceType.ApplicationCode || dbp.IsDeleted)
                         {
                             // update hardcoded part
                             dbp.Source = Domain.Enums.MetadataSourceType.ApplicationCode;
+                            
+                            // restore property
+                            dbp.IsDeleted = false;
+                            dbp.DeletionTime = null;
+                            dbp.DeleterUserId = null;
+
                             await _entityPropertyRepository.UpdateAsync(dbp);
                         }
                     }
@@ -430,9 +432,9 @@ namespace Shesha.DynamicEntities
                 dst.ReadOnly = src.Readonly;
                 dst.RegExp = src.RegExp;
                 dst.ValidationMessage = src.ValidationMessage;
-                dst.CascadeCreate = src.CascadeCreate;
-                dst.CascadeUpdate = src.CascadeUpdate;
-                dst.CascadeDeleteUnreferenced = src.CascadeDeleteUnreferenced;
+                dst.CascadeCreate = src.CascadeCreate ?? dst.CascadeCreate;
+                dst.CascadeUpdate = src.CascadeUpdate ?? dst.CascadeUpdate;
+                dst.CascadeDeleteUnreferenced = src.CascadeDeleteUnreferenced ?? dst.CascadeDeleteUnreferenced;
                 res = true;
             }
 

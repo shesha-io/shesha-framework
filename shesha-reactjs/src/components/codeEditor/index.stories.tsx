@@ -1,11 +1,10 @@
 import React from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import { CodeEditor, ICodeEditorProps } from './';
 
 export default {
   title: 'Components/Temp/CodeEditor',
-  component: CodeEditor,
+  component: CodeEditor
 } as Meta;
 
 // Create a master template for mapping args to render the Button component

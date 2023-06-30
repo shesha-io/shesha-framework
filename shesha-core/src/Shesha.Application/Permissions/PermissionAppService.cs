@@ -35,7 +35,7 @@ namespace Shesha.Permissions
         public Task<PermissionDto> GetAsync(string id)
         {
             if (string.IsNullOrEmpty(id))
-                return null;
+                return Task.FromResult<PermissionDto>(null);
 
             var dto = ObjectMapper.Map<PermissionDto>(PermissionManager.GetPermission(id));
             return Task.FromResult(dto);

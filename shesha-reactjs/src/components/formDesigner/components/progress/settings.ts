@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid';
 import { DesignerToolbarSettings } from '../../../../interfaces/toolbarSettings';
 
 export const alertSettingsForm = new DesignerToolbarSettings()
@@ -6,7 +7,6 @@ export const alertSettingsForm = new DesignerToolbarSettings()
     name: 'separator1',
     parentId: 'root',
     label: 'Display',
-    title: '',
   })
   .addPropertyAutocomplete({
     id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
@@ -145,7 +145,8 @@ export const alertSettingsForm = new DesignerToolbarSettings()
         name: 'lineStrokeColor',
         label: 'Stroke Width',
         description:
-          'The color of progress bar, render linear-gradient when passing an object, could accept string[] when has steps. Write the code that returns any of the following: `string | string[] | { from: string; to: string; direction: string }`',
+          'The color of progress bar, render linear-gradient when passing an object, could accept string[] when has steps. ' + 
+          'Write the code that returns any of the following: `string | string[] | { from: string; to: string; direction: string }`',
         mode: 'dialog',
       })
       .toJson(),
@@ -219,24 +220,28 @@ export const alertSettingsForm = new DesignerToolbarSettings()
     name: 'separatorStyle',
     parentId: 'root',
     label: 'Style',
-    title: '',
   })
   .addSectionSeparator({
     id: 'bc67960e-77e3-40f2-89cc-f18f94678cce',
     name: 'separatorVisibility',
     parentId: 'root',
     label: 'Visibility',
-    title: 'Visibility',
   })
-  .addTextArea({
+  .addCodeEditor({
     id: '03959ffd-cadb-496c-bf6d-b742f7f6edc6',
     name: 'customVisibility',
-    parentId: 'root',
     label: 'Custom Visibility',
-    autoSize: false,
-    showCount: false,
-    allowClear: false,
+    labelAlign: 'right',
+    parentId: 'root',
+    hidden: false,
+    customVisibility: null,
     description:
       'Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
+    validate: {},
+    settingsValidationErrors: [],
+    exposedVariables: [
+      { id: nanoid(), name: 'value', description: 'Component current value', type: 'string | any' },
+      { id: nanoid(), name: 'data', description: 'Selected form values', type: 'object' },
+    ],
   })
   .toJson();

@@ -20,4 +20,3 @@ using Shesha.Attributes;
 [assembly: Guid("3870c648-4aea-4b85-ba3f-f2f63b96136a")]
 
 [assembly: TablePrefix("Frwk_")]
-[assembly: BelongsToConfigurableModule(typeof(SheshaFrameworkModule))]

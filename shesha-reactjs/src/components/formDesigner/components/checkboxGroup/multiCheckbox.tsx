@@ -1,12 +1,12 @@
 import { Checkbox, Col, Row } from 'antd';
 import React, { FC, useEffect, useMemo } from 'react';
-import { useGet } from 'restful-react';
+import { useGet } from 'hooks';
 import { useForm, useFormData, useGlobalState } from '../../../../providers';
 import { useReferenceList } from '../../../../providers/referenceListDispatcher';
 import { getDataSourceList } from '../radio/utils';
 import { getSpan, ICheckboxGroupProps } from './utils';
 
-const MultiCheckbox: FC<ICheckboxGroupProps> = model => {
+const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
   const { formMode } = useForm();
   const { data: formData } = useFormData();
   const { globalState } = useGlobalState();
@@ -32,28 +32,28 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = model => {
   }, [model?.dataSourceType, model?.dataSourceUrl]);
 
   const reducedData = useMemo(() => {
-    if (Array.isArray(data?.result) && model?.reducerFunc) {
-      return new Function('data', model?.reducerFunc)(data?.result) as [];
+    const list = Array.isArray(data?.result) ? data?.result : data?.result?.items;
+
+    if (Array.isArray(list) && model?.reducerFunc) {
+      return new Function('data', model?.reducerFunc)(list) as [];
     }
 
     return data?.result;
   }, [data?.result, model?.reducerFunc]);
   //#endregion
 
-  const options = useMemo(() => getDataSourceList(model?.dataSourceType, items, refList?.items, reducedData) || [], [
-    model?.dataSourceType,
-    items,
-    refList?.items,
-    reducedData,
-  ]);
+  const options = useMemo(
+    () => getDataSourceList(model?.dataSourceType, items, refList?.items, reducedData) || [],
+    [model?.dataSourceType, items, refList?.items, reducedData]
+  );
 
   const isReadOnly = model?.readOnly || formMode === 'readonly';
 
   return (
-    <Checkbox.Group value={value} onChange={onChange} style={model?.style}>
+    <Checkbox.Group className="sha-multi-checkbox" value={value} onChange={onChange} style={model?.style}>
       <Row>
         {options.map(({ id, label, value: v }) => (
-          <Col id={id} span={getSpan(direction, options.length)}>
+          <Col id={id} span={getSpan(direction, options.length)} key={id}>
             <Checkbox id={id} value={v} disabled={isReadOnly}>
               {label}
             </Checkbox>

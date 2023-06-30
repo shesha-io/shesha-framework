@@ -1,12 +1,13 @@
 export * from './utils';
 export * from './utils/publicUtils';
+export { mutate, MutateProps, get, GetProps } from './utils/fetchers';
 export * from './interfaces';
 export * from './providers';
 export * from './components';
 export * from './hocs';
 export * from './hooks';
 export * from './formDesignerUtils';
-export * from './constants';
+export * from './shesha-constants';
 
 export { requestHeaders } from './utils/requestHeaders';
 export { removeZeroWidthCharsFromString } from './providers/form/utils';

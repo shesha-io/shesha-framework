@@ -1,14 +1,14 @@
 import React, { useState, useEffect, MutableRefObject } from 'react';
 import { FC } from 'react';
-import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '../../../interfaces/gql';
-import { GENERIC_ENTITIES_ENDPOINT, LEGACY_ITEMS_MODULE_NAME } from '../../../constants';
+import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from 'interfaces/gql';
+import { GENERIC_ENTITIES_ENDPOINT, LEGACY_ITEMS_MODULE_NAME } from 'shesha-constants';
 import { Form, Select, Skeleton, Spin } from 'antd';
 import axios from 'axios';
 import { useSheshaApplication } from '../../..';
 import FileSaver from 'file-saver';
-import { getFileNameFromResponse } from '../../../utils/fetchers';
-import { ConfigurationItemVersionStatus } from '../../../utils/configurationFramework/models';
-import * as RestfulShesha from '../../../utils/fetchers';
+import { getFileNameFromResponse } from 'utils/fetchers';
+import { ConfigurationItemVersionStatus } from 'utils/configurationFramework/models';
+import * as RestfulShesha from 'utils/fetchers';
 import { ConfigurationItemDto, IModule, IConfigurationItem, ModulesDictionary, ConfigItemDataNode, ITreeState } from '../models';
 import { ItemsTree } from '../itemsTree';
 import { getIndexesList } from '../treeUtils';
@@ -51,7 +51,7 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
                 return { and: [{ '==': [{ 'var': 'isLast' }, true] }, { 'in': [{ 'var': 'versionStatus' }, [ConfigurationItemVersionStatus.Live, ConfigurationItemVersionStatus.Ready, ConfigurationItemVersionStatus.Draft]] }] };
         }
         return null;
-    }
+    };
     const getListFetcherQueryParams = (mode: VerionSelectionMode): IGetConfigItemsPayload => {
         const tempFilter = { '!=': [{ 'var': 'itemType' }, 'entity'] }; // temporary filter out entity configuration
         const filterByMode = getItemFilterByMode(mode);
@@ -127,6 +127,8 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
         let treeNodes: ConfigItemDataNode[] = [];
 
         for (const moduleName in modules) {
+            if (!modules.hasOwnProperty(moduleName))
+                continue;
             const module = modules[moduleName];
             const moduleNode: ConfigItemDataNode = {
                 key: module.id ?? '-',
@@ -137,6 +139,8 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
             treeNodes.push(moduleNode);
 
             for (const itName in module.itemTypes) {
+                if (!module.itemTypes.hasOwnProperty(itName))
+                    continue;
                 const itemType = module.itemTypes[itName];
                 if (itemType) {
                     const itemTypeNode: ConfigItemDataNode = {
@@ -148,6 +152,8 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
                     moduleNode.children.push(itemTypeNode);
 
                     for (const appKey in itemType.applications) {
+                        if (!itemType.applications.hasOwnProperty(appKey))
+                            continue;
                         const application = itemType.applications[appKey];
                         
                         const appNode: ConfigItemDataNode = {
@@ -163,7 +169,7 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
                     //itemTypeNode.children = itemType.items.map<ConfigItemDataNode>(item => ({ key: item.id, title: item.name, isLeaf: true, itemId: item.id }));
                 }
             }
-            moduleNode.children = moduleNode.children.sort((a, b) => a.title < b.title ? -1 : a.title == b.title ? 0 : 1);
+            moduleNode.children = moduleNode.children.sort((a, b) => a.title < b.title ? -1 : a.title === b.title ? 0 : 1);
         }
         treeNodes = treeNodes.sort((a, b) => a.key === '-'
             ? -1
@@ -174,11 +180,11 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
         const dataIndexes = getIndexesList(treeNodes);
 
         setTreeState({ treeNodes: treeNodes, indexes: dataIndexes, itemsCount: allItems.length });
-    }
+    };
 
     const getExportFilter = () => {
         return { "in": [{ "var": "id" }, checkedIds] };
-    }
+    };
 
     const exportExecuter = () => {
         const filter = getExportFilter();
@@ -205,7 +211,7 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
                 setExportInProgress(false);
                 throw e;
             });
-    }
+    };
 
     if (props.exportRef)
         props.exportRef.current = {
@@ -216,7 +222,7 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
 
     const onChangeSelection = (checkedIds: string[]) => {
         setCheckedIds(checkedIds);
-    }
+    };
 
     return (
         <Spin spinning={exportInProgress} tip="Exporting...">
@@ -252,6 +258,6 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
             </Form>
         </Spin>
     );
-}
+};
 
 export default ConfigurationItemsExport;

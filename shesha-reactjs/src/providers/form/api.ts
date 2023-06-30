@@ -1,7 +1,7 @@
 import { nanoid } from "nanoid";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { GetDataError, useGet } from "restful-react";
-import { componentsTreeToFlatStructure, IMatchData, IToolboxComponents, useAppConfigurator, useMetadataDispatcher, useSheshaApplication } from "../..";
+import { GetDataError, useGet } from "hooks";
+import { componentsTreeToFlatStructure, getMatchData, IMatchData, IToolboxComponents, useAppConfigurator, useMetadataDispatcher, useSheshaApplication } from "../..";
 import { IAjaxResponseBase } from "../../interfaces/ajaxResponse";
 import { IErrorInfo } from "../../interfaces/errorInfo";
 import { IAbpWrappedGetEntityResponse } from "../../interfaces/gql";
@@ -10,7 +10,8 @@ import { EntityAjaxResponse, IEntity } from "../../pages/dynamic/interfaces";
 import { useConfigurationItemsLoader } from "../configurationItemsLoader";
 import { IMetadataDispatcherActionsContext } from "../metadataDispatcher/contexts";
 import { FormIdentifier, FormMarkupWithSettings, FormRawMarkup, IFormDto, IFormSettings } from "./models";
-import { asFormFullName, asFormRawId, getComponentsFromMarkup, useFormDesignerComponents } from "./utils";
+import { asFormFullName, asFormRawId, getComponentsFromMarkup } from "./utils";
+import { useFormDesignerComponents } from "./hooks";
 import * as RestfulShesha from '../../utils/fetchers';
 import { ConfigurationItemsViewMode } from "../appConfigurator/models";
 import { useModelApiEndpoint, useModelApiHelper } from "../../components/configurableForm/useActionEndpoint";
@@ -105,16 +106,33 @@ interface IGetFormByIdPayload {
     id: string;
 }
 
-const getMarkupFromResponse = (data: IAbpWrappedGetEntityResponse<FormConfigurationDto>): FormMarkupWithSettings => {
+export const getMarkupFromResponse = (data: IAbpWrappedGetEntityResponse<FormConfigurationDto>): FormMarkupWithSettings => {
     const markupJson = data?.result?.markup;
     return markupJson
         ? JSON.parse(markupJson) as FormMarkupWithSettings
         : null;
-}
+};
 
 /**
  * Load form markup from the back-end
  */
+export const getFormConfiguration = (formId: FormIdentifier, backendUrl: string, httpHeaders: HeadersInit) => {
+
+    const formRawId = asFormRawId(formId);
+    const formFullName = removeNullUndefined(asFormFullName(formId));
+
+    const requestParams = formRawId 
+        ? { url: '/api/services/Shesha/FormConfiguration/Get', queryParams: { id: formRawId } }
+        : formFullName
+            ? {
+                url: '/api/services/Shesha/FormConfiguration/GetByName', 
+                queryParams: { name: formFullName.name, module: formFullName.module, version: formFullName.version }
+            }
+            : null;
+
+    return RestfulShesha.get<IAbpWrappedGetEntityResponse<FormConfigurationDto>>(requestParams.url, requestParams.queryParams, { base: backendUrl, headers: httpHeaders});
+};
+
 export const useFormConfiguration = (args: UseFormConfigurationArgs): IFormMarkupResponse => {
 
     const { configurationItemMode } = useAppConfigurator();
@@ -163,7 +181,7 @@ export const useFormConfiguration = (args: UseFormConfigurationArgs): IFormMarku
 
     const reFetch = () => {
         return fetcher.refetch({ path: requestParams.url, queryParams: requestParams.queryParams });
-    }
+    };
 
     const reFetcher = () => {
         return canFetch
@@ -181,7 +199,7 @@ export const useFormConfiguration = (args: UseFormConfigurationArgs): IFormMarku
         requestParams: requestParams
     };
     return result;
-}
+};
 
 export interface UseFormWitgDataArgs {
     formId?: FormIdentifier;
@@ -202,6 +220,8 @@ export interface FormWithDataState {
     loaderHint?: string;
     loadingState: LoadingState;
     fetchedData?: IEntity;
+    gqlFields?: string;
+    getDataUrl?: string;
     form?: IFormDto;
     error?: IErrorInfo;
     dataFetcher?: () => Promise<EntityAjaxResponse | void>;
@@ -221,10 +241,64 @@ export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse
 
     const formRequestRef = useRef<string>();
 
+    const fetch = (getDataUrl, gqlFields, requestId) => {
+        // fetch data and resolve
+        const queryParams = { properties: gqlFields };
+        if (dataId)
+            queryParams["id"] = dataId;
+
+        const dataFetcher = () => RestfulShesha.get<EntityAjaxResponse, any, any, any>(
+            getDataUrl,
+            queryParams,
+            { base: backendUrl, headers: httpHeaders }
+        ).then(dataResponse => {
+            if (formRequestRef.current !== requestId)
+                return null; // todo: cancel data request
+
+            if (dataResponse.success) {
+                setState(prev => ({
+                    ...prev,
+                    loadingState: 'ready',
+                    loaderHint: null,
+                    fetchedData: dataResponse.result,
+                }));
+            } else {
+                setState(prev => ({
+                    ...prev,
+                    loadingState: 'failed',
+                    loaderHint: null,
+                    fetchedData: null,
+                    error: dataResponse.error
+                }));
+            }
+            return dataResponse;
+        })
+            .catch(e => {
+                const error = (e as IAjaxResponseBase)?.error;
+                setState(prev => ({ ...prev, loadingState: 'failed', loaderHint: null, error: error }));
+            });
+
+        setState(prev => ({ ...prev, loaderHint: 'Fetching data...', dataFetcher: dataFetcher }));
+        dataFetcher();
+    };
+
     useEffect(() => {
         const requestId = nanoid();
         formRequestRef.current = requestId;
         if (formId) {
+
+            // fetch only data if dataId if changed
+            if (Boolean(state.form) &&
+                    ((typeof formId === 'string' && formId === state.form.id)
+                    || (typeof formId === 'object' && formId.module === state.form.module && formId.name === state.form.name 
+                        && (!Boolean(formId.version) || formId.version === state.form.versionNo)))) {
+
+                if (dataId !== state.fetchedData?.id) {
+                    fetch(state.getDataUrl, state.gqlFields, requestId);
+                    return;
+                }
+            }
+
             setState(prev => ({ ...prev, loadingState: 'loading', loaderHint: 'Fetching form...', error: null, dataFetcher: null, form: null, fetchedData: null }));
 
             getForm({ formId, configurationItemMode: args.configurationItemMode, skipCache: false }).then(form => {
@@ -235,14 +309,14 @@ export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse
                 setState(prev => ({ ...prev, form: form }));
 
                 isEntityType(form.settings?.modelType).then(modelIsEntity => {
-                    if (dataId || !modelIsEntity) {
+                    //if (dataId || !modelIsEntity) {
                         endpointsHelper.getFormActionUrl({ actionName: StandardEntityActions.read, formSettings: form.settings, mappings: [] }).then(getDataEndpoint => {
                             const getDataUrl = getDataEndpoint && getDataEndpoint.httpVerb?.toLowerCase() === 'get' // note: support get only here
                                 ? getDataEndpoint.url
                                 : null;
 
                             if (Boolean(getDataUrl)) {
-                                setState(prev => ({ ...prev, loaderHint: 'Fetching metadata...' }));
+                                setState(prev => ({ ...prev, getDataUrl, loaderHint: 'Fetching metadata...' }));
 
                                 // fetch meta before the data
                                 getGqlFields({
@@ -257,44 +331,14 @@ export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse
 
                                     var gqlFields = gqlFieldsToString(gqlFieldsList);
 
-                                    // fetch data and resolve
-                                    const queryParams = { properties: gqlFields };
-                                    if (dataId)
-                                        queryParams["id"] = dataId;
+                                    setState(prev => ({ ...prev, gqlFields }));
 
-                                    const dataFetcher = () => RestfulShesha.get<EntityAjaxResponse, any, any, any>(
-                                        getDataUrl,
-                                        queryParams,
-                                        { base: backendUrl, headers: httpHeaders }
-                                    ).then(dataResponse => {
-                                        if (formRequestRef.current !== requestId)
-                                            return null; // todo: cancel data request
-
-                                        if (dataResponse.success) {
-                                            setState(prev => ({
-                                                ...prev,
-                                                loadingState: 'ready',
-                                                loaderHint: null,
-                                                fetchedData: dataResponse.result,
-                                            }));
-                                        } else {
-                                            setState(prev => ({
-                                                ...prev,
-                                                loadingState: 'failed',
-                                                loaderHint: null,
-                                                fetchedData: null,
-                                                error: dataResponse.error
-                                            }));
-                                        }
-                                        return dataResponse;
-                                    })
-                                        .catch(e => {
-                                            const error = (e as IAjaxResponseBase)?.error;
-                                            setState(prev => ({ ...prev, loadingState: 'failed', loaderHint: null, error: error }));
-                                        });
-
-                                    setState(prev => ({ ...prev, loaderHint: 'Fetching data...', dataFetcher: dataFetcher }));
-                                    dataFetcher();
+                                    if (dataId || !modelIsEntity) {
+                                        fetch(getDataUrl, gqlFields, requestId);
+                                    } else {
+                                        // data loading is not required
+                                        setState(prev => ({ ...prev, loadingState: 'ready', loaderHint: null }));
+                                    }                                
                                 });
                             } else {
                                 // data loading is not required
@@ -304,9 +348,9 @@ export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse
                             console.error('Failed to get endpoint for data fetching', e);
                             setState(prev => ({ ...prev, loadingState: 'failed', loaderHint: null, error: e }));
                         });
-                    } else {
-                        setState(prev => ({ ...prev, loadingState: 'ready', loaderHint: null }));
-                    }
+                    //} else {
+                    //    setState(prev => ({ ...prev, loadingState: 'ready', loaderHint: null }));
+                    //}
                 });
             }).catch(e => {
                 setState(prev => ({ ...prev, loadingState: 'failed', loaderHint: null, error: e }));
@@ -337,7 +381,7 @@ export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse
     };
 
     return result;
-}
+};
 
 // just for intrenal use
 interface IFieldData {
@@ -385,7 +429,9 @@ const getFormFields = (payload: GetFormFieldsPayload): string[] => {
         .allComponents;
     let fieldNames = [];
     for (const key in components) {
-        fieldNames.push(components[key].name);
+        if (components.hasOwnProperty(key)){
+            fieldNames.push(components[key].name);
+        }
     }
 
     fieldNames = fieldNames.concat(formSettings?.fieldsToFetch ?? []);
@@ -403,7 +449,7 @@ const getFormFields = (payload: GetFormFieldsPayload): string[] => {
     fieldNames = fieldNames.sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
 
     return fieldNames;
-}
+};
 
 interface GetGqlFieldsPayload extends GetFormFieldsPayload {
     getContainerProperties: IMetadataDispatcherActionsContext['getContainerProperties'];
@@ -428,11 +474,11 @@ export const getGqlFields = (payload: GetGqlFieldsPayload): Promise<IFieldData[]
                 item = item.trim();
                 const pathParts = item.split('.');
 
-                if (pathParts.length == 1) {
+                if (pathParts.length === 1) {
                     fields.push({
                         name: item,
                         child: [],
-                        property: metadata.properties.find(p => p.path.toLowerCase() == pathParts[0].toLowerCase()),
+                        property: metadata.properties.find(p => p.path.toLowerCase() === pathParts[0].toLowerCase()),
                     });
                     return;
                 }
@@ -441,22 +487,22 @@ export const getGqlFields = (payload: GetGqlFieldsPayload): Promise<IFieldData[]
                 let containerPath = "";
                 pathParts.forEach((part, idx) => {
                     let levelChilds = parent?.child ?? fields;
-                    let field = levelChilds.find(f => f.name == part);
+                    let field = levelChilds.find(f => f.name === part);
                     if (!field) {
                         field = {
                             name: part,
                             child: [],
-                            property: idx == 0
-                                ? metadata.properties.find(p => p.path.toLowerCase() == part.toLowerCase())
-                                : parent?.property?.dataType == 'object'
-                                    ? parent.property.properties?.find(p => p.path.toLowerCase() == part.toLowerCase())
+                            property: idx === 0
+                                ? metadata.properties.find(p => p.path.toLowerCase() === part.toLowerCase())
+                                : parent?.property?.dataType === 'object'
+                                    ? parent.property.properties?.find(p => p.path.toLowerCase() === part.toLowerCase())
                                     : null,
                         };
                         // If property metadata is not set - fetch it using dispatcher.
                         // Note: it's safe to fetch the same container multiple times because the dispatcher returns the same promise for all requests
                         if (!field.property) {
                             const metaPromise = getContainerProperties({ metadata: metadata, containerPath: containerPath }).then(response => {
-                                field.property = response.find(p => p.path.toLowerCase() == field.name.toLowerCase());
+                                field.property = response.find(p => p.path.toLowerCase() === field.name.toLowerCase());
                             });
                             // add promise to list
                             promises.push(metaPromise);
@@ -473,7 +519,7 @@ export const getGqlFields = (payload: GetGqlFieldsPayload): Promise<IFieldData[]
         return new Promise<IFieldData[]>((resolve) => {
             Promise.allSettled(promises).then(() => {
                 resolve(fields);
-            })
+            });
         });
     });
 };
@@ -516,14 +562,6 @@ export const useFormData = (args: UseFormDataArguments): UseFormDataResult => {
         actionName: StandardEntityActions.read,
         formSettings: formSettings,
         mappings: urlEvaluationData,
-        /*
-        [
-            //{ match: 'data', data: formData }, NOTE: form data must not be used here!
-            { match: 'parentFormValues', data: parentFormValues },
-            { match: 'globalState', data: globalState },
-            { match: 'query', data: queryParamsFromAddressBar },
-        ]        
-        */
     });
 
     const { getMetadata, getContainerProperties } = useMetadataDispatcher();
@@ -562,38 +600,45 @@ export const useFormData = (args: UseFormDataArguments): UseFormDataResult => {
 
             // fetch data and resolve
             queryParams = { ...queryParams, properties: gqlFields };
+            if (!queryParams['id'] && urlEvaluationData){
+                const initialValues = getMatchData(urlEvaluationData, 'initialValues');
+                if (initialValues?.id)
+                    queryParams['id'] = initialValues?.id;
+            }
 
-            const dataFetcher = () => RestfulShesha.get<EntityAjaxResponse, any, any, any>(
-                getDataUrl,
-                queryParams,
-                { base: backendUrl, headers: httpHeaders }
-            ).then(dataResponse => {
-                if (requestUidRef.current !== requestId)
-                    return null; // todo: cancel data request
-
-                if (dataResponse.success) {
-                    setState(prev => ({
-                        ...prev,
-                        loadingState: 'ready',
-                        loaderHint: null,
-                        data: dataResponse.result,
-                    }));
-                } else {
-                    setState(prev => ({
-                        ...prev,
-                        loadingState: 'failed',
-                        loaderHint: null,
-                        data: null,
-                        error: dataResponse.error
-                    }));
-                }
-                return dataResponse;
-            })
-                .catch(e => {
-                    const error = (e as IAjaxResponseBase)?.error;
-                    setState(prev => ({ ...prev, loadingState: 'failed', loaderHint: null, error: error }));
-                    return null;
-                });
+            const dataFetcher = () => {
+                return RestfulShesha.get<EntityAjaxResponse, any, any, any>(
+                    getDataUrl,
+                    queryParams,
+                    { base: backendUrl, headers: httpHeaders }
+                ).then(dataResponse => {
+                    if (requestUidRef.current !== requestId)
+                        return null; // todo: cancel data request
+    
+                    if (dataResponse.success) {
+                        setState(prev => ({
+                            ...prev,
+                            loadingState: 'ready',
+                            loaderHint: null,
+                            data: dataResponse.result,
+                        }));
+                    } else {
+                        setState(prev => ({
+                            ...prev,
+                            loadingState: 'failed',
+                            loaderHint: null,
+                            data: null,
+                            error: dataResponse.error
+                        }));
+                    }
+                    return dataResponse;
+                })
+                    .catch(e => {
+                        const error = (e as IAjaxResponseBase)?.error;
+                        setState(prev => ({ ...prev, loadingState: 'failed', loaderHint: null, error: error }));
+                        return null;
+                    });
+            };
 
             if (!lazy) {
                 setState(prev => ({ ...prev, loaderHint: 'Fetching data...', dataFetcher: dataFetcher }));
@@ -616,11 +661,11 @@ export const useFormData = (args: UseFormDataArguments): UseFormDataResult => {
     };
 
     return result;
-}
+};
 
 
 const getCorrectGetUrl = (endpoint: IApiEndpoint): string => {
     return endpoint && endpoint.httpVerb?.toLowerCase() === 'get'
         ? endpoint.url
         : null;
-}
+};

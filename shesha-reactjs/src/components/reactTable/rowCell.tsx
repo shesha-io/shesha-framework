@@ -22,9 +22,9 @@ export interface IRowCellProps {
 
 export const RowCell: FC<IRowCellProps> = ({ cell, preContent }) => {
   return (
-    <span key={nanoid()} {...cell.getCellProps(cellProps)} className="td">
+    <div key={nanoid()} {...cell.getCellProps(cellProps)} className="td">
       {preContent}
       {cell.render('Cell')}
-    </span>
+    </div>
   );
 };

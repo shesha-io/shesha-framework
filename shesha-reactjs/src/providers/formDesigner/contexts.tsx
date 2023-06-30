@@ -7,7 +7,7 @@ import {
   IAsyncValidationError,
   IFormValidationErrors,
 } from '../../interfaces';
-import defaultToolboxComponents from '../form/defaults/toolboxComponents';
+
 import {
   IConfigurableFormComponent,
   ROOT_COMPONENT_KEY,
@@ -15,9 +15,9 @@ import {
   DEFAULT_FORM_SETTINGS,
   IFlatComponentsStructure,
 } from '../form/models';
-import { StateWithHistory } from 'redux-undo';
 import { IDataSource } from '../formDesigner/models';
 import { IPropertyMetadata } from '../../interfaces/metadata';
+import { StateWithHistory } from 'utils/undoable';
 
 export type IFlagProgressFlags =
   | 'addComponent'
@@ -62,16 +62,16 @@ export interface IFormDesignerStateContext
   formSettings: IFormSettings;
 }
 
-export interface AddComonentPayloadBase {
+export interface AddComponentPayloadBase {
   index: number;
   containerId: string;
 }
 
-export interface IComponentAddPayload extends AddComonentPayloadBase {
+export interface IComponentAddPayload extends AddComponentPayloadBase {
   componentType: string;
 }
 
-export interface IComponentAddFromTemplatePayload extends AddComonentPayloadBase { }
+export interface IComponentAddFromTemplatePayload extends AddComponentPayloadBase { }
 
 export interface IAddDataPropertyPayload {
   propertyMetadata: IPropertyMetadata;
@@ -156,7 +156,7 @@ export const FORM_DESIGNER_CONTEXT_INITIAL_STATE: IFormDesignerStateContext = {
   isDragging: false,
   isDebug: false,
   formSettings: DEFAULT_FORM_SETTINGS,
-  toolboxComponentGroups: defaultToolboxComponents,
+  toolboxComponentGroups: [],//defaultToolboxComponents,
   dataSources: [],
   activeDataSourceId: null,
   readOnly: true,

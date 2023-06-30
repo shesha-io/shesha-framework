@@ -2,7 +2,9 @@ import React, { FC, useMemo } from 'react';
 import { IConfigurableFormComponent } from '../../../../interfaces/formDesigner';
 import { IPropertyMetadata } from '../../../../interfaces/metadata';
 import { useForm } from '../../../../providers/form';
-import { camelcaseDotNotation, createComponentModelForDataProperty, useFormDesignerComponentGroups } from '../../../../providers/form/utils';
+import { createComponentModelForDataProperty } from '../../../../providers/form/utils';
+import { camelcaseDotNotation } from '../../../../utils/string';
+import { useFormDesignerComponentGroups } from '../../../../providers/form/hooks';
 import { useMetadata } from '../../../../providers/metadata';
 import DynamicContainer from './dynamicContainer';
 
@@ -34,7 +36,7 @@ export const DynamicView: FC<DynamicViewProps> = (model) => {
     const propsToRender = useMemo<IPropertyMetadata[]>(() => {
         if (!currentMeta)
             return [];
-        const propertiesToMap = currentMeta.properties.filter(property => property.isVisible && !property.isFrameworkRelated && !staticComponentBindings.includes(camelcaseDotNotation(property.path)))
+        const propertiesToMap = currentMeta.properties.filter(property => property.isVisible && !property.isFrameworkRelated && !staticComponentBindings.includes(camelcaseDotNotation(property.path)));
         return propertiesToMap;
     }, [staticComponents, currentMeta]);
 
@@ -46,13 +48,13 @@ export const DynamicView: FC<DynamicViewProps> = (model) => {
             return component;
         }).filter(c => Boolean(c));
         return components;
-    }, [propsToRender]);
+    }, [propsToRender, toolboxComponentGroups]);
 
     if (isComponentHidden(model)) return null;
 
     return (
         <DynamicContainer components={dynamicComponents} />
     );
-}
+};
 
 export default DynamicView;

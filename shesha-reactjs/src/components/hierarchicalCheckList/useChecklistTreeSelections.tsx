@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
-import { CheckListItemModel, useCheckListGetSelection } from '../../apis/checkList';
+import { CheckListItemModel, useCheckListGetSelection } from 'apis/checkList';
 import { treeToList } from '../../utils/tree';
 import { ICheckListItemSelection } from './interface';
 
@@ -46,6 +46,7 @@ export const useChecklistTreeSelections = (id: string, ownerId: string, ownerTyp
 
   /**
    * Updates the current selections
+   *
    * @param updatedSelections - updated selections
    */
   const updateSelections = (updatedSelections: ICheckListItemSelection[]) => {
@@ -72,6 +73,7 @@ export const useChecklistTreeSelections = (id: string, ownerId: string, ownerTyp
 
   /**
    * Updates the checklist item comments
+   *
    * @param data the comments
    */
   const updateSelectionComments = (data: ICheckListItemSelection) => {

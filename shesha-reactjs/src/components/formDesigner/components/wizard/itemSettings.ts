@@ -109,7 +109,6 @@ export const getSettings = (_data?: IWizardStepProps) =>
       name: 'nextButtonSeparatorVisibility',
       parentId: 'root',
       label: 'Next Button',
-      title: '',
     })
     .addTextField({
       id: '737ae9b8-61d2-4ecd-9891-feaaec244a3a',
@@ -154,7 +153,6 @@ export const getSettings = (_data?: IWizardStepProps) =>
       name: 'backButtonSeparatorVisibility',
       parentId: 'root',
       label: 'Back Button',
-      title: '',
     })
 
     .addTextField({
@@ -201,7 +199,6 @@ export const getSettings = (_data?: IWizardStepProps) =>
       name: 'doneButtonSeparatorVisibility',
       parentId: 'root',
       label: 'Done Button',
-      title: '',
     })
     .addTextField({
       id: '20ea7d88-2e09-4d2e-9e4a-caa23b1e3502',
@@ -386,7 +383,8 @@ export const getSettings = (_data?: IWizardStepProps) =>
       hidden: false,
       customVisibility: null,
       description:
-        'Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
+        'Enter custom visibility code.  You must return true to show the component. ' + 
+        'The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
       validate: {},
       settingsValidationErrors: [],
       exposedVariables: [
@@ -413,7 +411,8 @@ export const getSettings = (_data?: IWizardStepProps) =>
       hidden: false,
       customEnabled: null,
       description:
-        'Enter custom enabled code.  You must return true to enable the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
+        'Enter custom enabled code.  You must return true to enable the component. ' + 
+        'The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
       validate: {},
       settingsValidationErrors: [],
       exposedVariables: [

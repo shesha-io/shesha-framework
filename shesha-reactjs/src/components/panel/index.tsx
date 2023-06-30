@@ -9,6 +9,7 @@ export interface ICollapsiblePanelProps extends CollapseProps {
   isActive?: boolean;
   header?: React.ReactNode;
   className?: string;
+  extraClassName?: string;
   style?: React.CSSProperties;
   showArrow?: boolean;
   forceRender?: boolean;
@@ -28,8 +29,12 @@ export const CollapsiblePanel: FC<ICollapsiblePanelProps> = ({
   noContentPadding,
   loading,
   className,
+  extraClassName,
   style,
   collapsedByDefault = false,
+  showArrow,
+  collapsible,
+  ghost,
 }) => {
   // Prevent the CollapsiblePanel from collapsing every time you click anywhere on the extra and header
   const onContainerClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => event?.stopPropagation();
@@ -41,15 +46,14 @@ export const CollapsiblePanel: FC<ICollapsiblePanelProps> = ({
       expandIconPosition={expandIconPosition}
       className={classNames('sha-collapsible-panel', className, { 'no-content-padding': noContentPadding })}
       style={style}
+      ghost={ghost}
     >
       <Panel
-        header={
-          <span className={`ant-collapse-header-text`} onClick={onContainerClick}>
-            {header || ' '}
-          </span>
-        }
         key="1"
-        extra={<span onClick={onContainerClick}>{extra}</span>}
+        collapsible={collapsible}
+        showArrow={showArrow}
+        header={<span className={`ant-collapse-header-text`}>{header || ' '}</span>}
+        extra={<span onClick={onContainerClick} className={extraClassName}>{extra}</span>}
       >
         <Skeleton loading={loading}>{children}</Skeleton>
       </Panel>

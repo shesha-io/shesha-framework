@@ -1,8 +1,8 @@
 import React, { MutableRefObject, useState } from 'react';
 import { FC } from 'react';
 import { Form, Spin, Upload } from 'antd';
-import { useSheshaApplication } from '../../..';
-import { ConfigItemDataNode, IDictionary, ITreeState } from '../models';
+import { IDictionary, useSheshaApplication } from '../../..';
+import { ConfigItemDataNode, ITreeState } from '../models';
 import { RcFile } from 'antd/lib/upload/interface';
 import { DeleteOutlined, FileZipTwoTone, InboxOutlined, LoadingOutlined } from '@ant-design/icons';
 import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
@@ -21,7 +21,7 @@ export interface IImportInterface {
 
 export interface IConfigurationItemsImportProps {
     onImported?: () => void;
-    importRef: MutableRefObject<IImportInterface>;
+    importRef?: MutableRefObject<IImportInterface>;
 }
 
 interface IItemInfo {
@@ -109,7 +109,7 @@ const packageInfo2TreeState = (pack: IPackageInfo): ITreeState => {
         itemsCount: itemsCount,
         indexes: getIndexesList(treeNodes),
     };
-}
+};
 
 export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (props) => {
     const { backendUrl, httpHeaders } = useSheshaApplication();
@@ -159,15 +159,15 @@ export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (pro
                 payload.onError(e);
                 setIsPackLoading(false);
             });
-    }
+    };
     const onChangeSelection = (checkedIds: string[]) => {
         setCheckedIds(checkedIds);
-    }
+    };
 
     const onDeleteClick = () => {
         setUploadFile(null);
         setTreeState(null);
-    }
+    };
 
     const fileRender = (_originNode, file, _currFileList) => {
         return (
@@ -191,7 +191,7 @@ export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (pro
             </div>
         );
         // {filesize(file.size)}
-    }
+    };
 
     const importExecuter = () => {
         if (!uploadFile?.originFileObj)
@@ -203,7 +203,7 @@ export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (pro
 
         const formData = new FormData();
         formData.append('file', uploadFile.originFileObj);
-        appendFormData(formData, 'itemsToImport', checkedIds);
+        appendFormData(formData, 'itemsToImport', JSON.stringify(checkedIds));
 
         return axios
             .post(`${backendUrl}/api/services/app/ConfigurationItem/ImportPackage`,
@@ -223,7 +223,7 @@ export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (pro
                 setIsImporting(false);
                 throw e;
             });
-    }
+    };
 
     if (props.importRef)
         props.importRef.current = {
@@ -256,6 +256,6 @@ export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (pro
             </Form>
         </Spin>
     );
-}
+};
 
 export default ConfigurationItemsImport;

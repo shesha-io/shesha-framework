@@ -1,6 +1,7 @@
-export const SpecificationType = {
-  jsType: 'boolean',
-  valueSources: ['value', 'field', 'func'],
+import { Type } from '@react-awesome-query-builder/antd';
+
+export const SpecificationType: Type = {
+  valueSources: ['value'],
   defaultOperator: 'is_satisfied',
   widgets: {
     specification: {

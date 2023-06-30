@@ -3,7 +3,7 @@ import { IToolboxComponent } from '../../../../../interfaces';
 import { GroupOutlined } from '@ant-design/icons';
 import ToolbarSettings from './settings';
 import { IButtonGroupProps } from './models';
-import { Alert, Menu } from 'antd';
+import { Alert, Menu, Space } from 'antd';
 import { IButtonGroupButton, ButtonGroupItemProps } from '../../../../../providers/buttonGroupConfigurator/models';
 import { useForm } from '../../../../../providers/form';
 import { ConfigurableButton } from '../configurableButton';
@@ -30,9 +30,9 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupProps> = {
     // TODO: Wrap this component within ConfigurableFormItem so that it will be the one handling the hidden state. Currently, it's failing. Always hide the component
     return <ButtonGroup {...model} />;
   },
-  migrator: m =>
+  migrator: (m) =>
     m
-      .add<IButtonGroupProps>(0, prev => {
+      .add<IButtonGroupProps>(0, (prev) => {
         return {
           ...prev,
           items: prev['items'] ?? [],
@@ -42,7 +42,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupProps> = {
       .add<IButtonGroupProps>(2, migrateV1toV2)
       .add<IButtonGroupProps>(
         3,
-        prev => ({
+        (prev) => ({
           ...prev,
           isInline: prev['isInline'] ?? true,
         }) /* default isInline to true if not specified */
@@ -64,7 +64,7 @@ type MenuButton = ButtonGroupItemProps & {
   childItems?: MenuButton[];
 };
 
-export const ButtonGroup: FC<IButtonGroupProps> = ({ items, id, size, spaceSize = 'middle', isInline }) => {
+export const ButtonGroup: FC<IButtonGroupProps> = ({ items, id, size, spaceSize = 'middle', isInline, noStyles }) => {
   const { formMode, formData, form } = useForm();
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const { globalState } = useGlobalState();
@@ -74,21 +74,22 @@ export const ButtonGroup: FC<IButtonGroupProps> = ({ items, id, size, spaceSize 
 
   const localexecuteExpression = (expression: string) => {
     const expressionArgs = {
-      data: formData,
+      data: formData ?? {},
       form: form,
       formMode: formMode,
       globalState: globalState,
       moment: moment,
       context: { selectedRow },
     };
-    return executeExpression<boolean>(expression, expressionArgs, true, error => {
-      console.error(error);
+    return executeExpression<boolean>(expression, expressionArgs, true, (error) => {
+      console.error('Expression evaluation failed', error);
       return true;
     });
   };
 
   /**
    * Return the visibility state of a button. A button is visible is it's not hidden and the user is permitted to view it
+   *
    * @param item
    * @returns
    */
@@ -116,7 +117,7 @@ export const ButtonGroup: FC<IButtonGroupProps> = ({ items, id, size, spaceSize 
           renderButtonItem(props, props?.id, disabled),
           props.id,
           disabled,
-          hasChildren ? props?.childItems?.filter(getIsVisible)?.map(props => renderMenuButton(props, isChild)) : null
+          hasChildren ? props?.childItems?.filter(getIsVisible)?.map((props) => renderMenuButton(props, isChild)) : null
         );
   };
 
@@ -150,10 +151,12 @@ export const ButtonGroup: FC<IButtonGroupProps> = ({ items, id, size, spaceSize 
   return (
     <Fragment>
       {isInline && (
-        <div className="sha-responsive-button-group-inline-container">
-          {filteredItems?.map(props =>
-            renderButtonItem(props, props?.id, !localexecuteExpression(props.customEnabled))
-          )}
+        <div className={noStyles ? null : 'sha-responsive-button-group-inline-container'}>
+          <Space>
+            {filteredItems?.map((props) =>
+              renderButtonItem(props, props?.id, !localexecuteExpression(props.customEnabled))
+            )}
+          </Space>
         </div>
       )}
 
@@ -161,7 +164,7 @@ export const ButtonGroup: FC<IButtonGroupProps> = ({ items, id, size, spaceSize 
         <div className="sha-responsive-button-group-container">
           <Menu
             mode="horizontal"
-            items={filteredItems?.map(props => renderMenuButton(props))}
+            items={filteredItems?.map((props) => renderMenuButton(props))}
             className={`sha-responsive-button-group space-${spaceSize}`}
             style={{ width: '30px' }}
           />

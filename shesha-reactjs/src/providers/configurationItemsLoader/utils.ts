@@ -9,7 +9,7 @@ export const getClassNameFromFullName = (name: string): string => {
     return idx > -1
         ? name.substring(idx + 1)
         : name;
-}
+};
 
 export const getFormNotFoundMessage = (formId: FormIdentifier) => {
     const rawId = asFormRawId(formId);
@@ -21,11 +21,11 @@ export const getFormNotFoundMessage = (formId: FormIdentifier) => {
         return `Form '${getFormFullName(fullName.module, fullName.name)}' not found`;
 
     return 'Form not found';
-}
+};
 
 export const getReferenceListNotFoundMessage = (refListId: IReferenceListIdentifier) => {
     if (refListId)
         return `Reference list '${getReferenceListFullName(refListId)}' not found`;
 
     return 'Reference list not found';
-}
+};

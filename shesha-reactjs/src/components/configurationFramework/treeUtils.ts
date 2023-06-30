@@ -16,4 +16,4 @@ export const getIndexesList = (data: DataNode[]): DataIndex[] => {
     const result: DataIndex[] = [];
     generateIndexesList(data, result);
     return result;
-}
+};

@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
-import { Meta } from '@storybook/react/types-6-0';
-import { Story } from '@storybook/react';
+import { Story, Meta } from '@storybook/react';
 import CollapsibleSidebarContainer, { ICollapsibleSidebarContainerProps } from './';
 import { Alert, Col, Row } from 'antd';
-import CollapsiblePanel from '../collapsiblePanel';
+import CollapsiblePanel from '../panel';
 // import './styles/index.less';
 
 export default {
   title: 'Components/CollapsibleSidebarContainer',
-  component: CollapsibleSidebarContainer,
+  component: CollapsibleSidebarContainer
 } as Meta;
 
 const LoremIpsum = () => (

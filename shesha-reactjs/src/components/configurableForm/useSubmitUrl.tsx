@@ -17,7 +17,6 @@ export const useSubmitUrl = (
    * @returns
    */
   return useMemo(() => {
-    //console.log('LOG: calculate submiturl')
     const { postUrl, putUrl, deleteUrl } = formSettings || {};
     let url = postUrl; // Fallback for now
 

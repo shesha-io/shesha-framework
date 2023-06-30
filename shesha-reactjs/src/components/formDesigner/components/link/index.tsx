@@ -5,8 +5,9 @@ import { LinkOutlined } from '@ant-design/icons';
 import { evaluateString, getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import { useForm, useFormData } from '../../../../providers';
 import settingsFormJson from './settingsForm.json';
-import ComponentsContainer, { Direction } from '../../componentsContainer';
-import { AlignItems, JustifyContent, JustifyItems } from '../container/model';
+import ComponentsContainer from '../../containers/componentsContainer';
+import { AlignItems, JustifyContent, JustifyItems } from '../../../../designer-components/container/interfaces';
+import { ContainerDirection } from '../../common/interfaces';
 
 export interface IAlertProps extends IConfigurableFormComponent {
   text: string;
@@ -19,7 +20,7 @@ export interface ILinkProps extends IConfigurableFormComponent {
   name: string;
   target?: string;
   download?: string;
-  direction?: Direction;
+  direction?: ContainerDirection;
   hasChildren?: boolean;
   justifyContent?: JustifyContent;
   alignItems?: AlignItems;
@@ -55,7 +56,8 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
     const linkStyle: CSSProperties = {};
 
     if (direction === 'horizontal' && justifyContent) {
-      (linkStyle['display'] = 'flex'), (linkStyle['justifyContent'] = justifyContent);
+      linkStyle['display'] = 'flex';
+      linkStyle['justifyContent'] = justifyContent;
       linkStyle['alignItems'] = alignItems;
       linkStyle['justifyItems'] = justifyItems;
     }

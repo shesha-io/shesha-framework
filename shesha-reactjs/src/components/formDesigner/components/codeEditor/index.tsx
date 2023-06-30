@@ -1,22 +1,16 @@
 import React from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '../../../../providers/form/models';
+import { FormMarkup } from '../../../../providers/form/models';
 import { CodeSandboxOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '../formItem';
 import settingsFormJson from './settingsForm.json';
 import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import { CodeEditor } from './codeEditor';
 import { DataTypes, StringFormats } from '../../../../interfaces/dataTypes';
-import { ICodeEditorProps } from './models';
-import { ICodeExposedVariable } from '../../../codeVariablesTable';
+import { ICodeEditorComponentProps, ICodeEditorProps } from './interfaces';
 import { useForm } from '../../../..';
 
 const settingsForm = settingsFormJson as FormMarkup;
-
-export interface ICodeEditorComponentProps extends IConfigurableFormComponent {
-  mode?: 'dialog' | 'inline';
-  exposedVariables?: ICodeExposedVariable[];
-}
 
 const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
   type: 'codeEditor',
@@ -29,7 +23,7 @@ const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
       ...model,
     };
 
-    const { formMode } = useForm();
+    const { formMode} = useForm();
 
     return (
       <>

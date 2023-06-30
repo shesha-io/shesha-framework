@@ -1,4 +1,3 @@
-// import { useAuth, useAuthorizationSettings, useGlobalState, usePublish } from '@shesha/reactjs';
 import React, { FC, useEffect, useState } from 'react';
 import { Button, Input, message } from 'antd';
 import { useGlobalState } from '../../providers';
@@ -53,7 +52,7 @@ const CurrencyConverter: FC<ICurrencyConverterProps> = ({
 
     const onCheckCache = () => {
         const state = getGlobalStateByKey(ECHANGE_GLOBAL_KEY);
-        message.info(state);
+        message.info(state?.toString());
     };
 
     const onClearCache = () => {

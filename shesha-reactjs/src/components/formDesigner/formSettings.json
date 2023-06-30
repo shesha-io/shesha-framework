@@ -335,11 +335,6 @@
           "type": "object"
         },
         {
-          "name": "parentFormValues",
-          "description": "Parent form values. The values of the form rendering the dialog.",
-          "type": "object"
-        },
-        {
           "name": "globalState",
           "description": "The global state of the application",
           "type": "object"

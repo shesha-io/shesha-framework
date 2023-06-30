@@ -1,5 +1,4 @@
 ﻿using FluentMigrator;
-using System;
 using System.Data;
 
 namespace Shesha.FluentMigrator.ReferenceLists
@@ -25,6 +24,10 @@ namespace Shesha.FluentMigrator.ReferenceLists
 
         internal Guid InsertReferenceList(string @namespace, string name, string description)
         {
+            var existingId = GetReferenceListId(@namespace, name);
+            if (existingId.HasValue)
+                return existingId.Value;
+
             var id = Guid.NewGuid();
             if (IsLegacyRefListStructure())
             {

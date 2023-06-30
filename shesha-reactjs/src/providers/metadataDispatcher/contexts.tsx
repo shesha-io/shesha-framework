@@ -1,4 +1,5 @@
 import { createContext } from 'react';
+import { IDictionary } from '../../interfaces';
 import { IModelMetadata, IPropertyMetadata } from '../../interfaces/metadata';
 import { IMetadataContext } from '../metadata/contexts';
 
@@ -10,9 +11,15 @@ export interface IGetMetadataPayload {
   modelType: string;
 }
 
-// export interface IGetSpecificationsPayload {
-//   modelType: string;
-// }
+export interface IGetPropertyMetadataPayload {
+  modelType: string;
+  propertyPath: string;
+}
+
+export interface IGetPropertiesMetadataPayload {
+  modelType: string;
+  properties: string[];
+}
 
 export interface IGetNestedPropertiesPayload {
   metadata: IModelMetadata;
@@ -27,8 +34,9 @@ export interface IRegisterProviderPayload {
 
 export interface IMetadataDispatcherActionsContext {
   getMetadata: (payload: IGetMetadataPayload) => Promise<IModelMetadata>;
+  getPropertyMetadata: (payload: IGetPropertyMetadataPayload) => Promise<IPropertyMetadata>;
+  getPropertiesMetadata: (payload: IGetPropertiesMetadataPayload) => Promise<IDictionary<IPropertyMetadata>>;
   isEntityType: (modelType: string) => Promise<boolean>;
-  //getSpecifications: (payload: IGetSpecificationsPayload) => Promise<ISpecification[]>;
   getContainerProperties: (payload: IGetNestedPropertiesPayload) => Promise<IPropertyMetadata[]>;
   getContainerMetadata: (payload: IGetNestedPropertiesPayload) => Promise<IModelMetadata>;
   registerProvider: (payload: IRegisterProviderPayload) => void;
@@ -50,3 +58,5 @@ export const METADATA_DISPATCHER_CONTEXT_INITIAL_STATE: IMetadataDispatcherState
 export const MetadataDispatcherStateContext = createContext<IMetadataDispatcherStateContext>(METADATA_DISPATCHER_CONTEXT_INITIAL_STATE);
 
 export const MetadataDispatcherActionsContext = createContext<IMetadataDispatcherActionsContext>(undefined);
+
+export type NestedPropertyMetadatAccessor = (propertyPath: string) => Promise<IPropertyMetadata>;

@@ -107,6 +107,8 @@ namespace Shesha.DynamicEntities
 
             if (propType.IsClass && !propType.IsSystemType() && !propType.IsEntityType())
             {
+                if (val is IJsonEntityProxy proxy)
+                    return JsonEntityProxy.GetJson(proxy, jval as JObject);
                 jval = jval.IsNullOrEmpty() ? new JObject() : jval;
                 var newjval = GetJObjectFromObject(val, jval as JObject);
                 if (jval.IsNullOrEmpty())

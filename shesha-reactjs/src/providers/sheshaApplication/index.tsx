@@ -8,18 +8,22 @@ import {
   SheshaApplicationStateContext,
   SHESHA_APPLICATION_CONTEXT_INITIAL_STATE,
 } from './contexts';
-import { RestfulProvider } from 'restful-react';
 import IRequestHeaders from '../../interfaces/requestHeaders';
-import { setBackendUrlAction, setHeadersAction } from './actions';
+import { setBackendUrlAction, setHeadersAction, updateToolboxComponentGroupsAction } from './actions';
 import { Router } from 'next/router';
 import AuthProvider from '../auth';
-import AuthorizationSettingsProvider from '../authorizationSettings';
 import ShaRoutingProvider from '../shaRouting';
 import { AppConfiguratorProvider } from '../appConfigurator';
 import { DynamicModalProvider } from '../dynamicModal';
 import { UiProvider } from '../ui';
 import { MetadataDispatcherProvider } from '../metadataDispatcher';
-import { FormIdentifier, IAuthProviderRefProps, IToolboxComponentGroup, ThemeProvider, ThemeProviderProps } from '../..';
+import {
+  FormIdentifier,
+  IAuthProviderRefProps,
+  IToolboxComponentGroup,
+  ThemeProvider,
+  ThemeProviderProps,
+} from '../..';
 import { ReferenceListDispatcherProvider } from '../referenceListDispatcher';
 import { StackedNavigationProvider } from '../../pages/dynamic/navigation/stakedNavigation';
 import ConditionalWrap from '../../components/conditionalWrapper';
@@ -27,6 +31,9 @@ import { ConfigurableActionDispatcherProvider } from '../configurableActionsDisp
 import { ApplicationActionsProcessor } from './configurable-actions/applicationActionsProcessor';
 import { ConfigurationItemsLoaderProvider } from '../configurationItemsLoader';
 import { FRONT_END_APP_HEADER_NAME } from './models';
+import { SettingsProvider } from '../settings';
+import { DataSourcesProvider } from '../dataSourcesProvider';
+import { useDeepCompareEffect } from 'react-use';
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;
@@ -35,7 +42,6 @@ export interface IShaApplicationProviderProps {
   router?: Router; // todo: replace with IRouter
   toolboxComponentGroups?: IToolboxComponentGroup[];
   unauthorizedRedirectUrl?: string;
-  whitelistUrls?: string[];
   themeProps?: ThemeProviderProps;
   routes?: ISheshaRutes;
   noAuth?: boolean;
@@ -47,7 +53,7 @@ export interface IShaApplicationProviderProps {
   getFormUrlFunc?: (formId: FormIdentifier) => string;
 }
 
-const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>> = props => {
+const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>> = (props) => {
   const {
     children,
     backendUrl,
@@ -58,10 +64,9 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
     router,
     toolboxComponentGroups = [],
     unauthorizedRedirectUrl,
-    whitelistUrls,
     themeProps,
     routes,
-    getFormUrlFunc
+    getFormUrlFunc,
   } = props;
   const initialHeaders = applicationKey ? { [FRONT_END_APP_HEADER_NAME]: applicationKey } : {};
   const [state, dispatch] = useReducer(appConfiguratorReducer, {
@@ -75,6 +80,16 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
   });
 
   const authRef = useRef<IAuthProviderRefProps>();
+
+  useDeepCompareEffect(() => {
+    if (toolboxComponentGroups?.length !== 0) {
+      updateToolboxComponentGroups(toolboxComponentGroups);
+    }
+  }, [toolboxComponentGroups]);
+
+  const updateToolboxComponentGroups = (payload: IToolboxComponentGroup[]) => {
+    dispatch(updateToolboxComponentGroupsAction(payload));
+  };
 
   const setRequestHeaders = (headers: IRequestHeaders) => {
     dispatch(setHeadersAction(headers));
@@ -101,27 +116,21 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
           anyOfPermissionsGranted: anyOfPermissionsGranted, // NOTE: don't pass ref directly here, it leads to bugs because some of components use old reference even when authRef is updated
         }}
       >
-        <RestfulProvider
-          base={state.backendUrl}
-          requestOptions={{
-            headers: state.httpHeaders,
-          }}
-        >
+        <SettingsProvider>
           <ConfigurableActionDispatcherProvider>
             <UiProvider>
-              <ShaRoutingProvider getFormUrlFunc={getFormUrlFunc} router={router} >
+              <ShaRoutingProvider getFormUrlFunc={getFormUrlFunc} router={router}>
                 <ConditionalWrap
                   condition={!props?.noAuth}
-                  wrap={authChildren => (
+                  wrap={(authChildren) => (
                     <AuthProvider
                       tokenName={accessTokenName || DEFAULT_ACCESS_TOKEN_NAME}
                       onSetRequestHeaders={setRequestHeaders}
                       unauthorizedRedirectUrl={unauthorizedRedirectUrl}
-                      whitelistUrls={whitelistUrls}
                       authRef={authRef}
                       homePageUrl={homePageUrl}
                     >
-                      <AuthorizationSettingsProvider>{authChildren}</AuthorizationSettingsProvider>
+                      {authChildren}
                     </AuthProvider>
                   )}
                 >
@@ -131,9 +140,11 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                         <ReferenceListDispatcherProvider>
                           <MetadataDispatcherProvider>
                             <StackedNavigationProvider>
-                              <DynamicModalProvider>
-                                <ApplicationActionsProcessor>{children}</ApplicationActionsProcessor>
-                              </DynamicModalProvider>
+                              <DataSourcesProvider>
+                                <DynamicModalProvider>
+                                  <ApplicationActionsProcessor>{children}</ApplicationActionsProcessor>
+                                </DynamicModalProvider>
+                              </DataSourcesProvider>
                             </StackedNavigationProvider>
                           </MetadataDispatcherProvider>
                         </ReferenceListDispatcherProvider>
@@ -144,7 +155,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
               </ShaRoutingProvider>
             </UiProvider>
           </ConfigurableActionDispatcherProvider>
-        </RestfulProvider>
+        </SettingsProvider>
       </SheshaApplicationActionsContext.Provider>
     </SheshaApplicationStateContext.Provider>
   );

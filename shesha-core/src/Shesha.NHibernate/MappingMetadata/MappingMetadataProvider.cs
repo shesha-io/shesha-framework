@@ -12,6 +12,7 @@ using Shesha.Configuration.MappingMetadata;
 using System.Reflection;
 using NHibernate.Mapping;
 using NUglify;
+using Shesha.NHibernate.Utilites;
 
 namespace Shesha.MappingMetadata
 {
@@ -68,13 +69,14 @@ namespace Shesha.MappingMetadata
                 {
                     var sqlBuilder = new StringBuilder();
 
-                    sqlBuilder.Append($"update {table.Key} set ");
+                    var tableName = table.Key.EscapeDbObjectName();
+                    sqlBuilder.Append($"update {tableName} set ");
 
                     var props = table.ToList();
 
                     sqlBuilder.Append(
                         string.Join(", ",
-                        props.Select(x => $"{x.ColumnNames[0]} = replace({x.ColumnNames[0]}, '\"{oldValue}\"', '\"{newValue}\"')")
+                        props.Select(x => $"{x.ColumnNames[0].EscapeDbObjectName()} = replace({x.ColumnNames[0].EscapeDbObjectName()}, '\"{oldValue}\"', '\"{newValue}\"')")
                         ));
 
                     var sql = sqlBuilder.ToString();
@@ -87,10 +89,13 @@ namespace Shesha.MappingMetadata
             {
                 foreach(var property in propsMetadata)
                 {
-                    var propName = property.ColumnNames.FirstOrDefault(x => x.ToLower().EndsWith("classname"));
-                    var sql = $"update {property.TableName} set {propName} = '{newValue}' where {propName} = '{oldValue}'";
-                    var q = session.CreateSQLQuery(sql);
-                    var i = await q.ExecuteUpdateAsync();
+                    var propName = property.ColumnNames.FirstOrDefault(x => x.ToLower().UnescapeDbObjectName().EndsWith("classname"));
+                    if (!string.IsNullOrWhiteSpace(propName)) 
+                    {
+                        var sql = $"update {property.TableName.EscapeDbObjectName()} set {propName.EscapeDbObjectName()} = '{newValue}' where {propName.EscapeDbObjectName()} = '{oldValue}'";
+                        var q = session.CreateSQLQuery(sql);
+                        var i = await q.ExecuteUpdateAsync();
+                    }
                 }
             }
         }

@@ -6,7 +6,7 @@ import { DownOutlined, LoginOutlined, UserOutlined } from '@ant-design/icons';
 import { useAuth, useSidebarMenu } from '../../providers';
 import ShaLink from '../shaLink';
 import { ProtectedContent, AppEditModeToggler, ConfigurableLogo } from '..';
-import { PERM_APP_CONFIGURATOR } from '../../constants';
+import { PERM_APP_CONFIGURATOR } from '../../shesha-constants';
 import ConfigurationItemViewModeToggler from '../appConfigurator/configurationItemViewModeToggler';
 
 const { Search } = Input;

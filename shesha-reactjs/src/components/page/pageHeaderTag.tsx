@@ -1,13 +1,13 @@
 import { Tag, TagProps } from 'antd';
 import React, { FC } from 'react';
 
-type Tag = {
+type TagWithText = {
   text: string;
 } & TagProps;
 
 export interface ITagProps {
   title?: string;
-  tag: string | Tag;
+  tag: string | TagWithText;
 }
 
 export const PageHeaderTag: FC<ITagProps> = ({ title, tag }) => {

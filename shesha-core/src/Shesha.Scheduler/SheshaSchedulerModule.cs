@@ -1,17 +1,16 @@
-﻿using System.Reflection;
-using Abp.AspNetCore;
+﻿using Abp.AspNetCore;
 using Abp.AspNetCore.Configuration;
 using Abp.AutoMapper;
-using Abp.Dependency;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
-using Shesha.Authorization;
+using Shesha.Modules;
 using Shesha.NHibernate;
+using System.Reflection;
 
 namespace Shesha.Scheduler
 {
     [DependsOn(typeof(SheshaNHibernateModule), typeof(AbpAspNetCoreModule))]
-    public class SheshaSchedulerModule : AbpModule
+    public class SheshaSchedulerModule : SheshaSubModule<SheshaFrameworkModule>
     {
         /// inheritedDoc
         public override void Initialize()

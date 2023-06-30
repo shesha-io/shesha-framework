@@ -5,6 +5,7 @@ using Castle.MicroKernel.Registration;
 using Shesha.Modules;
 using Shesha.Settings.Ioc;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Shesha.Sms.SmsPortal
 {
@@ -17,6 +18,11 @@ namespace Shesha.Sms.SmsPortal
             FriendlyName = "Shesha SMS Portal",
             Publisher = "Boxfusion"
         };
+
+        public override async Task<bool> InitializeConfigurationAsync()
+        {
+            return await ImportConfigurationAsync();
+        }
 
         public override void PreInitialize()
         {
@@ -31,7 +37,10 @@ namespace Shesha.Sms.SmsPortal
             IocManager.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
 
             IocManager.RegisterSettingAccessor<ISmsPortalSettings>(s => {
-                s.Host.WithDefaultValue("mymobileapi.com/api5/http5.aspx");
+                s.GatewaySettings.WithDefaultValue(new GatewaySettings { 
+                    Host = "mymobileapi.com/api5/http5.aspx",
+                    UseDefaultProxyCredentials = true
+                });
             });
 
             IocManager.IocContainer.Register(

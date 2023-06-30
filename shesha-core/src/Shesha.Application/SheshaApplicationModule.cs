@@ -11,6 +11,7 @@ using Castle.MicroKernel.Registration;
 using Shesha.Authorization;
 using Shesha.Email;
 using Shesha.GraphQL;
+using Shesha.Modules;
 using Shesha.Notifications;
 using Shesha.Otp.Configuration;
 using Shesha.Push;
@@ -22,6 +23,7 @@ using Shesha.Sms.Configuration;
 using Shesha.Startup;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Shesha
 {
@@ -30,8 +32,13 @@ namespace Shesha
         typeof(SheshaCoreModule),
         typeof(SheshaGraphQLModule),
         typeof(AbpAutoMapperModule))]
-    public class SheshaApplicationModule : AbpModule
+    public class SheshaApplicationModule : SheshaSubModule<SheshaFrameworkModule>
     {
+        public override async Task<bool> InitializeConfigurationAsync()
+        {
+            return await ImportConfigurationAsync();
+        }
+
         public override void PreInitialize()
         {
             IocManager.Register<IShaApplicationModuleConfiguration, ShaApplicationModuleConfiguration>();

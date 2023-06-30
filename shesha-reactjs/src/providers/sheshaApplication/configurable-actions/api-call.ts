@@ -7,11 +7,12 @@ import { IKeyValue } from "../../../interfaces/keyValue";
 import { useConfigurableAction } from "../../configurableActionsDispatcher";
 import qs from "qs";
 import { getQueryString } from "../../../components/autocomplete/utils";
+import { unwrapAbpResponse } from "../../../utils/fetchers";
 
 export interface IApiCallArguments {
   url: string;
   verb: string;
-  parameters: IKeyValue[],
+  parameters: IKeyValue[];
   headers: IKeyValue[];
   sendStandardHeaders: boolean;
 }
@@ -74,7 +75,7 @@ export const apiCallArgumentsForm = new DesignerToolbarSettings()
 
 type StringDictionary = {
   [key: string]: string;
-}
+};
 const mapKeyValueToDictionary = (value: IKeyValue[]): StringDictionary => {
   if (!value)
     return undefined;
@@ -85,11 +86,11 @@ const mapKeyValueToDictionary = (value: IKeyValue[]): StringDictionary => {
       result[item.key] = item.value;
   });
   return result;
-}
+};
 
 const isGlobalUrl = (url: string) => {
   return url?.match(/^(http|ftp|https):\/\//gi);
-}
+};
 
 export const useApiCallAction = () => {
   const { backendUrl, httpHeaders } = useSheshaApplication();
@@ -138,7 +139,7 @@ export const useApiCallAction = () => {
         data: preparedData,
         method: verb as Method,
         headers: allHeaders,
-      });
+      }).then(response => unwrapAbpResponse(response.data));
     }
   }, [backendUrl, httpHeaders]);
-}  
+};  

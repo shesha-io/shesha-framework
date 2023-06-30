@@ -6,6 +6,7 @@ using Abp.Auditing;
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using Shesha.Domain.Attributes;
+using Shesha.DynamicEntities;
 
 namespace Shesha.Domain
 {
@@ -32,13 +33,7 @@ namespace Shesha.Domain
         [ReferenceList("Shesha.Core", "OrganisationUnitType")]
         public virtual int? OrganisationType { get; set; }
         
-        public virtual int? TenantId { get; set; }
-
-        [StringLength(30)]
-        public virtual string CompanyRegistrationNo { get; set; }
-
-        [StringLength(30)]
-        public virtual string VatRegistrationNo { get; set; }
+        public virtual int? TenantId { get; set; }        
 
         [StringLength(200)]
         public virtual string ContactEmail { get; set; }
@@ -64,6 +59,7 @@ namespace Shesha.Domain
         /// Primary contact
         /// </summary>
         [Audited]
+        [CascadeUpdateRules(true, true)]
         public virtual TPerson PrimaryContact { get; set; }
 
     }

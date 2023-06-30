@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, Input, InputNumber } from 'antd';
-import { IColumnsComponentProps } from './columns';
+import { IColumnsComponentProps } from './interfaces';
 import ColumnsList from './columnsList';
 
 export interface IProps {

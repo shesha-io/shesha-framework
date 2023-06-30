@@ -1,6 +1,6 @@
 import React, { FC, useContext, PropsWithChildren, useRef } from 'react';
 import modelReducer from './reducer';
-import useThunkReducer from 'react-hook-thunk-reducer';
+import useThunkReducer from '../../../../hooks/thunkReducer';
 import {
   IUpdateChildItemsPayload,
   IUpdateItemSettingsPayload,
@@ -54,7 +54,7 @@ const PropertiesEditorProvider: FC<PropsWithChildren<IPropertiesEditorProviderPr
         props.onChange(updatedItems);
       }        
     });
-  }
+  };
 
   const addItem = (parentId?: string) => {
     //return dispatchDeferred

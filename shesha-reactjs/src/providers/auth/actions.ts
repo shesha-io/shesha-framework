@@ -1,8 +1,7 @@
 import { createAction } from 'redux-actions';
-import { UserLoginInfoDto } from '../../apis/session';
-import { ResetPasswordVerifyOtpResponse } from '../../apis/user';
-import { IErrorInfo, IHasErrorInfo } from '../../interfaces/errorInfo';
-//import IRequestHeaders from '../../interfaces/requestHeaders';
+import { UserLoginInfoDto } from 'apis/session';
+import { ResetPasswordVerifyOtpResponse } from 'apis/user';
+import { IErrorInfo, IHasErrorInfo } from 'interfaces/errorInfo';
 export enum AuthActionEnums {
   CheckAuthAction = 'CHECK_AUTH_ACTION',
   SetToken = 'SET_TOKEN',
@@ -14,6 +13,7 @@ export enum AuthActionEnums {
   FetchUserDataRequest = 'FETCH_USER_DATA_REQUEST',
   FetchUserDataSuccess = 'FETCH_USER_DATA_SUCCESS',
   FetchUserDataError = 'FETCH_USER_DATA_ERROR',
+  SetIsLoggedIn = 'SET_IS_LOGGED_IN',
 
   //#region Rest Password
   VerifyOtpSuccess = 'VERIFY_OTP_SUCCESS',
@@ -45,6 +45,11 @@ export const fetchUserDataAction = createAction(AuthActionEnums.FetchUserDataReq
 
 export const fetchUserDataActionSuccessAction = createAction<UserLoginInfoDto, UserLoginInfoDto>(
   AuthActionEnums.FetchUserDataSuccess,
+  p => p
+);
+
+export const setIsLoggedInAction = createAction<boolean, boolean>(
+  AuthActionEnums.SetIsLoggedIn,
   p => p
 );
 

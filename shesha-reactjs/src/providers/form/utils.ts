@@ -27,7 +27,6 @@ import {
 } from './models';
 import Mustache from 'mustache';
 import {
-  ITableColumn,
   IToolboxComponent,
   IToolboxComponentGroup,
   IToolboxComponents,
@@ -46,17 +45,15 @@ import formViewMarkup from './defaults/markups/formView.json';
 import masterDetailsViewMarkup from './defaults/markups/masterDetailsView.json';
 import menuViewMarkup from './defaults/markups/menuView.json';
 import tableViewMarkup from './defaults/markups/tableView.json';
-import { useSheshaApplication } from '..';
-import { CSSProperties, useMemo } from 'react';
+import { CSSProperties } from 'react';
 import camelcase from 'camelcase';
-import defaultToolboxComponents from './defaults/toolboxComponents';
 import { Migrator } from '../../utils/fluentMigrator/migrator';
 
 /**
  * Convert components tree to flat structure.
  * In flat structure we store components settings and their relations separately:
- *    allComponents - dictionary (key:value) of components. key - Id of the component, value - conponent settings
- *    componentRelations - dictionary of component relations. key - id of the container, value - ordered list of subcomponent ids
+ * allComponents - dictionary (key:value) of components. key - Id of the component, value - conponent settings
+ * componentRelations - dictionary of component relations. key - id of the container, value - ordered list of subcomponent ids
  */
 export const componentsTreeToFlatStructure = (
   toolboxComponents: IToolboxComponents,
@@ -87,7 +84,12 @@ export const componentsTreeToFlatStructure = (
       const customContainerNames = componentRegistration?.customContainerNames || [];
       let subContainers: IComponentsContainer[] = [];
       customContainerNames.forEach(containerName => {
-        const containers = component[containerName] as IComponentsContainer[];
+
+        const containers = component[containerName]
+          ? Array.isArray(component[containerName])
+            ? component[containerName] as IComponentsContainer[]
+            : [component[containerName] as IComponentsContainer]
+          : undefined;
         if (containers) subContainers = [...subContainers, ...containers];
       });
       if (component['components']) subContainers.push({ id: component.id, components: component['components'] });
@@ -111,7 +113,11 @@ export const componentsTreeToFlatStructure = (
   return result;
 };
 
-export const upgradeComponents = (toolboxComponents: IToolboxComponents, flatStructure: IFlatComponentsStructure) => {
+export const upgradeComponents = (
+  toolboxComponents: IToolboxComponents,
+  formSettings: IFormSettings,
+  flatStructure: IFlatComponentsStructure
+) => {
   const { allComponents } = flatStructure;
   for (const key in allComponents) {
     if (allComponents.hasOwnProperty(key)) {
@@ -119,7 +125,7 @@ export const upgradeComponents = (toolboxComponents: IToolboxComponents, flatStr
 
       const componentDefinition = toolboxComponents[component.type];
       if (componentDefinition) {
-        allComponents[key] = upgradeComponent(component, componentDefinition, flatStructure);
+        allComponents[key] = upgradeComponent(component, componentDefinition, formSettings, flatStructure);
       }
     }
   }
@@ -127,16 +133,18 @@ export const upgradeComponents = (toolboxComponents: IToolboxComponents, flatStr
 
 export const upgradeComponentsTree = (
   toolboxComponents: IToolboxComponents,
+  formSettings: IFormSettings,
   components: IConfigurableFormComponent[]
 ): IConfigurableFormComponent[] => {
   const flatStructure = componentsTreeToFlatStructure(toolboxComponents, components);
-  upgradeComponents(toolboxComponents, flatStructure);
+  upgradeComponents(toolboxComponents, formSettings, flatStructure);
   return componentsFlatStructureToTree(toolboxComponents, flatStructure);
 };
 
 export const upgradeComponent = (
   componentModel: IConfigurableFormComponent,
   definition: IToolboxComponent,
+  formSettings: IFormSettings,
   flatStructure: IFlatComponentsStructure
 ) => {
   if (!definition.migrator) return componentModel;
@@ -144,7 +152,7 @@ export const upgradeComponent = (
   const migrator = new Migrator<IConfigurableFormComponent, IConfigurableFormComponent>();
   const fluent = definition.migrator(migrator);
   if (componentModel.version === undefined) componentModel.version = -1;
-  const model = fluent.migrator.upgrade(componentModel, { flatStructure, componentId: componentModel.id });
+  const model = fluent.migrator.upgrade(componentModel, {formSettings, flatStructure, componentId: componentModel.id });
   return model;
 };
 
@@ -197,8 +205,12 @@ export const componentsFlatStructureToTree = (
 
         const customContainers = componentRegistration?.customContainerNames || [];
         customContainers.forEach(containerName => {
-          const childContainers = component[containerName] as IComponentsContainer[];
 
+          const childContainers = component[containerName]
+            ? Array.isArray(component[containerName])
+              ? component[containerName] as IComponentsContainer[]
+              : [component[containerName] as IComponentsContainer]
+            : undefined;
           if (childContainers) {
             childContainers.forEach(c => {
               const childComponents: IConfigurableFormComponent[] = [];
@@ -268,7 +280,7 @@ export const getCustomEnabledFunc = ({ customEnabled, name }: IConfigurableFormC
  * Evaluates the string using Mustache template.
  *
  * Given a the below expression
- *  const expression =  'My name is {{name}}';
+ * const expression =  'My name is {{name}}';
  *
  * and the below data
  *  const data = { name: 'John', surname: 'Dow' };
@@ -288,8 +300,8 @@ export const evaluateString = (template: string = '', data: any) => {
     if (localData) {
       //adding a function to the data object that will format datetime
 
-      localData.dateFormat = function() {
-        return function(timestamp, render) {
+      localData.dateFormat = function () {
+        return function (timestamp, render) {
           return new Date(render(timestamp).trim()).toLocaleDateString('en-us', {
             year: 'numeric',
             month: 'short',
@@ -358,7 +370,7 @@ export const evaluateComplexString = (expression: string, mappings: IMatchData[]
   return result;
 };
 
-interface IEvaluateComplexStringResult {
+export interface IEvaluateComplexStringResult {
   result: string;
   unevaluatedExpressions?: string[];
   success?: boolean;
@@ -413,7 +425,8 @@ interface IEvaluateComplexStringResult {
 //newer versions
 export const evaluateComplexStringWithResult = (
   expression: string,
-  mappings: IMatchData[]
+  mappings: IMatchData[],
+  requireNonEmptyResult: boolean,
 ): IEvaluateComplexStringResult => {
   const matches = new Set([...expression?.matchAll(/\{\{(?:(?!}}).)*\}\}/g)].flat());
 
@@ -432,7 +445,7 @@ export const evaluateComplexStringWithResult = (
         // But dynamic expression now can use formData and globalState, so as a result the expressions need to use dot notation
         const evaluatedValue = evaluateString(template, match ? { [match]: data } : data);
 
-        if (!evaluatedValue?.trim()) {
+        if (requireNonEmptyResult && !evaluatedValue?.trim()) {
           success = false;
           unevaluatedExpressions?.push(template);
         } else {
@@ -487,8 +500,10 @@ export function executeExpression<TResult>(
       let argsDefinition = '';
       const argList: any[] = [];
       for (const argumentName in expressionArgs) {
-        argsDefinition += (argsDefinition ? ', ' : '') + argumentName;
-        argList.push(expressionArgs[argumentName]);
+        if (expressionArgs.hasOwnProperty(argumentName)) {
+          argsDefinition += (argsDefinition ? ', ' : '') + argumentName;
+          argList.push(expressionArgs[argumentName]);
+        }
       }
 
       const expressionExecuter = new Function(argsDefinition, expression);
@@ -510,8 +525,10 @@ export function executeScript<TResult = any>(
     let argsDefinition = '';
     const argList: any[] = [];
     for (const argumentName in expressionArgs) {
-      argsDefinition += (argsDefinition ? ', ' : '') + argumentName;
-      argList.push(expressionArgs[argumentName]);
+      if (expressionArgs.hasOwnProperty(argumentName)) {
+        argsDefinition += (argsDefinition ? ', ' : '') + argumentName;
+        argList.push(expressionArgs[argumentName]);
+      }
     }
 
     const expressionExecuter = new Function(argsDefinition, expression);
@@ -545,12 +562,19 @@ export const getVisibleComponentIds = (
   components: IComponentsDictionary,
   values: any,
   globalState: any,
-  formMode: FormMode
+  formMode: FormMode,
+  propertyFilter?: (name: string) => boolean
 ): string[] => {
   const visibleComponents: string[] = [];
   for (const key in components) {
     if (components.hasOwnProperty(key)) {
       const component = components[key] as IConfigurableFormComponent;
+
+      if (propertyFilter && component.name){
+        const filteredOut = propertyFilter(component.name);
+        if (filteredOut === false)
+          continue;
+      };
 
       if (!component || component.hidden || component.visibility === 'No' || component.visibility === 'Removed')
         continue;
@@ -589,6 +613,7 @@ export const getEnabledComponentIds = (
 
 /**
  * Return field name for the antd form by a given expression
+ *
  * @param expression field name in dot notation e.g. 'supplier.name' or 'fullName'
  */
 export const getFieldNameFromExpression = (expression: string) => {
@@ -673,13 +698,6 @@ export const getValidationRules = (component: IConfigurableFormComponent, option
   return rules;
 };
 
-/* Convert string to camelCase */
-export const camelcaseDotNotation = str =>
-  str
-    .split('.')
-    .map(s => camelcase(s))
-    .join('.');
-
 const DICTIONARY_ACCESSOR_REGEX = /(^[\s]*\{(?<key>[\w]+)\.(?<accessor>[^\}]+)\}[\s]*$)/;
 const NESTED_ACCESSOR_REGEX = /((?<key>[\w]+)\.(?<accessor>[^\}]+))/;
 
@@ -691,6 +709,7 @@ const NESTED_ACCESSOR_REGEX = /((?<key>[\w]+)\.(?<accessor>[^\}]+))/;
  *  let expression = 'Full name is {{name}} {{surname}}';
  *
  * evaluateExpression(expression, person) will display 'Full name is First Last';
+ *
  * @param expression the expression to evaluate
  * @param data the data to use to evaluate the expression
  * @returns
@@ -700,7 +719,7 @@ export const evaluateStringLiteralExpression = (expression: string, data: any) =
 };
 
 export const evaluateValue = (value: string, dictionary: any) => {
-  return _evaluateValue(value, dictionary, true);
+  return evaluateValueInternal(value, dictionary, true);
 };
 
 /**
@@ -711,6 +730,7 @@ export const evaluateValue = (value: string, dictionary: any) => {
  *  let expression = 'Full name is {{name}} {{surname}}';
  *
  * evaluateExpression(expression, person) will display 'Full name is First Last';
+ *
  * @param expression the expression to evaluate
  * @param data the data to use to evaluate the expression
  * @returns
@@ -738,7 +758,7 @@ export const removeZeroWidthCharsFromString = (value: string): string => {
   return value.replace(/[\u200B-\u200D\uFEFF]/g, '');
 };
 
-export const _evaluateValue = (value: string, dictionary: any, isRoot: boolean) => {
+const evaluateValueInternal = (value: string, dictionary: any, isRoot: boolean) => {
   if (!value) return value;
   if (!dictionary) return null;
 
@@ -748,7 +768,7 @@ export const _evaluateValue = (value: string, dictionary: any, isRoot: boolean) 
   // check nested properties
   if (match.groups.accessor.match(NESTED_ACCESSOR_REGEX)) {
     // try get value recursive
-    return _evaluateValue(match.groups.accessor, dictionary[match.groups.key], false);
+    return evaluateValueInternal(match.groups.accessor, dictionary[match.groups.key], false);
   } else {
     const container = dictionary[match.groups.key];
     if (!container) return null;
@@ -811,18 +831,6 @@ export const convertSectionsToList = (ownerId: string, sections: IFormSections):
   }
 
   return result;
-};
-
-export const toolbarGroupsToComponents = (availableComponents: IToolboxComponentGroup[]): IToolboxComponents => {
-  const allComponents: IToolboxComponents = {};
-  if (availableComponents) {
-    availableComponents.forEach(group => {
-      group.components.forEach(component => {
-        allComponents[component.type] = component;
-      });
-    });
-  }
-  return allComponents;
 };
 
 export const findToolboxComponent = (
@@ -907,7 +915,7 @@ export function listComponentToModelMetadata<TModel extends IConfigurableFormCom
   if (metadata.validationMessage) mappedModel.validate.message = metadata.validationMessage;
 
   // map component-specific properties
-  if (component.linkToModelMetadata) mappedModel = component.linkToModelMetadata(model, metadata);
+  if (component.linkToModelMetadata) mappedModel = component.linkToModelMetadata(mappedModel, metadata);
 
   return mappedModel;
 }
@@ -934,7 +942,11 @@ export const processRecursive = (
 
   if (containers) {
     containers.forEach(containerName => {
-      const containerComponents = component[containerName] as IConfigurableFormComponent[];
+      const containerComponents = component[containerName]
+        ? Array.isArray(component[containerName])
+          ? component[containerName] as IConfigurableFormComponent[]
+          : [component[containerName] as IConfigurableFormComponent]
+        : undefined;
       if (containerComponents) {
         containerComponents.forEach(child => {
           func(child, component.id);
@@ -947,6 +959,7 @@ export const processRecursive = (
 
 /**
  * Clone components and generate new ids for them
+ *
  * @param componentsRegistration
  * @param components
  * @returns
@@ -1039,21 +1052,6 @@ export const createComponentModelForDataProperty = (
   return componentModel;
 };
 
-export const useFormDesignerComponentGroups = () => {
-  const app = useSheshaApplication(false);
-  const appComponentGroups = app?.toolboxComponentGroups ?? [];
-
-  const toolboxComponentGroups = [...(defaultToolboxComponents || []), ...appComponentGroups];
-  return toolboxComponentGroups;
-};
-
-export const useFormDesignerComponents = () => {
-  const componentGroups = useFormDesignerComponentGroups();
-
-  const toolboxComponents = useMemo(() => toolbarGroupsToComponents(componentGroups), [componentGroups]);
-  return toolboxComponents;
-};
-
 interface IKeyValue {
   key: string;
   value: string;
@@ -1079,6 +1077,11 @@ export interface IMatchData {
   match: string;
   data: any;
 }
+
+export const getMatchData = (dictionary: IMatchData[], name: string): any => {
+  const item = dictionary.find(i => i.match === name);
+  return item?.data;
+};
 
 const convertToKeyValues = (obj: IAnyObject): IKeyValue[] => {
   return Object.keys(obj).map(key => ({
@@ -1164,10 +1167,11 @@ export const filterFormData = (data: any) => {
 
 /**
  * Convert list of properties in dot notation to a list of properties for fetching using GraphQL syntax
+ *
  * @param properties
  * @returns
  */
-export const convertDotNotationPropertiesToGraphQL = (properties: string[], columns: ITableColumn[]): string => {
+export const convertDotNotationPropertiesToGraphQL = (properties: string[]): string => {
   const tree = {};
 
   const makeProp = (container: object, name: string) => {
@@ -1190,17 +1194,8 @@ export const convertDotNotationPropertiesToGraphQL = (properties: string[], colu
   };
 
   const expandedProps = [...properties];
-  // add id if missing
-  if (!expandedProps.includes('id')) expandedProps.push('id');
-
-  // special handling for entity references: expand properties list to include `id` and `_displayName`
-  const entityColumns = columns.filter(c => c.dataType === 'entity');
-  entityColumns.forEach(c => {
-    const requiredProps = [`${c.propertyName}.Id`, `${c.propertyName}._displayName`];
-    requiredProps.forEach(rp => {
-      if (!expandedProps.includes(rp)) expandedProps.push(rp);
-    });
-  });
+  // add id if missing only if there are any other properties
+  if (expandedProps?.length > 0 && !expandedProps.includes('id')) expandedProps.push('id');
 
   // build properties tree
   expandedProps.forEach(p => {
@@ -1214,10 +1209,14 @@ export const convertDotNotationPropertiesToGraphQL = (properties: string[], colu
   const getNodes = (container: object): string => {
     let result = '';
     for (const node in container) {
-      if (result !== '') result += ' ';
-      const nodeValue = container[node];
-      if (typeof nodeValue === 'object') result += `${preparePropertyName(node)} { ${getNodes(nodeValue)} }`;
-      else result += preparePropertyName(node);
+      if (container.hasOwnProperty(node)) {
+        if (result !== '') result += ' ';
+        const nodeValue = container[node];
+        if (typeof nodeValue === 'object')
+          result += `${preparePropertyName(node)} { ${getNodes(nodeValue)} }`;
+        else
+          result += preparePropertyName(node);
+      }
     }
     return result;
   };

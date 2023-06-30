@@ -2,7 +2,6 @@
 using Abp.Domain.Repositories;
 using Newtonsoft.Json;
 using Shesha.ConfigurationItems.Distribution;
-using Shesha.ConfigurationItems.Exceptions;
 using Shesha.Domain;
 using Shesha.Extensions;
 using System;
@@ -42,25 +41,22 @@ namespace Shesha.Services.ReferenceLists.Distribution
             if (!(item is ReferenceList refList))
                 throw new ArgumentException($"Wrong type of argument {item}. Expected {nameof(ReferenceList)}, actual: {item.GetType().FullName}");
 
-            if (refList.Configuration == null)
-                throw new ConfigurationMissingException(refList);
-
             var result = new DistributedReferenceList
             {
                 Id = refList.Id,
-                Name = refList.Configuration.Name,
-                ModuleName = refList.Configuration.Module?.Name,
-                FrontEndApplication = refList.Configuration.Application?.AppKey,
-                ItemType = refList.Configuration.ItemType,
+                Name = refList.Name,
+                ModuleName = refList.Module?.Name,
+                FrontEndApplication = refList.Application?.AppKey,
+                ItemType = refList.ItemType,
 
-                Label = refList.Configuration.Label,
-                Description = refList.Configuration.Description,
-                OriginId = refList.Configuration.Origin?.Id,
-                BaseItem = refList.Configuration.BaseItem?.Id,
-                VersionNo = refList.Configuration.VersionNo,
-                VersionStatus = refList.Configuration.VersionStatus,
-                ParentVersionId = refList.Configuration.ParentVersion?.Id,
-                Suppress = refList.Configuration.Suppress,
+                Label = refList.Label,
+                Description = refList.Description,
+                OriginId = refList.Origin?.Id,
+                BaseItem = refList.BaseItem?.Id,
+                VersionNo = refList.VersionNo,
+                VersionStatus = refList.VersionStatus,
+                ParentVersionId = refList.ParentVersion?.Id,
+                Suppress = refList.Suppress,
 
                 // reflist specific properties
                 Items = await ExportRefListItemsAsync(refList),

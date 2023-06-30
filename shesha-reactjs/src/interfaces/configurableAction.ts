@@ -1,3 +1,4 @@
+import { ICodeExposedVariable } from "components/codeVariablesTable";
 import { ReactNode } from "react";
 import { FormMarkup, GenericDictionary } from "../providers/form/models";
 
@@ -16,7 +17,14 @@ export interface ISettingsFormFactoryArgs<TModel = IConfigurableActionArguments>
   onCancel: () => void;
   onValuesChange?: (changedValues: any, values: TModel) => void;
   readOnly?: boolean;
+  exposedVariables?: ICodeExposedVariable[];
 }
+
+export interface FormMarkupFactoryArgs {
+  exposedVariables?: ICodeExposedVariable[];
+}
+export type FormMarkupFactory = (factoryArgs: FormMarkupFactoryArgs) => FormMarkup;
+
 
 export type IConfigurableActionArgumentsFormFactory<TModel = IConfigurableActionArguments> = (
   props: ISettingsFormFactoryArgs<TModel>
@@ -24,8 +32,8 @@ export type IConfigurableActionArgumentsFormFactory<TModel = IConfigurableAction
 
 export interface IHasActionOwner {
   /**
- * Action owner name (component responsible for the action execution)
- */
+   * Action owner name (component responsible for the action execution)
+   */
   owner: string;
 
   /**
@@ -46,6 +54,10 @@ export interface IConfigurableActionIdentifier extends IHasActionOwner {
  */
 export interface IConfigurableActionDescriptor<TArguments = IConfigurableActionArguments, TReponse = any> extends IConfigurableActionIdentifier {
   /**
+   * User friendly name of the action. Action name is displayed if the label is not specified
+   */
+   label?: string;
+  /**
    * Action description
    */
   description?: string;
@@ -54,13 +66,13 @@ export interface IConfigurableActionDescriptor<TArguments = IConfigurableActionA
    */
   hasArguments: boolean;
   /**
-  * Arguments form factory. Renders the action arguments editor
-  */
+   * Arguments form factory. Renders the action arguments editor
+   */
   argumentsFormFactory?: IConfigurableActionArgumentsFormFactory<TArguments>;
   /**
    * Markup of the arguments editor. Applied when the @argumentsFormFactory is not specified, in this case you can render arguments for in the designer itself
    */
-  argumentsFormMarkup?: FormMarkup;
+  argumentsFormMarkup?: FormMarkup | FormMarkupFactory;
 
   /**
    * Argument evaluation function. Default implementation is used when not specified

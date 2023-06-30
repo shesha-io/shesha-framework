@@ -13,12 +13,12 @@ export interface IPermissionsTreeComponentProps extends IConfigurableFormCompone
   updateKey?: string;
   onChange?: (values?: string[]) => void;
   /**
-  * Whether this control is disabled
-  */
+   * Whether this control is disabled
+   */
    disabled?: boolean;
   /**
-  * If true, the automplete will be in read-only mode. This is not the same sa disabled mode
-  */
+   * If true, the automplete will be in read-only mode. This is not the same sa disabled mode
+   */
   readOnly?: boolean;
   height?: number;
   mode: PermissionsTreeMode;  
@@ -33,10 +33,11 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionsTreeCompon
   factory: (model: IPermissionsTreeComponentProps) => {
     const { formMode } = useForm();
 
-    if (model.mode == 'Edit') {
+    if (model.mode === 'Edit') {
     return (
       <PermissionsTree 
         formComponentId={model?.id}
+        formComponentName={model.name}
         value={model?.value} 
         updateKey={model?.updateKey}
         onChange={model?.onChange}
@@ -44,11 +45,13 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionsTreeCompon
         disabled={model?.disabled}
         mode={model?.mode ?? "Select"}
       />
-    )} else {
+    );
+} else {
     return (
       <ConfigurableFormItem model={model}>
         <PermissionsTree 
           formComponentId={model?.id}
+          formComponentName={model.name}
           value={model?.value} 
           updateKey={model?.updateKey}
           onChange={model?.onChange}
@@ -57,7 +60,8 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionsTreeCompon
           mode={model?.mode ?? "Select"}
         />
       </ConfigurableFormItem>
-    )};
+    );
+};
   },
   initModel: (model: IPermissionsTreeComponentProps) => {
     return {

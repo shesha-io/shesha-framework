@@ -1,13 +1,15 @@
 import { createAction } from 'redux-actions';
-import { IConfigurableColumnsBase } from '../datatableColumnsConfigurator/models';
-import { IDataTableStateContext, IDataTableUserConfig } from './contexts';
+import { IConfigurableColumnsProps } from '../datatableColumnsConfigurator/models';
+import { IDataTableUserConfig } from './contexts';
 import {
   IndexColumnFilterOption,
   ITableFilter,
-  IGetDataPayloadInternal,
   IColumnSorting,
   DataTableColumnDto,
   ITableDataInternalResponse,
+  IGetListDataPayload,
+  IStoredFilter,
+  DataFetchingMode,
 } from './interfaces';
 
 export enum DataTableActionEnums {
@@ -16,6 +18,8 @@ export enum DataTableActionEnums {
   FetchTableData = 'FETCH_TABLE_DATA',
   FetchTableDataSuccess = 'FETCH_TABLE_DATA_SUCCESS',
   FetchTableDataError = 'FETCH_TABLE_DATA_ERROR',
+
+  SetRowData = 'SET_ROW_DATA',
 
   ExportToExcelRequest = 'EXPORT_TO_EXCEL_REQUEST',
   ExportToExcelSuccess = 'EXPORT_TO_EXCEL_SUCCESS',
@@ -41,13 +45,20 @@ export enum DataTableActionEnums {
   RegisterConfigurableColumns = 'REGISTER_CONFIGURABLE_COLUMNS',
   OnSelectRow = 'ON_SELECT_ROW',
   OnSort = 'ON_SORT',
+  SetModelType = 'SET_MODEL_TYPE',
+  SetDataFetchingMode = 'SET_DATA_FETCHING_MODE',
 
   ChangeDisplayColumn = 'CHANGE_DISPLAY_COLUMN',
   ChangePersistedFiltersToggle = 'CHANGE_PERSISTED_FILTERS_TOGGLE',
   /* NEW_ACTION_TYPE_GOES_HERE */
 }
 
-export const fetchTableDataAction = createAction<IGetDataPayloadInternal, IGetDataPayloadInternal>(
+export const setModelTypeAction = createAction<string, string>(
+  DataTableActionEnums.SetModelType,
+  p => p
+);
+
+export const fetchTableDataAction = createAction<IGetListDataPayload, IGetListDataPayload>(
   DataTableActionEnums.FetchTableData,
   p => p
 );
@@ -61,9 +72,15 @@ export const fetchTableDataErrorAction = createAction(DataTableActionEnums.Fetch
   /*nop*/
 });
 
+export interface ISetRowDataPayload {
+  rowIndex: number;
+  rowData: any;
+}
+export const setRowDataAction = createAction<ISetRowDataPayload, ISetRowDataPayload>(DataTableActionEnums.SetRowData, p => p);
+
 export interface IFetchColumnsSuccessSuccessPayload {
   columns: DataTableColumnDto[];
-  configurableColumns: IConfigurableColumnsBase[];
+  configurableColumns: IConfigurableColumnsProps[];
   userConfig: IDataTableUserConfig;
 }
 export const fetchColumnsSuccessSuccessAction = createAction<
@@ -124,10 +141,11 @@ export const changeSelectedStoredFilterIdsAction = createAction<string[], string
   p => p
 );
 
-export const setPredefinedFiltersAction = createAction<
-  Pick<IDataTableStateContext, 'predefinedFilters' | 'userConfigId'>,
-  Pick<IDataTableStateContext, 'predefinedFilters' | 'userConfigId'>
->(DataTableActionEnums.SetPredefinedFilters, p => p);
+export interface ISetPredefinedFiltersPayload {
+  predefinedFilters: IStoredFilter[];
+  userConfig: IDataTableUserConfig;
+}
+export const setPredefinedFiltersAction = createAction<ISetPredefinedFiltersPayload, ISetPredefinedFiltersPayload>(DataTableActionEnums.SetPredefinedFilters, p => p);
 
 export const changeSelectedIdsAction = createAction<string[], string[]>(DataTableActionEnums.ChangeSelectedIds, p => p);
 
@@ -142,7 +160,7 @@ export const exportToExcelWarningAction = createAction<string, string>(
 export interface IRegisterConfigurableColumnsPayload {
   /** owner of the columns list, not used now and may be removed later */
   ownerId: string;
-  columns: IConfigurableColumnsBase[];
+  columns: IConfigurableColumnsProps[];
 }
 export const registerConfigurableColumnsAction = createAction<
   IRegisterConfigurableColumnsPayload,
@@ -157,5 +175,10 @@ export const changeDisplayColumnAction = createAction<string, string>(DataTableA
 
 export const changePersistedFiltersToggleAction = createAction<boolean, boolean>(
   DataTableActionEnums.ChangePersistedFiltersToggle,
+  p => p
+);
+
+export const setDataFetchingModeAction = createAction<DataFetchingMode, DataFetchingMode>(
+  DataTableActionEnums.SetDataFetchingMode,
   p => p
 );

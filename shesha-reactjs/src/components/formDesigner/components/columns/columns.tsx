@@ -1,27 +1,12 @@
 import React from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
-import { IConfigurableFormComponent } from '../../../../providers/form/models';
 import { SplitCellsOutlined } from '@ant-design/icons';
 import { Row, Col } from 'antd';
 import ColumnsSettings from './columnsSettings';
-import ComponentsContainer from '../../componentsContainer';
+import ComponentsContainer from '../../containers/componentsContainer';
 import { useForm } from '../../../../providers';
 import { nanoid } from 'nanoid/non-secure';
-
-export interface IColumnProps {
-  id: string;
-  flex: number;
-  offset: number;
-  push: number;
-  pull: number;
-  components: IConfigurableFormComponent[];
-}
-
-export interface IColumnsComponentProps extends IConfigurableFormComponent {
-  columns: IColumnProps[];
-  gutterX?: number;
-  gutterY?: number;
-}
+import { IColumnsComponentProps } from './interfaces';
 
 const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
   type: 'columns',

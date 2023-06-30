@@ -1,6 +1,6 @@
 import { FormInstance } from 'antd';
 import { createContext } from 'react';
-import { ModelConfigurationDto } from '../../apis/modelConfigurations';
+import { ModelConfigurationDto } from 'apis/modelConfigurations';
 import { IModelItem } from '../../interfaces/modelConfigurator';
 
 export interface IUpdateItemSettingsPayload {

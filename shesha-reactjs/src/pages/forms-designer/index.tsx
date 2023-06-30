@@ -12,7 +12,7 @@ const DesignerPage: PageWithLayout<IDesignerPageProps> = props => {
     return (
         <FormDesigner formId={props.formId} />
     );
-}
+};
 
 DesignerPage["getInitialProps"] = async () => {
     resetServerContext(); // required for Drag&Drop

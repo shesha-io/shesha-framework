@@ -54,7 +54,7 @@ export const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
     } else {
       window.location.href = url;
     }
-  }
+  };
 
 
   return (

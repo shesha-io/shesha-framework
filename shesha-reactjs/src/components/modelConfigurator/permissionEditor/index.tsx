@@ -3,7 +3,7 @@ import permissionSettingsMarkup from '../permissionSettings.json';
 import ConfigurableForm from '../../configurableForm';
 import { FormMarkup } from '../../../providers/form/models';
 import { Form } from 'antd';
-import { PermissionDto } from '../../../apis/permission';
+import { PermissionDto } from 'apis/permission';
 
 interface IPermissionEditorComponentProps {
     name: string;
@@ -19,7 +19,7 @@ export const PermissionEditorComponent: FC<IPermissionEditorComponentProps> = (p
             <PermissionEditor {...props} />
         </Form.Item>
     );   
-}
+};
 
 interface IPermissionEditorProps extends IPermissionEditorComponentProps {
     value?: PermissionDto;
@@ -40,4 +40,4 @@ const PermissionEditor: FC<IPermissionEditorProps> = (props) => {
         }}
         />
     );
-}
+};

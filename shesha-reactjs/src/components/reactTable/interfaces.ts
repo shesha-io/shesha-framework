@@ -1,3 +1,4 @@
+import { IFlatComponentsStructure } from 'providers/form/models';
 import { ReactNode, CSSProperties } from 'react';
 import { Column, Row, SortingRule, TableState } from 'react-table';
 
@@ -5,6 +6,8 @@ export interface IColumnWidth {
   id: React.Key;
   value: number;
 }
+
+export type NewRowCapturePosition = 'top' | 'bottom';
 
 export interface IColumnResizing {
   startX?: number;
@@ -14,11 +17,20 @@ export interface IColumnResizing {
   isResizingColumn?: string;
 }
 
+export interface OnRowsReorderedArgs {
+  reorderedRows: object[];
+}
+
 export interface ITableRowDragProps {
   allowRowDragAndDrop?: boolean;
 
-  onRowDropped?: (row: any, oldIndex: number, newIndex: number) => void;
+  onRowsReordered?: (payload: OnRowsReorderedArgs) => Promise<void>;
 }
+
+export type RowDataInitializer = () => Promise<object>;
+
+export type InlineEditMode = 'one-by-one' | 'all-at-once';
+export type InlineSaveMode = 'auto' | 'manual';
 
 export interface IReactTableProps extends ITableRowDragProps {
   /**
@@ -94,7 +106,8 @@ export interface IReactTableProps extends ITableRowDragProps {
   onFetchData?: () => void;
   /**
    * Required if manualPagination is set to true
-   * If manualPagination is true, then this value used to determine the amount of pages available. This amount is then used to materialize the pageOptions and also compute the canNextPage values on the table instance.
+   * If manualPagination is true, then this value used to determine the amount of pages available. 
+   * This amount is then used to materialize the pageOptions and also compute the canNextPage values on the table instance.
    * Set to -1 if you don't know or don't want to present the number of pages available. canNextPage will return false if page data length is less than pageSize, otherwise true.
    */
   pageCount?: number;
@@ -159,15 +172,6 @@ export interface IReactTableProps extends ITableRowDragProps {
   /** Called when a user clicks on a resizing component (the right edge of a column header) */
   onResizedChange?: (columnSizes: IColumnResizing) => void;
 
-  /**
-   * column debounce delay in milliseconds
-   */
-  // resizeDebounceDelay?: number;
-
-  // rememberColumnWidths?: boolean;
-
-  tableId?: string;
-
   scrollBodyHorizontally?: boolean; // If true, specify the height, else it will default to 250px
 
   /**
@@ -182,6 +186,26 @@ export interface IReactTableProps extends ITableRowDragProps {
   omitClick?: boolean;
 
   containerStyle?: CSSProperties;
+  minHeight?: number;
+  maxHeight?: number;
 
   tableStyle?: CSSProperties;
+
+  canDeleteInline?: boolean;
+  deleteAction?: (rowIndex: number, data: any) => Promise<any>;
+
+  canEditInline?: boolean;
+  updateAction?: (rowIndex: number, data: any) => Promise<any>;
+
+  canAddInline?: boolean;
+  newRowCapturePosition?: NewRowCapturePosition;
+  newRowInsertPosition?: NewRowCapturePosition;
+  createAction?: (data: any) => Promise<any>;
+  newRowInitData?: RowDataInitializer;
+  inlineEditMode?: InlineEditMode;
+  inlineSaveMode?: InlineSaveMode;
+  inlineEditorComponents?: IFlatComponentsStructure;
+  inlineCreatorComponents?: IFlatComponentsStructure;
+  inlineDisplayComponents?: IFlatComponentsStructure;
 }
+

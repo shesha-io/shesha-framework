@@ -1,9 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\common.props" />
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>Shesha.Sms</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="SmsPortal\forms\package20230411_1234.shaconfig" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="SmsPortal\forms\package20230411_1234.shaconfig" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Abp" Version="6.6.2" />

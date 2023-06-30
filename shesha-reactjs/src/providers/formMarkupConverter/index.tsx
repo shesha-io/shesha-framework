@@ -1,15 +1,18 @@
 import React, { FC, ReactNode, useMemo } from 'react';
-import { FormRawMarkup, IFlatComponentsStructure } from '../form/models';
-import { componentsTreeToFlatStructure, getComponentsFromMarkup, upgradeComponents, useFormDesignerComponents } from '../form/utils';
+import { FormRawMarkup, IFlatComponentsStructure, IFormSettings } from '../form/models';
+import { componentsTreeToFlatStructure, getComponentsFromMarkup, upgradeComponents } from '../form/utils';
+import { useFormDesignerComponents } from '../form/hooks';
 
 export interface IFormMarkupConverterProps {
-    markup: FormRawMarkup,
-    children: (flatStructure: IFlatComponentsStructure, onChange: (flatStructure: IFlatComponentsStructure) => void) => ReactNode,
+    markup: FormRawMarkup;
+    formSettings: IFormSettings;
+    children: (flatStructure: IFlatComponentsStructure, onChange: (flatStructure: IFlatComponentsStructure) => void) => ReactNode;
 }
 
 const FormMarkupConverter: FC<IFormMarkupConverterProps> = ({
     children,
     markup,
+    formSettings: formSettings
 }) => {
     const designerComponents = useFormDesignerComponents();
 
@@ -18,14 +21,14 @@ const FormMarkupConverter: FC<IFormMarkupConverterProps> = ({
         const newFlatComponents = componentsTreeToFlatStructure(designerComponents, components);
         
         // migrate components to last version
-        upgradeComponents(designerComponents, newFlatComponents);
+        upgradeComponents(designerComponents, formSettings, newFlatComponents);
         
         return newFlatComponents;
     }, [markup]);
 
     const onChange = (_value: IFlatComponentsStructure) => {
-        console.log('CONVERTER onChange')
-    }
+        console.log('CONVERTER onChange');
+    };
 
     return <>{children(flatComponents, onChange)}</>;
 };

@@ -1,6 +1,6 @@
 import React, { FC, useState } from 'react';
 import { SidebarContainer, ConfigurableFormRenderer } from '../../components';
-import { Row, Col, Divider, Typography, Space, Form } from 'antd';
+import { Row, Col, Divider, Typography, Space } from 'antd';
 import Toolbox from './toolbox';
 import FormDesignerToolbar from './formDesignerToolbar';
 import ComponentPropertiesPanel from './componentPropertiesPanel';
@@ -21,14 +21,12 @@ export const FormDesignerRenderer: FC = ({}) => {
   const [widgetsOpen, setWidgetOpen] = useState(true);
   const [fieldPropertiesOpen, setFieldPropertiesOpen] = useState(true);
   const { formProps } = useFormPersister();
-  const [form] = Form.useForm();
 
-  const toggleWidgetSidebar = () => setWidgetOpen(widget => !widget);
+  const toggleWidgetSidebar = () => setWidgetOpen((widget) => !widget);
 
-  const toggleFieldPropertiesSidebar = () => setFieldPropertiesOpen(prop => !prop);
+  const toggleFieldPropertiesSidebar = () => setFieldPropertiesOpen((prop) => !prop);
 
-  const [formValues, setFormValues] = useState({});
-  const { formSettings } = useForm();
+  const { formSettings, form } = useForm();
   const { isDebug, readOnly } = useFormDesigner();
 
   const fullName = formProps ? getFormFullName(formProps.module, formProps.name) : null;
@@ -36,7 +34,7 @@ export const FormDesignerRenderer: FC = ({}) => {
 
   return (
     <div className="sha-page">
-      <div className="sha-page-heading">
+      <div className="sha-page-heading sha-form-heading-fixed">
         <div className="sha-page-title" style={{ justifyContent: 'left' }}>
           <Space>
             {title && (
@@ -52,13 +50,13 @@ export const FormDesignerRenderer: FC = ({}) => {
       <div className="sha-form-designer">
         <ConditionalWrap
           condition={Boolean(formSettings.modelType)}
-          wrap={content => (
+          wrap={(content) => (
             <MetadataProvider id="designer" modelType={formSettings.modelType}>
               {content}
             </MetadataProvider>
           )}
         >
-          <FormDesignerToolbar />
+          <FormDesignerToolbar className="sha-toolbar-fixed" />
           <SidebarContainer
             leftSidebarProps={
               readOnly
@@ -70,6 +68,7 @@ export const FormDesignerRenderer: FC = ({}) => {
                     title: 'Builder Widgets',
                     content: () => <Toolbox />,
                     placeholder: 'Builder Widgets',
+                    fixedPositon: true,
                   }
             }
             rightSidebarProps={{
@@ -79,20 +78,16 @@ export const FormDesignerRenderer: FC = ({}) => {
               title: () => <ComponentPropertiesTitle />,
               content: () => <ComponentPropertiesPanel />,
               placeholder: 'Properties',
+              fixedPositon: true,
             }}
           >
-            <ConfigurableFormRenderer
-              onValuesChange={(_changedValues, allvalues) => {
-                setFormValues(allvalues);
-              }}
-              form={form}
-            >
+            <ConfigurableFormRenderer form={form}>
               {isDebug && (
                 <>
                   <Row>
                     <Divider />
                     <Col span={24}>
-                      <pre>{JSON.stringify(formValues, null, 2)}</pre>
+                      <pre>{JSON.stringify(form.getFieldsValue(), null, 2)}</pre>
                     </Col>
                   </Row>
                 </>

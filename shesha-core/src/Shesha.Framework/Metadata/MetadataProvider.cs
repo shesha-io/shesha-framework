@@ -87,7 +87,6 @@ namespace Shesha.Metadata
                 : null;
             var epc = entityConfig?[property.Name];
 
-
             var dataType = GetDataType(property);
             var cascadeAttribute = property.GetAttribute<CascadeUpdateRulesAttribute>()
                 ?? property.PropertyType.GetCustomAttribute<CascadeUpdateRulesAttribute>();
@@ -110,9 +109,9 @@ namespace Shesha.Metadata
                 ValidationMessage = property.GetAttribute<RangeAttribute>()?.ErrorMessage 
                     ?? property.GetAttribute<StringLengthAttribute>()?.ErrorMessage
                     ?? property.GetAttribute<RegularExpressionAttribute>()?.ErrorMessage,
-                CascadeCreate = cascadeAttribute?.CanCreate ?? false,
-                CascadeUpdate = cascadeAttribute?.CanUpdate ?? false,
-                CascadeDeleteUnreferenced = cascadeAttribute?.DeleteUnreferenced ?? false,
+                CascadeCreate = cascadeAttribute?.CanCreate,
+                CascadeUpdate = cascadeAttribute?.CanUpdate,
+                CascadeDeleteUnreferenced = cascadeAttribute?.DeleteUnreferenced,
 
                 DataType = dataType.DataType,
                 DataFormat = dataType.DataFormat,
@@ -131,6 +130,8 @@ namespace Shesha.Metadata
                 IsFrameworkRelated = IsFrameworkRelatedProperty(property),
                 //ConfigurableByUser = property.GetAttribute<BindableAttribute>()?.Bindable ?? true,
                 //GroupName = ReflectionHelper.get(declaredProperty ?? property),
+                IsFilterable = epc != null && epc.IsMapped,
+                IsSortable = epc != null && epc.IsMapped,
             };
             if (!context.ProcessedTypes.Contains(property.PropertyType) && property.PropertyType.IsNotAnyEntityAndSystemType())
             {

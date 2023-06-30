@@ -1,10 +1,16 @@
 ﻿using Shesha.Domain.Attributes;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Domain
 {
     [Entity(TypeShortAlias = "Shesha.Core.OrganisationUnit")]
     public class OrganisationUnit : OrganisationBase<OrganisationUnit>
     {
+        [StringLength(30)]
+        public virtual string CompanyRegistrationNo { get; set; }
+
+        [StringLength(30)]
+        public virtual string VatRegistrationNo { get; set; }
         /*
         [StringLength(20)]
         [Display(Name = "Mobile Number")]

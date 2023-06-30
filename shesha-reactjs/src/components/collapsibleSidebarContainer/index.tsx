@@ -1,4 +1,4 @@
-import React, { FC, ReactNode } from 'react';
+import React, { FC, PropsWithChildren, ReactNode } from 'react';
 import classNames from 'classnames';
 import { RightOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
@@ -75,7 +75,7 @@ export interface ICollapsibleSidebarContainerProps {
   noPadding?: boolean;
 }
 
-export const CollapsibleSidebarContainer: FC<ICollapsibleSidebarContainerProps> = ({
+export const CollapsibleSidebarContainer: FC<PropsWithChildren<ICollapsibleSidebarContainerProps>> = ({
   leftSidebarProps,
   rightSidebarProps,
   header,
@@ -120,9 +120,7 @@ export const CollapsibleSidebarContainer: FC<ICollapsibleSidebarContainerProps> 
     <div className={'sidebar-container'}>
       {header && <div className="sidebar-container-header">{typeof header === 'function' ? header() : header}</div>}
 
-      <div
-        className={'sidebar-container-body'}
-      >
+      <div className={'sidebar-container-body'}>
         {renderSidebar('left')}
 
         <div

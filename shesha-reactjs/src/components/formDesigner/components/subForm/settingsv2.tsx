@@ -29,7 +29,7 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
   const [form] = Form.useForm();
 
   const [formTypesOptions, setFormTypesOptions] = useState<{ value: string }[]>(
-    formTypes.map(i => {
+    formTypes.map((i) => {
       return { value: i };
     })
   );
@@ -58,7 +58,7 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
           }
         }
 
-        setState(prev => ({ ...prev, ...incomingState }));
+        setState((prev) => ({ ...prev, ...incomingState }));
 
         onValuesChange(changedValues, incomingState);
       }}
@@ -97,20 +97,20 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
         </Select>
       </FormItem>
 
-      {state?.formSelectionMode == 'dynamic' && (
+      {state?.formSelectionMode === 'dynamic' && (
         <>
           <FormItem name="formType" label="Form type">
             <AutoComplete
               disabled={readOnly}
               options={formTypesOptions}
-              onSearch={t =>
+              onSearch={(t) =>
                 setFormTypesOptions(
                   (t
-                    ? formTypes.filter(f => {
+                    ? formTypes.filter((f) => {
                         return f.toLowerCase().includes(t.toLowerCase());
                       })
                     : formTypes
-                  ).map(i => {
+                  ).map((i) => {
                     return { value: i };
                   })
                 )
@@ -120,11 +120,11 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
         </>
       )}
 
-      {(!state?.formSelectionMode || state?.formSelectionMode == 'name') && (
-        <>
+      {(!state?.formSelectionMode || state?.formSelectionMode === 'name') && (
           <FormItem name="formId" label="Form">
             <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
           </FormItem>
+      )}
 
           <SectionSeparator title="Data" />
 
@@ -279,7 +279,7 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
                 label="POST Url"
                 type={''}
                 id={''}
-                description="he API url that will be used to update data. Write the code that returns the string"
+                description="The API url that will be used to update data. Write the code that returns the string"
                 exposedVariables={[
                   {
                     id: '788673a5-5eb9-4a9a-a34b-d8cea9cacb3c',
@@ -340,8 +340,7 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
               />
             </FormItem>
           </Show>
-        </>
-      )}
+
       <SectionSeparator title="Actions" />
 
       <FormItem
@@ -522,7 +521,10 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
       <FormItem
         label="Custom Visibility"
         name="customVisibility"
-        tooltip="Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
+        tooltip={
+          'Enter custom visibility code.  You must return true to show the component. ' +
+          'The global variable data is provided, and allows you to access the data of any form component, by using its API key.'
+        }
       >
         <CodeEditor
           readOnly={readOnly}
@@ -532,7 +534,10 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
           name="customVisibility"
           type={''}
           id={''}
-          description="Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
+          description={
+            'Enter custom visibility code.  You must return true to show the component. ' +
+            'The global variable data is provided, and allows you to access the data of any form component, by using its API key.'
+          }
           exposedVariables={[
             {
               id: '788673a5-5eb9-4a9a-a34b-d8cea9cacb3c',

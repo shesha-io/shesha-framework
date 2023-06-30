@@ -1,5 +1,6 @@
 import { Table, Tag } from 'antd';
-import React, { FC } from 'react';
+import { nanoid } from 'nanoid';
+import React, { FC, useMemo } from 'react';
 
 const columns = [
   {
@@ -21,7 +22,7 @@ const columns = [
 ];
 
 export interface ICodeExposedVariable {
-  id: string;
+  id?: string;
   name: string;
   description: string;
   type: string;
@@ -32,6 +33,10 @@ export interface ICodeVariablesTableProps {
   data?: ICodeExposedVariable[];
 }
 
-export const CodeVariablesTables: FC<ICodeVariablesTableProps> = ({ data }) => (
-  <Table columns={columns} dataSource={data} pagination={false} rowKey="id" />
-);
+export const CodeVariablesTables: FC<ICodeVariablesTableProps> = ({ data }) => {
+  const mappedVariables = useMemo(() => {
+    return data?.map<ICodeExposedVariable>(({ id, ...rest }) => ({ ...rest, id: Boolean(id) ? id : nanoid() }));
+  }, [data]);
+
+  return <Table columns={columns} dataSource={mappedVariables} pagination={false} rowKey="id" />;
+};

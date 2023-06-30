@@ -56,7 +56,7 @@ namespace Shesha.DynamicEntities
         public async Task MergeConfigurationsAsync(EntityConfig source, EntityConfig destination, bool deleteAfterMerge, bool deepUpdate)
         {
             // Copy main data
-            destination.Configuration.Label = source.Configuration.Label;
+            destination.Label = source.Label;
             destination.GenerateAppService = source.GenerateAppService;
 
             // Copy View configs
@@ -273,9 +273,9 @@ namespace Shesha.DynamicEntities
                             || hardCodedProp.MinLength.HasValue
                             || hardCodedProp.MaxLength.HasValue;
                         prop.RegExpHardcoded = !string.IsNullOrWhiteSpace(hardCodedProp.RegExp);
-                        prop.CascadeCreateHardcoded = hardCodedProp.CascadeCreate;
-                        prop.CascadeUpdateHardcoded = hardCodedProp.CascadeUpdate;
-                        prop.CascadeDeleteUnreferencedHardcoded = hardCodedProp.CascadeDeleteUnreferenced;
+                        prop.CascadeCreateHardcoded = hardCodedProp.CascadeCreate != null;
+                        prop.CascadeUpdateHardcoded = hardCodedProp.CascadeUpdate != null;
+                        prop.CascadeDeleteUnreferencedHardcoded = hardCodedProp.CascadeDeleteUnreferenced != null;
                     }
                 }
             }
@@ -293,7 +293,7 @@ namespace Shesha.DynamicEntities
 
         public async Task<ModelConfigurationDto> GetModelConfigurationOrNullAsync(string @namespace, string name, List<PropertyMetadataDto> hardCodedProps = null)
         {
-            var modelConfig = await _entityConfigRepository.GetAll().Where(m => m.ClassName == name && m.Namespace == @namespace && !m.Configuration.IsDeleted).FirstOrDefaultAsync();
+            var modelConfig = await _entityConfigRepository.GetAll().Where(m => m.ClassName == name && m.Namespace == @namespace && !m.IsDeleted).FirstOrDefaultAsync();
             if (modelConfig == null)
                 return null;
 

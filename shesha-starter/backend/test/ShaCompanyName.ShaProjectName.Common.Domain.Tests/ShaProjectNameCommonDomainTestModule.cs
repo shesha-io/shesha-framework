@@ -26,11 +26,12 @@ using Abp.Castle.Logging.Log4Net;
 using Abp.AspNetCore.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using ShaCompanyName.ShaProjectName.Domain;
 
 namespace ShaCompanyName.ShaProjectName.Common.Tests
 {
     [DependsOn(
-        typeof(ShaProjectNameCommonModule),
+        typeof(ShaProjectNameModule),
         typeof(AbpKernelModule),
         typeof(AbpTestBaseModule),
         typeof(SheshaApplicationModule),
@@ -101,9 +102,6 @@ namespace ShaCompanyName.ShaProjectName.Common.Tests
 
             // replace email sender
             Configuration.ReplaceService<IEmailSender, NullEmailSender>(DependencyLifeStyle.Transient);
-
-            // replace connection string resolver
-            Configuration.ReplaceService<IDbPerTenantConnectionStringResolver, TestConnectionStringResolver>(DependencyLifeStyle.Transient);
 
             Configuration.ReplaceService<ICurrentUnitOfWorkProvider, AsyncLocalCurrentUnitOfWorkProvider>(DependencyLifeStyle.Singleton);
 
