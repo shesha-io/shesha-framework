@@ -2,14 +2,14 @@ import typescript from '@rollup/plugin-typescript';
 import commonjs from '@rollup/plugin-commonjs';
 import postCss from 'rollup-plugin-postcss';
 import multi from '@rollup/plugin-multi-entry';
-import url from 'rollup-plugin-url';
+import url from '@rollup/plugin-url';
 import svgr from '@svgr/rollup';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import localResolve from 'rollup-plugin-local-resolve';
 import terser from '@rollup/plugin-terser';
-import json from 'rollup-plugin-json';
+import json from '@rollup/plugin-json';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
-import pkg from './package.json' assert { type: "json" };
+import pkg from './package.json' assert { type: 'json' };
 
 export default {
   input: ['src/index.tsx', 'src/providers/index.ts'],
