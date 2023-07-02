@@ -12,6 +12,7 @@ import { useSidebarMenuDefaults } from '../../providers/sidebarMenu';
 import ConfigurableSidebarMenu from '../configurableSidebarMenu';
 import { useLocalStorage, useTheme } from '../..';
 import { SIDEBAR_MENU_NAME } from '../../shesha-constants';
+import './styles/styles.less';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -127,6 +128,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
   return (
     <Layout style={style}>
       <Sider
+        className="sha-main-sider"
         collapsible
         collapsed={collapsed}
         onCollapse={setCollapsed}
