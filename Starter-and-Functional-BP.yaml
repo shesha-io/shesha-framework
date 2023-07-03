@@ -470,7 +470,7 @@ stages:
         workingDir: shesha-reactjs
         verbose: false
         customCommand: 'version $(versionNo) --allow-same-version'
-      # condition: ne(variables['currentBranch'], 'refs/heads/main')        
+      # condition: ne(variables['currentBranch'], 'refs/heads/main')
     - task: Npm@1
       displayName: 'Npm Install'
       inputs:
@@ -486,13 +486,13 @@ stages:
     #     verbose: true
     #     customCommand: install @shesha/reactjs@latest
     # Disabled Build of Package
-    - task: Npm@1
-      displayName: Npm Build
-      inputs:
-        command: custom
-        workingDir: 'shesha-reactjs'
-        verbose: true
-        customCommand: run build
+    # - task: Npm@1
+    #   displayName: Npm Build
+    #   inputs:
+    #     command: custom
+    #     workingDir: 'shesha-reactjs'
+    #     verbose: true
+    #     customCommand: run build
     - task: ArchiveFiles@2
       inputs:
         rootFolderOrFile: 'shesha-reactjs'
