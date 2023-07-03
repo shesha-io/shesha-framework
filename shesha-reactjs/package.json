@@ -19,8 +19,8 @@
   "scripts": {
     "test": "cross-env CI=1 jest --runInBand",
     "test:watch": "jest --watch",
-    "build": "rimraf dist && npm run build:less && rollup -c",
-    "build:clean": "npm run build:less && rollup -c",
+    "build": "npm run build:less && rollup -c",
+    "build:clean": "rimraf dist && npm run build:less && rollup -c",
     "start": "npm run build:less && npm run build:css && rollup -c -w",
     "build:stylesheets": "npm run build:less && npm run build:css",
     "build:less": "node less-bundle.js",
