@@ -100,7 +100,7 @@ stages:
         FileVersionNumber: "$(versionNo)"
         InformationalVersion: "$(versionNo)"
         PackageVersion: "$(versionNo)"
-      condition: ne(variables['currentBranch'], 'refs/heads/main')
+      # condition: ne(variables['currentBranch'], 'refs/heads/main')
     - task: DotNetCoreCLI@2
       displayName: dotnet Restore
       inputs:
@@ -208,7 +208,7 @@ stages:
         FileVersionNumber: "$(versionNo)"
         InformationalVersion: "$(versionNo)"
         PackageVersion: "$(versionNo)"
-      condition: ne(variables['currentBranch'], 'refs/heads/main')      
+      # condition: ne(variables['currentBranch'], 'refs/heads/main')      
     - task: DotNetCoreCLI@2
       displayName: dotnet Restore
       inputs:
@@ -301,7 +301,7 @@ stages:
         workingDir: shesha-functional-tests/adminportal
         verbose: false
         customCommand: 'version $(versionNo) --allow-same-version'
-      condition: ne(variables['currentBranch'], 'refs/heads/main')        
+      # condition: ne(variables['currentBranch'], 'refs/heads/main')        
     - task: Npm@1
       displayName: 'Npm Install'
       inputs:
@@ -384,7 +384,7 @@ stages:
         workingDir: shesha-starter/frontend
         verbose: false
         customCommand: 'version $(versionNo)--allow-same-version'
-      condition: ne(variables['currentBranch'], 'refs/heads/main')        
+      # condition: ne(variables['currentBranch'], 'refs/heads/main')        
     - task: Npm@1
       displayName: 'Npm Install'
       inputs:
@@ -467,7 +467,7 @@ stages:
         workingDir: shesha-starter/frontend
         verbose: false
         customCommand: 'version $(versionNo)--allow-same-version'
-      condition: ne(variables['currentBranch'], 'refs/heads/main')        
+      # condition: ne(variables['currentBranch'], 'refs/heads/main')        
     - task: Npm@1
       displayName: 'Npm Install'
       inputs:
