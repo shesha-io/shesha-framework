@@ -3,6 +3,9 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>Shesha.Sms</RootNamespace>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageId>Shesha.Sms.Xml2Sms</PackageId>
+    <Title>Shesha.Sms.Xml2Sms</Title>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Xml2Sms\forms\package20230411_1234.shaconfig" />

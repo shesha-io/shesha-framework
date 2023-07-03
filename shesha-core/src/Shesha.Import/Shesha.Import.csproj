@@ -5,6 +5,7 @@
     <PackageId>Shesha.Import</PackageId>
     <Title>Shesha.Import</Title>
     <Authors>Shesha</Authors>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

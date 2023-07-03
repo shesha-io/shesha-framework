@@ -8,6 +8,7 @@
     <PackageId>Shesha.Scheduler</PackageId>
     <Title>Shesha.Scheduler</Title>
     <Authors>Shesha</Authors>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

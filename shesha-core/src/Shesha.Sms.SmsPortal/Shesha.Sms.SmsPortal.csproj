@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>Shesha.Sms</RootNamespace>
+    <PackageId>Shesha.Sms.SmsPortal</PackageId>
+    <Title>Shesha.Sms.SmsPortal</Title>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="SmsPortal\forms\package20230411_1234.shaconfig" />
