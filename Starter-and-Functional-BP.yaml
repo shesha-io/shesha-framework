@@ -457,7 +457,7 @@ stages:
           # Write your PowerShell commands here.
           write-host "The current branch is: $(currentBranch)"
           write-host "The current version is: $(versionNo)"
-        workingDirectory: 'shesha-starter/frontend'
+        workingDirectory: 'shesha-reactjs'
     - task: NodeTool@0
       displayName: 'Use Node 18.15.0'
       inputs:
