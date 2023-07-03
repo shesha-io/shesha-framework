@@ -482,13 +482,14 @@ stages:
     #     workingDir: 'shesha-reactjs'
     #     verbose: true
     #     customCommand: install @shesha/reactjs@latest
-    - task: Npm@1
-      displayName: Npm Build
-      inputs:
-        command: custom
-        workingDir: 'shesha-reactjs'
-        verbose: true
-        customCommand: run build
+    # Disabled Build of Package
+    # - task: Npm@1
+    #   displayName: Npm Build
+    #   inputs:
+    #     command: custom
+    #     workingDir: 'shesha-reactjs'
+    #     verbose: true
+    #     customCommand: run build
     - task: ArchiveFiles@2
       inputs:
         rootFolderOrFile: 'shesha-reactjs'
