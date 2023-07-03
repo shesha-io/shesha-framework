@@ -131,8 +131,9 @@ stages:
       inputs:
         command: 'pack'
         packagesToPack: 'shesha-functional-tests/backend/src/**/*.csproj'
+        # packagesToPack: 'shesha-functional-tests/backend/src/Boxfusion.SheshaFunctionalTests.Web.Host.csproj'        
         configuration: '$(BuildParameters.configuration)'
-        nobuild: true
+        nobuild: false
         includesymbols: true
         includesource: true
         versioningScheme: 'byEnvVar'
