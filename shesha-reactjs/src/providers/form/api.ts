@@ -4,6 +4,7 @@ import { GetDataError, useGet } from 'hooks';
 import {
   componentsTreeToFlatStructure,
   getMatchData,
+  hasFormIdGotValue,
   IMatchData,
   IToolboxComponents,
   useAppConfigurator,
@@ -293,7 +294,8 @@ export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse
   useEffect(() => {
     const requestId = nanoid();
     formRequestRef.current = requestId;
-    if (formId) {
+
+    if (hasFormIdGotValue(formId)) {
       // fetch only data if dataId if changed
       if (
         Boolean(state.form) &&

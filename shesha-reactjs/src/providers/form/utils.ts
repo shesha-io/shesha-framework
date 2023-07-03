@@ -83,20 +83,19 @@ export const componentsTreeToFlatStructure = (
       // custom containers
       const customContainerNames = componentRegistration?.customContainerNames || [];
       let subContainers: IComponentsContainer[] = [];
-      customContainerNames.forEach(containerName => {
-
+      customContainerNames.forEach((containerName) => {
         const containers = component[containerName]
           ? Array.isArray(component[containerName])
-            ? component[containerName] as IComponentsContainer[]
+            ? (component[containerName] as IComponentsContainer[])
             : [component[containerName] as IComponentsContainer]
           : undefined;
         if (containers) subContainers = [...subContainers, ...containers];
       });
       if (component['components']) subContainers.push({ id: component.id, components: component['components'] });
 
-      subContainers.forEach(subContainer => {
+      subContainers.forEach((subContainer) => {
         if (subContainer && subContainer.components) {
-          subContainer.components.forEach(c => {
+          subContainer.components.forEach((c) => {
             processComponent(c, subContainer.id);
           });
         }
@@ -105,7 +104,7 @@ export const componentsTreeToFlatStructure = (
   };
 
   if (components) {
-    components.forEach(component => {
+    components.forEach((component) => {
       processComponent(component, ROOT_COMPONENT_KEY);
     });
   }
@@ -152,7 +151,11 @@ export const upgradeComponent = (
   const migrator = new Migrator<IConfigurableFormComponent, IConfigurableFormComponent>();
   const fluent = definition.migrator(migrator);
   if (componentModel.version === undefined) componentModel.version = -1;
-  const model = fluent.migrator.upgrade(componentModel, {formSettings, flatStructure, componentId: componentModel.id });
+  const model = fluent.migrator.upgrade(componentModel, {
+    formSettings,
+    flatStructure,
+    componentId: componentModel.id,
+  });
   return model;
 };
 
@@ -187,7 +190,7 @@ export const componentsFlatStructureToTree = (
     if (!componentIds) return;
 
     // iterate all component ids on the current level
-    componentIds.forEach(id => {
+    componentIds.forEach((id) => {
       // extract current component and add to hierarchy
       const component = { ...flat.allComponents[id] };
       container.push(component);
@@ -204,15 +207,14 @@ export const componentsFlatStructureToTree = (
         const componentRegistration = toolboxComponents[component.type];
 
         const customContainers = componentRegistration?.customContainerNames || [];
-        customContainers.forEach(containerName => {
-
+        customContainers.forEach((containerName) => {
           const childContainers = component[containerName]
             ? Array.isArray(component[containerName])
-              ? component[containerName] as IComponentsContainer[]
+              ? (component[containerName] as IComponentsContainer[])
               : [component[containerName] as IComponentsContainer]
             : undefined;
           if (childContainers) {
-            childContainers.forEach(c => {
+            childContainers.forEach((c) => {
               const childComponents: IConfigurableFormComponent[] = [];
               processComponent(childComponents, c.id);
               c.components = childComponents;
@@ -353,7 +355,7 @@ export const evaluateComplexString = (expression: string, mappings: IMatchData[]
 
   let result = expression;
 
-  Array.from(matches).forEach(matched => {
+  Array.from(matches).forEach((matched) => {
     mappings.forEach(({ match, data }) => {
       if (matched.includes(`{{${match}`)) {
         // When the match = "", we wanna send data as it is as that would mean that the expression doe nto use dot notation
@@ -426,7 +428,7 @@ export interface IEvaluateComplexStringResult {
 export const evaluateComplexStringWithResult = (
   expression: string,
   mappings: IMatchData[],
-  requireNonEmptyResult: boolean,
+  requireNonEmptyResult: boolean
 ): IEvaluateComplexStringResult => {
   const matches = new Set([...expression?.matchAll(/\{\{(?:(?!}}).)*\}\}/g)].flat());
 
@@ -436,7 +438,7 @@ export const evaluateComplexStringWithResult = (
 
   const unevaluatedExpressions = [];
 
-  Array.from(matches).forEach(template => {
+  Array.from(matches).forEach((template) => {
     mappings.forEach(({ match, data }) => {
       if (template.includes(`{{${match}`)) {
         // When the match = "", we wanna send data as it is as that would mean that the expression doe nto use dot notation
@@ -570,11 +572,10 @@ export const getVisibleComponentIds = (
     if (components.hasOwnProperty(key)) {
       const component = components[key] as IConfigurableFormComponent;
 
-      if (propertyFilter && component.name){
+      if (propertyFilter && component.name) {
         const filteredOut = propertyFilter(component.name);
-        if (filteredOut === false)
-          continue;
-      };
+        if (filteredOut === false) continue;
+      }
 
       if (!component || component.hidden || component.visibility === 'No' || component.visibility === 'Removed')
         continue;
@@ -879,7 +880,7 @@ export const getFormValidationRules = (markup: FormMarkup): Rules => {
   const components = getComponentsFromMarkup(markup);
 
   const rules: Rules = {};
-  components.forEach(component => {
+  components.forEach((component) => {
     rules[component.name] = getValidationRules(component) as [];
   });
 
@@ -936,19 +937,19 @@ export const processRecursive = (
 ) => {
   func(component, parentId);
 
-  const toolboxComponent = findToolboxComponent(componentsRegistration, c => c.type === component.type);
+  const toolboxComponent = findToolboxComponent(componentsRegistration, (c) => c.type === component.type);
   if (!toolboxComponent) return;
   const containers = getContainerNames(toolboxComponent);
 
   if (containers) {
-    containers.forEach(containerName => {
+    containers.forEach((containerName) => {
       const containerComponents = component[containerName]
         ? Array.isArray(component[containerName])
-          ? component[containerName] as IConfigurableFormComponent[]
+          ? (component[containerName] as IConfigurableFormComponent[])
           : [component[containerName] as IConfigurableFormComponent]
         : undefined;
       if (containerComponents) {
-        containerComponents.forEach(child => {
+        containerComponents.forEach((child) => {
           func(child, component.id);
           processRecursive(componentsRegistration, parentId, child, func);
         });
@@ -970,16 +971,16 @@ export const cloneComponents = (
 ): IConfigurableFormComponent[] => {
   const result: IConfigurableFormComponent[] = [];
 
-  components.forEach(component => {
+  components.forEach((component) => {
     const clone = { ...component, id: nanoid() };
 
     result.push(clone);
 
-    const toolboxComponent = findToolboxComponent(componentsRegistration, c => c.type === component.type);
+    const toolboxComponent = findToolboxComponent(componentsRegistration, (c) => c.type === component.type);
     const containers = getContainerNames(toolboxComponent);
 
     if (containers) {
-      containers.forEach(containerName => {
+      containers.forEach((containerName) => {
         const containerComponents = clone[containerName] as IConfigurableFormComponent[];
         if (containerComponents) {
           const newChilds = cloneComponents(componentsRegistration, containerComponents);
@@ -1018,7 +1019,7 @@ export const createComponentModelForDataProperty = (
 ): IConfigurableFormComponent => {
   const toolboxComponent = findToolboxComponent(
     components,
-    c =>
+    (c) =>
       Boolean(c.dataTypeSupported) &&
       c.dataTypeSupported({ dataType: propertyMetadata.dataType, dataFormat: propertyMetadata.dataFormat })
   );
@@ -1041,7 +1042,7 @@ export const createComponentModelForDataProperty = (
     hidden: false,
     visibility: 'Yes',
     customVisibility: null,
-    visibilityFunc: _data => true,
+    visibilityFunc: (_data) => true,
     isDynamic: false,
     validate: {},
   };
@@ -1079,12 +1080,12 @@ export interface IMatchData {
 }
 
 export const getMatchData = (dictionary: IMatchData[], name: string): any => {
-  const item = dictionary.find(i => i.match === name);
+  const item = dictionary.find((i) => i.match === name);
   return item?.data;
 };
 
 const convertToKeyValues = (obj: IAnyObject): IKeyValue[] => {
-  return Object.keys(obj).map(key => ({
+  return Object.keys(obj).map((key) => ({
     key,
     value: obj[key],
   }));
@@ -1132,7 +1133,7 @@ export const getObjectWithOnlyIncludedKeys = (obj: IAnyObject, includedProps: st
   const response: IAnyObject = {};
 
   if (includedProps?.length) {
-    includedProps?.forEach(key => {
+    includedProps?.forEach((key) => {
       if (obj[key]) {
         response[key] = obj[key];
       }
@@ -1142,7 +1143,12 @@ export const getObjectWithOnlyIncludedKeys = (obj: IAnyObject, includedProps: st
   return response;
 };
 
-export const getStyle = (style: string, formData: any = {}, globalState: any = {}, defaultStyle: object = {}): CSSProperties => {
+export const getStyle = (
+  style: string,
+  formData: any = {},
+  globalState: any = {},
+  defaultStyle: object = {}
+): CSSProperties => {
   if (!style) return defaultStyle;
   // tslint:disable-next-line:function-constructor
   return new Function('data, globalState', style)(formData, globalState);
@@ -1198,7 +1204,7 @@ export const convertDotNotationPropertiesToGraphQL = (properties: string[]): str
   if (expandedProps?.length > 0 && !expandedProps.includes('id')) expandedProps.push('id');
 
   // build properties tree
-  expandedProps.forEach(p => {
+  expandedProps.forEach((p) => {
     makeProp(tree, p);
   });
 
@@ -1212,10 +1218,8 @@ export const convertDotNotationPropertiesToGraphQL = (properties: string[]): str
       if (container.hasOwnProperty(node)) {
         if (result !== '') result += ' ';
         const nodeValue = container[node];
-        if (typeof nodeValue === 'object')
-          result += `${preparePropertyName(node)} { ${getNodes(nodeValue)} }`;
-        else
-          result += preparePropertyName(node);
+        if (typeof nodeValue === 'object') result += `${preparePropertyName(node)} { ${getNodes(nodeValue)} }`;
+        else result += preparePropertyName(node);
       }
     }
     return result;
@@ -1233,6 +1237,8 @@ export const asFormFullName = (formId: FormIdentifier): FormFullName | undefined
   return formId && Boolean((formId as FormFullName)?.name) ? (formId as FormFullName) : undefined;
 };
 
+export const hasFormIdGotValue = (formId: FormIdentifier) => (typeof formId === 'string' ? !!formId : !!formId?.name);
+
 export const convertToMarkupWithSettings = (markup: FormMarkup): FormMarkupWithSettings => {
   if (!markup) return null;
   const result = markup as FormMarkupWithSettings;
@@ -1248,7 +1254,7 @@ const evaluateRecursive = (data: any, evaluationContext: GenericDictionary): any
   }
   if (Array.isArray(data)) {
     // note: `typeof` returns object for arrays too, we must to check isArray before `typeof`
-    return data.map(item => evaluateRecursive(item, evaluationContext));
+    return data.map((item) => evaluateRecursive(item, evaluationContext));
   }
   if (typeof data === 'object') {
     const evaluatedObject = {};
@@ -1268,7 +1274,7 @@ export const genericActionArgumentsEvaluator = <TArguments = ActionParametersDic
 ): Promise<TArguments> => {
   if (!Boolean(argumentsConfiguration)) return Promise.resolve(null);
 
-  return new Promise<TArguments>(resolve => {
+  return new Promise<TArguments>((resolve) => {
     const evaluated = evaluateRecursive(argumentsConfiguration, evaluationContext);
     resolve(evaluated as TArguments);
   });
@@ -1296,7 +1302,7 @@ export const getFormActionArguments = (
     }
   }
 
-  return new Promise<ActionArguments>(resolve => {
+  return new Promise<ActionArguments>((resolve) => {
     const dictionary = params as ActionParametersDictionary;
     const actionArgs = {};
 
@@ -1360,7 +1366,7 @@ export const getComponentNames = (components: IComponentsDictionary, predicate: 
 
   if (typeof predicate !== 'function') throw new Error('getComponentNames: predicate must be defined');
 
-  Object.keys(components)?.forEach(key => {
+  Object.keys(components)?.forEach((key) => {
     let component = components[key];
 
     if (predicate(component)) {
