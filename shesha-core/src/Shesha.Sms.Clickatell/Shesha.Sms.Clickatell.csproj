@@ -3,6 +3,9 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>Shesha.Sms</RootNamespace>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageId>Shesha.Sms.Clickatell</PackageId>
+    <Title>Shesha.Sms.Clickatell</Title>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Clickatell\forms\package20230411_1233.shaconfig" />
