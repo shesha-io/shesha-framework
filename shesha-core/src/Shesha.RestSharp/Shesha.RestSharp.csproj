@@ -3,6 +3,9 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>Shesha</RootNamespace>
+    <PackageId>Shesha.RestSharp</PackageId>
+    <Title>Shesha.RestSharp</Title>
+    <Authors>Shesha</Authors>
   </PropertyGroup>
 
   <ItemGroup>

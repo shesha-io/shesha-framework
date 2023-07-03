@@ -2,6 +2,9 @@
   <Import Project="..\..\common.props" />
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
+    <PackageId>Shesha.Import</PackageId>
+    <Title>Shesha.Import</Title>
+    <Authors>Shesha</Authors>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

@@ -13,6 +13,8 @@
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
     <RootNamespace>Shesha</RootNamespace>
+    <Title>Shesha.Web.Core</Title>
+    <Authors>Shesha</Authors>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Application\PublicHolidays\**" />

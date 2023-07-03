@@ -3,6 +3,9 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>Shesha</RootNamespace>
+    <PackageId>Shesha.Ldap</PackageId>
+    <Title>Shesha.Ldap</Title>
+    <Authors>Shesha</Authors>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

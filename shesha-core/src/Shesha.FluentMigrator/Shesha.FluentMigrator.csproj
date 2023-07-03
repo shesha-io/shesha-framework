@@ -5,6 +5,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>Shesha</RootNamespace>
+    <PackageId>Shesha.FluentMigrator</PackageId>
+    <Title>Shesha.FluentMigrator</Title>
+    <Authors>Shesha</Authors>
   </PropertyGroup>
 
   <ItemGroup>
