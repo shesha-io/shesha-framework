@@ -294,6 +294,7 @@ stages:
       displayName: 'Use Node 18.15.0'
       inputs:
         versionSpec: 18.15.0
+      retryCountOnTaskFailure: 5
     - task: Npm@1
       displayName: 'Npm Update Version'
       inputs:
@@ -377,6 +378,7 @@ stages:
       displayName: 'Use Node 18.15.0'
       inputs:
         versionSpec: 18.15.0
+      retryCountOnTaskFailure: 5
     - task: Npm@1
       displayName: 'Npm Update Version'
       inputs:
@@ -455,19 +457,20 @@ stages:
           # Write your PowerShell commands here.
           write-host "The current branch is: $(currentBranch)"
           write-host "The current version is: $(versionNo)"
-        workingDirectory: 'shesha-starter/frontend'
+        workingDirectory: 'shesha-reactjs'
     - task: NodeTool@0
       displayName: 'Use Node 18.15.0'
       inputs:
         versionSpec: 18.15.0
+      retryCountOnTaskFailure: 5
     - task: Npm@1
       displayName: 'Npm Update Version'
       inputs:
         command: custom
-        workingDir: shesha-starter/frontend
+        workingDir: shesha-reactjs
         verbose: false
-        customCommand: 'version $(versionNo)--allow-same-version'
-      # condition: ne(variables['currentBranch'], 'refs/heads/main')        
+        customCommand: 'version $(versionNo) --allow-same-version'
+      # condition: ne(variables['currentBranch'], 'refs/heads/main')
     - task: Npm@1
       displayName: 'Npm Install'
       inputs:
@@ -475,6 +478,16 @@ stages:
         workingDir: shesha-reactjs
         verbose: false
         customCommand: 'install'
+    - task: Npm@1
+      inputs:
+        command: 'custom'
+        workingDir: shesha-reactjs
+        customCommand: 'npm run prepare'
+    - task: Npm@1
+      inputs:
+        command: 'custom'
+        workingDir: shesha-reactjs
+        customCommand: 'npm run build'        
     # - task: Npm@1
     #   displayName: Install Latest Shesha
     #   inputs:
@@ -483,13 +496,13 @@ stages:
     #     verbose: true
     #     customCommand: install @shesha/reactjs@latest
     # Disabled Build of Package
-    - task: Npm@1
-      displayName: Npm Build
-      inputs:
-        command: custom
-        workingDir: 'shesha-reactjs'
-        verbose: true
-        customCommand: run build
+    # - task: Npm@1
+    #   displayName: Npm Build
+    #   inputs:
+    #     command: custom
+    #     workingDir: 'shesha-reactjs'
+    #     verbose: true
+    #     customCommand: run build
     - task: ArchiveFiles@2
       inputs:
         rootFolderOrFile: 'shesha-reactjs'
