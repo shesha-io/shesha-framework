@@ -97,5 +97,8 @@ namespace Shesha.Domain
         /// Type of the data source
         /// </summary>
         public virtual RefListImportSourceType? SourceType { get; set; }
+
+        [StringLength(300)]
+        public virtual string LogFilePath { get; set; }
     }
 }
