@@ -417,7 +417,7 @@ stages:
       inputs:
         ArtifactName: adminportal-starter
   - job: Job_5
-    displayName: Build_Starter_Shesha_For_Publish
+    displayName: Build_Shesha_React_For_Publish
     pool:
       vmImage: windows-latest
     steps:
