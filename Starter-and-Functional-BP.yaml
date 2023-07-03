@@ -468,13 +468,13 @@ stages:
         verbose: false
         customCommand: 'version $(versionNo)--allow-same-version'
       # condition: ne(variables['currentBranch'], 'refs/heads/main')        
-    - task: Npm@1
-      displayName: 'Npm Install'
-      inputs:
-        command: custom
-        workingDir: shesha-reactjs
-        verbose: false
-        customCommand: 'install'
+    # - task: Npm@1
+    #   displayName: 'Npm Install'
+    #   inputs:
+    #     command: custom
+    #     workingDir: shesha-reactjs
+    #     verbose: false
+    #     customCommand: 'install'
     # - task: Npm@1
     #   displayName: Install Latest Shesha
     #   inputs:
