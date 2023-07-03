@@ -8,6 +8,7 @@
     <PackageId>Shesha.FluentMigrator</PackageId>
     <Title>Shesha.FluentMigrator</Title>
     <Authors>Shesha</Authors>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>

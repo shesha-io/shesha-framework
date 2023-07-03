@@ -6,6 +6,7 @@
     <PackageId>Shesha.GraphQL</PackageId>
     <Title>Shesha.GraphQL</Title>
     <Authors>Shesha</Authors>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>

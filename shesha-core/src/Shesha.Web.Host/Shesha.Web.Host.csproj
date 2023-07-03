@@ -7,6 +7,8 @@
     <OutputType>Exe</OutputType>
     <PackageId>Shesha.Web.Host</PackageId>
     <UserSecretsId>AbpCompanyName-Shesha-56C2EF2F-ABD6-4EFC-AAF2-2E81C34E8FB1</UserSecretsId>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Shesha.Web.Host</Title>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Forms\**" />

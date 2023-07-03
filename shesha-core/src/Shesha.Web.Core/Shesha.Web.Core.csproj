@@ -15,6 +15,7 @@
     <RootNamespace>Shesha</RootNamespace>
     <Title>Shesha.Web.Core</Title>
     <Authors>Shesha</Authors>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Application\PublicHolidays\**" />

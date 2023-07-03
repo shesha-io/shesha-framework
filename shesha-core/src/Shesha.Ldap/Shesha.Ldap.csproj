@@ -6,6 +6,7 @@
     <PackageId>Shesha.Ldap</PackageId>
     <Title>Shesha.Ldap</Title>
     <Authors>Shesha</Authors>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

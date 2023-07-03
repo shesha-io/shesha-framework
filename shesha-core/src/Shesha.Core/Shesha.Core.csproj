@@ -13,6 +13,7 @@
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
     <Title>Shesha.Core</Title>
     <Authors>Shesha</Authors>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>.\Shesha.Core.xml</DocumentationFile>
