@@ -482,12 +482,12 @@ stages:
       inputs:
         command: 'custom'
         workingDir: shesha-reactjs
-        customCommand: 'npm run prepare'
+        customCommand: 'run prepare'
     - task: Npm@1
       inputs:
         command: 'custom'
         workingDir: shesha-reactjs
-        customCommand: 'npm run build'        
+        customCommand: 'run build'        
     # - task: Npm@1
     #   displayName: Install Latest Shesha
     #   inputs:
