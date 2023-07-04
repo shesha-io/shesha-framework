@@ -66,7 +66,7 @@ stages:
       inputs:
         filePath: 'ReleaseFlow.ps1'
         workingDirectory: '$(System.DefaultWorkingDirectory)'
-        arguments: '-PipeBuildNumber "$(Build.BuildNumber)" -PipeSourceBranch "$(Build.SourceBranch)" -PipeSourceVersion "$(Build.SourceVersion)" -PipeTargetBranch "$(prTargetBranch)"' 
+        arguments: '-PipeBuildNumber "$(Build.BuildNumber)" -PipeSourceBranch "$(Build.SourceBranch)" -PipeSourceVersion "$(Build.SourceVersion)" -PipeTargetBranch "$(prTargetBranch)" -PipeBuildId "$(Build.BuildId)"' 
     - task: PowerShell@2
       displayName: Output to console the current branch and version
       inputs:
@@ -185,7 +185,7 @@ stages:
       inputs:
         filePath: 'ReleaseFlow.ps1'
         workingDirectory: '$(System.DefaultWorkingDirectory)'    
-        arguments: '-PipeBuildNumber "$(Build.BuildNumber)" -PipeSourceBranch "$(Build.SourceBranch)" -PipeSourceVersion "$(Build.SourceVersion)" -PipeTargetBranch "$(prTargetBranch)"'
+        arguments: '-PipeBuildNumber "$(Build.BuildNumber)" -PipeSourceBranch "$(Build.SourceBranch)" -PipeSourceVersion "$(Build.SourceVersion)" -PipeTargetBranch "$(prTargetBranch)" -PipeBuildId "$(Build.BuildId)"' 
     - task: PowerShell@2
       displayName: Output to console the current branch and version
       inputs:
@@ -290,7 +290,7 @@ stages:
       inputs:
         filePath: 'ReleaseFlow.ps1'
         workingDirectory: '$(System.DefaultWorkingDirectory)'
-        arguments: '-PipeBuildNumber "$(Build.BuildNumber)" -PipeSourceBranch "$(Build.SourceBranch)" -PipeSourceVersion "$(Build.SourceVersion)" -PipeTargetBranch "$(prTargetBranch)"'
+        arguments: '-PipeBuildNumber "$(Build.BuildNumber)" -PipeSourceBranch "$(Build.SourceBranch)" -PipeSourceVersion "$(Build.SourceVersion)" -PipeTargetBranch "$(prTargetBranch)" -PipeBuildId "$(Build.BuildId)"' 
     - task: PowerShell@2
       displayName: Output to console the current branch
       retryCountOnTaskFailure: 5      
@@ -375,7 +375,7 @@ stages:
       inputs:
         filePath: 'ReleaseFlow.ps1'
         workingDirectory: '$(System.DefaultWorkingDirectory)'
-        arguments: '-PipeBuildNumber "$(Build.BuildNumber)" -PipeSourceBranch "$(Build.SourceBranch)" -PipeSourceVersion "$(Build.SourceVersion)" -PipeTargetBranch "$(prTargetBranch)"'
+        arguments: '-PipeBuildNumber "$(Build.BuildNumber)" -PipeSourceBranch "$(Build.SourceBranch)" -PipeSourceVersion "$(Build.SourceVersion)" -PipeTargetBranch "$(prTargetBranch)" -PipeBuildId "$(Build.BuildId)"' 
     - task: PowerShell@2
       displayName: Output to console the current branch  
       inputs:
@@ -459,7 +459,7 @@ stages:
       inputs:
         filePath: 'ReleaseFlow.ps1'
         workingDirectory: '$(System.DefaultWorkingDirectory)'
-        arguments: '-PipeBuildNumber "$(Build.BuildNumber)" -PipeSourceBranch "$(Build.SourceBranch)" -PipeSourceVersion "$(Build.SourceVersion)" -PipeTargetBranch "$(prTargetBranch)"'
+        arguments: '-PipeBuildNumber "$(Build.BuildNumber)" -PipeSourceBranch "$(Build.SourceBranch)" -PipeSourceVersion "$(Build.SourceVersion)" -PipeTargetBranch "$(prTargetBranch)" -PipeBuildId "$(Build.BuildId)"' 
     - task: PowerShell@2
       displayName: Output to console the current branch  
       inputs:
@@ -554,7 +554,7 @@ stages:
       inputs:
         filePath: 'ReleaseFlow.ps1'
         workingDirectory: '$(System.DefaultWorkingDirectory)'
-        arguments: '-PipeBuildNumber "$(Build.BuildNumber)" -PipeSourceBranch "$(Build.SourceBranch)" -PipeSourceVersion "$(Build.SourceVersion)" -PipeTargetBranch "$(prTargetBranch)"'
+        arguments: '-PipeBuildNumber "$(Build.BuildNumber)" -PipeSourceBranch "$(Build.SourceBranch)" -PipeSourceVersion "$(Build.SourceVersion)" -PipeTargetBranch "$(prTargetBranch)" -PipeBuildId "$(Build.BuildId)"' 
     - task: PowerShell@2
       displayName: Delete Pipeline and Actions Yaml Files
       inputs:
