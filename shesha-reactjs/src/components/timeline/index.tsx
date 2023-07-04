@@ -6,6 +6,8 @@ import { EntitiesGetAllQueryParams, useEntitiesGetAll } from 'apis/entities';
 import { useGlobalState } from 'providers';
 import { ITimelineProps } from './models';
 import { TimelineItem } from './timelineItem';
+import './styles/styles.less';
+
 import moment from 'moment';
 
 export const ShaTimeline: FC<ITimelineProps> = ({ properties, ownerId, entityType, customApiUrl, apiSource }) => {
@@ -61,21 +63,19 @@ export const ShaTimeline: FC<ITimelineProps> = ({ properties, ownerId, entityTyp
 
   return (
     <Spin spinning={isFetchingEntities}>
-      {(!sortedTimelineData?.length && <Empty description="Empty timeline" />) || (
-        <Timeline>
-          {sortedTimelineData?.map(({ title, body, fromPerson, actionDate, channel }) => {
-            return (
-              <TimelineItem
-                title={title}
-                toPerson={fromPerson?._displayName}
-                channel={channel}
-                actionDate={moment(actionDate).format('DD/MM/YYYY HH:mm')}
-                body={body}
-              />
-            );
-          })}
-        </Timeline>
-      )}
+      <Timeline className="sha-timeline">
+        {sortedTimelineData?.map(({ title, body, fromPerson, actionDate, channel }) => {
+          return (
+            <TimelineItem
+              title={title}
+              toPerson={fromPerson?._displayName}
+              channel={channel}
+              actionDate={moment(actionDate).format('DD/MM/YYYY HH:mm')}
+              body={body}
+            />
+          );
+        })}
+      </Timeline>
     </Spin>
   );
 };
