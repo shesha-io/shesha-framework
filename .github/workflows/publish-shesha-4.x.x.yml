@@ -105,9 +105,9 @@ jobs:
       # ============ PACK ===============
 
       # Pack shesha-core (Solution)
-      # - name: Dotnet Pack shesha-core
-      #  run: dotnet pack -o ../dist -p:PackageVersion=${{ steps.tag_version.outputs.new_tag }} -p:Version=${{ steps.tag_version.outputs.new_tag }} --include-symbols --include-source
-      #  working-directory: ./shesha-core
+      - name: Dotnet Pack shesha-core
+        run: dotnet pack -o ../dist -p:PackageVersion=${{ steps.tag_version.outputs.new_tag }} -p:Version=${{ steps.tag_version.outputs.new_tag }} --include-symbols --include-source
+        working-directory: ./shesha-core
 
       # ============ RELEASE ===============
 
@@ -120,7 +120,7 @@ jobs:
           body: ${{ steps.tag_version.outputs.changelog }}
       # push nuget packages
       - name: Dotnet Nuget Push
-        run: dotnet nuget push "../**/*.nupkg" --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }} --skip-duplicate
+        run: dotnet nuget push "../dist/*.nupkg" --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }} --skip-duplicate
         working-directory: ./shesha-core
       # publish shesha-reactjs to npmjs registry
       - name: Publish shesha-reactjs to npmjs registry
