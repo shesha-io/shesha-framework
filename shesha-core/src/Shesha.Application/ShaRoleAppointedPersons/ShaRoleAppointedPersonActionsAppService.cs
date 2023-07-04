@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 namespace Shesha.ShaRoleAppointedPersons
 {
     [AbpAuthorize(PermissionNames.Pages_Roles)]
-    public class ShaRoleAppointedPersonAppService : SheshaCrudServiceBase<ShaRoleAppointedPerson, ShaRoleAppointedPersonDto, Guid, FilteredPagedAndSortedResultRequestDto, CreateShaRoleAppointedPersonDto, ShaRoleAppointedPersonDto>, IShaRoleAppointedPersonAppService
+    public class ShaRoleAppointedPersonActionsAppService : SheshaCrudServiceBase<ShaRoleAppointedPerson, ShaRoleAppointedPersonDto, Guid, FilteredPagedAndSortedResultRequestDto, CreateShaRoleAppointedPersonDto, ShaRoleAppointedPersonDto>, IShaRoleAppointedPersonAppService
     {
         private readonly IRepository<ShaRole, Guid> _roleRepository;
         private readonly IRepository<ShaRoleAppointmentEntity, Guid> _appEntityRepository;
@@ -25,7 +25,7 @@ namespace Shesha.ShaRoleAppointedPersons
         private readonly IRepository<Area, Guid> _areaRepository;
         private readonly IShaPermissionChecker _shaPermissionChecker;
 
-        public ShaRoleAppointedPersonAppService(IRepository<ShaRoleAppointedPerson, Guid> repository, IRepository<ShaRole, Guid> roleRepository, IRepository<ShaRoleAppointmentEntity, Guid> appEntityRepository, IRepository<Person, Guid> personRepository, IRepository<Area, Guid> areaRepository, IShaPermissionChecker shaPermissionChecker) : base(repository)
+        public ShaRoleAppointedPersonActionsAppService(IRepository<ShaRoleAppointedPerson, Guid> repository, IRepository<ShaRole, Guid> roleRepository, IRepository<ShaRoleAppointmentEntity, Guid> appEntityRepository, IRepository<Person, Guid> personRepository, IRepository<Area, Guid> areaRepository, IShaPermissionChecker shaPermissionChecker) : base(repository)
         {
             _roleRepository = roleRepository;
             _appEntityRepository = appEntityRepository;
