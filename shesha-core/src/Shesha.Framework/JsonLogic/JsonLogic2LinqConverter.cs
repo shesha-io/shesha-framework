@@ -873,12 +873,13 @@ namespace Shesha.JsonLogic
         private void ConvertEntityReferenceForEquality(ParameterExpression param, Expression potentialIdExpr, ref Expression potentialEntityRefExpr) 
         {
             if (potentialEntityRefExpr is MemberExpression memberExpression &&
+                memberExpression.Expression != null &&
                 memberExpression.Type.IsEntityType() &&
                 potentialIdExpr is ConstantExpression idExpr && 
                 idExpr.Value != null /* null values should be processed as references not as Id value*/)
             {
                 var idName = $"{memberExpression.Member.Name}.{nameof(IEntity.Id)}";
-                var expr = ExpressionExtensions.GetMemberExpression(param, idName);
+                var expr = ExpressionExtensions.GetMemberExpression(memberExpression.Expression, idName);
                 potentialEntityRefExpr = expr;
             }
         }        

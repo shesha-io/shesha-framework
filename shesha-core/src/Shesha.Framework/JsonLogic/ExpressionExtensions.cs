@@ -43,7 +43,7 @@ namespace Shesha.JsonLogic
             return GetMemberExpression((Expression)param, propertyName);
         }
 
-        private static MemberExpression GetMemberExpression(Expression param, string propertyName)
+        public static MemberExpression GetMemberExpression(Expression param, string propertyName)
         {
             if (!propertyName.Contains("."))
             {
