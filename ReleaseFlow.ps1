@@ -2,7 +2,8 @@ param(
     [string]$PipeBuildNumber,
     [string]$PipeSourceBranch,
     [string]$PipeSourceVersion,
-    [string]$PipeTargetBranch
+    [string]$PipeTargetBranch,
+    [string]$PipeBuildId    
 )
 
 write-host "The build number is: $PipeBuildNumber"
@@ -18,9 +19,9 @@ $major = $parts[0].Substring(0,4)
 $minor = $parts[0].Substring(4,2)
 $patch = $parts[0].Substring(6,2)
 $build = $parts[1]
-$mainVersion = "0.0.$patchNumber"
+$mainVersion = "0.0.$PipeBuildId"
 
-Write-Host "Version number for main: 0.0.$patchNumber"
+Write-Host "Version number for main: 0.0.$PipeBuildId"
 
 write-host "The build number formatted is: $patchNumber"
 
