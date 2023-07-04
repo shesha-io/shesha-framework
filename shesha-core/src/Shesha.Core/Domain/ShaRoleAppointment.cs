@@ -12,9 +12,12 @@ namespace Shesha.Domain
     {
         public virtual ShaRole Role { get; set; }
         public virtual int? TenantId { get; set; }
-        
+
+        [EntityReference(true)]
         public GenericEntityReference PermissionedEntity1 { get; set; }
+        [EntityReference(true)]
         public GenericEntityReference PermissionedEntity2 { get; set; }
+        [EntityReference(true)]
         public GenericEntityReference PermissionedEntity3 { get; set; }
 
         public virtual DateTime? FromDate { get; set; }
