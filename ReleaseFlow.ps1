@@ -18,9 +18,9 @@ $major = $parts[0].Substring(0,4)
 $minor = $parts[0].Substring(4,2)
 $patch = $parts[0].Substring(6,2)
 $build = $parts[1]
-$mainVersion = "0.0.$build.$datePart"
+$mainVersion = "0.0.$patchNumber-build"
 
-Write-Host "Version number for main: 0.0.$build.$datePart"
+Write-Host "Version number for main: 0.0.$patchNumber-build"
 
 write-host "The build number formatted is: $patchNumber"
 
