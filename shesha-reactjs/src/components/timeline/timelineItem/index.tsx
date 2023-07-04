@@ -11,8 +11,7 @@ export const TimelineItem: FC<ITimelineItemProps> = ({ title, channel, toPerson,
       <Card
         extra={
           <small style={{ color: 'gray' }}>
-            <ClockCircleOutlined />
-            {actionDate}
+            <ClockCircleOutlined /> {' ' + actionDate}
           </small>
         }
         title={
