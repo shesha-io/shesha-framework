@@ -19,7 +19,9 @@ namespace Shesha.Domain
         public virtual Site PrimarySite { get; set; }
 
         public virtual string AccountNo { get; set; }
+        [ReferenceList("Shesha.Core", "AccountStatus")]
         public virtual RefListAccountStatus? Status { get; set; }
+        [ReferenceList("Shesha.Core", "AccountType")]
         public virtual RefListAccountType? AccountType { get; set; }
         public virtual DateTime? ActiveFromDate { get; set; }
         public virtual DateTime? ActiveToDate { get; set; }
