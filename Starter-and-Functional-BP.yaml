@@ -126,11 +126,23 @@ stages:
       displayName: 'Publish Artifact: functional-shesha-api'
       inputs:
         ArtifactName: functional-shesha-api
+    # - task: DotNetCoreCLI@2
+    #   displayName: dotnet pack
+    #   inputs:
+    #     command: 'pack'
+    #     packagesToPack: 'shesha-functional-tests/backend/src/**/*.csproj'
+    #     # packagesToPack: 'shesha-functional-tests/backend/src/Boxfusion.SheshaFunctionalTests.Web.Host.csproj'        
+    #     configuration: '$(BuildParameters.configuration)'
+    #     nobuild: false
+    #     includesymbols: true
+    #     includesource: true
+    #     versioningScheme: 'byEnvVar'
+    #     versionEnvVar: 'versionNo'
     - task: DotNetCoreCLI@2
       displayName: dotnet pack
       inputs:
         command: 'pack'
-        packagesToPack: 'shesha-functional-tests/backend/src/**/*.csproj'
+        packagesToPack: 'shesha-core/src/**/*.csproj'
         # packagesToPack: 'shesha-functional-tests/backend/src/Boxfusion.SheshaFunctionalTests.Web.Host.csproj'        
         configuration: '$(BuildParameters.configuration)'
         nobuild: false
@@ -138,7 +150,6 @@ stages:
         includesource: true
         versioningScheme: 'byEnvVar'
         versionEnvVar: 'versionNo'
-
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: Nuget packs'
       inputs:
