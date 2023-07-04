@@ -5,12 +5,14 @@ import { getTimelineIcon } from '../../../utils/timelineIcon';
 import { ITimelineItemProps } from '../models';
 import { getTimelineTitle } from 'utils/timelinetitle';
 
+import '../styles/styles.less';
+
 export const TimelineItem: FC<ITimelineItemProps> = ({ title, channel, toPerson, body, actionDate }) => {
   return (
-    <Timeline.Item dot={getTimelineIcon(channel)}>
+    <Timeline.Item className="sha-timeline-item" dot={getTimelineIcon(channel)}>
       <Card
         extra={
-          <small style={{ color: 'gray' }}>
+          <small className="sha-timeline-extra">
             <ClockCircleOutlined /> {' ' + actionDate}
           </small>
         }
