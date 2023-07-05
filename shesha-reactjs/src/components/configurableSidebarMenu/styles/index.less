@@ -1,4 +1,6 @@
 .sha-sidebar-configurator {
+
+  
   .sha-action-buttons {
     .ant-btn {
       margin-right: 8px;
@@ -69,11 +71,15 @@
         border-bottom: 1px solid #ddd;
       }
 
+      
+
       .sha-sidebar-group-container {
         min-height: 30px;
         padding: 5px 5px 0px 20px;
       }
     }
+
+    
 
     .sha-sidebar-item-ghost {
       border: 1px dashed #4099ff;
@@ -83,17 +89,18 @@
   }
 }
 
-.ant-layout-sider {
-  overflow-x: hidden;
-  height: 100vh;
-}
+  .ant-layout-sider {
+    overflow-x: hidden
+  }
+  
+  .ant-layout-sider::-webkit-scrollbar {
+    width: 9px;
+    background-color: black;
+    color: black;
+  }
+  
+  .ant-layout-sider::-webkit-scrollbar-track {
+    background-color: gray;
+  }
 
-.ant-layout-sider, ::-webkit-scrollbar {
-  width: 9px;
-  background-color: black;
-  color: black;
-}
 
-.ant-layout-sider, ::-webkit-scrollbar-track {
-  background-color: gray;
-}
