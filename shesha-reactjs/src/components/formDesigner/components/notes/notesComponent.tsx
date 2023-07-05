@@ -12,6 +12,7 @@ export interface INotesProps extends IConfigurableFormComponent {
   ownerId: string;
   ownerType: string;
   savePlacement?: 'left' | 'right';
+  autoSize?: boolean;
 }
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -30,7 +31,11 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
 
     return (
       <NotesProvider ownerId={ownerId} ownerType={model.ownerType}>
-        <NotesRenderer showCommentBox={model.disabled !== true} buttonPostion={model?.savePlacement} />
+        <NotesRenderer
+          showCommentBox={model.disabled !== true}
+          buttonPostion={model?.savePlacement}
+          autoSize={model?.autoSize}
+        />
       </NotesProvider>
     );
   },

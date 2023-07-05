@@ -25,28 +25,6 @@
       "label": "Label"
     },
     {
-      "id": "a4076447-d2a2-44a9-bf9f-aa799a827cc7",
-      "type": "dropdown",
-      "name": "savePlacement",
-      "parentId": "root",
-      "label": "Save Placement",
-      "description": "This used to place the save button (Left, Right).",
-      "values": [
-        {
-          "label": "Left",
-          "value": "left",
-          "id": "18a25d15-5a3b-43f6-815c-ab50c60c67e2"
-        },
-        {
-          "label": "Right",
-          "value": "right",
-          "id": "ba03eef2-2fc6-4ac9-9f3d-d77952416c84"
-        }
-      ],
-      "defaultValue": "left",
-      "dataSourceType": "values"
-    },
-    {
       "id": "df8a8f35-a50b-42f9-9642-73d390ceddbf",
       "type": "dropdown",
       "name": "visibility",
@@ -86,6 +64,42 @@
       "name": "disabled",
       "parentId": "root",
       "label": "Disabled"
+    },
+    {
+      "id": "6ceecdd6-5231-4f98-83dd-b489195f7e3a",
+      "type": "sectionSeparator",
+      "name": "styleSeparator",
+      "parentId": "root",
+      "label": "Styling"
+    },
+    {
+      "id": "a4076447-d2a2-44a9-bf9f-aa799a827cc7",
+      "type": "dropdown",
+      "name": "savePlacement",
+      "parentId": "root",
+      "label": "Save Placement",
+      "description": "This used to place the save button (Left, Right).",
+      "values": [
+        {
+          "label": "Left",
+          "value": "left",
+          "id": "18a25d15-5a3b-43f6-815c-ab50c60c67e2"
+        },
+        {
+          "label": "Right",
+          "value": "right",
+          "id": "ba03eef2-2fc6-4ac9-9f3d-d77952416c84"
+        }
+      ],
+      "defaultValue": "left",
+      "dataSourceType": "values"
+    },
+    {
+      "id": "2fb35552-0dcb-42ec-aee5-0e8ca67127d4",
+      "type": "checkbox",
+      "name": "autoSize",
+      "parentId": "root",
+      "label": "Auto Size"
     },
     {
       "id": "5478b8f9-ec00-4d0a-9d2a-44a630cb2dcb",
