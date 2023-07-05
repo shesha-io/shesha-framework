@@ -25,6 +25,28 @@
       "label": "Label"
     },
     {
+      "id": "a4076447-d2a2-44a9-bf9f-aa799a827cc7",
+      "type": "dropdown",
+      "name": "savePlacement",
+      "parentId": "root",
+      "label": "Save Placement",
+      "description": "This used to place the save button (Left, Right).",
+      "values": [
+        {
+          "label": "Left",
+          "value": "left",
+          "id": "18a25d15-5a3b-43f6-815c-ab50c60c67e2"
+        },
+        {
+          "label": "Right",
+          "value": "right",
+          "id": "ba03eef2-2fc6-4ac9-9f3d-d77952416c84"
+        }
+      ],
+      "defaultValue": "left",
+      "dataSourceType": "values"
+    },
+    {
       "id": "df8a8f35-a50b-42f9-9642-73d390ceddbf",
       "type": "dropdown",
       "name": "visibility",

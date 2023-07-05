@@ -7,9 +7,10 @@ export interface INotesRendererProps {
   ownerId?: string;
   ownerType?: string;
   commentListStyles?: CSSProperties;
+  buttonPostion?: 'left' | 'right';
 }
 
-export const NotesRenderer: FC<INotesRendererProps> = ({ showCommentBox = true }) => {
+export const NotesRenderer: FC<INotesRendererProps> = ({ buttonPostion, showCommentBox = true }) => {
   const { notes, deleteNotes, isInProgress, postNotes } = useNotes();
 
   const { fetchNotes: isFetchingNotes, postNotes: isPostingNotes } = isInProgress;
@@ -23,6 +24,7 @@ export const NotesRenderer: FC<INotesRendererProps> = ({ showCommentBox = true }
         showCommentBox={showCommentBox}
         isFetchingNotes={isFetchingNotes}
         isPostingNotes={isPostingNotes}
+        buttonFloatRight={buttonPostion === 'right'}
       />
     </div>
   );
