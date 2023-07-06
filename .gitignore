@@ -308,3 +308,5 @@ storybook-static
 
 
 **/.next/**
+/shesha-core/src/Shesha.Core/Domain/TestSubject.cs
+/shesha-core/src/Shesha.Application/Test/appTest.cs
