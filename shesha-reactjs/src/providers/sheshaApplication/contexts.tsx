@@ -17,6 +17,7 @@ export interface ISheshaApplicationStateContext {
   httpHeaders: IHttpHeadersDictionary;
   toolboxComponentGroups?: IToolboxComponentGroup[];
   routes: ISheshaRutes;
+  globalVariables?: { [key in string]: any };
 }
 
 export const DEFAULT_SHESHA_ROUTES: ISheshaRutes = {
@@ -34,6 +35,7 @@ export interface ISheshaApplicationActionsContext {
   changeBackendUrl?: (backendUrl: string) => void;
   setRequestHeaders?: (headers: IRequestHeaders) => void;
   anyOfPermissionsGranted?: (permissions: string[]) => boolean;
+  setGlobalVariables?: (values: { [x: string]: any }) => void;
 }
 
 export const DEFAULT_ACCESS_TOKEN_NAME = 'xDFcxiooPQxazdndDsdRSerWQPlincytLDCarcxVxv';
