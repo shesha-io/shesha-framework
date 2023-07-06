@@ -3,7 +3,6 @@ import { IFlagsSetters } from '../../interfaces/flagsSetters';
 import { IFlagsState } from '../../interfaces/flagsState';
 import { ISidebarMenuItem } from '../../interfaces/sidebar';
 import { IHeaderAction } from './models';
-import { getInitIsExpanded } from './util';
 
 export type IFlagProgressFlags = 'fetchFileInfo' /* NEW_IN_PROGRESS_FLAG_GOES_HERE */;
 export type IFlagSucceededFlags = 'fetchFileInfo' /* NEW_SUCCEEDED_FLAG_GOES_HERE */;
@@ -31,7 +30,7 @@ export const SIDEBAR_MENU_CONTEXT_INITIAL_STATE: ISidebarMenuStateContext = {
   succeeded: {},
   error: {},
   actioned: {},
-  isExpanded: getInitIsExpanded(),
+  isExpanded: false,
 };
 
 export const SidebarMenuStateContext = createContext<ISidebarMenuStateContext>(SIDEBAR_MENU_CONTEXT_INITIAL_STATE);
