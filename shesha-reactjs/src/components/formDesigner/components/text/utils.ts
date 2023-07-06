@@ -38,10 +38,10 @@ export const getContent = (content: string, { dataType = 'string', dateFormat, n
 };
 
 export const formatDateStringAndPrefix = (content: string, dateFormat: string) => {
-  const regex = /^\s*(\S+)?\s*(\d{4}-\d{2}-\d{2})/;
+  const regex = /^\s*([\S\s]+?)\s+(\d{4}-\d{2}-\d{2})/;
   const match = content.match(regex);
 
-  if (match && match.length > 2) {
+  if (match) {
     const prefix = match[1] || '';
     const dateString = match[2];
 
