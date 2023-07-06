@@ -1,6 +1,6 @@
 import { Checkbox, Divider } from "antd";
 import classNames from "classnames";
-import React, { FC, useEffect, useMemo, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { useMeasure, usePrevious } from "react-use";
 import { FormFullName, IFormDto, IPersistedFormProps, useAppConfigurator, useSheshaApplication } from "../../providers";
 import { useConfigurationItemsLoader } from "../../providers/configurationItemsLoader";
@@ -131,20 +131,24 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     };
 
     const [ref, measured] = useMeasure();
-    
-    const itemWidth = useMemo(() => {
-        if (!measured) return 0;
-        //ensures that vertical landscape is always 100% of measured width
-        if (!listItemWidth || orientation === 'vertical') {
-          return measured?.width;
+    const [itemWidthCalc, setItemWidth] = useState({});
+
+    // ToDo: Horisontal orientation works incorrect under Container with Display = `grid`
+
+    useEffect(() => {
+        if (measured?.width === 0) return;
+        let res = null;
+        if (orientation === 'vertical' || !listItemWidth ||  listItemWidth === 'custom' && !customListItemWidth) {
+            res = selectionMode === 'none'
+                ? { width: '100%' } as React.CSSProperties
+                : { width: 'calc(100% - 0px)' } as React.CSSProperties;
+        } else {
+            res = listItemWidth === 'custom'
+                ? { width: `${customListItemWidth}px` } as React.CSSProperties
+                : { width: `${(measured?.width - 40) * listItemWidth - (selectionMode === 'none' ? 0 : 28)}px`};
         }
-    
-        if (listItemWidth === 'custom') {
-          if (!customListItemWidth) return measured?.width;
-          else return customListItemWidth;
-        }
-    
-        return measured?.width * listItemWidth;
+
+        setItemWidth(res);
     }, [measured?.width, listItemWidth, customListItemWidth, orientation]);
 
     const getFormConfig = (entityForm: EntityForm) => {
@@ -416,7 +420,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
                                             onClick={() => { 
                                                 onSelectRowLocal(index, item); 
                                             }}
-                                            style={{ width: selectionMode === 'none' ? itemWidth : !isNaN(itemWidth) ? itemWidth - 28 : itemWidth }}
+                                            style={itemWidthCalc}
                                         >
                                             {renderSubForm(item)}
                                         </div>
