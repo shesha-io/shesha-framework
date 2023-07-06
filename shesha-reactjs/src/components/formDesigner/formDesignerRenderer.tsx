@@ -6,7 +6,7 @@ import FormDesignerToolbar from './formDesignerToolbar';
 import ComponentPropertiesPanel from './componentPropertiesPanel';
 import ComponentPropertiesTitle from './componentPropertiesTitle';
 import { useForm } from '../../providers/form';
-import { MetadataProvider } from '../../providers';
+import { MetadataProvider, useSidebarMenu } from '../../providers';
 import ConditionalWrap from '../conditionalWrapper';
 import { useFormPersister } from '../../providers/formPersisterProvider';
 import { useFormDesigner } from '../../providers/formDesigner';
@@ -14,6 +14,7 @@ import StatusTag from '../statusTag';
 import { FORM_STATUS_MAPPING } from '../../utils/configurationFramework/models';
 import { getFormFullName } from '../../utils/form';
 import HelpTextPopover from '../helpTextPopover';
+import classNames from 'classnames';
 
 const { Title } = Typography;
 
@@ -21,6 +22,7 @@ export const FormDesignerRenderer: FC = ({}) => {
   const [widgetsOpen, setWidgetOpen] = useState(true);
   const [fieldPropertiesOpen, setFieldPropertiesOpen] = useState(true);
   const { formProps } = useFormPersister();
+  const { isExpanded } = useSidebarMenu(true);
 
   const toggleWidgetSidebar = () => setWidgetOpen((widget) => !widget);
 
@@ -56,7 +58,9 @@ export const FormDesignerRenderer: FC = ({}) => {
             </MetadataProvider>
           )}
         >
-          <FormDesignerToolbar className="sha-toolbar-fixed" />
+          <FormDesignerToolbar
+            className={classNames('sha-toolbar-fixed', { 'opened-sidebar': isExpanded, 'closed-sidebar': !isExpanded })}
+          />
           <SidebarContainer
             leftSidebarProps={
               readOnly

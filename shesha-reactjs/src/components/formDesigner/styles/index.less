@@ -47,9 +47,15 @@
     &.sha-toolbar-fixed {
       position: fixed;
       z-index: 1;
-      width: 100%;
       top: 100px;
-      width: calc(100% - 58px);
+
+      &.opened-sidebar {
+        width: calc(100% - 248px);
+      }
+
+      &.closed-sidebar {
+        width: calc(100% - 58px);
+      }
     }
 
     .sha-designer-toolbar-left {
