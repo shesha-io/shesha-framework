@@ -6,7 +6,7 @@ import FormDesignerToolbar from './formDesignerToolbar';
 import ComponentPropertiesPanel from './componentPropertiesPanel';
 import ComponentPropertiesTitle from './componentPropertiesTitle';
 import { useForm } from '../../providers/form';
-import { MetadataProvider, useSidebarMenu } from '../../providers';
+import { MetadataProvider, useSheshaApplication } from '../../providers';
 import ConditionalWrap from '../conditionalWrapper';
 import { useFormPersister } from '../../providers/formPersisterProvider';
 import { useFormDesigner } from '../../providers/formDesigner';
@@ -15,6 +15,7 @@ import { FORM_STATUS_MAPPING } from '../../utils/configurationFramework/models';
 import { getFormFullName } from '../../utils/form';
 import HelpTextPopover from '../helpTextPopover';
 import classNames from 'classnames';
+import { getInitIsExpanded } from './util';
 
 const { Title } = Typography;
 
@@ -22,7 +23,10 @@ export const FormDesignerRenderer: FC = ({}) => {
   const [widgetsOpen, setWidgetOpen] = useState(true);
   const [fieldPropertiesOpen, setFieldPropertiesOpen] = useState(true);
   const { formProps } = useFormPersister();
-  const { isExpanded } = useSidebarMenu(true);
+
+  const { globalVariables: { isSideBarExpanded } = {} } = useSheshaApplication();
+
+  const isExpanded = typeof isSideBarExpanded == 'boolean' ? isSideBarExpanded : getInitIsExpanded();
 
   const toggleWidgetSidebar = () => setWidgetOpen((widget) => !widget);
 

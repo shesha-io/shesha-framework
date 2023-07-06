@@ -8,9 +8,9 @@ import NodeOrFuncRenderer, { ReactNodeOrFunc } from '../nodeOrFuncRenderer';
 import { IHtmlHeadProps } from '../htmlHead';
 import LayoutHeading from '../layoutHeading';
 import { withAuth } from '../../hocs';
-import { useSidebarMenuDefaults, useSidebarMenu } from '../../providers/sidebarMenu';
+import { useSidebarMenuDefaults } from '../../providers/sidebarMenu';
 import ConfigurableSidebarMenu from '../configurableSidebarMenu';
-import { useLocalStorage, useTheme } from '../..';
+import { useLocalStorage, useSheshaApplication, useTheme } from '../..';
 import { SIDEBAR_MENU_NAME } from '../../shesha-constants';
 import { SIDEBAR_COLLAPSE } from './constant';
 import './styles/styles.less';
@@ -81,7 +81,8 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
   } = props;
   const { theme: themeFromStorage } = useTheme();
   const sidebarDefaults = useSidebarMenuDefaults();
-  const { collapse, expand } = useSidebarMenu(true);
+
+  const { setGlobalVariables } = useSheshaApplication();
 
   const sideMenuTheme = themeFromStorage?.sidebar;
 
@@ -100,10 +101,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
   }, [heading, title, heading, showHeading]);
 
   const onCollapse = (value: boolean) => {
-    const execute = value ? collapse : expand;
-
-    execute();
-
+    setGlobalVariables({ isSideBarExpanded: !value });
     setCollapsed(value);
   };
 
