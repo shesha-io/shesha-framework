@@ -8,11 +8,11 @@ import { MainLayout } from '../..';
 export default {
   title: 'Pages/Designer',
   component: DesignerPage,
-  argTypes: {}
+  argTypes: {},
 } as Meta;
 
 // Create a master template for mapping args to render the Button component
-const Template: Story<IDesignerPageProps> = args => (
+const Template: Story<IDesignerPageProps> = (args) => (
   <StoryApp>
     <MainLayout>
       <DesignerPage {...args} />
@@ -23,7 +23,22 @@ const Template: Story<IDesignerPageProps> = args => (
 // Reuse that template for creating different stories
 export const Basic = Template.bind({});
 
-export const Test = addStory(Template, {
-  formId: 'b9b13fd7-21cf-4e65-9422-fb471c3ea216',
+export const EpmDesignerUserManagement = addStory(Template, {
+  formId: 'd1d69771-07ec-46e0-9710-0c840295ecd2',
 });
 
+export const FncDesignerTSchoolDetails = addStory(Template, {
+  formId: '9da17eae-3099-4835-b196-200bfb955ae7',
+});
+
+export const FncDesignerTestDetails = addStory(Template, {
+  formId: 'e41926d1-0fe1-476d-804a-0b692cb8153d',
+});
+
+export const FncDesignerTextComponentDetails = addStory(Template, {
+  formId: 'd5e910a8-3f5b-4a96-9e7d-5142e14965f1',
+});
+
+export const DepDesignerCaseDetails = addStory(Template, {
+  formId: 'c6eb30fa-030e-4504-8247-64255377176b',
+});
