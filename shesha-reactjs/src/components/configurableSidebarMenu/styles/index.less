@@ -1,9 +1,11 @@
 .sha-sidebar-configurator {
+
   .sha-action-buttons {
     .ant-btn {
       margin-right: 8px;
     }
   }
+
   .sidebar-container-main-area {
     background-color: white !important;
 
@@ -21,7 +23,7 @@
         margin-left: 10px;
         margin-right: 10px;
       }
-      
+
       .sha-help-icon {
         cursor: help;
         font-size: 14px;
@@ -53,6 +55,7 @@
         min-height: 20px;
         z-index: 1000;
       }
+
       &:not(:hover) {
         .sha-sidebar-item-controls {
           display: none;
@@ -80,4 +83,18 @@
       opacity: 0.7;
     }
   }
+}
+
+.ant-layout-sider {
+  overflow-x: hidden
+}
+
+.ant-layout-sider::-webkit-scrollbar {
+  width: 9px;
+  background-color: black;
+  color: black;
+}
+
+.ant-layout-sider::-webkit-scrollbar-track {
+  background-color: gray;
 }
