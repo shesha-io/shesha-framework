@@ -8,10 +8,11 @@ import NodeOrFuncRenderer, { ReactNodeOrFunc } from '../nodeOrFuncRenderer';
 import { IHtmlHeadProps } from '../htmlHead';
 import LayoutHeading from '../layoutHeading';
 import { withAuth } from '../../hocs';
-import { useSidebarMenuDefaults } from '../../providers/sidebarMenu';
+import { useSidebarMenuDefaults, useSidebarMenu } from '../../providers/sidebarMenu';
 import ConfigurableSidebarMenu from '../configurableSidebarMenu';
 import { useLocalStorage, useTheme } from '../..';
 import { SIDEBAR_MENU_NAME } from '../../shesha-constants';
+import { SIDEBAR_COLLAPSE } from './constant';
 import './styles/styles.less';
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -80,10 +81,11 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
   } = props;
   const { theme: themeFromStorage } = useTheme();
   const sidebarDefaults = useSidebarMenuDefaults();
+  const { collapse, expand } = useSidebarMenu(true);
 
   const sideMenuTheme = themeFromStorage?.sidebar;
 
-  const [collapsed, setCollapsed] = useLocalStorage('SIDEBAR_COLLAPSE', true);
+  const [collapsed, setCollapsed] = useLocalStorage(SIDEBAR_COLLAPSE, true);
 
   useEffect(() => {
     document.title = title || '';
@@ -96,6 +98,14 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
   const isFixedHeading = useMemo(() => {
     return fixHeading && ((Boolean(title) && showHeading) || Boolean(heading));
   }, [heading, title, heading, showHeading]);
+
+  const onCollapse = (value: boolean) => {
+    const execute = value ? collapse : expand;
+
+    execute();
+
+    setCollapsed(value);
+  };
 
   const renderPageControls = () => {
     if (!headerControls && !reference) return null;
@@ -131,7 +141,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
         className="sha-main-sider"
         collapsible
         collapsed={collapsed}
-        onCollapse={setCollapsed}
+        onCollapse={onCollapse}
         trigger={<MenuTrigger collapsed={collapsed} />}
         theme={sideMenuTheme}
       >
