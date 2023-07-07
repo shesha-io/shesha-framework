@@ -164,3 +164,4 @@ export { default as SettingsEditor, type ISettingsEditorProps } from './settings
 export { FormComponentSelector, type IFormComponentSelectorProps } from './formComponentSelector';
 export { default as PropertyAutocomplete } from '../../src/components/propertyAutocomplete/propertyAutocomplete';
 export { default as ColorPicker } from '../../src/components/colorPicker';
+export { default as ComponentsContainer } from './formDesigner/containers/componentsContainer';
