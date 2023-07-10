@@ -25,7 +25,9 @@ import { ISwitchComponentProps } from 'components/formDesigner/components/switch
 import { IAlertComponentProps } from 'components/formDesigner/components/alert/interfaces';
 import { IReferenceListAutocompleteProps } from 'components/formDesigner/components/referenceListAutocomplete';
 
-interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'type'> {}
+interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'type'> {
+  jsSetting?: boolean;  
+}
 
 type DropdownType = ToolbarSettingsProp & Omit<IDropdownComponentProps, 'type'>;
 
@@ -197,7 +199,7 @@ export class DesignerToolbarSettings<T> {
   private addProperty(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp), type: string) {
     const obj = typeof props !== 'function' ? props : props(this.data);
 
-    this.form.push({ ...obj, type, version: 'latest' });
+    this.form.push({ ...obj, type: obj.jsSetting ? `setting.${type}`: type, version: 'latest' });
 
     return this;
   }

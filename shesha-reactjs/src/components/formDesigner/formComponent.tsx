@@ -1,4 +1,4 @@
-import { useGlobalState } from 'providers';
+import { IPropertySetting, useGlobalState } from 'providers';
 import React, { FC, MutableRefObject } from 'react';
 import { useForm } from '../../providers/form';
 
@@ -17,12 +17,16 @@ const FormComponent: FC<IFormComponentProps> = ({ id, componentRef }) => {
 
   const getActualModel = (model) => {
     const m = {...model};
-    for (var prop in m) {
-      if (prop.endsWith('_setting') && m[prop]?.mode === 'code' && Boolean(m[prop]?.code)) {
-        const val = new Function('value, data, globalState, formMode', m[prop]?.code)
-          (formData?.[model.name], formData, globalState, formMode);
+    const settings = m.settings;
 
-        const propNames = prop.replace('_setting', '').split('.');
+    for (var prop in settings) {
+      if (!Object.prototype.hasOwnProperty.call(settings, prop)) continue;
+      const setting = settings[prop] as IPropertySetting;
+      if (setting?.mode === 'code' && Boolean(setting?.code)) {
+        const val = new Function('value, data, staticSetting, globalState, formMode', setting?.code)
+          (formData?.[model.name], formData, setting?.value, globalState, formMode);
+
+        const propNames = prop.split('.');
         let obj = m;
         let i = 1;
         while(i < propNames.length) {
@@ -35,7 +39,7 @@ const FormComponent: FC<IFormComponentProps> = ({ id, componentRef }) => {
       }
     }
     return m;
-  }
+  };
 
   const actualModel = getActualModel(model);
 

@@ -1,47 +1,28 @@
 import React, { createContext, FC, useContext, useState } from 'react';
 import { CollapsiblePanel, ICollapsiblePanelProps } from 'components';
+import { useSettingsForm } from './settingsForm';
 
-interface ISettingsCollapsiblePanelProps extends ICollapsiblePanelProps {
-    propertyFilter: (name: string) => boolean;
-}
-
-/*export interface IRegisterFieldPayload {
-
-}*/
+interface ISettingsCollapsiblePanelProps extends ICollapsiblePanelProps { }
 
 export interface ISettingsCollapsiblePanelActionsContext {
     registerField: (name: string) => void;
-    getPropertyFilter: () => (name: string) => boolean;
 }
   
 export const SettingsCollapsiblePanelActionsContext = createContext<ISettingsCollapsiblePanelActionsContext>(undefined);
 
 const SettingsCollapsiblePanel: FC<ISettingsCollapsiblePanelProps> = (props) => {
     const [fields, setFields] = useState([]);
+    const { propertyFilter } = useSettingsForm<any>();
 
     const registerField = (name: string) => {
-        if (!Boolean(fields.find(x => {
-            return x === name;
-        })))
-            setFields(prev => {
-                return [...prev, name];
-            });
+        if (!Boolean(fields.find(x => (x === name))))
+            setFields(prev => ([...prev, name]));
     };
 
-    const getPropertyFilter = () => {
-        return props.propertyFilter;
-    };
+    const settingsCollapsiblePanelActions: ISettingsCollapsiblePanelActionsContext = { registerField };
 
-    const settingsCollapsiblePanelActions: ISettingsCollapsiblePanelActionsContext =
-    {
-        registerField,
-        getPropertyFilter
-    };
-
-    const show = !fields || fields.length === 0  || typeof props.propertyFilter !== 'function'
-        || Boolean(fields.find(x => {
-                return props.propertyFilter(x);
-            }));
+    const show = !fields || fields.length === 0  || typeof propertyFilter !== 'function'
+        || Boolean(fields.find(x => (propertyFilter(x))));
 
     return (
         <SettingsCollapsiblePanelActionsContext.Provider value={settingsCollapsiblePanelActions}>
@@ -54,9 +35,10 @@ const SettingsCollapsiblePanel: FC<ISettingsCollapsiblePanelProps> = (props) => 
 
 export function useSettingsPanel() {
     const actionsContext = useContext(SettingsCollapsiblePanelActionsContext);
-    return actionsContext !== undefined
-        ? actionsContext
-        : undefined;
+    if (actionsContext === undefined)
+        throw new Error('useSettingsPanel must be used within a SettingsCollapsiblePanel');
+  
+    return actionsContext;
 }
 
 export default SettingsCollapsiblePanel;

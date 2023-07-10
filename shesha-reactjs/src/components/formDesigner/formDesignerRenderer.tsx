@@ -14,8 +14,46 @@ import StatusTag from '../statusTag';
 import { FORM_STATUS_MAPPING } from '../../utils/configurationFramework/models';
 import { getFormFullName } from '../../utils/form';
 import HelpTextPopover from '../helpTextPopover';
+import { useDataContextManager } from 'providers/dataContextManager';
+import { IDataContextDescriptor } from 'providers/dataContextManager/models';
 
 const { Title } = Typography;
+
+interface DebugContentProps {
+  formValues: any;
+}
+
+const DebugContent: FC<DebugContentProps> = ({formValues}) => {
+  const { getDataContexts } = useDataContextManager();
+  const contextDict = getDataContexts('all');
+  const dataContexts: IDataContextDescriptor[] = [];
+  for (let key in contextDict) 
+  if (Object.hasOwn(contextDict, key)) 
+      dataContexts.push(contextDict[key] as IDataContextDescriptor);
+
+  return (
+    <>
+      <Divider />
+      <h2>Form data</h2>
+      <Row>
+        <Col span={24}>
+          <pre>{JSON.stringify(formValues, null, 2)}</pre>
+        </Col>
+      </Row>
+      <h2>Contexts</h2>
+      {dataContexts.map((item) => {
+        return (
+          <Row>
+            <h3>{item.name}:</h3>
+            <Col span={24}>
+              <pre>{JSON.stringify(item.data, null, 2)}</pre>
+            </Col>
+          </Row>
+        );
+      })}
+    </>
+  );
+};
 
 export const FormDesignerRenderer: FC = ({}) => {
   const [widgetsOpen, setWidgetOpen] = useState(true);
@@ -88,14 +126,7 @@ export const FormDesignerRenderer: FC = ({}) => {
               form={form}
             >
               {isDebug && (
-                <>
-                  <Row>
-                    <Divider />
-                    <Col span={24}>
-                      <pre>{JSON.stringify(formValues, null, 2)}</pre>
-                    </Col>
-                  </Row>
-                </>
+                <DebugContent formValues={formValues}/>
               )}
             </ConfigurableFormRenderer>
           </SidebarContainer>

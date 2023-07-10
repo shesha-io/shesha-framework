@@ -86,6 +86,9 @@ import TimelineComponent from 'components/formDesigner/components/timeline/timel
 import DataSource from 'components/formDesigner/components/dataSource/dataSourceComponent';
 import { ComponentSelectorComponent } from 'designer-components';
 import SettingsComponent from 'designer-components/_settings/settingsComponent';
+import TestComponent from 'designer-components/_test';
+import DataContextSelector from 'designer-components/dataContextSelector';
+import DataContextComponent from 'designer-components/dataContextComponent';
 
 export const ToolboxComponents: IToolboxComponentGroup[] = [
   {
@@ -195,9 +198,9 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
     components: [Paragraph, Title],
   },
   {
-    visible: false,
+    visible: true,
     name: 'Settings',
-    components: [SettingsComponent]
+    components: [SettingsComponent, TestComponent, DataContextSelector, DataContextComponent]
   }
 ];
 

@@ -26,10 +26,9 @@ const DataSourcesProvider: FC<PropsWithChildren<IDataSourcesProviderProps>> = ({
     };
 
     const getDataSource = (payload: IGetDataSourcePayload | string) => {
-        if (typeof(payload) === 'string') 
-            return dataSources.current[payload];
-        else
-            return dataSources.current[`${payload.id}_${payload.name}`];
+        return (typeof(payload) === 'string') 
+            ? dataSources.current[payload]
+            : dataSources.current[`${payload.id}_${payload.name}`];
     };
 
     const dataSourcesProviderActions: IDataSourcesProviderActionsContext = {
@@ -37,13 +36,6 @@ const DataSourcesProvider: FC<PropsWithChildren<IDataSourcesProviderProps>> = ({
         unregisterDataSource,
         getDataSources,
         getDataSource
-        /*registerAction,
-        unregisterAction,
-        getConfigurableAction,
-        getConfigurableActionOrNull,
-        getActions,
-        prepareArguments,
-        executeAction,*/
     };
 
     return (
@@ -77,9 +69,6 @@ function useDataSource(
     const { registerDataSource, unregisterDataSource } = useDataSources();
   
     useEffect(() => {
-        //if (!payload.owner || !payload.ownerUid)
-            //return null;
-        
         registerDataSource(payload);
         return () => {
             unregisterDataSource(payload);
@@ -87,8 +76,4 @@ function useDataSource(
     }, deps);
 }
   
-export {
-    DataSourcesProvider,
-    useDataSources,
-    useDataSource,
-};
+export { DataSourcesProvider, useDataSources, useDataSource };

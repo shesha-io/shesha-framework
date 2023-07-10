@@ -6,7 +6,6 @@ import { Checkbox } from 'antd';
 import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
 import { getStyle, validateConfigurableComponentSettings } from '../../providers/form/utils';
-
 import { DataTypes } from '../../interfaces/dataTypes';
 import { useForm, useFormData } from '../../providers';
 import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
@@ -30,10 +29,17 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps> = {
 
     return (
       <ConfigurableFormItem model={model} valuePropName="checked" initialValue={model?.defaultValue}>
-        {isReadOnly ? (
-          <ReadOnlyDisplayFormItem type="checkbox" disabled={disabled} />
-        ) : (
-          <Checkbox className="sha-checkbox" disabled={disabled} style={getStyle(model?.style, data)} />
+        {(value, onChange) => (
+          isReadOnly ? (
+            <ReadOnlyDisplayFormItem type="checkbox" disabled={disabled} />
+          ) : (
+            <Checkbox className="sha-checkbox" disabled={disabled} style={getStyle(model?.style, data)} 
+              checked={value} 
+              onChange={(e) => {
+                onChange({ target: e.target });
+              }}
+            />
+          )
         )}
       </ConfigurableFormItem>
     );

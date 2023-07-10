@@ -76,7 +76,7 @@
     },
     {
       "id": "0225b82d-19aa-47c7-b665-90508111bd23",
-      "type": "checkbox",
+      "type": "setting.checkbox",
       "name": "autoSize",
       "parentId": "root",
       "label": "Auto size"

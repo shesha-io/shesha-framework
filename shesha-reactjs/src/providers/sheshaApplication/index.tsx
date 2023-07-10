@@ -34,6 +34,8 @@ import { FRONT_END_APP_HEADER_NAME } from './models';
 import { SettingsProvider } from '../settings';
 import { DataSourcesProvider } from '../dataSourcesProvider';
 import { useDeepCompareEffect } from 'react-use';
+import { DataContextManager } from 'providers/dataContextManager';
+import { DataContextProvider } from 'providers/dataContextProvider';
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;
@@ -134,23 +136,29 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                     </AuthProvider>
                   )}
                 >
-                  <ConfigurationItemsLoaderProvider>
-                    <ThemeProvider {...(themeProps || {})}>
-                      <AppConfiguratorProvider>
-                        <ReferenceListDispatcherProvider>
-                          <MetadataDispatcherProvider>
-                            <StackedNavigationProvider>
-                              <DataSourcesProvider>
-                                <DynamicModalProvider>
-                                  <ApplicationActionsProcessor>{children}</ApplicationActionsProcessor>
-                                </DynamicModalProvider>
-                              </DataSourcesProvider>
-                            </StackedNavigationProvider>
-                          </MetadataDispatcherProvider>
-                        </ReferenceListDispatcherProvider>
-                      </AppConfiguratorProvider>
-                    </ThemeProvider>
-                  </ConfigurationItemsLoaderProvider>
+                  <DataContextManager>
+                    <DataContextProvider id={'1'} name={'root context'} type={'root'}>
+                      <DataContextProvider id={'2'} name={'child context'} type={'root'}>
+                        <ConfigurationItemsLoaderProvider>
+                          <ThemeProvider {...(themeProps || {})}>
+                            <AppConfiguratorProvider>
+                              <ReferenceListDispatcherProvider>
+                                <MetadataDispatcherProvider>
+                                  <StackedNavigationProvider>
+                                    <DataSourcesProvider>
+                                      <DynamicModalProvider>
+                                        <ApplicationActionsProcessor>{children}</ApplicationActionsProcessor>
+                                      </DynamicModalProvider>
+                                    </DataSourcesProvider>
+                                  </StackedNavigationProvider>
+                                </MetadataDispatcherProvider>
+                              </ReferenceListDispatcherProvider>
+                            </AppConfiguratorProvider>
+                          </ThemeProvider>
+                        </ConfigurationItemsLoaderProvider>
+                      </DataContextProvider>
+                    </DataContextProvider>
+                  </DataContextManager>
                 </ConditionalWrap>
               </ShaRoutingProvider>
             </UiProvider>

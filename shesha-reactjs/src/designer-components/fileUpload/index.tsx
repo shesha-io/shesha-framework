@@ -12,6 +12,7 @@ import {
 } from '../../providers/form/utils';
 import React from 'react';
 import { getSettings } from './settings';
+import { migrateDisabled, migrateHidden } from 'designer-components/_settings/utils';
 
 export interface IFileUploadProps extends IConfigurableFormComponent, IFormItem {
   ownerId: string;
@@ -66,25 +67,31 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
       </ConfigurableFormItem>
     );
   },
-  migrator: (m) =>
-    m
-      .add<IFileUploadProps>(0, (prev) => {
-        return {
-          ...prev,
-          allowReplace: true,
-          allowDelete: true,
-          allowUpload: true,
-          ownerId: '',
-          ownerType: '',
-          propertyName: '',
-        };
-      })
-      .add<IFileUploadProps>(1, (prev, context) => {
-        return {
-          ...prev,
-          useSync: !Boolean(context.formSettings?.modelType),
-        };
-      }),
+  migrator: (m) => m
+    .add<IFileUploadProps>(0, (prev) => {
+      return {
+        ...prev,
+        allowReplace: true,
+        allowDelete: true,
+        allowUpload: true,
+        ownerId: '',
+        ownerType: '',
+        propertyName: '',
+      };
+    })
+    .add<IFileUploadProps>(1, (prev, context) => {
+      return {
+        ...prev,
+        useSync: !Boolean(context.formSettings?.modelType),
+      };
+    })
+    .add<IFileUploadProps>(2, (prev) => {
+      const newModel = {...prev};
+      migrateHidden(newModel);
+      migrateDisabled(newModel);
+      return newModel;
+    })
+  ,
   settingsFormMarkup: getSettings(),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
 };

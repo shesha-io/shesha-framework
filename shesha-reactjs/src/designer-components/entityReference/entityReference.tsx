@@ -5,7 +5,7 @@ import ConfigurableFormItem from 'components/formDesigner/components/formItem';
 import { useForm } from '../..';
 import { EntityReference, IEntityReferenceProps } from 'components/entityReference';
 import { LinkExternalOutlined } from 'icons/linkExternalOutlined';
-import { EntityReferenceSettings } from './settings';
+import { EntityReferenceSettingsForm } from './settings';
 
 export type IActionParameters = [{ key: string; value: string }];
 
@@ -37,7 +37,7 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
     );
   },
   settingsFormFactory: (props) => {
-    return <EntityReferenceSettings {...props}/>;
+    return <EntityReferenceSettingsForm {...props}/>;
   },
   migrator: m => m.add<IEntityReferenceControlProps>(0, prev => {
     return {

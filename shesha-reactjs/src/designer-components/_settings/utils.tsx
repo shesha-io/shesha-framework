@@ -4,6 +4,7 @@ import { nanoid } from "nanoid";
 
 /**
  * Update structure of components to use with Setting component
+ * 
  * @param toolboxComponents List of Toolbox components
  * @param components Components structure
  * @returns Updated components structure
@@ -20,7 +21,7 @@ export const updateSettingsComponents = (
             // If should be wrapped as Setting
             newComponent.type = 'setting';
             newComponent.id = nanoid();
-            newComponent.label = newComponent.label + ' setting';
+            newComponent.label = newComponent.label;
         
             // Add source component as a child of Setting component
             if (Array.isArray(component['components']) && component['components'].length > 0) {
@@ -57,16 +58,16 @@ export const updateSettingsComponents = (
             if (Array.isArray(component['components']) && component['components'].length > 0)
                 newComponent['components'] = component['components'].map(c => {
                     return processComponent(c);
-                })
+                });
 
             return newComponent;
         }
-    }
+    };
   
     return components.map(c => {
         return processComponent(c);
     });
-}
+};
   
 export const migrateHidden = (model: IConfigurableFormComponent) => {
     if (Boolean(model.customVisibility) && !Boolean(model.hidden_setting?.code)) {
@@ -86,7 +87,7 @@ return !(() => {
         model.customVisibility = undefined;
     }
     return model;
-}
+};
 
 export const migrateDisabled = (model: IConfigurableFormComponent) => {
     if (Boolean(model.customEnabled) && !Boolean(model.disabled_setting?.code)) {
@@ -106,8 +107,8 @@ return !(() => {
         model.customEnabled = undefined;
     }
     return model;
-}
+};
 
 export const getPropertySetting = (model: any, propertyName: string): IPropertySetting => {
     return model?.[propertyName + '_setting'];
-}
+};

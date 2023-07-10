@@ -113,6 +113,7 @@ export interface ISetSelectedComponentPayload {
 export interface IFormDesignerActionsContext
   extends IFlagsSetters<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
   getChildComponents: (id: string) => IConfigurableFormComponent[];
+  getParentComponent: (componentId: string, type: string) => IConfigurableFormComponent;
   deleteComponent: (payload: IComponentDeletePayload) => void;
   duplicateComponent: (payload: IComponentDuplicatePayload) => void;
   updateComponent: (payload: IComponentUpdatePayload) => void;

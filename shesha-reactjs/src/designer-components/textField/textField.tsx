@@ -49,6 +49,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
 
     const readOnly = model?.readOnly || (formMode === 'readonly' && model.textType !== 'password');
 
+    const InputComponentType = renderInput(model.textType);
+
     const inputProps: InputProps = {
       className: 'sha-input',
       placeholder: model.placeholder,
@@ -61,8 +63,6 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       readOnly,
       style: getStyle(model?.style, formData),
     };
-
-    const InputComponentType = renderInput(model.textType);
 
     const eventProps = {
       model,
@@ -85,11 +85,15 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
           evaluateString(model?.initialValue, { formData, formMode, globalState })
         }
       >
-        {readOnly ? (
-          <ReadOnlyDisplayFormItem disabled={disabled} />
-        ) : (
-          <InputComponentType {...inputProps} disabled={disabled} {...customEventHandler(eventProps)} />
-        )}
+          {(value, onChange) => 
+            readOnly 
+              ? <ReadOnlyDisplayFormItem disabled={disabled} />
+              : <InputComponentType value={value} {...inputProps} disabled={disabled} {...customEventHandler(eventProps)} 
+                onChange={(e) => {
+                  onChange(e);
+                }} 
+              />
+          }
       </ConfigurableFormItem>
     );
   },

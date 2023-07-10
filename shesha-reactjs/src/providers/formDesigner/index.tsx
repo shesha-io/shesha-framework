@@ -178,6 +178,19 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
     return components;
   };
 
+  const getParentComponent = (componentId: string, type: string) => {
+    let component = statePresent.allComponents[componentId];
+    
+    while (!!component) {
+      component = statePresent.allComponents[component.parentId];
+      if (component?.type === type)
+        return component;
+    }
+
+    return null;
+  };
+
+
   const setFlatComponents = (flatComponents: IFlatComponentsStructure) => {
     dispatch((dispatchThunk, _getState) => {
       dispatchThunk(setFlatComponentsAction(flatComponents));
@@ -276,6 +289,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
     setActiveDataSource,
     getActiveDataSource,
     setReadOnly,
+    getParentComponent
     /* NEW_ACTION_GOES_HERE */
   };
 

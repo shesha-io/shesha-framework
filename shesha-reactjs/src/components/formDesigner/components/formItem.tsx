@@ -1,15 +1,18 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC, ReactNode, useMemo } from 'react';
 import { IConfigurableFormComponent } from '../../../providers/form/models';
-import { ColProps, Form } from 'antd';
+import { ColProps, Form, FormItemProps } from 'antd';
 import { useForm } from '../../../providers/form';
 import { getFieldNameFromExpression, getValidationRules } from '../../../providers/form/utils';
 import classNames from 'classnames';
 import './styles.less';
 import { useFormItem } from '../../../providers';
+//import { BindingProvider } from 'providers/bindingProvider';
+import { useDataContextManager } from 'providers/dataContextManager';
+import { DataBinderEx } from 'hocs/dataBinderEx';
 
 export interface IConfigurableFormItemProps {
   model: IConfigurableFormComponent;
-  readonly children?: React.ReactNode;
+  readonly children?: ReactNode | ((value: any, onChange:  (...args: any[]) => void) => ReactNode);
   className?: string;
   valuePropName?: string;
   initialValue?: any;
@@ -57,27 +60,62 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
   }, [model.name, namePrefix]);
 
   const { hideLabel } = model;
-  
-  return (
-    <Form.Item
-      className={classNames(className, { 'form-item-hidden': hideLabel })}
-      name={propNameMemo}
-      // name={getFieldNameFromExpression(model.name)}
-      label={hideLabel ? null : model.label}
-      labelAlign={model.labelAlign}
-      hidden={isHidden}
-      valuePropName={valuePropName}
-      initialValue={initialValue}
-      tooltip={model.description}
-      rules={isHidden ? [] : getValidationRules(model, { formData })}
-      labelCol={layout?.labelCol}
-      wrapperCol={hideLabel ? { span: 24 } : layout?.wrapperCol}
 
-      //help={''}
-      //hasFeedback
-    >
-      {children}
-    </Form.Item>
+  const formItemProps: FormItemProps = {
+    className: classNames(className, { 'form-item-hidden': hideLabel }),
+    label: hideLabel ? null : model.label,
+    labelAlign: model.labelAlign,
+    hidden: isHidden,
+    valuePropName: valuePropName,
+    initialValue: initialValue,
+    tooltip: model.description,
+    rules: isHidden ? [] : getValidationRules(model, { formData }),
+    labelCol: layout?.labelCol,
+    wrapperCol: hideLabel ? { span: 24 } : layout?.wrapperCol
+  };
+
+  const { getDataContext, onChange } = useDataContextManager();
+  const context =  getDataContext(model.context);
+  const { data } = context ?? {};
+
+  const reactChildren = children as ReactNode;
+  const funcChildren = children as (value: any, onChange:  (...args: any[]) => void) => ReactNode;
+
+  // binding to context data for upgraded components 
+  if (!!model.context && model.context !== 'formData' ) {
+    return (
+      <Form.Item {...formItemProps}>
+        <DataBinderEx 
+          onChange={(val) => {
+            if (!!onChange)
+              onChange(model.context, propNameMemo, val.target[!!valuePropName ? valuePropName : 'value']);
+          }}
+          value={!!data ? data[propNameMemo?.toString()] : undefined}
+        >
+          {funcChildren}
+        </DataBinderEx>
+      </Form.Item>
+    );
+  }
+
+  formItemProps.name = propNameMemo;
+  // name={getFieldNameFromExpression(model.name)}
+  //help={''}
+  //hasFeedback
+
+  // binding to from data for upgraded components 
+  if (model.context === 'formData' && funcChildren) 
+    return (
+      <Form.Item {...formItemProps}>
+        <DataBinderEx valuePropName={valuePropName}>
+          {funcChildren}
+        </DataBinderEx>
+      </Form.Item>
+    );
+
+  // Use standard Form.Item for components without binding support
+  return (
+    <Form.Item {...formItemProps}>{reactChildren}</Form.Item>
   );
 };
 

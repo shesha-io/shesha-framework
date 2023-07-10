@@ -21,6 +21,13 @@
         "id": "s4gmBg31azZC0UjZjpfTm",
         "components": [
           {
+            "id": "12343b1a-04c5-4658-ac0f-cbcbae6b3bd4",
+            "type": "dataContextSelector",
+            "name": "context",
+            "parentId": "s4gmBg31azZC0UjZjpfTm",
+            "label": "Context"
+          },
+          {
             "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
             "type": "propertyAutocomplete",
             "name": "name",

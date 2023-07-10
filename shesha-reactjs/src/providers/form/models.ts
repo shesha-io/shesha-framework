@@ -96,6 +96,9 @@ export interface IComponentRuntimeProps {
 export interface IComponentBindingProps {
   /** component name */
   name: string;
+
+  /** data context ID, empty for from data */
+  context?: string;
 }
 
 export interface IComponentVisibilityProps {

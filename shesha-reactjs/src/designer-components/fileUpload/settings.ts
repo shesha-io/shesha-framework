@@ -23,12 +23,14 @@ export const getSettings = () =>
       name: 'label',
       parentId: 'root',
       label: 'Label',
+      jsSetting: true,
     })
     .addDropdown({
       id: '57a40a33-7e08-4ce4-9f08-a34d24a83338',
       name: 'labelAlign',
       parentId: 'root',
       label: 'Label align',
+      jsSetting: true,
       values: [
         {
           label: 'left',
@@ -48,6 +50,7 @@ export const getSettings = () =>
       name: 'description',
       parentId: 'root',
       label: 'Description',
+      jsSetting: true,
     })
     .addDropdown({
       id: 'df8a8f35-a50b-42f9-9642-73d390ceddbf',
@@ -81,36 +84,22 @@ export const getSettings = () =>
       name: 'hidden',
       parentId: 'root',
       label: 'Hidden',
+      jsSetting: true,
     })
     .addCheckbox({
       id: 'c6885251-96a6-40ce-99b2-4b5209a9e01c',
       name: 'hideLabel',
       parentId: 'root',
       label: 'Hide Label',
+      jsSetting: true,
     })
     .addCheckbox({
       id: '24a8be15-98eb-40f7-99ea-ebb602693e9c',
       name: 'disabled',
       parentId: 'root',
       label: 'Disabled',
+      jsSetting: true,
     })
-    .addCodeEditor({
-      id: '4b5e5951-4998-4635-b1c8-0b6d3940c300',
-      name: 'customEnabled',
-      label: 'Custom Enabled',
-      labelAlign: 'right',
-      parentId: 'root',
-      hidden: false,
-      customEnabled: null,
-      description:
-        'Enter custom enabled code.  You must return true to enable the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
-      validate: {},
-      settingsValidationErrors: [],
-      exposedVariables: [
-        { name: 'value', description: 'Component current value', type: 'string | any' },
-        { name: 'data', description: 'Selected form values', type: 'object' },
-      ],
-    })    
     .addCheckbox({
       id: 'f4193290-3bc7-441a-92be-cfaf25d57c28',
       name: 'allowUpload',
@@ -119,6 +108,7 @@ export const getSettings = () =>
       hidden: false,
       customVisibility: 'return !data.disabled',
       validate: {},
+      jsSetting: true,
     })
     .addCheckbox({
       id: 'b0d75145-3f7c-424d-a1ac-c65990b4f749',
@@ -128,6 +118,7 @@ export const getSettings = () =>
       hidden: false,
       customVisibility: 'return !data.disabled',
       validate: {},
+      jsSetting: true,
     })
     .addCheckbox({
       id: '88697971-8945-420e-959b-46493f9955f9',
@@ -137,6 +128,7 @@ export const getSettings = () =>
       hidden: false,
       customVisibility: 'return !data.disabled',
       validate: {},
+      jsSetting: true,
     })
     .addSectionSeparator({
       id: 'd675bfe4-ee69-431e-931b-b0e0b9ceee6f',
@@ -149,6 +141,7 @@ export const getSettings = () =>
       name: 'validate.required',
       parentId: 'root',
       label: 'Required',
+      jsSetting: true,
     })
     .addSectionSeparator({
       id: '5478b8f9-ec00-4d0a-9d2a-44a630cb2dcb',
@@ -161,18 +154,21 @@ export const getSettings = () =>
       name: 'useSync',
       parentId: 'root',
       label: 'Synchronous upload',
+      jsSetting: true,
     })
     .addTextField({
       id: '417ee22e-a49d-44f2-a1c7-fef32ec87503',
       name: 'ownerId',
       parentId: 'root',
       label: 'Owner Id',
+      jsSetting: true,
     })
     .addTextField({
       id: 'c6ecd70c-7419-4ea7-a715-d42699d26e6e',
       name: 'ownerType',
       parentId: 'root',
       label: 'Owner Type',
+      jsSetting: true,
     })
     .addTextField({
       id: '124a3c72-452b-4fc3-82d8-e006ef541493',
@@ -180,36 +176,13 @@ export const getSettings = () =>
       parentId: 'root',
       label: 'Property Name',
       customVisibility: 'return !data.list',
+      jsSetting: true,
     })
     .addEditableTagGroupProps({
       id: nanoid(),
       name: 'allowedFileTypes',
       label: 'Allowed File Types',
       description: 'File types that can be accepted.',
+      jsSetting: true,
     })
-    .addSectionSeparator({
-      id: 'a59d3daa-e34f-4410-9ae1-fc1669eab5e5',
-      name: 'separatorVisibility',
-      parentId: 'root',
-      label: 'Visibility',
-    })
-    .addCodeEditor({
-      id: 'fb85d916-39f9-4f77-8d87-c1c53558b078',
-
-      name: 'customVisibility',
-      label: 'Custom Visibility',
-      labelAlign: 'right',
-      parentId: 'root',
-      hidden: false,
-      customVisibility: null,
-      description:
-        'Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
-      validate: {},
-      settingsValidationErrors: [],
-      exposedVariables: [
-        { name: 'value', description: 'Component current value', type: 'string | any' },
-        { name: 'data', description: 'Selected form values', type: 'object' },
-      ],
-    })
-
     .toJson();
