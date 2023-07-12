@@ -100,6 +100,7 @@ namespace Shesha.ConfigurationItems
                     await _moduleRepo.InsertAsync(dbModule);
                 }
                 else {
+                    dbModule.Name = codeModule.ModuleInfo.Name; // update name to ensure that the case is correct
                     dbModule.FriendlyName = codeModule.ModuleInfo.FriendlyName;
                     dbModule.Description = codeModule.ModuleInfo.Description;
                     dbModule.Publisher = codeModule.ModuleInfo.Publisher;
