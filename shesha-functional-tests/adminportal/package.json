@@ -1,5 +1,5 @@
 {
-    "name": "shesha-reactjs-starter",
+    "name": "shesha-io@shesha-reactjs",
     "version": "0.0.1",
     "private": false,
     "postinstall": "next",
