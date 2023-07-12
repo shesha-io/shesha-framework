@@ -67,6 +67,8 @@ namespace Shesha.Tests.EntityReferenceTest
                 };
                 await _moduleRepo.InsertAsync(dbModule);
 
+                await _unitOfWorkManager.Current.SaveChangesAsync();
+
                 var dbModules2 = await _moduleRepo.GetAllListAsync();
 
                 await uow.CompleteAsync();
