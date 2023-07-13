@@ -20,6 +20,7 @@ import { IConfigurableColumnsProps } from 'providers/datatableColumnsConfigurato
 import { IMetadataDispatcherActionsContext } from 'providers/metadataDispatcher/contexts';
 import { IEntityEndpointsEvaluator, useModelApiHelper } from 'components/configurableForm/useActionEndpoint';
 import { IUseMutateResponse, useMutate } from 'hooks/useMutate';
+import { getUrlKeyParam } from 'utils';
 
 export interface IWithUrlRepositoryArgs {
   getListUrl: string;
@@ -97,8 +98,9 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
 
   const fetch = (payload: IGetListDataPayload): Promise<ITableDataInternalResponse> => {
     const getDataPayload = convertPayload(payload);
+    const key = getUrlKeyParam(getListUrl);
 
-    const getDataUrl = `${backendUrl}${getListUrl}?${qs.stringify(getDataPayload)}`;
+    const getDataUrl = `${backendUrl}${getListUrl}${key}${qs.stringify(getDataPayload)}`;
 
     return axios({
       url: getDataUrl,

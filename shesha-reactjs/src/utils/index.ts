@@ -204,3 +204,5 @@ export const evaluateDynamicFilters = async (
 
   return convertedFilters;
 };
+
+export const getUrlKeyParam = (url: string = ''): '?' | '&' => (url?.includes('?') ? '&' : '?');
