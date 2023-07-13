@@ -23,11 +23,7 @@ const TimelineComponent: IToolboxComponent<ITimelineProps> = {
     const { formData } = useForm();
     const ownerId = evaluateValue(model.ownerId, { data: formData });
 
-    return (
-      <ConfigurableFormItem model={{ ...model }} valuePropName="checked" initialValue={model?.defaultValue}>
-        <ShaTimeline {...model} ownerId={ownerId} />
-      </ConfigurableFormItem>
-    );
+    return <ShaTimeline {...model} ownerId={ownerId} />;
   },
 
   settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
@@ -41,20 +37,20 @@ const TimelineComponent: IToolboxComponent<ITimelineProps> = {
       />
     );
   },
-  migrator: m =>
-    m.add<ITimelineProps>(0, prev => {
+  migrator: (m) =>
+    m.add<ITimelineProps>(0, (prev) => {
       const result: ITimelineProps = {
         ...prev,
         entityType: prev['entityType'],
       };
       const useExpression = Boolean(result['useExpression']);
       delete result['useExpression'];
-  
-      if (useExpression){
+
+      if (useExpression) {
         const migratedExpression = migrateDynamicExpression(prev['filters'] ?? {});
         result.filters = migratedExpression;
       }
-  
+
       return result;
     }),
 };
