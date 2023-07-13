@@ -1,5 +1,5 @@
 {
-  "name": "@shesha-io/reactjs",
+  "name": "reactjs",
   "version": "4.13.1-canary",
   "description": "The reactjs frontend application and ui for the shesha framework",
   "license": "GPL-3.0",
