@@ -29,11 +29,6 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
     const { globalState } = useGlobalState();
     const { data } = useFormData();
 
-    console.log('LOG:: StatusTagComponent data', data);
-    console.log('LOG:: StatusTagComponent globalState', globalState);
-    console.log('LOG:: StatusTagComponent formMode', formMode);
-    console.log('LOG:: StatusTagComponent model', model);
-
     const getExpressionExecutor = (expression: string) => {
       if (!expression) {
         return null;
