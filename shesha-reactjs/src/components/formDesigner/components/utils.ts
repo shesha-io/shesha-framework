@@ -92,12 +92,12 @@ export const customEventHandler = <T = any>({
     );
 
   return {
-    onBlur: event => onCustomEvent(event, 'onBlurCustom'),
-    onChange: event => onCustomEvent(event, 'onChangeCustom'),
-    onFocus: event => onCustomEvent(event, 'onFocusCustom'),
-    onClick: event => {
+    onBlur: (event) => onCustomEvent(event, 'onBlurCustom'),
+    onChange: (event) => onCustomEvent(event, 'onChangeCustom'),
+    onFocus: (event) => onCustomEvent(event, 'onFocusCustom'),
+    onClick: (event) => {
       event.stopPropagation();
-    }
+    },
   };
 };
 
@@ -121,6 +121,39 @@ export const customDateEventHandler = ({
     return eventFunc(
       formData,
       dateString,
+      form,
+      formMode,
+      globalState,
+      http,
+      message,
+      moment,
+      value,
+      setFormData,
+      setGlobalState
+    );
+  },
+});
+
+export const customTimeEventHandler = ({
+  model,
+  form,
+  formData,
+  formMode,
+  globalState,
+  http,
+  message,
+  moment,
+  setFormData,
+  setGlobalState,
+}: ICustomEventHandler) => ({
+  onChange: (value: any | null, timeString: string | [string, string]) => {
+    const eventFunc = new Function(
+      'data, timeString, form, formMode, globalState, http, message, moment, value, setFormData, setGlobalState',
+      model?.onChangeCustom
+    );
+    return eventFunc(
+      formData,
+      timeString,
       form,
       formMode,
       globalState,
@@ -252,7 +285,7 @@ export const customAddressEventHandler = ({
   };
 
   const onGeocodeChange = (event: IAddressAndCoords) =>
-    onSelect(event).then(payload => onCustomEvent({ ...event, ...(payload || {}) }, 'onSelectCustom'));
+    onSelect(event).then((payload) => onCustomEvent({ ...event, ...(payload || {}) }, 'onSelectCustom'));
 
   return {
     onChange,

@@ -2,17 +2,18 @@ import React, { FC, Fragment } from 'react';
 import { IToolboxComponent } from '../../interfaces';
 import { FormMarkup, IConfigurableFormComponent } from '../../providers/form/models';
 import { ClockCircleOutlined } from '@ant-design/icons';
-import { TimePicker } from 'antd';
+import { TimePicker, message } from 'antd';
 import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
 import moment, { Moment, isMoment } from 'moment';
-
+import { customTimeEventHandler } from '../../components/formDesigner/components/utils';
 import { getStyle, validateConfigurableComponentSettings } from '../../providers/form/utils';
-import { useForm, useFormData } from '../../providers';
+import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../../providers';
 import { HiddenFormItem } from '../../components/hiddenFormItem';
 import { DataTypes } from '../../interfaces/dataTypes';
 import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
 import { getNumericValue } from '../../utils/string';
+import { axiosHttp } from 'utils/fetchers';
 
 type RangeType = 'start' | 'end';
 // tslint:disable-next-line:interface-over-type-literal
@@ -67,11 +68,29 @@ const TimeField: IToolboxComponent<ITimePickerProps> = {
   isOutput: true,
   icon: <ClockCircleOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.time,
-  factory: (model: ITimePickerProps) => {
+  factory: (model: ITimePickerProps, _c, form) => {
+    const { formMode, setFormDataAndInstance } = useForm();
+    const { data: formData } = useFormData();
+    const { globalState, setState: setGlobalState } = useGlobalState();
+    const { backendUrl } = useSheshaApplication();
+
+    const eventProps = {
+      model,
+      form,
+      formData,
+      formMode,
+      globalState,
+      http: axiosHttp(backendUrl),
+      message,
+      moment,
+      setFormData: setFormDataAndInstance,
+      setGlobalState,
+    };
+
     return (
       <Fragment>
         <ConfigurableFormItem model={model}>
-          <TimePickerWrapper {...model} />
+          <TimePickerWrapper {...model} {...customTimeEventHandler(eventProps)} />
         </ConfigurableFormItem>
 
         {model?.range && (
