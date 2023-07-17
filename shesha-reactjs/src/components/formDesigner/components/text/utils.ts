@@ -39,18 +39,18 @@ export const getContent = (content: string, { dataType = 'string', dateFormat, n
 
 export const formatDateStringAndPrefix = (content: string, dateFormat: string) => {
   const regex = /^\s*([\S\s]+?)\s+(\d{4}-\d{2}-\d{2})/;
-  const match = content.match(regex);
+  const match = content?.match(regex);
 
-  if (match) {
+  if (match && match?.length > 2) {
     const prefix = match[1] || '';
-    const dateString = match[2];
+    const dateString = match[2] || '';
 
-    const formatedDate = moment(dateString).isValid()
-      ? moment(dateString).format(dateFormat || 'DD/MM/YYYY HH:mm')
-      : dateString;
-
-    return `${prefix} ${formatedDate}`;
+    return `${prefix} ${formatDate(dateString, dateFormat)}`;
   } else {
-    return content;
+    return formatDate(content, dateFormat);
   }
+};
+
+const formatDate = (dateText: string, dateFormat: string) => {
+  return moment(dateText).isValid() ? moment(dateText).format(dateFormat || 'DD/MM/YYYY HH:mm') : dateText;
 };
