@@ -4,6 +4,7 @@ import { ToolbarItemsGroup } from './toolbarItemsGroup';
 import { useToolbarConfigurator } from '../../../providers/toolbarConfigurator';
 import { IButtonGroup, IToolbarButton, ToolbarItemProps } from '../../../providers/toolbarConfigurator/models';
 import { ReactSortable, ItemInterface } from 'react-sortablejs';
+import { removeEmptyArrayValues as rmvEmpty } from 'utils';
 
 export interface IToolbarItemsContainerProps {
   index?: number[];
@@ -11,7 +12,7 @@ export interface IToolbarItemsContainerProps {
   items: ToolbarItemProps[];
 }
 
-export const ToolbarItemsContainer: FC<IToolbarItemsContainerProps> = props => {
+export const ToolbarItemsContainer: FC<IToolbarItemsContainerProps> = (props) => {
   const { updateChildItems, readOnly } = useToolbarConfigurator();
 
   const renderItem = (item: ToolbarItemProps, index: number) => {
@@ -23,11 +24,11 @@ export const ToolbarItemsContainer: FC<IToolbarItemsContainerProps> = props => {
       case 'group':
         const groupProps = item as IButtonGroup;
         return (
-          <ToolbarItemsGroup 
-            key={index} 
-            {...groupProps} 
-            index={[...props.index, index]} 
-            containerRendering={(args) => (<ToolbarItemsContainer {...args}/>)}
+          <ToolbarItemsGroup
+            key={index}
+            {...groupProps}
+            index={[...props.index, index]}
+            containerRendering={(args) => <ToolbarItemsContainer {...args} />}
           />
         );
     }
@@ -38,7 +39,7 @@ export const ToolbarItemsContainer: FC<IToolbarItemsContainerProps> = props => {
     const listChanged = true; //!newState.some(item => item.chosen !== null && item.chosen !== undefined);
 
     if (listChanged) {
-      const newChilds = newState.map<ToolbarItemProps>(item => item as ToolbarItemProps);
+      const newChilds = newState.map<ToolbarItemProps>((item) => item as ToolbarItemProps);
 
       updateChildItems({ index: props.index, id: props.id, childs: newChilds });
     }
@@ -65,7 +66,7 @@ export const ToolbarItemsContainer: FC<IToolbarItemsContainerProps> = props => {
       scroll={true}
       bubbleScroll={true}
     >
-      {props.items.map((item, index) => renderItem(item, index))}
+      {rmvEmpty(props.items.map((item, index) => renderItem(item, index)))}
     </ReactSortable>
   );
 };
