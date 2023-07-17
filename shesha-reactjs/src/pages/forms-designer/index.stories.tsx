@@ -39,6 +39,10 @@ export const FncDesignerTextComponentDetails = addStory(Template, {
   formId: 'd5e910a8-3f5b-4a96-9e7d-5142e14965f1',
 });
 
+export const FncDesignerBooksTable = addStory(Template, {
+  formId: '444911d7-cd4e-45b6-92e9-695fd3ea41ad',
+});
+
 export const DepDesignerCaseDetails = addStory(Template, {
   formId: 'c6eb30fa-030e-4504-8247-64255377176b',
 });
