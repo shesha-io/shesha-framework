@@ -7,13 +7,7 @@ import { DataTypes } from 'interfaces/dataTypes';
 import { useFormData, useGlobalState, useNestedPropertyMetadatAccessor, useSheshaApplication } from 'providers';
 import { useForm } from 'providers/form';
 import { FormMarkup } from 'providers/form/models';
-import {
-  evaluateString,
-  evaluateValue,
-  getStyle,
-  replaceTags,
-  validateConfigurableComponentSettings,
-} from 'providers/form/utils';
+import { evaluateValue, getStyle, replaceTags, validateConfigurableComponentSettings } from 'providers/form/utils';
 import Autocomplete, { ISelectOption } from 'components/autocomplete';
 import ConfigurableFormItem from 'components/formDesigner/components/formItem';
 import { customDropDownEventHandler } from 'components/formDesigner/components/utils';
@@ -128,6 +122,29 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       };
     };
 
+    const getDefaultValue = () => {
+      try {
+        if (model?.defaultValue) {
+          return new Function(
+            'data, form, formMode, globalState, http, message, moment, setFormData, setGlobalState',
+            model?.defaultValue
+          )(
+            data,
+            form,
+            formMode,
+            globalState,
+            axiosHttp(backendUrl),
+            message,
+            moment,
+            setFormDataAndInstance,
+            setGlobalState
+          );
+        }
+      } catch (_e) {
+        return undefined;
+      }
+    };
+
     const eventProps = {
       model,
       form,
@@ -140,6 +157,8 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       setFormData: setFormDataAndInstance,
       setGlobalState,
     };
+
+    const defaultValue = getDefaultValue();
 
     const autocompleteProps = {
       className: 'sha-autocomplete',
@@ -154,7 +173,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       placeholder: model.placeholder,
       queryParams: getQueryParams(),
       readOnly: model.readOnly || formMode === 'readonly',
-      defaultValue: evaluateString(model.defaultValue, { data, formMode, globalState }) as any,
+      defaultValue,
       getOptionFromFetchedItem,
       disableSearch: model.disableSearch,
       filter: evaluatedFilters,
