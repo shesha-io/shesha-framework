@@ -26,6 +26,7 @@ export interface IDateFieldProps extends IConfigurableFormComponent {
   weekFormat?: string;
   range?: boolean;
   dateOnly?: boolean;
+  resolveToUTC?: boolean;
   picker?: 'time' | 'date' | 'week' | 'month' | 'quarter' | 'year';
   disablePastDates?: boolean;
   onChange?: TimePickerChangeEvent | RangePickerChangeEvent;

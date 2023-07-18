@@ -25,6 +25,18 @@ export function disabledDate(props: IDateFieldProps, current) {
   return disabledFunc(current, moment);
 }
 
+export const getDefaultFormat = ({ dateOnly, resolveToUTC }: IDateFieldProps) => {
+  if (dateOnly) {
+    return 'YYYY-MM-DD';
+  }
+
+  if (!resolveToUTC) {
+    return 'YYYY-MM-DDThh:mm:ss';
+  }
+
+  return null;
+};
+
 export const getFormat = (props: IDateFieldProps, properties: IPropertyMetadata[]) => {
   const { name, picker, showTime } = props || {};
 

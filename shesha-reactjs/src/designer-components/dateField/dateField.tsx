@@ -16,7 +16,7 @@ import { getMoment, getPropertyMetadata } from '../../utils/date';
 import { axiosHttp } from '../../utils/fetchers';
 import { IDateFieldProps, IRangeInfo, RangePickerChangeEvent, TimePickerChangeEvent } from './interfaces';
 import settingsFormJson from './settingsForm.json';
-import { DATE_TIME_FORMATS, disabledDate, getFormat, getRangePickerValues } from './utils';
+import { DATE_TIME_FORMATS, disabledDate, getDefaultFormat, getFormat, getRangePickerValues } from './utils';
 
 const META_DATA_FILTERS: ProperyDataType[] = ['date', 'date-time', 'time'];
 
@@ -116,7 +116,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
   const dateFormat = props?.dateFormat || getPropertyMetadata(properties, name) || DATE_TIME_FORMATS.date;
   const timeFormat = props?.timeFormat || DATE_TIME_FORMATS.time;
 
-  const defaultFormat = dateOnly ? 'YYYY-MM-DD' : null;
+  const defaultFormat = getDefaultFormat(props);
 
   const { form, formMode, isComponentDisabled, formData } = useForm();
 
