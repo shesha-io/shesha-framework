@@ -36,3 +36,8 @@ export const FncTSchoolDetails = addStory(Template, {
 export const FncTextComponentDetails = addStory(Template, {
   formId: { name: 'text-component-details', module: 'Shesha' },
 });
+
+export const FncAddMember = addStory(Template, {
+  formId: { name: 'Add-Member', module: 'Shesha' },
+  mode: 'edit',
+});
