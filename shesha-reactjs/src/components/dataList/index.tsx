@@ -434,8 +434,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
                     >
                       {renderSubForm(item)}
                     </div>
-                    {!isLastItem && <Divider className="sha-list-component-divider" />}
-                  </ConditionalWrap>
+                  </ConditionalWrap>{' '}
+                  {!isLastItem && <Divider className="sha-list-component-divider" />}
                 </div>
               );
             })}
