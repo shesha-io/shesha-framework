@@ -62,6 +62,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         })
       );
     } else {
+      if (typeof onSelectRow !== 'function') return;
+
       if (onSelectRow) onSelectRow(index, row);
     }
   };
