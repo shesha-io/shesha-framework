@@ -7,7 +7,7 @@ namespace Shesha.Migrations
     /// <summary>
     /// Saved Filters
     /// </summary>
-    [Migration(20200623162800), UsedImplicitly]
+    [Migration(20200623162800), UsedImplicitly, MsSqlOnly]
     public class M20200623162800: AutoReversingMigration
     {
         public override void Up()
