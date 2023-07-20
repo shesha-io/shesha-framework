@@ -3,6 +3,7 @@ using Abp.Domain.Entities;
 using Abp.Timing;
 using Castle.Core;
 using Newtonsoft.Json.Linq;
+using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.JsonLogic.Exceptions;
 using Shesha.Reflection;
@@ -874,7 +875,7 @@ namespace Shesha.JsonLogic
         {
             if (potentialEntityRefExpr is MemberExpression memberExpression &&
                 memberExpression.Expression != null &&
-                memberExpression.Type.IsEntityType() &&
+                (memberExpression.Type.IsEntityType() || memberExpression.Type == typeof(GenericEntityReference)) &&
                 potentialIdExpr is ConstantExpression idExpr && 
                 idExpr.Value != null /* null values should be processed as references not as Id value*/)
             {
