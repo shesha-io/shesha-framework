@@ -25,7 +25,7 @@ export const TimelineItem: FC<ITimelineItemProps> = ({ title, channel, toPerson,
           </div>
         }
       >
-        <p>{body}</p>
+        <div className="timeline-body">{body}</div>
       </Card>
     </Timeline.Item>
   );

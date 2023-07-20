@@ -4,22 +4,25 @@ import { SplitCellsOutlined } from '@ant-design/icons';
 import { Row, Col } from 'antd';
 import ColumnsSettings from './columnsSettings';
 import ComponentsContainer from '../../containers/componentsContainer';
-import { useForm } from '../../../../providers';
+import { useForm, useFormData, useGlobalState } from '../../../../providers';
 import { nanoid } from 'nanoid/non-secure';
 import { IColumnsComponentProps } from './interfaces';
+import { getStyle } from 'utils/publicUtils';
 
 const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
   type: 'columns',
   name: 'Columns',
   icon: <SplitCellsOutlined />,
-  factory: model => {
+  factory: (model) => {
     const { isComponentHidden } = useForm();
+    const { data } = useFormData();
+    const { globalState } = useGlobalState();
     const { columns, gutterX = 0, gutterY = 0 } = model as IColumnsComponentProps;
 
     if (isComponentHidden(model)) return null;
 
     return (
-      <Row gutter={[gutterX, gutterY]}>
+      <Row gutter={[gutterX, gutterY]} style={getStyle(model?.style, data, globalState)}>
         {columns &&
           columns.map((col, index) => (
             <Col
@@ -33,7 +36,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
               <ComponentsContainer
                 containerId={col.id}
                 dynamicComponents={
-                  model?.isDynamic ? col?.components?.map(c => ({ ...c, readOnly: model?.readOnly })) : []
+                  model?.isDynamic ? col?.components?.map((c) => ({ ...c, readOnly: model?.readOnly })) : []
                 }
               />
             </Col>
@@ -41,7 +44,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
       </Row>
     );
   },
-  initModel: model => {
+  initModel: (model) => {
     const tabsModel: IColumnsComponentProps = {
       ...model,
       name: 'custom Name',

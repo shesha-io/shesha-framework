@@ -1,5 +1,5 @@
+import { nanoid } from 'nanoid/non-secure';
 import { DesignerToolbarSettings } from 'interfaces/toolbarSettings';
-import { nanoid } from 'nanoid';
 
 export const getSettings = () =>
   new DesignerToolbarSettings()
@@ -125,6 +125,19 @@ export const getSettings = () =>
       label: 'Default Mappings',
       description: 'Enter the JSON object that should match the structure of the default one provided',
       validate: {},
+    })
+    .addSectionSeparator({
+      id: '987c3de1-b959-4670-96f6-9b1747189a5e',
+      name: 'sectionStyle',
+      parentId: 'root',
+      label: 'Style',
+    })
+    .addCodeEditor({
+      id: '987c3de1-b959-4670-96f6-9b1747189a6e',
+      name: 'style',
+      label: 'Style',
+      parentId: 'root',
+      mode: 'dialog',
     })
     .addSectionSeparator({
       id: '6befdd49-41aa-41d6-a29e-76fa00590b74',
