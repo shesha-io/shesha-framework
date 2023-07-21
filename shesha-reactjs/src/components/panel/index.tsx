@@ -53,7 +53,11 @@ export const CollapsiblePanel: FC<ICollapsiblePanelProps> = ({
         collapsible={collapsible}
         showArrow={showArrow}
         header={<span className={`ant-collapse-header-text`}>{header || ' '}</span>}
-        extra={<span onClick={onContainerClick} className={extraClassName}>{extra}</span>}
+        extra={
+          <span onClick={onContainerClick} className={extraClassName}>
+            {extra}
+          </span>
+        }
       >
         <Skeleton loading={loading}>{children}</Skeleton>
       </Panel>
