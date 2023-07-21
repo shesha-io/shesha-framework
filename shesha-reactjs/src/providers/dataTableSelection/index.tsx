@@ -23,10 +23,7 @@ const DataTableSelectionProvider: FC<PropsWithChildren<IDataTableSelectionProvid
     const selectedId = state.selectedRow?.id;
     const currentId = row?.id;
 
-    // change selection only when the id differs
-    if (selectedId !== currentId){
-      dispatch(setSelectedRowAction({ index, row, id: row?.id }));
-    }
+    dispatch(setSelectedRowAction(selectedId !== currentId ? { index, row, id: row?.id } : null));
   };
 
   const setMultiSelectedRow = (rows: Row[] | Row) => {
