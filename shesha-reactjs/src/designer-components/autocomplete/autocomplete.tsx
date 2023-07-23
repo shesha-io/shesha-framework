@@ -188,9 +188,11 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       allowFreeText: model.allowFreeText,
     };
 
+    const formProps = defaultValue ? { model, initialValue: getDefaultValue() } : { model };
+
     // todo: implement other types of datasources!
     return (
-      <ConfigurableFormItem model={model}>
+      <ConfigurableFormItem {...formProps}>
         {model.useRawValues ? (
           <Autocomplete.Raw {...autocompleteProps} {...customDropDownEventHandler(eventProps)} />
         ) : (

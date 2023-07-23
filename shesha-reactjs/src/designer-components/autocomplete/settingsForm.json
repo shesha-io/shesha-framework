@@ -369,7 +369,7 @@
             "parentId": "PSXX7u5GWT0W8RXnVW3Ao",
             "hidden": false,
             "customVisibility": null,
-            "description": "Enter custom even handler on changing of event. Multiple values are exposed. Called when select an option or input value change",
+            "description": "Enter default value for component. Multiple values are exposed.",
             "validate": {},
             "settingsValidationErrors": [],
             "exposedVariables": [
