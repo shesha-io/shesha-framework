@@ -805,7 +805,7 @@
               {
                 "id": "ec349b3e-ef29-467c-96fb-265320ac37a0",
                 "label": "Disable past dates",
-                "value": "return current && current < moment().endOf('day');"
+                "value": "return current && current < moment().startOf('day');"
               },
               {
                 "id": "41db4d59-249d-4ba2-8049-db0fd9fbde14",
@@ -934,7 +934,7 @@
                 {
                   "id": "ec349b3e-ef29-467c-96fb-265320ac37a0",
                   "label": "Disable past dates",
-                  "value": "return current && current < moment().endOf('day');"
+                  "value": "return current && current < moment().startOf('day');"
                 },
                 {
                   "id": "41db4d59-249d-4ba2-8049-db0fd9fbde14",
