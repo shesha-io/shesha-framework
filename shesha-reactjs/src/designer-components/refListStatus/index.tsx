@@ -42,7 +42,9 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
 
     return (
       <ConfigurableFormItem model={{ ...model, hideLabel }}>
-        <RefListStatusControl model={{ ...model, solidBackground, showReflistName }} />
+        {(value, onChange) => {
+          return <RefListStatusControl model={{ ...model, solidBackground, showReflistName }} value={value} onChange={onChange}/>;
+        }}
       </ConfigurableFormItem>
     );
   },
@@ -58,6 +60,7 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
       .add<IRefListStatusPropsV0>(0, (prev) => {
         const result: IRefListStatusPropsV0 = {
           ...prev,
+          name: prev['name'],
           module: '',
           nameSpace: '',
         };

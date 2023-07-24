@@ -3,14 +3,14 @@
      {
         "id":"b8954bf6-f76d-4139-a850-c99bf06c8b69",
         "type":"sectionSeparator",
-        "name":"separator1",
+        "propertyName":"separator1",
         "parentId":"root",
         "label":"Display"
      },
      {
         "id":"5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
         "type":"propertyAutocomplete",
-        "name":"name",
+        "propertyName":"name",
         "parentId":"root",
         "label":"Name",
         "validate":{
@@ -20,7 +20,7 @@
      {
         "id":"46d07439-4c18-468c-89e1-60c002ce96c5",
         "type":"textField",
-        "name":"label",
+        "propertyName":"label",
         "parentId":"root",
         "label":"Label",
         "version":0,
@@ -29,7 +29,7 @@
      {
         "id":"57a40a33-7e08-4ce4-9f08-a34d24a83338",
         "type":"dropdown",
-        "name":"labelAlign",
+        "propertyName":"labelAlign",
         "parentId":"root",
         "label":"Label align",
         "values":[
@@ -49,14 +49,14 @@
      {
         "id":"2d32fe70-99a0-4825-ae6c-8b933004e119",
         "type":"textArea",
-        "name":"description",
+        "propertyName":"description",
         "parentId":"root",
         "label":"Description"
      },
      {
         "id":"1692d566-fe48-43bd-84e0-28b7103354c1",
         "type":"dropdown",
-        "name":"mode",
+        "propertyName":"mode",
         "parentId":"root",
         "label":"Mode",
         "hidden":false,
@@ -80,7 +80,7 @@
      {
         "id":"6b0bd9c6-6a53-4a05-9de0-ad1b17eb0018",
         "type":"autocomplete",
-        "name":"entityType",
+        "propertyName":"entityType",
         "label":"Entity Type",
         "labelAlign":"right",
         "parentId":"root",
@@ -99,7 +99,7 @@
      {
         "id":"hpm6rN_aj-L_KaG5MLIZt",
         "type":"propertyAutocomplete",
-        "name":"displayEntityKey",
+        "propertyName":"displayEntityKey",
         "label":"Display Property",
         "labelAlign":"right",
         "parentId":"root",
@@ -121,14 +121,14 @@
      {
       "id": "14413162-429e-451c-b3e6-b3f0ab6d7b09",
       "type": "sectionSeparator",
-      "name": "sectionFilters",
+      "propertyName": "sectionFilters",
       "parentId": "root",
       "label": "Filters"
     },
     {
       "id": "n4enebtmhFgvkP5ukQK1f",
       "type": "queryBuilder",
-      "name": "filters",
+      "propertyName": "filters",
       "label": "Entity Filter",
       "labelAlign": "right",
       "parentId": "root",
@@ -143,7 +143,7 @@
     {
       "id": "253ee0fd-9916-4728-9f93-16ecc1ca3bb9",
       "type": "sectionSeparator",
-      "name": "sectionFilters",
+      "propertyName": "sectionFilters",
       "parentId": "root",
       "label": ""
     }
@@ -151,7 +151,7 @@
      {
         "id":"2a6ee3b0-15f1-4521-cc6e-6a1c9d192ce2",
         "type":"entityPickerColumnsEditorComponent",
-        "name":"items",
+        "propertyName":"items",
         "parentId":"root",
         "label":"Columns",
         "customVisibility":"return data.entityType"
@@ -159,7 +159,7 @@
      {
         "id":"df8a8f35-a50b-42f9-9642-73d390ceddbf",
         "type":"dropdown",
-        "name":"visibility",
+        "propertyName":"visibility",
         "parentId":"root",
         "label":"Visibility",
         "description":"This property will eventually replace the 'hidden' property and other properties that toggle visibility on the UI and payload",
@@ -186,49 +186,49 @@
      {
         "id":"cfd7d45e-c7e3-4a27-987b-dc525c412448",
         "type":"checkbox",
-        "name":"hidden",
+        "propertyName":"hidden",
         "parentId":"root",
         "label":"Hidden"
      },
      {
         "id":"c6885251-96a6-40ce-99b2-4b5209a9e01c",
         "type":"checkbox",
-        "name":"hideLabel",
+        "propertyName":"hideLabel",
         "parentId":"root",
         "label":"Hide Label"
      },
      {
         "id":"24a8be15-98eb-40f7-99ea-ebb602693e9c",
         "type":"checkbox",
-        "name":"disabled",
+        "propertyName":"disabled",
         "parentId":"root",
         "label":"Disabled"
      },
      {
         "id":"1ceb3851-f15e-437b-98b6-84d6a1fbf801",
         "type":"checkbox",
-        "name":"readOnly",
+        "propertyName":"readOnly",
         "parentId":"root",
         "label":"Read Only"
      },
      {
         "id":"eb946e7c-5450-48b8-994a-ead765e3d631",
         "type":"sectionSeparator",
-        "name":"separator2",
+        "propertyName":"separator2",
         "parentId":"root",
         "label":"Data"
      },
      {
         "id":"0cc0b997-f3f7-4a3d-ba36-8590687af9bd",
         "type":"checkbox",
-        "name":"allowNewRecord",
+        "propertyName":"allowNewRecord",
         "parentId":"root",
         "label":"Allow New Record"
      },
      {
         "id":"2a5acbcf-cd52-487e-9cd7-09594a04793a",
         "type":"collapsiblePanel",
-        "name":"pnlModalSettings",
+        "propertyName":"pnlModalSettings",
         "label":"Dialogue settings",
         "labelAlign":"right",
         "parentId":"root",
@@ -243,7 +243,7 @@
            {
               "id":"4b3b0da0-f126-4e37-b5f5-568367dc008f",
               "type":"textField",
-              "name":"modalTitle",
+              "propertyName":"modalTitle",
               "label":"Title",
               "labelAlign":"right",
               "parentId":"2a5acbcf-cd52-487e-9cd7-09594a04793a",
@@ -258,7 +258,7 @@
            {
               "id":"fd3d4ef4-be06-40e9-9815-118754707d0e",
               "type":"formAutocomplete",
-              "name":"modalFormId",
+              "propertyName":"modalFormId",
               "label":"Modal form",
               "labelAlign":"right",
               "parentId":"2a5acbcf-cd52-487e-9cd7-09594a04793a",
@@ -271,7 +271,7 @@
            {
               "id":"43c5fcb7-a2d4-46d7-b671-6eac73e8d95c",
               "type":"checkbox",
-              "name":"showModalFooter",
+              "propertyName":"showModalFooter",
               "parentId":"2a5acbcf-cd52-487e-9cd7-09594a04793a",
               "label":"Show Modal Buttons",
               "defaultChecked":false
@@ -279,7 +279,7 @@
            {
               "id":"ea60aee4-a7aa-4fd6-a641-638a5a609157",
               "type":"dropdown",
-              "name":"submitHttpVerb",
+              "propertyName":"submitHttpVerb",
               "parentId":"2a5acbcf-cd52-487e-9cd7-09594a04793a",
               "label":"Submit Http Verb",
               "values":[
@@ -305,7 +305,7 @@
            {
               "id":"e669632e-55e0-46f4-9585-9e81ef0ae174",
               "type":"textField",
-              "name":"onSuccessRedirectUrl",
+              "propertyName":"onSuccessRedirectUrl",
               "parentId":"2a5acbcf-cd52-487e-9cd7-09594a04793a",
               "label":"Success Redirect URL",
               "customVisibility":"return data.showModalFooter === true",
@@ -315,7 +315,7 @@
            {
             "id": "7fba61cd-5e40-4141-8263-585d2b14a760",
             "type": "dropdown",
-            "name": "modalWidth",
+            "propertyName": "modalWidth",
             "parentId": "2a5acbcf-cd52-487e-9cd7-09594a04793a",
             "label": "Dialog Size",
             "allowClear": true,
@@ -345,7 +345,7 @@
           {
             "id": "b7e1b9f6-0228-4caa-9d2d-d2469ea83d97",
             "type": "numberField",
-            "name": "customWidth",
+            "propertyName": "customWidth",
             "label": "Enter Custom Width",
             "customVisibility": "return data.modalWidth === 'custom'"
           }
@@ -377,28 +377,28 @@
      {
         "id":"d675bfe4-ee69-431e-931b-b0e0b9ceee6f",
         "type":"sectionSeparator",
-        "name":"separator3",
+        "propertyName":"separator3",
         "parentId":"root",
         "label":"Validation"
      },
      {
         "id":"3be9da3f-f47e-48ae-b4c3-f5cc36e534d9",
         "type":"checkbox",
-        "name":"validate.required",
+        "propertyName":"validate.required",
         "parentId":"root",
         "label":"Required"
      },
      {
         "id":"6befdd49-41aa-41d6-a29e-76fa00590b75",
         "type":"sectionSeparator",
-        "name":"sectionStyle",
+        "propertyName":"sectionStyle",
         "parentId":"root",
         "label":"Style"
      },
      {
         "id":"06ab0599-914d-4d2d-875c-765a495472f8",
         "type":"codeEditor",
-        "name":"style",
+        "propertyName":"style",
         "label":"Style",
         "parentId":"root",
         "validate":{
@@ -410,7 +410,7 @@
         "description":"A script that returns the style of the element as an object. This should conform to CSSProperties",
         "exposedVariables":[
            {
-              "name":"data",
+              "propertyName":"data",
               "description":"Form values",
               "type":"object"
            }
@@ -419,7 +419,7 @@
      {
         "id":"8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
         "type":"dropdown",
-        "name":"size",
+        "propertyName":"size",
         "parentId":"root",
         "label":"Size",
         "allowClear":true,
@@ -445,14 +445,14 @@
      {
         "id":"bc67960e-77e3-40f2-89cc-f18f94678cce",
         "type":"sectionSeparator",
-        "name":"separatorVisibility",
+        "propertyName":"separatorVisibility",
         "parentId":"root",
         "label":"Visibility"
      },
      {
         "id":"3a0afccc-7d52-468b-843f-62ce57422048",
         "type":"codeEditor",
-        "name":"customVisibility",
+        "propertyName":"customVisibility",
         "label":"Custom Visibility",
         "labelAlign":"right",
         "parentId":"root",
@@ -467,12 +467,12 @@
         ],
         "exposedVariables":[
            {
-              "name":"value",
+              "propertyName":"value",
               "description":"Component current value",
               "type":"string | any"
            },
            {
-              "name":"data",
+              "propertyName":"data",
               "description":"Selected form values",
               "type":"object"
            }

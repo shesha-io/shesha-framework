@@ -3,7 +3,7 @@
     {
       "id": "rqEyWa_qG99Qo53kIjCKb",
       "type": "collapsiblePanel",
-      "name": "collapsiblePanel1",
+      "propertyName": "collapsiblePanel1",
       "label": "Personal Details",
       "labelAlign": "right",
       "parentId": "root",
@@ -14,7 +14,7 @@
           "textType": "text",
           "id": "Slv5HAwSuuCnemRp5_uQr",
           "type": "textField",
-          "name": "firstName",
+          "propertyName": "firstName",
           "label": "First Name",
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
@@ -27,7 +27,7 @@
           "textType": "text",
           "id": "g5Nj3VKjbDTewUG7nP_Uc",
           "type": "textField",
-          "name": "lastName",
+          "propertyName": "lastName",
           "label": "Last Name",
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
@@ -40,7 +40,7 @@
           "textType": "text",
           "id": "Kowp4i0jPvHDdoTjxrxfz",
           "type": "textField",
-          "name": "friend.fullName",
+          "propertyName": "friend.fullName",
           "label": "Friend's name",
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
@@ -52,7 +52,7 @@
         {
           "id": "w6vyINZcXhbRzmBpfpRkn",
           "type": "dropdown",
-          "name": "applicationStatus",
+          "propertyName": "applicationStatus",
           "label": "Application Status",
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
@@ -68,7 +68,7 @@
         {
           "id": "c9MAhE2PK8ghEquP9AoVT",
           "type": "autocomplete",
-          "name": "area",
+          "propertyName": "area",
           "label": "Area (Single)",
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
@@ -90,7 +90,7 @@
         {
           "id": "-jiSdvyFfoSlyO6uwihRj",
           "type": "autocomplete",
-          "name": "areas",
+          "propertyName": "areas",
           "label": "Area (Multiple)",
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
@@ -106,7 +106,7 @@
         {
           "id": "ku9UKoAqyx4sXP3HIiJ21",
           "type": "dropdown",
-          "name": "gender",
+          "propertyName": "gender",
           "label": "Gender",
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
@@ -123,7 +123,7 @@
         {
           "id": "Oc8E6PaJFth8z9iCGVsty",
           "type": "numberField",
-          "name": "age",
+          "propertyName": "age",
           "label": "Age",
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
@@ -135,7 +135,7 @@
         {
           "id": "q5zfGlYi7cQgtxC0F_oqC",
           "type": "dateField",
-          "name": "startDate",
+          "propertyName": "startDate",
           "label": "Start date (enabled)",
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
@@ -158,7 +158,7 @@
         {
           "id": "Eoj0lIPWcn71zNsY-vE03",
           "type": "dateField",
-          "name": "endDate",
+          "propertyName": "endDate",
           "label": "End Date (disabled)",
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
@@ -184,7 +184,7 @@
         {
           "id": "3-bGXDtAk6-xVa8mWXx71",
           "type": "checkbox",
-          "name": "optIn",
+          "propertyName": "optIn",
           "label": "Opt In",
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
@@ -197,7 +197,7 @@
         {
           "id": "DrdlKN1Gymz_an6v5mFgx",
           "type": "textArea",
-          "name": "message",
+          "propertyName": "message",
           "label": "Message",
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
@@ -212,7 +212,7 @@
         {
           "id": "gNhvOsPC-Qb4Y_H7gAs03",
           "type": "sectionSeparator",
-          "name": "subscriptions",
+          "propertyName": "subscriptions",
           "label": "Subscriptions",
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
@@ -223,7 +223,7 @@
         {
           "id": "8_smkyp9BYDuMhJ1TWkRV",
           "type": "switch",
-          "name": "marketingEmails",
+          "propertyName": "marketingEmails",
           "label": "Marketing Emails",
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
@@ -235,7 +235,7 @@
         {
           "id": "-7BWZjeWioYkZbvH24ao1",
           "type": "switch",
-          "name": "alerts",
+          "propertyName": "alerts",
           "label": "Alerts",
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",

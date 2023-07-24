@@ -26,7 +26,7 @@ const DataSourceComponent: IToolboxComponent<IDataSourceComponentProps> = {
   migrator: m => m.add<IDataSourceComponentProps>(0, prev => {
     return {
       ...prev,
-      name: prev['uniqueStateId'] ?? prev.name,
+      propertyName: prev['uniqueStateId'] ?? prev.propertyName,
       sourceType: 'Entity'
     };
   }),
@@ -52,7 +52,7 @@ export const DataSource: FC<IDataSourceComponentProps> = props => {
     setProvider(<DataSourceInner key={uniqueKey} {...props} />);
   }, [props]);*/
 
-  const uniqueKey = `${props.sourceType}_${props.name}_${props.entityType ?? props.endpoint}`; // is used just for re-rendering
+  const uniqueKey = `${props.sourceType}_${props.propertyName}_${props.entityType ?? props.endpoint}`; // is used just for re-rendering
   const provider = <DataSourceInner key={uniqueKey} {...props} />;
 
   return props.entityType ? (
@@ -65,7 +65,7 @@ export const DataSource: FC<IDataSourceComponentProps> = props => {
 };
 
 export const DataSourceInner: FC<IDataSourceComponentProps> = props => {
-  const { sourceType, entityType, endpoint, id, name } = props;
+  const { sourceType, entityType, endpoint, id, propertyName: name } = props;
   const { formMode } = useForm();
   const isDesignMode = formMode === 'designer';
 
@@ -87,7 +87,7 @@ export const DataSourceInner: FC<IDataSourceComponentProps> = props => {
 
   const providerWrapper = useMemo(() => {
     return sourceType === 'Form'
-      ? <FormItem name={props.name}>
+      ? <FormItem name={props.propertyName}>
           {provider}
         </FormItem>
       : provider;
@@ -111,7 +111,7 @@ export const DataSourceInner: FC<IDataSourceComponentProps> = props => {
   );
 };
 
-const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, name, filters, maxResultCount }) => {
+const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, propertyName: name, filters, maxResultCount }) => {
   const { registerActions, formData, formMode } = useForm();
   const dataSource = useDataTableStore();
   const { 

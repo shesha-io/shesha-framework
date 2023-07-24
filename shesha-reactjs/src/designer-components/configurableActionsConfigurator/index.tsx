@@ -10,6 +10,7 @@ import { IConfigurableActionGroupDictionary } from 'providers/configurableAction
 import ActionArgumentsEditor from './actionArgumensEditor';
 import HelpTextPopover from 'components/helpTextPopover';
 import { IConfigurableActionConfiguratorComponentProps } from './interfaces';
+import { migratePropertyName } from 'designer-components/_settings/utils';
 
 const { Panel } = Collapse;
 
@@ -26,13 +27,16 @@ const ConfigurableActionConfiguratorComponent: IToolboxComponent<IConfigurableAc
     if (isHidden) return null;
 
     return (
-      <Form.Item name={model.name} labelCol={{ span: 0 }} wrapperCol={{ span: 24 }} noStyle>
+      <Form.Item name={model.propertyName} labelCol={{ span: 0 }} wrapperCol={{ span: 24 }} noStyle>
         <ConfigurableActionConfigurator editorConfig={model} level={1} readOnly={formMode === 'readonly'} />
       </Form.Item>
     );
   },
   settingsFormMarkup: configurableActionsConfiguratorSettingsForm,
   validateSettings: model => validateConfigurableComponentSettings(configurableActionsConfiguratorSettingsForm, model),
+  migrator: m => m
+  .add<IConfigurableActionConfiguratorComponentProps>(0, prev => migratePropertyName(prev))
+,
 };
 
 interface IConfigurableActionConfiguratorProps {

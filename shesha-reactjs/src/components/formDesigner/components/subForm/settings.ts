@@ -3,20 +3,20 @@ import { DesignerToolbarSettings } from '../../../../interfaces/toolbarSettings'
 export const alertSettingsForm = new DesignerToolbarSettings()
   .addSectionSeparator({
     id: 'c367c411-e7cb-4cc4-b728-b21a51074920',
-    name: 'separator1',
+    propertyName: 'separator1',
     parentId: 'root',
     label: 'Display',
   })
   .addPropertyAutocomplete({
     id: 'e602b791-2352-4858-98c2-b4eb7377e1c9',
-    name: 'name',
+    propertyName: 'propertyName',
     parentId: 'root',
-    label: 'Name',
+    label: 'Property name',
     validate: { required: true },
   })
   .addAutocomplete({
     id: '8ca1a702-861d-45a8-826f-71c21ae7e3fb',
-    name: 'formId',
+    propertyName: 'formId',
     parentId: 'root',
     hidden: false,
     description: 'Specify the form that will be rendered on this list component',
@@ -29,7 +29,7 @@ export const alertSettingsForm = new DesignerToolbarSettings()
   })
   .addDropdown({
     id: '4453863e-43ac-4d3a-b9d5-2b54c269a233',
-    name: 'dataSource',
+    propertyName: 'dataSource',
     parentId: 'root',
     hidden: false,
     customVisibility: null,
@@ -43,7 +43,7 @@ export const alertSettingsForm = new DesignerToolbarSettings()
     ],
   })
   .addCodeEditor({
-    name: 'beforeGet',
+    propertyName: 'beforeGet',
     id: 'e33ac7e2-ccde-4e73-9525-012dcf605742',
     mode: 'dialog',
     label: 'On Submit',
@@ -70,7 +70,7 @@ export const alertSettingsForm = new DesignerToolbarSettings()
     ],
   })
   .addCodeEditor({
-    name: 'onCreated',
+    propertyName: 'onCreated',
     id: 'a066e195-e192-46fc-a05d-28b5088c3679',
     mode: 'dialog',
     label: 'On Submit',
@@ -97,7 +97,7 @@ export const alertSettingsForm = new DesignerToolbarSettings()
     ],
   })
   .addCodeEditor({
-    name: 'beforeGet',
+    propertyName: 'beforeGet',
     id: 'onUpdated',
     mode: 'dialog',
     label: 'On Submit',

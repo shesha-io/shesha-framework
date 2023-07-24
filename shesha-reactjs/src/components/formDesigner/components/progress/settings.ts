@@ -4,30 +4,30 @@ import { DesignerToolbarSettings } from '../../../../interfaces/toolbarSettings'
 export const alertSettingsForm = new DesignerToolbarSettings()
   .addSectionSeparator({
     id: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-    name: 'separator1',
+    propertyName: 'separator1',
     parentId: 'root',
     label: 'Display',
   })
   .addPropertyAutocomplete({
     id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
-    name: 'name',
+    propertyName: 'propertyName',
     parentId: 'root',
-    label: 'Name',
+    label: 'Property name',
     validate: { required: true },
   })
   .addTextField({
     id: '001bc9d9-d943-457c-b39a-95d5380bfdbe',
-    name: 'label',
+    propertyName: 'label',
     label: 'Label',
   })
   .addCheckbox({
     id: '3f7226c7-7953-4bea-b103-1484340f5929',
-    name: 'hideLabel',
+    propertyName: 'hideLabel',
     label: 'Hide label',
   })
   .addCodeEditor({
     id: 'a62a1d47-4255-4e0c-abae-ee313dada8d4',
-    name: 'format',
+    propertyName: 'format',
     label: 'Format',
     exposedVariables: [
       {
@@ -48,7 +48,7 @@ export const alertSettingsForm = new DesignerToolbarSettings()
   })
   .addNumberField({
     id: 'b10d0c9f-d83a-44c5-94e6-0d30f95a36cb',
-    name: 'percent',
+    propertyName: 'percent',
     label: 'Percent',
     min: 0,
     max: 100,
@@ -56,13 +56,13 @@ export const alertSettingsForm = new DesignerToolbarSettings()
   })
   .addCheckbox({
     id: '55e685e0-0277-4543-9fc2-1083c2603930',
-    name: 'showInfo',
+    propertyName: 'showInfo',
     label: 'Show Info',
     defaultValue: true,
   })
   .addDropdown({
     id: 'c8360d69-0da2-4875-8dae-a0a41fb924fc',
-    name: 'status',
+    propertyName: 'status',
     label: 'Status',
     description: 'To set the status of the Progress.',
     values: [
@@ -76,14 +76,14 @@ export const alertSettingsForm = new DesignerToolbarSettings()
   })
   .addTextField({
     id: '6e316ddf-183d-4477-a21d-22919292e6df',
-    name: 'strokeColor',
+    propertyName: 'strokeColor',
     label: 'Stroke Color',
     description:
       "The color of progress bar. This will be 'overridden' by the the 'strokeColor' property of 'line' and 'circle' types",
   })
   .addDropdown({
     id: 'd8b4769a-4499-42f9-9753-3caba0d44b39',
-    name: 'strokeLinecap',
+    propertyName: 'strokeLinecap',
     label: 'Stroke Linecap',
     parentId: 'root',
     hidden: false,
@@ -100,7 +100,7 @@ export const alertSettingsForm = new DesignerToolbarSettings()
   })
   .addCodeEditor({
     id: '9fa733bf-0cad-4a67-9461-e8df24ea4a13',
-    name: 'success',
+    propertyName: 'success',
     label: 'Success',
     description:
       'Configs of successfully progress bar. Returns an object of this format: { percent: number, strokeColor: string }',
@@ -108,13 +108,13 @@ export const alertSettingsForm = new DesignerToolbarSettings()
   })
   .addTextField({
     id: 'd72986e5-e099-4ba7-8ffe-b8e394542524',
-    name: 'trailColor',
+    propertyName: 'trailColor',
     label: 'trailColor',
     description: 'The color of unfilled part',
   })
   .addDropdown({
     id: '173e3a29-786f-44b8-b569-7f033c543e24',
-    name: 'progressType',
+    propertyName: 'progressType',
     parentId: 'root',
     hidden: false,
     customVisibility: null,
@@ -130,19 +130,19 @@ export const alertSettingsForm = new DesignerToolbarSettings()
   })
   .addContainer({
     id: 'fdb031ce-250f-4c7f-8ff9-b35ac59e1946',
-    name: 'lineContainer',
+    propertyName: 'lineContainer',
     direction: 'vertical',
     customVisibility: "return data.progressType === 'line'",
     components: new DesignerToolbarSettings()
       .addNumberField({
         id: '7decc517-9c50-433c-a23f-2054b5684a80',
-        name: 'steps',
+        propertyName: 'steps',
         label: 'Steps',
         description: 'The total step count',
       })
       .addCodeEditor({
         id: '7decc517-9c50-433c-a23f-2054b5684a80',
-        name: 'lineStrokeColor',
+        propertyName: 'lineStrokeColor',
         label: 'Stroke Width',
         description:
           'The color of progress bar, render linear-gradient when passing an object, could accept string[] when has steps. ' + 
@@ -153,13 +153,13 @@ export const alertSettingsForm = new DesignerToolbarSettings()
   })
   .addContainer({
     id: '6a49b8af-da4f-4de4-b834-cab5d83541ce',
-    name: 'circleContainer',
+    propertyName: 'circleContainer',
     direction: 'vertical',
     customVisibility: "return data.progressType === 'circle'",
     components: new DesignerToolbarSettings()
       .addCodeEditor({
         id: 'b6e39afe-2495-4b35-9c0a-661242b4b7c4',
-        name: 'circleStrokeColor',
+        propertyName: 'circleStrokeColor',
         label: 'Stroke Color',
         description:
           'The color of circular progress, render linear-gradient when passing an object. Write the code that returns: `string | object`',
@@ -169,12 +169,12 @@ export const alertSettingsForm = new DesignerToolbarSettings()
   })
   .addContainer({
     id: '73f9b6eb-e251-4286-b0c3-183f675b39fd',
-    name: 'dashboardContainer',
+    propertyName: 'dashboardContainer',
     direction: 'vertical',
     customVisibility: "return data.progressType === 'dashboard'",
     components: new DesignerToolbarSettings()
       .addNumberField({
-        name: 'gapDegree',
+        propertyName: 'gapDegree',
         label: 'Gap Degree',
         id: '25e604fc-5d88-4299-a596-5b51f0724675',
         stepNumeric: 0,
@@ -184,7 +184,7 @@ export const alertSettingsForm = new DesignerToolbarSettings()
       })
       .addDropdown({
         id: 'bdf1f1d3-21b2-4135-b482-72e784ea1d39',
-        name: 'gapPosition',
+        propertyName: 'gapPosition',
         parentId: 'root',
         hidden: false,
         customVisibility: null,
@@ -203,33 +203,33 @@ export const alertSettingsForm = new DesignerToolbarSettings()
   })
   .addNumberField({
     id: '6ffeac8a-71e0-4a98-bfe9-a47d3b1d0fa0',
-    name: 'strokeWidth',
+    propertyName: 'strokeWidth',
     label: 'Stroke Width',
     description: 'To set the width of the circular progress, unit: percentage of the canvas width in px',
     defaultValue: 6,
   })
   .addNumberField({
     id: '1bc6dfc0-6088-4a99-a667-ae6bd6943be4',
-    name: 'width',
+    propertyName: 'width',
     label: 'Width',
     description: 'To set the canvas width of the circular progress, unit: px',
     customVisibility: "return ['circle', 'dashboard'].includes(data.progressType);",
   })
   .addSectionSeparator({
     id: '516d72e1-3dfd-433f-8459-8b1610c3c9cb',
-    name: 'separatorStyle',
+    propertyName: 'separatorStyle',
     parentId: 'root',
     label: 'Style',
   })
   .addSectionSeparator({
     id: 'bc67960e-77e3-40f2-89cc-f18f94678cce',
-    name: 'separatorVisibility',
+    propertyName: 'separatorVisibility',
     parentId: 'root',
     label: 'Visibility',
   })
   .addCodeEditor({
     id: '03959ffd-cadb-496c-bf6d-b742f7f6edc6',
-    name: 'customVisibility',
+    propertyName: 'customVisibility',
     label: 'Custom Visibility',
     labelAlign: 'right',
     parentId: 'root',

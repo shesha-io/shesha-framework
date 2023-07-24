@@ -16,6 +16,7 @@ import { customDropDownEventHandler } from '../../components/formDesigner/compon
 import { axiosHttp } from '../../utils/fetchers';
 import moment from 'moment';
 import { getLegacyReferenceListIdentifier } from '../../utils/referenceList';
+import { migratePropertyName } from 'designer-components/_settings/utils';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -48,25 +49,28 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
 
     return (
       <ConfigurableFormItem model={model} {...initialValue}>
-        <Dropdown {...model} {...customDropDownEventHandler(eventProps)} />
+        {(value, onChange) => {
+          return <Dropdown {...model} {...customDropDownEventHandler(eventProps)} value={value} onChange={onChange} />;
+        }}
       </ConfigurableFormItem>
     );
   },
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
-  migrator: (m) =>
-    m
-      .add<IDropdownComponentProps>(0, (prev) => ({
+  migrator: (m) => m
+    .add<IDropdownComponentProps>(0, (prev) => ({
+      ...prev,
+      dataSourceType: prev['dataSourceType'] ?? 'values',
+      useRawValues: prev['useRawValues'] ?? false,
+    }))
+    .add<IDropdownComponentProps>(1, (prev) => {
+      return {
         ...prev,
-        dataSourceType: prev['dataSourceType'] ?? 'values',
-        useRawValues: prev['useRawValues'] ?? false,
-      }))
-      .add<IDropdownComponentProps>(1, (prev) => {
-        return {
-          ...prev,
-          referenceListId: getLegacyReferenceListIdentifier(prev.referenceListNamespace, prev.referenceListName),
-        };
-      }),
+        referenceListId: getLegacyReferenceListIdentifier(prev.referenceListNamespace, prev.referenceListName),
+      };
+    })
+    .add<IDropdownComponentProps>(2, (prev) => migratePropertyName(prev))
+    ,
   linkToModelMetadata: (model, metadata): IDropdownComponentProps => {
     return {
       ...model,

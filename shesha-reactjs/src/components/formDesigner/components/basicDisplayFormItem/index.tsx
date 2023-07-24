@@ -22,9 +22,9 @@ const BasicDisplayFormItemComponent: IToolboxComponent<IBasicDisplayFormItemProp
     const { data } = useFormData();
 
     const getDisplayValue = () => {
-      const value = _.get(data, model?.name);
+      const value = _.get(data, model?.componentName);
 
-      return typeof value === 'object' ? null : _.get(data, model?.name);
+      return typeof value === 'object' ? null : _.get(data, model?.componentName);
     };
 
     return (

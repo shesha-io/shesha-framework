@@ -33,9 +33,9 @@ const SettingsCollapsiblePanel: FC<ISettingsCollapsiblePanelProps> = (props) => 
     );
 };
 
-export function useSettingsPanel() {
+export function useSettingsPanel(required: Boolean) {
     const actionsContext = useContext(SettingsCollapsiblePanelActionsContext);
-    if (actionsContext === undefined)
+    if (actionsContext === undefined && required)
         throw new Error('useSettingsPanel must be used within a SettingsCollapsiblePanel');
   
     return actionsContext;

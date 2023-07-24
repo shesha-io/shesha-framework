@@ -78,32 +78,32 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
                         type='codeEditor'
                         language='typescript'
                         id={nanoid()}
-                        name={props.name + 'Code'}
+                        propertyName={props.name + 'Code'}
                         exposedVariables={[
                             {
-                              "name": "value",
-                              "description": "Component current value",
-                              "type": "string | any"
+                              name: "value",
+                              description: "Component current value",
+                              type: "string | any"
                             },
                             {
-                              "name": "data",
-                              "description": "Selected form values",
-                              "type": "object"
+                              name: "data",
+                              description: "Selected form values",
+                              type: "object"
                             },
                             {
-                            "name": "staticSetting",
-                            "description": "Static value of this setting",
-                            "type": "any"
+                            name: "staticSetting",
+                            description: "Static value of this setting",
+                            type: "any"
                             },
                             {
-                              "name": "globalState",
-                              "description": "Global state",
-                              "type": "object"
+                              name: "globalState",
+                              description: "Global state",
+                              type: "object"
                             },
                             {
-                              "name": "formMode",
-                              "description": "Form mode",
-                              "type": "object"
+                              name: "formMode",
+                              description: "Form mode",
+                              type: "object"
                             }
                         ]}
                     />

@@ -3,16 +3,16 @@
     {
       "id": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
       "type": "sectionSeparator",
-      "name": "separator1",
+      "propertyName": "separator1",
       "parentId": "root",
       "label": "Display"
     },
     {
       "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
       "type": "textField",
-      "name": "name",
+      "propertyName": "propertyName",
       "parentId": "root",
-      "label": "Name",
+      "label": "Property name",
       "validate": {
         "required": true
       },
@@ -22,7 +22,7 @@
     {
       "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
       "type": "textField",
-      "name": "label",
+      "propertyName": "label",
       "parentId": "root",
       "label": "Title",
       "validate": {},
@@ -32,7 +32,7 @@
     {
       "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
       "type": "textField",
-      "name": "description",
+      "propertyName": "description",
       "parentId": "root",
       "label": "Description",
       "version": 0,
@@ -41,14 +41,14 @@
     {
       "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
       "type": "checkbox",
-      "name": "hidden",
+      "propertyName": "hidden",
       "parentId": "root",
       "label": "Hidden"
     },
     {
       "id": "ac45ff35-a50b-42f9-9642-73d390ceddbf",
       "type": "dropdown",
-      "name": "sourceType",
+      "propertyName": "sourceType",
       "parentId": "root",
       "label": "Source type",
       "allowClear": true,
@@ -77,7 +77,7 @@
     {
       "id": "6b0bd9c6-6a53-4a05-9de0-ad1b17eb0018",
       "type": "autocomplete",
-      "name": "entityType",
+      "propertyName": "entityType",
       "label": "Entity Type",
       "labelAlign": "right",
       "parentId": "root",
@@ -93,7 +93,7 @@
     {
       "id": "3B19B03F-8568-4125-9CB0-CDEA52BE207D",
       "type": "endpointsAutocomplete",
-      "name": "endpoint",
+      "propertyName": "endpoint",
       "parentId": "root",
       "label": "Custom Endpoint",
       "customVisibility": "return data.sourceType == 'Entity' || data.sourceType == 'Url';",
@@ -113,7 +113,7 @@
     {
       "id": "8fQ68T0MS9Y29Q2oSe_mS",
       "type": "dropdown",
-      "name": "dataFetchingMode",
+      "propertyName": "dataFetchingMode",
       "label": "Data fetching mode",
       "labelAlign": "right",
       "parentId": "root",
@@ -152,7 +152,7 @@
     {
       "id": "f6c3d710-8d98-47fc-9fe2-7c6312e9a03c",
       "type": "dropdown",
-      "name": "defaultPageSize",
+      "propertyName": "defaultPageSize",
       "parentId": "root",
       "label": "Default Page Size",
       "dataSourceType": "values",
@@ -214,14 +214,14 @@
     {
       "id": "41721f44-adbc-42fe-8c70-69b30e36f4ca",
       "type": "sectionSeparator",
-      "name": "sectionVisibility",
+      "propertyName": "sectionVisibility",
       "parentId": "root",
       "label": "Visibility"
     },
     {
       "id": "6cb29c17-5b6a-40c1-b5a4-373c7a2c9e8f",
       "type": "codeEditor",
-      "name": "customVisibility",
+      "propertyName": "customVisibility",
       "label": "Custom Visibility",
       "labelAlign": "right",
       "parentId": "root",
@@ -232,12 +232,12 @@
       "settingsValidationErrors": [],
       "exposedVariables": [
         {
-          "name": "value",
+          "propertyName": "value",
           "description": "Component current value",
           "type": "string | any"
         },
         {
-          "name": "data",
+          "propertyName": "data",
           "description": "Selected form values",
           "type": "object"
         }

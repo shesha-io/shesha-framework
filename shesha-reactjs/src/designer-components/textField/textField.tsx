@@ -14,7 +14,7 @@ import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
 import { axiosHttp } from '../../utils/fetchers';
 import moment from 'moment';
 import { ITextFieldComponentProps, TextType } from './interfaces';
-import { migrateDisabled, migrateHidden } from 'designer-components/_settings/utils';
+import { migrateDisabled, migrateHidden, migratePropertyName } from 'designer-components/_settings/utils';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -87,12 +87,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       >
           {(value, onChange) => 
             readOnly 
-              ? <ReadOnlyDisplayFormItem disabled={disabled} />
-              : <InputComponentType value={value} {...inputProps} disabled={disabled} {...customEventHandler(eventProps)} 
-                onChange={(e) => {
-                  onChange(e);
-                }} 
-              />
+              ? <ReadOnlyDisplayFormItem value={value} disabled={disabled} />
+              : <InputComponentType {...inputProps} {...customEventHandler(eventProps)} disabled={disabled} value={value} onChange={onChange} />
           }
       </ConfigurableFormItem>
     );
@@ -106,9 +102,9 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
   migrator: (m) => m
     .add<ITextFieldComponentProps>(0, (prev) => ({ ...prev, textType: 'text' }))
     .add<ITextFieldComponentProps>(1, (prev) => {
-      const newModel = {...prev};
-      migrateHidden(newModel);
-      migrateDisabled(newModel);
+      let newModel: ITextFieldComponentProps = migrateHidden(prev);
+      newModel = migrateDisabled(newModel);
+      newModel = migratePropertyName(newModel);
       return newModel;
     })
   ,

@@ -565,7 +565,7 @@ const ListControl: FC<IListControlProps> = props => {
 
             <ButtonGroup
               items={buttons || []}
-              name={''}
+              propertyName={''}
               type={''}
               id={containerId}
               size="small"

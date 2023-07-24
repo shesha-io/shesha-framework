@@ -10,6 +10,7 @@ import { handleActions } from 'redux-actions';
 import { getItemPositionById } from './utils';
 import { IModelItem } from '../../../../interfaces/modelConfigurator';
 import { nanoid } from 'nanoid';
+import { MetadataSourceType } from 'interfaces/metadata';
 
 const findItemById = (items: IModelItem[], id: string): IModelItem => {
   for (const item of items) {
@@ -36,6 +37,7 @@ const modelReducer = handleActions<IPropertiesEditorStateContext, any>(
       const itemProps: IModelItem = {
         name: `New property`,
         id: nanoid(),
+        source: MetadataSourceType.UserDefined
       };
 
       const newItems = [...state.items];

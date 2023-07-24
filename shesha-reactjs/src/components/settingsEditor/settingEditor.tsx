@@ -88,7 +88,7 @@ export const GenericSettingEditor: FC<ISettingEditorWithValueProps> = (props) =>
         if (configuration.description){
             builder.addAlert({
                 id: 'descriptionAlert',
-                name: 'descriptionAlert',
+                propertyName: 'descriptionAlert',
                 text: configuration.description,
                 alertType: 'info',
             });
@@ -97,7 +97,7 @@ export const GenericSettingEditor: FC<ISettingEditorWithValueProps> = (props) =>
             case DataTypes.string: {
                 builder.addTextField({
                     id: 'value',
-                    name: 'value',
+                    propertyName: 'value',
                     label: configuration.label,
                     //description: configuration.description
                 });
@@ -106,7 +106,7 @@ export const GenericSettingEditor: FC<ISettingEditorWithValueProps> = (props) =>
             case DataTypes.number: {
                 builder.addNumberField({
                     id: 'value',
-                    name: 'value',
+                    propertyName: 'value',
                     label: configuration.label,
                     //description: configuration.description
                 });
@@ -115,7 +115,7 @@ export const GenericSettingEditor: FC<ISettingEditorWithValueProps> = (props) =>
             case DataTypes.boolean: {
                 builder.addCheckbox({
                     id: 'value',
-                    name: 'value',
+                    propertyName: 'value',
                     label: configuration.label,
                     //description: configuration.description
                 });

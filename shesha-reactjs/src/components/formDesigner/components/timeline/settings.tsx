@@ -55,7 +55,7 @@ const TimelineSettings: FC<ITabSettingsProps> = (props) => {
         <Input />
       </Form.Item>
 
-      <Form.Item name="name" initialValue={props.model.name} label="Name" rules={[{ required: true }]}>
+      <Form.Item name="propertyName" initialValue={props.model.propertyName} label="Property name" rules={[{ required: true }]}>
         <Input />
       </Form.Item>
 
@@ -95,7 +95,7 @@ const TimelineSettings: FC<ITabSettingsProps> = (props) => {
           <QueryBuilderWithModelType modelType={state?.entityType}>
             <QueryBuilderComponentRenderer
               readOnly={state.readOnly}
-              name="filters"
+              propertyName="filters"
               type={''}
               id={''}
               label="Query builder"

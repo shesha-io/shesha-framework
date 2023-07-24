@@ -12,31 +12,31 @@ export interface IShowConfirmationArguments {
 export const showConfirmationArgumentsForm = new DesignerToolbarSettings()
   .addTextField({
     id: nanoid(),
-    name: 'title',
+    propertyName: 'title',
     label: 'Title',
     validate: { required: true },
   })
   .addTextField({
     id: nanoid(),
-    name: 'content',
+    propertyName: 'content',
     label: 'Content',
     validate: { required: true },
   })
   .addTextField({
     id: nanoid(),
-    name: 'okText',
+    propertyName: 'okText',
     label: 'Ok text',
     validate: { required: true },
   })
   .addTextField({
     id: nanoid(),
-    name: 'cancelText',
+    propertyName: 'cancelText',
     label: 'Cancel text',
     validate: { required: true },
   })
   .addCheckbox({
     id: nanoid(),
-    name: "danger",
+    propertyName: "danger",
     label: "Danger",
   })
   .toJson();

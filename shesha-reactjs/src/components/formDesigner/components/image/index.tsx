@@ -25,7 +25,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
 
     // TODO:: Update the settings such that an option in the settings is added so allow the form to pass url through value.
     // TODO:: Add ImgWrapper component
-    const url: string = getString(model?.url, formData) || formData?.[model.name];
+    const url: string = getString(model?.url, formData) || formData?.[model.propertyName];
 
     return (
       <ConfigurableFormItem model={model}>

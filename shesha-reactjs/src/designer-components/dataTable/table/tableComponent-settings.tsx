@@ -173,7 +173,7 @@ function TableSettings(props: IProps) {
       wrapperCol={{ span: 24 }}
       labelCol={{ span: 24 }}
     >
-      <Form.Item name="name" label="Name">
+      <Form.Item name="propertyName" label="Property name">
         <PropertyAutocomplete readOnly={props.readOnly} showFillPropsButton={false} />
       </Form.Item>
 
@@ -226,7 +226,7 @@ function TableSettings(props: IProps) {
       >
         <CodeEditor
           id={''}
-          name="onNewRowInitialize"
+          propertyName="onNewRowInitialize"
           readOnly={props.readOnly}
           mode="dialog"
           label="New row init"
@@ -244,7 +244,7 @@ function TableSettings(props: IProps) {
       >
         <CodeEditor
           id={''}
-          name="onRowSave"
+          propertyName="onRowSave"
           readOnly={props.readOnly}
           mode="dialog"
           label="On row save"
@@ -262,7 +262,7 @@ function TableSettings(props: IProps) {
       >
         <CodeEditor
           id={''}
-          name="onRowSaveSuccess"
+          propertyName="onRowSaveSuccess"
           readOnly={props.readOnly}
           mode="dialog"
           label="On row save success"
@@ -309,7 +309,7 @@ function TableSettings(props: IProps) {
           readOnly={props.readOnly}
           mode="dialog"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          name="containerStyle"
+          propertyName="containerStyle"
           type={''}
           id={''}
           label="Table container style"
@@ -323,7 +323,7 @@ function TableSettings(props: IProps) {
           readOnly={props.readOnly}
           mode="dialog"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          name="tableStyle"
+          propertyName="tableStyle"
           type={''}
           id={''}
           label="Table style"

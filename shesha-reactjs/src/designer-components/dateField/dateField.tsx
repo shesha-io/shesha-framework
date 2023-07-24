@@ -5,9 +5,8 @@ import { CalendarOutlined } from '@ant-design/icons';
 import { DatePicker, message } from 'antd';
 import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
-import moment, { isMoment, Moment } from 'moment';
+import moment, { isMoment } from 'moment';
 import { getStyle, validateConfigurableComponentSettings } from '../../providers/form/utils';
-import { HiddenFormItem } from '../../components/hiddenFormItem';
 import { useForm, useFormData, useGlobalState, useMetaProperties, useSheshaApplication } from '../../providers';
 import { DataTypes } from '../../interfaces/dataTypes';
 import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
@@ -15,6 +14,7 @@ import { getPropertyMetadata, getMoment } from '../../utils/date';
 import { customDateEventHandler } from '../../components/formDesigner/components/utils';
 import { axiosHttp } from '../../utils/fetchers';
 import { ProperyDataType } from '../../interfaces/metadata';
+import { migratePropertyName } from 'designer-components/_settings/utils';
 
 const DATE_TIME_FORMATS = {
   time: 'HH:mm:ss',
@@ -30,12 +30,6 @@ const META_DATA_FILTERS: ProperyDataType[] = ['date', 'date-time', 'time'];
 const MIDNIGHT_MOMENT = moment('00:00:00', 'HH:mm:ss');
 
 const { RangePicker } = DatePicker;
-
-type RangeType = 'start' | 'end';
-
-interface IRangeInfo {
-  range: RangeType;
-}
 
 type RangeValue = [moment.Moment, moment.Moment];
 
@@ -95,15 +89,10 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
     return (
       <Fragment>
         <ConfigurableFormItem model={model}>
-          <DatePickerWrapper {...model} {...customDateEventHandler(eventProps)} />
+          {(value, onChange) => {
+            return <DatePickerWrapper {...model} {...customDateEventHandler(eventProps)} value={value} onChange={onChange} />;
+          }}
         </ConfigurableFormItem>
-
-        {model?.range && (
-          <Fragment>
-            <HiddenFormItem name={`${model?.name}Start`} />
-            <HiddenFormItem name={`${model?.name}End`} />
-          </Fragment>
-        )}
       </Fragment>
     );
   },
@@ -120,6 +109,9 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
     };
     return customModel;
   },
+  migrator: (m) => m
+    .add<IDateFieldProps>(0, (prev) => migratePropertyName(prev))
+  ,
   linkToModelMetadata: (model, metadata): IDateFieldProps => {
     return {
       ...model,
@@ -132,7 +124,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
   const properties = useMetaProperties(META_DATA_FILTERS);
 
   const {
-    name,
+    propertyName: name,
     disabled,
     hideBorder,
     range,
@@ -159,7 +151,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
   const monthFormat = props?.monthFormat || DATE_TIME_FORMATS.month;
   const weekFormat = props?.weekFormat || DATE_TIME_FORMATS.week;
 
-  const { form, formMode, isComponentDisabled, formData } = useForm();
+  const { formMode, isComponentDisabled, formData } = useForm();
 
   const isDisabled = isComponentDisabled(props);
 
@@ -219,18 +211,6 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     (onChange as RangePickerChangeEvent)(dates, formatString);
   };
 
-  const onCalendarChange = (values: Moment[], _formatString: [string, string], info: IRangeInfo) => {
-    const startDate = Array.isArray(values) && values[0];
-    const endDate = Array.isArray(values) && values[1];
-
-    if (info?.range === 'end' && form) {
-      form.setFieldsValue({
-        [`${name}Start`]: isMoment(startDate) ? startDate?.format() : null,
-        [`${name}End`]: isMoment(endDate) ? endDate?.format() : null,
-      });
-    }
-  };
-
   function disabledDate(current) {
     if (disabledDateMode === 'none') return false;
 
@@ -261,7 +241,6 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
       <RangePicker
         className="sha-range-picker"
         disabledDate={disabledDate}
-        onCalendarChange={onCalendarChange}
         onChange={handleRangePicker}
         format={pickerFormat}
         value={getRangePickerValues(value)}

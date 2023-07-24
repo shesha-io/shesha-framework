@@ -3,7 +3,7 @@
     {
       "id": "840aee56-42d2-40ed-a2c6-57abb255fb95",
       "type": "dropdown",
-      "name": "columnType",
+      "propertyName": "columnType",
       "label": "Type",
       "labelAlign": "right",
       "parentId": "root",
@@ -30,7 +30,7 @@
     {
       "id": "d2ba51c1-13cc-4952-a25c-5b03442097a0",
       "type": "container",
-      "name": "dataContainer",
+      "propertyName": "dataContainer",
       "label": "Container3",
       "labelAlign": "right",
       "parentId": "root",
@@ -43,7 +43,7 @@
         {
           "id": "52f4460d-2e64-4d79-a900-7cd28b0bebd3",
           "type": "propertyAutocomplete",
-          "name": "propertyName",
+          "propertyName": "propertyName",
           "label": "Property Name",
           "labelAlign": "right",
           "parentId": "d2ba51c1-13cc-4952-a25c-5b03442097a0",
@@ -57,7 +57,7 @@
     {
       "id": "5d4d56fb-d7f8-4835-a529-c4fa93f3596d",
       "type": "textField",
-      "name": "caption",
+      "propertyName": "caption",
       "label": "Caption",
       "labelAlign": "right",
       "parentId": "root",
@@ -71,7 +71,7 @@
     {
       "id": "9e5cad3f-b9af-4b19-aebb-d630265f6619",
       "type": "textArea",
-      "name": "description",
+      "propertyName": "description",
       "label": "Tooltip Description",
       "labelAlign": "right",
       "parentId": "root",
@@ -86,7 +86,7 @@
     {
       "id": "345c2181-fb9f-48ed-9631-864ac357807b",
       "type": "container",
-      "name": "cntButton",
+      "propertyName": "cntButton",
       "label": "Container2",
       "labelAlign": "right",
       "parentId": "root",
@@ -98,7 +98,7 @@
         {
           "id": "91b404a6-4021-4b0a-b9ef-007167a93075",
           "type": "iconPicker",
-          "name": "icon",
+          "propertyName": "icon",
           "label": "Icon",
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
@@ -109,7 +109,7 @@
         {
           "id": "F3B46A95-703F-4465-96CA-A58496A5F78C",
           "type": "configurableActionConfigurator",
-          "name": "actionConfiguration",
+          "propertyName": "actionConfiguration",
           "label": "Action configuration",
           "hidden": false,
           "customVisibility": "",
@@ -122,7 +122,7 @@
     {
       "id": "b1803af1-37fb-4f03-b2b6-727b7f17730c",
       "type": "numberField",
-      "name": "minWidth",
+      "propertyName": "minWidth",
       "label": "Min Width",
       "labelAlign": "right",
       "parentId": "root",
@@ -134,7 +134,7 @@
     {
       "id": "65bb484c-ab85-472c-bde7-e447c481ed47",
       "type": "numberField",
-      "name": "maxWidth",
+      "propertyName": "maxWidth",
       "label": "Max Width",
       "labelAlign": "right",
       "parentId": "root",
@@ -146,7 +146,7 @@
     {
       "id": "77ceb915-f4f9-4957-b62f-7a4e4ba00846",
       "type": "checkbox",
-      "name": "isVisible",
+      "propertyName": "isVisible",
       "label": "Is Visible",
       "labelAlign": "right",
       "parentId": "root",
@@ -158,7 +158,7 @@
     {
       "id": "cb28089d-1596-4c15-ae2e-ecfc69f33efc",
       "type": "checkbox",
-      "name": "isEditable",
+      "propertyName": "isEditable",
       "label": "Is Editable",
       "labelAlign": "right",
       "parentId": "root",
@@ -171,7 +171,7 @@
     {
       "id": "26c68b22-3211-475d-91e1-0745a4447329",
       "type": "editableTagGroup",
-      "name": "permissions",
+      "propertyName": "permissions",
       "label": "Permissions",
       "labelAlign": "right",
       "parentId": "root",
@@ -182,7 +182,7 @@
     {
       "id": "eJiLlB4PoftEbhcEeg_0W",
       "type": "dropdown",
-      "name": "defaultSorting",
+      "propertyName": "defaultSorting",
       "label": "Default Sorting",
       "labelAlign": "right",
       "parentId": "root",

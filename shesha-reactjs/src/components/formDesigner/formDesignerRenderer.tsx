@@ -46,7 +46,7 @@ const DebugContent: FC<DebugContentProps> = ({formValues}) => {
           <Row>
             <h3>{item.name}:</h3>
             <Col span={24}>
-              <pre>{JSON.stringify(item.data, null, 2)}</pre>
+              <pre>{JSON.stringify(item.dataContext.data, null, 2)}</pre>
             </Col>
           </Row>
         );

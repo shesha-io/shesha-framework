@@ -117,7 +117,7 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
             ...customComponent.settings,
             id: props.columnConfig.columnId,
             type: customComponent.type,
-            name: columnConfig.propertyName,
+            propertyName: columnConfig.propertyName,
             label: null,
             hideLabel: true,
         };

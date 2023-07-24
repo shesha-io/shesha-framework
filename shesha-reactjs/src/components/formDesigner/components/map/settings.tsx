@@ -53,7 +53,7 @@ const MapSettings: FC<ITabSettingsProps> = (props) => {
       disabled={props.readOnly}
     >
       <SectionSeparator title="Display" />
-      <Form.Item name="description" initialValue={props.model.name} label="Description">
+      <Form.Item name="description" initialValue={props.model.propertyName} label="Description">
         <TextArea />
       </Form.Item>
 
@@ -86,7 +86,7 @@ const MapSettings: FC<ITabSettingsProps> = (props) => {
 
         <Show when={Boolean(state?.customIcon)}>
           <Form.Item name="icon" label="Icon">
-            <IconPickerWrapper name={''} type={''} id={''} />
+            <IconPickerWrapper propertyName={''} type={''} id={''} />
           </Form.Item>
 
           <Form.Item name="color" label="Icon Color">
@@ -126,7 +126,7 @@ const MapSettings: FC<ITabSettingsProps> = (props) => {
       >
         <CodeEditor
           id={''}
-          name="customVisibility"
+          propertyName="customVisibility"
           readOnly={state.readOnly}
           mode="dialog"
           label="Custom Visibility"

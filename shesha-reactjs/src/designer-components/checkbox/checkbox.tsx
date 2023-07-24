@@ -10,6 +10,7 @@ import { DataTypes } from '../../interfaces/dataTypes';
 import { useForm, useFormData } from '../../providers';
 import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
 import { ICheckboxComponentProps } from './interfaces';
+import { migratePropertyName } from 'designer-components/_settings/utils';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -31,13 +32,13 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps> = {
       <ConfigurableFormItem model={model} valuePropName="checked" initialValue={model?.defaultValue}>
         {(value, onChange) => (
           isReadOnly ? (
-            <ReadOnlyDisplayFormItem type="checkbox" disabled={disabled} />
+            <ReadOnlyDisplayFormItem value={value} type="checkbox" disabled={disabled} />
           ) : (
             <Checkbox className="sha-checkbox" disabled={disabled} style={getStyle(model?.style, data)} 
               checked={value} 
-              onChange={(e) => {
+              onChange={onChange}/* (e) => {
                 onChange({ target: e.target });
-              }}
+              }}*/
             />
           )
         )}
@@ -45,6 +46,9 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps> = {
     );
   },
   settingsFormMarkup: settingsForm,
+  migrator: (m) => m
+    .add<ICheckboxComponentProps>(0, (prev) => migratePropertyName(prev))
+  ,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
 };
 

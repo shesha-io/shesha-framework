@@ -25,6 +25,7 @@ import { IAutocompleteComponentProps } from './interfaces';
 import { migrateDynamicExpression } from 'designer-components/_common-migrations/migrateUseExpression';
 import { useAsyncMemo } from 'hooks/useAsyncMemo';
 import { evaluateDynamicFilters } from 'utils';
+import { migratePropertyName } from 'designer-components/_settings/utils';
 
 interface IQueryParams {
   // tslint:disable-next-line:typedef-whitespace
@@ -172,35 +173,39 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     // todo: implement other types of datasources!
     return (
       <ConfigurableFormItem model={model}>
-        {model.useRawValues ? (
-          <Autocomplete.Raw {...autocompleteProps} {...customDropDownEventHandler(eventProps)} />
-        ) : (
-          <Autocomplete.EntityDto {...autocompleteProps} {...customDropDownEventHandler(eventProps)} />
-        )}
+        {(value, onChange) => {
+          return (
+          model.useRawValues ? (
+            <Autocomplete.Raw {...autocompleteProps} {...customDropDownEventHandler(eventProps)} value={value} onChange={onChange}/>
+          ) : (
+            <Autocomplete.EntityDto {...autocompleteProps} {...customDropDownEventHandler(eventProps)} value={value} onChange={onChange}/>
+          ));
+        }}
       </ConfigurableFormItem>
     );
   },
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
-  migrator: (m) =>
-    m
-      .add<IAutocompleteComponentProps>(0, (prev) => ({
-        ...prev,
-        dataSourceType: prev['dataSourceType'] ?? 'entitiesList',
-        useRawValues: prev['useRawValues'] ?? false,
-      }))
-      .add<IAutocompleteComponentProps>(1, (prev) => {
-        const result = { ...prev };
-        const useExpression = Boolean(result['useExpression']);
-        delete result['useExpression'];
+  migrator: (m) => m
+    .add<IAutocompleteComponentProps>(0, (prev) => ({
+      ...prev,
+      dataSourceType: prev['dataSourceType'] ?? 'entitiesList',
+      useRawValues: prev['useRawValues'] ?? false,
+    }))
+    .add<IAutocompleteComponentProps>(1, (prev) => {
+      const result = { ...prev };
+      const useExpression = Boolean(result['useExpression']);
+      delete result['useExpression'];
 
-        if (useExpression) {
-          const migratedExpression = migrateDynamicExpression(prev.filter);
-          result.filter = migratedExpression;
-        }
+      if (useExpression) {
+        const migratedExpression = migrateDynamicExpression(prev.filter);
+        result.filter = migratedExpression;
+      }
 
-        return result;
-      }),
+      return result;
+    })
+    .add<IAutocompleteComponentProps>(2, (prev) => migratePropertyName(prev))
+  ,
   linkToModelMetadata: (model, metadata): IAutocompleteComponentProps => {
     return {
       ...model,

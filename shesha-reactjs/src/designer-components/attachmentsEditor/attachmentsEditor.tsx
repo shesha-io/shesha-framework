@@ -12,6 +12,7 @@ import {
   validateConfigurableComponentSettings,
 } from '../../providers/form/utils';
 import { getSettings } from './settings';
+import { migratePropertyName } from 'designer-components/_settings/utils';
 
 export interface IAttachmentsEditorProps extends IConfigurableFormComponent {
   ownerId: string;
@@ -69,8 +70,8 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
   },
   settingsFormMarkup: getSettings(),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
-  migrator: (m) =>
-    m.add<IAttachmentsEditorProps>(0, (prev) => {
+  migrator: (m) => m
+    .add<IAttachmentsEditorProps>(0, (prev) => {
       return {
         ...prev,
         allowAdd: true,
@@ -81,7 +82,9 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         ownerType: '',
         ownerName: '',
       };
-    }),
+    })
+    .add<IAttachmentsEditorProps>(0, (prev) => migratePropertyName(prev))
+  ,
 };
 
 export default AttachmentsEditor;

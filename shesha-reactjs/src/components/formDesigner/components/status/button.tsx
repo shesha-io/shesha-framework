@@ -11,7 +11,7 @@ export type IActionParameters = [{ key: string; value: string }];
 
 export interface IStatusFieldProps extends IConfigurableFormComponent {
   color: string;
-  name: string;
+  propertyName: string;
 }
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -23,7 +23,7 @@ const StatusField: IToolboxComponent<IStatusFieldProps> = {
   factory: (model: IStatusFieldProps) => {
     const { data: formData } = useFormData();
 
-    const value = evaluateValue(model?.name, { data: formData });
+    const value = evaluateValue(model?.propertyName, { data: formData });
 
     return <Tag color={model?.color}>{value}</Tag>;
   },

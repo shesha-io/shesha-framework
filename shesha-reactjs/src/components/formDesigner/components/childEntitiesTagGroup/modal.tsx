@@ -35,7 +35,7 @@ const ChildEntitiesTagGroupModal: FC<IProps> = ({
   loading,
   modalTitle: title,
   modalWidth: width = '60%',
-  name,
+  propertyName: name,
   open,
   onSetData,
   onToggle,

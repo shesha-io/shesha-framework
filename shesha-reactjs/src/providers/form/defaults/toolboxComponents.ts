@@ -76,7 +76,6 @@ import SubForm from 'components/formDesigner/components/subForm';
 import Switch from 'components/formDesigner/components/switch/switch';
 import Tabs from 'components/formDesigner/components/tabs';
 import Text from 'components/formDesigner/components/text';
-import TextArea from 'components/formDesigner/components/textArea/textArea';
 import TextFieldComponent from 'designer-components/textField/textField';
 import TimeField from 'designer-components/timeField';
 import ValidationErrors from 'components/formDesigner/components/validationErrors';
@@ -89,6 +88,8 @@ import SettingsComponent from 'designer-components/_settings/settingsComponent';
 import TestComponent from 'designer-components/_test';
 import DataContextSelector from 'designer-components/dataContextSelector';
 import DataContextComponent from 'designer-components/dataContextComponent';
+import ContextPropertyAutocompleteComponent from 'designer-components/contextPropertyAutocomplete';
+import TextAreaComponent from 'designer-components/textArea/textArea';
 
 export const ToolboxComponents: IToolboxComponentGroup[] = [
   {
@@ -156,7 +157,7 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
       Radio,
       Section,
       Switch,
-      TextArea,
+      TextAreaComponent,
       TextFieldComponent,
       Statistic,
       Text,
@@ -200,7 +201,7 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
   {
     visible: true,
     name: 'Settings',
-    components: [SettingsComponent, TestComponent, DataContextSelector, DataContextComponent]
+    components: [SettingsComponent, TestComponent, DataContextSelector, DataContextComponent, ContextPropertyAutocompleteComponent]
   }
 ];
 

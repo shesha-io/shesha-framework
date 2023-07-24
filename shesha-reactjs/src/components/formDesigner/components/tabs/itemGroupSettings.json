@@ -3,7 +3,7 @@
     {
       "id": "f061d971-8b38-4b82-b192-563259afc159",
       "type": "textField",
-      "name": "name",
+      "propertyName": "name",
       "label": "Group Name",
       "labelAlign": "right",
       "parentId": "root",
@@ -16,14 +16,14 @@
     {
       "id": "9b976b38-5c09-41c9-9e5a-70e6734ef38f",
       "type": "textField",
-      "name": "label",
+      "propertyName": "label",
       "parentId": "root",
       "label": "Label"
     },
     {
       "id": "2ab34541-6fa0-4be2-bb1e-eb65ec63b353",
       "type": "dropdown",
-      "name": "groupType",
+      "propertyName": "groupType",
       "label": "Group Type",
       "labelAlign": "right",
       "parentId": "root",
@@ -44,7 +44,7 @@
     {
       "id": "uuIhAV7hqfVvjC4vLYUKo",
       "type": "textArea",
-      "name": "tooltip",
+      "propertyName": "tooltip",
       "label": "Group Tooltip",
       "labelAlign": "right",
       "parentId": "root",
@@ -59,7 +59,7 @@
     {
       "id": "4lmhhHM0xpvA0ERbkfkVS",
       "type": "iconPicker",
-      "name": "icon",
+      "propertyName": "icon",
       "label": "Icon",
       "labelAlign": "right",
       "parentId": "root",
@@ -70,7 +70,7 @@
     {
       "id": "WddtQisTgpi7GMg2qMASD",
       "type": "dropdown",
-      "name": "buttonType",
+      "propertyName": "buttonType",
       "label": "Button Type",
       "labelAlign": "right",
       "parentId": "root",

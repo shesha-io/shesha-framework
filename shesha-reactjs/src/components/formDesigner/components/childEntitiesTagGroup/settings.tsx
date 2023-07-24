@@ -37,7 +37,7 @@ export const ChildEntitiesTagGroupSettings: FC<IChildEntitiesTagGroupSettingsPro
     <Form form={form} onFinish={onSave} layout="vertical" onValuesChange={handleValuesChange} initialValues={model}>
       <SectionSeparator title="Display" />
 
-      <FormItem name="name" label="Name" rules={[{ required: true }]}>
+      <FormItem name="propertyName" label="Property name" rules={[{ required: true }]}>
         <PropertyAutocomplete id="415cc8ec-2fd1-4c5a-88e2-965153e16069" readOnly={readOnly} />
       </FormItem>
 
@@ -87,7 +87,7 @@ export const ChildEntitiesTagGroupSettings: FC<IChildEntitiesTagGroupSettingsPro
           readOnly={readOnly}
           mode="dialog"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          name="labelFormat"
+          propertyName="labelFormat"
           type={''}
           id={''}
           label="Label Format"
@@ -127,7 +127,7 @@ export const ChildEntitiesTagGroupSettings: FC<IChildEntitiesTagGroupSettingsPro
           mode="dialog"
           label="Custom Visibility"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          name="customVisibility"
+          propertyName="customVisibility"
           type={''}
           id={''}
           description="Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."

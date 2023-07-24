@@ -37,7 +37,7 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionsTreeCompon
     return (
       <PermissionsTree 
         formComponentId={model?.id}
-        formComponentName={model.name}
+        formComponentName={model.propertyName}
         value={model?.value} 
         updateKey={model?.updateKey}
         onChange={model?.onChange}
@@ -51,7 +51,7 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionsTreeCompon
       <ConfigurableFormItem model={model}>
         <PermissionsTree 
           formComponentId={model?.id}
-          formComponentName={model.name}
+          formComponentName={model.propertyName}
           value={model?.value} 
           updateKey={model?.updateKey}
           onChange={model?.onChange}

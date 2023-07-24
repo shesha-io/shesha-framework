@@ -5,28 +5,28 @@ export const getSettings = () =>
   new DesignerToolbarSettings()
     .addSectionSeparator({
       id: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-      name: 'separator1',
+      propertyName: 'separator1',
       parentId: 'root',
       label: 'Display',
     })
     .addPropertyAutocomplete({
       id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
-      name: 'name',
+      propertyName: 'propertyName',
       parentId: 'root',
-      label: 'Name',
+      label: 'Property name',
       validate: {
         required: true,
       },
     })
     .addTextField({
       id: '46d07439-4c18-468c-89e1-60c002ce96c5',
-      name: 'label',
+      propertyName: 'label',
       parentId: 'root',
       label: 'Label',
     })
     .addDropdown({
       id: '57a40a33-7e08-4ce4-9f08-a34d24a83338',
-      name: 'labelAlign',
+      propertyName: 'labelAlign',
       parentId: 'root',
       label: 'Label align',
       values: [
@@ -45,13 +45,13 @@ export const getSettings = () =>
     })
     .addTextArea({
       id: '2d32fe70-99a0-4825-ae6c-8b933004e119',
-      name: 'description',
+      propertyName: 'description',
       parentId: 'root',
       label: 'Description',
     })
     .addDropdown({
       id: 'df8a8f35-a50b-42f9-9642-73d390ceddbf',
-      name: 'visibility',
+      propertyName: 'visibility',
       parentId: 'root',
       label: 'Visibility',
       description:
@@ -78,25 +78,25 @@ export const getSettings = () =>
     })
     .addCheckbox({
       id: 'cfd7d45e-c7e3-4a27-987b-dc525c412448',
-      name: 'hidden',
+      propertyName: 'hidden',
       parentId: 'root',
       label: 'Hidden',
     })
     .addCheckbox({
       id: 'c6885251-96a6-40ce-99b2-4b5209a9e01c',
-      name: 'hideLabel',
+      propertyName: 'hideLabel',
       parentId: 'root',
       label: 'Hide Label',
     })
     .addCheckbox({
       id: '24a8be15-98eb-40f7-99ea-ebb602693e9c',
-      name: 'disabled',
+      propertyName: 'disabled',
       parentId: 'root',
       label: 'Disabled',
     })
     .addCodeEditor({
       id: '4b5e5951-4998-4635-b1c8-0b6d3940c300',
-      name: 'customEnabled',
+      propertyName: 'customEnabled',
       label: 'Custom Enabled',
       labelAlign: 'right',
       parentId: 'root',
@@ -120,7 +120,7 @@ export const getSettings = () =>
     })*/
     .addCheckbox({
       id: '40024b1c-edd4-4b5d-9c85-1dda6fb8db6c',
-      name: 'allowAdd',
+      propertyName: 'allowAdd',
       parentId: 'root',
       label: 'Allow Add',
       validate: {},
@@ -128,7 +128,7 @@ export const getSettings = () =>
     })
     .addCheckbox({
       id: '6b3d298a-0e82-4420-ae3c-38bf5a2246d4',
-      name: 'allowDelete',
+      propertyName: 'allowDelete',
       parentId: 'root',
       label: 'Allow Remove',
       validate: {},
@@ -136,26 +136,26 @@ export const getSettings = () =>
     })
     .addSectionSeparator({
       id: '9b302942-a0a6-4805-ac47-8f45486a69d4',
-      name: 'separator3',
+      propertyName: 'separator3',
       parentId: 'root',
       label: 'Files',
     })
     .addPropertyAutocomplete({
       id: '3fe73b1a-04c5-4658-ac0f-cbcbae6b3bd4',
       showFillPropsButton: false,
-      name: 'ownerName',
+      propertyName: 'ownerName',
       parentId: 'root',
       label: 'Owner',
     })
     .addTextField({
       id: '1c03863c-880d-4308-8667-c3d996619cb7',
-      name: 'ownerId',
+      propertyName: 'ownerId',
       parentId: 'root',
       label: 'Owner Id',
     })
     .addAutocomplete({
       id: '0009bf13-04a3-49d5-a9d8-1b23df20b97c',
-      name: 'ownerType',
+      propertyName: 'ownerType',
       label: 'Owner Type',
       labelAlign: 'right',
       parentId: 'root',
@@ -168,37 +168,37 @@ export const getSettings = () =>
     })
     .addTextField({
       id: 'db913b1b-3b25-46c9-afef-21854d917ba7',
-      name: 'filesCategory',
+      propertyName: 'filesCategory',
       parentId: 'root',
       label: 'Files Category',
     })
     .addEditableTagGroupProps({
       id: nanoid(),
-      name: 'allowedFileTypes',
+      propertyName: 'allowedFileTypes',
       label: 'Allowed File Types',
       description: 'File types that can be accepted.',
     })
     .addSectionSeparator({
       id: 'd675bfe4-ee69-431e-931b-b0e0b9ceee6f',
-      name: 'separator2',
+      propertyName: 'separator2',
       parentId: 'root',
       label: 'Validation',
     })
     .addCheckbox({
       id: '3be9da3f-f47e-48ae-b4c3-f5cc36e534d9',
-      name: 'validate.required',
+      propertyName: 'validate.required',
       parentId: 'root',
       label: 'Required',
     })
     .addSectionSeparator({
       id: '2d261430-fb79-4859-9a2b-6baf2d07ccb6',
-      name: 'separatorVisibility',
+      propertyName: 'separatorVisibility',
       parentId: 'root',
       label: 'Visibility',
     })
     .addCodeEditor({
       id: 'de95ae9a-52d0-4e18-b07d-a40a789c7ec7',
-      name: 'customVisibility',
+      propertyName: 'customVisibility',
       label: 'Custom Visibility',
       labelAlign: 'right',
       parentId: 'root',

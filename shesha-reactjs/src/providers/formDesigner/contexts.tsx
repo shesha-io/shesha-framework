@@ -18,6 +18,7 @@ import {
 //import { StateWithHistory } from 'redux-undo';
 import { IDataSource } from '../formDesigner/models';
 import { IPropertyMetadata } from '../../interfaces/metadata';
+import { IDataContextFullInstance } from 'providers/dataContextProvider';
 
 export type IFlagProgressFlags =
   | 'addComponent'
@@ -130,7 +131,7 @@ export interface IFormDesignerActionsContext
   endDraggingNewItem: () => void;
   startDragging: () => void;
   endDragging: () => void;
-  setSelectedComponent: (id: string, dataSourceId: string, componentRef?: MutableRefObject<any>) => void;
+  setSelectedComponent: (id: string, dataSourceId: string, dataContext: IDataContextFullInstance, componentRef?: MutableRefObject<any>) => void;
   updateFormSettings: (settings: IFormSettings) => void;
 
   getToolboxComponent: (type: string) => IToolboxComponent;

@@ -3,16 +3,16 @@
     {
       "id": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
       "type": "sectionSeparator",
-      "name": "separator1",
+      "propertyName": "separator1",
       "parentId": "root",
       "label": "Display"
     },
     {
       "id": "5da0ce15-0170-447d-8ca6-b34415a2d05a",
       "type": "textField",
-      "name": "name",
+      "propertyName": "propertyName",
       "parentId": "root",
-      "label": "Name",
+      "label": "Property name",
       "validate": {
         "required": true
       }
@@ -20,7 +20,7 @@
     {
       "id": "bb6040c8-9071-43c2-828c-50f6446c4c6e",
       "type": "dropdown",
-      "name": "align",
+      "propertyName": "align",
       "parentId": "root",
       "label": "Align",
       "values": [
@@ -51,7 +51,7 @@
     {
       "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
       "type": "dropdown",
-      "name": "size",
+      "propertyName": "size",
       "parentId": "root",
       "label": "The space size",
       "allowClear": true,
@@ -77,28 +77,28 @@
     {
       "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
       "type": "numberField",
-      "name": "sizeNumber",
+      "propertyName": "sizeNumber",
       "parentId": "root",
       "label": "Size Number"
     },
     {
       "id": "320d036b-c715-4676-a6cd-8b990950ddb9",
       "type": "numberField",
-      "name": "marginLeft",
+      "propertyName": "marginLeft",
       "parentId": "root",
       "label": "Margin Left"
     },
     {
       "id": "b2fcd9e5-e0a0-4b01-a7f1-ab85ff92d8c7",
       "type": "numberField",
-      "name": "marginRight",
+      "propertyName": "marginRight",
       "parentId": "root",
       "label": "Margin Right"
     },
     {
       "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
       "type": "dropdown",
-      "name": "direction",
+      "propertyName": "direction",
       "parentId": "root",
       "label": "Space",
       "values": [
@@ -119,7 +119,7 @@
     {
       "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
       "type": "checkbox",
-      "name": "wrap",
+      "propertyName": "wrap",
       "parentId": "root",
       "label": "Wrap"
     }

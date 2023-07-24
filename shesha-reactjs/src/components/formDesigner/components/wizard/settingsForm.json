@@ -3,16 +3,16 @@
     {
       "id": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
       "type": "sectionSeparator",
-      "name": "separator1",
+      "propertyName": "separator1",
       "parentId": "root",
       "label": "Display"
     },
     {
       "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
       "type": "textField",
-      "name": "name",
+      "propertyName": "propertyName",
       "parentId": "root",
-      "label": "Name",
+      "label": "Property name",
       "validate": {
         "required": true
       }
@@ -20,14 +20,14 @@
     {
       "id": "947b0f7d-aa08-48e9-ae81-031861d57cd0",
       "type": "textField",
-      "name": "defaultActiveKey",
+      "propertyName": "defaultActiveKey",
       "parentId": "root",
       "label": "Default Active Key"
     },
     {
       "id": "8b9033ea-9408-4f56-80f2-89f07cf1cc8f",
       "type": "dropdown",
-      "name": "wizardType",
+      "propertyName": "wizardType",
       "parentId": "root",
       "label": "Type",
       "values": [
@@ -48,7 +48,7 @@
     {
       "id": "df8a8f35-a50b-42f9-9642-73d390ceddbf",
       "type": "dropdown",
-      "name": "visibility",
+      "propertyName": "visibility",
       "parentId": "root",
       "label": "Visibility",
       "description": "This property will eventually replace the 'hidden' property and other properties that toggle visibility on the UI and payload",
@@ -75,14 +75,14 @@
     {
       "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
       "type": "checkbox",
-      "name": "hidden",
+      "propertyName": "hidden",
       "parentId": "root",
       "label": "Hidden"
     },
     {
       "id": "b395c0e9-dbc1-44f1-8fef-c18a49442871",
       "type": "labelValueEditor",
-      "name": "tabs",
+      "propertyName": "tabs",
       "parentId": "root",
       "label": "Tabs",
       "labelTitle": "Key",
@@ -93,14 +93,14 @@
     {
       "id": "5161528d-5aa6-4397-9240-095e89d4978d",
       "type": "sectionSeparator",
-      "name": "separatorVisibility",
+      "propertyName": "separatorVisibility",
       "parentId": "root",
       "label": "Visibility"
     },
     {
       "id": "cc2ef9f4-d0bd-4239-8c19-a2e0ca1892b2",
       "type": "codeEditor",
-      "name": "customVisibility",
+      "propertyName": "customVisibility",
       "label": "Custom Visibility",
       "labelAlign": "right",
       "parentId": "root",
@@ -110,8 +110,8 @@
       "validate": {},
       "settingsValidationErrors": [],
       "exposedVariables": [
-        { "name": "value", "description": "Component current value", "type": "string | any" },
-        { "name": "data", "description": "Selected form values", "type": "object" }
+        { "propertyName": "value", "description": "Component current value", "type": "string | any" },
+        { "propertyName": "data", "description": "Selected form values", "type": "object" }
       ]
     }
   ],

@@ -33,7 +33,7 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
                     onChangeValues={(changedValues) => {
                         setFormData({values: changedValues, mergeValues: true});
                     }}
-                    name={props.name}
+                    name={props.propertyName}
                 >
                     <ComponentsContainer containerId={props.id} dynamicComponents={components}/>
                 </SettingsControl>

@@ -3,16 +3,16 @@
     {
       "id": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
       "type": "sectionSeparator",
-      "name": "separator1",
+      "propertyName": "separator1",
       "parentId": "root",
       "label": "Display"
     },
     {
       "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
       "type": "propertyAutocomplete",
-      "name": "name",
+      "propertyName": "propertyName",
       "parentId": "root",
-      "label": "Name",
+      "label": "Property name",
       "validate": {
         "required": true
       }
@@ -20,7 +20,7 @@
     {
       "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
       "type": "textField",
-      "name": "label",
+      "propertyName": "label",
       "parentId": "root",
       "label": "Label",
       "version": 0,
@@ -29,7 +29,7 @@
     {
       "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
       "type": "dropdown",
-      "name": "labelAlign",
+      "propertyName": "labelAlign",
       "parentId": "root",
       "label": "Label align",
       "values": [
@@ -49,7 +49,7 @@
     {
       "id": "fbdb6bb1-5994-4205-86b4-236ca61ae54e",
       "type": "textField",
-      "name": "placeholder",
+      "propertyName": "placeholder",
       "parentId": "root",
       "label": "Placeholder",
       "version": 0,
@@ -58,49 +58,49 @@
     {
       "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
       "type": "textArea",
-      "name": "description",
+      "propertyName": "description",
       "parentId": "root",
       "label": "Description"
     },
     {
       "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
       "type": "checkbox",
-      "name": "hidden",
+      "propertyName": "hidden",
       "parentId": "root",
       "label": "Hidden"
     },
     {
       "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
       "type": "checkbox",
-      "name": "hideLabel",
+      "propertyName": "hideLabel",
       "parentId": "root",
       "label": "Hide Label"
     },
     {
       "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
       "type": "checkbox",
-      "name": "disabled",
+      "propertyName": "disabled",
       "parentId": "root",
       "label": "Disabled"
     },
     {
       "id": "d675bfe4-ee69-431e-931b-b0e0b9ceee6f",
       "type": "sectionSeparator",
-      "name": "separator2",
+      "propertyName": "separator2",
       "parentId": "root",
       "label": "Validation"
     },
     {
       "id": "3be9da3f-f47e-48ae-b4c3-f5cc36e534d9",
       "type": "checkbox",
-      "name": "validate.required",
+      "propertyName": "validate.required",
       "parentId": "root",
       "label": "Required"
     },
     {
       "id": "9ee3a529-1f0c-4def-bd41-ee166a5dfcd7",
       "type": "textField",
-      "name": "validate.message",
+      "propertyName": "validate.message",
       "parentId": "root",
       "label": "Message",
       "validate": {},
@@ -110,7 +110,7 @@
     {
       "id": "22725416-3a3c-412c-8461-4c8d55e5c073",
       "type": "codeEditor",
-      "name": "validate.validator",
+      "propertyName": "validate.validator",
       "parentId": "root",
       "label": "Validator",
       "validate": {},
@@ -121,22 +121,22 @@
       "settingsValidationErrors": [],
       "exposedVariables": [
         {
-          "name": "rules",
+          "propertyName": "rules",
           "description": "Validate rules, only support customize validator",
           "type": "object"
         },
         {
-          "name": "value",
+          "propertyName": "value",
           "description": "Component current value",
           "type": "object"
         },
         {
-          "name": "callback",
+          "propertyName": "callback",
           "description": "Callback called by component",
           "type": "function"
         },
         {
-          "name": "data",
+          "propertyName": "data",
           "description": "Form values",
           "type": "object"
         }
@@ -145,14 +145,14 @@
     {
       "id": "6befdd49-41aa-41d6-a29e-76fa00590b75",
       "type": "sectionSeparator",
-      "name": "sectionStyle",
+      "propertyName": "sectionStyle",
       "parentId": "root",
       "label": "Style"
     },
     {
       "id": "06ab0599-914d-4d2d-875c-765a495472f8",
       "type": "codeEditor",
-      "name": "style",
+      "propertyName": "style",
       "label": "Style",
       "parentId": "root",
       "validate": {},
@@ -160,7 +160,7 @@
       "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
       "exposedVariables": [
         {
-          "name": "data",
+          "propertyName": "data",
           "description": "Form values",
           "type": "object"
         }
@@ -169,7 +169,7 @@
     {
       "id": "494e8079-98f6-4a25-b9fd-40a77554ec89",
       "type": "dropdown",
-      "name": "size",
+      "propertyName": "size",
       "parentId": "root",
       "label": "Size",
       "allowClear": true,
@@ -195,14 +195,14 @@
     {
       "id": "41721f44-adbc-42fe-8c70-69b30e36f4ca",
       "type": "sectionSeparator",
-      "name": "sectionVisibility",
+      "propertyName": "sectionVisibility",
       "parentId": "root",
       "label": "Visibility"
     },
     {
       "id": "aec2d8de-6e86-4e4e-a9da-62c11e538363",
       "type": "codeEditor",
-      "name": "customVisibility",
+      "propertyName": "customVisibility",
       "label": "Custom Visibility",
       "labelAlign": "right",
       "parentId": "root",
@@ -213,12 +213,12 @@
       "settingsValidationErrors": [],
       "exposedVariables": [
         {
-          "name": "value",
+          "propertyName": "value",
           "description": "Component current value",
           "type": "string | any"
         },
         {
-          "name": "data",
+          "propertyName": "data",
           "description": "Selected form values",
           "type": "object"
         }
@@ -227,7 +227,7 @@
     {
       "id": "4b5e5951-4998-4635-b1c8-0b6d3940c300",
       "type": "codeEditor",
-      "name": "customEnabled",
+      "propertyName": "customEnabled",
       "label": "Custom Enabled",
       "labelAlign": "right",
       "parentId": "root",
@@ -238,12 +238,12 @@
       "settingsValidationErrors": [],
       "exposedVariables": [
         {
-          "name": "value",
+          "propertyName": "value",
           "description": "Component current value",
           "type": "string | any"
         },
         {
-          "name": "data",
+          "propertyName": "data",
           "description": "Selected form values",
           "type": "object"
         }

@@ -4,26 +4,26 @@ export const getSettings = (data: any) =>
   new DesignerToolbarSettings(data)
     .addSectionSeparator({
       id: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-      name: 'separator1',
+      propertyName: 'separator1',
       parentId: 'root',
       label: 'Display',
     })
     .addPropertyAutocomplete({
       id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
-      name: 'name',
+      propertyName: 'propertyName',
       parentId: 'root',
-      label: 'Name',
+      label: 'Property name',
       validate: { required: true },
     })
     .addTextField({
       id: '46d07439-4c18-468c-89e1-60c002ce96c5',
-      name: 'label',
+      propertyName: 'label',
       parentId: 'root',
       label: 'Label',
     })
     .addDropdown({
       id: '57a40a33-7e08-4ce4-9f08-a34d24a83338',
-      name: 'labelAlign',
+      propertyName: 'labelAlign',
       parentId: 'root',
       label: 'Label align',
       values: [
@@ -42,25 +42,25 @@ export const getSettings = (data: any) =>
     })
     .addNumberField({
       id: '971b2e8a-51e4-4289-bc65-185619eb56be',
-      name: 'count',
+      propertyName: 'count',
       parentId: 'root',
       label: 'Count',
     })
     .addIconPicker({
       id: '152f3d72-68fb-43ab-adf6-8cf7d11fe6e1',
-      name: 'icon',
+      propertyName: 'icon',
       label: 'Icon',
       parentId: 'root',
     })
     .addTextArea({
       id: '2d32fe70-99a0-4825-ae6c-8b933004e119',
-      name: 'description',
+      propertyName: 'description',
       parentId: 'root',
       label: 'Description',
     })
     .addDropdown({
       id: 'df8a8f35-a50b-42f9-9642-73d390ceddbf',
-      name: 'visibility',
+      propertyName: 'visibility',
       parentId: 'root',
       label: 'Visibility',
       description:
@@ -87,37 +87,37 @@ export const getSettings = (data: any) =>
     })
     .addCheckbox({
       id: 'cfd7d45e-c7e3-4a27-987b-dc525c412448',
-      name: 'hidden',
+      propertyName: 'hidden',
       parentId: 'root',
       label: 'Hidden',
     })
     .addCheckbox({
       id: '1ceb3851-f15e-437b-98b6-84d6a1fbf801',
-      name: 'readOnly',
+      propertyName: 'readOnly',
       parentId: 'root',
       label: 'Read Only',
     })
     .addCheckbox({
       id: 'c6885251-96a6-40ce-99b2-4b5209a9e01c',
-      name: 'hideLabel',
+      propertyName: 'hideLabel',
       parentId: 'root',
       label: 'Hide Label',
     })
     .addCheckbox({
       id: '148e12c0-41a0-4fa2-8c64-8f6dd5213a3e',
-      name: 'disabled',
+      propertyName: 'disabled',
       label: 'Disabled',
       parentId: 'root',
     })
     .addSectionSeparator({
       id: 'bc67960e-77e3-40f2-89cc-f18f94678cce',
-      name: 'separatorEvent',
+      propertyName: 'separatorEvent',
       parentId: 'root',
       label: 'Event',
     })
     .addCodeEditor({
       id: 'b9269416-3b78-42c4-934e-3e0dac8c7f01',
-      name: 'onChangeCustom',
+      propertyName: 'onChangeCustom',
       label: 'On Change',
       labelAlign: 'right',
       parentId: 'root',
@@ -190,7 +190,7 @@ export const getSettings = (data: any) =>
         },
         {
           id: '8d1541db-2151-4568-b925-d8777cea7f0f',
-          "name": "setGlobalState",
+          "propertyName": "setGlobalState",
           "description": "Setting the global state of the application",
           "type": "(payload: { key: string, data: any } ) => void"
         }
@@ -198,26 +198,26 @@ export const getSettings = (data: any) =>
     })
     .addSectionSeparator({
       id: '6d5a81bb-316b-41ec-8da5-6c61310f0311',
-      name: 'separatorStyle',
+      propertyName: 'separatorStyle',
       parentId: 'root',
       label: 'Style',
     })
     .addCodeEditor({
       id: '987c3de1-b959-4670-96f6-9b1747189a6e',
-      name: 'style',
+      propertyName: 'style',
       label: 'Style',
       parentId: 'root',
       mode: 'dialog',
     })
     .addSectionSeparator({
       id: 'a1f97ae0-a8d9-48b9-940c-d0f15946469e',
-      name: 'separatorVisibility',
+      propertyName: 'separatorVisibility',
       parentId: 'root',
       label: 'Visibility',
     })
     .addCodeEditor({
       id: '03959ffd-cadb-496c-bf6d-b742f7f6edc6',
-      name: 'customVisibility',
+      propertyName: 'customVisibility',
       parentId: 'root',
       label: 'Custom Visibility',
       description:

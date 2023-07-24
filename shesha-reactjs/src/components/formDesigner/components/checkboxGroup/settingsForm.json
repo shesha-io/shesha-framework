@@ -3,16 +3,16 @@
     {
       "id": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
       "type": "sectionSeparator",
-      "name": "separator1",
+      "propertyName": "separator1",
       "parentId": "root",
       "label": "Display"
     },
     {
       "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
       "type": "propertyAutocomplete",
-      "name": "name",
+      "propertyName": "propertyName",
       "parentId": "root",
-      "label": "Name",
+      "label": "Property name",
       "validate": {
         "required": true
       }
@@ -20,7 +20,7 @@
     {
       "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
       "type": "textField",
-      "name": "label",
+      "propertyName": "label",
       "parentId": "root",
       "label": "Label",
       "version": 0,
@@ -29,7 +29,7 @@
     {
       "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
       "type": "dropdown",
-      "name": "labelAlign",
+      "propertyName": "labelAlign",
       "parentId": "root",
       "label": "Label align",
       "values": [
@@ -52,14 +52,14 @@
     {
       "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
       "type": "textArea",
-      "name": "description",
+      "propertyName": "description",
       "parentId": "root",
       "label": "Description"
     },
     {
       "id": "df8a8f35-a50b-42f9-9642-73d390ceddbf",
       "type": "dropdown",
-      "name": "visibility",
+      "propertyName": "visibility",
       "parentId": "root",
       "label": "Visibility",
       "description": "This property will eventually replace the 'hidden' property and other properties that toggle visibility on the UI and payload",
@@ -89,35 +89,35 @@
     {
       "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
       "type": "checkbox",
-      "name": "hidden",
+      "propertyName": "hidden",
       "parentId": "root",
       "label": "Hidden"
     },
     {
       "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
       "type": "checkbox",
-      "name": "hideLabel",
+      "propertyName": "hideLabel",
       "parentId": "root",
       "label": "Hide Label"
     },
     {
       "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
       "type": "checkbox",
-      "name": "disabled",
+      "propertyName": "disabled",
       "parentId": "root",
       "label": "Disabled"
     },
     {
       "id": "c9a1371c-37c9-42d1-9188-850d0cea2c33",
       "type": "sectionSeparator",
-      "name": "dataSseparator",
+      "propertyName": "dataSseparator",
       "parentId": "root",
       "label": "Data"
     },
     {
       "id": "b62d9f2e-a2f8-4cab-b63b-1b0185ad2932",
       "type": "dropdown",
-      "name": "dataSourceType",
+      "propertyName": "dataSourceType",
       "parentId": "root",
       "label": "DataSource Type",
       "dataSourceType": "values",
@@ -145,7 +145,7 @@
     {
       "id": "366f360b-a37b-4803-a2c2-8637208caa9d",
       "type": "codeEditor",
-      "name": "dataSourceUrl",
+      "propertyName": "dataSourceUrl",
       "label": "Data Source Url",
       "parentId": "root",
       "validate": {},
@@ -153,12 +153,12 @@
       "description": "Write a code that returns the URL to be used to fetch data for the Radio.",
       "exposedVariables": [
         {
-          "name": "data",
+          "propertyName": "data",
           "description": "Form values",
           "type": "object"
         },
         {
-          "name": "globalState",
+          "propertyName": "globalState",
           "description": "The global state",
           "type": "object"
         }
@@ -168,7 +168,7 @@
     {
       "id": "c153b326-7ff2-4bb0-af21-45f80e8cd6e0",
       "type": "codeEditor",
-      "name": "reducerFunc",
+      "propertyName": "reducerFunc",
       "label": "Reducer function",
       "parentId": "root",
       "validate": {},
@@ -176,7 +176,7 @@
       "description": "A reducer function for the data returned from the server. The function is responsible for value and label props. The function should return an array of object of this format: { value, label }",
       "exposedVariables": [
         {
-          "name": "data",
+          "propertyName": "data",
           "description": "Data returned from the server. This should is an array",
           "type": "array"
         }
@@ -186,7 +186,7 @@
     {
       "id": "gWL0lQBLM5toTa53dcEe1",
       "type": "referenceListAutocomplete",
-      "name": "referenceListId",
+      "propertyName": "referenceListId",
       "label": "Reference List",
       "labelAlign": "right",
       "parentId": "root",
@@ -206,7 +206,7 @@
     {
       "id": "b62d9f2e-a2f8-4cab-b63b-1b0185ad2939",
       "type": "dropdown",
-      "name": "direction",
+      "propertyName": "direction",
       "parentId": "root",
       "label": "Direction",
       "dataSourceType": "values",
@@ -229,7 +229,7 @@
     {
       "id": "d2648d0e-4664-4fee-ab4a-b14e556d957b",
       "type": "dropdown",
-      "name": "mode",
+      "propertyName": "mode",
       "parentId": "root",
       "label": "Mode",
       "values": [
@@ -255,7 +255,7 @@
     {
       "id": "99af45e2-b779-401b-9b5b-f2457b52496c",
       "type": "labelValueEditor",
-      "name": "items",
+      "propertyName": "items",
       "parentId": "root",
       "label": "Items",
       "labelTitle": "Label",
@@ -267,28 +267,28 @@
     {
       "id": "d675bfe4-ee69-431e-931b-b0e0b9ceee6f",
       "type": "sectionSeparator",
-      "name": "separator2",
+      "propertyName": "separator2",
       "parentId": "root",
       "label": "Validation"
     },
     {
       "id": "3be9da3f-f47e-48ae-b4c3-f5cc36e534d9",
       "type": "checkbox",
-      "name": "validate.required",
+      "propertyName": "validate.required",
       "parentId": "root",
       "label": "Required"
     },
     {
       "id": "6befdd49-41aa-41d6-a29e-76fa00590b75",
       "type": "sectionSeparator",
-      "name": "sectionStyle",
+      "propertyName": "sectionStyle",
       "parentId": "root",
       "label": "Style"
     },
     {
       "id": "06ab0599-914d-4d2d-875c-765a495472f8",
       "type": "codeEditor",
-      "name": "style",
+      "propertyName": "style",
       "label": "Style",
       "parentId": "root",
       "validate": {},
@@ -296,7 +296,7 @@
       "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
       "exposedVariables": [
         {
-          "name": "data",
+          "propertyName": "data",
           "description": "Form values",
           "type": "object"
         }
@@ -305,14 +305,14 @@
     {
       "id": "ae7c663a-edf5-42a9-b6c7-24ef9293ddbd",
       "type": "sectionSeparator",
-      "name": "separatorVisibility",
+      "propertyName": "separatorVisibility",
       "parentId": "root",
       "label": "Visibility"
     },
     {
       "id": "3214eace-9e1f-4f93-89a9-d581e86d2ba9",
       "type": "codeEditor",
-      "name": "customVisibility",
+      "propertyName": "customVisibility",
       "label": "Custom Visibility",
       "labelAlign": "right",
       "parentId": "root",
@@ -323,12 +323,12 @@
       "settingsValidationErrors": [],
       "exposedVariables": [
         {
-          "name": "value",
+          "propertyName": "value",
           "description": "Component current value",
           "type": "string | any"
         },
         {
-          "name": "data",
+          "propertyName": "data",
           "description": "Selected form values",
           "type": "object"
         }

@@ -11,6 +11,7 @@ import FormItemWrapper from '../../components/formDesigner/components/formItemWr
 import NumberFieldControl from './control';
 import { INumberFieldComponentProps } from './interfaces';
 import settingsFormJson from './settingsForm.json';
+import { migratePropertyName } from 'designer-components/_settings/utils';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -34,13 +35,15 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
         model={model}
         initialValue={evaluateString(model?.defaultValue, { formData, formMode, globalState })}
       >
-        <FormItemWrapper mutate={isReadOnly} formType="number">
-          {isReadOnly ? (
-            <ReadOnlyDisplayFormItem disabled={disabled} />
+        {(value, onChange) => {
+          return isReadOnly ? (
+            <FormItemWrapper mutate={isReadOnly} formType="number">
+              <ReadOnlyDisplayFormItem disabled={disabled} />
+            </FormItemWrapper>
           ) : (
-            <NumberFieldControl form={form} disabled={disabled} model={model} />
-          )}
-        </FormItemWrapper>
+            <NumberFieldControl form={form} disabled={disabled} model={model} value={value} onChange={onChange} />
+          );
+        }}
       </ConfigurableFormItem>
     );
   },
@@ -48,6 +51,9 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
   initModel: model => ({
     ...model,
   }),
+  migrator: (m) => m
+    .add<INumberFieldComponentProps>(0, (prev) => migratePropertyName(prev))
+  ,
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
   linkToModelMetadata: (model, metadata): INumberFieldComponentProps => {
     return {

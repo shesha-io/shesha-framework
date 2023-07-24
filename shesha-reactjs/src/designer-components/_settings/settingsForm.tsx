@@ -51,7 +51,7 @@ const SettingsForm = <TModel,>(props: PropsWithChildren<SettingsFormProps<TModel
         onValuesChange(changedValues, incomingState);
     };
 
-    const  SettingsFormActions = {
+    const SettingsFormActions = {
         getFieldsValue,
         propertyFilter,
         onValuesChange: valuesChange

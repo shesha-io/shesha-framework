@@ -63,7 +63,7 @@ function DetailsViewSettings({ readOnly, onSave, model, onValuesChange }: IDetai
           description="Something"
           mode="dialog"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          name={'custom'}
+          propertyName={'custom'}
           type={'sdfsdfsd'}
           id={'dsdffd'}
         />

@@ -52,7 +52,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
     }, [model?.defaultActiveStep]);
 
     //#region configurable actions
-    const { name: actionOwnerName, id: actionsOwnerId } = model;
+    const { propertyName: actionOwnerName, id: actionsOwnerId } = model;
 
     const actionDependencies = [actionOwnerName, actionsOwnerId, current];
 
@@ -330,7 +330,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
       .add<IWizardComponentPropsV0>(0, prev => {
         const model: IWizardComponentPropsV0 = {
           ...prev,
-          name: prev.name ?? 'custom Name',
+          propertyName: prev.propertyName ?? 'custom Name',
           tabs: prev['filteredTabs'] ?? [
             {
               id: nanoid(),

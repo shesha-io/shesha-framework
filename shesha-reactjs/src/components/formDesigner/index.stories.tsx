@@ -1,7 +1,6 @@
 import React from 'react';
 import { Story, Meta } from '@storybook/react';
 import FormDesigner from './formDesigner';
-import { MetadataDispatcherProvider } from '../../providers';
 import { addStory } from '../../stories/utils';
 import { FormIdentifier, FormMode } from '../../providers/form/models';
 import StoryApp from '../storyBookApp';
@@ -19,9 +18,7 @@ export interface IFormDesignerStoryProps {
 // Create a master template for mapping args to render the Button component
 const DesignerTemplate: Story<IFormDesignerStoryProps> = ({ formId }) => (
   <StoryApp>
-    <MetadataDispatcherProvider>
-      <FormDesigner formId={formId} />
-    </MetadataDispatcherProvider>
+    <FormDesigner formId={formId} />
   </StoryApp>
 );
 

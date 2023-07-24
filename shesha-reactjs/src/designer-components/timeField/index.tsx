@@ -76,8 +76,8 @@ const TimeField: IToolboxComponent<ITimePickerProps> = {
 
         {model?.range && (
           <Fragment>
-            <HiddenFormItem name={`${model?.name}Start`} />
-            <HiddenFormItem name={`${model?.name}End`} />
+            <HiddenFormItem name={`${model?.propertyName}Start`} />
+            <HiddenFormItem name={`${model?.propertyName}End`} />
           </Fragment>
         )}
       </Fragment>
@@ -144,8 +144,8 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
   const onCalendarChange = (_, formatString: [string, string], info: RangeInfo) => {
     if (info?.range === 'end' && form) {
       form.setFieldsValue({
-        [`${rest?.name}Start`]: formatString[0],
-        [`${rest?.name}End`]: formatString[1],
+        [`${rest?.propertyName}Start`]: formatString[0],
+        [`${rest?.propertyName}End`]: formatString[1],
       });
     }
   };

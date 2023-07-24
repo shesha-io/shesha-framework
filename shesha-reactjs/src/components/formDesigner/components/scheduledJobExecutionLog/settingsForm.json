@@ -3,16 +3,16 @@
     {
       "id": "b1b79cf4-6844-4bdc-a57a-66077efa67a7",
       "type": "sectionSeparator",
-      "name": "separator1",
+      "propertyName": "separator1",
       "parentId": "root",
       "label": "Display"
     },
     {
       "id": "d686ceb7-3f2f-41c5-9c27-5e8bc92c4311",
       "type": "propertyAutocomplete",
-      "name": "name",
+      "propertyName": "propertyName",
       "parentId": "root",
-      "label": "Name",
+      "label": "Property name",
       "validate": {
         "required": true
       }
@@ -20,7 +20,7 @@
     {
       "id": "df8a8f35-a50b-42f9-9642-73d390ceddbf",
       "type": "dropdown",
-      "name": "visibility",
+      "propertyName": "visibility",
       "parentId": "root",
       "label": "Visibility",
       "description": "This property will eventually replace the 'hidden' property and other properties that toggle visibility on the UI and payload",
@@ -47,35 +47,35 @@
     {
       "id": "b85ad1b3-0e5b-46a2-8a87-7fad5d62a22e",
       "type": "checkbox",
-      "name": "hidden",
+      "propertyName": "hidden",
       "parentId": "root",
       "label": "Hidden"
     },
     {
       "id": "a11c0adc-04ae-4508-a7c8-e07b144c0279",
       "type": "checkbox",
-      "name": "hideLabel",
+      "propertyName": "hideLabel",
       "parentId": "root",
       "label": "Hide Label"
     },
     {
       "id": "8d062b35-39b8-434b-a4af-a140786ae825",
       "type": "checkbox",
-      "name": "disabled",
+      "propertyName": "disabled",
       "parentId": "root",
       "label": "Disabled"
     },
     {
       "id": "43887123-78be-422b-8fd7-8cb86a79e100",
       "type": "sectionSeparator",
-      "name": "sectionVisibility",
+      "propertyName": "sectionVisibility",
       "parentId": "root",
       "label": "Visibility"
     },
     {
       "id": "b6e31bea-8ca5-4924-accc-b07313f62aa7",
       "type": "codeEditor",
-      "name": "customVisibility",
+      "propertyName": "customVisibility",
       "label": "Custom Visibility",
       "labelAlign": "right",
       "parentId": "root",
@@ -85,14 +85,14 @@
       "validate": {},
       "settingsValidationErrors": [],
       "exposedVariables": [
-        { "name": "value", "description": "Component current value", "type": "string | any" },
-        { "name": "data", "description": "Selected form values", "type": "object" }
+        { "propertyName": "value", "description": "Component current value", "type": "string | any" },
+        { "propertyName": "data", "description": "Selected form values", "type": "object" }
       ]
     },
     {
       "id": "3fcebc75-a8c6-4a2b-8a85-cecfd6eafad5",
       "type": "codeEditor",
-      "name": "customEnabled",
+      "propertyName": "customEnabled",
       "label": "Custom Enabled",
       "labelAlign": "right",
       "parentId": "root",
@@ -102,8 +102,8 @@
       "validate": {},
       "settingsValidationErrors": [],
       "exposedVariables": [
-        { "name": "value", "description": "Component current value", "type": "string | any" },
-        { "name": "data", "description": "Selected form values", "type": "object" }
+        { "propertyName": "value", "description": "Component current value", "type": "string | any" },
+        { "propertyName": "data", "description": "Selected form values", "type": "object" }
       ]
     }
   ],

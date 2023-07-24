@@ -9,8 +9,8 @@ interface ISettingsFormItemProps extends PropsWithChildren<FormItemProps<any>> {
 }
   
 const SettingsFormItem: FC<ISettingsFormItemProps> = (props) => {
-    const settingsPanel = useSettingsPanel();
-    if (settingsPanel) {
+    const settingsPanel = useSettingsPanel(false);
+    if (settingsPanel && props.name) {
         settingsPanel.registerField(props.name.toString());
     }
 

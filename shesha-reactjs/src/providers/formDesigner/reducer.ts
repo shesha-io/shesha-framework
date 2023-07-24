@@ -155,7 +155,8 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
         let formComponent: IConfigurableFormComponent = {
           id: nanoid(),
           type: toolboxComponent.type,
-          name: camelcaseDotNotation(componentName),
+          propertyName: camelcaseDotNotation(componentName),
+          componentName: camelcaseDotNotation(componentName),
           label: componentName,
           labelAlign: 'right',
           parentId: containerId,
@@ -349,7 +350,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 
         // create or update new containers
         newContainers.forEach((c) => {
-          const existingContainer = newComponents[c.id] || { name: '', type: '', isDynamic: false };
+          const existingContainer = newComponents[c.id] || { propertyName: '', type: '', isDynamic: false };
           newComponents[c.id] = { ...existingContainer, ...c };
         });
 

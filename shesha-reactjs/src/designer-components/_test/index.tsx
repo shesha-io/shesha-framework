@@ -24,8 +24,8 @@ const TestComponent: IToolboxComponent<ITestComponentProps> = {
     factory: (model: ITestComponentProps) => {
         
         return (
-            <TestControl name='test' label={model.label} valuePropName='checked'>
-                <Checkbox />
+            <TestControl name='test' label={model.label} valuePropName='value'>
+                <Input />
             </TestControl>
         );
     }

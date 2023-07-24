@@ -23,7 +23,7 @@ const ShaDrawer: FC<IShaDrawerProps> = props => {
     id,
     placement,
     width,
-    name,
+    propertyName: name,
     readOnly,
     label,
     onOkAction,

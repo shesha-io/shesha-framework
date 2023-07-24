@@ -1,19 +1,19 @@
-import { IToolboxComponent } from '../../../../interfaces';
-import { FormMarkup } from '../../../../providers/form/models';
+import { IToolboxComponent } from 'interfaces';
+import { FormMarkup } from 'providers/form/models';
 import { FontColorsOutlined } from '@ant-design/icons';
 import { Input, message } from 'antd';
-import ConfigurableFormItem from '../formItem';
 import { TextAreaProps } from 'antd/lib/input';
 import settingsFormJson from './settingsForm.json';
 import React from 'react';
-import { evaluateString, getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../../../../providers';
-import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
-import { DataTypes, StringFormats } from '../../../../interfaces/dataTypes';
-import { customEventHandler } from '../utils';
-import { axiosHttp } from '../../../../utils/fetchers';
+import { evaluateString, getStyle, validateConfigurableComponentSettings } from 'providers/form/utils';
+import { useForm, useFormData, useGlobalState, useSheshaApplication } from 'providers';
+import { DataTypes, StringFormats } from 'interfaces/dataTypes';
+import { axiosHttp } from 'utils/fetchers';
 import moment from 'moment';
 import { ITextAreaComponentProps } from './interfaces';
+import { ConfigurableFormItem } from 'components';
+import ReadOnlyDisplayFormItem from 'components/readOnlyDisplayFormItem';
+import { customEventHandler } from 'components/formDesigner/components/utils';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -71,7 +71,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
       setGlobalState,
     };
 
-    const currentValue = form?.getFieldValue(model.name);
+    const currentValue = form?.getFieldValue(model.propertyName);
     const showAsJson = Boolean(currentValue) && typeof currentValue === 'object';
 
     return (
@@ -82,18 +82,22 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
           evaluateString(model?.initialValue, { formData, formMode, globalState })
         }
       >
-        {showAsJson ? (
-          <JsonTextArea textAreaProps={textAreaProps} customEventHandler={customEventHandler(eventProps)} />
-        ) : isReadOnly ? (
-          <ReadOnlyDisplayFormItem disabled={disabled} />
-        ) : (
-          <Input.TextArea
-            rows={2}
-            {...textAreaProps}
-            disabled={disabled ? disabled : undefined}
-            {...customEventHandler(eventProps)}
-          />
-        )}
+        {(value, onChange) => {
+          return showAsJson ? (
+              <JsonTextArea value={value} textAreaProps={textAreaProps} customEventHandler={customEventHandler(eventProps)} />
+            ) : isReadOnly ? (
+              <ReadOnlyDisplayFormItem value={value} disabled={disabled} />
+            ) : (
+              <Input.TextArea
+                rows={2}
+                {...textAreaProps}
+                disabled={disabled ? disabled : undefined}
+                {...customEventHandler(eventProps)}
+                value={value}
+                onChange={onChange}
+              />
+            );
+          }}
       </ConfigurableFormItem>
     );
   },

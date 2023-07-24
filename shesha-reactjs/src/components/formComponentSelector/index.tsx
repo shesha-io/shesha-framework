@@ -69,7 +69,7 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
     let componentModel: IConfigurableFormComponent = {
       id: nanoid(),
       type: toolboxComponent.type,
-      name: 'editor',
+      propertyName: 'editor',
       hidden: false,
       visibility: 'Yes',
       customVisibility: null,

@@ -173,13 +173,14 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                 return;
             }
 
-            if (propertyInfo.PropertyType == typeof(GenericEntityReference))
+            // ToDo: AS - need to decide how to return GenericEntityReference - as object or as scalar
+            /*if (propertyInfo.PropertyType == typeof(GenericEntityReference))
             {
                 Field(GraphTypeMapper.GetGraphType(typeof(GenericEntityReference), isInput: false), propertyInfo.Name, resolve: context => {
                     return  propertyInfo.GetValue(context.Source) as GenericEntityReference;
                 });
                 return;
-            }
+            }*/
 
             if (isDictionary || propertyInfo.PropertyType.Namespace != null && !propertyInfo.PropertyType.Namespace.StartsWith("System"))
             {

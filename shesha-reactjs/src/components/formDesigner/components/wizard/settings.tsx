@@ -68,7 +68,7 @@ const WizardSettings: FC<ITabSettingsProps> = props => {
       disabled={props.readOnly}
     >
       <SectionSeparator title="Display" />
-      <Form.Item name="name" initialValue={props.model.name} label="Name" rules={[{ required: true }]}>
+      <Form.Item name="propertyName" initialValue={props.model.propertyName} label="Property name" rules={[{ required: true }]}>
         <Input />
       </Form.Item>
 
@@ -182,7 +182,7 @@ const WizardSettings: FC<ITabSettingsProps> = props => {
         <CodeEditor
           mode="dialog"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          name="customVisibility"
+          propertyName="customVisibility"
           type={''}
           id={''}
           label="Custom Visibility"

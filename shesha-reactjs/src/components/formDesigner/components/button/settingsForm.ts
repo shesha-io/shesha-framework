@@ -4,8 +4,8 @@ export const getSettings = (data: any) =>
   new DesignerToolbarSettings(data)
     .addPropertyAutocomplete({
       id: '5d4d56fb-d7f8-4835-a529-c4fa93f3596d',
-      name: 'name',
-      label: 'Name',
+      propertyName: 'propertyName',
+      label: 'Property name',
       labelAlign: 'right',
       parentId: 'root',
       hidden: false,
@@ -16,13 +16,13 @@ export const getSettings = (data: any) =>
     })
     .addTextField({
       id: 'd498779d-012a-4c6a-82a9-77231245ae28',
-      name: 'label',
+      propertyName: 'label',
       parentId: 'root',
       label: 'Label',
     })
     .addTextArea({
       id: '9b671866-072e-4688-8b48-ddf5e12d70d4',
-      name: 'tooltip',
+      propertyName: 'tooltip',
       label: 'Tooltip',
       labelAlign: 'right',
       parentId: '345c2181-fb9f-48ed-9631-864ac357807b',
@@ -35,7 +35,7 @@ export const getSettings = (data: any) =>
     })
     .addIconPicker({
       id: '91b404a6-4021-4b0a-b9ef-007167a93075',
-      name: 'icon',
+      propertyName: 'icon',
       label: 'Icon',
       labelAlign: 'right',
       parentId: '345c2181-fb9f-48ed-9631-864ac357807b',
@@ -45,7 +45,7 @@ export const getSettings = (data: any) =>
     })
     .addDropdown({
       id: 'be15598e-5c23-40bc-8245-6b5385bb7963',
-      name: 'buttonType',
+      propertyName: 'buttonType',
       label: 'Button Type',
       labelAlign: 'right',
       parentId: '345c2181-fb9f-48ed-9631-864ac357807b',
@@ -90,7 +90,7 @@ export const getSettings = (data: any) =>
     })
     .addCheckbox({
       id: '4e9b886a-6186-4467-a688-639b30a0e06f',
-      name: 'danger',
+      propertyName: 'danger',
       label: 'Danger',
       labelAlign: 'right',
       parentId: '345c2181-fb9f-48ed-9631-864ac357807b',
@@ -100,7 +100,7 @@ export const getSettings = (data: any) =>
     })
     .addCheckbox({
       id: 'd25a7d85-6afe-4595-899f-62675fb6c491',
-      name: 'block',
+      propertyName: 'block',
       label: 'Block',
       labelAlign: 'right',
       parentId: '345c2181-fb9f-48ed-9631-864ac357807b',
@@ -110,7 +110,7 @@ export const getSettings = (data: any) =>
     })
     .addDropdown({
       id: 'df8a8f35-a50b-42f9-9642-73d390ceddbf',
-      name: 'visibility',
+      propertyName: 'visibility',
       parentId: 'root',
       label: 'Visibility',
       description:
@@ -137,19 +137,19 @@ export const getSettings = (data: any) =>
     })
     .addCheckbox({
       id: 'cfd7d45e-c7e3-4a27-987b-dc525c412448',
-      name: 'hidden',
+      propertyName: 'hidden',
       parentId: 'root',
       label: 'Hidden',
     })
     .addCheckbox({
       id: '24a8be15-98eb-40f7-99ea-ebb602693e9c',
-      name: 'disabled',
+      propertyName: 'disabled',
       parentId: 'root',
       label: 'Disabled',
     })
     .addConfigurableActionConfigurator({
       id: 'F3B46A95-703F-4465-96CA-A58496A5F78C',
-      name: 'actionConfiguration',
+      propertyName: 'actionConfiguration',
       label: 'Action configuration',
       hidden: false,
       customVisibility: '',
@@ -158,13 +158,13 @@ export const getSettings = (data: any) =>
     })
     .addSectionSeparator({
       id: '6befdd49-41aa-41d6-a29e-76fa00590b75',
-      name: 'sectionStyle',
+      propertyName: 'sectionStyle',
       parentId: 'root',
       label: 'Style',
     })
     .addCodeEditor({
       id: '06ab0599-914d-4d2d-875c-765a495472f8',
-      name: 'style',
+      propertyName: 'style',
       label: 'Style',
       parentId: 'root',
       validate: {},
@@ -174,7 +174,7 @@ export const getSettings = (data: any) =>
     })
     .addDropdown({
       id: '8615d12f-6ea0-4b11-a1a1-6088c7160fd9',
-      name: 'size',
+      propertyName: 'size',
       parentId: 'root',
       label: 'Size',
       allowClear: true,
@@ -199,13 +199,13 @@ export const getSettings = (data: any) =>
     })
     .addSectionSeparator({
       id: '0495b899-bb48-44ea-a212-c4920bf3a8a4',
-      name: 'sectionVisibility',
+      propertyName: 'sectionVisibility',
       parentId: 'root',
       label: 'Visibility',
     })
     .addCodeEditor({
       id: '341beffe-2d62-4c4c-8c97-5f2b433716bf',
-      name: 'customVisibility',
+      propertyName: 'customVisibility',
       label: 'Custom Visibility',
       labelAlign: 'right',
       parentId: 'root',
@@ -225,7 +225,7 @@ export const getSettings = (data: any) =>
     })
     .addCodeEditor({
       id: '4b5e5951-4998-4635-b1c8-0b6d3940c300',
-      name: 'customEnabled',
+      propertyName: 'customEnabled',
       label: 'Custom Enabled',
       labelAlign: 'right',
       parentId: 'root',
@@ -245,7 +245,7 @@ export const getSettings = (data: any) =>
     })
     .addEditableTagGroupProps({
       id: '26c68b22-3211-475d-91e1-0745a4447329',
-      name: 'permissions',
+      propertyName: 'permissions',
       label: 'Permissions',
       labelAlign: 'right',
       parentId: 'root',

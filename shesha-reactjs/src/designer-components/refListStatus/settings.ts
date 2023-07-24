@@ -4,7 +4,7 @@ import { DesignerToolbarSettings } from '../../interfaces/toolbarSettings';
 export const RefListStatusSettingsForm = new DesignerToolbarSettings()
     .addCollapsiblePanel({
         id: "b8954bf6-f76d-4139-a850-c99bf06c8b69",
-        name: "separator1",
+        propertyName: "separator1",
         parentId: "root",
         label: "Display",
         labelAlign: "right",
@@ -18,24 +18,24 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
         content: {
             id: '1BCC52E8-FD3B-4309-AD9B-099CDB729441',
             components: new DesignerToolbarSettings()
-                .addPropertyAutocomplete({
+                .addContextPropertyAutocomplete({
                     id: "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
-                    name: "name",
+                    propertyName: "propertyName",
                     parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
-                    label: "Name",
+                    label: "Property name",
                     validate: {
                         required: true
                     }
                 })
                 .addTextField({
                     id: "46d07439-4c18-468c-89e1-60c002ce96c5",
-                    name: "label",
+                    propertyName: "label",
                     parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
                     label: "Label"
                 })
                 .addDropdown({
                     id: "57a40a33-7e08-4ce4-9f08-a34d24a83338",
-                    name: "labelAlign",
+                    propertyName: "labelAlign",
                     parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
                     label: "Label align",
                     values: [
@@ -54,20 +54,20 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
                 })
                 .addTextArea({
                     id: "2d32fe70-99a0-4825-ae6c-8b933004e119",
-                    name: "description",
+                    propertyName: "description",
                     parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
                     label: "Description",
                     readOnly: false
                 })
                 .addCheckbox({
                     id: "cfd7d45e-c7e3-4a27-987b-dc525c412448",
-                    name: "hidden",
+                    propertyName: "hidden",
                     parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
                     label: "Hidden"
                 })
                 .addCheckbox({
                     id: "c6885251-96a6-40ce-99b2-4v5209a9e01c",
-                    name: "hideLabel",
+                    propertyName: "hideLabel",
                     parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
                     defaultValue: true,
                     label: "Hide Label"
@@ -77,7 +77,7 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
     })
     .addCollapsiblePanel({
         id: nanoid(),
-        name: "pnlCustomizeStatus",
+        propertyName: "pnlCustomizeStatus",
         parentId: "root",
         label: "Customize Status",
         labelAlign: "right",
@@ -93,7 +93,7 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
             components: new DesignerToolbarSettings()
                 .addCheckbox({
                     id: "3fg9da3f-f47e-48ae-b4c3-f5cc36f934d9",
-                    name: "showReflistName",
+                    propertyName: "showReflistName",
                     parentId: "5478b8f9-ec00-4d0a-9k2a-44a630cb2dcb",
                     description: 'When checked the DisplayName/RefList Name will be shown.',
                     defaultValue: true,
@@ -101,14 +101,14 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
                 })
                 .addCheckbox({
                     id: "3be9da3f-f47e-48ae-b4c3-f5cc36f934d9",
-                    name: "showIcon",
+                    propertyName: "showIcon",
                     parentId: "5478b8f9-ec00-4d0a-9k2a-44a630cb2dcb",
                     description: 'When checked the icon will display on the left side of the DisplayName',
                     label: "Show Icon"
                 })
                 .addCheckbox({
                     id: "3be9da3f-f47e-49ae-b8c3-f5cc36f164d9",
-                    name: "solidBackground",
+                    propertyName: "solidBackground",
                     parentId: "5478b8f9-ec00-4d0a-9k2a-44a630cb2dcb",
                     description: 'When checked the component will show a coloured badge and display within it in white font the icon and/or the selected reference list item label.',
                     defaultValue: true,
@@ -120,7 +120,7 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
     })
     .addCollapsiblePanel({
         id: nanoid(),
-        name: "pnlStyle",
+        propertyName: "pnlStyle",
         parentId: "root",
         label: "Style",
         labelAlign: "right",
@@ -136,7 +136,7 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
             components: new DesignerToolbarSettings()
                 .addCodeEditor({
                     id: "06ab0599-914d-4d2d-875c-765a495472f8",
-                    name: "style",
+                    propertyName: "style",
                     label: "Style",
                     parentId: "D3AA47EB-6047-4009-8AF1-2E36357CAC5D",
                     validate: {},
@@ -152,7 +152,7 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
     })
     .addCollapsiblePanel({
         id: nanoid(),
-        name: "pnlRefListSource",
+        propertyName: "pnlRefListSource",
         parentId: "root",
         label: "RefList Source",
         description: 'This section is for binding your status tag to a specific RefList Properties',
@@ -169,7 +169,7 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
             components: new DesignerToolbarSettings()
                 .addRefListAutocomplete({
                     id: nanoid(),
-                    name: 'referenceListId',
+                    propertyName: 'referenceListId',
                     label: 'Reference list'
                 })
                 .toJson()
@@ -178,7 +178,7 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
 
     .addCollapsiblePanel({
         id: nanoid(),
-        name: "pnlVisibility",
+        propertyName: "pnlVisibility",
         parentId: "root",
         label: "Visibility",
         labelAlign: "right",
@@ -194,7 +194,7 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
             components: new DesignerToolbarSettings()
                 .addCodeEditor({
                     id: '03959ffd-cadb-496c-bf6d-b742f7f6edc6',
-                    name: 'customVisibility',
+                    propertyName: 'customVisibility',
                     parentId: 'AC91C296-4BD4-4013-B8F9-BE71C0F37F9B',
                     label: 'Custom Visibility',
                     description:

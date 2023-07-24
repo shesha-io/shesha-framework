@@ -52,11 +52,12 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
   };
 
   const getMetadata = (payload: IGetMetadataPayload) => {
-    const { modelType } = payload;
+    const { modelType, dataType = 'entity' } = payload;
     const loadedModel = models.current[payload.modelType];
     if (loadedModel) return loadedModel;
 
-    const metaPromise = new Promise<IModelMetadata>((resolve, reject) => {
+    if (dataType === 'entity') {
+      const metaPromise = new Promise<IModelMetadata>((resolve, reject) => {
       metadataGet({ container: modelType }, { base: backendUrl, headers: httpHeaders })
         .then(response => {
           if (!response.success) {
@@ -92,10 +93,23 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
         .catch(e => {
           reject(e);
         });
-    });
-    models.current[payload.modelType] = metaPromise;
+      });
 
-    return metaPromise;
+      models.current[payload.modelType] = metaPromise;
+
+      return metaPromise;
+    }
+
+    return Promise.resolve(null);
+  };
+
+  const registerModel = (modelType: string, model: Promise<IModelMetadata>) => {
+    if (!models.current[modelType])
+      models.current[modelType] = model;
+  };
+
+  const updateModel = (modelType: string, model: Promise<IModelMetadata>) => {
+      models.current[modelType] = model;
   };
 
   const getPropertyByName = (properties: IPropertyMetadata[], name: string): IPropertyMetadata => {
@@ -241,6 +255,8 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
     registerProvider,
     activateProvider,
     getActiveProvider,
+    registerModel,
+    updateModel
     /* NEW_ACTION_GOES_HERE */
   };
 

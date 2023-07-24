@@ -28,7 +28,7 @@ const ButtonGroupSettings: FC<IButtonGroupSettingsProps> = props => {
   return (
     <Form form={form} onFinish={props.onSave} onValuesChange={onValuesChange} labelCol={{ span: 24 }}>
       <SectionSeparator title="UX" />
-      <Form.Item name="name" initialValue={props.model.name} label="Name" rules={[{ required: true }]}>
+      <Form.Item name="componentName" initialValue={props.model.componentName} label="Component name" rules={[{ required: true }]}>
         <Input readOnly={props.readOnly} />
       </Form.Item>
 
@@ -79,7 +79,7 @@ const ButtonGroupSettings: FC<IButtonGroupSettingsProps> = props => {
           readOnly={props.readOnly}
           mode="dialog"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          name="customVisibility"
+          propertyName="customVisibility"
           type={''}
           id={''}
           label="Custom Visibility"

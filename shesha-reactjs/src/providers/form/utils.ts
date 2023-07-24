@@ -169,7 +169,7 @@ export const getClosestComponent = (componentId: string, context: SettingsMigrat
 
 export const getClosestTableId = (context: SettingsMigrationContext) => {
   const table = getClosestComponent(context.componentId, context, 'datatableContext');
-  return table ? table['uniqueStateId'] ?? table.name : null;
+  return table ? table['uniqueStateId'] ?? table.propertyName : null;
 };
 
 //#endregion
@@ -228,7 +228,7 @@ export const componentsFlatStructureToTree = (
   return tree;
 };
 
-export const getCustomVisibilityFunc = ({ customVisibility, hidden_setting, name }: IConfigurableFormComponent) => {
+export const getCustomVisibilityFunc = ({ customVisibility, hidden_setting, propertyName: name }: IConfigurableFormComponent) => {
   const inverse = hidden_setting?.mode === 'code' && Boolean(hidden_setting?.code);
   const f = inverse ? hidden_setting.code : customVisibility;
   if (Boolean(f)) {
@@ -256,7 +256,7 @@ export const getCustomVisibilityFunc = ({ customVisibility, hidden_setting, name
   } else return () => true;
 };
 
-export const getCustomEnabledFunc = ({ customEnabled, disabled_setting, name }: IConfigurableFormComponent) => {
+export const getCustomEnabledFunc = ({ customEnabled, disabled_setting, propertyName: name }: IConfigurableFormComponent) => {
   const inverse = disabled_setting?.mode === 'code' && Boolean(disabled_setting?.code);
   const f = inverse ? disabled_setting.code : customEnabled;
   if (Boolean(f)) {
@@ -576,8 +576,8 @@ export const getVisibleComponentIds = (
     if (components.hasOwnProperty(key)) {
       const component = components[key] as IConfigurableFormComponent;
 
-      if (propertyFilter && component.name){
-        const filteredOut = propertyFilter(component.name);
+      if (propertyFilter && component.propertyName){
+        const filteredOut = propertyFilter(component.propertyName);
         if (filteredOut === false)
           continue;
       };
@@ -886,7 +886,7 @@ export const getFormValidationRules = (markup: FormMarkup): Rules => {
 
   const rules: Rules = {};
   components.forEach(component => {
-    rules[component.name] = getValidationRules(component) as [];
+    rules[component.propertyName] = getValidationRules(component) as [];
   });
 
   return rules;
@@ -1040,7 +1040,7 @@ export const createComponentModelForDataProperty = (
   let componentModel: IConfigurableFormComponent = {
     id: nanoid(),
     type: toolboxComponent.type,
-    name: fullName,
+    propertyName: fullName,
     label: propertyMetadata.label,
     labelAlign: 'right',
     //parentId: containerId,
@@ -1385,7 +1385,7 @@ export const getComponentNames = (components: IComponentsDictionary, predicate: 
     let component = components[key];
 
     if (predicate(component)) {
-      componentNames.push(component.name);
+      componentNames.push(component.propertyName);
     }
   });
 

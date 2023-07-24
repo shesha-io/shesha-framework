@@ -46,7 +46,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
 
     const propsToLevel = (properties: IPropertyMetadata[]): ICodeTreeLevel => {
       const result: ICodeTreeLevel = {};
-      properties.forEach((p) => {
+      properties?.forEach((p) => {
         result[p.path] = {
           value: p.path,
           caption: p.label,

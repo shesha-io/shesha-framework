@@ -33,7 +33,7 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
   migrator: m => m.add<ITableContextComponentProps>(0, prev => {
     return {
       ...prev,
-      name: prev['uniqueStateId'] ?? prev.name,
+      propertyName: prev['uniqueStateId'] ?? prev.propertyName,
     };
   }).add<ITableContextComponentProps>(1, prev => {
     return {
@@ -59,8 +59,8 @@ export const TableContext: FC<ITableContextComponentProps> = props => {
   const { entityType, sourceType } = props;
 
   const uniqueKey = useMemo(() => {
-    return `${props.sourceType}_${props.name}_${props.entityType ?? 'empty'}`; // is used just for re-rendering
-  }, [props.sourceType, props.name, props.entityType]);
+    return `${props.sourceType}_${props.propertyName}_${props.entityType ?? 'empty'}`; // is used just for re-rendering
+  }, [props.sourceType, props.propertyName, props.entityType]);
 
   return sourceType === 'Entity' && entityType ? (
     <MetadataProvider id={props.id} modelType={entityType}>
@@ -72,7 +72,7 @@ export const TableContext: FC<ITableContextComponentProps> = props => {
 };
 
 export const TableContextInner: FC<ITableContextComponentProps> = props => {
-  const { sourceType, entityType, endpoint, id, name } = props;
+  const { sourceType, entityType, endpoint, id, propertyName: name } = props;
   const { formMode } = useForm();
   const isDesignMode = formMode === 'designer';
 
@@ -101,7 +101,7 @@ export const TableContextInner: FC<ITableContextComponentProps> = props => {
   </DataTableProvider>;
 
   const providerWrapper = sourceType === 'Form'
-    ? <FormItem name={props.name}>
+    ? <FormItem name={props.propertyName}>
       {provider}
     </FormItem>
     : provider;

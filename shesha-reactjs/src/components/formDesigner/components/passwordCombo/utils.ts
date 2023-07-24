@@ -26,14 +26,14 @@ export const confirmModel = (m: IPasswordComponentProps): IPasswordComponentProp
   model.description = m.confirmDescription;
   model.placeholder = m.confirmPlaceholder;
   model.label = m.confirmLabel;
-  model.name = `${SILENT_KEY}${model.name}`;
+  model.propertyName = `${SILENT_KEY}${model.propertyName}`;
 
   return model;
 };
 
-export const getConfigModel = ({ id, name, type }: IPasswordComponentProps): IPasswordComponentProps => ({
+export const getConfigModel = ({ id, propertyName: name, type }: IPasswordComponentProps): IPasswordComponentProps => ({
   id,
-  name,
+  propertyName: name,
   type,
   hideLabel: true,
 });
@@ -64,7 +64,7 @@ export const getFormItemProps = (
   { formData, isComponentHidden }: IFormPropOptions
 ): FormItemProps => ({
   className: classNames({ 'form-item-hidden': model?.hideLabel }),
-  name: getFieldNameFromExpression(model?.name),
+  name: getFieldNameFromExpression(model?.propertyName),
   label: model?.hideLabel ? null : model?.label,
   labelAlign: model?.labelAlign,
   hidden: isComponentHidden(model),

@@ -3,16 +3,16 @@
     {
       "id": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
       "type": "sectionSeparator",
-      "name": "separator1",
+      "propertyName": "separator1",
       "parentId": "root",
       "label": "Display"
     },
     {
       "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
       "type": "propertyAutocomplete",
-      "name": "name",
+      "propertyName": "propertyName",
       "parentId": "root",
-      "label": "Name",
+      "label": "Property name",
       "validate": {
         "required": true
       }
@@ -20,35 +20,35 @@
     {
       "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
       "type": "textField",
-      "name": "label",
+      "propertyName": "label",
       "parentId": "root",
       "label": "Label"
     },
     {
       "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
       "type": "checkbox",
-      "name": "hidden",
+      "propertyName": "hidden",
       "parentId": "root",
       "label": "Hidden"
     },
     {
       "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
       "type": "checkbox",
-      "name": "hideLabel",
+      "propertyName": "hideLabel",
       "parentId": "root",
       "label": "Hide Label"
     },
     {
       "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
       "type": "checkbox",
-      "name": "disabled",
+      "propertyName": "disabled",
       "parentId": "root",
       "label": "Disabled"
     },
     {
       "id": "fbdb6bb1-5994-4205-86b4-236ca61ae54e",
       "type": "textField",
-      "name": "placeholder",
+      "propertyName": "placeholder",
       "parentId": "root",
       "label": "Placeholder",
       "initialValue": "Start writing text..."
@@ -56,49 +56,49 @@
     {
       "id": "2dc13b6c-459d-4cca-823c-dd739f8cc48e",
       "type": "sectionSeparator",
-      "name": "separator1",
+      "propertyName": "separator1",
       "parentId": "root",
       "label": "State"
     },
     {
       "id": "94b1e472-21b9-4f7a-9894-4390a192dc82",
       "type": "checkbox",
-      "name": "readOnly",
+      "propertyName": "readOnly",
       "parentId": "root",
       "label": "Read Only"
     },
     {
       "id": "c7b6839f-7d73-4e9c-b80a-87a030d3faa0",
       "type": "checkbox",
-      "name": "saveHeightInStorage",
+      "propertyName": "saveHeightInStorage",
       "parentId": "root",
       "label": "Save height in storage"
     },
     {
       "id": "577d96e2-7f08-4b56-ab7f-8185e3e001f3",
       "type": "checkbox",
-      "name": "saveModeInStorage",
+      "propertyName": "saveModeInStorage",
       "parentId": "root",
       "label": "Save mode in storage"
     },
     {
       "id": "222b765c-db16-4ffa-b062-35b31b169ee5",
       "type": "checkbox",
-      "name": "askBeforePasteHTML",
+      "propertyName": "askBeforePasteHTML",
       "parentId": "root",
       "label": "Ask before paste HTML"
     },
     {
       "id": "1ceb3851-f15e-437b-98b6-84d6a1fbf801",
       "type": "checkbox",
-      "name": "askBeforePasteFromWord",
+      "propertyName": "askBeforePasteFromWord",
       "parentId": "root",
       "label": "Ask before paste from Word/Excel"
     },
     {
       "id": "584609f3-b0dd-4313-b459-257e0eabcd5c",
       "type": "dropdown",
-      "name": "defaultActionOnPaste",
+      "propertyName": "defaultActionOnPaste",
       "label": "Default insert method",
       "labelAlign": "right",
       "parentId": "root",
@@ -114,7 +114,7 @@
     {
       "id": "aec2d8de-6e86-4e4e-a9da-62c11e538363",
       "type": "codeEditor",
-      "name": "customVisibility",
+      "propertyName": "customVisibility",
       "label": "Custom Visibility",
       "labelAlign": "right",
       "parentId": "root",
@@ -124,21 +124,21 @@
       "validate": {},
       "settingsValidationErrors": [],
       "exposedVariables": [
-        { "name": "value", "description": "Component current value", "type": "string | any" },
-        { "name": "data", "description": "Selected form values", "type": "object" }
+        { "propertyName": "value", "description": "Component current value", "type": "string | any" },
+        { "propertyName": "data", "description": "Selected form values", "type": "object" }
       ]
     },
     {
       "id": "b9c20717-7949-42fe-a960-16067f09ae18",
       "type": "sectionSeparator",
-      "name": "separator1",
+      "propertyName": "separator1",
       "parentId": "root",
       "label": "Options"
     },
     {
       "id": "3f148b9a-bbc1-427b-93cc-15bfb0760b09",
       "type": "checkbox",
-      "name": "toolbar",
+      "propertyName": "toolbar",
       "parentId": "root",
       "label": "Show toolbar?",
       "defaultValue": true
@@ -146,7 +146,7 @@
     {
       "id": "096d9f6e-a4bc-4f53-acb7-a22bb01e06fb",
       "type": "dropdown",
-      "name": "preset",
+      "propertyName": "preset",
       "label": "Presets",
       "labelAlign": "right",
       "parentId": "root",
@@ -160,7 +160,7 @@
     {
       "id": "644451a2-1213-4263-91f9-b00125c3990d",
       "type": "checkbox",
-      "name": "textIcons",
+      "propertyName": "textIcons",
       "parentId": "root",
       "label": "Text icons?",
       "defaultChecked": false
@@ -168,7 +168,7 @@
     {
       "id": "84f7ec52-a3e1-4f6a-bd2e-472aa028a2d6",
       "type": "dropdown",
-      "name": "toolbarButtonSize",
+      "propertyName": "toolbarButtonSize",
       "label": "Size of icons",
       "labelAlign": "right",
       "parentId": "root",
@@ -184,7 +184,7 @@
     {
       "id": "eadad453-9d39-4f96-9d78-cb468ff51253",
       "type": "checkbox",
-      "name": "toolbarSticky",
+      "propertyName": "toolbarSticky",
       "parentId": "root",
       "label": "Sticky Toolbar?",
       "defaultChecked": false
@@ -192,7 +192,7 @@
     {
       "id": "c6d1f6e8-3a48-4cd4-804c-a5f5f0c41c31",
       "type": "numberField",
-      "name": "toolbarStickyOffset",
+      "propertyName": "toolbarStickyOffset",
       "parentId": "root",
       "label": "Sticky offset",
       "min": 0,
@@ -201,7 +201,7 @@
     {
       "id": "c6da4f7f-5e4f-4ec8-9ebb-b078d91b5a08",
       "type": "checkbox",
-      "name": "autofocus",
+      "propertyName": "autofocus",
       "parentId": "root",
       "label": "Auto-focus",
       "defaultChecked": false
@@ -209,7 +209,7 @@
     {
       "id": "0b46b975-0cbb-4562-b2fa-5c3a72972777",
       "type": "checkbox",
-      "name": "useSearch",
+      "propertyName": "useSearch",
       "parentId": "root",
       "label": "Use search",
       "defaultChecked": true
@@ -217,7 +217,7 @@
     {
       "id": "d826d77d-6071-4c9f-88df-cc097d80d4ac",
       "type": "checkbox",
-      "name": "iframe",
+      "propertyName": "iframe",
       "parentId": "root",
       "label": "Iframe mode",
       "defaultChecked": false
@@ -225,7 +225,7 @@
     {
       "id": "d942fd90-d778-403f-b19e-5ce760167339",
       "type": "checkbox",
-      "name": "spellcheck",
+      "propertyName": "spellcheck",
       "parentId": "root",
       "label": "Spell-check",
       "defaultChecked": false
@@ -233,7 +233,7 @@
     {
       "id": "dd7cdc57-b3c7-499d-8029-da678ade71a4",
       "type": "dropdown",
-      "name": "direction",
+      "propertyName": "direction",
       "label": "Direction",
       "labelAlign": "right",
       "parentId": "root",
@@ -248,7 +248,7 @@
     {
       "id": "545b600c-526e-49d3-a38b-6c953490091c",
       "type": "dropdown",
-      "name": "enter",
+      "propertyName": "enter",
       "label": "Element that will be created on Enter",
       "labelAlign": "right",
       "parentId": "root",
@@ -263,7 +263,7 @@
     {
       "id": "7fb4ab34-a9db-408d-95c8-97a9217b5790",
       "type": "dropdown",
-      "name": "defaultMode",
+      "propertyName": "defaultMode",
       "label": "Default mode",
       "labelAlign": "right",
       "parentId": "root",
@@ -279,7 +279,7 @@
     {
       "id": "e79a10ab-6877-42e5-9159-7948b120266c",
       "type": "checkbox",
-      "name": "showCharsCounter",
+      "propertyName": "showCharsCounter",
       "parentId": "root",
       "label": "Show characters counter",
       "defaultChecked": true
@@ -287,7 +287,7 @@
     {
       "id": "97f90333-f9f0-40bd-991b-c1852a2605aa",
       "type": "checkbox",
-      "name": "showWordsCounter",
+      "propertyName": "showWordsCounter",
       "parentId": "root",
       "label": "Show words counter",
       "defaultChecked": true
@@ -295,7 +295,7 @@
     {
       "id": "828d6e83-b096-46ec-bde5-d710f4e663bd",
       "type": "checkbox",
-      "name": "showXPathInStatusbar",
+      "propertyName": "showXPathInStatusbar",
       "parentId": "root",
       "label": "Show path to selected element",
       "defaultChecked": true
@@ -303,7 +303,7 @@
     {
       "id": "adebdd44-8cf5-4cee-818d-4c9e057505a3",
       "type": "checkbox",
-      "name": "insertImageAsBase64URI",
+      "propertyName": "insertImageAsBase64URI",
       "parentId": "root",
       "label": "Insert image as Base64 URI",
       "defaultChecked": false
@@ -311,14 +311,14 @@
     {
       "id": "e16e4b59-c457-4980-b510-5c233f6e80d3",
       "type": "sectionSeparator",
-      "name": "separator1",
+      "propertyName": "separator1",
       "parentId": "root",
       "label": "Sizes"
     },
     {
       "id": "2b6194b8-85ba-44ed-bd28-218fbbaef99d",
       "type": "checkbox",
-      "name": "autoHeight",
+      "propertyName": "autoHeight",
       "parentId": "root",
       "label": "Auto height",
       "defaultChecked": true
@@ -326,7 +326,7 @@
     {
       "id": "eb3eacf0-98f2-4d59-b9dc-5f428969b35c",
       "type": "checkbox",
-      "name": "allowResizeY",
+      "propertyName": "allowResizeY",
       "parentId": "root",
       "label": "Allow Height resize",
       "defaultChecked": true,
@@ -335,7 +335,7 @@
     {
       "id": "279803c8-d481-4ecc-92b7-bf6d347618a8",
       "type": "numberField",
-      "name": "height",
+      "propertyName": "height",
       "parentId": "root",
       "label": "Height(px)",
       "min": 0,
@@ -344,7 +344,7 @@
     {
       "id": "00976d26-fa0c-49ba-8bd5-426cc1e40e67",
       "type": "numberField",
-      "name": "minHeight",
+      "propertyName": "minHeight",
       "parentId": "root",
       "label": "Min height(px)",
       "min": 0
@@ -352,7 +352,7 @@
     {
       "id": "3c2a14d9-2393-4297-96ae-f54400ea1e9c",
       "type": "numberField",
-      "name": "maxHeight",
+      "propertyName": "maxHeight",
       "parentId": "root",
       "label": "Max height(px)",
       "min": 0
@@ -360,7 +360,7 @@
     {
       "id": "565641c0-7ab0-4726-9540-0336b4f7d60f",
       "type": "checkbox",
-      "name": "autoWidth",
+      "propertyName": "autoWidth",
       "parentId": "root",
       "label": "Auto width",
       "defaultChecked": true
@@ -368,7 +368,7 @@
     {
       "id": "891f1646-25b4-4c18-8e85-31f31fc3f289",
       "type": "checkbox",
-      "name": "allowResizeX",
+      "propertyName": "allowResizeX",
       "parentId": "root",
       "label": "Allow Width resize",
       "defaultChecked": true,
@@ -377,7 +377,7 @@
     {
       "id": "b343be0e-d3a3-4284-aa2c-e056593c4417",
       "type": "numberField",
-      "name": "width",
+      "propertyName": "width",
       "parentId": "root",
       "label": "Width(px)",
       "min": 0,
@@ -386,7 +386,7 @@
     {
       "id": "4f9bb5b2-176e-4b85-9387-22f57fd3df93",
       "type": "numberField",
-      "name": "minWidth",
+      "propertyName": "minWidth",
       "parentId": "root",
       "label": "Min width(px)",
       "min": 0
@@ -394,7 +394,7 @@
     {
       "id": "e697dd49-cc84-4139-b746-378ed3cfdeba",
       "type": "numberField",
-      "name": "maxWidth",
+      "propertyName": "maxWidth",
       "parentId": "root",
       "label": "Max width(px)",
       "min": 0
@@ -402,14 +402,14 @@
     {
       "id": "0eefd6bb-ab13-4493-9374-11b72c0f88e9",
       "type": "sectionSeparator",
-      "name": "separator1",
+      "propertyName": "separator1",
       "parentId": "root",
       "label": "Plugins"
     },
     {
       "id": "5e4c2fff-619e-44af-825c-4977290ee492",
       "type": "dropdown",
-      "name": "disablePlugins",
+      "propertyName": "disablePlugins",
       "label": "Disabled plugins",
       "labelAlign": "right",
       "parentId": "root",
@@ -492,25 +492,25 @@
     {
       "id": "86084e2b-c827-427d-930b-cadb5e9d28ae",
       "type": "sectionSeparator",
-      "name": "separator1",
+      "propertyName": "separator1",
       "parentId": "root",
       "label": "Theme"
     },
     {
       "id": "06ab0599-914d-4d2d-875c-765a495472f8",
       "type": "codeEditor",
-      "name": "style",
+      "propertyName": "style",
       "label": "Style",
       "parentId": "root",
       "validate": {},
       "settingsValidationErrors": [],
       "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
-      "exposedVariables": [{ "name": "data", "description": "Form values", "type": "object" }]
+      "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }]
     },
     {
       "id": "d541e913-4d88-4bcd-a58b-6a659ab4dd19",
       "type": "dropdown",
-      "name": "theme",
+      "propertyName": "theme",
       "label": "Theme",
       "labelAlign": "right",
       "parentId": "root",

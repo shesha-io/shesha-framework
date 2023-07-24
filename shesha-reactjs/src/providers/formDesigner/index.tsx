@@ -53,6 +53,8 @@ import {
 import { IDataSource } from '../formDesigner/models';
 import { useMetadataDispatcher } from '../../providers';
 import { useDeepCompareEffect } from 'react-use';
+import { useDataContextManager } from 'providers/dataContextManager';
+import { IDataContextFullInstance } from 'providers/dataContextProvider';
 
 export interface IFormDesignerProviderProps {
   flatComponents: IFlatComponentsStructure;
@@ -80,6 +82,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   };
 
   const { activateProvider } = useMetadataDispatcher(false) ?? {};
+  const { setActiveContext } = useDataContextManager(false) ?? {};
 
   /*
   const [state, dispatch] = useThunkReducer(formReducer, {
@@ -234,8 +237,9 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
     //dispatch(ActionCreators.redo());
   };
 
-  const setSelectedComponent = (componentId: string, dataSourceId: string, componentRef?: MutableRefObject<any>) => {
+  const setSelectedComponent = (componentId: string, dataSourceId: string, dataContext: IDataContextFullInstance, componentRef?: MutableRefObject<any>) => {
     if (activateProvider) activateProvider(dataSourceId);
+    if (setActiveContext) setActiveContext(dataContext);
     dispatch(setSelectedComponentAction({ id: componentId, dataSourceId, componentRef }));
   };
 

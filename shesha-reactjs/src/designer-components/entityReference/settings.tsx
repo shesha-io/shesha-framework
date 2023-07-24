@@ -6,7 +6,7 @@ import Show from 'components/show';
 import { AutocompleteRaw } from 'components/autocomplete';
 import FormAutocomplete from 'components/formAutocomplete';
 import EndpointsAutocomplete from 'components/endpointsAutocomplete/endpointsAutocomplete';
-import { MetadataProvider } from 'providers';
+import { MetadataProvider, useForm } from 'providers';
 import LabelValueEditor from 'components/formDesigner/components/labelValueEditor/labelValueEditor';
 import CollapsiblePanel from 'components/panel';
 import { ConfigurableActionConfigurator } from '../configurableActionsConfigurator';
@@ -15,6 +15,8 @@ import { IEntityReferenceControlProps } from './entityReference';
 import SettingsFormItem from 'designer-components/_settings/settingsFormItem';
 import SettingsCollapsiblePanel from 'designer-components/_settings/settingsCollapsiblePanel';
 import SettingsForm, { useSettingsForm } from 'designer-components/_settings/settingsForm';
+import { ContextPropertyAutocomplete } from 'designer-components/contextPropertyAutocomplete';
+import { useFormDesigner } from 'providers/formDesigner';
 
 interface IEntityReferenceSettingsState extends IEntityReferenceControlProps { }
 
@@ -27,7 +29,10 @@ export const EntityReferenceSettingsForm: FC<ISettingsFormFactoryArgs<IEntityRef
 };
 
 const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceControlProps>> = ({readOnly}) => {
-  const { model: state } = useSettingsForm<IEntityReferenceControlProps>();
+  const { model: state, getFieldsValue, onValuesChange } = useSettingsForm<IEntityReferenceControlProps>();
+
+  const designerModelType = useFormDesigner(false)?.formSettings?.modelType;
+  const { formSettings } = useForm();
 
   const [formTypesOptions, setFormTypesOptions] = useState<{ value: string }[]>(
     formTypes.map(i => {
@@ -35,12 +40,17 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
     })
   );
 
+  const formData = getFieldsValue();
+
   return (
     <>
     <SettingsCollapsiblePanel header='Display'>
-      <SettingsFormItem name="name" label="Name"  required>
-        <PropertyAutocomplete id="fb71cb51-884f-4f34-aa77-820c12276c95" readOnly={readOnly} />
-      </SettingsFormItem>
+        <ContextPropertyAutocomplete id="fb71cb51-884f-4f34-aa77-820c12276c95"
+          readOnly={readOnly} 
+          defaultModelType={designerModelType ?? formSettings.modelType}
+          formData={formData}
+          onValuesChange={onValuesChange}
+        />
 
       <SettingsFormItem name="label" label="Label" jsSetting>
         <Input readOnly={readOnly} />
@@ -233,7 +243,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
           mode="dialog"
           label="Style"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          name="style"
+          propertyName="style"
           type={''}
           id={''}
           description="CSS Style"

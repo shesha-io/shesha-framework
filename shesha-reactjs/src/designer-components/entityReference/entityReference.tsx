@@ -6,6 +6,7 @@ import { useForm } from '../..';
 import { EntityReference, IEntityReferenceProps } from 'components/entityReference';
 import { LinkExternalOutlined } from 'icons/linkExternalOutlined';
 import { EntityReferenceSettingsForm } from './settings';
+import { migratePropertyName } from 'designer-components/_settings/utils';
 
 export type IActionParameters = [{ key: string; value: string }];
 
@@ -27,29 +28,34 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
 
     return (
       <ConfigurableFormItem model={model}>
-        {!isHidden &&
+        {(value) => {
+          return !isHidden &&
             <EntityReference
                 {...model}
                 disabled={isDisabled}
-            />
-        }
+                value={value}
+            />;
+        }}
       </ConfigurableFormItem>
     );
   },
   settingsFormFactory: (props) => {
     return <EntityReferenceSettingsForm {...props}/>;
   },
-  migrator: m => m.add<IEntityReferenceControlProps>(0, prev => {
-    return {
-      ...prev,
-      formSelectionMode: 'name',
-      entityReferenceType: 'Quickview',
-      quickviewWidth: 600,
-      displayProperty: '',
-      handleFail: false,
-      handleSuccess: false
-    };
-  }),
+  migrator: m => m
+    .add<IEntityReferenceControlProps>(0, prev => {
+      return {
+        ...prev,
+        formSelectionMode: 'name',
+        entityReferenceType: 'Quickview',
+        quickviewWidth: 600,
+        displayProperty: '',
+        handleFail: false,
+        handleSuccess: false
+      };
+    })
+    .add<IEntityReferenceControlProps>(1, (prev) => migratePropertyName(prev))
+  ,
   linkToModelMetadata: (model, metadata): IEntityReferenceControlProps => {
     return {
       ...model,

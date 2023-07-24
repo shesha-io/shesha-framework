@@ -1,11 +1,11 @@
+import { IDataContextFullInstance } from "providers/dataContextProvider";
+
 export interface IDataContextDescriptor {
   id: string;
   parentId?: string;
   name: string;
   type: string;
-  data?: object;
-  //dataContext: DataContextFullInstance;
-  //parentDataContext?: DataContextFullInstance | undefined;
+  dataContext?: IDataContextFullInstance;
 }
 
 export interface IDataContextDictionary {

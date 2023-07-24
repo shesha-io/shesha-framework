@@ -23,10 +23,10 @@ const SectionComponent: IToolboxComponent<ISectionProps> = {
     const { data: formData } = useFormData();
 
     if (formMode === 'designer') {
-      return <Alert message={model.name} />;
+      return <Alert message={model.propertyName} />;
     }
 
-    const section = getSection(model.id, model.name);
+    const section = getSection(model.id, model.propertyName);
 
     if (section) {
       return <Fragment>{section(formData)}</Fragment>;

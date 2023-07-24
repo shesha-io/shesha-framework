@@ -1,7 +1,7 @@
 import { createContext } from 'react';
 import { IDictionary } from '../../interfaces';
 import { IModelMetadata, IPropertyMetadata } from '../../interfaces/metadata';
-import { IMetadataContext } from '../metadata/contexts';
+import { IMetadataContext, MetadataType } from '../metadata/contexts';
 
 export interface IMetadataDispatcherStateContext {
   activeProvider?: string;
@@ -9,6 +9,7 @@ export interface IMetadataDispatcherStateContext {
 
 export interface IGetMetadataPayload {
   modelType: string;
+  dataType?: MetadataType;
 }
 
 export interface IGetPropertyMetadataPayload {
@@ -43,6 +44,8 @@ export interface IMetadataDispatcherActionsContext {
   // todo: add `unregisterProvider`
   activateProvider: (providerId: string) => void;
   getActiveProvider: () => IMetadataContext;
+  registerModel: (modeltype: string, model: Promise<IModelMetadata>) => void;
+  updateModel: (modeltype: string, model: Promise<IModelMetadata>) => void;
 }
 
 export interface IMetadataProviderRegistration {
@@ -55,7 +58,7 @@ export interface IMetadataProviderRegistration {
 export const METADATA_DISPATCHER_CONTEXT_INITIAL_STATE: IMetadataDispatcherStateContext = {
 };
 
-export const MetadataDispatcherStateContext = createContext<IMetadataDispatcherStateContext>(METADATA_DISPATCHER_CONTEXT_INITIAL_STATE);
+export const MetadataDispatcherStateContext = createContext<IMetadataDispatcherStateContext>({...METADATA_DISPATCHER_CONTEXT_INITIAL_STATE});
 
 export const MetadataDispatcherActionsContext = createContext<IMetadataDispatcherActionsContext>(undefined);
 

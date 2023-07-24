@@ -100,7 +100,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
               }
               : undefined
           }
-          name={model?.name}
+          name={model?.propertyName}
           width={width}
           configurableColumns={model.items ?? []}
         />

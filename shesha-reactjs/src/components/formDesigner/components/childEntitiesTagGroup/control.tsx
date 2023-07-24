@@ -44,7 +44,7 @@ const WARNING_BIND_FORM = 'Please bind an appropriate form to this component.';
 const ChildEntitiesTagGroupControl: FC<IProps> = ({ formMode: fMode, model, onChange, value }) => {
   const [state, setState] = useState<IState>(INIT_STATE);
   const { activeValue, open, options, origin } = state;
-  const { capturedProperties, deleteConfirmationBody, deleteConfirmationTitle, formId, labelFormat, name } = model;
+  const { capturedProperties, deleteConfirmationBody, deleteConfirmationTitle, formId, labelFormat, propertyName: name } = model;
 
   const { globalState } = useGlobalState();
 

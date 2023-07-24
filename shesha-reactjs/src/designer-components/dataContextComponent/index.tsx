@@ -1,11 +1,17 @@
 import { IToolboxComponent } from '../../interfaces';
 import { CodeOutlined } from '@ant-design/icons';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { IConfigurableFormComponent } from '../../providers';
 import { DataContextProvider } from 'providers/dataContextProvider';
 import ComponentsContainer from 'components/formDesigner/componentsContainer';
+import { IModelMetadata, IPropertyMetadata } from 'interfaces/metadata';
+import { DataTypes } from 'interfaces/dataTypes';
+import { DataContextSettingsForm } from './settings';
 
-interface IDataContextComponentProps extends IConfigurableFormComponent {}
+export interface IDataContextComponentProps extends IConfigurableFormComponent {
+  items: IPropertyMetadata[];
+  initialDataCode: string;
+}
 
 const DataContextComponent: IToolboxComponent<IDataContextComponentProps> = {
     type: 'dataContext',
@@ -15,22 +21,30 @@ const DataContextComponent: IToolboxComponent<IDataContextComponentProps> = {
     icon: <CodeOutlined />,
     dataTypeSupported: () => false,
     factory: (model: IDataContextComponentProps, _c) => {
+
+      const metadata: Promise<IModelMetadata> = useMemo(() => {
+        return Promise.resolve({
+          name: model.componentName,
+          type: model.id,
+          dataType: DataTypes.context,
+          apiEndpoints: {},
+          specifications: {},
+          properties: model.items ?? []
+        } as IModelMetadata);
+      }, [model.id, model.componentName, model.items]);
+
       return (
-        <DataContextProvider {...model}>
-            <ComponentsContainer
-                containerId={model.id}
-            />
+        <DataContextProvider {...model} name={model.componentName} metadata={metadata}>
+            <ComponentsContainer containerId={model.id} />
         </DataContextProvider>
       );
     },
-    initModel: (model) => ({
-      ...model,
-    }),
-    linkToModelMetadata: (model): IDataContextComponentProps => {
-      return {
-        ...model,
-      };
+    settingsFormFactory: (props) => {
+      return <DataContextSettingsForm {...props}/>;
     },
+    initModel: model => ({...model}),
+    linkToModelMetadata: (model): IDataContextComponentProps => ({...model})
+    ,
   };
   
   export default DataContextComponent;

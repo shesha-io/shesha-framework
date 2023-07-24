@@ -3,7 +3,7 @@
     {
       "id": "aIMnm2re1exM1M7pEEur9",
       "type": "collapsiblePanel",
-      "name": "pnlDisplay",
+      "propertyName": "pnlDisplay",
       "label": "Display",
       "labelAlign": "right",
       "parentId": "root",
@@ -11,7 +11,7 @@
       "visibility": "Yes",
       "customVisibility": null,
       "isDynamic": false,
-      "version": 1,
+      "version": 2,
       "expandIconPosition": "left",
       "header": {
         "id": "FizvoIoyeq1cZMqAgbDLL",
@@ -22,10 +22,10 @@
         "components": [
           {
             "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
-            "type": "propertyAutocomplete",
-            "name": "name",
+            "type": "contextPropertyAutocomplete",
+            "propertyName": "propertyName",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
-            "label": "Name",
+            "label": "Property name",
             "validate": {
               "required": true
             }
@@ -33,7 +33,7 @@
           {
             "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
             "type": "textField",
-            "name": "label",
+            "propertyName": "label",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
             "label": "Label",
             "version": 0,
@@ -42,7 +42,7 @@
           {
             "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
             "type": "dropdown",
-            "name": "labelAlign",
+            "propertyName": "labelAlign",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
             "label": "Label align",
             "values": [
@@ -65,21 +65,21 @@
           {
             "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
             "type": "checkbox",
-            "name": "hideLabel",
+            "propertyName": "hideLabel",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
             "label": "Hide Label"
           },
           {
             "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
             "type": "textArea",
-            "name": "description",
+            "propertyName": "description",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
             "label": "Description"
           },
           {
             "id": "fbdb6bb1-5994-4205-86b4-236ca61ae54e",
             "type": "textField",
-            "name": "placeholder",
+            "propertyName": "placeholder",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
             "label": "Placeholder",
             "version": 0,
@@ -88,7 +88,7 @@
           {
             "id": "d2648d0e-4664-4fee-ab4a-b14e556d957b",
             "type": "dropdown",
-            "name": "mode",
+            "propertyName": "mode",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
             "label": "Selection Mode",
             "values": [
@@ -114,7 +114,7 @@
           {
             "id": "df8a8f35-a50b-42f9-9642-73d390ceddbf",
             "type": "dropdown",
-            "name": "visibility",
+            "propertyName": "visibility",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
             "label": "Visibility",
             "description": "This property will eventually replace the 'hidden' property and other properties that toggle visibility on the UI and payload",
@@ -144,28 +144,28 @@
           {
             "id": "733811b4-d7c0-4447-bba0-a9fb7d6d5f05",
             "type": "checkbox",
-            "name": "disableSearch",
+            "propertyName": "disableSearch",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
             "label": "Disable Search"
           },
           {
             "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
             "type": "checkbox",
-            "name": "disabled",
+            "propertyName": "disabled",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
             "label": "Disabled"
           },
           {
             "id": "1ceb3851-f15e-437b-98b6-84d6a1fbf801",
             "type": "checkbox",
-            "name": "readOnly",
+            "propertyName": "readOnly",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
             "label": "Read Only"
           },
           {
             "id": "7e4876d8-1ed4-4576-9f5b-46cfd77d8643",
             "type": "checkbox",
-            "name": "hideBorder",
+            "propertyName": "hideBorder",
             "label": "Hide border",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
             "hidden": false,
@@ -190,9 +190,9 @@
             {
               "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
               "type": "propertyAutocomplete",
-              "name": "name",
+              "propertyName": "propertyName",
               "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
-              "label": "Name",
+              "label": "Property name",
               "validate": {
                 "required": true
               }
@@ -200,7 +200,7 @@
             {
               "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
               "type": "textField",
-              "name": "label",
+              "propertyName": "label",
               "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
               "label": "Label",
               "version": 0,
@@ -209,7 +209,7 @@
             {
               "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
               "type": "dropdown",
-              "name": "labelAlign",
+              "propertyName": "labelAlign",
               "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
               "label": "Label align",
               "values": [
@@ -232,21 +232,21 @@
             {
               "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
               "type": "checkbox",
-              "name": "hideLabel",
+              "propertyName": "hideLabel",
               "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
               "label": "Hide Label"
             },
             {
               "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
               "type": "textArea",
-              "name": "description",
+              "propertyName": "description",
               "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
               "label": "Description"
             },
             {
               "id": "fbdb6bb1-5994-4205-86b4-236ca61ae54e",
               "type": "textField",
-              "name": "placeholder",
+              "propertyName": "placeholder",
               "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
               "label": "Placeholder",
               "version": 0,
@@ -255,7 +255,7 @@
             {
               "id": "d2648d0e-4664-4fee-ab4a-b14e556d957b",
               "type": "dropdown",
-              "name": "mode",
+              "propertyName": "mode",
               "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
               "label": "Selection Mode",
               "values": [
@@ -281,7 +281,7 @@
             {
               "id": "df8a8f35-a50b-42f9-9642-73d390ceddbf",
               "type": "dropdown",
-              "name": "visibility",
+              "propertyName": "visibility",
               "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
               "label": "Visibility",
               "description": "This property will eventually replace the 'hidden' property and other properties that toggle visibility on the UI and payload",
@@ -311,28 +311,28 @@
             {
               "id": "733811b4-d7c0-4447-bba0-a9fb7d6d5f05",
               "type": "checkbox",
-              "name": "disableSearch",
+              "propertyName": "disableSearch",
               "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
               "label": "Disable Search"
             },
             {
               "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
               "type": "checkbox",
-              "name": "disabled",
+              "propertyName": "disabled",
               "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
               "label": "Disabled"
             },
             {
               "id": "1ceb3851-f15e-437b-98b6-84d6a1fbf801",
               "type": "checkbox",
-              "name": "readOnly",
+              "propertyName": "readOnly",
               "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
               "label": "Read Only"
             },
             {
               "id": "7e4876d8-1ed4-4576-9f5b-46cfd77d8643",
               "type": "checkbox",
-              "name": "hideBorder",
+              "propertyName": "hideBorder",
               "label": "Hide border",
               "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
               "hidden": false,
@@ -347,7 +347,7 @@
     {
       "id": "a7qbgROr9WUeMWUO-CQ56",
       "type": "collapsiblePanel",
-      "name": "pnlData",
+      "propertyName": "pnlData",
       "label": "Data",
       "labelAlign": "right",
       "parentId": "root",
@@ -355,7 +355,7 @@
       "visibility": "Yes",
       "customVisibility": null,
       "isDynamic": false,
-      "version": 1,
+      "version": 2,
       "expandIconPosition": "left",
       "header": {
         "id": "R9BipBqjVuZ5HY4vdteSp",
@@ -367,7 +367,7 @@
           {
             "id": "028b4eaf-8830-4dcd-b54f-422c72b25418",
             "type": "dropdown",
-            "name": "dataSourceType",
+            "propertyName": "dataSourceType",
             "parentId": "f9pNv-hqF5ukaDytb7xwq",
             "label": "Data Source type",
             "dataSourceType": "values",
@@ -390,7 +390,7 @@
           {
             "id": "Xp6zDosEy-IrSeDfHHwh-",
             "type": "container",
-            "name": "container1",
+            "propertyName": "container1",
             "label": "Container1",
             "labelAlign": "right",
             "parentId": "f9pNv-hqF5ukaDytb7xwq",
@@ -406,7 +406,7 @@
               {
                 "id": "33557039-48e8-4082-9ac7-510388d4dc6e",
                 "type": "textField",
-                "name": "dataSourceUrl",
+                "propertyName": "dataSourceUrl",
                 "parentId": "Xp6zDosEy-IrSeDfHHwh-",
                 "label": "Data Source Url",
                 "customVisibility": "",
@@ -428,7 +428,7 @@
               {
                 "id": "4c6133f1-8886-4527-aa6c-ae0606506a8a",
                 "type": "textField",
-                "name": "keyPropName",
+                "propertyName": "keyPropName",
                 "parentId": "Xp6zDosEy-IrSeDfHHwh-",
                 "label": "Key Prop Name",
                 "customVisibility": "",
@@ -450,7 +450,7 @@
               {
                 "id": "007e5859-9299-4434-84d9-9f7b0f7228af",
                 "type": "textField",
-                "name": "valuePropName",
+                "propertyName": "valuePropName",
                 "parentId": "Xp6zDosEy-IrSeDfHHwh-",
                 "label": "Value Prop Name",
                 "customVisibility": "",
@@ -472,7 +472,7 @@
               {
                 "id": "b395c0e9-dbc1-44f1-8fef-c18a49442871",
                 "type": "labelValueEditor",
-                "name": "queryParams",
+                "propertyName": "queryParams",
                 "parentId": "Xp6zDosEy-IrSeDfHHwh-",
                 "label": "Query Param",
                 "labelTitle": "Param",
@@ -492,7 +492,7 @@
           {
             "id": "uEFBpy19tApJMiBuFyj9s",
             "type": "container",
-            "name": "container2",
+            "propertyName": "container2",
             "label": "Container2",
             "labelAlign": "right",
             "parentId": "f9pNv-hqF5ukaDytb7xwq",
@@ -508,7 +508,7 @@
               {
                 "id": "c1ffda30-8eea-4621-aae7-0af583143df6",
                 "type": "autocomplete",
-                "name": "entityTypeShortAlias",
+                "propertyName": "entityTypeShortAlias",
                 "label": "Entity Type",
                 "labelAlign": "right",
                 "parentId": "uEFBpy19tApJMiBuFyj9s",
@@ -534,7 +534,7 @@
               {
                 "id": "hpm6rN_aj-L_KaG5MLIZt",
                 "type": "propertyAutocomplete",
-                "name": "entityDisplayProperty",
+                "propertyName": "entityDisplayProperty",
                 "label": "Display Property",
                 "labelAlign": "right",
                 "parentId": "uEFBpy19tApJMiBuFyj9s",
@@ -552,7 +552,7 @@
               {
                 "id": "n4enebtmhFgvkP5ukQK1f",
                 "type": "queryBuilder",
-                "name": "filter",
+                "propertyName": "filter",
                 "label": "Entity Filter",
                 "labelAlign": "right",
                 "parentId": "uEFBpy19tApJMiBuFyj9s",
@@ -571,7 +571,7 @@
           {
             "id": "dde8e245-1555-4a99-a333-4b7c31bcc5f4",
             "type": "checkbox",
-            "name": "useRawValues",
+            "propertyName": "useRawValues",
             "label": "Use raw values",
             "labelAlign": "right",
             "parentId": "f9pNv-hqF5ukaDytb7xwq",
@@ -583,7 +583,7 @@
           {
             "id": "Wda2Q9DU5DDExAb7MEEfK",
             "type": "checkbox",
-            "name": "allowFreeText",
+            "propertyName": "allowFreeText",
             "label": "Allow Free Text",
             "labelAlign": "right",
             "parentId": "f9pNv-hqF5ukaDytb7xwq",
@@ -608,7 +608,7 @@
             {
               "id": "028b4eaf-8830-4dcd-b54f-422c72b25418",
               "type": "dropdown",
-              "name": "dataSourceType",
+              "propertyName": "dataSourceType",
               "parentId": "f9pNv-hqF5ukaDytb7xwq",
               "label": "Data Source type",
               "dataSourceType": "values",
@@ -631,7 +631,7 @@
             {
               "id": "Xp6zDosEy-IrSeDfHHwh-",
               "type": "container",
-              "name": "container1",
+              "propertyName": "container1",
               "label": "Container1",
               "labelAlign": "right",
               "parentId": "f9pNv-hqF5ukaDytb7xwq",
@@ -647,7 +647,7 @@
                 {
                   "id": "33557039-48e8-4082-9ac7-510388d4dc6e",
                   "type": "textField",
-                  "name": "dataSourceUrl",
+                  "propertyName": "dataSourceUrl",
                   "parentId": "Xp6zDosEy-IrSeDfHHwh-",
                   "label": "Data Source Url",
                   "customVisibility": "",
@@ -669,7 +669,7 @@
                 {
                   "id": "4c6133f1-8886-4527-aa6c-ae0606506a8a",
                   "type": "textField",
-                  "name": "keyPropName",
+                  "propertyName": "keyPropName",
                   "parentId": "Xp6zDosEy-IrSeDfHHwh-",
                   "label": "Key Prop Name",
                   "customVisibility": "",
@@ -691,7 +691,7 @@
                 {
                   "id": "007e5859-9299-4434-84d9-9f7b0f7228af",
                   "type": "textField",
-                  "name": "valuePropName",
+                  "propertyName": "valuePropName",
                   "parentId": "Xp6zDosEy-IrSeDfHHwh-",
                   "label": "Value Prop Name",
                   "customVisibility": "",
@@ -713,7 +713,7 @@
                 {
                   "id": "b395c0e9-dbc1-44f1-8fef-c18a49442871",
                   "type": "labelValueEditor",
-                  "name": "queryParams",
+                  "propertyName": "queryParams",
                   "parentId": "Xp6zDosEy-IrSeDfHHwh-",
                   "label": "Query Param",
                   "labelTitle": "Param",
@@ -733,7 +733,7 @@
             {
               "id": "uEFBpy19tApJMiBuFyj9s",
               "type": "container",
-              "name": "container2",
+              "propertyName": "container2",
               "label": "Container2",
               "labelAlign": "right",
               "parentId": "f9pNv-hqF5ukaDytb7xwq",
@@ -749,7 +749,7 @@
                 {
                   "id": "c1ffda30-8eea-4621-aae7-0af583143df6",
                   "type": "autocomplete",
-                  "name": "entityTypeShortAlias",
+                  "propertyName": "entityTypeShortAlias",
                   "label": "Entity Type",
                   "labelAlign": "right",
                   "parentId": "uEFBpy19tApJMiBuFyj9s",
@@ -775,7 +775,7 @@
                 {
                   "id": "hpm6rN_aj-L_KaG5MLIZt",
                   "type": "propertyAutocomplete",
-                  "name": "entityDisplayProperty",
+                  "propertyName": "entityDisplayProperty",
                   "label": "Display Property",
                   "labelAlign": "right",
                   "parentId": "uEFBpy19tApJMiBuFyj9s",
@@ -793,7 +793,7 @@
                 {
                   "id": "n4enebtmhFgvkP5ukQK1f",
                   "type": "queryBuilder",
-                  "name": "filter",
+                  "propertyName": "filter",
                   "label": "Entity Filter",
                   "labelAlign": "right",
                   "parentId": "uEFBpy19tApJMiBuFyj9s",
@@ -812,7 +812,7 @@
             {
               "id": "dde8e245-1555-4a99-a333-4b7c31bcc5f4",
               "type": "checkbox",
-              "name": "useRawValues",
+              "propertyName": "useRawValues",
               "label": "Use raw values",
               "labelAlign": "right",
               "parentId": "f9pNv-hqF5ukaDytb7xwq",
@@ -824,7 +824,7 @@
             {
               "id": "Wda2Q9DU5DDExAb7MEEfK",
               "type": "checkbox",
-              "name": "allowFreeText",
+              "propertyName": "allowFreeText",
               "label": "Allow Free Text",
               "labelAlign": "right",
               "parentId": "f9pNv-hqF5ukaDytb7xwq",
@@ -844,7 +844,7 @@
     {
       "id": "PDYQYqtRUJBl-9TpyJeCm",
       "type": "collapsiblePanel",
-      "name": "pnlEvents",
+      "propertyName": "pnlEvents",
       "label": "Events",
       "labelAlign": "right",
       "parentId": "root",
@@ -864,7 +864,7 @@
           {
             "id": "ba7ce49e-3067-4285-a1cb-104d4a8ee570",
             "type": "codeEditor",
-            "name": "onChangeCustom",
+            "propertyName": "onChangeCustom",
             "label": "On Change",
             "labelAlign": "right",
             "parentId": "FcmCvh3CcsJbPrg0ryOI3",
@@ -875,57 +875,57 @@
             "settingsValidationErrors": [],
             "exposedVariables": [
               {
-                "name": "data",
+                "propertyName": "data",
                 "description": "Selected form values",
                 "type": "object"
               },
               {
-                "name": "form",
+                "propertyName": "form",
                 "description": "Form instance",
                 "type": "FormInstance"
               },
               {
-                "name": "formMode",
+                "propertyName": "formMode",
                 "description": "The form mode",
                 "type": "'readonly' | 'edit' | 'designer'"
               },
               {
-                "name": "globalState",
+                "propertyName": "globalState",
                 "description": "The global state of the application",
                 "type": "object"
               },
               {
-                "name": "http",
+                "propertyName": "http",
                 "description": "axios instance used to make http requests",
                 "type": "object"
               },
               {
-                "name": "message",
+                "propertyName": "message",
                 "description": "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
                 "type": "object"
               },
               {
-                "name": "moment",
+                "propertyName": "moment",
                 "description": "The moment.js object",
                 "type": "object"
               },
               {
-                "name": "option",
+                "propertyName": "option",
                 "description": "Meta data of component current value",
                 "type": "object"
               },
               {
-                "name": "value",
+                "propertyName": "value",
                 "description": "Component current value",
                 "type": "string | any"
               },
               {
-                "name": "setFormData",
+                "propertyName": "setFormData",
                 "description": "A function used to update the form data",
                 "type": "({ values: object, mergeValues: boolean}) => void"
               },
               {
-                "name": "setGlobalState",
+                "propertyName": "setGlobalState",
                 "description": "Setting the global state of the application",
                 "type": "(payload: { key: string, data: any } ) => void"
               }
@@ -934,7 +934,7 @@
           {
             "id": "40abba89-228f-41a4-8113-9bd44fe78263",
             "type": "editableTagGroup",
-            "name": "subscribedEventNames",
+            "propertyName": "subscribedEventNames",
             "label": "Subscribed Event Names",
             "labelAlign": "right",
             "parentId": "FcmCvh3CcsJbPrg0ryOI3",
@@ -956,7 +956,7 @@
             {
               "id": "ba7ce49e-3067-4285-a1cb-104d4a8ee570",
               "type": "codeEditor",
-              "name": "onChangeCustom",
+              "propertyName": "onChangeCustom",
               "label": "On Change",
               "labelAlign": "right",
               "parentId": "FcmCvh3CcsJbPrg0ryOI3",
@@ -967,57 +967,57 @@
               "settingsValidationErrors": [],
               "exposedVariables": [
                 {
-                  "name": "data",
+                  "propertyName": "data",
                   "description": "Selected form values",
                   "type": "object"
                 },
                 {
-                  "name": "form",
+                  "propertyName": "form",
                   "description": "Form instance",
                   "type": "FormInstance"
                 },
                 {
-                  "name": "formMode",
+                  "propertyName": "formMode",
                   "description": "The form mode",
                   "type": "'readonly' | 'edit' | 'designer'"
                 },
                 {
-                  "name": "globalState",
+                  "propertyName": "globalState",
                   "description": "The global state of the application",
                   "type": "object"
                 },
                 {
-                  "name": "http",
+                  "propertyName": "http",
                   "description": "axios instance used to make http requests",
                   "type": "object"
                 },
                 {
-                  "name": "message",
+                  "propertyName": "message",
                   "description": "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
                   "type": "object"
                 },
                 {
-                  "name": "moment",
+                  "propertyName": "moment",
                   "description": "The moment.js object",
                   "type": "object"
                 },
                 {
-                  "name": "option",
+                  "propertyName": "option",
                   "description": "Meta data of component current value",
                   "type": "object"
                 },
                 {
-                  "name": "value",
+                  "propertyName": "value",
                   "description": "Component current value",
                   "type": "string | any"
                 },
                 {
-                  "name": "setFormData",
+                  "propertyName": "setFormData",
                   "description": "A function used to update the form data",
                   "type": "({ values: object, mergeValues: boolean}) => void"
                 },
                 {
-                  "name": "setGlobalState",
+                  "propertyName": "setGlobalState",
                   "description": "Setting the global state of the application",
                   "type": "(payload: { key: string, data: any } ) => void"
                 }
@@ -1026,7 +1026,7 @@
             {
               "id": "40abba89-228f-41a4-8113-9bd44fe78263",
               "type": "editableTagGroup",
-              "name": "subscribedEventNames",
+              "propertyName": "subscribedEventNames",
               "label": "Subscribed Event Names",
               "labelAlign": "right",
               "parentId": "FcmCvh3CcsJbPrg0ryOI3",
@@ -1043,7 +1043,7 @@
     {
       "id": "cTmW5Fmz3yVQap6tItHIl",
       "type": "collapsiblePanel",
-      "name": "pnlValidation",
+      "propertyName": "pnlValidation",
       "label": "Validation",
       "labelAlign": "right",
       "parentId": "root",
@@ -1063,7 +1063,7 @@
           {
             "id": "3be9da3f-f47e-48ae-b4c3-f5cc36e534d9",
             "type": "checkbox",
-            "name": "validate.required",
+            "propertyName": "validate.required",
             "parentId": "OrSN8jJNAbKMZ0RD5N0Bo",
             "label": "Required"
           }
@@ -1080,7 +1080,7 @@
             {
               "id": "3be9da3f-f47e-48ae-b4c3-f5cc36e534d9",
               "type": "checkbox",
-              "name": "validate.required",
+              "propertyName": "validate.required",
               "parentId": "OrSN8jJNAbKMZ0RD5N0Bo",
               "label": "Required"
             }
@@ -1092,7 +1092,7 @@
     {
       "id": "6Vw9iiDw9d0MD_Rh5cbIn",
       "type": "collapsiblePanel",
-      "name": "pnlQuickview",
+      "propertyName": "pnlQuickview",
       "label": "Quickview",
       "labelAlign": "right",
       "parentId": "root",
@@ -1112,14 +1112,14 @@
           {
             "id": "c8eb05cd-937a-4894-9770-271551e9ce31",
             "type": "checkbox",
-            "name": "quickviewEnabled",
+            "propertyName": "quickviewEnabled",
             "parentId": "SsWPpiJfTbgl4iHlFA_or",
             "label": "Use Quickview"
           },
           {
             "id": "49c6712b-7e91-4dab-9f11-4e7c5e6b6c74",
             "type": "formAutocomplete",
-            "name": "quickviewFormPath",
+            "propertyName": "quickviewFormPath",
             "parentId": "SsWPpiJfTbgl4iHlFA_or",
             "label": "Form Path",
             "customVisibility": "return data.quickviewEnabled === true",
@@ -1129,7 +1129,7 @@
           {
             "id": "c6ec53eb-3bec-40d6-b1a1-687c5d1c3d1d",
             "type": "textField",
-            "name": "quickviewGetEntityUrl",
+            "propertyName": "quickviewGetEntityUrl",
             "parentId": "SsWPpiJfTbgl4iHlFA_or",
             "label": "Get Entity Url",
             "customVisibility": "return data.quickviewEnabled === true",
@@ -1139,7 +1139,7 @@
           {
             "id": "b0eeb8cb-d9ad-479e-a731-10d5909a50a2",
             "type": "textField",
-            "name": "quickviewDisplayPropertyName",
+            "propertyName": "quickviewDisplayPropertyName",
             "parentId": "SsWPpiJfTbgl4iHlFA_or",
             "label": "Display Property Name",
             "customVisibility": "return data.quickviewEnabled === true",
@@ -1149,7 +1149,7 @@
           {
             "id": "d690a0b7-a9d3-4ab2-8843-9dcfbac08adc",
             "type": "textField",
-            "name": "quickviewWidth",
+            "propertyName": "quickviewWidth",
             "parentId": "SsWPpiJfTbgl4iHlFA_or",
             "label": "Width",
             "customVisibility": "return data.quickviewEnabled === true",
@@ -1169,14 +1169,14 @@
             {
               "id": "c8eb05cd-937a-4894-9770-271551e9ce31",
               "type": "checkbox",
-              "name": "quickviewEnabled",
+              "propertyName": "quickviewEnabled",
               "parentId": "SsWPpiJfTbgl4iHlFA_or",
               "label": "Use Quickview"
             },
             {
               "id": "49c6712b-7e91-4dab-9f11-4e7c5e6b6c74",
               "type": "formAutocomplete",
-              "name": "quickviewFormPath",
+              "propertyName": "quickviewFormPath",
               "parentId": "SsWPpiJfTbgl4iHlFA_or",
               "label": "Form Path",
               "customVisibility": "return data.quickviewEnabled === true",
@@ -1186,7 +1186,7 @@
             {
               "id": "c6ec53eb-3bec-40d6-b1a1-687c5d1c3d1d",
               "type": "textField",
-              "name": "quickviewGetEntityUrl",
+              "propertyName": "quickviewGetEntityUrl",
               "parentId": "SsWPpiJfTbgl4iHlFA_or",
               "label": "Get Entity Url",
               "customVisibility": "return data.quickviewEnabled === true",
@@ -1196,7 +1196,7 @@
             {
               "id": "b0eeb8cb-d9ad-479e-a731-10d5909a50a2",
               "type": "textField",
-              "name": "quickviewDisplayPropertyName",
+              "propertyName": "quickviewDisplayPropertyName",
               "parentId": "SsWPpiJfTbgl4iHlFA_or",
               "label": "Display Property Name",
               "customVisibility": "return data.quickviewEnabled === true",
@@ -1206,7 +1206,7 @@
             {
               "id": "d690a0b7-a9d3-4ab2-8843-9dcfbac08adc",
               "type": "textField",
-              "name": "quickviewWidth",
+              "propertyName": "quickviewWidth",
               "parentId": "SsWPpiJfTbgl4iHlFA_or",
               "label": "Width",
               "customVisibility": "return data.quickviewEnabled === true",
@@ -1221,7 +1221,7 @@
     {
       "id": "7UJDsvMw_E9kg5mvIL6XT",
       "type": "collapsiblePanel",
-      "name": "pnlStyle",
+      "propertyName": "pnlStyle",
       "label": "Style",
       "labelAlign": "right",
       "parentId": "root",
@@ -1241,7 +1241,7 @@
           {
             "id": "06ab0599-914d-4d2d-875c-765a495472f8",
             "type": "codeEditor",
-            "name": "style",
+            "propertyName": "style",
             "label": "Style",
             "parentId": "G670M5i5T85_M0HrSligg",
             "validate": {},
@@ -1249,7 +1249,7 @@
             "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
             "exposedVariables": [
               {
-                "name": "data",
+                "propertyName": "data",
                 "description": "Form values",
                 "type": "object"
               }
@@ -1258,7 +1258,7 @@
           {
             "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
             "type": "dropdown",
-            "name": "size",
+            "propertyName": "size",
             "parentId": "G670M5i5T85_M0HrSligg",
             "label": "Size",
             "allowClear": true,
@@ -1297,7 +1297,7 @@
             {
               "id": "06ab0599-914d-4d2d-875c-765a495472f8",
               "type": "codeEditor",
-              "name": "style",
+              "propertyName": "style",
               "label": "Style",
               "parentId": "G670M5i5T85_M0HrSligg",
               "validate": {},
@@ -1305,7 +1305,7 @@
               "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
               "exposedVariables": [
                 {
-                  "name": "data",
+                  "propertyName": "data",
                   "description": "Form values",
                   "type": "object"
                 }
@@ -1314,7 +1314,7 @@
             {
               "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
               "type": "dropdown",
-              "name": "size",
+              "propertyName": "size",
               "parentId": "G670M5i5T85_M0HrSligg",
               "label": "Size",
               "allowClear": true,
@@ -1348,7 +1348,7 @@
     {
       "id": "Wt0jHSkz32lTIeFOckNxe",
       "type": "collapsiblePanel",
-      "name": "pnlVisibility",
+      "propertyName": "pnlVisibility",
       "label": "Visibility",
       "labelAlign": "right",
       "parentId": "root",
@@ -1368,7 +1368,7 @@
           {
             "id": "205fc274-395c-4120-94ea-e9669470b194",
             "type": "codeEditor",
-            "name": "customVisibility",
+            "propertyName": "customVisibility",
             "label": "Custom Visibility",
             "labelAlign": "right",
             "parentId": "nnHMw2dHygQOncvPzTzNf",
@@ -1379,12 +1379,12 @@
             "settingsValidationErrors": [],
             "exposedVariables": [
               {
-                "name": "value",
+                "propertyName": "value",
                 "description": "Component current value",
                 "type": "string | any"
               },
               {
-                "name": "data",
+                "propertyName": "data",
                 "description": "Selected form values",
                 "type": "object"
               }
@@ -1393,7 +1393,7 @@
           {
             "id": "4b5e5951-4998-4635-b1c8-0b6d3940c300",
             "type": "codeEditor",
-            "name": "customEnabled",
+            "propertyName": "customEnabled",
             "label": "Custom Enabled",
             "labelAlign": "right",
             "parentId": "nnHMw2dHygQOncvPzTzNf",
@@ -1404,12 +1404,12 @@
             "settingsValidationErrors": [],
             "exposedVariables": [
               {
-                "name": "value",
+                "propertyName": "value",
                 "description": "Component current value",
                 "type": "string | any"
               },
               {
-                "name": "data",
+                "propertyName": "data",
                 "description": "Selected form values",
                 "type": "object"
               }
@@ -1428,7 +1428,7 @@
             {
               "id": "205fc274-395c-4120-94ea-e9669470b194",
               "type": "codeEditor",
-              "name": "customVisibility",
+              "propertyName": "customVisibility",
               "label": "Custom Visibility",
               "labelAlign": "right",
               "parentId": "nnHMw2dHygQOncvPzTzNf",
@@ -1439,12 +1439,12 @@
               "settingsValidationErrors": [],
               "exposedVariables": [
                 {
-                  "name": "value",
+                  "propertyName": "value",
                   "description": "Component current value",
                   "type": "string | any"
                 },
                 {
-                  "name": "data",
+                  "propertyName": "data",
                   "description": "Selected form values",
                   "type": "object"
                 }
@@ -1453,7 +1453,7 @@
             {
               "id": "4b5e5951-4998-4635-b1c8-0b6d3940c300",
               "type": "codeEditor",
-              "name": "customEnabled",
+              "propertyName": "customEnabled",
               "label": "Custom Enabled",
               "labelAlign": "right",
               "parentId": "nnHMw2dHygQOncvPzTzNf",
@@ -1464,12 +1464,12 @@
               "settingsValidationErrors": [],
               "exposedVariables": [
                 {
-                  "name": "value",
+                  "propertyName": "value",
                   "description": "Component current value",
                   "type": "string | any"
                 },
                 {
-                  "name": "data",
+                  "propertyName": "data",
                   "description": "Selected form values",
                   "type": "object"
                 }

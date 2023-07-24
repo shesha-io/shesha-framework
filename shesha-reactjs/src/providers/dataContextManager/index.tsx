@@ -1,9 +1,11 @@
+import { IDataContextFullInstance } from "providers/dataContextProvider";
 import { IRegisterDataContextPayload } from "providers/dataContextProvider/models";
-import React, { FC, PropsWithChildren, useContext, useEffect, useState } from "react";
+import React, { FC, PropsWithChildren, useContext, useEffect, useRef, useState } from "react";
 import { createContext } from 'react';
 import { IDataContextDescriptor, IDataContextDictionary, IGetDataContextPayload } from "./models";
 
 export interface IDataContextManagerStateContext {
+    activeContext: IDataContextFullInstance;
     contexts: IDataContextDictionary;
 }
 
@@ -12,11 +14,13 @@ export interface IDataContextManagerActionsContext {
     getDataContexts: (topId: string) => IDataContextDescriptor[];
     unregisterDataContext: (payload: IRegisterDataContextPayload) => void;
     getDataContext: (payload: IGetDataContextPayload | string) => IDataContextDescriptor;
-    onChange: (contextId: string, name: string | string[], value: any) => void;
+    onChangeContext: (contextId: string, dataContext: IDataContextFullInstance) => void;
+    setActiveContext: (context: IDataContextFullInstance) => void;
+    getActiveContext: () => IDataContextFullInstance;
 }
 
 /** initial state */
-export const DATA_CONTEXT_MANAGER_CONTEXT_INITIAL_STATE: IDataContextManagerStateContext = {contexts: {}};
+export const DATA_CONTEXT_MANAGER_CONTEXT_INITIAL_STATE: IDataContextManagerStateContext = {activeContext: null, contexts: {}};
 
 export const DataContextManagerStateContext = createContext<IDataContextManagerStateContext>(DATA_CONTEXT_MANAGER_CONTEXT_INITIAL_STATE);
 export const DataContextManagerActionsContext = createContext<IDataContextManagerActionsContext>(undefined);
@@ -27,24 +31,29 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
 
     const [state, setState] = useState<IDataContextManagerStateContext>(DATA_CONTEXT_MANAGER_CONTEXT_INITIAL_STATE);
 
+    const contexts = useRef<IDataContextDictionary>({});
+
     const registerDataContext = (payload: IRegisterDataContextPayload) => {
-        setState(prev => {
-            return {
-                ...prev,
-                contexts: {
-                    ...prev.contexts,
-                    [`${payload.id}`]: { id: payload.id, name: payload.name, parentId: payload.parentId, type: payload.type, data: payload.data ?? {} }
-                }
-              };
-        });
+        const existingContext = contexts.current[payload.id];
+        if (!existingContext) {
+            contexts.current[payload.id] = {
+            id: payload.id,
+            name: payload.name,
+            type: payload.type,
+            dataContext: payload.dataContext,
+          };
+        } else {
+            existingContext.dataContext = payload.dataContext;
+        }
+
+        setState({...state, contexts: contexts.current });
     };
 
     const unregisterDataContext = (payload: IRegisterDataContextPayload) => {
-        setState(prev => {
-            const newState = {...prev};
-            delete newState.contexts[`${payload.id}`];
-            return newState;
-        });
+        if (!!contexts.current[payload.id])
+            delete contexts.current[payload.id];
+
+        setState({...state, contexts: contexts.current });
     };
 
     const getDataContexts = (topId: string) => {
@@ -72,23 +81,27 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
     const getDataContext = (payload: IGetDataContextPayload | string) => {
         if (!payload)
             return undefined;
+
         return (typeof(payload) === 'string') 
-            ? state.contexts[payload]
-            : state.contexts[`${payload.id}`];//_${payload.name}`];
+            ? contexts.current[payload]
+            : contexts.current[`${payload.id}`];
     };
 
-    const onChange = (contextId: string, name: string, value: any) => {
-        const newState = {...state};
-        newState.contexts[contextId].data[name] = value;
-        setState(newState);
-        /*setState(prev => {
-            return {...prev,
-                contexts: { ...prev.contexts,
-                    [contextId]: { ...prev.contexts[contextId]
-                        data: {...state.data, [name]: value}}
-                    }
-                }
-        });*/
+    const onChangeContext = (contextId: string, dataContext: IDataContextFullInstance) => {
+        const existingContext = contexts.current[contextId];
+        if (!!existingContext) {
+            existingContext.dataContext = dataContext;
+            setState({...state, contexts: contexts.current });
+        }
+    };
+
+    const setActiveContext = (context: IDataContextFullInstance) => {
+        if (state.activeContext !== context)
+            setState({...state, activeContext: context});
+    };
+
+    const getActiveContext = () => {
+        return state.activeContext;
     };
 
     const dataContextsProviderActions: IDataContextManagerActionsContext = {
@@ -96,7 +109,9 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
         unregisterDataContext,
         getDataContexts,
         getDataContext,
-        onChange
+        onChangeContext,
+        setActiveContext,
+        getActiveContext
     };
 
     return (
@@ -116,16 +131,16 @@ function useDataContextManager(require: boolean = true) {
       throw new Error('useDataContextManager must be used within a DataContextManager');
     }
     return actionsContext !== undefined && stateContext !== undefined
-      ? { ...actionsContext, stateContext }
+      ? { ...actionsContext, ...stateContext }
       : undefined;
 }
 
 function useDataContextRegister(payload: IRegisterDataContextPayload, deps?: ReadonlyArray<any>): void {
-    const { registerDataContext: registerManager, unregisterDataContext } = useDataContextManager(false) ?? {};
+    const { registerDataContext, unregisterDataContext } = useDataContextManager(false) ?? {};
 
     useEffect(() => {
-        if (!!registerManager) {
-            registerManager(payload);
+        if (!!registerDataContext) {
+            registerDataContext(payload);
         } else
             return null;
 

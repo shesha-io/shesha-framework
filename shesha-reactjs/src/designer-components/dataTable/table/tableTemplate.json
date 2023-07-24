@@ -2,7 +2,7 @@
   {
     "id": "{{NEW_KEY}}",
     "type": "datatableContext",
-    "name": "dataTable1",
+    "propertyName": "dataTable1",
     "label": "Table",
     "labelAlign": "right",
     "parentId": "root",
@@ -13,7 +13,7 @@
       {
         "id": "fwQ-yyXEThNSF4Bt4msUH",
         "type": "container",
-        "name": "horizontalContainer5",
+        "propertyName": "horizontalContainer5",
         "label": "Horizontal Container7",
         "labelAlign": "right",
         "parentId": "{{NEW_KEY}}",
@@ -25,7 +25,7 @@
           {
             "id": "CTI0XKjHMiwet4AuHx__4",
             "type": "container",
-            "name": "horizontalContainer6",
+            "propertyName": "horizontalContainer6",
             "label": "Horizontal Container7",
             "labelAlign": "right",
             "parentId": "fwQ-yyXEThNSF4Bt4msUH",
@@ -37,7 +37,7 @@
               {
                 "id": "i4jUdZQIeFyj3kYX0EE4Y",
                 "type": "tableViewSelector",
-                "name": "tableViewSelector1",
+                "propertyName": "tableViewSelector1",
                 "label": "Table view selector1",
                 "labelAlign": "right",
                 "parentId": "CTI0XKjHMiwet4AuHx__4",
@@ -51,7 +51,7 @@
           {
             "id": "O-ieWwy7eZB-jepFIUeiO",
             "type": "container",
-            "name": "horizontalContainer7",
+            "propertyName": "horizontalContainer7",
             "label": "Horizontal Container7",
             "labelAlign": "right",
             "parentId": "fwQ-yyXEThNSF4Bt4msUH",
@@ -61,7 +61,7 @@
               {
                 "id": "ItrB5cnWA8ej79HX-eok5",
                 "type": "datatable.quickSearch",
-                "name": "quickSearch1",
+                "propertyName": "quickSearch1",
                 "label": "Quick Search1",
                 "labelAlign": "right",
                 "parentId": "O-ieWwy7eZB-jepFIUeiO",
@@ -72,7 +72,7 @@
               {
                 "id": "rxYPsJCcRyIGsVhDExg-n",
                 "type": "datatable.pager",
-                "name": "tablePager1",
+                "propertyName": "tablePager1",
                 "label": "Table Pager1",
                 "labelAlign": "right",
                 "parentId": "O-ieWwy7eZB-jepFIUeiO",
@@ -90,7 +90,7 @@
       {
         "id": "g38qlSIIoUYVnzqVaaNEy",
         "type": "container",
-        "name": "horizontalContainer2",
+        "propertyName": "horizontalContainer2",
         "label": "Horizontal Container7",
         "labelAlign": "right",
         "parentId": "{{NEW_KEY}}",
@@ -100,7 +100,7 @@
           {
             "id": "46jNfZhuX5Qf-6cmtqWrO",
             "type": "container",
-            "name": "horizontalContainer4",
+            "propertyName": "horizontalContainer4",
             "label": "Horizontal Container7",
             "labelAlign": "right",
             "parentId": "g38qlSIIoUYVnzqVaaNEy",
@@ -110,7 +110,7 @@
               {
                 "id": "r_K43R86pKL4mbwRVynvE",
                 "type": "toolbar",
-                "name": "toolbar2",
+                "propertyName": "toolbar2",
                 "label": "Toolbar2",
                 "labelAlign": "right",
                 "parentId": "46jNfZhuX5Qf-6cmtqWrO",
@@ -121,7 +121,7 @@
                     "id": "udkemPOwpE4itKlDsYpL4",
                     "itemType": "item",
                     "sortOrder": 0,
-                    "name": "Add",
+                    "propertyName": "Add",
                     "itemSubType": "button",
                     "icon": "PlusOutlined",
                     "buttonType": "link",
@@ -133,7 +133,7 @@
                     "id": "GhFkay6EZ8BoMYr88mWW1",
                     "itemType": "item",
                     "sortOrder": 5,
-                    "name": "separator",
+                    "propertyName": "separator",
                     "itemSubType": "separator",
                     "selected": false
                   },
@@ -141,7 +141,7 @@
                     "id": "nvnj0Q1wivGgkrCcfl9Jc",
                     "itemType": "item",
                     "sortOrder": 4,
-                    "name": "Open",
+                    "propertyName": "Open",
                     "itemSubType": "button",
                     "buttonAction": "navigate",
                     "buttonType": "link",
@@ -153,7 +153,7 @@
                     "id": "cWvZyb0P456Ndcpyb7vrz",
                     "itemType": "item",
                     "sortOrder": 5,
-                    "name": "Edit",
+                    "propertyName": "Edit",
                     "itemSubType": "button",
                     "buttonType": "link",
                     "buttonAction": "navigate",
@@ -165,7 +165,7 @@
                     "id": "D0xNVk62p9GFliocBS9jA",
                     "itemType": "item",
                     "sortOrder": 3,
-                    "name": "separator",
+                    "propertyName": "separator",
                     "itemSubType": "separator",
                     "selected": false
                   },
@@ -173,7 +173,7 @@
                     "id": "RjL_C607edu-_k4r5Oj_g",
                     "itemType": "item",
                     "sortOrder": 2,
-                    "name": "Export",
+                    "propertyName": "Export",
                     "itemSubType": "button",
                     "icon": "DownloadOutlined",
                     "buttonType": "link",
@@ -190,7 +190,7 @@
           {
             "id": "m9o4pOhm-t4mb4JKH-1It",
             "type": "container",
-            "name": "horizontalContainer3",
+            "propertyName": "horizontalContainer3",
             "label": "Horizontal Container7",
             "labelAlign": "right",
             "parentId": "g38qlSIIoUYVnzqVaaNEy",
@@ -200,7 +200,7 @@
               {
                 "id": "BZZMhqzXrNLISIR67oHar",
                 "type": "button",
-                "name": "btnSelectColumns",
+                "propertyName": "btnSelectColumns",
                 "label": "",
                 "labelAlign": "right",
                 "parentId": "m9o4pOhm-t4mb4JKH-1It",
@@ -215,7 +215,7 @@
               {
                 "id": "x5FW_I0G8O_H2YFPY93JS",
                 "type": "button",
-                "name": "btnAdvancedFilter",
+                "propertyName": "btnAdvancedFilter",
                 "label": "",
                 "labelAlign": "right",
                 "parentId": "m9o4pOhm-t4mb4JKH-1It",
@@ -230,7 +230,7 @@
               {
                 "id": "Mqo5WrsmmXm8JL8S05RCR",
                 "type": "button",
-                "name": "btnRefresh",
+                "propertyName": "btnRefresh",
                 "label": "",
                 "labelAlign": "right",
                 "parentId": "m9o4pOhm-t4mb4JKH-1It",
@@ -254,7 +254,7 @@
       {
         "id": "4C7ToUgt7-dmrecAH66df",
         "type": "datatable",
-        "name": "dataTable1",
+        "propertyName": "dataTable1",
         "label": "DataTable1",
         "labelAlign": "right",
         "parentId": "{{NEW_KEY}}",

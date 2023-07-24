@@ -36,6 +36,8 @@ import { DataSourcesProvider } from '../dataSourcesProvider';
 import { useDeepCompareEffect } from 'react-use';
 import { DataContextManager } from 'providers/dataContextManager';
 import { DataContextProvider } from 'providers/dataContextProvider';
+import { IModelMetadata } from 'interfaces/metadata';
+import { DataTypes, StringFormats } from 'interfaces/dataTypes';
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;
@@ -108,6 +110,49 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
     return authorizer && authorizer(permissions);
   };
 
+  const contextMetadata = Promise.resolve({
+    name: 'root context',
+    type: 'rootContex',
+    dataType: DataTypes.context,
+    apiEndpoints: {},
+    specifications: {},
+    properties: [
+      {
+        path: 'name',
+        label: 'Name ctx',
+        dataType: DataTypes.string,
+        dataFormat: StringFormats.singleline,
+      },
+      {
+        path: 'myData',
+        label: 'My Data ctx',
+        dataType: DataTypes.object,
+        properties: [
+          {
+            path: 'name',
+            label: 'Name child',
+            dataType: DataTypes.string,
+            dataFormat: StringFormats.singleline,
+          },
+          {
+            path: 'description',
+            label: 'Description child',
+            dataType: DataTypes.string,
+            dataFormat: StringFormats.singleline,
+          }
+        ]
+      }
+    ]
+  } as IModelMetadata);
+
+  const initialData = new Promise<object>((resolve) => {
+    setTimeout(() => {
+      resolve({name: 'Test data', myData: {name: 'Nested test data'}, checkbox: true});
+    }, 3000);
+  });
+
+  const initialData2 = {name: 'Test data 2', myData: {name: 'Nested test data 2'}, checkbox: true};
+
   return (
     <SheshaApplicationStateContext.Provider value={state}>
       <SheshaApplicationActionsContext.Provider
@@ -123,7 +168,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
             <UiProvider>
               <ShaRoutingProvider getFormUrlFunc={getFormUrlFunc} router={router}>
                 <ConditionalWrap
-                  condition={!props?.noAuth}
+                  condition={true /*!props?.noAuth*/}
                   wrap={(authChildren) => (
                     <AuthProvider
                       tokenName={accessTokenName || DEFAULT_ACCESS_TOKEN_NAME}
@@ -136,29 +181,29 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                     </AuthProvider>
                   )}
                 >
-                  <DataContextManager>
-                    <DataContextProvider id={'1'} name={'root context'} type={'root'}>
-                      <DataContextProvider id={'2'} name={'child context'} type={'root'}>
-                        <ConfigurationItemsLoaderProvider>
-                          <ThemeProvider {...(themeProps || {})}>
-                            <AppConfiguratorProvider>
-                              <ReferenceListDispatcherProvider>
-                                <MetadataDispatcherProvider>
-                                  <StackedNavigationProvider>
-                                    <DataSourcesProvider>
-                                      <DynamicModalProvider>
-                                        <ApplicationActionsProcessor>{children}</ApplicationActionsProcessor>
-                                      </DynamicModalProvider>
-                                    </DataSourcesProvider>
-                                  </StackedNavigationProvider>
-                                </MetadataDispatcherProvider>
-                              </ReferenceListDispatcherProvider>
-                            </AppConfiguratorProvider>
-                          </ThemeProvider>
-                        </ConfigurationItemsLoaderProvider>
-                      </DataContextProvider>
-                    </DataContextProvider>
-                  </DataContextManager>
+                  <ConfigurationItemsLoaderProvider>
+                    <ThemeProvider {...(themeProps || {})}>
+                      <AppConfiguratorProvider>
+                        <ReferenceListDispatcherProvider>
+                          <MetadataDispatcherProvider>
+                            <DataContextManager>
+                              <StackedNavigationProvider>
+                                <DataSourcesProvider>
+                                  <DynamicModalProvider>
+                                      <DataContextProvider id={'1'} name={'root context'} type={'root'} metadata={contextMetadata} initialData={initialData}>
+                                        <DataContextProvider id={'2'} name={'child context'} type={'root'} metadata={contextMetadata} initialData={initialData2}>
+                                          <ApplicationActionsProcessor>{children}</ApplicationActionsProcessor>
+                                        </DataContextProvider>
+                                        </DataContextProvider>
+                                  </DynamicModalProvider>
+                                </DataSourcesProvider>
+                              </StackedNavigationProvider>
+                            </DataContextManager>
+                          </MetadataDispatcherProvider>
+                        </ReferenceListDispatcherProvider>
+                      </AppConfiguratorProvider>
+                    </ThemeProvider>
+                  </ConfigurationItemsLoaderProvider>
                 </ConditionalWrap>
               </ShaRoutingProvider>
             </UiProvider>

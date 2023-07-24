@@ -22,15 +22,15 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
   name: 'Statistic',
   icon: <BarChartOutlined />,
   factory: ({ style, valueStyle, ...model }: IStatisticComponentProps) => {
-    const { prefix, suffix, name } = model;
+    const { prefix, suffix, propertyName: name } = model;
     const { data: formData } = useFormData();
 
     const getDisplayValue = (prop: string) => {
       if (!formData || !prop) return undefined;
 
-      const value = _.get(formData, model?.name);
+      const value = _.get(formData, model?.propertyName);
 
-      return typeof value === 'object' ? null : _.get(formData, model?.name);
+      return typeof value === 'object' ? null : _.get(formData, model?.propertyName);
     };
 
     return (

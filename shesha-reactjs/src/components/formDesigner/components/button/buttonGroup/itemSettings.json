@@ -3,7 +3,7 @@
     {
       "id": "840aee56-42d2-40ed-a2c6-57abb255fb95",
       "type": "dropdown",
-      "name": "itemSubType",
+      "propertyName": "itemSubType",
       "label": "Item Type",
       "labelAlign": "right",
       "parentId": "root",
@@ -34,7 +34,7 @@
     {
       "id": "5d4d56fb-d7f8-4835-a529-c4fa93f3596d",
       "type": "textField",
-      "name": "name",
+      "propertyName": "name",
       "label": "Name",
       "labelAlign": "right",
       "parentId": "root",
@@ -47,14 +47,14 @@
     {
       "id": "d498779d-012a-4c6a-82a9-77231245ae28",
       "type": "textField",
-      "name": "label",
+      "propertyName": "label",
       "parentId": "root",
       "label": "Label"
     },
     {
       "id": "345c2181-fb9f-48ed-9631-864ac357807b",
       "type": "container",
-      "name": "cntButton",
+      "propertyName": "cntButton",
       "label": "Container2",
       "labelAlign": "right",
       "parentId": "root",
@@ -66,7 +66,7 @@
         {
           "id": "9b671866-072e-4688-8b48-ddf5e12d70d4",
           "type": "textArea",
-          "name": "tooltip",
+          "propertyName": "tooltip",
           "label": "Tooltip",
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
@@ -80,7 +80,7 @@
         {
           "id": "91b404a6-4021-4b0a-b9ef-007167a93075",
           "type": "iconPicker",
-          "name": "icon",
+          "propertyName": "icon",
           "label": "Icon",
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
@@ -91,7 +91,7 @@
         {
           "id": "be15598e-5c23-40bc-8245-6b5385bb7963",
           "type": "dropdown",
-          "name": "buttonType",
+          "propertyName": "buttonType",
           "label": "Button Type",
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
@@ -137,7 +137,7 @@
         {
           "id": "4e9b886a-6186-4467-a688-639b30a0e06f",
           "type": "checkbox",
-          "name": "danger",
+          "propertyName": "danger",
           "label": "Danger",
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
@@ -148,7 +148,7 @@
         {
           "id": "df8a8f35-a50b-42f9-9642-73d390ceddbf",
           "type": "dropdown",
-          "name": "visibility",
+          "propertyName": "visibility",
           "parentId": "root",
           "label": "Visibility",
           "description": "This property will eventually replace the 'hidden' property and other properties that toggle visibility on the UI and payload",
@@ -175,21 +175,21 @@
         {
           "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
           "type": "checkbox",
-          "name": "hidden",
+          "propertyName": "hidden",
           "parentId": "root",
           "label": "Hidden"
         },
         {
           "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
           "type": "checkbox",
-          "name": "disabled",
+          "propertyName": "disabled",
           "parentId": "root",
           "label": "Disabled"
         },
         {
           "id": "F3B46A95-703F-4465-96CA-A58496A5F78C",
           "type": "configurableActionConfigurator",
-          "name": "actionConfiguration",
+          "propertyName": "actionConfiguration",
           "label": "Action configuration",
           "hidden": false,
           "customVisibility": "",
@@ -199,25 +199,25 @@
         {
           "id": "6befdd49-41aa-41d6-a29e-76fa00590b75",
           "type": "sectionSeparator",
-          "name": "sectionStyle",
+          "propertyName": "sectionStyle",
           "parentId": "root",
           "label": "Style"
         },
         {
           "id": "06ab0599-914d-4d2d-875c-765a495472f8",
           "type": "codeEditor",
-          "name": "style",
+          "propertyName": "style",
           "label": "Style",
           "parentId": "root",
           "validate": {},
           "settingsValidationErrors": [],
           "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
-          "exposedVariables": [{ "name": "data", "description": "Form values", "type": "object" }]
+          "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }]
         },
         {
           "id": "0495b899-bb48-44ea-a212-c4920bf3a8a4",
           "type": "sectionSeparator",
-          "name": "sectionVisibility",
+          "propertyName": "sectionVisibility",
           "parentId": "root",
           "label": "Visibility"
         }
@@ -226,7 +226,7 @@
     {
       "id": "341beffe-2d62-4c4c-8c97-5f2b433716bf",
       "type": "codeEditor",
-      "name": "customVisibility",
+      "propertyName": "customVisibility",
       "label": "Custom Visibility",
       "labelAlign": "right",
       "parentId": "root",
@@ -236,17 +236,17 @@
       "validate": {},
       "settingsValidationErrors": [],
       "exposedVariables": [
-        { "name": "data", "description": "The form data", "type": "object" },
-        { "name": "moment", "description": "The moment.js object", "type": "object" },
-        { "name": "form", "description": "Form instance", "type": "FormInstance" },
-        { "name": "formMode", "description": "The form mode", "type": "'readonly' | 'edit' | 'designer'" },
-        { "name": "globalState", "description": "The global state of the application", "type": "object" }
+        { "propertyName": "data", "description": "The form data", "type": "object" },
+        { "propertyName": "moment", "description": "The moment.js object", "type": "object" },
+        { "propertyName": "form", "description": "Form instance", "type": "FormInstance" },
+        { "propertyName": "formMode", "description": "The form mode", "type": "'readonly' | 'edit' | 'designer'" },
+        { "propertyName": "globalState", "description": "The global state of the application", "type": "object" }
       ]
     },
     {
       "id": "4b5e5951-4998-4635-b1c8-0b6d3940c300",
       "type": "codeEditor",
-      "name": "customEnabled",
+      "propertyName": "customEnabled",
       "label": "Custom Enabled",
       "labelAlign": "right",
       "parentId": "root",
@@ -256,17 +256,17 @@
       "validate": {},
       "settingsValidationErrors": [],
       "exposedVariables": [
-        { "name": "data", "description": "The form data", "type": "object" },
-        { "name": "moment", "description": "The moment.js object", "type": "object" },
-        { "name": "form", "description": "Form instance", "type": "FormInstance" },
-        { "name": "formMode", "description": "The form mode", "type": "'readonly' | 'edit' | 'designer'" },
-        { "name": "globalState", "description": "The global state of the application", "type": "object" }
+        { "propertyName": "data", "description": "The form data", "type": "object" },
+        { "propertyName": "moment", "description": "The moment.js object", "type": "object" },
+        { "propertyName": "form", "description": "Form instance", "type": "FormInstance" },
+        { "propertyName": "formMode", "description": "The form mode", "type": "'readonly' | 'edit' | 'designer'" },
+        { "propertyName": "globalState", "description": "The global state of the application", "type": "object" }
       ]
     },
     {
       "id": "26c68b22-3211-475d-91e1-0745a4447329",
       "type": "editableTagGroup",
-      "name": "permissions",
+      "propertyName": "permissions",
       "label": "Permissions",
       "labelAlign": "right",
       "parentId": "root",

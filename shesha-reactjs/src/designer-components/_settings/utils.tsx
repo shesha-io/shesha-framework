@@ -69,8 +69,9 @@ export const updateSettingsComponents = (
     });
 };
   
-export const migrateHidden = (model: IConfigurableFormComponent) => {
-    if (Boolean(model.customVisibility) && !Boolean(model.hidden_setting?.code)) {
+export const migrateHidden = (prev: IConfigurableFormComponent) => {
+    const model = {...prev};
+    /*if (Boolean(model.customVisibility) && !Boolean(model.hidden_setting?.code)) {
         model.hidden_setting = {
             ...model.hidden_setting,
             mode: 'code',
@@ -85,12 +86,13 @@ return !(() => {
 })();`
         };
         model.customVisibility = undefined;
-    }
+    }*/
     return model;
 };
 
-export const migrateDisabled = (model: IConfigurableFormComponent) => {
-    if (Boolean(model.customEnabled) && !Boolean(model.disabled_setting?.code)) {
+export const migrateDisabled = (prev: IConfigurableFormComponent) => {
+    const model = {...prev};
+    /*if (Boolean(model.customEnabled) && !Boolean(model.disabled_setting?.code)) {
         model.disabled_setting = {
             ...model.disabled_setting,
             mode: 'code',
@@ -105,8 +107,16 @@ return !(() => {
 })();`
         };
         model.customEnabled = undefined;
-    }
+    }*/
     return model;
+};
+
+export const migratePropertyName = <T extends IConfigurableFormComponent,>(prev: T) => {
+    const name = prev['name'];
+    if (!!name && !prev.propertyName)
+    return {...prev, componentName: name, propertyName: name} as T;
+  else
+    return {...prev} as T;
 };
 
 export const getPropertySetting = (model: any, propertyName: string): IPropertySetting => {

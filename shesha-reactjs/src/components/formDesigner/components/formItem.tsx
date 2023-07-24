@@ -8,7 +8,7 @@ import './styles.less';
 import { useFormItem } from '../../../providers';
 //import { BindingProvider } from 'providers/bindingProvider';
 import { useDataContextManager } from 'providers/dataContextManager';
-import { DataBinderEx } from 'hocs/dataBinderEx';
+import { DataBinder } from 'hocs/dataBinder';
 
 export interface IConfigurableFormItemProps {
   model: IConfigurableFormComponent;
@@ -44,7 +44,7 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
   }, [formItem]);
 
   const getPropName = () => {
-    const name = getFieldNameFromExpression(model.name);
+    const name = getFieldNameFromExpression(model.propertyName);
 
     if (namePrefix) {
       const prefix = namePrefix?.split('.');
@@ -57,7 +57,7 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
 
   const propNameMemo = useMemo(() => {
     return getPropName();
-  }, [model.name, namePrefix]);
+  }, [model.propertyName, namePrefix]);
 
   const { hideLabel } = model;
 
@@ -74,26 +74,42 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
     wrapperCol: hideLabel ? { span: 24 } : layout?.wrapperCol
   };
 
-  const { getDataContext, onChange } = useDataContextManager();
+  const { getDataContext } = useDataContextManager();
   const context =  getDataContext(model.context);
-  const { data } = context ?? {};
+  const { data } = context?.dataContext ?? {};
 
   const reactChildren = children as ReactNode;
   const funcChildren = children as (value: any, onChange:  (...args: any[]) => void) => ReactNode;
 
   // binding to context data for upgraded components 
-  if (!!model.context && model.context !== 'formData' ) {
+  if (!!model.context) {
+    
+    let value = undefined;
+
+    if (!!data) {
+      if (typeof propNameMemo === 'string')
+        value = data[propNameMemo];
+      else if (Array.isArray(propNameMemo) && propNameMemo.length > 0) {
+        value = data[propNameMemo[0]];
+        propNameMemo.forEach((item, index) => {
+          if (index > 0)
+            value = typeof value === 'object' ? value[item] : undefined;
+        });
+      }
+    }
+
     return (
       <Form.Item {...formItemProps}>
-        <DataBinderEx 
+        <DataBinder 
           onChange={(val) => {
-            if (!!onChange)
-              onChange(model.context, propNameMemo, val.target[!!valuePropName ? valuePropName : 'value']);
+            const value = !!val.target ? val.target[!!valuePropName ? valuePropName : 'value'] : val;
+            if (!!context.dataContext.onChange)
+              context.dataContext.onChange(propNameMemo, value);
           }}
-          value={!!data ? data[propNameMemo?.toString()] : undefined}
+          value={value}
         >
           {funcChildren}
-        </DataBinderEx>
+        </DataBinder>
       </Form.Item>
     );
   }
@@ -104,12 +120,12 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
   //hasFeedback
 
   // binding to from data for upgraded components 
-  if (model.context === 'formData' && funcChildren) 
+  if (typeof funcChildren === 'function') 
     return (
       <Form.Item {...formItemProps}>
-        <DataBinderEx valuePropName={valuePropName}>
+        <DataBinder valuePropName={valuePropName}>
           {funcChildren}
-        </DataBinderEx>
+        </DataBinder>
       </Form.Item>
     );
 

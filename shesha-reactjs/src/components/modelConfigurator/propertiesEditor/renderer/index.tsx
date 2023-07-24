@@ -1,17 +1,18 @@
 import React, { FC, useMemo } from 'react';
-import { Tabs } from 'antd';
+import { Button, Tabs } from 'antd';
 import { SidebarContainer } from '../../../';
 import { ToolbarItemProperties } from './itemProperties';
 import ItemsContainer from './itemsContainer';
 import { usePropertiesEditor } from '../provider';
 import CodeEditor from 'components/codeEditor';
+import { IPropertiesEditorProps } from '..';
 
-export interface IModelConfiguratorProps {}
+export const PropertiesEditorRenderer: FC<IPropertiesEditorProps> = ({
+  allowAdd = false
+}) => {
+  const { items, addItem, selectedItemRef } = usePropertiesEditor();
 
-export const PropertiesEditorRenderer: FC<IModelConfiguratorProps> = () => {
-  const { items /*addItem, selectedItemRef*/ } = usePropertiesEditor();
-
-  /*const onAddClick = () => {
+  const onAddClick = () => {
     addItem().then(_item => {
       const element = selectedItemRef?.current;
       if (element) {
@@ -27,7 +28,7 @@ export const PropertiesEditorRenderer: FC<IModelConfiguratorProps> = () => {
           });
       }
     });
-  }*/
+  };
 
   const jsonSchema = useMemo(() => {
     return JSON.stringify(items, null, 2);
@@ -41,11 +42,12 @@ export const PropertiesEditorRenderer: FC<IModelConfiguratorProps> = () => {
           key: '1',
           children: (
             <>
-              {/*<div className="sha-action-buttons" style={{ marginBottom: '8px' }}>
-          <Button onClick={onAddClick} type="primary">
-            Add Property
-          </Button>
-        </div>*/}
+              {allowAdd &&
+              <div className="sha-action-buttons" style={{ marginBottom: '8px' }}>
+                <Button onClick={onAddClick} type="primary">
+                  Add Property
+                </Button>
+              </div>}
               <div className="sha-sidebar-configurator">
                 <SidebarContainer
                   rightSidebarProps={{

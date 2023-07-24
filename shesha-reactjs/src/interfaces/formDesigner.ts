@@ -148,7 +148,7 @@ export interface IToolboxComponents {
   [key: string]: IToolboxComponent;
 }
 
-export { type IConfigurableFormComponent, type IFormComponentContainer };
+export { type IConfigurableFormComponent as IConfigurableFormComponent, type IFormComponentContainer };
 
 export interface IFieldValidationErrors {
   name: InternalNamePath;

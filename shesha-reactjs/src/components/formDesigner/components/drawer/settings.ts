@@ -5,21 +5,21 @@ export const getSettings = (data: { readOnly?: boolean }) =>
   new DesignerToolbarSettings(data)
     .addSectionSeparator({
       id: nanoid(),
-      name: 'separator1',
+      propertyName: 'separator1',
       parentId: 'root',
       label: 'Display',
     })
     .addPropertyAutocomplete({
       id: nanoid(),
-      name: 'name',
+      propertyName: 'propertyName',
       parentId: 'root',
-      label: 'Name',
+      label: 'Property name',
       validate: { required: true },
     })
-    .addSectionSeparator({ id: nanoid(), name: 'placementSeparator', readOnly: data.readOnly })
+    .addSectionSeparator({ id: nanoid(), propertyName: 'placementSeparator', readOnly: data.readOnly })
     .addDropdown({
       id: nanoid(),
-      name: 'placement',
+      propertyName: 'placement',
       parentId: 'root',
       hidden: false,
       customVisibility: null,
@@ -36,7 +36,7 @@ export const getSettings = (data: { readOnly?: boolean }) =>
     })
     .addTextField({
       id: nanoid(),
-      name: 'width',
+      propertyName: 'width',
       label: 'Width',
       description: 'Width of the Drawer dialog in % or px',
       placeholder: '70% or 800px',
@@ -44,7 +44,7 @@ export const getSettings = (data: { readOnly?: boolean }) =>
     })
     .addTextField({
       id: nanoid(),
-      name: 'height',
+      propertyName: 'height',
       label: 'Height',
       description: 'Placement is top or bottom, height of the Drawer dialog',
       customVisibility: "return data?.placement === 'bottom' || data?.placement === 'top'",
@@ -52,37 +52,37 @@ export const getSettings = (data: { readOnly?: boolean }) =>
     })
     .addSectionSeparator({
       id: nanoid(),
-      name: 'Footer',
+      propertyName: 'Footer',
       label: 'Footer',
       readOnly: data.readOnly,
     })
     .addCheckbox({
       id: nanoid(),
-      name: 'showFooter',
+      propertyName: 'showFooter',
       label: 'Show Footer',
       description: 'Whether Ok and Cancel buttons are shown',
     })
     .addContainer({
       id: nanoid(),
-      name: 'containerComponents',
+      propertyName: 'containerComponents',
       direction: 'vertical',
       customVisibility: 'return data.showFooter',
       components: new DesignerToolbarSettings()
-        .addSectionSeparator({ id: nanoid(), name: 'okButtonSeparator', label: 'Ok button' })
+        .addSectionSeparator({ id: nanoid(), propertyName: 'okButtonSeparator', label: 'Ok button' })
         .addConfigurableActionConfigurator({
           id: nanoid(),
-          name: 'onOkAction',
+          propertyName: 'onOkAction',
           label: 'Ok Action',
         })
         .addTextField({
           id: nanoid(),
-          name: 'okText',
+          propertyName: 'okText',
           label: 'Ok Text',
           description: 'The text that will be displayed on the Ok button',
         })
         .addCodeEditor({
           id: nanoid(),
-          name: 'okButtonCustomEnabled',
+          propertyName: 'okButtonCustomEnabled',
           parentId: 'root',
           label: 'Custom Enabled',
           description: 'Enter custom enabled of the Ok button',
@@ -102,21 +102,21 @@ export const getSettings = (data: { readOnly?: boolean }) =>
           ],
         })
 
-        .addSectionSeparator({ id: nanoid(), name: 'cancelButtonSeparator', label: 'Cancel button' })
+        .addSectionSeparator({ id: nanoid(), propertyName: 'cancelButtonSeparator', label: 'Cancel button' })
         .addConfigurableActionConfigurator({
           id: nanoid(),
-          name: 'onCancelAction',
+          propertyName: 'onCancelAction',
           label: 'Ok Cancel',
         })
         .addTextField({
           id: nanoid(),
-          name: 'cancelText',
+          propertyName: 'cancelText',
           label: 'Cancel Text',
           description: 'The text that will be displayed on the Cancel button',
         })
         .addCodeEditor({
           id: nanoid(),
-          name: 'cancelButtonCustomEnabled',
+          propertyName: 'cancelButtonCustomEnabled',
           parentId: 'root',
           label: 'Custom Enabled',
           description: 'Enter custom enabled of the Cancel button',
@@ -139,13 +139,13 @@ export const getSettings = (data: { readOnly?: boolean }) =>
     })
     .addSectionSeparator({
       id: 'bc67960e-77e3-40f2-89cc-f18f94678cce',
-      name: 'separatorVisibility',
+      propertyName: 'separatorVisibility',
       parentId: 'root',
       label: 'Visibility',
     })
     .addCodeEditor({
       id: '03959ffd-cadb-496c-bf6d-b742f7f6edc6',
-      name: 'customVisibility',
+      propertyName: 'customVisibility',
       parentId: 'root',
       label: 'Custom Visibility',
       description:

@@ -14,7 +14,7 @@ export interface IExecuteScriptArguments {
 const executeScriptArgumentsForm = new DesignerToolbarSettings()
   .addCodeEditor({
     id: nanoid(),
-    name: 'expression',
+    propertyName: 'expression',
     label: 'Expression',
     mode: 'dialog',
     exposedVariables: [

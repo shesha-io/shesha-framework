@@ -3,21 +3,21 @@
     {
       "id": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
       "type": "sectionSeparator",
-      "name": "separator1",
+      "propertyName": "separator1",
       "parentId": "root",
       "label": "Display"
     },
     {
       "id": "1a3bfee6-3cde-41f0-b371-f743e801bef3",
       "type": "checkbox",
-      "name": "container",
+      "propertyName": "container",
       "parentId": "root",
       "label": "Container?"
     },
     {
       "id": "6d29cf2c-96fe-40ce-be97-32e9f5d0fe40",
       "type": "dropdown",
-      "name": "dividerType",
+      "propertyName": "dividerType",
       "parentId": "root",
       "label": "Divider Type",
       "values": [
@@ -37,7 +37,7 @@
     {
       "id": "3496cef5-a86f-4839-b70a-1f9871f96f45",
       "type": "dropdown",
-      "name": "contentType",
+      "propertyName": "contentType",
       "parentId": "root",
       "label": "Content type",
       "values": [
@@ -62,21 +62,21 @@
     {
       "id": "006dcd8f-690c-4caa-89d2-bf9f701b50fd",
       "type": "textField",
-      "name": "orientationMargin",
+      "propertyName": "orientationMargin",
       "parentId": "root",
       "label": "Orientation Margin"
     },
     {
       "id": "89c6096e-c351-4185-ab49-9d98e1b638a5",
       "type": "checkbox",
-      "name": "dashed",
+      "propertyName": "dashed",
       "parentId": "root",
       "label": "Dashed"
     },
     {
       "id": "00d60630-64b1-4a2e-b3b2-71f4c6021bf1",
       "type": "checkbox",
-      "name": "plain",
+      "propertyName": "plain",
       "parentId": "root",
       "label": "Plain"
     }

@@ -16,7 +16,7 @@ function ColumnsSettings({ readOnly, onSave, model, onValuesChange }: IProps) {
 
   return (
     <Form form={form} onFinish={onSave} layout="vertical" onValuesChange={onValuesChange}>
-      <Form.Item name="name" label="Name" rules={[{ required: true }]} initialValue={model?.name}>
+      <Form.Item name="propertyName" label="Property name" rules={[{ required: true }]} initialValue={model?.propertyName}>
         <Input readOnly={readOnly}/>
       </Form.Item>
 

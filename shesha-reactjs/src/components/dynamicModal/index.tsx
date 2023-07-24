@@ -130,7 +130,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
         <ConfigurableForm {...formProps}>
           <Show when={footerButtons === 'custom' && Boolean(buttons?.length)}>
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <ButtonGroup items={buttons || []} name={''} type={''} id={''} size="middle" isInline noStyles />
+              <ButtonGroup items={buttons || []} propertyName={''} type={''} id={''} size="middle" isInline noStyles />
             </div>
           </Show>
         </ConfigurableForm>

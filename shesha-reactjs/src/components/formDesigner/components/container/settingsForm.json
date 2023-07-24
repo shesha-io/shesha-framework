@@ -3,16 +3,16 @@
     {
       "id": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
       "type": "sectionSeparator",
-      "name": "separator1",
+      "propertyName": "separator1",
       "parentId": "root",
       "label": "Display"
     },
     {
       "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
       "type": "textField",
-      "name": "name",
+      "propertyName": "propertyName",
       "parentId": "root",
-      "label": "Name",
+      "label": "Property name",
       "validate": {
         "required": true
       }
@@ -20,7 +20,7 @@
     {
       "id": "df8a8f35-a50b-42f9-9642-73d390ceddbf",
       "type": "dropdown",
-      "name": "visibility",
+      "propertyName": "visibility",
       "parentId": "root",
       "label": "Visibility",
       "description": "This property will eventually replace the 'hidden' property and other properties that toggle visibility on the UI and payload",
@@ -47,14 +47,14 @@
     {
       "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
       "type": "checkbox",
-      "name": "hidden",
+      "propertyName": "hidden",
       "parentId": "root",
       "label": "Hidden"
     },
     {
       "id": "45b51033-4803-46f7-96fa-10bb277426c7",
       "type": "dropdown",
-      "name": "direction",
+      "propertyName": "direction",
       "label": "Direction",
       "labelAlign": "right",
       "parentId": "root",
@@ -80,7 +80,7 @@
     {
       "id": "b796c757-6e6d-4312-94cc-089000b4f130",
       "type": "dropdown",
-      "name": "justifyContent",
+      "propertyName": "justifyContent",
       "label": "Justify Content",
       "labelAlign": "right",
       "parentId": "root",
@@ -139,7 +139,7 @@
     {
       "id": "7b484701-5ccf-475c-becb-9f148311d3de",
       "type": "dropdown",
-      "name": "alignItems",
+      "propertyName": "alignItems",
       "label": "Align Items",
       "labelAlign": "right",
       "parentId": "root",
@@ -223,7 +223,7 @@
     {
       "id": "bfa728a6-8a09-4107-93a1-492f08871ff4",
       "type": "dropdown",
-      "name": "justifyItems",
+      "propertyName": "justifyItems",
       "label": "Justify Items",
       "labelAlign": "right",
       "parentId": "root",
@@ -323,7 +323,7 @@
       "textType": "text",
       "id": "ab892092-08ec-4eb3-9b79-51b515ef5d22",
       "type": "textField",
-      "name": "className",
+      "propertyName": "className",
       "label": "Custom CSS Class",
       "labelAlign": "right",
       "parentId": "root",
@@ -336,41 +336,41 @@
     {
       "id": "bc67960e-77e3-40f2-89cc-f18f94678cce",
       "type": "sectionSeparator",
-      "name": "separatorStyle",
+      "propertyName": "separatorStyle",
       "parentId": "root",
       "label": "Style"
     },
     {
       "id": "5ab13301-7277-427a-8edb-2a2537e70407",
       "type": "codeEditor",
-      "name": "style",
+      "propertyName": "style",
       "label": "Style",
       "parentId": "root",
       "mode": "dialog",
       "description": "The style that will be applied to the container",
-      "exposedVariables": [{ "name": "data", "description": "Form data", "type": "object" }]
+      "exposedVariables": [{ "propertyName": "data", "description": "Form data", "type": "object" }]
     },
     {
       "id": "987c3de1-b959-4670-96f6-9b1747189a6e",
       "type": "codeEditor",
-      "name": "wrapperStyle",
+      "propertyName": "wrapperStyle",
       "label": "Wrapper Style",
       "parentId": "root",
       "mode": "dialog",
       "description": "The style that will be applied to the container wrapper",
-      "exposedVariables": [{ "name": "data", "description": "Form data", "type": "object" }]
+      "exposedVariables": [{ "propertyName": "data", "description": "Form data", "type": "object" }]
     },
     {
       "id": "30111098-21da-4d6b-a737-145c5db41c72",
       "type": "sectionSeparator",
-      "name": "separatorVisibility",
+      "propertyName": "separatorVisibility",
       "parentId": "root",
       "label": "Visibility"
     },
     {
       "id": "a34130d9-7987-4331-8b95-71a3b77f8eb9",
       "type": "codeEditor",
-      "name": "customVisibility",
+      "propertyName": "customVisibility",
       "label": "Custom Visibility",
       "labelAlign": "right",
       "parentId": "root",
@@ -380,8 +380,8 @@
       "validate": {},
       "settingsValidationErrors": [],
       "exposedVariables": [
-        { "name": "value", "description": "Component current value", "type": "string | any" },
-        { "name": "data", "description": "Selected form values", "type": "object" }
+        { "propertyName": "value", "description": "Component current value", "type": "string | any" },
+        { "propertyName": "data", "description": "Selected form values", "type": "object" }
       ]
     }
   ],

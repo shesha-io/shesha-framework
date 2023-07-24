@@ -3,7 +3,7 @@
     {
       "id": "840aee56-42d2-40ed-a2c6-57abb255fb95",
       "type": "dropdown",
-      "name": "layertype",
+      "propertyName": "layertype",
       "label": "Layer Type",
       "labelAlign": "right",
       "parentId": "root",
@@ -29,7 +29,7 @@
     {
       "id": "5d4d56fb-d7f8-4835-a529-c4fa93f3596d",
       "type": "textField",
-      "name": "name",
+      "propertyName": "name",
       "label": "Name",
       "labelAlign": "right",
       "parentId": "root",
@@ -42,7 +42,7 @@
     {
       "id": "298a5254-f0f6-4685-b25f-51be50ed3804",
       "type": "textField",
-      "name": "label",
+      "propertyName": "label",
       "label": "Name",
       "labelAlign": "right",
       "parentId": "root",
@@ -53,14 +53,14 @@
     {
       "id": "d498779d-012a-4c6a-82a9-77231245ae28",
       "type": "textArea",
-      "name": "description",
+      "propertyName": "description",
       "parentId": "root",
       "label": "Description"
     },
     {
       "id": "91b404a6-4021-4b0a-b9ef-007167a93075",
       "type": "iconPicker",
-      "name": "icon",
+      "propertyName": "icon",
       "label": "Icon",
       "labelAlign": "right",
       "parentId": "root",
@@ -71,7 +71,7 @@
     {
       "id": "b4117249-8c2f-4991-a96c-9ea434293120",
       "type": "colorPicker",
-      "name": "iconColor",
+      "propertyName": "iconColor",
       "label": "Icon Color",
       "labelAlign": "right",
       "parentId": "root",
@@ -82,7 +82,7 @@
     {
       "id": "a4020833-3476-407d-bdb6-3acedc1e22f4",
       "type": "numberField",
-      "name": "iconSize",
+      "propertyName": "iconSize",
       "parentId": "root",
       "customVisibility": "return data.layertype === 'points'",
       "label": "Icon Size"
@@ -90,21 +90,21 @@
     {
       "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
       "type": "checkbox",
-      "name": "visible",
+      "propertyName": "visible",
       "parentId": "root",
       "label": "Visible"
     },
     {
       "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
       "type": "checkbox",
-      "name": "allowChangeVisibility",
+      "propertyName": "allowChangeVisibility",
       "parentId": "root",
       "label": "Allow Change Visibility"
     },
     {
       "id": "a1a39039-bbae-421c-9ada-2c01fa8271bb",
       "type": "dropdown",
-      "name": "dataSource",
+      "propertyName": "dataSource",
       "label": "Data Source",
       "labelAlign": "right",
       "parentId": "root",
@@ -130,7 +130,7 @@
     {
       "id": "6b0bd9c6-6a53-4a05-9de0-ad1b17eb0018",
       "type": "autocomplete",
-      "name": "entityType",
+      "propertyName": "entityType",
       "label": "Entity Type",
       "labelAlign": "right",
       "parentId": "root",
@@ -145,7 +145,7 @@
     {
       "id": "9ecd42b3-3a62-40b7-8542-796efca2bd61",
       "type": "propertyAutocomplete",
-      "name": "latitude",
+      "propertyName": "latitude",
       "label": "Latitude",
       "labelAlign": "right",
       "parentId": "root",
@@ -165,7 +165,7 @@
     {
       "id": "f4b0f3e2-a6ad-41f8-8cf3-5ce523e3d8ca",
       "type": "propertyAutocomplete",
-      "name": "longitude",
+      "propertyName": "longitude",
       "label": "Longitude",
       "labelAlign": "right",
       "parentId": "root",
@@ -185,7 +185,7 @@
     {
       "id": "73e19e6c-977f-46f2-a5fb-593bbdca911b",
       "type": "propertyAutocomplete",
-      "name": "boundary",
+      "propertyName": "boundary",
       "label": "Boundary",
       "labelAlign": "right",
       "parentId": "root",
@@ -203,7 +203,7 @@
     {
       "id": "3a159ec9-6d2a-40b4-a797-2847b3878aa8",
       "type": "queryBuilder",
-      "name": "filters",
+      "propertyName": "filters",
       "label": "Entity Filter",
       "labelAlign": "right",
       "parentId": "root",
@@ -218,7 +218,7 @@
     {
       "id": "3B19B03F-8568-4125-9CB0-CDEA52BE207D",
       "type": "endpointsAutocomplete",
-      "name": "customUrl",
+      "propertyName": "customUrl",
       "parentId": "root",
       "label": "Endpoint",
       "customVisibility": "return data.dataSource == 'custom';",
@@ -227,7 +227,7 @@
     {
       "id": "305e5c5c-cf45-4fb4-bb22-3c4c63d91975",
       "type": "textField",
-      "name": "ownerId",
+      "propertyName": "ownerId",
       "label": "Owner Id",
       "labelAlign": "right",
       "parentId": "root",

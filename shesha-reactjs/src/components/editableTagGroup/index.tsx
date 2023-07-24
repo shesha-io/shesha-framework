@@ -98,7 +98,7 @@ export const EditableTagGroup: FC<IEditableTagGroupProps> = ({ value = [], onCha
   };
 
   const { inputVisible, inputValue } = state;
-  const tagChild = value?.map(forMap);
+  const tagChild = (Array.isArray(value) ? value : !!value ? [value] : [])?.map(forMap);
 
   return (
     <>

@@ -37,7 +37,7 @@ const AddressSettings: FC<IButtonGroupSettingsProps> = ({ readOnly, model, onSav
     <Form form={form} onFinish={onSave} onValuesChange={handleValuesChange} initialValues={model} layout="vertical">
       <SectionSeparator title="Display" />
 
-      <Form.Item name="name" label="Name" required>
+      <Form.Item name="propertyName" label="Property name" required>
         <PropertyAutocomplete id="415cc8ec-2fd1-4c5a-88e2-965153e16069" readOnly={readOnly} />
       </Form.Item>
 
@@ -173,7 +173,7 @@ const AddressSettings: FC<IButtonGroupSettingsProps> = ({ readOnly, model, onSav
       >
         <CodeEditor
           id={''}
-          name="onChangeCustom"
+          propertyName="onChangeCustom"
           readOnly={readOnly}
           mode="dialog"
           label="On Change"
@@ -191,7 +191,7 @@ const AddressSettings: FC<IButtonGroupSettingsProps> = ({ readOnly, model, onSav
       >
         <CodeEditor
           id={''}
-          name="onSelectCustom"
+          propertyName="onSelectCustom"
           readOnly={readOnly}
           mode="dialog"
           label="On Select"
@@ -210,7 +210,7 @@ const AddressSettings: FC<IButtonGroupSettingsProps> = ({ readOnly, model, onSav
       >
         <CodeEditor
           id={''}
-          name="customVisibility"
+          propertyName="customVisibility"
           readOnly={readOnly}
           mode="dialog"
           label="Custom Visibility"

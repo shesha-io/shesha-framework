@@ -10,19 +10,19 @@ export interface IUpdateItemArguments {
 export const updateItemArgumentsForm = new DesignerToolbarSettings()
   .addTextField({
     id: nanoid(),
-    name: 'name',
+    propertyName: 'name',
     label: 'Name',
     validate: { required: true },
   })
   .addTextField({
     id: nanoid(),
-    name: 'displayName',
+    propertyName: 'displayName',
     label: 'Display Name',
     validate: { required: true },
   })
   .addTextField({
     id: nanoid(),
-    name: 'description',
+    propertyName: 'description',
     label: 'Description',
   })
   .toJson();

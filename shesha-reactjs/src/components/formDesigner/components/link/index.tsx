@@ -17,7 +17,7 @@ export interface IAlertProps extends IConfigurableFormComponent {
 }
 export interface ILinkProps extends IConfigurableFormComponent {
   content?: string;
-  name: string;
+  propertyName: string;
   target?: string;
   download?: string;
   direction?: ContainerDirection;
@@ -41,7 +41,7 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
     const { data } = useFormData();
 
     const {
-      name,
+      propertyName: name,
       content = '',
       style,
       target,

@@ -56,7 +56,7 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
     >
       <SectionSeparator title="Display" />
 
-      <FormItem name="name" label="Name" rules={[{ required: true }]}>
+      <FormItem name="propertyName" label="Property name" rules={[{ required: true }]}>
         <PropertyAutocomplete id="fb71cb51-884f-4f34-aa77-820c12276c95" readOnly={readOnly} />
       </FormItem>
 
@@ -191,7 +191,7 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
               readOnly={readOnly}
               mode="inline"
               setOptions={{ minLines: 15, maxLines: 500, fixedWidthGutter: true }}
-              name="properties"
+              propertyName="properties"
               type={''}
               id={''}
               language="graphqlschema"
@@ -206,7 +206,7 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
           <QueryBuilderWithModelType modelType={state?.entityType}>
             <QueryBuilderComponentRenderer
               readOnly={readOnly}
-              name="filters"
+              propertyName="filters"
               type={''}
               id={''}
               label="Query builder"
@@ -264,7 +264,7 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
               readOnly={readOnly}
               mode="dialog"
               setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-              name="deleteUrl"
+              propertyName="deleteUrl"
               label="Delete URL"
               type={''}
               id={''}
@@ -302,7 +302,7 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
               mode="dialog"
               label="Delete Confirm Message"
               setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-              name="deleteConfirmMessage"
+              propertyName="deleteConfirmMessage"
               type={''}
               id={''}
               description="The confirm message that will be displayed before you delete an item. Write the code that returns the string"
@@ -343,7 +343,7 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
           label="On Submit"
           mode="dialog"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          name="onSubmit"
+          propertyName="onSubmit"
           type={''}
           id={''}
           description="Write a code that return tha payload to be sent to the server when submitting this items"
@@ -382,7 +382,7 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
           mode="dialog"
           label="Submit URL"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          name="submitUrl"
+          propertyName="submitUrl"
           type={''}
           id={''}
           description="The URL to submit the list items to"
@@ -414,7 +414,7 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
           mode="dialog"
           label="Target URL"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          name="targetUrl"
+          propertyName="targetUrl"
           type={''}
           id={''}
           description="The URL to forward to after event is triggered"
@@ -505,7 +505,7 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
           mode="dialog"
           label="Custom Visibility"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          name="customVisibility"
+          propertyName="customVisibility"
           type={''}
           id={''}
           description={"Enter custom visibility code.  You must return true to show the component. " +

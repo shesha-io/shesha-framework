@@ -3,7 +3,7 @@
       {
         "id": "XfBj2SDuEkTf-SbtWciWo",
         "type": "container",
-        "name": "container6",
+        "propertyName": "container6",
         "label": "Container6",
         "labelAlign": "right",
         "parentId": "root",
@@ -17,7 +17,7 @@
             "textType": "text",
             "id": "U4jgpgbofzzQW3_njc5wZ",
             "type": "textField",
-            "name": "dependency",
+            "propertyName": "dependency",
             "label": "Depends on",
             "labelAlign": "right",
             "hidden": false,
@@ -44,7 +44,7 @@
             "textType": "text",
             "id": "C-F9oF99z_LKSfSG4-TdG",
             "type": "textField",
-            "name": "category",
+            "propertyName": "category",
             "label": "Category",
             "labelAlign": "right",
             "hidden": true,
@@ -68,7 +68,7 @@
           {
             "id": "j0EAgLiqqB7QdHW-QUJqI",
             "type": "dropdown",
-            "name": "access",
+            "propertyName": "access",
             "label": "Access",
             "labelAlign": "right",
             "parentId": "XfBj2SDuEkTf-SbtWciWo",
@@ -115,7 +115,7 @@
           {
             "id": "WXaDzSHBAKzkbO18zDotx",
             "type": "autocompleteTagGroup",
-            "name": "permissions",
+            "propertyName": "permissions",
             "label": "Permissions",
             "labelAlign": "right",
             "parentId": "XfBj2SDuEkTf-SbtWciWo",
@@ -130,7 +130,7 @@
           {
             "id": "V4ZLolRl8UZK1HHiNvYO_",
             "type": "autocompleteTagGroup",
-            "name": "actualPermissions",
+            "propertyName": "actualPermissions",
             "label": "Actual permissions",
             "labelAlign": "right",
             "parentId": "XfBj2SDuEkTf-SbtWciWo",
@@ -146,7 +146,7 @@
           {
             "id": "8YKNrq6D42G1Lzrgoizyn",
             "type": "dropdown",
-            "name": "actualAccess",
+            "propertyName": "actualAccess",
             "label": "Actual access",
             "labelAlign": "right",
             "parentId": "XfBj2SDuEkTf-SbtWciWo",

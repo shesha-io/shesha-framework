@@ -430,7 +430,7 @@ const getFormFields = (payload: GetFormFieldsPayload): string[] => {
     let fieldNames = [];
     for (const key in components) {
         if (components.hasOwnProperty(key)){
-            fieldNames.push(components[key].name);
+            fieldNames.push(components[key].propertyName);
         }
     }
 

@@ -12,9 +12,9 @@ import {
 } from '../../providers/form/utils';
 import React from 'react';
 import { getSettings } from './settings';
-import { migrateDisabled, migrateHidden } from 'designer-components/_settings/utils';
+import { migrateDisabled, migrateHidden, migratePropertyName } from 'designer-components/_settings/utils';
 
-export interface IFileUploadProps extends IConfigurableFormComponent, IFormItem {
+export interface IFileUploadProps extends IConfigurableFormComponent, Omit<IFormItem, 'name'> {
   ownerId: string;
   ownerType: string;
   propertyName: string;
@@ -46,29 +46,35 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
 
     return (
       <ConfigurableFormItem model={model}>
-        <StoredFileProvider
-          fileId={model.value?.Id ?? model.value}
-          baseUrl={backendUrl}
-          ownerId={Boolean(ownerId) ? ownerId : Boolean(data?.id) ? data?.id : ''}
-          ownerType={
-            Boolean(model.ownerType) ? model.ownerType : Boolean(formSettings?.modelType) ? formSettings?.modelType : ''
-          }
-          propertyName={Boolean(model.propertyName) ? model.propertyName : model.name}
-          uploadMode={model.useSync ? 'sync' : 'async'}
-        >
-          <FileUpload
-            isStub={formMode === 'designer'}
-            allowUpload={enabled && model.allowUpload}
-            allowDelete={enabled && model.allowDelete}
-            allowReplace={enabled && model.allowReplace}
-            allowedFileTypes={model?.allowedFileTypes}
-          />
-        </StoredFileProvider>
+        {(value, onChange) => {
+          return (
+            <StoredFileProvider
+              value={value}
+              onChange={onChange}
+              fileId={model.value?.Id ?? model.value}
+              baseUrl={backendUrl}
+              ownerId={Boolean(ownerId) ? ownerId : Boolean(data?.id) ? data?.id : ''}
+              ownerType={
+                Boolean(model.ownerType) ? model.ownerType : Boolean(formSettings?.modelType) ? formSettings?.modelType : ''
+              }
+              propertyName={Boolean(model.propertyName) ? model.propertyName : model.propertyName}
+              uploadMode={model.useSync ? 'sync' : 'async'}
+            >
+              <FileUpload
+                isStub={formMode === 'designer'}
+                allowUpload={enabled && model.allowUpload}
+                allowDelete={enabled && model.allowDelete}
+                allowReplace={enabled && model.allowReplace}
+                allowedFileTypes={model?.allowedFileTypes}
+              />
+            </StoredFileProvider>
+          );
+        }}
       </ConfigurableFormItem>
     );
   },
   migrator: (m) => m
-    .add<IFileUploadProps>(0, (prev) => {
+    .add<IFileUploadProps>(0, prev => {
       return {
         ...prev,
         allowReplace: true,
@@ -77,20 +83,16 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
         ownerId: '',
         ownerType: '',
         propertyName: '',
-      };
+      } as IFileUploadProps;
     })
-    .add<IFileUploadProps>(1, (prev, context) => {
-      return {
-        ...prev,
-        useSync: !Boolean(context.formSettings?.modelType),
-      };
-    })
+    .add<IFileUploadProps>(1, (prev, context) => ({...prev, useSync: !Boolean(context.formSettings?.modelType)}))
     .add<IFileUploadProps>(2, (prev) => {
       const newModel = {...prev};
       migrateHidden(newModel);
       migrateDisabled(newModel);
       return newModel;
     })
+    .add<IFileUploadProps>(3, (prev) => migratePropertyName(prev))
   ,
   settingsFormMarkup: getSettings(),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),

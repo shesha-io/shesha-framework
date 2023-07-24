@@ -54,7 +54,7 @@ function DataListSettings(props: IProps) {
         </Select>
         </Form.Item>*/}
 
-      <Form.Item name="name" label="Name">
+      <Form.Item name="propertyName" label="Property name">
         <PropertyAutocomplete readOnly={props.readOnly} showFillPropsButton={false} />
       </Form.Item>
 
@@ -123,7 +123,7 @@ function DataListSettings(props: IProps) {
             readOnly={props.readOnly}
             mode="dialog"
             setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-            name="formIdExpression"
+            propertyName="formIdExpression"
             type={''}
             id={''}
             label="Form identifer expression"
@@ -169,7 +169,7 @@ function DataListSettings(props: IProps) {
           readOnly={props.readOnly}
           mode="dialog"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          name="customVisibility"
+          propertyName="customVisibility"
           type={''}
           id={''}
           label="Custom visibility"

@@ -361,8 +361,12 @@ namespace Shesha
                     return;
                 case DataTypes.EntityReference:
                     if (property.EntityType.IsNullOrWhiteSpace())
+                    {
                         // GenericEntityReference
-                        sb.AppendLine($"{propertyName}: {propertyName}");
+                        //sb.AppendLine($"{propertyName}: {propertyName}");
+                        sb.Append(propertyName);
+                        sb.AppendLine(" {id _className _displayName} ");
+                    }
                     else
                         // EntityReference
                         sb.AppendLine($"{propertyName}: {propertyName}{nameof(IEntity.Id)}");

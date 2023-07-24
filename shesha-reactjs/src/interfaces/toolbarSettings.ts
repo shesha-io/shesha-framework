@@ -1,6 +1,5 @@
 import { IButtonsProps } from './../components/formDesigner/components/button/buttonGroup/buttonsComponent/interfaces';
 import { IDropdownComponentProps } from 'designer-components/dropdown/interfaces';
-import { ITextAreaComponentProps } from './../components/formDesigner/components/textArea/interfaces';
 import { ILabelValueEditorComponentProps } from './../components/formDesigner/components/labelValueEditor/interfaces';
 import { ITextFieldComponentProps } from '../designer-components/textField/interfaces';
 import { IConfigurableFormComponent } from '.';
@@ -24,6 +23,8 @@ import { IPropertyAutocompleteComponentProps } from 'components/formDesigner/com
 import { ISwitchComponentProps } from 'components/formDesigner/components/switch/interfaces';
 import { IAlertComponentProps } from 'components/formDesigner/components/alert/interfaces';
 import { IReferenceListAutocompleteProps } from 'components/formDesigner/components/referenceListAutocomplete';
+import { IContextPropertyAutocompleteComponentProps } from 'designer-components/contextPropertyAutocomplete';
+import { ITextAreaComponentProps } from 'designer-components/textArea/interfaces';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'type'> {
   jsSetting?: boolean;  
@@ -34,6 +35,8 @@ type DropdownType = ToolbarSettingsProp & Omit<IDropdownComponentProps, 'type'>;
 type SectionSeparatorType = ToolbarSettingsProp & Omit<ISectionSeparatorComponentProps, 'type'>;
 
 type TextFieldType = ToolbarSettingsProp & Omit<ITextFieldComponentProps, 'type'>;
+
+type ContextPropertyAutocompleteType = ToolbarSettingsProp & Omit<IContextPropertyAutocompleteComponentProps, 'type'>;
 
 type PropertyAutocompleteType = ToolbarSettingsProp & Omit<IPropertyAutocompleteComponentProps, 'type'>;
 
@@ -120,6 +123,10 @@ export class DesignerToolbarSettings<T> {
 
   public addTextField(props: TextFieldType | ((data: T) => TextFieldType)) {
     return this.addProperty(props, 'textField');
+  }
+
+  public addContextPropertyAutocomplete(props: ContextPropertyAutocompleteType | ((data: T) => ContextPropertyAutocompleteType)) {
+    return this.addProperty(props, 'contextPropertyAutocomplete');
   }
 
   public addPropertyAutocomplete(props: PropertyAutocompleteType | ((data: T) => PropertyAutocompleteType)) {

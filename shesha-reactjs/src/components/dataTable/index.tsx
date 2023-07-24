@@ -336,7 +336,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
             ...customComponent.settings,
             id: dataCol.columnId,
             type: customComponent.type,
-            name: dataCol.propertyName,
+            propertyName: dataCol.propertyName,
             label: null,
             hideLabel: true,
           };

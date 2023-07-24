@@ -3,7 +3,7 @@
     {
       "id": "f061d971-8b38-4b82-b192-563259afc159",
       "type": "textField",
-      "name": "name",
+      "propertyName": "name",
       "label": "Group Name",
       "labelAlign": "right",
       "parentId": "root",
@@ -16,7 +16,7 @@
     {
       "id": "uuIhAV7hqfVvjC4vLYUKo",
       "type": "textArea",
-      "name": "tooltip",
+      "propertyName": "tooltip",
       "label": "Group Tooltip",
       "labelAlign": "right",
       "parentId": "root",
@@ -31,7 +31,7 @@
     {
       "id": "4lmhhHM0xpvA0ERbkfkVS",
       "type": "iconPicker",
-      "name": "icon",
+      "propertyName": "icon",
       "label": "Icon",
       "labelAlign": "right",
       "parentId": "root",
@@ -42,7 +42,7 @@
     {
       "id": "WddtQisTgpi7GMg2qMASD",
       "type": "dropdown",
-      "name": "buttonType",
+      "propertyName": "buttonType",
       "label": "Button Type",
       "labelAlign": "right",
       "parentId": "root",
