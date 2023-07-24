@@ -11,7 +11,7 @@ import {
   DEFAULT_PADDING_SIZE,
   getContent,
   getFontSizeStyle,
-  getPaddingSizeStyle, 
+  getPaddingSizeStyle,
 } from './utils';
 import './styles/index.less';
 import classNames from 'classnames';
@@ -35,7 +35,7 @@ const TypographyComponent: FC<ITextTypographyProps> = ({
   const { data: formData } = useFormData();
   const { globalState } = useGlobalState();
 
-  const contentEvaluation = contentDisplay === 'name' ? value : evaluateString(model?.content, formData);
+  const contentEvaluation = contentDisplay === 'name' ? value || '' : evaluateString(model?.content, formData);
   const content = getContent(contentEvaluation, { dataType, dateFormat, numberFormat });
 
   const isVisibleByCondition = executeCustomExpression(model.customVisibility, true, formData, globalState);

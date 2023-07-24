@@ -19,7 +19,7 @@ import {
 } from './actions';
 import { CrudMode } from './models';
 import { Form, FormInstance, FormProps } from 'antd';
-import { FormProvider, useForm } from 'providers/form';
+import { FormProvider, useForm } from 'providers';
 import { IErrorInfo } from 'interfaces/errorInfo';
 import { RowDataInitializer } from 'components/reactTable/interfaces';
 import { useDebouncedCallback } from 'use-debounce';
@@ -264,6 +264,8 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
         getInitialData,
     };
 
+    const flatComponents = state.mode === 'read' ? props.displayComponents : props.editorComponents;
+
     return (
         <CrudContext.Provider value={contextValue}>
             {true &&
@@ -271,7 +273,8 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
                     key={state.mode} /* important for re-rendering of the provider after mode change */
                     form={form}
                     name={''}
-                    flatComponents={state.mode === 'read' ? props.displayComponents : props.editorComponents}
+                    allComponents={flatComponents.allComponents}
+                    componentRelations={flatComponents.componentRelations}
                     formSettings={undefined}
                     mode={ state.mode === 'read' ? 'readonly' : 'edit' }
                     isActionsOwner={false}

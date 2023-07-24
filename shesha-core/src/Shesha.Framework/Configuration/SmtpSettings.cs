@@ -31,6 +31,11 @@
         public string Domain { get; set; }
 
         /// <summary>
+        /// Domain name to login to Incoming server.
+        /// </summary>
+        public string IncomingServer { get; set; }
+
+        /// <summary>
         /// Is SSL enabled?
         /// </summary>
         public bool EnableSsl { get; set; }

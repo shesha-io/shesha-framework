@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\common.props" />
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <AssemblyName>Shesha.Tests</AssemblyName>
     <PackageId>Shesha.Tests</PackageId>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
@@ -53,6 +53,7 @@
     <ProjectReference Include="..\..\src\Shesha.AzureAD\Shesha.AzureAD.csproj" />
     <ProjectReference Include="..\..\src\Shesha.NHibernate\Shesha.NHibernate.csproj" />
     <ProjectReference Include="..\..\src\Shesha.Scheduler\Shesha.Scheduler.csproj" />
+    <ProjectReference Include="..\..\src\Shesha.Web.Core\Shesha.Web.Core.csproj" />
     <ProjectReference Include="..\..\src\Shesha.Web.FormsDesigner\Shesha.Web.FormsDesigner.csproj" />
   </ItemGroup>
   <ItemGroup>
@@ -60,7 +61,7 @@
     <PackageReference Include="Abp.MemoryDb" Version="6.6.2" />
     <PackageReference Include="FluentAssertions" Version="6.7.0" />
     <PackageReference Include="GraphQL" Version="5.3.0" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.9.0" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.54.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
     <PackageReference Include="Moq" Version="4.14.1" />
     <PackageReference Include="NSubstitute" Version="4.2.1" />

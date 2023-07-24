@@ -29,7 +29,7 @@ export interface ISettingsEditor<TSettings = any> {
   save?: () => Promise<TSettings>;
 }
 
-export interface IConfigurableComponentProps<TSettings = any> {
+export interface IConfigurableApplicationComponentProps<TSettings = any> {
   canConfigure?: boolean;
   children: ConfigurableComponentChildrenFn<TSettings>;
   onStartEdit?: () => void;
@@ -44,14 +44,14 @@ export interface IBlockOverlayProps {
   onClick?: () => void;
 }
 
-export const ConfigurableComponent = <TSettings extends any>({ 
+export const ConfigurableApplicationComponent = <TSettings extends any>({ 
   children,
   canConfigure = true,
   defaultSettings,
   settingsEditor,
   name,
   isApplicationSpecific
-}: IConfigurableComponentProps<TSettings>) => {
+}: IConfigurableApplicationComponentProps<TSettings>) => {
   const component = useMemo(() => {
     return createConfigurableComponent<TSettings>(defaultSettings);
   }, [defaultSettings]);
@@ -72,5 +72,3 @@ export const ConfigurableComponent = <TSettings extends any>({
     </ConfigurableComponentProvider>
   );
 };
-
-export default ConfigurableComponent;

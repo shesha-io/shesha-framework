@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>ShaCompanyName.ShaProjectName.Common</RootNamespace>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -9,14 +9,14 @@
   <ItemGroup>
     <PackageReference Include="Abp" Version="6.6.2" />
     <PackageReference Include="Intent.RoslynWeaver.Attributes" Version="2.0.1" />
-    <PackageReference Include="NHibernate" Version="5.3.12" />
+    <PackageReference Include="NHibernate" Version="5.4.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Shesha.Application" Version="4.11.72" />
-    <PackageReference Include="Shesha.Core" Version="4.11.72" />
-    <PackageReference Include="Shesha.Framework" Version="4.11.72" />
-    <PackageReference Include="Shesha.Web.FormsDesigner" Version="4.11.72" />
+    <PackageReference Include="Shesha.Application" Version="4.35.15" />
+    <PackageReference Include="Shesha.Core" Version="4.35.15" />
+    <PackageReference Include="Shesha.Framework" Version="4.35.15" />
+    <PackageReference Include="Shesha.Web.FormsDesigner" Version="4.35.15" />
     <ProjectReference Include="..\ShaCompanyName.ShaProjectName.Domain\ShaCompanyName.ShaProjectName.Domain.csproj" />
   </ItemGroup>
 

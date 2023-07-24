@@ -24,17 +24,23 @@ const Template: Story<IDynamicPageProps> = (args) => (
 // Reuse that template for creating different stories
 export const Basic = Template.bind({});
 
-export const OrderDetails = addStory(Template, {
-  formId: { name: 'order-details', module: 'boxfusion.inventory' },
-  id: 'da4d3320-7c71-4df4-9d20-0ce51d9c1a66',
+export const EpmUserManagemenet = addStory(Template, {
+  formId: { name: 'user-management-new', module: '' },
 });
 
-export const TableInlineEditing = addStory(Template, {
-  formId: { name: 'table-inline', module: 'test' },
+export const FncTSchoolDetails = addStory(Template, {
+  formId: { name: 'School-Details', module: 'Boxfusion.SheshaFunctionalTests.Common' },
+  id: 'ca55ba17-6af1-4a62-b0f2-fb3657faa9c1',
 });
 
-export const FormsIndex = addStory(Template, {
-  formId: { name: 'forms', module: 'shesha' },
+export const FncTextComponentDetails = addStory(Template, {
+  formId: { name: 'text-component-details', module: 'Shesha' },
+});
+
+export const FncAddMember = addStory(Template, {
+  formId: { name: 'Add-Member', module: 'Shesha' },
+  mode: 'edit',
+  id: '5BC9A277-63ED-4A71-919F-0B4064363BBC'
 });
 
 export const OrganisationEdit = addStory(Template, {
@@ -60,16 +66,6 @@ export const PersonDetails = addStory(Template, {
     module: 'Test Module',
     version: 1,
   },
-});
-
-export const TestMap = addStory(Template, {
-  // formId: '21ca7d2c-6b26-4434-8df0-55523ab1827d',
-  formId: {
-    name: 'playground',
-    module: 'TestModule',
-  },
-  // mode: 'readonly',
-  id: 'dc7f6c47-d537-418f-8eda-d0b7f796ea67',
 });
 
 export const PermissionEdit = addStory(Template, {

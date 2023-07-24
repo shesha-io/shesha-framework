@@ -39,7 +39,7 @@ namespace Shesha.GraphQL.Provider
             [typeof(Uri)] = typeof(UriGraphType),
             // 
             [typeof(RawJson)] = typeof(RawJsonType),
-
+            
             // ToDo: AS - need to decide how to return GenericEntityReference - as object or as scalar
             //[typeof(GenericEntityReference)] = typeof(GenericEntityReferenceType),
         };

@@ -32,8 +32,10 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
   }, [model?.dataSourceType, model?.dataSourceUrl]);
 
   const reducedData = useMemo(() => {
-    if (Array.isArray(data?.result) && model?.reducerFunc) {
-      return new Function('data', model?.reducerFunc)(data?.result) as [];
+    const list = Array.isArray(data?.result) ? data?.result : data?.result?.items;
+
+    if (Array.isArray(list) && model?.reducerFunc) {
+      return new Function('data', model?.reducerFunc)(list) as [];
     }
 
     return data?.result;

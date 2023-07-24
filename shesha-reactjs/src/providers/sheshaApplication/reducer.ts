@@ -34,6 +34,17 @@ export default handleActions<ISheshaApplicationStateContext, any>(
         backendUrl: payload,
       };
     },
+    [SheshaApplicationActionEnums.SetGlobalVariables]: (
+      state: ISheshaApplicationStateContext,
+      action: ReduxActions.Action<{ [x: string]: any }>
+    ) => {
+      const { payload } = action;
+
+      return {
+        ...state,
+        globalVariables: { ...(state.globalVariables || {}), ...payload },
+      };
+    },
     [SheshaApplicationActionEnums.UpdateToolboxComponentGroups]: (
       state: ISheshaApplicationStateContext,
       action: ReduxActions.Action<IToolboxComponentGroup[]>

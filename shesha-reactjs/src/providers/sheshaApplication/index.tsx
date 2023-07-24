@@ -9,7 +9,12 @@ import {
   SHESHA_APPLICATION_CONTEXT_INITIAL_STATE,
 } from './contexts';
 import IRequestHeaders from '../../interfaces/requestHeaders';
-import { setBackendUrlAction, setHeadersAction, updateToolboxComponentGroupsAction } from './actions';
+import {
+  setBackendUrlAction,
+  setGlobalVariablesAction,
+  setHeadersAction,
+  updateToolboxComponentGroupsAction,
+} from './actions';
 import { Router } from 'next/router';
 import AuthProvider from '../auth';
 import ShaRoutingProvider from '../shaRouting';
@@ -110,6 +115,10 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
     return authorizer && authorizer(permissions);
   };
 
+  const setGlobalVariables = (values: { [x: string]: any }) => {
+    dispatch(setGlobalVariablesAction(values));
+  };
+
   const contextMetadata = Promise.resolve({
     name: 'root context',
     type: 'rootContex',
@@ -161,6 +170,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
           setRequestHeaders,
           // This will always return false if you're not authorized
           anyOfPermissionsGranted: anyOfPermissionsGranted, // NOTE: don't pass ref directly here, it leads to bugs because some of components use old reference even when authRef is updated
+          setGlobalVariables,
         }}
       >
         <SettingsProvider>

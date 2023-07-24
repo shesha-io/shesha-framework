@@ -17,6 +17,7 @@ using Shesha.Authorization;
 using Shesha.Authorization.Accounts;
 using Shesha.Authorization.Roles;
 using Shesha.Authorization.Users;
+using Shesha.AutoMapper.Dto;
 using Shesha.Configuration;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
@@ -26,6 +27,7 @@ using Shesha.Otp;
 using Shesha.Otp.Dto;
 using Shesha.Roles.Dto;
 using Shesha.SecurityQuestions.Dto;
+using Shesha.Services.ReferenceLists.Dto;
 using Shesha.Users.Dto;
 using Shesha.Utilities;
 using System;
@@ -40,7 +42,7 @@ namespace Shesha.Users
 {
     [AbpAuthorize(PermissionNames.Pages_Users)]
 
-    public class UserAppService : AsyncCrudAppService<User, UserDto, long, PagedUserResultRequestDto, CreateUserDto, UpdateUserDto>, IUserAppService
+    public class UserAppService : AsyncCrudAppService<User, UserDto, long, PagedUserResultRequestDto, CreateUserDto, UserDto>, IUserAppService
     {
         // from: http://regexlib.com/REDetails.aspx?regexp_id=1923
         public const string PasswordRegex = "(?=^.{8,}$)(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\\s)[0-9a-zA-Z!@#$%^&*()]*$";
@@ -109,7 +111,7 @@ namespace Shesha.Users
             return MapToEntityDto(user);
         }
 
-        public override async Task<UserDto> UpdateAsync(UpdateUserDto input)
+        public override async Task<UserDto> UpdateAsync(UserDto input)
         {
             CheckUpdatePermission();
 
@@ -189,7 +191,7 @@ namespace Shesha.Users
             return user;
         }
 
-        protected override void MapToEntity(UpdateUserDto updateInput, User user)
+        protected override void MapToEntity(UserDto updateInput, User user)
         {
             ObjectMapper.Map(updateInput, user);
             user.SupportedPasswordResetMethods = updateInput.SupportedPasswordResetMethods.Sum();
@@ -204,6 +206,7 @@ namespace Shesha.Users
                 var roles = _roleManager.Roles.Where(r => userRoles.Contains(r.Id)).Select(r => r.NormalizedName);
                 var userDto = base.MapToEntityDto(user);
                 userDto.RoleNames = roles.ToArray();
+                userDto.SupportedPasswordResetMethods = EntityExtensions.DecomposeIntoBitFlagComponents(user.SupportedPasswordResetMethods);
                 return userDto;
             }
             catch

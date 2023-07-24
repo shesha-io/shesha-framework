@@ -47,6 +47,22 @@
             "label": "Range?"
           },
           {
+            "id": "dc6d8703-bba7-49da-8d7c-36e0cd9045a5",
+            "type": "checkbox",
+            "name": "dateOnly",
+            "parentId": "VmAusRlLZo3cYRFk88xnf",
+            "label": "Date Only?",
+            "description": "Send only a date format as a request, otherwise sends a datetime format"
+          },
+          {
+            "id": "e92bcf3c-a70a-4aeb-b6ac-5643eb5b4fe2",
+            "type": "switch",
+            "name": "resolveToUTC",
+            "parentId": "VmAusRlLZo3cYRFk88xnf",
+            "label": "Resolve to UTC",
+            "description": "If switched on the selected time will be converted to UTC"
+          },
+          {
             "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
             "type": "dropdown",
             "propertyName": "labelAlign",
@@ -110,9 +126,7 @@
             "placeholder": "",
             "description": "",
             "defaultValue": "",
-            "mode": [
-              "single"
-            ],
+            "mode": ["single"],
             "entityTypeShortAlias": "",
             "dataSourceUrl": "",
             "validate": {},
@@ -306,9 +320,7 @@
               "placeholder": "",
               "description": "",
               "defaultValue": "",
-              "mode": [
-                "single"
-              ],
+              "mode": ["single"],
               "entityTypeShortAlias": "",
               "dataSourceUrl": "",
               "validate": {},
@@ -793,7 +805,7 @@
               {
                 "id": "ec349b3e-ef29-467c-96fb-265320ac37a0",
                 "label": "Disable past dates",
-                "value": "return current && current < moment().endOf('day');"
+                "value": "return current && current < moment().startOf('day');"
               },
               {
                 "id": "41db4d59-249d-4ba2-8049-db0fd9fbde14",
@@ -922,7 +934,7 @@
                 {
                   "id": "ec349b3e-ef29-467c-96fb-265320ac37a0",
                   "label": "Disable past dates",
-                  "value": "return current && current < moment().endOf('day');"
+                  "value": "return current && current < moment().startOf('day');"
                 },
                 {
                   "id": "41db4d59-249d-4ba2-8049-db0fd9fbde14",

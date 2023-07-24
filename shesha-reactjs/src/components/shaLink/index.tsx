@@ -15,34 +15,40 @@ export interface IShaLinkProps {
    * @deprecated - pass children instead
    */
   displayName?: string;
+
+  className?: string;
 }
 
-export const ShaLink: FC<PropsWithChildren<IShaLinkProps>> = ({ linkTo, linkToForm, params, icon, displayName, children }) => {
+export const ShaLink: FC<PropsWithChildren<IShaLinkProps>> = ({
+  linkTo,
+  linkToForm,
+  params,
+  icon,
+  displayName,
+  children,
+  className,
+}) => {
   const { router, getFormUrl } = useShaRouting();
 
   const paramsStr = useMemo(() => {
-    if (!params)
-      return undefined;
+    if (!params) return undefined;
     var str = [];
-    for (const key of Object.keys(params)) 
-      str.push(encodeURIComponent(key) + "=" + encodeURIComponent(params[key]));
-    return str.join("&");
+    for (const key of Object.keys(params)) str.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
+    return str.join('&');
   }, [params]);
 
   const url = (linkTo ?? getFormUrl(linkToForm)) + (paramsStr ? `?${paramsStr}` : '');
 
-
   const changeRoute = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     event.preventDefault();
 
-    if (url)
-      router?.push(url /*.toLowerCase() - it causes problems on prod because of case sensitivity of routings!*/);
+    if (url) router?.push(url /*.toLowerCase() - it causes problems on prod because of case sensitivity of routings!*/);
   };
 
   const childrenOrDisplayText = children || displayName;
 
   return (
-    <Button type="link" onClick={changeRoute} href={url}>
+    <Button type="link" onClick={changeRoute} href={url} className={className}>
       {icon}
       {childrenOrDisplayText && <span> {childrenOrDisplayText}</span>}
     </Button>

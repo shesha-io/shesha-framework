@@ -8,6 +8,7 @@ using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Notifications.Dto;
 using Shesha.Services;
+using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -193,6 +194,69 @@ public class NotificationAppService: DynamicCrudAppService<Notification, Dynamic
 
     #endregion
 
+    #region Direct Push notifications
+
+    /// <summary>
+    /// Publish Push notification
+    /// </summary>
+    /// <param name="notificationName">Name of the notification. Default push template of the specified notification will be used</param>
+    /// <param name="data">Data that is used to fill template</param>
+    /// <param name="personId">Recipient person id</param>
+    /// <param name="attachments">Notification attachments</param>
+    /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
+    /// <returns></returns>
+    public async Task PublishPushNotificationAsync<TData>(string notificationName,
+        TData data,
+        string personId,
+        List<NotificationAttachmentDto> attachments = null,
+        object sourceEntity = null) where TData : NotificationData
+    {
+        if (string.IsNullOrWhiteSpace(personId))
+            throw new Exception($"{nameof(personId)} must not be null");
+
+        var entityIdentifier = GetEntityIdentifier(sourceEntity);
+
+        var wrappedData = new ShaNotificationData(data)
+        {
+            SendType = RefListNotificationType.Push,
+            RecipientText = personId,
+            Attachments = attachments
+        };
+        await _notificationPublisher.PublishAsync(notificationName, wrappedData, entityIdentifier);
+    }
+
+    /// <summary>
+    /// Publish Push notification using explicitly specified template
+    /// </summary>
+    /// <param name="templateId">Id of the template</param>
+    /// <param name="data">Data that is used to fill template</param>
+    /// <param name="personId">Recipient person id</param>
+    /// <param name="attachments">Attachments</param>
+    /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
+    /// <returns></returns>
+    public async Task PublishPushNotificationAsync<TData>(Guid templateId,
+        TData data,
+        string personId,
+        List<NotificationAttachmentDto> attachments = null,
+        object sourceEntity = null) where TData : NotificationData
+    {
+        if (string.IsNullOrWhiteSpace(personId))
+            throw new Exception($"{nameof(personId)} must not be null");
+
+        var entityIdentifier = GetEntityIdentifier(sourceEntity);
+
+        var wrappedData = new ShaNotificationData(data)
+        {
+            SendType = RefListNotificationType.Push,
+            RecipientText = personId,
+            TemplateId = templateId,
+            Attachments = attachments
+        };
+        await _notificationPublisher.PublishAsync(templateId.ToString(), wrappedData, entityIdentifier);
+    }
+
+    #endregion
+
     /// <summary>
     /// Note: for temporary usage only
     /// </summary>
@@ -222,4 +286,5 @@ public class NotificationAppService: DynamicCrudAppService<Notification, Dynamic
             StoredFileId = file.Id
         };
     }
+
 }

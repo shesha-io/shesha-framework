@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <VersionPrefix>1.0.0.0</VersionPrefix>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <AssetTargetFallback>$(AssetTargetFallback);portable-net45+win8+wp8+wpa81;</AssetTargetFallback>
     <AssemblyName>ShaCompanyName.ShaProjectName.Web.Core</AssemblyName>
     <PackageId>ShaCompanyName.ShaProjectName.Web.Core</PackageId>
@@ -31,7 +31,7 @@
     <PackageReference Include="Abp.HangFire.AspNetCore" Version="6.6.2" />
     <PackageReference Include="Abp.AspNetCore" Version="6.6.2" />
     <PackageReference Include="Abp.ZeroCore" Version="6.6.2" />
-    <PackageReference Include="Hangfire.Core" Version="1.7.25" />
+    <PackageReference Include="Hangfire.Core" Version="1.8.2" />
     <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="6.0.1" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.4" />
@@ -39,15 +39,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Shesha.AzureAD" Version="4.11.72" />
-    <PackageReference Include="Shesha.Firebase" Version="4.11.72" />
-    <PackageReference Include="Shesha.Import" Version="4.11.72" />
-    <PackageReference Include="Shesha.Ldap" Version="4.11.72" />
-    <PackageReference Include="Shesha.Sms.BulkSms" Version="4.11.72" />
-    <PackageReference Include="Shesha.Sms.Clickatell" Version="4.11.72" />
-    <PackageReference Include="Shesha.Sms.SmsPortal" Version="4.11.72" />
-    <PackageReference Include="Shesha.Sms.Xml2Sms" Version="4.11.72" />
-    <PackageReference Include="Shesha.Web.FormsDesigner" Version="4.11.72" />
+    <PackageReference Include="Shesha.AzureAD" Version="4.35.15" />
+    <PackageReference Include="Shesha.Firebase" Version="4.35.15" />
+    <PackageReference Include="Shesha.Import" Version="4.35.15" />
+    <PackageReference Include="Shesha.Ldap" Version="4.35.15" />
+    <PackageReference Include="Shesha.Sms.BulkSms" Version="4.35.15" />
+    <PackageReference Include="Shesha.Sms.Clickatell" Version="4.35.15" />
+    <PackageReference Include="Shesha.Sms.SmsPortal" Version="4.35.15" />
+    <PackageReference Include="Shesha.Sms.Xml2Sms" Version="4.35.15" />
+    <PackageReference Include="Shesha.Web.FormsDesigner" Version="4.35.15" />
   </ItemGroup>
 
   <ItemGroup>

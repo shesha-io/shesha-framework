@@ -323,12 +323,12 @@
       "settingsValidationErrors": [],
       "exposedVariables": [
         {
-          "propertyName": "value",
-          "description": "Component current value",
-          "type": "string | any"
+          "name": "globalState",
+          "description": "The global state of the application",
+          "type": "object"
         },
         {
-          "propertyName": "data",
+          "name": "data",
           "description": "Selected form values",
           "type": "object"
         }

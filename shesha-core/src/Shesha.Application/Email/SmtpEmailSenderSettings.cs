@@ -75,6 +75,14 @@ namespace Shesha.Email
         }
 
         /// <summary>
+        /// Domain name to login to incoming server.
+        /// </summary>
+        public virtual string IncomingServer
+        {
+            get => _emailSettings.SmtpSettings.GetValue()?.IncomingServer;
+        }
+
+        /// <summary>
         /// Is SSL enabled?
         /// </summary>
         public virtual bool EnableSsl

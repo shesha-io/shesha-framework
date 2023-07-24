@@ -104,9 +104,7 @@
               }
             ],
             "dataSourceType": "values",
-            "defaultValue": [
-              "single"
-            ],
+            "defaultValue": ["single"],
             "version": 1,
             "useRawValues": false,
             "referenceListId": null
@@ -271,9 +269,7 @@
                 }
               ],
               "dataSourceType": "values",
-              "defaultValue": [
-                "single"
-              ],
+              "defaultValue": ["single"],
               "version": 1,
               "useRawValues": false,
               "referenceListId": null
@@ -364,6 +360,67 @@
       "content": {
         "id": "f9pNv-hqF5ukaDytb7xwq",
         "components": [
+          {
+            "id": "4c5d3cce-73d4-4895-bcf8-abbbe86c48dc",
+            "type": "codeEditor",
+            "name": "defaultValue",
+            "label": "Default Value",
+            "labelAlign": "right",
+            "parentId": "PSXX7u5GWT0W8RXnVW3Ao",
+            "hidden": false,
+            "customVisibility": null,
+            "description": "Enter default value for component. Multiple values are exposed.",
+            "validate": {},
+            "settingsValidationErrors": [],
+            "exposedVariables": [
+              {
+                "name": "data",
+                "description": "Selected form values",
+                "type": "object"
+              },
+              {
+                "name": "form",
+                "description": "Form instance",
+                "type": "FormInstance"
+              },
+              {
+                "name": "formMode",
+                "description": "The form mode",
+                "type": "'readonly' | 'edit' | 'designer'"
+              },
+              {
+                "name": "globalState",
+                "description": "The global state of the application",
+                "type": "object"
+              },
+              {
+                "name": "http",
+                "description": "axios instance used to make http requests",
+                "type": "object"
+              },
+              {
+                "name": "message",
+                "description": "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
+                "type": "object"
+              },
+              {
+                "name": "moment",
+                "description": "The moment.js object",
+                "type": "object"
+              },
+              {
+                "name": "setFormData",
+                "description": "A function used to update the form data",
+                "type": "({ values: object, mergeValues: boolean}) => void"
+              },
+              {
+                "name": "setGlobalState",
+                "description": "Setting the global state of the application",
+                "type": "(payload: { key: string, data: any } ) => void"
+              }
+            ]
+          },
+
           {
             "id": "028b4eaf-8830-4dcd-b54f-422c72b25418",
             "type": "dropdown",

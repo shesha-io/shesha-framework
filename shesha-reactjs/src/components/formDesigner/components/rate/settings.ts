@@ -190,7 +190,7 @@ export const getSettings = (data: any) =>
         },
         {
           id: '8d1541db-2151-4568-b925-d8777cea7f0f',
-          "propertyName": "setGlobalState",
+          "name": "setGlobalState",
           "description": "Setting the global state of the application",
           "type": "(payload: { key: string, data: any } ) => void"
         }

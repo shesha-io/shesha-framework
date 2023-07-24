@@ -3,7 +3,7 @@ using FluentMigrator;
 
 namespace Shesha.NHibernate.Migrations
 {
-    [Migration(20200724124600)]
+    [Migration(20200724124600), MsSqlOnly]
     public class M20200724124600: Migration
     {
         public override void Up()

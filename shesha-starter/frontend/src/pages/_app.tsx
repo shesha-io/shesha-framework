@@ -1,11 +1,8 @@
 import {
-  AppConfiguratorProvider,
-  DynamicModalProvider,
   GlobalStateProvider,
   PageWithLayout,
   ShaApplicationProvider,
   StoredFilesProvider,
-  UiProvider,
 } from '@shesha/reactjs';
 import { CustomErrorBoundary, CustomNProgress } from 'components';
 import App from 'next/app';
@@ -17,7 +14,7 @@ require('@shesha/reactjs/dist/styles.less');
 require('src/styles/compiled.antd.variable.css');
 require('src/styles/custom-n-progress.less');
 
-interface IState {}
+interface IState { }
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export class Main extends App<{}, {}, IState> {
@@ -57,14 +54,10 @@ export class Main extends App<{}, {}, IState> {
         <StyledThemeProvider>
           <GlobalStateProvider>
             <ShaApplicationProvider backendUrl={BASE_URL} router={router}>
-              <AppConfiguratorProvider>
-                <DynamicModalProvider>
-                  <CustomNProgress />
-                  <StoredFilesProvider baseUrl={BASE_URL} ownerId={''} ownerType={''}>
-                    <UiProvider>{getLayout(<Component {...(router?.query || {})} {...pageProps} />)}</UiProvider>
-                  </StoredFilesProvider>
-                </DynamicModalProvider>
-              </AppConfiguratorProvider>
+              <CustomNProgress />
+              <StoredFilesProvider baseUrl={BASE_URL} ownerId={''} ownerType={''}>
+                {getLayout(<Component {...(router?.query || {})} {...pageProps} />)}
+              </StoredFilesProvider>
             </ShaApplicationProvider>
           </GlobalStateProvider>
         </StyledThemeProvider>

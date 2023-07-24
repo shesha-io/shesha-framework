@@ -4,7 +4,7 @@ using Shesha.Domain;
 
 namespace Shesha.Migrations
 {
-    [Migration(20200214121500)]
+    [Migration(20200214121500), MsSqlOnly]
     public class M20200214121500: Migration
     {
         public override void Up()

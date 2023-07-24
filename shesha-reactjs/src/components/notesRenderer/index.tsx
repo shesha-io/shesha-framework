@@ -7,9 +7,11 @@ export interface INotesRendererProps {
   ownerId?: string;
   ownerType?: string;
   commentListStyles?: CSSProperties;
+  buttonPostion?: 'left' | 'right';
+  autoSize?: boolean;
 }
 
-export const NotesRenderer: FC<INotesRendererProps> = ({ showCommentBox = true }) => {
+export const NotesRenderer: FC<INotesRendererProps> = ({ autoSize, buttonPostion, showCommentBox = true }) => {
   const { notes, deleteNotes, isInProgress, postNotes } = useNotes();
 
   const { fetchNotes: isFetchingNotes, postNotes: isPostingNotes } = isInProgress;
@@ -23,6 +25,8 @@ export const NotesRenderer: FC<INotesRendererProps> = ({ showCommentBox = true }
         showCommentBox={showCommentBox}
         isFetchingNotes={isFetchingNotes}
         isPostingNotes={isPostingNotes}
+        buttonFloatRight={buttonPostion === 'right'}
+        autoSize={autoSize}
       />
     </div>
   );

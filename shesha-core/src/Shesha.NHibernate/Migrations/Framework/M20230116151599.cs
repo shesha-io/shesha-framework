@@ -4,7 +4,7 @@ using System;
 
 namespace Shesha.Migrations.Framework
 {
-    [Migration(20230116151599)]
+    [Migration(20230116151599), MsSqlOnly]
     public class M20230116151599 : OneWayMigration
     {
         public override void Up()

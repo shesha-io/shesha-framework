@@ -1,5 +1,5 @@
 import React, { FC, useMemo } from 'react';
-import { ConfigurableComponent, ISettingsEditorProps } from '../configurableComponent';
+import { ConfigurableApplicationComponent, ISettingsEditorProps } from '../configurableComponent';
 import { SidebarMenu } from '../sidebarMenu';
 import { ISidebarMenuItem, SidebarMenuProvider } from '../../providers/sidebarMenu';
 import ComponentSettingsModal from './settingsModal';
@@ -36,7 +36,7 @@ export const ConfigurableSidebarMenu: FC<IConfigurableSidebarMenuProps> = props 
 
   return (
     <CustomErrorBoundary>
-      <ConfigurableComponent<ISideBarMenuProps>
+      <ConfigurableApplicationComponent<ISideBarMenuProps>
         defaultSettings={memoizedDefaults}
         settingsEditor={{
           render: editor,
@@ -53,7 +53,7 @@ export const ConfigurableSidebarMenu: FC<IConfigurableSidebarMenuProps> = props 
             </SidebarMenuProvider>
           </div>
         )}
-      </ConfigurableComponent>
+      </ConfigurableApplicationComponent>
     </CustomErrorBoundary>
   );
 };

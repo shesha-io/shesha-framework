@@ -101,8 +101,8 @@ export const AnnotationSettingsForm = new DesignerToolbarSettings()
         exposedVariables: [
             { id: "3be9da3f-f47e-48ae-b4c3-f5cc36e534d7", name: "value", description: "Component current value", type: "string | any" },
             { id: "3be9da3f-f58e-48ae-b4c3-f5cc36e534d7", name: "data", description: "Selected form values", type: "object" },
-            { "propertyName": "formMode", "description": "The form mode", "type": "'readonly' | 'edit' | 'designer'" },
-            { "propertyName": "globalState", "description": "The global state of the application", "type": "object" },
+            { "name": "formMode", "description": "The form mode", "type": "'readonly' | 'edit' | 'designer'" },
+            { "name": "globalState", "description": "The global state of the application", "type": "object" },
         ]
     })
     .addSectionSeparator({
@@ -212,6 +212,6 @@ export const AnnotationSettingsForm = new DesignerToolbarSettings()
         description: "A script that returns the image url as a string. This should return a string",
         exposedVariables: [
             { id: "fb85d916-39f9-4f88-8d87-c1c53558b078", name: "data", description: "Form values", type: "object" },
-            { "propertyName": "globalState", "description": "The global state of the application", "type": "object" }]
+            { "name": "globalState", "description": "The global state of the application", "type": "object" }]
     })
     .toJson();

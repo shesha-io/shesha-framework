@@ -5,8 +5,8 @@ import { LinkOutlined } from '@ant-design/icons';
 import { evaluateString, getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import { useForm, useFormData } from '../../../../providers';
 import settingsFormJson from './settingsForm.json';
-import ComponentsContainer from '../../componentsContainer';
-import { AlignItems, JustifyContent, JustifyItems } from '../container/interfaces';
+import ComponentsContainer from '../../containers/componentsContainer';
+import { AlignItems, JustifyContent, JustifyItems } from '../../../../designer-components/container/interfaces';
 import { ContainerDirection } from '../../common/interfaces';
 
 export interface IAlertProps extends IConfigurableFormComponent {

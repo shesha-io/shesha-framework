@@ -35,6 +35,8 @@ export { default as BasicToolbar } from './basicToolbar';
 export { default as BooleanDropDown } from './booleanDropDown';
 export { default as SidebarContainer } from './sidebarContainer';
 export { default as AutoCompletePlaces } from './googlePlacesAutocomplete';
+export { default as EndpointsAutocomplete } from './endpointsAutocomplete/endpointsAutocomplete';
+export { default as FormAutocomplete } from './formAutocomplete';
 export { default as CustomFile } from './customFile';
 export { default as SimplePageToolbar } from './simplePageToolbar';
 export { default as ErrorBoundary } from './errorBoundary/errorBoundary';
@@ -120,6 +122,8 @@ export { default as Show, type IShowProps } from './show';
 export { default as CodeEditor } from './formDesigner/components/codeEditor/codeEditor';
 export { default as ModelConfigurator } from './modelConfigurator';
 
+export { ConfigurableApplicationComponent, IConfigurableApplicationComponentProps } from './configurableComponent';
+
 export {
   //default as GenericRefListDropDown,
   DtoRefListDropDown,
@@ -158,5 +162,6 @@ export { default as LabelValueEditor } from './formDesigner/components/labelValu
 export { default as RichTextEditor, type IRichTextEditorProps } from './richTextEditor';
 export { default as SettingsEditor, type ISettingsEditorProps } from './settingsEditor';
 export { FormComponentSelector, type IFormComponentSelectorProps } from './formComponentSelector';
-
+export { default as PropertyAutocomplete } from '../../src/components/propertyAutocomplete/propertyAutocomplete';
 export { default as ColorPicker } from '../../src/components/colorPicker';
+export { default as ComponentsContainer } from './formDesigner/containers/componentsContainer';

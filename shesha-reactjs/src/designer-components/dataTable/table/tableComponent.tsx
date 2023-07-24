@@ -1,9 +1,8 @@
 import React, { FC, Fragment, useEffect, useRef } from 'react';
 import { IToolboxComponent } from 'interfaces';
 import { TableOutlined } from '@ant-design/icons';
-import { Alert, message } from 'antd';
+import { Alert } from 'antd';
 import { DataTable, CollapsibleSidebarContainer, DatatableAdvancedFilter, DatatableColumnsSelector } from 'components';
-import { axiosHttp } from 'utils/fetchers';
 import {
   useDataTableStore,
   useGlobalState,
@@ -11,16 +10,17 @@ import {
   useSheshaApplication,
   useForm,
   useFormData,
-  useConfigurableActionDispatcher,
 } from 'providers';
 import TableSettings from './tableComponent-settings';
 import { ITableComponentProps } from './models';
 import { getStyle } from 'providers/form/utils';
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
-import moment from 'moment';
 import { useDeepCompareEffect } from 'react-use';
-import { filterVisibility, getOnRowDroppedAction } from './utils';
+import { filterVisibility } from './utils';
+import { SheshaActionOwners } from 'providers/configurableActionsDispatcher/models';
+import { OnRowsReorderedArgs } from 'components/reactTable/interfaces';
+import { RowsReorderPayload } from 'providers/dataTable/repository/interfaces';
 
 const TableComponent: IToolboxComponent<ITableComponentProps> = {
   type: 'datatable',
@@ -68,8 +68,22 @@ const TableComponent: IToolboxComponent<ITableComponentProps> = {
         newRowCapturePosition: 'top',
         newRowInsertPosition: 'top',
         canDeleteInline: 'no',
-      })),
-
+      }))
+      .add<ITableComponentProps>(4, (prev) => ({
+        ...prev,
+        onRowSaveSuccessAction: prev['onRowSaveSuccess'] && typeof (prev['onRowSaveSuccess']) === 'string'
+          ? {
+            actionOwner: SheshaActionOwners.Common,
+            actionName: 'Execute Script',
+            actionArguments: {
+              expression: prev['onRowSaveSuccess'],
+            },
+            handleFail: false,
+            handleSuccess: false,
+          }
+          : null
+      })
+  ),
   settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
     return (
       <TableSettings
@@ -88,14 +102,13 @@ const NotConfiguredWarning: FC = () => {
 };
 
 export const TableWrapper: FC<ITableComponentProps> = (props) => {
-  const { id, items, useMultiselect, allowRowDragAndDrop, tableStyle, containerStyle, rowDroppedActionConfiguration } =
+  const { id, items, useMultiselect, allowRowDragAndDrop, tableStyle, containerStyle } =
     props as ITableComponentProps;
 
-  const { formMode, form, setFormDataAndInstance } = useForm();
+  const { formMode } = useForm();
   const { data: formData } = useFormData();
-  const { globalState, setState: setGlobalState } = useGlobalState();
-  const { backendUrl, anyOfPermissionsGranted } = useSheshaApplication();
-  const { executeAction } = useConfigurableActionDispatcher();
+  const { globalState } = useGlobalState();
+  const { anyOfPermissionsGranted } = useSheshaApplication();
 
   const isDesignMode = formMode === 'designer';
 
@@ -104,7 +117,6 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     isInProgress: { isFiltering, isSelectingColumns },
     setIsInProgressFlag,
     registerConfigurableColumns,
-    changeActionedRow,
     tableData,
   } = useDataTableStore();
   const repository = getRepository();
@@ -114,8 +126,8 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     const permissibleColumns = isDesignMode
       ? items
       : items
-          ?.filter(({ permissions }) => anyOfPermissionsGranted(permissions || []))
-          .filter(filterVisibility(filterVisibility({ data: formData, globalState })));
+        ?.filter(({ permissions }) => anyOfPermissionsGranted(permissions || []))
+        .filter(filterVisibility({ data: formData, globalState }));
 
     registerConfigurableColumns(id, permissibleColumns);
   }, [items, isDesignMode]);
@@ -142,6 +154,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
 
   if (isDesignMode && !repository) return <NotConfiguredWarning />;
 
+  /*
   const handleOnRowDropped = (row: any, oldIndex: number, newIndex: number) => {
     changeActionedRow(row);
 
@@ -169,6 +182,13 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     } else {
       executeAction(getOnRowDroppedAction(props, evaluationContext));
     }
+  };
+  */
+  const handleRowsReordered = (payload: OnRowsReorderedArgs): Promise<void> => {
+    const reorderPayload: RowsReorderPayload = {
+      reorderedRows: payload.reorderedRows
+    };
+    return repository.reorder(reorderPayload);
   };
 
   const toggleFieldPropertiesSidebar = () => {
@@ -199,23 +219,26 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
         selectedRowIndex={selectedRow?.index}
         useMultiselect={useMultiselect}
         allowRowDragAndDrop={allowRowDragAndDrop}
-        onRowDropped={handleOnRowDropped}
+        onRowsReordered={handleRowsReordered}
         tableStyle={getStyle(tableStyle, formData, globalState)}
         containerStyle={getStyle(containerStyle, formData, globalState)}
-        
+
         canAddInline={props.canAddInline}
+        canAddInlineExpression={props.canAddInlineExpression}
         customCreateUrl={props.customCreateUrl}
         newRowCapturePosition={props.newRowCapturePosition}
         onNewRowInitialize={props.onNewRowInitialize}
 
         canEditInline={props.canEditInline}
+        canEditInlineExpression={props.canEditInlineExpression}
         customUpdateUrl={props.customUpdateUrl}
 
         canDeleteInline={props.canDeleteInline}
+        canDeleteInlineExpression={props.canDeleteInlineExpression}
         customDeleteUrl={props.customDeleteUrl}
 
         onRowSave={props.onRowSave}
-        onRowSaveSuccess={props.onRowSaveSuccess}
+        onRowSaveSuccessAction={props.onRowSaveSuccessAction}
         inlineSaveMode={props.inlineSaveMode}
         inlineEditMode={props.inlineEditMode}
         minHeight={props.minHeight}

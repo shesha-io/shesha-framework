@@ -12,7 +12,8 @@ export const migrateV0toV1 = (props: IButtonGroupButtonV0, context: SettingsMigr
     const result: IButtonComponentProps = {
         ...props,
         actionConfiguration: actionConfiguration,
-        type: props['type'] ?? "button"
+        type: props['type'] ?? "button",
+        propertyName: props['name']
     };
     return result;
 };

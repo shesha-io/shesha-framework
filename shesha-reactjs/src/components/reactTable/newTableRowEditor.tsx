@@ -39,7 +39,7 @@ export const NewTableRowEditor: FC<INewRowEditorProps> = (props) => {
                     className='tr tr-body'
                     {...headerGroupProps}
                 >
-                    {columns.map((column, index) => {
+                    {columns.filter(c => c.isVisible).map((column, index) => {
                         return <NewRowCell key={index} column={column} />;
                     })}
                 </div>

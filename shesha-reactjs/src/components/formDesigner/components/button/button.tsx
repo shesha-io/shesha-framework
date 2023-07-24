@@ -77,6 +77,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
           label: prev.label ?? 'Submit',
           sortOrder: 0,
           itemType: 'item',
+          name: prev['name']
         };
         return buttonModel;
       })

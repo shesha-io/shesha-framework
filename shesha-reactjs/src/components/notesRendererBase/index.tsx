@@ -6,6 +6,7 @@ import { INote, ICreateNotePayload } from '../../providers/notes/contexts';
 import _ from 'lodash';
 import ShaDivider from '../shaDivider';
 import classNames from 'classnames';
+import './styles/styles.less';
 
 const { Paragraph } = Typography;
 
@@ -21,6 +22,8 @@ export interface INotesRendererBaseProps {
   notes?: INote[];
   postNotes: (payload: ICreateNotePayload) => void;
   deleteNotes: (selectedCommentId: string) => void;
+  buttonFloatRight?: boolean;
+  autoSize?: boolean;
 }
 
 export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
@@ -35,6 +38,8 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
   notes,
   showSaveBtn = true,
   commentListClassName,
+  buttonFloatRight,
+  autoSize,
 }) => {
   const [newComments, setNewComments] = useState('');
   const textRef = useRef(null);
@@ -73,9 +78,10 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
             onChange={({ target: { value } }) => setNewComments(value)}
             disabled={isPostingNotes}
             onPressEnter={handleSaveNotes}
+            autoSize={autoSize ? { minRows: 2 } : false}
           />
           {showSaveBtn && (
-            <div className="notes-textarea-save-btn">
+            <div className={classNames('notes-textarea-save-btn', { right: buttonFloatRight })}>
               <Button
                 size="small"
                 type="primary"

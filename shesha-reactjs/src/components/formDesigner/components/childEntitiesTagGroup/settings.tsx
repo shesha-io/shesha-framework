@@ -45,6 +45,13 @@ export const ChildEntitiesTagGroupSettings: FC<IChildEntitiesTagGroupSettingsPro
         <Input readOnly={readOnly} />
       </FormItem>
 
+      <FormItem name="labelAlign" label="Label align">
+        <Select disabled={readOnly}>
+          <Option value="left">left</Option>
+          <Option value="right">right</Option>
+        </Select>
+      </FormItem>
+
       <Form.Item name="readOnly" label="Read Only" valuePropName="checked">
         <Checkbox disabled={readOnly} />
       </Form.Item>

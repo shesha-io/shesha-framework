@@ -10,8 +10,10 @@ import LayoutHeading from '../layoutHeading';
 import { withAuth } from '../../hocs';
 import { useSidebarMenuDefaults } from '../../providers/sidebarMenu';
 import ConfigurableSidebarMenu from '../configurableSidebarMenu';
-import { useLocalStorage, useTheme } from '../..';
+import { useLocalStorage, useSheshaApplication, useTheme } from '../..';
 import { SIDEBAR_MENU_NAME } from '../../shesha-constants';
+import { SIDEBAR_COLLAPSE } from './constant';
+import './styles/styles.less';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -54,7 +56,7 @@ export interface IMainLayoutProps extends IHtmlHeadProps {
   headerControls?: ReactNodeOrFunc;
 }
 
-const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = props => {
+const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
   const {
     title,
     // description,
@@ -80,9 +82,11 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = props => {
   const { theme: themeFromStorage } = useTheme();
   const sidebarDefaults = useSidebarMenuDefaults();
 
+  const { setGlobalVariables } = useSheshaApplication();
+
   const sideMenuTheme = themeFromStorage?.sidebar;
 
-  const [collapsed, setCollapsed] = useLocalStorage('SIDEBAR_COLLAPSE', true);
+  const [collapsed, setCollapsed] = useLocalStorage(SIDEBAR_COLLAPSE, true);
 
   useEffect(() => {
     document.title = title || '';
@@ -95,6 +99,11 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = props => {
   const isFixedHeading = useMemo(() => {
     return fixHeading && ((Boolean(title) && showHeading) || Boolean(heading));
   }, [heading, title, heading, showHeading]);
+
+  const onCollapse = (value: boolean) => {
+    setGlobalVariables({ isSideBarExpanded: !value });
+    setCollapsed(value);
+  };
 
   const renderPageControls = () => {
     if (!headerControls && !reference) return null;
@@ -127,17 +136,11 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = props => {
   return (
     <Layout style={style}>
       <Sider
+        className="sha-main-sider"
         collapsible
         collapsed={collapsed}
-        onCollapse={setCollapsed}
+        onCollapse={onCollapse}
         trigger={<MenuTrigger collapsed={collapsed} />}
-        style={{
-          overflow: 'auto',
-          height: '100vh',
-          position: 'fixed',
-          paddingTop: '48px',
-          left: 0,
-        }}
         theme={sideMenuTheme}
       >
         <ConfigurableSidebarMenu
@@ -147,6 +150,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = props => {
           defaultSettings={sidebarDefaults}
         />
       </Sider>
+
       <Layout className="site-layout">
         <Header className="site-layout-background" style={headerStyle}>
           <LayoutHeader collapsed={collapsed} customComponent={customComponent} />

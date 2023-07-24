@@ -1,17 +1,24 @@
-﻿using System;
-using System.Configuration;
-using System.Globalization;
-using System.Linq;
+﻿using Abp.Configuration.Startup;
 using Abp.Dependency;
 using Abp.Extensions;
 using Abp.MultiTenancy;
 using Abp.Reflection;
 using Castle.Core.Logging;
 using FluentMigrator.Runner;
+using FluentMigrator.Runner.Conventions;
+using FluentMigrator.Runner.Initialization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Shesha.Configuration;
+using Shesha.Configuration.Startup;
+using Shesha.Exceptions;
 using Shesha.FluentMigrator;
 using Shesha.NHibernate.Exceptions;
+using Shesha.NHibernate.PostgreSql;
+using System;
+using System.Configuration;
+using System.Globalization;
+using System.Linq;
 
 namespace Shesha.NHibernate
 {
@@ -24,11 +31,13 @@ namespace Shesha.NHibernate
 
         private readonly IAssemblyFinder _assemblyFinder;
         private readonly IDbPerTenantConnectionStringResolver _connectionStringResolver;
+        private readonly DbmsType _databaseType;
 
         public ILogger Logger { get; set; } = NullLogger.Instance;
 
-        public SheshaDbMigrator(IDbPerTenantConnectionStringResolver connectionStringResolver, IAssemblyFinder assemblyFinder)
+        public SheshaDbMigrator(IModuleConfigurations configurations, IDbPerTenantConnectionStringResolver connectionStringResolver, IAssemblyFinder assemblyFinder)
         {
+            _databaseType = configurations.ShaNHibernate().DatabaseType;
             _connectionStringResolver = connectionStringResolver;
             _assemblyFinder = assemblyFinder;
         }
@@ -65,30 +74,54 @@ namespace Shesha.NHibernate
             var services = new ServiceCollection();
             services.TryAddSingleton<IModuleLocator, ModuleLocator>();
 
-            return services
+            services
                 // Add common FluentMigrator services
                 .AddFluentMigratorCore()
                 .ConfigureRunner(rb =>
                     {
                         rb.WithGlobalCommandTimeout(TimeSpan.FromMinutes(30));
 
-                        rb.AddSqlServer2012()
-                            // Set the connection string
-                            .WithGlobalConnectionString(connectionString);
-                        
+                        switch (_databaseType)
+                        {
+                            case DbmsType.SQLServer:
+                                {
+                                    rb.AddSqlServer2012();
+                                    break;
+                                }
+                            case DbmsType.PostgreSQL:
+                                {
+                                    rb.AddPostgres();
+                                    break;
+                                }
+                            default:
+                                throw new DbmsTypeNotSpecified();
+                        }
+                        rb.WithGlobalConnectionString(connectionString);
+
                         var assemblies = _assemblyFinder.GetAllAssemblies();
                         foreach (var assembly in assemblies)
                         {
                             // Define the assembly containing the migrations
-                            rb.ScanIn(assembly).For.Migrations();
+                            rb.ScanIn(assembly).For.Migrations().For.EmbeddedResources();
                         }
                     }
                 )
 
                 // Enable logging to console in the FluentMigrator way
                 .AddLogging(lb => lb.AddFluentMigratorConsole())
-                // Build the service provider
-                .BuildServiceProvider(false);
+                // Start of type filter configuration
+                .Configure<RunnerOptions>(opt =>
+                {
+                    opt.Tags = new[] { _databaseType.ToString() };
+                });
+
+            if (_databaseType == DbmsType.PostgreSQL) 
+            {
+                // register custom conventions for PostgreSql. It forces to use citext for string columns in the create statements
+                services.AddSingleton<IConventionSet>(new PostgreSqlConventionsSet());
+            }
+
+            return services.BuildServiceProvider(false);            
         }
 
         /// <summary>
@@ -122,12 +155,12 @@ namespace Shesha.NHibernate
 
             try
             {
-                if (runner is MigrationRunner standardRunner) 
+                if (runner is MigrationRunner standardRunner)
                 {
                     var migrationsToApply = standardRunner.MigrationLoader.LoadMigrations().Where(mi => !standardRunner.VersionLoader.VersionInfo.HasAppliedMigration(mi.Key)).OrderBy(m => m.Key).ToList();
                     Logger.Info($"Found {migrationsToApply.Count()} migrations to apply");
 
-                    foreach (var migration in migrationsToApply) 
+                    foreach (var migration in migrationsToApply)
                     {
                         var migrationName = migration.Value.Migration.GetType().FullName;
 
@@ -137,11 +170,11 @@ namespace Shesha.NHibernate
                             standardRunner.MigrateUp(migration.Value.Version);
                             Logger.Info($"Migration {migrationName} (version={migration.Value.Version}) applied successfully");
                         }
-                        catch (Exception e) 
+                        catch (Exception e)
                         {
                             Logger.Error($"Failed to apply migration {migrationName} (version={migration.Value.Version})", e);
                             throw;
-                        }                        
+                        }
                     }
                 }
                 else
@@ -149,7 +182,7 @@ namespace Shesha.NHibernate
             }
             catch (Exception)
             {
-                 throw;
+                throw;
             }
         }
 

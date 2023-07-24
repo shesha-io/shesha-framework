@@ -1,62 +1,28 @@
-import React, { FC, Fragment } from 'react';
-import { IToolboxComponent } from '../../interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '../../providers/form/models';
 import { CalendarOutlined } from '@ant-design/icons';
 import { DatePicker, message } from 'antd';
-import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
-import settingsFormJson from './settingsForm.json';
 import moment, { isMoment } from 'moment';
-import { getStyle, validateConfigurableComponentSettings } from '../../providers/form/utils';
-import { useForm, useFormData, useGlobalState, useMetaProperties, useSheshaApplication } from '../../providers';
-import { DataTypes } from '../../interfaces/dataTypes';
-import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
-import { getPropertyMetadata, getMoment } from '../../utils/date';
+import React, { FC, Fragment } from 'react';
+import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
 import { customDateEventHandler } from '../../components/formDesigner/components/utils';
-import { axiosHttp } from '../../utils/fetchers';
+import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
+import { IToolboxComponent } from '../../interfaces';
+import { DataTypes } from '../../interfaces/dataTypes';
 import { ProperyDataType } from '../../interfaces/metadata';
+import { useForm, useFormData, useGlobalState, useMetaProperties, useSheshaApplication } from '../../providers';
+import { FormMarkup } from '../../providers/form/models';
+import { getStyle, validateConfigurableComponentSettings } from '../../providers/form/utils';
+import { getMoment, getPropertyMetadata } from '../../utils/date';
+import { axiosHttp } from '../../utils/fetchers';
+import { IDateFieldProps, RangePickerChangeEvent, TimePickerChangeEvent } from './interfaces';
+import settingsFormJson from './settingsForm.json';
+import { DATE_TIME_FORMATS, disabledDate, getDefaultFormat, getFormat, getRangePickerValues } from './utils';
 import { migratePropertyName } from 'designer-components/_settings/utils';
-
-const DATE_TIME_FORMATS = {
-  time: 'HH:mm:ss',
-  week: 'YYYY-wo',
-  date: 'DD/MM/YYYY',
-  quarter: 'YYYY-\\QQ',
-  month: 'YYYY-MM',
-  year: 'YYYY',
-};
 
 const META_DATA_FILTERS: ProperyDataType[] = ['date', 'date-time', 'time'];
 
 const MIDNIGHT_MOMENT = moment('00:00:00', 'HH:mm:ss');
 
 const { RangePicker } = DatePicker;
-
-type RangeValue = [moment.Moment, moment.Moment];
-
-type TimePickerChangeEvent = (value: any | null, dateString: string) => void;
-type RangePickerChangeEvent = (values: any, formatString: [string, string]) => void;
-
-export interface IDateFieldProps extends IConfigurableFormComponent {
-  dateFormat?: string;
-  value?: any;
-  hideBorder?: boolean;
-  showTime?: boolean;
-  showNow?: boolean;
-  defaultToMidnight?: boolean;
-  showToday?: boolean;
-  timeFormat?: string;
-  yearFormat?: string;
-  quarterFormat?: string;
-  monthFormat?: string;
-  weekFormat?: string;
-  range?: boolean;
-  picker?: 'time' | 'date' | 'week' | 'month' | 'quarter' | 'year';
-  disablePastDates?: boolean;
-  onChange?: TimePickerChangeEvent | RangePickerChangeEvent;
-  disabledDateMode?: 'none' | 'functionTemplate' | 'customFunction';
-  disabledDateTemplate?: string;
-  disabledDateFunc?: string;
-}
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -128,6 +94,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     disabled,
     hideBorder,
     range,
+    dateOnly,
     value,
     showTime,
     showNow,
@@ -146,10 +113,8 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
 
   const dateFormat = props?.dateFormat || getPropertyMetadata(properties, name) || DATE_TIME_FORMATS.date;
   const timeFormat = props?.timeFormat || DATE_TIME_FORMATS.time;
-  const yearFormat = props?.yearFormat || DATE_TIME_FORMATS.year;
-  const quarterFormat = props?.quarterFormat || DATE_TIME_FORMATS.quarter;
-  const monthFormat = props?.monthFormat || DATE_TIME_FORMATS.month;
-  const weekFormat = props?.weekFormat || DATE_TIME_FORMATS.week;
+
+  const defaultFormat = getDefaultFormat(props);
 
   const { formMode, isComponentDisabled, formData } = useForm();
 
@@ -157,33 +122,9 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
 
   const isReadOnly = readOnly || formMode === 'readonly';
 
-  const getFormat = () => {
-    switch (picker) {
-      case 'date':
-        return showTime ? `${dateFormat} ${timeFormat}` : dateFormat;
-      case 'year':
-        return yearFormat;
-      case 'month':
-        return monthFormat;
-      case 'quarter':
-        return quarterFormat;
-      case 'time':
-        return timeFormat;
-      case 'week':
-        return weekFormat;
-      default:
-        return dateFormat;
-    }
-  };
-
-  const pickerFormat = getFormat();
+  const pickerFormat = getFormat(props, properties);
 
   const formattedValue = getMoment(value, pickerFormat);
-
-  const getRangePickerValues = (valueToUse: any) =>
-    (Array.isArray(valueToUse) && valueToUse?.length === 2
-      ? valueToUse?.map((v) => moment(new Date(v), pickerFormat))
-      : [null, null]) as RangeValue;
 
   const handleDatePickerChange = (localValue: any | null, dateString: string) => {
     if (!dateString?.trim()) {
@@ -191,7 +132,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
       return;
     }
 
-    const newValue = isMoment(localValue) ? localValue.format() : localValue;
+    const newValue = isMoment(localValue) ? localValue.format(defaultFormat) : localValue;
 
     (onChange as TimePickerChangeEvent)(newValue, dateString);
   };
@@ -203,24 +144,13 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     }
 
     const dates = (values as []).map((val: any) => {
-      if (isMoment(val)) return val.format();
+      if (isMoment(val)) return val.format(defaultFormat);
 
       return val;
     });
 
     (onChange as RangePickerChangeEvent)(dates, formatString);
   };
-
-  function disabledDate(current) {
-    if (disabledDateMode === 'none') return false;
-
-    const disabledTimeExpression = disabledDateMode === 'functionTemplate' ? disabledDateTemplate : disabledDateFunc;
-
-    // tslint:disable-next-line:function-constructor
-    const disabledFunc = new Function('current', 'moment', disabledTimeExpression);
-
-    return disabledFunc(current, moment);
-  }
 
   if (isReadOnly) {
     const format = `${dateFormat}${showTime ? timeFormat : ''}`;
@@ -240,11 +170,11 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     return (
       <RangePicker
         className="sha-range-picker"
-        disabledDate={disabledDate}
+        disabledDate={(e) => disabledDate(props, e)}
         onChange={handleRangePicker}
         format={pickerFormat}
-        value={getRangePickerValues(value)}
-        defaultValue={getRangePickerValues(defaultValue)}
+        value={getRangePickerValues(value, pickerFormat)}
+        defaultValue={getRangePickerValues(defaultValue, pickerFormat)}
         {...rest}
         picker={picker}
         showTime={showTime ? (defaultToMidnight ? { defaultValue: [MIDNIGHT_MOMENT, MIDNIGHT_MOMENT] } : true) : false}
@@ -260,7 +190,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     <DatePicker
       className="sha-date-picker"
       value={formattedValue}
-      disabledDate={disabledDate}
+      disabledDate={(e) => disabledDate(props, e)}
       disabled={isDisabled}
       onChange={handleDatePickerChange}
       bordered={!hideBorder}

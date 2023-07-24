@@ -1,8 +1,8 @@
-import React, { FC, MutableRefObject, useRef } from 'react';
+import React, { FC, MutableRefObject, useEffect, useRef } from 'react';
 import { Button, Tooltip } from 'antd';
 import { DeleteFilled, StopOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import FormComponent from '../formComponent';
-import { useForm } from '../../../providers/form';
+import { useComponentModel, useForm } from '../../../providers/form';
 import DragHandle from './dragHandle';
 import ValidationIcon from './validationIcon';
 import { Show } from '../../show';
@@ -10,6 +10,7 @@ import classNames from 'classnames';
 import CustomErrorBoundary from '../../customErrorBoundary';
 import { useFormDesigner } from '../../../providers/formDesigner';
 import { IConfigurableFormComponent } from '../../../interfaces';
+import { useMetadata } from 'providers';
 
 export interface IConfigurableFormComponentProps {
   id: string;
@@ -17,10 +18,11 @@ export interface IConfigurableFormComponentProps {
 }
 
 const ConfigurableFormComponent: FC<IConfigurableFormComponentProps> = ({ id }) => {
-  const { formMode, getComponentModel } = useForm();
+  const { formMode } = useForm();
   const designer = useFormDesigner(false);
 
-  const componentModel = getComponentModel(id);
+  const componentModel = useComponentModel(id);
+  
   const componentRef = useRef(null);
   const isDesignMode = formMode === 'designer';
 
@@ -60,8 +62,20 @@ const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerPr
   const {
     deleteComponent,
     selectedComponentId,
-    readOnly: readonly,
+    readOnly,
+    activeDataSourceId,
+    setActiveDataSource,
   } = useFormDesigner();
+
+  const metadata = useMetadata(false);
+  useEffect(() => {
+    if (componentModel.id && selectedComponentId === componentModel.id && metadata && metadata.id !== activeDataSourceId){
+      // set active data source, 
+      // this code is used to correct a current datasource after adding of a  new component to a form
+      setActiveDataSource(metadata.id);
+    }    
+  }, []);
+  
 
   const onDeleteClick = () => {
     deleteComponent({ componentId: componentModel.id });
@@ -95,7 +109,7 @@ const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerPr
       </span>
 
       {invalidConfiguration && <ValidationIcon validationErrors={componentModel.settingsValidationErrors} />}
-      {!readonly && (
+      {!readOnly && (
         <div className="sha-component-controls">
           <Button icon={<DeleteFilled color="red" />} onClick={onDeleteClick} size="small" danger />
         </div>

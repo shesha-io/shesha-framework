@@ -1,6 +1,7 @@
 using Abp.Modules;
 using Abp.Reflection.Extensions;
 using Boxfusion.SheshaFunctionalTests.Common;
+using Boxfusion.SheshaFunctionalTests.Common.Authorization;
 using Castle.MicroKernel.Registration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -10,6 +11,7 @@ using Shesha.Authentication.JwtBearer;
 using Shesha.Authorization;
 using Shesha.AzureAD;
 using Shesha.Configuration;
+using Shesha.Configuration.Startup;
 using Shesha.Import;
 using Shesha.Ldap;
 using Shesha.Sms.BulkSms;
@@ -19,7 +21,6 @@ using Shesha.Sms.Xml2Sms;
 using Shesha.Web.FormsDesigner;
 using System;
 using System.Text;
-using Boxfusion.SheshaFunctionalTests.Common.Authorization;
 
 namespace Boxfusion.SheshaFunctionalTests
 {
@@ -44,7 +45,6 @@ namespace Boxfusion.SheshaFunctionalTests
      )]
     public class SheshaFunctionalTestsWebCoreModule : AbpModule
     {
-        private readonly IWebHostEnvironment _env;
         private readonly IConfigurationRoot _appConfiguration;
 
         /// <summary>
@@ -53,7 +53,6 @@ namespace Boxfusion.SheshaFunctionalTests
         /// <param name="env"></param>
         public SheshaFunctionalTestsWebCoreModule(IWebHostEnvironment env)
         {
-            _env = env;
             _appConfiguration = env.GetAppConfiguration();
         }
 
@@ -62,9 +61,12 @@ namespace Boxfusion.SheshaFunctionalTests
         /// </summary>
         public override void PreInitialize()
         {
-            Configuration.DefaultNameOrConnectionString = _appConfiguration.GetConnectionString(
-                SheshaConsts.ConnectionStringName
-            );
+            var config = Configuration.Modules.ShaNHibernate();
+            
+            config.UseDbms(c => c.GetDbmsType(), c => c.GetDefaultConnectionString());
+
+            // use this line to switch to PostgreSql
+            //config.UsePostgreSql();
 
             ConfigureTokenAuth();
         }

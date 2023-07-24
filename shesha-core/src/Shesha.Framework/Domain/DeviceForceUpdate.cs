@@ -7,6 +7,7 @@ using Shesha.Domain.Attributes;
 
 namespace Shesha.Domain
 {
+    [Discriminator]
     [Entity(GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
     public class DeviceForceUpdate : FullAuditedEntity<Guid>
     {

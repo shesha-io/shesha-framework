@@ -2,8 +2,7 @@ import React from 'react';
 import { IToolboxComponent } from '../../interfaces';
 import { SettingOutlined } from '@ant-design/icons';
 import { IConfigurableFormComponent, useForm } from '../../providers';
-import { ConfigurableFormItem } from 'components';
-import ComponentsContainer from 'components/formDesigner/componentsContainer';
+import { ComponentsContainer, ConfigurableFormItem } from 'components';
 import SettingsControl from './settingsControl';
 
 export interface ISettingsComponentProps extends IConfigurableFormComponent {

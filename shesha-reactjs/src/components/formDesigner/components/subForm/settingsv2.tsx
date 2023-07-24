@@ -279,7 +279,7 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
                 label="POST Url"
                 type={''}
                 id={''}
-                description="he API url that will be used to update data. Write the code that returns the string"
+                description="The API url that will be used to update data. Write the code that returns the string"
                 exposedVariables={[
                   {
                     id: '788673a5-5eb9-4a9a-a34b-d8cea9cacb3c',

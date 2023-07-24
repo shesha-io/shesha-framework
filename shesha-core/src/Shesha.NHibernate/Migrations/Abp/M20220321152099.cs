@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Migrations.Abp
 {
-    [Migration(20220321152099)]
+    [Migration(20220321152099), MsSqlOnly]
     public class M20220321152099 : Migration
     {
         public override void Down()

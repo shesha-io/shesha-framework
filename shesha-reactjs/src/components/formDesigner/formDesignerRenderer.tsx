@@ -1,12 +1,12 @@
 import React, { FC, useState } from 'react';
 import { SidebarContainer, ConfigurableFormRenderer } from '../../components';
-import { Row, Col, Divider, Typography, Space, Form } from 'antd';
+import { Row, Col, Divider, Typography, Space } from 'antd';
 import Toolbox from './toolbox';
 import FormDesignerToolbar from './formDesignerToolbar';
 import ComponentPropertiesPanel from './componentPropertiesPanel';
 import ComponentPropertiesTitle from './componentPropertiesTitle';
 import { useForm } from '../../providers/form';
-import { MetadataProvider } from '../../providers';
+import { MetadataProvider, useSheshaApplication } from '../../providers';
 import ConditionalWrap from '../conditionalWrapper';
 import { useFormPersister } from '../../providers/formPersisterProvider';
 import { useFormDesigner } from '../../providers/formDesigner';
@@ -14,6 +14,8 @@ import StatusTag from '../statusTag';
 import { FORM_STATUS_MAPPING } from '../../utils/configurationFramework/models';
 import { getFormFullName } from '../../utils/form';
 import HelpTextPopover from '../helpTextPopover';
+import classNames from 'classnames';
+import { getInitIsExpanded } from './util';
 import { useDataContextManager } from 'providers/dataContextManager';
 import { IDataContextDescriptor } from 'providers/dataContextManager/models';
 
@@ -59,14 +61,16 @@ export const FormDesignerRenderer: FC = ({}) => {
   const [widgetsOpen, setWidgetOpen] = useState(true);
   const [fieldPropertiesOpen, setFieldPropertiesOpen] = useState(true);
   const { formProps } = useFormPersister();
-  const [form] = Form.useForm();
 
-  const toggleWidgetSidebar = () => setWidgetOpen(widget => !widget);
+  const { globalVariables: { isSideBarExpanded } = {} } = useSheshaApplication();
 
-  const toggleFieldPropertiesSidebar = () => setFieldPropertiesOpen(prop => !prop);
+  const isExpanded = typeof isSideBarExpanded == 'boolean' ? isSideBarExpanded : getInitIsExpanded();
 
-  const [formValues, setFormValues] = useState({});
-  const { formSettings } = useForm();
+  const toggleWidgetSidebar = () => setWidgetOpen((widget) => !widget);
+
+  const toggleFieldPropertiesSidebar = () => setFieldPropertiesOpen((prop) => !prop);
+
+  const { formSettings, form } = useForm();
   const { isDebug, readOnly } = useFormDesigner();
 
   const fullName = formProps ? getFormFullName(formProps.module, formProps.name) : null;
@@ -74,7 +78,7 @@ export const FormDesignerRenderer: FC = ({}) => {
 
   return (
     <div className="sha-page">
-      <div className="sha-page-heading">
+      <div className="sha-page-heading sha-form-heading-fixed">
         <div className="sha-page-title" style={{ justifyContent: 'left' }}>
           <Space>
             {title && (
@@ -90,13 +94,15 @@ export const FormDesignerRenderer: FC = ({}) => {
       <div className="sha-form-designer">
         <ConditionalWrap
           condition={Boolean(formSettings.modelType)}
-          wrap={content => (
+          wrap={(content) => (
             <MetadataProvider id="designer" modelType={formSettings.modelType}>
               {content}
             </MetadataProvider>
           )}
         >
-          <FormDesignerToolbar />
+          <FormDesignerToolbar
+            className={classNames('sha-toolbar-fixed', { 'opened-sidebar': isExpanded, 'closed-sidebar': !isExpanded })}
+          />
           <SidebarContainer
             leftSidebarProps={
               readOnly
@@ -108,6 +114,7 @@ export const FormDesignerRenderer: FC = ({}) => {
                     title: 'Builder Widgets',
                     content: () => <Toolbox />,
                     placeholder: 'Builder Widgets',
+                    fixedPositon: true,
                   }
             }
             rightSidebarProps={{
@@ -117,16 +124,12 @@ export const FormDesignerRenderer: FC = ({}) => {
               title: () => <ComponentPropertiesTitle />,
               content: () => <ComponentPropertiesPanel />,
               placeholder: 'Properties',
+              fixedPositon: true,
             }}
           >
-            <ConfigurableFormRenderer
-              onValuesChange={(_changedValues, allvalues) => {
-                setFormValues(allvalues);
-              }}
-              form={form}
-            >
+            <ConfigurableFormRenderer form={form}>
               {isDebug && (
-                <DebugContent formValues={formValues}/>
+                <DebugContent formValues={form.getFieldsValue()}/>
               )}
             </ConfigurableFormRenderer>
           </SidebarContainer>

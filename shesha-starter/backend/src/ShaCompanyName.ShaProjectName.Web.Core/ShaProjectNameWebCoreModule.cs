@@ -4,11 +4,15 @@ using Castle.MicroKernel.Registration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using ShaCompanyName.ShaProjectName.Application;
+using ShaCompanyName.ShaProjectName.Common.Authorization;
+using ShaCompanyName.ShaProjectName.Domain;
 using Shesha;
 using Shesha.Authentication.JwtBearer;
 using Shesha.Authorization;
 using Shesha.AzureAD;
 using Shesha.Configuration;
+using Shesha.Configuration.Startup;
 using Shesha.Import;
 using Shesha.Ldap;
 using Shesha.Sms.BulkSms;
@@ -18,9 +22,6 @@ using Shesha.Sms.Xml2Sms;
 using Shesha.Web.FormsDesigner;
 using System;
 using System.Text;
-using ShaCompanyName.ShaProjectName.Common.Authorization;
-using ShaCompanyName.ShaProjectName.Domain;
-using ShaCompanyName.ShaProjectName.Application;
 
 namespace ShaCompanyName.ShaProjectName
 {
@@ -45,7 +46,6 @@ namespace ShaCompanyName.ShaProjectName
 	 )]
     public class ShaProjectNameWebCoreModule : AbpModule
     {
-        private readonly IWebHostEnvironment _env;
         private readonly IConfigurationRoot _appConfiguration;
 
         /// <summary>
@@ -54,7 +54,6 @@ namespace ShaCompanyName.ShaProjectName
         /// <param name="env"></param>
         public ShaProjectNameWebCoreModule(IWebHostEnvironment env)
         {
-            _env = env;
             _appConfiguration = env.GetAppConfiguration();
         }
 
@@ -63,9 +62,12 @@ namespace ShaCompanyName.ShaProjectName
         /// </summary>
         public override void PreInitialize()
         {
-            Configuration.DefaultNameOrConnectionString = _appConfiguration.GetConnectionString(
-                SheshaConsts.ConnectionStringName
-            );
+            var config = Configuration.Modules.ShaNHibernate();
+            
+            config.UseDbms(c => c.GetDbmsType(), c => c.GetDefaultConnectionString());
+
+            //config.UseMsSql();
+            //config.UsePostgreSql();
 
             ConfigureTokenAuth();
         }

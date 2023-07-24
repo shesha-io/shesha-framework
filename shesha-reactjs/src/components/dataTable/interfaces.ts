@@ -5,6 +5,7 @@ import { DataTableFullInstance } from '../../providers/dataTable/contexts';
 import { IAnyObject } from '../../interfaces';
 import { Column, Row, CellProps } from 'react-table';
 import { ProperyDataType } from 'interfaces/metadata';
+import { IConfigurableActionConfiguration } from 'interfaces/configurableAction';
 
 export interface ITableActionColumns {
   icon?: ReactNode;
@@ -34,22 +35,25 @@ export interface IColumnEditFieldProps {
   onChange: (key: string, value: any) => void;
 }
 
-export type YesNoInherit = 'yes' | 'no' | 'inherit';
+export type YesNoInherit = 'yes' | 'no' | 'inherit' | 'js';
 
 export interface IShaDataTableInlineEditableProps {
   canDeleteInline?: YesNoInherit;
+  canDeleteInlineExpression?: string; // todo: replace with new dynamic JS properties
   customDeleteUrl?: string;
   canEditInline?: YesNoInherit;
+  canEditInlineExpression?: string; // todo: replace with new dynamic JS properties
   inlineEditMode?: InlineEditMode;
   inlineSaveMode?: InlineSaveMode;
   customUpdateUrl?: string;
   canAddInline?: YesNoInherit;
+  canAddInlineExpression?: string; // todo: replace with new dynamic JS properties
   newRowCapturePosition?: NewRowCapturePosition;
   newRowInsertPosition?: NewRowCapturePosition;
   customCreateUrl?: string;
   onNewRowInitialize?: string;
   onRowSave?: string;
-  onRowSaveSuccess?: string;
+  onRowSaveSuccessAction?: IConfigurableActionConfiguration;
 }
 
 export interface IShaDataTableProps extends ITableRowDragProps, IShaDataTableInlineEditableProps {

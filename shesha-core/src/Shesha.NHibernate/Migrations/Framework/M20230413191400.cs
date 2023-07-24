@@ -3,7 +3,7 @@ using Shesha.FluentMigrator;
 
 namespace Shesha.Migrations.Framework
 {
-    [Migration(20230413191400)]
+    [Migration(20230413191400), MsSqlOnly]
     public class M20230413191400 : OneWayMigration
     {
         public override void Up()

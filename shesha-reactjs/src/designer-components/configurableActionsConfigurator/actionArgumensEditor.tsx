@@ -1,7 +1,8 @@
 import { Collapse } from 'antd';
+import { ICodeExposedVariable } from 'components/codeVariablesTable';
 import React, { useMemo } from 'react';
 import { FC } from 'react';
-import { IConfigurableActionArgumentsFormFactory, IConfigurableActionDescriptor } from '../../interfaces/configurableAction';
+import { FormMarkupFactory, IConfigurableActionArgumentsFormFactory, IConfigurableActionDescriptor } from '../../interfaces/configurableAction';
 import { FormMarkup } from '../../providers/form/models';
 import GenericArgumentsEditor from './genericArgumentsEditor';
 
@@ -12,21 +13,28 @@ export interface IActionArgumentsEditorProps {
     value?: any;
     onChange?: (value: any) => void;
     readOnly?: boolean;
+    exposedVariables?: ICodeExposedVariable[];
 }
 
-const getDefaultFactory = (markup: FormMarkup, readOnly: boolean): IConfigurableActionArgumentsFormFactory => {
+const getDefaultFactory = (markup: FormMarkup | FormMarkupFactory, readOnly: boolean): IConfigurableActionArgumentsFormFactory => {
     return ({
         model,
         onSave,
         onCancel,
         onValuesChange,
+        exposedVariables,
     }) => {
+        const markupFactory = typeof(markup) === 'function'
+            ? markup as FormMarkupFactory
+            : () => markup as FormMarkup;
+        
+        const formMarkup = markupFactory({ exposedVariables });
         return (
             <GenericArgumentsEditor
                 model={model}
                 onSave={onSave}
                 onCancel={onCancel}
-                markup={markup}
+                markup={formMarkup}
                 onValuesChange={onValuesChange}
                 readOnly={readOnly}
             />
@@ -34,7 +42,7 @@ const getDefaultFactory = (markup: FormMarkup, readOnly: boolean): IConfigurable
     };
 };
 
-export const ActionArgumentsEditor: FC<IActionArgumentsEditorProps> = ({ action, value, onChange, readOnly = false }) => {
+export const ActionArgumentsEditor: FC<IActionArgumentsEditorProps> = ({ action, value, onChange, readOnly = false, exposedVariables }) => {
 
     const argumentsEditor = useMemo(() => {
         const settingsFormFactory = action.argumentsFormFactory
@@ -64,6 +72,7 @@ export const ActionArgumentsEditor: FC<IActionArgumentsEditorProps> = ({ action,
                 onCancel,
                 onValuesChange,
                 readOnly,
+                exposedVariables,
             })
             : null;
     }, [action]);

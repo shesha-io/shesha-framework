@@ -165,3 +165,8 @@ export interface IAsyncValidationError {
 export interface IFormValidationErrors { }
 
 export { type ConfigurableFormInstance };
+
+export interface IComponentsContainerBaseProps {
+  containerId: string;
+  readOnly?: boolean;
+}

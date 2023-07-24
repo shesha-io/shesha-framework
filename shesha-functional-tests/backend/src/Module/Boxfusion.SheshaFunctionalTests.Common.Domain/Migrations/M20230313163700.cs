@@ -4,7 +4,7 @@ using System;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Migrations
 {
-    [Migration(20230313163700)]
+    [Migration(20230313163700), MsSqlOnly]
     public class M20230313163700 : Migration
     {
         public override void Down()

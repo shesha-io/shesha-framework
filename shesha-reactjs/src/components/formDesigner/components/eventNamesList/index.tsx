@@ -25,7 +25,7 @@ const EventNamesComponent: IToolboxComponent<IEventNamesComponentProps> = {
 
     return (
       <ConfigurableFormItem model={model}>
-        <EventNames {...model} />
+        <EventNames {...model} name={model.propertyName} />
       </ConfigurableFormItem>
     );
   },

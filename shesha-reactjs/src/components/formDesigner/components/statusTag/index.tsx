@@ -5,7 +5,7 @@ import { useGlobalState, useFormData } from '../../../../providers';
 import { evaluateString, validateConfigurableComponentSettings } from '../../../../formDesignerUtils';
 import { IConfigurableFormComponent, IToolboxComponent } from '../../../../interfaces/formDesigner';
 import { useForm } from '../../../../providers/form';
-import { executeCustomExpression } from '../../../../providers/form/utils';
+import { executeCustomExpression, getStyle } from '../../../../providers/form/utils';
 import StatusTag, { DEFAULT_STATUS_TAG_MAPPINGS, IStatusTagProps as ITagProps } from '../../../statusTag';
 import ConfigurableFormItem from '../formItem';
 import { getSettings } from './settings';
@@ -28,11 +28,6 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
     const { formMode } = useForm();
     const { globalState } = useGlobalState();
     const { data } = useFormData();
-
-    console.log('LOG:: StatusTagComponent data', data);
-    console.log('LOG:: StatusTagComponent globalState', globalState);
-    console.log('LOG:: StatusTagComponent formMode', formMode);
-    console.log('LOG:: StatusTagComponent model', model);
 
     const getExpressionExecutor = (expression: string) => {
       if (!expression) {
@@ -102,7 +97,7 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
         condition={model?.valueSource === 'form'}
         wrap={(children) => <ConfigurableFormItem model={model}>{children}</ConfigurableFormItem>}
       >
-        <StatusTag {...props} />
+        <StatusTag {...props} style={getStyle(model?.style, data, globalState)} />
       </ConditionalWrap>
     );
   },

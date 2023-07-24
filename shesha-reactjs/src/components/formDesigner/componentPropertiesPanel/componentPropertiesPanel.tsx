@@ -1,4 +1,4 @@
-import React, { FC, MutableRefObject, ReactNode, useEffect, useState } from 'react';
+import React, { FC, MutableRefObject, useMemo } from 'react';
 import { IFormLayoutSettings, ISettingsFormFactory, ISettingsFormInstance, IToolboxComponent } from 'interfaces';
 import { Empty } from 'antd';
 import { useDebouncedCallback } from 'use-debounce';
@@ -39,8 +39,6 @@ const getDefaultFactory = (markup: FormMarkup): ISettingsFormFactory => {
 
 export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (props) => {
   const { toolboxComponent, componentModel, readOnly, autoSave, formRef, propertyFilter, layoutSettings } = props;
-  // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus
-  const [editor, setEditor] = useState<ReactNode>(<></>);
 
   const { getActiveProvider } = useMetadataDispatcher(false) ?? {};
 
@@ -52,32 +50,15 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
     300
   );
 
-  const onCancel = () => {
-    //
-  };
+  const metaProvider = getActiveProvider ? getActiveProvider() : null;
 
   const onSave = values => {
     if (!readOnly)
       props.onSave(values);
   };
 
-  const onValuesChange = (_changedValues, values) => {
-    if (autoSave && !readOnly)
-      debouncedSave(values);
-  };
+  const editor = useMemo(() => {
 
-  const wrapEditor = (renderEditor: () => ReactNode) => {
-    const metaProvider = getActiveProvider ? getActiveProvider() : null;
-    if (!metaProvider) return <>{renderEditor()}</>;
-
-    return (
-      <MetadataContext.Provider value={metaProvider}>
-        <>{renderEditor()}</>
-      </MetadataContext.Provider>
-    );
-  };
-
-  const getEditor = () => {
     const emptyEditor = null;
 
     if (!Boolean(toolboxComponent)) return emptyEditor;
@@ -90,27 +71,33 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
           : null;
     if (!settingsFormFactory) return emptyEditor;
 
-    return wrapEditor(() => (
-      <React.Fragment>
-        {settingsFormFactory({
-          readOnly: readOnly,
-          model: componentModel,
-          onSave,
-          onCancel,
-          onValuesChange,
-          toolboxComponent,
-          formRef: formRef,
-          propertyFilter,
-          layoutSettings,
-        })}
-      </React.Fragment>
-    ));
-  };
+    const onCancel = () => {
+      //
+    };
 
-  useEffect(() => {
-    const currentEditor = getEditor();
-    setEditor(currentEditor);
-  }, [toolboxComponent, readOnly]);
+    const onValuesChange = (_changedValues, values) => {
+      if (autoSave && !readOnly)
+        debouncedSave(values);
+    };
+
+    return (
+      <MetadataContext.Provider value={metaProvider}>
+        <React.Fragment>
+          {settingsFormFactory({
+            readOnly: readOnly,
+            model: componentModel,
+            onSave,
+            onCancel,
+            onValuesChange,
+            toolboxComponent,
+            formRef: formRef,
+            propertyFilter,
+            layoutSettings,
+          })}
+        </React.Fragment>
+      </MetadataContext.Provider>
+    );
+  }, [toolboxComponent, readOnly, metaProvider?.modelType]);
 
   return Boolean(toolboxComponent)
     ? <>{editor}</>

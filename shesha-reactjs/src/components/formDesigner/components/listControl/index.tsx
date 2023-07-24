@@ -64,6 +64,7 @@ const ListComponent: IToolboxComponent<IListComponentProps> = {
 
         const customProps: IListComponentProps = {
           ...prev,
+          name: prev['name'],
           showPagination: prev['showPagination'] ?? true,
           hideLabel: prev['hideLabel'] ?? true,
           uniqueStateId: prev['uniqueStateId'] ?? uniqueStateId,

@@ -4,7 +4,7 @@ import React, { MutableRefObject } from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
 import { useForm, useFormData } from '../../../../providers';
 import { FormMarkup, IConfigurableFormComponent } from '../../../../providers/form/models';
-import { evaluateValue, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
+import { evaluateString, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import { IHierarchicalCheckListProps } from '../../../hierarchicalCheckList';
 import { CheckListSelectionType, ISaveSelectionsInput } from '../../../hierarchicalCheckList/interface';
 import ConfigurableFormItem, { IConfigurableFormItemProps } from '../formItem';
@@ -36,9 +36,9 @@ const HierarchicalChecklistComponent: IToolboxComponent<IHierarchicalChecklistPr
     const { data: formData } = useFormData();
 
     // TODO:: Review - formData?.ownerType, formData?.ownerId and formData?.checklistId need to be removed
-    const ownerType = evaluateValue(formData?.ownerType || model?.ownerType, { data: formData });
-    const ownerId = evaluateValue(formData?.ownerId || model?.ownerId, { data: formData });
-    const checklistId = evaluateValue(formData?.checklistId || model?.checklistId, { data: formData });
+    const ownerType = evaluateString(formData?.ownerType || model?.ownerType, { data: formData });
+    const ownerId = evaluateString(formData?.ownerId || model?.ownerId, { data: formData });
+    const checklistId = evaluateString(formData?.checklistId || model?.checklistId, { data: formData });
 
     const renderChecklist = () => {
       if (!isUuid(checklistId)) {
@@ -71,8 +71,8 @@ const HierarchicalChecklistComponent: IToolboxComponent<IHierarchicalChecklistPr
     );
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
-  initModel: model => {
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  initModel: (model) => {
     const checklistModel = model as IHierarchicalChecklistProps;
 
     const customModel: IHierarchicalChecklistProps = {

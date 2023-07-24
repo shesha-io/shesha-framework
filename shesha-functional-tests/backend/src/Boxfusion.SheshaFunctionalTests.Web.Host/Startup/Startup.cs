@@ -3,13 +3,13 @@ using Abp.AspNetCore.SignalR.Hubs;
 using Abp.Castle.Logging.Log4Net;
 using Abp.Extensions;
 using Abp.PlugIns;
-using Boxfusion.SheshaFunctionalTests.Configuration;
-using Boxfusion.SheshaFunctionalTests.Web.Host.Startup;
+using Boxfusion.SheshaFunctionalTests.Hangfire;
 using Castle.Facilities.Logging;
 using ElmahCore;
 using ElmahCore.Mvc;
 using GraphQL;
 using Hangfire;
+using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -19,38 +19,36 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
-using Boxfusion.SheshaFunctionalTests.Hangfire;
 using Shesha.Authorization;
 using Shesha.Configuration;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Swagger;
+using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.GraphQL;
 using Shesha.GraphQL.Middleware;
-using Shesha.Exceptions;
-using System;
-using System.IO;
 using Shesha.Identity;
-using Shesha.Web;
 using Shesha.Scheduler.Extensions;
 using Shesha.Swagger;
-using System.Reflection;
-using Swashbuckle.AspNetCore.SwaggerGen;
+using Shesha.Web;
 using Swashbuckle.AspNetCore.Swagger;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using System;
+using System.IO;
+using System.Reflection;
 
 namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 {
-	public class Startup
+    public class Startup
 	{
 		private readonly IConfigurationRoot _appConfiguration;
 		private readonly IWebHostEnvironment _hostEnvironment;
 
-		public Startup(IWebHostEnvironment hostEnvironment, IHostingEnvironment env)
+		public Startup(IWebHostEnvironment hostEnvironment)
 		{
-			_appConfiguration = env.GetAppConfiguration();
+			_appConfiguration = hostEnvironment.GetAppConfiguration();
 			_hostEnvironment = hostEnvironment;
 		}
 
@@ -64,9 +62,7 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 			services.AddElmah<XmlFileErrorLog>(options =>
 			{
 				options.Path = @"elmah";
-				//options.LogPath = "~/App_Data/ElmahLogs";
 				options.LogPath = Path.Combine(_hostEnvironment.ContentRootPath, "App_Data", "ElmahLogs");
-				//options.CheckPermissionAction = context => context.User.Identity.IsAuthenticated; //note: looks like we have to use cookies for it
 				options.Filters.Add(new ElmahFilter());
 			});
 
@@ -85,8 +81,7 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
                 .AddNewtonsoftJson(options =>
                 {
                     options.UseCamelCasing(true);
-                })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+                });
 
 			IdentityRegistrar.Register(services);
 			AuthConfigurer.Configure(services, _appConfiguration);
@@ -94,33 +89,32 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 			services.AddSignalR();
 
 			services.AddCors();
-			/*
-            // Configure CORS for angular2 UI
-            services.AddCors(
-                options => options.AddPolicy(
-                    _defaultCorsPolicyName,
-                    builder => builder
-                        .WithOrigins(
-                            // App:CorsOrigins in appsettings.json can contain more than one address separated by comma.
-                            _appConfiguration["App:CorsOrigins"]
-                                .Split(",", StringSplitOptions.RemoveEmptyEntries)
-                                .Select(o => o.RemovePostFix("/"))
-                                .ToArray()
-                        )
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials()
-                )
-            );
-            */
+			
 			AddApiVersioning(services);
 
 			services.AddHttpContextAccessor();
 
 			services.AddHangfire(config =>
 			{
-				config.UseSqlServerStorage(_appConfiguration.GetConnectionString("Default"));
-			});
+                var dbms = _appConfiguration.GetDbmsType();
+                var connStr = _appConfiguration.GetDefaultConnectionString();
+
+                switch (dbms)
+                {
+                    case DbmsType.SQLServer:
+                        {
+                            config.UseSqlServerStorage(connStr);
+                            break;
+                        }
+                    case DbmsType.PostgreSQL:
+                        {
+                            config.UsePostgreSqlStorage(connStr);
+                            break;
+                        }
+                }
+            });
+			services.AddHangfireServer(config => {
+            });
 
 			// add Shesha GraphQL
 			services.AddSheshaGraphQL();
@@ -199,12 +193,8 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 				options.IndexStream = () => Assembly.GetExecutingAssembly()
 					.GetManifestResourceStream("Boxfusion.SheshaFunctionalTests.Web.Host.wwwroot.swagger.ui.index.html");
 			}); // URL: /swagger​
-			var options = new BackgroundJobServerOptions
-			{
-				//Queues = new[] { "alpha", "beta", "default" }
-			};
-			app.UseHangfireServer(options);
-			app.UseHangfireDashboard("/hangfire",
+			
+            app.UseHangfireDashboard("/hangfire",
 				new DashboardOptions
 				{
 					Authorization = new[] { new HangfireAuthorizationFilter() }

@@ -100,6 +100,7 @@ namespace Shesha.ConfigurationItems
                     await _moduleRepo.InsertAsync(dbModule);
                 }
                 else {
+                    dbModule.Name = codeModule.ModuleInfo.Name; // update name to ensure that the case is correct
                     dbModule.FriendlyName = codeModule.ModuleInfo.FriendlyName;
                     dbModule.Description = codeModule.ModuleInfo.Description;
                     dbModule.Publisher = codeModule.ModuleInfo.Publisher;
@@ -113,13 +114,15 @@ namespace Shesha.ConfigurationItems
 
                 }
 
+                await _unitOfWorkManager.Current.SaveChangesAsync();
+
                 // initialize main module
                 var mainModuleInitialized = await codeModule.Instance.InitializeConfigurationAsync();
 
                 // initialize submodules
                 var submodules = allSubModules.Where(m => m.ModuleType == codeModule.ModuleType).OfType<IHasDataDrivenConfiguration>().ToList();
                 var submodulesInitialized = false;
-                foreach (var submodule in submodules) 
+                foreach (var submodule in submodules)
                 {
                     submodulesInitialized = submodulesInitialized || await submodule.InitializeConfigurationAsync();
                 }

@@ -7,7 +7,7 @@ using Shesha.Domain.Enums;
 
 namespace Shesha.Domain
 {
-    public class NotificationMessage : FullAuditedEntity<Guid>, IMayHaveTenant
+    public class NotificationMessage : FullAuditedEntityWithExternalSync<Guid>, IMayHaveTenant
     {
         /// <summary>
         /// Person who sent this message
@@ -29,6 +29,11 @@ namespace Shesha.Domain
         /// </summary>
         [StringLength(300)]
         public virtual string RecipientText { get; set; }
+        /// <summary>
+        /// Sender text (email address/mobile number etc)
+        /// </summary>
+        [StringLength(300)]
+        public virtual string SenderText { get; set; }
 
         /// <summary>
         /// Subject of the message
@@ -68,9 +73,19 @@ namespace Shesha.Domain
         public virtual RefListNotificationStatus Status { get; set; }
 
         /// <summary>
+        /// Direction (outgoing/incoming)
+        /// </summary>
+        public virtual RefListNotificationDirection Direction { get; set; }
+
+        /// <summary>
         /// Error message
         /// </summary>
         public virtual string ErrorMessage { get; set; }
+
+        /// <summary>
+        /// CC emails
+        /// </summary>
+        public virtual string Cc { get; set; }
 
         public NotificationMessage()
         {

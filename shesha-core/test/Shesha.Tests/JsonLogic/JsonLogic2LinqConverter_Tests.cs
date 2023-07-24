@@ -548,12 +548,27 @@ namespace Shesha.Tests.JsonLogic
   ]
 }";
 
+        private readonly string _nestedColumnResolver_expression2 = @"{
+  ""and"": [
+    {
+      ""=="": [
+        {
+          ""var"": ""PrimaryOrganisation.PrimaryAddress""
+        },
+        ""D80526AB-BB64-41FA-BFB8-F74A9332C0CA""
+      ]
+    }
+  ]
+}";
+
         [Fact]
         public void NestedColumnResolver_Convert()
         {
             var expression = ConvertToExpression<Person>(_nestedColumnResolver_expression);
-
             Assert.Equal(@"ent => (ent.User.UserName == ""admin"")", expression.ToString());
+
+            var expression2 = ConvertToExpression<Person>(_nestedColumnResolver_expression2);
+            Assert.Equal(@"ent => (ent.PrimaryOrganisation.PrimaryAddress.Id == ""D80526AB-BB64-41FA-BFB8-F74A9332C0CA"".ToGuid())", expression2.ToString());
         }
 
         [Fact]

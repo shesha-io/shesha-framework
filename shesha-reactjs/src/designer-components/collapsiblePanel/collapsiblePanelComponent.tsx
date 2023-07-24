@@ -3,7 +3,7 @@ import { FormMarkup } from 'providers/form/models';
 import { GroupOutlined } from '@ant-design/icons';
 import settingsFormJson from './settingsForm.json';
 import { CollapsiblePanel } from 'components/panel';
-import ComponentsContainer from 'components/formDesigner/componentsContainer';
+import ComponentsContainer from 'components/formDesigner/containers/componentsContainer';
 import { useForm } from 'providers/form';
 import React from 'react';
 import { validateConfigurableComponentSettings } from 'providers/form/utils';
@@ -24,10 +24,9 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
 
     if (isComponentHidden(model)) return null;
 
-    if (model.hideWhenEmpty && formMode !== 'designer'){
+    if (model.hideWhenEmpty && formMode !== 'designer') {
       const childsVisible = hasVisibleChilds(model.content.id);
-      if (!childsVisible)
-        return null;
+      if (!childsVisible) return null;
     }
 
     const headerComponents = model?.header?.components?.map(c => ({ ...c, readOnly: model?.readOnly })) ?? [];
@@ -38,15 +37,18 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
     return (
       <CollapsiblePanel
         header={label}
-        expandIconPosition={expandIconPosition !== 'hide' ? expandIconPosition as ExpandIconPosition : 'left'}
+        expandIconPosition={expandIconPosition !== 'hide' ? (expandIconPosition as ExpandIconPosition) : 'left'}
         collapsedByDefault={collapsedByDefault}
         extra={extra}
-        collapsible={collapsible === 'header' ? 'header' : 'icon'} showArrow={collapsible !== 'disabled' && expandIconPosition !== 'hide'}
+        collapsible={collapsible === 'header' ? 'header' : 'icon'}
+        showArrow={collapsible !== 'disabled' && expandIconPosition !== 'hide'}
         ghost={ghost}
       >
         <ComponentsContainer
           containerId={model.content.id}
-          dynamicComponents={model?.isDynamic ? model?.content.components?.map(c => ({ ...c, readOnly: model?.readOnly })) : []}
+          dynamicComponents={
+            model?.isDynamic ? model?.content.components?.map((c) => ({ ...c, readOnly: model?.readOnly })) : []
+          }
         />
       </CollapsiblePanel>
     );

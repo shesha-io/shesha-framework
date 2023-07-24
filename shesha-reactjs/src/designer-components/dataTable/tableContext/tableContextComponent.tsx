@@ -3,12 +3,12 @@ import { Alert } from 'antd';
 import FormItem from 'antd/lib/form/FormItem';
 import React, { FC, Fragment, useEffect, useMemo } from 'react';
 import { IToolboxComponent } from 'interfaces';
-import { MetadataProvider, useDataTableStore, useForm } from 'providers';
+import { MetadataProvider, useDataTableStore, useForm, useFormData } from 'providers';
 import DataTableProvider from 'providers/dataTable';
 import { DataTableSelectionProvider, useDataTableSelection } from 'providers/dataTableSelection';
 import { FormMarkup, IConfigurableFormComponent } from 'providers/form/models';
-import { validateConfigurableComponentSettings } from 'providers/form/utils';
-import ComponentsContainer from 'components/formDesigner/componentsContainer';
+import { evaluateString, validateConfigurableComponentSettings } from 'providers/form/utils';
+import ComponentsContainer from 'components/formDesigner/containers/componentsContainer';
 import settingsFormJson from './settingsForm.json';
 import { DataFetchingMode } from 'providers/dataTable/interfaces';
 
@@ -30,32 +30,37 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
   factory: (model: ITableContextComponentProps) => {
     return <TableContext {...model} />;
   },
-  migrator: m => m.add<ITableContextComponentProps>(0, prev => {
-    return {
-      ...prev,
-      propertyName: prev['uniqueStateId'] ?? prev.propertyName,
-    };
-  }).add<ITableContextComponentProps>(1, prev => {
-    return {
-      ...prev,
-      sourceType: 'Entity'
-    };
-  }).add<ITableContextComponentProps>(2, prev => {
-    return {
-      ...prev,
-      defaultPageSize: 10
-    };
-  }).add<ITableContextComponentProps>(3, prev => {
-    return {
-      ...prev,
-      dataFetchingMode: 'paging',
-    };
-  }),
+  migrator: (m) =>
+    m
+      .add<ITableContextComponentProps>(0, (prev) => {
+        return {
+          ...prev,
+          name: prev['uniqueStateId'] ?? prev['name'],
+        };
+      })
+      .add<ITableContextComponentProps>(1, (prev) => {
+        return {
+          ...prev,
+          sourceType: 'Entity',
+        };
+      })
+      .add<ITableContextComponentProps>(2, (prev) => {
+        return {
+          ...prev,
+          defaultPageSize: 10,
+        };
+      })
+      .add<ITableContextComponentProps>(3, (prev) => {
+        return {
+          ...prev,
+          dataFetchingMode: 'paging',
+        };
+      }),
   settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
 };
 
-export const TableContext: FC<ITableContextComponentProps> = props => {
+export const TableContext: FC<ITableContextComponentProps> = (props) => {
   const { entityType, sourceType } = props;
 
   const uniqueKey = useMemo(() => {
@@ -71,47 +76,55 @@ export const TableContext: FC<ITableContextComponentProps> = props => {
   );
 };
 
-export const TableContextInner: FC<ITableContextComponentProps> = props => {
+export const TableContextInner: FC<ITableContextComponentProps> = (props) => {
   const { sourceType, entityType, endpoint, id, propertyName: name } = props;
   const { formMode } = useForm();
+  const { data } = useFormData();
+
   const isDesignMode = formMode === 'designer';
 
-  if (isDesignMode && ((sourceType === 'Entity' && !entityType) || (sourceType === 'Url' && !endpoint)))
+  const getDataPath = evaluateString(endpoint, { data });
+
+  const configurationWarningMessage = !sourceType
+    ? 'Select `Source type` on the settings panel'
+    : sourceType === 'Entity' && !entityType
+    ? 'Select `Entity Type` on the settings panel'
+    : sourceType === 'Url' && !endpoint
+    ? 'Select `Custom Endpoint` on the settings panel'
+    : sourceType === 'Form' && !name
+    ? 'Select `Name` on the settings panel'
+    : null;
+
+  if (isDesignMode && configurationWarningMessage)
     return (
       <Alert
         className="sha-designer-warning"
         message="Table is not configured"
-        description={sourceType === 'Entity' ? "Select entity type on the settings panel" : "Select endpoint on the settings panel"}
+        description={configurationWarningMessage}
         type="warning"
         showIcon
       />
     );
 
-  const provider = <DataTableProvider
-    userConfigId={props.id}
-    entityType={entityType}
-    getDataPath={endpoint}
-    actionOwnerId={id}
-    actionOwnerName={name}
-    sourceType={props.sourceType}
-    initialPageSize={props.defaultPageSize ?? 10}
-    dataFetchingMode={props.dataFetchingMode ?? 'paging'}
-  >
-    <TableContextAccessor {...props} />
-  </DataTableProvider>;
-
-  const providerWrapper = sourceType === 'Form'
-    ? <FormItem name={props.propertyName}>
-      {provider}
-    </FormItem>
-    : provider;
-
-
-  return (
-    <DataTableSelectionProvider>
-      {providerWrapper}
-    </DataTableSelectionProvider>
+  const provider = (
+    <DataTableProvider
+      userConfigId={props.id}
+      entityType={entityType}
+      getDataPath={getDataPath}
+      propertyName={name}
+      actionOwnerId={id}
+      actionOwnerName={name}
+      sourceType={props.sourceType}
+      initialPageSize={props.defaultPageSize ?? 10}
+      dataFetchingMode={props.dataFetchingMode ?? 'paging'}
+    >
+      <TableContextAccessor {...props} />
+    </DataTableProvider>
   );
+
+  const providerWrapper = sourceType === 'Form' ? <FormItem name={props.propertyName}>{provider}</FormItem> : provider;
+
+  return <DataTableSelectionProvider>{providerWrapper}</DataTableSelectionProvider>;
 };
 
 const TableContextAccessor: FC<ITableContextComponentProps> = ({ id }) => {
@@ -141,9 +154,7 @@ const TableContextAccessor: FC<ITableContextComponentProps> = ({ id }) => {
 
   return (
     <Fragment>
-      <ComponentsContainer
-        containerId={id}
-      />
+      <ComponentsContainer containerId={id} />
     </Fragment>
   );
 };

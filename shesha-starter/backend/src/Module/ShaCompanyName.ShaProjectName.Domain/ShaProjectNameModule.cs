@@ -31,8 +31,6 @@ namespace ShaCompanyName.ShaProjectName.Domain
         /// inheritedDoc
         public override void Initialize()
         {
-            IocManager.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
-
             var thisAssembly = Assembly.GetExecutingAssembly();
             IocManager.RegisterAssemblyByConvention(thisAssembly);
 
