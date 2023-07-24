@@ -7,7 +7,7 @@ using System;
 
 namespace Shesha.EntityReferences
 {
-    public class GenericEntityReference : IGenericEntityReference
+    public class GenericEntityReference : IEquatable<GenericEntityReference>, IGenericEntityReference
     {
         private object _entity;
 
@@ -54,6 +54,33 @@ namespace Shesha.EntityReferences
         private static GenericEntityReference SetEntity<T>(Entity<T> entity)
         {
             return new GenericEntityReference(entity);
+        }
+
+        public override bool Equals(object obj) => this.Equals(obj as GenericEntityReference);
+
+        public bool Equals(GenericEntityReference obj)
+        {
+            return Id == obj.Id && _className == obj._className;
+        }
+
+        public static bool operator ==(GenericEntityReference l, GenericEntityReference r)
+        {
+            if (l is null)
+            {
+                if (r is null)
+                    return true;
+                // Only the left side is null.
+                return false;
+            }
+            // Equals handles case of null on right side.
+            return l.Equals(r);
+        }
+
+        public static bool operator !=(GenericEntityReference l, GenericEntityReference r) => !(l == r);
+
+        public override int GetHashCode()
+        {
+            return Id.IsNullOrEmpty() ? 0 : Id.GetHashCode();
         }
     }
 }
