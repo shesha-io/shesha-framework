@@ -6,6 +6,7 @@ using Abp.Notifications;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Dtos;
+using Shesha.EntityReferences;
 using Shesha.Notifications.Dto;
 using Shesha.Services;
 using Shesha.Utilities;
@@ -56,6 +57,11 @@ public class NotificationAppService: DynamicCrudAppService<Notification, Dynamic
             entityIdentifier: entityIdentifier
         );
     }
+
+    //public async Task PublishPersonNotificationAsync(Guid templateId, Guid personId, GenericEntityReference source)
+    //{
+
+    //}
 
     #region Direct email notifications
 
