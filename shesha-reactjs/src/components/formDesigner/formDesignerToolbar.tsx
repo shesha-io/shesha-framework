@@ -27,13 +27,10 @@ import {
   updateItemStatus,
 } from '../../utils/configurationFramework/actions';
 import { useShaRouting, useSheshaApplication } from '../..';
-import classNames from 'classnames';
 
-export interface IProps {
-  className?: string;
-}
+export interface IProps {}
 
-export const FormDesignerToolbar: FC<IProps> = ({ className }) => {
+export const FormDesignerToolbar: FC<IProps> = () => {
   const { loadForm, saveForm, formProps } = useFormPersister();
   const { backendUrl, httpHeaders, routes } = useSheshaApplication();
   const { router } = useShaRouting(false) ?? {};
@@ -195,7 +192,7 @@ export const FormDesignerToolbar: FC<IProps> = ({ className }) => {
   );
 
   return (
-    <div className={classNames('sha-designer-toolbar', className)}>
+    <div className="sha-designer-toolbar">
       <div className="sha-designer-toolbar-left">
         {!readOnly && (
           <Dropdown.Button icon={<DownOutlined />} overlay={saveMenu} onClick={onSaveClick} type="primary">

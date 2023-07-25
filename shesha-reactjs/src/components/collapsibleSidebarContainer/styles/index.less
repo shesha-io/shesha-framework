@@ -43,20 +43,6 @@
         }
       }
 
-      &.fixed-position {
-        position: fixed;
-        z-index: 1;
-        top: 156px;
-        bottom: 0;
-        overflow-y: scroll;
-        overflow-x: hidden;
-        min-height: unset;
-      }
-
-      &.fixed-position-right {
-        right: 0;
-      }
-
       background: white;
       .transition();
 
@@ -175,26 +161,6 @@
 
       &::not(.no-padding) {
         padding: @padding-lg;
-      }
-
-      &.fixed-left-open {
-        margin-top: 101px;
-        margin-left: 368px;
-      }
-
-      &.fixed-right-open {
-        margin-top: 101px;
-        margin-right: 350px;
-      }
-
-      &.fixed-left-close {
-        margin-top: 101px;
-        margin-left: 76px;
-      }
-
-      &.fixed-right-close {
-        margin-top: 101px;
-        margin-right: 76px;
       }
     }
   }

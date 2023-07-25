@@ -6,7 +6,7 @@ import FormDesignerToolbar from './formDesignerToolbar';
 import ComponentPropertiesPanel from './componentPropertiesPanel';
 import ComponentPropertiesTitle from './componentPropertiesTitle';
 import { useForm } from '../../providers/form';
-import { MetadataProvider, useSheshaApplication } from '../../providers';
+import { MetadataProvider } from '../../providers';
 import ConditionalWrap from '../conditionalWrapper';
 import { useFormPersister } from '../../providers/formPersisterProvider';
 import { useFormDesigner } from '../../providers/formDesigner';
@@ -14,8 +14,6 @@ import StatusTag from '../statusTag';
 import { FORM_STATUS_MAPPING } from '../../utils/configurationFramework/models';
 import { getFormFullName } from '../../utils/form';
 import HelpTextPopover from '../helpTextPopover';
-import classNames from 'classnames';
-import { getInitIsExpanded } from './util';
 
 const { Title } = Typography;
 
@@ -23,10 +21,6 @@ export const FormDesignerRenderer: FC = ({}) => {
   const [widgetsOpen, setWidgetOpen] = useState(true);
   const [fieldPropertiesOpen, setFieldPropertiesOpen] = useState(true);
   const { formProps } = useFormPersister();
-
-  const { globalVariables: { isSideBarExpanded } = {} } = useSheshaApplication();
-
-  const isExpanded = typeof isSideBarExpanded == 'boolean' ? isSideBarExpanded : getInitIsExpanded();
 
   const toggleWidgetSidebar = () => setWidgetOpen((widget) => !widget);
 
@@ -40,7 +34,7 @@ export const FormDesignerRenderer: FC = ({}) => {
 
   return (
     <div className="sha-page">
-      <div className="sha-page-heading sha-form-heading-fixed">
+      <div className="sha-page-heading">
         <div className="sha-page-title" style={{ justifyContent: 'left' }}>
           <Space>
             {title && (
@@ -62,9 +56,7 @@ export const FormDesignerRenderer: FC = ({}) => {
             </MetadataProvider>
           )}
         >
-          <FormDesignerToolbar
-            className={classNames('sha-toolbar-fixed', { 'opened-sidebar': isExpanded, 'closed-sidebar': !isExpanded })}
-          />
+          <FormDesignerToolbar />
           <SidebarContainer
             leftSidebarProps={
               readOnly
@@ -76,7 +68,6 @@ export const FormDesignerRenderer: FC = ({}) => {
                     title: 'Builder Widgets',
                     content: () => <Toolbox />,
                     placeholder: 'Builder Widgets',
-                    fixedPositon: true,
                   }
             }
             rightSidebarProps={{
@@ -86,7 +77,6 @@ export const FormDesignerRenderer: FC = ({}) => {
               title: () => <ComponentPropertiesTitle />,
               content: () => <ComponentPropertiesPanel />,
               placeholder: 'Properties',
-              fixedPositon: true,
             }}
           >
             <ConfigurableFormRenderer form={form}>

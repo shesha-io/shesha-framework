@@ -32,11 +32,6 @@ interface ISidebarProps {
   onClose?: () => void;
 
   placeholder?: string;
-
-  /**
-   * Indicates whether the sidebar is in a fixed position
-   */
-  fixedPositon?: boolean;
 }
 
 export interface ISidebarContainerProps extends PropsWithChildren<any> {
@@ -77,22 +72,10 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
 
     const rotation = side === 'right' ? (sidebarProps?.open ? 0 : 180) : sidebarProps?.open ? 180 : 0;
 
-    const { open, onOpen, title, onClose, placeholder, content, fixedPositon } = sidebarProps;
-
-    const classFixedPositon = {
-      'fixed-position': fixedPositon,
-      'fixed-position-right': fixedPositon && side === 'right',
-    };
+    const { open, onOpen, title, onClose, placeholder, content } = sidebarProps;
 
     return (
-      <div
-        className={classNames(
-          `sidebar-container-${side}`,
-          { open },
-          { 'allow-full-collapse': allowFullCollapse },
-          classFixedPositon
-        )}
-      >
+      <div className={classNames(`sidebar-container-${side}`, { open }, { 'allow-full-collapse': allowFullCollapse })}>
         <div className="sidebar-header">
           <div className={`sidebar-header-title ${side}`}>{typeof title === 'function' ? title() : title}</div>
           <div className={`sidebar-header-btn ${side}`} onClick={open ? onClose : onOpen}>
@@ -130,12 +113,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
             { 'right-only-open': rightSidebarProps?.open && !leftSidebarProps?.open },
             { 'no-left-panel': !leftSidebarProps },
             { 'no-right-panel': !rightSidebarProps },
-            { 'allow-full-collapse': allowFullCollapse },
-
-            { 'fixed-left-open': leftSidebarProps?.fixedPositon && leftSidebarProps?.open },
-            { 'fixed-right-open': rightSidebarProps?.fixedPositon && rightSidebarProps?.open },
-            { 'fixed-left-close': leftSidebarProps?.fixedPositon && !leftSidebarProps?.open },
-            { 'fixed-right-close': rightSidebarProps?.fixedPositon && !rightSidebarProps?.open }
+            { 'allow-full-collapse': allowFullCollapse }
           )}
         >
           <div className="sidebar-container-main-area-body">{children}</div>
