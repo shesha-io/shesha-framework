@@ -41,3 +41,21 @@ export const FncAddMember = addStory(Template, {
   formId: { name: 'Add-Member', module: 'Shesha' },
   mode: 'edit',
 });
+
+export const FncTableForteenTest = addStory(Template, {
+  formId: { name: 'Table-forteen-Test', module: 'Shesha' },
+});
+
+export const DepCustomerDetails = addStory(Template, {
+  formId: { name: 'customer-details', module: 'Boxfusion.Dep' },
+  id: '7cd698ce-9e41-4604-8ef6-08f0e1a8144d',
+});
+
+export const DepCaseDetailsDuplicate = addStory(Template, {
+  formId: { name: 'case-details-duplicate', module: 'CaseManagement' },
+  id: '21345e5a-7862-4f83-b5b3-0b404967915c',
+});
+
+export const DepStarterTemplate = addStory(Template, {
+  formId: { name: 'service-requests-mapule', module: 'StarterTemplate' },
+});
