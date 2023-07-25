@@ -5,6 +5,7 @@ using NHibernate.UserTypes;
 using Shesha.EntityReferences;
 using System;
 using System.Data.Common;
+using System.Data.SqlTypes;
 
 namespace Shesha.NHibernate.UserTypes
 {
@@ -37,8 +38,10 @@ namespace Shesha.NHibernate.UserTypes
 
         public new bool Equals(object x, object y)
         {
+            if (x == null && y == null) return true;
+
             if (x is GenericEntityReference erx && y is GenericEntityReference ery)
-                return erx.Id == ery.Id && erx._className == ery._className;
+                return erx == ery;
             return false;
         }
 

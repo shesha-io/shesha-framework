@@ -1,10 +1,7 @@
 import React, { CSSProperties, FC, PropsWithChildren, useCallback, useMemo } from 'react';
 import ConfigurableFormComponent from '../configurableFormComponent';
 import { useForm } from 'providers/form';
-import {
-  TOOLBOX_COMPONENT_DROPPABLE_KEY,
-  TOOLBOX_DATA_ITEM_DROPPABLE_KEY,
-} from 'providers/form/models';
+import { TOOLBOX_COMPONENT_DROPPABLE_KEY, TOOLBOX_DATA_ITEM_DROPPABLE_KEY } from 'providers/form/models';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { joinStringValues } from 'utils';
 import DynamicComponent from '../components/dynamicView/dynamicComponent';
@@ -14,7 +11,7 @@ import { useFormData, useGlobalState } from 'providers';
 import { executeScriptSync } from 'utils/publicUtils';
 import { IComponentsContainerProps } from './componentsContainer';
 
-export const ComponentsContainerForm: FC<IComponentsContainerProps> = props => {
+export const ComponentsContainerForm: FC<IComponentsContainerProps> = (props) => {
   const { formMode } = useForm();
   const { data: formData } = useFormData();
   const designer = useFormDesigner(false);
@@ -51,7 +48,7 @@ export const ComponentsContainerForm: FC<IComponentsContainerProps> = props => {
   return useDesigner ? <ComponentsContainerDesigner {...props} /> : <ComponentsContainerLive {...props} />;
 };
 
-ComponentsContainerForm.displayName = "ComponentsContainer(Form)";
+ComponentsContainerForm.displayName = 'ComponentsContainer(Form)';
 
 type AlignmentProps = Pick<
   IComponentsContainerProps,
@@ -69,7 +66,7 @@ type AlignmentProps = Pick<
   | 'flexWrap'
 >;
 
-const getAlignmentStyle = ({
+export const getAlignmentStyle = ({
   direction = 'vertical',
   justifyContent,
   alignItems,
@@ -87,9 +84,7 @@ const getAlignmentStyle = ({
     display,
   };
 
-  const gridTemplateColumns = Array(gridColumnsCount)
-    .fill('auto')
-    ?.join(' ');
+  const gridTemplateColumns = Array(gridColumnsCount).fill('auto')?.join(' ');
 
   if (direction === 'horizontal' || display !== 'block') {
     style['justifyContent'] = justifyContent;
@@ -118,7 +113,7 @@ const getAlignmentStyle = ({
   return style;
 };
 
-const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContainerProps>> = props => {
+const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContainerProps>> = (props) => {
   const {
     containerId,
     children,
@@ -132,21 +127,14 @@ const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContainerProp
   } = props;
 
   const { getChildComponentIds } = useForm();
-  const {
-    updateChildComponents,
-    addComponent,
-    addDataProperty,
-    startDragging,
-    endDragging,
-    readOnly,
-    hasDragged,
-  } = useFormDesigner();
+  const { updateChildComponents, addComponent, addDataProperty, startDragging, endDragging, readOnly, hasDragged } =
+    useFormDesigner();
 
   const childIds = getChildComponentIds(containerId);
 
   const componentsMapped = useMemo<ItemInterface[]>(() => {
-    return childIds.map<ItemInterface>(id => ({
-      id: id
+    return childIds.map<ItemInterface>((id) => ({
+      id: id,
     }));
   }, [childIds]);
 
@@ -157,15 +145,14 @@ const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContainerProp
       return;
     }
 
-    const chosen = newState.some(item => item.chosen === true);
-    if (chosen)
-      return;
+    const chosen = newState.some((item) => item.chosen === true);
+    if (chosen) return;
 
     // temporary commented out, the behavoiur of the sortablejs differs sometimes
     const listChanged = true; //!newState.some(item => item.chosen !== null && item.chosen !== undefined);
 
     if (listChanged) {
-      const newDataItemIndex = newState.findIndex(item => item['type'] === TOOLBOX_DATA_ITEM_DROPPABLE_KEY);
+      const newDataItemIndex = newState.findIndex((item) => item['type'] === TOOLBOX_DATA_ITEM_DROPPABLE_KEY);
       if (newDataItemIndex > -1) {
         // dropped data item
         const draggedItem = newState[newDataItemIndex];
@@ -176,7 +163,7 @@ const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContainerProp
           index: newDataItemIndex,
         });
       } else {
-        const newComponentIndex = newState.findIndex(item => item['type'] === TOOLBOX_COMPONENT_DROPPABLE_KEY);
+        const newComponentIndex = newState.findIndex((item) => item['type'] === TOOLBOX_COMPONENT_DROPPABLE_KEY);
         if (newComponentIndex > -1) {
           // add new component
           const toolboxComponent = newState[newComponentIndex];
@@ -200,7 +187,7 @@ const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContainerProp
           }
 
           if (isModified) {
-            const newIds = newState.map<string>(item => item.id.toString());
+            const newIds = newState.map<string>((item) => item.id.toString());
             updateChildComponents({ containerId, componentIds: newIds });
           }
         }
@@ -213,7 +200,7 @@ const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContainerProp
     startDragging();
   };
 
-  const onDragEnd = _evt => {
+  const onDragEnd = (_evt) => {
     endDragging();
   };
 
@@ -230,7 +217,7 @@ const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContainerProp
   return (
     <ConditionalWrap
       condition={!noDefaultStyling}
-      wrap={content => (
+      wrap={(content) => (
         <div className={joinStringValues(['sha-components-container', direction, className])} style={wrapperStyle}>
           {content}
         </div>
@@ -270,7 +257,7 @@ const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContainerProp
   );
 };
 
-const ComponentsContainerLive: FC<PropsWithChildren<IComponentsContainerProps>> = props => {
+const ComponentsContainerLive: FC<PropsWithChildren<IComponentsContainerProps>> = (props) => {
   const {
     containerId,
     children,

@@ -63,7 +63,7 @@ namespace Shesha.NHibernate.UserTypes
             if (x == null && y == null)
                 return true;
 
-            if (x == null || y == null)
+            if (x == null && y != null || x != null && y == null)
                 return false;
 
             if (x is IJsonEntityProxy xp && y is IJsonEntityProxy yp)
