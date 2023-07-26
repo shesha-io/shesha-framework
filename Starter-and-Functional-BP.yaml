@@ -89,9 +89,9 @@ stages:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'api-info-1'
     - task: UseDotNet@2
-      displayName: Use .NET Core sdk 6.x
+      displayName: Use .NET Core sdk 7.x
       inputs:
-        version: 6.x
+        version: 7.x
     - task: Assembly-Info-NetCore@3
       displayName: 'Set Assembly Manifest Data'
       inputs:
