@@ -6,7 +6,7 @@ import FormDesignerToolbar from './formDesignerToolbar';
 import ComponentPropertiesPanel from './componentPropertiesPanel';
 import ComponentPropertiesTitle from './componentPropertiesTitle';
 import { useForm } from '../../providers/form';
-import { MetadataProvider, useSheshaApplication } from '../../providers';
+import { MetadataProvider } from '../../providers';
 import ConditionalWrap from '../conditionalWrapper';
 import { useFormPersister } from '../../providers/formPersisterProvider';
 import { useFormDesigner } from '../../providers/formDesigner';
@@ -14,57 +14,13 @@ import StatusTag from '../statusTag';
 import { FORM_STATUS_MAPPING } from '../../utils/configurationFramework/models';
 import { getFormFullName } from '../../utils/form';
 import HelpTextPopover from '../helpTextPopover';
-import classNames from 'classnames';
-import { getInitIsExpanded } from './util';
-import { useDataContextManager } from 'providers/dataContextManager';
-import { IDataContextDescriptor } from 'providers/dataContextManager/models';
 
 const { Title } = Typography;
-
-interface DebugContentProps {
-  formValues: any;
-}
-
-const DebugContent: FC<DebugContentProps> = ({formValues}) => {
-  const { getDataContexts } = useDataContextManager();
-  const contextDict = getDataContexts('all');
-  const dataContexts: IDataContextDescriptor[] = [];
-  for (let key in contextDict) 
-  if (Object.hasOwn(contextDict, key)) 
-      dataContexts.push(contextDict[key] as IDataContextDescriptor);
-
-  return (
-    <>
-      <Divider />
-      <h2>Form data</h2>
-      <Row>
-        <Col span={24}>
-          <pre>{JSON.stringify(formValues, null, 2)}</pre>
-        </Col>
-      </Row>
-      <h2>Contexts</h2>
-      {dataContexts.map((item) => {
-        return (
-          <Row>
-            <h3>{item.name}:</h3>
-            <Col span={24}>
-              <pre>{JSON.stringify(item.dataContext.data, null, 2)}</pre>
-            </Col>
-          </Row>
-        );
-      })}
-    </>
-  );
-};
 
 export const FormDesignerRenderer: FC = ({}) => {
   const [widgetsOpen, setWidgetOpen] = useState(true);
   const [fieldPropertiesOpen, setFieldPropertiesOpen] = useState(true);
   const { formProps } = useFormPersister();
-
-  const { globalVariables: { isSideBarExpanded } = {} } = useSheshaApplication();
-
-  const isExpanded = typeof isSideBarExpanded == 'boolean' ? isSideBarExpanded : getInitIsExpanded();
 
   const toggleWidgetSidebar = () => setWidgetOpen((widget) => !widget);
 
@@ -78,7 +34,7 @@ export const FormDesignerRenderer: FC = ({}) => {
 
   return (
     <div className="sha-page">
-      <div className="sha-page-heading sha-form-heading">
+      <div className="sha-page-heading">
         <div className="sha-page-title" style={{ justifyContent: 'left' }}>
           <Space>
             {title && (
@@ -100,9 +56,7 @@ export const FormDesignerRenderer: FC = ({}) => {
             </MetadataProvider>
           )}
         >
-          <FormDesignerToolbar
-            className={classNames('sha-toolbar', { 'opened-sidebar': isExpanded, 'closed-sidebar': !isExpanded })}
-          />
+          <FormDesignerToolbar />
           <SidebarContainer
             leftSidebarProps={
               readOnly
@@ -114,7 +68,6 @@ export const FormDesignerRenderer: FC = ({}) => {
                     title: 'Builder Widgets',
                     content: () => <Toolbox />,
                     placeholder: 'Builder Widgets',
-                    //fixedPositon: true,
                   }
             }
             rightSidebarProps={{
@@ -124,12 +77,18 @@ export const FormDesignerRenderer: FC = ({}) => {
               title: () => <ComponentPropertiesTitle />,
               content: () => <ComponentPropertiesPanel />,
               placeholder: 'Properties',
-              //fixedPositon: true,
             }}
           >
             <ConfigurableFormRenderer form={form}>
               {isDebug && (
-                <DebugContent formValues={form.getFieldsValue()}/>
+                <>
+                  <Row>
+                    <Divider />
+                    <Col span={24}>
+                      <pre>{JSON.stringify(form.getFieldsValue(), null, 2)}</pre>
+                    </Col>
+                  </Row>
+                </>
               )}
             </ConfigurableFormRenderer>
           </SidebarContainer>

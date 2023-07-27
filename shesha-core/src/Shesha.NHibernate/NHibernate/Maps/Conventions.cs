@@ -66,7 +66,13 @@ namespace Shesha.NHibernate.Maps
                 {
                     return (id =>
                     {
-                        id.Generator(NHGens.HighLow, g => g.Params(new { table = "Frwk_HiLoSequences", sequence = "FrameworkSequence", column = "NextValue", max_lo = "100" }));
+                        id.Generator(NHGens.HighLow, g => g.Params(
+                            new { 
+                                table = "Frwk_HiLoSequences".DoubleQuote(), // Important: NH doesn't apply Naming Strategy specified in the configuration, we have to quote names manually here
+                                column = "NextValue".DoubleQuote(),
+                                sequence = "FrameworkSequence", 
+                                max_lo = "100" 
+                            }));
                     });
                 }
                 else if (t == typeof(Guid))

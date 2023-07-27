@@ -7,12 +7,9 @@ using Abp.Reflection.Extensions;
 using Abp.Zero.Configuration;
 using Boxfusion.Authorization;
 using Castle.MicroKernel.Registration;
-using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using Shesha.Application;
 using Shesha.Authentication.JwtBearer;
 using Shesha.Authorization;
 using Shesha.Bootstrappers;
@@ -21,10 +18,7 @@ using Shesha.Elmah;
 using Shesha.Languages;
 using Shesha.NHibernate;
 using Shesha.Scheduler;
-using Shesha.Startup;
-using Shesha.Validations;
 using System;
-using System.Reflection;
 using System.Text;
 
 namespace Shesha
