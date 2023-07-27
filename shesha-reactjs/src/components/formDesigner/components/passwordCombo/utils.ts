@@ -43,7 +43,7 @@ export const getDefaultModel = (m: IPasswordComponentProps) => {
     const model = { ...m };
 
     if (!model.confirmLabel && model.label) {
-      model.confirmLabel = incrementLastChar(m.label);
+      model.confirmLabel = incrementLastChar(m.label as string);
     }
 
     return model;

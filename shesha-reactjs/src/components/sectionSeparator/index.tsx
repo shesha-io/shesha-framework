@@ -1,6 +1,6 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Space, Tooltip } from 'antd';
-import React, { CSSProperties, FC } from 'react';
+import React, { CSSProperties, FC, ReactNode } from 'react';
 
 export interface ISectionSeparatorProps {
   /**
@@ -12,7 +12,7 @@ export interface ISectionSeparatorProps {
   /**
    * Title of the section
    */
-  title?: string;
+  title?: string | ReactNode;
 
   /**
    * The style that will be applied to the container of the section

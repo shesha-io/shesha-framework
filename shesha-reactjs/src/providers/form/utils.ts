@@ -230,19 +230,17 @@ export const componentsFlatStructureToTree = (
   return tree;
 };
 
-export const getCustomVisibilityFunc = ({ customVisibility, hidden_setting, propertyName: name }: IConfigurableFormComponent) => {
-  const inverse = hidden_setting?.mode === 'code' && Boolean(hidden_setting?.code);
-  const f = inverse ? hidden_setting.code : customVisibility;
-  if (Boolean(f)) {
+export const getCustomVisibilityFunc = ({ customVisibility, propertyName: name }: IConfigurableFormComponent) => {
+  if (Boolean(customVisibility)) {
     try {
       /* tslint:disable:function-constructor */
 
-      const customVisibilityExecutor = new Function('value, data, globalState, formMode', f);
+      const customVisibilityExecutor = new Function('value, data, globalState, formMode', customVisibility);
 
       const getIsVisible = (data = {}, globalState = {}, formMode) => {
         try {
           const result = customVisibilityExecutor(data?.[name], data, globalState, formMode);
-          return inverse ? !result : result;
+          return result;
         } catch (e) {
           console.warn(`Custom Visibility of field ${name} throws exception: ${e}`);
           return true;
@@ -258,17 +256,15 @@ export const getCustomVisibilityFunc = ({ customVisibility, hidden_setting, prop
   } else return () => true;
 };
 
-export const getCustomEnabledFunc = ({ customEnabled, disabled_setting, propertyName: name }: IConfigurableFormComponent) => {
-  const inverse = disabled_setting?.mode === 'code' && Boolean(disabled_setting?.code);
-  const f = inverse ? disabled_setting.code : customEnabled;
-  if (Boolean(f)) {
+export const getCustomEnabledFunc = ({ customEnabled, propertyName: name }: IConfigurableFormComponent) => {
+  if (Boolean(customEnabled)) {
     try {
-      const customEnabledExecutor = new Function('value, data, globalState, formMode', f);
+      const customEnabledExecutor = new Function('value, data, globalState, formMode', customEnabled);
 
       const getIsEnabled = (data = {}, globalState = {}, formMode) => {
         try {
           const result = customEnabledExecutor(data?.[name], data, globalState, formMode);
-          return inverse ? !result : result;
+          return result;
         } catch (e) {
           console.error(`Custom Enabled of field ${name} throws exception: ${e}`);
           return true;

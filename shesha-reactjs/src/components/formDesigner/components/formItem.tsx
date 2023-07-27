@@ -6,9 +6,8 @@ import { getFieldNameFromExpression, getValidationRules } from '../../../provide
 import classNames from 'classnames';
 import './styles.less';
 import { useFormItem } from '../../../providers';
-//import { BindingProvider } from 'providers/bindingProvider';
-import { useDataContextManager } from 'providers/dataContextManager';
 import { DataBinder } from 'hocs/dataBinder';
+import { useDataContextManager } from 'providers/dataContextManager';
 
 export interface IConfigurableFormItemProps {
   model: IConfigurableFormComponent;

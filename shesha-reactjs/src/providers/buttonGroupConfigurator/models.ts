@@ -27,7 +27,7 @@ export interface IButtonGroupItemBase {
   id: string;
   name: string;
   block?: boolean;
-  label?: string;
+  label?: string | React.ReactNode;
   tooltip?: string;
   sortOrder: number;
   danger?: boolean;
