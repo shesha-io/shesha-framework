@@ -1,7 +1,8 @@
 import { Checkbox, Form, Input, Select } from 'antd';
-import React, { FC } from 'react';
+import { ContextPropertyAutocomplete } from 'designer-components/contextPropertyAutocomplete';
+import { useFormDesigner } from 'providers/formDesigner';
+import React, { FC, useState } from 'react';
 import FormAutocomplete from '../../../formAutocomplete';
-import PropertyAutocomplete from '../../../propertyAutocomplete/propertyAutocomplete';
 import SectionSeparator from '../../../sectionSeparator';
 import CodeEditor from '../codeEditor/codeEditor';
 import { IChildEntitiesTagGroupProps } from './models';
@@ -24,11 +25,14 @@ export const ChildEntitiesTagGroupSettings: FC<IChildEntitiesTagGroupSettingsPro
   onValuesChange,
 }) => {
   const [form] = Form.useForm();
+  const designerModelType = useFormDesigner(false)?.formSettings?.modelType;
+  const [state, setState] = useState<IChildEntitiesTagGroupProps>(model);
 
   const handleValuesChange = (changedValues: IChildEntitiesTagGroupProps, values: IChildEntitiesTagGroupProps) => {
     if (readOnly) return;
 
     form?.setFieldsValue(changedValues);
+    setState((s) => ({ ...s, ...changedValues }));
 
     onValuesChange(changedValues, values);
   };
@@ -37,9 +41,10 @@ export const ChildEntitiesTagGroupSettings: FC<IChildEntitiesTagGroupSettingsPro
     <Form form={form} onFinish={onSave} layout="vertical" onValuesChange={handleValuesChange} initialValues={model}>
       <SectionSeparator title="Display" />
 
-      <FormItem name="propertyName" label="Property name" rules={[{ required: true }]}>
-        <PropertyAutocomplete id="415cc8ec-2fd1-4c5a-88e2-965153e16069" readOnly={readOnly} />
-      </FormItem>
+      <ContextPropertyAutocomplete id="415cc8ec-2fd1-4c5a-88e2-965153e16069" 
+        readOnly={readOnly} defaultModelType={designerModelType} formData={state} 
+        onValuesChange={(val) => handleValuesChange(val, {...state, ...val})}
+      />
 
       <FormItem name="label" label="Label">
         <Input readOnly={readOnly} />

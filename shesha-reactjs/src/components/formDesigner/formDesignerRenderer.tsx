@@ -78,7 +78,7 @@ export const FormDesignerRenderer: FC = ({}) => {
 
   return (
     <div className="sha-page">
-      <div className="sha-page-heading sha-form-heading-fixed">
+      <div className="sha-page-heading sha-form-heading">
         <div className="sha-page-title" style={{ justifyContent: 'left' }}>
           <Space>
             {title && (
@@ -101,7 +101,7 @@ export const FormDesignerRenderer: FC = ({}) => {
           )}
         >
           <FormDesignerToolbar
-            className={classNames('sha-toolbar-fixed', { 'opened-sidebar': isExpanded, 'closed-sidebar': !isExpanded })}
+            className={classNames('sha-toolbar', { 'opened-sidebar': isExpanded, 'closed-sidebar': !isExpanded })}
           />
           <SidebarContainer
             leftSidebarProps={
@@ -114,7 +114,7 @@ export const FormDesignerRenderer: FC = ({}) => {
                     title: 'Builder Widgets',
                     content: () => <Toolbox />,
                     placeholder: 'Builder Widgets',
-                    fixedPositon: true,
+                    //fixedPositon: true,
                   }
             }
             rightSidebarProps={{
@@ -124,7 +124,7 @@ export const FormDesignerRenderer: FC = ({}) => {
               title: () => <ComponentPropertiesTitle />,
               content: () => <ComponentPropertiesPanel />,
               placeholder: 'Properties',
-              fixedPositon: true,
+              //fixedPositon: true,
             }}
           >
             <ConfigurableFormRenderer form={form}>

@@ -2,6 +2,40 @@ import { IContainerComponentProps } from "designer-components/container/interfac
 import { IConfigurableFormComponent, IPropertySetting, IToolboxComponents } from "interfaces";
 import { nanoid } from "nanoid";
 
+export const isPropertySettings = (data: any) => {
+    if (typeof data !== 'object')
+        return false;
+    
+    if (data.hasOwnProperty('_mode')
+        && (data._mode === 'code' || data._mode === 'value'))
+        /*&& data.hasOwnProperty('_value') 
+        && data.hasOwnProperty('_code')
+        && Object.keys(data).length === 3)*/
+        return true;
+    
+    return false;
+};
+
+export const getPropertySettingsFromData = (data: any, propName: string): IPropertySetting => {
+    const propNames = propName.split('.');
+    let val = data;
+    propNames.forEach(p => {
+        val = val?.[p];
+    });
+
+    if (isPropertySettings(val))
+        return val;
+    else
+        return { _mode: 'value', _code: undefined, _value: val };
+};
+
+export const getPropertySettingsFromValue = (value: any): IPropertySetting => {
+    if (isPropertySettings(value))
+        return value;
+    else
+        return { _mode: 'value', _code: undefined, _value: value };
+};
+
 /**
  * Update structure of components to use with Setting component
  * 
@@ -21,7 +55,6 @@ export const updateSettingsComponents = (
             // If should be wrapped as Setting
             newComponent.type = 'setting';
             newComponent.id = nanoid();
-            newComponent.label = newComponent.label;
         
             // Add source component as a child of Setting component
             if (Array.isArray(component['components']) && component['components'].length > 0) {

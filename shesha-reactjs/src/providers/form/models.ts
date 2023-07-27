@@ -1,5 +1,5 @@
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { IAsyncValidationError } from '../../interfaces';
 import { FormLayout } from 'antd/lib/form/Form';
 import { IKeyValue } from '../../interfaces/keyValue';
@@ -22,9 +22,9 @@ export type VisibilityType = 'Yes' | 'No' | 'Removed';
 export type PropertySettingMode = 'value' | 'code';
 
 export interface IPropertySetting {
-  value?: any;
-  mode?: PropertySettingMode;
-  code?: string;
+  _mode?: PropertySettingMode;
+  _value?: any;
+  _code?: string;
 }
 
 /**
@@ -67,7 +67,7 @@ export type ConfigurableFormComponentTypes =
 
 export interface IComponentLabelProps {
   /** The label for this field that will appear next to it. */
-  label?: string;
+  label?: string | React.ReactNode;
   /** Hide label of the field */
   hideLabel?: boolean;
 

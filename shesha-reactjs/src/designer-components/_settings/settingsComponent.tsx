@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { IToolboxComponent } from '../../interfaces';
 import { SettingOutlined } from '@ant-design/icons';
-import { IConfigurableFormComponent, useForm } from '../../providers';
+import { IConfigurableFormComponent, PropertySettingMode, useForm } from '../../providers';
 import { ComponentsContainer, ConfigurableFormItem } from 'components';
-import SettingsControl from './settingsControl';
+import { DataContextProvider } from 'providers/dataContextProvider';
+import { Button } from 'antd';
+import { getPropertySettingsFromData } from './utils';
+import { SettingsControl } from './settingsControl';
 
 export interface ISettingsComponentProps extends IConfigurableFormComponent {
     components?: IConfigurableFormComponent[];
@@ -18,24 +21,53 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
     icon: <SettingOutlined />,
     factory: (model: ISettingsComponentProps) => {
 
-        const { formData, setFormData } = useForm();
+        const { formData } = useForm();
 
-        let props: IConfigurableFormComponent = Boolean(model?.label)
-            ? model
-            : model?.components?.length > 0 ? model?.components[0] : null;
-        const components = model?.components?.map(c => ({ ...c, hideLabel: true, readOnly: model?.readOnly }));
+        const initSettings = getPropertySettingsFromData(formData, model.propertyName);
+
+        const [ mode, setMode ] = useState<PropertySettingMode>(initSettings._mode ?? 'value');
+
+        const internalProps = model?.components?.length > 0 ? model?.components[0] : model;
+        const props = Boolean(model?.label) ? model : internalProps;
+
+        const switchMode = () => setMode(mode === 'code' ? 'value' : 'code');
+
+        const components = useMemo(() => {
+            return model?.components?.map(c => ({ ...c, hideLabel: true, readOnly: model?.readOnly, context: model.id }));
+        }, [model?.components, model?.readOnly, model?.id]);
     
+        const label = 
+            <>
+                <label>{props.label}</label>
+                <Button 
+                    shape="round"
+                    style={{marginLeft: 5, marginRight: 5}}
+                    type='primary' ghost  size='small' 
+                    onClick={switchMode}>
+                    {mode === 'code' ? 'VALUE' : 'JS'}
+                </Button>
+            </>;
+
         return (
-            <ConfigurableFormItem model={{...props}} >
-                <SettingsControl 
-                    formData={formData}
-                    onChangeValues={(changedValues) => {
-                        setFormData({values: changedValues, mergeValues: true});
-                    }}
-                    name={props.propertyName}
-                >
-                    <ComponentsContainer containerId={props.id} dynamicComponents={components}/>
-                </SettingsControl>
+            <ConfigurableFormItem model={{...props, label: label }}  >
+                {(value, onChange) => {
+                    return (
+                        <SettingsControl id={model.id} propertyName={internalProps?.propertyName} mode={mode} value={value} onChange={onChange}>
+                            {(value, onChange, propertyName) => 
+                                <DataContextProvider id={model.id} name={model.id} type={'custom'} 
+                                    initialData={new Promise((resolve) => {
+                                        resolve({[propertyName]: value});
+                                    })}
+                                    onChangeData={(value) => {
+                                        onChange(value[propertyName]);
+                                    }}
+                                >
+                                    <ComponentsContainer containerId={props.id} dynamicComponents={components}/>
+                                </DataContextProvider>
+                            }
+                        </SettingsControl>
+                    );
+                }}
             </ConfigurableFormItem>
         );
     }

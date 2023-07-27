@@ -31,11 +31,12 @@ export interface IDataContextProviderProps {
     type: DataContextType;
     initialData?: Promise<object> | object;
     metadata?: Promise<IModelMetadata>;
+    onChangeData?: <T,>(data: T) => void;
 }
 
 const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = ({ children, ...props }) => {
     
-    const { id, name, type = 'custom', initialData, metadata } = props;
+    const { id, name, type = 'custom', initialData, metadata, onChangeData } = props;
 
     const { onChangeContext } = useDataContextManager();
     const metadataDispatcher = useMetadataDispatcher();
@@ -86,6 +87,8 @@ const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = ({
 
     useEffect(() => {
         onChangeContext(id, {...state, onChange});
+        if (!!onChangeData)
+            onChangeData({...state.data});
     }, [state.data]);
 
     metadataDispatcher?.registerModel(id, metadata);

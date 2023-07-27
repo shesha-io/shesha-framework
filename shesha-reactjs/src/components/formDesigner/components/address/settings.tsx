@@ -2,14 +2,14 @@ import { Checkbox, Form, Input, InputNumber, Select } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
 import React, { FC, useState } from 'react';
 import { COUNTRY_CODES } from '../../../../shesha-constants/country-codes';
-import PropertyAutocomplete from '../../../propertyAutocomplete/propertyAutocomplete';
 import SectionSeparator from '../../../sectionSeparator';
 import Show from '../../../show';
 import CodeEditor from '../codeEditor/codeEditor';
 import { Option } from 'antd/lib/mentions';
 import { IAddressCompomentProps } from './models';
 import { EXPOSED_VARIABLES } from './utils';
-import SettingsFormItem from 'designer-components/_settings/settingsFormItem';
+import { ContextPropertyAutocomplete } from 'designer-components/contextPropertyAutocomplete';
+import { useFormDesigner } from 'providers/formDesigner';
 
 export interface IButtonGroupSettingsProps {
   readOnly?: boolean;
@@ -20,8 +20,10 @@ export interface IButtonGroupSettingsProps {
 }
 
 const AddressSettings: FC<IButtonGroupSettingsProps> = ({ readOnly, model, onSave, onValuesChange }) => {
+  
   const [form] = Form.useForm();
-  const [{ showPriorityBounds }, setState] = useState<IAddressCompomentProps>(model);
+  const designerModelType = useFormDesigner(false)?.formSettings?.modelType;
+  const [state, setState] = useState<IAddressCompomentProps>(model);
 
   const handleValuesChange = (changedValues: IAddressCompomentProps, values: IAddressCompomentProps) => {
     if (readOnly) return;
@@ -37,20 +39,21 @@ const AddressSettings: FC<IButtonGroupSettingsProps> = ({ readOnly, model, onSav
     <Form form={form} onFinish={onSave} onValuesChange={handleValuesChange} initialValues={model} layout="vertical">
       <SectionSeparator title="Display" />
 
-      <Form.Item name="propertyName" label="Property name" required>
-        <PropertyAutocomplete id="415cc8ec-2fd1-4c5a-88e2-965153e16069" readOnly={readOnly} />
-      </Form.Item>
+      <ContextPropertyAutocomplete id="415cc8ec-2fd1-4c5a-88e2-965153e16069" 
+        readOnly={readOnly} defaultModelType={designerModelType} formData={state} 
+        onValuesChange={(val) => handleValuesChange(val, {...state, ...val})}
+      />
 
       <Form.Item name="label" label="Label">
         <Input readOnly={readOnly} />
       </Form.Item>
 
-      <SettingsFormItem name="labelAlign" label="Label align">
+      <Form.Item name="labelAlign" label="Label align">
         <Select disabled={readOnly}>
           <Option value="left">left</Option>
           <Option value="right">right</Option>
         </Select>
-      </SettingsFormItem>
+      </Form.Item>
 
       <Form.Item name="placeholder" label="Placeholder">
         <Input readOnly={readOnly} />
@@ -136,7 +139,7 @@ const AddressSettings: FC<IButtonGroupSettingsProps> = ({ readOnly, model, onSav
         <Checkbox disabled={readOnly} />
       </Form.Item>
 
-      <Show when={showPriorityBounds}>
+      <Show when={state.showPriorityBounds}>
         <Form.Item
           name="latPriority"
           label="Latitude (Priority Bound)"

@@ -22,11 +22,10 @@
         "components": [
           {
             "id": "b67e9759-a3be-4b51-85a7-f45c5aec7365",
-            "type": "propertyAutocomplete",
+            "type": "contextPropertyAutocomplete",
             "propertyName": "propertyName",
             "parentId": "aUt4GeRhocL5W_aGaaR10",
-            "label": "Property name",
-            "description": "If you select range mode, the form will generate 2 time fields - [propertyName]Start & propertyName[End]. For example, if the field name is eventDate, then the generated values will be eventDateStart and eventDateEnd"
+            "label": "Property name"
           },
           {
             "id": "77cce09f-73c1-4c06-98ee-0b8673e01cd1",

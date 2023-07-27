@@ -1,4 +1,5 @@
 import { UnorderedListOutlined } from '@ant-design/icons';
+import { migratePropertyName } from 'designer-components/_settings/utils';
 import React from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
 import { DataTypes } from '../../../../interfaces/dataTypes';
@@ -22,7 +23,9 @@ const ChildEntitiesTagGroup: IToolboxComponent<IChildEntitiesTagGroupProps> = {
 
     return (
       <ConfigurableFormItem model={model}>
-        <ChildEntitiesTagGroupControl model={model} formMode={formMode} />
+        {(value, onChange) =>
+          <ChildEntitiesTagGroupControl model={model} formMode={formMode} value={value} onChange={onChange} />
+        }
       </ConfigurableFormItem>
     );
   },
@@ -37,6 +40,9 @@ const ChildEntitiesTagGroup: IToolboxComponent<IChildEntitiesTagGroupProps> = {
       />
     );
   },
+  migrator: (m) => m
+    .add<IChildEntitiesTagGroupProps>(0, (prev) => migratePropertyName(prev))
+  ,
 };
 
 export default ChildEntitiesTagGroup;

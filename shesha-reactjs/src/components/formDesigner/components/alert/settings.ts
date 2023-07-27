@@ -8,11 +8,11 @@ export const getSettings = (data: any) =>
       parentId: 'root',
       label: 'Display',
     })
-    .addPropertyAutocomplete({
+    .addTextField({
       id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
-      propertyName: 'propertyName',
+      propertyName: 'componentName',
       parentId: 'root',
-      label: 'Property name',
+      label: 'Component name',
       validate: { required: true },
     })
     .addDropdown({

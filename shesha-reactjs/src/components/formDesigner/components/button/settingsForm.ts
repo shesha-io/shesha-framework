@@ -2,14 +2,13 @@ import { DesignerToolbarSettings } from '../../../../interfaces/toolbarSettings'
 
 export const getSettings = (data: any) =>
   new DesignerToolbarSettings(data)
-    .addPropertyAutocomplete({
+    .addTextField({
       id: '5d4d56fb-d7f8-4835-a529-c4fa93f3596d',
-      propertyName: 'propertyName',
-      label: 'Property name',
+      propertyName: 'componentName',
+      label: 'Component name',
       labelAlign: 'right',
       parentId: 'root',
       hidden: false,
-      customVisibility: null,
       validate: {
         required: true,
       },

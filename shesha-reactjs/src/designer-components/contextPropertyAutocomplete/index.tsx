@@ -66,7 +66,7 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
         }}/>
       </Form.Item>
       <Form.Item {...{label: contextlabel, readOnly}} hidden={state.mode === 'formData'} >
-        <DataContextSelector {...model} value={state.context} onChange={(value) => {
+        <DataContextSelector {...model} value={formData.context} onChange={(value) => {
           onValuesChange({context: value});
           setState({...state, context: value});
         }}/>

@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import { useForm } from 'providers/form';
 import { Empty } from 'antd';
 import { useFormDesigner } from 'providers/formDesigner';
@@ -28,8 +28,8 @@ export const ComponentPropertiesPanel: FC<IProps> = () => {
       </>
     );
 
-  const componentModel = getComponentModel(id);
-  const toolboxComponent = getToolboxComponent(componentModel.type);
+  const componentModel = useMemo(() => getComponentModel(id), [id]);
+  const toolboxComponent = useMemo(() => getToolboxComponent(componentModel.type), [componentModel.type]);
 
   return (
     <ComponentPropertiesEditor

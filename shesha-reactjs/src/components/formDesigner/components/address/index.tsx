@@ -1,4 +1,5 @@
 import { HomeOutlined } from '@ant-design/icons';
+import { migratePropertyName } from 'designer-components/_settings/utils';
 import React from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
 import { useForm } from '../../../../providers';
@@ -21,9 +22,13 @@ const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
     return (
       <AddressEffect externalApiKey={model?.googleMapsApiKey}>
         <ConfigurableFormItem model={model}>
-          <ReadOnlyDisplayFormItemWrapper readOnly={readOnly} disabled={model?.disabled}>
-            <AutoCompletePlacesControl {...model} />
-          </ReadOnlyDisplayFormItemWrapper>
+          {(value, onChange) => { 
+            return (
+              <ReadOnlyDisplayFormItemWrapper value={value} readOnly={readOnly} disabled={model?.disabled}>
+                <AutoCompletePlacesControl {...model} readOnly={readOnly} disabled={model?.disabled} value={value} onChange={onChange}/>
+              </ReadOnlyDisplayFormItemWrapper>
+            );
+          }}
         </ConfigurableFormItem>
       </AddressEffect>
     );
@@ -39,6 +44,9 @@ const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
       />
     );
   },
+  migrator: (m) => m
+    .add<IAddressCompomentProps>(0, (prev) => migratePropertyName(prev))
+  ,  
 };
 
 export default AddressCompoment;

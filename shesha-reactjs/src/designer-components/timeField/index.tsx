@@ -1,4 +1,4 @@
-import React, { FC, Fragment } from 'react';
+import React, { FC } from 'react';
 import { IToolboxComponent } from '../../interfaces';
 import { FormMarkup, IConfigurableFormComponent } from '../../providers/form/models';
 import { ClockCircleOutlined } from '@ant-design/icons';
@@ -9,17 +9,11 @@ import moment, { Moment, isMoment } from 'moment';
 import { customTimeEventHandler } from '../../components/formDesigner/components/utils';
 import { getStyle, validateConfigurableComponentSettings } from '../../providers/form/utils';
 import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../../providers';
-import { HiddenFormItem } from '../../components/hiddenFormItem';
 import { DataTypes } from '../../interfaces/dataTypes';
 import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
 import { getNumericValue } from '../../utils/string';
 import { axiosHttp } from 'utils/fetchers';
-
-type RangeType = 'start' | 'end';
-// tslint:disable-next-line:interface-over-type-literal
-type RangeInfo = {
-  range: RangeType;
-};
+import { migratePropertyName } from 'designer-components/_settings/utils';
 
 type RangeValue = [moment.Moment, moment.Moment];
 
@@ -88,18 +82,9 @@ const TimeField: IToolboxComponent<ITimePickerProps> = {
     };
 
     return (
-      <Fragment>
-        <ConfigurableFormItem model={model}>
-          <TimePickerWrapper {...model} {...customTimeEventHandler(eventProps)} />
-        </ConfigurableFormItem>
-
-        {model?.range && (
-          <Fragment>
-            <HiddenFormItem name={`${model?.propertyName}Start`} />
-            <HiddenFormItem name={`${model?.propertyName}End`} />
-          </Fragment>
-        )}
-      </Fragment>
+      <ConfigurableFormItem model={model}>
+        {(value, onChange) => <TimePickerWrapper {...model} {...customTimeEventHandler(eventProps)} value={value} onChange={onChange} />}
+      </ConfigurableFormItem>
     );
   },
   settingsFormMarkup: settingsForm,
@@ -111,6 +96,9 @@ const TimeField: IToolboxComponent<ITimePickerProps> = {
     };
     return customModel;
   },
+  migrator: (m) => m
+    .add<ITimePickerProps>(0, (prev) => migratePropertyName(prev))
+  ,
 };
 
 export const TimePickerWrapper: FC<ITimePickerProps> = ({
@@ -127,7 +115,7 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
   secondStep,
   ...rest
 }) => {
-  const { form, formMode, isComponentDisabled } = useForm();
+  const { formMode, isComponentDisabled } = useForm();
   const { data: formData } = useFormData();
   const evaluatedValue = getMoment(value, format);
 
@@ -160,15 +148,6 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
     (onChange as RangePickerChangeEvent)(values, formatString);
   };
 
-  const onCalendarChange = (_, formatString: [string, string], info: RangeInfo) => {
-    if (info?.range === 'end' && form) {
-      form.setFieldsValue({
-        [`${rest?.propertyName}Start`]: formatString[0],
-        [`${rest?.propertyName}End`]: formatString[1],
-      });
-    }
-  };
-
   if (isReadOnly) {
     return <ReadOnlyDisplayFormItem value={evaluatedValue?.toISOString()} disabled={isDisabled} type="time" />;
   }
@@ -177,7 +156,6 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
     return (
       <TimePicker.RangePicker
         onChange={handleRangePicker}
-        onCalendarChange={onCalendarChange}
         format={format}
         defaultValue={getDefaultRangePickerValues() as RangeValue}
         {...steps}
