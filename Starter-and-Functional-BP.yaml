@@ -474,14 +474,14 @@ stages:
       inputs:
         versionSpec: 18.15.0
       retryCountOnTaskFailure: 5
-    - task: Npm@1
-      displayName: 'Npm Update Version'
-      inputs:
-        command: custom
-        workingDir: shesha-reactjs
-        verbose: false
-        customCommand: 'version $(versionNo) --allow-same-version'
-      # condition: ne(variables['currentBranch'], 'refs/heads/main')
+    # - task: Npm@1
+    #   displayName: 'Npm Update Version'
+    #   inputs:
+    #     command: custom
+    #     workingDir: shesha-reactjs
+    #     verbose: false
+    #     customCommand: 'version $(versionNo) --allow-same-version'
+    #   # condition: ne(variables['currentBranch'], 'refs/heads/main')
     - task: Npm@1
       displayName: 'Npm Install'
       inputs:
