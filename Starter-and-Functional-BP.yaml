@@ -488,7 +488,7 @@ stages:
         command: custom
         workingDir: shesha-reactjs
         verbose: false
-        customCommand: 'install'
+        customCommand: 'install --legacy-peer-deps'
     - task: Npm@1
       inputs:
         command: 'custom'
