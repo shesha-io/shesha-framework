@@ -19,7 +19,7 @@ $major = $parts[0].Substring(0,4)
 $minor = $parts[0].Substring(4,2)
 $patch = $parts[0].Substring(6,2)
 $build = $parts[1]
-$mainVersion = "0.0.$PipeBuildId"
+$mainVersion = "0.0.$PipeBuildId" + "-build"
 
 Write-Host "Version number for main: 0.0.$PipeBuildId"
 
