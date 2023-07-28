@@ -96,11 +96,20 @@ stages:
       displayName: 'Set Assembly Manifest Data'
       inputs:
         InsertAttributes: true
+        VersionNumber: "$(versionNo)-build"
+        FileVersionNumber: "$(versionNo)-build"
+        InformationalVersion: "$(versionNo)-build"
+        PackageVersion: "$(versionNo)-build"
+      # condition: ne(variables['currentBranch'], 'refs/heads/main')
+    - task: Assembly-Info-NetCore@3
+      displayName: 'Set Assembly Manifest Data'
+      inputs:
+        InsertAttributes: true
         VersionNumber: "$(versionNo)"
         FileVersionNumber: "$(versionNo)"
         InformationalVersion: "$(versionNo)"
         PackageVersion: "$(versionNo)"
-      # condition: ne(variables['currentBranch'], 'refs/heads/main')
+      condition: ne(variables['currentBranch'], 'refs/heads/main')
     - task: DotNetCoreCLI@2
       displayName: dotnet Restore
       inputs:
@@ -194,6 +203,7 @@ stages:
           write-host "The current branch is: $(currentBranch)"
           write-host "The current version is: $(versionNo)"
         workingDirectory: '$(System.DefaultWorkingDirectory)'
+      condition: ne(variables['currentBranch'], 'refs/heads/main')
     - task: PowerShell@2
       displayName: Create a txt file to carry the original branch name to the release pipeline  
       inputs:
@@ -215,11 +225,20 @@ stages:
       displayName: 'Set Assembly Manifest Data'
       inputs:
         InsertAttributes: true
+        VersionNumber: "$(versionNo)-build"
+        FileVersionNumber: "$(versionNo)-build"
+        InformationalVersion: "$(versionNo)-build"
+        PackageVersion: "$(versionNo)-build"
+      # condition: ne(variables['currentBranch'], 'refs/heads/main')
+    - task: Assembly-Info-NetCore@3
+      displayName: 'Set Assembly Manifest Data'
+      inputs:
+        InsertAttributes: true
         VersionNumber: "$(versionNo)"
         FileVersionNumber: "$(versionNo)"
         InformationalVersion: "$(versionNo)"
         PackageVersion: "$(versionNo)"
-      # condition: ne(variables['currentBranch'], 'refs/heads/main')      
+      condition: ne(variables['currentBranch'], 'refs/heads/main')
     - task: DotNetCoreCLI@2
       displayName: dotnet Restore
       inputs:
@@ -396,8 +415,16 @@ stages:
         command: custom
         workingDir: shesha-starter/frontend
         verbose: false
+        customCommand: 'version $(versionNo)-build --allow-same-version'
+      # condition: ne(variables['currentBranch'], 'refs/heads/main')
+    - task: Npm@1
+      displayName: 'Npm Update Version'
+      inputs:
+        command: custom
+        workingDir: shesha-starter/frontend
+        verbose: false
         customCommand: 'version $(versionNo)--allow-same-version'
-      # condition: ne(variables['currentBranch'], 'refs/heads/main')        
+      condition: ne(variables['currentBranch'], 'refs/heads/main')
     - task: Npm@1
       displayName: 'Npm Install'
       inputs:
@@ -478,10 +505,18 @@ stages:
       displayName: 'Npm Update Version'
       inputs:
         command: custom
-        workingDir: shesha-reactjs
+        workingDir: shesha-starter/frontend
         verbose: false
-        customCommand: 'version $(versionNo) --allow-same-version'
+        customCommand: 'version $(versionNo)-build --allow-same-version'
       # condition: ne(variables['currentBranch'], 'refs/heads/main')
+    - task: Npm@1
+      displayName: 'Npm Update Version'
+      inputs:
+        command: custom
+        workingDir: shesha-starter/frontend
+        verbose: false
+        customCommand: 'version $(versionNo)--allow-same-version'
+      condition: ne(variables['currentBranch'], 'refs/heads/main')
     - task: Npm@1
       displayName: 'Npm Install'
       inputs:
