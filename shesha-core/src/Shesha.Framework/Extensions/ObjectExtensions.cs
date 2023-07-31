@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using Abp.Domain.Entities;
+using NetTopologySuite.Geometries;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.Reflection;
@@ -43,7 +44,8 @@ namespace Shesha.Extensions
                 && !type.IsEntityType()
                 && !type.IsJsonEntityType()
                 && !type.IsSystemType()
-                && !type.IsEntityReferenceType();
+                && !type.IsEntityReferenceType()
+                && !typeof(Geometry).IsAssignableFrom(type);
         }
 
         /// <summary>
