@@ -100,16 +100,18 @@ namespace Shesha.NHibernate
                     .SetProperty("hbm2ddl.keywords", "auto-quote")
                     .CurrentSessionContext<UnitOfWorkSessionContext>();
 
+                /*
                 if (config.CustomDriver != null)
                     _nhConfig.Properties[NhEnvironment.ConnectionDriver] = config.CustomDriver.AssemblyQualifiedName;
 
                 if (config.CustomDialect != null)
                     _nhConfig.Properties[NhEnvironment.Dialect] = config.CustomDialect.AssemblyQualifiedName;
+                */
 
                 // register linq extensions
                 _nhConfig.LinqToHqlGeneratorsRegistry<SheshaLinqToHqlGeneratorsRegistry>();
 
-                // register filters
+                // register filters6
                 _nhConfig.AddFilterDefinition(SoftDeleteFilter.GetDefinition());
                 _nhConfig.AddFilterDefinition(MayHaveTenantFilter.GetDefinition());
                 _nhConfig.AddFilterDefinition(MustHaveTenantFilter.GetDefinition());
@@ -139,6 +141,8 @@ namespace Shesha.NHibernate
 
                 conventions.Compile(_nhConfig);
 
+                //var cfg = Configuration.Modules.ShaNHibernate().NhConfiguration;
+
                 if (IocManager.IsRegistered<IInterceptor>())
                     _nhConfig.SetInterceptor(IocManager.Resolve<IInterceptor>());
 
@@ -147,9 +151,32 @@ namespace Shesha.NHibernate
                 // ToDo: ABP662, some ABP entities (WebhookEvent, DynamicProperty) contain not virtual properties
                 _nhConfig.Properties.Add("use_proxy_validator", "false");
 
-                _sessionFactory = config.SessionFactoryBuilder != null
-                    ? config.SessionFactoryBuilder.Invoke(_nhConfig)
-                    : _nhConfig.BuildSessionFactory();
+                var sessionFactory = _nhConfig.BuildSessionFactory();
+
+                var spatialDialect = (ISpatialDialect)((ISessionFactoryImplementor)sessionFactory).Dialect;
+                if (spatialDialect != null) 
+                {
+                    bool rebuildSessionFactory = false;
+
+
+                    if (spatialDialect.SupportsSpatialMetadata(MetadataClass.GeometryColumn))
+                    {
+                        global::NHibernate.Spatial.Metadata.Metadata.AddMapping(_nhConfig, MetadataClass.GeometryColumn);
+                        rebuildSessionFactory = true;
+                    }
+
+                    if (spatialDialect.SupportsSpatialMetadata(MetadataClass.SpatialReferenceSystem))
+                    {
+                        global::NHibernate.Spatial.Metadata.Metadata.AddMapping(_nhConfig, MetadataClass.SpatialReferenceSystem);
+                        rebuildSessionFactory = true;
+                    }
+
+                    if (rebuildSessionFactory)
+                    {
+                        sessionFactory = _nhConfig.BuildSessionFactory();
+                    }
+                }
+                _sessionFactory = sessionFactory;
 
                 IocManager.IocContainer.Install(new NhRepositoryInstaller(_sessionFactory));
             }

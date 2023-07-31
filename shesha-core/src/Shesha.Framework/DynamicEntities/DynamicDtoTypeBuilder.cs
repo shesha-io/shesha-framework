@@ -5,6 +5,7 @@ using Abp.Extensions;
 using Abp.Reflection;
 using Abp.Runtime.Caching;
 using Castle.Core.Logging;
+using NetTopologySuite.Geometries;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using Shesha.AutoMapper.Dto;
@@ -120,6 +121,8 @@ namespace Shesha.DynamicEntities
                     return typeof(Guid?);
                 case DataTypes.String:
                     return typeof(string);
+                case DataTypes.Geometry:
+                    return typeof(Geometry);
                 case DataTypes.Date:
                 case DataTypes.DateTime:
                     return typeof(DateTime?);

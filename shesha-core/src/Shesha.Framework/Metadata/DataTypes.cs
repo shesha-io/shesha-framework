@@ -22,6 +22,7 @@ namespace Shesha.Metadata
         public const string Array = "array";
         public const string Object = "object";
         public const string ObjectReference = "object-reference";
+        public const string Geometry = "geometry";
     }
 
     /// <summary>

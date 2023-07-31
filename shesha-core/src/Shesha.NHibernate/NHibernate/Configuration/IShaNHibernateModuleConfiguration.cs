@@ -1,4 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
+using NHibernate;
+using NHibernate.Dialect;
+using NHibernate.Driver;
 using Shesha.Configuration;
 using System;
 
@@ -25,6 +28,21 @@ namespace Shesha.NHibernate.Configuration
         /// Current connection string
         /// </summary>
         string ConnectionString { get; }
+
+        /// <summary>
+        /// Custom dialect
+        /// </summary>
+        Type CustomDialect { get; }
+
+        /// <summary>
+        /// Custom driver
+        /// </summary>
+        Type CustomDriver { get; }
+
+        /// <summary>
+        /// Session factory builder
+        /// </summary>
+        Func<global::NHibernate.Cfg.Configuration, ISessionFactory> SessionFactoryBuilder { get; }
 
         /// <summary>
         /// Set MS Sql as a DBMS type
@@ -66,5 +84,21 @@ namespace Shesha.NHibernate.Configuration
         /// <param name="dbmsTypeGetter">DBMS Type factory</param>
         /// <param name="connectionStringGetter">Connection string factory</param>
         void UseDbms(Func<IConfigurationRoot, DbmsType> dbmsTypeGetter, Func<IConfigurationRoot, string> connectionStringGetter);
+
+        /// <summary>
+        /// Use custom dialect
+        /// </summary>
+        void UseDialect<TDialect>() where TDialect : Dialect;
+
+        /// <summary>
+        /// Use custom driver
+        /// </summary>
+        void UseDriver<TDriver>() where TDriver : IDriver;
+
+        /// <summary>
+        /// Use custoim session factory builder
+        /// </summary>
+        /// <param name="factoryBuilder"></param>
+        void UseCustomSessionFactoryBuilder(Func<global::NHibernate.Cfg.Configuration, ISessionFactory> factoryBuilder);
     }
 }
