@@ -5,7 +5,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
-using NHibernate.Util;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.Extensions;
@@ -107,7 +106,7 @@ namespace Shesha.Configuration.Runtime
                     }
                 case GeneralDataType.Enum:
                     var enumType = prop.PropertyType;
-                    if (enumType.IsNullable())
+                    if (enumType.IsNullableType())
                         enumType = Nullable.GetUnderlyingType(prop.PropertyType);
                     propConfig.EnumType = enumType;
                     break;

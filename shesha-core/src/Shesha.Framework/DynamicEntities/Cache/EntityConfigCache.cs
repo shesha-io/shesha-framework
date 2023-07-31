@@ -7,16 +7,13 @@ using Abp.Events.Bus.Handlers;
 using Abp.ObjectMapping;
 using Abp.Reflection;
 using Abp.Runtime.Caching;
-using NHibernate.Linq;
-using NHibernate.Type;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.DynamicEntities.Dtos;
-using Shesha.Utilities;
+using Shesha.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Shesha.DynamicEntities.Cache
@@ -77,7 +74,7 @@ namespace Shesha.DynamicEntities.Cache
                     .ToListAsync();
                 var propertyDtos = properties.Select(p => _mapper.Map<EntityPropertyDto>(p)).ToList();
 
-                var conf = await _configReprository.GetAll().FirstOrDefaultAsync(x => x.ClassName == entityType.Name && x.Namespace == entityType.Namespace);
+                var conf = await _configReprository.GetAll().Where(x => x.ClassName == entityType.Name && x.Namespace == entityType.Namespace).FirstOrDefaultAsync();
                 var confDto = _mapper.Map<EntityConfigDto>(conf);
 
                 await uow.CompleteAsync();

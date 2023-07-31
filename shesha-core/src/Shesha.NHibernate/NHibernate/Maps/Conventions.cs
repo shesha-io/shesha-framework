@@ -1,6 +1,7 @@
 ﻿using Abp.Domain.Entities;
 using AutoMapper.Internal;
 using Castle.Core.Internal;
+using NetTopologySuite.Geometries;
 using NHibernate;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
@@ -148,7 +149,7 @@ namespace Shesha.NHibernate.Maps
                     return true;
                 }
 
-                if (mi.IsJsonEntityType() || Attribute.IsDefined(mi, (typeof(SaveAsJsonAttribute))))
+                if (mi == typeof(Geometry) || mi.IsJsonEntityType() || Attribute.IsDefined(mi, (typeof(SaveAsJsonAttribute))))
                 {
                     return false;
                 }
@@ -301,6 +302,11 @@ namespace Shesha.NHibernate.Maps
                 {
                     columnType = NHibernateUtil.StringClob;
                     sqlType = "nvarchar(max)";
+                }
+
+                if (propertyType == typeof(Geometry))
+                {
+                    propertyCustomizer.Type<global::NHibernate.Spatial.Type.GeometryType>();
                 }
 
                 if (member.LocalMember.GetMemberType().IsJsonEntityType() || member.LocalMember.HasAttribute<SaveAsJsonAttribute>())

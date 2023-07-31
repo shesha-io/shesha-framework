@@ -11,11 +11,16 @@ using Abp.Reflection;
 using Abp.Runtime.Caching;
 using Abp.Threading;
 using Castle.MicroKernel.Registration;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using NHibernate;
 using NHibernate.Dialect;
 using NHibernate.Driver;
-using NHibernate.Extensions.NpgSql;
+using NHibernate.Engine;
+using NHibernate.Spatial.Dialect;
+using NHibernate.Spatial.Mapping;
+using NHibernate.Spatial.Metadata;
+using Npgsql;
 using Shesha.Attributes;
 using Shesha.Bootstrappers;
 using Shesha.Configuration;
@@ -40,6 +45,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using NhEnvironment = global::NHibernate.Cfg.Environment;
 
 namespace Shesha.NHibernate
 {
@@ -94,6 +100,12 @@ namespace Shesha.NHibernate
                     .SetProperty("hbm2ddl.keywords", "auto-quote")
                     .CurrentSessionContext<UnitOfWorkSessionContext>();
 
+                if (config.CustomDriver != null)
+                    _nhConfig.Properties[NhEnvironment.ConnectionDriver] = config.CustomDriver.AssemblyQualifiedName;
+
+                if (config.CustomDialect != null)
+                    _nhConfig.Properties[NhEnvironment.Dialect] = config.CustomDialect.AssemblyQualifiedName;
+
                 // register linq extensions
                 _nhConfig.LinqToHqlGeneratorsRegistry<SheshaLinqToHqlGeneratorsRegistry>();
 
@@ -127,17 +139,17 @@ namespace Shesha.NHibernate
 
                 conventions.Compile(_nhConfig);
 
-                var cfg = Configuration.Modules.ShaNHibernate().NhConfiguration;
-
                 if (IocManager.IsRegistered<IInterceptor>())
-                    cfg.SetInterceptor(IocManager.Resolve<IInterceptor>());
+                    _nhConfig.SetInterceptor(IocManager.Resolve<IInterceptor>());
 
-                cfg.SessionFactory().GenerateStatistics();
+                _nhConfig.SessionFactory().GenerateStatistics();
 
                 // ToDo: ABP662, some ABP entities (WebhookEvent, DynamicProperty) contain not virtual properties
-                cfg.Properties.Add("use_proxy_validator", "false");
+                _nhConfig.Properties.Add("use_proxy_validator", "false");
 
-                _sessionFactory = cfg.BuildSessionFactory();
+                _sessionFactory = config.SessionFactoryBuilder != null
+                    ? config.SessionFactoryBuilder.Invoke(_nhConfig)
+                    : _nhConfig.BuildSessionFactory();
 
                 IocManager.IocContainer.Install(new NhRepositoryInstaller(_sessionFactory));
             }
@@ -153,6 +165,7 @@ namespace Shesha.NHibernate
 
             IocManager.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
         }
+
 
         private IDbmsSpecificConfigurationProvider GetConfigProvider(DbmsType dbmsType) 
         {

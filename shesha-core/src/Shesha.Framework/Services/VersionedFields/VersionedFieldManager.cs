@@ -2,7 +2,6 @@
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
-using NHibernate.Linq;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Extensions;
@@ -36,7 +35,8 @@ namespace Shesha.Services.VersionedFields
             var config = _entityConfigurationStore.Get(typeof(TEntity));
 
             return await _fieldRepository.GetAll()
-                .FirstOrDefaultAsync(f => f.OwnerId == owner.Id.ToString() && f.OwnerType == config.TypeShortAlias && f.Name == fieldName);
+                .Where(f => f.OwnerId == owner.Id.ToString() && f.OwnerType == config.TypeShortAlias && f.Name == fieldName)
+                .FirstOrDefaultAsync();
         }
 
         public VersionedField GetVersionedField<TEntity, TId>(TEntity owner, string fieldName) where TEntity : IEntity<TId>

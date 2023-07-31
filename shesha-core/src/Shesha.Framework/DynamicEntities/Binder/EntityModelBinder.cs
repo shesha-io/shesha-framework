@@ -5,8 +5,6 @@ using Abp.Extensions;
 using Abp.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using NHibernate;
-using NHibernate.Util;
 using Shesha.AutoMapper.Dto;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
@@ -41,7 +39,6 @@ namespace Shesha.DynamicEntities.Binder
         private readonly IRepository<EntityConfig, Guid> _entityConfigRepository;
         private readonly IMetadataProvider _metadataProvider;
         private readonly IIocManager _iocManager;
-        private readonly ISessionFactory _sessionFactory;
         private readonly ITypeFinder _typeFinder;
         private readonly IEntityConfigurationStore _entityConfigurationStore;
         private readonly IObjectValidatorManager _objectValidatorManager;
@@ -52,7 +49,6 @@ namespace Shesha.DynamicEntities.Binder
             IRepository<EntityConfig, Guid> entityConfigRepository,
             IMetadataProvider metadataProvider,
             IIocManager iocManager,
-            ISessionFactory sessionFactory,
             ITypeFinder typeFinder,
             IEntityConfigurationStore entityConfigurationStore,
             IObjectValidatorManager propertyValidatorManager
@@ -63,7 +59,6 @@ namespace Shesha.DynamicEntities.Binder
             _entityConfigRepository = entityConfigRepository;
             _metadataProvider = metadataProvider;
             _iocManager = iocManager;
-            _sessionFactory = sessionFactory;
             _typeFinder = typeFinder;
             _entityConfigurationStore = entityConfigurationStore;
             _objectValidatorManager = propertyValidatorManager;

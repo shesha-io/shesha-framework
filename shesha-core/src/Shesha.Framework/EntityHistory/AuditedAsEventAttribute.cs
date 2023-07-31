@@ -1,8 +1,4 @@
 ﻿using System;
-using Castle.Core.Internal;
-using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
-using NHibernate.Cfg.XmlHbmBinding;
-using Shesha.Domain;
 
 namespace Shesha.EntityHistory
 {

@@ -10,10 +10,6 @@ using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Reflection;
 using Castle.DynamicProxy;
-using NHibernate.Intercept;
-using NHibernate.Mapping.ByCode;
-using NHibernate.Proxy;
-using NHibernate.Proxy.DynamicProxy;
 using Shesha.Attributes;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
@@ -262,13 +258,13 @@ namespace Shesha.Reflection
         /// <returns>Returns <paramref name="type"/> if type is not a proxy class, else returns the BaseType of type.</returns>
         public static Type StripCastleProxyType(this Type type)
         {
-            #pragma warning disable 612, 618
-            if (type.GetInterfaces().Any(i => i == typeof(INHibernateProxy) || i == typeof(IProxy) || i == typeof(IProxyTargetAccessor) || i == typeof(IFieldInterceptorAccessor)))
+            var strippers = IocManager.Instance.ResolveAll<IProxyStripper>();
+            var currentType = type;
+            foreach (var stripper in strippers) 
             {
-                return type.BaseType;
+                currentType = stripper.StripProxy(currentType);
             }
-            #pragma warning restore 612, 618
-            return type;
+            return currentType;
         }
 
         public static Attribute GetPropertyAttribute(PropertyInfo propInfo, Type attributeType)
@@ -629,6 +625,22 @@ namespace Shesha.Reflection
             // 3. check ReferenceListAttribute on the enum type
             refListAttribute = propertyType.GetAttribute<ReferenceListAttribute>();
             return refListAttribute?.GetReferenceListIdentifier(propertyType);
+        }
+
+        private static Type GetPropertyOrFieldType(this MemberInfo propertyOrField)
+        {
+            if (propertyOrField.MemberType == MemberTypes.Property)
+            {
+                return ((PropertyInfo)propertyOrField).PropertyType;
+            }
+
+            if (propertyOrField.MemberType == MemberTypes.Field)
+            {
+                return ((FieldInfo)propertyOrField).FieldType;
+            }
+
+            throw new ArgumentOutOfRangeException("propertyOrField",
+                                                  "Expected PropertyInfo or FieldInfo; found :" + propertyOrField.MemberType);
         }
 
         /// <summary>

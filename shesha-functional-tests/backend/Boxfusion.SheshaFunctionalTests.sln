@@ -61,6 +61,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shesha.Web.Core", "..\..\sh
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shesha.Web.FormsDesigner", "..\..\shesha-core\src\Shesha.Web.FormsDesigner\Shesha.Web.FormsDesigner.csproj", "{38A577E9-B2AE-4C5F-A8B7-2D85C9586CE6}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shesha.NHibernate.PostGis", "..\..\shesha-core\src\Shesha.NHibernate.PostGis\Shesha.NHibernate.PostGis.csproj", "{D12CD226-224B-40CA-9F71-CF6F69AB79FB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -218,6 +220,12 @@ Global
 		{38A577E9-B2AE-4C5F-A8B7-2D85C9586CE6}.DebugLocalShesha|Any CPU.Build.0 = Debug|Any CPU
 		{38A577E9-B2AE-4C5F-A8B7-2D85C9586CE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38A577E9-B2AE-4C5F-A8B7-2D85C9586CE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D12CD226-224B-40CA-9F71-CF6F69AB79FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D12CD226-224B-40CA-9F71-CF6F69AB79FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D12CD226-224B-40CA-9F71-CF6F69AB79FB}.DebugLocalShesha|Any CPU.ActiveCfg = Debug|Any CPU
+		{D12CD226-224B-40CA-9F71-CF6F69AB79FB}.DebugLocalShesha|Any CPU.Build.0 = Debug|Any CPU
+		{D12CD226-224B-40CA-9F71-CF6F69AB79FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D12CD226-224B-40CA-9F71-CF6F69AB79FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -244,6 +252,7 @@ Global
 		{66A9A025-079F-4A6D-8B2A-C9E71A796C01} = {75540715-92AC-4551-9DCE-F71CF71009E3}
 		{38B117AE-F27F-4F8A-B61D-2FC4D35140BC} = {75540715-92AC-4551-9DCE-F71CF71009E3}
 		{38A577E9-B2AE-4C5F-A8B7-2D85C9586CE6} = {75540715-92AC-4551-9DCE-F71CF71009E3}
+		{D12CD226-224B-40CA-9F71-CF6F69AB79FB} = {75540715-92AC-4551-9DCE-F71CF71009E3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {95ED23F3-8DEA-456E-A44B-87A161CB696A}
