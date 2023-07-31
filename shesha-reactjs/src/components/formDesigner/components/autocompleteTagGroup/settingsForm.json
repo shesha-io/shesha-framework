@@ -1,20 +1,6 @@
 {
   "components": [
     {
-      "id": "11954bf6-f76d-4139-a850-c99bf06c8b69",
-      "type": "sectionSeparator",
-      "name": "separator1",
-      "parentId": "root",
-      "label": "Data"
-    },
-    {
-      "id": "11d07439-4c18-468c-89e1-60c002ce96c5",
-      "type": "textField",
-      "name": "autocompleteUrl",
-      "parentId": "root",
-      "label": "Autocomplete Url"
-    },
-    {
       "id": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
       "type": "sectionSeparator",
       "name": "separator1",
@@ -23,7 +9,7 @@
     },
     {
       "id": "22d07439-4c18-468c-89e1-60c002ce96c5",
-      "type": "textField",
+      "type": "propertyAutocomplete",
       "name": "name",
       "parentId": "root",
       "label": "Name"
@@ -62,6 +48,20 @@
       "name": "disabled",
       "parentId": "root",
       "label": "Disabled"
+    },
+    {
+      "id": "11954bf6-f76d-4139-a850-c99bf06c8b69",
+      "type": "sectionSeparator",
+      "name": "separator2",
+      "parentId": "root",
+      "label": "Data"
+    },
+    {
+      "id": "11d07439-4c18-468c-89e1-60c002ce96c5",
+      "type": "textField",
+      "name": "autocompleteUrl",
+      "parentId": "root",
+      "label": "Autocomplete Url"
     },
     {
       "id": "d675bfe4-ee69-431e-931b-b0e0b9ceee6f",
