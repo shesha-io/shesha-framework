@@ -12,8 +12,8 @@ using Abp.IdentityFramework;
 using Abp.MultiTenancy;
 using Abp.Zero.Configuration;
 using Microsoft.AspNetCore.Identity;
-using NHibernate.Linq;
 using Shesha.Domain;
+using Shesha.Extensions;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
@@ -237,7 +237,7 @@ namespace Shesha.Authorization
             if (string.IsNullOrWhiteSpace(imei))
                 return true; // skip if the IMEI is null
 
-            return await _mobileDeviceRepository.GetAll().AnyAsync(d => d.IMEI == imei.Trim() && !d.IsLocked);
+            return await _mobileDeviceRepository.GetAll().Where(d => d.IMEI == imei.Trim() && !d.IsLocked).AnyAsync();
         }
 
         protected virtual async Task<ShaLoginResult<TTenant, TUser>> CreateLoginResultAsync(TUser user, TTenant tenant = null)
@@ -298,7 +298,7 @@ namespace Shesha.Authorization
         {
             return string.IsNullOrWhiteSpace(imei)
                 ? null
-                : (await _mobileDeviceRepository.GetAll().FirstOrDefaultAsync(d => d.IMEI == imei))?.Name;
+                : (await _mobileDeviceRepository.GetAll().Where(d => d.IMEI == imei).FirstOrDefaultAsync())?.Name;
         }
 
         protected virtual void SaveLoginAttempt(ShaLoginResult<TTenant, TUser> loginResult, string tenancyName, string userNameOrEmailAddress)

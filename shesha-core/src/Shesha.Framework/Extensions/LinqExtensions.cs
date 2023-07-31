@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Abp.Specifications;
-using NHibernate.Linq;
 
 namespace Shesha.Extensions
 {
@@ -18,17 +17,15 @@ namespace Shesha.Extensions
         /// <param name="source">A sequence of values to determine the maximum of.</param>
         /// <param name="selector">A projection function to apply to each element.</param>
         /// <param name="defaultValue"></param>
-        /// <param name="cancellationToken">A cancellation token that can be used to cancel the work.</param>
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <typeparam name="TResult">The type of the value returned by the function represented by <paramref name="selector" />.</typeparam>
         /// <returns>The maximum value in the sequence.</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is <see langword="null" />.</exception>
         public static async Task<TResult> MaxOrDefaultAsync<TSource, TResult>(this IQueryable<TSource> source,
-            Expression<Func<TSource, TResult>> selector, TResult defaultValue,
-            CancellationToken cancellationToken = default)
+            Expression<Func<TSource, TResult>> selector, TResult defaultValue)
         {
-            return await source.AnyAsync(cancellationToken)
-                ? await source.MaxAsync(selector, cancellationToken)
+            return await source.AnyAsync()
+                ? source.Max(selector)  // todo: update ABP and use async version or implement Shesha-specific interface
                 : defaultValue;
         }
 

@@ -2,7 +2,6 @@
 using AutoMapper.Internal;
 using Castle.Core.Internal;
 using Newtonsoft.Json.Linq;
-using NHibernate.Util;
 using Shesha.AutoMapper.Dto;
 using Shesha.Extensions;
 using Shesha.JsonEntities.Proxy;

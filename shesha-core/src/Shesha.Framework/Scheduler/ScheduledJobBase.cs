@@ -3,10 +3,10 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Extensions;
 using Microsoft.Extensions.Configuration;
-using NHibernate.Linq;
 using Shesha.Authorization.Users;
 using Shesha.Domain;
 using Shesha.Exceptions;
+using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Scheduler.Attributes;
 using Shesha.Scheduler.Domain;
@@ -15,6 +15,7 @@ using Shesha.Services;
 using Shesha.Utilities;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -394,7 +395,7 @@ namespace Shesha.Scheduler
 
                 using (var unitOfWork = UnitOfWorkManager.Begin(TransactionScopeOption.RequiresNew))
                 {
-                    var existingExecution = await JobExecutionRepository.GetAll().FirstOrDefaultAsync(ex => ex.Id == executionId);
+                    var existingExecution = await JobExecutionRepository.GetAll().Where(ex => ex.Id == executionId).FirstOrDefaultAsync();
                     ScheduledJobExecution jobExecution = null;
 
                     if (existingExecution != null && existingExecution.Status == ExecutionStatus.Enqueued)

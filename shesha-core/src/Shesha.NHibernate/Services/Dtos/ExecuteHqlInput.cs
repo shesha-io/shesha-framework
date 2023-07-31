@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Shesha.Controllers.Dtos
+namespace Shesha.Services.Dtos
 {
     /// <summary>
     /// Execute HQL input
