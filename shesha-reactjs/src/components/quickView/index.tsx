@@ -111,9 +111,9 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
           skipFetchData={true}
         />
       </FormItemProvider>
-      ) : (
-        <></>
-      );
+    ) : (
+      <></>
+    );
   }, [formSettings, formData]);
 
   const render = () => {
@@ -122,7 +122,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
     }
 
     return (
-      <Button type="link">
+      <Button className="entity-reference-btn" type="link">
         {formTitle ?? (
           <span>
             <Spin size="small" /> Loading...
