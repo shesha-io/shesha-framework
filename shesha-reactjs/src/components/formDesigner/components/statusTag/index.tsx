@@ -9,7 +9,7 @@ import { executeCustomExpression, getStyle } from '../../../../providers/form/ut
 import StatusTag, { DEFAULT_STATUS_TAG_MAPPINGS, IStatusTagProps as ITagProps } from '../../../statusTag';
 import ConfigurableFormItem from '../formItem';
 import { getSettings } from './settings';
-import ConditionalWrap from 'components/conditionalWrapper';
+import FormItemWrapper from '../formItemWrapper';
 
 export interface IStatusTagProps extends Omit<ITagProps, 'mappings' | 'style'>, IConfigurableFormComponent {
   colorCodeEvaluator?: string;
@@ -93,12 +93,15 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
     if (!isVisibleByCondition && formMode !== 'designer') return null;
 
     return (
-      <ConditionalWrap
-        condition={model?.valueSource === 'form'}
-        wrap={(children) => <ConfigurableFormItem model={model}>{children}</ConfigurableFormItem>}
-      >
-        <StatusTag {...props} style={getStyle(model?.style, data, globalState)} />
-      </ConditionalWrap>
+      <ConfigurableFormItem model={model}>
+        <FormItemWrapper
+          mutate={model?.valueSource !== 'form'}
+          formType="reference-list-item"
+          overrideValue={props.value}
+        >
+          <StatusTag {...props} style={getStyle(model?.style, data, globalState)} />
+        </FormItemWrapper>
+      </ConfigurableFormItem>
     );
   },
   settingsFormMarkup: getSettings(),

@@ -4,6 +4,36 @@ import { DesignerToolbarSettings } from 'interfaces/toolbarSettings';
 export const getSettings = () =>
   new DesignerToolbarSettings()
     .addSectionSeparator({
+      id: '2e523fcc-e4c5-44a5-834e-4225241306dd',
+      name: 'separatorDisplay',
+      parentId: 'root',
+      label: 'Display',
+    })
+    .addPropertyAutocomplete({
+      id: nanoid(),
+      name: 'name',
+      label: 'Name',
+      customVisibility: 'return data?.valueSource === "form"',
+      validate: {
+        required: true,
+      },
+    })
+    .addTextField({
+      id: '8c898413-7dfd-4322-b610-fce8c35756f8',
+      name: 'label',
+      parentId: 'root',
+      label: 'Label',
+    })
+    .addCheckbox({
+      id: 'd936689d-8ea3-4f8a-bcc3-d494d27c46fd',
+      name: 'hideLabel',
+      parentId: 'root',
+      label: 'Hide Label',
+      labelAlign: 'right',
+      customVisibility: null,
+      validate: {},
+    })
+    .addSectionSeparator({
       id: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
       name: 'separator1',
       parentId: 'root',
@@ -51,15 +81,6 @@ export const getSettings = () =>
       ],
       validate: { required: true },
       defaultValue: 'manual',
-    })
-    .addPropertyAutocomplete({
-      id: nanoid(),
-      name: 'name',
-      label: 'Name',
-      customVisibility: 'return data?.valueSource === "form"',
-      validate: {
-        required: true,
-      },
     })
     .addTextField({
       id: '43f91890-9728-47f3-9694-3d893d820c86',
@@ -132,6 +153,7 @@ export const getSettings = () =>
       parentId: 'root',
       label: 'Style',
     })
+
     .addCodeEditor({
       id: '987c3de1-b959-4670-96f6-9b1747189a6e',
       name: 'style',
