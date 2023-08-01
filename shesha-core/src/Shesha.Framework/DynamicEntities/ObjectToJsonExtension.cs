@@ -1,6 +1,9 @@
 ﻿using Abp.Json;
 using AutoMapper.Internal;
 using Castle.Core.Internal;
+using NetTopologySuite.Geometries;
+using NetTopologySuite.IO;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Shesha.AutoMapper.Dto;
 using Shesha.Extensions;
@@ -10,6 +13,7 @@ using Shesha.Reflection;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -42,7 +46,8 @@ namespace Shesha.DynamicEntities
                 p.CanRead && p.IsPublic()
                 && !p.HasAttribute<Newtonsoft.Json.JsonIgnoreAttribute>()
                 && !p.HasAttribute<System.Text.Json.Serialization.JsonIgnoreAttribute>()
-                && !IsServiceDtoField(p));
+                && !IsServiceDtoField(p))
+                .ToList();
 
             foreach (var prop in props)
             {
@@ -108,6 +113,10 @@ namespace Shesha.DynamicEntities
             {
                 if (val is IJsonEntityProxy proxy)
                     return JsonEntityProxy.GetJson(proxy, jval as JObject);
+
+                if (val is Geometry geometry)
+                    return ConvertGeometry(geometry);
+
                 jval = jval.IsNullOrEmpty() ? new JObject() : jval;
                 var newjval = GetJObjectFromObject(val, jval as JObject);
                 if (jval.IsNullOrEmpty())
@@ -130,6 +139,22 @@ namespace Shesha.DynamicEntities
                 return JProperty.FromObject(val);
 
             return jval;
+        }
+
+        private static JToken ConvertGeometry(Geometry geometry) 
+        {
+            var serializer = GeoJsonSerializer.Create();
+            using (var stringWriter = new StringWriter())
+            {
+                using (var jsonWriter = new JsonTextWriter(stringWriter))
+                {
+                    serializer.Serialize(jsonWriter, geometry);
+
+                    var geoJson = stringWriter.ToString();
+                    var result = JObject.Parse(geoJson);
+                    return result;
+                }
+            }
         }
     }
 }

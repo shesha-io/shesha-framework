@@ -1,16 +1,12 @@
-﻿using Newtonsoft.Json;
-using Shesha.DynamicEntities;
-using Shesha.DynamicEntities.Dtos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Shesha.DynamicEntities;
+using Shesha.Json;
 
 namespace Shesha.JsonEntities
 {
-    public interface IJsonEntity: IHasClassNameField //, IHasDisplayNameField
+    /// <summary>
+    /// Json entity
+    /// </summary>
+    public interface IJsonEntity: IHasGetJson, IHasClassNameField //, IHasDisplayNameField
     {
-        string GetJson();
     }
 }
