@@ -92,7 +92,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
       migrateDisabled(newModel);
       return newModel;
     })
-    .add<IFileUploadProps>(3, (prev) => migratePropertyName(prev))
+    .add<IFileUploadProps>(3, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
   ,
   settingsFormMarkup: getSettings(),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),

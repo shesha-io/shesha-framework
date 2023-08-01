@@ -7,6 +7,7 @@ import { getSettings } from './settingsForm';
 import { useFormData } from 'providers';
 import { ICommonContainerProps, IContainerComponentProps } from './interfaces';
 import ComponentsContainer from 'components/formDesigner/containers/componentsContainer';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 
 const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   type: 'container',
@@ -60,7 +61,9 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       display: prev['display']/* ?? 'block'*/,
       flexWrap: prev['flexWrap'] ?? 'wrap',
       components: prev['components'] ?? []
-    })),
+    }))
+    .add<IContainerComponentProps>(1, prev => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
 };
 
 export default ContainerComponent;

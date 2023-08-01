@@ -14,7 +14,7 @@ import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
 import { axiosHttp } from '../../utils/fetchers';
 import moment from 'moment';
 import { ITextFieldComponentProps, TextType } from './interfaces';
-import { migrateDisabled, migrateHidden, migratePropertyName } from 'designer-components/_settings/utils';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -31,6 +31,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
   type: 'textField',
   isInput: true,
   isOutput: true,
+  canBeJsSetting: true,
   name: 'Text field',
   icon: <CodeOutlined />,
   dataTypeSupported: ({ dataType, dataFormat }) =>
@@ -101,12 +102,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
   }),
   migrator: (m) => m
     .add<ITextFieldComponentProps>(0, (prev) => ({ ...prev, textType: 'text' }))
-    .add<ITextFieldComponentProps>(1, (prev) => {
-      let newModel: ITextFieldComponentProps = migrateHidden(prev);
-      newModel = migrateDisabled(newModel);
-      newModel = migratePropertyName(newModel);
-      return newModel;
-    })
+    .add<ITextFieldComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
   ,
   linkToModelMetadata: (model, metadata): ITextFieldComponentProps => {
     return {

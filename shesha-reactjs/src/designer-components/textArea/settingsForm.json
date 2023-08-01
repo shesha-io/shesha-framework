@@ -5,7 +5,7 @@
       "type": "collapsiblePanel",
       "propertyName": "pnlDisplay",
       "label": "Display",
-      "labelAlign": "right",
+      "labelAlign": "left",
       "parentId": "root",
       "hidden": false,
       "visibility": "Yes",
@@ -87,7 +87,7 @@
           },
           {
             "id": "0225b82d-19aa-47c7-b665-90508111bd23",
-            "type": "setting.checkbox",
+            "type": "checkbox",
             "propertyName": "autoSize",
             "parentId": "pnl14bf6-f76d-4139-a850-c99bf06c8b69",
             "label": "Auto size"

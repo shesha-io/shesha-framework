@@ -18,7 +18,7 @@ import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions }
 import { ITableDataColumn } from 'providers/dataTable/interfaces';
 import { IColumnEditorProps, IFieldComponentProps, standardCellComponentTypes } from 'providers/datatableColumnsConfigurator/models';
 import { useFormDesignerComponents } from 'providers/form/hooks';
-import { executeScriptSync, getCustomEnabledFunc, getCustomVisibilityFunc } from 'providers/form/utils';
+import { executeScriptSync } from 'providers/form/utils';
 import moment from 'moment';
 import { axiosHttp } from 'utils/fetchers';
 import { IAnyObject } from 'interfaces';
@@ -376,8 +376,9 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
             model = component.linkToModelMetadata(model, propertyMeta);
           }
 
-          model.visibilityFunc = getCustomVisibilityFunc(model);
-          model.enabledFunc = getCustomEnabledFunc(model);
+          // ToDo: AS - use hidden and disable in JS mode
+          //model.visibilityFunc = getCustomVisibilityFunc(model);
+          //model.enabledFunc = getCustomEnabledFunc(model);
 
           result.allComponents[model.id] = model;
           componentIds.push(model.id);

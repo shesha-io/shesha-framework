@@ -9,7 +9,7 @@ export const getSettings = () =>
       parentId: 'root',
       label: 'Display',
       labelAlign: "right",
-      expandIconPosition: "left",
+      expandIconPosition: "start",
       ghost: true,
       collapsible: 'header',
       content: {
@@ -146,7 +146,7 @@ export const getSettings = () =>
       parentId: 'root',
       label: 'Validation',
       labelAlign: "right",
-      expandIconPosition: "left",
+      expandIconPosition: "start",
       ghost: true,
       collapsible: 'header',
       content: {
@@ -169,7 +169,7 @@ export const getSettings = () =>
       parentId: 'root',
       label: 'Files',
       labelAlign: "right",
-      expandIconPosition: "left",
+      expandIconPosition: "start",
       ghost: true,
       collapsible: 'header',
       content: {

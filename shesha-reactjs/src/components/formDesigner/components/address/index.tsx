@@ -1,5 +1,5 @@
 import { HomeOutlined } from '@ant-design/icons';
-import { migratePropertyName } from 'designer-components/_settings/utils';
+import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
 import React from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
 import { useForm } from '../../../../providers';
@@ -45,7 +45,7 @@ const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
     );
   },
   migrator: (m) => m
-    .add<IAddressCompomentProps>(0, (prev) => migratePropertyName(prev))
+    .add<IAddressCompomentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
   ,  
 };
 

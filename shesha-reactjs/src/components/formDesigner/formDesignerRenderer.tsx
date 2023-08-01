@@ -1,6 +1,6 @@
 import React, { FC, useState } from 'react';
-import { SidebarContainer, ConfigurableFormRenderer } from '../../components';
-import { Row, Col, Divider, Typography, Space } from 'antd';
+import { SidebarContainer, ConfigurableFormRenderer, CollapsiblePanel } from '../../components';
+import { Col, Divider, Typography, Space } from 'antd';
 import Toolbox from './toolbox';
 import FormDesignerToolbar from './formDesignerToolbar';
 import ComponentPropertiesPanel from './componentPropertiesPanel';
@@ -14,6 +14,7 @@ import StatusTag from '../statusTag';
 import { FORM_STATUS_MAPPING } from '../../utils/configurationFramework/models';
 import { getFormFullName } from '../../utils/form';
 import HelpTextPopover from '../helpTextPopover';
+import { useDataContextManager } from 'providers/dataContextManager';
 
 const { Title } = Typography;
 
@@ -81,19 +82,41 @@ export const FormDesignerRenderer: FC = ({}) => {
           >
             <ConfigurableFormRenderer form={form}>
               {isDebug && (
-                <>
-                  <Row>
-                    <Divider />
-                    <Col span={24}>
-                      <pre>{JSON.stringify(form.getFieldsValue(), null, 2)}</pre>
-                    </Col>
-                  </Row>
-                </>
+                <DebugPanel formData={form.getFieldsValue()} />
               )}
             </ConfigurableFormRenderer>
           </SidebarContainer>
         </ConditionalWrap>
       </div>
     </div>
+  );
+};
+
+interface DebugPanelProps {
+  formData?: any;
+}
+
+const DebugPanel: FC<DebugPanelProps> = (props) => {
+
+  const ctxManager = useDataContextManager(false);
+
+  const contexts = ctxManager.getDataContexts('all');
+
+  return (
+    <>
+      <Divider />
+      <CollapsiblePanel header='Form data' expandIconPosition='start' ghost>
+        <Col span={24}>
+          <pre>{JSON.stringify(props.formData, null, 2)}</pre>
+        </Col>
+      </CollapsiblePanel>
+      {contexts.map((ctx) => 
+        <CollapsiblePanel header={ctx.name} expandIconPosition='start' ghost>
+          <Col span={24}>
+            <pre>{JSON.stringify(ctx.dataContext?.data, null, 2)}</pre>
+          </Col>
+        </CollapsiblePanel>
+      )}
+    </>
   );
 };

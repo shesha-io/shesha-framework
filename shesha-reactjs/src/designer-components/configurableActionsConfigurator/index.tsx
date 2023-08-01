@@ -11,7 +11,7 @@ import ActionArgumentsEditor from './actionArgumensEditor';
 import HelpTextPopover from 'components/helpTextPopover';
 import { IConfigurableActionConfiguratorComponentProps } from './interfaces';
 import { ICodeExposedVariable } from 'components/codeVariablesTable';
-import { migratePropertyName } from 'designer-components/_settings/utils';
+import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
 
 const { Panel } = Collapse;
 
@@ -36,7 +36,7 @@ const ConfigurableActionConfiguratorComponent: IToolboxComponent<IConfigurableAc
   settingsFormMarkup: configurableActionsConfiguratorSettingsForm,
   validateSettings: model => validateConfigurableComponentSettings(configurableActionsConfiguratorSettingsForm, model),
   migrator: m => m
-  .add<IConfigurableActionConfiguratorComponentProps>(0, prev => migratePropertyName(prev))
+  .add<IConfigurableActionConfiguratorComponentProps>(0, prev => migratePropertyName(migrateCustomFunctions(prev)))
 ,
 };
 

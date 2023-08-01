@@ -6,7 +6,7 @@ import { useForm } from '../..';
 import { EntityReference, IEntityReferenceProps } from 'components/entityReference';
 import { LinkExternalOutlined } from 'icons/linkExternalOutlined';
 import { EntityReferenceSettingsForm } from './settings';
-import { migratePropertyName } from 'designer-components/_settings/utils';
+import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
 
 export type IActionParameters = [{ key: string; value: string }];
 
@@ -54,7 +54,7 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
         handleSuccess: false
       };
     })
-    .add<IEntityReferenceControlProps>(1, (prev) => migratePropertyName(prev))
+    .add<IEntityReferenceControlProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
   ,
   linkToModelMetadata: (model, metadata): IEntityReferenceControlProps => {
     return {

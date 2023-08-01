@@ -61,7 +61,7 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
   const { hideLabel } = model;
 
   const formItemProps: FormItemProps = {
-    className: classNames(className, { 'form-item-hidden': hideLabel }),
+    className: classNames(className),//, { 'form-item-hidden': hideLabel }),
     label: hideLabel ? null : model.label,
     labelAlign: model.labelAlign,
     hidden: isHidden,
@@ -81,7 +81,7 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
   const funcChildren = children as (value: any, onChange:  (...args: any[]) => void) => ReactNode;
 
   // binding to context data for upgraded components 
-  if (!!model.context) {
+  if (!!model.context && typeof funcChildren === 'function') {
     
     let value = undefined;
 
@@ -101,8 +101,8 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
       <Form.Item {...formItemProps}>
         <DataBinder 
           onChange={(val) => {
-            const value = !!val.target ? val.target[!!valuePropName ? valuePropName : 'value'] : val;
-            if (!!context.dataContext.onChange)
+            const value = !!val?.target ? val?.target[!!valuePropName ? valuePropName : 'value'] : val;
+            if (!!context?.dataContext?.onChange)
               context.dataContext.onChange(propNameMemo, value);
           }}
           value={value}

@@ -9,7 +9,7 @@ import { IButtonGroupItemBaseV0, migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
 import { getSettings } from './settingsForm';
 import { IButtonComponentProps } from './interfaces';
-import { migratePropertyName } from 'designer-components/_settings/utils';
+import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
 
 export type IActionParameters = [{ key: string; value: string }];
 
@@ -84,7 +84,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       })
       .add<IButtonComponentProps>(1, migrateV0toV1)
       .add<IButtonComponentProps>(2, migrateV1toV2)
-      .add<IButtonComponentProps>(3, (prev) => migratePropertyName(prev))
+      .add<IButtonComponentProps>(3, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
   ,
 };
 

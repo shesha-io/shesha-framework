@@ -31,8 +31,9 @@
             }
           },
           {
+            "isSetting": true,
             "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
-            "type": "setting.textField",
+            "type": "textField",
             "propertyName": "label",
             "parentId": "V7fTtlRl67ZoKhBMqXwoF",
             "label": "Label",
@@ -40,8 +41,9 @@
             "textType": "text"
           },
           {
+            "isSetting": true,
             "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
-            "type": "setting.dropdown",
+            "type": "dropdown",
             "propertyName": "labelAlign",
             "parentId": "V7fTtlRl67ZoKhBMqXwoF",
             "label": "Label align",

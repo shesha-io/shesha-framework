@@ -12,7 +12,7 @@ import {
   validateConfigurableComponentSettings,
 } from '../../providers/form/utils';
 import { getSettings } from './settings';
-import { migratePropertyName } from 'designer-components/_settings/utils';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 
 export interface IAttachmentsEditorProps extends IConfigurableFormComponent {
   ownerId: string;
@@ -83,7 +83,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         ownerName: '',
       };
     })
-    .add<IAttachmentsEditorProps>(0, (prev) => migratePropertyName(prev))
+    .add<IAttachmentsEditorProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
   ,
 };
 

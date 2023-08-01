@@ -11,7 +11,7 @@ import FormItemWrapper from '../../components/formDesigner/components/formItemWr
 import NumberFieldControl from './control';
 import { INumberFieldComponentProps } from './interfaces';
 import settingsFormJson from './settingsForm.json';
-import { migratePropertyName } from 'designer-components/_settings/utils';
+import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -52,7 +52,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
     ...model,
   }),
   migrator: (m) => m
-    .add<INumberFieldComponentProps>(0, (prev) => migratePropertyName(prev))
+    .add<INumberFieldComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
   ,
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
   linkToModelMetadata: (model, metadata): INumberFieldComponentProps => {

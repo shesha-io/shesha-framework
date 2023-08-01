@@ -11,7 +11,7 @@ import ConfigurableFormItem from '../formItem';
 import RefListCheckboxGroup from './refListCheckboxGroup';
 import settingsFormJson from './settingsForm.json';
 import { ICheckboxGroupProps } from './utils';
-import { migratePropertyName } from 'designer-components/_settings/utils';
+import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -62,7 +62,7 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGoupProps> = {
           referenceListId: getLegacyReferenceListIdentifier(prev.referenceListNamespace, prev.referenceListName),
         };
       })
-      .add<IEnhancedICheckboxGoupProps>(2, (prev) => migratePropertyName(prev))
+      .add<IEnhancedICheckboxGoupProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
   ,
   linkToModelMetadata: (model, metadata): IEnhancedICheckboxGoupProps => {
     const refListId: IReferenceListIdentifier = metadata.referenceListName

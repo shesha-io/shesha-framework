@@ -1,9 +1,9 @@
 import { IContainerComponentProps } from "designer-components/container/interfaces";
-import { IConfigurableFormComponent, IPropertySetting, IToolboxComponents } from "interfaces";
+import { IComponentsDictionary, IConfigurableFormComponent, IPropertySetting, IToolboxComponents } from "interfaces";
 import { nanoid } from "nanoid";
 
 export const isPropertySettings = (data: any) => {
-    if (typeof data !== 'object')
+    if (!data || typeof data !== 'object')
         return false;
     
     if (data.hasOwnProperty('_mode')
@@ -36,6 +36,27 @@ export const getPropertySettingsFromValue = (value: any): IPropertySetting => {
         return { _mode: 'value', _code: undefined, _value: value };
 };
 
+export const updateSettingsComponentsDict = ( 
+    toolboxComponents: IToolboxComponents,
+    components: IComponentsDictionary) => {
+        const comps: IConfigurableFormComponent[] = [];
+
+        for (const key in components) {
+            if (components.hasOwnProperty(key)) {
+                comps.push(components[key]);
+            }
+        }
+
+        const updComps = updateSettingsComponents(toolboxComponents, comps);
+
+        const res: IComponentsDictionary = {};
+        updComps.forEach((comp) => {
+            res[comp.id] = comp;
+        });
+
+        return res;
+};
+
 /**
  * Update structure of components to use with Setting component
  * 
@@ -48,110 +69,59 @@ export const updateSettingsComponents = (
     components: IConfigurableFormComponent[]) => {
 
         const processComponent = (component: IConfigurableFormComponent) => {
-  
-        const newComponent: IConfigurableFormComponent = {...component};
-  
-        if (component.type?.startsWith('setting.')) {
-            // If should be wrapped as Setting
-            newComponent.type = 'setting';
-            newComponent.id = nanoid();
-        
-            // Add source component as a child of Setting component
-            if (Array.isArray(component['components']) && component['components'].length > 0) {
-                newComponent['components'] = [{
-                    ...component,
-                    type: component.type.replace('setting.', ''),
-                    components: component['components'].map(c => {
-                        return processComponent(c);
-                    }),
-                    parentId: newComponent.id
-                }] as IContainerComponentProps[];
-            } else {
-                newComponent['components'] = [{
-                    ...component,
-                    type: component.type.replace('setting.', ''),
-                    parentId: newComponent.id
-                }] as IConfigurableFormComponent[];
-            }
-            return newComponent;
-        } else {
-            // If should not be wrapped as Setting then check all child containers
+
             const componentRegistration = toolboxComponents[component.type];
 
-            // custom containers
-            const customContainerNames = componentRegistration?.customContainerNames || [];
-            customContainerNames.forEach(subContainer => {
-                if (Array.isArray(component[subContainer]?.components) && component[subContainer]?.components.length > 0)
-                    newComponent[subContainer].components = component[subContainer]?.components.map(c => {
-                        return processComponent(c);
-                    });
-            });
+            const newComponent: IConfigurableFormComponent = {...component, jsSetting: false};
+    
+            if (componentRegistration.canBeJsSetting && (component.jsSetting !== false) 
+                || component.jsSetting === true) {
 
-            // default container
-            if (Array.isArray(component['components']) && component['components'].length > 0)
-                newComponent['components'] = component['components'].map(c => {
-                    return processComponent(c);
+                const oldComponent: IConfigurableFormComponent = {...newComponent};
+
+                // If should be wrapped as Setting
+                newComponent.type = 'setting';
+                newComponent.id = nanoid();
+            
+                // Add source component as a child of Setting component
+                if (Array.isArray(oldComponent['components']) && oldComponent['components'].length > 0) {
+                    newComponent['components'] = [{
+                        ...oldComponent,
+                        components: oldComponent['components'].map(c => {
+                            return processComponent(c);
+                        }),
+                        parentId: newComponent.id
+                    }] as IContainerComponentProps[];
+                } else {
+                    newComponent['components'] = [{
+                        ...oldComponent,
+                        parentId: newComponent.id
+                    }] as IConfigurableFormComponent[];
+                }
+                return newComponent;
+            } else {
+                // If should not be wrapped as Setting then check all child containers
+
+                // custom containers
+                const customContainerNames = componentRegistration?.customContainerNames || [];
+                customContainerNames.forEach(subContainer => {
+                    if (Array.isArray(component[subContainer]?.components) && component[subContainer]?.components.length > 0)
+                        newComponent[subContainer].components = component[subContainer]?.components.map(c => {
+                            return processComponent(c);
+                        });
                 });
 
-            return newComponent;
-        }
-    };
+                // default container
+                if (Array.isArray(component['components']) && component['components'].length > 0)
+                    newComponent['components'] = component['components'].map(c => {
+                        return processComponent(c);
+                    });
+
+                return newComponent;
+            }
+        };
   
     return components.map(c => {
         return processComponent(c);
     });
-};
-  
-export const migrateHidden = (prev: IConfigurableFormComponent) => {
-    const model = {...prev};
-    /*if (Boolean(model.customVisibility) && !Boolean(model.hidden_setting?.code)) {
-        model.hidden_setting = {
-            ...model.hidden_setting,
-            mode: 'code',
-            code: 
-`// Automatically updated from customVisibility, please review
-
-return !(() => {
-    // Source code
-
-    ${model.customVisibility}
-
-})();`
-        };
-        model.customVisibility = undefined;
-    }*/
-    return model;
-};
-
-export const migrateDisabled = (prev: IConfigurableFormComponent) => {
-    const model = {...prev};
-    /*if (Boolean(model.customEnabled) && !Boolean(model.disabled_setting?.code)) {
-        model.disabled_setting = {
-            ...model.disabled_setting,
-            mode: 'code',
-            code: 
-`// Automatically updated from customEnabled, please review
-
-return !(() => {
-    // Source code
-
-    ${model.customEnabled}
-
-})();`
-        };
-        model.customEnabled = undefined;
-    }*/
-    return model;
-};
-
-export const migratePropertyName = <T extends IConfigurableFormComponent,>(prev: T) => {
-    const name = prev['name'];
-    if (!!name && !prev.propertyName)
-    return {...prev, componentName: name, propertyName: name} as T;
-  else
-    return {...prev} as T;
-};
-
-export const getPropertySetting = (model: any, propertyName: string): IPropertySetting => {
-    return model?.[propertyName + '_setting'];
 };

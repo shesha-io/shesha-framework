@@ -19,7 +19,7 @@ import { IAutocompleteComponentProps } from './interfaces';
 import { migrateDynamicExpression } from 'designer-components/_common-migrations/migrateUseExpression';
 import { useAsyncMemo } from 'hooks/useAsyncMemo';
 import { evaluateDynamicFilters } from 'utils';
-import { migratePropertyName } from 'designer-components/_settings/utils';
+import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
 
 interface IQueryParams {
   // tslint:disable-next-line:typedef-whitespace
@@ -225,7 +225,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
 
       return result;
     })
-    .add<IAutocompleteComponentProps>(2, (prev) => migratePropertyName(prev))
+    .add<IAutocompleteComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
   ,
   linkToModelMetadata: (model, metadata): IAutocompleteComponentProps => {
     return {

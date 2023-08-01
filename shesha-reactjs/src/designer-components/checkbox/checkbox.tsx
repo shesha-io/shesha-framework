@@ -10,7 +10,7 @@ import { DataTypes } from '../../interfaces/dataTypes';
 import { useForm, useFormData } from '../../providers';
 import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
 import { ICheckboxComponentProps } from './interfaces';
-import { migratePropertyName } from 'designer-components/_settings/utils';
+import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -18,6 +18,7 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps> = {
   type: 'checkbox',
   isInput: true,
   isOutput: true,
+  canBeJsSetting: true,
   name: 'Checkbox',
   icon: <CheckSquareOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
@@ -47,7 +48,7 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps> = {
   },
   settingsFormMarkup: settingsForm,
   migrator: (m) => m
-    .add<ICheckboxComponentProps>(0, (prev) => migratePropertyName(prev))
+    .add<ICheckboxComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
   ,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
 };

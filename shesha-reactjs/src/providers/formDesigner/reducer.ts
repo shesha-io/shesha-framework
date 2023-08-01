@@ -25,8 +25,6 @@ import {
   cloneComponents,
   createComponentModelForDataProperty,
   findToolboxComponent,
-  getCustomEnabledFunc,
-  getCustomVisibilityFunc,
   processRecursive,
   upgradeComponent,
 } from '../form/utils';
@@ -325,8 +323,6 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 
       const component = state.allComponents[payload.componentId];
       const newComponent = { ...component, ...payload.settings } as IConfigurableFormComponent;
-      newComponent.visibilityFunc = getCustomVisibilityFunc(newComponent);
-      newComponent.enabledFunc = getCustomEnabledFunc(newComponent);
 
       const toolboxComponent = findToolboxComponent(state.toolboxComponentGroups, (c) => c.type === component.type);
 

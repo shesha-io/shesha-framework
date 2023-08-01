@@ -16,6 +16,9 @@ export const ComponentPropertiesPanel: FC<IProps> = () => {
     return Promise.resolve();
   };
 
+  const componentModel = useMemo(() => !!id ? getComponentModel(id) : undefined , [id]);
+  const toolboxComponent = useMemo(() => !!componentModel?.type ? getToolboxComponent(componentModel.type) : undefined, [componentModel?.type]);
+
   if (!Boolean(id))
     return (
       <>
@@ -27,9 +30,6 @@ export const ComponentPropertiesPanel: FC<IProps> = () => {
         />
       </>
     );
-
-  const componentModel = useMemo(() => getComponentModel(id), [id]);
-  const toolboxComponent = useMemo(() => getToolboxComponent(componentModel.type), [componentModel.type]);
 
   return (
     <ComponentPropertiesEditor

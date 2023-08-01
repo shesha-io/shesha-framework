@@ -14,7 +14,7 @@ import { ITextAreaComponentProps } from './interfaces';
 import { ConfigurableFormItem } from 'components';
 import ReadOnlyDisplayFormItem from 'components/readOnlyDisplayFormItem';
 import { customEventHandler } from 'components/formDesigner/components/utils';
-import { migratePropertyName } from 'designer-components/_settings/utils';
+import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -114,7 +114,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
     return textAreaModel;
   },
   migrator: (m) => m
-    .add<ITextAreaComponentProps>(0, (prev) => migratePropertyName(prev))
+    .add<ITextAreaComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
   ,
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),

@@ -13,7 +13,7 @@ import { DataTypes } from '../../interfaces/dataTypes';
 import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
 import { getNumericValue } from '../../utils/string';
 import { axiosHttp } from 'utils/fetchers';
-import { migratePropertyName } from 'designer-components/_settings/utils';
+import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
 
 type RangeValue = [moment.Moment, moment.Moment];
 
@@ -60,6 +60,7 @@ const TimeField: IToolboxComponent<ITimePickerProps> = {
   name: 'Time Picker',
   isInput: true,
   isOutput: true,
+  canBeJsSetting: true,
   icon: <ClockCircleOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.time,
   factory: (model: ITimePickerProps, _c, form) => {
@@ -97,7 +98,7 @@ const TimeField: IToolboxComponent<ITimePickerProps> = {
     return customModel;
   },
   migrator: (m) => m
-    .add<ITimePickerProps>(0, (prev) => migratePropertyName(prev))
+    .add<ITimePickerProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
   ,
 };
 

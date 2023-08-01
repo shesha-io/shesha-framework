@@ -9,7 +9,6 @@
       "parentId": "root",
       "hidden": false,
       "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "left",
@@ -81,7 +80,7 @@
             "type": "textField",
             "propertyName": "placeholder",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
-            "label": "Placeholder",
+            "label": "Placeholder 1",
             "version": 0,
             "textType": "text"
           },
@@ -167,7 +166,6 @@
             "label": "Hide border",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
             "hidden": false,
-            "customVisibility": null,
             "validate": {}
           }
         ]
@@ -175,170 +173,7 @@
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
-      "components": [
-        {
-          "id": "FizvoIoyeq1cZMqAgbDLL",
-          "components": [],
-          "parentId": "aIMnm2re1exM1M7pEEur9"
-        },
-        {
-          "id": "y9SNudmMM0Wd1Sc_YI1ng",
-          "components": [
-            {
-              "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
-              "type": "propertyAutocomplete",
-              "propertyName": "propertyName",
-              "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
-              "label": "Property name",
-              "validate": {
-                "required": true
-              }
-            },
-            {
-              "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
-              "type": "textField",
-              "propertyName": "label",
-              "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
-              "label": "Label",
-              "version": 0,
-              "textType": "text"
-            },
-            {
-              "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
-              "type": "dropdown",
-              "propertyName": "labelAlign",
-              "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
-              "label": "Label align",
-              "values": [
-                {
-                  "label": "left",
-                  "value": "left",
-                  "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
-                },
-                {
-                  "label": "right",
-                  "value": "right",
-                  "id": "b920ef96-ae27-4a01-bfad-b5b7d07218da"
-                }
-              ],
-              "dataSourceType": "values",
-              "version": 1,
-              "useRawValues": false,
-              "referenceListId": null
-            },
-            {
-              "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
-              "type": "checkbox",
-              "propertyName": "hideLabel",
-              "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
-              "label": "Hide Label"
-            },
-            {
-              "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
-              "type": "textArea",
-              "propertyName": "description",
-              "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
-              "label": "Description"
-            },
-            {
-              "id": "fbdb6bb1-5994-4205-86b4-236ca61ae54e",
-              "type": "textField",
-              "propertyName": "placeholder",
-              "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
-              "label": "Placeholder",
-              "version": 0,
-              "textType": "text"
-            },
-            {
-              "id": "d2648d0e-4664-4fee-ab4a-b14e556d957b",
-              "type": "dropdown",
-              "propertyName": "mode",
-              "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
-              "label": "Selection Mode",
-              "values": [
-                {
-                  "label": "single",
-                  "value": "single",
-                  "id": "b920ef96-ae27-4a01-bfad-b5b7d07238da"
-                },
-                {
-                  "label": "multiple",
-                  "value": "multiple",
-                  "id": "60A17884-B7D6-4B24-BB45-A60BD17A04C5"
-                }
-              ],
-              "dataSourceType": "values",
-              "defaultValue": ["single"],
-              "version": 1,
-              "useRawValues": false,
-              "referenceListId": null
-            },
-            {
-              "id": "df8a8f35-a50b-42f9-9642-73d390ceddbf",
-              "type": "dropdown",
-              "propertyName": "visibility",
-              "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
-              "label": "Visibility",
-              "description": "This property will eventually replace the 'hidden' property and other properties that toggle visibility on the UI and payload",
-              "allowClear": true,
-              "values": [
-                {
-                  "label": "Yes (Display in UI and include in payload)",
-                  "value": "Yes",
-                  "id": "53cd10ce-26af-474b-af75-8e7b1f19e51d"
-                },
-                {
-                  "label": "No (Only include in payload)",
-                  "value": "No",
-                  "id": "f07a228c-cb9c-4da7-a8bc-bc2be518a058"
-                },
-                {
-                  "label": "Removed (Remove from UI and exlude from payload)",
-                  "value": "Removed",
-                  "id": "3b6282ee-2eee-47ec-bab9-4cba52b970a0"
-                }
-              ],
-              "dataSourceType": "values",
-              "version": 1,
-              "useRawValues": false,
-              "referenceListId": null
-            },
-            {
-              "id": "733811b4-d7c0-4447-bba0-a9fb7d6d5f05",
-              "type": "checkbox",
-              "propertyName": "disableSearch",
-              "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
-              "label": "Disable Search"
-            },
-            {
-              "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
-              "type": "checkbox",
-              "propertyName": "disabled",
-              "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
-              "label": "Disabled"
-            },
-            {
-              "id": "1ceb3851-f15e-437b-98b6-84d6a1fbf801",
-              "type": "checkbox",
-              "propertyName": "readOnly",
-              "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
-              "label": "Read Only"
-            },
-            {
-              "id": "7e4876d8-1ed4-4576-9f5b-46cfd77d8643",
-              "type": "checkbox",
-              "propertyName": "hideBorder",
-              "label": "Hide border",
-              "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
-              "hidden": false,
-              "customVisibility": null,
-              "validate": {}
-            }
-          ],
-          "parentId": "aIMnm2re1exM1M7pEEur9"
-        }
-      ]
+      "settingsValidationErrors": []
     },
     {
       "id": "a7qbgROr9WUeMWUO-CQ56",
@@ -349,7 +184,6 @@
       "parentId": "root",
       "hidden": false,
       "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "left",
@@ -368,7 +202,6 @@
             "labelAlign": "right",
             "parentId": "PSXX7u5GWT0W8RXnVW3Ao",
             "hidden": false,
-            "customVisibility": null,
             "description": "Enter default value for component. Multiple values are exposed.",
             "validate": {},
             "settingsValidationErrors": [],
@@ -451,9 +284,8 @@
             "label": "Container1",
             "labelAlign": "right",
             "parentId": "f9pNv-hqF5ukaDytb7xwq",
-            "hidden": false,
+            "hidden": {"_code": "return  getSettingValue(data?.dataSourceType) !== 'url';", "_mode": "code", "_value": false},
             "visibility": "Yes",
-            "customVisibility": "return data.dataSourceType === 'url'",
             "isDynamic": false,
             "direction": "vertical",
             "justifyContent": "left",
@@ -466,18 +298,6 @@
                 "propertyName": "dataSourceUrl",
                 "parentId": "Xp6zDosEy-IrSeDfHHwh-",
                 "label": "Data Source Url",
-                "customVisibility": "",
-                "placeholder": "",
-                "description": "",
-                "prefix": "",
-                "suffix": "",
-                "initialValue": "",
-                "validate": {
-                  "minLength": "",
-                  "maxLength": "",
-                  "message": ""
-                },
-                "quickviewWidth": "",
                 "settingsValidationErrors": [],
                 "version": 0,
                 "textType": "text"
@@ -488,19 +308,6 @@
                 "propertyName": "keyPropName",
                 "parentId": "Xp6zDosEy-IrSeDfHHwh-",
                 "label": "Key Prop Name",
-                "customVisibility": "",
-                "validate": {
-                  "minLength": "",
-                  "maxLength": "",
-                  "message": ""
-                },
-                "settingsValidationErrors": [],
-                "placeholder": "",
-                "description": "",
-                "prefix": "",
-                "suffix": "",
-                "initialValue": "",
-                "quickviewWidth": "",
                 "version": 0,
                 "textType": "text"
               },
@@ -510,19 +317,6 @@
                 "propertyName": "valuePropName",
                 "parentId": "Xp6zDosEy-IrSeDfHHwh-",
                 "label": "Value Prop Name",
-                "customVisibility": "",
-                "validate": {
-                  "minLength": "",
-                  "maxLength": "",
-                  "message": ""
-                },
-                "settingsValidationErrors": [],
-                "placeholder": "",
-                "description": "",
-                "prefix": "",
-                "suffix": "",
-                "initialValue": "",
-                "quickviewWidth": "",
                 "version": 0,
                 "textType": "text"
               },
@@ -539,7 +333,6 @@
                 "ignorePrefixesOnNewItems": true,
                 "validate": {},
                 "description": "",
-                "customVisibility": "",
                 "settingsValidationErrors": []
               }
             ],
@@ -553,9 +346,8 @@
             "label": "Container2",
             "labelAlign": "right",
             "parentId": "f9pNv-hqF5ukaDytb7xwq",
-            "hidden": false,
+            "hidden": {"_code": "return getSettingValue(data?.dataSourceType) !== 'entitiesList';", "_mode": "code", "_value": false},
             "visibility": "Yes",
-            "customVisibility": "return data.dataSourceType === 'entitiesList'",
             "isDynamic": false,
             "direction": "vertical",
             "justifyContent": "left",
@@ -570,22 +362,11 @@
                 "labelAlign": "right",
                 "parentId": "uEFBpy19tApJMiBuFyj9s",
                 "hidden": false,
-                "customVisibility": "",
                 "dataSourceType": "url",
                 "validate": {},
                 "dataSourceUrl": "/api/services/app/Metadata/EntityTypeAutocomplete",
                 "entityTypeShortAlias": "",
                 "useRawValues": true,
-                "placeholder": "",
-                "description": "",
-                "defaultValue": "",
-                "keyPropName": "",
-                "valuePropName": "",
-                "quickviewFormPath": "",
-                "quickviewGetEntityUrl": "",
-                "quickviewDisplayPropertyName": "",
-                "quickviewWidth": "",
-                "settingsValidationErrors": [],
                 "version": 1
               },
               {
@@ -595,9 +376,8 @@
                 "label": "Display Property",
                 "labelAlign": "right",
                 "parentId": "uEFBpy19tApJMiBuFyj9s",
-                "hidden": false,
+                "hidden": {"_code": "return !getSettingValue(data?.entityTypeShortAlias);", "_mode": "code", "_value": false},
                 "visibility": "Yes",
-                "customVisibility": "return data.entityTypeShortAlias",
                 "isDynamic": false,
                 "placeholder": "",
                 "description": "Name of the property that should be displayed in the autocomplete. Live empty to use default display property defined on the back-end.",
@@ -614,7 +394,6 @@
                 "labelAlign": "right",
                 "parentId": "uEFBpy19tApJMiBuFyj9s",
                 "hidden": false,
-                "customVisibility": "",
                 "isDynamic": false,
                 "validate": {},
                 "settingsValidationErrors": [],
@@ -633,7 +412,6 @@
             "labelAlign": "right",
             "parentId": "f9pNv-hqF5ukaDytb7xwq",
             "hidden": false,
-            "customVisibility": null,
             "validate": {},
             "settingsValidationErrors": []
           },
@@ -644,9 +422,8 @@
             "label": "Allow Free Text",
             "labelAlign": "right",
             "parentId": "f9pNv-hqF5ukaDytb7xwq",
-            "hidden": false,
+            "hidden": {"_code": "return !(getSettingValue(data?.dataSourceType) === 'url' && getSettingValue(data?.useRawValues) === true);", "_mode": "code", "_value": false},
             "visibility": "Yes",
-            "customVisibility": "return data.dataSourceType === 'url' && data.useRawValues === true",
             "isDynamic": false,
             "description": "Allow to use free text that is missing on the source",
             "validate": {},
@@ -657,246 +434,7 @@
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
-      "components": [
-        {
-          "id": "f9pNv-hqF5ukaDytb7xwq",
-          "components": [
-            {
-              "id": "028b4eaf-8830-4dcd-b54f-422c72b25418",
-              "type": "dropdown",
-              "propertyName": "dataSourceType",
-              "parentId": "f9pNv-hqF5ukaDytb7xwq",
-              "label": "Data Source type",
-              "dataSourceType": "values",
-              "values": [
-                {
-                  "label": "Entities List",
-                  "value": "entitiesList",
-                  "id": "58bd1839-b215-4b7b-b7c7-acf67b52f7af"
-                },
-                {
-                  "label": "Url",
-                  "value": "url",
-                  "id": "e71e4e52-2886-4569-94b4-f47d58602bc2"
-                }
-              ],
-              "version": 1,
-              "useRawValues": false,
-              "referenceListId": null
-            },
-            {
-              "id": "Xp6zDosEy-IrSeDfHHwh-",
-              "type": "container",
-              "propertyName": "container1",
-              "label": "Container1",
-              "labelAlign": "right",
-              "parentId": "f9pNv-hqF5ukaDytb7xwq",
-              "hidden": false,
-              "visibility": "Yes",
-              "customVisibility": "return data.dataSourceType === 'url'",
-              "isDynamic": false,
-              "direction": "vertical",
-              "justifyContent": "left",
-              "className": "",
-              "settingsValidationErrors": [],
-              "components": [
-                {
-                  "id": "33557039-48e8-4082-9ac7-510388d4dc6e",
-                  "type": "textField",
-                  "propertyName": "dataSourceUrl",
-                  "parentId": "Xp6zDosEy-IrSeDfHHwh-",
-                  "label": "Data Source Url",
-                  "customVisibility": "",
-                  "placeholder": "",
-                  "description": "",
-                  "prefix": "",
-                  "suffix": "",
-                  "initialValue": "",
-                  "validate": {
-                    "minLength": "",
-                    "maxLength": "",
-                    "message": ""
-                  },
-                  "quickviewWidth": "",
-                  "settingsValidationErrors": [],
-                  "version": 0,
-                  "textType": "text"
-                },
-                {
-                  "id": "4c6133f1-8886-4527-aa6c-ae0606506a8a",
-                  "type": "textField",
-                  "propertyName": "keyPropName",
-                  "parentId": "Xp6zDosEy-IrSeDfHHwh-",
-                  "label": "Key Prop Name",
-                  "customVisibility": "",
-                  "validate": {
-                    "minLength": "",
-                    "maxLength": "",
-                    "message": ""
-                  },
-                  "settingsValidationErrors": [],
-                  "placeholder": "",
-                  "description": "",
-                  "prefix": "",
-                  "suffix": "",
-                  "initialValue": "",
-                  "quickviewWidth": "",
-                  "version": 0,
-                  "textType": "text"
-                },
-                {
-                  "id": "007e5859-9299-4434-84d9-9f7b0f7228af",
-                  "type": "textField",
-                  "propertyName": "valuePropName",
-                  "parentId": "Xp6zDosEy-IrSeDfHHwh-",
-                  "label": "Value Prop Name",
-                  "customVisibility": "",
-                  "validate": {
-                    "minLength": "",
-                    "maxLength": "",
-                    "message": ""
-                  },
-                  "settingsValidationErrors": [],
-                  "placeholder": "",
-                  "description": "",
-                  "prefix": "",
-                  "suffix": "",
-                  "initialValue": "",
-                  "quickviewWidth": "",
-                  "version": 0,
-                  "textType": "text"
-                },
-                {
-                  "id": "b395c0e9-dbc1-44f1-8fef-c18a49442871",
-                  "type": "labelValueEditor",
-                  "propertyName": "queryParams",
-                  "parentId": "Xp6zDosEy-IrSeDfHHwh-",
-                  "label": "Query Param",
-                  "labelTitle": "Param",
-                  "labelName": "param",
-                  "valueTitle": "Value",
-                  "valueName": "value",
-                  "ignorePrefixesOnNewItems": true,
-                  "validate": {},
-                  "description": "",
-                  "customVisibility": "",
-                  "settingsValidationErrors": []
-                }
-              ],
-              "version": 0,
-              "flexWrap": "wrap"
-            },
-            {
-              "id": "uEFBpy19tApJMiBuFyj9s",
-              "type": "container",
-              "propertyName": "container2",
-              "label": "Container2",
-              "labelAlign": "right",
-              "parentId": "f9pNv-hqF5ukaDytb7xwq",
-              "hidden": false,
-              "visibility": "Yes",
-              "customVisibility": "return data.dataSourceType === 'entitiesList'",
-              "isDynamic": false,
-              "direction": "vertical",
-              "justifyContent": "left",
-              "className": "",
-              "settingsValidationErrors": [],
-              "components": [
-                {
-                  "id": "c1ffda30-8eea-4621-aae7-0af583143df6",
-                  "type": "autocomplete",
-                  "propertyName": "entityTypeShortAlias",
-                  "label": "Entity Type",
-                  "labelAlign": "right",
-                  "parentId": "uEFBpy19tApJMiBuFyj9s",
-                  "hidden": false,
-                  "customVisibility": "",
-                  "dataSourceType": "url",
-                  "validate": {},
-                  "dataSourceUrl": "/api/services/app/Metadata/EntityTypeAutocomplete",
-                  "entityTypeShortAlias": "",
-                  "useRawValues": true,
-                  "placeholder": "",
-                  "description": "",
-                  "defaultValue": "",
-                  "keyPropName": "",
-                  "valuePropName": "",
-                  "quickviewFormPath": "",
-                  "quickviewGetEntityUrl": "",
-                  "quickviewDisplayPropertyName": "",
-                  "quickviewWidth": "",
-                  "settingsValidationErrors": [],
-                  "version": 1
-                },
-                {
-                  "id": "hpm6rN_aj-L_KaG5MLIZt",
-                  "type": "propertyAutocomplete",
-                  "propertyName": "entityDisplayProperty",
-                  "label": "Display Property",
-                  "labelAlign": "right",
-                  "parentId": "uEFBpy19tApJMiBuFyj9s",
-                  "hidden": false,
-                  "visibility": "Yes",
-                  "customVisibility": "return data.entityTypeShortAlias",
-                  "isDynamic": false,
-                  "placeholder": "",
-                  "description": "Name of the property that should be displayed in the autocomplete. Live empty to use default display property defined on the back-end.",
-                  "validate": {},
-                  "modelType": "{{data.entityTypeShortAlias}}",
-                  "showFillPropsButton": false,
-                  "settingsValidationErrors": []
-                },
-                {
-                  "id": "n4enebtmhFgvkP5ukQK1f",
-                  "type": "queryBuilder",
-                  "propertyName": "filter",
-                  "label": "Entity Filter",
-                  "labelAlign": "right",
-                  "parentId": "uEFBpy19tApJMiBuFyj9s",
-                  "hidden": false,
-                  "customVisibility": "",
-                  "isDynamic": false,
-                  "validate": {},
-                  "settingsValidationErrors": [],
-                  "modelType": "{{data.entityTypeShortAlias}}",
-                  "fieldsUnavailableHint": "Please select `Entity Type` to be able to configure this filter."
-                }
-              ],
-              "version": 0,
-              "flexWrap": "wrap"
-            },
-            {
-              "id": "dde8e245-1555-4a99-a333-4b7c31bcc5f4",
-              "type": "checkbox",
-              "propertyName": "useRawValues",
-              "label": "Use raw values",
-              "labelAlign": "right",
-              "parentId": "f9pNv-hqF5ukaDytb7xwq",
-              "hidden": false,
-              "customVisibility": null,
-              "validate": {},
-              "settingsValidationErrors": []
-            },
-            {
-              "id": "Wda2Q9DU5DDExAb7MEEfK",
-              "type": "checkbox",
-              "propertyName": "allowFreeText",
-              "label": "Allow Free Text",
-              "labelAlign": "right",
-              "parentId": "f9pNv-hqF5ukaDytb7xwq",
-              "hidden": false,
-              "visibility": "Yes",
-              "customVisibility": "return data.dataSourceType === 'url' && data.useRawValues === true",
-              "isDynamic": false,
-              "description": "Allow to use free text that is missing on the source",
-              "validate": {},
-              "settingsValidationErrors": []
-            }
-          ],
-          "parentId": "a7qbgROr9WUeMWUO-CQ56"
-        }
-      ]
+      "settingsValidationErrors": []
     },
     {
       "id": "PDYQYqtRUJBl-9TpyJeCm",
@@ -907,7 +445,6 @@
       "parentId": "root",
       "hidden": false,
       "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 1,
       "expandIconPosition": "left",
@@ -926,7 +463,6 @@
             "labelAlign": "right",
             "parentId": "FcmCvh3CcsJbPrg0ryOI3",
             "hidden": false,
-            "customVisibility": null,
             "description": "Enter custom even handler on changing of event. (form, value, option) are exposed. Called when select an option or input value change",
             "validate": {},
             "settingsValidationErrors": [],
@@ -996,7 +532,6 @@
             "labelAlign": "right",
             "parentId": "FcmCvh3CcsJbPrg0ryOI3",
             "hidden": false,
-            "customVisibility": null,
             "validate": {},
             "description": "This is a list of event that, when dispatched, will trigger the refetching of items for the component"
           }
@@ -1005,97 +540,7 @@
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
-      "components": [
-        {
-          "id": "FcmCvh3CcsJbPrg0ryOI3",
-          "components": [
-            {
-              "id": "ba7ce49e-3067-4285-a1cb-104d4a8ee570",
-              "type": "codeEditor",
-              "propertyName": "onChangeCustom",
-              "label": "On Change",
-              "labelAlign": "right",
-              "parentId": "FcmCvh3CcsJbPrg0ryOI3",
-              "hidden": false,
-              "customVisibility": null,
-              "description": "Enter custom even handler on changing of event. (form, value, option) are exposed. Called when select an option or input value change",
-              "validate": {},
-              "settingsValidationErrors": [],
-              "exposedVariables": [
-                {
-                  "propertyName": "data",
-                  "description": "Selected form values",
-                  "type": "object"
-                },
-                {
-                  "propertyName": "form",
-                  "description": "Form instance",
-                  "type": "FormInstance"
-                },
-                {
-                  "propertyName": "formMode",
-                  "description": "The form mode",
-                  "type": "'readonly' | 'edit' | 'designer'"
-                },
-                {
-                  "propertyName": "globalState",
-                  "description": "The global state of the application",
-                  "type": "object"
-                },
-                {
-                  "propertyName": "http",
-                  "description": "axios instance used to make http requests",
-                  "type": "object"
-                },
-                {
-                  "propertyName": "message",
-                  "description": "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
-                  "type": "object"
-                },
-                {
-                  "propertyName": "moment",
-                  "description": "The moment.js object",
-                  "type": "object"
-                },
-                {
-                  "propertyName": "option",
-                  "description": "Meta data of component current value",
-                  "type": "object"
-                },
-                {
-                  "propertyName": "value",
-                  "description": "Component current value",
-                  "type": "string | any"
-                },
-                {
-                  "propertyName": "setFormData",
-                  "description": "A function used to update the form data",
-                  "type": "({ values: object, mergeValues: boolean}) => void"
-                },
-                {
-                  "propertyName": "setGlobalState",
-                  "description": "Setting the global state of the application",
-                  "type": "(payload: { key: string, data: any } ) => void"
-                }
-              ]
-            },
-            {
-              "id": "40abba89-228f-41a4-8113-9bd44fe78263",
-              "type": "editableTagGroup",
-              "propertyName": "subscribedEventNames",
-              "label": "Subscribed Event Names",
-              "labelAlign": "right",
-              "parentId": "FcmCvh3CcsJbPrg0ryOI3",
-              "hidden": false,
-              "customVisibility": null,
-              "validate": {},
-              "description": "This is a list of event that, when dispatched, will trigger the refetching of items for the component"
-            }
-          ],
-          "parentId": "PDYQYqtRUJBl-9TpyJeCm"
-        }
-      ]
+      "settingsValidationErrors": []
     },
     {
       "id": "cTmW5Fmz3yVQap6tItHIl",
@@ -1106,7 +551,6 @@
       "parentId": "root",
       "hidden": false,
       "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 1,
       "expandIconPosition": "left",
@@ -1129,22 +573,7 @@
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
-      "components": [
-        {
-          "id": "OrSN8jJNAbKMZ0RD5N0Bo",
-          "components": [
-            {
-              "id": "3be9da3f-f47e-48ae-b4c3-f5cc36e534d9",
-              "type": "checkbox",
-              "propertyName": "validate.required",
-              "parentId": "OrSN8jJNAbKMZ0RD5N0Bo",
-              "label": "Required"
-            }
-          ],
-          "parentId": "cTmW5Fmz3yVQap6tItHIl"
-        }
-      ]
+      "settingsValidationErrors": []
     },
     {
       "id": "6Vw9iiDw9d0MD_Rh5cbIn",
@@ -1153,9 +582,8 @@
       "label": "Quickview",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": false,
+      "hidden": {"_code": "return getSettingValue(data?.quickviewEnabled) !== true;", "_mode": "code", "_value": false},
       "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 1,
       "expandIconPosition": "left",
@@ -1179,7 +607,6 @@
             "propertyName": "quickviewFormPath",
             "parentId": "SsWPpiJfTbgl4iHlFA_or",
             "label": "Form Path",
-            "customVisibility": "return data.quickviewEnabled === true",
             "version": 0,
             "textType": "text"
           },
@@ -1189,7 +616,6 @@
             "propertyName": "quickviewGetEntityUrl",
             "parentId": "SsWPpiJfTbgl4iHlFA_or",
             "label": "Get Entity Url",
-            "customVisibility": "return data.quickviewEnabled === true",
             "version": 0,
             "textType": "text"
           },
@@ -1199,7 +625,6 @@
             "propertyName": "quickviewDisplayPropertyName",
             "parentId": "SsWPpiJfTbgl4iHlFA_or",
             "label": "Display Property Name",
-            "customVisibility": "return data.quickviewEnabled === true",
             "version": 0,
             "textType": "text"
           },
@@ -1209,7 +634,6 @@
             "propertyName": "quickviewWidth",
             "parentId": "SsWPpiJfTbgl4iHlFA_or",
             "label": "Width",
-            "customVisibility": "return data.quickviewEnabled === true",
             "version": 0,
             "textType": "text"
           }
@@ -1218,62 +642,7 @@
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
-      "components": [
-        {
-          "id": "SsWPpiJfTbgl4iHlFA_or",
-          "components": [
-            {
-              "id": "c8eb05cd-937a-4894-9770-271551e9ce31",
-              "type": "checkbox",
-              "propertyName": "quickviewEnabled",
-              "parentId": "SsWPpiJfTbgl4iHlFA_or",
-              "label": "Use Quickview"
-            },
-            {
-              "id": "49c6712b-7e91-4dab-9f11-4e7c5e6b6c74",
-              "type": "formAutocomplete",
-              "propertyName": "quickviewFormPath",
-              "parentId": "SsWPpiJfTbgl4iHlFA_or",
-              "label": "Form Path",
-              "customVisibility": "return data.quickviewEnabled === true",
-              "version": 0,
-              "textType": "text"
-            },
-            {
-              "id": "c6ec53eb-3bec-40d6-b1a1-687c5d1c3d1d",
-              "type": "textField",
-              "propertyName": "quickviewGetEntityUrl",
-              "parentId": "SsWPpiJfTbgl4iHlFA_or",
-              "label": "Get Entity Url",
-              "customVisibility": "return data.quickviewEnabled === true",
-              "version": 0,
-              "textType": "text"
-            },
-            {
-              "id": "b0eeb8cb-d9ad-479e-a731-10d5909a50a2",
-              "type": "textField",
-              "propertyName": "quickviewDisplayPropertyName",
-              "parentId": "SsWPpiJfTbgl4iHlFA_or",
-              "label": "Display Property Name",
-              "customVisibility": "return data.quickviewEnabled === true",
-              "version": 0,
-              "textType": "text"
-            },
-            {
-              "id": "d690a0b7-a9d3-4ab2-8843-9dcfbac08adc",
-              "type": "textField",
-              "propertyName": "quickviewWidth",
-              "parentId": "SsWPpiJfTbgl4iHlFA_or",
-              "label": "Width",
-              "customVisibility": "return data.quickviewEnabled === true",
-              "version": 0,
-              "textType": "text"
-            }
-          ],
-          "parentId": "6Vw9iiDw9d0MD_Rh5cbIn"
-        }
-      ]
+      "settingsValidationErrors": []
     },
     {
       "id": "7UJDsvMw_E9kg5mvIL6XT",
@@ -1284,7 +653,6 @@
       "parentId": "root",
       "hidden": false,
       "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 1,
       "expandIconPosition": "left",
@@ -1346,196 +714,7 @@
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
-      "components": [
-        {
-          "id": "G670M5i5T85_M0HrSligg",
-          "components": [
-            {
-              "id": "06ab0599-914d-4d2d-875c-765a495472f8",
-              "type": "codeEditor",
-              "propertyName": "style",
-              "label": "Style",
-              "parentId": "G670M5i5T85_M0HrSligg",
-              "validate": {},
-              "settingsValidationErrors": [],
-              "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
-              "exposedVariables": [
-                {
-                  "propertyName": "data",
-                  "description": "Form values",
-                  "type": "object"
-                }
-              ]
-            },
-            {
-              "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
-              "type": "dropdown",
-              "propertyName": "size",
-              "parentId": "G670M5i5T85_M0HrSligg",
-              "label": "Size",
-              "allowClear": true,
-              "values": [
-                {
-                  "label": "Small",
-                  "value": "small",
-                  "id": "4f11403c-95fd-4e49-bb60-cb8c25f0f3c3"
-                },
-                {
-                  "label": "Middle",
-                  "value": "middle",
-                  "id": "8f85c476-e632-4fa7-89ad-2be6cfb7f1f1"
-                },
-                {
-                  "label": "Large",
-                  "value": "large",
-                  "id": "F4A7F447-68D6-457F-94D4-C1220C6EA630"
-                }
-              ],
-              "dataSourceType": "values",
-              "version": 1,
-              "useRawValues": false,
-              "referenceListId": null
-            }
-          ],
-          "parentId": "7UJDsvMw_E9kg5mvIL6XT"
-        }
-      ]
-    },
-    {
-      "id": "Wt0jHSkz32lTIeFOckNxe",
-      "type": "collapsiblePanel",
-      "propertyName": "pnlVisibility",
-      "label": "Visibility",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "visibility": "Yes",
-      "customVisibility": null,
-      "isDynamic": false,
-      "version": 1,
-      "expandIconPosition": "left",
-      "header": {
-        "id": "u7LOMmaFMM4jwePnZcTUG",
-        "components": []
-      },
-      "content": {
-        "id": "nnHMw2dHygQOncvPzTzNf",
-        "components": [
-          {
-            "id": "205fc274-395c-4120-94ea-e9669470b194",
-            "type": "codeEditor",
-            "propertyName": "customVisibility",
-            "label": "Custom Visibility",
-            "labelAlign": "right",
-            "parentId": "nnHMw2dHygQOncvPzTzNf",
-            "hidden": false,
-            "customVisibility": null,
-            "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-            "validate": {},
-            "settingsValidationErrors": [],
-            "exposedVariables": [
-              {
-                "propertyName": "value",
-                "description": "Component current value",
-                "type": "string | any"
-              },
-              {
-                "propertyName": "data",
-                "description": "Selected form values",
-                "type": "object"
-              }
-            ]
-          },
-          {
-            "id": "4b5e5951-4998-4635-b1c8-0b6d3940c300",
-            "type": "codeEditor",
-            "propertyName": "customEnabled",
-            "label": "Custom Enabled",
-            "labelAlign": "right",
-            "parentId": "nnHMw2dHygQOncvPzTzNf",
-            "hidden": false,
-            "customEnabled": null,
-            "description": "Enter custom enabled code.  You must return true to enable the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-            "validate": {},
-            "settingsValidationErrors": [],
-            "exposedVariables": [
-              {
-                "propertyName": "value",
-                "description": "Component current value",
-                "type": "string | any"
-              },
-              {
-                "propertyName": "data",
-                "description": "Selected form values",
-                "type": "object"
-              }
-            ]
-          }
-        ]
-      },
-      "collapsible": "header",
-      "ghost": true,
-      "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
-      "components": [
-        {
-          "id": "nnHMw2dHygQOncvPzTzNf",
-          "components": [
-            {
-              "id": "205fc274-395c-4120-94ea-e9669470b194",
-              "type": "codeEditor",
-              "propertyName": "customVisibility",
-              "label": "Custom Visibility",
-              "labelAlign": "right",
-              "parentId": "nnHMw2dHygQOncvPzTzNf",
-              "hidden": false,
-              "customVisibility": null,
-              "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-              "validate": {},
-              "settingsValidationErrors": [],
-              "exposedVariables": [
-                {
-                  "propertyName": "value",
-                  "description": "Component current value",
-                  "type": "string | any"
-                },
-                {
-                  "propertyName": "data",
-                  "description": "Selected form values",
-                  "type": "object"
-                }
-              ]
-            },
-            {
-              "id": "4b5e5951-4998-4635-b1c8-0b6d3940c300",
-              "type": "codeEditor",
-              "propertyName": "customEnabled",
-              "label": "Custom Enabled",
-              "labelAlign": "right",
-              "parentId": "nnHMw2dHygQOncvPzTzNf",
-              "hidden": false,
-              "customEnabled": null,
-              "description": "Enter custom enabled code.  You must return true to enable the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-              "validate": {},
-              "settingsValidationErrors": [],
-              "exposedVariables": [
-                {
-                  "propertyName": "value",
-                  "description": "Component current value",
-                  "type": "string | any"
-                },
-                {
-                  "propertyName": "data",
-                  "description": "Selected form values",
-                  "type": "object"
-                }
-              ]
-            }
-          ],
-          "parentId": "Wt0jHSkz32lTIeFOckNxe"
-        }
-      ]
+      "settingsValidationErrors": []
     }
   ],
   "formSettings": {

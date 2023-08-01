@@ -27,6 +27,7 @@ import {
 } from './models';
 import Mustache from 'mustache';
 import {
+  IPropertySetting,
   IToolboxComponent,
   IToolboxComponentGroup,
   IToolboxComponents,
@@ -48,6 +49,72 @@ import tableViewMarkup from './defaults/markups/tableView.json';
 import { CSSProperties } from 'react';
 import camelcase from 'camelcase';
 import { Migrator } from '../../utils/fluentMigrator/migrator';
+import { isPropertySettings } from 'designer-components/_settings/utils';
+
+/**
+ * Convert model to values calculated from JS code if provided (for each fields)
+ *
+ * @param model - model
+ * @returns - converted model
+ */
+export const getActualModel = (model: any, formData: any, formMode: FormMode) => {
+
+  const getSettingValue = (value: any, calcFunction: (setting: IPropertySetting) => any) => {
+    if (!value) 
+      return value;
+  
+    if (typeof value === 'object') {
+      if (isPropertySettings(value)) {
+        // update setting value to actual
+        const v = value as IPropertySetting;
+        if (v?._mode === 'code' && Boolean(v?._code)) {
+          const val = calcFunction(v);
+          return val;
+        } else {
+          return v?._value;
+        }
+      } //else
+        // update nested objects
+        //return getActualModel(value, formData, formMode);
+    }
+    return value;
+  };
+  
+  const getValue = (val: any) => {
+    return getSettingValue(val, calcValue);
+  };
+
+  const calcValue = (setting) => {
+    try {
+      const res = new Function('value, data, staticValue, formMode, getSettingValue', setting?._code)
+        (formData?.[model.propertyName], formData, setting?._value, formMode, getValue);
+      return res;
+    } catch {
+      return undefined;
+    }
+  };
+
+  const m = {...model};
+
+  for (var propName in m) {
+    if (!Object.prototype.hasOwnProperty.call(m, propName)) continue;
+    
+    const propNames = propName.split('.');
+    let obj = m;
+    let i = 1;
+    while(i < propNames.length) {
+      if (typeof obj[propNames[i - 1]] === 'undefined')
+        obj[propNames[i - 1]] = {};
+      obj = obj[propNames[i - 1]];
+      i++;
+    }
+
+    const value = obj[propNames[propNames.length - 1]];
+
+    obj[propNames[propNames.length - 1]] = getSettingValue(value, calcValue);
+  }
+  return m;
+};
 
 /**
  * Convert components tree to flat structure.
@@ -69,8 +136,8 @@ export const componentsTreeToFlatStructure = (
     result.allComponents[component.id] = {
       ...component,
       parentId,
-      visibilityFunc: getCustomVisibilityFunc(component),
-      enabledFunc: getCustomEnabledFunc(component),
+      //visibilityFunc: getCustomVisibilityFunc(component),
+      //enabledFunc: getCustomEnabledFunc(component),
     };
 
     const level = result.componentRelations[parentId] || [];
@@ -230,55 +297,55 @@ export const componentsFlatStructureToTree = (
   return tree;
 };
 
-export const getCustomVisibilityFunc = ({ customVisibility, propertyName: name }: IConfigurableFormComponent) => {
-  if (Boolean(customVisibility)) {
-    try {
-      /* tslint:disable:function-constructor */
+// export const getCustomVisibilityFunc = ({ customVisibility, propertyName: name }: IConfigurableFormComponent) => {
+//   if (Boolean(customVisibility)) {
+//     try {
+//       /* tslint:disable:function-constructor */
 
-      const customVisibilityExecutor = new Function('value, data, globalState, formMode', customVisibility);
+//       const customVisibilityExecutor = new Function('value, data, globalState, formMode', customVisibility);
 
-      const getIsVisible = (data = {}, globalState = {}, formMode) => {
-        try {
-          const result = customVisibilityExecutor(data?.[name], data, globalState, formMode);
-          return result;
-        } catch (e) {
-          console.warn(`Custom Visibility of field ${name} throws exception: ${e}`);
-          return true;
-        }
-      };
+//       const getIsVisible = (data = {}, globalState = {}, formMode) => {
+//         try {
+//           const result = customVisibilityExecutor(data?.[name], data, globalState, formMode);
+//           return result;
+//         } catch (e) {
+//           console.warn(`Custom Visibility of field ${name} throws exception: ${e}`);
+//           return true;
+//         }
+//       };
 
-      return getIsVisible;
-    } catch (e) {
-      return () => {
-        console.warn(`Incorrect syntax of the 'Custom Visibility', field name: ${name}, error: ${e}`);
-      };
-    }
-  } else return () => true;
-};
+//       return getIsVisible;
+//     } catch (e) {
+//       return () => {
+//         console.warn(`Incorrect syntax of the 'Custom Visibility', field name: ${name}, error: ${e}`);
+//       };
+//     }
+//   } else return () => true;
+// };
 
-export const getCustomEnabledFunc = ({ customEnabled, propertyName: name }: IConfigurableFormComponent) => {
-  if (Boolean(customEnabled)) {
-    try {
-      const customEnabledExecutor = new Function('value, data, globalState, formMode', customEnabled);
+// export const getCustomEnabledFunc = ({ customEnabled, propertyName: name }: IConfigurableFormComponent) => {
+//   if (Boolean(customEnabled)) {
+//     try {
+//       const customEnabledExecutor = new Function('value, data, globalState, formMode', customEnabled);
 
-      const getIsEnabled = (data = {}, globalState = {}, formMode) => {
-        try {
-          const result = customEnabledExecutor(data?.[name], data, globalState, formMode);
-          return result;
-        } catch (e) {
-          console.error(`Custom Enabled of field ${name} throws exception: ${e}`);
-          return true;
-        }
-      };
+//       const getIsEnabled = (data = {}, globalState = {}, formMode) => {
+//         try {
+//           const result = customEnabledExecutor(data?.[name], data, globalState, formMode);
+//           return result;
+//         } catch (e) {
+//           console.error(`Custom Enabled of field ${name} throws exception: ${e}`);
+//           return true;
+//         }
+//       };
 
-      return getIsEnabled;
-    } catch (e) {
-      return () => {
-        console.warn(`Incorrect syntax of the 'Custom Enabled', field name: ${name}, error: ${e}`);
-      };
-    }
-  } else return () => true;
-};
+//       return getIsEnabled;
+//     } catch (e) {
+//       return () => {
+//         console.warn(`Incorrect syntax of the 'Custom Enabled', field name: ${name}, error: ${e}`);
+//       };
+//     }
+//   } else return () => true;
+// };
 
 /**
  * Evaluates the string using Mustache template.
@@ -572,7 +639,9 @@ export const getVisibleComponentIds = (
   const visibleComponents: string[] = [];
   for (const key in components) {
     if (components.hasOwnProperty(key)) {
-      const component = components[key] as IConfigurableFormComponent;
+
+      // update component model to actual values
+      const component = getActualModel(components[key] as IConfigurableFormComponent, values, formMode);
 
       if (propertyFilter && component.propertyName) {
         const filteredOut = propertyFilter(component.propertyName);

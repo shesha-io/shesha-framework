@@ -16,7 +16,7 @@ import { customDropDownEventHandler } from '../../components/formDesigner/compon
 import { axiosHttp } from '../../utils/fetchers';
 import moment from 'moment';
 import { getLegacyReferenceListIdentifier } from '../../utils/referenceList';
-import { migratePropertyName } from 'designer-components/_settings/utils';
+import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -69,7 +69,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
         referenceListId: getLegacyReferenceListIdentifier(prev.referenceListNamespace, prev.referenceListName),
       };
     })
-    .add<IDropdownComponentProps>(2, (prev) => migratePropertyName(prev))
+    .add<IDropdownComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     ,
   linkToModelMetadata: (model, metadata): IDropdownComponentProps => {
     return {

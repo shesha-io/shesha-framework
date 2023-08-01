@@ -9,10 +9,10 @@
      },
      {
         "id":"5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
-        "type":"propertyAutocomplete",
-        "propertyName":"name",
+        "type":"contextPropertyAutocomplete",
+        "propertyName":"propertyName",
         "parentId":"root",
-        "label":"Name",
+        "label":"Property name",
         "validate":{
            "required":true
         }

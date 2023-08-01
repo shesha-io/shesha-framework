@@ -154,6 +154,9 @@ export interface IConfigurableFormComponent extends
   /** If true, indicates that component is rendered dynamically and some of rules (e.g. visibility) shouldn't be applied to this component */
   isDynamic?: boolean;
 
+  /** If true, indicates that component should be wrapped by SettingComponent and use JS customization  */
+  jsSetting?: boolean;
+
   subscribedEventNames?: string[];
   style?: string;
 }

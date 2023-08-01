@@ -8,7 +8,7 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
         parentId: "root",
         label: "Display",
         labelAlign: "right",
-        expandIconPosition: "left",
+        expandIconPosition: "start",
         ghost: true,
         hideWhenEmpty: true,
         header: {
@@ -81,7 +81,7 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
         parentId: "root",
         label: "Customize Status",
         labelAlign: "right",
-        expandIconPosition: "left",
+        expandIconPosition: "start",
         ghost: true,
         hideWhenEmpty: true,
         header: {
@@ -124,7 +124,7 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
         parentId: "root",
         label: "Style",
         labelAlign: "right",
-        expandIconPosition: "left",
+        expandIconPosition: "start",
         ghost: true,
         hideWhenEmpty: true,
         header: {
@@ -157,7 +157,7 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
         label: "RefList Source",
         description: 'This section is for binding your status tag to a specific RefList Properties',
         labelAlign: "right",
-        expandIconPosition: "left",
+        expandIconPosition: "start",
         ghost: true,
         hideWhenEmpty: true,
         header: {
@@ -182,7 +182,7 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
         parentId: "root",
         label: "Visibility",
         labelAlign: "right",
-        expandIconPosition: "left",
+        expandIconPosition: "start",
         ghost: true,
         hideWhenEmpty: true,
         header: {

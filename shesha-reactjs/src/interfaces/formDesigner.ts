@@ -57,7 +57,13 @@ export interface IToolboxComponent<T extends IConfigurableFormComponent = any> {
   /**
    * If true, indicates that the component has data bindings and can be used as an output.
    */
-   isOutput?: boolean;
+  isOutput?: boolean;
+
+  /**
+   * If true, indicates that the component can be used as a setting component with JS customization
+   */
+  canBeJsSetting?: boolean;
+
   /**
    * Component name. This name is displayed on the components toolbox
    */

@@ -23,12 +23,12 @@ export const DATA_CONTEXT_PROVIDER_CONTEXT_INITIAL_STATE: IDataContextProviderSt
 export const DataContextProviderStateContext = createContext<IDataContextProviderStateContext>(DATA_CONTEXT_PROVIDER_CONTEXT_INITIAL_STATE);
 export const DataContextProviderActionsContext = createContext<IDataContextProviderActionsContext>(undefined);
 
-export type DataContextType = 'root' | 'custom' | string;
+export type DataContextType = 'root' | 'custom' | 'settings';
 
 export interface IDataContextProviderProps { 
     id: string;
     name: string;
-    type: DataContextType;
+    type: DataContextType | string;
     initialData?: Promise<object> | object;
     metadata?: Promise<IModelMetadata>;
     onChangeData?: <T,>(data: T) => void;

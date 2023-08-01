@@ -7,7 +7,7 @@ import settingsFormJson from './settingsForm.json';
 import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import AutocompleteTagGroup from '../../../autocompleteTagGroup';
 import { useForm } from '../../../..';
-import { migratePropertyName } from 'designer-components/_settings/utils';
+import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
 
 export interface IAutocompleteTagsOutlinedComponentProps extends IConfigurableFormComponent {
   value?: string[];
@@ -51,7 +51,7 @@ const AutocompleteTagGroupComponent: IToolboxComponent<IAutocompleteTagsOutlined
   settingsFormMarkup: settingsForm,
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
   migrator: (m) => m
-    .add<IAutocompleteTagsOutlinedComponentProps>(0, (prev: IAutocompleteTagsOutlinedComponentProps) => migratePropertyName(prev))
+    .add<IAutocompleteTagsOutlinedComponentProps>(0, (prev: IAutocompleteTagsOutlinedComponentProps) => migratePropertyName(migrateCustomFunctions(prev)))
 ,
 };
 

@@ -1,5 +1,5 @@
 import { UnorderedListOutlined } from '@ant-design/icons';
-import { migratePropertyName } from 'designer-components/_settings/utils';
+import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
 import React from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
 import { DataTypes } from '../../../../interfaces/dataTypes';
@@ -41,7 +41,7 @@ const ChildEntitiesTagGroup: IToolboxComponent<IChildEntitiesTagGroupProps> = {
     );
   },
   migrator: (m) => m
-    .add<IChildEntitiesTagGroupProps>(0, (prev) => migratePropertyName(prev))
+    .add<IChildEntitiesTagGroupProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
   ,
 };
 

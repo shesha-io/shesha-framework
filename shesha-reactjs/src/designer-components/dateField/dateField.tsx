@@ -16,7 +16,7 @@ import { axiosHttp } from '../../utils/fetchers';
 import { IDateFieldProps, RangePickerChangeEvent, TimePickerChangeEvent } from './interfaces';
 import settingsFormJson from './settingsForm.json';
 import { DATE_TIME_FORMATS, disabledDate, getDefaultFormat, getFormat, getRangePickerValues } from './utils';
-import { migratePropertyName } from 'designer-components/_settings/utils';
+import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
 
 const META_DATA_FILTERS: ProperyDataType[] = ['date', 'date-time', 'time'];
 
@@ -76,7 +76,7 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
     return customModel;
   },
   migrator: (m) => m
-    .add<IDateFieldProps>(0, (prev) => migratePropertyName(prev))
+    .add<IDateFieldProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
   ,
   linkToModelMetadata: (model, metadata): IDateFieldProps => {
     return {

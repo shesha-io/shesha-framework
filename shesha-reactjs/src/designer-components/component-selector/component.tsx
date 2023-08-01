@@ -6,7 +6,7 @@ import { useForm } from 'providers';
 import { getSettings } from './settingsForm';
 import { IComponentSelectorComponentProps } from './interfaces';
 import { ConfigurableFormItem, FormComponentSelector } from 'components';
-import { migratePropertyName } from 'designer-components/_settings/utils';
+import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
 
 export type IActionParameters = [{ key: string; value: string }];
 
@@ -34,6 +34,6 @@ export const ComponentSelectorComponent: IToolboxComponent<IComponentSelectorCom
   validateSettings: model => validateConfigurableComponentSettings(getSettings(model), model),
   migrator: m => m
     .add<IComponentSelectorComponentProps>(0, prev => ({ ...prev, componentType: 'input' }))
-    .add<IComponentSelectorComponentProps>(1, prev => migratePropertyName(prev))
+    .add<IComponentSelectorComponentProps>(1, prev => migratePropertyName(migrateCustomFunctions(prev)))
   ,
 };

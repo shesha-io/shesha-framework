@@ -7,6 +7,7 @@ import { DataContextProvider } from 'providers/dataContextProvider';
 import { Button } from 'antd';
 import { getPropertySettingsFromData } from './utils';
 import { SettingsControl } from './settingsControl';
+import { getSettings } from './settings';
 
 export interface ISettingsComponentProps extends IConfigurableFormComponent {
     components?: IConfigurableFormComponent[];
@@ -30,7 +31,9 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
         const internalProps = model?.components?.length > 0 ? model?.components[0] : model;
         const props = Boolean(model?.label) ? model : internalProps;
 
-        const switchMode = () => setMode(mode === 'code' ? 'value' : 'code');
+        const switchMode = () => {
+            setMode(mode === 'code' ? 'value' : 'code');
+        };
 
         const components = useMemo(() => {
             return model?.components?.map(c => ({ ...c, hideLabel: true, readOnly: model?.readOnly, context: model.id }));
@@ -54,7 +57,7 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
                     return (
                         <SettingsControl id={model.id} propertyName={internalProps?.propertyName} mode={mode} value={value} onChange={onChange}>
                             {(value, onChange, propertyName) => 
-                                <DataContextProvider id={model.id} name={model.id} type={'custom'} 
+                                <DataContextProvider id={model.id} name={props.label.toString()} type={'settings'} 
                                     initialData={new Promise((resolve) => {
                                         resolve({[propertyName]: value});
                                     })}
@@ -70,7 +73,8 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
                 }}
             </ConfigurableFormItem>
         );
-    }
+    },
+    settingsFormMarkup: getSettings(),
 };
 
 export default SettingsComponent;

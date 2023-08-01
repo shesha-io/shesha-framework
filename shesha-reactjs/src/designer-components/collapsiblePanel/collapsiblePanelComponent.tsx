@@ -10,7 +10,7 @@ import { validateConfigurableComponentSettings } from 'providers/form/utils';
 import { ICollapsiblePanelComponentProps, ICollapsiblePanelComponentPropsV0 } from './interfaces';
 import { nanoid } from 'nanoid';
 import { ExpandIconPosition } from 'antd/lib/collapse/Collapse';
-import { migratePropertyName } from 'designer-components/_settings/utils';
+import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -82,7 +82,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
         collapsible: 'icon'
       };
     })
-    .add<ICollapsiblePanelComponentProps>(2, (prev) => migratePropertyName(prev))
+    .add<ICollapsiblePanelComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
   ,
   customContainerNames: ['header', 'content'],
 };

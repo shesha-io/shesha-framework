@@ -7,7 +7,7 @@ import { useForm, useFormData, useGlobalState } from 'providers';
 import { getSettings } from './settings';
 import ShaIcon from '../../../shaIcon';
 import { IAlertComponentProps } from './interfaces';
-import { migratePropertyName } from 'designer-components/_settings/utils';
+import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
 
 const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
   type: 'alert',
@@ -44,7 +44,7 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
     ...model,
   }),
   migrator: (m) => m
-    .add<IAlertComponentProps>(0, (prev: IAlertComponentProps) => migratePropertyName(prev))
+    .add<IAlertComponentProps>(0, (prev: IAlertComponentProps) => migratePropertyName(migrateCustomFunctions(prev)))
   ,
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),

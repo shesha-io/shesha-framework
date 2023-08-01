@@ -254,6 +254,11 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   };
 
   const updateVisibleComponents = (formContext: IFormStateInternalContext) => {
+    /*const comps = updateSettingsComponentsDict(
+      toolboxComponents,
+      allComponents
+    );*/
+
     const visibleComponents = getVisibleComponentIds(
       allComponents,
       formContext.formData,

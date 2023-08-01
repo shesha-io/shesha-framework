@@ -206,7 +206,7 @@ export class DesignerToolbarSettings<T> {
   private addProperty(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp), type: string) {
     const obj = typeof props !== 'function' ? props : props(this.data);
 
-    this.form.push({ ...obj, type: obj.jsSetting ? `setting.${type}`: type, version: 'latest' });
+    this.form.push({ ...obj, type, version: 'latest' });
 
     return this;
   }
