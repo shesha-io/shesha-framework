@@ -2,7 +2,6 @@
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Reflection;
-using NHibernate.Linq;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;

@@ -1,4 +1,5 @@
 ﻿using NHibernate.Dialect;
+using Shesha.NHibernate.Connection;
 using NhConfiguration = global::NHibernate.Cfg.Configuration;
 namespace Shesha.NHibernate.PostgreSql
 {
@@ -15,6 +16,7 @@ namespace Shesha.NHibernate.PostgreSql
 
                  db.Dialect<PostgreSQL83Dialect>();
                  db.Driver<CitextPostgreSqlDriver>();
+                 db.ConnectionProvider<SheshaNhConnectionProvider>();
 
                  db.Timeout = 150;
                  db.LogFormattedSql = true;

@@ -13,9 +13,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using NHibernate.Linq;
 using Shesha.Authorization.Roles;
 using Shesha.Configuration;
+using Shesha.Extensions;
 using Shesha.Settings;
 using System;
 using System.Collections.Generic;
@@ -272,7 +272,7 @@ namespace Shesha.Authorization.Users
                 return false;
 
             var normalizedUsername = NormalizeName(username);
-            return await Users.AnyAsync(u => u.NormalizedUserName == normalizedUsername);
+            return await Users.Where(u => u.NormalizedUserName == normalizedUsername).AnyAsync();
         }
 
         public override void InitializeOptions(int? tenantId)

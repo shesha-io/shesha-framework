@@ -47,6 +47,10 @@ export const FncDesignerAddMember = addStory(Template, {
   formId: '42a4135c-bd2d-4dba-bc2c-6bbd8bace7da',
 });
 
+export const FncDesignerMemberDetailsView = addStory(Template, {
+  formId: 'c3b1d5f5-dcc6-4957-b45f-34bdc9f59d95',
+});
+
 export const FncDesignerMemberCreateView = addStory(Template, {
   formId: 'd69e9365-1121-4a45-bab2-e93f5d67f8b6',
 });

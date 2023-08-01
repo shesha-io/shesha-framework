@@ -2,6 +2,8 @@
 using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
+using NetTopologySuite.Geometries;
+using NetTopologySuite.Operation;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
@@ -9,7 +11,6 @@ using Shesha.DynamicEntities;
 using Shesha.Extensions;
 using Shesha.Metadata.Dtos;
 using Shesha.Reflection;
-using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -18,9 +19,6 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using static AutoMapper.Internal.ExpressionFactory;
 
 namespace Shesha.Metadata
 {
@@ -281,6 +279,9 @@ namespace Shesha.Metadata
 
             if (propType == typeof(Int64))
                 return new DataTypeInfo(DataTypes.Number, NumberFormats.Int64);
+
+            if (propType == typeof(Geometry))
+                return new DataTypeInfo(DataTypes.Geometry);
 
             if (propType == typeof(Single) || propType == typeof(float))
                 return new DataTypeInfo(DataTypes.Number, NumberFormats.Float);

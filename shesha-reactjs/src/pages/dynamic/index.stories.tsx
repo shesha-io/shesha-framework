@@ -47,6 +47,12 @@ export const FncTableForteenTest = addStory(Template, {
   formId: { name: 'Table-forteen-Test', module: 'Shesha' },
 });
 
+export const FncPaymentDetailsView = addStory(Template, {
+  formId: { name: 'payment-details-view', module: 'Shesha' },
+  id: '4b47ff58-3511-486e-81a2-2299ff7c515e',
+  mode: 'edit',
+});
+
 export const DepCustomerDetails = addStory(Template, {
   formId: { name: 'customer-details', module: 'Boxfusion.Dep' },
   id: '7cd698ce-9e41-4604-8ef6-08f0e1a8144d',

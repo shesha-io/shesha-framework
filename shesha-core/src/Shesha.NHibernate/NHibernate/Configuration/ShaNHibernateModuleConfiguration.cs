@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using NHibernate;
+using NHibernate.Dialect;
+using NHibernate.Driver;
 using Shesha.Configuration;
 using Shesha.Exceptions;
 using System;
@@ -12,6 +15,10 @@ namespace Shesha.NHibernate.Configuration
     {
         private readonly IWebHostEnvironment _env;
         private readonly IAbpStartupConfiguration _startupConfig;
+        
+        public Type CustomDialect { get; private set; }
+        public Type CustomDriver { get; private set; }
+        public Func<global::NHibernate.Cfg.Configuration, ISessionFactory> SessionFactoryBuilder { get; private set; }
 
         public ShaNHibernateModuleConfiguration(IWebHostEnvironment env, IAbpStartupConfiguration startupConfig)
         {
@@ -103,6 +110,21 @@ namespace Shesha.NHibernate.Configuration
         {
             var configuration = AppConfigurations.Get(_env.ContentRootPath, _env.EnvironmentName, _env.IsDevelopment());
             return connectionStringGetter(configuration);
+        }
+
+        public void UseDialect<TDialect>() where TDialect: Dialect
+        {
+            CustomDialect = typeof(TDialect);
+        }
+
+        public void UseDriver<TDriver>() where TDriver: IDriver
+        {
+            CustomDriver = typeof(TDriver);
+        }
+
+        public void UseCustomSessionFactoryBuilder(Func<global::NHibernate.Cfg.Configuration, ISessionFactory> sessionFactoryBuilder)
+        {
+            SessionFactoryBuilder = sessionFactoryBuilder;
         }
     }
 }

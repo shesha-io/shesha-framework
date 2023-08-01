@@ -44,7 +44,7 @@
     <PackageReference Include="MediaTypeMap.Core" Version="2.3.3" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
     <PackageReference Include="NETStandard.Library" Version="2.0.3" />
-    <PackageReference Include="NHibernate" Version="5.4.2" />
+    <PackageReference Include="NHibernate" Version="5.4.3" />
     <PackageReference Include="Stubble.Core" Version="1.9.3" />
   </ItemGroup>
   <ItemGroup>

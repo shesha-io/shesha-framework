@@ -2,8 +2,6 @@
 using System.Linq;
 using System.Reflection;
 using Abp.Dependency;
-using NHibernate;
-using NHibernate.Persister.Entity;
 using Shesha.Services;
 
 namespace Shesha.Configuration.Runtime
@@ -69,7 +67,7 @@ namespace Shesha.Configuration.Runtime
         public string Category { get; set; }
 
         private bool? _isMapped;
-        private static object _isMappedLock = new object();
+        
 
         public Type EntityType { get; set; }
 
@@ -83,19 +81,9 @@ namespace Shesha.Configuration.Runtime
                 if (_isMapped.HasValue)
                     return _isMapped.Value;
 
-                lock (_isMappedLock)
-                {
-                    if (_isMapped != null)
-                        return _isMapped.Value;
-
-                    var sessionFactory = StaticContext.IocManager.Resolve<ISessionFactory>();
-                    var metadata = sessionFactory.GetClassMetadata(EntityType) as SingleTableEntityPersister;
-
-                    _isMapped = metadata != null
-                        ? metadata.PropertyNames.Contains(PropertyInfo.Name)
-                        : false;
-                    return _isMapped.Value;
-                }
+                var informer = StaticContext.IocManager.Resolve<IDbMappingInformer>();
+                _isMapped = informer.IsMappedEntity(EntityType, PropertyInfo);
+                return _isMapped.Value;
             }
         }
 

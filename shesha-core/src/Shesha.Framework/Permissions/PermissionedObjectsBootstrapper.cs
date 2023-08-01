@@ -1,7 +1,6 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Reflection;
-using NHibernate.Linq;
 using Shesha.Bootstrappers;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;

@@ -8,8 +8,8 @@ using Abp.IdentityFramework;
 using Abp.Runtime.Session;
 using Abp.UI;
 using Microsoft.AspNetCore.Identity;
-using NHibernate.Linq;
 using Shesha.Authorization.Roles;
+using Shesha.Extensions;
 using Shesha.MultiTenancy;
 
 namespace Shesha.Authorization.Users

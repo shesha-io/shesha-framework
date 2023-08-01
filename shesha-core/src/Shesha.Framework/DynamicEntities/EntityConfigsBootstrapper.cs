@@ -2,7 +2,6 @@
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Reflection;
-using NHibernate.Linq;
 using Shesha.Bootstrappers;
 using Shesha.Configuration.Runtime;
 using Shesha.ConfigurationItems;
@@ -95,11 +94,11 @@ namespace Shesha.DynamicEntities
                 while (parent != typeof(object) && dbParent == null)
                 {
                     parent = parent.BaseType;
-                    dbParent = await _entityConfigRepository.GetAll().FirstOrDefaultAsync(x => x.Namespace == parent.Namespace && x.ClassName == parent.Name);
+                    dbParent = await _entityConfigRepository.GetAll().Where(x => x.Namespace == parent.Namespace && x.ClassName == parent.Name).FirstOrDefaultAsync();
                 }
                 if (dbParent != null)
                 {
-                    var dbEntity = await _entityConfigRepository.GetAll().FirstOrDefaultAsync(x => x.Namespace == entityType.Namespace && x.ClassName == entityType.Name);
+                    var dbEntity = await _entityConfigRepository.GetAll().Where(x => x.Namespace == entityType.Namespace && x.ClassName == entityType.Name).FirstOrDefaultAsync();
                     dbEntity.Parent = dbParent;
                     await _entityConfigRepository.UpdateAsync(dbEntity);
                 }

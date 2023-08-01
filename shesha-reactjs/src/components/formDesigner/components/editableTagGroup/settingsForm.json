@@ -8,6 +8,16 @@
       "label": "Display"
     },
     {
+      "id": "d54aab8e-418b-42ed-8497-fbd284daa33a",
+      "type": "propertyAutocomplete",
+      "name": "name",
+      "parentId": "root",
+      "label": "Name",
+      "validate": {
+        "required": true
+      }
+    },
+    {
       "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
       "type": "textField",
       "propertyName": "label",

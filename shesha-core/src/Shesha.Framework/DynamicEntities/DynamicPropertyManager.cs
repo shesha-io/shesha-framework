@@ -1,14 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Linq.Dynamic.Core;
-using System.Reflection;
-using System.Threading.Tasks;
-using Abp.Collections.Extensions;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Newtonsoft.Json.Linq;
-using NHibernate.Linq;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
@@ -16,7 +9,11 @@ using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
 using Shesha.Metadata;
 using Shesha.Services;
-using Shesha.Services.VersionedFields;
+using System;
+using System.Linq;
+using System.Linq.Dynamic.Core;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Shesha.DynamicEntities
 {

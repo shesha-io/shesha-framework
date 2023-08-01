@@ -7,6 +7,7 @@ import { getNumberFormat } from 'utils/string';
 interface IFormItemWrapper {
   readonly mutate: boolean;
   readonly formType: ProperyDataType;
+  readonly overrideValue?: any;
 }
 
 const FormItemWrapper: FC<PropsWithChildren<IFormItemWrapper>> = ({ children, mutate, formType, ...props }) => {
@@ -19,12 +20,15 @@ const FormItemWrapper: FC<PropsWithChildren<IFormItemWrapper>> = ({ children, mu
       case 'number':
         return getNumberFormat(value, getPropertyMetadata(properties, id));
 
+      case 'reference-list-item':
+        return props?.overrideValue ?? value;
+
       default:
         return value;
     }
   };
 
-  const childrenWithProps = React.Children.map(children, child => {
+  const childrenWithProps = React.Children.map(children, (child) => {
     if (React.isValidElement(child)) {
       const payload = mutate ? { ...props, value: getValue() } : { ...props };
       return React.cloneElement(child, payload);
