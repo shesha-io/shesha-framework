@@ -12,6 +12,7 @@ using NHibernate.Linq.Functions;
 using Shesha.Authorization.Users;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
+using Shesha.EntityReferences;
 using Shesha.Exceptions;
 using Shesha.NHibernate;
 using Shesha.NotificationMessages.Dto;
@@ -458,6 +459,8 @@ namespace Shesha.Notifications
                             template.BodyFormat == RefListNotificationTemplateType.PlainText, 
                             message.SendType == RefListNotificationType.SMS);
                         message.Status = RefListNotificationStatus.Outgoing;
+                        if (!string.IsNullOrEmpty(shaNotificationData.SourceEntityId))
+                            message.SourceEntity = new GenericEntityReference(shaNotificationData.SourceEntityId, shaNotificationData.SourceEntityClassName, shaNotificationData.SourceEntityDisplayName);
                         NotificationMessageRepository.Update(message);
 
                         // schedule sending
@@ -515,6 +518,8 @@ namespace Shesha.Notifications
                             template.BodyFormat == RefListNotificationTemplateType.PlainText,
                             message.SendType == RefListNotificationType.SMS);
                         message.Status = RefListNotificationStatus.Outgoing;
+                        if (!string.IsNullOrEmpty(shaNotificationData.SourceEntityId))
+                            message.SourceEntity = new GenericEntityReference(shaNotificationData.SourceEntityId, shaNotificationData.SourceEntityClassName, shaNotificationData.SourceEntityDisplayName); ;
                         await NotificationMessageRepository.UpdateAsync(message);
 
                         messagesToSend.Add(message.Id);

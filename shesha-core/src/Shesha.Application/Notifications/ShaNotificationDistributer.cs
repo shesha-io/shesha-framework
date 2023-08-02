@@ -8,8 +8,10 @@ using Abp.Domain.Uow;
 using Abp.Extensions;
 using Abp.Notifications;
 using Abp.Runtime.Session;
+using Newtonsoft.Json;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
+using Shesha.EntityReferences;
 using Shesha.NotificationMessages.Dto;
 using Shesha.Notifications.Dto;
 using System;
@@ -269,8 +271,11 @@ namespace Shesha.Notifications
                             TenantNotification = tenantNotificationInfo,
                             SendType = shaData.SendType,
                             RecipientText = shaData.RecipientText,
-                            Status = RefListNotificationStatus.Preparing
+                            Status = RefListNotificationStatus.Preparing,                            
                         };
+                        if (!string.IsNullOrEmpty(notificationInfo.EntityId) && !string.IsNullOrEmpty(notificationInfo.EntityTypeName))
+                            notificationMessage.SourceEntity = new GenericEntityReference(notificationInfo.EntityId, notificationInfo.EntityTypeName, "");
+
                         await _messageRepository.InsertAsync(notificationMessage);
 
                         var notificationMessageDto = ObjectMapper.Map<NotificationMessageDto>(notificationMessage);

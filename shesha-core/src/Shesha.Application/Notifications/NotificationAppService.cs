@@ -3,6 +3,9 @@ using Abp.BackgroundJobs;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Notifications;
+using DocumentFormat.OpenXml.Vml.Office;
+using DocumentFormat.OpenXml.Wordprocessing;
+using NHibernate.Linq;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Dtos;
@@ -14,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Threading.Tasks;
 
 namespace Shesha.Notifications;
@@ -21,24 +25,31 @@ namespace Shesha.Notifications;
 /// <summary>
 /// Notification application service
 /// </summary>
-public class NotificationAppService: DynamicCrudAppService<Notification, DynamicDto<Notification, Guid>, Guid>, INotificationAppService
+public class NotificationAppService : DynamicCrudAppService<Notification, DynamicDto<Notification, Guid>, Guid>, INotificationAppService
 {
     private readonly INotificationPublisher _notificationPublisher;
     private readonly IBackgroundJobManager _backgroundJobManager;
     private readonly IStoredFileService _fileService;
+    private readonly INotificationPublicationContext _notificationPublicationContext;
+    private readonly IRepository<Notification, Guid> _repository;
+    private readonly IRepository<NotificationTemplate, Guid> _templateRepository;
 
-    public NotificationAppService(IRepository<Notification, Guid> repository, INotificationPublisher notificationPublisher, IBackgroundJobManager backgroundJobManager, IStoredFileService fileService) : base(repository)
+    public NotificationAppService(IRepository<Notification, Guid> repository, INotificationPublisher notificationPublisher, IBackgroundJobManager backgroundJobManager, IStoredFileService fileService, INotificationPublicationContext notificationPublicationContext, IRepository<NotificationTemplate, Guid> templateRepository) : base(repository)
     {
         _notificationPublisher = notificationPublisher;
         _backgroundJobManager = backgroundJobManager;
         _fileService = fileService;
+        _notificationPublicationContext = notificationPublicationContext;
+        _repository = repository;
+        _templateRepository = templateRepository;
+
     }
 
     /// inheritedDoc
     public async Task PublishAsync(string notificationName,
         NotificationData data,
         List<Person> recipients,
-        object sourceEntity = null)
+        GenericEntityReference sourceEntity = null)
     {
         if (recipients == null)
             throw new Exception($"{nameof(recipients)} must not be null");
@@ -58,10 +69,6 @@ public class NotificationAppService: DynamicCrudAppService<Notification, Dynamic
         );
     }
 
-    //public async Task PublishPersonNotificationAsync(Guid templateId, Guid personId, GenericEntityReference source)
-    //{
-
-    //}
 
     #region Direct email notifications
 
@@ -78,7 +85,7 @@ public class NotificationAppService: DynamicCrudAppService<Notification, Dynamic
         TData data,
         string emailAddress,
         List<NotificationAttachmentDto> attachments = null,
-        object sourceEntity = null) where TData: NotificationData
+        GenericEntityReference sourceEntity = null) where TData : NotificationData
     {
         if (string.IsNullOrWhiteSpace(emailAddress))
             throw new Exception($"{nameof(emailAddress)} must not be null");
@@ -89,7 +96,10 @@ public class NotificationAppService: DynamicCrudAppService<Notification, Dynamic
         {
             SendType = RefListNotificationType.Email,
             RecipientText = emailAddress,
-            Attachments = attachments
+            Attachments = attachments,
+            SourceEntityId = sourceEntity.Id,
+            SourceEntityClassName = sourceEntity._className,
+            SourceEntityDisplayName = sourceEntity._displayName
         };
         await _notificationPublisher.PublishAsync(notificationName, wrappedData, entityIdentifier);
     }
@@ -107,7 +117,7 @@ public class NotificationAppService: DynamicCrudAppService<Notification, Dynamic
         TData data,
         string emailAddress,
         List<NotificationAttachmentDto> attachments = null,
-        object sourceEntity = null) where TData : NotificationData
+        GenericEntityReference sourceEntity = null) where TData : NotificationData
     {
         if (string.IsNullOrWhiteSpace(emailAddress))
             throw new Exception($"{nameof(emailAddress)} must not be null");
@@ -119,7 +129,10 @@ public class NotificationAppService: DynamicCrudAppService<Notification, Dynamic
             SendType = RefListNotificationType.Email,
             RecipientText = emailAddress,
             TemplateId = templateId,
-            Attachments = attachments
+            Attachments = attachments,
+            SourceEntityId = sourceEntity.Id,
+            SourceEntityClassName = sourceEntity._className,
+            SourceEntityDisplayName = sourceEntity._displayName
         };
         await _notificationPublisher.PublishAsync("DirectEmail", wrappedData, entityIdentifier);
     }
@@ -139,7 +152,7 @@ public class NotificationAppService: DynamicCrudAppService<Notification, Dynamic
     public async Task PublishSmsNotificationAsync<TData>(string notificationName,
         TData data,
         string mobileNo,
-        object sourceEntity = null) where TData : NotificationData
+        GenericEntityReference sourceEntity = null) where TData : NotificationData
     {
         if (string.IsNullOrWhiteSpace(mobileNo))
             throw new Exception($"{nameof(mobileNo)} must not be null");
@@ -149,7 +162,10 @@ public class NotificationAppService: DynamicCrudAppService<Notification, Dynamic
         var wrappedData = new ShaNotificationData(data)
         {
             SendType = RefListNotificationType.SMS,
-            RecipientText = mobileNo
+            RecipientText = mobileNo,
+            SourceEntityId = sourceEntity.Id,
+            SourceEntityClassName = sourceEntity._className,
+            SourceEntityDisplayName = sourceEntity._displayName
         };
         await _notificationPublisher.PublishAsync(notificationName, wrappedData, entityIdentifier);
     }
@@ -164,8 +180,8 @@ public class NotificationAppService: DynamicCrudAppService<Notification, Dynamic
     /// <returns></returns>
     public async Task PublishSmsNotificationAsync<TData>(Guid templateId,
         TData data,
-        string mobileNo, 
-        object sourceEntity = null
+        string mobileNo,
+        GenericEntityReference sourceEntity = null
         ) where TData : NotificationData
     {
         if (string.IsNullOrWhiteSpace(mobileNo))
@@ -177,22 +193,39 @@ public class NotificationAppService: DynamicCrudAppService<Notification, Dynamic
         {
             SendType = RefListNotificationType.SMS,
             RecipientText = mobileNo,
-            TemplateId = templateId
+            TemplateId = templateId,
+            SourceEntityId = sourceEntity.Id,
+            SourceEntityClassName = sourceEntity._className,
+            SourceEntityDisplayName = sourceEntity._displayName
         };
         await _notificationPublisher.PublishAsync(templateId.ToString(), wrappedData, entityIdentifier);
     }
 
-    private static EntityIdentifier GetEntityIdentifier(object entity)
+    //private static EntityIdentifier GetEntityIdentifier(object entity)
+    //{
+    //    EntityIdentifier entityIdentifier = null;
+    //    if (entity is not null)
+    //    {
+    //        if (entity is Entity<Guid>)
+    //            entityIdentifier = new EntityIdentifier(entity.GetType(), ((Entity<Guid>)entity).Id);
+    //        else if (entity is Entity<long>)
+    //            entityIdentifier = new EntityIdentifier(entity.GetType(), ((Entity<long>)entity).Id);
+    //        else if (entity is Entity<int>)
+    //            entityIdentifier = new EntityIdentifier(entity.GetType(), ((Entity<int>)entity).Id);
+    //    }
+
+    //    return entityIdentifier;
+    //}
+
+    private static EntityIdentifier GetEntityIdentifier(GenericEntityReference genericEntity)
     {
         EntityIdentifier entityIdentifier = null;
+
+        Entity<Guid> entity = genericEntity;
+
         if (entity is not null)
         {
-            if (entity is Entity<Guid>)
-                entityIdentifier = new EntityIdentifier(entity.GetType(), ((Entity<Guid>)entity).Id);
-            else if (entity is Entity<long>)
-                entityIdentifier = new EntityIdentifier(entity.GetType(), ((Entity<long>)entity).Id);
-            else if (entity is Entity<int>)
-                entityIdentifier = new EntityIdentifier(entity.GetType(), ((Entity<int>)entity).Id);
+            entityIdentifier = new EntityIdentifier(entity.GetType(), entity.Id);
         }
 
         return entityIdentifier;
@@ -215,7 +248,7 @@ public class NotificationAppService: DynamicCrudAppService<Notification, Dynamic
         TData data,
         string personId,
         List<NotificationAttachmentDto> attachments = null,
-        object sourceEntity = null) where TData : NotificationData
+        GenericEntityReference sourceEntity = null) where TData : NotificationData
     {
         if (string.IsNullOrWhiteSpace(personId))
             throw new Exception($"{nameof(personId)} must not be null");
@@ -226,7 +259,10 @@ public class NotificationAppService: DynamicCrudAppService<Notification, Dynamic
         {
             SendType = RefListNotificationType.Push,
             RecipientText = personId,
-            Attachments = attachments
+            Attachments = attachments,
+            SourceEntityId = sourceEntity.Id,
+            SourceEntityClassName = sourceEntity._className,
+            SourceEntityDisplayName = sourceEntity._displayName
         };
         await _notificationPublisher.PublishAsync(notificationName, wrappedData, entityIdentifier);
     }
@@ -244,7 +280,7 @@ public class NotificationAppService: DynamicCrudAppService<Notification, Dynamic
         TData data,
         string personId,
         List<NotificationAttachmentDto> attachments = null,
-        object sourceEntity = null) where TData : NotificationData
+        GenericEntityReference sourceEntity = null) where TData : NotificationData
     {
         if (string.IsNullOrWhiteSpace(personId))
             throw new Exception($"{nameof(personId)} must not be null");
@@ -256,7 +292,10 @@ public class NotificationAppService: DynamicCrudAppService<Notification, Dynamic
             SendType = RefListNotificationType.Push,
             RecipientText = personId,
             TemplateId = templateId,
-            Attachments = attachments
+            Attachments = attachments,
+            SourceEntityId = sourceEntity.Id,
+            SourceEntityClassName = sourceEntity._className,
+            SourceEntityDisplayName = sourceEntity._displayName
         };
         await _notificationPublisher.PublishAsync(templateId.ToString(), wrappedData, entityIdentifier);
     }
@@ -288,9 +327,123 @@ public class NotificationAppService: DynamicCrudAppService<Notification, Dynamic
         var file = await _fileService.SaveFileAsync(stream, fileName);
         return new NotificationAttachmentDto()
         {
-            FileName = fileName, 
+            FileName = fileName,
             StoredFileId = file.Id
         };
     }
 
+    #region new notififiers
+    /// <summary>
+    /// Send Notification to specified person
+    /// </summary>
+    public async Task<Guid?> SendNotification<TData>(string notificationName, Person recipient, TData data, RefListNotificationType? notificationType = null, GenericEntityReference sourceEntity = null, List<NotificationAttachmentDto> attachments = null) where TData : NotificationData
+    {
+
+        if (notificationType != null)
+        {
+            return await SendNotificationByType(notificationName, (int)notificationType, recipient, data, sourceEntity, attachments);
+        }
+        else
+        {
+            if (recipient.PreferredContactMethod != null)
+            {
+                return await SendNotificationByType(notificationName, (int)recipient.PreferredContactMethod, recipient, data, sourceEntity, attachments);
+            }
+            else
+            {
+                await SendNotificationByType(notificationName, (int)RefListNotificationType.Email, recipient, data, sourceEntity, attachments);
+                await SendNotificationByType(notificationName, (int)RefListNotificationType.SMS, recipient, data, sourceEntity, attachments);
+                await SendNotificationByType(notificationName, (int)RefListNotificationType.Push, recipient, data, sourceEntity, attachments);
+            }
+        }
+
+        return null;
+    }
+
+    private async Task<Guid?> SendNotificationByType<TData>(string notificationName, int notificationType, Person person, TData data, GenericEntityReference sourceEntity = null, List<NotificationAttachmentDto> attachments = null) where TData : NotificationData
+    {
+        var email = !(string.IsNullOrWhiteSpace(person?.EmailAddress1) || string.IsNullOrEmpty(person.EmailAddress1)) ? person.EmailAddress1 : person.EmailAddress2;
+        var mobileNo = !(string.IsNullOrWhiteSpace(person?.MobileNumber1) || string.IsNullOrEmpty(person.MobileNumber1)) ? person.MobileNumber1 : person.MobileNumber2;
+
+        var notification = await _repository.GetAll().FirstOrDefaultAsync(e => e.Name == notificationName);
+        var templates = await _templateRepository.GetAllListAsync(e => e.Notification == notification);
+
+        var template = templates.FirstOrDefault(e => (int)e.SendType == notificationType);
+        if (template != null)
+        {
+            switch (notificationType)
+            {
+                case (int)RefListNotificationType.Email:
+                    return string.IsNullOrWhiteSpace(email) || string.IsNullOrEmpty(email) ? null : await SendEmailAsync(template.Id, email, data, sourceEntity: sourceEntity, attachments: attachments);
+                case (int)RefListNotificationType.SMS:
+                    return string.IsNullOrWhiteSpace(mobileNo) || string.IsNullOrEmpty(mobileNo) ? null : await SendSmsAsync(template.Id, mobileNo, data, sourceEntity: sourceEntity);
+                case (int)RefListNotificationType.Push:
+                    return await SendPushAsync(template.Id, person.Id, data, sourceEntity: sourceEntity);
+                default:
+                    break;
+            }
+        }
+
+        return null;
+    }
+
+    private async Task<Guid?> SendSmsAsync<TData>(Guid notificationTemplate, string mobileNumber, TData data, GenericEntityReference sourceEntity = null) where TData : NotificationData
+    {
+        Guid? messageId = Guid.Empty;
+
+        using (_notificationPublicationContext.BeginScope())
+        {
+            await PublishSmsNotificationAsync(
+            templateId: notificationTemplate,
+            data: data,
+            mobileNo: mobileNumber,
+            sourceEntity: sourceEntity
+            );
+
+            messageId = _notificationPublicationContext.Statistics.NotificationMessages.FirstOrDefault()?.Id;
+        }
+
+        return messageId;
+    }
+
+    private async Task<Guid?> SendEmailAsync<TData>(Guid notificationTemplate, string emailAddress, TData data, GenericEntityReference sourceEntity = null, List<NotificationAttachmentDto> attachments = null) where TData : NotificationData
+    {
+        Guid? messageId = Guid.Empty;
+
+        using (_notificationPublicationContext.BeginScope())
+        {
+            await PublishEmailNotificationAsync(
+                templateId: notificationTemplate,
+                data: data,
+                attachments: attachments,
+                emailAddress: emailAddress,
+                sourceEntity: sourceEntity);
+
+            messageId = _notificationPublicationContext.Statistics.NotificationMessages.FirstOrDefault()?.Id;
+        }
+
+        return messageId;
+    }
+
+    private async Task<Guid?> SendPushAsync<TData>(Guid notificationTemplate, Guid personId, TData data, GenericEntityReference sourceEntity = null, List<NotificationAttachmentDto> attachments = null) where TData : NotificationData
+    {
+        Guid? messageId = Guid.Empty;
+
+        using (_notificationPublicationContext.BeginScope())
+        {
+            await PublishPushNotificationAsync(
+                templateId: notificationTemplate,
+                data: data,
+                attachments: attachments,
+                personId: personId.ToString(),
+                sourceEntity: sourceEntity
+                );
+
+            messageId = _notificationPublicationContext.Statistics.NotificationMessages.FirstOrDefault()?.Id;
+        }
+
+        return messageId;
+    }
+
+    #endregion
 }
