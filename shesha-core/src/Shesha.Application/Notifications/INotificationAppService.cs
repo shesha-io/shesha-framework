@@ -1,6 +1,8 @@
 ﻿using Abp.Notifications;
 using Shesha.Domain;
+using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Dtos;
+using Shesha.EntityReferences;
 using Shesha.Notifications.Dto;
 using System;
 using System.Collections.Generic;
@@ -22,7 +24,7 @@ namespace Shesha.Notifications
         /// <param name="recipients">list of recipients</param>
         /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
         /// <returns></returns>
-        Task PublishAsync(string notificationName, NotificationData data, List<Person> recipients, object sourceEntity = null);
+        Task PublishAsync(string notificationName, NotificationData data, List<Person> recipients, GenericEntityReference sourceEntity = null);
 
         /// <summary>
         /// Publish email notification
@@ -33,7 +35,7 @@ namespace Shesha.Notifications
         /// <param name="attachments">Notification attachments</param>
         /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
         /// <returns></returns>
-        Task PublishEmailNotificationAsync<TData>(string notificationName, TData data, string emailAddress, List<NotificationAttachmentDto> attachments, object sourceEntity = null) where TData : NotificationData;
+        Task PublishEmailNotificationAsync<TData>(string notificationName, TData data, string emailAddress, List<NotificationAttachmentDto> attachments, GenericEntityReference sourceEntity = null) where TData : NotificationData;
 
         /// <summary>
         /// Publish email notification using explicitly specified template
@@ -44,7 +46,7 @@ namespace Shesha.Notifications
         /// <param name="attachments">Notification attachments</param>
         /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
         /// <returns></returns>
-        Task PublishEmailNotificationAsync<TData>(Guid templateId, TData data, string emailAddress, List<NotificationAttachmentDto> attachments, object sourceEntity = null) where TData : NotificationData;
+        Task PublishEmailNotificationAsync<TData>(Guid templateId, TData data, string emailAddress, List<NotificationAttachmentDto> attachments, GenericEntityReference sourceEntity = null) where TData : NotificationData;
 
         /// <summary>
         /// Publish sms notification
@@ -54,7 +56,7 @@ namespace Shesha.Notifications
         /// <param name="mobileNo">Recipient mobile number</param>
         /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
         /// <returns></returns>
-        Task PublishSmsNotificationAsync<TData>(string notificationName, TData data, string mobileNo, object sourceEntity = null) where TData : NotificationData;
+        Task PublishSmsNotificationAsync<TData>(string notificationName, TData data, string mobileNo, GenericEntityReference sourceEntity = null) where TData : NotificationData;
 
         /// <summary>
         /// Publish sms notification using explicitly specified template
@@ -64,7 +66,7 @@ namespace Shesha.Notifications
         /// <param name="mobileNo">Recipient mobile number</param>
         /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
         /// <returns></returns>
-        Task PublishSmsNotificationAsync<TData>(Guid templateId, TData data, string mobileNo, object sourceEntity = null) where TData : NotificationData;
+        Task PublishSmsNotificationAsync<TData>(Guid templateId, TData data, string mobileNo, GenericEntityReference sourceEntity = null) where TData : NotificationData;
 
         /// <summary>
         /// Publish email notification
@@ -75,7 +77,7 @@ namespace Shesha.Notifications
         /// <param name="attachments">Notification attachments</param>
         /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
         /// <returns></returns>
-        Task PublishPushNotificationAsync<TData>(string notificationName, TData data, string personId, List<NotificationAttachmentDto> attachments = null, object sourceEntity = null) where TData : NotificationData;
+        Task PublishPushNotificationAsync<TData>(string notificationName, TData data, string personId, List<NotificationAttachmentDto> attachments = null, GenericEntityReference sourceEntity = null) where TData : NotificationData;
 
         /// <summary>
         /// Publish email notification using explicitly specified template
@@ -86,12 +88,17 @@ namespace Shesha.Notifications
         /// <param name="attachments">Notification attachments</param>
         /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
         /// <returns></returns>
-        Task PublishPushNotificationAsync<TData>(Guid templateId, TData data, string personId, List<NotificationAttachmentDto> attachments = null, object sourceEntity = null) where TData : NotificationData;
+        Task PublishPushNotificationAsync<TData>(Guid templateId, TData data, string personId, List<NotificationAttachmentDto> attachments = null, GenericEntityReference sourceEntity = null) where TData : NotificationData;
 
 
         /// <summary>
         /// Save notification attachment
         /// </summary>
         Task<NotificationAttachmentDto> SaveAttachmentAsync(string fileName, Stream stream);
+
+        /// <summary>
+        /// Send Notification to specified person
+        /// </summary>
+        Task<Guid?> SendNotification<TData>(string notificationName, Person recipient, TData data, RefListNotificationType? notificationType = null, GenericEntityReference sourceEntity = null, List<NotificationAttachmentDto> attachments = null) where TData : NotificationData;
     }
 }

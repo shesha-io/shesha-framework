@@ -10,7 +10,7 @@ namespace Shesha.EntityReferences
     public class GenericEntityReference : IEquatable<GenericEntityReference>, IGenericEntityReference
     {
         private object _entity;
-
+       
         public GenericEntityReference(string id, string typeName, string dysplayName = null)
         {
             Id = id;

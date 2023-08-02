@@ -4,6 +4,7 @@ using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using Abp.Notifications;
 using Shesha.Domain.Enums;
+using Shesha.EntityReferences;
 
 namespace Shesha.Domain
 {
@@ -56,6 +57,11 @@ namespace Shesha.Domain
         /// Notification
         /// </summary>
         public virtual Notification Notification { get; set; }
+        
+        /// <summary>
+        /// Source or Owner Entity 
+        /// </summary>
+        public virtual GenericEntityReference SourceEntity { get; set; }
 
         /// <summary>
         /// Date and time of last attempt to send the message

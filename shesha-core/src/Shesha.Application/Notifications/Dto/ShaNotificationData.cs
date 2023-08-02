@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Abp.Notifications;
 using Newtonsoft.Json;
 using Shesha.Domain.Enums;
+using Shesha.EntityReferences;
 
 namespace Shesha.Notifications.Dto
 {
@@ -31,6 +32,14 @@ namespace Shesha.Notifications.Dto
         /// Recipient text (email address/mobile number etc)
         /// </summary>
         public virtual string RecipientText { get; set; }
+        /// <summary>
+        /// Recipient text (email address/mobile number etc)
+        /// </summary>
+        public virtual string SourceEntityId { get; internal set; }
+
+        public virtual string SourceEntityClassName { get; internal set; }
+
+        public virtual string SourceEntityDisplayName { get; internal set; }
 
         protected string Data {
             get => Properties[nameof(Data)] as string;

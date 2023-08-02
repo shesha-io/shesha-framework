@@ -65,6 +65,7 @@ namespace Shesha.Notifications
                     {
                         message.Body = body;
                         message.RecipientText = mobileNo;
+                        //message.SourceEntity = userNotification.s;
                     });
 
                     // schedule sending
