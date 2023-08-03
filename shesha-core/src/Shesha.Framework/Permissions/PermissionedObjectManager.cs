@@ -114,8 +114,6 @@ namespace Shesha.Permissions
             return dto;
         }
 
-
-
         public virtual PermissionedObjectDto Get(string objectName, bool useInherited = true,
             UseDependencyType useDependency = UseDependencyType.Before, bool useHidden = false)
         {
@@ -129,8 +127,7 @@ namespace Shesha.Permissions
             return obj?.Permissions ?? new ConcurrentHashSet<string>();
         }
 
-        [UnitOfWork]
-        public virtual async Task<PermissionedObjectDto> CreateAsync(string objectName, string objectType, string inheritedFromName = null, string dependentFromName = null)
+        private PermissionedObject InternalCreate(string objectName, string objectType, string inheritedFromName = null, string dependentFromName = null)
         {
             var inh = inheritedFromName;
             if (inheritedFromName == null)
@@ -155,6 +152,13 @@ namespace Shesha.Permissions
                 Module = "",
                 Type = objectType
             };
+            return dbObj;
+        }
+
+        [UnitOfWork]
+        public virtual async Task<PermissionedObjectDto> CreateAsync(string objectName, string objectType, string inheritedFromName = null, string dependentFromName = null)
+        {
+            var dbObj = InternalCreate(objectName, objectType, inheritedFromName, dependentFromName);
             await _permissionedObjectRepository.InsertAsync(dbObj);
             var obj = _objectMapper.Map<PermissionedObjectDto>(dbObj);
             _cacheManager.GetPermissionedObjectCache().Set(objectName, obj);
@@ -168,7 +172,7 @@ namespace Shesha.Permissions
         {
             var obj = await _cacheManager.GetPermissionedObjectCache().GetOrDefaultAsync(objectName);
 
-            if (obj == null)
+            if (obj == null || obj.Type == PermissionedObjectsSheshaTypes.Cache)
             {
                 var dbObj = await _permissionedObjectRepository.GetAll().Where(x => x.Object == objectName).FirstOrDefaultAsync();
                 if (dbObj != null)
@@ -193,7 +197,8 @@ namespace Shesha.Permissions
             if (obj == null)
             {
                 using var unitOfWork = _unitOfWorkManager.Begin();
-                var dbObj = await _permissionedObjectRepository.GetAll().Where(x => x.Object == objectName).FirstOrDefaultAsync();
+                var dbObj = await _permissionedObjectRepository.GetAll().Where(x => x.Object == objectName).FirstOrDefaultAsync() 
+                    ?? InternalCreate(objectName, PermissionedObjectsSheshaTypes.Cache);
                 if (dbObj != null)
                 {
                     obj = _objectMapper.Map<PermissionedObjectDto>(dbObj);
@@ -270,9 +275,10 @@ namespace Shesha.Permissions
             obj.Category = permissionedObject.Category;
             obj.Description = permissionedObject.Description;
             obj.Permissions = string.Join(",", permissionedObject.Permissions ?? new ConcurrentHashSet<string>());
+            obj.Type = permissionedObject.Type;
             //obj.Inherited = permissionedObject.Inherited;
             obj.Hidden = permissionedObject.Hidden;
-            obj.Access = (RefListPermissionedAccess?)permissionedObject.Access ?? RefListPermissionedAccess.Inherited;
+            obj.Access = permissionedObject.Access ?? RefListPermissionedAccess.Inherited;
 
             await _permissionedObjectRepository.InsertOrUpdateAsync(obj);
 

@@ -203,38 +203,28 @@ namespace Shesha.DynamicEntities
 
             if (input.Permission != null)
             {
-                await _permissionedObjectManager.SetPermissionsAsync(
-                    $"{modelConfig.Namespace}.{modelConfig.ClassName}",
-                    input.Permission.Access ?? RefListPermissionedAccess.Inherited,
-                    input.Permission.Permissions.ToList());
+                input.Permission.Type = PermissionedObjectsSheshaTypes.Entity;
+                await _permissionedObjectManager.SetAsync(input.Permission);
             }
             if (input.PermissionGet != null)
             {
-                await _permissionedObjectManager.SetPermissionsAsync(
-                $"{modelConfig.Namespace}.{modelConfig.ClassName}@Get",
-                input.PermissionGet.Access ?? RefListPermissionedAccess.Inherited,
-                input.PermissionGet.Permissions.ToList());
+                input.PermissionGet.Type = PermissionedObjectsSheshaTypes.EntityAction;
+                await _permissionedObjectManager.SetAsync(input.PermissionGet);
             }
             if (input.PermissionCreate != null)
             {
-                await _permissionedObjectManager.SetPermissionsAsync(
-                    $"{modelConfig.Namespace}.{modelConfig.ClassName}@Create",
-                    input.PermissionCreate.Access ?? RefListPermissionedAccess.Inherited,
-                    input.PermissionCreate.Permissions.ToList());
+                input.PermissionCreate.Type = PermissionedObjectsSheshaTypes.EntityAction;
+                await _permissionedObjectManager.SetAsync(input.PermissionCreate);
             }
             if (input.PermissionUpdate != null)
             {
-                await _permissionedObjectManager.SetPermissionsAsync(
-                $"{modelConfig.Namespace}.{modelConfig.ClassName}@Update",
-                input.PermissionUpdate.Access ?? RefListPermissionedAccess.Inherited,
-                input.PermissionUpdate.Permissions.ToList());
+                input.PermissionUpdate.Type = PermissionedObjectsSheshaTypes.EntityAction;
+                await _permissionedObjectManager.SetAsync(input.PermissionUpdate);
             }
             if (input.PermissionDelete != null)
             {
-                await _permissionedObjectManager.SetPermissionsAsync(
-                $"{modelConfig.Namespace}.{modelConfig.ClassName}@Delete",
-                input.PermissionDelete.Access ?? RefListPermissionedAccess.Inherited,
-                input.PermissionDelete.Permissions.ToList());
+                input.PermissionDelete.Type = PermissionedObjectsSheshaTypes.EntityAction;
+                await _permissionedObjectManager.SetAsync(input.PermissionDelete);
             }
 
             // Notify change
