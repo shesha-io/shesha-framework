@@ -2,6 +2,7 @@
 {
     public static class PermissionedObjectsSheshaTypes
     {
+        public const string Cache = "cache";
         public const string WebApi = "Shesha.WebApi";
         public const string WebApiAction = "Shesha.WebApi.Action";
         public const string WebCrudApi = "Shesha.WebCrudApi";
