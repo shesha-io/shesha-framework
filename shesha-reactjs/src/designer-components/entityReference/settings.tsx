@@ -229,11 +229,11 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
     </Show>
 
     <SettingsCollapsiblePanel header='Layout'>
-      <SettingsFormItem name="labelCol" label="Label Col">
+      <SettingsFormItem name="labelCol" label="Label Col" jsSetting>
         <InputNumber min={0} max={24} defaultValue={5} step={1} readOnly={readOnly} />
       </SettingsFormItem>
 
-      <SettingsFormItem name="wrapperCol" label="Wrapper Col">
+      <SettingsFormItem name="wrapperCol" label="Wrapper Col" jsSetting>
         <InputNumber min={0} max={24} defaultValue={13} step={1} readOnly={readOnly} />
       </SettingsFormItem>
 

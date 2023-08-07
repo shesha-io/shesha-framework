@@ -110,7 +110,6 @@
             "parentId": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
             "hidden": false,
             "visibility": "Yes",
-            "customVisibility": null,
             "isDynamic": false,
             "description": "",
             "validate": {},
@@ -132,7 +131,6 @@
             "parentId": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
             "hidden": false,
             "visibility": "Yes",
-            "customVisibility": null,
             "isDynamic": false,
             "description": "Make the collapse borderless and its background transparent",
             "validate": {},
@@ -150,7 +148,6 @@
       "parentId": "root",
       "hidden": false,
       "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "left",
@@ -172,36 +169,10 @@
             "parentId": "bc67960e-77e3-40f2-89cc-f18f94678cce",
             "hidden": false,
             "visibility": "Yes",
-            "customVisibility": null,
             "isDynamic": false,
             "description": "Allows to hide the panel when all components are hidden due to some conditions",
             "validate": {},
             "settingsValidationErrors": []
-          },
-          {
-            "id": "d92ec2a2-93f4-431d-b143-e2fa2a720a4d",
-            "type": "codeEditor",
-            "propertyName": "customVisibility",
-            "label": "Custom Visibility",
-            "labelAlign": "right",
-            "parentId": "bc67960e-77e3-40f2-89cc-f18f94678cce",
-            "hidden": false,
-            "customVisibility": null,
-            "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-            "validate": {},
-            "settingsValidationErrors": [],
-            "exposedVariables": [
-              {
-                "propertyName": "value",
-                "description": "Component current value",
-                "type": "string | any"
-              },
-              {
-                "propertyName": "data",
-                "description": "Selected form values",
-                "type": "object"
-              }
-            ]
           }
         ]
       }

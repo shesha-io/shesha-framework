@@ -24,6 +24,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
   type: 'dropdown',
   isInput: true,
   isOutput: true,
+  canBeJsSetting: true,
   name: 'Dropdown',
   icon: <DownSquareOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.referenceListItem,
@@ -70,7 +71,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
       };
     })
     .add<IDropdownComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-    ,
+  ,
   linkToModelMetadata: (model, metadata): IDropdownComponentProps => {
     return {
       ...model,

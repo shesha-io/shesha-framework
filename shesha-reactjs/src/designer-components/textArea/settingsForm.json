@@ -9,7 +9,6 @@
       "parentId": "root",
       "hidden": false,
       "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "left",
@@ -168,7 +167,6 @@
             "label": "Hide border",
             "parentId": "pnl14bf6-f76d-4139-a850-c99bf06c8b69",
             "hidden": false,
-            "customVisibility": null,
             "validate": {}
           }
         ]
@@ -185,7 +183,6 @@
       "parentId": "root",
       "hidden": false,
       "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "left",
@@ -202,7 +199,6 @@
             "labelAlign": "right",
             "parentId": "pnl990f54ee-b754-479d-8e45-559efbd70c10",
             "hidden": false,
-            "customVisibility": null,
             "description": "Enter custom even handler on changing of event. (form, event) are exposed",
             "validate": {},
             "settingsValidationErrors": [],
@@ -239,7 +235,6 @@
             "labelAlign": "right",
             "parentId": "pnl990f54ee-b754-479d-8e45-559efbd70c10",
             "hidden": false,
-            "customVisibility": null,
             "description": "Enter custom even handler on focus of event. (form, event) are exposed",
             "validate": {},
             "settingsValidationErrors": [],
@@ -276,7 +271,6 @@
             "labelAlign": "right",
             "parentId": "pnl990f54ee-b754-479d-8e45-559efbd70c10",
             "hidden": false,
-            "customVisibility": null,
             "description": "Enter custom even handler on blur of event. (form, event) are exposed",
             "validate": {},
             "settingsValidationErrors": [],
@@ -318,7 +312,6 @@
       "parentId": "root",
       "hidden": false,
       "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "left",
@@ -367,7 +360,6 @@
             "validate": {},
             "labelAlign": "right",
             "hidden": false,
-            "customVisibility": null,
             "description": "Enter custom validator logic for form.item rules. Customize validation rule. Accept Promise as return.",
             "settingsValidationErrors": [],
             "exposedVariables": [
@@ -380,14 +372,6 @@
               { "propertyName": "callback", "description": "Callback called by component", "type": "function" },
               { "propertyName": "data", "description": "Form values", "type": "object" }
             ]
-          },
-          {
-            "id": "d690a0b7-a9d3-4ab2-8843-9dcfbac08adc",
-            "type": "textField",
-            "propertyName": "quickviewWidth",
-            "parentId": "pnl5bfe4-ee69-431e-931b-b0e0b9ceee6f",
-            "label": "Width",
-            "customVisibility": "return data.quickviewEnabled === true"
           }
         ]
       }
@@ -402,7 +386,6 @@
       "parentId": "root",
       "hidden": false,
       "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "left",
@@ -447,62 +430,6 @@
               }
             ],
             "dataSourceType": "values"
-          }
-        ]
-      }
-    },
-
-    {
-      "id": "040f9a56-b3b0-4fd2-a40b-8887f125b52d",
-      "type": "collapsiblePanel",
-      "propertyName": "pnlVisibility",
-      "label": "Visibility",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "visibility": "Yes",
-      "customVisibility": null,
-      "isDynamic": false,
-      "version": 2,
-      "expandIconPosition": "left",
-      "collapsible": "header",
-      "ghost": true,
-      "content": {
-        "id": "pnlf9a56-b3b0-4fd2-a40b-8887f125b52d",
-        "components": [
-          {
-            "id": "4775577f-a025-4a25-94bf-3d1e52dd64b5",
-            "type": "codeEditor",
-            "propertyName": "customVisibility",
-            "label": "Custom Visibility",
-            "labelAlign": "right",
-            "parentId": "pnlf9a56-b3b0-4fd2-a40b-8887f125b52d",
-            "hidden": false,
-            "customVisibility": null,
-            "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-            "validate": {},
-            "settingsValidationErrors": [],
-            "exposedVariables": [
-              { "propertyName": "value", "description": "Component current value", "type": "string | any" },
-              { "propertyName": "data", "description": "Selected form values", "type": "object" }
-            ]
-          },
-          {
-            "id": "4b5e5951-4998-4635-b1c8-0b6d3940c300",
-            "type": "codeEditor",
-            "propertyName": "customEnabled",
-            "label": "Custom Enabled",
-            "labelAlign": "right",
-            "parentId": "pnlf9a56-b3b0-4fd2-a40b-8887f125b52d",
-            "hidden": false,
-            "customEnabled": null,
-            "description": "Enter custom enabled code.  You must return true to enable the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-            "validate": {},
-            "settingsValidationErrors": [],
-            "exposedVariables": [
-              { "propertyName": "value", "description": "Component current value", "type": "string | any" },
-              { "propertyName": "data", "description": "Selected form values", "type": "object" }
-            ]
           }
         ]
       }

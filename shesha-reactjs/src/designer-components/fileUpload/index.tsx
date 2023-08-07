@@ -12,12 +12,11 @@ import {
 } from '../../providers/form/utils';
 import React from 'react';
 import { getSettings } from './settings';
-import { migrateDisabled, migrateHidden, migratePropertyName } from 'designer-components/_settings/utils';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 
 export interface IFileUploadProps extends IConfigurableFormComponent, Omit<IFormItem, 'name'> {
   ownerId: string;
   ownerType: string;
-  propertyName: string;
   allowUpload?: boolean;
   allowReplace?: boolean;
   allowDelete?: boolean;
@@ -82,17 +81,17 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
         allowUpload: true,
         ownerId: '',
         ownerType: '',
-        propertyName: '',
+        owner: '',
       } as IFileUploadProps;
     })
     .add<IFileUploadProps>(1, (prev, context) => ({...prev, useSync: !Boolean(context.formSettings?.modelType)}))
     .add<IFileUploadProps>(2, (prev) => {
-      const newModel = {...prev};
-      migrateHidden(newModel);
-      migrateDisabled(newModel);
-      return newModel;
+      // update propertyName from old propertyName field, not from name field
+      const pn = prev.propertyName;
+      const model = migratePropertyName(migrateCustomFunctions(prev));
+      model.propertyName = pn;
+      return model;
     })
-    .add<IFileUploadProps>(3, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
   ,
   settingsFormMarkup: getSettings(),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),

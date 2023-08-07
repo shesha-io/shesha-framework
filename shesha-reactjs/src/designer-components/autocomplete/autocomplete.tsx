@@ -32,6 +32,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   type: 'autocomplete',
   isInput: true,
   isOutput: true,
+  canBeJsSetting: true,
   name: 'Autocomplete',
   icon: <FileSearchOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,

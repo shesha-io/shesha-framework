@@ -37,9 +37,7 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps> = {
           ) : (
             <Checkbox className="sha-checkbox" disabled={disabled} style={getStyle(model?.style, data)} 
               checked={value} 
-              onChange={onChange}/* (e) => {
-                onChange({ target: e.target });
-              }}*/
+              onChange={onChange}
             />
           )
         )}

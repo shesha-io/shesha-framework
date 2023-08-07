@@ -31,6 +31,7 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
   name: 'Date field',
   isInput: true,
   isOutput: true,
+  canBeJsSetting: true,
   icon: <CalendarOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.date || dataType === DataTypes.dateTime,
   factory: (model: IDateFieldProps, _c, form) => {

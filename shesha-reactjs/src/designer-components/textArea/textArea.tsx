@@ -33,6 +33,9 @@ const JsonTextArea: React.FC<IJsonTextAreaProps> = (props) => {
 const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
   type: 'textArea',
   name: 'Text Area',
+  isInput: true,
+  isOutput: true,
+  canBeJsSetting: true,
   icon: <FontColorsOutlined />,
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string && dataFormat === StringFormats.multiline,

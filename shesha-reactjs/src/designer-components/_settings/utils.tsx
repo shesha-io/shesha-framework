@@ -74,7 +74,7 @@ export const updateSettingsComponents = (
 
             const newComponent: IConfigurableFormComponent = {...component, jsSetting: false};
     
-            if (componentRegistration.canBeJsSetting && (component.jsSetting !== false) 
+            if (componentRegistration?.canBeJsSetting && (component.jsSetting !== false) 
                 || component.jsSetting === true) {
 
                 const oldComponent: IConfigurableFormComponent = {...newComponent};

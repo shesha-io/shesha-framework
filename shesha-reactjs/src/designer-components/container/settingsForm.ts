@@ -13,7 +13,6 @@ import {
 
 export const getSettings = (data: any) =>
   new DesignerToolbarSettings(data)
-
     .addCollapsiblePanel({
       id: '11164664-cbc9-4cef-babc-6fbea44cd0ca',
       propertyName: 'pnlDisplay',
@@ -81,7 +80,6 @@ export const getSettings = (data: any) =>
             parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
             allowClear: false,
             hidden: false,
-            customVisibility: null,
             dataSourceType: 'values',
             values: [
               {
@@ -117,8 +115,7 @@ export const getSettings = (data: any) =>
             label: 'Flex Direction',
             labelAlign: 'right',
             parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
-            hidden: false,
-            customVisibility: "return data.display === 'flex';",
+            hidden: {_code: "return  getSettingValue(data?.display) !== 'flex';", _mode: 'code', _value: false} as any,
             dataSourceType: 'values',
             values: FLEX_DIRECTION,
             description:
@@ -130,8 +127,7 @@ export const getSettings = (data: any) =>
             label: 'Flex Wrap',
             labelAlign: 'right',
             parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
-            hidden: false,
-            customVisibility: "return data.display === 'flex';",
+            hidden: {_code: "return getSettingValue(data?.display) !== 'flex';", _mode: 'code', _value: false} as any,
             dataSourceType: 'values',
             values: FLEX_WRAP,
             description:
@@ -143,7 +139,7 @@ export const getSettings = (data: any) =>
             parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
             label: 'Gap',
             description: 'Examples of a valid gap include: `10` | `10px` | `20px 20px`',
-            customVisibility: "return data.display && data.display !== 'block';",
+            hidden: {_code: "return  getSettingValue(data?.display) === 'block';", _mode: 'code', _value: false} as any,
           })
           .addNumberField({
             id: 'aae1d544-fe19-4865-9ef7-f885c72d8f61',
@@ -151,7 +147,7 @@ export const getSettings = (data: any) =>
             parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
             label: 'Grid Columns Count',
             description: 'Number of columns each grid should have',
-            customVisibility: "return data.display === 'grid' || data.display === 'inline-grid';",
+            hidden: {_code: "return getSettingValue(data?.display) !== 'grid' && getSettingValue(data?.display) !== 'inline-grid';", _mode: 'code', _value: false} as any,
           })
           .addDropdown({
             id: '3069d513-09bc-41c1-9f63-e47ecf56fb41',
@@ -160,7 +156,6 @@ export const getSettings = (data: any) =>
             labelAlign: 'right',
             parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
             hidden: true,
-            customVisibility: null,
             dataSourceType: 'values',
             values: [
               {
@@ -184,8 +179,7 @@ export const getSettings = (data: any) =>
             label: 'Align Items',
             labelAlign: 'right',
             parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
-            hidden: false,
-            customVisibility: "return data.direction !== 'block';",
+            hidden: {_code: "return  getSettingValue(data?.direction) === 'block';", _mode: 'code', _value: false} as any,
             dataSourceType: 'values',
             values: ALIGN_ITEMS,
             validate: {},
@@ -198,8 +192,7 @@ export const getSettings = (data: any) =>
             label: 'Align Self',
             labelAlign: 'right',
             parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
-            hidden: false,
-            customVisibility: "return data.direction !== 'block';",
+            hidden: {_code: "return  getSettingValue(data?.direction) === 'block';", _mode: 'code', _value: false} as any,
             dataSourceType: 'values',
             values: ALIGN_SELF,
             validate: {},
@@ -212,8 +205,7 @@ export const getSettings = (data: any) =>
             label: 'Justify Content',
             labelAlign: 'right',
             parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
-            hidden: false,
-            customVisibility: "return data.direction !== 'block';",
+            hidden: {_code: "return  getSettingValue(data?.direction) === 'block';", _mode: 'code', _value: false} as any,
             dataSourceType: 'values',
             values: JUSTIFY_CONTENT,
             validate: {},
@@ -226,8 +218,7 @@ export const getSettings = (data: any) =>
             label: 'Justify Self',
             labelAlign: 'right',
             parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
-            hidden: false,
-            customVisibility: "return data.direction !== 'block';",
+            hidden: {_code: "return  getSettingValue(data?.direction) === 'block';", _mode: 'code', _value: false} as any,
             dataSourceType: 'values',
             values: JUSTIFY_SELF,
             validate: {},
@@ -240,8 +231,7 @@ export const getSettings = (data: any) =>
             label: 'Text Justify',
             labelAlign: 'right',
             parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
-            hidden: false,
-            customVisibility: "return data.direction !== 'block';",
+            hidden: {_code: "return  getSettingValue(data?.direction) === 'block';", _mode: 'code', _value: false} as any,
             dataSourceType: 'values',
             values: TEXT_JUSTIFY,
             validate: {},
@@ -254,8 +244,6 @@ export const getSettings = (data: any) =>
             label: 'Justify Items',
             labelAlign: 'right',
             parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
-            hidden: false,
-            customVisibility: "return data.direction !== 'block';",
             dataSourceType: 'values',
             values: JUSTIFY_ITEMS,
             validate: {},
@@ -270,7 +258,6 @@ export const getSettings = (data: any) =>
             labelAlign: 'right',
             parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
             hidden: false,
-            customVisibility: null,
             description: 'Custom CSS Class to add to this component',
             validate: {},
             settingsValidationErrors: [],
@@ -301,6 +288,6 @@ export const getSettings = (data: any) =>
       mode: 'dialog',
       description: 'The style that will be applied to the container wrapper',
       exposedVariables: [{ id: nanoid(), name: 'data', description: 'Form data', type: 'object' }],
-      customVisibility: 'return !data.noDefaultStyling;',
+      hidden: {_code: "return  getSettingValue(data?.noDefaultStyling);", _mode: 'code', _value: false} as any,
     })
     .toJson();

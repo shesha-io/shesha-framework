@@ -29,7 +29,6 @@ export const getSettings = () =>
             propertyName: 'label',
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
             label: 'Label',
-            jsSetting: true,
           })
           .addDropdown({
             id: '57a40a33-7e08-4ce4-9f08-a34d24a83338',
@@ -49,14 +48,12 @@ export const getSettings = () =>
               },
             ],
             dataSourceType: 'values',
-            jsSetting: true,
           })
           .addTextArea({
             id: '2d32fe70-99a0-4825-ae6c-8b933004e119',
             propertyName: 'description',
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
             label: 'Description',
-            jsSetting: true,
           })
           .addDropdown({
             id: 'df8a8f35-a50b-42f9-9642-73d390ceddbf',
@@ -84,7 +81,6 @@ export const getSettings = () =>
               },
             ],
             dataSourceType: 'values',
-            jsSetting: true,
             hidden: {_code: 'return  getSettingValue(data?.disabled) ?? false;', _mode: 'code', _value: false} as any,
           })
           .addCheckbox({
@@ -92,21 +88,18 @@ export const getSettings = () =>
             propertyName: 'hidden',
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
             label: 'Hidden',
-            jsSetting: true,
           })
           .addCheckbox({
             id: 'c6885251-96a6-40ce-99b2-4b5209a9e01c',
             propertyName: 'hideLabel',
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
             label: 'Hide Label',
-            jsSetting: true,
           })
           .addCheckbox({
             id: '24a8be15-98eb-40f7-99ea-ebb602693e9c',
             propertyName: 'disabled',
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
             label: 'Disabled',
-            jsSetting: true,
           })
           /*.addTextField({
             id: '1ad47439-4c18-468c-89e1-60c002ce96c5',
@@ -114,7 +107,6 @@ export const getSettings = () =>
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
             label: 'Max height',
             description: 'Max height of file list (analog)',
-            jsSetting: true,
           })*/
           .addCheckbox({
             id: '40024b1c-edd4-4b5d-9c85-1dda6fb8db6c',
@@ -123,7 +115,6 @@ export const getSettings = () =>
             label: 'Allow Add',
             validate: {},
             hidden: {_code: 'return  getSettingValue(data?.disabled) ?? false;', _mode: 'code', _value: false} as any,
-            jsSetting: true,
           })
           .addCheckbox({
             id: '6b3d298a-0e82-4420-ae3c-38bf5a2246d4',
@@ -132,7 +123,6 @@ export const getSettings = () =>
             label: 'Allow Remove',
             validate: {},
             hidden: {_code: 'return  getSettingValue(data?.disabled) ?? false;', _mode: 'code', _value: false} as any,
-            jsSetting: true,
           }).toJson()
         ]
       }
@@ -155,14 +145,12 @@ export const getSettings = () =>
             propertyName: 'ownerName',
             parentId: 'pnl02942-a0a6-4805-ac47-8f45486a69d4',
             label: 'Owner',
-            jsSetting: true,
           })
           .addTextField({
             id: '1c03863c-880d-4308-8667-c3d996619cb7',
             propertyName: 'ownerId',
             parentId: 'pnl02942-a0a6-4805-ac47-8f45486a69d4',
             label: 'Owner Id',
-            jsSetting: true,
           })
           .addAutocomplete({
             id: '0009bf13-04a3-49d5-a9d8-1b23df20b97c',
@@ -176,14 +164,12 @@ export const getSettings = () =>
             dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
             settingsValidationErrors: [],
             useRawValues: true,
-            jsSetting: true,
           })
           .addTextField({
             id: 'db913b1b-3b25-46c9-afef-21854d917ba7',
             propertyName: 'filesCategory',
             parentId: 'pnl02942-a0a6-4805-ac47-8f45486a69d4',
             label: 'Files Category',
-            jsSetting: true,
           })
           .addEditableTagGroupProps({
             id: nanoid(),
@@ -191,7 +177,6 @@ export const getSettings = () =>
             propertyName: 'allowedFileTypes',
             label: 'Allowed File Types',
             description: 'File types that can be accepted.',
-            jsSetting: true,
           }).toJson()
         ]
       }

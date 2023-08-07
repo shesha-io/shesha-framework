@@ -10,11 +10,11 @@ import { validateConfigurableComponentSettings } from '../../formDesignerUtils';
 import { executeCustomExpression } from '../../utils/publicUtils';
 import { Alert } from 'antd';
 import { IRefListStatusPropsV0 } from './migrations/models';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 
 const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
   type: 'refListStatus',
   isInput: true,
-  isOutput: true,
   name: 'Reference list status',
   icon: <FileSearchOutlined />,
 
@@ -42,8 +42,8 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
 
     return (
       <ConfigurableFormItem model={{ ...model, hideLabel }}>
-        {(value, onChange) => {
-          return <RefListStatusControl model={{ ...model, solidBackground, showReflistName }} value={value} onChange={onChange}/>;
+        {(value) => {
+          return <RefListStatusControl model={{ ...model, solidBackground, showReflistName }} value={value} />;
         }}
       </ConfigurableFormItem>
     );
@@ -55,27 +55,28 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
     };
     return customModel;
   },
-  migrator: (m) =>
-    m
-      .add<IRefListStatusPropsV0>(0, (prev) => {
-        const result: IRefListStatusPropsV0 = {
-          ...prev,
-          name: prev['name'],
-          module: '',
-          nameSpace: '',
-        };
-        return result;
-      })
-      .add<IRefListStatusProps>(1, (prev) => {
-        const { module, nameSpace, ...restProps } = prev;
-        const result: IRefListStatusProps = {
-          ...restProps,
-          referenceListId: nameSpace
-            ? { module: module, name: nameSpace /* note the property was named wrong initially */ }
-            : null,
-        };
-        return result;
-      }),
+  migrator: (m) => m
+    .add<IRefListStatusPropsV0>(0, (prev) => {
+      const result: IRefListStatusPropsV0 = {
+        ...prev,
+        name: prev['name'],
+        module: '',
+        nameSpace: '',
+      };
+      return result;
+    })
+    .add<IRefListStatusProps>(1, (prev) => {
+      const { module, nameSpace, ...restProps } = prev;
+      const result: IRefListStatusProps = {
+        ...restProps,
+        referenceListId: nameSpace
+          ? { module: module, name: nameSpace /* note the property was named wrong initially */ }
+          : null,
+      };
+      return result;
+    })
+    .add<IRefListStatusProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
   settingsFormMarkup: RefListStatusSettingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(RefListStatusSettingsForm, model),
 };

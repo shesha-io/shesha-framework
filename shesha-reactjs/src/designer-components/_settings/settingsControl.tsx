@@ -19,13 +19,13 @@ export const SettingsControl: FC<ISettingsControlProps> = ({ id, propertyName, v
     const settings = getPropertySettingsFromValue(value);
 
     useEffect(() => {
-        onChange({ _value: settings._value, _code: settings._code, _mode: mode });
+        onChange(!!settings._code || mode === 'code' ? { _value: settings._value, _code: settings._code, _mode: mode } : settings._value);
     }, [mode]);
 
     if (mode === 'code') {
         return <CodeEditor 
             value={settings._code}
-            onChange={(value) => onChange({ _value: settings._value, _code: value, _mode: mode })}
+            onChange={(value) => onChange(!!value || mode === 'code' ? { _value: settings._value, _code: value, _mode: mode } : settings._value)}
             mode='dialog'
             type='codeEditor'
             language='typescript'

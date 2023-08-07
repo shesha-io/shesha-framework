@@ -9,7 +9,6 @@
       "parentId": "root",
       "hidden": false,
       "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 1,
       "expandIconPosition": "left",
@@ -196,7 +195,6 @@
             "label": "Hide border",
             "parentId": "aUt4GeRhocL5W_aGaaR10",
             "hidden": false,
-            "customVisibility": null,
             "validate": {},
             "description": "",
             "settingsValidationErrors": [
@@ -408,7 +406,6 @@
               "label": "Hide border",
               "parentId": "aUt4GeRhocL5W_aGaaR10",
               "hidden": false,
-              "customVisibility": null,
               "validate": {},
               "description": "",
               "settingsValidationErrors": [
@@ -441,7 +438,6 @@
       "parentId": "root",
       "hidden": false,
       "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 1,
       "expandIconPosition": "left",
@@ -460,7 +456,6 @@
             "labelAlign": "right",
             "parentId": "_m7e9WBdpkz4CsCrpVx8d",
             "hidden": false,
-            "customVisibility": null,
             "description": "Enter custom even handler on changing of event. Multiple variables are exposed",
             "validate": {},
             "settingsValidationErrors": [],
@@ -533,7 +528,6 @@
       "parentId": "root",
       "hidden": false,
       "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 1,
       "expandIconPosition": "left",
@@ -582,7 +576,6 @@
       "parentId": "root",
       "hidden": false,
       "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 1,
       "expandIconPosition": "left",
@@ -671,7 +664,6 @@
       "parentId": "root",
       "hidden": false,
       "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 1,
       "expandIconPosition": "left",
@@ -794,141 +786,6 @@
               "version": 1,
               "useRawValues": false,
               "referenceListId": null
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "n06Ktj3plbauASH1cxgYq",
-      "type": "collapsiblePanel",
-      "propertyName": "pnlVisibility",
-      "label": "Visibility",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "visibility": "Yes",
-      "customVisibility": null,
-      "isDynamic": false,
-      "version": 1,
-      "expandIconPosition": "left",
-      "header": {
-        "id": "upggG0AcZTCP9StXUj5Fg",
-        "components": []
-      },
-      "content": {
-        "id": "GmUBbrOudI7kcpxCrfyTN",
-        "components": [
-          {
-            "id": "1a4d6a5e-070a-4e7c-a95a-8c41f4273f7e",
-            "type": "codeEditor",
-            "propertyName": "customVisibility",
-            "label": "Custom Visibility",
-            "labelAlign": "right",
-            "parentId": "GmUBbrOudI7kcpxCrfyTN",
-            "hidden": false,
-            "customVisibility": null,
-            "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-            "validate": {},
-            "settingsValidationErrors": [],
-            "exposedVariables": [
-              {
-                "propertyName": "value",
-                "description": "Component current value",
-                "type": "string | any"
-              },
-              {
-                "propertyName": "data",
-                "description": "Selected form values",
-                "type": "object"
-              }
-            ]
-          },
-          {
-            "id": "4b5e5951-4998-4635-b1c8-0b6d3940c300",
-            "type": "codeEditor",
-            "propertyName": "customEnabled",
-            "label": "Custom Enabled",
-            "labelAlign": "right",
-            "parentId": "GmUBbrOudI7kcpxCrfyTN",
-            "hidden": false,
-            "customEnabled": null,
-            "description": "Enter custom enabled code.  You must return true to enable the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-            "validate": {},
-            "settingsValidationErrors": [],
-            "exposedVariables": [
-              {
-                "propertyName": "value",
-                "description": "Component current value",
-                "type": "string | any"
-              },
-              {
-                "propertyName": "data",
-                "description": "Selected form values",
-                "type": "object"
-              }
-            ]
-          }
-        ]
-      },
-      "collapsible": "header",
-      "collapsedByDefault": false,
-      "ghost": true,
-      "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
-      "components": [
-        {
-          "id": "GmUBbrOudI7kcpxCrfyTN",
-          "components": [
-            {
-              "id": "1a4d6a5e-070a-4e7c-a95a-8c41f4273f7e",
-              "type": "codeEditor",
-              "propertyName": "customVisibility",
-              "label": "Custom Visibility",
-              "labelAlign": "right",
-              "parentId": "GmUBbrOudI7kcpxCrfyTN",
-              "hidden": false,
-              "customVisibility": null,
-              "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-              "validate": {},
-              "settingsValidationErrors": [],
-              "exposedVariables": [
-                {
-                  "propertyName": "value",
-                  "description": "Component current value",
-                  "type": "string | any"
-                },
-                {
-                  "propertyName": "data",
-                  "description": "Selected form values",
-                  "type": "object"
-                }
-              ]
-            },
-            {
-              "id": "4b5e5951-4998-4635-b1c8-0b6d3940c300",
-              "type": "codeEditor",
-              "propertyName": "customEnabled",
-              "label": "Custom Enabled",
-              "labelAlign": "right",
-              "parentId": "GmUBbrOudI7kcpxCrfyTN",
-              "hidden": false,
-              "customEnabled": null,
-              "description": "Enter custom enabled code.  You must return true to enable the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-              "validate": {},
-              "settingsValidationErrors": [],
-              "exposedVariables": [
-                {
-                  "propertyName": "value",
-                  "description": "Component current value",
-                  "type": "string | any"
-                },
-                {
-                  "propertyName": "data",
-                  "description": "Selected form values",
-                  "type": "object"
-                }
-              ]
             }
           ]
         }

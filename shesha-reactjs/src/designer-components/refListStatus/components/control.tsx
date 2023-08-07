@@ -12,7 +12,6 @@ import { useReferenceListItem } from 'providers/referenceListDispatcher';
 interface IProps {
   formMode?: FormMode;
   model: IRefListStatusProps;
-  onChange?: Function;
   value?: any;
 }
 

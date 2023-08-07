@@ -19,6 +19,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
   type: 'numberField',
   isInput: true,
   isOutput: true,
+  canBeJsSetting: true,
   name: 'Number field',
   icon: <NumberOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.number,

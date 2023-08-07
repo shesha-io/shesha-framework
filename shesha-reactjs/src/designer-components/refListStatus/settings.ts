@@ -175,39 +175,4 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
                 .toJson()
         }
     })
-
-    .addCollapsiblePanel({
-        id: nanoid(),
-        propertyName: "pnlVisibility",
-        parentId: "root",
-        label: "Visibility",
-        labelAlign: "right",
-        expandIconPosition: "start",
-        ghost: true,
-        hideWhenEmpty: true,
-        header: {
-            id: nanoid(),
-            components: []
-        },
-        content: {
-            id: 'AC91C296-4BD4-4013-B8F9-BE71C0F37F9B',
-            components: new DesignerToolbarSettings()
-                .addCodeEditor({
-                    id: '03959ffd-cadb-496c-bf6d-b742f7f6edc6',
-                    propertyName: 'customVisibility',
-                    parentId: 'AC91C296-4BD4-4013-B8F9-BE71C0F37F9B',
-                    label: 'Custom Visibility',
-                    description:
-                        'Enter custom visibility code.  You must return true to show the component. ' +
-                        'The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
-                    exposedVariables: [
-                        { id: nanoid(), name: 'value', description: 'Component current value', type: 'string | any' },
-                        { id: nanoid(), name: 'data', description: 'Selected form values', type: 'object' },
-                        { id: nanoid(), name: "globalState", description: "The global state of the application", type: "object" }
-                    ],
-                })
-
-                .toJson()
-        }
-    })
     .toJson();
