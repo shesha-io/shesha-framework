@@ -9,6 +9,7 @@ import { CodeEditor } from './codeEditor';
 import { DataTypes, StringFormats } from '../../../../interfaces/dataTypes';
 import { ICodeEditorComponentProps, ICodeEditorProps } from './interfaces';
 import { useForm } from '../../../..';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -26,19 +27,26 @@ const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
     const { formMode} = useForm();
 
     return (
-      <>
         <ConfigurableFormItem model={model}>
-          <CodeEditor
-            language="typescript"
-            {...editorProps}
-            mode={model.mode || 'dialog'}
-            setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-            readOnly={formMode === 'readonly'}
-          />
+          {(value, onChange) => {
+            return (
+              <CodeEditor
+                value={value}
+                onChange={onChange}
+                language="typescript"
+                {...editorProps}
+                mode={model.mode || 'dialog'}
+                setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
+                readOnly={formMode === 'readonly'}
+              />
+            );
+          }}
         </ConfigurableFormItem>
-      </>
     );
   },
+  migrator: (m) => m
+    .add<ICodeEditorComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
   initModel: model => {
     const textAreaModel: ICodeEditorComponentProps = {
       ...model,
