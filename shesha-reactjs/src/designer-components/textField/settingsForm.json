@@ -31,7 +31,7 @@
           },
           {
             "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
-            "type": "setting.textField",
+            "type": "textField",
             "propertyName": "label",
             "parentId": "s4gmBg31azZC0UjZjpfTm",
             "label": "Label",
@@ -40,7 +40,7 @@
           },
           {
             "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
-            "type": "setting.dropdown",
+            "type": "dropdown",
             "propertyName": "textType",
             "parentId": "s4gmBg31azZC0UjZjpfTm",
             "label": "Type",
@@ -63,7 +63,7 @@
           },
           {
             "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
-            "type": "setting.dropdown",
+            "type": "dropdown",
             "propertyName": "labelAlign",
             "parentId": "s4gmBg31azZC0UjZjpfTm",
             "label": "Label align",
@@ -86,7 +86,7 @@
           },
           {
             "id": "fbdb6bb1-5994-4205-86b4-236ca61ae54e",
-            "type": "setting.textField",
+            "type": "textField",
             "propertyName": "placeholder",
             "parentId": "s4gmBg31azZC0UjZjpfTm",
             "label": "Placeholder",
@@ -95,14 +95,14 @@
           },
           {
             "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
-            "type": "setting.textArea",
+            "type": "textArea",
             "propertyName": "description",
             "parentId": "s4gmBg31azZC0UjZjpfTm",
             "label": "Description"
           },
           {
             "id": "12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6",
-            "type": "setting.textField",
+            "type": "textField",
             "propertyName": "prefix",
             "parentId": "s4gmBg31azZC0UjZjpfTm",
             "label": "Prefix",
@@ -111,7 +111,7 @@
           },
           {
             "id": "d68b1754-682c-4f2c-b49a-a1f250467474",
-            "type": "setting.textField",
+            "type": "textField",
             "propertyName": "suffix",
             "parentId": "s4gmBg31azZC0UjZjpfTm",
             "label": "Suffix",
@@ -120,7 +120,7 @@
           },
           {
             "id": "fbdb6bb1-5994-4205-86b4-236ca62ae54e",
-            "type": "setting.textField",
+            "type": "textField",
             "propertyName": "initialValue",
             "parentId": "s4gmBg31azZC0UjZjpfTm",
             "label": "Default Value",
@@ -168,35 +168,35 @@
           },
           {
             "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
-            "type": "setting.checkbox",
+            "type": "checkbox",
             "propertyName": "hidden",
             "parentId": "s4gmBg31azZC0UjZjpfTm",
             "label": "Hidden"
           },
           {
             "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
-            "type": "setting.checkbox",
+            "type": "checkbox",
             "propertyName": "hideLabel",
             "parentId": "s4gmBg31azZC0UjZjpfTm",
             "label": "Hide Label"
           },
           {
             "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
-            "type": "setting.checkbox",
+            "type": "checkbox",
             "propertyName": "disabled",
             "parentId": "s4gmBg31azZC0UjZjpfTm",
             "label": "Disabled"
           },
           {
             "id": "1ceb3851-f15e-437b-98b6-84d6a1fbf801",
-            "type": "setting.checkbox",
+            "type": "checkbox",
             "propertyName": "readOnly",
             "parentId": "s4gmBg31azZC0UjZjpfTm",
             "label": "Read Only"
           },
           {
             "id": "c67b7404-d980-437a-a544-74e4e816f6cd",
-            "type": "setting.checkbox",
+            "type": "checkbox",
             "propertyName": "hideBorder",
             "label": "Hide border",
             "parentId": "s4gmBg31azZC0UjZjpfTm",
@@ -439,14 +439,14 @@
         "components": [
           {
             "id": "3be9da3f-f47e-48ae-b4c3-f5cc36e534d9",
-            "type": "setting.checkbox",
+            "type": "checkbox",
             "propertyName": "validate.required",
             "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
             "label": "Required"
           },
           {
             "id": "b61a1580-0ff9-460e-8f13-43b9d80ceb6c",
-            "type": "setting.numberField",
+            "type": "numberField",
             "propertyName": "validate.minLength",
             "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
             "label": "Min Length",
@@ -454,7 +454,7 @@
           },
           {
             "id": "cc0d5dc1-19e6-42c3-bd5e-e63946a7f53c",
-            "type": "setting.numberField",
+            "type": "numberField",
             "propertyName": "validate.maxLength",
             "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
             "label": "Max Length",
@@ -462,7 +462,7 @@
           },
           {
             "id": "9ee3a529-1f0c-4def-bd41-ee166a5dfcd7",
-            "type": "setting.textField",
+            "type": "textField",
             "propertyName": "validate.message",
             "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
             "label": "Message",
@@ -549,7 +549,7 @@
           },
           {
             "id": "494e8079-98f6-4a25-b9fd-40a77554ec89",
-            "type": "setting.dropdown",
+            "type": "dropdown",
             "propertyName": "size",
             "parentId": "RvNp_osTwoxjfKmj1mO9p",
             "label": "Size",
