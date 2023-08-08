@@ -12,6 +12,7 @@ export const getSettings = (data: any) =>
       validate: {
         required: true,
       },
+      jsSetting: false
     })
     .addTextField({
       id: 'd498779d-012a-4c6a-82a9-77231245ae28',
@@ -26,7 +27,6 @@ export const getSettings = (data: any) =>
       labelAlign: 'right',
       parentId: '345c2181-fb9f-48ed-9631-864ac357807b',
       hidden: false,
-      customVisibility: '',
       autoSize: false,
       showCount: false,
       allowClear: false,
@@ -38,8 +38,7 @@ export const getSettings = (data: any) =>
       label: 'Icon',
       labelAlign: 'right',
       parentId: '345c2181-fb9f-48ed-9631-864ac357807b',
-      hidden: false,
-      customVisibility: "return data.itemSubType === 'button'",
+      hidden: {_code: 'return  getSettingValue(data?.itemSubType) !== "button";', _mode: 'code', _value: false} as any,
       settingsValidationErrors: [],
     })
     .addDropdown({
@@ -49,7 +48,6 @@ export const getSettings = (data: any) =>
       labelAlign: 'right',
       parentId: '345c2181-fb9f-48ed-9631-864ac357807b',
       hidden: false,
-      customVisibility: null,
       validate: {
         required: true,
       },
@@ -94,7 +92,6 @@ export const getSettings = (data: any) =>
       labelAlign: 'right',
       parentId: '345c2181-fb9f-48ed-9631-864ac357807b',
       hidden: false,
-      customVisibility: null,
       validate: {},
     })
     .addCheckbox({
@@ -104,7 +101,6 @@ export const getSettings = (data: any) =>
       labelAlign: 'right',
       parentId: '345c2181-fb9f-48ed-9631-864ac357807b',
       hidden: false,
-      customVisibility: null,
       validate: {},
     })
     .addDropdown({
@@ -151,7 +147,6 @@ export const getSettings = (data: any) =>
       propertyName: 'actionConfiguration',
       label: 'Action configuration',
       hidden: false,
-      customVisibility: '',
       validate: {},
       settingsValidationErrors: [],
     })
@@ -196,52 +191,6 @@ export const getSettings = (data: any) =>
       ],
       dataSourceType: 'values',
     })
-    .addSectionSeparator({
-      id: '0495b899-bb48-44ea-a212-c4920bf3a8a4',
-      propertyName: 'sectionVisibility',
-      parentId: 'root',
-      label: 'Visibility',
-    })
-    .addCodeEditor({
-      id: '341beffe-2d62-4c4c-8c97-5f2b433716bf',
-      propertyName: 'customVisibility',
-      label: 'Custom Visibility',
-      labelAlign: 'right',
-      parentId: 'root',
-      hidden: false,
-      customVisibility: null,
-      description:
-        'Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
-      validate: {},
-      settingsValidationErrors: [],
-      exposedVariables: [
-        { name: 'data', description: 'The form data', type: 'object' },
-        { name: 'moment', description: 'The moment.js object', type: 'object' },
-        { name: 'form', description: 'Form instance', type: 'FormInstance' },
-        { name: 'formMode', description: 'The form mode', type: "'readonly' | 'edit' | 'designer'" },
-        { name: 'globalState', description: 'The global state of the application', type: 'object' },
-      ],
-    })
-    .addCodeEditor({
-      id: '4b5e5951-4998-4635-b1c8-0b6d3940c300',
-      propertyName: 'customEnabled',
-      label: 'Custom Enabled',
-      labelAlign: 'right',
-      parentId: 'root',
-      hidden: false,
-      customEnabled: null,
-      description:
-        'Enter custom enabled code.  You must return true to enable the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
-      validate: {},
-      settingsValidationErrors: [],
-      exposedVariables: [
-        { name: 'data', description: 'The form data', type: 'object' },
-        { name: 'moment', description: 'The moment.js object', type: 'object' },
-        { name: 'form', description: 'Form instance', type: 'FormInstance' },
-        { name: 'formMode', description: 'The form mode', type: "'readonly' | 'edit' | 'designer'" },
-        { name: 'globalState', description: 'The global state of the application', type: 'object' },
-      ],
-    })
     .addEditableTagGroupProps({
       id: '26c68b22-3211-475d-91e1-0745a4447329',
       propertyName: 'permissions',
@@ -249,7 +198,6 @@ export const getSettings = (data: any) =>
       labelAlign: 'right',
       parentId: 'root',
       hidden: false,
-      customVisibility: null,
       validate: {},
     })
     .toJson();

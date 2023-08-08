@@ -7,7 +7,7 @@ import { useForm } from '../../../../providers';
 import ConfigurableFormItem from '../formItem';
 import ChildEntitiesTagGroupControl from './control';
 import { IChildEntitiesTagGroupProps } from './models';
-import { ChildEntitiesTagGroupSettings } from './settings';
+import { ChildEntitiesTagGroupSettingsForm } from './settings';
 
 const ChildEntitiesTagGroup: IToolboxComponent<IChildEntitiesTagGroupProps> = {
   type: 'childEntitiesTagGroup',
@@ -29,17 +29,7 @@ const ChildEntitiesTagGroup: IToolboxComponent<IChildEntitiesTagGroupProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
-    return (
-      <ChildEntitiesTagGroupSettings
-        readOnly={readOnly}
-        model={model}
-        onSave={onSave as any}
-        onCancel={onCancel}
-        onValuesChange={onValuesChange as any}
-      />
-    );
-  },
+  settingsFormFactory: (props) => ( <ChildEntitiesTagGroupSettingsForm {...props}/>),
   migrator: (m) => m
     .add<IChildEntitiesTagGroupProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
   ,

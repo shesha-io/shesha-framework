@@ -1,7 +1,6 @@
 import React, { FC, Fragment } from 'react';
 import { IToolboxComponent } from '../../../../../interfaces';
 import { GroupOutlined } from '@ant-design/icons';
-import ToolbarSettings from './settings';
 import { IButtonGroupProps } from './models';
 import { Alert, Menu, Space } from 'antd';
 import { IButtonGroupButton, ButtonGroupItemProps } from '../../../../../providers/buttonGroupConfigurator/models';
@@ -13,6 +12,7 @@ import { executeExpression, getStyle } from '../../../../../providers/form/utils
 import { getButtonGroupItems, getButtonGroupMenuItem } from './utils';
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
+import { ButtonGroupSettingsForm } from './settings';
 
 const ButtonGroupComponent: IToolboxComponent<IButtonGroupProps> = {
   type: 'buttonGroup',
@@ -47,17 +47,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupProps> = {
           isInline: prev['isInline'] ?? true,
         }) /* default isInline to true if not specified */
       ),
-  settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
-    return (
-      <ToolbarSettings
-        readOnly={readOnly}
-        model={model}
-        onSave={onSave}
-        onCancel={onCancel}
-        onValuesChange={onValuesChange}
-      />
-    );
-  },
+  settingsFormFactory: (props) => ( <ButtonGroupSettingsForm {...props} />),
 };
 
 type MenuButton = ButtonGroupItemProps & {

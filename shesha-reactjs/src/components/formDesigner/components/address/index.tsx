@@ -8,7 +8,7 @@ import ConfigurableFormItem from '../formItem';
 import AutoCompletePlacesControl from './control';
 import AddressEffect from './effect';
 import { IAddressCompomentProps } from './models';
-import AddressSettings from './settings';
+import { AddressSettingsForm } from './settings';
 
 const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
   type: 'address',
@@ -33,17 +33,7 @@ const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
       </AddressEffect>
     );
   },
-  settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
-    return (
-      <AddressSettings
-        readOnly={readOnly}
-        model={model}
-        onSave={onSave as any}
-        onCancel={onCancel}
-        onValuesChange={onValuesChange as any}
-      />
-    );
-  },
+  settingsFormFactory: (props) => (<AddressSettingsForm {...props} />),
   migrator: (m) => m
     .add<IAddressCompomentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
   ,  

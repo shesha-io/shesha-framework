@@ -9,7 +9,6 @@
       "parentId": "root",
       "hidden": false,
       "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 1,
       "expandIconPosition": "left",
@@ -135,7 +134,6 @@
       "parentId": "root",
       "hidden": false,
       "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 1,
       "expandIconPosition": "left",
@@ -198,7 +196,7 @@
                 "type": "object"
               }
             ],
-            "customVisibility": "return data.dataSourceType === 'url'"
+            "hidden": {"_code": "return  getSettingValue(data.dataSourceType) !== 'url';", "_mode": "code", "_value": false}
           },
           {
             "id": "c153b326-7ff2-4bb0-af21-45f80e8cd6e0",
@@ -216,7 +214,7 @@
                 "type": "array"
               }
             ],
-            "customVisibility": "return data.dataSourceType === 'url'"
+            "hidden": {"_code": "return  getSettingValue(data.dataSourceType) !== 'url';", "_mode": "code", "_value": false}
           },
           {
             "id": "gWL0lQBLM5toTa53dcEe1",
@@ -225,9 +223,8 @@
             "label": "Reference List",
             "labelAlign": "right",
             "parentId": "pnl1371c-37c9-42d1-9188-850d0cea2c33",
-            "hidden": false,
             "visibility": "Yes",
-            "customVisibility": "return data.dataSourceType === 'referenceList'",
+            "hidden": {"_code": "return  getSettingValue(data.dataSourceType) !== 'referenceList';", "_mode": "code", "_value": false},
             "isDynamic": false,
             "version": 0,
             "convertToFullId": true,
@@ -237,6 +234,18 @@
               "message": ""
             },
             "settingsValidationErrors": []
+          },
+          {
+            "id": "99af45e2-b779-401b-9b5b-f2457b52496c",
+            "type": "labelValueEditor",
+            "propertyName": "items",
+            "parentId": "pnl1371c-37c9-42d1-9188-850d0cea2c33",
+            "label": "Items",
+            "labelTitle": "Label",
+            "labelName": "label",
+            "valueTitle": "Value",
+            "valueName": "value",
+            "hidden": {"_code": "return  getSettingValue(data.dataSourceType) !== 'values';", "_mode": "code", "_value": false}
           },
           {
             "id": "b62d9f2e-a2f8-4cab-b63b-1b0185ad2939",
@@ -286,18 +295,6 @@
             "version": 1,
             "useRawValues": false,
             "referenceListId": null
-          },
-          {
-            "id": "99af45e2-b779-401b-9b5b-f2457b52496c",
-            "type": "labelValueEditor",
-            "propertyName": "items",
-            "parentId": "pnl1371c-37c9-42d1-9188-850d0cea2c33",
-            "label": "Items",
-            "labelTitle": "Label",
-            "labelName": "label",
-            "valueTitle": "Value",
-            "valueName": "value",
-            "customVisibility": "return data.dataSourceType === 'values'"
           }
         ]
       }
@@ -311,7 +308,6 @@
       "parentId": "root",
       "hidden": false,
       "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 1,
       "expandIconPosition": "left",
@@ -344,7 +340,6 @@
       "parentId": "root",
       "hidden": false,
       "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 1,
       "expandIconPosition": "left",
@@ -371,57 +366,6 @@
               {
                 "propertyName": "data",
                 "description": "Form values",
-                "type": "object"
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "id": "ae7c663a-edf5-42a9-b6c7-24ef9293ddbd",
-      "type": "collapsiblePanel",
-      "propertyName": "pnlVisibility",
-      "label": "Visibility",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "visibility": "Yes",
-      "customVisibility": null,
-      "isDynamic": false,
-      "version": 1,
-      "expandIconPosition": "left",
-      "collapsible": "header",
-      "collapsedByDefault": false,
-      "ghost": true,
-      "header": {
-        "id": "2JkE1UV7XdEQgLAcKGSq3",
-        "components": []
-      },
-      "content": {
-        "id": "pnlc663a-edf5-42a9-b6c7-24ef9293ddbd",
-        "components": [
-          {
-            "id": "3214eace-9e1f-4f93-89a9-d581e86d2ba9",
-            "type": "codeEditor",
-            "propertyName": "customVisibility",
-            "label": "Custom Visibility",
-            "labelAlign": "right",
-            "parentId": "pnlc663a-edf5-42a9-b6c7-24ef9293ddbd",
-            "hidden": false,
-            "customVisibility": null,
-            "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-            "validate": {},
-            "settingsValidationErrors": [],
-            "exposedVariables": [
-              {
-                "propertyName": "value",
-                "description": "Component current value",
-                "type": "string | any"
-              },
-              {
-                "propertyName": "data",
-                "description": "Selected form values",
                 "type": "object"
               }
             ]

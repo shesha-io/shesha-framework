@@ -28,8 +28,9 @@ const settingsForm = settingsFormJson as FormMarkup;
 
 const AutocompleteTagGroupComponent: IToolboxComponent<IAutocompleteTagsOutlinedComponentProps> = {
   type: 'autocompleteTagGroup',
-  name: 'AutocompleteTagsOutlined',
+  name: 'Autocomplete Tags Outlined',
   icon: <TagOutlined />,
+  canBeJsSetting: true,
   factory: (model: IAutocompleteTagsOutlinedComponentProps) => {
     const { formMode } = useForm();
 

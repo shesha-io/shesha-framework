@@ -23,6 +23,7 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGoupProps> = {
   type: 'checkboxGroup',
   isInput: true,
   isOutput: true,
+  canBeJsSetting: true,
   name: 'Checkbox group',
   icon: <ProfileOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.referenceListItem,
@@ -48,21 +49,20 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGoupProps> = {
     };
     return customProps;
   },
-  migrator: m =>
-    m
-      .add<IEnhancedICheckboxGoupProps>(0, prev => ({
+  migrator: m => m
+    .add<IEnhancedICheckboxGoupProps>(0, prev => ({
+      ...prev,
+      dataSourceType: prev['dataSourceType'] ?? 'values',
+      direction: prev['direction'] ?? 'horizontal',
+      mode: prev['mode'] ?? 'single',
+    }))
+    .add<IEnhancedICheckboxGoupProps>(1, prev => {
+      return {
         ...prev,
-        dataSourceType: prev['dataSourceType'] ?? 'values',
-        direction: prev['direction'] ?? 'horizontal',
-        mode: prev['mode'] ?? 'single',
-      }))
-      .add<IEnhancedICheckboxGoupProps>(1, prev => {
-        return {
-          ...prev,
-          referenceListId: getLegacyReferenceListIdentifier(prev.referenceListNamespace, prev.referenceListName),
-        };
-      })
-      .add<IEnhancedICheckboxGoupProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+        referenceListId: getLegacyReferenceListIdentifier(prev.referenceListNamespace, prev.referenceListName),
+      };
+    })
+    .add<IEnhancedICheckboxGoupProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
   ,
   linkToModelMetadata: (model, metadata): IEnhancedICheckboxGoupProps => {
     const refListId: IReferenceListIdentifier = metadata.referenceListName
