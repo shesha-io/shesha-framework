@@ -57,7 +57,7 @@ namespace Shesha.Authorization
             var methodName = methods.ContainsKey(method.RemovePostfix("Async")) ? methods[method.RemovePostfix("Async")] : method;
             var permissionName = $"{permissionedObject}@{methodName}";
 
-            var permission = _permissionedObjectManager.Get(permissionName);
+            var permission = await _permissionedObjectManager.GetAsync(permissionName);
 
             var actualAccess = replaceInherited != null && permission?.ActualAccess == RefListPermissionedAccess.Inherited
                 ? replaceInherited

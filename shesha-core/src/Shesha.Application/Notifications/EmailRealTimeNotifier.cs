@@ -73,6 +73,7 @@ namespace Shesha.Notifications
                         message.Subject = subject;
                         message.Body = body;
                         message.RecipientText = email;
+                        //message.SourceEntity = userNotification.;
                     });
 
                     // save attachments

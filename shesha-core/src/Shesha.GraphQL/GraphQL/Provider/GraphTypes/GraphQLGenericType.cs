@@ -1,17 +1,22 @@
 ﻿using Abp.Domain.Uow;
 using GraphQL;
 using GraphQL.Types;
+using NetTopologySuite.Geometries;
+using NetTopologySuite.IO;
+using Newtonsoft.Json;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Cache;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
+using Shesha.Json;
 using Shesha.JsonEntities;
 using Shesha.Reflection;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -146,13 +151,33 @@ namespace Shesha.GraphQL.Provider.GraphTypes
             var isDictionary = propertyInfo.PropertyType.IsAssignableToGenericType(typeof(IDictionary<,>));
             var typeName = propertyInfo.PropertyType.Name;
 
-            if (propertyInfo.PropertyType.IsJsonEntityType()) 
+            if (propertyInfo.PropertyType.IsJsonEntityType())
             {
                 Field(GraphTypeMapper.GetGraphType(typeof(RawJson), isInput: false), propertyInfo.Name, resolve: context => {
                     var jsonEntity = propertyInfo.GetValue(context.Source) as IJsonEntity;
                     return jsonEntity != null
                         ? new RawJson(jsonEntity)
                         : null;
+                });
+                return;
+            }
+            if (typeof(Geometry).IsAssignableFrom(propertyInfo.PropertyType))
+            {
+                Field(GraphTypeMapper.GetGraphType(typeof(RawJson), isInput: false), propertyInfo.Name, resolve: context => {
+                    var geometry = propertyInfo.GetValue(context.Source) as Geometry;
+                    if (geometry == null)
+                        return null;
+
+                    var serializer = GeoJsonSerializer.Create();
+                    using (var stringWriter = new StringWriter())
+                    {
+                        using (var jsonWriter = new JsonTextWriter(stringWriter))
+                        {
+                            serializer.Serialize(jsonWriter, geometry);
+                            var geoJson = stringWriter.ToString();
+                            return new RawJson(new JsonString(geoJson));
+                        }
+                    }
                 });
                 return;
             }

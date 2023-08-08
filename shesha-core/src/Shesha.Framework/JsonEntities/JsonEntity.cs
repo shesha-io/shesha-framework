@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Shesha.DynamicEntities.Dtos;
 using Shesha.JsonEntities.Converters;
 
 namespace Shesha.JsonEntities

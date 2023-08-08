@@ -1,5 +1,5 @@
 {
-    "name": "reactjs",
+    "name": "@shesha/reactjs",
     "version": "0.0.1",
     "private": false,
     "postinstall": "next",
