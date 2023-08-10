@@ -77,6 +77,13 @@ export const getSettings = () =>
       dataSourceType: 'values',
     })
     .addCheckbox({
+      id: 'cfd7d45e-c7e3-4a27-987b-dc525c412447',
+      name: 'isDragger',
+      parentId: 'root',
+      label: 'Is Dragger',
+      description: 'Where the uploader should show a dragger instead of buttom',
+    })
+    .addCheckbox({
       id: 'cfd7d45e-c7e3-4a27-987b-dc525c412448',
       name: 'hidden',
       parentId: 'root',
