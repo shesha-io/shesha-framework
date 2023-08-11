@@ -1,5 +1,6 @@
-Hlayi you add your change log data in here.
-Editing Hlayis notes
-
-Editing Hlayis notes
-Editing Hlayis notes
+# Release Notes
+- Event tooltips
+- Date formatting
+- Allowing default values on Autocomplete and Dropdown
+- Exposing hide label property on Status tag
+- Allowing generic entity filtering
