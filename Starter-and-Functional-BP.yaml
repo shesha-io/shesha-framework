@@ -556,7 +556,7 @@ stages:
           $filePath = "package.json"
           $Jsonfile = Get-Content $filePath -raw | ConvertFrom-Json
 
-          $Jsonfile.name = 'reactjs'
+          $Jsonfile.name = "reactjs"
           ConvertTo-Json $Jsonfile -Depth 5 | % { [System.Text.RegularExpressions.Regex]::Unescape($_) } | Set-Content $filePath
 
           npm version $(versionNo) --allow-same-version --no-git-tag-version
