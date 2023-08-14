@@ -1,6 +1,6 @@
 {
   "name": "@shesha/reactjs",
-  "version": "4.14.0-canary",
+  "version": "0.0.1-beta",
   "description": "The reactjs frontend application and ui for the shesha framework",
   "license": "GPL-3.0",
   "homepage": "https://shesha-io.github.io/shesha-framework",
