@@ -29,7 +29,7 @@ export interface IFileUploadProps {
   /* isStub is used just to fix strange error when the user is reordering components on the form */
   isStub?: boolean;
   allowedFileTypes?: string[];
-  uploadMode?: 'button' | 'dragger';
+  isDragger?: boolean;
 }
 
 export const FileUpload: FC<IFileUploadProps> = ({
@@ -40,7 +40,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   callback,
   isStub = false,
   allowedFileTypes = [],
-  uploadMode = 'button',
+  isDragger = false,
 }) => {
   const {
     fileInfo,
@@ -68,7 +68,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const onReplaceClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     e.preventDefault();
 
-    if (uploadMode === 'button') {
+    if (!isDragger) {
       uploadButtonRef.current.click();
     } else {
       if (uploadDraggerSpanRef.current) {
@@ -152,7 +152,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   );
 
   const renderStub = () => {
-    if (uploadMode === 'button') {
+    if (!isDragger) {
       return <div className={classes}>{uploadButton}</div>;
     }
 
@@ -160,7 +160,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   };
 
   const renderUploader = () => {
-    if (uploadMode === 'button') {
+    if (!isDragger) {
       return (
         <Upload {...fileProps} className={classes}>
           {uploadButton}

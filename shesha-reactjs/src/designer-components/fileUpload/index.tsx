@@ -22,7 +22,7 @@ export interface IFileUploadProps extends IConfigurableFormComponent, IFormItem 
   allowDelete?: boolean;
   useSync?: boolean;
   allowedFileTypes?: string[];
-  uploadMode?: 'button' | 'dragger';
+  isDragger?: boolean;
 }
 
 const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
@@ -62,7 +62,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
             allowDelete={enabled && model.allowDelete}
             allowReplace={enabled && model.allowReplace}
             allowedFileTypes={model?.allowedFileTypes}
-            uploadMode={model?.uploadMode}
+            isDragger={model?.isDragger}
           />
         </StoredFileProvider>
       </ConfigurableFormItem>
@@ -90,7 +90,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
       }),
   initModel: (model) => ({
     ...model,
-    uploadMode: 'button',
+    isDragger: false,
   }),
   settingsFormMarkup: getSettings(),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),

@@ -49,24 +49,12 @@ export const getSettings = () =>
       parentId: 'root',
       label: 'Description',
     })
-    .addDropdown({
+    .addCheckbox({
       id: '53cd10ce-25af-474b-af75-8e7b1f19e52d',
-      name: 'uploadMode',
-      label: 'Upload Mode',
-      allowClear: true,
-      values: [
-        {
-          label: 'Button',
-          value: 'button',
-          id: '53cd10ce-26af-474b-af75-8e7b1f19e52d',
-        },
-        {
-          label: 'Dragger',
-          value: 'dragger',
-          id: 'f07a228c-cb9c-4da7-a8bc-bc2be518a048',
-        },
-      ],
-      dataSourceType: 'values',
+      name: 'isDragger',
+      label: 'Is dragger',
+      parentId: 'root',
+      description: 'Whether the uploader should show a dragger instead of button',
     })
     .addDropdown({
       id: 'df8a8f35-a50b-42f9-9642-73d390ceddbf',
