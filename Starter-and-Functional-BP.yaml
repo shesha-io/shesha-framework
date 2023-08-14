@@ -495,3 +495,96 @@ stages:
       displayName: 'Publish Artifact: Release Version'
       inputs:
         ArtifactName: release-version
+  - job: Job_6
+    displayName: Build_Shesha_React_For_Publish
+    pool:
+      vmImage: windows-latest
+    steps:
+    - task: PowerShell@2
+      displayName: Check if Pull Request
+      retryCountOnTaskFailure: 5      
+      inputs:
+        targetType: 'inline'
+        script: |
+          $targetBranch = ""
+          if ("$(Build.SourceBranch)" -like "*/pull/*")
+          {
+              $targetBranch = "$(System.PullRequest.TargetBranch)"
+              write-host "This is a Pull Request and the target branch is: $targetBranch"  
+              write-host "##vso[task.setvariable variable=prTargetBranch]$targetBranch"
+          }
+          else
+          {
+            write-host "This is not a Pull Request and the target branch is set to empty string"  
+            write-host "##vso[task.setvariable variable=prTargetBranch]''"                              
+          }                             
+        workingDirectory: '$(System.DefaultWorkingDirectory)'        
+    - task: PowerShell@2
+      displayName: Check to establish if this pipeline was triggered from a tag
+      inputs:
+        filePath: 'ReleaseFlow.ps1'
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        arguments: '-PipeBuildNumber "$(Build.BuildNumber)" -PipeSourceBranch "$(Build.SourceBranch)" -PipeSourceVersion "$(Build.SourceVersion)" -PipeTargetBranch "$(prTargetBranch)" -PipeBuildId "$(Build.BuildId)"' 
+    - task: PowerShell@2
+      displayName: Output to console the current branch  
+      inputs:
+        targetType: 'inline'
+        script: |
+          # Write your PowerShell commands here.
+          write-host "The current branch is: $(currentBranch)"
+          write-host "The current version is: $(versionNo)"
+        workingDirectory: 'shesha-reactjs'
+    - task: NodeTool@0
+      displayName: 'Use Node 18.15.0'
+      inputs:
+        versionSpec: 18.15.0
+      retryCountOnTaskFailure: 5
+    # - task: Npm@1
+    #   displayName: 'Npm Update Version'
+    #   inputs:
+    #     command: custom
+    #     workingDir: shesha-reactjs
+    #     verbose: false
+    #     customCommand: 'version $(versionNo) --allow-same-version'
+    #   # condition: ne(variables['currentBranch'], 'refs/heads/main')
+    - task: PowerShell@2
+      inputs:
+        targetType: 'inline'
+        script: |
+          write-host "Setting Name Property for Package"
+
+          $filePath = "package.json"
+          $Jsonfile = Get-Content $filePath -raw | ConvertFrom-Json
+
+          $Jsonfile.name = "reactjs"
+          ConvertTo-Json $Jsonfile -Depth 5 | % { [System.Text.RegularExpressions.Regex]::Unescape($_) } | Set-Content $filePath
+          cat $filePath
+        workingDirectory: 'shesha-reactjs'
+    - task: Npm@1
+      displayName: 'Npm Install'
+      inputs:
+        command: custom
+        workingDir: shesha-reactjs
+        verbose: false
+        customCommand: 'install'
+    - task: Npm@1
+      inputs:
+        command: 'custom'
+        workingDir: shesha-reactjs
+        customCommand: 'run prepare'
+    - task: Npm@1
+      inputs:
+        command: 'custom'
+        workingDir: shesha-reactjs
+        customCommand: 'run build'
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: 'shesha-reactjs'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/shesha-react.zip'
+        replaceExistingArchive: true  
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: shesha-react'
+      inputs:
+        ArtifactName: shesha-react
