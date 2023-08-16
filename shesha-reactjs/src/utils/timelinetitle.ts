@@ -4,6 +4,8 @@ export const getTimelineTitle = (channel: number) => {
   switch (channel) {
     case TimelineChannels.SMS:
       return 'sent a sms';
+    case TimelineChannels.Call:
+      return 'recieved a call';
     case TimelineChannels.Message:
       return 'Sent a direct message';
     case TimelineChannels.Email:
