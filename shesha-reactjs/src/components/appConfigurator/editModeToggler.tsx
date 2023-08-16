@@ -3,6 +3,7 @@ import React, { FC } from 'react';
 import { useAppConfigurator } from '../../providers';
 import SwitchToEditModeConfirmation from './switchToEditModeConfirmation';
 import SwitchToLiveModeConfirmation from './switchToLiveModeConfirmation';
+import { Button } from 'antd';
 
 export interface IAppEditModeTogglerProps {}
 
@@ -17,7 +18,10 @@ export const AppEditModeToggler: FC<IAppEditModeTogglerProps> = () => {
       </>
     ) : (
       <>
-        <EditOutlined title="Click to launch Edit Mode" onClick={() => toggleEditModeConfirmation(true)} />
+        <Button type="link" title="Click to launch Edit Mode" onClick={() => toggleEditModeConfirmation(true)}>
+          <EditOutlined />
+        </Button>
+
         <SwitchToEditModeConfirmation />
       </>
     );
