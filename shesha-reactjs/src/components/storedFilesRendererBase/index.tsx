@@ -4,6 +4,7 @@ import { InboxOutlined, FileZipOutlined, UploadOutlined } from '@ant-design/icon
 import { message, Button, notification, Alert, Upload, ButtonProps } from 'antd';
 import { UploadChangeParam, RcFile } from 'antd/lib/upload/interface';
 import { IUploadFilePayload, IStoredFile, IDownloadFilePayload } from '../../providers/storedFiles/contexts';
+import { DraggerStub } from 'components/fileUpload/stubs';
 
 interface IUploaderFileTypes {
   name: string;
@@ -33,7 +34,7 @@ export interface IStoredFilesRendererBaseProps {
   /* isStub is used just to fix strange error when the user is reordering components on the form */
   isStub?: boolean;
   allowedFileTypes?: string[];
-  maxHeight?: string;  
+  maxHeight?: string;
 }
 
 export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
@@ -52,11 +53,11 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   uploadBtnProps,
   validFileTypes = [],
   maxFileLength = 0,
-  isDragger = true,
+  isDragger = false,
   disabled,
   isStub = false,
   allowedFileTypes = [],
-  maxHeight
+  maxHeight,
 }) => {
   const hasFiles = !!fileList.length;
 
@@ -133,8 +134,10 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         <p className="ant-upload-drag-icon">
           <InboxOutlined />
         </p>
-
         <p className="ant-upload-text">Click or drag file to this area to upload</p>
+        <p className="ant-upload-hint">
+          Support for a single or bulk upload. Strictly prohibit from uploading company data or other band files
+        </p>
       </>
     );
   };
@@ -148,10 +151,10 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   };
 
   return (
-    <div className="sha-stored-files-renderer" style={{maxHeight}}>
+    <div className="sha-stored-files-renderer" style={{ maxHeight }}>
       {isDragger ? (
         isStub ? (
-          <div>{renderDraggerContent()}</div>
+          <DraggerStub />
         ) : (
           <Dragger {...props}>{renderDraggerContent()}</Dragger>
         )
