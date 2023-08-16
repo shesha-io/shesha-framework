@@ -6,6 +6,7 @@ namespace Shesha.Domain.Attributes
     public class JoinedPropertyAttribute: Attribute
     {
         public string TableName { get; set; }
+        public string Schema { get; set; }
 
         public JoinedPropertyAttribute(string tableName)
         {

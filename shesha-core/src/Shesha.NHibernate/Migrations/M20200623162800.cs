@@ -42,7 +42,7 @@ namespace Shesha.Migrations
                 .WithColumn("HqlExpression").AsStringMax().Nullable().WithColumnDescription("HQL Query that defines the filter. Either built with JsonLogic or typed in manually")
                 .WithColumn("JsonLogicExpression").AsStringMax().Nullable().WithColumnDescription("JsonLogic expression of the filter. It can be converted to HQL when needed")
                 
-                .WithFullPowerEntityColumns(indexCreatedByUserId: true /*for user filters quick search*/);
+                .WithFullPowerEntityColumns();
 
             Create.Table("Frwk_StoredFilterContainers").WithDescription("Each filter has at least one containing object such as datatable or report")
                 .WithIdAsGuid()
@@ -51,8 +51,7 @@ namespace Shesha.Migrations
 
                 .WithColumn("IsHidden").AsBoolean().NotNullable().WithDefaultValue(false).WithColumnDescription("When true, this filter is hidden from all users independent of Visibility settings")
                 .WithColumn("IsDefaultFilter").AsBoolean().NotNullable().WithDefaultValue(false).WithColumnDescription("True for default filter of a container i.e. filter(s) that get immediately applied (selected in dropdown) when the data table or report is loaded. For non-exclusive filters, more than one can be selected as default")
-                
-                .WithFullPowerChildEntityColumns(indexCreatedByUserId: true /*for user filters quick search*/, ownerIdSize: 100 /*bigger ID size is required here because in some cases we link filters to containing data tables that are not entities and identified by a data table ID string*/);
+                .WithFullPowerChildEntityColumns();
 
             //todo: add Where (for deletion)
             Create.UniqueConstraint("uq_Frwk_StoredFilterContainers_container_filter")

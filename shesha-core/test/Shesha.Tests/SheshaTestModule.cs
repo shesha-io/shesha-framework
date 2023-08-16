@@ -14,6 +14,7 @@ using Castle.MicroKernel.Registration;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.Configuration;
 using Shesha.Configuration.Startup;
+using Shesha.FluentMigrator;
 using Shesha.NHibernate;
 using Shesha.Services;
 using Shesha.Tests.DependencyInjection;

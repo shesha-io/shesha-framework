@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Shesha.NHibernate.Exceptions
+﻿namespace Shesha.FluentMigrator
 {
     /// <summary>
     /// Exception that is used to indicate that there are migration with incorrect version numbers

@@ -10,6 +10,7 @@ using Abp.Domain.Entities;
 using Newtonsoft.Json;
 using PluralizeService.Core;
 using Shesha.Domain.Attributes;
+using Shesha.Domain.Conventions;
 using Shesha.Domain.Interfaces;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
@@ -101,6 +102,23 @@ namespace Shesha.Domain
         }
 
         /// <summary>
+        /// Returns schema name for the specified entity type
+        /// </summary>
+        /// <param name="entityType"></param>
+        /// <returns></returns>
+        public static string GetSchemaName(Type entityType) 
+        {
+            if (IsRootEntity(entityType))
+            {
+                // If the `TableAttribute` exists - use it. Note: we search the attribute in base classes too, it allows to use it in the abstract classes
+                var tableAttribute = entityType.Closest(t => t.BaseType, t => t.HasAttribute<TableAttribute>())?.GetAttribute<TableAttribute>();
+                return tableAttribute?.Schema;
+            }
+            else
+                return GetSchemaName(GetRootEntity(entityType));
+        }
+
+        /// <summary>
         /// Returns column name for the specified property
         /// </summary>
         public static string GetColumnName(MemberInfo memberInfo)
@@ -121,16 +139,21 @@ namespace Shesha.Domain
             var columnPrefix = GetColumnPrefix(memberInfo.DeclaringType);
             var propertyType = memberInfo.GetPropertyOrFieldType().GetUnderlyingTypeIfNullable();
 
-            if (memberInfo.IsReferenceListProperty())
-                return columnPrefix + memberInfo.Name + "Lkp";
+            var conventions = GetNamingConventions(memberInfo);
 
-            if (propertyType == typeof(TimeSpan) || propertyType == typeof(TimeSpan?))
-            {
-                // TimeSpan is mapped to bigint column (ticks number) and name of column should end with Ticks
-                return columnPrefix + memberInfo.Name + "Ticks";
-            }
+            var suffix = memberInfo.IsReferenceListProperty()
+                ? "Lkp"
+                : propertyType == typeof(TimeSpan) || propertyType == typeof(TimeSpan?)
+                    ? "Ticks"
+                    : null;
 
-            return columnPrefix + memberInfo.Name;
+            return conventions.GetColumnName(columnPrefix, memberInfo.Name, suffix);
+        }
+
+        private static INamingConventions GetNamingConventions(MemberInfo memberInfo) 
+        {
+            var conventionsType = memberInfo.ReflectedType.GetAttribute<NamingConventionsAttribute>()?.ConventionsType ?? typeof(DefaultNamingConventions);
+            return Activator.CreateInstance(conventionsType) as INamingConventions;
         }
 
         private static Type GetPropertyOrFieldType(this MemberInfo propertyOrField)
@@ -304,32 +327,6 @@ namespace Shesha.Domain
                 ? foreignKeyAttribute.Name
                 : columnPrefix + prop.Name + "Id";
         }
-
-        /*
-        /// <summary>
-        /// Returns true if the property is persisted to the DB
-        /// </summary>
-        /// <param name="prop"></param>
-        /// <returns></returns>
-        public static bool IsPersistentProperty(MemberInfo prop)
-        {
-            if (prop.HasAttribute<NotMappedAttribute>())
-                return false;
-
-            if (!IsRootEntity(prop.DeclaringType) && prop.DeclaringType.BaseType != null)
-            {
-                var upperLevelProperty = prop.DeclaringType.BaseType.GetProperty(prop.Name);
-                if (upperLevelProperty != null)
-                {
-                    if (GetColumnName(prop) == GetColumnName(upperLevelProperty))
-                        return false;
-                }
-            }
-
-            var inspector = new SimpleModelInspector() as IModelInspector;
-            return inspector.IsPersistentProperty(prop);
-        }
-        */
 
         /// <summary>
         /// Returns discriminator value for the specified entity type
