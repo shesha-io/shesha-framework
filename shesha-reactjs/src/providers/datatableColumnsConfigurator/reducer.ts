@@ -19,6 +19,7 @@ const toolbarReducer = handleActions<IColumnsConfiguratorStateContext, any>(
         itemType: 'item',
         sortOrder: state.items.length,
         caption: `Column ${buttonsCount + 1}`,
+        minWidth: 100,
         columnType: 'data',
         isVisible: true,
         propertyName: '',
