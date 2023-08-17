@@ -8,6 +8,7 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
+      "jsSetting": false,
       "customVisibility": null,
       "validate": {
         "required": true
@@ -95,6 +96,7 @@
     }
   ],
   "formSettings": {
+    "isSettingsForm": true,
     "layout": "horizontal",
     "colon": true,
     "labelCol": {

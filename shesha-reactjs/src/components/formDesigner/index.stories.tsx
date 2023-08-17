@@ -47,10 +47,6 @@ export const CustomFunctions = addStory(DesignerTemplate, {
   formId: '30c5cd95-e96d-4023-b213-94b1531ec6d9',
 });
 
-export const FormDetails = addStory(DesignerTemplate, {
-  formId: 'ac80013a-c02b-433b-b813-877422747a74',
-});
-
 export const FormsIndex = addStory(DesignerTemplate, {
   formId: {
     name: 'forms',
@@ -78,6 +74,14 @@ export const PersonDetails = addStory(DesignerTemplate, {
   formId: {
     name: 'person-details',
     module: 'Test Module',
+    version: 1
+  }
+});
+
+export const FormDetails = addStory(DesignerTemplate, {
+  formId: {
+    name: 'form-details',
+    module: 'shesha',
     version: 1
   }
 });

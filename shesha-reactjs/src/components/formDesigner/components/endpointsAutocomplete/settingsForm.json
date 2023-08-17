@@ -9,7 +9,7 @@
     },
     {
       "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
-      "type": "propertyAutocomplete",
+      "type": "contextPropertyAutocomplete",
       "propertyName": "propertyName",
       "parentId": "root",
       "label": "Property name",
@@ -170,7 +170,6 @@
       "label": "Hide border",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "validate": {}
     },
     {
@@ -188,25 +187,24 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
-      "description": "Enter custom even handler on changing of event. (form, event) are exposed",
+      "description": "Enter custom eventhandler on changing of event. (form, event) are exposed",
       "validate": {},
       "settingsValidationErrors": [],
       "exposedVariables": [
-        { "propertyName": "data", "description": "Selected form values", "type": "object" },
-        { "propertyName": "event", "description": "Event callback when user input", "type": "object" },
-        { "propertyName": "form", "description": "Form instance", "type": "FormInstance" },
-        { "propertyName": "formMode", "description": "The form mode", "type": "'readonly' | 'edit' | 'designer'" },
-        { "propertyName": "globalState", "description": "The global state of the application", "type": "object" },
-        { "propertyName": "http", "description": "axios instance used to make http requests", "type": "object" },
+        { "name": "data", "description": "Selected form values", "type": "object" },
+        { "name": "event", "description": "Event callback when user input", "type": "object" },
+        { "name": "form", "description": "Form instance", "type": "FormInstance" },
+        { "name": "formMode", "description": "The form mode", "type": "'readonly' | 'edit' | 'designer'" },
+        { "name": "globalState", "description": "The global state of the application", "type": "object" },
+        { "name": "http", "description": "axios instance used to make http requests", "type": "object" },
         {
-          "propertyName": "message",
+          "name": "message",
           "description": "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
           "type": "object"
         },
-        { "propertyName": "moment", "description": "The moment.js object", "type": "object" },
+        { "name": "moment", "description": "The moment.js object", "type": "object" },
         {
-          "propertyName": "setFormData",
+          "name": "setFormData",
           "description": "A function used to update the form data",
           "type": "({ values: object, mergeValues: boolean}) => void"
         }
@@ -220,25 +218,24 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
-      "description": "Enter custom even handler on focus of event. (form, event) are exposed",
+      "description": "Enter custom event handler on focus of event. (form, event) are exposed",
       "validate": {},
       "settingsValidationErrors": [],
       "exposedVariables": [
-        { "propertyName": "data", "description": "Selected form values", "type": "object" },
-        { "propertyName": "event", "description": "Event callback when user input", "type": "object" },
-        { "propertyName": "form", "description": "Form instance", "type": "FormInstance" },
-        { "propertyName": "formMode", "description": "The form mode", "type": "'readonly' | 'edit' | 'designer'" },
-        { "propertyName": "globalState", "description": "The global state of the application", "type": "object" },
-        { "propertyName": "http", "description": "axios instance used to make http requests", "type": "object" },
+        { "name": "data", "description": "Selected form values", "type": "object" },
+        { "name": "event", "description": "Event callback when user input", "type": "object" },
+        { "name": "form", "description": "Form instance", "type": "FormInstance" },
+        { "name": "formMode", "description": "The form mode", "type": "'readonly' | 'edit' | 'designer'" },
+        { "name": "globalState", "description": "The global state of the application", "type": "object" },
+        { "name": "http", "description": "axios instance used to make http requests", "type": "object" },
         {
-          "propertyName": "message",
+          "name": "message",
           "description": "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
           "type": "object"
         },
-        { "propertyName": "moment", "description": "The moment.js object", "type": "object" },
+        { "name": "moment", "description": "The moment.js object", "type": "object" },
         {
-          "propertyName": "setFormData",
+          "name": "setFormData",
           "description": "A function used to update the form data",
           "type": "({ values: object, mergeValues: boolean}) => void"
         }
@@ -252,25 +249,24 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
-      "description": "Enter custom even handler on blur of event. (form, event) are exposed",
+      "description": "Enter custom eventhandler on blur of event. (form, event) are exposed",
       "validate": {},
       "settingsValidationErrors": [],
       "exposedVariables": [
-        { "propertyName": "data", "description": "Selected form values", "type": "object" },
-        { "propertyName": "event", "description": "Event callback when user input", "type": "object" },
-        { "propertyName": "form", "description": "Form instance", "type": "FormInstance" },
-        { "propertyName": "formMode", "description": "The form mode", "type": "'readonly' | 'edit' | 'designer'" },
-        { "propertyName": "globalState", "description": "The global state of the application", "type": "object" },
-        { "propertyName": "http", "description": "axios instance used to make http requests", "type": "object" },
+        { "name": "data", "description": "Selected form values", "type": "object" },
+        { "name": "event", "description": "Event callback when user input", "type": "object" },
+        { "name": "form", "description": "Form instance", "type": "FormInstance" },
+        { "name": "formMode", "description": "The form mode", "type": "'readonly' | 'edit' | 'designer'" },
+        { "name": "globalState", "description": "The global state of the application", "type": "object" },
+        { "name": "http", "description": "axios instance used to make http requests", "type": "object" },
         {
-          "propertyName": "message",
+          "name": "message",
           "description": "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
           "type": "object"
         },
-        { "propertyName": "moment", "description": "The moment.js object", "type": "object" },
+        { "name": "moment", "description": "The moment.js object", "type": "object" },
         {
-          "propertyName": "setFormData",
+          "name": "setFormData",
           "description": "A function used to update the form data",
           "type": "({ values: object, mergeValues: boolean}) => void"
         }
@@ -323,7 +319,6 @@
       "validate": {},
       "labelAlign": "right",
       "hidden": false,
-      "customVisibility": null,
       "description": "Enter custom validator logic for form.item rules. Returns a Promise",
       "settingsValidationErrors": [],
       "exposedVariables": [
@@ -332,18 +327,10 @@
           "description": "Validate rules, only support customize validator",
           "type": "object"
         },
-        { "propertyName": "value", "description": "Component current value", "type": "object" },
-        { "propertyName": "callback", "description": "Callback called by component", "type": "function" },
-        { "propertyName": "data", "description": "Form values", "type": "object" }
+        { "name": "value", "description": "Component current value", "type": "object" },
+        { "name": "callback", "description": "Callback called by component", "type": "function" },
+        { "name": "data", "description": "Form values", "type": "object" }
       ]
-    },
-    {
-      "id": "d690a0b7-a9d3-4ab2-8843-9dcfbac08adc",
-      "type": "textField",
-      "propertyName": "quickviewWidth",
-      "parentId": "root",
-      "label": "Width",
-      "customVisibility": "return data.quickviewEnabled === true"
     },
     {
       "id": "6befdd49-41aa-41d6-a29e-76fa00590b75",
@@ -361,7 +348,7 @@
       "validate": {},
       "settingsValidationErrors": [],
       "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
-      "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }]
+      "exposedVariables": [{ "name": "data", "description": "Form values", "type": "object" }]
     },
     {
       "id": "494e8079-98f6-4a25-b9fd-40a77554ec89",
@@ -388,47 +375,6 @@
         }
       ],
       "dataSourceType": "values"
-    },
-    {
-      "id": "41721f44-adbc-42fe-8c70-69b30e36f4ca",
-      "type": "sectionSeparator",
-      "propertyName": "sectionVisibility",
-      "parentId": "root",
-      "label": "Visibility"
-    },
-    {
-      "id": "aec2d8de-6e86-4e4e-a9da-62c11e538363",
-      "type": "codeEditor",
-      "propertyName": "customVisibility",
-      "label": "Custom Visibility",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "customVisibility": null,
-      "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-      "validate": {},
-      "settingsValidationErrors": [],
-      "exposedVariables": [
-        { "propertyName": "value", "description": "Component current value", "type": "string | any" },
-        { "propertyName": "data", "description": "Selected form values", "type": "object" }
-      ]
-    },
-    {
-      "id": "4b5e5951-4998-4635-b1c8-0b6d3940c300",
-      "type": "codeEditor",
-      "propertyName": "customEnabled",
-      "label": "Custom Enabled",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "customEnabled": null,
-      "description": "Enter custom enabled code.  You must return true to enable the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-      "validate": {},
-      "settingsValidationErrors": [],
-      "exposedVariables": [
-        { "propertyName": "value", "description": "Component current value", "type": "string | any" },
-        { "propertyName": "data", "description": "Selected form values", "type": "object" }
-      ]
     }
   ],
   "formSettings": {

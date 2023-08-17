@@ -10,6 +10,7 @@ import { Alert, Typography } from 'antd';
 import { QueryBuilderWithModelType } from './queryBuilderWithModelType';
 import { IQueryBuilderComponentProps } from './interfaces';
 import ConfigurableFormItem from 'components/formDesigner/components/formItem';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -23,6 +24,9 @@ const QueryBuilderComponent: IToolboxComponent<IQueryBuilderComponentProps> = {
     return (<QueryBuilder {...model} readOnly={formMode === 'readonly'}></QueryBuilder>);
   },
   settingsFormMarkup: settingsForm,
+  migrator: (m) => m
+    .add<IQueryBuilderComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
 };
 

@@ -51,6 +51,42 @@ import camelcase from 'camelcase';
 import { Migrator } from '../../utils/fluentMigrator/migrator';
 import { isPropertySettings } from 'designer-components/_settings/utils';
 
+export const getValuesModel = (model: any, postfix: string = null) => {
+
+  const getSettingValue = (value: any) => {
+    if (!value) 
+      return value;
+
+    if (typeof value === 'object') {
+      return typeof value?._value === 'string'
+        ? `${value?._value}${!!postfix ? ` (${postfix})` : ""}`
+        : value?._value;
+    }
+    return value;
+  };
+
+  const m = {...model};
+
+  for (var propName in m) {
+    if (!Object.prototype.hasOwnProperty.call(m, propName)) continue;
+    
+    const propNames = propName.split('.');
+    let obj = m;
+    let i = 1;
+    while(i < propNames.length) {
+      if (typeof obj[propNames[i - 1]] === 'undefined')
+        obj[propNames[i - 1]] = {};
+      obj = obj[propNames[i - 1]];
+      i++;
+    }
+
+    const value = obj[propNames[propNames.length - 1]];
+
+    obj[propNames[propNames.length - 1]] = getSettingValue(value);
+  }
+  return m;
+};
+
 /**
  * Convert model to values calculated from JS code if provided (for each fields)
  *

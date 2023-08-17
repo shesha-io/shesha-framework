@@ -61,8 +61,6 @@ import { advancedFilter2JsonLogic, getTableDataColumns } from './utils';
 import { useLocalStorage } from 'hooks';
 import { withNullRepository } from './repository/nullRepository';
 import { withUrlRepository } from './repository/urlRepository';
-import { useForm } from 'providers/form';
-import { ConfigurableFormInstance } from 'interfaces';
 
 interface IDataTableProviderBaseProps {
   /** Configurable columns. Is used in pair with entityType  */
@@ -94,6 +92,8 @@ interface IHasDataSourceType {
 }
 interface IHasFormDataSourceConfig {
   propertyName: string;
+  getFieldValue?: (propertyName: string) => object[];
+  onChange?:  (...args: any[]) => void;
 }
 interface IUrlDataSourceConfig {
   getDataPath?: string;
@@ -108,7 +108,7 @@ type IDataTableProviderProps = IDataTableProviderBaseProps & IHasDataSourceType 
   
 };
 
-const getTableProviderComponent = (props: IDataTableProviderProps, formInstance: ConfigurableFormInstance): FC<IDataTableProviderBaseProps> => {
+const getTableProviderComponent = (props: IDataTableProviderProps): FC<IDataTableProviderBaseProps> => {
   const { sourceType } = props;
   switch (sourceType) {
     case 'Entity': {
@@ -116,9 +116,9 @@ const getTableProviderComponent = (props: IDataTableProviderProps, formInstance:
       return withBackendRepository(DataTableProviderWithRepository, { entityType, getListUrl: getDataPath });
     };
     case 'Form': {
-      const { propertyName } = props as IHasFormDataSourceConfig;
+      const { propertyName, getFieldValue, onChange } = props as IHasFormDataSourceConfig;
 
-      return withFormFieldRepository(DataTableProviderWithRepository, { propertyName, formInstance: formInstance.form });      
+      return withFormFieldRepository(DataTableProviderWithRepository, { propertyName, getFieldValue, onChange });
     };
     case 'Url':
       const { getDataPath } = props as IHasEntityDataSourceConfig;
@@ -177,10 +177,8 @@ const getFetchListDataPayload = (state: IDataTableStateContext): IGetListDataPay
 };
 
 const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = (props) => {
-  const form = useForm(false);
-  
   const component = useMemo(() => {
-    return getTableProviderComponent(props, form);
+    return getTableProviderComponent(props);
   }, [props.sourceType]);
 
   return <>{component(props)}</>;

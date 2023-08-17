@@ -2,17 +2,18 @@ import React, { FC, Fragment } from 'react';
 import { IToolboxComponent } from '../../../../../interfaces';
 import { GroupOutlined } from '@ant-design/icons';
 import { IButtonGroupProps } from './models';
-import { Alert, Menu, Space } from 'antd';
+import { Alert, Divider, Menu, Space } from 'antd';
 import { IButtonGroupButton, ButtonGroupItemProps } from '../../../../../providers/buttonGroupConfigurator/models';
 import { useForm } from '../../../../../providers/form';
 import { ConfigurableButton } from '../configurableButton';
 import { useSheshaApplication, useDataTableSelection, useGlobalState } from '../../../../../providers';
 import moment from 'moment';
-import { executeExpression, getStyle } from '../../../../../providers/form/utils';
+import { executeExpression, getActualModel, getStyle } from '../../../../../providers/form/utils';
 import { getButtonGroupItems, getButtonGroupMenuItem } from './utils';
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
 import { ButtonGroupSettingsForm } from './settings';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 
 const ButtonGroupComponent: IToolboxComponent<IButtonGroupProps> = {
   type: 'buttonGroup',
@@ -30,23 +31,22 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupProps> = {
     // TODO: Wrap this component within ConfigurableFormItem so that it will be the one handling the hidden state. Currently, it's failing. Always hide the component
     return <ButtonGroup {...model} />;
   },
-  migrator: (m) =>
-    m
-      .add<IButtonGroupProps>(0, (prev) => {
-        return {
-          ...prev,
-          items: prev['items'] ?? [],
-        };
-      })
-      .add<IButtonGroupProps>(1, migrateV0toV1)
-      .add<IButtonGroupProps>(2, migrateV1toV2)
-      .add<IButtonGroupProps>(
-        3,
-        (prev) => ({
-          ...prev,
-          isInline: prev['isInline'] ?? true,
-        }) /* default isInline to true if not specified */
-      ),
+  migrator: (m) => m
+    .add<IButtonGroupProps>(0, (prev) => {
+      return {
+        ...prev,
+        items: prev['items'] ?? [],
+      };
+    })
+    .add<IButtonGroupProps>(1, migrateV0toV1)
+    .add<IButtonGroupProps>(2, migrateV1toV2)
+    .add<IButtonGroupProps>(3, (prev) => ({...prev, isInline: prev['isInline'] ?? true,})) /* default isInline to true if not specified */
+    .add<IButtonGroupProps>(4, (prev) => {
+      const newModel = {...prev};
+      newModel.items = prev.items?.map((item) => migrateCustomFunctions(item as any));
+      return migratePropertyName(migrateCustomFunctions(newModel));
+    })
+  ,
   settingsFormFactory: (props) => ( <ButtonGroupSettingsForm {...props} />),
 };
 
@@ -61,6 +61,8 @@ export const ButtonGroup: FC<IButtonGroupProps> = ({ items, id, size, spaceSize 
   const { selectedRow } = useDataTableSelection(false) ?? {}; // todo: move to a generic context provider
 
   const isDesignMode = formMode === 'designer';
+
+  const actualItems = items?.map((item) => getActualModel(item, formData, formMode));
 
   const localexecuteExpression = (expression: string) => {
     const expressionArgs = {
@@ -85,12 +87,8 @@ export const ButtonGroup: FC<IButtonGroupProps> = ({ items, id, size, spaceSize 
    */
   const getIsVisible = (item: ButtonGroupItemProps) => {
     const { permissions, hidden } = item;
-
-    const isVisibleByCondition = localexecuteExpression(item.customVisibility);
-
     const granted = anyOfPermissionsGranted(permissions || []);
-
-    return isVisibleByCondition && !hidden && granted;
+    return !hidden && granted;
   };
 
   const renderMenuButton = (props: MenuButton, isChild = false) => {
@@ -112,10 +110,13 @@ export const ButtonGroup: FC<IButtonGroupProps> = ({ items, id, size, spaceSize 
   };
 
   const renderButtonItem = (item: ButtonGroupItemProps, uuid: string, disabled = false, isChild = false) => {
-    const itemProps = item as IButtonGroupButton;
+    const itemProps = getActualModel(item, formData, formMode) as IButtonGroupButton;
 
-    return (
-      <ConfigurableButton
+    const isDivider = itemProps && (itemProps.itemSubType === 'line' || itemProps.itemSubType === 'separator');
+
+    return isDivider
+      ? <Divider type='vertical' />
+      :<ConfigurableButton
         formComponentId={id}
         key={uuid}
         {...itemProps}
@@ -124,12 +125,12 @@ export const ButtonGroup: FC<IButtonGroupProps> = ({ items, id, size, spaceSize 
         disabled={disabled}
         buttonType={isChild ? 'link' : item.buttonType}
       />
-    );
+    ;
   };
 
-  const filteredItems = items?.filter(getIsVisible);
+  const filteredItems = actualItems?.filter(getIsVisible);
 
-  if (items.length === 0 && isDesignMode)
+  if (actualItems.length === 0 && isDesignMode)
     return (
       <Alert
         className="sha-designer-warning"
@@ -144,7 +145,7 @@ export const ButtonGroup: FC<IButtonGroupProps> = ({ items, id, size, spaceSize 
         <div className={noStyles ? null : 'sha-responsive-button-group-inline-container'}>
           <Space>
             {filteredItems?.map((props) =>
-              renderButtonItem(props, props?.id, !localexecuteExpression(props.customEnabled))
+              renderButtonItem(props, props?.id, props.disabled)
             )}
           </Space>
         </div>

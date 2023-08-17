@@ -10,6 +10,7 @@
       "hidden": false,
       "customVisibility": null,
       "dataSourceType": "values",
+      "jsSetting": false,
       "values": [
         {
           "id": "8400a8ec-577d-4468-9347-5601f952b44c",
@@ -39,7 +40,7 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
+      "jsSetting": false,
       "validate": {
         "required": true
       }
@@ -52,14 +53,20 @@
       "label": "Label"
     },
     {
+      "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
+      "type": "checkbox",
+      "propertyName": "hidden",
+      "parentId": "root",
+      "label": "Hidden"
+    },
+    {
       "id": "345c2181-fb9f-48ed-9631-864ac357807b",
       "type": "container",
       "propertyName": "cntButton",
       "label": "Container2",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": false,
-      "customVisibility": "return data.itemSubType === 'button'",
+      "hidden": {"_code": "return  getSettingValue(data?.itemSubType) !== 'button';", "_mode": "code", "_value": false},
       "direction": "vertical",
       "justifyContent": "left",
       "components": [
@@ -71,7 +78,6 @@
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
           "hidden": false,
-          "customVisibility": "",
           "autoSize": false,
           "showCount": false,
           "allowClear": false,
@@ -84,8 +90,6 @@
           "label": "Icon",
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
-          "hidden": false,
-          "customVisibility": "return data.itemSubType === 'button'",
           "settingsValidationErrors": []
         },
         {
@@ -96,7 +100,6 @@
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
           "hidden": false,
-          "customVisibility": null,
           "validate": {
             "required": true
           },
@@ -142,7 +145,6 @@
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
           "hidden": false,
-          "customVisibility": null,
           "validate": {}
         },
         {
@@ -173,13 +175,6 @@
           "dataSourceType": "values"
         },
         {
-          "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
-          "type": "checkbox",
-          "propertyName": "hidden",
-          "parentId": "root",
-          "label": "Hidden"
-        },
-        {
           "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
           "type": "checkbox",
           "propertyName": "disabled",
@@ -192,7 +187,6 @@
           "propertyName": "actionConfiguration",
           "label": "Action configuration",
           "hidden": false,
-          "customVisibility": "",
           "validate": {},
           "settingsValidationErrors": []
         },        
@@ -213,54 +207,7 @@
           "settingsValidationErrors": [],
           "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
           "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }]
-        },
-        {
-          "id": "0495b899-bb48-44ea-a212-c4920bf3a8a4",
-          "type": "sectionSeparator",
-          "propertyName": "sectionVisibility",
-          "parentId": "root",
-          "label": "Visibility"
         }
-      ]
-    },
-    {
-      "id": "341beffe-2d62-4c4c-8c97-5f2b433716bf",
-      "type": "codeEditor",
-      "propertyName": "customVisibility",
-      "label": "Custom Visibility",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "customVisibility": null,
-      "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-      "validate": {},
-      "settingsValidationErrors": [],
-      "exposedVariables": [
-        { "propertyName": "data", "description": "The form data", "type": "object" },
-        { "propertyName": "moment", "description": "The moment.js object", "type": "object" },
-        { "propertyName": "form", "description": "Form instance", "type": "FormInstance" },
-        { "propertyName": "formMode", "description": "The form mode", "type": "'readonly' | 'edit' | 'designer'" },
-        { "propertyName": "globalState", "description": "The global state of the application", "type": "object" }
-      ]
-    },
-    {
-      "id": "4b5e5951-4998-4635-b1c8-0b6d3940c300",
-      "type": "codeEditor",
-      "propertyName": "customEnabled",
-      "label": "Custom Enabled",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "customEnabled": null,
-      "description": "Enter custom enabled code.  You must return true to enable the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-      "validate": {},
-      "settingsValidationErrors": [],
-      "exposedVariables": [
-        { "propertyName": "data", "description": "The form data", "type": "object" },
-        { "propertyName": "moment", "description": "The moment.js object", "type": "object" },
-        { "propertyName": "form", "description": "Form instance", "type": "FormInstance" },
-        { "propertyName": "formMode", "description": "The form mode", "type": "'readonly' | 'edit' | 'designer'" },
-        { "propertyName": "globalState", "description": "The global state of the application", "type": "object" }
       ]
     },
     {
@@ -271,11 +218,11 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "validate": {}
     }
   ],
   "formSettings": {
+    "isSettingsForm": true,
     "layout": "horizontal",
     "colon": true,
     "labelCol": {

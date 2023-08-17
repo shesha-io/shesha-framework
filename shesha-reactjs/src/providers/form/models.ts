@@ -98,7 +98,7 @@ export interface IComponentBindingProps {
   componentName?: string;
 
   /** property name */
-  propertyName: string;
+  propertyName?: string;
 
   /** data context ID, empty for from data */
   context?: string;

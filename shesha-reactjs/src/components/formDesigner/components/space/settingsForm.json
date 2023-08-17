@@ -10,9 +10,10 @@
     {
       "id": "5da0ce15-0170-447d-8ca6-b34415a2d05a",
       "type": "textField",
-      "propertyName": "propertyName",
+      "propertyName": "componentName",
       "parentId": "root",
-      "label": "Property name",
+      "label": "Component name",
+      "jsSetting": false,
       "validate": {
         "required": true
       }

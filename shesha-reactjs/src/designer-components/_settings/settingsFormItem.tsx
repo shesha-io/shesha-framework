@@ -1,6 +1,6 @@
 import React, { cloneElement, FC, ReactElement, ReactNode, useState } from 'react';
 import { Button, Form, FormItemProps } from "antd";
-import SettingsControl, { SettingsControlChildrentype } from './settingsControl';
+import SettingsControl, { SettingsControlChildrenType } from './settingsControl';
 import { useSettingsForm } from './settingsForm';
 import { useSettingsPanel } from './settingsCollapsiblePanel';
 import { getPropertySettingsFromData } from './utils';
@@ -8,7 +8,7 @@ import { PropertySettingMode } from 'index';
 
 interface ISettingsFormItemProps extends Omit<FormItemProps<any>, 'children'> {
     jsSetting?: boolean;
-    readonly children?: ReactNode | SettingsControlChildrentype;
+    readonly children?: ReactNode | SettingsControlChildrenType;
 }
   
 const SettingsFormItem: FC<ISettingsFormItemProps> = (props) => {
@@ -19,9 +19,7 @@ const SettingsFormItem: FC<ISettingsFormItemProps> = (props) => {
 
     const { propertyFilter } = useSettingsForm<any>();
     return !Boolean(propertyFilter) || typeof propertyFilter === 'function' && propertyFilter(props.name?.toString())
-        ? props.jsSetting
-            ? <SettingsFormComponent {...props}/>
-            : <Form.Item {...props as FormItemProps<any>}/>
+        ? <SettingsFormComponent {...props}/>
         : null;
 };
 
@@ -33,7 +31,8 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
     const [ mode, setMode ] = useState<PropertySettingMode>(initSettings._mode ?? 'value');
     const switchMode = () => setMode(mode === 'code' ? 'value' : 'code');
 
-    const label = 
+    const label = props.jsSetting
+        ?
         <>
             <label>{props.label}</label>
             <Button
@@ -43,10 +42,11 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
                 onClick={switchMode}>
                 {mode === 'code' ? 'VALUE' : 'JS'}
             </Button>
-        </>;
+        </>
+        : props.label;
 
     if (typeof props.children === 'function') {
-        const children = props.children as SettingsControlChildrentype;
+        const children = props.children as SettingsControlChildrenType;
         return (
             <Form.Item {...props} label={label} >
                 <SettingsControl id={props.name.toString()} propertyName={props.name.toString()} mode={mode}>
@@ -56,6 +56,10 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
         );
     }
     
+    if (!props.jsSetting) {
+        return <Form.Item {...props as FormItemProps<any>}>{props.children}</Form.Item>;
+    }
+
     const valuePropName = props.valuePropName ?? 'value';
     const children = props.children as ReactElement;
     return (

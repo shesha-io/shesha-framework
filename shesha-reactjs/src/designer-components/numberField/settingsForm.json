@@ -250,7 +250,7 @@
             "parentId": "mIU4FmT5-lSGV_z7Wtqnv",
             "hidden": false,
             "customVisibility": null,
-            "description": "Enter custom even handler on changing of event. (form, value) are exposed. The callback triggered when the value is changed",
+            "description": "Enter custom eventhandler on changing of event. (form, value) are exposed. The callback triggered when the value is changed",
             "validate": {},
             "settingsValidationErrors": [],
             "exposedVariables": [

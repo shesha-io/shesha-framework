@@ -7,6 +7,7 @@ import { getStyle, validateConfigurableComponentSettings } from '../../../../pro
 import { useForm, useFormData } from '../../../../providers';
 import SectionSeparator from '../../../sectionSeparator';
 import { ISectionSeparatorComponentProps } from './interfaces';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -36,6 +37,10 @@ const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentPro
       label: 'Section',
     };
   },
+  migrator: (m) => m
+    .add<ISectionSeparatorComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
+
 };
 
 export default SectionSeparatorComponent;

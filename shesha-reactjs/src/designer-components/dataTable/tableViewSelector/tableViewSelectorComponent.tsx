@@ -11,6 +11,7 @@ import { useDeepCompareEffect } from 'react-use';
 import TableViewSelectorRenderer from 'components/tableViewSelectorRenderer';
 import { migrateFilterMustacheExpressions } from 'designer-components/_common-migrations/migrateUseExpression';
 import { evaluateDynamicFilters } from 'utils';
+import { migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 
 const TableViewSelectorComponent: IToolboxComponent<ITableViewSelectorComponentProps> = {
   type: 'tableViewSelector',
@@ -29,7 +30,9 @@ const TableViewSelectorComponent: IToolboxComponent<ITableViewSelectorComponentP
   })
     .add(1, prev => (
       { ...prev, filters: prev.filters.map(filter => migrateFilterMustacheExpressions(filter)) }
-    )),
+    ))
+    .add(2, (prev) => migratePropertyName(prev))
+  ,
   settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
     return (
       <TableViewSelectorSettings

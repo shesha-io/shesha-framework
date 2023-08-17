@@ -22,6 +22,7 @@ export interface IFileUploadProps extends IConfigurableFormComponent, Omit<IForm
   allowDelete?: boolean;
   useSync?: boolean;
   allowedFileTypes?: string[];
+  isDragger?: boolean;
 }
 
 const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
@@ -65,12 +66,26 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
                 allowDelete={enabled && model.allowDelete}
                 allowReplace={enabled && model.allowReplace}
                 allowedFileTypes={model?.allowedFileTypes}
+                isDragger={model?.isDragger}
               />
             </StoredFileProvider>
           );
         }}
       </ConfigurableFormItem>
     );
+  },
+  initModel: model => {
+    const customModel: IFileUploadProps = {
+      ...model,
+      allowReplace: true,
+      allowDelete: true,
+      allowUpload: true,
+      ownerId: '{data.id}',
+      ownerType: '',
+      propertyName: '',
+      isDragger: false,
+    };
+    return customModel;
   },
   migrator: (m) => m
     .add<IFileUploadProps>(0, prev => {
@@ -79,9 +94,9 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
         allowReplace: true,
         allowDelete: true,
         allowUpload: true,
-        ownerId: '',
-        ownerType: '',
-        owner: '',
+        ownerId: prev['ownerId'],
+        ownerType: prev['ownerType'],
+        owner: prev['owner'],
       } as IFileUploadProps;
     })
     .add<IFileUploadProps>(1, (prev, context) => ({...prev, useSync: !Boolean(context.formSettings?.modelType)}))

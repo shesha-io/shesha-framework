@@ -73,7 +73,6 @@
           .action-icon {
             font-size: 16px;
             border-radius: 8px;
-            padding: 0px 10px 0px 10px;
 
             &:hover {
               color: white;
@@ -121,16 +120,18 @@
   &.ant-layout-has-sider {
     .ant-layout-sider {
       z-index: 2;
-      flex: 0 0 @sha-sider-expanded-width !important;
-      max-width: @sha-sider-expanded-width !important;
-      min-width: @sha-sider-expanded-width !important;
-      width: @sha-sider-expanded-width !important;
+      flex: 0 0 @sha-sider-expanded-width  !important;
+      max-width: @sha-sider-expanded-width  !important;
+      min-width: @sha-sider-expanded-width  !important;
+      width: @sha-sider-expanded-width  !important;
 
       .ant-layout-sider-children {
-        width: @sha-sider-expanded-width !important;
+        width: @sha-sider-expanded-width  !important;
+
         .logo {
-          margin-top: @layout-trigger-height !important; // It should use a config
+          margin-top: @layout-trigger-height  !important; // It should use a config
         }
+
         .ant-menu-inline-collapsed {
           width: inherit;
         }
@@ -138,22 +139,22 @@
 
       .ant-layout-sider-trigger {
         top: 0 !important; // By default, the trigger is at the bottom. But we want it to be at the top for the sake of of
-        width: @sha-sider-expanded-width !important;
+        width: @sha-sider-expanded-width  !important;
         font-size: 18px;
       }
 
       &.ant-layout-sider-collapsed {
-        flex: 0 0 @sha-sider-collapsed-width !important;
-        max-width: @sha-sider-collapsed-width !important;
-        min-width: @sha-sider-collapsed-width !important;
-        width: @sha-sider-collapsed-width !important;
+        flex: 0 0 @sha-sider-collapsed-width  !important;
+        max-width: @sha-sider-collapsed-width  !important;
+        min-width: @sha-sider-collapsed-width  !important;
+        width: @sha-sider-collapsed-width  !important;
 
         .ant-layout-sider-children {
-          width: @sha-sider-collapsed-width !important;
+          width: @sha-sider-collapsed-width  !important;
         }
 
         .ant-layout-sider-trigger {
-          width: @sha-sider-collapsed-width !important;
+          width: @sha-sider-collapsed-width  !important;
         }
       }
     }

@@ -296,7 +296,7 @@ export const getSettings = (_data?: IWizardStepProps) =>
       parentId: 'root',
       hidden: false,
       customVisibility: null,
-      description: 'Enter custom even handler on changing of event. (form, event) are exposed',
+      description: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
       validate: {},
       settingsValidationErrors: [],
       exposedVariables: [

@@ -8,7 +8,7 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
+      "jsSetting": false,
       "validate": {
         "required": true
       }
@@ -21,7 +21,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "autoSize": false,
       "showCount": false,
       "allowClear": false,
@@ -36,7 +35,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "settingsValidationErrors": []
     },
     {
@@ -47,7 +45,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "dataSourceType": "values",
       "useRawValues": false,
       "validate": {},
@@ -69,6 +66,7 @@
   "formSettings": {
     "layout": "horizontal",
     "colon": true,
+    "isSettingsForm": true,
     "labelCol": {
       "span": 5
     },

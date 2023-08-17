@@ -13,6 +13,7 @@ import { migrateV0toV1 } from './migrations/migrate-v1';
 import { ITableViewProps } from '../../../../providers/tableViewSelectorConfigurator/models';
 import { entityPickerSettings } from './settingsForm';
 import { migrateDynamicExpression } from 'designer-components/_common-migrations/migrateUseExpression';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 
 export interface IEntityPickerComponentProps extends IConfigurableFormComponent {
   placeholder?: string;
@@ -79,60 +80,65 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
 
     return (
       <ConfigurableFormItem model={model} initialValue={model.defaultValue}>
-        <EntityPicker
-          formId={model.id}
-          disabled={disabled}
-          readOnly={isReadOnly}
-          displayEntityKey={model.displayEntityKey}
-          entityType={model.entityType}
-          filters={entityPickerFilter}
-          useRawValues={model.useRawValues}
-          mode={model.mode}
-          addNewRecordsProps={
-            model.allowNewRecord
-              ? {
-                modalFormId: model.modalFormId,
-                modalTitle: model.modalTitle,
-                showModalFooter: model.showModalFooter,
-                submitHttpVerb: model.submitHttpVerb,
-                onSuccessRedirectUrl: model.onSuccessRedirectUrl,
-                modalWidth: customWidth ? `${customWidth}${widthUnits}` : modalWidth,
-              }
-              : undefined
-          }
-          name={model?.propertyName}
-          width={width}
-          configurableColumns={model.items ?? []}
-        />
+        {(value, onChange) => (
+          <EntityPicker
+            formId={model.id}
+            disabled={disabled}
+            readOnly={isReadOnly}
+            displayEntityKey={model.displayEntityKey}
+            entityType={model.entityType}
+            filters={entityPickerFilter}
+            useRawValues={model.useRawValues}
+            mode={model.mode}
+            addNewRecordsProps={
+              model.allowNewRecord
+                ? {
+                  modalFormId: model.modalFormId,
+                  modalTitle: model.modalTitle,
+                  showModalFooter: model.showModalFooter,
+                  submitHttpVerb: model.submitHttpVerb,
+                  onSuccessRedirectUrl: model.onSuccessRedirectUrl,
+                  modalWidth: customWidth ? `${customWidth}${widthUnits}` : modalWidth,
+                }
+                : undefined
+            }
+            name={model?.propertyName}
+            width={width}
+            configurableColumns={model.items ?? []}
+            value={value}
+            onChange={onChange}
+          />
+        )}
       </ConfigurableFormItem>
     );
   },
-  migrator: m =>
-    m
-      .add<IEntityPickerComponentProps>(0, prev => {
-        return {
-          ...prev,
-          items: prev['items'] ?? [],
-          mode: prev['mode'] ?? 'single',
-          entityType: prev['entityType'],
-        };
-      })
-      .add<IEntityPickerComponentProps>(1, migrateV0toV1)
-      .add<IEntityPickerComponentProps>(2, prev => {
-        return { ...prev, useRawValues: true };
-      })
-      .add<IEntityPickerComponentProps>(3, prev => {
-        const result = { ...prev };
-        const useExpression = Boolean(result['useExpression']);
-        delete result['useExpression'];
+  migrator: m => m
+    .add<IEntityPickerComponentProps>(0, prev => {
+      return {
+        ...prev,
+        items: prev['items'] ?? [],
+        mode: prev['mode'] ?? 'single',
+        entityType: prev['entityType'],
+      };
+    })
+    .add<IEntityPickerComponentProps>(1, migrateV0toV1)
+    .add<IEntityPickerComponentProps>(2, prev => {
+      return { ...prev, useRawValues: true };
+    })
+    .add<IEntityPickerComponentProps>(3, prev => {
+      const result = { ...prev };
+      const useExpression = Boolean(result['useExpression']);
+      delete result['useExpression'];
 
-        if (useExpression) {
-          const migratedExpression = migrateDynamicExpression(prev.filters);
-          result.filters = migratedExpression;
-        }
+      if (useExpression) {
+        const migratedExpression = migrateDynamicExpression(prev.filters);
+        result.filters = migratedExpression;
+      }
 
-        return result;
-      }),
+      return result;
+    })
+    .add<IEntityPickerComponentProps>(4, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
   settingsFormMarkup: entityPickerSettings,
   validateSettings: model => validateConfigurableComponentSettings(entityPickerSettings, model),
   linkToModelMetadata: (model, metadata): IEntityPickerComponentProps => {

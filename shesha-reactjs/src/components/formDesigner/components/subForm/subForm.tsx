@@ -21,10 +21,11 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
   const {
     id,
     module,
+    name,
     errors,
     loading,
     formSettings,
-    name,
+    propertyName,
     versionStatus,
     hasFetchedConfig,
     versionNo,
@@ -46,7 +47,7 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
       <Show when={showFormInfo}>
         <FormInfo {...persistedFormProps} />
       </Show>
-      <div style={{ flex: 1 }} data-name={name}>
+      <div style={{ flex: 1 }} data-name={propertyName}>
         {Object.keys(errors).map((error, index) => (
           <ValidationErrors key={index} error={errors[error]} />
         ))}
@@ -55,7 +56,7 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
           <ComponentsContainerProvider
             ContainerComponent={ComponentsContainerSubForm}
           >
-            <FormItemProvider namePrefix={name} labelCol={formSettings?.labelCol} wrapperCol={formSettings?.wrapperCol}>
+            <FormItemProvider namePrefix={propertyName} labelCol={formSettings?.labelCol} wrapperCol={formSettings?.wrapperCol}>
               <ComponentsContainer containerId={ROOT_COMPONENT_KEY} readOnly={readOnly}/>
             </FormItemProvider>
           </ComponentsContainerProvider>

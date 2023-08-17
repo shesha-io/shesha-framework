@@ -5,7 +5,7 @@ import { SubFormActionsContext, SubFormContext, SUB_FORM_CONTEXT_INITIAL_STATE }
 import { useDeepCompareMemoKeepReference, usePubSub } from '../../hooks';
 import { subFormReducer } from './reducer';
 import { getQueryParams } from 'utils/url';
-import { DEFAULT_FORM_SETTINGS, FormMarkupWithSettings } from '../form/models';
+import { DEFAULT_FORM_SETTINGS } from '../form/models';
 import {
   setMarkupWithSettingsAction,
   fetchDataRequestAction,
@@ -13,7 +13,7 @@ import {
   fetchDataErrorAction,
   IPersistedFormPropsWithComponents,
 } from './actions';
-import { ISubFormProps } from './interfaces';
+import { ISubFormProviderProps } from './interfaces';
 import { ColProps, message, notification } from 'antd';
 import { useGlobalState } from '../globalState';
 import { EntitiesGetQueryParams } from 'apis/entities';
@@ -38,13 +38,6 @@ import { useModelApiHelper } from 'components/configurableForm/useActionEndpoint
 import { StandardEntityActions } from 'interfaces/metadata';
 import { useFormDesignerComponents } from 'providers/form/hooks';
 
-export interface SubFormProviderProps extends Omit<ISubFormProps, 'name' | 'value'> {
-  actionsOwnerId?: string;
-  actionOwnerName?: string;
-  name?: string;
-  markup?: FormMarkupWithSettings;
-  value?: string | { id: string; [key: string]: any };
-}
 
 interface IFormLoadingState {
   isLoading: boolean;
@@ -58,7 +51,7 @@ interface QueryParamsEvaluatorArguments {
 }
 type QueryParamsEvaluator = (args: QueryParamsEvaluatorArguments) => object;
 
-const SubFormProvider: FC<PropsWithChildren<SubFormProviderProps>> = ({
+const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = ({
   formSelectionMode,
   formType,
   children,
@@ -74,7 +67,7 @@ const SubFormProvider: FC<PropsWithChildren<SubFormProviderProps>> = ({
   dataSource,
   markup,
   properties,
-  name,
+  propertyName,
   labelCol,
   wrapperCol,
   queryParams,
@@ -115,17 +108,17 @@ const SubFormProvider: FC<PropsWithChildren<SubFormProviderProps>> = ({
 
   // update global state on value change
   useDeepCompareEffect(() => {
-    if (name) {
+    if (propertyName) {
       // Note: don't write undefined if subform value is missing in the globalState. It doesn't make any sense but initiates a re-rendering
-      const existsInGlobalState = Boolean(globalState) && globalState.hasOwnProperty(name);
+      const existsInGlobalState = Boolean(globalState) && globalState.hasOwnProperty(propertyName);
       if (value === undefined && !existsInGlobalState) return;
 
       setGlobalState({
-        key: name,
+        key: propertyName,
         data: value,
       });
     }
-  }, [value, name]);
+  }, [value, propertyName]);
 
   const [internalEntityType, setInternalEntityType] = useState(entityType);
 
@@ -398,6 +391,7 @@ const SubFormProvider: FC<PropsWithChildren<SubFormProviderProps>> = ({
             hasFetchedConfig: true,
             id: response?.id,
             module: response?.module,
+            name: response?.name,
             components: response.markup,
             formSettings: response.settings,
             versionNo: response?.versionNo,
@@ -505,7 +499,7 @@ const SubFormProvider: FC<PropsWithChildren<SubFormProviderProps>> = ({
           labelCol: getColSpan(labelCol) || getColSpan(state?.formSettings?.labelCol),
           wrapperCol: getColSpan(wrapperCol) || getColSpan(state?.formSettings?.wrapperCol), // Override with the incoming one
         },
-        name,
+        propertyName,
         value: value || defaultValue,
       }}
     >

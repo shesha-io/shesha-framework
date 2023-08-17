@@ -8,6 +8,18 @@
       "label": "Display"
     },
     {
+      "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
+      "type": "textField",
+      "propertyName": "componentName",
+      "parentId": "root",
+      "label": "ComponentName",
+      "version": 0,
+      "textType": "text",
+      "validate": {
+        "required": true
+      }
+    },
+    {
       "id": "1a3bfee6-3cde-41f0-b371-f743e801bef3",
       "type": "checkbox",
       "propertyName": "container",

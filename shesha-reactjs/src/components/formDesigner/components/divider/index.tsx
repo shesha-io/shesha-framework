@@ -1,5 +1,6 @@
 import { LineOutlined } from '@ant-design/icons';
 import { Divider, DividerProps } from 'antd';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 import React from 'react';
 import { validateConfigurableComponentSettings } from '../../../../formDesignerUtils';
 import { IConfigurableFormComponent, IToolboxComponent } from '../../../../interfaces/formDesigner';
@@ -40,6 +41,9 @@ const DividerComponent: IToolboxComponent<IDividerProps> = {
   },
   settingsFormMarkup: settingsForm,
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  migrator: (m) => m
+    .add<IDividerProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
   initModel: model => ({
     dividerType: 'horizontal',
     orientation: 'center',

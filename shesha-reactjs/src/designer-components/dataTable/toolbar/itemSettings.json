@@ -8,7 +8,7 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
+      "jsSetting": false,
       "dataSourceType": "values",
       "values": [
         {
@@ -39,7 +39,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "validate": {
         "required": true
       }
@@ -64,7 +63,6 @@
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
           "hidden": false,
-          "customVisibility": "",
           "autoSize": false,
           "showCount": false,
           "allowClear": false,
@@ -107,7 +105,6 @@
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
           "hidden": false,
-          "customVisibility": null,
           "validate": {
             "required": true
           },
@@ -153,7 +150,6 @@
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
           "hidden": false,
-          "customVisibility": null,
           "validate": {}
         },
         {
@@ -162,7 +158,6 @@
           "propertyName": "actionConfiguration",
           "label": "Action configuration",
           "hidden": false,
-          "customVisibility": "",
           "validate": {},
           "settingsValidationErrors": []
         }
@@ -210,12 +205,12 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "validate": {}
     }
   ],
   "formSettings": {
     "layout": "horizontal",
+    "isSettingsForm": true,
     "colon": true,
     "labelCol": {
       "span": 5

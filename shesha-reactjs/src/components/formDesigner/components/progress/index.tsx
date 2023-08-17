@@ -8,6 +8,7 @@ import { useForm } from '../../../../providers';
 import { alertSettingsForm } from './settings';
 import { ProgressType } from 'antd/lib/progress/progress';
 import ConfigurableFormItem from '../formItem';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 
 interface IProgressProps
   extends Omit<ProgressProps, 'style' | 'type' | 'size' | 'format' | 'success' | 'strokeColor'>,
@@ -82,26 +83,35 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
 
     return (
       <ConfigurableFormItem model={model}>
-        <ProgressWrapper
-          type={progressType}
-          strokeColor={getEvaluatedStrokeValue()}
-          format={getEvaluatedFormat}
-          percent={percent}
-          width={width}
-          strokeWidth={strokeWidth}
-          gapPosition={gapPosition}
-          steps={steps}
-          trailColor={trailColor}
-          status={status}
-          showInfo={showInfo}
-          strokeLinecap={strokeLinecap}
-          success={getEvaluatedSuccessColor()}
-        />
+        {(value) => {
+
+          const perc = percent || value;
+
+          return (
+            <ProgressWrapper
+              type={progressType}
+              strokeColor={getEvaluatedStrokeValue()}
+              format={getEvaluatedFormat}
+              percent={perc}
+              width={width}
+              strokeWidth={strokeWidth}
+              gapPosition={gapPosition}
+              steps={steps}
+              trailColor={trailColor}
+              status={status}
+              showInfo={showInfo}
+              strokeLinecap={strokeLinecap}
+              success={getEvaluatedSuccessColor()}
+            />);
+        }}
       </ConfigurableFormItem>
     );
   },
   settingsFormMarkup: alertSettingsForm,
   validateSettings: model => validateConfigurableComponentSettings(alertSettingsForm, model),
+  migrator: (m) => m
+    .add<IProgressProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
 };
 
 const ProgressWrapper: FC<IValuable & ProgressProps> = ({ percent, value, ...props }) => {

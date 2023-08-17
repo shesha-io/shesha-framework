@@ -1,6 +1,5 @@
 import { LayoutOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
-import FormItem from 'antd/lib/form/FormItem';
 import React, { FC, Fragment, useEffect, useMemo } from 'react';
 import { IToolboxComponent } from 'interfaces';
 import { MetadataProvider, useDataTableStore, useForm, useFormData } from 'providers';
@@ -11,6 +10,8 @@ import { evaluateString, validateConfigurableComponentSettings } from 'providers
 import ComponentsContainer from 'components/formDesigner/containers/componentsContainer';
 import settingsFormJson from './settingsForm.json';
 import { DataFetchingMode } from 'providers/dataTable/interfaces';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { ConfigurableFormItem } from 'components';
 
 export interface ITableContextComponentProps extends IConfigurableFormComponent {
   sourceType?: 'Form' | 'Entity' | 'Url';
@@ -55,7 +56,9 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
           ...prev,
           dataFetchingMode: 'paging',
         };
-      }),
+      })
+      .add<ITableContextComponentProps>(4, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
 };
@@ -77,7 +80,7 @@ export const TableContext: FC<ITableContextComponentProps> = (props) => {
 };
 
 export const TableContextInner: FC<ITableContextComponentProps> = (props) => {
-  const { sourceType, entityType, endpoint, id, propertyName: name } = props;
+  const { sourceType, entityType, endpoint, id, propertyName, componentName } = props;
   const { formMode } = useForm();
   const { data } = useFormData();
 
@@ -91,8 +94,8 @@ export const TableContextInner: FC<ITableContextComponentProps> = (props) => {
     ? 'Select `Entity Type` on the settings panel'
     : sourceType === 'Url' && !endpoint
     ? 'Select `Custom Endpoint` on the settings panel'
-    : sourceType === 'Form' && !name
-    ? 'Select `Name` on the settings panel'
+    : sourceType === 'Form' && !propertyName
+    ? 'Select `propertyName` on the settings panel'
     : null;
 
   if (isDesignMode && configurationWarningMessage)
@@ -106,23 +109,29 @@ export const TableContextInner: FC<ITableContextComponentProps> = (props) => {
       />
     );
 
-  const provider = (
+  const provider = (getFieldValue = undefined, onChange = undefined) => 
     <DataTableProvider
       userConfigId={props.id}
       entityType={entityType}
       getDataPath={getDataPath}
-      propertyName={name}
+      propertyName={propertyName}
       actionOwnerId={id}
-      actionOwnerName={name}
+      actionOwnerName={componentName}
       sourceType={props.sourceType}
       initialPageSize={props.defaultPageSize ?? 10}
       dataFetchingMode={props.dataFetchingMode ?? 'paging'}
+      getFieldValue={getFieldValue}
+      onChange={onChange}
     >
       <TableContextAccessor {...props} />
     </DataTableProvider>
-  );
+  ;
 
-  const providerWrapper = sourceType === 'Form' ? <FormItem name={props.propertyName}>{provider}</FormItem> : provider;
+  const providerWrapper = sourceType === 'Form' 
+    ? <ConfigurableFormItem model={{...props, hideLabel: true}} wrapperCol={{md: 24}}>
+        {(_v, onChange, _p, getFieldValue) => provider(getFieldValue, onChange)}
+      </ConfigurableFormItem> 
+    : provider();
 
   return <DataTableSelectionProvider>{providerWrapper}</DataTableSelectionProvider>;
 };

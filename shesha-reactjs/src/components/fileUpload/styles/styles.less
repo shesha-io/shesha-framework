@@ -1,19 +1,31 @@
-.sha-upload {
-  &.sha-upload-has-file {
-    .ant-upload-select {
-      position: absolute;
-      position: absolute;
-      top: -1000px;
-      left: -1000px;
+.sha-file-upload-container {
+  .sha-upload {
+    &.sha-upload-has-file {
+      .ant-upload-select {
+        position: absolute;
+        position: absolute;
+        top: -1000px;
+        left: -1000px;
+      }
+
+      &.ant-upload-drag {
+        padding: unset;
+        border: unset;
+
+        .ant-upload-btn {
+          padding: unset;
+        }
+      }
     }
-  }
-  .ant-upload-list {
-    .sha-upload-list-item-error {
-      a {
-        color: red;
+    .ant-upload-list {
+      .sha-upload-list-item-error {
+        a {
+          color: red;
+        }
       }
     }
   }
+
   .sha-upload-uploading {
     margin-right: 5px;
   }
@@ -23,3 +35,5 @@
     margin-left: 5px;
   }
 }
+
+// .ant-upload ant-upload-drag

@@ -12,10 +12,11 @@ import TimeCell from "./default/timeCell";
 import { useCrud } from 'providers/crudContext';
 import { CustomErrorBoundary } from 'components';
 import { useFormDesignerComponents } from 'providers/form/hooks';
-import { useForm } from 'providers';
+import { useForm, useFormData } from 'providers';
 import { IColumnEditorProps, IFieldComponentProps, standardCellComponentTypes } from 'providers/datatableColumnsConfigurator/models';
 import { IPropertyMetadata } from 'interfaces/metadata';
 import { ITableDataColumn } from 'providers/dataTable/interfaces';
+import { getActualModel } from 'utils/publicUtils';
 
 export const DataCell = <D extends object = {}, V = number>(props: IDataCellProps<D, V>) => {
     const { mode } = useCrud();
@@ -108,13 +109,15 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
     const { columnConfig, propertyMeta, customComponent } = props;
 
     const toolboxComponents = useFormDesignerComponents();
-    const { form } = useForm();
+    const { form, formMode } = useForm();
+    const { data } = useFormData();
 
     const component = toolboxComponents[customComponent.type];
 
     const componentModel = useMemo(() => {
+        const actualModel = getActualModel(customComponent.settings, data, formMode);
         let model: IColumnEditorProps = {
-            ...customComponent.settings,
+            ...actualModel,
             id: props.columnConfig.columnId,
             type: customComponent.type,
             propertyName: columnConfig.propertyName,

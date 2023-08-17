@@ -237,7 +237,7 @@
             "labelAlign": "right",
             "parentId": "Scip2BCqWk6HniFIJTgtA",
             "hidden": false,
-            "description": "Enter custom even handler on changing of event. (form, event) are exposed",
+            "description": "Enter custom eventhandler on changing of event. (form, event) are exposed",
             "validate": {},
             "settingsValidationErrors": [],
             "exposedVariables": [
@@ -301,7 +301,7 @@
             "labelAlign": "right",
             "parentId": "Scip2BCqWk6HniFIJTgtA",
             "hidden": false,
-            "description": "Enter custom even handler on focus of event. (form, event) are exposed",
+            "description": "Enter custom eventhandler on focus of event. (form, event) are exposed",
             "validate": {},
             "settingsValidationErrors": [],
             "exposedVariables": [
@@ -360,7 +360,7 @@
             "labelAlign": "right",
             "parentId": "Scip2BCqWk6HniFIJTgtA",
             "hidden": false,
-            "description": "Enter custom even handler on blur of event. (form, event) are exposed",
+            "description": "Enter custom eventhandler on blur of event. (form, event) are exposed",
             "validate": {},
             "settingsValidationErrors": [],
             "exposedVariables": [

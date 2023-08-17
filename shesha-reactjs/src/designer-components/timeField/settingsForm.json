@@ -456,7 +456,7 @@
             "labelAlign": "right",
             "parentId": "_m7e9WBdpkz4CsCrpVx8d",
             "hidden": false,
-            "description": "Enter custom even handler on changing of event. Multiple variables are exposed",
+            "description": "Enter custom eventhandler on changing of event. Multiple variables are exposed",
             "validate": {},
             "settingsValidationErrors": [],
             "exposedVariables": [

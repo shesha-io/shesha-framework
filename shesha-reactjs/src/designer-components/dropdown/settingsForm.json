@@ -378,7 +378,7 @@
             "labelAlign": "right",
             "parentId": "Vd8kaikjalJkbFuqN5U3I",
             "hidden": false,
-            "description": "Enter custom even handler on changing of event. (form, value, option) are exposed",
+            "description": "Enter custom eventhandler on changing of event. (form, value, option) are exposed",
             "validate": {},
             "settingsValidationErrors": [],
             "exposedVariables": [

@@ -18,21 +18,11 @@
       }
     },
     {
-      "id": "69a62acd-f384-4333-9b46-64411777d3d0",
-      "type": "codeEditor",
-      "propertyName": "customVisibility",
-      "label": "Custom Visibility",
-      "labelAlign": "right",
+      "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
+      "type": "checkbox",
+      "propertyName": "hidden",
       "parentId": "root",
-      "hidden": false,
-      "customVisibility": null,
-      "description": "Enter custom visibility code. You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-      "validate": {},
-      "settingsValidationErrors": [],
-      "exposedVariables": [
-        { "propertyName": "value", "description": "Component current value", "type": "string | any" },
-        { "propertyName": "data", "description": "Selected form values", "type": "object" }
-      ]
+      "label": "Hidden"
     }
   ],
   "formSettings": {

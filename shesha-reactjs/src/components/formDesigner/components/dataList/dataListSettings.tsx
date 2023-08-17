@@ -1,35 +1,32 @@
-import React, { useState } from 'react';
-import { Form, Select, AutoComplete, InputNumber } from 'antd';
+import React, { FC, useState } from 'react';
+import { Select, AutoComplete, InputNumber, Input } from 'antd';
 import SectionSeparator from '../../../sectionSeparator';
 import CodeEditor from '../codeEditor/codeEditor';
-import PropertyAutocomplete from '../../../propertyAutocomplete/propertyAutocomplete';
-import { FormSelectionMode, IDataListComponentProps, ListItemWidth, Orientation } from '../../../dataList/models';
+import { IDataListComponentProps } from '../../../dataList/models';
 import FormAutocomplete from '../../../formAutocomplete';
 import Show from 'components/show';
-
-export interface IProps {
-  readOnly: boolean;
-  model: IDataListComponentProps;
-  onSave: (model: IDataListComponentProps) => void;
-  onCancel: () => void;
-  onValuesChange?: (changedValues: any, values: IDataListComponentProps) => void;
-}
+import { ISettingsFormFactoryArgs } from 'interfaces';
+import SettingsForm, { useSettingsForm } from 'designer-components/_settings/settingsForm';
+import SettingsFormItem from 'designer-components/_settings/settingsFormItem';
 
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 
-function DataListSettings(props: IProps) {
-  const [form] = Form.useForm();
+export const DataListSettingsForm: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = (props) => {
+  return (
+    SettingsForm<IDataListComponentProps>({...props, children: <DataListSettings {...props}/>})
+  );
+};
+
+const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = ({readOnly}) => {
+  const { model: state } = useSettingsForm<IDataListComponentProps>();
 
   /*const dataSourcesDict = useDataSources()?.getDataSources() ?? {};
   const dataSources: IDataSourceDescriptor[] = [];
   for (let key in dataSourcesDict) {
     dataSources.push(dataSourcesDict[key] as IDataSourceDescriptor);
   }*/
-  const initialState: IDataListComponentProps = {
-    ...props?.model,
-  };
 
-  const [state, setState] = useState<IDataListComponentProps>(initialState);
+  //const [state, setState] = useState<IDataListComponentProps>(initialState);
   const [formTypesOptions, setFormTypesOptions] = useState<{ value: string }[]>(
     formTypes.map(i => {
       return { value: i };
@@ -37,69 +34,60 @@ function DataListSettings(props: IProps) {
   );
 
   return (
-    <Form
-      form={form}
-      onFinish={props.onSave}
-      onValuesChange={props.onValuesChange}
-      initialValues={initialState}
-      wrapperCol={{ span: 24 }}
-      labelCol={{ span: 24 }}
-    >
-      {/*<Form.Item name="dataSource" label="Data Source">
+    <>
+      <SettingsFormItem name="componentName" label="Component name" required>
+        <Input readOnly={readOnly}/>
+      </SettingsFormItem>
+
+      {/*<SettingsFormItem name="dataSource" label="Data Source">
         <Select disabled={props.readOnly}>
           <Option key='-1' value={null}>Data context</Option>
           {dataSources.map((item, index) => {
             return <Option key={index.toString()} value={`${item.id}_${item.name}`}>{item.name}</Option>
           })}         
         </Select>
-        </Form.Item>*/}
+        </SettingsFormItem>
+      
+        <Button onClick={toggleColumnsModal}>{props.readOnly ? 'View Properties' : 'Customize Properties'}</Button>
 
-      <Form.Item name="propertyName" label="Property name">
-        <PropertyAutocomplete readOnly={props.readOnly} showFillPropsButton={false} />
-      </Form.Item>
-
-      {/*<Button onClick={toggleColumnsModal}>{props.readOnly ? 'View Properties' : 'Customize Properties'}</Button>
-
-      <Form.Item name="properties">
+      <SettingsFormItem name="properties">
         <ColumnsEditorModal
           visible={state?.showColumnsModal}
           hideModal={toggleColumnsModal}
           readOnly={props.readOnly}
         />
-      </Form.Item>*/}
+      </SettingsFormItem>*/}
 
       <SectionSeparator title="Selection" />
 
-      <Form.Item name="selectionMode" label="Selection mode">
-        <Select disabled={props.readOnly} defaultValue={'none'}>
+      <SettingsFormItem name="selectionMode" label="Selection mode" jsSetting>
+        <Select disabled={readOnly} defaultValue={'none'}>
           <Select.Option key='1' value='none'>None</Select.Option>
           <Select.Option key='2' value='single'>Single</Select.Option>
           <Select.Option key='3' value='multiple'>Multiple</Select.Option>
         </Select>
-      </Form.Item>
+      </SettingsFormItem>
 
       <SectionSeparator title="Render" />
 
-      <Form.Item name="formSelectionMode" label="Form selection mode">
-        <Select disabled={props.readOnly} defaultValue={'none'} onChange={(item) => {
-          setState({...state, formSelectionMode: (item as FormSelectionMode)}); 
-        }}>
+      <SettingsFormItem name="formSelectionMode" label="Form selection mode">
+        <Select disabled={readOnly} defaultValue={'none'}>
           <Select.Option key='name' value='name'>Named form</Select.Option>
           <Select.Option key='view' value='view'>View type</Select.Option>
           <Select.Option key='expression' value='expression'>Expression</Select.Option>
         </Select>
-      </Form.Item>
+      </SettingsFormItem>
 
       {state.formSelectionMode === 'name' &&
-      <Form.Item name="formId" label="Form">
-        <FormAutocomplete convertToFullId={true} readOnly={props.readOnly} />
-      </Form.Item>
+      <SettingsFormItem name="formId" label="Form">
+        <FormAutocomplete convertToFullId={true} readOnly={readOnly} />
+      </SettingsFormItem>
       }
 
       {state.formSelectionMode === 'view' &&
-        <Form.Item name="formType" label="formType">
+        <SettingsFormItem name="formType" label="formType" jsSetting>
           <AutoComplete
-            disabled={props.readOnly}
+            disabled={readOnly}
             options={formTypesOptions}
             onSearch={t =>
               setFormTypesOptions(
@@ -114,13 +102,13 @@ function DataListSettings(props: IProps) {
               )
             }
           />
-        </Form.Item>
+        </SettingsFormItem>
       }
 
       {state.formSelectionMode === 'expression' && 
-        <Form.Item name="formIdExpression" label="Form identifer expression">
+        <SettingsFormItem name="formIdExpression" label="Form identifer expression">
           <CodeEditor
-            readOnly={props.readOnly}
+            readOnly={readOnly}
             mode="dialog"
             setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
             propertyName="formIdExpression"
@@ -132,56 +120,33 @@ function DataListSettings(props: IProps) {
               { "name": "item", "description": "List item", "type": "object" },
             ]}
           />
-        </Form.Item>
+        </SettingsFormItem>
       }
 
-      <Form.Item name="orientation" label="Orientation">
-        <Select disabled={props.readOnly} defaultValue="vertical" onChange={(item) => {
-          setState({...state, orientation: (item as Orientation)}); 
-        }}>
+      <SettingsFormItem name="orientation" label="Orientation" jsSetting>
+        <Select disabled={readOnly} defaultValue="vertical">
           <Select.Option key={1} value="vertical">Vertical</Select.Option>
           <Select.Option key={2} value="horizontal">Horizontal</Select.Option>
         </Select>
-      </Form.Item>
+      </SettingsFormItem>
 
       <Show when={state?.orientation === 'horizontal'}>
-        <Form.Item name="listItemWidth" label="List Item Width">
-          <Select disabled={props.readOnly} defaultValue={1} onChange={(item) => {
-            setState({...state, listItemWidth: (item as ListItemWidth)}); 
-          }}>
+        <SettingsFormItem name="listItemWidth" label="List Item Width">
+          <Select disabled={readOnly} defaultValue={1}>
             <Select.Option key={1} value={1}>100%</Select.Option>
             <Select.Option key={2} value={0.5}>50%</Select.Option>
             <Select.Option key={3} value={0.33}>33%</Select.Option>
             <Select.Option key={4} value={0.25}>25%</Select.Option>
             <Select.Option key={5} value="custom">(Custom)</Select.Option>
           </Select>
-        </Form.Item>
+        </SettingsFormItem>
 
         <Show when={state?.listItemWidth === 'custom'}>
-          <Form.Item name="customListItemWidth" label="Custom List Item Width (px)">
+          <SettingsFormItem name="customListItemWidth" label="Custom List Item Width (px)">
             <InputNumber />
-          </Form.Item>
+          </SettingsFormItem>
         </Show>
       </Show>
-
-      <Form.Item name="customVisibility" label="Custom visibility">
-        <CodeEditor
-          readOnly={props.readOnly}
-          mode="dialog"
-          setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          propertyName="customVisibility"
-          type={''}
-          id={''}
-          label="Custom visibility"
-          description="Enter custom visibility code. You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
-          exposedVariables={[
-            { "name": "value", "description": "Component current value", "type": "string | any" },
-            { "name": "data", "description": "Selected form values", "type": "object" }            
-          ]}
-        />
-      </Form.Item>
-    </Form>
+    </>
   );
-}
-
-export default DataListSettings;
+};

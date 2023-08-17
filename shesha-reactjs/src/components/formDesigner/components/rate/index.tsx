@@ -20,6 +20,7 @@ import moment from 'moment';
 import { customRateEventHandler } from '../utils';
 import _ from 'lodash';
 import classNames from 'classnames';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 
 export interface IRateProps extends IConfigurableFormComponent {
   value?: number;
@@ -67,22 +68,29 @@ const RateComponent: IToolboxComponent<IRateProps> = {
 
     return (
       <ConfigurableFormItem model={model}>
-        <Rate
-          allowClear={allowClear}
-          //allowHalf={allowHalf}
-          character={icon ? <ShaIcon iconName={icon as IconType} /> : <StarFilled />}
-          disabled={disabled}
-          count={localCount}
-          tooltips={tooltips}
-          className={classNames(className, 'sha-rate')}
-          style={getStyle(style, formData)} // Temporary. Make it configurable
-          {...customRateEventHandler(eventProps)}
-        />
+        {(value, onChange) =>
+          <Rate
+            allowClear={allowClear}
+            //allowHalf={allowHalf}
+            character={icon ? <ShaIcon iconName={icon as IconType} /> : <StarFilled />}
+            disabled={disabled}
+            count={localCount}
+            tooltips={tooltips}
+            className={classNames(className, 'sha-rate')}
+            style={getStyle(style, formData)} // Temporary. Make it configurable
+            {...customRateEventHandler(eventProps)}
+            value={value}
+            onChange={onChange}
+          />
+        }
       </ConfigurableFormItem>
     );
   },
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  migrator: (m) => m
+    .add<IRateProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
 };
 
 export default RateComponent;

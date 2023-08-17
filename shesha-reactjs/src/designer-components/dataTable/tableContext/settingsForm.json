@@ -9,15 +9,14 @@
     },
     {
       "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
-      "type": "textField",
+      "type": "contextPropertyAutocomplete",
       "propertyName": "propertyName",
       "parentId": "root",
       "label": "Property name",
       "validate": {
         "required": true
       },
-      "version": 0,
-      "textType": "text"
+      "version": 0
     },
     {
       "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
@@ -81,8 +80,7 @@
       "label": "Entity Type",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": false,
-      "customVisibility": "return data.sourceType == 'Entity';",
+      "hidden": {"_code": "return getSettingValue(data.sourceType) !== 'Entity';", "_mode": "code", "_value": false},
       "dataSourceType": "url",
       "validate": {},
       "dataSourceUrl": "/api/services/app/Metadata/EntityTypeAutocomplete",
@@ -96,7 +94,7 @@
       "propertyName": "endpoint",
       "parentId": "root",
       "label": "Custom Endpoint",
-      "customVisibility": "return data.sourceType == 'Entity' || data.sourceType == 'Url';",
+      "hidden": {"_code": "return getSettingValue(data.sourceType) !== 'Entity' && getSettingValue(data.sourceType) !== 'Url';", "_mode": "code", "_value": false},
       "validate": {
         "minLength": "",
         "maxLength": "",
@@ -119,7 +117,6 @@
       "parentId": "root",
       "hidden": false,
       "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 1,
       "dataSourceType": "values",
@@ -208,40 +205,8 @@
         "single"
       ],
       "dataSourceUrl": "",
-      "customVisibility": "return data.dataFetchingMode === 'paging';",
+      "hidden": {"_code": "return getSettingValue(data.dataFetchingMode) !== 'paging';", "_mode": "code", "_value": false},
       "settingsValidationErrors": []
-    },
-    {
-      "id": "41721f44-adbc-42fe-8c70-69b30e36f4ca",
-      "type": "sectionSeparator",
-      "propertyName": "sectionVisibility",
-      "parentId": "root",
-      "label": "Visibility"
-    },
-    {
-      "id": "6cb29c17-5b6a-40c1-b5a4-373c7a2c9e8f",
-      "type": "codeEditor",
-      "propertyName": "customVisibility",
-      "label": "Custom Visibility",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "customVisibility": null,
-      "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-      "validate": {},
-      "settingsValidationErrors": [],
-      "exposedVariables": [
-        {
-          "propertyName": "value",
-          "description": "Component current value",
-          "type": "string | any"
-        },
-        {
-          "propertyName": "data",
-          "description": "Selected form values",
-          "type": "object"
-        }
-      ]
     }
   ],
   "formSettings": {

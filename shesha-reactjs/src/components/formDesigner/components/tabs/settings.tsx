@@ -1,30 +1,26 @@
 import React, { FC } from 'react';
-import { Form, Select, Input } from 'antd';
+import { Select, Input, Checkbox } from 'antd';
 import SectionSeparator from '../../../sectionSeparator';
-import CodeEditor from '../codeEditor/codeEditor';
 import EditableTagGroup from '../../../editableTagGroup';
 import { ITabPaneProps, ITabsComponentProps } from './models';
 import ItemListSettingsModal from '../itemListConfigurator/itemListSettingsModal';
 import itemSettings from './itemSettings.json';
 import { FormMarkup } from '../../../../providers/form/models';
 import { nanoid } from 'nanoid/non-secure';
+import { ISettingsFormFactoryArgs } from 'interfaces';
+import SettingsForm, { useSettingsForm } from 'designer-components/_settings/settingsForm';
+import SettingsFormItem from 'designer-components/_settings/settingsFormItem';
 
 const { Option } = Select;
 
-export interface ITabSettingsProps {
-  readOnly: boolean;
-  model: ITabsComponentProps;
-  onSave: (model: ITabsComponentProps) => void;
-  onCancel: () => void;
-  onValuesChange?: (changedValues: any, values: ITabsComponentProps) => void;
-}
+export const TabSettingsForm: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = (props) => {
+  return (
+    SettingsForm<ITabsComponentProps>({...props, children: <TabSettings {...props}/>})
+  );
+};
 
-const TabSettings: FC<ITabSettingsProps> = (props) => {
-  const [form] = Form.useForm();
-
-  const onValuesChange = (changedValues, values) => {
-    if (props.onValuesChange) props.onValuesChange(changedValues, values);
-  };
+const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = ({readOnly}) => {
+  const { model } = useSettingsForm<ITabsComponentProps>();
 
   const onAddNewItem = (_, count: number) => {
     const id = nanoid();
@@ -41,80 +37,61 @@ const TabSettings: FC<ITabSettingsProps> = (props) => {
     return buttonProps;
   };
 
-  const tabs = props.model.tabs?.map((item) => ({ ...item, label: item?.title }));
+  const tabs = model.tabs?.map((item) => ({ ...item, label: item?.title }));
 
   return (
-    <Form
-      form={form}
-      onFinish={props.onSave}
-      onValuesChange={onValuesChange}
-      labelCol={{ span: 24 }}
-      disabled={props.readOnly}
-    >
+    <>
       <SectionSeparator title="Display" />
-      <Form.Item name="propertyName" initialValue={props.model.propertyName} label="Property name" rules={[{ required: true }]}>
+      <SettingsFormItem name="componentName" label="Component name" rules={[{ required: true }]}>
         <Input />
-      </Form.Item>
+      </SettingsFormItem>
 
-      <Form.Item
-        name="defaultActiveKey"
-        initialValue={props.model.defaultActiveKey}
-        label="Default Active Key"
-        rules={[{ required: true }]}
-      >
+      <SettingsFormItem name="defaultActiveKey" label="Default Active Key" rules={[{ required: true }]}>
         <Input />
-      </Form.Item>
+      </SettingsFormItem>
 
-      <Form.Item name="tabType" initialValue={props.model.tabType} label="Tab Type">
+      <SettingsFormItem name="tabType" label="Tab Type">
         <Select allowClear>
           <Option value="line">Line</Option>
           <Option value="card">Card</Option>
         </Select>
-      </Form.Item>
+      </SettingsFormItem>
 
-      <Form.Item
-        name="size"
-        initialValue={props.model.size}
-        label="Size"
-        tooltip="This will set the size for all buttons"
-      >
+      <SettingsFormItem name="size" label="Size" tooltip="This will set the size for all buttons" jsSetting >
         <Select>
           <Option value="small">Small</Option>
           <Option value="middle">Middle</Option>
           <Option value="large">Large</Option>
         </Select>
-      </Form.Item>
+      </SettingsFormItem>
 
-      <Form.Item
-        name="position"
-        initialValue={props.model.position}
-        label="Position"
-        tooltip="This will set the size for all buttons"
-      >
+      <SettingsFormItem name="position" label="Position" tooltip="This will set the size for all buttons" jsSetting>
         <Select>
           <Option value="top">Top</Option>
           <Option value="bottom">Bottom</Option>
           <Option value="left">Left</Option>
           <Option value="right">Right</Option>
         </Select>
-      </Form.Item>
+      </SettingsFormItem>
 
-      <Form.Item
-        name="visibility"
-        initialValue={props.model.visibility}
-        label="Visibility"
+      <SettingsFormItem name="hidden" label="Hidden" valuePropName="checked" jsSetting>
+        <Checkbox disabled={readOnly} />
+      </SettingsFormItem>
+
+      <SettingsFormItem name="visibility" label="Visibility"
         tooltip="This property will eventually replace the 'hidden' property and other properties that toggle visibility on the UI and payload"
+        jsSetting
       >
         <Select>
           <Option value="Yes">Yes (Display in UI and include in payload)</Option>
           <Option value="No">No (Only include in payload)</Option>
           <Option value="Removed">Removed (Remove from UI and exlude from payload)</Option>
         </Select>
-      </Form.Item>
+      </SettingsFormItem>
 
       <SectionSeparator title="Configure Tab Panes" />
 
-      <Form.Item name="tabs" initialValue={tabs}>
+      <SettingsFormItem name="tabs">
         <ItemListSettingsModal
           options={{ onAddNewItem }}
           title="Configure Tabs"
@@ -123,41 +100,20 @@ const TabSettings: FC<ITabSettingsProps> = (props) => {
           callToAction="Configure Tab Panes"
           itemTypeMarkup={itemSettings as FormMarkup}
           allowAddGroups={false}
+          value={tabs}
         />
-      </Form.Item>
+      </SettingsFormItem>
 
       <SectionSeparator title="Security" />
 
-      <Form.Item
-        label="Custom Visibility"
-        name="customVisibility"
-        tooltip={ "Enter custom visibility code.  You must return true to show the component. " + 
-          "The global variable data is provided, and allows you to access the data of any form component, by using its API key." 
-        }
-      >
-        <CodeEditor
-          mode="dialog"
-          setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          propertyName="customVisibility"
-          type={''}
-          id={''}
-          label="Custom Visibility"
-          description={ "Enter custom visibility code.  You must return true to show the component. " + 
-            "The global variable data is provided, and allows you to access the data of any form component, by using its API key." 
-          }
-        />
-      </Form.Item>
-
-      <Form.Item
+      <SettingsFormItem
         label="Permissions"
         name="permissions"
-        initialValue={props.model.permissions}
         tooltip="Enter a list of permissions that should be associated with this component"
+        jsSetting
       >
         <EditableTagGroup />
-      </Form.Item>
-    </Form>
+      </SettingsFormItem>
+    </>
   );
 };
-
-export default TabSettings;

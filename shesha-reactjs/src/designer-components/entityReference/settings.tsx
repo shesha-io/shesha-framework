@@ -18,13 +18,11 @@ import SettingsForm, { useSettingsForm } from 'designer-components/_settings/set
 import { ContextPropertyAutocomplete } from 'designer-components/contextPropertyAutocomplete';
 import { useFormDesigner } from 'providers/formDesigner';
 
-interface IEntityReferenceSettingsState extends IEntityReferenceControlProps { }
-
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 
 export const EntityReferenceSettingsForm: FC<ISettingsFormFactoryArgs<IEntityReferenceControlProps>> = (props) => {
   return (
-    SettingsForm<IEntityReferenceSettingsState>({...props, children: <EntityReferenceSettings {...props}/>})
+    SettingsForm<IEntityReferenceControlProps>({...props, children: <EntityReferenceSettings {...props}/>})
   );
 };
 

@@ -1,18 +1,20 @@
-import React, { FC, ReactNode, useEffect, useState } from 'react';
+import React, { FC, useEffect, useMemo, useRef } from 'react';
 import { useButtonGroupConfigurator } from '../../../../../providers/buttonGroupConfigurator';
-import { Empty } from 'antd';
+import { Empty, Form } from 'antd';
 import { ConfigurableForm } from '../../../..';
 import itemSettingsJson from './itemSettings.json';
 import itemGroupSettingsJson from './itemGroupSettings.json';
 import { FormMarkup } from '../../../../../providers/form/models';
 import { useDebouncedCallback } from 'use-debounce';
+import { ConfigurableFormInstance } from '../../../../../providers/form/contexts';
 
-export interface IButtonGroupPropertiesProps { }
+export interface IButtonGroupPropertiesProps {}
 
 export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = () => {
   const { selectedItemId, getItem, updateItem, readOnly } = useButtonGroupConfigurator();
-  // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus
-  const [editor, setEditor] = useState<ReactNode>(<></>);
+  const [form] = Form.useForm();
+
+  const formRef = useRef<ConfigurableFormInstance>(null);
 
   const debouncedSave = useDebouncedCallback(
     values => {
@@ -23,10 +25,12 @@ export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = () => {
   );
 
   useEffect(() => {
-    setEditor(getEditor());
+    const values = getItem(selectedItemId);
+    form?.setFieldsValue(values);
   }, [selectedItemId]);
 
-  const getEditor = () => {
+  // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus
+  const editor = useMemo(() => {
     const emptyEditor = null;
     if (!selectedItemId) return emptyEditor;
 
@@ -36,21 +40,23 @@ export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = () => {
       componentModel.itemType === 'item'
         ? (itemSettingsJson as FormMarkup)
         : componentModel.itemType === 'group'
-          ? (itemGroupSettingsJson as FormMarkup)
-          : [];
+        ? (itemGroupSettingsJson as FormMarkup)
+        : [];
     return (
       <ConfigurableForm
-        key={selectedItemId}
+        key={selectedItemId} // rerender for each item to initialize all controls
+        formRef={formRef}
         labelCol={{ span: 24 }}
         wrapperCol={{ span: 24 }}
-        mode={readOnly ? 'readonly' : 'edit'}
+        mode={ readOnly ? 'readonly' : 'edit' }
         markup={markup}
         onFinish={onSettingsSave}
+        form={form}
         initialValues={componentModel}
         onValuesChange={debouncedSave}
       />
     );
-  };
+  }, [selectedItemId]);
 
   if (!Boolean(selectedItemId)) {
     return (

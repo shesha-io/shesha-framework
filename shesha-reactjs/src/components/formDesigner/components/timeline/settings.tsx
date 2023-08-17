@@ -1,5 +1,5 @@
-import React, { FC, useState } from 'react';
-import { Form, Input, Select } from 'antd';
+import React, { FC } from 'react';
+import { Checkbox, Input, Select } from 'antd';
 import SectionSeparator from '../../../sectionSeparator';
 import Show from '../../../show';
 import { AutocompleteRaw } from '../../../autocomplete';
@@ -7,94 +7,79 @@ import { QueryBuilderComponentRenderer } from 'designer-components/queryBuilder/
 import { QueryBuilderWithModelType } from 'designer-components/queryBuilder/queryBuilderWithModelType';
 import Properties from '../../../properties';
 import { ITimelineProps } from '../../../timeline/models';
+import { ISettingsFormFactoryArgs } from 'interfaces';
+import SettingsForm, { useSettingsForm } from 'designer-components/_settings/settingsForm';
+import SettingsFormItem from 'designer-components/_settings/settingsFormItem';
+import SettingsCollapsiblePanel from 'designer-components/_settings/settingsCollapsiblePanel';
 
 const { Option } = Select;
 
-export interface ITabSettingsProps {
-  readOnly: boolean;
-  model: ITimelineProps;
-  onSave: (model: ITimelineProps) => void;
-  onCancel: () => void;
-  onValuesChange?: (changedValues: any, values) => void;
-}
+export const TimelineSettingsForm: FC<ISettingsFormFactoryArgs<ITimelineProps>> = (props) => {
+  return (
+    SettingsForm<ITimelineProps>({...props, children: <TimelineSettings {...props}/>})
+  );
+};
 
-const TimelineSettings: FC<ITabSettingsProps> = (props) => {
-  const [state, setState] = useState(props?.model);
-  const [form] = Form.useForm();
-
-  const onValuesChange = (changedValues: any, values) => {
-    const newValues = { ...state, ...values };
-    if (props.onValuesChange) props.onValuesChange(changedValues, newValues);
-  };
-
-  const handleValuesChange = (changedValues: ITimelineProps, values) => {
-    if (state.readOnly) return;
-    const incomingState = { ...values };
-
-    if (Object.hasOwn(changedValues, 'entityType')) {
-      incomingState.filters = null;
-      incomingState.properties = null;
-
-      form?.setFieldsValue({ properties: null, filters: null });
-    }
-    setState(incomingState);
-    onValuesChange(changedValues, incomingState);
-  };
+const TimelineSettings: FC<ISettingsFormFactoryArgs<ITimelineProps>> = ({readOnly}) => {
+  const { model: state, onValuesChange } = useSettingsForm<ITimelineProps>();
 
   return (
-    <Form
-      initialValues={props?.model}
-      form={form}
-      onFinish={props.onSave}
-      onValuesChange={handleValuesChange}
-      labelCol={{ span: 24 }}
-      disabled={props.readOnly}
-    >
-      <SectionSeparator />
-      <Form.Item name="label" initialValue={props.model.label} label="Label" rules={[{ required: true }]}>
-        <Input />
-      </Form.Item>
+    <>
+      <SettingsCollapsiblePanel header='Data'>
 
-      <Form.Item name="propertyName" initialValue={props.model.propertyName} label="Property name" rules={[{ required: true }]}>
-        <Input />
-      </Form.Item>
+      <SettingsFormItem name="componentName" initialValue={state.propertyName} label="Component name" rules={[{ required: true }]}>
+        <Input disabled={readOnly} />
+      </SettingsFormItem>
 
-      <Form.Item
+      <SettingsFormItem name="label" initialValue={state.label} label="Label" jsSetting>
+        <Input disabled={readOnly} />
+      </SettingsFormItem>
+
+      <SettingsFormItem name="hidden" label="Hidden" valuePropName="checked" jsSetting>
+        <Checkbox disabled={readOnly} />
+      </SettingsFormItem>
+
+      <SettingsFormItem
         name="apiSource"
         label="Api source"
         tooltip="An option to use entity option or custom api. Bare in mind that everything works the same as entity for custom api, the source is the only thing that differs."
         initialValue={['entity']}
       >
-        <Select disabled={state.readOnly}>
+        <Select disabled={readOnly}>
           <Option value="entity">entity</Option>
           <Option value="custom">custom Url</Option>
         </Select>
-      </Form.Item>
+      </SettingsFormItem>
 
       <Show when={state.apiSource === 'custom'}>
-        <Form.Item name={'ownerId'} label="id">
-          <Input />
-        </Form.Item>
+        <SettingsFormItem name={'ownerId'} label="id">
+          <Input disabled={readOnly} />
+        </SettingsFormItem>
       </Show>
 
       <Show when={state?.apiSource === 'entity'}>
-        <Form.Item name="entityType" label="Entity type">
+        <SettingsFormItem name="entityType" label="Entity type">
+          {(value) =>
           <AutocompleteRaw
+            value={value}
             dataSourceType="url"
             dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete"
             readOnly={state.readOnly}
+            disabled={readOnly} 
+            onChange={(val) => onValuesChange({entityType: val, filters: null, properties: null})}
           />
-        </Form.Item>
+          }
+        </SettingsFormItem>
         <Show when={Boolean(state?.entityType)}>
-          <Form.Item name="properties" label="Properties">
-            <Properties modelType={state?.entityType} mode="multiple" value={state?.properties} />
-          </Form.Item>
+          <SettingsFormItem name="properties" label="Properties">
+            <Properties modelType={state?.entityType} mode="multiple" value={state?.properties} disabled={readOnly} />
+          </SettingsFormItem>
 
           <SectionSeparator title="Query builder" />
 
           <QueryBuilderWithModelType modelType={state?.entityType}>
             <QueryBuilderComponentRenderer
-              readOnly={state.readOnly}
+              readOnly={readOnly}
               propertyName="filters"
               type={''}
               id={''}
@@ -105,11 +90,12 @@ const TimelineSettings: FC<ITabSettingsProps> = (props) => {
       </Show>
 
       <Show when={state?.apiSource === 'custom'}>
-        <Form.Item label="Custom Api URL" name="customApiUrl" tooltip="The URL for a custom Api.">
-          <Input readOnly={state.readOnly} />
-        </Form.Item>
+        <SettingsFormItem label="Custom Api URL" name="customApiUrl" tooltip="The URL for a custom Api.">
+          <Input readOnly={readOnly} />
+        </SettingsFormItem>
       </Show>
-    </Form>
+      </SettingsCollapsiblePanel>
+    </>
   );
 };
 

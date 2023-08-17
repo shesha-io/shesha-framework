@@ -9,7 +9,7 @@
     },
     {
       "id": "de0f8d68-de60-4ec6-9290-d9cfffa5bcbc",
-      "type": "textField",
+      "type": "contextPropertyAutocomplete",
       "propertyName": "propertyName",
       "parentId": "root",
       "label": "Property name",
@@ -23,11 +23,14 @@
       "type": "textField",
       "propertyName": "title",
       "parentId": "root",
-      "label": "Title",
-      "required": true,
-      "validate": {
-        "required": true
-      }
+      "label": "Title"
+    },
+    {
+      "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
+      "type": "checkbox",
+      "propertyName": "hidden",
+      "parentId": "root",
+      "label": "Hidden"
     },
     {
       "id": "c8a2b2ce-3aef-46f9-a1f6-1c04417e7d20",
@@ -37,7 +40,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": "",
       "settingsValidationErrors": []
     },
     {
@@ -48,7 +50,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": "",
       "settingsValidationErrors": []
     },
     {
@@ -79,30 +80,6 @@
       "settingsValidationErrors": [],
       "description": "A script that returns the style of the value as an object. This should conform to CSSProperties",
       "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }]
-    },
-    {
-      "id": "ba5a5ebd-55ed-4c4c-adc7-35c591c8fd4e",
-      "type": "sectionSeparator",
-      "propertyName": "separatorVisibility",
-      "parentId": "root",
-      "label": "Visibility"
-    },
-    {
-      "id": "c6f46a6a-4a14-4aa3-af3d-938e2a24dee3",
-      "type": "codeEditor",
-      "propertyName": "customVisibility",
-      "label": "Custom Visibility",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "customVisibility": null,
-      "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-      "validate": {},
-      "settingsValidationErrors": [],
-      "exposedVariables": [
-        { "propertyName": "value", "description": "Component current value", "type": "string | any" },
-        { "propertyName": "data", "description": "Selected form values", "type": "object" }
-      ]
     }
   ],
   "formSettings": {

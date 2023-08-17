@@ -55,6 +55,12 @@ export const getSettings = () =>
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
             label: 'Description',
           })
+          .addCheckbox({
+            id: '53cd10ce-25af-474b-af75-8e7b1f19e52d',
+            propertyName: 'isDragger',
+            label: 'Is dragger',
+            parentId: 'root',
+            description: 'Whether the uploader should show a dragger instead of button',          })          
           .addDropdown({
             id: 'df8a8f35-a50b-42f9-9642-73d390ceddbf',
             propertyName: 'visibility',
@@ -75,7 +81,7 @@ export const getSettings = () =>
                 id: 'f07a228c-cb9c-4da7-a8bc-bc2be518a058',
               },
               {
-                label: 'Removed (Remove from UI and exlude from payload)',
+                label: 'Removed (Remove from UI and exclude from payload)',
                 value: 'Removed',
                 id: '3b6282ee-2eee-47ec-bab9-4cba52b970a0',
               },
@@ -105,7 +111,7 @@ export const getSettings = () =>
             propertyName: 'allowUpload',
             label: 'Allow Upload',
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
-            hidden: {_code: 'return  !getSettingValue(data?.disabled) ?? false;', _mode: 'code', _value: false} as any,
+            hidden: {_code: 'return  getSettingValue(data?.disabled);', _mode: 'code', _value: false} as any,
             validate: {},
           })
           .addCheckbox({
@@ -113,7 +119,7 @@ export const getSettings = () =>
             propertyName: 'allowReplace',
             label: 'Allow Replace',
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
-            hidden: {_code: 'return  !getSettingValue(data?.disabled) ?? false;', _mode: 'code', _value: false} as any,
+            hidden: {_code: 'return  getSettingValue(data?.disabled);', _mode: 'code', _value: false} as any,
             validate: {},
           })
           .addCheckbox({
@@ -121,7 +127,7 @@ export const getSettings = () =>
             propertyName: 'allowDelete',
             label: 'Allow Delete',
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
-            hidden: {_code: 'return  !getSettingValue(data?.disabled) ?? false;', _mode: 'code', _value: false} as any,
+            hidden: {_code: 'return  getSettingValue(data?.disabled);', _mode: 'code', _value: false} as any,
             validate: {},
           }).toJson()
         ]
