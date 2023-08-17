@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "private": false,
   "postinstall": "next",
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
