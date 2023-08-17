@@ -189,6 +189,12 @@ export const FormAutocomplete: FC<IFormAutocompleteRuntimeProps> = (props) => {
             if (!selectedFromList)
                 valueFetcher.refetch({ queryParams: valueFetchParams });
         }
+
+        if (!props.value){
+            if (autocompleteText)
+                setAutocompleteText(null);
+            selectedValue.current = props.value;
+        }
     }, [props.value]);
 
     const options = useMemo<IOption[]>(() => {
