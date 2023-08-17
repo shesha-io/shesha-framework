@@ -16,6 +16,7 @@ export const subFormReducer = handleActions<ISubFormStateContext, any>(
         hasFetchedConfig, 
         id, 
         module,
+        name,
         allComponents,
         componentRelations,
       } = payload || {};
@@ -24,6 +25,7 @@ export const subFormReducer = handleActions<ISubFormStateContext, any>(
         ...state,
         id,
         module,
+        name,
         hasFetchedConfig,
         components,
         formSettings,

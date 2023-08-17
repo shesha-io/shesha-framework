@@ -84,6 +84,13 @@ export const getSettings = () =>
             hidden: {_code: 'return  getSettingValue(data?.disabled) ?? false;', _mode: 'code', _value: false} as any,
           })
           .addCheckbox({
+            id: 'cfd7d45e-c7e3-4a27-987b-dc525c412447',
+            propertyName: 'isDragger',
+            parentId: 'root',
+            label: 'Is Dragger',
+            description: 'Where the uploader should show a dragger instead of buttom',
+          })
+          .addCheckbox({
             id: 'cfd7d45e-c7e3-4a27-987b-dc525c412448',
             propertyName: 'hidden',
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',

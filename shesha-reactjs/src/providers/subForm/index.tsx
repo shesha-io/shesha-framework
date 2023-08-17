@@ -391,6 +391,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = ({
             hasFetchedConfig: true,
             id: response?.id,
             module: response?.module,
+            name: response?.name,
             components: response.markup,
             formSettings: response.settings,
             versionNo: response?.versionNo,

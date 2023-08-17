@@ -122,7 +122,7 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
     return customProps;
   },
   migrator: (m) => m
-    .add<ILinkProps>(0, (prev) => ({...prev}))
+    .add<ILinkProps>(0, (prev) => ({...prev} as ILinkProps))
     .add<ILinkProps>(1, (prev) => {
       return {
         ...prev,

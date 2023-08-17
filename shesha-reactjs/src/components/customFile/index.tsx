@@ -13,6 +13,7 @@ export interface ICustomFileProps {
   isStub?: boolean;
   allowedFileTypes?: string[];
   maxHeight?: string;
+  isDragger?: boolean;
 }
 
 export const CustomFile: FC<ICustomFileProps> = (props) => {
@@ -38,7 +39,7 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
       <StoredFilesRendererBase
         isStub={props.isStub}
         disabled={!props.allowAdd}
-        isDragger={false}
+        isDragger={props?.isDragger}
         fileList={fileList.map(({ url, ...rest }) => ({ url: `${backendUrl}${url}`, ...rest }))}
         allowUpload={false}
         //downloadFile={downloadFile}

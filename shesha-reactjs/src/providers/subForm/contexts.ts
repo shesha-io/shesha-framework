@@ -4,7 +4,7 @@ import { IConfigurableFormComponent, IFlatComponentsStructure } from '../../inte
 import { IFormSettings, IPersistedFormProps } from '../form/models';
 
 export interface IPersistedFormPayload
-  extends Pick<IPersistedFormProps, 'id' | 'versionNo' | 'versionStatus' | 'description' | 'module'> { }
+  extends Pick<IPersistedFormProps, 'id' | 'versionNo' | 'versionStatus' | 'description' | 'module' | 'name'> { }
 
 export interface IFetchDataErrorPayload {
   error: GetDataError<unknown>;

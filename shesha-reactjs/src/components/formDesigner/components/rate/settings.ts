@@ -137,7 +137,7 @@ export const getSettings = (data: any) =>
             labelAlign: 'right',
             parentId: '2pnl54bf6-f76d-4139-a850-c99bf06c8b69',
             hidden: false,
-            description: 'Enter custom even handler on changing of event. (form, value, option) are exposed',
+            description: 'Enter custom eventhandler on changing of event. (form, value, option) are exposed',
             validate: {},
             settingsValidationErrors: [],
             exposedVariables: [

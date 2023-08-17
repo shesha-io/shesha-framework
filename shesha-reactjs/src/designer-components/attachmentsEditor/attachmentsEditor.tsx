@@ -24,6 +24,7 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent {
   allowDelete: boolean;
   allowReplace: boolean;
   allowRename: boolean;
+  isDragger?: boolean;
   maxHeight?: string;
 }
 
@@ -63,6 +64,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
             allowRename={enabled && model.allowRename}
             allowedFileTypes={model.allowedFileTypes}
             maxHeight={model.maxHeight}
+            isDragger={model?.isDragger}
           />
         </StoredFilesProvider>
       </ConfigurableFormItem>
@@ -78,6 +80,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         allowDelete: true,
         allowReplace: true,
         allowRename: true,
+        isDragger: false,
         ownerId: '',
         ownerType: '',
         ownerName: '',

@@ -78,7 +78,7 @@ interface ISubFormWrapperProps
 }
 
 const SubFormWrapper: FC<ISubFormWrapperProps> = ({ style, readOnly, ...props }) => {
-  const actionOwnerName = `Subform (${props.propertyName})`;
+  const actionOwnerName = `Subform (${props.componentName})`;
   return (
     <SubFormProvider {...props} actionsOwnerId={props.id} actionOwnerName={actionOwnerName} key={props.id}>
       <SubForm style={style} readOnly={readOnly} />
