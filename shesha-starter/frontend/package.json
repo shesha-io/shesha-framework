@@ -1,7 +1,7 @@
 {
-  "name": "shesha-reactjs-starter",
+  "name": "@shesha-io",
   "version": "0.0.1",
-  "private": false,
+  "private": true,
   "postinstall": "next",
   "workspaces": [
     "packages/*"
@@ -22,6 +22,7 @@
     "@microsoft/applicationinsights-web": "^2.6.2",
     "@microsoft/signalr": "^5.0.6",
     "@shesha/reactjs": "^4.37.4",
+    "@shesha-reactjs-starter/template": "1.0.0",
     "@types/react-dom": "^18.2.4",
     "antd": "^4.24.0",
     "axios": "^0.21.1",
