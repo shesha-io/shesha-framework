@@ -7,6 +7,7 @@ import { useForm } from '../../../../providers/form';
 import { evaluateValue, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import React from 'react';
 import NotesProvider from '../../../../providers/notes';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 
 export interface INotesProps extends IConfigurableFormComponent {
   ownerId: string;
@@ -49,6 +50,9 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
     };
     return customModel;
   },
+  migrator: (m) => m
+    .add<INotesProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)) as INotesProps)
+  ,
 };
 
 export default NotesComponent;

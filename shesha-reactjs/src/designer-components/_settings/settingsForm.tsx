@@ -49,6 +49,7 @@ const SettingsForm = <TModel,>(props: PropsWithChildren<SettingsFormProps<TModel
         const incomingState = { ...state.model, ...changedValues };
         setState({model: incomingState});
         onValuesChange(changedValues, incomingState);
+        form.setFieldsValue(incomingState);
     };
 
     const SettingsFormActions = {

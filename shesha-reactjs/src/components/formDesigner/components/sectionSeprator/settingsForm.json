@@ -10,9 +10,10 @@
     {
       "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
       "type": "textField",
-      "propertyName": "propertyName",
+      "propertyName": "componentName",
       "parentId": "root",
-      "label": "Property name",
+      "jsSetting": false,
+      "label": "Component name",
       "validate": {
         "required": true
       }
@@ -59,30 +60,6 @@
       "settingsValidationErrors": [],
       "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
       "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }]
-    },
-    {
-      "id": "6e5da414-c29f-4e9a-a019-278bbd21ead4",
-      "type": "sectionSeparator",
-      "propertyName": "sectionVisibility",
-      "parentId": "root",
-      "label": "Style"
-    },
-    {
-      "id": "8c5fc51f-a459-4e2f-9ca0-2a66725c9879",
-      "type": "codeEditor",
-      "propertyName": "customVisibility",
-      "label": "Custom Visibility",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "customVisibility": null,
-      "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-      "validate": {},
-      "settingsValidationErrors": [],
-      "exposedVariables": [
-        { "propertyName": "value", "description": "Component current value", "type": "string | any" },
-        { "propertyName": "data", "description": "Selected form values", "type": "object" }
-      ]
     }
   ],
   "formSettings": {

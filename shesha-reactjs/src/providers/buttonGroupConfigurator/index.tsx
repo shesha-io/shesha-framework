@@ -40,7 +40,7 @@ const ButtonGroupConfiguratorProvider: FC<PropsWithChildren<IButtonGroupConfigur
   const [state, dispatch] = useReducer(buttonGroupReducer, {
     ...BUTTON_GROUP_CONTEXT_INITIAL_STATE,
     items: props.items,
-    readOnly: readOnly,
+    readOnly: readOnly
   });
 
   const addButton = () => {

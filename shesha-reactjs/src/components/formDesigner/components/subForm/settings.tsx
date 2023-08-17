@@ -1,105 +1,83 @@
 import { AutoComplete, Checkbox, Form, Input, InputNumber, Select } from 'antd';
 import React, { FC, useState } from 'react';
 import SectionSeparator from '../../../sectionSeparator';
-import PropertyAutocomplete from '../../../propertyAutocomplete/propertyAutocomplete';
 import CodeEditor from '../codeEditor/codeEditor';
 import Show from '../../../show';
 import { AutocompleteRaw } from '../../../autocomplete';
-import { ISubFormProps } from '../../../../providers/subForm/interfaces';
 import FormAutocomplete from '../../../formAutocomplete';
+import { ISettingsFormFactoryArgs } from 'interfaces';
+import SettingsForm, { useSettingsForm } from 'designer-components/_settings/settingsForm';
+import { useFormDesigner } from 'providers/formDesigner';
+import { useForm } from 'providers';
+import { ISubFormComponentProps } from '.';
+import SettingsCollapsiblePanel from 'designer-components/_settings/settingsCollapsiblePanel';
+import { ContextPropertyAutocomplete } from 'designer-components/contextPropertyAutocomplete';
+import SettingsFormItem from 'designer-components/_settings/settingsFormItem';
 
 const Option = Select.Option;
 
-const FormItem = Form.Item;
-
-export interface ISubFormSettingsProps {
-  readOnly: boolean;
-  model: ISubFormProps;
-  onSave: (model: ISubFormProps) => void;
-  onCancel: () => void;
-  onValuesChange?: (changedValues: any, values: ISubFormProps) => void;
-}
-
-interface ISubFormSettingsState extends ISubFormProps {}
+interface ISubFormSettingsState extends ISubFormComponentProps {}
 
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 
-export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, model, onValuesChange }) => {
-  const [state, setState] = useState<ISubFormSettingsState>(model);
-  const [form] = Form.useForm();
+export const SubFormSettingsForm: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = (props) => {
+  return (
+    SettingsForm<ISubFormSettingsState>({...props, children: <SubFormSettings {...props}/>})
+  );
+};
+
+const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({readOnly}) => {
+  const { model: formData, onValuesChange } = useSettingsForm<ISubFormComponentProps>();
+
+  const designerModelType = useFormDesigner(false)?.formSettings?.modelType;
+  const { formSettings } = useForm();
 
   const [formTypesOptions, setFormTypesOptions] = useState<{ value: string }[]>(
-    formTypes.map((i) => {
+    formTypes.map(i => {
       return { value: i };
     })
   );
 
   return (
-    <Form
-      form={form}
-      onFinish={onSave}
-      layout="vertical"
-      onValuesChange={(changedValues: ISubFormProps, values: ISubFormProps) => {
-        const incomingState = { ...values };
+    <>
+      <SettingsCollapsiblePanel header='Display'>
+        <ContextPropertyAutocomplete id="fb71cb51-884f-4f34-aa77-820c12276c95"
+          readOnly={readOnly} 
+          defaultModelType={designerModelType ?? formSettings.modelType}
+          formData={formData}
+          onValuesChange={onValuesChange}
+        />
 
-        if (Object.hasOwn(changedValues, 'entityType')) {
-          incomingState.properties = null;
-
-          form?.setFieldsValue({ properties: null });
-        }
-
-        if (Object.hasOwn(changedValues, 'apiMode')) {
-          if (changedValues?.apiMode === 'entityName') {
-            incomingState.getUrl = null;
-            form?.setFieldsValue({ getUrl: null });
-          } else {
-            incomingState.entityType = null;
-            form?.setFieldsValue({ entityType: null });
-          }
-        }
-
-        setState((prev) => ({ ...prev, ...incomingState }));
-
-        onValuesChange(changedValues, incomingState);
-      }}
-      initialValues={{
-        ...model,
-        properties: typeof model?.properties === 'string' ? model?.properties : model?.properties?.join(' '),
-      }}
-      // initialValues={initialValues}
-    >
-      <SectionSeparator title="Display" />
-
-      <FormItem name="propertyName" label="Property name">
-        <PropertyAutocomplete id="fb71cb51-884f-4f34-aa77-820c12276c95" readOnly={readOnly} />
-      </FormItem>
-
-      <FormItem name="label" label="Label">
+      <SettingsFormItem name="label" label="Label" jsSetting>
         <Input readOnly={readOnly} />
-      </FormItem>
+      </SettingsFormItem>
 
-      <FormItem name="readOnly" label="Read Only" valuePropName="checked">
+      <SettingsFormItem name="readOnly" label="Read Only" valuePropName="checked" jsSetting>
         <Checkbox disabled={readOnly} />
-      </FormItem>
+      </SettingsFormItem>
 
-      <Form.Item name="hideLabel" label="Hide Label" valuePropName="checked">
+      <SettingsFormItem name="hideLabel" label="Hide Label" valuePropName="checked" jsSetting>
         <Checkbox disabled={readOnly} />
-      </Form.Item>
+      </SettingsFormItem>
 
-      <FormItem name="uniqueStateId" label="Unique State ID" tooltip="Important for accessing the ">
+      <SettingsFormItem name="hidden" label="Hidden" valuePropName="checked" jsSetting>
+        <Checkbox disabled={readOnly} />
+      </SettingsFormItem>
+
+      <SettingsFormItem name="uniqueStateId" label="Unique State ID" tooltip="Important for accessing the " jsSetting>
         <Input readOnly={readOnly} />
-      </FormItem>
+      </SettingsFormItem>
 
-      <FormItem name="formSelectionMode" initialValue={'name'} label="Form selection mode">
+      <SettingsFormItem name="formSelectionMode" initialValue={'name'} label="Form selection mode">
         <Select disabled={readOnly}>
           <Option value="name">Name</Option>
           <Option value="dynamic">Dynamic</Option>
         </Select>
-      </FormItem>
+      </SettingsFormItem>
 
-      {state?.formSelectionMode === 'dynamic' && (
+      {formData?.formSelectionMode === 'dynamic' && (
         <>
-          <FormItem name="formType" label="Form type">
+          <SettingsFormItem name="formType" label="Form type" jsSetting>
             <AutoComplete
               disabled={readOnly}
               options={formTypesOptions}
@@ -116,19 +94,19 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
                 )
               }
             />
-          </FormItem>
+          </SettingsFormItem>
         </>
       )}
 
-      {(!state?.formSelectionMode || state?.formSelectionMode === 'name') && (
-          <FormItem name="formId" label="Form">
+      {(!formData?.formSelectionMode || formData?.formSelectionMode === 'name') && (
+          <SettingsFormItem name="formId" label="Form" jsSetting>
             <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
-          </FormItem>
+          </SettingsFormItem>
       )}
 
           <SectionSeparator title="Data" />
 
-          <FormItem
+          <SettingsFormItem
             name="dataSource"
             initialValue={'form'}
             label="Data source"
@@ -138,48 +116,71 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
               <Option value="form">form</Option>
               <Option value="api">api</Option>
             </Select>
-          </FormItem>
+          </SettingsFormItem>
 
-          <Show when={state?.dataSource === 'api'}>
-            <FormItem
+          <Show when={formData?.dataSource === 'api'}>
+            <SettingsFormItem jsSetting
               name="apiMode"
               initialValue={'entityType'}
               label="API Mode"
               tooltip="The API mode to use to fetch data"
             >
-              <Select disabled={readOnly}>
-                <Option value="entityName">entityName</Option>
-                <Option value="url">url</Option>
-              </Select>
-            </FormItem>
+              {(value) => 
+                <Select disabled={readOnly} value={value}
+                  onChange={(val) => {
+                    if (val === 'entityName') {
+                      onValuesChange({apiMode: val, getUrl: null});
+                    } else {
+                      onValuesChange({apiMode: val, entityType: null});
+                    }
+                  }}
+                  >
+                  <Option value="entityName">entityName</Option>
+                  <Option value="url">url</Option>
+                </Select>
+              }
+            </SettingsFormItem>
 
-            <Show when={state?.apiMode === 'entityName'}>
-              <FormItem name="entityType" label="Entity type">
-                <AutocompleteRaw
-                  dataSourceType="url"
-                  dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete"
-                  readOnly={readOnly}
-                />
-              </FormItem>
+            <Show when={formData?.apiMode === 'entityName'}>
+              <SettingsFormItem name="entityType" label="Entity type" jsSetting>
+                {(value) => {
+                  return <AutocompleteRaw
+                    dataSourceType="url"
+                    dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete"
+                    readOnly={readOnly}
+                    value={value}
+                    onChange={(val) => {
+                      onValuesChange({entityType: val, properties: null});
+                    }}
+                  />;
+                }}
+              </SettingsFormItem>
             </Show>
 
-            <Show when={Boolean(state?.entityType)}>
-              <FormItem name="properties" label="Properties">
-                <CodeEditor
-                  readOnly={readOnly}
-                  mode="inline"
-                  setOptions={{ minLines: 15, maxLines: 500, fixedWidthGutter: true }}
-                  propertyName="properties"
-                  type={''}
-                  id={''}
-                  language="graphqlschema"
-                  label="Query Params"
-                  description="Properties in GraphQL-like syntax"
-                />
-              </FormItem>
+            <Show when={Boolean(formData?.entityType)}>
+              <Form.Item label="Properties" />      
+              <SettingsFormItem name="properties" jsSetting>
+                {(value) => {
+                  return <CodeEditor
+                    readOnly={readOnly}
+                    mode="inline"
+                    setOptions={{ minLines: 15, maxLines: 500, fixedWidthGutter: true }}
+                    propertyName="properties"
+                    type={''}
+                    id={''}
+                    value={typeof value === 'string' ? value : value?.join(' ')}
+                    onChange={(val) => {
+                      onValuesChange({properties: val});
+                    }}
+                    language="graphqlschema"
+                    label="Query Params"
+                    description="Properties in GraphQL-like syntax"
+                  />;
+                }}
+              </SettingsFormItem>
             </Show>
 
-            <FormItem
+            <SettingsFormItem
               label="Query Params"
               name="queryParams"
               tooltip="The code that returns the query parameters to be used to fetch the data. Ideally this should be a function that returns an object with the entity id"
@@ -220,19 +221,20 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
                   },
                 ]}
               />
-            </FormItem>
+            </SettingsFormItem>
 
             <SectionSeparator
               title="URLs"
               tooltip="These settings are not mandatory except if you do not want to use the default URL, which is dependent on the Entity"
             />
 
-            <Show when={state?.apiMode === 'url'}>
-              <FormItem
+            <Show when={formData?.apiMode === 'url'}>
+              <SettingsFormItem
                 label="GET Url"
                 name="getUrl"
                 tooltip="The API url that will be used to fetch the data. Write the code that returns the string"
               >
+                {(value) => 
                 <CodeEditor
                   readOnly={readOnly}
                   mode="dialog"
@@ -240,6 +242,10 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
                   propertyName="getUrl"
                   type={''}
                   id={''}
+                  value={value}
+                  onChange={(val) => {
+                    onValuesChange({getUrl: val});
+                  }}
                   label="GET Url"
                   description="The API url that will be used to fetch the data. Write the code that returns the string"
                   exposedVariables={[
@@ -263,10 +269,11 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
                     },
                   ]}
                 />
-              </FormItem>
+                }
+              </SettingsFormItem>
             </Show>
 
-            <FormItem
+            <SettingsFormItem
               label="POST Url"
               name="postUrl"
               tooltip="The API url that will be used to update data. Write the code that returns the string"
@@ -301,9 +308,9 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
                   },
                 ]}
               />
-            </FormItem>
+            </SettingsFormItem>
 
-            <FormItem
+            <SettingsFormItem
               label="PUT Url"
               name="putUrl"
               tooltip="The API url that will be used to update data. Write the code that returns the string"
@@ -338,12 +345,13 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
                   },
                 ]}
               />
-            </FormItem>
+            </SettingsFormItem>
           </Show>
+      </SettingsCollapsiblePanel>
 
       <SectionSeparator title="Actions" />
 
-      <FormItem
+      <SettingsFormItem
         label="On Submit"
         name="beforeGet"
         tooltip="Triggered before retrieving the sub-form object from the back-end"
@@ -385,9 +393,9 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
             },
           ]}
         />
-      </FormItem>
+      </SettingsFormItem>
 
-      <FormItem
+      <SettingsFormItem
         label="On Created"
         name="onCreated"
         tooltip="Triggered after successfully creating a new sub-form object in the back-end"
@@ -434,9 +442,9 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
             },
           ]}
         />
-      </FormItem>
+      </SettingsFormItem>
 
-      <FormItem
+      <SettingsFormItem
         label="On Updated"
         name="onUpdated"
         tooltip="Triggered after successfully creating a new sub-form object in the back-end"
@@ -483,19 +491,19 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
             },
           ]}
         />
-      </FormItem>
+      </SettingsFormItem>
 
       <SectionSeparator title="Layout" />
 
-      <FormItem name="labelCol" label="Label Col">
+      <SettingsFormItem name="labelCol" label="Label Col" jsSetting>
         <InputNumber min={0} max={24} defaultValue={5} step={1} readOnly={readOnly} />
-      </FormItem>
+      </SettingsFormItem>
 
-      <FormItem name="wrapperCol" label="Wrapper Col">
+      <SettingsFormItem name="wrapperCol" label="Wrapper Col" jsSetting>
         <InputNumber min={0} max={24} defaultValue={13} step={1} readOnly={readOnly} />
-      </FormItem>
+      </SettingsFormItem>
 
-      <FormItem name="style" label="Style">
+      <SettingsFormItem name="style" label="Style">
         <CodeEditor
           readOnly={readOnly}
           mode="dialog"
@@ -514,52 +522,7 @@ export const SubFormSettings: FC<ISubFormSettingsProps> = ({ readOnly, onSave, m
             },
           ]}
         />
-      </FormItem>
-
-      <SectionSeparator title="Visibility" />
-
-      <FormItem
-        label="Custom Visibility"
-        name="customVisibility"
-        tooltip={
-          'Enter custom visibility code.  You must return true to show the component. ' +
-          'The global variable data is provided, and allows you to access the data of any form component, by using its API key.'
-        }
-      >
-        <CodeEditor
-          readOnly={readOnly}
-          mode="dialog"
-          label="Custom Visibility"
-          setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          propertyName="customVisibility"
-          type={''}
-          id={''}
-          description={
-            'Enter custom visibility code.  You must return true to show the component. ' +
-            'The global variable data is provided, and allows you to access the data of any form component, by using its API key.'
-          }
-          exposedVariables={[
-            {
-              id: '788673a5-5eb9-4a9a-a34b-d8cea9cacb3c',
-              name: 'data',
-              description: 'Form data',
-              type: 'object',
-            },
-            {
-              id: '65b71112-d412-401f-af15-1d3080f85319',
-              name: 'globalState',
-              description: 'The global state',
-              type: 'object',
-            },
-            {
-              id: '3633b881-43f4-4779-9f8c-da3de9ecf9b8',
-              name: 'queryParams',
-              description: 'Query parameters',
-              type: 'object',
-            },
-          ]}
-        />
-      </FormItem>
-    </Form>
+      </SettingsFormItem>
+      </>
   );
 };

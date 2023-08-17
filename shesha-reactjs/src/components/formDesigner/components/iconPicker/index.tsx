@@ -7,20 +7,25 @@ import IconPicker, { ShaIconTypes } from '../../../iconPicker';
 import { executeScriptSync, useForm, useFormData, useGlobalState } from '../../../..';
 import { iconPickerFormSettings } from './settings';
 import { IIconPickerComponentProps } from './interfaces';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 
 const IconPickerComponent: IToolboxComponent<IIconPickerComponentProps> = {
   type: 'iconPicker',
   name: 'Icon Picker',
   icon: <HeartOutlined />,
+  canBeJsSetting: true,
   factory: (model: IIconPickerComponentProps) => {
     return (
       <ConfigurableFormItem model={model}>
-        <IconPickerWrapper {...model} />
+        {(value, onChange) => <IconPickerWrapper {...model} value={value} onChange={onChange}/>}
       </ConfigurableFormItem>
     );
   },
   settingsFormMarkup: iconPickerFormSettings,
   validateSettings: model => validateConfigurableComponentSettings(iconPickerFormSettings, model),
+  migrator: (m) => m
+    .add<IIconPickerComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
 };
 
 export interface IIconPickerWrapperProps extends IIconPickerComponentProps {

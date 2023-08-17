@@ -9,28 +9,30 @@ import { validateConfigurableComponentSettings } from '../../../../providers/for
 import { DataTypes } from '../../../../interfaces/dataTypes';
 import { useForm } from '../../../../providers';
 import { IEditableTagGroupComponentProps } from './interfaces';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
 const EditableTagGroupComponent: IToolboxComponent<IEditableTagGroupComponentProps> = {
   type: 'editableTagGroup',
-  name: 'TagsOutlined',
+  name: 'Tags Outlined',
   icon: <HomeOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.array,
   factory: (model: IEditableTagGroupComponentProps) => {
-    const { formMode } = useForm();
+    const { formMode, isComponentDisabled } = useForm();
+
+    const disabled = isComponentDisabled(model) || formMode === 'readonly';
+
     return (
       <ConfigurableFormItem model={model}>
-        <EditableTagGroup
-          value={model?.value}
-          defaultValue={model?.defaultValue}
-          onChange={model?.onChange}
-          readOnly={formMode === 'readonly'}
-        />
+        {(value, onChange) => (<EditableTagGroup value={value} defaultValue={model?.defaultValue} onChange={onChange} readOnly={disabled} />)}
       </ConfigurableFormItem>
     );
   },
   settingsFormMarkup: settingsForm,
+  migrator: (m) => m
+    .add<IEditableTagGroupComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
 };
 

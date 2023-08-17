@@ -7,6 +7,7 @@ import { validateConfigurableComponentSettings } from '../../../../../providers/
 import { PermissionsTree, PermissionsTreeMode } from '../../../../permissionsTree';
 import { useForm } from '../../../../..';
 import ConfigurableFormItem from '../../formItem';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 
 export interface IPermissionsTreeComponentProps extends IConfigurableFormComponent {
   value?: string[];
@@ -34,21 +35,7 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionsTreeCompon
     const { formMode } = useForm();
 
     if (model.mode === 'Edit') {
-    return (
-      <PermissionsTree 
-        formComponentId={model?.id}
-        formComponentName={model.propertyName}
-        value={model?.value} 
-        updateKey={model?.updateKey}
-        onChange={model?.onChange}
-        readOnly={model?.readOnly || formMode === 'readonly'}
-        disabled={model?.disabled}
-        mode={model?.mode ?? "Select"}
-      />
-    );
-} else {
-    return (
-      <ConfigurableFormItem model={model}>
+      return (
         <PermissionsTree 
           formComponentId={model?.id}
           formComponentName={model.propertyName}
@@ -58,10 +45,28 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionsTreeCompon
           readOnly={model?.readOnly || formMode === 'readonly'}
           disabled={model?.disabled}
           mode={model?.mode ?? "Select"}
+          height={model?.height}
         />
-      </ConfigurableFormItem>
-    );
-};
+      );
+    } else {
+      return (
+        <ConfigurableFormItem model={model}>
+          {(value, onChange) =>
+            <PermissionsTree 
+              formComponentId={model?.id}
+              formComponentName={model.propertyName}
+              value={value} 
+              updateKey={model?.updateKey}
+              onChange={onChange}
+              readOnly={model?.readOnly || formMode === 'readonly'}
+              disabled={model?.disabled}
+              mode={model?.mode ?? "Select"}
+              height={model?.height}
+            />
+          }
+          </ConfigurableFormItem>
+      );
+    };
   },
   initModel: (model: IPermissionsTreeComponentProps) => {
     return {
@@ -75,6 +80,9 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionsTreeCompon
       ...model,
     };
   },
+  migrator: (m) => m
+    .add<IPermissionsTreeComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IPermissionsTreeComponentProps)
+  ,
 };
 
 export default PermissionedObjectsTreeComponent;

@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { ListItem } from './listItem';
 import { ListItemsGroup } from './listItemsGroup';
 import { ReactSortable, ItemInterface } from 'react-sortablejs';
-import { useItemListConfigurator } from '../../../..';
+import { getValuesModel, useItemListConfigurator } from '../../../..';
 import { IConfigurableItemBase, IConfigurableItemGroup } from '../../../../providers/itemListConfigurator/contexts';
 
 export interface IItemListContainerProps {
@@ -15,15 +15,16 @@ export const ItemListContainer: FC<IItemListContainerProps> = ({ index, id, item
   const { updateChildItems } = useItemListConfigurator();
 
   const renderItem = (item: IConfigurableItemBase, localIndex: number) => {
-    switch (item?.itemType) {
+    
+    const actualModel = getValuesModel(item);
 
-      
+    switch (actualModel?.itemType) {
       case 'item':
-        const itemProps = item as IConfigurableItemBase;
+        const itemProps = actualModel as IConfigurableItemBase;
         return <ListItem title={''} key={localIndex} index={[...index, localIndex]} {...itemProps} />;
 
       case 'group':
-        const groupProps = item as IConfigurableItemGroup;
+        const groupProps = actualModel as IConfigurableItemGroup;
         return (
           <ListItemsGroup 
             key={localIndex} 
@@ -31,6 +32,8 @@ export const ItemListContainer: FC<IItemListContainerProps> = ({ index, id, item
             index={[...index, localIndex]} 
             containerRendering={(args) => (<ItemListContainer {...args}/>)}
           />);
+      default:
+        return null;
     }
   };
 

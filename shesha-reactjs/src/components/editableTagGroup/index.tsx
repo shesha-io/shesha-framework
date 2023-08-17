@@ -77,14 +77,15 @@ export const EditableTagGroup: FC<IEditableTagGroupProps> = ({ value = [], onCha
   const forMap = (tag: string) => {
     const tagElem = (
       <Tag
-        closable
+        closable={!readOnly}
         onClose={e => {
           e.preventDefault();
           handleClose(tag);
         }}
         onClick={e => {
           e.preventDefault();
-          onTagEdit(tag);
+          if (!readOnly)
+            onTagEdit(tag);
         }}
       >
         {tag}

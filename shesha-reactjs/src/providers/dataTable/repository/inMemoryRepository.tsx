@@ -1,4 +1,3 @@
-import { FormInstance } from "antd";
 import { IConfigurableColumnsProps, IDataColumnsProps } from "providers/datatableColumnsConfigurator/models";
 import React, { ComponentType, useCallback, useMemo } from "react";
 import { FC } from "react";
@@ -133,19 +132,20 @@ export function withInMemoryRepository<WrappedProps>(WrappedComponent: Component
 
 export interface IWithFormFieldRepositoryArgs {
     propertyName: string;
-    formInstance: FormInstance<any>;
+    getFieldValue?: (propertyName: string) => object[];
+    onChange?:  (...args: any[]) => void;
 }
 export function withFormFieldRepository<WrappedProps>(WrappedComponent: ComponentType<WrappedProps & IHasRepository & IHasModelType>, args: IWithFormFieldRepositoryArgs): FC<WrappedProps> {
-    const { propertyName, formInstance } = args;
+    const { propertyName, getFieldValue, onChange } = args;
 
     return props => {
-        const valueAccessor = useCallback(() => formInstance?.getFieldValue(propertyName), [formInstance, propertyName]);
-        const onChange = useCallback((newValue: object[]) => {
-            if (formInstance)
-              formInstance.setFieldValue(propertyName, newValue);
-          }, [formInstance, propertyName]);
+        const valueAccessor = useCallback(() => getFieldValue(propertyName), [propertyName]);
+        const onChangeAccessor = useCallback((newValue: object[]) => {
+            if (onChange)
+                onChange(newValue);
+        }, [propertyName]);
                
-        const repository = useInMemoryRepository({ valueAccessor, onChange: onChange });
+        const repository = useInMemoryRepository({ valueAccessor, onChange: onChangeAccessor });
 
         return (<WrappedComponent {...props} repository={repository} modelType={null} />);
     };

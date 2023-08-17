@@ -6,6 +6,7 @@
       "propertyName": "name",
       "label": "Name",
       "labelAlign": "right",
+      "jsSetting": false,
       "parentId": "root"
     },
     {
@@ -22,6 +23,7 @@
       "type": "textField",
       "propertyName": "key",
       "label": "Key",
+      "jsSetting": false,
       "labelAlign": "right",
       "parentId": "root"
     },
@@ -68,6 +70,17 @@
     {
       "id": "d1e06550-826c-4db9-9b9f-ce05e565f64f",
       "type": "checkbox",
+      "propertyName": "hidden",
+      "label": "Hidden",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "customVisibility": null,
+      "validate": {}
+    },
+    {
+      "id": "d1e06550-826c-4db9-9b9f-ce05e565f64f",
+      "type": "checkbox",
       "propertyName": "disabled",
       "label": "Disabled",
       "labelAlign": "right",
@@ -99,40 +112,6 @@
       "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }]
     },
     {
-      "id": "78f2f5ee-9826-4567-a938-d7bc03ba90ac",
-      "type": "codeEditor",
-      "propertyName": "customVisibility",
-      "label": "Custom Visibility",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "customVisibility": null,
-      "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-      "validate": {},
-      "settingsValidationErrors": [],
-      "exposedVariables": [
-        { "propertyName": "globalState", "description": "The Global state", "type": "object" },
-        { "propertyName": "data", "description": "Selected form values", "type": "object" }
-      ]
-    },
-    {
-      "id": "377bbbee-d7f6-42bf-8f08-fc9303424518",
-      "type": "codeEditor",
-      "propertyName": "customEnabled",
-      "label": "Custom Enabled",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "customEnabled": null,
-      "description": "Enter custom enabled code.  You must return true to enable the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-      "validate": {},
-      "settingsValidationErrors": [],
-      "exposedVariables": [
-        { "propertyName": "globalState", "description": "The Global state", "type": "object" },
-        { "propertyName": "data", "description": "Selected form values", "type": "object" }
-      ]
-    },
-    {
       "id": "3d24cc31-a797-40b8-b178-1e77eabb69c4",
       "type": "editableTagGroup",
       "propertyName": "permissions",
@@ -146,6 +125,7 @@
   ],
   "formSettings": {
     "layout": "horizontal",
+    "isSettingsForm": true,
     "colon": true,
     "labelCol": {
       "span": 5

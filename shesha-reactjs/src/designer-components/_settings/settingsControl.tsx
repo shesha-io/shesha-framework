@@ -3,7 +3,7 @@ import { PropertySettingMode } from '../../providers';
 import { CodeEditor } from 'components/formDesigner/components/codeEditor/codeEditor';
 import { getPropertySettingsFromValue } from './utils';
 
-export type SettingsControlChildrentype = (value: any, onChange:  (...args: any[]) => void, propertyName: string) => ReactElement;
+export type SettingsControlChildrenType = (value: any, onChange:  (...args: any[]) => void, propertyName: string) => ReactElement;
 
 interface ISettingsControlProps {
     id: string;
@@ -11,7 +11,7 @@ interface ISettingsControlProps {
     value?: any;
     mode: PropertySettingMode;
     onChange?: (value: any) => void;
-    readonly children?: SettingsControlChildrentype;
+    readonly children?: SettingsControlChildrenType;
 }
 
 export const SettingsControl: FC<ISettingsControlProps> = ({ id, propertyName, value, mode, onChange, children }) => {
@@ -19,13 +19,17 @@ export const SettingsControl: FC<ISettingsControlProps> = ({ id, propertyName, v
     const settings = getPropertySettingsFromValue(value);
 
     useEffect(() => {
-        onChange(!!settings._code || mode === 'code' ? { _value: settings._value, _code: settings._code, _mode: mode } : settings._value);
+        if (onChange)
+            onChange(!!settings._code || mode === 'code' ? { _value: settings._value, _code: settings._code, _mode: mode } : settings._value);
     }, [mode]);
 
     if (mode === 'code') {
         return <CodeEditor 
             value={settings._code}
-            onChange={(value) => onChange(!!value || mode === 'code' ? { _value: settings._value, _code: value, _mode: mode } : settings._value)}
+            onChange={(value) => {
+                if (onChange)
+                    onChange(!!value || mode === 'code' ? { _value: settings._value, _code: value, _mode: mode } : settings._value);
+            }}
             mode='dialog'
             type='codeEditor'
             language='typescript'
@@ -42,7 +46,8 @@ export const SettingsControl: FC<ISettingsControlProps> = ({ id, propertyName, v
     }
     
     return children(settings._value, (value) => {
-        onChange(!!settings._code ? { _value: value, _code: settings._code, _mode: mode } : value);
+        if (onChange)
+            onChange(!!settings._code ? { _value: value, _code: settings._code, _mode: mode } : value);
     }, propertyName);
 };
 

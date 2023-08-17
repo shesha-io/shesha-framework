@@ -72,6 +72,18 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
       </ConfigurableFormItem>
     );
   },
+  initModel: model => {
+    const customModel: IFileUploadProps = {
+      ...model,
+      allowReplace: true,
+      allowDelete: true,
+      allowUpload: true,
+      ownerId: '{data.id}',
+      ownerType: '',
+      propertyName: '',
+    };
+    return customModel;
+  },
   migrator: (m) => m
     .add<IFileUploadProps>(0, prev => {
       return {
@@ -79,9 +91,9 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
         allowReplace: true,
         allowDelete: true,
         allowUpload: true,
-        ownerId: '',
-        ownerType: '',
-        owner: '',
+        ownerId: prev['ownerId'],
+        ownerType: prev['ownerType'],
+        owner: prev['owner'],
       } as IFileUploadProps;
     })
     .add<IFileUploadProps>(1, (prev, context) => ({...prev, useSync: !Boolean(context.formSettings?.modelType)}))

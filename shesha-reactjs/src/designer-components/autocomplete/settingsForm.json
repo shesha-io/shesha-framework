@@ -12,6 +12,10 @@
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "left",
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": [],
       "header": {
         "id": "FizvoIoyeq1cZMqAgbDLL",
         "components": []
@@ -169,11 +173,7 @@
             "validate": {}
           }
         ]
-      },
-      "collapsible": "header",
-      "ghost": true,
-      "hideWhenEmpty": true,
-      "settingsValidationErrors": []
+      }
     },
     {
       "id": "a7qbgROr9WUeMWUO-CQ56",

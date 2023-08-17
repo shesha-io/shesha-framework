@@ -7,6 +7,7 @@ import { iconPickerFormSettings } from './settings';
 import ColorPicker from '../../../colorPicker';
 import { ColorResult } from 'react-color';
 import { IColorPickerComponentProps } from './interfaces';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 
 const ColorPickerComponent: IToolboxComponent<IColorPickerComponentProps> = {
   type: 'colorPicker',
@@ -15,11 +16,14 @@ const ColorPickerComponent: IToolboxComponent<IColorPickerComponentProps> = {
   factory: (model: IColorPickerComponentProps) => {
     return (
       <ConfigurableFormItem model={model}>
-        <ColorPickerWrapper {...model} />
+        {(value, onChange) => (<ColorPickerWrapper {...model} value={value} onChange={onChange}/>)}
       </ConfigurableFormItem>
     );
   },
   settingsFormMarkup: iconPickerFormSettings,
+  migrator: (m) => m
+    .add<IColorPickerComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
   validateSettings: model => validateConfigurableComponentSettings(iconPickerFormSettings, model),
 };
 

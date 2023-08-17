@@ -4,35 +4,33 @@ import { IConfigurableFormComponent } from '../../../../providers/form/models';
 import { FormOutlined } from '@ant-design/icons';
 import {
   executeCustomExpression,
-  getStyle,
-  validateConfigurableComponentSettings,
+  getStyle
 } from '../../../../providers/form/utils';
 import {
   useForm,
   SubFormProvider,
-  SubFormProviderProps,
   useGlobalState,
   useFormItem,
   useFormData,
 } from '../../../../providers';
-import { alertSettingsForm } from './settings';
 import SubForm from './subForm';
 import ConfigurableFormItem from '../formItem';
-import { SubFormSettings } from './settingsv2';
+import { SubFormSettingsForm } from './settings';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { ISubFormProviderProps } from 'providers/subForm/interfaces';
 
-export interface ISubFormProps
-  extends Omit<SubFormProviderProps, 'labelCol' | 'wrapperCol'>,
+export interface ISubFormComponentProps
+  extends Omit<ISubFormProviderProps, 'labelCol' | 'wrapperCol'>,
     IConfigurableFormComponent {
-  propertyName: string;
   labelCol?: number;
   wrapperCol?: number;
 }
 
-const SubFormComponent: IToolboxComponent<ISubFormProps> = {
+const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
   type: 'subForm',
   name: 'Sub Form',
   icon: <FormOutlined />,
-  factory: (model: ISubFormProps) => {
+  factory: (model: ISubFormComponentProps) => {
     const { formMode } = useForm();
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
@@ -56,20 +54,13 @@ const SubFormComponent: IToolboxComponent<ISubFormProps> = {
     );
   },
   // settingsFormMarkup: alertSettingsForm,
-  migrator: m => m.add<ISubFormProps>(0, prev => ({ ...prev, apiMode: 'entityName' })),
-  settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
-    return (
-      <SubFormSettings
-        readOnly={readOnly}
-        model={model as any}
-        onSave={onSave as any}
-        onCancel={onCancel}
-        onValuesChange={onValuesChange as any}
-      />
-    );
-  },
+  migrator: m => m
+    .add<ISubFormComponentProps>(0, prev => ({ ...prev, apiMode: prev['apiMode'] ?? 'entityName' }))
+    .add<ISubFormComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    ,
+  settingsFormFactory: (props) => <SubFormSettingsForm {...props}/>,
   initModel: model => {
-    const customProps: ISubFormProps = {
+    const customProps: ISubFormComponentProps = {
       ...model,
       dataSource: 'form',
       apiMode: 'entityName',
@@ -78,11 +69,10 @@ const SubFormComponent: IToolboxComponent<ISubFormProps> = {
     };
     return customProps;
   },
-  validateSettings: model => validateConfigurableComponentSettings(alertSettingsForm, model),
 };
 
 interface ISubFormWrapperProps
-  extends Omit<ISubFormProps, 'id' | 'type' | 'style' | 'labelCol' | 'wrapperCol'>,
+  extends Omit<ISubFormComponentProps, 'id' | 'type' | 'style' | 'labelCol' | 'wrapperCol'>,
     IStylable {
   id: string;
 }

@@ -6,15 +6,16 @@ import { IToolbarProps } from './models';
 import { Alert, Menu, Dropdown } from 'antd';
 import { IButtonGroup, IToolbarButton, ToolbarItemProps } from '../../../providers/toolbarConfigurator/models';
 import { useForm, isInDesignerMode } from '../../../providers/form';
-import { getVisibilityFunc2 } from '../../../providers/form/utils';
+import { getActualModel, getVisibilityFunc2 } from '../../../providers/form/utils';
 import { useDataTableSelection } from '../../../providers/dataTableSelection';
 import { ToolbarButton } from './toolbarButton';
 import { ShaIcon } from '../../../components';
 import { IconType } from '../../../components/shaIcon';
-import { useSheshaApplication } from '../../../providers';
+import { useFormData, useSheshaApplication } from '../../../providers';
 import { nanoid } from 'nanoid/non-secure';
 import { migrateV0toV1, IToolbarPropsV0 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
+import { migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 
 const ToolbarComponent: IToolboxComponent<IToolbarProps> = {
   type: 'toolbar',
@@ -37,7 +38,9 @@ const ToolbarComponent: IToolboxComponent<IToolbarProps> = {
         return { ...prev, items: items };
       })
       .add<IToolbarProps>(1, migrateV0toV1)
-      .add<IToolbarProps>(2, migrateV1toV2),
+      .add<IToolbarProps>(2, migrateV1toV2)
+      .add<IToolbarProps>(3, (prev) => migratePropertyName(prev))
+  ,
   settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
     return (
       <ToolbarSettings
@@ -53,15 +56,18 @@ const ToolbarComponent: IToolboxComponent<IToolbarProps> = {
 
 export const Toolbar: FC<IToolbarProps> = ({ items, id }) => {
   const { formMode } = useForm();
+  const { data: formData } = useFormData();
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const { selectedRow } = useDataTableSelection(false) ?? {};
   const isDesignMode = formMode === 'designer';
+
+  const actualItems = items?.map((item) => getActualModel(item, formData, formMode));
 
   const renderItem = (item: ToolbarItemProps, uuid: string) => {
     if (!isInDesignerMode()) {
       const visibilityFunc = getVisibilityFunc2(item.customVisibility, item.name);
 
-      const isVisible = visibilityFunc({}, { selectedRow }, formMode);
+      const isVisible = visibilityFunc(formData, { selectedRow }, formMode);
 
       if (!isVisible) return null;
     }
@@ -109,7 +115,7 @@ export const Toolbar: FC<IToolbarProps> = ({ items, id }) => {
     return null;
   };
 
-  if (items.length === 0 && isDesignMode)
+  if (actualItems.length === 0 && isDesignMode)
     return (
       <Alert
         className="sha-designer-warning"
@@ -120,7 +126,7 @@ export const Toolbar: FC<IToolbarProps> = ({ items, id }) => {
 
   return (
     <div style={{ minHeight: '30px' }}>
-      {items
+      {actualItems
         ?.filter(({ permissions }) => anyOfPermissionsGranted(permissions || []))
         .map(item => renderItem(item, nanoid()))}
     </div>

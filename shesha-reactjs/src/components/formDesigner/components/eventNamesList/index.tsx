@@ -8,6 +8,7 @@ import { useForm } from '../../../../providers';
 import { alertSettingsForm } from './settings';
 import { EVENTS } from './eventNames';
 import ConfigurableFormItem from '../formItem';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 
 export interface IEventNamesComponentProps extends IConfigurableFormComponent {}
 
@@ -16,6 +17,7 @@ const EventNamesComponent: IToolboxComponent<IEventNamesComponentProps> = {
   name: 'Event Names',
   icon: <ThunderboltOutlined />,
   isHidden: true,
+  canBeJsSetting: true,
   factory: (model: IEventNamesComponentProps) => {
     const { isComponentHidden } = useForm();
 
@@ -25,10 +27,13 @@ const EventNamesComponent: IToolboxComponent<IEventNamesComponentProps> = {
 
     return (
       <ConfigurableFormItem model={model}>
-        <EventNames {...model} name={model.propertyName} />
+        {(value, onChange) => <EventNames {...model} name={model.propertyName} value={value} onChange={onChange}/>}
       </ConfigurableFormItem>
     );
   },
+  migrator: (m) => m
+    .add<IEventNamesComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
   settingsFormMarkup: alertSettingsForm,
   validateSettings: model => validateConfigurableComponentSettings(alertSettingsForm, model),
 };

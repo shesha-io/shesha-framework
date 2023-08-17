@@ -3,11 +3,12 @@ import React from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
 import { DataTypes } from '../../../../interfaces/dataTypes';
 import { useForm } from '../../../../providers';
-import TimelineSettings from './settings';
+import { TimelineSettingsForm } from './settings';
 import { evaluateValue } from '../../../../providers/form/utils';
 import { ShaTimeline } from '../../../timeline/index';
 import { ITimelineProps } from '../../../timeline/models';
 import { migrateDynamicExpression } from 'designer-components/_common-migrations/migrateUseExpression';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 
 const TimelineComponent: IToolboxComponent<ITimelineProps> = {
   type: 'timeline',
@@ -22,19 +23,9 @@ const TimelineComponent: IToolboxComponent<ITimelineProps> = {
     return <ShaTimeline {...model} ownerId={ownerId} />;
   },
 
-  settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
-    return (
-      <TimelineSettings
-        readOnly={readOnly}
-        model={model}
-        onSave={onSave}
-        onCancel={onCancel}
-        onValuesChange={onValuesChange}
-      />
-    );
-  },
-  migrator: (m) =>
-    m.add<ITimelineProps>(0, (prev) => {
+  settingsFormFactory: (props) => <TimelineSettingsForm {...props} />,
+  migrator: (m) => m
+    .add<ITimelineProps>(0, (prev) => {
       const result: ITimelineProps = {
         ...prev,
         entityType: prev['entityType'],
@@ -48,7 +39,9 @@ const TimelineComponent: IToolboxComponent<ITimelineProps> = {
       }
 
       return result;
-    }),
+    })
+    .add<ITimelineProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
 };
 
 export default TimelineComponent;

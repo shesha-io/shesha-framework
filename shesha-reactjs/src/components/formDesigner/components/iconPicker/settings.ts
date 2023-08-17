@@ -8,7 +8,7 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
     parentId: 'root',
     label: 'Display',
   })
-  .addPropertyAutocomplete({
+  .addContextPropertyAutocomplete({
     id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
     propertyName: 'propertyName',
     parentId: 'root',
@@ -62,7 +62,6 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
     labelAlign: 'right',
     parentId: 'root',
     hidden: false,
-    customVisibility: null,
     description: 'Enter custom icon code. The function must return a string representing the name of the icon',
     validate: {},
     settingsValidationErrors: [],
@@ -90,7 +89,6 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
     labelAlign: 'right',
     parentId: 'root',
     hidden: false,
-    customVisibility: null,
     description: 'Enter custom color code. The function must return a string representing the color of the icon',
     validate: {},
     settingsValidationErrors: [],
@@ -137,28 +135,5 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
     propertyName: 'hideLabel',
     parentId: 'root',
     label: 'Hide Label',
-  })
-  .addSectionSeparator({
-    id: '41721f44-adbc-42fe-8c70-69b30e36f4ca',
-    propertyName: 'sectionVisibility',
-    parentId: 'root',
-    label: 'Visibility',
-  })
-  .addCodeEditor({
-    id: '84558f32-b056-4ced-9803-accef8cab0ec',
-    propertyName: 'customVisibility',
-    label: 'Custom Visibility',
-    labelAlign: 'right',
-    parentId: 'root',
-    hidden: false,
-    customVisibility: null,
-    description:
-      'Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
-    validate: {},
-    settingsValidationErrors: [],
-    exposedVariables: [
-      { id: nanoid(), name: 'value', description: 'Component current value', type: 'string | any' },
-      { id: nanoid(), name: 'data', description: 'Selected form values', type: 'object' },
-    ],
   })
   .toJson();

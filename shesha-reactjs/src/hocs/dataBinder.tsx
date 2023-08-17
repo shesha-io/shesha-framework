@@ -1,12 +1,15 @@
-import React, { FC, ReactNode } from 'react';
+import React, { FC } from 'react';
 import { useBinding } from 'providers/bindingProvider';
+import { IConfigurableFormItemChildFunc } from 'components/formDesigner/components/formItem';
 
 export interface IDataBinderProps  {
+    propertyName?: string;
     valuePropName?: string;
     value?: any;
     onChange?:  (...args: any[]) => void;
+    getFieldValue?: (propertyName: string) => object[];
     useBinding?: boolean;
-    children: (value: any, onChange:  (...args: any[]) => void) => ReactNode;
+    children: IConfigurableFormItemChildFunc;
 }
 
 const DataBinder: FC<IDataBinderProps> = (props) => {
@@ -16,7 +19,7 @@ const DataBinder: FC<IDataBinderProps> = (props) => {
     const value = binding && ub ? binding.value : props[valuePropName];
     const onChange = binding && ub ? binding.onChange : props.onChange;
     
-    return <>{props.children(value, onChange)}</>;
+    return <>{props.children(value, onChange, props.propertyName, props.getFieldValue)}</>;
 };
 
 export { DataBinder };

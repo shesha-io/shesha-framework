@@ -9,7 +9,7 @@
     },
     {
       "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
-      "type": "propertyAutocomplete",
+      "type": "copnstextPropertyAutocomplete",
       "propertyName": "propertyName",
       "parentId": "root",
       "label": "Property name",
@@ -23,7 +23,6 @@
       "propertyName": "alertType",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "label": "Type",
       "dataSourceType": "values",
       "values": [
@@ -58,7 +57,6 @@
       "propertyName": "text",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "label": "Text",
       "autoSize": false,
       "showCount": false,
@@ -73,7 +71,6 @@
       "propertyName": "description",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "label": "Description",
       "autoSize": false,
       "showCount": false,
@@ -101,7 +98,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": "",
       "settingsValidationErrors": []
     },
     {
@@ -137,30 +133,6 @@
       "propertyName": "hidden",
       "parentId": "root",
       "label": "Hidden"
-    },
-    {
-      "id": "bc67960e-77e3-40f2-89cc-f18f94678cce",
-      "type": "sectionSeparator",
-      "propertyName": "separatorVisibility",
-      "parentId": "root",
-      "label": "Visibility"
-    },
-    {
-      "id": "4b9a0517-a5df-4517-8459-94d9c860703c",
-      "type": "codeEditor",
-      "propertyName": "customVisibility",
-      "label": "Custom Visibility",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "customVisibility": null,
-      "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-      "validate": {},
-      "settingsValidationErrors": [],
-      "exposedVariables": [
-        { "propertyName": "value", "description": "Component current value", "type": "string | any" },
-        { "propertyName": "data", "description": "Selected form values", "type": "object" }
-      ]
     }
   ],
   "formSettings": {

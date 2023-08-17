@@ -92,6 +92,14 @@ export const PersonDetails = addStory(Template, {
   },
 });
 
+export const FormDetails = addStory(Template, {
+  formId: {
+    name: 'form-details',
+    module: 'shesha',
+    version: 1,
+  },
+});
+
 export const PermissionEdit = addStory(Template, {
   formId: {
     name: 'permission-edit',

@@ -24,5 +24,3 @@ const ButtonsComponent: IToolboxComponent<IButtonsComponentProps> = {
 };
 
 export default ButtonsComponent;
-
-//#region Page Toolbar

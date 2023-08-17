@@ -5,22 +5,20 @@ import { Alert } from 'antd';
 import { useDataTableSelection, useDataTableStore, useForm } from '../../../../providers';
 import { DataList } from '../../../dataList';
 import { IDataListComponentProps } from '../../../dataList/models';
-import DataListSettings from './dataListSettings';
 import { useDataSources } from '../../../../providers/dataSourcesProvider';
 import ConfigurableFormItem from '../formItem';
 import classNames from 'classnames';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { DataListSettingsForm } from './dataListSettings';
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
     type: 'datalist',
     name: 'DataList',
     icon: <UnorderedListOutlined />,
     factory: (model: IDataListComponentProps) => {
-
-      //console.log(`DataListComponent render`);
-
       return <DataListWrapper {...model} />;
     },
-    migrator:  m => m
+    migrator: m => m
       .add<IDataListComponentProps>(0, prev => {
         return {
           ...prev,
@@ -35,18 +33,10 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
           orientation: 'vertical',
           listItemWidth: 1
         };
-        }),
-      settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
-      return (
-        <DataListSettings
-          readOnly={readOnly}
-          model={model}
-          onSave={onSave}
-          onCancel={onCancel}
-          onValuesChange={onValuesChange}
-        />
-      );
-    },
+        })
+      .add<IDataListComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+      ,
+      settingsFormFactory: (props) => (<DataListSettingsForm {...props}/>),
 };
 
 const NotConfiguredWarning: FC = () => {

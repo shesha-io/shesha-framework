@@ -1,4 +1,4 @@
-import { MetadataProvider, useMetadataDispatcher } from "index";
+import { getFieldNameFromExpression, MetadataProvider, useMetadataDispatcher } from "index";
 import { IModelMetadata } from "interfaces/metadata";
 import { useDataContextManager, useDataContextRegister } from "providers/dataContextManager";
 import React, { FC, PropsWithChildren, useContext, useEffect, useState } from "react";
@@ -15,6 +15,7 @@ export interface IDataContextProviderStateContext {
 
 export interface IDataContextProviderActionsContext {
     onChange: (name: string | string[], value: any) => void;
+    getFieldValue: (name: string) => object[];
 }
 
 /** initial state */
@@ -42,7 +43,7 @@ const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = ({
     const metadataDispatcher = useMetadataDispatcher();
 
     const parentContext = useDataContext(false);
-    const [state, setState] = useState<IDataContextProviderStateContext>({ 
+    const [state, setState] = useState<IDataContextProviderStateContext>({
         id,
         name,
         type,
@@ -60,9 +61,27 @@ const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = ({
 
     useEffect(() => {
         setState({...state, metadata});
-        onChangeContext(id, {...state, onChange});
+        onChangeContext(id, {...state, onChange, getFieldValue});
         metadataDispatcher?.updateModel(id, metadata);
     }, [metadata]);
+
+    const getFieldValue = (name: string) => {
+        if (!!state.data) {
+            const propName = getFieldNameFromExpression(name);
+
+            if (typeof propName === 'string')
+              return state.data[propName];
+            else if (Array.isArray(propName) && propName.length > 0) {
+              let value = state.data[propName[0]];
+              propName.forEach((item, index) => {
+                if (index > 0)
+                  value = typeof value === 'object' ? value[item] : undefined;
+              });
+              return value;
+            }
+        } else
+            return undefined;
+    };
 
     const onChange = (name: string  | string[], value: any) => {
         const data = {...state.data} ?? {};
@@ -86,18 +105,18 @@ const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = ({
     };
 
     useEffect(() => {
-        onChangeContext(id, {...state, onChange});
+        onChangeContext(id, {...state, onChange, getFieldValue});
         if (!!onChangeData)
             onChangeData({...state.data});
     }, [state.data]);
 
     metadataDispatcher?.registerModel(id, metadata);
 
-    useDataContextRegister({id, dataContext: {...state, onChange}, name, type, parentId: parentContext?.id}, [id, name, parentContext?.id ]);
+    useDataContextRegister({id, dataContext: {...state, onChange, getFieldValue}, name, type, parentId: parentContext?.id}, [id, name, parentContext?.id ]);
 
     return (
         <MetadataProvider id={id} modelType={id} dataType='context' > 
-            <DataContextProviderActionsContext.Provider value={{ onChange }}>
+            <DataContextProviderActionsContext.Provider value={{ onChange, getFieldValue }}>
                 <DataContextProviderStateContext.Provider value={state}>
                     <>{children}</> 
                 </DataContextProviderStateContext.Provider>

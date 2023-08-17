@@ -105,7 +105,7 @@ export const getSettings = () =>
             propertyName: 'allowUpload',
             label: 'Allow Upload',
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
-            hidden: {_code: 'return  !getSettingValue(data?.disabled) ?? false;', _mode: 'code', _value: false} as any,
+            hidden: {_code: 'return  getSettingValue(data?.disabled);', _mode: 'code', _value: false} as any,
             validate: {},
           })
           .addCheckbox({
@@ -113,7 +113,7 @@ export const getSettings = () =>
             propertyName: 'allowReplace',
             label: 'Allow Replace',
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
-            hidden: {_code: 'return  !getSettingValue(data?.disabled) ?? false;', _mode: 'code', _value: false} as any,
+            hidden: {_code: 'return  getSettingValue(data?.disabled);', _mode: 'code', _value: false} as any,
             validate: {},
           })
           .addCheckbox({
@@ -121,7 +121,7 @@ export const getSettings = () =>
             propertyName: 'allowDelete',
             label: 'Allow Delete',
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
-            hidden: {_code: 'return  !getSettingValue(data?.disabled) ?? false;', _mode: 'code', _value: false} as any,
+            hidden: {_code: 'return  getSettingValue(data?.disabled);', _mode: 'code', _value: false} as any,
             validate: {},
           }).toJson()
         ]

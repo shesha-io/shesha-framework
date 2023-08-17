@@ -2,12 +2,13 @@ import React from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
 import { SplitCellsOutlined } from '@ant-design/icons';
 import { Row, Col } from 'antd';
-import ColumnsSettings from './columnsSettings';
 import ComponentsContainer from '../../containers/componentsContainer';
 import { useForm, useFormData, useGlobalState } from '../../../../providers';
 import { nanoid } from 'nanoid/non-secure';
 import { IColumnsComponentProps } from './interfaces';
 import { getStyle } from 'utils/publicUtils';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { ColumnsSettingsForm } from './columnsSettings';
 
 const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
   type: 'columns',
@@ -44,6 +45,9 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
       </Row>
     );
   },
+  migrator: (m) => m
+    .add<IColumnsComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IColumnsComponentProps)
+  ,
   initModel: (model) => {
     const tabsModel: IColumnsComponentProps = {
       ...model,
@@ -58,17 +62,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
 
     return tabsModel;
   },
-  settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
-    return (
-      <ColumnsSettings
-        readOnly={readOnly}
-        model={model as IColumnsComponentProps}
-        onSave={onSave}
-        onCancel={onCancel}
-        onValuesChange={onValuesChange}
-      />
-    );
-  },
+  settingsFormFactory: (props) => (<ColumnsSettingsForm {...props}/>),
   customContainerNames: ['columns'],
 };
 

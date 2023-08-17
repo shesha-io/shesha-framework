@@ -1,4 +1,3 @@
-import { nanoid } from 'nanoid';
 import { DesignerToolbarSettings } from '../../../../interfaces/toolbarSettings';
 
 export const alertSettingsForm = new DesignerToolbarSettings()
@@ -8,7 +7,7 @@ export const alertSettingsForm = new DesignerToolbarSettings()
     parentId: 'root',
     label: 'Display',
   })
-  .addPropertyAutocomplete({
+  .addContextPropertyAutocomplete({
     id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
     propertyName: 'propertyName',
     parentId: 'root',
@@ -87,7 +86,6 @@ export const alertSettingsForm = new DesignerToolbarSettings()
     label: 'Stroke Linecap',
     parentId: 'root',
     hidden: false,
-    customVisibility: null,
     useRawValues: false,
     dataSourceType: 'values',
     defaultValue: 'round',
@@ -117,7 +115,6 @@ export const alertSettingsForm = new DesignerToolbarSettings()
     propertyName: 'progressType',
     parentId: 'root',
     hidden: false,
-    customVisibility: null,
     label: 'Type',
     useRawValues: false,
     dataSourceType: 'values',
@@ -132,7 +129,7 @@ export const alertSettingsForm = new DesignerToolbarSettings()
     id: 'fdb031ce-250f-4c7f-8ff9-b35ac59e1946',
     propertyName: 'lineContainer',
     direction: 'vertical',
-    customVisibility: "return data.progressType === 'line'",
+    hidden: {_code: 'return  getSettingValue(data?.progressType) !== "line";', _mode: 'code', _value: false} as any,
     components: new DesignerToolbarSettings()
       .addNumberField({
         id: '7decc517-9c50-433c-a23f-2054b5684a80',
@@ -155,7 +152,7 @@ export const alertSettingsForm = new DesignerToolbarSettings()
     id: '6a49b8af-da4f-4de4-b834-cab5d83541ce',
     propertyName: 'circleContainer',
     direction: 'vertical',
-    customVisibility: "return data.progressType === 'circle'",
+    hidden: {_code: 'return  getSettingValue(data?.progressType) !== "circle";', _mode: 'code', _value: false} as any,
     components: new DesignerToolbarSettings()
       .addCodeEditor({
         id: 'b6e39afe-2495-4b35-9c0a-661242b4b7c4',
@@ -171,7 +168,7 @@ export const alertSettingsForm = new DesignerToolbarSettings()
     id: '73f9b6eb-e251-4286-b0c3-183f675b39fd',
     propertyName: 'dashboardContainer',
     direction: 'vertical',
-    customVisibility: "return data.progressType === 'dashboard'",
+    hidden: {_code: 'return  getSettingValue(data?.progressType) !== "dashboard";', _mode: 'code', _value: false} as any,
     components: new DesignerToolbarSettings()
       .addNumberField({
         propertyName: 'gapDegree',
@@ -187,7 +184,6 @@ export const alertSettingsForm = new DesignerToolbarSettings()
         propertyName: 'gapPosition',
         parentId: 'root',
         hidden: false,
-        customVisibility: null,
         label: 'Gap Position',
         useRawValues: false,
         dataSourceType: 'values',
@@ -213,35 +209,6 @@ export const alertSettingsForm = new DesignerToolbarSettings()
     propertyName: 'width',
     label: 'Width',
     description: 'To set the canvas width of the circular progress, unit: px',
-    customVisibility: "return ['circle', 'dashboard'].includes(data.progressType);",
-  })
-  .addSectionSeparator({
-    id: '516d72e1-3dfd-433f-8459-8b1610c3c9cb',
-    propertyName: 'separatorStyle',
-    parentId: 'root',
-    label: 'Style',
-  })
-  .addSectionSeparator({
-    id: 'bc67960e-77e3-40f2-89cc-f18f94678cce',
-    propertyName: 'separatorVisibility',
-    parentId: 'root',
-    label: 'Visibility',
-  })
-  .addCodeEditor({
-    id: '03959ffd-cadb-496c-bf6d-b742f7f6edc6',
-    propertyName: 'customVisibility',
-    label: 'Custom Visibility',
-    labelAlign: 'right',
-    parentId: 'root',
-    hidden: false,
-    customVisibility: null,
-    description:
-      'Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
-    validate: {},
-    settingsValidationErrors: [],
-    exposedVariables: [
-      { id: nanoid(), name: 'value', description: 'Component current value', type: 'string | any' },
-      { id: nanoid(), name: 'data', description: 'Selected form values', type: 'object' },
-    ],
+    hidden: {_code: 'return  !["circle", "dashboard"].includes(getSettingValue(data?.progressType));', _mode: 'code', _value: false} as any,
   })
   .toJson();

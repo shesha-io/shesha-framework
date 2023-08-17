@@ -9,7 +9,6 @@
       "parentId": "root",
       "hidden": false,
       "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "left",
@@ -43,7 +42,6 @@
             "labelAlign": "right",
             "parentId": "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
             "hidden": false,
-            "customVisibility": null,
             "isDynamic": false,
             "dataSourceType": "url",
             "useRawValues": true,
@@ -68,7 +66,6 @@
             "labelAlign": "right",
             "parentId": "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
             "hidden": false,
-            "customVisibility": null,
             "isDynamic": false,
             "autoSize": false,
             "showCount": false,
@@ -92,7 +89,6 @@
             "labelAlign": "right",
             "parentId": "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
             "hidden": false,
-            "customVisibility": null,
             "description": "If true, the JSON content block is expanded by default",
             "validate": {},
             "settingsValidationErrors": []
@@ -151,7 +147,6 @@
       "parentId": "root",
       "hidden": false,
       "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "left",
@@ -166,53 +161,6 @@
             "propertyName": "validate.required",
             "parentId": "pnl5bfe4-ee69-431e-931b-b0e0b9ceee6f",
             "label": "Required"
-          }
-        ]
-      }
-    },
-
-    {
-      "id": "41721f44-adbc-42fe-8c70-69b30e36f4ca",
-      "type": "collapsiblePanel",
-      "propertyName": "pnlVisibility",
-      "label": "Visibility",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "visibility": "Yes",
-      "customVisibility": null,
-      "isDynamic": false,
-      "version": 2,
-      "expandIconPosition": "left",
-      "collapsible": "header",
-      "ghost": true,
-      "content": {
-        "id": "pnl21f44-adbc-42fe-8c70-69b30e36f4ca",
-        "components": [
-          {
-            "id": "42c05f0a-7757-489e-972c-857814edb4e4",
-            "type": "codeEditor",
-            "propertyName": "customVisibility",
-            "label": "Custom Visibility",
-            "labelAlign": "right",
-            "parentId": "pnl21f44-adbc-42fe-8c70-69b30e36f4ca",
-            "hidden": false,
-            "customVisibility": null,
-            "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-            "validate": {},
-            "settingsValidationErrors": [],
-            "exposedVariables": [
-              {
-                "propertyName": "value",
-                "description": "Component current value",
-                "type": "string | any"
-              },
-              {
-                "propertyName": "data",
-                "description": "Selected form values",
-                "type": "object"
-              }
-            ]
           }
         ]
       }

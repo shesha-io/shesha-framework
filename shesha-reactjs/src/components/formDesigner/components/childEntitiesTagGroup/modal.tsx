@@ -35,7 +35,7 @@ const ChildEntitiesTagGroupModal: FC<IProps> = ({
   loading,
   modalTitle: title,
   modalWidth: width = '60%',
-  propertyName: name,
+  propertyName,
   open,
   onSetData,
   onToggle,
@@ -60,7 +60,7 @@ const ChildEntitiesTagGroupModal: FC<IProps> = ({
     form.setFieldsValue({ [mutatedName]: undefined });
   };
 
-  const mutatedName = `${GHOST_PAYLOAD_KEY}_${name}`;
+  const mutatedName = `${GHOST_PAYLOAD_KEY}_${propertyName}`;
   const markup = {
     components: data?.markup,
     formSettings: data?.settings,
@@ -84,7 +84,7 @@ const ChildEntitiesTagGroupModal: FC<IProps> = ({
 
         <ValidationErrors error={error} />
 
-        <SubFormProvider name={mutatedName} markup={markup} properties={[]} defaultValue={initialValues?.metadata}>
+        <SubFormProvider propertyName={mutatedName} markup={markup} properties={[]} defaultValue={initialValues?.metadata}>
           <SubForm readOnly={formMode === 'readonly'} />
         </SubFormProvider>
       </Skeleton>

@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useMemo, useRef } from 'react';
 import { useButtonGroupConfigurator } from '../../../../../providers/buttonGroupConfigurator';
 import { Empty, Form } from 'antd';
 import { ConfigurableForm } from '../../../..';
@@ -12,8 +12,6 @@ export interface IButtonGroupPropertiesProps {}
 
 export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = () => {
   const { selectedItemId, getItem, updateItem, readOnly } = useButtonGroupConfigurator();
-  // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus
-  const [editor, setEditor] = useState<ReactNode>(<></>);
   const [form] = Form.useForm();
 
   const formRef = useRef<ConfigurableFormInstance>(null);
@@ -27,20 +25,12 @@ export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = () => {
   );
 
   useEffect(() => {
-    form.resetFields();
-
-    if (formRef.current) {
-      const values = form.getFieldsValue();
-
-      formRef.current.setFormData({ values, mergeValues: false });
-    }
+    const values = getItem(selectedItemId);
+    form?.setFieldsValue(values);
   }, [selectedItemId]);
 
-  useEffect(() => {
-    setEditor(getEditor());
-  }, [selectedItemId]);
-
-  const getEditor = () => {
+  // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus
+  const editor = useMemo(() => {
     const emptyEditor = null;
     if (!selectedItemId) return emptyEditor;
 
@@ -54,6 +44,7 @@ export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = () => {
         : [];
     return (
       <ConfigurableForm
+        key={selectedItemId} // rerender for each item to initialize all controls
         formRef={formRef}
         labelCol={{ span: 24 }}
         wrapperCol={{ span: 24 }}
@@ -65,7 +56,7 @@ export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = () => {
         onValuesChange={debouncedSave}
       />
     );
-  };
+  }, [selectedItemId]);
 
   if (!Boolean(selectedItemId)) {
     return (

@@ -8,9 +8,10 @@ import { MetadataProvider, useDataTableStore, useForm, useGlobalState, useNested
 import { useDataSource } from 'providers/dataSourcesProvider';
 import DataTableProvider from 'providers/dataTable';
 import { DataTableSelectionProvider, useDataTableSelection } from 'providers/dataTableSelection';
-import DataSourceSettings from './dataSourceSettings';
 import { IDataSourceComponentProps } from './models';
 import { evaluateDynamicFilters } from 'utils';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { DataSourceSettingsForm } from './dataSourceSettings';
 
 const getPageSize = (value?: number) => { 
   return Boolean(value) ? value : 1147489646 /* get all data */; 
@@ -23,24 +24,17 @@ const DataSourceComponent: IToolboxComponent<IDataSourceComponentProps> = {
   factory: (model: IDataSourceComponentProps) => {
     return <DataSource {...model} />;
   },
-  migrator: m => m.add<IDataSourceComponentProps>(0, prev => {
-    return {
-      ...prev,
-      propertyName: prev['uniqueStateId'] ?? prev.propertyName,
-      sourceType: 'Entity'
-    };
-  }),
-  settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
-    return (
-      <DataSourceSettings
-        readOnly={readOnly}
-        model={model as IDataSourceComponentProps}
-        onSave={onSave}
-        onCancel={onCancel}
-        onValuesChange={onValuesChange}
-      />
-    );
-  }
+  migrator: m => 
+    m.add<IDataSourceComponentProps>(0, prev => {
+      return {
+        ...prev,
+        name: prev['uniqueStateId'] ?? prev['name'],
+        sourceType: 'Entity'
+      };
+    })
+    .add<IDataSourceComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
+  settingsFormFactory: (props) => (<DataSourceSettingsForm {...props}/>),
 };
 
 export const DataSource: FC<IDataSourceComponentProps> = props => {

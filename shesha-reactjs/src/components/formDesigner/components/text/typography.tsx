@@ -3,11 +3,10 @@ import { ParagraphProps } from 'antd/lib/typography/Paragraph';
 import { TextProps } from 'antd/lib/typography/Text';
 import { TitleProps } from 'antd/lib/typography/Title';
 import React, { CSSProperties, FC, PropsWithChildren, useMemo } from 'react';
-import { useForm, useFormData, useGlobalState, useTheme } from 'providers';
-import { evaluateString, executeCustomExpression, getStyle } from 'providers/form/utils';
+import { useForm, useFormData, useTheme } from 'providers';
+import { evaluateString, getStyle } from 'providers/form/utils';
 import { ITextTypographyProps, ITypographyProps } from './models';
 import {
-  DEFAULT_CONTENT_DISPLAY,
   DEFAULT_PADDING_SIZE,
   getContent,
   getFontSizeStyle,
@@ -23,7 +22,7 @@ declare const TITLE_ELE_LIST: [1, 2, 3, 4, 5];
 type LevelType = typeof TITLE_ELE_LIST[number];
 
 const TypographyComponent: FC<ITextTypographyProps> = ({
-  contentDisplay = DEFAULT_CONTENT_DISPLAY,
+  contentDisplay,
   dataType,
   dateFormat,
   numberFormat,
@@ -33,18 +32,11 @@ const TypographyComponent: FC<ITextTypographyProps> = ({
 }) => {
   const { formMode } = useForm();
   const { data: formData } = useFormData();
-  const { globalState } = useGlobalState();
 
-  const contentEvaluation = contentDisplay === 'name' ? value || '' : evaluateString(model?.content, formData);
+  const contentEvaluation = evaluateString(value, formData);
   const content = getContent(contentEvaluation, { dataType, dateFormat, numberFormat });
 
-  const isVisibleByCondition = executeCustomExpression(model.customVisibility, true, formData, globalState);
-
-  if (!isVisibleByCondition && formMode !== 'designer') {
-    return null;
-  }
-
-  if (!content && formMode === 'designer') {
+  if (!content && contentDisplay === 'content' && formMode === 'designer') {
     return <Alert type="warning" message="Please make sure you enter the content to be displayed here!" />;
   }
 

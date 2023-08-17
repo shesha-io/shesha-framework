@@ -18,7 +18,7 @@ export interface ISubFormStateContext extends IPersistedFormPayload, IFlatCompon
   initialValues?: any;
   components?: IConfigurableFormComponent[];
   formSettings?: IFormSettings;
-  name?: string;
+  propertyName?: string;
   errors?: {
     getData?: GetDataError<unknown>;
     getForm?: GetDataError<unknown>;

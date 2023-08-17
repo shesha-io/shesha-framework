@@ -111,8 +111,8 @@ const ShaDrawer: FC<IShaDrawerProps> = props => {
     globalState,
   };
 
-  const okButtonDisabled = !executeScriptSync<boolean>(okButtonCustomEnabled, context);
-  const cancelButtonDisabled = !executeScriptSync<boolean>(cancelButtonCustomEnabled, context);
+  const okButtonDisabled = !!okButtonCustomEnabled ? !executeScriptSync<boolean>(okButtonCustomEnabled, context) : false;
+  const cancelButtonDisabled = !!cancelButtonCustomEnabled ? !executeScriptSync<boolean>(cancelButtonCustomEnabled, context) : false;
 
   if (formMode === 'designer') {
     return (

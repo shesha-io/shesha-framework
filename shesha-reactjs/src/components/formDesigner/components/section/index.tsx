@@ -7,6 +7,7 @@ import { validateConfigurableComponentSettings } from '../../../../providers/for
 import _ from 'lodash';
 import { useForm, useFormData } from '../../../../providers';
 import { Alert } from 'antd';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 
 export interface ISectionProps extends IConfigurableFormComponent {
   // name: string;
@@ -36,6 +37,9 @@ const SectionComponent: IToolboxComponent<ISectionProps> = {
   },
   settingsFormMarkup: settingsForm,
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  migrator: (m) => m
+    .add<ISectionProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
 };
 
 export default SectionComponent;

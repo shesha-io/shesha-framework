@@ -1,4 +1,5 @@
 import { LockOutlined } from '@ant-design/icons';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 import React, { Fragment } from 'react';
 import { useForm } from '../../../..';
 import { IToolboxComponent } from '../../../../interfaces';
@@ -40,6 +41,9 @@ const PasswordComboComponent: IToolboxComponent<IPasswordComponentProps> = {
   },
   settingsFormMarkup: settingsForm,
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  migrator: (m) => m
+    .add<IPasswordComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
 };
 
 export default PasswordComboComponent;

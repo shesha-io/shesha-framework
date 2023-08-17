@@ -1,56 +1,37 @@
 import { getPropertySettingsFromValue } from "designer-components/_settings/utils";
 import { IConfigurableFormComponent } from "providers";
 
+export const migrateFunctionToProp = <T extends IConfigurableFormComponent,>(prev: T, propName: string, funcPropname: string, invert: Boolean = false) => {
+    const model = {...prev};
+
+    const propSettings = getPropertySettingsFromValue(prev[propName]);
+
+    if (Boolean(model[funcPropname]) && !Boolean(propSettings._code)) {
+        const func = `// Automatically updated from '${funcPropname}', please review\n\n` +
+        (invert ? 'return !(() => {\n    // Source code\n\n' : "") +
+        model[funcPropname] +
+        (invert ? '\n\n})();' : "");
+
+        model[propName] = {
+            ...propSettings, 
+            _mode: 'code', 
+            _code: func
+        };
+        delete model[funcPropname];
+    }
+    return model;
+};
+
 export const migrateCustomFunctions = <T extends IConfigurableFormComponent,>(prev: T) => {
     return migrateDisabled(migrateHidden(prev));
 };
 
 export const migrateHidden = <T extends IConfigurableFormComponent,>(prev: T) => {
-    const model = {...prev};
-
-    const hiddenSettings = getPropertySettingsFromValue(prev?.hidden);
-
-    if (Boolean(model['customVisibility']) && !Boolean(hiddenSettings._code)) {
-        model.hidden = {
-            ...hiddenSettings,
-            mode: 'code',
-            code: 
-`// Automatically updated from customVisibility, please review
-
-return !(() => {
-    // Source code
-
-    ${model['customVisibility']}
-
-})();`
-        } as any;
-        delete model['customVisibility'];
-    }
-    return model;
+    return migrateFunctionToProp(prev, 'hidden', 'customVisibility', true);
 };
 
 export const migrateDisabled = <T extends IConfigurableFormComponent,>(prev: T) => {
-    const model = {...prev};
-
-    const disabledSettings = getPropertySettingsFromValue(prev?.disabled);
-
-    if (Boolean(model['customEnabled']) && !Boolean(disabledSettings._code)) {
-        model.disabled = {
-            ...disabledSettings,
-            mode: 'code',
-            code: 
-`// Automatically updated from customEnabled, please review
-
-return !(() => {
-    // Source code
-
-    ${model['customEnabled']}
-
-})();`
-        } as any;
-        delete model['customEnabled'];
-    }
-    return model;
+    return migrateFunctionToProp(prev, 'disabled', 'customEnabled', true);
 };
 
 export const migratePropertyName = <T extends IConfigurableFormComponent,>(prev: T) => {

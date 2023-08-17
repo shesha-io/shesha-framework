@@ -30,7 +30,7 @@ const ImageAnnotationComponent: IToolboxComponent<IImageProps> = {
 
     return (
       <ConfigurableFormItem model={model} >
-        <ImageAnnotationControl model={model} />
+        {(value, onChange) => <ImageAnnotationControl model={model} value={value} onChange={onChange}/>}
       </ConfigurableFormItem>
     );
   },

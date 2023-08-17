@@ -505,7 +505,7 @@ const ListControl: FC<IListControlProps> = props => {
     }
     return (
       <SubFormProvider
-        name={`${localName}`}
+        propertyName={`${localName}`}
         markup={{ components: formConfiguration?.markup, formSettings: formConfiguration?.settings }}
         properties={[]}
         labelCol={localLabelCol}
