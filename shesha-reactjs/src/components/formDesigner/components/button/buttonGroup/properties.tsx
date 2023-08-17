@@ -29,7 +29,7 @@ export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = () => {
   useEffect(() => {
     form.resetFields();
 
-    if (formRef.current) {
+    if (formRef.current && selectedItemId) {
       const values = form.getFieldsValue();
 
       formRef.current.setFormData({ values, mergeValues: false });
