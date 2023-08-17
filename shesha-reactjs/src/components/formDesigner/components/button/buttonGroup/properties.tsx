@@ -1,22 +1,18 @@
-import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
+import React, { FC, ReactNode, useEffect, useState } from 'react';
 import { useButtonGroupConfigurator } from '../../../../../providers/buttonGroupConfigurator';
-import { Empty, Form } from 'antd';
+import { Empty } from 'antd';
 import { ConfigurableForm } from '../../../..';
 import itemSettingsJson from './itemSettings.json';
 import itemGroupSettingsJson from './itemGroupSettings.json';
 import { FormMarkup } from '../../../../../providers/form/models';
 import { useDebouncedCallback } from 'use-debounce';
-import { ConfigurableFormInstance } from '../../../../../providers/form/contexts';
 
-export interface IButtonGroupPropertiesProps {}
+export interface IButtonGroupPropertiesProps { }
 
 export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = () => {
   const { selectedItemId, getItem, updateItem, readOnly } = useButtonGroupConfigurator();
   // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus
   const [editor, setEditor] = useState<ReactNode>(<></>);
-  const [form] = Form.useForm();
-
-  const formRef = useRef<ConfigurableFormInstance>(null);
 
   const debouncedSave = useDebouncedCallback(
     values => {
@@ -25,16 +21,6 @@ export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = () => {
     // delay in ms
     300
   );
-
-  useEffect(() => {
-    form.resetFields();
-
-    if (formRef.current && selectedItemId) {
-      const values = form.getFieldsValue();
-
-      formRef.current.setFormData({ values, mergeValues: false });
-    }
-  }, [selectedItemId]);
 
   useEffect(() => {
     setEditor(getEditor());
@@ -50,17 +36,16 @@ export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = () => {
       componentModel.itemType === 'item'
         ? (itemSettingsJson as FormMarkup)
         : componentModel.itemType === 'group'
-        ? (itemGroupSettingsJson as FormMarkup)
-        : [];
+          ? (itemGroupSettingsJson as FormMarkup)
+          : [];
     return (
       <ConfigurableForm
-        formRef={formRef}
+        key={selectedItemId}
         labelCol={{ span: 24 }}
         wrapperCol={{ span: 24 }}
-        mode={ readOnly ? 'readonly' : 'edit' }
+        mode={readOnly ? 'readonly' : 'edit'}
         markup={markup}
         onFinish={onSettingsSave}
-        form={form}
         initialValues={componentModel}
         onValuesChange={debouncedSave}
       />

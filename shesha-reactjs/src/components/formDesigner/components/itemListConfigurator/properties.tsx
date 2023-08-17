@@ -1,20 +1,16 @@
-import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
-import { Empty, Form } from 'antd';
+import React, { FC, ReactNode, useEffect, useState } from 'react';
+import { Empty } from 'antd';
 import { ConfigurableForm } from '../../..';
 import { useDebouncedCallback } from 'use-debounce';
-import { ConfigurableFormInstance } from '../../../../providers/form/contexts';
 import { useItemListConfigurator } from '../../../../providers';
 
-export interface IItemConfigPropertiesProps {}
+export interface IItemConfigPropertiesProps { }
 
-export const ItemConfigProperties: FC<IItemConfigPropertiesProps> = ({}) => {
+export const ItemConfigProperties: FC<IItemConfigPropertiesProps> = ({ }) => {
   const { selectedItemId, getItem, updateItem, itemTypeMarkup, groupTypeMarkup } = useItemListConfigurator();
 
   // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus
   const [editor, setEditor] = useState<ReactNode>(<></>);
-  const [form] = Form.useForm();
-
-  const formRef = useRef<ConfigurableFormInstance>(null);
 
   const debouncedSave = useDebouncedCallback(
     values => {
@@ -23,16 +19,6 @@ export const ItemConfigProperties: FC<IItemConfigPropertiesProps> = ({}) => {
     // delay in ms
     300
   );
-
-  useEffect(() => {
-    form.resetFields();
-
-    if (formRef.current && selectedItemId) {
-      const values = form.getFieldsValue();
-
-      formRef.current.setFormData({ values, mergeValues: false });
-    }
-  }, [selectedItemId]);
 
   useEffect(() => {
     setEditor(getEditor());
@@ -48,13 +34,12 @@ export const ItemConfigProperties: FC<IItemConfigPropertiesProps> = ({}) => {
       componentModel.itemType === 'item' ? itemTypeMarkup : componentModel.itemType === 'group' ? groupTypeMarkup : [];
     return (
       <ConfigurableForm
-        formRef={formRef}
+        key={selectedItemId}
         labelCol={{ span: 24 }}
         wrapperCol={{ span: 24 }}
         mode="edit"
         markup={markup}
         onFinish={onSettingsSave}
-        form={form}
         initialValues={componentModel}
         onValuesChange={debouncedSave}
       />
