@@ -18,8 +18,8 @@ interface IGetItemArgs {
 }
 
 function getItem({ label, target, key, icon, children, isParent, navigate }: IGetItemArgs): MenuItem {
-  const clickHandler = (url) => {
-    //event.stopPropagation();
+  const clickHandler = (event, url) => {
+    event.stopPropagation();
     navigate(url);
   };
   return {
@@ -29,7 +29,7 @@ function getItem({ label, target, key, icon, children, isParent, navigate }: IGe
     label: (
       <a
         className={classNames('nav-links-renderer', { 'is-parent-menu': isParent })}
-        onClick={target ? () => clickHandler(target) : undefined}
+        onClick={target ? (e) => clickHandler(e, target) : undefined}
       >
         {label}
       </a>
