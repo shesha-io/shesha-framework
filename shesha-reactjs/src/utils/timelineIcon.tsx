@@ -5,6 +5,9 @@ import React from 'react';
 export const getTimelineIcon = (channel: number) => {
   switch (channel) {
     case TimelineChannels.SMS:
+      return <MessageOutlined style={{ fontSize: '24px' }} />;
+      break;
+    case TimelineChannels.Call:
       return <PhoneOutlined style={{ fontSize: '24px' }} />;
       break;
     case TimelineChannels.Message:

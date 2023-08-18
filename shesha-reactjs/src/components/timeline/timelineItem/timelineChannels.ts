@@ -3,4 +3,5 @@ export enum TimelineChannels {
   SMS = 2,
   Note = 3,
   Message = 4,
+  Call = 5,
 }
