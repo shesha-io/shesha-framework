@@ -18,8 +18,8 @@ interface IGetItemArgs {
 }
 
 function getItem({ label, target, key, icon, children, isParent, navigate }: IGetItemArgs): MenuItem {
-  const clickHandler = (event, url) => {
-    event.stopPropagation();
+  const clickHandler = (url) => {
+    //event.stopPropagation();
     navigate(url);
   };
   return {
@@ -27,7 +27,10 @@ function getItem({ label, target, key, icon, children, isParent, navigate }: IGe
     icon,
     children,
     label: (
-      <a className={classNames('nav-links-renderer', { 'is-parent-menu': isParent })} onClick={target ? e => clickHandler(e, target) : undefined}>
+      <a
+        className={classNames('nav-links-renderer', { 'is-parent-menu': isParent })}
+        onClick={target ? () => clickHandler(target) : undefined}
+      >
         {label}
       </a>
     ),
@@ -61,9 +64,13 @@ export const renderSidebarMenuItem = (props: IProps) => {
     target,
     key,
     icon: getIcon(icon, hasChildren, isRootItem),
-    children: hasChildren ? childItems?.map(item => renderSidebarMenuItem({ ...item, navigate: props.navigate, isItemVisible: props.isItemVisible })) : null,
+    children: hasChildren
+      ? childItems?.map((item) =>
+          renderSidebarMenuItem({ ...item, navigate: props.navigate, isItemVisible: props.isItemVisible })
+        )
+      : null,
     isParent: hasChildren,
-    navigate: props.navigate
+    navigate: props.navigate,
   });
 };
 
