@@ -108,13 +108,14 @@ const toolbarReducer = handleActions<IColumnsConfiguratorStateContext, any>(
       const {
         settings: { columnType, minWidth, maxWidth },
       } = payload;
+
       if (!!columnType) {
-        const widths = payload.settings.columnType === 'action' ? 35 : null;
+        const width = payload.settings.columnType === 'action' ? 35 : null;
         if (!minWidth) {
-          payload.settings.maxWidth = widths;
+          payload.settings.maxWidth = width;
         }
         if (!maxWidth) {
-          payload.settings.minWidth = widths;
+          payload.settings.minWidth = width;
         }
       }
       const newItems = [...state.items];
