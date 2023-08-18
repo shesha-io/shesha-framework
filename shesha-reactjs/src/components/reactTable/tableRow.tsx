@@ -69,13 +69,20 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
   const [selected, setSelected] = useState<Number>(selectedRowIndex);
 
   const handleRowClick = () => {
-    setSelected(row?.index);
-    onClick(row);
+    if (selected === row?.index) {
+      setSelected(-1);
+    } else {
+      onClick(row);
+      setSelected(row?.index);
+    }
   };
 
   const {} = useDataTableStore();
 
-  const handleRowDoubleClick = () => onDoubleClick(row, index);
+  const handleRowDoubleClick = () => {
+    onDoubleClick(row, index);
+  };
+
   prepareRow(row);
 
   useEffect(() => {
