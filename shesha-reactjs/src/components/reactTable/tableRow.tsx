@@ -1,11 +1,12 @@
 import { MoreOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
-import React, { FC } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import { Row } from 'react-table';
 import { RowCell } from './rowCell';
 import { CrudProvider } from 'providers/crudContext';
 import { InlineSaveMode } from './interfaces';
 import { IFlatComponentsStructure } from 'providers/form/models';
+import { useDataTableStore } from 'index';
 
 export type RowEditMode = 'read' | 'edit';
 
@@ -37,7 +38,7 @@ export const RowDragHandle = SortableHandle(() => (
   </div>
 ));
 */
-export const SortableRow: FC<ISortableRowProps> = (props) => (<TableRow {...props} />);
+export const SortableRow: FC<ISortableRowProps> = (props) => <TableRow {...props} />;
 
 export const RowDragHandle = () => (
   <div className="row-handle" style={{ cursor: 'grab' }}>
@@ -45,17 +46,17 @@ export const RowDragHandle = () => (
   </div>
 );
 
-export const TableRow: FC<ISortableRowProps> = props => {
-  const { 
-    row, 
-    prepareRow, 
-    onClick, 
-    onDoubleClick, 
-    index, 
-    selectedRowIndex, 
-    updater, 
-    deleter, 
-    allowEdit, 
+export const TableRow: FC<ISortableRowProps> = (props) => {
+  const {
+    row,
+    prepareRow,
+    onClick,
+    onDoubleClick,
+    index,
+    selectedRowIndex,
+    updater,
+    deleter,
+    allowEdit,
     allowDelete,
     editMode,
     allowChangeEditMode,
@@ -64,11 +65,34 @@ export const TableRow: FC<ISortableRowProps> = props => {
     inlineDisplayComponents,
   } = props;
 
-  const handleRowClick = () => onClick(row);
+  const tableRef = useRef(null);
+  const [selected, setSelected] = useState<Number>(selectedRowIndex);
 
-  const handleRowDoubleClick = () => onDoubleClick(row, index);
+  const handleRowClick = () => {
+    if (selected === row?.index) {
+      setSelected(-1);
+    } else {
+      onClick(row);
+      setSelected(row?.index);
+    }
+  };
+
+  const {} = useDataTableStore();
+
+  const handleRowDoubleClick = () => {
+    onDoubleClick(row, index);
+  };
 
   prepareRow(row);
+
+  useEffect(() => {
+    const onClickOutside = (event) => {
+      if (tableRef.current && !tableRef.current.contains(event.target)) {
+        setSelected(-1);
+      }
+    };
+    document.addEventListener('click', onClickOutside);
+  }, []);
 
   return (
     <CrudProvider
@@ -85,13 +109,14 @@ export const TableRow: FC<ISortableRowProps> = props => {
       displayComponents={inlineDisplayComponents}
     >
       <div
+        ref={tableRef}
         onClick={handleRowClick}
         onDoubleClick={handleRowDoubleClick}
         {...row.getRowProps()}
         className={classNames(
           'tr tr-body',
           { 'tr-odd': index % 2 === 0 },
-          { 'sha-tr-selected': selectedRowIndex === row?.index }
+          { 'sha-tr-selected': selected === row?.index }
         )}
       >
         {row.cells.map((cell, index) => {
