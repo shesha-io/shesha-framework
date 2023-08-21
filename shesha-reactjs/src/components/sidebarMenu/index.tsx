@@ -43,8 +43,7 @@ export const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
   const keys = openedKeys && openedKeys.length > 0 ? openedKeys : undefined;
 
   const handleNavigate = (url: string) => {
-    if (!url)
-      return;
+    if (!url) return;
     if (typeof router === 'object') {
       try {
         router?.push(url);
@@ -56,16 +55,17 @@ export const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
     }
   };
 
-
   return (
     <Menu
       mode="inline"
+      selectedKeys={[selectedKey]}
       className="nav-links-renderer sha-sidebar-menu"
-      defaultSelectedKeys={selectedKey ? [selectedKey] : []}
       defaultOpenKeys={keys}
       onOpenChange={onOpenChange}
       theme={theme}
-      items={items.map(item => renderSidebarMenuItem({ ...item, isItemVisible, navigate: handleNavigate, isRootItem: true }))}
+      items={items.map((item) =>
+        renderSidebarMenuItem({ ...item, isItemVisible, navigate: handleNavigate, isRootItem: true })
+      )}
     />
   );
 };
