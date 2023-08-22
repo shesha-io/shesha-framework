@@ -62,3 +62,6 @@ export const DepDesignerCaseDetails = addStory(Template, {
 export const EntprDesignerTimeField = addStory(Template, {
   formId: 'adbfb402-07d1-4ff3-8cac-44acbe10ed50',
 });
+export const RefListStatus = addStory(Template, {
+  formId: 'ecebf97c-cf1e-4e43-831e-91f0ceccaf06',
+});

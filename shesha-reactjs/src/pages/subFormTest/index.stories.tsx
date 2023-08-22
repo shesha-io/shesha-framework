@@ -15,4 +15,4 @@ const EntityConfiguratorTemplate: ComponentStory<typeof SubFormTestPage> = (args
 );
 
 export const Primary = EntityConfiguratorTemplate.bind({});
-Primary.args = { id: null };//'3F0C6DF1-9135-4DC6-9905-E5D1EABB87A8' };
+Primary.args = { id: null }; //'3F0C6DF1-9135-4DC6-9905-E5D1EABB87A8' };

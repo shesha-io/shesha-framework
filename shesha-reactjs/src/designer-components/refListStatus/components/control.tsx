@@ -4,7 +4,7 @@ import '../styles/index.less';
 import { IRefListStatusProps } from '../models';
 import convertCssColorNameToHex from 'convert-css-color-name-to-hex';
 import { Alert, Skeleton, Tag, Tooltip } from 'antd';
-import { getStyle } from 'utils/publicUtils';
+import { evaluateString, getStyle } from 'utils/publicUtils';
 import ToolTipTittle from './tooltip';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useReferenceListItem } from 'providers/referenceListDispatcher';
@@ -17,15 +17,25 @@ interface IProps {
 }
 
 const RefListStatusControl: FC<IProps> = ({ model, value }) => {
-  const { formData: data } = useForm();
+  const { formData: data, formMode } = useForm();
   const { globalState } = useGlobalState();
   const { referenceListId, showIcon, solidBackground, style, showReflistName } = model;
 
-  const listItem = useReferenceListItem(referenceListId?.module, referenceListId?.name, value);  
+  const initialValue = evaluateString(model?.initialValue, { data, formMode, globalState });
+
+  const numInitialValue = !!initialValue && parseInt(initialValue);
+  const currentValue = value ?? numInitialValue;
+
+  const listItem = useReferenceListItem(referenceListId?.module, referenceListId?.name, currentValue);
 
   if (listItem?.error && !listItem?.loading) {
     return (
-      <Alert showIcon message="Something went during Reflists fetch" description={listItem.error.message} type="error" />
+      <Alert
+        showIcon
+        message="Something went wrong during Reflists fetch"
+        description={listItem.error.message}
+        type="error"
+      />
     );
   }
 
@@ -39,29 +49,36 @@ const RefListStatusControl: FC<IProps> = ({ model, value }) => {
 
   if (!itemData?.itemValue && !listItem?.loading) return null;
 
+  const showToolTip =
+    (itemData?.description && showReflistName) || (!showReflistName && (itemData?.item || itemData?.description));
+
   return (
     <Skeleton loading={listItem?.loading}>
-      <div className='sha-status-tag-container'>
-        <Tag
-          className="sha-status-tag"
-          color={memoizedColor}
-          style={{ ...getStyle(style, data, globalState) }}
-          icon={canShowIcon ? <Icon type={itemData?.icon} /> : null}
-        >
-          {showReflistName && itemData?.item}
-        </Tag>
-        {(((itemData?.description && showReflistName) ||
-          (!showReflistName && (itemData?.item || itemData?.description))) &&
-          (
-            <Tooltip
-              placement="rightTop"
-              title={<ToolTipTittle showReflistName={showReflistName} currentStatus={itemData} />}
+      <div className="sha-status-tag-container">
+        {showToolTip ? (
+          <Tooltip
+            placement="rightTop"
+            title={<ToolTipTittle showReflistName={showReflistName} currentStatus={itemData} />}
+          >
+            <Tag
+              className="sha-status-tag"
+              color={memoizedColor}
+              style={{ ...getStyle(style, data, globalState) }}
+              icon={canShowIcon ? <Icon type={itemData?.icon} /> : null}
             >
-
-              <QuestionCircleOutlined className='sha-help-icon' />
-
-            </Tooltip>
-          ))}
+              {showReflistName && itemData?.item}
+            </Tag>
+          </Tooltip>
+        ) : (
+          <Tag
+            className="sha-status-tag"
+            color={memoizedColor}
+            style={{ ...getStyle(style, data, globalState) }}
+            icon={canShowIcon ? <Icon type={itemData?.icon} /> : null}
+          >
+            {showReflistName && itemData?.item}
+          </Tag>
+        )}
       </div>
     </Skeleton>
   );
