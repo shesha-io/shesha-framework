@@ -6,7 +6,6 @@ import convertCssColorNameToHex from 'convert-css-color-name-to-hex';
 import { Alert, Skeleton, Tag, Tooltip } from 'antd';
 import { evaluateString, getStyle } from 'utils/publicUtils';
 import ToolTipTittle from './tooltip';
-import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useReferenceListItem } from 'providers/referenceListDispatcher';
 
 interface IProps {
