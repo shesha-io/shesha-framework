@@ -59,13 +59,6 @@ export const RefListStatusSettingsForm = new DesignerToolbarSettings()
           label: 'Description',
           readOnly: false,
         })
-        .addTextField({
-          id: '46d07439-5b18-468c-89e1-60c002ce96c5',
-          name: 'initialValue',
-          parentId: '1BDD52E8-FD3B-4309-AD9B-099CDB729441',
-          description: 'Enter default value of component. (formData, formMode, globalState) are exposed',
-          label: 'Default Value',
-        })
         .addCheckbox({
           id: 'cfd7d45e-c7e3-4a27-987b-dc525c412448',
           name: 'hidden',

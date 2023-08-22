@@ -4,7 +4,7 @@ import '../styles/index.less';
 import { IRefListStatusProps } from '../models';
 import convertCssColorNameToHex from 'convert-css-color-name-to-hex';
 import { Alert, Skeleton, Tag, Tooltip } from 'antd';
-import { evaluateString, getStyle } from 'utils/publicUtils';
+import { getStyle } from 'utils/publicUtils';
 import ToolTipTittle from './tooltip';
 import { useReferenceListItem } from 'providers/referenceListDispatcher';
 
@@ -16,16 +16,11 @@ interface IProps {
 }
 
 const RefListStatusControl: FC<IProps> = ({ model, value }) => {
-  const { formData: data, formMode } = useForm();
+  const { formData: data } = useForm();
   const { globalState } = useGlobalState();
   const { referenceListId, showIcon, solidBackground, style, showReflistName } = model;
 
-  const initialValue = evaluateString(model?.initialValue, { data, formMode, globalState });
-
-  const numInitialValue = !!initialValue && parseInt(initialValue);
-  const currentValue = value ?? numInitialValue;
-
-  const listItem = useReferenceListItem(referenceListId?.module, referenceListId?.name, currentValue);
+  const listItem = useReferenceListItem(referenceListId?.module, referenceListId?.name, value);
 
   if (listItem?.error && !listItem?.loading) {
     return (

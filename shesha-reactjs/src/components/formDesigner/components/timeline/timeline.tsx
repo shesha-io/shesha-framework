@@ -1,9 +1,6 @@
 import { ClockCircleOutlined } from '@ant-design/icons';
 import React from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
-
-import ConfigurableFormItem from '../formItem';
-
 import { DataTypes } from '../../../../interfaces/dataTypes';
 import { useForm } from '../../../../providers';
 import TimelineSettings from './settings';
