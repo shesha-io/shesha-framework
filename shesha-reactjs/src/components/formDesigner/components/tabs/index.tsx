@@ -4,8 +4,8 @@ import { FolderOutlined } from '@ant-design/icons';
 import { Tabs } from 'antd';
 import ComponentsContainer from '../../containers/componentsContainer';
 import React, { Fragment } from 'react';
-import { getActualModel } from '../../../../providers/form/utils';
-import { useForm, useFormData, useSheshaApplication } from '../../../../providers';
+import { getActualModel, useApplicationContext } from '../../../../providers/form/utils';
+import { useSheshaApplication } from '../../../../providers';
 import { nanoid } from 'nanoid/non-secure';
 import { TabSettingsForm } from './settings';
 import { ITabsComponentProps } from './models';
@@ -20,12 +20,11 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
   icon: <FolderOutlined />,
   factory: model => {
     const { anyOfPermissionsGranted } = useSheshaApplication();
-    const { isComponentHidden, formMode } = useForm();
-    const { data: formData } = useFormData();
+    const allData = useApplicationContext();
 
     const { tabs, defaultActiveKey, tabType = 'card', size, position = 'top' } = model as ITabsComponentProps;
 
-    if (isComponentHidden(model)) return null;
+    if (model.hidden) return null;
 
     const actionKey = defaultActiveKey || (tabs?.length && tabs[0]?.key);
 
@@ -34,7 +33,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
         {tabs?.map(
           (item) => {
 
-            const actualItem = getActualModel(item, formData, formMode);
+            const actualItem = getActualModel(item, allData);
 
             const {
               id,
@@ -55,7 +54,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
 
             const granted = anyOfPermissionsGranted(permissions || []);
 
-            if ((!granted || hidden) && formMode !== 'designer') return null;
+            if ((!granted || hidden) && allData.formMode !== 'designer') return null;
 
             return (
               <TabPane

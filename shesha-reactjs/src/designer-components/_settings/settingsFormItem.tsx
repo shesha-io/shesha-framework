@@ -26,14 +26,16 @@ const SettingsFormItem: FC<ISettingsFormItemProps> = (props) => {
 const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
     const { getFieldsValue } = useSettingsForm<any>();
     const formData = getFieldsValue();
-    const initSettings = getPropertySettingsFromData(formData, props.name.toString());
+    const initSettings = getPropertySettingsFromData(formData, props.name?.toString());
 
     const [ mode, setMode ] = useState<PropertySettingMode>(initSettings._mode ?? 'value');
     const switchMode = () => setMode(mode === 'code' ? 'value' : 'code');
 
+    if (!props.name)
+        return null;
+
     const label = props.jsSetting
-        ?
-        <>
+        ? <>
             <label>{props.label}</label>
             <Button
                 shape="round"

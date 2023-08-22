@@ -111,9 +111,9 @@ const DebugPanel: FC<DebugPanelProps> = (props) => {
         </Col>
       </CollapsiblePanel>
       {contexts.map((ctx) => 
-        <CollapsiblePanel header={ctx.name} expandIconPosition='start' ghost>
+        <CollapsiblePanel header={<>{ctx.name}: {ctx.description} <span style={{color: 'gray'}}>({ctx.id})</span></>} expandIconPosition='start' ghost>
           <Col span={24}>
-            <pre>{JSON.stringify(ctx.dataContext?.data, null, 2)}</pre>
+            <pre>{JSON.stringify(ctx.getData(), null, 2)}</pre>
           </Col>
         </CollapsiblePanel>
       )}

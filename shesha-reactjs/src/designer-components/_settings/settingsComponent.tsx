@@ -57,7 +57,7 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
                     return (
                         <SettingsControl id={model.id} propertyName={internalProps?.propertyName} mode={mode} value={value} onChange={onChange}>
                             {(value, onChange, propertyName) => 
-                                <DataContextProvider id={model.id} name={props.label.toString()} type={'settings'} 
+                                <DataContextProvider id={model.id} name={props.componentName} description={props.label.toString()} type={'settings'} 
                                     initialData={new Promise((resolve) => {
                                         resolve({[propertyName]: value});
                                     })}

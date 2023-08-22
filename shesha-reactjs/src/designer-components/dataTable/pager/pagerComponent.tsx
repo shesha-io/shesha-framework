@@ -6,6 +6,7 @@ import React from 'react';
 import { useForm } from 'providers';
 import { IConfigurableFormComponent } from 'providers/form/models';
 import { validateConfigurableComponentSettings } from 'providers/form/utils';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 
 export interface IPagerComponentProps extends ITablePagerProps, IConfigurableFormComponent {}
 
@@ -20,15 +21,18 @@ const PagerComponent: IToolboxComponent<IPagerComponentProps> = {
 
     return <TablePager {...model} />;
   },
-  migrator:  m => m
-  .add<IPagerComponentProps>(0, prev => {
+  initModel: (model: IPagerComponentProps) => {
     return {
-      ...prev,
+      ...model,
       showSizeChanger: true,
       showTotalItems: true,
       items: [],
     };
-  }),
+  },  
+  migrator:  m => m
+    .add<IPagerComponentProps>(0, prev => ({...prev} as IPagerComponentProps))
+    .add(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
   settingsFormMarkup: context => getSettings(context),
   validateSettings: model => validateConfigurableComponentSettings(getSettings(model), model),
 };

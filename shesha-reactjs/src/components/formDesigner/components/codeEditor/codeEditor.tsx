@@ -1,13 +1,14 @@
 import React, { FC, Fragment, useMemo, useState } from 'react';
 import { useMetadata } from '../../../../providers';
 import { Show } from '../../../..';
-import { ICodeTreeLevel } from '../../../codeEditor/codeCompleter';
-import { IPropertyMetadata } from '../../../../interfaces/metadata';
 import { Alert, Button, Modal, Space, Tabs } from 'antd';
 import { CodeOutlined } from '@ant-design/icons';
 import { ICodeEditorProps } from './interfaces';
 import { CodeVariablesTables } from '../../../codeVariablesTable';
 import { CodeEditor as BaseCodeEditor } from 'components/codeEditor';
+import { useDataContextManager } from 'providers/dataContextManager';
+import { ICodeTreeLevel } from 'components/codeEditor/utils';
+import { getContextMetadata, getFormDataMetadata } from './utils';
 
 const { TabPane } = Tabs;
 
@@ -40,36 +41,16 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
     if (props.onChange) props.onChange(null);
   };
   const meta = useMetadata(false);
+  const dataContextManager = useDataContextManager(false);
 
-  const metaItems = useMemo<ICodeTreeLevel>(() => {
-    if (!Boolean(meta?.metadata)) return null;
+  const metaItems = useMemo<ICodeTreeLevel>(() => getFormDataMetadata(meta?.metadata), [meta]);
+  const ctxItems = useMemo<ICodeTreeLevel>(() => getContextMetadata(dataContextManager?.getDataContexts(dataContextManager?.getActiveContext()?.id)), [dataContextManager.lastUpdate]);
 
-    const propsToLevel = (properties: IPropertyMetadata[]): ICodeTreeLevel => {
-      const result: ICodeTreeLevel = {};
-      properties?.forEach((p) => {
-        result[p.path] = {
-          value: p.path,
-          caption: p.label,
-          loaded: true,
-        };
-      });
-      return result;
-    };
-
-    const metaTree: ICodeTreeLevel = {
-      data: {
-        value: 'data',
-        caption: meta.metadata.name,
-        loaded: true,
-        childs: propsToLevel(meta.metadata.properties),
-      },
-    };
-    return metaTree;
-  }, [meta]);
-
-  const editorProps = {
-    shaMetadata: metaItems,
-  };
+  const editorProps: any = {};
+  if (exposedVariables.find(x => x.name === 'data'))
+    editorProps.shaMetadata = metaItems;
+  if (exposedVariables.find(x => x.name === 'contexts'))
+    editorProps.shaContext = ctxItems;
 
   const openEditorDialog = () => setShowDialog(true);
 

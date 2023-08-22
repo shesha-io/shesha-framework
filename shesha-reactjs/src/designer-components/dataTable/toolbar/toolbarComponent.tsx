@@ -5,13 +5,13 @@ import ToolbarSettings from './toolbarSettingsPanel';
 import { IToolbarProps } from './models';
 import { Alert, Menu, Dropdown } from 'antd';
 import { IButtonGroup, IToolbarButton, ToolbarItemProps } from '../../../providers/toolbarConfigurator/models';
-import { useForm, isInDesignerMode } from '../../../providers/form';
-import { getActualModel, getVisibilityFunc2 } from '../../../providers/form/utils';
+import { isInDesignerMode } from '../../../providers/form';
+import { getActualModel, getVisibilityFunc2, useApplicationContext } from '../../../providers/form/utils';
 import { useDataTableSelection } from '../../../providers/dataTableSelection';
 import { ToolbarButton } from './toolbarButton';
 import { ShaIcon } from '../../../components';
 import { IconType } from '../../../components/shaIcon';
-import { useFormData, useSheshaApplication } from '../../../providers';
+import { useSheshaApplication } from '../../../providers';
 import { nanoid } from 'nanoid/non-secure';
 import { migrateV0toV1, IToolbarPropsV0 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
@@ -55,19 +55,18 @@ const ToolbarComponent: IToolboxComponent<IToolbarProps> = {
 };
 
 export const Toolbar: FC<IToolbarProps> = ({ items, id }) => {
-  const { formMode } = useForm();
-  const { data: formData } = useFormData();
+  const allData = useApplicationContext();
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const { selectedRow } = useDataTableSelection(false) ?? {};
-  const isDesignMode = formMode === 'designer';
+  const isDesignMode = allData.formMode === 'designer';
 
-  const actualItems = items?.map((item) => getActualModel(item, formData, formMode));
+  const actualItems = items?.map((item) => getActualModel(item, allData));
 
   const renderItem = (item: ToolbarItemProps, uuid: string) => {
     if (!isInDesignerMode()) {
       const visibilityFunc = getVisibilityFunc2(item.customVisibility, item.name);
 
-      const isVisible = visibilityFunc(formData, { selectedRow }, formMode);
+      const isVisible = visibilityFunc(allData.data, { selectedRow }, allData.formMode);
 
       if (!isVisible) return null;
     }

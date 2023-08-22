@@ -50,6 +50,49 @@ import { CSSProperties } from 'react';
 import camelcase from 'camelcase';
 import { Migrator } from '../../utils/fluentMigrator/migrator';
 import { isPropertySettings } from 'designer-components/_settings/utils';
+import { axiosHttp, useDataTableSelection, useForm, useFormData, useGlobalState, useSheshaApplication } from 'index';
+import { useDataContextManager } from 'providers/dataContextManager';
+import { ISelectionProps } from 'providers/dataTableSelection/models';
+import moment from 'moment';
+import { message } from 'antd';
+
+/** Interface to geat all avalilable data */
+export interface IApplicationContext {
+  /** Form data */
+  data: any;
+  /** Form mode */
+  formMode: FormMode;
+  /** Contexts datas */
+  contexts: any;
+  /** Global state */
+  globalState: any;
+  /** Table selection */
+  selectedRow: ISelectionProps;
+  /** Moment function */
+  moment: Function;
+  /** Other data */
+  [key: string]: any;
+}
+
+export function useApplicationContext(topContextId?: string): IApplicationContext {
+  const { backendUrl } = useSheshaApplication();
+  const dcm = useDataContextManager(false);
+  const { formMode, form, setFormDataAndInstance: setFormData } = useForm(false);
+  const { globalState, setState: setGlobalState } = useGlobalState();
+  return {
+    data: useFormData()?.data,
+    setFormData,
+    formMode,
+    form,
+    contexts: {...useDataContextManager(false)?.getDataContextsData(topContextId), lastUpdate: dcm.lastUpdate},
+    globalState,
+    setGlobalState,
+    selectedRow: useDataTableSelection(false)?.selectedRow,
+    moment: moment,
+    http: axiosHttp(backendUrl),
+    message
+   };
+};
 
 export const getValuesModel = (model: any, postfix: string = null) => {
 
@@ -93,7 +136,7 @@ export const getValuesModel = (model: any, postfix: string = null) => {
  * @param model - model
  * @returns - converted model
  */
-export const getActualModel = (model: any, formData: any, formMode: FormMode) => {
+export const getActualModel = (model: any, allData: any) => {//, formData: any, formMode: FormMode, allData: {name: string; data: any}[] = []) => {
 
   const getSettingValue = (value: any, calcFunction: (setting: IPropertySetting) => any) => {
     if (!value) 
@@ -122,8 +165,18 @@ export const getActualModel = (model: any, formData: any, formMode: FormMode) =>
 
   const calcValue = (setting) => {
     try {
-      const res = new Function('value, data, staticValue, formMode, getSettingValue', setting?._code)
-        (formData?.[model.propertyName], formData, setting?._value, formMode, getValue);
+      //let vars = 'value, data, staticValue, formMode, getSettingValue';
+      //const datas = [formData?.[model.propertyName], formData, setting?._value, formMode, getValue];
+      let vars = 'staticValue, getSettingValue';
+      const datas = [setting?._value, getValue];
+      for (let key in allData) {
+        if (Object.hasOwn(allData, key)) {
+          vars+= `, ${key}`;
+          datas.push(allData[key]);
+        }
+      }
+      const res = new Function(vars, setting?._code)(...datas);
+        //(formData?.[model.propertyName], formData, setting?._value, formMode, getValue, allData[0]?.data);
       return res;
     } catch {
       return undefined;
@@ -645,6 +698,19 @@ export function executeScript<TResult = any>(
   });
 }
 
+export const getExecutorScriptSync = (context: any) => {
+  /*let argsDefinition = '';
+  const argList: any[] = [];
+  for (const argumentName in context) {
+    if (context.hasOwnProperty(argumentName)) {
+      argsDefinition += (argsDefinition ? ', ' : '') + argumentName;
+      argList.push(context[argumentName]);
+    }
+  }*/
+
+  return <T,>(jscode: string) =>  executeScriptSync<T>(jscode, context);
+};
+
 export function executeScriptSync<TResult = any>(expression: string, context: IExpressionExecuterArguments): TResult {
   if (!expression) throw new Error('Expression must be defined');
 
@@ -675,16 +741,14 @@ export const getVisibleComponentIds = (
   const visibleComponents: string[] = [];
   for (const key in components) {
     if (components.hasOwnProperty(key)) {
-
-      // update component model to actual values
-      const component = getActualModel(components[key] as IConfigurableFormComponent, values, formMode);
+      const component = components[key] as IConfigurableFormComponent;
 
       if (propertyFilter && component.propertyName) {
         const filteredOut = propertyFilter(component.propertyName);
         if (filteredOut === false) continue;
       }
 
-      if (!component || component.hidden || component.visibility === 'No' || component.visibility === 'Removed')
+      if (!component || component.visibility === 'No' || component.visibility === 'Removed')
         continue;
 
       const isVisible = component.visibilityFunc == null || component.visibilityFunc(values, globalState, formMode);
@@ -701,14 +765,12 @@ export const getEnabledComponentIds = (
   components: IComponentsDictionary,
   values: any,
   globalState: any,
-  formMode: FormMode
+  formMode: FormMode,
 ): string[] => {
   const enabledComponents: string[] = [];
   for (const key in components) {
     if (components.hasOwnProperty(key)) {
       const component = components[key] as IConfigurableFormComponent;
-      if (!component || component.disabled) continue;
-
       const isEnabled =
         !Boolean(component?.enabledFunc) ||
         (typeof component?.enabledFunc === 'function' && component?.enabledFunc(values, globalState, formMode));

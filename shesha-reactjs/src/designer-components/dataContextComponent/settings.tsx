@@ -51,11 +51,18 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
   return (
     <>
     <SettingsCollapsiblePanel header="Data context">
-      <SettingsFormItem label="Component name" required>
-        <Input id="fb71cb51-884f-4f34-aa77-820c12276c95" readOnly={readOnly} value={model.propertyName} onChange={(e) => {
-          const name = e.target.value;
-          onValuesChange({componenName: name, propertyName: name});
-        }}/>
+      <SettingsFormItem name='componentName' label="Component name" tooltip='This name will be used as identifier and in the code editor' required>
+        {(value) => 
+          <Input readOnly={readOnly} value={value} onChange={(e) => {
+              const name = e.target.value;
+              onValuesChange({componenName: name, propertyName: name});
+            }}
+          />
+        }
+      </SettingsFormItem>
+
+      <SettingsFormItem name='description' label="Description">
+        <Input readOnly={readOnly} />
       </SettingsFormItem>
 
       <SettingsFormItem name="initialDataCode" label="Context metadata" jsSetting>

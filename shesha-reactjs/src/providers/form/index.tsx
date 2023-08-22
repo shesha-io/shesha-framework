@@ -34,7 +34,7 @@ import {
   convertActions,
   getVisibleComponentIds,
   convertSectionsToList,
-  getEnabledComponentIds,
+  getEnabledComponentIds
 } from './utils';
 import { useFormDesignerComponents } from './hooks';
 import { FormInstance } from 'antd';
@@ -264,7 +264,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
       formContext.formData,
       globalState,
       formContext?.formMode,
-      propertyFilter,
+      propertyFilter
     );
     setVisibleComponents({ componentIds: visibleComponents });
   };
@@ -289,7 +289,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
       allComponents,
       formContext.formData,
       globalState,
-      formContext?.formMode
+      formContext?.formMode,
     );
 
     setEnabledComponents({ componentIds: enabledComponents });

@@ -1,26 +1,26 @@
-import { IDataContextFullInstance } from "providers/dataContextProvider";
-import { IRegisterDataContextPayload } from "providers/dataContextProvider/models";
 import React, { FC, PropsWithChildren, useContext, useEffect, useRef, useState } from "react";
 import { createContext } from 'react';
-import { IDataContextDescriptor, IDataContextDictionary, IGetDataContextPayload } from "./models";
+import { IDataContextDescriptor, IDataContextDictionary, IRegisterDataContextPayload } from "./models";
 
 export interface IDataContextManagerStateContext {
-    activeContext: IDataContextFullInstance;
-    contexts: IDataContextDictionary;
+    lastUpdate: string;
 }
 
 export interface IDataContextManagerActionsContext {
     registerDataContext: (payload: IRegisterDataContextPayload) => void;
-    getDataContexts: (topId: string) => IDataContextDescriptor[];
     unregisterDataContext: (payload: IRegisterDataContextPayload) => void;
-    getDataContext: (payload: IGetDataContextPayload | string) => IDataContextDescriptor;
-    onChangeContext: (contextId: string, dataContext: IDataContextFullInstance) => void;
-    setActiveContext: (context: IDataContextFullInstance) => void;
-    getActiveContext: () => IDataContextFullInstance;
+    getDataContexts: (topId?: string) => IDataContextDescriptor[];
+    getDataContextsData: (topId?: string) => {};
+    getDataContext: (contextId: string) => IDataContextDescriptor;
+    getDataContextData: (contextId: string) => any;
+    onChangeContext: (dataContext: IDataContextDescriptor) => void;
+    onChangeContextData: (contextId: string, data: any) => void;
+    setActiveContext: (contextId: string) => void;
+    getActiveContext: () => IDataContextDescriptor;
 }
 
 /** initial state */
-export const DATA_CONTEXT_MANAGER_CONTEXT_INITIAL_STATE: IDataContextManagerStateContext = {activeContext: null, contexts: {}};
+export const DATA_CONTEXT_MANAGER_CONTEXT_INITIAL_STATE: IDataContextManagerStateContext = {lastUpdate: new Date().toISOString()};
 
 export const DataContextManagerStateContext = createContext<IDataContextManagerStateContext>(DATA_CONTEXT_MANAGER_CONTEXT_INITIAL_STATE);
 export const DataContextManagerActionsContext = createContext<IDataContextManagerActionsContext>(undefined);
@@ -30,39 +30,45 @@ export interface IDataContextManagerProps { }
 const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ children }) => {
 
     const [state, setState] = useState<IDataContextManagerStateContext>(DATA_CONTEXT_MANAGER_CONTEXT_INITIAL_STATE);
+    const [activeContextId, setActiveContextId] = useState<string>(null);
 
+    const contextsData = useRef<{}>({});
     const contexts = useRef<IDataContextDictionary>({});
 
     const registerDataContext = (payload: IRegisterDataContextPayload) => {
-        const existingContext = contexts.current[payload.id];
-        if (!existingContext) {
-            contexts.current[payload.id] = {
-            id: payload.id,
-            name: payload.name,
-            type: payload.type,
-            dataContext: payload.dataContext,
-          };
-        } else {
-            existingContext.dataContext = payload.dataContext;
-        }
+        const ctx = {...payload, initialData: undefined};
+        contexts.current[payload.id] = {...ctx};
+        contextsData.current[payload.id] = {...payload.initialData};
 
-        setState({...state, contexts: contexts.current });
+        //setData({...contextsData, [payload.id]: payload.initialData});
+        setState({...state, lastUpdate: new Date().toJSON() });
     };
 
     const unregisterDataContext = (payload: IRegisterDataContextPayload) => {
         if (!!contexts.current[payload.id])
             delete contexts.current[payload.id];
 
-        setState({...state, contexts: contexts.current });
+        setState({...state, lastUpdate: new Date().toJSON() });
+    };
+
+    const getDataContextsData =(topId?: string) => {
+        const res = {};
+        getDataContexts(topId).forEach(item => {
+            res[item.id] = {
+                ...getDataContextData(item.id),
+                setFieldValue: item.setFieldValue
+            };
+        });
+        return res;
     };
 
     const getDataContexts = (topId: string) => {
-        const contexts: IDataContextDescriptor[] = [];
+        const ctxs: IDataContextDescriptor[] = [];
         
         const dataContexts: IDataContextDescriptor[] = [];
-        for (let key in state.contexts) 
-            if (Object.hasOwn(state.contexts, key)) 
-                dataContexts.push(state.contexts[key] as IDataContextDescriptor);
+        for (let key in contexts.current) 
+            if (Object.hasOwn(contexts.current, key) && contexts.current[key].type !== 'settings') 
+                dataContexts.push(contexts.current[key] as IDataContextDescriptor);
 
         if (!topId)
             return dataContexts?.filter(x => x.type === 'root') ?? [];
@@ -72,44 +78,57 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
 
         let c = dataContexts.find(x => x.id === topId);
         while (c != null) {
-            contexts.push(c);
+            ctxs.push(c);
             c = dataContexts.find(x => x.id === c.parentId);
         }
-        return contexts;
+        return ctxs;
     };
 
-    const getDataContext = (payload: IGetDataContextPayload | string) => {
-        if (!payload)
+    const getDataContext = (contextId: string) => {
+        if (!contextId)
             return undefined;
 
-        return (typeof(payload) === 'string') 
-            ? contexts.current[payload]
-            : contexts.current[`${payload.id}`];
+        return contexts.current[contextId];
     };
 
-    const onChangeContext = (contextId: string, dataContext: IDataContextFullInstance) => {
-        const existingContext = contexts.current[contextId];
+    const getDataContextData = (contextId: string) => {
+        if (!contextId)
+            return undefined;
+
+        return contextsData.current[contextId];
+    };
+
+    const onChangeContext = (payload: IDataContextDescriptor) => {
+        const existingContext = contexts.current[payload.id];
         if (!!existingContext) {
-            existingContext.dataContext = dataContext;
-            setState({...state, contexts: contexts.current });
+            contexts.current[payload.id] = {...payload, metadata: payload.metadata ??  contexts.current[payload.id].metadata};
+            setState({...state, lastUpdate: new Date().toJSON() });
         }
     };
+    
+    const onChangeContextData = (contextId: string, data: any) => {
+        contextsData.current[contextId] = {...data};
+        setState({...state, lastUpdate: new Date().toJSON()});
+    };
 
-    const setActiveContext = (context: IDataContextFullInstance) => {
-        if (state.activeContext !== context)
-            setState({...state, activeContext: context});
+    const setActiveContext = (contextId: string) => {
+        if (activeContextId !== contextId)
+            setActiveContextId(contextId);
     };
 
     const getActiveContext = () => {
-        return state.activeContext;
+        return contexts.current[activeContextId];
     };
 
     const dataContextsProviderActions: IDataContextManagerActionsContext = {
         registerDataContext,
         unregisterDataContext,
         getDataContexts,
+        getDataContextsData,
         getDataContext,
+        getDataContextData,
         onChangeContext,
+        onChangeContextData,
         setActiveContext,
         getActiveContext
     };

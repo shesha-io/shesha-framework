@@ -6,9 +6,8 @@ import { Alert, Divider, Menu, Space } from 'antd';
 import { IButtonGroupButton, ButtonGroupItemProps } from '../../../../../providers/buttonGroupConfigurator/models';
 import { useForm } from '../../../../../providers/form';
 import { ConfigurableButton } from '../configurableButton';
-import { useSheshaApplication, useDataTableSelection, useGlobalState } from '../../../../../providers';
-import moment from 'moment';
-import { executeExpression, getActualModel, getStyle } from '../../../../../providers/form/utils';
+import { useSheshaApplication } from '../../../../../providers';
+import { getActualModel, getStyle, useApplicationContext } from '../../../../../providers/form/utils';
 import { getButtonGroupItems, getButtonGroupMenuItem } from './utils';
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
@@ -21,12 +20,11 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupProps> = {
   icon: <GroupOutlined />,
   factory: (props: IButtonGroupProps) => {
     const model = { ...props, items: getButtonGroupItems(props) } as IButtonGroupProps;
-    const { isComponentHidden, formMode } = useForm();
+    const { formMode } = useForm();
     const { anyOfPermissionsGranted } = useSheshaApplication();
-    const hidden = isComponentHidden({ id: model?.id, isDynamic: model?.isDynamic, hidden: model?.hidden });
     const granted = anyOfPermissionsGranted(model?.permissions || []);
 
-    if ((hidden || !granted) && formMode !== 'designer') return null;
+    if ((props.hidden || !granted) && formMode !== 'designer') return null;
 
     // TODO: Wrap this component within ConfigurableFormItem so that it will be the one handling the hidden state. Currently, it's failing. Always hide the component
     return <ButtonGroup {...model} />;
@@ -55,46 +53,20 @@ type MenuButton = ButtonGroupItemProps & {
 };
 
 export const ButtonGroup: FC<IButtonGroupProps> = ({ items, id, size, spaceSize = 'middle', isInline, noStyles }) => {
-  const { formMode, formData, form } = useForm();
+  const allData = useApplicationContext();
   const { anyOfPermissionsGranted } = useSheshaApplication();
-  const { globalState } = useGlobalState();
-  const { selectedRow } = useDataTableSelection(false) ?? {}; // todo: move to a generic context provider
 
-  const isDesignMode = formMode === 'designer';
+  const isDesignMode = allData.formMode === 'designer';
 
-  const actualItems = items?.map((item) => getActualModel(item, formData, formMode));
-
-  const localexecuteExpression = (expression: string) => {
-    const expressionArgs = {
-      data: formData ?? {},
-      form: form,
-      formMode: formMode,
-      globalState: globalState,
-      moment: moment,
-      context: { selectedRow },
-    };
-    return executeExpression<boolean>(expression, expressionArgs, true, (error) => {
-      console.error('Expression evaluation failed', error);
-      return true;
-    });
-  };
-
-  /**
-   * Return the visibility state of a button. A button is visible is it's not hidden and the user is permitted to view it
-   *
-   * @param item
-   * @returns
-   */
+  // Return the visibility state of a button. A button is visible is it's not hidden and the user is permitted to view it
   const getIsVisible = (item: ButtonGroupItemProps) => {
     const { permissions, hidden } = item;
     const granted = anyOfPermissionsGranted(permissions || []);
-    return !hidden && granted;
+    return isDesignMode || !hidden && granted;
   };
 
   const renderMenuButton = (props: MenuButton, isChild = false) => {
     const hasChildren = props?.childItems?.length > 0;
-
-    const disabled = !localexecuteExpression(props.customEnabled);
 
     const buttonProps = props.itemType === 'item' ? (props as IButtonGroupButton) : null;
     const isDivider = buttonProps && (buttonProps.itemSubType === 'line' || buttonProps.itemSubType === 'separator');
@@ -102,15 +74,15 @@ export const ButtonGroup: FC<IButtonGroupProps> = ({ items, id, size, spaceSize 
     return isDivider
       ? { type: 'divider' }
       : getButtonGroupMenuItem(
-          renderButtonItem(props, props?.id, disabled),
+          renderButtonItem(props, props?.id, props.disabled),
           props.id,
-          disabled,
+          props.disabled,
           hasChildren ? props?.childItems?.filter(getIsVisible)?.map((props) => renderMenuButton(props, isChild)) : null
         );
   };
 
   const renderButtonItem = (item: ButtonGroupItemProps, uuid: string, disabled = false, isChild = false) => {
-    const itemProps = getActualModel(item, formData, formMode) as IButtonGroupButton;
+    const itemProps = getActualModel(item, allData) as IButtonGroupButton;
 
     const isDivider = itemProps && (itemProps.itemSubType === 'line' || itemProps.itemSubType === 'separator');
 
@@ -121,13 +93,14 @@ export const ButtonGroup: FC<IButtonGroupProps> = ({ items, id, size, spaceSize 
         key={uuid}
         {...itemProps}
         size={size}
-        style={getStyle(item?.style, formData)}
+        style={getStyle(item?.style, allData.data)}
         disabled={disabled}
         buttonType={isChild ? 'link' : item.buttonType}
       />
     ;
   };
 
+  const actualItems = items?.map((item) => getActualModel(item, allData));
   const filteredItems = actualItems?.filter(getIsVisible);
 
   if (actualItems.length === 0 && isDesignMode)

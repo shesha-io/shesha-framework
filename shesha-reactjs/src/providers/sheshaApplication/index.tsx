@@ -41,6 +41,7 @@ import { DataSourcesProvider } from '../dataSourcesProvider';
 import { useDeepCompareEffect } from 'react-use';
 import { DataContextManager } from 'providers/dataContextManager';
 import { DataContextProvider } from 'providers/dataContextProvider';
+import { IModelMetadata } from 'interfaces/metadata';
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;
@@ -117,6 +118,15 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
     dispatch(setGlobalVariablesAction(values));
   };
 
+  const testMetadata: IModelMetadata = {
+    name: 'testProp',
+    type: '',
+    dataType: 'string',
+    apiEndpoints: {},
+    specifications: [],
+    properties: []
+  };
+
   return (
     <SheshaApplicationStateContext.Provider value={state}>
       <SheshaApplicationActionsContext.Provider
@@ -152,7 +162,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                         <ReferenceListDispatcherProvider>
                           <MetadataDispatcherProvider>
                             <DataContextManager>
-                              <DataContextProvider id={'appContext'} name={'Application context'} type={'root'} >
+                              <DataContextProvider id={'appContext'} name={'appContext'} description={'Application context'} type={'root'} metadata={new Promise(resolve => resolve(testMetadata))} >
                                 <StackedNavigationProvider>
                                   <DataSourcesProvider>
                                     <DynamicModalProvider>

@@ -75,6 +75,12 @@ export const getSettings = (data: any) =>
       label: 'Icon',
       parentId: 'root',
     })
+    .addCheckbox({
+      id: '148e12c0-41a0-4fa2-8c64-8f6dd5213a3e',
+      propertyName: 'hidden',
+      label: 'Hidden',
+      parentId: 'root',
+    })
     .addSectionSeparator({
       id: '516d72e1-3dfd-433f-8459-8b1610c3c9cb',
       propertyName: 'separatorStyle',
@@ -86,21 +92,6 @@ export const getSettings = (data: any) =>
       propertyName: 'style',
       label: 'Style',
       parentId: 'root',
-      mode: 'dialog',
-    })
-    .addSectionSeparator({
-      id: 'bc67960e-77e3-40f2-89cc-f18f94678cce',
-      propertyName: 'separatorVisibility',
-      parentId: 'root',
-      label: 'Visibility',
-    })
-    .addCodeEditor({
-      id: '03959ffd-cadb-496c-bf6d-b742f7f6edc6',
-      propertyName: 'customVisibility',
-      parentId: 'root',
-      label: 'Custom Visibility',
-      description:
-        'Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
       mode: 'dialog',
     })
     .toJson();

@@ -2,7 +2,8 @@ import { Skeleton } from "antd";
 import React, { FC } from "react";
 import type { IAceEditorProps } from 'react-ace';
 import ReactAce from "react-ace/lib/ace";
-import { metadataCodeCompleter } from './codeCompleter';
+import { metadataCodeCompleter } from './metadataCompleter';
+import contextCodeCompleter from "./contextCompleter";
 
 const DEFAULT_ACE_URL = 'https://cdn.jsdelivr.net/npm/ace-builds@1.12.2/src-noconflict';
 
@@ -36,6 +37,7 @@ const AceEditorLazy = React.lazy<typeof ReactAce>(() => new Promise(async resolv
     const langTools = ace.require("ace/ext/language_tools");
 
     langTools.addCompleter(metadataCodeCompleter);
+    langTools.addCompleter(contextCodeCompleter);
 
     resolve(reactAce);
 }));

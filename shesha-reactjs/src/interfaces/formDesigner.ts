@@ -12,6 +12,7 @@ import { IPropertyMetadata } from './metadata';
 import { ConfigurableFormInstance } from '../providers/form/contexts';
 import { Migrator, MigratorFluent } from '../utils/fluentMigrator/migrator';
 import { FormLayout } from 'antd/lib/form/Form';
+import { IApplicationContext } from 'utils/publicUtils';
 
 export interface ISettingsFormInstance {
   submit: () => void;
@@ -85,7 +86,8 @@ export interface IToolboxComponent<T extends IConfigurableFormComponent = any> {
     model: T,
     componentRef: MutableRefObject<any>,
     form: FormInstance<any>,
-    children?: JSX.Element
+    children?: JSX.Element,
+    context?: IApplicationContext
   ) => ReactNode;
   /**
    * @deprecated - use `migrator` instead

@@ -189,22 +189,22 @@
       "ignorePrefixesOnNewItems": true,
       "exposedVariables": [
         {
-          "propertyName": "data",
+          "name": "data",
           "description": "The form data",
           "type": "object"
         },
         {
-          "propertyName": "parentFormValues",
+          "name": "parentFormValues",
           "description": "Parent form values. The values of the form rendering the dialog.",
           "type": "object"
         },
         {
-          "propertyName": "globalState",
+          "name": "globalState",
           "description": "The global state of the application",
           "type": "object"
         },
         {
-          "propertyName": "query",
+          "name": "query",
           "description": "Query parameters from the address bar",
           "type": "object"
         }
@@ -226,27 +226,27 @@
       "validate": {},
       "exposedVariables": [
         {
-          "propertyName": "data",
+          "name": "data",
           "description": "The form data",
           "type": "object"
         },
         {
-          "propertyName": "moment",
+          "name": "moment",
           "description": "The moment.js object",
           "type": "object"
         },
         {
-          "propertyName": "parentFormValues",
+          "name": "parentFormValues",
           "description": "Parent form values. The values of the form rendering the dialog.",
           "type": "object"
         },
         {
-          "propertyName": "globalState",
+          "name": "globalState",
           "description": "The global state of the application",
           "type": "object"
         },
         {
-          "propertyName": "initialValues",
+          "name": "initialValues",
           "description": "Initial values",
           "type": "object"
         }
@@ -268,42 +268,42 @@
       "validate": {},
       "exposedVariables": [
         {
-          "propertyName": "moment",
+          "name": "moment",
           "description": "The moment.js object",
           "type": "object"
         },
         {
-          "propertyName": "parentFormValues",
+          "name": "parentFormValues",
           "description": "Parent form values. The values of the form rendering the dialog.",
           "type": "object"
         },
         {
-          "propertyName": "globalState",
+          "name": "globalState",
           "description": "The global state of the application",
           "type": "object"
         },
         {
-          "propertyName": "initialValues",
+          "name": "initialValues",
           "description": "Initial values",
           "type": "object"
         },
         {
-          "propertyName": "http",
+          "name": "http",
           "description": "axios instance used to make http requests",
           "type": "object"
         },
         {
-          "propertyName": "message",
+          "name": "message",
           "description": "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
           "type": "object"
         },
         {
-          "propertyName": "form",
+          "name": "form",
           "description": "The form instance",
           "type": "object"
         },
         {
-          "propertyName": "setGlobalState",
+          "name": "setGlobalState",
           "description": "Setting the global state of the application",
           "type": "(payload: { key: string, data: any } ) => void"
         }
@@ -325,47 +325,47 @@
       "validate": {},
       "exposedVariables": [
         {
-          "propertyName": "data",
+          "name": "data",
           "description": "Fetched data from the server",
           "type": "object"
         },
         {
-          "propertyName": "moment",
+          "name": "moment",
           "description": "The moment.js object",
           "type": "object"
         },
         {
-          "propertyName": "globalState",
+          "name": "globalState",
           "description": "The global state of the application",
           "type": "object"
         },
         {
-          "propertyName": "initialValues",
+          "name": "initialValues",
           "description": "Initial values",
           "type": "object"
         },
         {
-          "propertyName": "http",
+          "name": "http",
           "description": "axios instance used to make http requests",
           "type": "object"
         },
         {
-          "propertyName": "initialValues",
+          "name": "initialValues",
           "description": "Initial values passsed to the form. In most cases, it's the selected row in a case where an action column is the one triggering the form displaying on the dialog",
           "type": "object"
         },
         {
-          "propertyName": "message",
+          "name": "message",
           "description": "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
           "type": "object"
         },
         {
-          "propertyName": "form",
+          "name": "form",
           "description": "The form instance",
           "type": "object"
         },
         {
-          "propertyName": "setGlobalState",
+          "name": "setGlobalState",
           "description": "Setting the global state of the application",
           "type": "(payload: { key: string, data: any } ) => void"
         }
@@ -387,47 +387,47 @@
       "validate": {},
       "exposedVariables": [
         {
-          "propertyName": "data",
+          "name": "data",
           "description": "The form data",
           "type": "object"
         },
         {
-          "propertyName": "moment",
+          "name": "moment",
           "description": "The moment.js object",
           "type": "object"
         },
         {
-          "propertyName": "parentFormValues",
+          "name": "parentFormValues",
           "description": "Parent form values. The values of the form rendering the dialog.",
           "type": "object"
         },
         {
-          "propertyName": "globalState",
+          "name": "globalState",
           "description": "The global state of the application",
           "type": "object"
         },
         {
-          "propertyName": "initialValues",
+          "name": "initialValues",
           "description": "Initial values",
           "type": "object"
         },
         {
-          "propertyName": "http",
+          "name": "http",
           "description": "axios instance used to make http requests",
           "type": "object"
         },
         {
-          "propertyName": "message",
+          "name": "message",
           "description": "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
           "type": "object"
         },
         {
-          "propertyName": "setFormData",
+          "name": "setFormData",
           "description": "A function used to update the form data",
           "type": "({ values: object, mergeValues: boolean}) => void"
         },
         {
-          "propertyName": "setGlobalState",
+          "name": "setGlobalState",
           "description": "Setting the global state of the application",
           "type": "(payload: { key: string, data: any } ) => void"
         }

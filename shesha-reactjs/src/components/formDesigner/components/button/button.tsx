@@ -18,22 +18,16 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
   name: 'Button',
   icon: <BorderOutlined />,
   factory: ({ style, ...model }: IButtonComponentProps) => {
-    const { isComponentDisabled, isComponentHidden, formMode } = useForm();
+    const { formMode } = useForm();
     const { data } = useFormData();
 
     const { anyOfPermissionsGranted } = useSheshaApplication();
-
-    const { id, isDynamic, hidden, disabled } = model;
 
     const fieldModel = {
       ...model,
       label: null,
       tooltip: null,
     };
-
-    const isHidden = isComponentHidden({ id, isDynamic, hidden });
-
-    const isDisabled = isComponentDisabled({ id, isDynamic, disabled });
 
     const grantedPermission = anyOfPermissionsGranted(model?.permissions || []);
 
@@ -44,11 +38,9 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
     return (
       <ConfigurableFormItem model={fieldModel}>
         <ConfigurableButton
+          {...model}
           block={model?.block}
           formComponentId={model?.id}
-          {...model}
-          disabled={isDisabled}
-          hidden={isHidden}
           style={getStyle(style, data)}
         />
       </ConfigurableFormItem>
