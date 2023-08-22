@@ -1,6 +1,6 @@
 import { TimelineChannels } from 'components/timeline/timelineItem/timelineChannels';
 
-export const getTimelineTitle = (channel: number) => {
+export const getTimelineTitle = (channel: number, extra: String = '') => {
   switch (channel) {
     case TimelineChannels.SMS:
       return 'sent a sms';
@@ -12,6 +12,8 @@ export const getTimelineTitle = (channel: number) => {
       return 'sent an email';
     case TimelineChannels.Note:
       return 'Commented on this Service Request';
+    case TimelineChannels.Asign:
+      return 'has assigned case to ' + extra;
     default:
       return '';
   }

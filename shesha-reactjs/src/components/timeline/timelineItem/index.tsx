@@ -7,7 +7,7 @@ import { getTimelineTitle } from 'utils/timelinetitle';
 
 import '../styles/styles.less';
 
-export const TimelineItem: FC<ITimelineItemProps> = ({ title, channel, toPerson, body, actionDate }) => {
+export const TimelineItem: FC<ITimelineItemProps> = ({ title, channel, toPerson, fromPerson, body, actionDate }) => {
   return (
     <Timeline.Item className="sha-timeline-item" dot={getTimelineIcon(channel)}>
       <Card
@@ -20,7 +20,7 @@ export const TimelineItem: FC<ITimelineItemProps> = ({ title, channel, toPerson,
           <div>
             <label>
               <strong style={{ textDecoration: 'underline' }}>{toPerson}</strong>{' '}
-              {!!channel ? getTimelineTitle(channel) : title}
+              {!!channel ? getTimelineTitle(channel, fromPerson) : title}
             </label>
           </div>
         }
