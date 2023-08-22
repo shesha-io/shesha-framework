@@ -1,9 +1,12 @@
-﻿using System.Threading.Tasks;
-using Abp.Configuration.Startup;
+﻿using Abp.Configuration.Startup;
 using Abp.Domain.Uow;
 using Abp.Extensions;
 using Abp.MultiTenancy;
 using Abp.Runtime.Session;
+using Shesha.FluentMigrator;
+using Shesha.NHibernate.Configuration;
+using System;
+using System.Threading.Tasks;
 
 namespace Shesha.NHibernate
 {
@@ -11,7 +14,7 @@ namespace Shesha.NHibernate
     /// Implements <see cref="IDbPerTenantConnectionStringResolver"/> to dynamically resolve
     /// connection string for a multi tenant application.
     /// </summary>
-    public class DbPerTenantConnectionStringResolver : DefaultConnectionStringResolver, IDbPerTenantConnectionStringResolver
+    public class DbPerTenantConnectionStringResolver : DefaultConnectionStringResolver, IDbConnectionSettingsResolver
     {
         /// <summary>
         /// Reference to the session.
@@ -20,6 +23,7 @@ namespace Shesha.NHibernate
 
         private readonly ICurrentUnitOfWorkProvider _currentUnitOfWorkProvider;
         private readonly ITenantCache _tenantCache;
+        private readonly IShaNHibernateModuleConfiguration _nhConfiguration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DbPerTenantConnectionStringResolver"/> class.
@@ -32,6 +36,7 @@ namespace Shesha.NHibernate
         {
             _currentUnitOfWorkProvider = currentUnitOfWorkProvider;
             _tenantCache = tenantCache;
+            _nhConfiguration = configuration.Get<IShaNHibernateModuleConfiguration>();
 
             AbpSession = NullAbpSession.Instance;
         }
@@ -75,6 +80,14 @@ namespace Shesha.NHibernate
                 ? _currentUnitOfWorkProvider.Current.GetTenantId()
                 : AbpSession.TenantId;
         }
-    }
 
+        public DbmsType GetDbmsType(DbPerTenantConnectionStringResolveArgs args)
+        {
+            // todo: review after ABP update, we need to store DBMS type per tenant in the TenantCacheItem
+            if (args.TenantId != null)
+                throw new NotSupportedException("Multitemancy is not supported");
+
+            return _nhConfiguration.DatabaseType;
+        }
+    }
 }

@@ -3,6 +3,7 @@ using NHibernate;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using Shesha.Configuration;
+using Shesha.FluentMigrator;
 using System;
 
 namespace Shesha.NHibernate.Configuration

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Shesha.Exceptions
+﻿namespace Shesha.FluentMigrator
 {
     /// <summary>
     /// Indicates that DBMS type is not specified

@@ -1,5 +1,4 @@
-﻿using Abp.Configuration.Startup;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Extensions;
 using Abp.MultiTenancy;
 using Abp.Reflection;
@@ -9,19 +8,13 @@ using FluentMigrator.Runner.Conventions;
 using FluentMigrator.Runner.Initialization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Shesha.Configuration;
-using Shesha.Configuration.Startup;
-using Shesha.Exceptions;
-using Shesha.FluentMigrator;
-using Shesha.NHibernate.Exceptions;
-using Shesha.NHibernate.PostgreSql;
-using System;
+using Shesha.FluentMigrator.Conventions;
 using System.Configuration;
 using System.Globalization;
-using System.Linq;
 
-namespace Shesha.NHibernate
+namespace Shesha.FluentMigrator
 {
+    // todo: move to Shesha.FluentMigrator
     public class SheshaDbMigrator : IAbpZeroDbMigrator, ITransientDependency
     {
         /// <summary>
@@ -30,16 +23,17 @@ namespace Shesha.NHibernate
         const string MigrationVersionFormat = "yyyyMMddHHmmff";
 
         private readonly IAssemblyFinder _assemblyFinder;
-        private readonly IDbPerTenantConnectionStringResolver _connectionStringResolver;
-        private readonly DbmsType _databaseType;
+        private readonly IDbConnectionSettingsResolver _connectionSettingsResolver;
+        private readonly IModuleLocator _moduleLocator;
+        
 
         public ILogger Logger { get; set; } = NullLogger.Instance;
 
-        public SheshaDbMigrator(IModuleConfigurations configurations, IDbPerTenantConnectionStringResolver connectionStringResolver, IAssemblyFinder assemblyFinder)
+        public SheshaDbMigrator(IDbConnectionSettingsResolver connectionSettingsResolver, IAssemblyFinder assemblyFinder, IModuleLocator moduleLocator)
         {
-            _databaseType = configurations.ShaNHibernate().DatabaseType;
-            _connectionStringResolver = connectionStringResolver;
+            _connectionSettingsResolver = connectionSettingsResolver;
             _assemblyFinder = assemblyFinder;
+            _moduleLocator = moduleLocator;
         }
 
         public virtual void CreateOrMigrateForHost()
@@ -69,11 +63,11 @@ namespace Shesha.NHibernate
         /// <summary>
         /// Configure the dependency injection services
         /// </summary>
-        private IServiceProvider CreateServices(string connectionString)
+        private IServiceProvider CreateServices(IDbConnectionSettings connectionSettings)
         {
             var services = new ServiceCollection();
-            services.TryAddSingleton<IModuleLocator, ModuleLocator>();
-
+            services.TryAddSingleton<IModuleLocator>(_moduleLocator);
+            
             services
                 // Add common FluentMigrator services
                 .AddFluentMigratorCore()
@@ -81,7 +75,7 @@ namespace Shesha.NHibernate
                     {
                         rb.WithGlobalCommandTimeout(TimeSpan.FromMinutes(30));
 
-                        switch (_databaseType)
+                        switch (connectionSettings.DbmsType)
                         {
                             case DbmsType.SQLServer:
                                 {
@@ -96,7 +90,7 @@ namespace Shesha.NHibernate
                             default:
                                 throw new DbmsTypeNotSpecified();
                         }
-                        rb.WithGlobalConnectionString(connectionString);
+                        rb.WithGlobalConnectionString(connectionSettings.ConnectionString);
 
                         var assemblies = _assemblyFinder.GetAllAssemblies();
                         foreach (var assembly in assemblies)
@@ -112,10 +106,10 @@ namespace Shesha.NHibernate
                 // Start of type filter configuration
                 .Configure<RunnerOptions>(opt =>
                 {
-                    opt.Tags = new[] { _databaseType.ToString() };
+                    opt.Tags = new[] { connectionSettings.DbmsType.ToString() };
                 });
 
-            if (_databaseType == DbmsType.PostgreSQL) 
+            if (connectionSettings.DbmsType == DbmsType.PostgreSQL) 
             {
                 // register custom conventions for PostgreSql. It forces to use citext for string columns in the create statements
                 services.AddSingleton<IConventionSet>(new PostgreSqlConventionsSet());
@@ -134,13 +128,16 @@ namespace Shesha.NHibernate
                 tenant == null ? MultiTenancySides.Host : MultiTenancySides.Tenant
             );
 
+            var dbmsType = _connectionSettingsResolver.GetDbmsType(args);
             var connectionString = GetConnectionString(
-                _connectionStringResolver.GetNameOrConnectionString(args)
+                _connectionSettingsResolver.GetNameOrConnectionString(args)
             );
 
             // Put the database update into a scope to ensure
             // that all resources will be disposed.
-            using var scope = CreateServices(connectionString).CreateScope();
+            var connectionSettings = new DbConnectionSettings(dbmsType, connectionString);
+            using var scope = CreateServices(connectionSettings).CreateScope();
+            using var connectionSettingsScope = DbConnectionSettings.BeginConnectionScope(connectionSettings);
 
             // Instantiate the runner
             var runner = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();

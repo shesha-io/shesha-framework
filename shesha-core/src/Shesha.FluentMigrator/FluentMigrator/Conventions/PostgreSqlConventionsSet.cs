@@ -1,11 +1,7 @@
 ﻿using FluentMigrator.Runner;
 using FluentMigrator.Runner.Conventions;
-using JetBrains.Annotations;
-using Shesha.FluentMigrator.Conventions;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace Shesha.NHibernate.PostgreSql
+namespace Shesha.FluentMigrator.Conventions
 {
     /// <summary>
     /// PostgreSql conventions set
