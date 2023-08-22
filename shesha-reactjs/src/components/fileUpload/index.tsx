@@ -2,11 +2,22 @@ import React, { FC, useRef } from 'react';
 import { useStoredFile } from '../../providers';
 import { Upload, message, Button } from 'antd';
 import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
-import { InfoCircleOutlined, SyncOutlined, DeleteOutlined, LoadingOutlined, UploadOutlined } from '@ant-design/icons';
+import {
+  InfoCircleOutlined,
+  SyncOutlined,
+  DeleteOutlined,
+  LoadingOutlined,
+  UploadOutlined,
+  InboxOutlined,
+} from '@ant-design/icons';
 import { UploadProps } from 'antd/lib/upload/Upload';
 import filesize from 'filesize';
 import { FileVersionsPopup } from './fileVersionsPopup';
+import { DraggerStub } from './stubs';
 import './styles/styles.less';
+import Show from 'components/show';
+
+const { Dragger } = Upload;
 
 export interface IFileUploadProps {
   allowUpload?: boolean;
@@ -18,6 +29,7 @@ export interface IFileUploadProps {
   /* isStub is used just to fix strange error when the user is reordering components on the form */
   isStub?: boolean;
   allowedFileTypes?: string[];
+  isDragger?: boolean;
 }
 
 export const FileUpload: FC<IFileUploadProps> = ({
@@ -28,6 +40,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   callback,
   isStub = false,
   allowedFileTypes = [],
+  isDragger = false,
 }) => {
   const {
     fileInfo,
@@ -40,6 +53,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     */
   } = useStoredFile();
   const uploadButtonRef = useRef(null);
+  const uploadDraggerSpanRef = useRef(null);
 
   const onCustomRequest = ({ file /*, onError, onSuccess*/ }: RcCustomRequestOptions) => {
     // call action from context
@@ -54,7 +68,13 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const onReplaceClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     e.preventDefault();
 
-    uploadButtonRef.current.click();
+    if (!isDragger) {
+      uploadButtonRef.current.click();
+    } else {
+      if (uploadDraggerSpanRef.current) {
+        uploadDraggerSpanRef.current.click();
+      }
+    }
   };
 
   const onDeleteClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
@@ -130,13 +150,42 @@ export const FileUpload: FC<IFileUploadProps> = ({
       (press to upload)
     </Button>
   );
-  return isStub ? (
-    <div className={classes}>{uploadButton}</div>
-  ) : (
-    <Upload {...fileProps} className={classes}>
-      {uploadButton}
-    </Upload>
-  );
+
+  const renderStub = () => {
+    if (!isDragger) {
+      return <div className={classes}>{uploadButton}</div>;
+    }
+
+    return <DraggerStub />;
+  };
+
+  const renderUploader = () => {
+    if (!isDragger) {
+      return (
+        <Upload {...fileProps} className={classes}>
+          {uploadButton}
+        </Upload>
+      );
+    }
+
+    return (
+      <Dragger {...fileProps} className={classes}>
+        <span ref={uploadDraggerSpanRef} />
+
+        <Show when={showUploadButton}>
+          <p className="ant-upload-drag-icon">
+            <InboxOutlined />
+          </p>
+          <p className="ant-upload-text">Click or drag file to this area to upload</p>
+          <p className="ant-upload-hint">
+            Support for a single or bulk upload. Strictly prohibit from uploading company data or other band files
+          </p>
+        </Show>
+      </Dragger>
+    );
+  };
+
+  return <span className="sha-file-upload-container">{isStub ? renderStub() : renderUploader()}</span>;
 };
 
 export default FileUpload;

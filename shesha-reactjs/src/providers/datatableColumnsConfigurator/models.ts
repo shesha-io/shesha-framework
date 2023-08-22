@@ -24,6 +24,7 @@ export interface IEditableColumnProps {
 export interface IConfigurableColumnsBase {
   id: string;
   caption: string;
+  columnType?: DatatableColumnType;
   sortOrder: number;
   itemType: ColumnsItemType;
   description?: string;

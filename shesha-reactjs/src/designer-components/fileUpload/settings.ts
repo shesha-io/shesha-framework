@@ -49,6 +49,13 @@ export const getSettings = () =>
       parentId: 'root',
       label: 'Description',
     })
+    .addCheckbox({
+      id: '53cd10ce-25af-474b-af75-8e7b1f19e52d',
+      name: 'isDragger',
+      label: 'Is dragger',
+      parentId: 'root',
+      description: 'Whether the uploader should show a dragger instead of button',
+    })
     .addDropdown({
       id: 'df8a8f35-a50b-42f9-9642-73d390ceddbf',
       name: 'visibility',
@@ -69,7 +76,7 @@ export const getSettings = () =>
           id: 'f07a228c-cb9c-4da7-a8bc-bc2be518a058',
         },
         {
-          label: 'Removed (Remove from UI and exlude from payload)',
+          label: 'Removed (Remove from UI and exclude from payload)',
           value: 'Removed',
           id: '3b6282ee-2eee-47ec-bab9-4cba52b970a0',
         },
@@ -110,7 +117,7 @@ export const getSettings = () =>
         { name: 'value', description: 'Component current value', type: 'string | any' },
         { name: 'data', description: 'Selected form values', type: 'object' },
       ],
-    })    
+    })
     .addCheckbox({
       id: 'f4193290-3bc7-441a-92be-cfaf25d57c28',
       name: 'allowUpload',
