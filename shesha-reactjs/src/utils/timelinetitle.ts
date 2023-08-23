@@ -11,7 +11,7 @@ export const getTimelineTitle = (channel: number, extra: String = '') => {
     case TimelineChannels.Email:
       return 'sent an email';
     case TimelineChannels.Note:
-      return 'Commented on this Service Request';
+      return 'commented on this Service Request';
     case TimelineChannels.Asign:
       return 'has assigned case to ' + extra;
     default:
