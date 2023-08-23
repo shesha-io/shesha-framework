@@ -1,5 +1,7 @@
 export * from './utils';
 export * from './utils/publicUtils';
+export { ConfigurationFrameworkActions } from './utils/configurationFramework/actions';
+
 export { mutate, MutateProps, get, GetProps } from './utils/fetchers';
 export * from './interfaces';
 export * from './providers';
