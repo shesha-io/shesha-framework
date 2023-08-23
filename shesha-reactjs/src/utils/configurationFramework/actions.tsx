@@ -267,7 +267,7 @@ export const itemCancelVersion = (payload: ICancelItemVersionPayload): Promise<I
 
 //#endregion
 
-//#region Doanload as JSON
+//#region Download as JSON
 export interface IDownloadItemAsJsonPayload extends IHasHttpSettings {
     id: string;
 }
@@ -290,3 +290,10 @@ export const downloadAsJson = (payload: IDownloadItemAsJsonPayload): Promise<IDo
 };
 
 //#endregion
+
+export const ConfigurationFrameworkActions = {
+    updateStatus: updateItemStatus,
+    cancelVersion: itemCancelVersion,
+    publish: publishItem,
+    setReady: setItemReady,
+};
