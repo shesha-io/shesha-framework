@@ -25,7 +25,7 @@ const DataContextComponent: IToolboxComponent<IDataContextComponentProps> = {
       const metadata: Promise<IModelMetadata> = useMemo(() => {
         return Promise.resolve({
           name: model.componentName,
-          type: model.id,
+          type: model.componentName + '_' + model.id,
           dataType: DataTypes.context,
           apiEndpoints: {},
           specifications: {},
@@ -42,7 +42,7 @@ const DataContextComponent: IToolboxComponent<IDataContextComponentProps> = {
     settingsFormFactory: (props) => {
       return <DataContextSettingsForm {...props}/>;
     },
-    initModel: model => ({...model}),
+    initModel: model => ({...model, description: model.componentName}),
     linkToModelMetadata: (model): IDataContextComponentProps => ({...model})
     ,
   };

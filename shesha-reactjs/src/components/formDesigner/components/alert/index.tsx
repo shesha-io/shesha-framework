@@ -3,7 +3,7 @@ import { IToolboxComponent } from '../../../../interfaces';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
 import { evaluateString, getStyle, validateConfigurableComponentSettings } from 'providers/form/utils';
-import { useForm, useFormData, useGlobalState } from 'providers';
+import { useFormData, useGlobalState } from 'providers';
 import { getSettings } from './settings';
 import ShaIcon from '../../../shaIcon';
 import { IAlertComponentProps } from './interfaces';
@@ -14,17 +14,15 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
   name: 'Alert',
   icon: <ExclamationCircleOutlined />,
   factory: (model: IAlertComponentProps) => {
-    const { isComponentHidden } = useForm();
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
 
     const { text, alertType, description, showIcon, closable, icon, style } = model;
 
     const evaluatedMessage = evaluateString(text, { data: formData, globalState });
-
     const evaluatedDescription = evaluateString(description, formData);
 
-    if (isComponentHidden(model)) return null;
+    if (model.hidden) return null;
 
     return (
       <Alert

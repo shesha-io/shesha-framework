@@ -37,7 +37,7 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
 
   const { namePrefix, wrapperCol: formItemWrapperCol, labelCol: formItemlabelCol } = formItem;
 
-  const isHidden = isComponentHidden(model);
+  const isHidden = isComponentHidden(model) || model.hidden;
 
   const layout = useMemo(() => {
     // Make sure the `wrapperCol` and `labelCol` from `FormItemProver` override the ones from the main form
@@ -63,7 +63,7 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
 
   const { getDataContext } = useDataContextManager();
   const context =  getDataContext(model.context);
-  const { getFieldValue } = context?.dataContext ?? {};
+  const { getFieldValue } = context ?? {};
 
   const reactChildren = children as ReactNode;
   const funcChildren = children as IConfigurableFormItemChildFunc;
@@ -78,11 +78,11 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
         <DataBinder 
           onChange={(val) => {
             const value = !!val?.target ? val?.target[!!valuePropName ? valuePropName : 'value'] : val;
-            if (!!context?.dataContext?.onChange)
-              context.dataContext.onChange(propName, value);
+            if (!!context?.setFieldValue)
+              context.setFieldValue(propName, value);
           }}
           value={value}
-          getFieldValue={(propName) => getDataContext(model.context)?.dataContext?.getFieldValue(propName)}
+          getFieldValue={(propName) => getDataContext(model.context)?.getFieldValue(propName)}
         >
           {funcChildren}
         </DataBinder>
@@ -92,7 +92,7 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
 
   formItemProps.name = propName;
 
-  // binding to from data for upgraded components 
+  // binding to from data for upgraded components
   if (typeof funcChildren === 'function') 
     return (
       <Form.Item {...formItemProps}>

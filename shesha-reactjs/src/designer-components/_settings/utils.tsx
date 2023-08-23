@@ -17,6 +17,9 @@ export const isPropertySettings = (data: any) => {
 };
 
 export const getPropertySettingsFromData = (data: any, propName: string): IPropertySetting => {
+    if (!propName) 
+        return { _mode: 'value', _code: undefined, _value: undefined };
+
     const propNames = propName.split('.');
     let val = data;
     propNames.forEach(p => {

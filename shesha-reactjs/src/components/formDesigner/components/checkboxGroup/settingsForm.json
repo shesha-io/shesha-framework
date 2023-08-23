@@ -186,12 +186,12 @@
             "description": "Write a code that returns the URL to be used to fetch data for the Radio.",
             "exposedVariables": [
               {
-                "propertyName": "data",
+                "name": "data",
                 "description": "Form values",
                 "type": "object"
               },
               {
-                "propertyName": "globalState",
+                "name": "globalState",
                 "description": "The global state",
                 "type": "object"
               }

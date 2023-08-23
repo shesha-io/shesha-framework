@@ -8,12 +8,13 @@ export const getSettings = (data: any) =>
       parentId: 'root',
       label: 'Display',
     })
-    .addPropertyAutocomplete({
+    .addTextField({
       id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
-      propertyName: 'propertyName',
+      propertyName: 'componentName',
       parentId: 'root',
-      label: 'Property name',
+      label: 'Component name',
       validate: { required: true },
+      jsSetting: false
     })
     .addSectionSeparator({
       id: '8e9069f1-9981-4336-b7af-acd6250a8d2e',
@@ -35,32 +36,10 @@ export const getSettings = (data: any) =>
       label: 'Show Total Items',
       defaultValue: true,
     })
-    .addSectionSeparator({
-      id: 'bc67960e-77e3-40f2-89cc-f18f94678cce',
-      propertyName: 'separatorVisibility',
+    .addCheckbox({
+      id: 'ff14eada-10f7-4470-8db2-52b543d9d03f',
+      propertyName: 'hidden',
       parentId: 'root',
-      label: 'Visibility',
-    })
-    .addCodeEditor({
-      id: '03959ffd-cadb-496c-bf6d-b742f7f6edc6',
-      propertyName: 'customVisibility',
-      parentId: 'root',
-      label: 'Custom Visibility',
-      description:
-        'Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
-      exposedVariables: [
-        {
-          id: '788673a5-5eb9-4a9a-a34b-d8cea9cacb3c',
-          name: 'data',
-          description: 'Form data',
-          type: 'object',
-        },
-        {
-          id: '65b71112-d412-401f-af15-1d3080f85319',
-          name: 'globalState',
-          description: 'The global state',
-          type: 'object',
-        },
-      ],
+      label: 'Hidden',
     })
     .toJson();

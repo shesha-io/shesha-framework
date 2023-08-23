@@ -36,9 +36,10 @@ export const SettingsControl: FC<ISettingsControlProps> = ({ id, propertyName, v
             id={id}
             propertyName={propertyName + 'Code'}
             exposedVariables={[
-                { name: "value", description: "Component current value", type: "string | any" },
                 { name: "data", description: "Selected form values", type: "object" },
-                { name: "staticValue", description: "Static value of this setting", type: "any" },
+                { name: "contexts", description: "Contexts data", type: "object" },
+                //{ name: "value", description: "Component current value", type: "string | any" },
+                //{ name: "staticValue", description: "Static value of this setting", type: "any" },
                 { name: "globalState", description: "Global state", type: "object" },
                 { name: "formMode", description: "Form mode", type: "object" }
             ]}

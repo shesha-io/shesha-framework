@@ -468,57 +468,57 @@
             "settingsValidationErrors": [],
             "exposedVariables": [
               {
-                "propertyName": "data",
+                "name": "data",
                 "description": "Selected form values",
                 "type": "object"
               },
               {
-                "propertyName": "form",
+                "name": "form",
                 "description": "Form instance",
                 "type": "FormInstance"
               },
               {
-                "propertyName": "formMode",
+                "name": "formMode",
                 "description": "The form mode",
                 "type": "'readonly' | 'edit' | 'designer'"
               },
               {
-                "propertyName": "globalState",
+                "name": "globalState",
                 "description": "The global state of the application",
                 "type": "object"
               },
               {
-                "propertyName": "http",
+                "name": "http",
                 "description": "axios instance used to make http requests",
                 "type": "object"
               },
               {
-                "propertyName": "message",
+                "name": "message",
                 "description": "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
                 "type": "object"
               },
               {
-                "propertyName": "moment",
+                "name": "moment",
                 "description": "The moment.js object",
                 "type": "object"
               },
               {
-                "propertyName": "option",
+                "name": "option",
                 "description": "Meta data of component current value",
                 "type": "object"
               },
               {
-                "propertyName": "value",
+                "name": "value",
                 "description": "Component current value",
                 "type": "string | any"
               },
               {
-                "propertyName": "setFormData",
+                "name": "setFormData",
                 "description": "A function used to update the form data",
                 "type": "({ values: object, mergeValues: boolean}) => void"
               },
               {
-                "propertyName": "setGlobalState",
+                "name": "setGlobalState",
                 "description": "Setting the global state of the application",
                 "type": "(payload: { key: string, data: any } ) => void"
               }

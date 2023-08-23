@@ -237,7 +237,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
 
   const setSelectedComponent = (componentId: string, dataSourceId: string, dataContext: IDataContextFullInstance, componentRef?: MutableRefObject<any>) => {
     if (activateProvider) activateProvider(dataSourceId);
-    if (setActiveContext) setActiveContext(dataContext);
+    if (setActiveContext) setActiveContext(dataContext.id);
     dispatch(setSelectedComponentAction({ id: componentId, dataSourceId, componentRef }));
   };
 

@@ -53,13 +53,6 @@
       "label": "Label"
     },
     {
-      "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
-      "type": "checkbox",
-      "propertyName": "hidden",
-      "parentId": "root",
-      "label": "Hidden"
-    },
-    {
       "id": "345c2181-fb9f-48ed-9631-864ac357807b",
       "type": "container",
       "propertyName": "cntButton",
@@ -173,6 +166,13 @@
             }
           ],
           "dataSourceType": "values"
+        },
+        {
+          "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
+          "type": "checkbox",
+          "propertyName": "hidden",
+          "parentId": "root",
+          "label": "Hidden"
         },
         {
           "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",

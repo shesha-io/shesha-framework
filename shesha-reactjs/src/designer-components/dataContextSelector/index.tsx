@@ -10,12 +10,12 @@ import { useDataContextManager } from 'providers/dataContextManager';
 interface IDataContextSelectorComponentProps extends IConfigurableFormComponent {}
 
 const DataContextSelector: FC<any> = (model) => {
-  const { getActiveContext } = useDataContextManager();
+  const { getActiveContext, getDataContext } = useDataContextManager();
   const dataContexts = [];
   let dataContext = getActiveContext();
   while (!!dataContext) {
     dataContexts.push(dataContext);
-    dataContext = dataContext.parentDataContext;
+    dataContext = getDataContext(dataContext.parentId);
   }
 
   const metadataDispatcher = useMetadataDispatcher();

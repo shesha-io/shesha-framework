@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
-import { Form, Button, Select, Input, InputNumber } from 'antd';
-import { ITableComponentBaseProps, ITableComponentProps, RowDroppedMode } from './models';
+import React, { FC, useState } from 'react';
+import { Button, Select, Input, InputNumber } from 'antd';
+import { ITableComponentProps, RowDroppedMode } from './models';
 import { ColumnsEditorModal } from './columnsEditor/columnsEditorModal';
 import Checkbox from 'antd/lib/checkbox/Checkbox';
 import SectionSeparator from '../../../components/sectionSeparator';
 import CodeEditor from '../../../components/formDesigner/components/codeEditor/codeEditor';
-import PropertyAutocomplete from '../../../components/propertyAutocomplete/propertyAutocomplete';
 import { ConfigurableActionConfigurator } from '../../configurableActionsConfigurator';
 import { YesNoInherit } from 'components/dataTable/interfaces';
 import { InlineEditMode, InlineSaveMode, NewRowCapturePosition } from 'components/reactTable/interfaces';
 import { nanoid } from 'nanoid';
+import { ISettingsFormFactoryArgs } from 'interfaces';
+import SettingsForm, { useSettingsForm } from 'designer-components/_settings/settingsForm';
+import SettingsFormItem from 'designer-components/_settings/settingsFormItem';
 
 interface ITypedOption<T = string> {
   label: React.ReactNode;
@@ -162,18 +164,26 @@ interface IColumnsSettingsState {
   rowDroppedMode?: RowDroppedMode;
 }
 
-function TableSettings(props: IProps) {
+const TableSettingsForm: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props) => {
+  return (
+    SettingsForm<ITableComponentProps>({...props, children: <TableSettings {...props}/>})
+  );
+};
+
+const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({readOnly}) => {
+  const { model } = useSettingsForm<ITableComponentProps>();
+  
   const [state, setState] = useState<IColumnsSettingsState>({
     showColumnsModal: false,
   });
-  const [form] = Form.useForm();
+  /*const [form] = Form.useForm();
   const canEditInline = Form.useWatch('canEditInline', form);
   const canAddInline = Form.useWatch('canAddInline', form);
-  const canDeleteInline = Form.useWatch('canDeleteInline', form);
+  const canDeleteInline = Form.useWatch('canDeleteInline', form);*/
 
   const toggleColumnsModal = () => setState(prev => ({ ...prev, showColumnsModal: !prev?.showColumnsModal }));
 
-  const initialState: ITableComponentBaseProps = {
+  /*const initialState: ITableComponentBaseProps = {
     ...props?.model,
   };
 
@@ -184,49 +194,42 @@ function TableSettings(props: IProps) {
     }));
 
     if (props.onValuesChange) props.onValuesChange(changedValues, values as any);
-  };
+  };*/
 
   return (
-    <Form
-      form={form}
-      onFinish={props.onSave}
-      onValuesChange={onValuesChange}
-      initialValues={initialState}
-      wrapperCol={{ span: 24 }}
-      labelCol={{ span: 24 }}
-    >
-      <Form.Item name="propertyName" label="Property name">
-        <PropertyAutocomplete readOnly={props.readOnly} showFillPropsButton={false} />
-      </Form.Item>
+    <>
+      <SettingsFormItem name="componentName" label="Component name">
+        <Input readOnly={readOnly} />
+      </SettingsFormItem>
 
-      <Button onClick={toggleColumnsModal}>{props.readOnly ? 'View Columns' : 'Customize Columns'}</Button>
+      <Button onClick={toggleColumnsModal}>{readOnly ? 'View Columns' : 'Customize Columns'}</Button>
 
-      <Form.Item name="items">
+      <SettingsFormItem name="items">
         <ColumnsEditorModal
           visible={state?.showColumnsModal}
           hideModal={toggleColumnsModal}
-          readOnly={props.readOnly}
+          readOnly={readOnly}
         />
-      </Form.Item>
+      </SettingsFormItem>
 
-      <Form.Item name="useMultiselect" label="Use Multi-select" valuePropName="checked">
-        <Checkbox disabled={props.readOnly} />
-      </Form.Item>
+      <SettingsFormItem name="useMultiselect" label="Use Multi-select" valuePropName="checked" jsSetting>
+        <Checkbox disabled={readOnly} />
+      </SettingsFormItem>
 
       <SectionSeparator title="CRUD" />
 
-      <Form.Item
+      <SettingsFormItem 
         name="canEditInline"
         label="Can edit inline"
       // label={<>Can edit inline <Switch size="small" defaultChecked unCheckedChildren="static" checkedChildren="JS" style={{ marginLeft: '8px' }}/></>}
       >
-        <Select disabled={props.readOnly} options={yesNoInheritOptions} />
-      </Form.Item>
-      <Form.Item name="canEditInlineExpression" label="Can edit inline expression" hidden={canEditInline !== 'js'}>
+        <Select disabled={readOnly} options={yesNoInheritOptions} />
+      </SettingsFormItem>
+      <SettingsFormItem name="canEditInlineExpression" label="Can edit inline expression" hidden={model.canEditInline !== 'js'}>
         <CodeEditor
           id={''}
           propertyName="canEditInlineExpression"
-          readOnly={props.readOnly}
+          readOnly={readOnly}
           mode="dialog"
           label="Can edit inline expression"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
@@ -234,25 +237,25 @@ function TableSettings(props: IProps) {
           description="Return true to enable inline editing and false to disable."
           exposedVariables={ENABLE_CRUD_EXPOSED_VARIABLES}
         />
-      </Form.Item>
-      <Form.Item name="inlineEditMode" label="Row edit mode" hidden={canEditInline === 'no'}>
-        <Select disabled={props.readOnly} options={inlineEditModes} />
-      </Form.Item>
-      <Form.Item name="inlineSaveMode" label="Save mode" hidden={canEditInline === 'no'}>
-        <Select disabled={props.readOnly} options={inlineSaveModes} />
-      </Form.Item>
-      <Form.Item name="customUpdateUrl" label="Custom update url" hidden={canEditInline === 'no'}>
-        <Input readOnly={props.readOnly} />
-      </Form.Item>
+      </SettingsFormItem>
+      <SettingsFormItem name="inlineEditMode" label="Row edit mode" hidden={model.canEditInline === 'no'}>
+        <Select disabled={readOnly} options={inlineEditModes} />
+      </SettingsFormItem>
+      <SettingsFormItem name="inlineSaveMode" label="Save mode" hidden={model.canEditInline === 'no'}>
+        <Select disabled={readOnly} options={inlineSaveModes} />
+      </SettingsFormItem>
+      <SettingsFormItem name="customUpdateUrl" label="Custom update url" hidden={model.canEditInline === 'no'}>
+        <Input readOnly={readOnly} />
+      </SettingsFormItem>
 
-      <Form.Item name="canAddInline" label="Can add inline">
-        <Select disabled={props.readOnly} options={yesNoInheritOptions} />
-      </Form.Item>
-      <Form.Item name="canAddInlineExpression" label="Can add inline expression" hidden={canAddInline !== 'js'}>
+      <SettingsFormItem name="canAddInline" label="Can add inline">
+        <Select disabled={readOnly} options={yesNoInheritOptions} />
+      </SettingsFormItem>
+      <SettingsFormItem name="canAddInlineExpression" label="Can add inline expression" hidden={model.canAddInline !== 'js'}>
         <CodeEditor
           id={''}
           propertyName="canAddInlineExpression"
-          readOnly={props.readOnly}
+          readOnly={readOnly}
           mode="dialog"
           label="Can add inline expression"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
@@ -260,26 +263,26 @@ function TableSettings(props: IProps) {
           description="Return true to enable inline creation of new rows and false to disable."
           exposedVariables={ENABLE_CRUD_EXPOSED_VARIABLES}
         />
-      </Form.Item>
-      <Form.Item name="newRowCapturePosition" label="New row capture position" hidden={canAddInline === 'no'}>
-        <Select disabled={props.readOnly} options={rowCapturePositions} />
-      </Form.Item>
-      <Form.Item name="newRowInsertPosition" label="New row insert position" /*hidden={canAddInline === 'no'}*/ hidden={true} /* note: hidden until review of rows drag&drop */>
-        <Select disabled={props.readOnly} options={rowCapturePositions} />
-      </Form.Item>
-      <Form.Item name="customCreateUrl" label="Custom create url" hidden={canEditInline === 'no'}>
-        <Input readOnly={props.readOnly} />
-      </Form.Item>
-      <Form.Item
+      </SettingsFormItem>
+      <SettingsFormItem name="newRowCapturePosition" label="New row capture position" hidden={model.canAddInline === 'no'}>
+        <Select disabled={readOnly} options={rowCapturePositions} />
+      </SettingsFormItem>
+      <SettingsFormItem name="newRowInsertPosition" label="New row insert position" /*hidden={canAddInline === 'no'}*/ hidden={true} /* note: hidden until review of rows drag&drop */>
+        <Select disabled={readOnly} options={rowCapturePositions} />
+      </SettingsFormItem>
+      <SettingsFormItem name="customCreateUrl" label="Custom create url" hidden={model.canEditInline === 'no'}>
+        <Input readOnly={readOnly} />
+      </SettingsFormItem>
+      <SettingsFormItem
         label="New row init"
         name="onNewRowInitialize"
         tooltip="Allows configurators to specify logic to initialise the object bound to a new row."
-        hidden={canAddInline === 'no'}
+        hidden={model.canAddInline === 'no'}
       >
         <CodeEditor
           id={''}
           propertyName="onNewRowInitialize"
-          readOnly={props.readOnly}
+          readOnly={readOnly}
           mode="dialog"
           label="New row init"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
@@ -287,17 +290,17 @@ function TableSettings(props: IProps) {
           description="Specify logic to initialise the object bound to a new row. This handler should return an object or a Promise<object>."
           exposedVariables={NEW_ROW_EXPOSED_VARIABLES}
         />
-      </Form.Item>
-      <Form.Item
+      </SettingsFormItem>
+      <SettingsFormItem
         label="On row save"
         name="onRowSave"
         tooltip="Custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations). This handler should return an object or a Promise<object>."
-        hidden={canAddInline === 'no' && canEditInline === 'no'}
+        hidden={model.canAddInline === 'no' && model.canEditInline === 'no'}
       >
         <CodeEditor
           id={''}
           propertyName="onRowSave"
-          readOnly={props.readOnly}
+          readOnly={readOnly}
           mode="dialog"
           label="On row save"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
@@ -305,8 +308,8 @@ function TableSettings(props: IProps) {
           description="Allows custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations)."
           exposedVariables={ROW_SAVE_EXPOSED_VARIABLES}
         />
-      </Form.Item>
-      <Form.Item name="onRowSaveSuccessAction" labelCol={{ span: 0 }} wrapperCol={{ span: 24 }} noStyle>
+      </SettingsFormItem>
+      <SettingsFormItem name="onRowSaveSuccessAction" labelCol={{ span: 0 }} wrapperCol={{ span: 24 }} noStyle>
         <ConfigurableActionConfigurator
           editorConfig={null}
           level={1}
@@ -314,15 +317,15 @@ function TableSettings(props: IProps) {
           description="Custom business logic to be executed after successfull saving of new/updated row."
           exposedVariables={ROW_SAVED_SUCCESS_EXPOSED_VARIABLES}
         />
-      </Form.Item>
-      <Form.Item name="canDeleteInline" label="Can delete inline">
-        <Select disabled={props.readOnly} options={yesNoInheritOptions} />
-      </Form.Item>
-      <Form.Item name="canDeleteInlineExpression" label="Can delete inline expression" hidden={canDeleteInline !== 'js'}>
+      </SettingsFormItem>
+      <SettingsFormItem name="canDeleteInline" label="Can delete inline">
+        <Select disabled={readOnly} options={yesNoInheritOptions} />
+      </SettingsFormItem>
+      <SettingsFormItem name="canDeleteInlineExpression" label="Can delete inline expression" hidden={model.canDeleteInline !== 'js'}>
         <CodeEditor
           id={''}
           propertyName="canDeleteInlineExpression"
-          readOnly={props.readOnly}
+          readOnly={readOnly}
           mode="dialog"
           label="Can delete inline expression"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
@@ -330,39 +333,41 @@ function TableSettings(props: IProps) {
           description="Return true to enable inline deletion and false to disable."
           exposedVariables={ENABLE_CRUD_EXPOSED_VARIABLES}
         />
-      </Form.Item>      
-      <Form.Item name="customDeleteUrl" label="Custom delete url" hidden={canDeleteInline === 'no'}>
-        <Input readOnly={props.readOnly} />
-      </Form.Item>
+      </SettingsFormItem>      
+      <SettingsFormItem name="customDeleteUrl" label="Custom delete url" hidden={model.canDeleteInline === 'no'}>
+        <Input readOnly={readOnly} />
+      </SettingsFormItem>
 
       <SectionSeparator title="Row drag and drop" />
 
-      <Form.Item
+      <SettingsFormItem  jsSetting
         name="allowRowDragAndDrop"
         label="Allow row drag-and-drop"
         valuePropName="checked"
         tooltip="Whether rows should be dragged and dropped to rearrange them"
       >
-        <Checkbox disabled={props.readOnly} />
-      </Form.Item>
+        <Checkbox disabled={readOnly} />
+      </SettingsFormItem>
 
-      <Form.Item name="rowDroppedActionConfiguration">
+      <SettingsFormItem name="rowDroppedActionConfiguration">
         <ConfigurableActionConfigurator editorConfig={null} level={1} label="On Row Dropped Action" />
-      </Form.Item>
+      </SettingsFormItem>
 
       <SectionSeparator title="Layout" />
 
-      <Form.Item name="minHeight" label="Min Height" tooltip="The minimum height of the table (e.g. even when 0 rows). If blank then minimum height is 0.">
+      <SettingsFormItem  jsSetting
+        name="minHeight" label="Min Height" tooltip="The minimum height of the table (e.g. even when 0 rows). If blank then minimum height is 0.">
         <InputNumber />
-      </Form.Item>
+      </SettingsFormItem>
 
-      <Form.Item name="maxHeight" label="Max Height" tooltip="The maximum height of the table. If left blank should grow to display all rows, otherwise should allow for vertical scrolling.">
+      <SettingsFormItem  jsSetting
+        name="maxHeight" label="Max Height" tooltip="The maximum height of the table. If left blank should grow to display all rows, otherwise should allow for vertical scrolling.">
         <InputNumber />
-      </Form.Item>
+      </SettingsFormItem>
 
-      <Form.Item name="containerStyle" label="Table container style">
+      <SettingsFormItem name="containerStyle" label="Table container style">
         <CodeEditor
-          readOnly={props.readOnly}
+          readOnly={readOnly}
           mode="dialog"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           propertyName="containerStyle"
@@ -372,11 +377,11 @@ function TableSettings(props: IProps) {
           description="The style that will be applied to the table container/wrapper"
           exposedVariables={[]}
         />
-      </Form.Item>
+      </SettingsFormItem>
 
-      <Form.Item name="tableStyle" label="Table style">
+      <SettingsFormItem name="tableStyle" label="Table style">
         <CodeEditor
-          readOnly={props.readOnly}
+          readOnly={readOnly}
           mode="dialog"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           propertyName="tableStyle"
@@ -386,9 +391,9 @@ function TableSettings(props: IProps) {
           description="The style that will be applied to the table"
           exposedVariables={[]}
         />
-      </Form.Item>
-    </Form>
+      </SettingsFormItem>
+    </>
   );
-}
+};
 
-export default TableSettings;
+export default TableSettingsForm;

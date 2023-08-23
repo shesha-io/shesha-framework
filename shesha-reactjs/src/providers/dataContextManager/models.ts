@@ -1,18 +1,19 @@
-import { IDataContextFullInstance } from "providers/dataContextProvider";
+import { IModelMetadata } from "interfaces/metadata";
+import { IDataContextProviderActionsContext } from "providers/dataContextProvider";
 
-export interface IDataContextDescriptor {
+export interface IDataContextDescriptor extends IDataContextProviderActionsContext {
   id: string;
-  parentId?: string;
   name: string;
+  description?: string;
   type: string;
-  dataContext?: IDataContextFullInstance;
+  parentId?: string;
+  metadata?: IModelMetadata;
 }
 
 export interface IDataContextDictionary {
   [key: string]: IDataContextDescriptor;
 }
 
-export interface IGetDataContextPayload {
-  id: string;
-  name: string;
+export interface IRegisterDataContextPayload extends IDataContextDescriptor {
+  initialData?: any;
 }

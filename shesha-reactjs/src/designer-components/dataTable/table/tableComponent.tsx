@@ -21,6 +21,7 @@ import { filterVisibility } from './utils';
 import { SheshaActionOwners } from 'providers/configurableActionsDispatcher/models';
 import { OnRowsReorderedArgs } from 'components/reactTable/interfaces';
 import { RowsReorderPayload } from 'providers/dataTable/repository/interfaces';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 
 const TableComponent: IToolboxComponent<ITableComponentProps> = {
   type: 'datatable',
@@ -82,19 +83,10 @@ const TableComponent: IToolboxComponent<ITableComponentProps> = {
             handleSuccess: false,
           }
           : null
-      })
-  ),
-  settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
-    return (
-      <TableSettings
-        readOnly={readOnly}
-        model={model}
-        onSave={onSave}
-        onCancel={onCancel}
-        onValuesChange={onValuesChange}
-      />
-    );
-  },
+      }))
+      .add<ITableComponentProps>(5, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
+  settingsFormFactory: (props) => <TableSettings {...props}/>,
 };
 
 const NotConfiguredWarning: FC = () => {
