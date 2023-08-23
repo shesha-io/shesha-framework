@@ -47,9 +47,9 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
   const ctxItems = useMemo<ICodeTreeLevel>(() => getContextMetadata(dataContextManager?.getDataContexts(dataContextManager?.getActiveContext()?.id)), [dataContextManager.lastUpdate]);
 
   const editorProps: any = {};
-  if (exposedVariables.find(x => x.name === 'data'))
+  if (!exposedVariables || exposedVariables.find(x => x.name === 'data'))
     editorProps.shaMetadata = metaItems;
-  if (exposedVariables.find(x => x.name === 'contexts'))
+  if (!exposedVariables || exposedVariables.find(x => x.name === 'contexts'))
     editorProps.shaContext = ctxItems;
 
   const openEditorDialog = () => setShowDialog(true);

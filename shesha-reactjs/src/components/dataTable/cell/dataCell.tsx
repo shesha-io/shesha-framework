@@ -12,11 +12,11 @@ import TimeCell from "./default/timeCell";
 import { useCrud } from 'providers/crudContext';
 import { CustomErrorBoundary } from 'components';
 import { useFormDesignerComponents } from 'providers/form/hooks';
-import { useForm, useFormData } from 'providers';
+import { useForm } from 'providers';
 import { IColumnEditorProps, IFieldComponentProps, standardCellComponentTypes } from 'providers/datatableColumnsConfigurator/models';
 import { IPropertyMetadata } from 'interfaces/metadata';
 import { ITableDataColumn } from 'providers/dataTable/interfaces';
-import { getActualModel } from 'utils/publicUtils';
+import { getActualModel, useApplicationContext } from 'utils/publicUtils';
 
 export const DataCell = <D extends object = {}, V = number>(props: IDataCellProps<D, V>) => {
     const { mode } = useCrud();
@@ -109,13 +109,12 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
     const { columnConfig, propertyMeta, customComponent } = props;
 
     const toolboxComponents = useFormDesignerComponents();
-    const { form, formMode } = useForm();
-    const { data } = useFormData();
+    const appallData = useApplicationContext();
 
     const component = toolboxComponents[customComponent.type];
 
     const componentModel = useMemo(() => {
-        const actualModel = getActualModel(customComponent.settings, data, formMode);
+        const actualModel = getActualModel(customComponent.settings, appallData);
         let model: IColumnEditorProps = {
             ...actualModel,
             id: props.columnConfig.columnId,
@@ -140,7 +139,7 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
 
     return (
         <CustomErrorBoundary>
-            {component.factory(componentModel, componentRef, form)}
+            {component.factory(componentModel, componentRef, appallData.form)}
         </CustomErrorBoundary>
     );
 };
