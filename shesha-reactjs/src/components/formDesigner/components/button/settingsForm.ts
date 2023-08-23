@@ -40,7 +40,6 @@ export const getSettings = (data: any) =>
       labelAlign: 'right',
       parentId: '345c2181-fb9f-48ed-9631-864ac357807b',
       hidden: false,
-      customVisibility: "return data.itemSubType === 'button'",
       settingsValidationErrors: [],
     })
     .addDropdown({
