@@ -115,8 +115,11 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
             if (handleSuccess) {
               if (onSuccess) {
                 const onSuccessContext = { ...argumentsEvaluationContext, actionResponse: actionResponse };
-                executeAction({ actionConfiguration: onSuccess, argumentsEvaluationContext: onSuccessContext });
+                executeAction({ actionConfiguration: onSuccess, argumentsEvaluationContext: onSuccessContext, success: payload.success, fail: payload.fail });
               } else console.warn(`onSuccess handled is not defined for action '${actionOwner}:${actionName}'`);
+            } else {
+              if (payload.success)
+                payload.success(actionResponse);
             }
           })
           .catch((error) => {
@@ -124,8 +127,11 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
             if (handleFail) {
               if (onFail) {
                 const onFailContext = { ...argumentsEvaluationContext, actionError: error };
-                executeAction({ actionConfiguration: onFail, argumentsEvaluationContext: onFailContext });
+                executeAction({ actionConfiguration: onFail, argumentsEvaluationContext: onFailContext, success: payload.success, fail: payload.fail });
               } else console.warn(`onSuccess handled is not defined for action '${actionOwner}:${actionName}'`);
+            } else {
+              if (payload.fail)
+                payload.fail(error);
             }
           });
       });

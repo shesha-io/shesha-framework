@@ -166,44 +166,51 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
     };
 
     /// NAVIGATION
-    const executeActionIfConfigured = (accessor: (IWizardStepProps) => IConfigurableActionConfiguration) => {
+    const executeActionIfConfigured = (accessor: (IWizardStepProps) => IConfigurableActionConfiguration, success?: (actionResponse: any) => void) => {
       const actionConfiguration = accessor(visibleSteps[current]);
       if (!actionConfiguration) {
         console.warn(`Action not configured: tab '${current}', accessor: '${accessor.toString()}'`);
+        if (success)
+          success(null);
         return;
       }
 
       executeAction({
         actionConfiguration: actionConfiguration,
         argumentsEvaluationContext: actionEvaluationContext,
+        success
       });
     };
 
     const next = () => {
       if (current >= model.steps.length - 1) return;
-      executeActionIfConfigured(tab => tab.nextButtonActionConfiguration);
-
-      const nextStep = getNextStep();
-
-      if (nextStep >= 0) {
-        setCurrent(nextStep);
-      }
-
-      setComponents(visibleSteps[current]?.components);
+      executeActionIfConfigured(
+        tab => tab.nextButtonActionConfiguration,
+        () => {
+          setTimeout(() => {
+            const nextStep = getNextStep();
+            if (nextStep >= 0) 
+              setCurrent(nextStep);
+            setComponents(visibleSteps[current]?.components);
+          }, 100); // It is necessary to have time to complete a request
+        }
+      );
     };
 
     const back = () => {
       if (current <= 0) return;
 
-      executeActionIfConfigured(tab => tab.backButtonActionConfiguration);
-
-      const prevStep = getPrevStep();
-
-      if (prevStep >= 0) {
-        setCurrent(prevStep);
-      }
-
-      setComponents(visibleSteps[current]?.components);
+      executeActionIfConfigured(
+        tab => tab.backButtonActionConfiguration,
+        () => {
+          setTimeout(() => {
+            const prevStep = getPrevStep();
+            if (prevStep >= 0) 
+              setCurrent(prevStep);
+            setComponents(visibleSteps[current]?.components);
+          }, 100); // It is necessary to have time to complete a request
+        }
+      );
     };
 
     const cancel = () => {

@@ -14,6 +14,8 @@ export interface IGetConfigurableActionPayload {
 export interface IExecuteActionPayload {
   actionConfiguration: IConfigurableActionConfiguration;
   argumentsEvaluationContext: GenericDictionary;
+  success?: (actionResponse: any) => void;
+  fail?: (error: any) => void;
 }
 
 export interface IRegisterActionPayload<TArguments = IConfigurableActionArguments, TReponse = any> extends IConfigurableActionDescriptor<TArguments, TReponse> {
