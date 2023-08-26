@@ -18,7 +18,7 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
     isInput: true,
     isOutput: true,
     name: 'Setting',
-    isHidden: false,
+    //isHidden: false,
     icon: <SettingOutlined />,
     factory: (model: ISettingsComponentProps) => {
 
@@ -43,6 +43,7 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
             <>
                 <label>{props.label}</label>
                 <Button 
+                    disabled={model.disabled || model.readOnly}
                     shape="round"
                     style={{marginLeft: 5, marginRight: 5}}
                     type='primary' ghost  size='small' 
@@ -62,7 +63,8 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
                                         resolve({[propertyName]: value});
                                     })}
                                     onChangeData={(value) => {
-                                        onChange(value[propertyName]);
+                                        if (value)
+                                            onChange(value[propertyName]);
                                     }}
                                 >
                                     <ComponentsContainer containerId={props.id} dynamicComponents={components}/>

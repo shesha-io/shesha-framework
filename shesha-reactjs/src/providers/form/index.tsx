@@ -46,6 +46,7 @@ import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { useGlobalState } from '../globalState';
 import { useDeepCompareEffect } from 'react-use';
 import { DelayedUpdateProvider } from 'providers/delayedUpdateProvider';
+import { useDataContextManager } from 'providers/dataContextManager';
 
 export interface IFormProviderProps {
   name: string;
@@ -94,6 +95,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   const toolboxComponents = useFormDesignerComponents();
 
   const { globalState } = useGlobalState();
+  const contextManager = useDataContextManager();
 
   const getToolboxComponent = (type: string) => toolboxComponents[type];
 
@@ -432,6 +434,10 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     hasVisibleChilds,
   };
   if (formRef) formRef.current = { ...configurableFormActions, ...state, allComponents, componentRelations };
+
+  useEffect(() => {
+    contextManager.updateFormInstance({...state, ...configurableFormActions} as ConfigurableFormInstance);
+  }, [state]);
 
   return (
     <FormStateContext.Provider value={{...state, allComponents, componentRelations }}>

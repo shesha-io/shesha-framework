@@ -1,7 +1,7 @@
 import { getFieldNameFromExpression, MetadataProvider, useMetadataDispatcher } from "index";
 import { IModelMetadata } from "interfaces/metadata";
 import { useDataContextManager, useDataContextRegister } from "providers/dataContextManager";
-import React, { FC, PropsWithChildren, useContext, useEffect, useState } from "react";
+import React, { FC, PropsWithChildren, useContext, useEffect, useRef, useState } from "react";
 import { createContext } from 'react';
 
 export interface IDataContextProviderStateContext {
@@ -12,12 +12,16 @@ export interface IDataContextProviderStateContext {
     //data?: object;
     parentDataContext?: IDataContextFullInstance | null;
     metadata?: Promise<IModelMetadata>;
+    api?: object;
 }
 
 export interface IDataContextProviderActionsContext {
     setFieldValue: (name: string, value: any) => void;
     getFieldValue: (name: string) => any;
+    setData: (data: any) => void;
     getData: () => any;
+    updateApi: (api: object) => any;
+    updateOnChangeData: (func: IContextOnChangeData) => void;
 }
 
 /** initial state */
@@ -26,7 +30,9 @@ export const DATA_CONTEXT_PROVIDER_CONTEXT_INITIAL_STATE: IDataContextProviderSt
 export const DataContextProviderStateContext = createContext<IDataContextProviderStateContext>(DATA_CONTEXT_PROVIDER_CONTEXT_INITIAL_STATE);
 export const DataContextProviderActionsContext = createContext<IDataContextProviderActionsContext>(undefined);
 
-export type DataContextType = 'root' | 'custom' | 'settings';
+export type DataContextType = 'root' | 'custom' | 'settings' | 'table';
+
+export type IContextOnChangeData = <T,>(data: T, changedData: any) => void;
 
 export interface IDataContextProviderProps { 
     id: string;
@@ -35,16 +41,17 @@ export interface IDataContextProviderProps {
     type: DataContextType | string;
     initialData?: Promise<object>;
     metadata?: Promise<IModelMetadata>;
-    onChangeData?: <T,>(data: T) => void;
+    onChangeData?: IContextOnChangeData;
 }
 
 const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = ({ children, ...props }) => {
     
-    const { id, name, description, type = 'custom', initialData, metadata, onChangeData } = props;
+    const { id, name, description, type = 'custom', initialData, metadata } = props;
 
     const { onChangeContext, getDataContextData, onChangeContextData } = useDataContextManager();
     const metadataDispatcher = useMetadataDispatcher();
 
+    const onChangeData = useRef<IContextOnChangeData>(props.onChangeData);
 
     const parentContext = useDataContext(false);
     const [state, setState] = useState<IDataContextProviderStateContext>({
@@ -78,41 +85,80 @@ const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = ({
     const setFieldValue = (name: string, value: any) => {
         const data = {...getDataContextData(props.id)} ?? {};
         const propName = getFieldNameFromExpression(name);
+
+        const changedData = {};
+
         if (typeof propName === 'string')
-            data[propName] = value;
+            changedData[propName] = value;
         else if (Array.isArray(propName) && propName.length > 0) {
-            let prop = data[propName[0]];
-            let vprop = data;
+            let prop = changedData;
             propName.forEach((item, index) => {
                 if (index < propName.length - 1) {
-                    if (!(typeof prop === 'object'))
-                        vprop[item] = {};
-                    vprop = vprop[item];
-                    prop = vprop[propName[index + 1]];
+                    prop[item] = {};
+                    prop = prop[item];
                 }
             });
-            vprop[propName[propName.length - 1]] = value;
+            prop[propName[propName.length - 1]] = value;
         }
 
-        if (onChangeData)
-            onChangeData(data);
-        onChangeContextData(props.id, data);
+        if (onChangeData.current)
+            onChangeData.current({...data, ...changedData}, changedData);
+        onChangeContextData(props.id, {...data, ...changedData});
+    };
+
+    const setData = (data: any) => {
+        if (onChangeData.current)
+            onChangeData.current({...data}, {...data});
+        onChangeContextData(props.id, {...data});
     };
 
     const getData = () => {
         return {...getDataContextData(props.id)} ?? {};
     };
 
+    const updateApi = (api: object) => {
+        if (!state.api) {
+            setState({...state, api});
+            onChangeContext({
+                id,
+                name,
+                description,
+                type,
+                parentId: parentContext?.id,
+                ...actionContext,
+                api
+            });
+        }
+    };
+
+    const updateOnChangeData = (func: IContextOnChangeData) => {
+        onChangeData.current = func;
+    };
+
     const actionContext ={
         setFieldValue,
         getFieldValue,
-        getData
+        setData,
+        getData,
+        updateApi,
+        updateOnChangeData
     };
+
+    useDataContextRegister({
+        id,
+        name,
+        description,
+        type,
+        parentId: parentContext?.id,
+        initialData: {},
+        ...actionContext,
+        api: state.api
+    }, []);
 
     useEffect(() => {
         initialData?.then(res => {
-            if (onChangeData)
-                onChangeData(res);
+            if (onChangeData.current)
+                onChangeData.current(res, res);
             onChangeContextData(props.id, res);
         });
         metadata?.then(res => {
@@ -151,21 +197,12 @@ const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = ({
             description,
             type,
             parentId: parentContext?.id,
-            ...actionContext
+            ...actionContext,
+            api: state.api
         });
     }, [name, description]);
 
     metadataDispatcher?.registerModel(id, metadata);
-
-    useDataContextRegister({
-        id,
-        name,
-        description,
-        type,
-        parentId: parentContext?.id,
-        initialData: {},
-        ...actionContext
-    }, [id, name, parentContext?.id ]);
 
     return (
         <MetadataProvider id={id} modelType={id} dataType='context' > 

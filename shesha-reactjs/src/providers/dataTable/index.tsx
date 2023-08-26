@@ -61,6 +61,7 @@ import { advancedFilter2JsonLogic, getTableDataColumns } from './utils';
 import { useLocalStorage } from 'hooks';
 import { withNullRepository } from './repository/nullRepository';
 import { withUrlRepository } from './repository/urlRepository';
+import { useDataContext } from 'providers/dataContextProvider';
 
 interface IDataTableProviderBaseProps {
   /** Configurable columns. Is used in pair with entityType  */
@@ -207,6 +208,8 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   const { setState: setGlobalState } = useGlobalState();
   const tableIsReady = useRef(false);
+
+  const ctx = useDataContext(false);
 
   // sync dataFetchingMode
   useEffect(() => {
@@ -604,38 +607,64 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   const getRepository = (): IRepository => repository;
 
+  const actions = {
+    onSort,
+    ...flagSetters,
+    changeDisplayColumn,
+    setCurrentPage,
+    changePageSize,
+    toggleColumnVisibility,
+    toggleColumnFilter,
+    changeFilterOption,
+    changeFilter,
+    applyFilters,
+    clearFilters,
+    changeQuickSearch,
+    performQuickSearch,
+    toggleSaveFilterModal,
+    changeSelectedRow,
+    changeActionedRow,
+    changeSelectedStoredFilterIds,
+    setPredefinedFilters,
+    changeSelectedIds,
+    refreshTable,
+    registerConfigurableColumns,
+    getCurrentFilter,
+    changePersistedFiltersToggle,
+    getRepository,
+    setRowData,
+    /* NEW_ACTION_GOES_HERE */
+  };
+
+  const contextOnChangeData = <T,>(_data: T, changedData: IDataTableStateContext) => {
+    if (!changedData)
+      return;
+
+    if (changedData.quickSearch !== undefined && changedData.quickSearch !== state.quickSearch) {
+      changeQuickSearch(changedData.quickSearch);
+      return;
+    }
+
+    if (changedData.currentPage !== undefined && changedData.currentPage !== state.currentPage) {
+      setCurrentPage(changedData.currentPage);
+      return;
+    }
+  };
+
+  // update context data
+  useEffect(() => {
+    ctx.setData(state);
+    ctx.updateApi(actions);
+    ctx.updateOnChangeData(contextOnChangeData);
+  }, []);
+
+  useEffect(() => {
+    ctx.setData(state);
+  }, [state]);
+
   return (
     <DataTableStateContext.Provider value={state}>
-      <DataTableActionsContext.Provider
-        value={{
-          onSort,
-          ...flagSetters,
-          changeDisplayColumn,
-          setCurrentPage,
-          changePageSize,
-          toggleColumnVisibility,
-          toggleColumnFilter,
-          changeFilterOption,
-          changeFilter,
-          applyFilters,
-          clearFilters,
-          changeQuickSearch,
-          performQuickSearch,
-          toggleSaveFilterModal,
-          changeSelectedRow,
-          changeActionedRow,
-          changeSelectedStoredFilterIds,
-          setPredefinedFilters,
-          changeSelectedIds,
-          refreshTable,
-          registerConfigurableColumns,
-          getCurrentFilter,
-          changePersistedFiltersToggle,
-          getRepository,
-          setRowData,
-          /* NEW_ACTION_GOES_HERE */
-        }}
-      >
+      <DataTableActionsContext.Provider value={actions}>
         {children}
       </DataTableActionsContext.Provider>
     </DataTableStateContext.Provider>

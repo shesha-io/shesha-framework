@@ -12,6 +12,7 @@ import {
   IGetPropertyMetadataPayload,
   IGetPropertiesMetadataPayload,
   NestedPropertyMetadatAccessor,
+  IMetadataDispatcherFullinstance,
 } from './contexts';
 import {
   activateProviderAction,
@@ -289,7 +290,7 @@ function useMetadataDispatcherActions(require: boolean) {
   return context;
 }
 
-function useMetadataDispatcher(require: boolean = true) {
+function useMetadataDispatcher(require: boolean = true): IMetadataDispatcherFullinstance {
   const actionsContext = useMetadataDispatcherActions(require);
   const stateContext = useMetadataDispatcherState(require);
 

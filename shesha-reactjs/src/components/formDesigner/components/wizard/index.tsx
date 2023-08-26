@@ -7,7 +7,7 @@ import React, { useMemo, useState } from 'react';
 import { useForm, useGlobalState } from '../../../../providers';
 import { IConfigurableFormComponent, useFormData, useSheshaApplication } from '../../../../';
 import { nanoid } from 'nanoid/non-secure';
-import WizardSettings from './settings';
+import WizardSettingsForm from './settings';
 import { IStepProps, IWizardComponentProps } from './models';
 import ShaIcon from '../../../shaIcon';
 import moment from 'moment';
@@ -23,6 +23,7 @@ import classNames from 'classnames';
 import { findLastIndex } from 'lodash';
 import ConditionalWrap from '../../../conditionalWrapper';
 import { useDeepCompareEffect } from 'react-use';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 
 const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   type: 'wizard',
@@ -30,7 +31,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   icon: <DoubleRightOutlined />,
   factory: model => {
     const { anyOfPermissionsGranted } = useSheshaApplication();
-    const { isComponentHidden, formMode } = useForm();
+    const { formMode } = useForm();
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
@@ -239,7 +240,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
 
     const splitButtons = buttonsLayout === 'spaceBetween';
 
-    if (isComponentHidden(model)) return null;
+    if (model?.hidden) return null;
 
     return (
       <div className="sha-wizard">
@@ -325,47 +326,37 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
       </div>
     );
   },
-  migrator: m =>
-    m
-      .add<IWizardComponentPropsV0>(0, prev => {
-        const model: IWizardComponentPropsV0 = {
-          ...prev,
-          propertyName: prev.propertyName ?? 'custom Name',
-          tabs: prev['filteredTabs'] ?? [
-            {
-              id: nanoid(),
-              name: 'step1',
-              label: 'Step 1',
-              title: 'Step 1',
-              subTitle: 'Sub title 1',
-              description: 'Description 1',
-              sortOrder: 0,
-              allowCancel: false,
-              cancelButtonText: 'Cancel',
-              nextButtonText: 'Next',
-              backButtonText: 'Back',
-              doneButtonText: 'Done',
-              key: 'step1',
-              components: [],
-              itemType: 'item',
-            },
-          ],
-        };
-        return model;
-      })
-      .add(1, migrateV0toV1),
-
-  settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
-    return (
-      <WizardSettings
-        readOnly={readOnly}
-        model={model}
-        onSave={onSave}
-        onCancel={onCancel}
-        onValuesChange={onValuesChange}
-      />
-    );
-  },
+  migrator: m => m
+    .add<IWizardComponentPropsV0>(0, prev => {
+      const model: IWizardComponentPropsV0 = {
+        ...prev,
+        propertyName: prev.propertyName ?? 'custom Name',
+        tabs: prev['filteredTabs'] ?? [
+          {
+            id: nanoid(),
+            name: 'step1',
+            label: 'Step 1',
+            title: 'Step 1',
+            subTitle: 'Sub title 1',
+            description: 'Description 1',
+            sortOrder: 0,
+            allowCancel: false,
+            cancelButtonText: 'Cancel',
+            nextButtonText: 'Next',
+            backButtonText: 'Back',
+            doneButtonText: 'Done',
+            key: 'step1',
+            components: [],
+            itemType: 'item',
+          },
+        ],
+      };
+      return model;
+    })
+    .add(1, migrateV0toV1)
+    .add<IWizardComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev as IConfigurableFormComponent)) as IWizardComponentProps)
+  ,
+  settingsFormFactory: (props) => <WizardSettingsForm {...props} />,
   // validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
   customContainerNames: ['steps'],
   getContainers: model => {

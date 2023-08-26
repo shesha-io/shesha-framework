@@ -8,6 +8,7 @@ export interface IDataContextDescriptor extends IDataContextProviderActionsConte
   type: string;
   parentId?: string;
   metadata?: IModelMetadata;
+  api?: object;
 }
 
 export interface IDataContextDictionary {

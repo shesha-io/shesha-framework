@@ -45,6 +45,12 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
   skipFetchData,
   ...props
 }) => {
+
+  const formInstance =  useForm();
+  //const contextManager = useDataContextManager(false);
+  //if (contextManager)
+  //  contextManager.updateFormInstance(formInstance);
+
   const {
     setFormData,
     formData,
@@ -55,7 +61,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
     setValidationErrors,
     setFormDataAndInstance,
     visibleComponentIdsIsSet,
-  } = useForm();
+  } = formInstance;
   const { isDragging = false } = useFormDesigner(false) ?? {};
   const {
     excludeFormFieldsInPayload,

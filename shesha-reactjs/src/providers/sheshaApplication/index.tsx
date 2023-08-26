@@ -42,6 +42,7 @@ import { useDeepCompareEffect } from 'react-use';
 import { DataContextManager } from 'providers/dataContextManager';
 import { DataContextProvider } from 'providers/dataContextProvider';
 import { IModelMetadata } from 'interfaces/metadata';
+import DebugPanel from 'components/debugPanel';
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;
@@ -166,7 +167,9 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                                 <StackedNavigationProvider>
                                   <DataSourcesProvider>
                                     <DynamicModalProvider>
-                                      <ApplicationActionsProcessor>{children}</ApplicationActionsProcessor>
+                                      <DebugPanel>
+                                        <ApplicationActionsProcessor>{children}</ApplicationActionsProcessor>
+                                      </DebugPanel>
                                     </DynamicModalProvider>
                                   </DataSourcesProvider>
                                 </StackedNavigationProvider>

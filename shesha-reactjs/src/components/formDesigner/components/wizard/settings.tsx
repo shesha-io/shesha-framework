@@ -1,28 +1,31 @@
-import React, { FC, useRef, useState } from 'react';
-import { Form, Select, Input, RefSelectProps } from 'antd';
-import SectionSeparator from '../../../sectionSeparator';
-import CodeEditor from '../codeEditor/codeEditor';
+import React, { FC, useRef } from 'react';
+import { Select, Input, RefSelectProps, Checkbox } from 'antd';
 import EditableTagGroup from '../../../editableTagGroup';
 import { IWizardStepProps, IWizardComponentProps } from './models';
 import ItemListSettingsModal from '../itemListConfigurator/itemListSettingsModal';
 import { getSettings } from './itemSettings';
 import { nanoid } from 'nanoid/non-secure';
+import SettingsForm, { useSettingsForm } from 'designer-components/_settings/settingsForm';
+import SettingsFormItem from 'designer-components/_settings/settingsFormItem';
+import { ISettingsFormFactoryArgs } from 'interfaces';
+import SettingsCollapsiblePanel from 'designer-components/_settings/settingsCollapsiblePanel';
 
 const { Option } = Select;
 
-export interface ITabSettingsProps {
-  readOnly: boolean;
-  model: IWizardComponentProps;
-  onSave: (model: IWizardComponentProps) => void;
-  onCancel: () => void;
-  onValuesChange?: (changedValues: any, values: IWizardComponentProps) => void;
-}
+export const WizardSettingsForm: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (props) => {
+  return (
+    SettingsForm<IWizardComponentProps>({...props, children: <WizardSettings {...props}/>})
+  );
+};
 
-const WizardSettings: FC<ITabSettingsProps> = props => {
-  const [state, setState] = useState<IWizardComponentProps>(props?.model);
-  const [form] = Form.useForm();
 
-  const onValuesChange = (changedValues: any, values: IWizardComponentProps) => {
+const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (props) => {
+
+  const {readOnly} = props;
+
+  const { model: state/*, getFieldsValue, onValuesChange*/ } = useSettingsForm<IWizardComponentProps>();
+
+  /*const onValuesChange = (changedValues: any, values: IWizardComponentProps) => {
     // whenever the tabs change, check to see if `defaultActiveStep` is still present within the tabs. If not, remove it
     const foundIndex = values?.defaultActiveStep
       ? values?.steps?.findIndex(item => item?.id === values?.defaultActiveStep)
@@ -33,7 +36,7 @@ const WizardSettings: FC<ITabSettingsProps> = props => {
     setState(prev => ({ ...prev, ...values, defaultActiveStep: foundIndex < 0 ? null : values?.defaultActiveStep }));
 
     if (props.onValuesChange) props.onValuesChange(changedValues, newValues);
-  };
+  };*/
 
   const onAddNewItem = (_, count: number) => {
     const buttonProps: IWizardStepProps = {
@@ -59,106 +62,91 @@ const WizardSettings: FC<ITabSettingsProps> = props => {
   const selectRef = useRef<RefSelectProps>();
 
   return (
-    <Form
-      initialValues={props?.model}
-      form={form}
-      onFinish={props.onSave}
-      onValuesChange={onValuesChange}
-      labelCol={{ span: 24 }}
-      disabled={props.readOnly}
-    >
-      <SectionSeparator title="Display" />
-      <Form.Item name="propertyName" initialValue={props.model.propertyName} label="Property name" rules={[{ required: true }]}>
-        <Input />
-      </Form.Item>
+    <>
+    <SettingsCollapsiblePanel header='Display'>
 
-      <Form.Item name="wizardType" initialValue={props.model.wizardType} label="Wizard Type">
-        <Select allowClear>
+      <SettingsFormItem name="componentName" label="Component name" rules={[{ required: true }]}>
+        <Input disabled={readOnly}/>
+      </SettingsFormItem>
+
+      <SettingsFormItem name="wizardType" label="Wizard Type" jsSetting>
+        <Select allowClear disabled={readOnly}>
           <Option value="default">Default</Option>
           <Option value="navigation">Navigation</Option>
         </Select>
-      </Form.Item>
+      </SettingsFormItem>
 
-      <Form.Item
+      <SettingsFormItem
         name="size"
-        initialValue={props.model.size}
+        jsSetting
         label="Size"
         tooltip="This will set the size for all buttons"
       >
-        <Select>
+        <Select disabled={readOnly}>
           <Option value="default">default</Option>
           <Option value="small">small</Option>
         </Select>
-      </Form.Item>
+      </SettingsFormItem>
 
-      <Form.Item
+      <SettingsFormItem
         name="direction"
-        initialValue={props.model.size}
+        jsSetting
         label="Direction"
         tooltip="To specify the direction of the step bar"
       >
-        <Select>
+        <Select disabled={readOnly}>
           <Option value="vertical">vertical</Option>
           <Option value="horizontal">horizontal</Option>
         </Select>
-      </Form.Item>
+      </SettingsFormItem>
 
-      <Form.Item
+      <SettingsFormItem
         name="labelPlacement"
-        initialValue={props.model.labelPlacement}
+        jsSetting
         label="Label Placement"
         tooltip="To specify the label placement"
       >
-        <Select>
+        <Select disabled={readOnly}>
           <Option value="vertical">vertical</Option>
           <Option value="horizontal">horizontal</Option>
         </Select>
-      </Form.Item>
+      </SettingsFormItem>
 
-      <Form.Item
+      <SettingsFormItem
         name="defaultActiveStep"
-        initialValue={props.model.defaultActiveStep}
+        jsSetting
         label="Default Active Step"
         tooltip="This will be the default step tha"
       >
-        <Select allowClear ref={selectRef} value={state?.defaultActiveStep}>
+        <Select allowClear ref={selectRef} value={state?.defaultActiveStep} disabled={readOnly}>
           {state?.steps?.map(({ id, title }) => (
             <Option value={id} key={id}>
               {title}
             </Option>
           ))}
         </Select>
-      </Form.Item>
+      </SettingsFormItem>
 
-      <Form.Item
+      <SettingsFormItem
         name="buttonsLayout"
-        initialValue={props.model.buttonsLayout}
+        jsSetting
         label="Buttons Layout"
         tooltip="How you want the steps buttons to be aligned"
       >
-        <Select>
+        <Select disabled={readOnly}>
           <Option value="left">Left</Option>
           <Option value="right">Right</Option>
           <Option value="spaceBetween">Space Between</Option>
         </Select>
-      </Form.Item>
+      </SettingsFormItem>
 
-      <Form.Item
-        name="visibility"
-        initialValue={props.model.visibility}
-        label="Visibility"
-        tooltip="This property will eventually replace the 'hidden' property and other properties that toggle visibility on the UI and payload"
-      >
-        <Select>
-          <Option value="Yes">Yes (Display in UI and include in payload)</Option>
-          <Option value="No">No (Only include in payload)</Option>
-          <Option value="Removed">Removed (Remove from UI and exlude from payload)</Option>
-        </Select>
-      </Form.Item>
+      <SettingsFormItem name="hidden" label="Hidden" valuePropName="checked" jsSetting>
+        <Checkbox disabled={readOnly} />
+      </SettingsFormItem>
+    </SettingsCollapsiblePanel>
 
-      <SectionSeparator title="Configure Wizard Steps" />
-
-      <Form.Item name="steps" initialValue={steps}>
+    <SettingsCollapsiblePanel header="Configure Wizard Steps" >
+      <SettingsFormItem name="steps" initialValue={steps}>
         <ItemListSettingsModal
           options={{ onAddNewItem }}
           title="Configure Wizard Steps"
@@ -168,40 +156,22 @@ const WizardSettings: FC<ITabSettingsProps> = props => {
           allowAddGroups={false}
           insertMode="after"
         />
-      </Form.Item>
+      </SettingsFormItem>
+    </SettingsCollapsiblePanel>
 
-      <SectionSeparator title="Security" />
-
-      <Form.Item
-        label="Custom Visibility"
-        name="customVisibility"
-        tooltip={"Enter custom visibility code.  You must return true to show the component. " +
-          "The global variable data is provided, and allows you to access the data of any form component, by using its API key."
-        }
-      >
-        <CodeEditor
-          mode="dialog"
-          setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          propertyName="customVisibility"
-          type={''}
-          id={''}
-          label="Custom Visibility"
-          description={"Enter custom visibility code.  You must return true to show the component. " +
-            "The global variable data is provided, and allows you to access the data of any form component, by using its API key."
-          }
-        />
-      </Form.Item>
-
-      <Form.Item
+    <SettingsCollapsiblePanel header="Security" >
+      <SettingsFormItem
+        jsSetting
         label="Permissions"
         name="permissions"
         initialValue={props.model.permissions}
         tooltip="Enter a list of permissions that should be associated with this component"
       >
-        <EditableTagGroup />
-      </Form.Item>
-    </Form>
+        <EditableTagGroup disabled={readOnly}/>
+      </SettingsFormItem>
+    </SettingsCollapsiblePanel>
+    </>
   );
 };
 
-export default WizardSettings;
+export default WizardSettingsForm;

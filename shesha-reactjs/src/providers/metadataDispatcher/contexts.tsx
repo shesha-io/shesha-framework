@@ -48,6 +48,8 @@ export interface IMetadataDispatcherActionsContext {
   updateModel: (modeltype: string, model: Promise<IModelMetadata>) => void;
 }
 
+export interface IMetadataDispatcherFullinstance extends IMetadataDispatcherStateContext, IMetadataDispatcherActionsContext {}
+
 export interface IMetadataProviderRegistration {
   id: string;
   modelType: string;

@@ -11,6 +11,7 @@ import {
   /* NEW_ACTION_IMPORT_GOES_HERE */
 } from './actions';
 import { Row } from 'react-table';
+import { useDataContext } from 'providers/dataContextProvider';
 
 export interface IDataTableSelectionProviderProps {}
 
@@ -19,9 +20,13 @@ const DataTableSelectionProvider: FC<PropsWithChildren<IDataTableSelectionProvid
     ...DATATABLE_SELECTION_CONTEXT_INITIAL_STATE,
   });
 
+  const ctx = useDataContext(false);
+
   const setSelectedRow = (index: number, row: any) => {
     const selectedId = state.selectedRow?.id;
     const currentId = row?.id;
+
+    ctx.setFieldValue('selectedRow', row);
 
     dispatch(setSelectedRowAction(selectedId !== currentId ? { index, row, id: row?.id } : null));
   };

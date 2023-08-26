@@ -1,6 +1,6 @@
 import React, { FC, Fragment, useMemo, useState } from 'react';
 import { useMetadata } from '../../../../providers';
-import { Show } from '../../../..';
+import { Show, useMetadataDispatcher } from '../../../..';
 import { Alert, Button, Modal, Space, Tabs } from 'antd';
 import { CodeOutlined } from '@ant-design/icons';
 import { ICodeEditorProps } from './interfaces';
@@ -42,8 +42,9 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
   };
   const meta = useMetadata(false);
   const dataContextManager = useDataContextManager(false);
+  const metaDispatcher = useMetadataDispatcher(false);
 
-  const metaItems = useMemo<ICodeTreeLevel>(() => getFormDataMetadata(meta?.metadata), [meta]);
+  const metaItems = useMemo<ICodeTreeLevel>(() => getFormDataMetadata(metaDispatcher, meta?.metadata), [meta]);
   const ctxItems = useMemo<ICodeTreeLevel>(() => getContextMetadata(dataContextManager?.getDataContexts(dataContextManager?.getActiveContext()?.id)), [dataContextManager.lastUpdate]);
 
   const editorProps: any = {};
@@ -51,6 +52,8 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
     editorProps.shaMetadata = metaItems;
   if (!exposedVariables || exposedVariables.find(x => x.name === 'contexts'))
     editorProps.shaContext = ctxItems;
+  
+  editorProps.shaTest = {dispatcher: metaDispatcher, metadata: meta?.metadata};
 
   const openEditorDialog = () => setShowDialog(true);
 

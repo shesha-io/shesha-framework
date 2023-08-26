@@ -16,10 +16,25 @@ function getCurrentToken(editor) {
 }
 */
 
+export interface CompletionModel {
+    caption: string;
+    description?: string;
+    snippet?: string;
+    meta: string;
+    type: string;
+    value?: string;
+    parent?: string;
+    docHTML?: string;
+    inputParameters?: { [name: string]: string };
+  }
+
 export interface ICodeTreeItem {
     value: string;
     caption?: string;
+    meta?: string;
+
     loaded: boolean;
+    childRefresh?: (resolve: (data: ICodeTreeLevel) => void) => void;
 
     childs?: ICodeTreeLevel;
 }
@@ -36,7 +51,7 @@ const treeLevel2Completions = (level: ICodeTreeLevel, prefix: string = ''): Ace.
                 caption: prefix + toCamelCase(item.value),
                 value: prefix + toCamelCase(item.value),
                 meta: item.caption,
-                score: 1,
+                score: 0,
             });
         }
     }
@@ -67,8 +82,16 @@ export const getCompletions = (
             currentItem = currentLevel
                 ? currentLevel[part]
                 : null;
-            if (currentItem)
+            if (currentItem) {
+                if (!currentItem.loaded && currentItem.childRefresh) {
+                    currentItem.childRefresh((res) => {
+                        const completions = treeLevel2Completions(res, prefix);
+                        callback(null, completions);
+                    });
+                    break;
+                }
                 currentLevel = currentItem.childs;
+            }
             // todo: load if chlids are not loaded yet
         } while (parts.length > 0 && currentItem);
 

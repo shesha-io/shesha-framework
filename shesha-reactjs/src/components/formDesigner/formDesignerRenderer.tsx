@@ -27,8 +27,12 @@ export const FormDesignerRenderer: FC = ({}) => {
 
   const toggleFieldPropertiesSidebar = () => setFieldPropertiesOpen((prop) => !prop);
 
-  const { formSettings, form } = useForm();
   const { isDebug, readOnly } = useFormDesigner();
+  const formInstance =  useForm();
+  const { formSettings, form } = formInstance;
+  //const contextManager = useDataContextManager(false);
+  //if (contextManager)
+    //contextManager.updateFormInstance(formInstance);
 
   const fullName = formProps ? getFormFullName(formProps.module, formProps.name) : null;
   const title = formProps?.label ? `${formProps.label} (${fullName})` : fullName;

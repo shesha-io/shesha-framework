@@ -61,12 +61,12 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
   return (
     <>
       <Form.Item {...{label: componentlabel, readOnly}} hidden={state.mode === 'formData'} >
-        <Input value={formData?.componentName} onChange={(e) => {
+        <Input disabled={model.disabled} readOnly={model.readOnly} value={formData?.componentName} onChange={(e) => {
           onValuesChange({componentName: e.target.value});
         }}/>
       </Form.Item>
       <Form.Item {...{label: contextlabel, readOnly}} hidden={state.mode === 'formData'} >
-        <DataContextSelector {...model} value={formData.context} onChange={(value) => {
+        <DataContextSelector {...model} readOnly={model.disabled || model.readOnly} value={formData?.context} onChange={(value) => {
           onValuesChange({context: value});
           setState({...state, context: value});
         }}/>
@@ -89,13 +89,17 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
             dropdownStyle={getStyle(model?.dropdownStyle, formData)}
             size={model.size}
             mode={model.mode}
-            readOnly={readOnly}
+            readOnly={model.disabled || readOnly}
             showFillPropsButton={model.showFillPropsButton ?? true}
           />
         </Form.Item>
       </ConditionalWrap>
-      <Button type='link' onClick={setFormDataMode} hidden={state.mode === 'formData'}>hide binding option (bind to form data)</Button>
-      <Button type='link' onClick={setContextMode} hidden={state.mode === 'context'}>show binding option</Button>
+      <Button type='link' onClick={setFormDataMode} hidden={model.disabled || model.readOnly || state.mode === 'formData'}>
+        hide binding option (bind to form data)
+      </Button>
+      <Button type='link' onClick={setContextMode} hidden={model.disabled || model.readOnly ||state.mode === 'context'}>
+        show binding option
+      </Button>
     </>
   );
 };

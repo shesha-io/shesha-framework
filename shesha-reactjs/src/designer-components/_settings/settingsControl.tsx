@@ -8,13 +8,14 @@ export type SettingsControlChildrenType = (value: any, onChange:  (...args: any[
 interface ISettingsControlProps {
     id: string;
     propertyName: string;
+    readonly?: boolean;
     value?: any;
     mode: PropertySettingMode;
     onChange?: (value: any) => void;
     readonly children?: SettingsControlChildrenType;
 }
 
-export const SettingsControl: FC<ISettingsControlProps> = ({ id, propertyName, value, mode, onChange, children }) => {
+export const SettingsControl: FC<ISettingsControlProps> = ({ id, propertyName, readonly, value, mode, onChange, children }) => {
 
     const settings = getPropertySettingsFromValue(value);
 
@@ -24,7 +25,8 @@ export const SettingsControl: FC<ISettingsControlProps> = ({ id, propertyName, v
     }, [mode]);
 
     if (mode === 'code') {
-        return <CodeEditor 
+        return <CodeEditor
+            readOnly={readonly}
             value={settings._code}
             onChange={(value) => {
                 if (onChange)
