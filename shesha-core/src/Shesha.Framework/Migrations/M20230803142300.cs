@@ -3,14 +3,9 @@ using Shesha.FluentMigrator;
 
 namespace Shesha.Migrations
 {
-    [Migration(20230803142300)]
-    public class M20230803142300 : Migration
+    [Migration(20230803142300), MsSqlOnly]
+    public class M20230803142300 : OneWayMigration
     {
-        public override void Down()
-        {
-            throw new System.NotImplementedException();
-        }
-
         public override void Up()
         {
             Execute.Sql("delete from Frwk_PermissionedObjects where AccessLkp = 2 and (Permissions is null or Permissions = '')");
