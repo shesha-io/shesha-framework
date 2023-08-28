@@ -90,6 +90,7 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
 
 export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
   const properties = useMetaProperties(META_DATA_FILTERS);
+  const { globalState } = useGlobalState();
 
   const {
     name,
@@ -180,6 +181,8 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     );
   }
 
+  const evaluatedStyle = style ? getStyle(style, formData, globalState) : { width: '100%' };
+
   if (range) {
     return (
       <RangePicker
@@ -195,7 +198,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         showTime={showTime ? (defaultToMidnight ? { defaultValue: [MIDNIGHT_MOMENT, MIDNIGHT_MOMENT] } : true) : false}
         showSecond
         disabled={isDisabled}
-        style={getStyle(style, formData)}
+        style={evaluatedStyle}
         allowClear
       />
     );
@@ -215,7 +218,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
       showSecond={true}
       picker={picker}
       format={pickerFormat}
-      style={getStyle(style, formData)}
+      style={evaluatedStyle}
       {...rest}
       allowClear
     />
