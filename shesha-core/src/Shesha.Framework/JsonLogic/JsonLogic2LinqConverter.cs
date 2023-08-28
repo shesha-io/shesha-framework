@@ -838,17 +838,26 @@ namespace Shesha.JsonLogic
             if (!(memberExpressionToCompare is MemberExpression memberExpr && numericConstToConvert is ConstantExpression constExpr))
                 return;
 
-            if (memberExpr.Type.GetUnderlyingTypeIfNullable() == typeof(int) && constExpr.Type == typeof(Int64)) 
+            if (memberExpr.Type.GetUnderlyingTypeIfNullable() == typeof(int)) 
             {
-                var constValue = (Int64)constExpr.Value;
-                if (constValue <= int.MaxValue)
-                    numericConstToConvert = Expression.Constant(Convert.ToInt32(constValue));
+                if (constExpr.Type == typeof(Int64))
+                {
+                    var constValue = (Int64)constExpr.Value;
+                    if (constValue <= int.MaxValue)
+                        numericConstToConvert = Expression.Constant(Convert.ToInt32(constValue));
+                    else
+                        throw new OverflowException($"Constant value must be not grester than {int.MaxValue} (max int size) to compare with {memberExpr.Member.Name}, currtent value is {constValue}");
+                }
                 else
-                    throw new OverflowException($"Constant value must be not grester than {int.MaxValue} (max int size) to compare with {memberExpr.Member.Name}, currtent value is {constValue}");
+                    if (constExpr.Type == typeof(string) && int.TryParse((string)constExpr.Value, out var intValue)) 
+                        numericConstToConvert = Expression.Constant(intValue);
             }
-            if (memberExpr.Type.GetUnderlyingTypeIfNullable() == typeof(Int64) && constExpr.Type == typeof(int))
+            if (memberExpr.Type.GetUnderlyingTypeIfNullable() == typeof(Int64))
             {
-                numericConstToConvert = Expression.Constant((Int64)constExpr.Value);
+                if (constExpr.Type == typeof(int))
+                    numericConstToConvert = Expression.Constant((Int64)constExpr.Value);
+                else if (constExpr.Type == typeof(string) && Int64.TryParse((string)constExpr.Value, out var int64Value))
+                    numericConstToConvert = Expression.Constant(int64Value);
             }
         }
 
