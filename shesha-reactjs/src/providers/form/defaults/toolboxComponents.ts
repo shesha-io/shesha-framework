@@ -68,7 +68,7 @@ import RefListStatusComponent from 'designer-components/refListStatus';
 import RichTextEditor from 'components/formDesigner/components/richTextEditor';
 import ScheduledJobExecutionLog from 'components/formDesigner/components/scheduledJobExecutionLog/scheduledJobExecutionLog';
 import Section from 'components/formDesigner/components/section';
-import SectionSeprator from 'components/formDesigner/components/sectionSeprator/sectionSeprator';
+import SectionSeprator from 'components/formDesigner/components/sectionSeprator';
 import Space from 'components/formDesigner/components/space';
 import Statistic from 'components/formDesigner/components/statistic';
 import StatusTag from 'components/formDesigner/components/statusTag';

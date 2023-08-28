@@ -1,5 +1,6 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Space, Tooltip } from 'antd';
+import Show from 'components/show';
 import React, { CSSProperties, FC } from 'react';
 
 export interface ISectionSeparatorProps {
@@ -43,10 +44,11 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
   return (
     <div className="sha-section-separator" style={containerStyle}>
       <span className="sha-section-separator-section-name" style={titleStyle}>
-        <Space>
-          <Space>
-            {sectionTitle} {tooltip && <Tooltip title={tooltip}>{<QuestionCircleOutlined />}</Tooltip>}
-          </Space>
+        <Space size="small">
+          {sectionTitle}
+          <Show when={Boolean(tooltip?.trim())}>
+            <Tooltip title={tooltip}>{<QuestionCircleOutlined className='tooltip-question-icon' size={14} />}</Tooltip>
+          </Show>
         </Space>
       </span>
     </div>

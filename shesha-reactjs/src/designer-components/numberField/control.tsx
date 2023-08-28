@@ -43,7 +43,7 @@ const NumberFieldControl: FC<IProps> = ({ disabled, form, model, onChange, value
     min: model?.min,
     max: model?.max,
     size: model?.size,
-    style: !!style ? getStyle(style, formData) : { width: '100%' },
+    style: style ? getStyle(style, formData, globalState) : { width: '100%' },
     step: model?.highPrecision ? model?.stepNumeric : model?.stepNumeric,
     ...customInputNumberEventHandler(eventProps, onChange),
     defaultValue: model?.defaultValue,
