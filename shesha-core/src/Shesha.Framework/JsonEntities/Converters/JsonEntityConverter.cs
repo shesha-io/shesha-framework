@@ -20,16 +20,16 @@ namespace Shesha.JsonEntities.Converters
             if (reader.TokenType == JsonToken.Null) return null;
             var jObj = JObject.Load(reader);
 
-            if (objectType == typeof(JsonEntity))
-            {
-                var _className = jObj.ContainsKey(nameof(IJsonEntity._className).ToCamelCase())
-                    ? jObj.GetValue(nameof(IJsonEntity._className).ToCamelCase()).ToString()
-                    : null;
+            var _className = jObj.ContainsKey(nameof(IJsonEntity._className).ToCamelCase())
+                ? jObj.GetValue(nameof(IJsonEntity._className).ToCamelCase()).ToString()
+                : null;
+            
+            objectType = _className != null 
+                ? StaticContext.IocManager.Resolve<TypeFinder>().Find(t => t.FullName == _className).FirstOrDefault()
+                : objectType;
 
-                if (_className == null)
-                    throw new JsonSerializationException("JsonEntity must contain \"_className\" field");
-                objectType = StaticContext.IocManager.Resolve<TypeFinder>().Find(t => t.FullName == _className).FirstOrDefault();
-            }
+            if (objectType == typeof(JsonEntity) && _className == null)
+                throw new JsonSerializationException("JsonEntity must contain \"_className\" field");
 
             var proxyFactory = StaticContext.IocManager.Resolve<IJsonEntityProxyFactory>();
             return proxyFactory.GetNewProxiedJsonEntity(objectType, jObj);
