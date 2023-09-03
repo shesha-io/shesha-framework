@@ -1,14 +1,14 @@
+import { nanoid } from 'nanoid/non-secure';
+import { handleActions } from 'redux-actions';
+import { ColumnsActionEnums } from './actions';
 import {
   IColumnsConfiguratorStateContext,
   IUpdateChildItemsPayload,
   IUpdateItemSettingsPayload,
   TOOLBAR_CONTEXT_INITIAL_STATE,
 } from './contexts';
-import { ColumnsActionEnums } from './actions';
-import { IDataColumnsProps, IConfigurableColumnGroup, standardCellComponentTypes } from './models';
-import { handleActions } from 'redux-actions';
+import { IConfigurableColumnGroup, IDataColumnsProps, standardCellComponentTypes } from './models';
 import { getItemById, getItemPositionById } from './utils';
-import { nanoid } from 'nanoid/non-secure';
 
 const toolbarReducer = handleActions<IColumnsConfiguratorStateContext, any>(
   {

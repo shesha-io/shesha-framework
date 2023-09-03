@@ -28,7 +28,7 @@ export const confirm = (
     onCancel,
   });
 
-export const getRowIds = (rows: any): string[] => rows.map(i => i?.id);
+export const getRowIds = (rows: any): string[] => rows.map((i) => i?.id);
 
 export const onMessageDisplay = (type: keyof MessageApi, content: ArgsProps | any) => {
   message.destroy();

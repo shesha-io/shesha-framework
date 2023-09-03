@@ -1,16 +1,16 @@
+export * from '../providers/form/utils';
 export { axiosHttp } from './fetchers';
 export { requestHeaders } from './requestHeaders';
-export * from '../providers/form/utils';
 
 export {
-  type QueryStringParams,
-  getCurrentUrl,
   getCurrentQueryString,
+  getCurrentUrl,
   getCurrentUrlWithQueryString,
-  normalizeUrl,
-  isSameUrls,
   getLoginUrlWithReturn,
-  getQueryParams,
   getQueryParam,
+  getQueryParams,
   getUrlWithoutQueryParams,
+  isSameUrls,
+  normalizeUrl,
+  type QueryStringParams,
 } from './url';

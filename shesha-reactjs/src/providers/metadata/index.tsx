@@ -1,16 +1,16 @@
-import React, { FC, useContext, PropsWithChildren, useEffect, useMemo } from 'react';
-import metadataReducer from './reducer';
+import React, { FC, PropsWithChildren, useContext, useEffect, useMemo } from 'react';
+import useThunkReducer from '../../hooks/thunkReducer';
+import { IPropertyMetadata, ProperyDataType } from '../../interfaces/metadata';
+import { useMetadataDispatcher } from '../../providers';
+import { setMetadataAction } from './actions';
 import {
-  METADATA_CONTEXT_INITIAL_STATE,
-  IMetadataStateContext,
   IMetadataActionsContext,
   IMetadataContext,
+  IMetadataStateContext,
+  METADATA_CONTEXT_INITIAL_STATE,
   MetadataContext,
 } from './contexts';
-import { setMetadataAction } from './actions';
-import useThunkReducer from '../../hooks/thunkReducer';
-import { useMetadataDispatcher } from '../../providers';
-import { IPropertyMetadata, ProperyDataType } from 'interfaces/metadata';
+import metadataReducer from './reducer';
 
 export interface IMetadataProviderProps {
   id?: string;
@@ -31,7 +31,7 @@ const MetadataProvider: FC<PropsWithChildren<IMetadataProviderProps>> = ({ id, m
 
   useEffect(() => {
     if (modelType)
-      fetchMeta({ modelType }).then(meta => {
+      fetchMeta({ modelType }).then((meta) => {
         dispatch(setMetadataAction({ metadata: meta }));
       });
   }, [modelType]);
@@ -65,9 +65,9 @@ function useMetadata(require: boolean) {
 
 /**
  * Get list of properties filtered by data type
- * 
+ *
  * @param dataTypes data types filter
- * @returns 
+ * @returns
  */
 const useMetaProperties = (dataTypes: ProperyDataType[]): IPropertyMetadata[] => {
   const meta = useMetadata(false);
@@ -75,13 +75,11 @@ const useMetaProperties = (dataTypes: ProperyDataType[]): IPropertyMetadata[] =>
   const properties = useMemo(() => {
     const { properties = [] } = meta?.metadata ?? {};
     return dataTypes
-      ? properties.filter(({ dataType }) =>
-        dataTypes.includes(dataType as ProperyDataType)
-      )
+      ? properties.filter(({ dataType }) => dataTypes.includes(dataType as ProperyDataType))
       : properties;
   }, [meta, dataTypes]);
 
   return properties;
 };
 
-export { MetadataProvider, useMetadata, useMetaProperties };
+export { MetadataProvider, useMetaProperties, useMetadata };

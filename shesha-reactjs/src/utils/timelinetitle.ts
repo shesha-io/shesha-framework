@@ -1,4 +1,4 @@
-import { TimelineChannels } from 'components/timeline/timelineItem/timelineChannels';
+import { TimelineChannels } from '../components/timeline/timelineItem/timelineChannels';
 
 export const getTimelineTitle = (channel: number) => {
   switch (channel) {

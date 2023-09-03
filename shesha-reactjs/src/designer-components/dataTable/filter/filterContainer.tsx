@@ -1,15 +1,15 @@
 import React, { FC } from 'react';
-import { FilterItem } from './filterItem';
+import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { useTableViewSelectorConfigurator } from '../../../providers/tableViewSelectorConfigurator';
 import { ITableViewProps } from '../../../providers/tableViewSelectorConfigurator/models';
-import { ReactSortable, ItemInterface } from 'react-sortablejs';
+import { FilterItem } from './filterItem';
 
 export interface IFilterContainerProps {
   index?: number[];
   items: ITableViewProps[];
 }
 
-export const FilterContainer: FC<IFilterContainerProps> = props => {
+export const FilterContainer: FC<IFilterContainerProps> = (props) => {
   const { updateChildItems, readOnly } = useTableViewSelectorConfigurator();
 
   const onSetList = (newState: ItemInterface[], _sortable, _store) => {
@@ -17,7 +17,7 @@ export const FilterContainer: FC<IFilterContainerProps> = props => {
     const listChanged = true; //!newState.some(item => item.chosen !== null && item.chosen !== undefined);
 
     if (listChanged) {
-      const newChilds = newState.map<ITableViewProps>(item => item as ITableViewProps);
+      const newChilds = newState.map<ITableViewProps>((item) => item as ITableViewProps);
       updateChildItems({ index: props.index, childs: newChilds });
     }
     return;

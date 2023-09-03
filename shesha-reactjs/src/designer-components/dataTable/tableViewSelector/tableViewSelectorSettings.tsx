@@ -1,8 +1,8 @@
-import React from 'react';
 import { Checkbox, Form } from 'antd';
+import React from 'react';
+import { SectionSeparator } from '../../..';
 import { ITableViewSelectorComponentProps } from './models';
 import TableViewSelectorSettingsModal from './tableViewSelectorSettingsModal';
-import { SectionSeparator } from '../../..';
 
 export interface ITableViewSelectorSettingsProps {
   readOnly: boolean;

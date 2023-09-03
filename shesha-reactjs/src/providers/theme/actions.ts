@@ -8,7 +8,7 @@ export enum ThemeActionEnums {
 
 export const setThemeAction = createAction<IThemeStateContext, IConfigurableTheme>(
   ThemeActionEnums.SetTheme,
-  theme => ({
+  (theme) => ({
     theme,
   })
 );

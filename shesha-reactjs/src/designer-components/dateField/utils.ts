@@ -1,7 +1,7 @@
-import { IPropertyMetadata } from 'interfaces/metadata';
+import moment from 'moment';
+import { IPropertyMetadata } from '../../interfaces/metadata';
 import { getPropertyMetadata } from '../../utils/date';
 import { IDateFieldProps, RangeValue } from './interfaces';
-import moment from 'moment';
 
 export const DATE_TIME_FORMATS = {
   time: 'HH:mm:ss',

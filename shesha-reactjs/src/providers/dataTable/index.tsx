@@ -1,66 +1,66 @@
-import React, { FC, useContext, PropsWithChildren, useEffect, useRef, useMemo } from 'react';
-import { useThunkReducer } from 'hooks/thunkReducer';
-import { dataTableReducer } from './reducer';
+import camelCaseKeys from 'camelcase-keys';
+import { isEqual, sortBy } from 'lodash';
+import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useRef } from 'react';
+import { useDebouncedCallback } from 'use-debounce';
+import { useLocalStorage } from '../../hooks';
+import { useThunkReducer } from '../../hooks/thunkReducer';
+import { ConfigurableFormInstance } from '../../interfaces';
+import { useForm } from '../../providers/form';
+import { useConfigurableAction } from '../configurableActionsDispatcher';
+import { IConfigurableColumnsProps } from '../datatableColumnsConfigurator/models';
+import { useGlobalState } from '../globalState';
+import { getFlagSetters } from '../utils/flagsSetters';
 import {
+  applyFilterAction,
+  changeActionedRowAction,
+  changeDisplayColumnAction,
+  changeFilterAction,
+  changeFilterOptionAction,
+  changePageSizeAction,
+  changePersistedFiltersToggleAction,
+  changeQuickSearchAction,
+  changeSelectedIdsAction,
+  changeSelectedRowAction,
+  changeSelectedStoredFilterIdsAction,
+  fetchColumnsSuccessSuccessAction,
+  fetchTableDataAction,
+  fetchTableDataErrorAction,
+  fetchTableDataSuccessAction,
+  onSortAction,
+  registerConfigurableColumnsAction,
+  setCurrentPageAction,
+  setDataFetchingModeAction,
+  setModelTypeAction,
+  setPredefinedFiltersAction,
+  setRowDataAction,
+  toggleColumnFilterAction,
+  toggleColumnVisibilityAction,
+  toggleSaveFilterModalAction,
+} from './actions';
+import {
+  DATA_TABLE_CONTEXT_INITIAL_STATE,
   DataTableActionsContext,
   DataTableStateContext,
-  DATA_TABLE_CONTEXT_INITIAL_STATE,
   IDataTableStateContext,
   IDataTableUserConfig,
 } from './contexts';
-import { getFlagSetters } from '../utils/flagsSetters';
 import {
-  fetchTableDataAction,
-  fetchTableDataSuccessAction,
-  fetchTableDataErrorAction,
-  setCurrentPageAction,
-  changePageSizeAction,
-  toggleColumnVisibilityAction,
-  toggleColumnFilterAction,
-  changeFilterOptionAction,
-  changeFilterAction,
-  applyFilterAction,
-  changeQuickSearchAction,
-  toggleSaveFilterModalAction,
-  changeSelectedRowAction,
-  changeSelectedStoredFilterIdsAction,
-  setPredefinedFiltersAction,
-  changeSelectedIdsAction,
-  registerConfigurableColumnsAction,
-  onSortAction,
-  changeDisplayColumnAction,
-  changeActionedRowAction,
-  changePersistedFiltersToggleAction,
-  fetchColumnsSuccessSuccessAction,
-  setRowDataAction,
-  setModelTypeAction,
-  setDataFetchingModeAction,
-} from './actions';
-import {
-  IndexColumnFilterOption,
   ColumnFilter,
+  DataFetchingMode,
+  IColumnSorting,
   IFilterItem,
+  IGetListDataPayload,
   IStoredFilter,
   ITableFilter,
-  IColumnSorting,
-  IGetListDataPayload,
-  DataFetchingMode,
+  IndexColumnFilterOption,
 } from './interfaces';
-import { isEqual, sortBy } from 'lodash';
-import { useDebouncedCallback } from 'use-debounce';
-import { IConfigurableColumnsProps } from '../datatableColumnsConfigurator/models';
-import { useGlobalState } from '../globalState';
-import camelCaseKeys from 'camelcase-keys';
-import { useConfigurableAction } from '../configurableActionsDispatcher';
-import { IHasModelType, IHasRepository, IRepository } from './repository/interfaces';
+import { dataTableReducer } from './reducer';
 import { withBackendRepository } from './repository/backendRepository';
 import { withFormFieldRepository } from './repository/inMemoryRepository';
-import { advancedFilter2JsonLogic, getTableDataColumns } from './utils';
-import { useLocalStorage } from 'hooks';
+import { IHasModelType, IHasRepository, IRepository } from './repository/interfaces';
 import { withNullRepository } from './repository/nullRepository';
 import { withUrlRepository } from './repository/urlRepository';
-import { useForm } from 'providers/form';
-import { ConfigurableFormInstance } from 'interfaces';
+import { advancedFilter2JsonLogic, getTableDataColumns } from './utils';
 
 interface IDataTableProviderBaseProps {
   /** Configurable columns. Is used in pair with entityType  */
@@ -695,4 +695,4 @@ function useDataTableStore(require: boolean = true) {
 const useDataTable = useDataTableStore;
 
 export default DataTableProvider;
-export { DataTableProvider, useDataTableState, useDataTableActions, useDataTable, useDataTableStore };
+export { DataTableProvider, useDataTable, useDataTableActions, useDataTableState, useDataTableStore };

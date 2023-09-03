@@ -11,9 +11,7 @@ export interface IMetadataActionsContext {
   getMetadata: () => Promise<IModelMetadata>;
 }
 
-export interface IMetadataContext extends IMetadataStateContext, IMetadataActionsContext {
-  
-}
+export interface IMetadataContext extends IMetadataStateContext, IMetadataActionsContext {}
 
 export interface ISetMetadataPayload {
   metadata: IModelMetadata;

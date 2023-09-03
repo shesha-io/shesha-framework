@@ -1,6 +1,6 @@
 import { createAction } from 'redux-actions';
+import { IToolboxComponentGroup } from '../../interfaces';
 import IRequestHeaders from '../../interfaces/requestHeaders';
-import { IToolboxComponentGroup } from 'interfaces';
 
 export enum SheshaApplicationActionEnums {
   SetRequestHeaders = 'SET_REQUEST_HEADERS',

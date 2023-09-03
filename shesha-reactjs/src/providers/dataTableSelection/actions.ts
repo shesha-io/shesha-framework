@@ -10,12 +10,12 @@ export enum DataTableSelectionActionEnums {
 
 export const setSelectedRowAction = createAction<ISelectionProps, ISelectionProps>(
   DataTableSelectionActionEnums.SetSelectedRow,
-  p => p
+  (p) => p
 );
 
 export const setMultiSelectedRowAction = createAction<Array<Row> | Row, Array<Row> | Row>(
   DataTableSelectionActionEnums.SetMultiSelectedRow,
-  p => p
+  (p) => p
 );
 
 /* NEW_ACTION_GOES_HERE */

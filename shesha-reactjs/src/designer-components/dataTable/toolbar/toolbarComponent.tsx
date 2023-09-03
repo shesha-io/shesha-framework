@@ -1,20 +1,20 @@
-import React, { FC } from 'react';
-import { IToolboxComponent } from '../../../interfaces';
 import { DashOutlined } from '@ant-design/icons';
-import ToolbarSettings from './toolbarSettingsPanel';
-import { IToolbarProps } from './models';
-import { Alert, Menu, Dropdown } from 'antd';
-import { IButtonGroup, IToolbarButton, ToolbarItemProps } from '../../../providers/toolbarConfigurator/models';
-import { useForm, isInDesignerMode } from '../../../providers/form';
-import { getVisibilityFunc2 } from '../../../providers/form/utils';
-import { useDataTableSelection } from '../../../providers/dataTableSelection';
-import { ToolbarButton } from './toolbarButton';
+import { Alert, Dropdown, Menu } from 'antd';
+import { nanoid } from 'nanoid/non-secure';
+import React, { FC } from 'react';
 import { ShaIcon } from '../../../components';
 import { IconType } from '../../../components/shaIcon';
+import { IToolboxComponent } from '../../../interfaces';
 import { useSheshaApplication } from '../../../providers';
-import { nanoid } from 'nanoid/non-secure';
-import { migrateV0toV1, IToolbarPropsV0 } from './migrations/migrate-v1';
+import { useDataTableSelection } from '../../../providers/dataTableSelection';
+import { isInDesignerMode, useForm } from '../../../providers/form';
+import { getVisibilityFunc2 } from '../../../providers/form/utils';
+import { IButtonGroup, IToolbarButton, ToolbarItemProps } from '../../../providers/toolbarConfigurator/models';
+import { IToolbarPropsV0, migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
+import { IToolbarProps } from './models';
+import { ToolbarButton } from './toolbarButton';
+import ToolbarSettings from './toolbarSettingsPanel';
 
 const ToolbarComponent: IToolboxComponent<IToolbarProps> = {
   type: 'toolbar',
@@ -30,9 +30,9 @@ const ToolbarComponent: IToolboxComponent<IToolbarProps> = {
       items: [],
     };
   },
-  migrator: m =>
+  migrator: (m) =>
     m
-      .add<IToolbarPropsV0>(0, prev => {
+      .add<IToolbarPropsV0>(0, (prev) => {
         const items = prev['items'] && Array.isArray(prev['items']) ? prev['items'] : [];
         return { ...prev, items: items };
       })
@@ -84,7 +84,7 @@ export const Toolbar: FC<IToolbarProps> = ({ items, id }) => {
         const group = item as IButtonGroup;
         const menu = (
           <Menu>
-            {group.childItems.map(childItem => (
+            {group.childItems.map((childItem) => (
               <Menu.Item
                 key={childItem?.id}
                 title={childItem.tooltip}
@@ -122,7 +122,7 @@ export const Toolbar: FC<IToolbarProps> = ({ items, id }) => {
     <div style={{ minHeight: '30px' }}>
       {items
         ?.filter(({ permissions }) => anyOfPermissionsGranted(permissions || []))
-        .map(item => renderItem(item, nanoid()))}
+        .map((item) => renderItem(item, nanoid()))}
     </div>
   );
 };

@@ -1,5 +1,5 @@
-import { IModelMetadata, ISpecification } from "../../interfaces/metadata";
-import { IMetadataProviderRegistration } from "./contexts";
+import { IModelMetadata, ISpecification } from '../../interfaces/metadata';
+import { IMetadataProviderRegistration } from './contexts';
 
 export interface IProperty {
   name: string;

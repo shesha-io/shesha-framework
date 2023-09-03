@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 
 export const useIsSsr = () => {
   // we always start off in "SSR mode", to ensure our initial browser render

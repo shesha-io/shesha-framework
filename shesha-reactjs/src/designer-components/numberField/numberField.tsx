@@ -1,13 +1,13 @@
 import { NumberOutlined } from '@ant-design/icons';
 import React from 'react';
+import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
+import FormItemWrapper from '../../components/formDesigner/components/formItemWrapper';
+import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
 import { IToolboxComponent } from '../../interfaces';
 import { DataTypes } from '../../interfaces/dataTypes';
 import { useForm, useGlobalState } from '../../providers';
 import { FormMarkup } from '../../providers/form/models';
 import { evaluateString, validateConfigurableComponentSettings } from '../../providers/form/utils';
-import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
-import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
-import FormItemWrapper from '../../components/formDesigner/components/formItemWrapper';
 import NumberFieldControl from './control';
 import { INumberFieldComponentProps } from './interfaces';
 import settingsFormJson from './settingsForm.json';
@@ -45,10 +45,10 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
     );
   },
   settingsFormMarkup: settingsForm,
-  initModel: model => ({
+  initModel: (model) => ({
     ...model,
   }),
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   linkToModelMetadata: (model, metadata): INumberFieldComponentProps => {
     return {
       ...model,

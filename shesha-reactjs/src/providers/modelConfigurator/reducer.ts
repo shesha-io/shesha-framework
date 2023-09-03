@@ -1,10 +1,7 @@
-import {
-  IModelConfiguratorStateContext,
-  MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE,
-} from './contexts';
-import { ModelActionEnums } from './actions';
 import { handleActions } from 'redux-actions';
-import { ModelConfigurationDto } from 'apis/modelConfigurations';
+import { ModelConfigurationDto } from '../../apis/modelConfigurations';
+import { ModelActionEnums } from './actions';
+import { IModelConfiguratorStateContext, MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE } from './contexts';
 
 const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
   {
@@ -15,24 +12,21 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
       return {
         ...state,
         modelConfiguration: action.payload,
-        id: ''
+        id: '',
       };
     },
 
-    [ModelActionEnums.ChangeModelId]: (
-      state: IModelConfiguratorStateContext,
-      action: ReduxActions.Action<string>
-    ) => {
+    [ModelActionEnums.ChangeModelId]: (state: IModelConfiguratorStateContext, action: ReduxActions.Action<string>) => {
       if (action.payload) {
         return {
           ...state,
-          id: action.payload
+          id: action.payload,
         };
       }
       return {
         ...state,
         modelConfiguration: {},
-        id: action.payload
+        id: action.payload,
       };
     },
 
@@ -64,7 +58,7 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
       return {
         ...state,
         id: payload.id,
-        modelConfiguration: {...payload},
+        modelConfiguration: { ...payload },
       };
     },
   },

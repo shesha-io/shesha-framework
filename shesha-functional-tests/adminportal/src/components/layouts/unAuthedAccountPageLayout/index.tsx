@@ -1,16 +1,14 @@
-import React, { FC, ReactNode } from 'react';
-import { Row, Col } from 'antd';
-import { useUi } from '@shesha/reactjs';
-import { UnAuthedLayoutContainer } from './styles';
+import React, { FC, ReactNode } from "react";
+import { Row, Col } from "antd";
+import { useUi } from "@shesha/reactjs";
+import { UnAuthedLayoutContainer } from "./styles";
 
-interface IProps {
+export const UnAuthedAccountPageLayout: FC<{
   className?: string;
   heading?: string;
   hint?: string;
   children?: ReactNode;
-}
-
-export const UnAuthedAccountPageLayout: FC<IProps> = ({ className, children, heading, hint }) => {
+}> = ({ className, children, heading, hint }) => {
   const { accountFormCols } = useUi();
 
   return (
@@ -23,9 +21,15 @@ export const UnAuthedAccountPageLayout: FC<IProps> = ({ className, children, hea
                 <img src="/images/app-logo.png" />
               </div>
             </div>
-            {heading && <h2 className="un-authed-account-page-layout-heading">{heading}</h2>}
+            {heading && (
+              <h2 className="un-authed-account-page-layout-heading">
+                {heading}
+              </h2>
+            )}
 
-            {hint && <p className="un-authed-account-page-layout-hint">{hint}</p>}
+            {hint && (
+              <p className="un-authed-account-page-layout-hint">{hint}</p>
+            )}
 
             {children}
           </Col>

@@ -38,10 +38,8 @@ export const TOOLBAR_CONTEXT_INITIAL_STATE: ITableViewSelectorConfiguratorStateC
   readOnly: false,
 };
 
-export const TableViewSelectorConfiguratorStateContext = createContext<ITableViewSelectorConfiguratorStateContext>(
-  TOOLBAR_CONTEXT_INITIAL_STATE
-);
+export const TableViewSelectorConfiguratorStateContext =
+  createContext<ITableViewSelectorConfiguratorStateContext>(TOOLBAR_CONTEXT_INITIAL_STATE);
 
-export const TableViewSelectorConfiguratorActionsContext = createContext<ITableViewSelectorConfiguratorActionsContext>(
-  undefined
-);
+export const TableViewSelectorConfiguratorActionsContext =
+  createContext<ITableViewSelectorConfiguratorActionsContext>(undefined);

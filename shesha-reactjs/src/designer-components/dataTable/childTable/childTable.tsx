@@ -1,24 +1,24 @@
 import { Alert, Space } from 'antd';
-import React, { FC, Fragment, MutableRefObject, useEffect } from 'react';
-import { CollapsiblePanel, GlobalTableFilter, Show, TablePager } from 'components';
+import camelCaseKeys from 'camelcase-keys';
+import { isEmpty } from 'lodash';
 import {
   useDataTable,
   useForm,
   useGlobalState,
   useNestedPropertyMetadatAccessor,
   useSheshaApplication,
-} from 'providers';
-import ComponentsContainer from 'components/formDesigner/containers/componentsContainer';
-import { hasDynamicFilter } from 'providers/dataTable/utils';
-import './styles/index.less';
-import { ButtonGroup } from 'components/formDesigner/components/button/buttonGroup/buttonGroupComponent';
-import camelCaseKeys from 'camelcase-keys';
-import _, { isEmpty } from 'lodash';
+} from '../../../providers';
+import React, { FC, Fragment, MutableRefObject, useEffect } from 'react';
 import { useDeepCompareEffect } from 'react-use';
 import { IChildTableComponentProps } from '.';
-import { evaluateString } from 'providers/form/utils';
-import { evaluateDynamicFilters, getValidDefaultBool } from 'utils';
-import { DEFAULT_DT_USER_CONFIG } from 'providers/dataTable/contexts';
+import { CollapsiblePanel, GlobalTableFilter, Show, TablePager } from '../../../components';
+import { ButtonGroup } from '../../../components/formDesigner/components/button/buttonGroup/buttonGroupComponent';
+import ComponentsContainer from '../../../components/formDesigner/containers/componentsContainer';
+import { DEFAULT_DT_USER_CONFIG } from '../../../providers/dataTable/contexts';
+import { hasDynamicFilter } from '../../../providers/dataTable/utils';
+import { evaluateString } from '../../../providers/form/utils';
+import { evaluateDynamicFilters, getValidDefaultBool } from '../../../utils';
+import './styles/index.less';
 
 export interface IChildTableProps extends IChildTableComponentProps {
   componentRef: MutableRefObject<any>;

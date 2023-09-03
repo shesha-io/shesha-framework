@@ -6,9 +6,11 @@ export function useAsyncMemo<T>(factory: () => Promise<T> | undefined | null, de
   useEffect(() => {
     let cancel = false;
     const promise = factory();
-    if (promise === undefined || promise === null) 
-        return () => { /*nop*/ };
-    
+    if (promise === undefined || promise === null)
+      return () => {
+        /*nop*/
+      };
+
     promise.then((val) => {
       if (!cancel) {
         setVal(val);
@@ -21,4 +23,4 @@ export function useAsyncMemo<T>(factory: () => Promise<T> | undefined | null, de
   }, deps);
 
   return val;
-};
+}

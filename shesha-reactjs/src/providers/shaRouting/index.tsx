@@ -1,12 +1,12 @@
-import React, { FC, useReducer, useContext, PropsWithChildren } from 'react';
-import { shaRoutingReducer } from './reducer';
-import { ShaRoutingActionsContext, ShaRoutingStateContext, SHA_ROUTING_CONTEXT_INITIAL_STATE } from './contexts';
-import { getFlagSetters } from '../utils/flagsSetters';
 import { Router } from 'next/router';
+import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
+import { FormIdentifier, asFormFullName } from '../..';
 import { useConfigurableAction } from '../configurableActionsDispatcher';
-import { navigateArgumentsForm } from './actions/navigate-arguments';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
-import { asFormFullName, FormIdentifier } from '../..';
+import { getFlagSetters } from '../utils/flagsSetters';
+import { navigateArgumentsForm } from './actions/navigate-arguments';
+import { SHA_ROUTING_CONTEXT_INITIAL_STATE, ShaRoutingActionsContext, ShaRoutingStateContext } from './contexts';
+import { shaRoutingReducer } from './reducer';
 
 export interface IRoutingProviderProvider {
   router: Router;
@@ -22,37 +22,43 @@ interface ShaRoutingProviderProps {
 }
 
 const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ children, router, getFormUrlFunc }) => {
-  const [state, dispatch] = useReducer(shaRoutingReducer, { ...SHA_ROUTING_CONTEXT_INITIAL_STATE, router, getFormUrlFunc });
-  
+  const [state, dispatch] = useReducer(shaRoutingReducer, {
+    ...SHA_ROUTING_CONTEXT_INITIAL_STATE,
+    router,
+    getFormUrlFunc,
+  });
+
   /* NEW_ACTION_DECLARATION_GOES_HERE */
   const goingToRoute = (route: string) => {
     state?.router?.push(route);
   };
 
   const getFormUrl = (formId: FormIdentifier) => {
-    if (state.getFormUrlFunc)
-      return state.getFormUrlFunc(formId);
-    
+    if (state.getFormUrlFunc) return state.getFormUrlFunc(formId);
+
     var form = asFormFullName(formId);
-    return form ? `/dynamic${form.module ? `/${form.module}`: ''}/${form.name}` : "";
+    return form ? `/dynamic${form.module ? `/${form.module}` : ''}/${form.name}` : '';
   };
 
   const actionDependencies = [state, state?.router];
-  useConfigurableAction<INavigateActoinArguments>({
-    name: 'Navigate',
-    owner: 'Common',
-    ownerUid: SheshaActionOwners.Common,
-    hasArguments: true,
-    executer: (request) => {
-      if (state?.router){
-        return state?.router?.push(request.target);
-      } else {
-        window.location.href = request.target;
-        return Promise.resolve();
-      }        
+  useConfigurableAction<INavigateActoinArguments>(
+    {
+      name: 'Navigate',
+      owner: 'Common',
+      ownerUid: SheshaActionOwners.Common,
+      hasArguments: true,
+      executer: (request) => {
+        if (state?.router) {
+          return state?.router?.push(request.target);
+        } else {
+          window.location.href = request.target;
+          return Promise.resolve();
+        }
+      },
+      argumentsFormMarkup: navigateArgumentsForm,
     },
-    argumentsFormMarkup: navigateArgumentsForm
-  }, actionDependencies);
+    actionDependencies
+  );
 
   return (
     <ShaRoutingStateContext.Provider value={{ ...state, router }}>
@@ -103,4 +109,4 @@ function useShaRouting(require: boolean = true) {
 
 export default ShaRoutingProvider;
 
-export { ShaRoutingProvider, useShaRoutingState, useShaRoutingActions, useShaRouting };
+export { ShaRoutingProvider, useShaRouting, useShaRoutingActions, useShaRoutingState };

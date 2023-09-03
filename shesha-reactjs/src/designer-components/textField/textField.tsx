@@ -1,19 +1,19 @@
-import { IToolboxComponent } from '../../interfaces';
-import { FormMarkup } from '../../providers/form/models';
 import { CodeOutlined } from '@ant-design/icons';
 import { Input, message } from 'antd';
 import { InputProps } from 'antd/lib/input';
-import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
-import settingsFormJson from './settingsForm.json';
-import React from 'react';
-import { evaluateString, getStyle, validateConfigurableComponentSettings } from '../../providers/form/utils';
-import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../../providers';
-import { customEventHandler } from '../../components/formDesigner/components/utils';
-import { DataTypes, StringFormats } from '../../interfaces/dataTypes';
-import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
-import { axiosHttp } from '../../utils/fetchers';
 import moment from 'moment';
+import React from 'react';
+import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
+import { customEventHandler } from '../../components/formDesigner/components/utils';
+import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
+import { IToolboxComponent } from '../../interfaces';
+import { DataTypes, StringFormats } from '../../interfaces/dataTypes';
+import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../../providers';
+import { FormMarkup } from '../../providers/form/models';
+import { evaluateString, getStyle, validateConfigurableComponentSettings } from '../../providers/form/utils';
+import { axiosHttp } from '../../utils/fetchers';
 import { ITextFieldComponentProps, TextType } from './interfaces';
+import settingsFormJson from './settingsForm.json';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

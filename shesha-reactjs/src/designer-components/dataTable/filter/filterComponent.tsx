@@ -1,14 +1,14 @@
-import React, { FC, Fragment, useState } from 'react';
-import { IToolboxComponent } from '../../../interfaces';
 import { FilterOutlined } from '@ant-design/icons';
-import { FilterTarget, ICustomFilterComponentProps } from './interfaces';
-import { ConfigurableFormItem } from '../../../components';
 import { Button, Modal } from 'antd';
-import { QueryBuilderWrapper } from 'designer-components/queryBuilder/queryBuilderWrapper';
-import { TableViewSelectorConfiguratorProvider, useTableViewSelectorConfigurator } from '../../../providers';
-import FilterConfigurator from './filterConfigurator';
-import { ITableViewProps } from '../../../providers/tableViewSelectorConfigurator/models';
+import React, { FC, Fragment, useState } from 'react';
 import { useMedia } from 'react-use';
+import { ConfigurableFormItem } from '../../../components';
+import { QueryBuilderWrapper } from '../../../designer-components/queryBuilder/queryBuilderWrapper';
+import { IToolboxComponent } from '../../../interfaces';
+import { TableViewSelectorConfiguratorProvider, useTableViewSelectorConfigurator } from '../../../providers';
+import { ITableViewProps } from '../../../providers/tableViewSelectorConfigurator/models';
+import FilterConfigurator from './filterConfigurator';
+import { FilterTarget, ICustomFilterComponentProps } from './interfaces';
 
 const CustomFilterComponent: IToolboxComponent<ICustomFilterComponentProps> = {
   type: 'filter',
@@ -41,11 +41,11 @@ interface ICustomFilter {
 export const CustomFilter: FC<ICustomFilter> = ({ value, onChange, readOnly = false }) => {
   const [showModal, setShowModal] = useState(false);
 
-  const toggleFiltersModal = () => setShowModal(prev => !prev);
+  const toggleFiltersModal = () => setShowModal((prev) => !prev);
 
   return (
     <Fragment>
-      <Button onClick={toggleFiltersModal}>{ readOnly ? 'View Filters' : 'Customise Filters' }</Button>
+      <Button onClick={toggleFiltersModal}>{readOnly ? 'View Filters' : 'Customise Filters'}</Button>
 
       <QueryBuilderWrapper>
         <TableViewSelectorConfiguratorProvider items={(value as ITableViewProps[]) || []} readOnly={readOnly}>
@@ -80,10 +80,8 @@ export const FilterSettingsModalInner: FC<IFilterSettingsModal> = ({ visible, on
       width={isSmall ? '90%' : '60%'}
       open={visible}
       title={readOnly ? 'View Filters' : 'Configure Filters'}
-      
       onCancel={hideModal}
-      cancelText={ readOnly ? 'Close' : undefined }
-
+      cancelText={readOnly ? 'Close' : undefined}
       okText="Save"
       onOk={onOkClick}
       okButtonProps={{ hidden: readOnly }}

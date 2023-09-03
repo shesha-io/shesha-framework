@@ -1,15 +1,16 @@
-import { ICodeExposedVariable } from "components/codeVariablesTable";
-import { ReactNode } from "react";
-import { FormMarkup, GenericDictionary } from "../providers/form/models";
+import { ICodeExposedVariable } from '../components/codeVariablesTable';
+import { ReactNode } from 'react';
+import { FormMarkup, GenericDictionary } from '../providers/form/models';
 
 /**
  * Configuration action executer
  */
-export type IConfigurableActionExecuter<TArguments, TReponse> = (actionArguments: TArguments, context: GenericDictionary) => Promise<TReponse>;
+export type IConfigurableActionExecuter<TArguments, TReponse> = (
+  actionArguments: TArguments,
+  context: GenericDictionary
+) => Promise<TReponse>;
 
-export interface IConfigurableActionArguments {
-
-}
+export interface IConfigurableActionArguments {}
 
 export interface ISettingsFormFactoryArgs<TModel = IConfigurableActionArguments> {
   model: TModel;
@@ -24,7 +25,6 @@ export interface FormMarkupFactoryArgs {
   exposedVariables?: ICodeExposedVariable[];
 }
 export type FormMarkupFactory = (factoryArgs: FormMarkupFactoryArgs) => FormMarkup;
-
 
 export type IConfigurableActionArgumentsFormFactory<TModel = IConfigurableActionArguments> = (
   props: ISettingsFormFactoryArgs<TModel>
@@ -46,17 +46,18 @@ export interface IConfigurableActionIdentifier extends IHasActionOwner {
   /**
    * Action Name
    */
-   name: string;
+  name: string;
 }
 
 /**
  * Configurable action descriptor. Is used to define consigurable actions
  */
-export interface IConfigurableActionDescriptor<TArguments = IConfigurableActionArguments, TReponse = any> extends IConfigurableActionIdentifier {
+export interface IConfigurableActionDescriptor<TArguments = IConfigurableActionArguments, TReponse = any>
+  extends IConfigurableActionIdentifier {
   /**
    * User friendly name of the action. Action name is displayed if the label is not specified
    */
-   label?: string;
+  label?: string;
   /**
    * Action description
    */

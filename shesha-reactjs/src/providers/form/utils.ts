@@ -1,43 +1,21 @@
-import { FormMode } from './../../pages/dynamic/interfaces';
-import { IAnyObject } from './../../interfaces/anyObject';
-import {
-  IFlatComponentsStructure,
-  IConfigurableFormComponent,
-  ROOT_COMPONENT_KEY,
-  IComponentsDictionary,
-  IComponentsContainer,
-  IFormActions,
-  IFormAction,
-  FormMarkup,
-  FormMarkupWithSettings,
-  IFormSection,
-  IFormSections,
-  ViewType,
-  IFormValidationRulesOptions,
-  SILENT_KEY,
-  FormIdentifier,
-  FormFullName,
-  FormUid,
-  IFormSettings,
-  DEFAULT_FORM_SETTINGS,
-  ActionArguments,
-  ActionParameters,
-  ActionParametersDictionary,
-  GenericDictionary,
-} from './models';
+import { Rule, RuleObject } from 'antd/lib/form';
+import Schema, { Rules, ValidateSource } from 'async-validator';
+import camelcase from 'camelcase';
 import Mustache from 'mustache';
+import { nanoid } from 'nanoid';
+import nestedProperty from 'nested-property';
+import { CSSProperties } from 'react';
 import {
   IToolboxComponent,
   IToolboxComponentGroup,
   IToolboxComponents,
   SettingsMigrationContext,
 } from '../../interfaces';
-import Schema, { Rules, ValidateSource } from 'async-validator';
 import { IPropertyMetadata } from '../../interfaces/metadata';
-import { nanoid } from 'nanoid';
-import { Rule, RuleObject } from 'antd/lib/form';
-import nestedProperty from 'nested-property';
+import { Migrator } from '../../utils/fluentMigrator/migrator';
 import { getFullPath } from '../../utils/metadata';
+import { IAnyObject } from './../../interfaces/anyObject';
+import { FormMode } from './../../pages/dynamic/interfaces';
 import blankViewMarkup from './defaults/markups/blankView.json';
 import dashboardViewMarkup from './defaults/markups/dashboardView.json';
 import detailsViewMarkup from './defaults/markups/detailsView.json';
@@ -45,9 +23,31 @@ import formViewMarkup from './defaults/markups/formView.json';
 import masterDetailsViewMarkup from './defaults/markups/masterDetailsView.json';
 import menuViewMarkup from './defaults/markups/menuView.json';
 import tableViewMarkup from './defaults/markups/tableView.json';
-import { CSSProperties } from 'react';
-import camelcase from 'camelcase';
-import { Migrator } from '../../utils/fluentMigrator/migrator';
+import {
+  ActionArguments,
+  ActionParameters,
+  ActionParametersDictionary,
+  DEFAULT_FORM_SETTINGS,
+  FormFullName,
+  FormIdentifier,
+  FormMarkup,
+  FormMarkupWithSettings,
+  FormUid,
+  GenericDictionary,
+  IComponentsContainer,
+  IComponentsDictionary,
+  IConfigurableFormComponent,
+  IFlatComponentsStructure,
+  IFormAction,
+  IFormActions,
+  IFormSection,
+  IFormSections,
+  IFormSettings,
+  IFormValidationRulesOptions,
+  ROOT_COMPONENT_KEY,
+  SILENT_KEY,
+  ViewType,
+} from './models';
 
 /**
  * Convert components tree to flat structure.

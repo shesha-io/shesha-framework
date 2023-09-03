@@ -1,21 +1,21 @@
-import React, { FC } from 'react';
-import { IToolboxComponent } from '../../interfaces';
-import { FormMarkup } from '../../providers/form/models';
 import { DownSquareOutlined } from '@ant-design/icons';
 import { message, Select } from 'antd';
+import moment from 'moment';
+import React, { FC } from 'react';
+import { evaluateString } from '../..';
 import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
+import { customDropDownEventHandler } from '../../components/formDesigner/components/utils';
+import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
+import RefListDropDown from '../../components/refListDropDown';
+import { IToolboxComponent } from '../../interfaces';
+import { DataTypes } from '../../interfaces/dataTypes';
+import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../../providers';
+import { FormMarkup } from '../../providers/form/models';
+import { getStyle, validateConfigurableComponentSettings } from '../../providers/form/utils';
+import { axiosHttp } from '../../utils/fetchers';
+import { getLegacyReferenceListIdentifier } from '../../utils/referenceList';
 import { IDropdownComponentProps, ILabelValue } from './interfaces';
 import settingsFormJson from './settingsForm.json';
-import { getStyle, validateConfigurableComponentSettings } from '../../providers/form/utils';
-import RefListDropDown from '../../components/refListDropDown';
-import { DataTypes } from '../../interfaces/dataTypes';
-import { evaluateString } from '../..';
-import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../../providers';
-import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
-import { customDropDownEventHandler } from '../../components/formDesigner/components/utils';
-import { axiosHttp } from '../../utils/fetchers';
-import moment from 'moment';
-import { getLegacyReferenceListIdentifier } from '../../utils/referenceList';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

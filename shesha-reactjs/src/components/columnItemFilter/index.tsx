@@ -14,7 +14,7 @@ import {
 import { useReferenceList } from '../../providers/referenceListDispatcher';
 import { useEntityAutocomplete } from '../../utils/autocomplete';
 import { EntityData } from '../../interfaces/gql';
-import { ProperyDataType } from 'interfaces/metadata';
+import { ProperyDataType } from '../../interfaces/metadata';
 
 const { RangePicker: DateRangePicker } = DatePicker;
 const { RangePicker: TimeRangePicker } = TimePicker;
@@ -201,7 +201,7 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
             </Dropdown>
           )}
         </div>
-        <div className="filter-heading-right" onMouseOver={e => e.stopPropagation()}>
+        <div className="filter-heading-right" onMouseOver={(e) => e.stopPropagation()}>
           <DeleteOutlined onClick={handleDeleteFilter} />
         </div>
       </div>
@@ -271,13 +271,13 @@ interface IFilterBaseProps {
   onPressEnter: () => void;
 }
 
-interface ISingleValueFilterProps extends IFilterBaseProps { }
+interface ISingleValueFilterProps extends IFilterBaseProps {}
 
 interface IStringFilterProps extends ISingleValueFilterProps {
   value: string;
   onChange: (changeValue: ChangeEvent<HTMLInputElement>) => void;
 }
-const StringFilter: FC<IStringFilterProps> = props => {
+const StringFilter: FC<IStringFilterProps> = (props) => {
   return (
     <Input
       size="small"
@@ -293,7 +293,7 @@ interface INumberFilterProps extends ISingleValueFilterProps {
   onChange: (changeValue: number | number[] | string | undefined) => void;
   value: number;
 }
-const NumberFilter: FC<INumberFilterProps> = props => {
+const NumberFilter: FC<INumberFilterProps> = (props) => {
   return (
     <InputNumber
       className="ant-input-number-no-margin"
@@ -311,7 +311,7 @@ interface INumberRangeFilterProps extends IFilterBaseProps {
   value: number[];
   onChange: (changeValue: number | number[] | undefined) => void;
 }
-const NumberRangeFilter: FC<INumberRangeFilterProps> = props => {
+const NumberRangeFilter: FC<INumberRangeFilterProps> = (props) => {
   const [min, max] = props.value instanceof Array && props.value.length === 2 ? props.value : [null, null];
 
   const [minNumber, setMinNumber] = useState<number>(0);
@@ -361,13 +361,11 @@ interface IRefListFilterProps extends IFilterBaseProps {
   onChange: (changeValue: number[] | undefined) => void;
 }
 
-const RefListFilter: FC<IRefListFilterProps> = props => {
-  const { data: refListItems, loading: refListLoading } = useReferenceList(
-    {
-      name: props.referenceListName,
-      module: props.referenceListModule,
-    }
-  );
+const RefListFilter: FC<IRefListFilterProps> = (props) => {
+  const { data: refListItems, loading: refListLoading } = useReferenceList({
+    name: props.referenceListName,
+    module: props.referenceListModule,
+  });
 
   return (
     <Select
@@ -395,7 +393,7 @@ interface IEntityFilterProps extends IFilterBaseProps {
   autocompleteUrl?: string;
   entityType: string;
 }
-const EntityFilter: FC<IEntityFilterProps> = props => {
+const EntityFilter: FC<IEntityFilterProps> = (props) => {
   const { data, loading, search } = useEntityAutocomplete({ entityType: props.entityType, value: props.value });
 
   const dataLoaded = data && data.length > 0;

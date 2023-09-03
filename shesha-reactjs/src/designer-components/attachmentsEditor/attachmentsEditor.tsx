@@ -1,16 +1,16 @@
-import React from 'react';
-import { IToolboxComponent } from '../../interfaces';
-import { IConfigurableFormComponent } from '../../providers/form/models';
 import { FolderAddOutlined } from '@ant-design/icons';
-import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
-import StoredFilesProvider from '../../providers/storedFiles';
+import React from 'react';
 import { CustomFile } from '../../components';
+import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
+import { IToolboxComponent } from '../../interfaces';
 import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../../providers';
+import { IConfigurableFormComponent } from '../../providers/form/models';
 import {
   evaluateValue,
   executeCustomExpression,
   validateConfigurableComponentSettings,
 } from '../../providers/form/utils';
+import StoredFilesProvider from '../../providers/storedFiles';
 import { getSettings } from './settings';
 
 export interface IAttachmentsEditorProps extends IConfigurableFormComponent {

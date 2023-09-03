@@ -1,52 +1,51 @@
-import React, { FC, useContext, useEffect, PropsWithChildren, useMemo, MutableRefObject } from 'react';
-import { authReducer } from './reducer';
+import { useMutate } from 'hooks';
 import useThunkReducer from 'hooks/thunkReducer';
+import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useMemo } from 'react';
+import { sessionGetCurrentLoginInformations } from '../../apis/session';
+import { AuthenticateModel, AuthenticateResultModelAjaxResponse } from '../../apis/tokenAuth';
+import { ResetPasswordVerifyOtpResponse } from '../../apis/user';
+import { OverlayLoader } from '../../components/overlayLoader';
+import { IAccessToken } from '../../interfaces';
+import { IHttpHeaders } from '../../interfaces/accessToken';
+import { IErrorInfo } from '../../interfaces/errorInfo';
+import { IApiEndpoint } from '../../interfaces/metadata';
+import IRequestHeaders from '../../interfaces/requestHeaders';
+import { HOME_CACHE_URL, URL_CHANGE_PASSWORD, URL_HOME_PAGE, URL_LOGIN_PAGE } from '../../shesha-constants';
 import {
-  AuthStateContext,
-  AuthActionsContext,
-  AUTH_CONTEXT_INITIAL_STATE,
-  ILoginForm,
-  IAuthStateContext,
-} from './contexts';
-import {
-  loginUserAction,
-  loginUserErrorAction,
-  logoutUserAction,
-  verifyOtpSuccessAction,
-  resetPasswordSuccessAction,
-  setAccessTokenAction,
-  checkAuthAction,
-  fetchUserDataAction,
-  fetchUserDataActionSuccessAction,
-  fetchUserDataActionErrorAction,
-  loginUserSuccessAction,
-  setIsLoggedInAction,
-  /* NEW_ACTION_IMPORT_GOES_HERE */
-} from './actions';
-import { URL_LOGIN_PAGE, URL_HOME_PAGE, URL_CHANGE_PASSWORD, HOME_CACHE_URL } from 'shesha-constants';
-import { IAccessToken } from 'interfaces';
-import { OverlayLoader } from 'components/overlayLoader';
-import {
-  removeAccessToken as removeTokenFromStorage,
-  saveUserToken as saveUserTokenToStorage,
+  AUTHORIZATION_HEADER_NAME,
   getAccessToken as getAccessTokenFromStorage,
   getHttpHeaders as getHttpHeadersFromToken,
-  AUTHORIZATION_HEADER_NAME,
-} from 'utils/auth';
-import { getLocalizationOrDefault } from 'utils/localization';
-import { getCustomHeaders, getTenantId } from 'utils/multitenancy';
+  removeAccessToken as removeTokenFromStorage,
+  saveUserToken as saveUserTokenToStorage,
+} from '../../utils/auth';
+import { getLocalizationOrDefault } from '../../utils/localization';
+import { getCustomHeaders, getTenantId } from '../../utils/multitenancy';
+import { getCurrentUrl, getLoginUrlWithReturn, getQueryParam, isSameUrls } from '../../utils/url';
 import { useShaRouting } from '../shaRouting';
-import IRequestHeaders from 'interfaces/requestHeaders';
-import { IHttpHeaders } from 'interfaces/accessToken';
 import { useSheshaApplication } from '../sheshaApplication';
-import { getCurrentUrl, getLoginUrlWithReturn, getQueryParam, isSameUrls } from 'utils/url';
 import { getFlagSetters } from '../utils/flagsSetters';
-import { IErrorInfo } from 'interfaces/errorInfo';
-import { useMutate } from 'hooks';
-import { IApiEndpoint } from 'interfaces/metadata';
-import { sessionGetCurrentLoginInformations } from 'apis/session';
-import { AuthenticateModel, AuthenticateResultModelAjaxResponse } from 'apis/tokenAuth';
-import { ResetPasswordVerifyOtpResponse } from 'apis/user';
+import {
+  checkAuthAction,
+  fetchUserDataAction,
+  fetchUserDataActionErrorAction,
+  fetchUserDataActionSuccessAction,
+  loginUserAction,
+  loginUserErrorAction,
+  loginUserSuccessAction,
+  logoutUserAction,
+  resetPasswordSuccessAction,
+  setAccessTokenAction,
+  setIsLoggedInAction,
+  verifyOtpSuccessAction,
+} from './actions';
+import {
+  AUTH_CONTEXT_INITIAL_STATE,
+  AuthActionsContext,
+  AuthStateContext,
+  IAuthStateContext,
+  ILoginForm,
+} from './contexts';
+import { authReducer } from './reducer';
 
 const DEFAULT_HOME_PAGE = '/';
 const loginEndpoint: IApiEndpoint = { url: '/api/TokenAuth/Authenticate', httpVerb: 'POST' };
@@ -126,7 +125,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
 
     dispatch(fetchUserDataAction());
     sessionGetCurrentLoginInformations({ base: backendUrl, headers })
-      .then(response => {
+      .then((response) => {
         if (response.result.user) {
           dispatch(fetchUserDataActionSuccessAction(response.result.user));
 
@@ -154,7 +153,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
           redirectToUnauthorized();
         }
       })
-      .catch(e => {
+      .catch((e) => {
         console.log('failed to fetch user profile', e);
         dispatch(fetchUserDataActionErrorAction({ message: 'Oops, something went wrong' }));
         redirectToUnauthorized();
@@ -293,7 +292,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
 
       loginUserHttp(loginEndpoint, loginFormData)
         .then(loginSuccessHandler)
-        .catch(err => {
+        .catch((err) => {
           dispatchThunk(loginUserErrorAction(err?.data));
         });
     });
@@ -306,7 +305,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
   /**
    * Logout success
    */
-  const logoutSuccess = resolve => {
+  const logoutSuccess = (resolve) => {
     clearAccessToken();
     dispatch(logoutUserAction());
     redirect(unauthorizedRedirectUrl);
@@ -333,7 +332,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
 
     const granted = loginInfo.grantedPermissions || [];
 
-    return permissions.some(p => granted.includes(p));
+    return permissions.some((p) => granted.includes(p));
   };
 
   if (authRef) authRef.current = { anyOfPermissionsGranted, headers: state?.headers };
@@ -432,4 +431,4 @@ function useAuth(require: boolean = true) {
 
 export default AuthProvider;
 
-export { AuthProvider, useAuthState, useAuthActions, useAuth };
+export { AuthProvider, useAuth, useAuthActions, useAuthState };

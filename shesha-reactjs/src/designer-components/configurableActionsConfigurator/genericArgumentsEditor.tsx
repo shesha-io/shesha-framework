@@ -1,8 +1,8 @@
-import React, { useEffect, useRef } from 'react';
 import { Form } from 'antd';
+import React, { useEffect, useRef } from 'react';
 import { ConfigurableForm, ConfigurableFormInstance } from '../..';
-import { FormMarkup } from '../../providers/form/models';
 import { IConfigurableActionArguments } from '../../interfaces/configurableAction';
+import { FormMarkup } from '../../providers/form/models';
 
 export interface IProps<TModel extends IConfigurableActionArguments> {
   model: TModel;
@@ -32,7 +32,7 @@ function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
       formRef={formRef}
       labelCol={{ span: 24 }}
       wrapperCol={{ span: 24 }}
-      mode={readOnly ? "readonly" : "edit"}
+      mode={readOnly ? 'readonly' : 'edit'}
       form={form}
       onFinish={onSave}
       markup={markup}

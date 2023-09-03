@@ -1,6 +1,6 @@
 import { CommentOutlined, MailOutlined, MessageOutlined, PhoneOutlined } from '@ant-design/icons';
-import { TimelineChannels } from 'components/timeline/timelineItem/timelineChannels';
 import React from 'react';
+import { TimelineChannels } from '../components/timeline/timelineItem/timelineChannels';
 
 export const getTimelineIcon = (channel: number) => {
   switch (channel) {

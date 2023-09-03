@@ -5,7 +5,7 @@ import { getLocalStorage } from './storage';
 /**
  * Standard Authorization header name
  */
- export const AUTHORIZATION_HEADER_NAME = 'Authorization';
+export const AUTHORIZATION_HEADER_NAME = 'Authorization';
 
 // Fields to remove from the AuthContext
 interface IAccessToken {
@@ -30,7 +30,7 @@ export const saveUserToken = ({ accessToken, expireInSeconds, expireOn }: IAcces
 
 const parseToken = (token: string): IAccessToken => {
   try {
-    return JSON.parse(jseu.encoder.decodeBase64(token) as string) as IAccessToken;      
+    return JSON.parse(jseu.encoder.decodeBase64(token) as string) as IAccessToken;
   } catch (error) {
     console.error('failed to parse token', error);
     return null;
@@ -70,10 +70,9 @@ export const removeAccessToken = (tokenName: string) => {
 
 export const getHttpHeaders = (token: string | null) => {
   const headers = {};
-  if (token)
-    headers[AUTHORIZATION_HEADER_NAME] = `Bearer ${token}`;
+  if (token) headers[AUTHORIZATION_HEADER_NAME] = `Bearer ${token}`;
 
   headers['.AspNetCore.Culture'] = getLocalizationOrDefault();
-    
+
   return headers;
 };

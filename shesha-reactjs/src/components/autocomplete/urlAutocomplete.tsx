@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Select } from 'antd';
-import { useGet } from 'hooks';
+import { useGet } from '../../hooks';
 import { useDebouncedCallback } from 'use-debounce';
 import { useSubscribe } from '../..';
 import { ReadOnlyDisplayFormItem } from './../readOnlyDisplayFormItem';
@@ -12,7 +12,7 @@ import {
   IUrlFetcherQueryParams,
 } from './models';
 import { getQueryString, trimQueryString } from './utils';
-import { IAjaxResponseBase } from 'interfaces/ajaxResponse';
+import { IAjaxResponseBase } from '../../interfaces/ajaxResponse';
 
 export const UrlAutocomplete = <TValue,>(props: IUrlAutocompleteProps<TValue>) => {
   const {

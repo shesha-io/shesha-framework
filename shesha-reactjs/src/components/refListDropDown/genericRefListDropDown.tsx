@@ -1,10 +1,10 @@
-import React, { useMemo } from 'react';
 import { Empty, Select, Spin } from 'antd';
-import { ReferenceListItemDto } from 'apis/referenceList';
-import { CustomLabeledValue, IGenericRefListDropDownProps, ISelectOption } from './models';
-import ReadOnlyDisplayFormItem from '../readOnlyDisplayFormItem';
-import { useReferenceList } from 'providers/referenceListDispatcher';
 import { ValidationErrors } from 'components';
+import { useReferenceList } from 'providers/referenceListDispatcher';
+import React, { useMemo } from 'react';
+import { ReferenceListItemDto } from '../../apis/referenceList';
+import ReadOnlyDisplayFormItem from '../readOnlyDisplayFormItem';
+import { CustomLabeledValue, IGenericRefListDropDownProps, ISelectOption } from './models';
 
 // tslint:disable-next-line:whitespace
 export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownProps<TValue>) => {

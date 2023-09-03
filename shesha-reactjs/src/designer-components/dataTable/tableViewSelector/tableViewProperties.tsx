@@ -1,10 +1,10 @@
-import React, { FC, useEffect, ReactNode, useState } from 'react';
-import { useTableViewSelectorConfigurator } from '../../../providers/tableViewSelectorConfigurator';
 import { Empty, Form } from 'antd';
-import { ConfigurableForm } from '../../../components';
-import tableViewSettingsJson from './tableViewSettings.json';
-import { FormMarkup } from '../../../providers/form/models';
+import React, { FC, ReactNode, useEffect, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
+import { ConfigurableForm } from '../../../components';
+import { FormMarkup } from '../../../providers/form/models';
+import { useTableViewSelectorConfigurator } from '../../../providers/tableViewSelectorConfigurator';
+import tableViewSettingsJson from './tableViewSettings.json';
 
 export interface IProps {}
 
@@ -15,7 +15,7 @@ export const TableViewProperties: FC<IProps> = () => {
   const [form] = Form.useForm();
 
   const debouncedSave = useDebouncedCallback(
-    values => {
+    (values) => {
       updateItem({ id: selectedItemId, settings: values });
     },
     // delay in ms
@@ -28,7 +28,7 @@ export const TableViewProperties: FC<IProps> = () => {
 
     const componentModel = getItem(selectedItemId);
 
-    const onSettingsSave = values => {
+    const onSettingsSave = (values) => {
       console.log(values);
     };
 

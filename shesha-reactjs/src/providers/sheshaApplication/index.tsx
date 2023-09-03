@@ -1,27 +1,6 @@
-import React, { FC, useReducer, useContext, PropsWithChildren, useRef } from 'react';
-import appConfiguratorReducer from './reducer';
-import {
-  DEFAULT_ACCESS_TOKEN_NAME,
-  DEFAULT_SHESHA_ROUTES,
-  ISheshaRutes,
-  SheshaApplicationActionsContext,
-  SheshaApplicationStateContext,
-  SHESHA_APPLICATION_CONTEXT_INITIAL_STATE,
-} from './contexts';
-import IRequestHeaders from '../../interfaces/requestHeaders';
-import {
-  setBackendUrlAction,
-  setGlobalVariablesAction,
-  setHeadersAction,
-  updateToolboxComponentGroupsAction,
-} from './actions';
 import { Router } from 'next/router';
-import AuthProvider from '../auth';
-import ShaRoutingProvider from '../shaRouting';
-import { AppConfiguratorProvider } from '../appConfigurator';
-import { DynamicModalProvider } from '../dynamicModal';
-import { UiProvider } from '../ui';
-import { MetadataDispatcherProvider } from '../metadataDispatcher';
+import React, { FC, PropsWithChildren, useContext, useReducer, useRef } from 'react';
+import { useDeepCompareEffect } from 'react-use';
 import {
   FormIdentifier,
   IAuthProviderRefProps,
@@ -29,16 +8,37 @@ import {
   ThemeProvider,
   ThemeProviderProps,
 } from '../..';
-import { ReferenceListDispatcherProvider } from '../referenceListDispatcher';
-import { StackedNavigationProvider } from '../../pages/dynamic/navigation/stakedNavigation';
 import ConditionalWrap from '../../components/conditionalWrapper';
+import IRequestHeaders from '../../interfaces/requestHeaders';
+import { StackedNavigationProvider } from '../../pages/dynamic/navigation/stakedNavigation';
+import { AppConfiguratorProvider } from '../appConfigurator';
+import AuthProvider from '../auth';
 import { ConfigurableActionDispatcherProvider } from '../configurableActionsDispatcher';
-import { ApplicationActionsProcessor } from './configurable-actions/applicationActionsProcessor';
 import { ConfigurationItemsLoaderProvider } from '../configurationItemsLoader';
-import { FRONT_END_APP_HEADER_NAME } from './models';
-import { SettingsProvider } from '../settings';
 import { DataSourcesProvider } from '../dataSourcesProvider';
-import { useDeepCompareEffect } from 'react-use';
+import { DynamicModalProvider } from '../dynamicModal';
+import { MetadataDispatcherProvider } from '../metadataDispatcher';
+import { ReferenceListDispatcherProvider } from '../referenceListDispatcher';
+import { SettingsProvider } from '../settings';
+import ShaRoutingProvider from '../shaRouting';
+import { UiProvider } from '../ui';
+import {
+  setBackendUrlAction,
+  setGlobalVariablesAction,
+  setHeadersAction,
+  updateToolboxComponentGroupsAction,
+} from './actions';
+import { ApplicationActionsProcessor } from './configurable-actions/applicationActionsProcessor';
+import {
+  DEFAULT_ACCESS_TOKEN_NAME,
+  DEFAULT_SHESHA_ROUTES,
+  ISheshaRutes,
+  SHESHA_APPLICATION_CONTEXT_INITIAL_STATE,
+  SheshaApplicationActionsContext,
+  SheshaApplicationStateContext,
+} from './contexts';
+import { FRONT_END_APP_HEADER_NAME } from './models';
+import appConfiguratorReducer from './reducer';
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;

@@ -372,9 +372,7 @@
               }
             ],
             "dataSourceType": "values",
-            "defaultValue": [
-              "single"
-            ],
+            "defaultValue": ["single"],
             "version": 1,
             "useRawValues": false,
             "referenceListId": null
@@ -542,9 +540,7 @@
                 }
               ],
               "dataSourceType": "values",
-              "defaultValue": [
-                "single"
-              ],
+              "defaultValue": ["single"],
               "version": 1,
               "useRawValues": false,
               "referenceListId": null

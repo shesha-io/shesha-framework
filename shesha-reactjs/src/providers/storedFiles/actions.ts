@@ -1,5 +1,5 @@
 import { createAction } from 'redux-actions';
-import { IStoredFilesStateContext, IStoredFile } from './contexts';
+import { IStoredFile, IStoredFilesStateContext } from './contexts';
 
 export enum StoredFilesActionEnums {
   DownloadFileRequest = 'DOWNLOAD_FILE_REQUEST',
@@ -40,25 +40,25 @@ export const downloadFileErrorAction = createAction<IStoredFilesStateContext>(
 
 export const uploadFileRequestAction = createAction<IStoredFilesStateContext, IStoredFile>(
   StoredFilesActionEnums.UploadFileRequest,
-  newFile => ({ newFile })
+  (newFile) => ({ newFile })
 );
 export const uploadFileSuccessAction = createAction<IStoredFilesStateContext, IStoredFile>(
   StoredFilesActionEnums.UploadFileSuccess,
-  newFile => ({ newFile })
+  (newFile) => ({ newFile })
 );
 export const uploadFileErrorAction = createAction<IStoredFilesStateContext, IStoredFile>(
   StoredFilesActionEnums.UploadFileError,
-  newFile => ({ newFile })
+  (newFile) => ({ newFile })
 );
 
 export const deleteFileRequestAction = createAction<IStoredFilesStateContext, string>(
   StoredFilesActionEnums.DeleteFileRequest,
-  fileIdToDelete => ({ fileIdToDelete })
+  (fileIdToDelete) => ({ fileIdToDelete })
 );
 
 export const deleteFileSuccessAction = createAction<IStoredFilesStateContext, string>(
   StoredFilesActionEnums.DeleteFileSuccess,
-  fileIdToDelete => ({ fileIdToDelete })
+  (fileIdToDelete) => ({ fileIdToDelete })
 );
 export const deleteFileErrorAction = createAction<IStoredFilesStateContext>(
   StoredFilesActionEnums.DeleteFileError,
@@ -84,7 +84,7 @@ export const fetchFileListRequestAction = createAction<IStoredFilesStateContext>
 );
 export const fetchFileListSuccessAction = createAction<IStoredFilesStateContext, IStoredFile[]>(
   StoredFilesActionEnums.FetchFileListSuccess,
-  fileList => ({ fileList })
+  (fileList) => ({ fileList })
 );
 export const fetchFileListErrorAction = createAction<IStoredFilesStateContext>(
   StoredFilesActionEnums.FetchFileListError,
@@ -106,11 +106,11 @@ export const downloadZipErrorAction = createAction<IStoredFilesStateContext>(
 
 export const onFileAddedAction = createAction<IStoredFilesStateContext, IStoredFile>(
   StoredFilesActionEnums.OnFileAdded,
-  newFile => ({ newFile })
+  (newFile) => ({ newFile })
 );
 
 export const onFileDeletedAction = createAction<IStoredFilesStateContext, string>(
   StoredFilesActionEnums.OnFileDeleted,
-  fileIdToDelete => ({ fileIdToDelete })
+  (fileIdToDelete) => ({ fileIdToDelete })
 );
 /* NEW_ACTION_GOES_HERE */

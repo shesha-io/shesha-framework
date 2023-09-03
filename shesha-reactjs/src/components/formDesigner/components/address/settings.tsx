@@ -1,15 +1,15 @@
 import { Checkbox, Form, Input, InputNumber, Select } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
+import { Option } from 'antd/lib/mentions';
 import React, { FC, useState } from 'react';
+import SettingsFormItem from '../../../../designer-components/_settings/settingsFormItem';
 import { COUNTRY_CODES } from '../../../../shesha-constants/country-codes';
 import PropertyAutocomplete from '../../../propertyAutocomplete/propertyAutocomplete';
 import SectionSeparator from '../../../sectionSeparator';
 import Show from '../../../show';
 import CodeEditor from '../codeEditor/codeEditor';
-import { Option } from 'antd/lib/mentions';
 import { IAddressCompomentProps } from './models';
 import { EXPOSED_VARIABLES } from './utils';
-import SettingsFormItem from 'designer-components/_settings/settingsFormItem';
 
 export interface IButtonGroupSettingsProps {
   readOnly?: boolean;

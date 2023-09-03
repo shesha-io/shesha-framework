@@ -1,10 +1,10 @@
 import React from 'react';
-import { IToolboxComponent } from 'interfaces';
-import { IConfigurableFormComponent } from 'providers/form/models';
-import ConfigurableFormItem from 'components/formDesigner/components/formItem';
 import { useForm } from '../..';
-import { EntityReference, IEntityReferenceProps } from 'components/entityReference';
-import { LinkExternalOutlined } from 'icons/linkExternalOutlined';
+import { EntityReference, IEntityReferenceProps } from '../../components/entityReference';
+import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
+import { LinkExternalOutlined } from '../../icons/linkExternalOutlined';
+import { IToolboxComponent } from '../../interfaces';
+import { IConfigurableFormComponent } from '../../providers/form/models';
 import { EntityReferenceSettings } from './settings';
 
 export type IActionParameters = [{ key: string; value: string }];
@@ -27,29 +27,25 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
 
     return (
       <ConfigurableFormItem model={model}>
-        {!isHidden &&
-            <EntityReference
-                {...model}
-                disabled={isDisabled}
-            />
-        }
+        {!isHidden && <EntityReference {...model} disabled={isDisabled} />}
       </ConfigurableFormItem>
     );
   },
   settingsFormFactory: (props) => {
-    return <EntityReferenceSettings {...props}/>;
+    return <EntityReferenceSettings {...props} />;
   },
-  migrator: m => m.add<IEntityReferenceControlProps>(0, prev => {
-    return {
-      ...prev,
-      formSelectionMode: 'name',
-      entityReferenceType: 'Quickview',
-      quickviewWidth: 600,
-      displayProperty: '',
-      handleFail: false,
-      handleSuccess: false
-    };
-  }),
+  migrator: (m) =>
+    m.add<IEntityReferenceControlProps>(0, (prev) => {
+      return {
+        ...prev,
+        formSelectionMode: 'name',
+        entityReferenceType: 'Quickview',
+        quickviewWidth: 600,
+        displayProperty: '',
+        handleFail: false,
+        handleSuccess: false,
+      };
+    }),
   linkToModelMetadata: (model, metadata): IEntityReferenceControlProps => {
     return {
       ...model,

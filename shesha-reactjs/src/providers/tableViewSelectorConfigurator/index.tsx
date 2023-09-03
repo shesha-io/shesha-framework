@@ -1,23 +1,22 @@
-import React, { FC, useReducer, useContext, PropsWithChildren } from 'react';
-import toolbarReducer from './reducer';
+import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
 import {
-  IUpdateChildItemsPayload,
-  IUpdateItemSettingsPayload,
-  TableViewSelectorConfiguratorActionsContext,
-  TableViewSelectorConfiguratorStateContext,
-  TOOLBAR_CONTEXT_INITIAL_STATE,
-} from './contexts';
-import {
-  addItemAction,
-  deleteItemAction,
   addGroupAction,
+  addItemAction,
   deleteGroupAction,
+  deleteItemAction,
   selectItemAction,
   updateChildItemsAction,
   updateItemAction,
-  /* NEW_ACTION_IMPORT_GOES_HERE */
 } from './actions';
+import {
+  IUpdateChildItemsPayload,
+  IUpdateItemSettingsPayload,
+  TOOLBAR_CONTEXT_INITIAL_STATE,
+  TableViewSelectorConfiguratorActionsContext,
+  TableViewSelectorConfiguratorStateContext,
+} from './contexts';
 import { ITableViewProps } from './models';
+import toolbarReducer from './reducer';
 import { getItemById } from './utils';
 
 export interface ITableViewSelectorConfiguratorProviderPropsBase {
@@ -31,13 +30,10 @@ export interface ITableViewSelectorConfiguratorProviderProps {
   readOnly?: boolean;
 }
 
-const TableViewSelectorConfiguratorProvider: FC<PropsWithChildren<
-  ITableViewSelectorConfiguratorProviderProps
->> = props => {
-  const {
-    children,
-    readOnly,
-  } = props;
+const TableViewSelectorConfiguratorProvider: FC<PropsWithChildren<ITableViewSelectorConfiguratorProviderProps>> = (
+  props
+) => {
+  const { children, readOnly } = props;
 
   const [state, dispatch] = useReducer(toolbarReducer, {
     ...TOOLBAR_CONTEXT_INITIAL_STATE,
@@ -46,23 +42,19 @@ const TableViewSelectorConfiguratorProvider: FC<PropsWithChildren<
   });
 
   const addItem = () => {
-    if (!state.readOnly)
-      dispatch(addItemAction());
+    if (!state.readOnly) dispatch(addItemAction());
   };
 
   const deleteItem = (uid: string) => {
-    if (!state.readOnly)
-      dispatch(deleteItemAction(uid));
+    if (!state.readOnly) dispatch(deleteItemAction(uid));
   };
 
   const addGroup = () => {
-    if (!state.readOnly)
-      dispatch(addGroupAction());
+    if (!state.readOnly) dispatch(addGroupAction());
   };
 
   const deleteGroup = (uid: string) => {
-    if (!state.readOnly)
-      dispatch(deleteGroupAction(uid));
+    if (!state.readOnly) dispatch(deleteGroupAction(uid));
   };
 
   const selectItem = (uid: string) => {
@@ -70,8 +62,7 @@ const TableViewSelectorConfiguratorProvider: FC<PropsWithChildren<
   };
 
   const updateChildItems = (payload: IUpdateChildItemsPayload) => {
-    if (!state.readOnly)
-      dispatch(updateChildItemsAction(payload));
+    if (!state.readOnly) dispatch(updateChildItemsAction(payload));
   };
 
   const getItem = (uid: string): ITableViewProps => {
@@ -79,8 +70,7 @@ const TableViewSelectorConfiguratorProvider: FC<PropsWithChildren<
   };
 
   const updateItem = (payload: IUpdateItemSettingsPayload) => {
-    if (!state.readOnly)
-      dispatch(updateItemAction(payload));
+    if (!state.readOnly) dispatch(updateItemAction(payload));
   };
 
   /* NEW_ACTION_DECLARATION_GOES_HERE */

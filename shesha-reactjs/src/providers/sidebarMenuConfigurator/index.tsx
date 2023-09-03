@@ -1,25 +1,24 @@
-import React, { FC, useReducer, useContext, PropsWithChildren, useMemo } from 'react';
-import sidebarMenuReducer from './reducer';
+import React, { FC, PropsWithChildren, useContext, useMemo, useReducer } from 'react';
+import { usePrevious } from 'react-use';
+import { ISidebarMenuItem } from '../sidebarMenu';
 import {
-  IUpdateChildItemsPayload,
-  IUpdateItemSettingsPayload,
-  SidebarMenuConfiguratorActionsContext,
-  SidebarMenuConfiguratorStateContext,
-  SIDEBAR_MENU_CONTEXT_INITIAL_STATE,
-} from './contexts';
-import {
+  addGroupAction,
   addItemAction,
+  deleteGroupAction,
   deleteItemAction,
   selectItemAction,
   updateChildItemsAction,
   updateItemAction,
-  addGroupAction,
-  deleteGroupAction,
-  /* NEW_ACTION_IMPORT_GOES_HERE */
 } from './actions';
+import {
+  IUpdateChildItemsPayload,
+  IUpdateItemSettingsPayload,
+  SIDEBAR_MENU_CONTEXT_INITIAL_STATE,
+  SidebarMenuConfiguratorActionsContext,
+  SidebarMenuConfiguratorStateContext,
+} from './contexts';
+import sidebarMenuReducer from './reducer';
 import { getItemById } from './utils';
-import { ISidebarMenuItem } from '../sidebarMenu';
-import { usePrevious } from 'react-use';
 
 export interface ISidebarMenuConfiguratorProviderPropsBase {
   baseUrl?: string;
@@ -29,7 +28,7 @@ export interface ISidebarMenuConfiguratorProviderProps {
   items: ISidebarMenuItem[];
 }
 
-const SidebarMenuConfiguratorProvider: FC<PropsWithChildren<ISidebarMenuConfiguratorProviderProps>> = props => {
+const SidebarMenuConfiguratorProvider: FC<PropsWithChildren<ISidebarMenuConfiguratorProviderProps>> = (props) => {
   const { children } = props;
 
   const [state, dispatch] = useReducer(sidebarMenuReducer, {

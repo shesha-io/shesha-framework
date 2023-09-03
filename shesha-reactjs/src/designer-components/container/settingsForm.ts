@@ -1,14 +1,14 @@
 import { nanoid } from 'nanoid/non-secure';
 import { DesignerToolbarSettings } from '../../interfaces/toolbarSettings';
 import {
-  JUSTIFY_ITEMS,
   ALIGN_ITEMS,
-  JUSTIFY_CONTENT,
   ALIGN_SELF,
-  TEXT_JUSTIFY,
-  JUSTIFY_SELF,
   FLEX_DIRECTION,
   FLEX_WRAP,
+  JUSTIFY_CONTENT,
+  JUSTIFY_ITEMS,
+  JUSTIFY_SELF,
+  TEXT_JUSTIFY,
 } from './data';
 
 export const getSettings = (data: any) =>

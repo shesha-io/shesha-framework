@@ -1,19 +1,19 @@
+import { DeleteFilled, QuestionCircleOutlined } from '@ant-design/icons';
+import { Button, Tooltip } from 'antd';
 import React, { FC } from 'react';
+import ShaIcon, { IconType } from '../../../../components/shaIcon';
+import { useColumnsConfigurator } from '../../../../providers/datatableColumnsConfigurator';
 import {
   IConfigurableActionColumnsProps,
   IConfigurableColumnsProps,
 } from '../../../../providers/datatableColumnsConfigurator/models';
-import { Button, Tooltip } from 'antd';
-import { DeleteFilled, QuestionCircleOutlined } from '@ant-design/icons';
-import { useColumnsConfigurator } from '../../../../providers/datatableColumnsConfigurator';
 import DragHandle from './dragHandle';
-import ShaIcon, { IconType } from '../../../../components/shaIcon';
 
 export interface IProps extends IConfigurableColumnsProps {
   index: number[];
 }
 
-export const Column: FC<IProps> = props => {
+export const Column: FC<IProps> = (props) => {
   const { deleteColumn: deleteButton, selectedItemId, readOnly } = useColumnsConfigurator();
 
   const onDeleteClick = () => {

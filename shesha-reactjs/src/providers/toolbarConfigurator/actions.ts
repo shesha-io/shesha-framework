@@ -18,21 +18,21 @@ export enum ToolbarActionEnums {
 
 export const addButtonAction = createAction(ToolbarActionEnums.AddButton);
 
-export const deleteButtonAction = createAction<string, string>(ToolbarActionEnums.DeleteButton, p => p);
+export const deleteButtonAction = createAction<string, string>(ToolbarActionEnums.DeleteButton, (p) => p);
 
 export const addGroupAction = createAction(ToolbarActionEnums.AddGroup);
-export const deleteGroupAction = createAction<string, string>(ToolbarActionEnums.DeleteGroup, p => p);
+export const deleteGroupAction = createAction<string, string>(ToolbarActionEnums.DeleteGroup, (p) => p);
 
-export const selectItemAction = createAction<string, string>(ToolbarActionEnums.SelectItem, p => p);
+export const selectItemAction = createAction<string, string>(ToolbarActionEnums.SelectItem, (p) => p);
 
 export const updateChildItemsAction = createAction<IUpdateChildItemsPayload, IUpdateChildItemsPayload>(
   ToolbarActionEnums.UpdateChildItems,
-  p => p
+  (p) => p
 );
 
 export const updateItemAction = createAction<IUpdateItemSettingsPayload, IUpdateItemSettingsPayload>(
   ToolbarActionEnums.UpdateItem,
-  p => p
+  (p) => p
 );
 
 /* NEW_ACTION_GOES_HERE */

@@ -13,7 +13,7 @@ export const useDelete = () => {
   const [state, setState] = useState<IDeleteState>();
 
   const mutate = (url: string, config?: AxiosRequestConfig) => {
-    setState(prev => ({ ...prev, loading: true }));
+    setState((prev) => ({ ...prev, loading: true }));
 
     return new Promise((resolve, reject) => {
       axios({
@@ -23,17 +23,17 @@ export const useDelete = () => {
         headers: httpHeaders,
         ...config,
       })
-        .then(data => {
-          setState(prev => ({ ...prev, loading: false, error: null }));
+        .then((data) => {
+          setState((prev) => ({ ...prev, loading: false, error: null }));
 
           resolve(data?.data);
         })
-        .catch(error => {
-          setState(prev => ({ ...prev, loading: false, error: error }));
+        .catch((error) => {
+          setState((prev) => ({ ...prev, loading: false, error: error }));
           reject();
         })
         .finally(() => {
-          setState(prev => ({ ...prev, loading: false }));
+          setState((prev) => ({ ...prev, loading: false }));
         });
     });
   };

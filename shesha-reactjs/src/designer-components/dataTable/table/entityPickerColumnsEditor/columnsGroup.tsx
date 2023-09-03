@@ -1,8 +1,8 @@
-import React, { FC } from 'react';
-import { Button } from 'antd';
 import { DeleteFilled } from '@ant-design/icons';
-import { ColumnsItemProps, IConfigurableColumnGroup } from '../../../../providers/datatableColumnsConfigurator/models';
+import { Button } from 'antd';
+import React, { FC } from 'react';
 import { useColumnsConfigurator } from '../../../../providers/datatableColumnsConfigurator';
+import { ColumnsItemProps, IConfigurableColumnGroup } from '../../../../providers/datatableColumnsConfigurator/models';
 import DragHandle from './dragHandle';
 
 export interface IContainerRenderArgs {
@@ -15,7 +15,7 @@ export interface IColumnsGroupProps extends IConfigurableColumnGroup {
   containerRendering: (args: IContainerRenderArgs) => React.ReactNode;
 }
 
-export const ColumnsGroup: FC<IColumnsGroupProps> = props => {
+export const ColumnsGroup: FC<IColumnsGroupProps> = (props) => {
   const { deleteGroup, selectedItemId, readOnly } = useColumnsConfigurator();
 
   const onDeleteClick = () => {

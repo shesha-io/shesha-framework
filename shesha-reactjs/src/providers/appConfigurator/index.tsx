@@ -1,36 +1,33 @@
-import React, { FC, useReducer, useContext, PropsWithChildren, useEffect, useMemo } from 'react';
-import appConfiguratorReducer from './reducer';
-import { AppConfiguratorActionsContext, AppConfiguratorStateContext, APP_CONTEXT_INITIAL_STATE } from './contexts';
+import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useReducer } from 'react';
+import { useLocalStorage } from '../../hooks';
+import { PERM_APP_CONFIGURATOR } from '../../shesha-constants';
 import {
-  ApplicationMode,
-  ConfigurationItemsViewMode,
-} from './models';
-import {
-  switchApplicationModeAction,
-  toggleShowInfoBlockAction,
-  toggleEditModeConfirmationAction,
-  toggleCloseEditModeConfirmationAction,
-  switchConfigurationItemModeAction,
-} from './actions';
-import { useSheshaApplication } from '../sheshaApplication';
-import { useConfigurableAction } from '../configurableActionsDispatcher';
-import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
-import {
+  IConfigurationFrameworkHookArguments,
+  IHasConfigurableItemId,
   createNewVersion,
   deleteItem,
   downloadAsJson,
-  IConfigurationFrameworkHookArguments,
-  IHasConfigurableItemId,
   itemCancelVersion,
   publishItem,
   setItemReady,
 } from '../../utils/configurationFramework/actions';
-import { genericItemActionArgumentsForm } from './configurable-actions/generic-item-arguments';
-import { useLocalStorage } from '../../hooks';
-import { PERM_APP_CONFIGURATOR } from '../../shesha-constants';
 import { useAuth } from '../auth';
+import { useConfigurableAction } from '../configurableActionsDispatcher';
+import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
+import { useSheshaApplication } from '../sheshaApplication';
+import {
+  switchApplicationModeAction,
+  switchConfigurationItemModeAction,
+  toggleCloseEditModeConfirmationAction,
+  toggleEditModeConfirmationAction,
+  toggleShowInfoBlockAction,
+} from './actions';
+import { genericItemActionArgumentsForm } from './configurable-actions/generic-item-arguments';
+import { APP_CONTEXT_INITIAL_STATE, AppConfiguratorActionsContext, AppConfiguratorStateContext } from './contexts';
+import { ApplicationMode, ConfigurationItemsViewMode } from './models';
+import appConfiguratorReducer from './reducer';
 
-export interface IAppConfiguratorProviderProps { }
+export interface IAppConfiguratorProviderProps {}
 
 interface IAppConfiguratorModesState {
   mode: ConfigurationItemsViewMode;
@@ -47,15 +44,20 @@ interface IUseAppConfiguratorSettingsResponse extends IAppConfiguratorModesState
 const ITEM_MODE_HEADER = 'sha-config-item-mode';
 
 const useAppConfiguratorSettings = (): IUseAppConfiguratorSettingsResponse => {
-  const [itemMode, setItemMode] = useLocalStorage<ConfigurationItemsViewMode>('CONFIGURATION_ITEM_MODE', AppConfiguratorModeDefaults.mode);
-  const [isFormInfoVisible, setIsFormInfoVisible] = useLocalStorage<boolean>('FORM_INFO_VISIBLE', AppConfiguratorModeDefaults.isInformerVisible);
+  const [itemMode, setItemMode] = useLocalStorage<ConfigurationItemsViewMode>(
+    'CONFIGURATION_ITEM_MODE',
+    AppConfiguratorModeDefaults.mode
+  );
+  const [isFormInfoVisible, setIsFormInfoVisible] = useLocalStorage<boolean>(
+    'FORM_INFO_VISIBLE',
+    AppConfiguratorModeDefaults.isInformerVisible
+  );
   const auth = useAuth(false);
   const { httpHeaders, setRequestHeaders } = useSheshaApplication();
 
   const setHeaderValue = (mode: ConfigurationItemsViewMode) => {
     const currentHeaderValue = httpHeaders[ITEM_MODE_HEADER];
-    if (currentHeaderValue !== mode)
-      setRequestHeaders({ [ITEM_MODE_HEADER]: mode });
+    if (currentHeaderValue !== mode) setRequestHeaders({ [ITEM_MODE_HEADER]: mode });
   };
 
   const hasRights = useMemo(() => {
@@ -71,19 +73,23 @@ const useAppConfiguratorSettings = (): IUseAppConfiguratorSettingsResponse => {
 
   const result: IUseAppConfiguratorSettingsResponse = hasRights
     ? {
-      mode: itemMode,
-      isInformerVisible: isFormInfoVisible,
-      setMode: mode => {
-        setRequestHeaders({ [ITEM_MODE_HEADER]: mode });
-        setItemMode(mode);
-      },
-      setIsInformerVisible: setIsFormInfoVisible,
-    }
+        mode: itemMode,
+        isInformerVisible: isFormInfoVisible,
+        setMode: (mode) => {
+          setRequestHeaders({ [ITEM_MODE_HEADER]: mode });
+          setItemMode(mode);
+        },
+        setIsInformerVisible: setIsFormInfoVisible,
+      }
     : {
-      ...AppConfiguratorModeDefaults,
-      setMode: () => { /*nop*/ },
-      setIsInformerVisible: () => { /*nop*/ },
-    };
+        ...AppConfiguratorModeDefaults,
+        setMode: () => {
+          /*nop*/
+        },
+        setIsInformerVisible: () => {
+          /*nop*/
+        },
+      };
   return result;
 };
 
@@ -96,10 +102,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
     configurationItemMode: configuratorSettings.mode,
   });
 
-  const {
-    backendUrl,
-    httpHeaders,
-  } = useSheshaApplication();
+  const { backendUrl, httpHeaders } = useSheshaApplication();
 
   //#region Configuration Framework
 
@@ -114,7 +117,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       owner: actionsOwner,
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
-      executer: actionArgs => {
+      executer: (actionArgs) => {
         return createNewVersion({ id: actionArgs.itemId, ...cfArgs });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
@@ -128,7 +131,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       owner: actionsOwner,
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
-      executer: actionArgs => {
+      executer: (actionArgs) => {
         return setItemReady({ id: actionArgs.itemId, ...cfArgs });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
@@ -142,7 +145,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       owner: actionsOwner,
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
-      executer: actionArgs => {
+      executer: (actionArgs) => {
         return deleteItem({ id: actionArgs.itemId, ...cfArgs });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
@@ -156,7 +159,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       owner: actionsOwner,
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
-      executer: actionArgs => {
+      executer: (actionArgs) => {
         return publishItem({ id: actionArgs.itemId, ...cfArgs });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
@@ -170,7 +173,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       owner: actionsOwner,
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
-      executer: actionArgs => {
+      executer: (actionArgs) => {
         return itemCancelVersion({ id: actionArgs.itemId, ...cfArgs });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
@@ -184,7 +187,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       owner: actionsOwner,
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
-      executer: actionArgs => {
+      executer: (actionArgs) => {
         return downloadAsJson({ id: actionArgs.itemId, ...cfArgs });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
@@ -272,8 +275,8 @@ function useAppConfigurator() {
 
 export {
   AppConfiguratorProvider,
-  useAppConfiguratorState,
-  useAppConfiguratorActions,
   useAppConfigurator,
+  useAppConfiguratorActions,
+  useAppConfiguratorState,
   type ApplicationMode,
 };

@@ -1,31 +1,30 @@
-import React, { FC, useReducer, useContext, PropsWithChildren, useMemo } from 'react';
-import itemListConfiguratorReducer from './reducer';
+import { nanoid } from 'nanoid/non-secure';
+import React, { FC, PropsWithChildren, useContext, useMemo, useReducer } from 'react';
+import { usePrevious } from 'react-use';
+import { InsertMode } from '../../interfaces';
+import { treeToList } from '../../utils/tree';
+import { FormMarkup } from '../form/models';
 import {
-  IConfigurableItemBase,
-  IItemsOptions,
-  IUpdateChildItemsPayload,
-  IUpdateItemSettingsPayload,
-  ItemListConfiguratorProviderActionsContext,
-  ItemListConfiguratorStateContext,
-  ITEM_LIST_CONFIGURATOR_CONTEXT_INITIAL_STATE,
-  IConfigurableItemGroup,
-} from './contexts';
-import {
+  addGroupAction,
   addItemAction,
+  deleteGroupAction,
   deleteItemAction,
   selectItemAction,
   updateChildItemsAction,
   updateItemAction,
-  addGroupAction,
-  deleteGroupAction,
-  /* NEW_ACTION_IMPORT_GOES_HERE */
 } from './actions';
+import {
+  IConfigurableItemBase,
+  IConfigurableItemGroup,
+  IItemsOptions,
+  ITEM_LIST_CONFIGURATOR_CONTEXT_INITIAL_STATE,
+  IUpdateChildItemsPayload,
+  IUpdateItemSettingsPayload,
+  ItemListConfiguratorProviderActionsContext,
+  ItemListConfiguratorStateContext,
+} from './contexts';
+import itemListConfiguratorReducer from './reducer';
 import { getItemById } from './utils';
-import { usePrevious } from 'react-use';
-import { nanoid } from 'nanoid/non-secure';
-import { FormMarkup } from '../form/models';
-import { treeToList } from '../../utils/tree';
-import { InsertMode } from '../../interfaces';
 
 export interface IItemListConfiguratorProviderPropsBase {
   baseUrl?: string;
@@ -58,7 +57,7 @@ const ItemListConfiguratorProvider: FC<PropsWithChildren<IItemListConfiguratorPr
 
   const addItem = () => {
     const itemTypeLength = treeToList(state.items as IConfigurableItemGroup[], 'childItems').filter(
-      i => i.itemType === 'item'
+      (i) => i.itemType === 'item'
     ).length;
     const itemProps: IConfigurableItemBase = {
       id: nanoid(),
@@ -87,7 +86,7 @@ const ItemListConfiguratorProvider: FC<PropsWithChildren<IItemListConfiguratorPr
 
   const addGroup = () => {
     const groupTypeLength = treeToList(state.items as IConfigurableItemGroup[], 'childItems').filter(
-      i => i.itemType === 'group'
+      (i) => i.itemType === 'group'
     ).length;
 
     const groupProps: IConfigurableItemGroup = {

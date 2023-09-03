@@ -1,19 +1,19 @@
-import React, { FC, Fragment } from 'react';
-import { IToolboxComponent } from '../../interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '../../providers/form/models';
 import { ClockCircleOutlined } from '@ant-design/icons';
 import { TimePicker, message } from 'antd';
-import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
-import settingsFormJson from './settingsForm.json';
 import moment, { Moment, isMoment } from 'moment';
+import React, { FC, Fragment } from 'react';
+import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
 import { customTimeEventHandler } from '../../components/formDesigner/components/utils';
-import { getStyle, validateConfigurableComponentSettings } from '../../providers/form/utils';
-import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../../providers';
 import { HiddenFormItem } from '../../components/hiddenFormItem';
-import { DataTypes } from '../../interfaces/dataTypes';
 import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
+import { IToolboxComponent } from '../../interfaces';
+import { DataTypes } from '../../interfaces/dataTypes';
+import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../../providers';
+import { FormMarkup, IConfigurableFormComponent } from '../../providers/form/models';
+import { getStyle, validateConfigurableComponentSettings } from '../../providers/form/utils';
+import { axiosHttp } from '../../utils/fetchers';
 import { getNumericValue } from '../../utils/string';
-import { axiosHttp } from 'utils/fetchers';
+import settingsFormJson from './settingsForm.json';
 
 type RangeType = 'start' | 'end';
 // tslint:disable-next-line:interface-over-type-literal

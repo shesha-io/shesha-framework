@@ -1,14 +1,13 @@
 import { ClockCircleOutlined } from '@ant-design/icons';
 import React from 'react';
+import { migrateDynamicExpression } from '../../../../designer-components/_common-migrations/migrateUseExpression';
 import { IToolboxComponent } from '../../../../interfaces';
 import { DataTypes } from '../../../../interfaces/dataTypes';
 import { useForm } from '../../../../providers';
-import TimelineSettings from './settings';
-
 import { evaluateValue } from '../../../../providers/form/utils';
 import { ShaTimeline } from '../../../timeline/index';
 import { ITimelineProps } from '../../../timeline/models';
-import { migrateDynamicExpression } from 'designer-components/_common-migrations/migrateUseExpression';
+import TimelineSettings from './settings';
 
 const TimelineComponent: IToolboxComponent<ITimelineProps> = {
   type: 'timeline',

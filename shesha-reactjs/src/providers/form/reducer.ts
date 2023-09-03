@@ -1,34 +1,31 @@
+import { handleActions } from 'redux-actions';
+import { IFormValidationErrors } from '../../interfaces';
+import { FormActionEnums } from './actions';
 import {
   FORM_CONTEXT_INITIAL_STATE,
   IFormStateInternalContext,
-  ISetVisibleComponentsPayload,
-  ISetFormDataPayload,
   IRegisterActionsPayload,
   ISetEnabledComponentsPayload,
   ISetFormControlsDataPayload,
+  ISetFormDataPayload,
+  ISetVisibleComponentsPayload,
 } from './contexts';
-import {
-  FormMode,
-  IFormSettings,
-} from './models';
-import { FormActionEnums } from './actions';
-import { handleActions } from 'redux-actions';
-import {
-  convertActions,
-  filterFormData,
-} from './utils';
-import { IFormValidationErrors } from '../../interfaces';
+import { FormMode, IFormSettings } from './models';
+import { convertActions, filterFormData } from './utils';
 
 const reducer = handleActions<IFormStateInternalContext, any>(
   {
-    [FormActionEnums.SetSettingsAction]: (state: IFormStateInternalContext, action: ReduxActions.Action<IFormSettings>) => {
+    [FormActionEnums.SetSettingsAction]: (
+      state: IFormStateInternalContext,
+      action: ReduxActions.Action<IFormSettings>
+    ) => {
       const { payload } = action;
-      
+
       return {
         ...state,
         formSettings: payload,
       };
-    },    
+    },
 
     [FormActionEnums.SetFormMode]: (state: IFormStateInternalContext, action: ReduxActions.Action<FormMode>) => {
       const { payload } = action;
@@ -64,11 +61,17 @@ const reducer = handleActions<IFormStateInternalContext, any>(
       };
     },
 
-    [FormActionEnums.SetFormControlsData]: (state: IFormStateInternalContext, action: ReduxActions.Action<ISetFormControlsDataPayload>) => {
+    [FormActionEnums.SetFormControlsData]: (
+      state: IFormStateInternalContext,
+      action: ReduxActions.Action<ISetFormControlsDataPayload>
+    ) => {
       return { ...state, formControlsData: { ...state.formControlsData, ...action.payload?.values } };
     },
 
-    [FormActionEnums.SetFormData]: (state: IFormStateInternalContext, action: ReduxActions.Action<ISetFormDataPayload>) => {
+    [FormActionEnums.SetFormData]: (
+      state: IFormStateInternalContext,
+      action: ReduxActions.Action<ISetFormDataPayload>
+    ) => {
       const { payload } = action;
 
       // note: merge is used to keep initial values of fields which have no corresponding components on the form (e.g. id, parentId)
@@ -101,7 +104,9 @@ const reducer = handleActions<IFormStateInternalContext, any>(
       } = action;
 
       const componentActions = convertActions(id, actionsToRegister);
-      const otherActions = state.actions.filter(a => a.owner !== id || !componentActions.find(ca => ca.name === a.name));
+      const otherActions = state.actions.filter(
+        (a) => a.owner !== id || !componentActions.find((ca) => ca.name === a.name)
+      );
 
       return {
         ...state,

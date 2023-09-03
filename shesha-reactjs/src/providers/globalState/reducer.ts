@@ -1,11 +1,11 @@
+import { handleActions } from 'redux-actions';
+import { GlobalStateActionEnums } from './actions';
 import {
   GLOBAL_STATE_CONTEXT_INITIAL_STATE,
   IGlobalStateStateContext,
   ISetPubSubPayload,
   ISetStatePayload,
 } from './contexts';
-import { GlobalStateActionEnums } from './actions';
-import { handleActions } from 'redux-actions';
 
 const reducer = handleActions<IGlobalStateStateContext, any>(
   {

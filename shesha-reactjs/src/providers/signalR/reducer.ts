@@ -1,5 +1,5 @@
-import { ISignalRStateContext } from './contexts';
 import { SignalRActionEnums } from './actions';
+import { ISignalRStateContext } from './contexts';
 
 export function signalRReducer(
   state: ISignalRStateContext,

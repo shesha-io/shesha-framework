@@ -17,21 +17,21 @@ export enum TableViewSelectorActionEnums {
 
 export const addItemAction = createAction(TableViewSelectorActionEnums.AddItem);
 
-export const deleteItemAction = createAction<string, string>(TableViewSelectorActionEnums.DeleteItem, p => p);
+export const deleteItemAction = createAction<string, string>(TableViewSelectorActionEnums.DeleteItem, (p) => p);
 
 export const addGroupAction = createAction(TableViewSelectorActionEnums.AddGroup);
-export const deleteGroupAction = createAction<string, string>(TableViewSelectorActionEnums.DeleteGroup, p => p);
+export const deleteGroupAction = createAction<string, string>(TableViewSelectorActionEnums.DeleteGroup, (p) => p);
 
-export const selectItemAction = createAction<string, string>(TableViewSelectorActionEnums.SelectFilter, p => p);
+export const selectItemAction = createAction<string, string>(TableViewSelectorActionEnums.SelectFilter, (p) => p);
 
 export const updateChildItemsAction = createAction<IUpdateChildItemsPayload, IUpdateChildItemsPayload>(
   TableViewSelectorActionEnums.UpdateChildItems,
-  p => p
+  (p) => p
 );
 
 export const updateItemAction = createAction<IUpdateItemSettingsPayload, IUpdateItemSettingsPayload>(
   TableViewSelectorActionEnums.UpdateItem,
-  p => p
+  (p) => p
 );
 
 /* NEW_ACTION_GOES_HERE */

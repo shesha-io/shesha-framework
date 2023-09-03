@@ -1,12 +1,12 @@
 import { ColumnWidthOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import React, { FC, Fragment, useState } from 'react';
+import { useForm } from '../../../..';
+import ConfigurableFormItem from '../../../../components/formDesigner/components/formItem';
 import { IConfigurableFormComponent, IToolboxComponent } from '../../../../interfaces';
 import { ColumnsItemProps } from '../../../../providers/datatableColumnsConfigurator/models';
 import { ITableComponentBaseProps } from '../models';
 import { ColumnsEditorModal } from './columnsEditorModal';
-import ConfigurableFormItem from '../../../../components/formDesigner/components/formItem';
-import { useForm } from '../../../..';
 
 interface IColumnsEditorComponentProps extends ITableComponentBaseProps, IConfigurableFormComponent {
   //items: ColumnsItemProps[];
@@ -26,7 +26,7 @@ const EntityPickerColumnsEditorComponent: IToolboxComponent<IColumnsEditorCompon
     const { formMode } = useForm();
     return (
       <ConfigurableFormItem model={model}>
-        <ColumnsConfig readOnly={formMode === 'readonly'}/>
+        <ColumnsConfig readOnly={formMode === 'readonly'} />
       </ConfigurableFormItem>
     );
   },
@@ -47,13 +47,19 @@ interface IColumnsConfigProps {
 const ColumnsConfig: FC<IColumnsConfigProps> = ({ value, onChange, readOnly }) => {
   const [modalVisible, setModalVisible] = useState(false);
 
-  const toggleModalVisibility = () => setModalVisible(prev => !prev);
+  const toggleModalVisibility = () => setModalVisible((prev) => !prev);
 
   return (
     <Fragment>
       <Button onClick={toggleModalVisibility}>Configure Columns</Button>
 
-      <ColumnsEditorModal visible={modalVisible} hideModal={toggleModalVisibility} value={value} onChange={onChange} readOnly={readOnly}/>
+      <ColumnsEditorModal
+        visible={modalVisible}
+        hideModal={toggleModalVisibility}
+        value={value}
+        onChange={onChange}
+        readOnly={readOnly}
+      />
     </Fragment>
   );
 };

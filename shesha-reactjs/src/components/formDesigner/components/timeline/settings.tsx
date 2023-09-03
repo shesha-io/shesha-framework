@@ -1,11 +1,11 @@
-import React, { FC, useState } from 'react';
 import { Form, Input, Select } from 'antd';
+import React, { FC, useState } from 'react';
+import { QueryBuilderComponentRenderer } from '../../../../designer-components/queryBuilder/queryBuilderComponent';
+import { QueryBuilderWithModelType } from '../../../../designer-components/queryBuilder/queryBuilderWithModelType';
+import { AutocompleteRaw } from '../../../autocomplete';
+import Properties from '../../../properties';
 import SectionSeparator from '../../../sectionSeparator';
 import Show from '../../../show';
-import { AutocompleteRaw } from '../../../autocomplete';
-import { QueryBuilderComponentRenderer } from 'designer-components/queryBuilder/queryBuilderComponent';
-import { QueryBuilderWithModelType } from 'designer-components/queryBuilder/queryBuilderWithModelType';
-import Properties from '../../../properties';
 import { ITimelineProps } from '../../../timeline/models';
 
 const { Option } = Select;

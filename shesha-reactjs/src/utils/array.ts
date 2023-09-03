@@ -5,7 +5,7 @@ interface IAnyObject {
 const removeUndefined = (input: IAnyObject) => {
   const newObj = {};
 
-  Object.keys(input).forEach(key => {
+  Object.keys(input).forEach((key) => {
     if (input[key] === Object(input[key])) newObj[key] = removeUndefined(input[key]);
     else if (input[key] !== undefined) newObj[key] = input[key];
   });
@@ -20,7 +20,7 @@ export const removeUndefinedProperties = (input: IAnyObject, nested = false) => 
     return removeUndefined(input);
   }
 
-  Object.keys(obj).forEach(key => (obj[key] === undefined ? delete obj[key] : {}));
+  Object.keys(obj).forEach((key) => (obj[key] === undefined ? delete obj[key] : {}));
 
   return obj;
 };

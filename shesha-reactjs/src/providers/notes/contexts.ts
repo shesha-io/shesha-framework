@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { NoteDto } from 'apis/note';
+import { NoteDto } from '../../apis/note';
 import { IFlagsSetters, IFlagsState } from '../../interfaces';
 
 export type IFlagProgressFlags = 'fetchNotes' | 'postNotes' | 'deleteNotes' /* NEW_IN_PROGRESS_FLAG_GOES_HERE */;

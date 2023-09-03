@@ -1,16 +1,16 @@
-import React, { FC, MutableRefObject, useEffect } from 'react';
-import { IToolboxComponent } from 'interfaces';
 import { SelectOutlined } from '@ant-design/icons';
-import TableViewSelectorSettings from './tableViewSelectorSettings';
-import { ITableViewSelectorComponentProps } from './models';
-import { useDataTableStore, useGlobalState, useForm, useNestedPropertyMetadatAccessor } from 'providers';
+import { Alert } from 'antd';
 import camelCaseKeys from 'camelcase-keys';
 import _ from 'lodash';
-import { Alert } from 'antd';
+import React, { FC, MutableRefObject, useEffect } from 'react';
 import { useDeepCompareEffect } from 'react-use';
-import TableViewSelectorRenderer from 'components/tableViewSelectorRenderer';
-import { migrateFilterMustacheExpressions } from 'designer-components/_common-migrations/migrateUseExpression';
-import { evaluateDynamicFilters } from 'utils';
+import TableViewSelectorRenderer from '../../../components/tableViewSelectorRenderer';
+import { migrateFilterMustacheExpressions } from '../../../designer-components/_common-migrations/migrateUseExpression';
+import { IToolboxComponent } from '../../../interfaces';
+import { useDataTableStore, useForm, useGlobalState, useNestedPropertyMetadatAccessor } from '../../../providers';
+import { evaluateDynamicFilters } from '../../../utils';
+import { ITableViewSelectorComponentProps } from './models';
+import TableViewSelectorSettings from './tableViewSelectorSettings';
 
 const TableViewSelectorComponent: IToolboxComponent<ITableViewSelectorComponentProps> = {
   type: 'tableViewSelector',
@@ -19,17 +19,17 @@ const TableViewSelectorComponent: IToolboxComponent<ITableViewSelectorComponentP
   factory: (model: ITableViewSelectorComponentProps, componentRef: MutableRefObject<any>) => {
     return <TableViewSelector {...model} componentRef={componentRef} />;
   },
-  migrator: m => m.add<ITableViewSelectorComponentProps>(0, prev => {
-    return {
-      ...prev,
-      title: prev['title'] ?? 'Title',
-      filters: prev['filters'] ?? [],
-      componentRef: prev['componentRef']
-    };
-  })
-    .add(1, prev => (
-      { ...prev, filters: prev.filters.map(filter => migrateFilterMustacheExpressions(filter)) }
-    )),
+  migrator: (m) =>
+    m
+      .add<ITableViewSelectorComponentProps>(0, (prev) => {
+        return {
+          ...prev,
+          title: prev['title'] ?? 'Title',
+          filters: prev['filters'] ?? [],
+          componentRef: prev['componentRef'],
+        };
+      })
+      .add(1, (prev) => ({ ...prev, filters: prev.filters.map((filter) => migrateFilterMustacheExpressions(filter)) })),
   settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
     return (
       <TableViewSelectorSettings
@@ -47,7 +47,12 @@ interface ITableViewSelectorProps extends ITableViewSelectorComponentProps {
   componentRef: MutableRefObject<any>;
 }
 
-export const TableViewSelector: FC<ITableViewSelectorProps> = ({ filters, hidden, componentRef, persistSelectedFilters }) => {
+export const TableViewSelector: FC<ITableViewSelectorProps> = ({
+  filters,
+  hidden,
+  componentRef,
+  persistSelectedFilters,
+}) => {
   const {
     columns,
     changeSelectedStoredFilterIds,
@@ -79,7 +84,7 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({ filters, hidden
         { match: 'globalState', data: globalState },
       ],
       propertyMetadataAccessor
-    ).then(evaluatedFilters => {
+    ).then((evaluatedFilters) => {
       setPredefinedFilters(evaluatedFilters);
     });
   };

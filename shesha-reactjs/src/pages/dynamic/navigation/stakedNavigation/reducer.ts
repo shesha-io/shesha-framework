@@ -1,5 +1,5 @@
-import { IStackedNavigationStateContext } from './contexts';
 import { StackedNavigationActionEnums } from './actions';
+import { IStackedNavigationStateContext } from './contexts';
 
 export function stakedNavigationReducer(
   state: IStackedNavigationStateContext,

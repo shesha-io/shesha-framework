@@ -6,7 +6,7 @@ export enum RouteActionEnums {
   /* NEW_ACTION_TYPE_GOES_HERE */
 }
 
-export const goingToRouteAction = createAction<IRoute, string>(RouteActionEnums.GoingToRoute, nextRoute => ({
+export const goingToRouteAction = createAction<IRoute, string>(RouteActionEnums.GoingToRoute, (nextRoute) => ({
   nextRoute,
 }));
 

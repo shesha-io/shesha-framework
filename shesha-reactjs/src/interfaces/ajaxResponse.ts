@@ -8,6 +8,6 @@ export interface IAjaxResponseBase {
   __abp?: boolean;
 }
 
-export interface IAjaxResponse<T> extends IAjaxResponseBase{
+export interface IAjaxResponse<T> extends IAjaxResponseBase {
   result?: T;
 }

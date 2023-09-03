@@ -1,5 +1,5 @@
-import { ReferenceListItemDto } from "apis/referenceList";
-import { IReferenceListIdentifier } from "providers/referenceListDispatcher/models";
+import { ReferenceListItemDto } from '../apis/referenceList';
+import { IReferenceListIdentifier } from '../providers/referenceListDispatcher/models';
 
 export const CACHED_REF_LIST_ITEMS = 'CACHED_REF_LIST_ITEMS';
 
@@ -23,9 +23,7 @@ const getListItemsFromStorage = () => {
 };
 
 const getNameWithNamespace = (namespace: string, name: string) => {
-  return Boolean(namespace)
-    ? `${namespace}.${name}`
-    : name;
+  return Boolean(namespace) ? `${namespace}.${name}` : name;
 };
 
 export const saveListItems = (listName: string, listNamespace: string, reflListItems: ReferenceListItemDto[]) => {
@@ -45,7 +43,7 @@ export const saveListItems = (listName: string, listNamespace: string, reflListI
           list: reflListItems,
         });
 
-        cachedListItems?.map(value => {
+        cachedListItems?.map((value) => {
           const { namespace } = value;
 
           if (namespace === listNamespace) {
@@ -97,11 +95,14 @@ export const getCachedItems = (listName: string, listNamespace: string) => {
   return [];
 };
 
-export const getLegacyReferenceListIdentifier = (referenceListNamespace?: string, referenceListName?: string): IReferenceListIdentifier => {
+export const getLegacyReferenceListIdentifier = (
+  referenceListNamespace?: string,
+  referenceListName?: string
+): IReferenceListIdentifier => {
   return !referenceListNamespace && !referenceListName
     ? null
     : {
-      name: getNameWithNamespace(referenceListNamespace, referenceListName),
-      module: undefined      
-    };
+        name: getNameWithNamespace(referenceListNamespace, referenceListName),
+        module: undefined,
+      };
 };

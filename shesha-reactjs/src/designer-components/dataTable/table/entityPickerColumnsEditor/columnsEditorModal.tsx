@@ -1,14 +1,14 @@
-import React, { FC } from 'react';
 import { Modal } from 'antd';
+import React, { FC } from 'react';
+import { useMedia } from 'react-use';
+import { IEntityPickerComponentProps } from '../../../../components/formDesigner/components/entityPicker';
+import { MetadataProvider, useForm } from '../../../../providers';
 import {
   ColumnsConfiguratorProvider,
   useColumnsConfigurator,
 } from '../../../../providers/datatableColumnsConfigurator';
-import { ColumnsConfigurator } from './columnsConfigurator';
 import { IConfigurableColumnsBase } from '../../../../providers/datatableColumnsConfigurator/models';
-import { useMedia } from 'react-use';
-import { MetadataProvider, useForm } from '../../../../providers';
-import { IEntityPickerComponentProps } from '../../../../components/formDesigner/components/entityPicker';
+import { ColumnsConfigurator } from './columnsConfigurator';
 
 export interface IColumnsEditorModal {
   visible: boolean;
@@ -32,10 +32,8 @@ export const ColumnsEditorModalInner: FC<IColumnsEditorModal> = ({ visible, onCh
       width={isSmall ? '90%' : '60%'}
       open={visible}
       title="Configure Columns"
-      
       onCancel={hideModal}
       cancelText={readOnly ? 'Close' : undefined}
-      
       okText="Save"
       onOk={onOkClick}
       okButtonProps={{ hidden: readOnly }}
@@ -45,7 +43,7 @@ export const ColumnsEditorModalInner: FC<IColumnsEditorModal> = ({ visible, onCh
   );
 };
 
-export const ColumnsEditorModal: FC<IColumnsEditorModal> = props => {
+export const ColumnsEditorModal: FC<IColumnsEditorModal> = (props) => {
   const { formData } = useForm();
   let modelType = (formData as IEntityPickerComponentProps)?.entityType;
   return (

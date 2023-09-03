@@ -1,8 +1,8 @@
-import React, { FC } from 'react';
 import { Col, Divider, Row } from 'antd';
+import React, { FC } from 'react';
 import { CollapsiblePanel, Page, SectionSeparator } from '../../../components';
-import FormExample from './form';
 import AlertsExample from './alertsExamples';
+import FormExample from './form';
 import ThemeParameters from './parameters';
 import TextsExample from './textsExample';
 

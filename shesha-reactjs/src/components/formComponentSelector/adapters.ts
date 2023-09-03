@@ -1,15 +1,14 @@
-import DropdownComponent from 'designer-components/dropdown/dropdown';
-import AutocompleteComponent from 'designer-components/autocomplete/autocomplete';
-import CheckboxComponent from 'designer-components/checkbox/checkbox';
-import DateFieldComponent from 'designer-components/dateField/dateField';
-import TimeFieldComponent from 'designer-components/timeField';
-import NumberComponent from 'designer-components/numberField/numberField';
-import RefListStatusComponent from 'designer-components/refListStatus/index';
-import TextFieldComponent from 'designer-components/textField/textField';
-import StatusTagComponent from 'components/formDesigner/components/statusTag';
-
-import { IDictionary } from 'interfaces';
-import EntityReferenceComponent from 'designer-components/entityReference/entityReference';
+import StatusTagComponent from '../../components/formDesigner/components/statusTag';
+import AutocompleteComponent from '../../designer-components/autocomplete/autocomplete';
+import CheckboxComponent from '../../designer-components/checkbox/checkbox';
+import DateFieldComponent from '../../designer-components/dateField/dateField';
+import DropdownComponent from '../../designer-components/dropdown/dropdown';
+import EntityReferenceComponent from '../../designer-components/entityReference/entityReference';
+import NumberComponent from '../../designer-components/numberField/numberField';
+import RefListStatusComponent from '../../designer-components/refListStatus/index';
+import TextFieldComponent from '../../designer-components/textField/textField';
+import TimeFieldComponent from '../../designer-components/timeField';
+import { IDictionary } from '../../interfaces';
 
 /*
 export interface IEditorAdapter<T extends IConfigurableFormComponent = IConfigurableFormComponent> {
