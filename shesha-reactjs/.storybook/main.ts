@@ -42,7 +42,6 @@ const config: StorybookConfig = {
               interfaces: './src/interfaces',
               pages: './src/pages',
               providers: './src/providers',
-              'shesha-constants': './src/shesha-constants',
               stories: './src/stories',
               styles: './src/styles',
               typings: './src/typings',
