@@ -22,7 +22,6 @@ import {
   applyFilterAction,
   changeQuickSearchAction,
   toggleSaveFilterModalAction,
-  changeSelectedRowAction,
   changeSelectedStoredFilterIdsAction,
   setPredefinedFiltersAction,
   changeSelectedIdsAction,
@@ -35,6 +34,8 @@ import {
   setRowDataAction,
   setModelTypeAction,
   setDataFetchingModeAction,
+  setSelectedRowAction,
+  setMultiSelectedRowAction,
 } from './actions';
 import {
   IndexColumnFilterOption,
@@ -61,7 +62,9 @@ import { advancedFilter2JsonLogic, getTableDataColumns } from './utils';
 import { useLocalStorage } from 'hooks';
 import { withNullRepository } from './repository/nullRepository';
 import { withUrlRepository } from './repository/urlRepository';
-import { useDataContext } from 'providers/dataContextProvider';
+import { DataContextProvider, useDataContext } from 'providers/dataContextProvider';
+import { MetadataProvider } from 'providers/metadata';
+import { Row } from 'react-table';
 
 interface IDataTableProviderBaseProps {
   /** Configurable columns. Is used in pair with entityType  */
@@ -177,12 +180,35 @@ const getFetchListDataPayload = (state: IDataTableStateContext): IGetListDataPay
   return payload;
 };
 
+const DataTableWithMetadataProvider: FC<PropsWithChildren<IDataTableProviderProps>> = (props) => {
+  const modelType = (props as IHasEntityDataSourceConfig).entityType;
+
+  const table = useMemo(() => {
+    return props.sourceType === 'Entity' && modelType
+    ? <MetadataProvider id={props.userConfigId} modelType={modelType}>{props.children}</MetadataProvider>
+    : <>{props.children}</>;
+  }, [props.sourceType, modelType]);
+
+  return table;
+};
+
 const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = (props) => {
   const component = useMemo(() => {
     return getTableProviderComponent(props);
   }, [props.sourceType]);
 
-  return <>{component(props)}</>;
+  return (
+    <DataContextProvider
+      id={'ctx_' + props.userConfigId}
+      name={props.actionOwnerName}
+      description={`Table context for ${props.actionOwnerName}`}
+      type='table'
+    >
+      <DataTableWithMetadataProvider {...props}>
+        {component(props)}
+      </DataTableWithMetadataProvider>
+    </DataContextProvider>
+  );
 };
 
 export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTableProviderWithRepositoryProps>> = (props) => {
@@ -386,14 +412,14 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     }
   };
 
-  const changeSelectedRow = (val: any) => {
+  /*const changeSelectedRow = (val: any) => {
     const rowId = val?.id;
     const currentId = state.selectedRow?.id;
 
     // todo: check current row mode and allow to toggle selection if row is in the read mode
     if (rowId !== currentId)
       dispatch(changeSelectedRowAction(val ? camelCaseKeys(val, { deep: true }) : null));
-  };
+  };*/
 
   const changeActionedRow = (val: any) => {
     dispatch(changeActionedRowAction(val ? camelCaseKeys(val, { deep: true }) : null));
@@ -607,6 +633,15 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   const getRepository = (): IRepository => repository;
 
+  const setSelectedRow = (index: number, row: any) => {
+    dispatch(setSelectedRowAction(state.selectedRow?.id !== row?.id ? { index, row, id: row?.id } : null));
+  };
+
+  const setMultiSelectedRow = (rows: Row[] | Row) => {
+    dispatch(setMultiSelectedRowAction(rows));
+  };
+
+
   const actions = {
     onSort,
     ...flagSetters,
@@ -622,7 +657,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     changeQuickSearch,
     performQuickSearch,
     toggleSaveFilterModal,
-    changeSelectedRow,
+    //changeSelectedRow,
     changeActionedRow,
     changeSelectedStoredFilterIds,
     setPredefinedFilters,
@@ -633,6 +668,8 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     changePersistedFiltersToggle,
     getRepository,
     setRowData,
+    setSelectedRow,
+    setMultiSelectedRow
     /* NEW_ACTION_GOES_HERE */
   };
 
@@ -653,14 +690,27 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   // update context data
   useEffect(() => {
-    ctx.setData(state);
+    ctx.setData({
+      selectedRow: state.selectedRow,
+      selectedIds: state.selectedIds,
+      currentPage: state.currentPage,
+      tableData: state.tableData,
+      quickSearch: state.quickSearch
+    });
     ctx.updateApi(actions);
     ctx.updateOnChangeData(contextOnChangeData);
   }, []);
 
   useEffect(() => {
-    ctx.setData(state);
-  }, [state]);
+    ctx.setData({
+      selectedRow: state.selectedRow,
+      selectedIds: state.selectedIds,
+      currentPage: state.currentPage,
+      tableData: state.tableData,
+      quickSearch: state.quickSearch
+    });
+    ctx.updateOnChangeData(contextOnChangeData); // update context.onChangeData function to use new State
+  }, [state, state.selectedRow, state.selectedIds, state.currentPage, state.tableData, state.quickSearch]);
 
   return (
     <DataTableStateContext.Provider value={state}>

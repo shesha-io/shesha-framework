@@ -356,6 +356,8 @@ export const EntityPickerEditable = (props: IEntityPickerProps) => {
 
   return (
     <DataTableProvider
+      userConfigId={'table_' + props.name}
+      actionOwnerName={'table_' + props.name}
       sourceType='Entity'
       entityType={entityType}
       dataFetchingMode='paging'

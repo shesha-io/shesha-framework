@@ -1,4 +1,5 @@
 import { ConfigurableFormInstance } from "interfaces";
+import { isEqual } from "lodash";
 import React, { FC, PropsWithChildren, useContext, useEffect, useRef, useState } from "react";
 import { createContext } from 'react';
 import { IDataContextDescriptor, IDataContextDictionary, IRegisterDataContextPayload } from "./models";
@@ -117,18 +118,27 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
     const onChangeContext = (payload: IDataContextDescriptor) => {
         const existingContext = contexts.current[payload.id];
         if (!!existingContext) {
-            contexts.current[payload.id] = {
+            const newCtx = {
                 ...payload,
                 metadata: payload.metadata ?? contexts.current[payload.id].metadata,
                 api: payload.api ?? contexts.current[payload.id].api
             };
-            setState({...state, lastUpdate: new Date().toJSON() });
+            const changed = !isEqual(existingContext, newCtx);
+            if (changed) {
+                //console.log('Update context: ' + contexts.current[payload.id]?.name);
+                contexts.current[payload.id] = newCtx;
+                setState({...state, lastUpdate: new Date().toJSON() });
+            }
         }
     };
     
     const onChangeContextData = (contextId: string, data: any) => {
-        contextsData.current[contextId] = {...data};
-        setState({...state, lastUpdate: new Date().toJSON()});
+        const changed = !isEqual(contextsData.current[contextId], data);
+        if (changed) {
+            //console.log('Update context data: ' + contexts.current[contextId]?.name);
+            contextsData.current[contextId] = {...data};
+            setState({...state, lastUpdate: new Date().toJSON()});
+        }
     };
 
     const setActiveContext = (contextId: string) => {

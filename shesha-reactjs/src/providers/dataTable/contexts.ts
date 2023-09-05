@@ -1,4 +1,5 @@
 import { createContext } from 'react';
+import { Row } from 'react-table';
 import { IFlagsSetters, IFlagsState } from '../../interfaces';
 import { IConfigurableColumnsProps } from '../datatableColumnsConfigurator/models';
 import {
@@ -12,6 +13,16 @@ import {
   DataFetchingMode,
 } from './interfaces';
 import { IHasModelType, IRepository } from './repository/interfaces';
+
+/** Table Selection */
+
+export interface ISelectionProps {
+  index?: number;
+  id?: string;
+  row: any;
+}
+
+/** Table context */
 
 export type IFlagProgressFlags =
   | 'isFiltering'
@@ -100,7 +111,7 @@ export interface IDataTableStateContext
   selectedStoredFilterIds?: string[];
 
   /** index of selected row */
-  selectedRow?: any;
+  //selectedRow?: any;
 
   actionedRow?: any;
 
@@ -125,6 +136,10 @@ export interface IDataTableStateContext
 
   userConfigId?: string;
   //#endregion
+
+  selectedRow?: ISelectionProps;
+  selectedRows?: { [key in string]: string }[];
+
 }
 
 export interface IDataTableActionsContext
@@ -144,7 +159,6 @@ export interface IDataTableActionsContext
   /** change quick search and refresh table data */
   performQuickSearch?: (val: string) => void;
   toggleSaveFilterModal?: (visible: boolean) => void;
-  changeSelectedRow?: (index: any) => void;
   changeActionedRow?: (data: any) => void;
   changeSelectedStoredFilterIds?: (selectedStoredFilterIds: string[]) => void;
 
@@ -171,6 +185,9 @@ export interface IDataTableActionsContext
    * Set row data after inline editing
    */
   setRowData: (rowIndex: number, data: any) => void;
+
+  setSelectedRow: (index: number, row: any) => void;
+  setMultiSelectedRow: (rows: Row[] | Row) => void;
 }
 
 export const DATA_TABLE_CONTEXT_INITIAL_STATE: IDataTableStateContext = {
@@ -200,6 +217,8 @@ export const DATA_TABLE_CONTEXT_INITIAL_STATE: IDataTableStateContext = {
   userConfigId: null,
   modelType: null,
   dataFetchingMode: 'paging',
+  selectedRow: null,
+  selectedRows: [],
 };
 
 export interface DataTableFullInstance extends IDataTableStateContext, IDataTableActionsContext { }

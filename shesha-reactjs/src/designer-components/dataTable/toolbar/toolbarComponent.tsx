@@ -7,11 +7,10 @@ import { Alert, Menu, Dropdown } from 'antd';
 import { IButtonGroup, IToolbarButton, ToolbarItemProps } from '../../../providers/toolbarConfigurator/models';
 import { isInDesignerMode } from '../../../providers/form';
 import { getActualModel, getVisibilityFunc2, useApplicationContext } from '../../../providers/form/utils';
-import { useDataTableSelection } from '../../../providers/dataTableSelection';
 import { ToolbarButton } from './toolbarButton';
 import { ShaIcon } from '../../../components';
 import { IconType } from '../../../components/shaIcon';
-import { useSheshaApplication } from '../../../providers';
+import { useDataTableState, useSheshaApplication } from '../../../providers';
 import { nanoid } from 'nanoid/non-secure';
 import { migrateV0toV1, IToolbarPropsV0 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
@@ -57,7 +56,7 @@ const ToolbarComponent: IToolboxComponent<IToolbarProps> = {
 export const Toolbar: FC<IToolbarProps> = ({ items, id }) => {
   const allData = useApplicationContext();
   const { anyOfPermissionsGranted } = useSheshaApplication();
-  const { selectedRow } = useDataTableSelection(false) ?? {};
+  const { selectedRow } = useDataTableState(false) ?? {};
   const isDesignMode = allData.formMode === 'designer';
 
   const actualItems = items?.map((item) => getActualModel(item, allData));
@@ -66,7 +65,11 @@ export const Toolbar: FC<IToolbarProps> = ({ items, id }) => {
     if (!isInDesignerMode()) {
       const visibilityFunc = getVisibilityFunc2(item.customVisibility, item.name);
 
-      const isVisible = visibilityFunc(allData.data, { selectedRow }, allData.formMode);
+      const isVisible = visibilityFunc(
+        allData.data, 
+        { selectedRow: selectedRow.row }, // ToDo: Need to review for contexts use
+        allData.formMode
+      );
 
       if (!isVisible) return null;
     }

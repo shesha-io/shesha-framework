@@ -59,9 +59,11 @@ export const getContextMetadata = (ctx: IDataContextDescriptor[]) => {
             ? propsToLevel(p)
             : undefined;
 
-          const fs = Object.getOwnPropertyNames(p).filter((f => {
-            return typeof p[f] === 'function';
-          }));
+          const fs = p && typeof p === 'object' 
+            ? Object.getOwnPropertyNames(p)?.filter((f => {
+              return typeof p[f] === 'function';
+            }))
+            : undefined;
 
           if (fs?.length > 0) {
             const funcs: ICodeTreeLevel = {};

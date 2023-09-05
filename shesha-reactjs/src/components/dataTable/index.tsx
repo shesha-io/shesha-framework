@@ -88,8 +88,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     quickSearch,
     onSort,
     changeSelectedIds,
-    changeSelectedRow,
     setRowData,
+    setSelectedRow,
     // succeeded,
     succeeded: { exportToExcel: exportToExcelSuccess },
     error: { exportToExcel: exportToExcelError },
@@ -100,11 +100,11 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       onSelectRow(index, row);
     }
 
-    if (changeSelectedRow) {
+    if (setSelectedRow) {
       const rowId = row?.id;
       const currentId = store.selectedRow?.id;
       if (rowId !== currentId)
-        changeSelectedRow(row);
+        setSelectedRow(index, row);
     }
   };
 

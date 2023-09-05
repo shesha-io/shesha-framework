@@ -1,6 +1,7 @@
+import { Row } from 'react-table';
 import { createAction } from 'redux-actions';
 import { IConfigurableColumnsProps } from '../datatableColumnsConfigurator/models';
-import { IDataTableUserConfig } from './contexts';
+import { IDataTableUserConfig, ISelectionProps } from './contexts';
 import {
   IndexColumnFilterOption,
   ITableFilter,
@@ -50,8 +51,23 @@ export enum DataTableActionEnums {
 
   ChangeDisplayColumn = 'CHANGE_DISPLAY_COLUMN',
   ChangePersistedFiltersToggle = 'CHANGE_PERSISTED_FILTERS_TOGGLE',
+
+  // selections
+  SetSelectedRow = 'SET_SELECTED_ROW',
+  SetMultiSelectedRow = 'SET_MULTI_SELECTED_ROW',
+
   /* NEW_ACTION_TYPE_GOES_HERE */
 }
+
+export const setSelectedRowAction = createAction<ISelectionProps, ISelectionProps>(
+  DataTableActionEnums.SetSelectedRow,
+  p => p
+);
+
+export const setMultiSelectedRowAction = createAction<Array<Row> | Row, Array<Row> | Row>(
+  DataTableActionEnums.SetMultiSelectedRow,
+  p => p
+);
 
 export const setModelTypeAction = createAction<string, string>(
   DataTableActionEnums.SetModelType,

@@ -1,5 +1,5 @@
+import { ISelectionProps } from "providers/dataTable/contexts";
 import { FormIdentifier, IConfigurableFormComponent } from "../..";
-import { ISelectionProps } from "../../providers/dataTableSelection/models";
 
 export type FormSelectionMode = 'name' | 'view' | 'expression';
 export type Orientation = 'vertical' | 'horizontal';

@@ -7,7 +7,6 @@ import { IToolboxComponent } from 'interfaces';
 import { MetadataProvider, useDataTableStore, useForm, useGlobalState, useNestedPropertyMetadatAccessor } from 'providers';
 import { useDataSource } from 'providers/dataSourcesProvider';
 import DataTableProvider from 'providers/dataTable';
-import { DataTableSelectionProvider, useDataTableSelection } from 'providers/dataTableSelection';
 import { IDataSourceComponentProps } from './models';
 import { evaluateDynamicFilters } from 'utils';
 import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
@@ -98,11 +97,7 @@ export const DataSourceInner: FC<IDataSourceComponentProps> = props => {
       />
     );
 
-  return (
-    <DataTableSelectionProvider>
-      {providerWrapper}
-    </DataTableSelectionProvider>
-  );
+  return providerWrapper;
 };
 
 const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, propertyName: name, filters, maxResultCount }) => {
@@ -116,7 +111,6 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, propertyName: n
     modelType,
   } = dataSource;
 
-  const dataSelection = useDataTableSelection();
   //const { selectedRow } = dataSelection;
   const { globalState } = useGlobalState();
 
@@ -126,7 +120,7 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, propertyName: n
     changePageSize(getPageSize(maxResultCount));
   }, [maxResultCount]);
 
-  useDataSource({ id, name, dataSource, dataSelection }, [id, name, dataSource, dataSelection]);
+  useDataSource({ id, name, dataSource }, [id, name, dataSource]);
 
   /*const deleteRow = () => {
     console.log(`deleteRow ${selectedRow.id}`);

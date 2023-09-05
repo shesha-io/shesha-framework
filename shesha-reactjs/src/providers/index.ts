@@ -1,7 +1,6 @@
 export * from './appConfigurator';
 export * from './auth';
 export * from './dataTable';
-export * from './dataTableSelection';
 export * from './itemListConfigurator';
 export * from './dynamicModal';
 export * from './form';

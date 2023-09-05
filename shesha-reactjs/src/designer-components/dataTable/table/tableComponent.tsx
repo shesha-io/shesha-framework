@@ -6,7 +6,6 @@ import { DataTable, CollapsibleSidebarContainer, DatatableAdvancedFilter, Datata
 import {
   useDataTableStore,
   useGlobalState,
-  useDataTableSelection,
   useSheshaApplication,
   useForm,
   useFormData,
@@ -110,6 +109,8 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     setIsInProgressFlag,
     registerConfigurableColumns,
     tableData,
+    selectedRow,
+    setMultiSelectedRow
   } = useDataTableStore();
   const repository = getRepository();
 
@@ -123,8 +124,6 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
 
     registerConfigurableColumns(id, permissibleColumns);
   }, [items, isDesignMode]);
-
-  const { selectedRow, setSelectedRow, setMultiSelectedRow } = useDataTableSelection();
 
   const renderSidebarContent = () => {
     if (isFiltering) {
@@ -188,11 +187,6 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     else setIsInProgressFlag({ isFiltering: false, isSelectingColumns: false });
   };
 
-  const onSelectRow = (index: number, row: any) => {
-    if (row) {
-      setSelectedRow(index, row);
-    }
-  };
 
   return (
     <CollapsibleSidebarContainer
@@ -206,7 +200,6 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
       allowFullCollapse
     >
       <DataTable
-        onSelectRow={onSelectRow}
         onMultiRowSelect={setMultiSelectedRow}
         selectedRowIndex={selectedRow?.index}
         useMultiselect={useMultiselect}

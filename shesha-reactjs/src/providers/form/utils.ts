@@ -50,11 +50,11 @@ import { CSSProperties } from 'react';
 import camelcase from 'camelcase';
 import { Migrator } from '../../utils/fluentMigrator/migrator';
 import { isPropertySettings } from 'designer-components/_settings/utils';
-import { axiosHttp, useDataTableSelection, useForm, useFormData, useGlobalState, useSheshaApplication } from 'index';
+import { axiosHttp, useDataTableStore, useForm, useFormData, useGlobalState, useSheshaApplication } from 'index';
 import { useDataContextManager } from 'providers/dataContextManager';
-import { ISelectionProps } from 'providers/dataTableSelection/models';
 import moment from 'moment';
 import { message } from 'antd';
+import { ISelectionProps } from 'providers/dataTable/contexts';
 
 /** Interface to geat all avalilable data */
 export interface IApplicationContext {
@@ -77,7 +77,7 @@ export interface IApplicationContext {
 export function useApplicationContext(topContextId?: string): IApplicationContext {
   const { backendUrl } = useSheshaApplication();
   const dcm = useDataContextManager(false);
-  const { formMode, form, setFormDataAndInstance: setFormData } = useForm(false);
+  const { formMode, form, setFormDataAndInstance: setFormData } = useForm(false) ?? dcm.getFormInstance();
   const { globalState, setState: setGlobalState } = useGlobalState();
   return {
     data: useFormData()?.data,
@@ -87,7 +87,7 @@ export function useApplicationContext(topContextId?: string): IApplicationContex
     contexts: {...useDataContextManager(false)?.getDataContextsData(topContextId), lastUpdate: dcm.lastUpdate},
     globalState,
     setGlobalState,
-    selectedRow: useDataTableSelection(false)?.selectedRow,
+    selectedRow: useDataTableStore(false)?.selectedRow,
     moment: moment,
     http: axiosHttp(backendUrl),
     message

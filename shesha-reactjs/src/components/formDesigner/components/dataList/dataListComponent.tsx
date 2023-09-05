@@ -2,7 +2,7 @@ import React, { FC, useCallback, useMemo } from 'react';
 import { UnorderedListOutlined } from "@ant-design/icons";
 import { IToolboxComponent } from "../../../../interfaces";
 import { Alert } from 'antd';
-import { useDataTableSelection, useDataTableStore, useForm } from '../../../../providers';
+import { useDataTableStore, useForm } from '../../../../providers';
 import { DataList } from '../../../dataList';
 import { IDataListComponentProps } from '../../../dataList/models';
 import { useDataSources } from '../../../../providers/dataSourcesProvider';
@@ -55,26 +55,20 @@ export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
     ? ds.getDataSource(props.dataSource)?.dataSource
     : dts;
 
-  const dSel = useDataTableSelection(false);
 
-  const dataSelection = props.dataSource
-    ? ds.getDataSource(props.dataSource)?.dataSelection
-    : dSel;
-
-  if (!dataSource || !dataSelection)
+  if (!dataSource)
     return <NotConfiguredWarning />;
   
   const {
     tableData,
     isFetchingTableData,
     selectedIds,
-    changeSelectedRow,
     changeSelectedIds,
     getRepository,
     modelType
   } = dataSource;
 
-  const { selectedRow, selectedRows, setSelectedRow, setMultiSelectedRow } = dataSelection;
+  const { selectedRow, selectedRows, setSelectedRow, setMultiSelectedRow } = dataSource;
 
   const repository = getRepository();
 
@@ -89,10 +83,8 @@ export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
   const onSelectRow = useCallback((index: number, row: any) => {
     if (row) {
       setSelectedRow(index, row);
-      if (changeSelectedRow) 
-        changeSelectedRow(row);
     }
-  }, [changeSelectedRow]);
+  }, [setSelectedRow]);
 
   const data = useMemo(() => {
     return isDesignMode 

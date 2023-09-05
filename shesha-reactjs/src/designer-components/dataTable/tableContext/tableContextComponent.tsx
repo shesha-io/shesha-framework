@@ -1,10 +1,9 @@
 import { LayoutOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
-import React, { FC, Fragment, MutableRefObject, useEffect, useMemo, useRef } from 'react';
+import React, { FC, Fragment, useEffect, useMemo } from 'react';
 import { IToolboxComponent } from 'interfaces';
-import { MetadataProvider, useDataTableStore, useForm, useFormData } from 'providers';
+import { useDataTableStore, useForm, useFormData } from 'providers';
 import DataTableProvider from 'providers/dataTable';
-import { DataTableSelectionProvider, useDataTableSelection } from 'providers/dataTableSelection';
 import { FormMarkup, IConfigurableFormComponent } from 'providers/form/models';
 import { evaluateString, validateConfigurableComponentSettings } from 'providers/form/utils';
 import ComponentsContainer from 'components/formDesigner/containers/componentsContainer';
@@ -12,7 +11,6 @@ import settingsFormJson from './settingsForm.json';
 import { DataFetchingMode } from 'providers/dataTable/interfaces';
 import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 import { ConfigurableFormItem } from 'components';
-import { DataContextProvider, IContextOnChangeData } from 'providers/dataContextProvider';
 
 export interface ITableContextComponentProps extends IConfigurableFormComponent {
   sourceType?: 'Form' | 'Entity' | 'Url';
@@ -65,40 +63,15 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
 };
 
 export const TableContext: FC<ITableContextComponentProps> = (props) => {
-  const { entityType, sourceType } = props;
 
   const uniqueKey = useMemo(() => {
     return `${props.sourceType}_${props.propertyName}_${props.entityType ?? 'empty'}`; // is used just for re-rendering
   }, [props.sourceType, props.propertyName, props.entityType]);
 
-  const contextonChangeDataRef = useRef<IContextOnChangeData>(null);
-
-  const table = sourceType === 'Entity' && entityType ? (
-    <MetadataProvider id={props.id} modelType={entityType}>
-      <TableContextInner key={uniqueKey} {...props} contextonChangeDataRef={contextonChangeDataRef}/>
-    </MetadataProvider>
-  ) : (
-    <TableContextInner key={uniqueKey} {...props} contextonChangeDataRef={contextonChangeDataRef}/>
-  );
-
-  return (
-    <DataContextProvider 
-      id={'ctx_' + props.id}
-      name={props.componentName}
-      description={`Table context for ${props.componentName}`}
-      type='table'
-      /*onChangeData={(data, changedData) => {
-        if (contextonChangeDataRef.current)
-          contextonChangeDataRef.current(data, changedData);
-      }}*/
-    >
-      {table}
-    </DataContextProvider>
-  );
+  return <TableContextInner key={uniqueKey} {...props} />;
 };
 
 interface ITableContextInnerProps extends ITableContextComponentProps {
-  contextonChangeDataRef: MutableRefObject<IContextOnChangeData>;
 }
 
 export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
@@ -149,19 +122,16 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
     </DataTableProvider>
   ;
 
-  const providerWrapper = sourceType === 'Form' 
+  return sourceType === 'Form' 
     ? <ConfigurableFormItem model={{...props, hideLabel: true}} wrapperCol={{md: 24}}>
         {(_v, onChange, _p, getFieldValue) => provider(getFieldValue, onChange)}
       </ConfigurableFormItem> 
-    : provider();
-
-  return <DataTableSelectionProvider>{providerWrapper}</DataTableSelectionProvider>;
+    : provider();;
 };
 
 const TableContextAccessor: FC<ITableContextComponentProps> = ({ id }) => {
   const { registerActions } = useForm();
-  const { refreshTable, exportToExcel, tableConfigLoaded, setIsInProgressFlag } = useDataTableStore();
-  const { selectedRow } = useDataTableSelection();
+  const { selectedRow, refreshTable, exportToExcel, tableConfigLoaded, setIsInProgressFlag } = useDataTableStore();
 
   const toggleColumnsSelector = () => {
     setIsInProgressFlag({ isSelectingColumns: true, isFiltering: false });

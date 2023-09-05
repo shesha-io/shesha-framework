@@ -13,7 +13,7 @@ const DataSourcesProvider: FC<PropsWithChildren<IDataSourcesProviderProps>> = ({
     const registerDataSource = (payload: IRegisterDataSourcePayload) => {
         dataSources.current = {
           ...dataSources.current,
-          [`${payload.id}_${payload.name}`]: { id: payload.id, name: payload.name, dataSource: payload.dataSource, dataSelection: payload.dataSelection }
+          [`${payload.id}_${payload.name}`]: { id: payload.id, name: payload.name, dataSource: payload.dataSource }
         };
     };
 

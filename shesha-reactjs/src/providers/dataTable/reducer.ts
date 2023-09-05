@@ -2,6 +2,7 @@ import {
   DATA_TABLE_CONTEXT_INITIAL_STATE,
   DEFAULT_PAGE_SIZE_OPTIONS,
   IDataTableStateContext,
+  ISelectionProps,
 } from './contexts';
 import {
   DataTableActionEnums,
@@ -24,6 +25,7 @@ import {
 import { handleActions } from 'redux-actions';
 import { getFilterOptions } from '../../components/columnItemFilter';
 import { getTableDataColumn, getTableDataColumns, prepareColumn } from './utils';
+import { Row } from 'react-table';
 
 /** get dirty filter if exists and fallback to current filter state */
 const getDirtyFilter = (state: IDataTableStateContext): ITableFilter[] => {
@@ -32,6 +34,49 @@ const getDirtyFilter = (state: IDataTableStateContext): ITableFilter[] => {
 
 const reducer = handleActions<IDataTableStateContext, any>(
   {
+    /** Table Selection */
+
+    [DataTableActionEnums.SetSelectedRow]: (
+      state: IDataTableStateContext,
+      action: ReduxActions.Action<ISelectionProps>
+    ) => {
+      const { payload } = action;
+      const selectedRow = state?.selectedRow?.id === payload?.id ? null : payload;
+      return {...state, selectedRow};
+    },
+
+    [DataTableActionEnums.SetMultiSelectedRow]: (
+      state: IDataTableStateContext,
+      action: ReduxActions.Action<Row[] | Row>
+    ) => {
+      const { payload } = action;
+      const { selectedRows: rows } = state;
+      let selectedRows;
+
+      if (Array.isArray(payload)) {
+        selectedRows = payload?.filter(({ isSelected }) => isSelected).map(({ original }) => original);
+      } else {
+        const data = payload.original as any;
+        const exists = rows.some(({ id }) => id === data?.id);
+        const isSelected = payload.isSelected;
+
+        if (exists && isSelected) {
+          selectedRows = [...rows.filter(({ id }) => id !== data?.id), data];
+        } else if (exists && !isSelected) {
+          selectedRows = rows.filter(({ id }) => id !== data?.id);
+        } else if (!exists && isSelected) {
+          selectedRows = [...rows, data];
+        }
+      }
+
+      return {
+        ...state,
+        selectedRows,
+      };
+    },
+
+    /** Table Context */
+
     [DataTableActionEnums.SetModelType]: (state: IDataTableStateContext, action: ReduxActions.Action<string>) => {
       const { payload } = action;
 
@@ -46,14 +91,6 @@ const reducer = handleActions<IDataTableStateContext, any>(
       return {
         ...state,
         userConfigId: payload,
-      };
-    },
-    [DataTableActionEnums.ChangeSelectedRow]: (state: IDataTableStateContext, action: ReduxActions.Action<any>) => {
-      const { payload } = action;
-      
-      return {
-        ...state,
-        selectedRow: payload?.id === state?.selectedRow?.id ? null : payload,
       };
     },
     [DataTableActionEnums.ChangeActionedRow]: (state: IDataTableStateContext, action: ReduxActions.Action<any>) => {

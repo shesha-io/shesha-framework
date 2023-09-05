@@ -12,6 +12,8 @@ import TableViewSelectorRenderer from 'components/tableViewSelectorRenderer';
 import { migrateFilterMustacheExpressions } from 'designer-components/_common-migrations/migrateUseExpression';
 import { evaluateDynamicFilters } from 'utils';
 import { migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { useDataContextManager } from 'providers/dataContextManager';
+import { useDataContext } from 'providers/dataContextProvider';
 
 const TableViewSelectorComponent: IToolboxComponent<ITableViewSelectorComponentProps> = {
   type: 'tableViewSelector',
@@ -62,6 +64,8 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({ filters, hidden
   } = useDataTableStore();
   const { globalState } = useGlobalState();
   const { formData, formMode } = useForm();
+  const dataContextManager = useDataContextManager(false);
+  const dataContext = useDataContext(false);
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(modelType);
 
   componentRef.current = {
@@ -75,12 +79,17 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({ filters, hidden
   const debounceEvaluateDynamicFiltersHelper = () => {
     const data = !_.isEmpty(formData) ? camelCaseKeys(formData, { deep: true, pascalCase: true }) : formData;
 
+    const match = [
+      { match: 'data', data: data },
+      { match: 'globalState', data: globalState },
+    ];
+
+    if (dataContextManager)
+      match.push({ match: 'contexts', data: dataContextManager.getDataContextsData(dataContext?.id)});
+
     evaluateDynamicFilters(
       filters,
-      [
-        { match: 'data', data: data },
-        { match: 'globalState', data: globalState },
-      ],
+      match,
       propertyMetadataAccessor
     ).then(evaluatedFilters => {
       setPredefinedFilters(evaluatedFilters);
@@ -89,7 +98,7 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({ filters, hidden
 
   useDeepCompareEffect(() => {
     debounceEvaluateDynamicFiltersHelper();
-  }, [filters, formData, globalState]);
+  }, [filters, formData, globalState, dataContextManager.lastUpdate]);
 
   useEffect(() => {
     changePersistedFiltersToggle(persistSelectedFilters);
