@@ -34,7 +34,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
 
   useEffect(() => {
     form.resetFields();
-  });
+  }, []);
 
   const linkToModelMetadata = (metadata: IPropertyMetadata) => {
     const currentModel = form.getFieldsValue() as TModel;
