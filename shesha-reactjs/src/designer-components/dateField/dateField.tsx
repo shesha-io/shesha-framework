@@ -187,7 +187,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     return (
       <RangePicker
         className="sha-range-picker"
-        disabledDate={(e) => disabledDate(props, e)}
+        disabledDate={(e) => disabledDate(props, e, formData, globalState)}
         onCalendarChange={onCalendarChange}
         onChange={handleRangePicker}
         format={pickerFormat}
@@ -208,7 +208,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     <DatePicker
       className="sha-date-picker"
       value={formattedValue}
-      disabledDate={(e) => disabledDate(props, e)}
+      disabledDate={(e) => disabledDate(props, e, formData, globalState)}
       disabled={isDisabled}
       onChange={handleDatePickerChange}
       bordered={!hideBorder}
