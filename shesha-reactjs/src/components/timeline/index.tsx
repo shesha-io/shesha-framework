@@ -16,7 +16,7 @@ export const ShaTimeline: FC<ITimelineProps> = ({ properties, ownerId, entityTyp
   //timeline icons
   const { globalState } = useGlobalState();
   const getAllProps =
-    apiSource === 'custom' ? { path: customApiUrl + `?id=${ownerId}` || '', lazy: true } : { lazy: true };
+    apiSource === 'custom' ? { path: customApiUrl + `?id=${ownerId + 'sds'}` || '', lazy: true } : { lazy: true };
   const { refetch: fetchAllEntities, loading: isFetchingEntities, data } = useGetAll(getAllProps as any);
 
   const fetchEntities = (params: object) => {
@@ -65,14 +65,16 @@ export const ShaTimeline: FC<ITimelineProps> = ({ properties, ownerId, entityTyp
     <Spin spinning={isFetchingEntities}>
       {(!sortedTimelineData?.length && <Empty description="Empty timeline" />) || (
         <Timeline className="sha-timeline">
-          {sortedTimelineData?.map(({ title, body, fromPerson, actionDate, channel }) => {
+          {sortedTimelineData?.map(({ title, body, fromPerson, actionDate, channel, attachments }) => {
             return (
               <TimelineItem
                 title={title}
+                ownerId={ownerId}
                 toPerson={fromPerson?._displayName}
                 channel={channel}
                 actionDate={moment(actionDate).format('DD/MM/YYYY HH:mm')}
                 body={body}
+                attachments={attachments}
               />
             );
           })}
