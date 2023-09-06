@@ -16,7 +16,7 @@ export const ShaTimeline: FC<ITimelineProps> = ({ properties, ownerId, entityTyp
   //timeline icons
   const { globalState } = useGlobalState();
   const getAllProps =
-    apiSource === 'custom' ? { path: customApiUrl + `?id=${ownerId + 'sds'}` || '', lazy: true } : { lazy: true };
+    apiSource === 'custom' ? { path: customApiUrl + `?id=${ownerId}` || '', lazy: true } : { lazy: true };
   const { refetch: fetchAllEntities, loading: isFetchingEntities, data } = useGetAll(getAllProps as any);
 
   const fetchEntities = (params: object) => {
