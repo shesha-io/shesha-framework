@@ -28,8 +28,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using static AutoMapper.Internal.ExpressionFactory;
+using static AutoMapper.QueryableExtensions.LetPropertyMaps;
 using NHcfg = NHibernate.Cfg;
 using NHGens = NHibernate.Mapping.ByCode.Generators;
 using NMIMPL = NHibernate.Mapping.ByCode.Impl;
@@ -148,7 +150,7 @@ namespace Shesha.NHibernate.Maps
 
             mapper.IsComponent((mi, declared) =>
             {
-                if (mi == typeof(GenericEntityReference))
+                if (mi == typeof(GenericEntityReference) || mi.IsAssignableTo(typeof(ConfigurationItemIdentifier)))
                 {
                     return true;
                 }
@@ -163,7 +165,7 @@ namespace Shesha.NHibernate.Maps
 
             mapper.IsProperty((mi, declared) =>
             {
-                if (mi.GetMemberType() == typeof(GenericEntityReference))
+                if (mi.GetMemberType() == typeof(GenericEntityReference) || mi.GetMemberType().IsAssignableTo(typeof(ConfigurationItemIdentifier)))
                 {
                     return true;
                 }
@@ -297,6 +299,21 @@ namespace Shesha.NHibernate.Maps
                     return;
                 }
 
+                if (propertyType.IsAssignableTo(typeof(ConfigurationItemIdentifier))) 
+                {
+                    var prefix = MappingHelper.GetColumnPrefix(member.LocalMember.DeclaringType);
+                    var moduleColumn = MappingHelper.GetNameForMember(member.LocalMember, prefix, member.LocalMember.Name, nameof(FormIdentifier.Module));
+                    var nameColumn = MappingHelper.GetNameForMember(member.LocalMember, prefix, member.LocalMember.Name, nameof(FormIdentifier.Name));
+
+                    propertyCustomizer.Columns(
+                            c => { c.Name(moduleColumn); },
+                            c => { c.Name(nameColumn); }
+                        );
+                    var gtype = typeof(ConfigurationItemIdentifierUserType);
+                    propertyCustomizer.Type(gtype, null);
+                    return;
+                }
+
                 if (propertyType == typeof(DateTime) || propertyType == typeof(DateTime?))
                 {
                     columnType = NHibernateUtil.DateTime;
@@ -304,7 +321,6 @@ namespace Shesha.NHibernate.Maps
                 }
                 else
                     if (member.LocalMember.GetAttribute<StringLengthAttribute>()?.MaximumLength == int.MaxValue)
-                //if (Attribute.IsDefined(member.LocalMember, (typeof(StringClobAttribute))))
                 {
                     columnType = NHibernateUtil.StringClob;
                     sqlType = "nvarchar(max)";
@@ -390,7 +406,7 @@ namespace Shesha.NHibernate.Maps
                             }
                             else
                             {
-                                var idColumn = idProp.GetAttribute<ColumnAttribute>()?.Name ?? "Id";
+                                var idColumn = MappingHelper.GetIdColumnName(idProp);
 
                                 // get Id mapper
                                 var idMapper = _idMapper.Invoke(idProp.PropertyType);
@@ -485,12 +501,9 @@ namespace Shesha.NHibernate.Maps
                if (lazyRelation != null)
                    map.Lazy(lazyRelation);
 
-               var foreignKeyAttribute = propertyPath.LocalMember.GetAttribute<ForeignKeyAttribute>(true);
-               var foreignKeyColumn = foreignKeyAttribute != null
-                   ? foreignKeyAttribute.Name
-                   : columnPrefix + propertyPath.LocalMember.Name + "Id";
-
                //map.NotFound(NotFoundMode.Ignore); disabled due to performance issues, this option breaks lazy loading
+
+               var foreignKeyColumn = MappingHelper.GetForeignKeyColumn(propertyPath.LocalMember);
                map.Column(foreignKeyColumn);
 
                var directlyMappedFk = propertyPath.LocalMember.DeclaringType?.GetProperty(foreignKeyColumn);

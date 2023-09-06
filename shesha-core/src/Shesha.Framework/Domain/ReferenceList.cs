@@ -53,11 +53,7 @@ namespace Shesha.Domain
         /// <returns></returns>
         public virtual ReferenceListIdentifier GetReferenceListIdentifier()
         {
-            return new ReferenceListIdentifier
-            {
-                Module = Module?.Name,
-                Name = Name
-            };
+            return new ReferenceListIdentifier(Module?.Name, Name);
         }
 
         public virtual void SetHardLinkToApplication(bool value)

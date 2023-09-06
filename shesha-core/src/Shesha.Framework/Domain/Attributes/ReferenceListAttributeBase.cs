@@ -45,11 +45,7 @@ namespace Shesha.Domain.Attributes
         /// </summary>
         public ReferenceListIdentifier GetReferenceListIdentifier(MemberInfo memberInfo)
         {
-            return new ReferenceListIdentifier()
-            {
-                Module = GetModuleName(memberInfo?.DeclaringType?.Assembly),
-                Name = FullName
-            };
+            return new ReferenceListIdentifier(GetModuleName(memberInfo?.DeclaringType?.Assembly), FullName);
         }
 
         /// <summary>
@@ -57,11 +53,7 @@ namespace Shesha.Domain.Attributes
         /// </summary>
         public ReferenceListIdentifier GetReferenceListIdentifier(Type enumType)
         {
-            return new ReferenceListIdentifier()
-            {
-                Module = GetModuleName(enumType?.Assembly),
-                Name = FullName
-            };
+            return new ReferenceListIdentifier(GetModuleName(enumType?.Assembly), FullName);
         }
 
         /// <summary>

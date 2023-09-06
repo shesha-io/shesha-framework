@@ -11,6 +11,10 @@ using FluentMigrator.Builders;
 using FluentMigrator.Builders.Alter.Table;
 using FluentMigrator.Builders.Create.Table;
 using FluentMigrator.Infrastructure;
+using FluentMigrator.Model;
+using FluentMigrator.Runner.Conventions;
+using NHibernate.Mapping;
+using NHibernate.Type;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.Extensions;
@@ -18,6 +22,7 @@ using Shesha.FluentMigrator;
 using Shesha.Migrations;
 using Shesha.NHibernate.Maps;
 using Shesha.Reflection;
+using Shesha.Utilities;
 
 namespace Shesha.CodeGeneration
 {
@@ -121,6 +126,7 @@ namespace Shesha.CodeGeneration
 
             // todo: handle this case: OrganisationUnit -> OrganisationBase<OrganisationUnit> (parent prop here) -> OrganisationBase
             var isRoot = MappingHelper.IsRootEntity(entityType);
+            var schema = MappingHelper.GetSchemaName(entityType);
 
             switch (ddlStatement)
             {
@@ -134,7 +140,10 @@ namespace Shesha.CodeGeneration
                     {
                         sb.AppendLine($"            // {entityType.FullName}");
                         sb.Append($@"            Create.Table(""{MappingHelper.GetTableName(entityType)}"")");
-                        AddColumns(sb, props, ddlStatement);
+                        if (!string.IsNullOrWhiteSpace(schema))
+                            sb.Append($@".InSchema(""{schema}"")");
+
+                        AddColumns(entityType, sb, props, ddlStatement);
                         var discriminatorColumn = MappingHelper.GetDiscriminatorColumn(entityType);
                         if (!string.IsNullOrWhiteSpace(discriminatorColumn))
                         {
@@ -155,7 +164,9 @@ namespace Shesha.CodeGeneration
                     {
                         sb.AppendLine($"            // {entityType.FullName}");
                         sb.Append($@"            Alter.Table(""{MappingHelper.GetTableName(entityType)}"")");
-                        AddColumns(sb, props, ddlStatement);
+                        if (!string.IsNullOrWhiteSpace(schema))
+                            sb.Append($@".InSchema(""{schema}"")");
+                        AddColumns(entityType, sb, props, ddlStatement);
                         sb.AppendLine(";");
                     }
                     break;
@@ -191,24 +202,30 @@ namespace Shesha.CodeGeneration
             return propNames;
         }
 
-        private static void AddColumns(StringBuilder sb, List<PropertyInfo> properties, DdlStatement statement)
+        private static void AddColumns(Type entityType, StringBuilder sb, List<PropertyInfo> properties, DdlStatement statement)
         {
             var allProps = properties.ToList(); // make a copy of the list to prevent mutations
 
-            var idProp = properties.FirstOrDefault(p => p.Name == "Id");
+            var idProp = properties.FirstOrDefault(p => p.Name == nameof(Entity.Id));
             if (idProp != null)
             {
                 if (statement == DdlStatement.Create)
                 {
                     sb.AppendLine();
+
+                    var idName = MappingHelper.GetIdColumnName(idProp);
+                    var idNameParam = idName == DatabaseConsts.IdColumn
+                        ? null
+                        : idName.DoubleQuote();
+
                     if (idProp.PropertyType == typeof(Guid))
-                        sb.Append($@"                .{nameof(SheshaFluentMigratorExtensions.WithIdAsGuid)}()");
+                        sb.Append($@"                .{nameof(SheshaFluentMigratorExtensions.WithIdAsGuid)}({idNameParam})");
                     else
                     if (idProp.PropertyType == typeof(int))
-                        sb.Append($@"                .{nameof(SheshaFluentMigratorExtensions.WithIdAsInt32)}()");
+                        sb.Append($@"                .{nameof(SheshaFluentMigratorExtensions.WithIdAsInt32)}({idNameParam})");
                     else
                     if (idProp.PropertyType == typeof(Int64))
-                        sb.Append($@"                .{nameof(SheshaFluentMigratorExtensions.WithIdAsInt64)}()");
+                        sb.Append($@"                .{nameof(SheshaFluentMigratorExtensions.WithIdAsInt64)}({idNameParam})");
                     else
                         throw new NotSupportedException($"Id of type {idProp.PropertyType.FullName} is not supported");
 
@@ -225,14 +242,39 @@ namespace Shesha.CodeGeneration
                 sb.AppendLine();
                 if (property.PropertyType.IsEntityType())
                 {
-                    var fkTable = MappingHelper.GetTableName(property.PropertyType);
+                    var primaryTable = MappingHelper.GetTableName(property.PropertyType);
+                    var primaryTableSchema = MappingHelper.GetSchemaName(property.PropertyType);
+                    var primaryIdName = MappingHelper.GetColumnName(property.PropertyType.GetProperty(nameof(Entity.Id)));
+
                     var fkColumn = MappingHelper.GetForeignKeyColumn(property);
+                    var schema = MappingHelper.GetSchemaName(entityType);
 
-                    var method = statement == DdlStatement.Create
-                        ? nameof(SheshaFluentMigratorExtensions.WithForeignKeyColumn)
-                        : nameof(SheshaFluentMigratorExtensions.AddForeignKeyColumn);
+                    var fk = new ForeignKeyDefinition() { 
+                        ForeignTableSchema = schema,
+                        ForeignTable = MappingHelper.GetTableName(entityType),
+                        ForeignColumns = new[] { fkColumn },
 
-                    sb.Append($@"                .{method}(""{fkColumn}"", ""{fkTable}"")");
+                        PrimaryTableSchema = primaryTableSchema,
+                        PrimaryTable = primaryTable,
+                        PrimaryColumns = new[] { primaryIdName },
+                    };
+                    var fkName = GetDefaultForeignKeyName(fk);
+
+                    if (string.IsNullOrWhiteSpace(schema) && string.IsNullOrWhiteSpace(primaryTableSchema))
+                    {
+                        var method = statement == DdlStatement.Create
+                            ? nameof(SheshaFluentMigratorExtensions.WithForeignKeyColumn)
+                            : nameof(SheshaFluentMigratorExtensions.AddForeignKeyColumn);
+
+                        sb.Append($@"                .{method}(""{fkColumn}"", ""{primaryTable}"")");
+                    }
+                    else {
+                        var method = statement == DdlStatement.Create
+                            ? nameof(ICreateTableWithColumnSyntax.WithColumn)
+                            : nameof(IAlterTableAddColumnOrAlterColumnSyntax.AddColumn);
+                        
+                        sb.Append($@"                .{method}(""{fkColumn}"").AsGuid().Nullable().ForeignKey(""{fkName}"", ""{primaryTableSchema}"", ""{primaryTable}"", ""{primaryIdName}"").Indexed()");
+                    }
                 } else 
                 {
                     var method = statement == DdlStatement.Create
@@ -290,6 +332,10 @@ namespace Shesha.CodeGeneration
                     {
                         sb.Append($@".{nameof(IColumnTypeSyntax<IFluentSyntax>.AsInt64)}()");
                     }
+                    else if (property.PropertyType == typeof(FormIdentifier))
+                    {
+                        sb.Append($@".{nameof(IColumnTypeSyntax<IFluentSyntax>.AsInt64)}()");
+                    }
                     else
                         throw new NotSupportedException($"unsupported property type: '{property.PropertyType.FullName}'");
 
@@ -299,6 +345,32 @@ namespace Shesha.CodeGeneration
                         sb.Append($@".{nameof(IColumnOptionSyntax<IFluentSyntax, IFluentSyntax>.Nullable)}()");
                 }
             }
+        }
+
+        private static string GetDefaultForeignKeyName(ForeignKeyDefinition foreignKey)
+        {
+            var sb = new StringBuilder();
+
+            sb.Append("fk_");
+            sb.Append(foreignKey.ForeignTable);
+
+            foreach (string foreignColumn in foreignKey.ForeignColumns)
+            {
+                sb.Append("_");
+                sb.Append(foreignColumn);
+            }
+            /*
+            sb.Append("_");
+            sb.Append(foreignKey.PrimaryTable);
+
+            foreach (string primaryColumn in foreignKey.PrimaryColumns)
+            {
+                sb.Append("_");
+                sb.Append(primaryColumn);
+            }
+            */
+
+            return sb.ToString();
         }
 
         /// <summary>
@@ -390,6 +462,22 @@ namespace Shesha.CodeGeneration
                     sb.AppendLine();
                     sb.Append($@"                .{helper}()");
                 }
+            }
+
+            var formIdProperties = properties.Where(p => p.PropertyType == typeof(FormIdentifier)).ToList();
+            foreach (var formProperty in formIdProperties) 
+            {
+                properties.Remove(formProperty);
+
+                var prefix = MappingHelper.GetColumnPrefix(formProperty.DeclaringType);
+                var moduleColumn = MappingHelper.GetNameForMember(formProperty, prefix, formProperty.Name, nameof(FormIdentifier.Module));
+                var nameColumn = MappingHelper.GetNameForMember(formProperty, prefix, formProperty.Name, nameof(FormIdentifier.Name));
+
+                // apply helper
+                sb.AppendLine();
+                sb.Append($@"                .WithColumn(""{moduleColumn}"").AsString(200).Nullable()");
+                sb.AppendLine();
+                sb.Append($@"                .WithColumn(""{nameColumn}"").AsString(200).Nullable()");
             }
 
             return properties;

@@ -139,20 +139,42 @@ namespace Shesha.Domain
             var columnPrefix = GetColumnPrefix(memberInfo.DeclaringType);
             var propertyType = memberInfo.GetPropertyOrFieldType().GetUnderlyingTypeIfNullable();
 
-            var conventions = GetNamingConventions(memberInfo);
-
             var suffix = memberInfo.IsReferenceListProperty()
                 ? "Lkp"
                 : propertyType == typeof(TimeSpan) || propertyType == typeof(TimeSpan?)
                     ? "Ticks"
                     : null;
 
-            return conventions.GetColumnName(columnPrefix, memberInfo.Name, suffix);
+            return GetNameForMember(memberInfo, columnPrefix, memberInfo.Name, suffix);
+        }
+
+        /// <summary>
+        /// Get name of the ID column taking into account all attributes except prefix and postfix
+        /// </summary>
+        /// <param name="memberInfo"></param>
+        /// <returns></returns>
+        public static string GetIdColumnName(MemberInfo memberInfo) 
+        {
+            var columnAttribute = memberInfo.GetAttribute<ColumnAttribute>(true);
+
+            if (!string.IsNullOrWhiteSpace(columnAttribute?.Name))
+                return columnAttribute.Name;
+
+            return GetNameForMember(memberInfo, "", memberInfo.Name, "");
+        }
+
+        /// <summary>
+        /// Get column name for the specified member (property/field) with explicitly specified prefix, name and suffix
+        /// </summary>
+        public static string GetNameForMember(MemberInfo memberInfo, string prefix, string name, string suffix) 
+        {
+            var conventions = GetNamingConventions(memberInfo);
+            return conventions.GetColumnName(prefix, name, suffix);
         }
 
         private static INamingConventions GetNamingConventions(MemberInfo memberInfo) 
         {
-            var conventionsType = memberInfo.ReflectedType.GetAttribute<NamingConventionsAttribute>()?.ConventionsType ?? typeof(DefaultNamingConventions);
+            var conventionsType = memberInfo.ReflectedType.GetAttribute<NamingConventionsAttribute>(true)?.ConventionsType ?? typeof(DefaultNamingConventions);
             return Activator.CreateInstance(conventionsType) as INamingConventions;
         }
 
@@ -192,12 +214,13 @@ namespace Shesha.Domain
                 Type rootType = GetRootEntity(type);
                 if (rootType != null && rootType.Assembly.FullName != type.Assembly.FullName)
                 {
+                    // This column extends a table created in another module - we should add a prefix
                     if (!Prefixes.ContainsKey(rootType.Assembly.FullName)
                         || Prefixes[rootType.Assembly.FullName] != Prefixes[type.Assembly.FullName])
                         return GetTablePrefix(type);
                 }
             }
-
+            
             return "";
         }
 
@@ -317,15 +340,16 @@ namespace Shesha.Domain
         /// </summary>
         /// <param name="prop"></param>
         /// <returns></returns>
-        public static string GetForeignKeyColumn(PropertyInfo prop)
+        public static string GetForeignKeyColumn(MemberInfo prop)
         {
             var foreignKeyAttribute = prop.GetAttribute<ForeignKeyAttribute>(true);
+            if (foreignKeyAttribute != null)
+                return foreignKeyAttribute.Name;
 
             var columnPrefix = GetColumnPrefix(prop.DeclaringType);
 
-            return foreignKeyAttribute != null
-                ? foreignKeyAttribute.Name
-                : columnPrefix + prop.Name + "Id";
+            var conventions = GetNamingConventions(prop);
+            return conventions.GetColumnName(columnPrefix, prop.Name, "Id");
         }
 
         /// <summary>

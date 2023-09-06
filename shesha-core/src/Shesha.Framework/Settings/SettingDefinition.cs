@@ -5,6 +5,7 @@ using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.ConfigurationItems;
 using System;
 using Microsoft.AspNetCore.Mvc;
+using Shesha.Domain;
 
 namespace Shesha.Settings
 {
