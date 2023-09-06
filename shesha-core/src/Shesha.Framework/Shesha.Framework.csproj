@@ -24,15 +24,12 @@
 
   <ItemGroup>
     <Compile Remove="Domain\Specifications\**" />
-    <Compile Remove="FluentMigrator\**" />
     <Compile Remove="Migrations\PostgreSql\Scripts\**" />
     <Compile Remove="Services\ApplicationParts\**" />
     <EmbeddedResource Remove="Domain\Specifications\**" />
-    <EmbeddedResource Remove="FluentMigrator\**" />
     <EmbeddedResource Remove="Migrations\PostgreSql\Scripts\**" />
     <EmbeddedResource Remove="Services\ApplicationParts\**" />
     <None Remove="Domain\Specifications\**" />
-    <None Remove="FluentMigrator\**" />
     <None Remove="Migrations\PostgreSql\Scripts\**" />
     <None Remove="Services\ApplicationParts\**" />
   </ItemGroup>

@@ -49,7 +49,9 @@ namespace Shesha.GraphQL.Provider.GraphTypes
             if (propsInfo == null || propsInfo.Length == 0)
                 throw new GraphQLSchemaException(genericType.Name, $"Unable to create generic GraphQL type from type {genericType.Name} because it has no properties");
 
-            var properties = genericType.GetProperties(BindingFlags.Public | BindingFlags.Instance).ToList();
+            var properties = genericType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(p => p.PropertyType != typeof(Type))
+                .ToList();
             foreach (var property in properties) 
             {
                 EmitField(property);
