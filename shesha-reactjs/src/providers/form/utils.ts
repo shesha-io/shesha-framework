@@ -55,6 +55,7 @@ import { useDataContextManager } from 'providers/dataContextManager';
 import moment from 'moment';
 import { message } from 'antd';
 import { ISelectionProps } from 'providers/dataTable/contexts';
+import { useDataContext } from 'providers/dataContextProvider';
 
 /** Interface to geat all avalilable data */
 export interface IApplicationContext {
@@ -75,6 +76,8 @@ export interface IApplicationContext {
 }
 
 export function useApplicationContext(topContextId?: string): IApplicationContext {
+  let tcId = useDataContext(false)?.id;
+  tcId = topContextId || tcId;
   const { backendUrl } = useSheshaApplication();
   const dcm = useDataContextManager(false);
   const { formMode, form, setFormDataAndInstance: setFormData } = useForm(false) ?? dcm.getFormInstance();
@@ -84,7 +87,7 @@ export function useApplicationContext(topContextId?: string): IApplicationContex
     setFormData,
     formMode,
     form,
-    contexts: {...useDataContextManager(false)?.getDataContextsData(topContextId), lastUpdate: dcm.lastUpdate},
+    contexts: {...useDataContextManager(false)?.getDataContextsData(tcId), lastUpdate: dcm.lastUpdate},
     globalState,
     setGlobalState,
     selectedRow: useDataTableStore(false)?.selectedRow,
@@ -1415,18 +1418,10 @@ export const convertToMarkupWithSettings = (markup: FormMarkup, isSettingsForm?:
     if (typeof isSettingsForm === 'undefined')
       return result;
     else
-      return {
-        ...result,
-        formSettings: {
-          ...result.formSettings,
-          isSettingsForm: 
-            isSettingsForm === true 
-              ? true 
-              : isSettingsForm === false 
-                ? false 
-                : result.formSettings.isSettingsForm
-        }
-      };
+      if (typeof isSettingsForm !== 'undefined' && isSettingsForm !== null) {
+        result.formSettings.isSettingsForm = isSettingsForm;
+        return result;
+      }
   if (Array.isArray(markup)) return { components: markup, formSettings: {...DEFAULT_FORM_SETTINGS, isSettingsForm} };
 
   return { components: [], formSettings: {...DEFAULT_FORM_SETTINGS, isSettingsForm} };

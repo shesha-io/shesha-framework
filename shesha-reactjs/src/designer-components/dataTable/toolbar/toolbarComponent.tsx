@@ -67,7 +67,7 @@ export const Toolbar: FC<IToolbarProps> = ({ items, id }) => {
 
       const isVisible = visibilityFunc(
         allData.data, 
-        { selectedRow: selectedRow.row }, // ToDo: Need to review for contexts use
+        { selectedRow: selectedRow?.row }, // ToDo: Need to review for contexts use
         allData.formMode
       );
 

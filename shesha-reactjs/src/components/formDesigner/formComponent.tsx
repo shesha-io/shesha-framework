@@ -1,4 +1,3 @@
-import { useDataContext } from 'providers/dataContextProvider';
 import React, { FC, MutableRefObject } from 'react';
 import { getActualModel, useApplicationContext } from 'utils/publicUtils';
 import { useForm } from '../../providers/form';
@@ -10,7 +9,7 @@ export interface IFormComponentProps {
 
 const FormComponent: FC<IFormComponentProps> = ({ id, componentRef }) => {
   const { getComponentModel, form, getToolboxComponent, isComponentHidden, isComponentDisabled } = useForm();
-  const allData = useApplicationContext(useDataContext(false)?.id);
+  const allData = useApplicationContext();
 
   const model = getComponentModel(id);
   const toolboxComponent = getToolboxComponent(model.type);

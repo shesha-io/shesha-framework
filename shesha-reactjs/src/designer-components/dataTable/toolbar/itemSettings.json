@@ -176,8 +176,8 @@
       "validate": {},
       "settingsValidationErrors": [],
       "exposedVariables": [
-        { "propertyName": "value", "description": "Component current value", "type": "string | any" },
-        { "propertyName": "data", "description": "Selected form values", "type": "object" }
+        { "Name": "value", "description": "Component current value", "type": "string | any" },
+        { "Name": "data", "description": "Selected form values", "type": "object" }
       ]
     },
     {
@@ -193,8 +193,8 @@
       "validate": {},
       "settingsValidationErrors": [],
       "exposedVariables": [
-        { "propertyName": "value", "description": "Component current value", "type": "string | any" },
-        { "propertyName": "data", "description": "Selected form values", "type": "object" }
+        { "Name": "value", "description": "Component current value", "type": "string | any" },
+        { "Name": "data", "description": "Selected form values", "type": "object" }
       ]
     },
     {

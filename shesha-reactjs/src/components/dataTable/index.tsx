@@ -105,6 +105,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       const currentId = store.selectedRow?.id;
       if (rowId !== currentId)
         setSelectedRow(index, row);
+      else 
+        setSelectedRow(null, null);
     }
   };
 

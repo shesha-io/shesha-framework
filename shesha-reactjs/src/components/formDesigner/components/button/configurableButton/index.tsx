@@ -6,7 +6,6 @@ import { IButtonGroupButton } from '../../../../../providers/buttonGroupConfigur
 import { CSSProperties } from 'react';
 import { useConfigurableActionDispatcher } from '../../../../../providers/configurableActionsDispatcher';
 import { useApplicationContext } from 'utils/publicUtils';
-import { useDataContext } from 'providers/dataContextProvider';
 
 export interface IConfigurableButtonProps extends Omit<IButtonGroupButton, 'style'> {
   formComponentId: string;
@@ -16,7 +15,7 @@ export interface IConfigurableButtonProps extends Omit<IButtonGroupButton, 'styl
 }
 
 export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
-  const evaluationContext = useApplicationContext(useDataContext(false)?.id);
+  const evaluationContext = useApplicationContext();
   const { executeAction } = useConfigurableActionDispatcher();
 
   const onButtonClick = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {

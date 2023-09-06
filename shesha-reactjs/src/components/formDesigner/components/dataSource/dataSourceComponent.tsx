@@ -123,7 +123,7 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, propertyName: n
   useDataSource({ id, name, dataSource }, [id, name, dataSource]);
 
   /*const deleteRow = () => {
-    console.log(`deleteRow ${selectedRow.id}`);
+    console.log(`deleteRow ${selectedRow?.id}`);
   };*/
 
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(modelType);

@@ -97,7 +97,7 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
         </React.Fragment>
       </MetadataContext.Provider>
     );
-  }, [toolboxComponent, readOnly, metaProvider?.modelType]);
+  }, [toolboxComponent, readOnly, metaProvider?.modelType, componentModel]);
 
   return Boolean(toolboxComponent)
     ? <>{editor}</>
