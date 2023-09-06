@@ -10,6 +10,7 @@ import {
   FieldSettings,
   Widgets,
   Fields,
+  FieldOrGroup,
 } from '@react-awesome-query-builder/antd';
 import classNames from 'classnames';
 import { ITableColumn } from '../../interfaces';
@@ -67,7 +68,8 @@ export const QueryBuilder: FC<IQueryBuilderProps> = props => {
   const convertFields = (fields: IProperty[]): Fields => {
     const confFields: Fields = {};
 
-    fields?.forEach(({ dataType, visible, propertyName, label, fieldSettings, preferWidgets }) => {
+    const convertField = (property: IProperty): FieldOrGroup => {
+      const { dataType, visible, label, fieldSettings, preferWidgets, childProperties: childProps } = property;
       let type: string = dataType;
       let defaultPreferWidgets = [];
 
@@ -80,57 +82,75 @@ export const QueryBuilder: FC<IQueryBuilderProps> = props => {
 
       // Note: include namespaces and exclude arrays (they are not supported for now)
       const isVisible = (visible || dataType === 'namespace') && dataType !== DataTypes.array;
-      if (isVisible) {
-        switch (dataType) {
-          case 'string':
-          case DataTypes.string:
-            type = 'text';
-            break;
+      if (!isVisible)
+        return null;
 
-          case DataTypes.date:
-            type = 'date';
-            break;
-          case DataTypes.dateTime:
-            type = 'datetime';
-            break;
-          case DataTypes.time:
-            type = 'time';
-            break;
+      switch (dataType) {
+        case 'string':
+        case DataTypes.string:
+          type = 'text';
+          break;
 
-          case DataTypes.number:
-            type = 'number';
-            break;
+        case DataTypes.date:
+          type = 'date';
+          break;
+        case DataTypes.dateTime:
+          type = 'datetime';
+          break;
+        case DataTypes.time:
+          type = 'time';
+          break;
 
-          case 'entityReference':
-          case DataTypes.entityReference:
-            type = 'entityReference';
-            //defaultPreferWidgets = ['entityAutocomplete'];
-            break;
+        case DataTypes.number:
+          type = 'number';
+          break;
 
-          case 'refList':
-          case DataTypes.referenceListItem:
-            type = 'refList';
-            defaultPreferWidgets = ['refListDropdown'];
-            break;
-          // case 'multiValueRefList':
-          //   type = 'multiselect';
-          //   break;
-          case '!struct':
-            type = dataType;
-            break;
-          default:
-            break;
-        }
+        case 'entityReference':
+        case DataTypes.entityReference:
+          type = 'entityReference';
+          //defaultPreferWidgets = ['entityAutocomplete'];
+          break;
 
-        const fieldPreferWidgets = preferWidgets || defaultPreferWidgets || [];
-        confFields[propertyName] = {
-          label,
-          type,
-          // @ts-ignore note: types are wrong in the library, they doesn't allow to extend
-          fieldSettings,
-          preferWidgets: fieldPreferWidgets.length > 0 ? fieldPreferWidgets : undefined,
-        };
+        case 'refList':
+        case DataTypes.referenceListItem:
+          type = 'refList';
+          defaultPreferWidgets = ['refListDropdown'];
+          break;
+        // case 'multiValueRefList':
+        //   type = 'multiselect';
+        //   break;
+        case '!struct':
+          type = dataType;
+          break;
+        default:
+          break;
       }
+
+      const fieldPreferWidgets = preferWidgets || defaultPreferWidgets || [];
+
+      const subfields = dataType === '!struct' ? {} : undefined;
+      if (subfields){
+          childProps.forEach(p => {
+            const converted = convertField(p);
+            if (converted)
+              subfields[p.propertyName] = converted;
+          });
+      }     
+
+      return {
+        label,
+        type,
+        // @ts-ignore note: types are wrong in the library, they doesn't allow to extend
+        fieldSettings,
+        preferWidgets: fieldPreferWidgets.length > 0 ? fieldPreferWidgets : undefined,
+        subfields: subfields
+      };
+    };
+
+    fields?.forEach((property) => {
+      const converted = convertField(property);
+      if (converted)
+        confFields[property.propertyName] = converted;
     });
     return confFields;
   };
