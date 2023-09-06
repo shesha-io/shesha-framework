@@ -116,6 +116,8 @@ export {
 export { default as ConfigurableComponent } from './appConfigurator/configurableComponent'; // todo: convert to subtype
 export { default as FormDesigner, type IFormDesignerProps } from './formDesigner/formDesigner';
 export { default as QueryBuilder, type IQueryBuilderProps } from './queryBuilder';
+export { type JsonLogicResult } from '@react-awesome-query-builder/antd';
+
 export { default as ConfigurableForm } from './configurableForm';
 export { type IConfigurableFormRendererProps, type IConfigurableFormProps } from './configurableForm/models';
 export { default as Show, type IShowProps } from './show';

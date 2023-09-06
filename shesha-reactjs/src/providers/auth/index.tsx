@@ -143,7 +143,15 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
 
               cacheHomeUrl(response.result?.user?.homeUrl || homePageUrl);
 
-              redirect(returnUrl ?? response.result?.user?.homeUrl ?? homePageUrl ?? DEFAULT_HOME_PAGE);
+              const redirects: string[] = [
+                returnUrl,
+                response.result?.user?.homeUrl,
+                homePageUrl,
+                DEFAULT_HOME_PAGE
+              ];
+              const redirectUrl = redirects.find(r => Boolean(r?.trim())); // skip all null/undefined and empty strings
+
+              redirect(redirectUrl);
             }
           }
         } else {
