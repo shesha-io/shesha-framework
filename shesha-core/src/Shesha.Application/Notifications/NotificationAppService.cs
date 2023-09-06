@@ -351,13 +351,11 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
             }
             else
             {
-                await SendNotificationByType(notificationName, (int)RefListNotificationType.Email, recipient, data, sourceEntity, attachments);
                 await SendNotificationByType(notificationName, (int)RefListNotificationType.SMS, recipient, data, sourceEntity, attachments);
                 await SendNotificationByType(notificationName, (int)RefListNotificationType.Push, recipient, data, sourceEntity, attachments);
+                return await SendNotificationByType(notificationName, (int)RefListNotificationType.Email, recipient, data, sourceEntity, attachments);
             }
         }
-
-        return null;
     }
 
     private async Task<Guid?> SendNotificationByType<TData>(string notificationName, int notificationType, Person person, TData data, GenericEntityReference sourceEntity = null, List<NotificationAttachmentDto> attachments = null) where TData : NotificationData
