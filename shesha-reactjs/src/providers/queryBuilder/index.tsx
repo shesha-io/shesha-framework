@@ -39,27 +39,42 @@ const QueryBuilderProvider: FC<PropsWithChildren<IQueryBuilderProviderProps>> = 
     });
     // handle specifications
     modelMeta.specifications.forEach(specification => {
-      const allParts = specification.name.split('.');
-      allParts.pop();
-      let nsPath = null;
-      allParts.forEach(ns => {
-        nsPath = nsPath ? `${nsPath}.${ns}` : ns;
-        const existingProp = properties.find(p => p.propertyName === ns);
-        if (!existingProp)
-          properties.push({
+      const containerNames = specification.name.split('.');
+      const nodeName = containerNames.pop();
+      
+      let containerNode: IProperty = null;
+      
+      // process all containers
+      containerNames.forEach(containerName => {
+        const container = containerNode 
+          ? containerNode.childProperties 
+          : properties;
+        
+        containerNode = (container).find(p => p.propertyName === containerName);
+        
+        if (!containerNode){
+          containerNode = {
             dataType: '!struct',
-            label: nsPath,
+            label: containerName,
             visible: true,
-            propertyName: nsPath,
-          });
+            propertyName: containerName,
+            childProperties: [],
+          };
+          container.push(containerNode);
+        }
+          
+        if (!containerNode.childProperties)
+          containerNode.childProperties = [];
       });
 
-      properties.push({
-        propertyName: specification.name,
-        label: specification.friendlyName,
+      // add leaf node
+      const leafNode = {
         dataType: 'specification',
-        visible: true
-      });
+        label: specification.friendlyName,
+        visible: true,
+        propertyName: nodeName,
+      };
+      (containerNode?.childProperties ?? properties).push(leafNode);
     });
     return properties;
 
