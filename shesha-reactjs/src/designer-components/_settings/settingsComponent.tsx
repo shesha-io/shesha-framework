@@ -8,6 +8,7 @@ import { Button } from 'antd';
 import { getPropertySettingsFromData } from './utils';
 import { SettingsControl } from './settingsControl';
 import { getSettings } from './settings';
+import { getValueByPropertyName, setValueByPropertyName } from 'utils/object';
 
 export interface ISettingsComponentProps extends IConfigurableFormComponent {
     components?: IConfigurableFormComponent[];
@@ -60,11 +61,11 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
                             {(value, onChange, propertyName) => 
                                 <DataContextProvider id={model.id} name={props.componentName} description={props.label.toString()} type={'settings'} 
                                     initialData={new Promise((resolve) => {
-                                        resolve({[propertyName]: value});
+                                        resolve(setValueByPropertyName({}, propertyName, value));
                                     })}
                                     onChangeData={(value) => {
                                         if (value)
-                                            onChange(value[propertyName]);
+                                            onChange(getValueByPropertyName(value, propertyName));
                                     }}
                                 >
                                     <ComponentsContainer containerId={props.id} dynamicComponents={components}/>

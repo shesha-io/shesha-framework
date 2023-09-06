@@ -145,7 +145,7 @@ export const getActualModel = (model: any, allData: any) => {//, formData: any, 
     if (!value) 
       return value;
   
-    if (typeof value === 'object') {
+    if (typeof value === 'object' && !Array.isArray(value)) {
       if (isPropertySettings(value)) {
         // update setting value to actual
         const v = value as IPropertySetting;
@@ -155,9 +155,9 @@ export const getActualModel = (model: any, allData: any) => {//, formData: any, 
         } else {
           return v?._value;
         }
-      } //else
+      } else
         // update nested objects
-        //return getActualModel(value, formData, formMode);
+        return getActualModel(value, allData);
     }
     return value;
   };
@@ -191,7 +191,9 @@ export const getActualModel = (model: any, allData: any) => {//, formData: any, 
   for (var propName in m) {
     if (!Object.prototype.hasOwnProperty.call(m, propName)) continue;
     
-    const propNames = propName.split('.');
+    m[propName] = getSettingValue(m[propName], calcValue);
+
+    /*const propNames = propName.split('.');
     let obj = m;
     let i = 1;
     while(i < propNames.length) {
@@ -203,7 +205,7 @@ export const getActualModel = (model: any, allData: any) => {//, formData: any, 
 
     const value = obj[propNames[propNames.length - 1]];
 
-    obj[propNames[propNames.length - 1]] = getSettingValue(value, calcValue);
+    obj[propNames[propNames.length - 1]] = getSettingValue(value, calcValue);*/
   }
   return m;
 };
@@ -794,6 +796,7 @@ export const getFieldNameFromExpression = (expression: string) => {
 
   return expression.includes('.') ? expression.split('.') : expression;
 };
+
 export const getBoolean = (value: any) => {
   if (typeof value == 'boolean') {
     return value;
