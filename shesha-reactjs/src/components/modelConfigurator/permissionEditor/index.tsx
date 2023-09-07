@@ -4,6 +4,7 @@ import ConfigurableForm from '../../configurableForm';
 import { FormMarkup } from '../../../providers/form/models';
 import { Form } from 'antd';
 import { PermissionDto } from 'apis/permission';
+import { isEqual } from 'lodash';
 
 interface IPermissionEditorComponentProps {
     name: string;
@@ -35,8 +36,11 @@ const PermissionEditor: FC<IPermissionEditorProps> = (props) => {
         mode="edit"
         markup={permissionSettingsMarkup as FormMarkup}
         initialValues={props?.value}
-        onValuesChange={(_, v) =>{ 
-            props?.onChange(v);
+        onValuesChange={(v) =>{
+            const d = {...props?.value, ...v};
+            if (!isEqual(props?.value, d)) {
+                props?.onChange(d);
+            }
         }}
         />
     );
