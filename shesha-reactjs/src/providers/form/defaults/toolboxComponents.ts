@@ -82,7 +82,6 @@ import TimeField from 'designer-components/timeField';
 import ValidationErrors from 'components/formDesigner/components/validationErrors';
 import Wizard from 'components/formDesigner/components/wizard';
 import { IToolboxComponentGroup } from '../../../interfaces/formDesigner';
-import TimelineComponent from 'components/formDesigner/components/timeline/timeline';
 import DataSource from 'components/formDesigner/components/dataSource/dataSourceComponent';
 import { ComponentSelectorComponent } from 'designer-components';
 
@@ -93,7 +92,6 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
     components: [
       Address,
       AutocompleteTagGroup,
-      TimelineComponent,
       ChildEntitiesTagGroup,
       CodeEditor,
       ColorPickerComponent,
