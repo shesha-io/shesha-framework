@@ -108,11 +108,11 @@ namespace Shesha.FluentMigrator
         /// <summary>
         /// Adds full auditing fields to a table. See <see cref="IFullAudited"/>.
         /// </summary>
-        public static ICreateTableColumnOptionOrWithColumnSyntax WithFullAuditColumns(this ICreateTableWithColumnSyntax table)
+        public static ICreateTableColumnOptionOrWithColumnSyntax WithFullAuditColumns(this ICreateTableWithColumnSyntax table, IDbObjectNames? names = null)
         {
             return table
-                .WithAuditColumns()
-                .WithDeletionAuditColumns();
+                .WithAuditColumns(names)
+                .WithDeletionAuditColumns(names);
         }
 
         public static ICreateTableColumnOptionOrWithColumnSyntax WithFullAuditedEntityWithExternalSyncColumns(this ICreateTableWithColumnSyntax table)
@@ -336,10 +336,10 @@ namespace Shesha.FluentMigrator
                 .AddColumn(DatabaseConsts.TenantIdColumn).AsInt32().Nullable().ForeignKey(DatabaseConsts.TenantsTable, DatabaseConsts.IdColumn);
         }
 
-        public static IAlterTableColumnOptionOrAddColumnOrAlterColumnSyntax AddDiscriminator(this IAlterTableAddColumnOrAlterColumnSyntax table)
+        public static IAlterTableColumnOptionOrAddColumnOrAlterColumnSyntax AddDiscriminator(this IAlterTableAddColumnOrAlterColumnSyntax table, string? name = null)
         {
             return table
-                .AddColumn(DatabaseConsts.DiscriminatorColumn).AsString(DatabaseConsts.DiscriminatorMaxSize);
+                .AddColumn(name ?? DatabaseConsts.DiscriminatorColumn).AsString(DatabaseConsts.DiscriminatorMaxSize);
         }
 
         public static IAlterTableColumnOptionOrAddColumnOrAlterColumnSyntax AddExternalSyncColumns(this IAlterTableAddColumnOrAlterColumnSyntax table)
@@ -358,28 +358,28 @@ namespace Shesha.FluentMigrator
         /// <summary>
         /// Adds an auto increment <see cref="int"/> primary key to the table.
         /// </summary>
-        public static ICreateTableColumnOptionOrWithColumnSyntax WithIdAsInt32(this ICreateTableWithColumnSyntax table)
+        public static ICreateTableColumnOptionOrWithColumnSyntax WithIdAsInt32(this ICreateTableWithColumnSyntax table, string? name = null)
         {
             return table
-                .WithColumn(DatabaseConsts.IdColumn).AsInt32().NotNullable().PrimaryKey().Identity();
+                .WithColumn(name ?? DatabaseConsts.IdColumn).AsInt32().NotNullable().PrimaryKey().Identity();
         }
 
         /// <summary>
         /// Adds an auto increment <see cref="long"/> primary key to the table.
         /// </summary>
-        public static ICreateTableColumnOptionOrWithColumnSyntax WithIdAsInt64(this ICreateTableWithColumnSyntax table)
+        public static ICreateTableColumnOptionOrWithColumnSyntax WithIdAsInt64(this ICreateTableWithColumnSyntax table, string? name = null)
         {
             return table
-                .WithColumn(DatabaseConsts.IdColumn).AsInt64().NotNullable().PrimaryKey().Identity();
+                .WithColumn(name ?? DatabaseConsts.IdColumn).AsInt64().NotNullable().PrimaryKey().Identity();
         }
 
         /// <summary>
         /// Adds an <see cref="Guid"/> primary key to the table.
         /// </summary>
-        public static ICreateTableColumnOptionOrWithColumnSyntax WithIdAsGuid(this ICreateTableWithColumnSyntax table)
+        public static ICreateTableColumnOptionOrWithColumnSyntax WithIdAsGuid(this ICreateTableWithColumnSyntax table, string? name = null)
         {
             return table
-                .WithColumn(DatabaseConsts.IdColumn).AsGuid().NotNullable().PrimaryKey();
+                .WithColumn(name ?? DatabaseConsts.IdColumn).AsGuid().NotNullable().PrimaryKey();
         }
 
         /// <summary>
@@ -499,9 +499,9 @@ namespace Shesha.FluentMigrator
         /// <summary>
         /// Adds discriminator field to a table.
         /// </summary>
-        public static ICreateTableColumnOptionOrWithColumnSyntax WithDiscriminator(this ICreateTableWithColumnSyntax table)
+        public static ICreateTableColumnOptionOrWithColumnSyntax WithDiscriminator(this ICreateTableWithColumnSyntax table, string? name = null)
         {
-            return table.WithColumn(DatabaseConsts.DiscriminatorColumn).AsString(DatabaseConsts.DiscriminatorMaxSize);
+            return table.WithColumn(name ?? DatabaseConsts.DiscriminatorColumn).AsString(DatabaseConsts.DiscriminatorMaxSize);
         }
 
         /// <summary>

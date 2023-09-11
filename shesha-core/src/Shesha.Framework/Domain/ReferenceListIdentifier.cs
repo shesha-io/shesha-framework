@@ -3,29 +3,20 @@
     /// <summary>
     /// Identifier of the <see cref="ReferenceList"/> (Module, Namespace and Name)
     /// </summary>
-    public class ReferenceListIdentifier
+    public class ReferenceListIdentifier : ConfigurationItemIdentifier
     {
-        public string Module { get; set; }
-        public string Name { get; set; }
+        public override string ItemType => "ref-list";
 
-        public ReferenceListIdentifier()
+        public ReferenceListIdentifier(string module, string name) : base(module, name)
         {
-
         }
 
-        public ReferenceListIdentifier(string module, string @namespace, string name)
+        public ReferenceListIdentifier(string module, string @namespace, string name): base(
+                module, 
+                !string.IsNullOrWhiteSpace(@namespace)
+                    ? $"{@namespace}.{name}"
+                    : name)
         {
-            Module = module;
-            //Namespace = @namespace;
-            Name = !string.IsNullOrWhiteSpace(@namespace)
-                ? $"{@namespace}.{name}"
-                : name;
-        }
-
-        public ReferenceListIdentifier(string module, string name)
-        {
-            Module = module;
-            Name = name;
         }
     }
 }

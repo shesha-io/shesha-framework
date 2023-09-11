@@ -2,10 +2,12 @@
 using Abp.Domain.Repositories;
 using Abp.Domain.Services;
 using Abp.Reflection;
+using Abp.Runtime.Caching;
 using Shesha.Configuration.MappingMetadata;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
+using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
@@ -31,6 +33,10 @@ namespace Shesha.DynamicEntities
         private readonly IMetadataProvider _metadataProvider;
         private readonly EntityModelProvider _entityModelProvider;
         private readonly IMappingMetadataProvider _mappingMetadataProvider;
+        private readonly ICacheManager _cacheManager;
+
+        public ITypedCache<string, ModelConfigurationDto> ModelConfigsCache =>
+            _cacheManager.GetCache<string, ModelConfigurationDto>($"{this.GetType().Name}_models");
 
         public ModelConfigurationManager(
             IRepository<EntityConfig, Guid> entityConfigRepository,
@@ -40,7 +46,8 @@ namespace Shesha.DynamicEntities
             IMetadataProvider metadataProvider,
             EntityModelProvider entityModelProvider,
             IRepository<ConfigurationItem, Guid> configurationItemRepository,
-            IMappingMetadataProvider mappingMetadataProvider
+            IMappingMetadataProvider mappingMetadataProvider,
+            ICacheManager cacheManager
             )
         {
             _entityConfigRepository = entityConfigRepository;
@@ -51,6 +58,7 @@ namespace Shesha.DynamicEntities
             _entityModelProvider = entityModelProvider;
             _configurationItemRepository = configurationItemRepository;
             _mappingMetadataProvider = mappingMetadataProvider;
+            _cacheManager = cacheManager;
         }
 
         public async Task MergeConfigurationsAsync(EntityConfig source, EntityConfig destination, bool deleteAfterMerge, bool deepUpdate)
@@ -294,20 +302,16 @@ namespace Shesha.DynamicEntities
 
         public async Task<ModelConfigurationDto> GetModelConfigurationOrNullAsync(string @namespace, string name, List<PropertyMetadataDto> hardCodedProps = null)
         {
-            var modelConfig = await _entityConfigRepository.GetAll().Where(m => m.ClassName == name && m.Namespace == @namespace && !m.IsDeleted).FirstOrDefaultAsync();
-            if (modelConfig == null)
-                return null;
+            var cacheKey = $"{@namespace}|{name}";
+            var result = await ModelConfigsCache.GetAsync(cacheKey, async () => {
+                var modelConfig = await _entityConfigRepository.GetAll().Where(m => m.ClassName == name && m.Namespace == @namespace && !m.IsDeleted).FirstOrDefaultAsync();
+                if (modelConfig == null)
+                    return null;
 
-            return await GetModelConfigurationAsync(modelConfig, hardCodedProps);
-        }
+                return await GetModelConfigurationAsync(modelConfig, hardCodedProps);
+            });
 
-        public async Task<ModelConfigurationDto> GetModelConfigurationOrNullAsync(Guid id, List<PropertyMetadataDto> hardCodedProps = null)
-        {
-            var modelConfig = await _entityConfigRepository.GetAll().Where(m => m.Id == id).FirstOrDefaultAsync();
-            if (modelConfig == null)
-                return null;
-
-            return await GetModelConfigurationAsync(modelConfig, hardCodedProps);
+            return result;
         }
     }
 }

@@ -90,7 +90,7 @@ namespace Shesha.Settings
 
         private async Task<SettingConfiguration> EnsureConfigurationAsync(SettingDefinition setting)
         {
-            var definition = await _settingStore.GetSettingConfigurationAsync(new ConfigurationItemIdentifier { Name = setting.Name, Module = setting.ModuleName });
+            var definition = await _settingStore.GetSettingConfigurationAsync(new SettingConfigurationIdentifier(setting.ModuleName, setting.Name));
             if (definition != null)
                 return definition;
 
