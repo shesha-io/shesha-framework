@@ -259,13 +259,18 @@ stages:
         workingDir: 'shesha-functional-tests/adminportal'
         verbose: true
         customCommand: run build
-    - task: ArchiveFiles@2
+    # Creating a temporary directory to copy both node apps
+    - task: PowerShell@2
+      displayName: 'Preparing ReactJS for Archiving'
       inputs:
-        rootFolderOrFile: 'shesha-functional-tests/adminportal'
-        includeRootFolder: false
-        archiveType: 'zip'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/frontend.zip'
-        replaceExistingArchive: true
+        targetType: 'inline'
+        script: |
+          # Write your PowerShell commands here.
+          
+          Write-Host "Copying Shesha ReactJS Artifacts"
+          cp -R shesha-reactjs $(Build.ArtifactStagingDirectory)/shesha-reactjs
+          cp -R shesha-functional-tests $(Build.ArtifactStagingDirectory)/shesha-functional-tests
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: shesha-adminportal-functional'
       inputs:
