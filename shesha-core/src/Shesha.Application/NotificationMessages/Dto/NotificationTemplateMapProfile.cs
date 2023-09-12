@@ -4,6 +4,7 @@ using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
 using Shesha.Extensions;
 using Shesha.Notifications.Dto;
+using Shesha.Utilities;
 
 namespace Shesha.NotificationMessages.Dto
 {
@@ -23,7 +24,10 @@ namespace Shesha.NotificationMessages.Dto
                         ? new EntityReferenceDto<Guid?>(e.Template.Id, e.Template.Name, e.Template.GetClassName()) : null))
                 .ForMember(u => u.Notification,
                     options => options.MapFrom(e => e.Notification != null 
-                        ? new EntityReferenceDto<Guid?>(e.Notification.Id, e.Notification.Name, e.Notification.GetClassName()) : null))
+                        ? new EntityReferenceDto<Guid?>(e.Notification.Id, e.Notification.Name, e.Notification.GetClassName()) : null)) 
+                .ForMember(u => u.SourceEntity,
+                    options => options.MapFrom(e => e.SourceEntity != null 
+                        ? new EntityReferenceDto<Guid?>(e.SourceEntity.Id.Replace('"', ' ').Trim().ToGuid(), e.SourceEntity._displayName, e.SourceEntity._className) : null))
                 .MapReferenceListValuesToDto();
 
             CreateMap<NotificationMessageAttachment, NotificationAttachmentDto>()

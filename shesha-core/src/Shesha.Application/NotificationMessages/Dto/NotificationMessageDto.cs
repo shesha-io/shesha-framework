@@ -49,6 +49,11 @@ namespace Shesha.NotificationMessages.Dto
         public EntityReferenceDto<Guid?> Notification { get; set; }
 
         /// <summary>
+        /// Source Entity
+        /// </summary>
+        public EntityReferenceDto<Guid?> SourceEntity { get; set; }
+
+        /// <summary>
         /// Attachments
         /// </summary>
         public List<NotificationAttachmentDto> Attachments { get; set; } = new List<NotificationAttachmentDto>();
