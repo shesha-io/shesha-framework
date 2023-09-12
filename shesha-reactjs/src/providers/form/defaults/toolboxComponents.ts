@@ -52,7 +52,6 @@ import Switch from 'components/formDesigner/components/switch/switch';
 import Tabs from 'components/formDesigner/components/tabs';
 import Text from 'components/formDesigner/components/text';
 import TextArea from 'components/formDesigner/components/textArea/textArea';
-import TimelineComponent from 'components/formDesigner/components/timeline/timeline';
 import ValidationErrors from 'components/formDesigner/components/validationErrors';
 import Wizard from 'components/formDesigner/components/wizard';
 import { ComponentSelectorComponent } from '../../../designer-components';
@@ -93,7 +92,6 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
     components: [
       Address,
       AutocompleteTagGroup,
-      TimelineComponent,
       ChildEntitiesTagGroup,
       CodeEditor,
       ColorPickerComponent,

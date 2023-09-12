@@ -840,6 +840,18 @@
                 "name": "moment",
                 "description": "Instance of moment.js",
                 "type": "object"
+              },
+              {
+                "id": "36715ca2-4347-4647-a36a-d76258b600d8",
+                "name": "data",
+                "description": "Form data",
+                "type": "object"
+              },
+              {
+                "id": "49e3fe10-cbe5-4a73-b187-bb6cd8c924e8",
+                "name": "globalState",
+                "description": "The global state",
+                "type": "object"
               }
             ]
           }

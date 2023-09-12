@@ -153,7 +153,7 @@ namespace Shesha
 
                 await Repository.InsertAsync(entity);
 
-                var _delayedUpdate = (input as IHasDelayedUpdateField)._delayedUpdate;
+                var _delayedUpdate = (input as IHasDelayedUpdateField)?._delayedUpdate;
                 if (_delayedUpdate?.Any() ?? false)
                 {
                     await DelayedUpdateAsync<TEntity, TPrimaryKey>(_delayedUpdate, entity, validationResults);

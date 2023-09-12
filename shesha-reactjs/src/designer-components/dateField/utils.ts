@@ -1,4 +1,4 @@
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 import { IPropertyMetadata } from '../../interfaces/metadata';
 import { getPropertyMetadata } from '../../utils/date';
 import { IDateFieldProps, RangeValue } from './interfaces';
@@ -12,7 +12,7 @@ export const DATE_TIME_FORMATS = {
   year: 'YYYY',
 };
 
-export function disabledDate(props: IDateFieldProps, current) {
+export function disabledDate(props: IDateFieldProps, current: Moment, data: object, globalState: object) {
   const { disabledDateMode, disabledDateTemplate, disabledDateFunc } = props;
 
   if (disabledDateMode === 'none') return false;
@@ -20,9 +20,9 @@ export function disabledDate(props: IDateFieldProps, current) {
   const disabledTimeExpression = disabledDateMode === 'functionTemplate' ? disabledDateTemplate : disabledDateFunc;
 
   // tslint:disable-next-line:function-constructor
-  const disabledFunc = new Function('current', 'moment', disabledTimeExpression);
+  const disabledFunc = new Function('current', 'moment', 'data', 'globalState', disabledTimeExpression);
 
-  return disabledFunc(current, moment);
+  return disabledFunc(current, moment, data, globalState);
 }
 
 export const getDefaultFormat = ({ dateOnly, resolveToUTC }: IDateFieldProps) => {

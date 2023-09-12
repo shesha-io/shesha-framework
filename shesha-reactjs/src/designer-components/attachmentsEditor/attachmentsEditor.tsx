@@ -1,4 +1,6 @@
 import { FolderAddOutlined } from '@ant-design/icons';
+import { message } from 'antd';
+import moment from 'moment';
 import React from 'react';
 import { CustomFile } from '../../components';
 import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
@@ -11,6 +13,8 @@ import {
   validateConfigurableComponentSettings,
 } from '../../providers/form/utils';
 import StoredFilesProvider from '../../providers/storedFiles';
+import { IStoredFile } from '../../providers/storedFiles/contexts';
+import { axiosHttp } from '../../utils/fetchers';
 import { getSettings } from './settings';
 
 export interface IAttachmentsEditorProps extends IConfigurableFormComponent {
@@ -25,23 +29,45 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent {
   allowRename: boolean;
   isDragger?: boolean;
   maxHeight?: string;
+  onFileChanged?: string;
 }
 
 const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
   type: 'attachmentsEditor',
   name: 'File list',
   icon: <FolderAddOutlined />,
-  factory: (model: IAttachmentsEditorProps) => {
+  factory: (model: IAttachmentsEditorProps, _c, form) => {
     const { backendUrl } = useSheshaApplication();
-    const { formMode, formSettings } = useForm();
+    const { formMode, formSettings, setFormDataAndInstance } = useForm();
     const { data } = useFormData();
-    const { globalState } = useGlobalState();
+    const { globalState, setState: setGlobalState } = useGlobalState();
 
     const ownerId = evaluateValue(model.ownerId, { data: data, globalState });
 
     const readonly = formMode === 'readonly';
     const isEnabledByCondition = executeCustomExpression(model.customEnabled, true, data, globalState);
     const enabled = !readonly && !model.disabled && isEnabledByCondition;
+
+    const onFileListChanged = (fileList: IStoredFile[]) => {
+      const http = axiosHttp(backendUrl);
+      const setFormData = setFormDataAndInstance;
+
+      const eventFunc = new Function(
+        'fileList',
+        'data',
+        'form',
+        'formMode',
+        'globalState',
+        'http',
+        'message',
+        'moment',
+        'setFormData',
+        'setGlobalState',
+        model.onFileChanged
+      );
+
+      return eventFunc(fileList, data, form, formMode, globalState, http, message, moment, setFormData, setGlobalState);
+    };
 
     return (
       <ConfigurableFormItem model={model}>
@@ -64,6 +90,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
             allowedFileTypes={model.allowedFileTypes}
             maxHeight={model.maxHeight}
             isDragger={model?.isDragger}
+            onFileListChanged={onFileListChanged}
           />
         </StoredFilesProvider>
       </ConfigurableFormItem>

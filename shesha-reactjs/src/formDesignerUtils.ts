@@ -17,3 +17,4 @@ export {
 } from './providers/form/utils';
 
 export { toolbarGroupsToComponents } from './providers/form/hooks';
+export { migrateDynamicExpression } from './designer-components/_common-migrations/migrateUseExpression';

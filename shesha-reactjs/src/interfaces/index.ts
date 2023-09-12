@@ -37,6 +37,8 @@ export type { InsertMode } from './insertMode';
 export type { IColor, IHsl, IHsv, IRgb } from './color';
 export type { IApiEndpoint } from './metadata';
 export type { IAjaxResponse, IAjaxResponseBase } from './ajaxResponse';
+export type { ICommonContainerProps, IContainerComponentProps } from '../designer-components/container/interfaces';
+export { DataTypes, StringFormats } from './dataTypes';
 
 export * from './formDesigner';
 export * from './shesha';
