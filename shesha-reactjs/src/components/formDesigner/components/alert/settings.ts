@@ -14,6 +14,7 @@ export const getSettings = (data: any) =>
       parentId: 'root',
       label: 'Component name',
       validate: { required: true },
+      jsSetting: false
     })
     .addDropdown({
       id: 'f6c3d710-8d98-47fc-9fe2-7c6312e9a03c',

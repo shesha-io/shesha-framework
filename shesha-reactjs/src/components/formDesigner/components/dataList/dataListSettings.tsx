@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { Select, AutoComplete, InputNumber, Input } from 'antd';
+import { Select, AutoComplete, InputNumber, Input, Checkbox } from 'antd';
 import SectionSeparator from '../../../sectionSeparator';
 import CodeEditor from '../codeEditor/codeEditor';
 import { IDataListComponentProps } from '../../../dataList/models';
@@ -143,10 +143,14 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
 
         <Show when={state?.listItemWidth === 'custom'}>
           <SettingsFormItem name="customListItemWidth" label="Custom List Item Width (px)">
-            <InputNumber />
+            <InputNumber readOnly={readOnly}/>
           </SettingsFormItem>
         </Show>
       </Show>
+  
+      <SettingsFormItem name="hidden" label="Hidden" jsSetting>
+          <Checkbox disabled={readOnly} />
+      </SettingsFormItem>
     </>
   );
 };

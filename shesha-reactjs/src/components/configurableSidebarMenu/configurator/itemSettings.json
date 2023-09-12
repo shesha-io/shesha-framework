@@ -8,7 +8,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "dataSourceType": "values",
       "values": [
         {
@@ -39,7 +38,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "autoSize": false,
       "showCount": false,
       "allowClear": false,
@@ -54,8 +52,7 @@
       "label": "Container2",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": false,
-      "customVisibility": "return data.itemType === 'button'",
+      "hidden": {"_code": "return getSettingValue(data?.itemType) !== 'button';", "_mode": "code", "_value": false},
       "direction": "vertical",
       "justifyContent": "left",
       "components": [
@@ -67,7 +64,6 @@
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
           "hidden": false,
-          "customVisibility": "",
           "autoSize": false,
           "showCount": false,
           "allowClear": false,
@@ -81,7 +77,6 @@
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
           "hidden": false,
-          "customVisibility": "return data.itemType === 'button'",
           "settingsValidationErrors": []
         },
         {
@@ -92,7 +87,6 @@
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
           "hidden": false,
-          "customVisibility": "",
           "dataSourceType": "values",
           "values": [
             {
@@ -119,83 +113,16 @@
           "validate": {}
         },
         {
-          "id": "75407830-901f-41a0-bfa0-da18f043b299",
-          "type": "container",
-          "propertyName": "cntNavigate",
-          "label": "Container (horizontal or vertical)1",
+          "id": "62ef6e50-8762-476a-8f52-1376d7b8006a",
+          "type": "textField",
+          "propertyName": "target",
+          "label": "Target Url",
           "labelAlign": "right",
-          "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
-          "hidden": false,
-          "customVisibility": "return data.buttonAction === 'navigate'",
-          "direction": "vertical",
-          "justifyContent": "left",
-          "components": [
-            {
-              "id": "62ef6e50-8762-476a-8f52-1376d7b8006a",
-              "type": "textField",
-              "propertyName": "target",
-              "label": "Target Url",
-              "labelAlign": "right",
-              "parentId": "75407830-901f-41a0-bfa0-da18f043b299",
-              "hidden": false,
-              "customVisibility": "",
-              "validate": {
-                "required": false
-              },
-              "dataSourceType": "values",
-              "values": [
-                {
-                  "id": "5c717647-2ecd-434d-8d74-6c6805303007",
-                  "label": "Navigate",
-                  "value": "navigate"
-                },
-                {
-                  "id": "c025760d-b99b-4c44-89cf-1edb2a6cd014",
-                  "label": "Dialogue",
-                  "value": "dialogue"
-                },
-                {
-                  "id": "3f71a488-7cd8-4b9b-b0f6-8b37b8a04aae",
-                  "label": "Execute Script",
-                  "value": "executeScript"
-                },
-                {
-                  "id": "18fa8cc0-a327-466d-9513-52c53218d39d",
-                  "label": "Execute form action",
-                  "value": "executeFormAction"
-                }
-              ],
-              "direction": "horizontal",
-              "justifyContent": "left",
-              "components": []
-            }
-          ],
+          "parentId": "75407830-901f-41a0-bfa0-da18f043b299",
+          "hidden": {"_code": "return getSettingValue(data?.buttonAction) !== 'navigate';", "_mode": "code", "_value": false},
           "validate": {
             "required": false
-          },
-          "dataSourceType": "values",
-          "values": [
-            {
-              "id": "5c717647-2ecd-434d-8d74-6c6805303007",
-              "label": "Navigate",
-              "value": "navigate"
-            },
-            {
-              "id": "c025760d-b99b-4c44-89cf-1edb2a6cd014",
-              "label": "Dialogue",
-              "value": "dialogue"
-            },
-            {
-              "id": "3f71a488-7cd8-4b9b-b0f6-8b37b8a04aae",
-              "label": "Execute Script",
-              "value": "executeScript"
-            },
-            {
-              "id": "18fa8cc0-a327-466d-9513-52c53218d39d",
-              "label": "Execute form action",
-              "value": "executeFormAction"
-            }
-          ]
+          }
         },
         {
           "id": "fe4b3c03-3e0b-410f-8a9d-93db02ca51ed",
@@ -204,8 +131,7 @@
           "label": "Dialogue settings",
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
-          "hidden": false,
-          "customVisibility": "return data.buttonAction === 'dialogue'",
+          "hidden": {"_code": "return getSettingValue(data?.buttonAction) !== 'dialogue';", "_mode": "code", "_value": false},
           "validate": {
             "required": false
           },
@@ -220,7 +146,6 @@
               "labelAlign": "right",
               "parentId": "fe4b3c03-3e0b-410f-8a9d-93db02ca51ed",
               "hidden": false,
-              "customVisibility": null,
               "validate": {
                 "required": true
               }
@@ -233,7 +158,6 @@
               "labelAlign": "right",
               "parentId": "fe4b3c03-3e0b-410f-8a9d-93db02ca51ed",
               "hidden": false,
-              "customVisibility": null,
               "validate": {
                 "required": true
               }              
@@ -246,31 +170,7 @@
               "labelAlign": "right",
               "parentId": "fe4b3c03-3e0b-410f-8a9d-93db02ca51ed",
               "hidden": true,
-              "customVisibility": null,
               "validate": {}
-            }
-          ],
-          "dataSourceType": "values",
-          "values": [
-            {
-              "id": "5c717647-2ecd-434d-8d74-6c6805303007",
-              "label": "Navigate",
-              "value": "navigate"
-            },
-            {
-              "id": "c025760d-b99b-4c44-89cf-1edb2a6cd014",
-              "label": "Dialogue",
-              "value": "dialogue"
-            },
-            {
-              "id": "3f71a488-7cd8-4b9b-b0f6-8b37b8a04aae",
-              "label": "Execute Script",
-              "value": "executeScript"
-            },
-            {
-              "id": "18fa8cc0-a327-466d-9513-52c53218d39d",
-              "label": "Execute form action",
-              "value": "executeFormAction"
             }
           ]
         },
@@ -281,8 +181,7 @@
           "label": "Form Action",
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
-          "hidden": false,
-          "customVisibility": "return data.buttonAction === 'executeFormAction'",
+          "hidden": {"_code": "return getSettingValue(data?.buttonAction) !== 'executeFormAction';", "_mode": "code", "_value": false},
           "validate": {}
         }
       ]
@@ -295,7 +194,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": "",
       "autoSize": false,
       "showCount": false,
       "allowClear": false,
@@ -313,7 +211,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "validate": {}
     }
   ],

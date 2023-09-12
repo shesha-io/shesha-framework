@@ -22,7 +22,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
     const { isComponentHidden, formMode, hasVisibleChilds } = useForm();
     const { label, expandIconPosition, collapsedByDefault, collapsible, ghost } = model;
 
-    if (isComponentHidden(model)) return null;
+    if (model.hidden || isComponentHidden(model)) return null;
 
     if (model.hideWhenEmpty && formMode !== 'designer') {
       const childsVisible = hasVisibleChilds(model.content.id);

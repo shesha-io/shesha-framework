@@ -1,4 +1,4 @@
-import { AutoComplete, Checkbox, Form, Input, InputNumber, Select } from 'antd';
+import { AutoComplete, Checkbox, Input, InputNumber, Select } from 'antd';
 import React, { FC, useState } from 'react';
 import SectionSeparator from '../../../sectionSeparator';
 import CodeEditor from '../codeEditor/codeEditor';
@@ -158,24 +158,23 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
             </Show>
 
             <Show when={Boolean(formData?.entityType)}>
-              <Form.Item label="Properties" />      
-              <SettingsFormItem name="properties" jsSetting>
+              <SettingsFormItem name="properties" label="Properties" jsSetting>
                 {(value) => {
                   return <CodeEditor
-                    readOnly={readOnly}
-                    mode="inline"
-                    setOptions={{ minLines: 15, maxLines: 500, fixedWidthGutter: true }}
-                    propertyName="properties"
-                    type={''}
-                    id={''}
-                    value={typeof value === 'string' ? value : value?.join(' ')}
-                    onChange={(val) => {
-                      onValuesChange({properties: val});
-                    }}
-                    language="graphqlschema"
-                    label="Query Params"
-                    description="Properties in GraphQL-like syntax"
-                  />;
+                      readOnly={readOnly}
+                      mode="inline"
+                      setOptions={{ minLines: 15, maxLines: 500, fixedWidthGutter: true }}
+                      propertyName="properties"
+                      type={''}
+                      id={''}
+                      value={typeof value === 'string' ? value : value?.join(' ')}
+                      onChange={(val) => {
+                        onValuesChange({properties: val});
+                      }}
+                      language="graphqlschema"
+                      label="Query Params"
+                      description="Properties in GraphQL-like syntax"
+                    />;
                 }}
               </SettingsFormItem>
             </Show>

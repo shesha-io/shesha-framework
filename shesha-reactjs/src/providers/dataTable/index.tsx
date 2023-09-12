@@ -689,7 +689,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   };
 
   // update context data
-  useEffect(() => {
+  /*useEffect(() => {
     ctx.setData({
       selectedRow: state.selectedRow,
       selectedIds: state.selectedIds,
@@ -699,7 +699,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     });
     ctx.updateApi(actions);
     ctx.updateOnChangeData(contextOnChangeData);
-  }, []);
+  }, []);*/
 
   useEffect(() => {
     ctx.setData({
@@ -709,8 +709,9 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
       tableData: state.tableData,
       quickSearch: state.quickSearch
     });
+    ctx.updateApi(actions);
     ctx.updateOnChangeData(contextOnChangeData); // update context.onChangeData function to use new State
-  }, [state, state.selectedRow, state.selectedIds, state.currentPage, state.tableData, state.quickSearch]);
+  }, [state.selectedRow, state.selectedIds, state.currentPage, state.tableData, state.quickSearch]);
 
   return (
     <DataTableStateContext.Provider value={state}>

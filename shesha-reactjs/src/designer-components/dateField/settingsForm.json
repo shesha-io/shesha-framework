@@ -467,7 +467,8 @@
             "description": "",
             "version": 1,
             "useRawValues": false,
-            "referenceListId": null
+            "referenceListId": null,
+            "jsSetting": false
           },
           {
             "id": "ebbd2969-f7d5-4e28-9a7c-56695ed09e59",
