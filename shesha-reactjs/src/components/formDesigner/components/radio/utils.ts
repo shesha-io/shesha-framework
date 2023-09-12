@@ -1,10 +1,10 @@
-import { nanoid } from 'nanoid/non-secure';
-import { CSSProperties } from 'react';
 import { RadioChangeEvent, SpaceProps } from 'antd';
-import { ReferenceListItemDto } from 'apis/referenceList';
 import { IConfigurableFormComponent } from 'interfaces';
-import { DataSourceType, ILabelValue } from 'designer-components/dropdown/interfaces';
+import { nanoid } from 'nanoid/non-secure';
 import { IReferenceListIdentifier } from 'providers/referenceListDispatcher/models';
+import { CSSProperties } from 'react';
+import { ReferenceListItemDto } from '../../../../apis/referenceList';
+import { DataSourceType, ILabelValue } from '../../../../designer-components/dropdown/interfaces';
 
 export interface IRadioProps extends Omit<IConfigurableFormComponent, 'style'> {
   items?: ILabelValue[];
@@ -39,6 +39,6 @@ export const getDataSourceList = (
     case 'referenceList':
       return (refList || [])?.map(({ id, item, itemValue }) => ({ id, value: itemValue, label: item }));
     case 'url':
-      return urlList?.map(props => (props?.id ? props : { ...props, id: nanoid() }));
+      return urlList?.map((props) => (props?.id ? props : { ...props, id: nanoid() }));
   }
 };

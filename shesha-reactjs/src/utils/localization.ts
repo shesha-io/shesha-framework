@@ -1,4 +1,4 @@
-import { getLocalStorage } from "./storage";
+import { getLocalStorage } from './storage';
 
 const LOCALIZATION = 'LOCALIZATION';
 

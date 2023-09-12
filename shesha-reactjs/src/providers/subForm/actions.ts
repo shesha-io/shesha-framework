@@ -14,17 +14,18 @@ export interface IPersistedFormPropsWithComponents extends FormMarkupWithSetting
   hasFetchedConfig?: boolean;
 }
 
-interface ISubformMarkupAndSettings extends IPersistedFormPropsWithComponents, IFlatComponentsStructure {
+interface ISubformMarkupAndSettings extends IPersistedFormPropsWithComponents, IFlatComponentsStructure {}
 
-}
+export const setMarkupWithSettingsAction = createAction<ISubformMarkupAndSettings, ISubformMarkupAndSettings>(
+  SubFormActionEnums.SetMarkupWithSettings,
+  (p) => p
+);
 
-export const setMarkupWithSettingsAction = createAction<
-  ISubformMarkupAndSettings,
-  ISubformMarkupAndSettings
->(SubFormActionEnums.SetMarkupWithSettings, p => p);
-
-export const fetchDataRequestAction = createAction<void, void>(SubFormActionEnums.FetchDataRequest, p => p);
-export const fetchDataSuccessAction = createAction<void, void>(SubFormActionEnums.FetchDataSuccess, p => p);
-export const fetchDataErrorAction = createAction<IFetchDataErrorPayload, IFetchDataErrorPayload>(SubFormActionEnums.FetchDataError, p => p);
+export const fetchDataRequestAction = createAction<void, void>(SubFormActionEnums.FetchDataRequest, (p) => p);
+export const fetchDataSuccessAction = createAction<void, void>(SubFormActionEnums.FetchDataSuccess, (p) => p);
+export const fetchDataErrorAction = createAction<IFetchDataErrorPayload, IFetchDataErrorPayload>(
+  SubFormActionEnums.FetchDataError,
+  (p) => p
+);
 
 /* NEW_ACTION_GOES_HERE */

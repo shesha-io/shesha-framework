@@ -1,8 +1,8 @@
-import { useMemo } from 'react';
 import { useGet } from 'hooks';
-import { GENERIC_ENTITIES_ENDPOINT } from 'shesha-constants';
-import { IAbpWrappedGetEntityListResponse, EntityData, IGenericGetAllPayload } from 'interfaces/gql';
 import { convertDotNotationPropertiesToGraphQL } from 'providers/form/utils';
+import { useMemo } from 'react';
+import { EntityData, IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '../interfaces/gql';
+import { GENERIC_ENTITIES_ENDPOINT } from '../shesha-constants';
 import { getEntityFilterByIds } from './graphQl';
 
 interface AutocompleteReturn {
@@ -85,8 +85,8 @@ export const useEntityAutocomplete = (props: IAutocompleteProps): AutocompleteRe
     const result = listItems ?? [];
 
     if (valueItems) {
-      valueItems.forEach(i => {
-        if (result.findIndex(fi => fi.id === i.id) === -1) result.push(i);
+      valueItems.forEach((i) => {
+        if (result.findIndex((fi) => fi.id === i.id) === -1) result.push(i);
       });
     }
 

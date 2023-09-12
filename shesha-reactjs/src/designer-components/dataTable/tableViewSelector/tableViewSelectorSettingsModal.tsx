@@ -38,7 +38,7 @@ const FiltersListInner: FC<Omit<IFiltersListProps, 'filters'>> = ({ showModal, r
         </>
       )}
 
-      <TableViewContainer items={items} index={[]} onConfigClick={onConfigClick} readOnly={readOnly}/>
+      <TableViewContainer items={items} index={[]} onConfigClick={onConfigClick} readOnly={readOnly} />
     </div>
   );
 };
@@ -82,10 +82,9 @@ export const TableViewSelectorSettingsModalInner: FC<ITableViewSelectorSettingsM
     <Modal
       width="75%"
       open={visible}
-      title={readOnly ?  'View Filter' : 'Configure Filter'}
+      title={readOnly ? 'View Filter' : 'Configure Filter'}
       onCancel={hideModal}
       cancelText={readOnly ? 'Close' : undefined}
-
       okText="Save"
       onOk={updateFilters}
       okButtonProps={{ hidden: readOnly }}
@@ -95,10 +94,9 @@ export const TableViewSelectorSettingsModalInner: FC<ITableViewSelectorSettingsM
   );
 };
 
-export const TableViewSelectorSettingsModal: FC<Omit<
-  ITableViewSelectorSettingsModal,
-  'visible' | 'hideModal'
->> = props => {
+export const TableViewSelectorSettingsModal: FC<Omit<ITableViewSelectorSettingsModal, 'visible' | 'hideModal'>> = (
+  props
+) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const showModal = () => setModalVisible(true);
@@ -109,7 +107,7 @@ export const TableViewSelectorSettingsModal: FC<Omit<
 
   return (
     <TableViewSelectorConfiguratorProvider items={items} readOnly={props.readOnly}>
-      <FiltersListInner showModal={showModal} readOnly={props.readOnly}/>
+      <FiltersListInner showModal={showModal} readOnly={props.readOnly} />
 
       <TableViewSelectorSettingsModalInner {...props} visible={modalVisible} hideModal={hideModal} />
     </TableViewSelectorConfiguratorProvider>

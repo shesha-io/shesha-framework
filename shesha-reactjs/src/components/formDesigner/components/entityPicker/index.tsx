@@ -1,18 +1,18 @@
-import React, { useMemo } from 'react';
-import { IToolboxComponent } from '../../../../interfaces';
-import { FormIdentifier, IConfigurableFormComponent } from '../../../../providers/form/models';
 import { EllipsisOutlined } from '@ant-design/icons';
-import ConfigurableFormItem from '../formItem';
-import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import { EntityPicker } from '../../..';
 import { Alert } from 'antd';
-import { useForm } from '../../../../providers';
+import React, { useMemo } from 'react';
+import { EntityPicker } from '../../..';
+import { migrateDynamicExpression } from '../../../../designer-components/_common-migrations/migrateUseExpression';
+import { IToolboxComponent } from '../../../../interfaces';
 import { DataTypes } from '../../../../interfaces/dataTypes';
+import { useForm } from '../../../../providers';
 import { IConfigurableColumnsProps } from '../../../../providers/datatableColumnsConfigurator/models';
-import { migrateV0toV1 } from './migrations/migrate-v1';
+import { FormIdentifier, IConfigurableFormComponent } from '../../../../providers/form/models';
+import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import { ITableViewProps } from '../../../../providers/tableViewSelectorConfigurator/models';
+import ConfigurableFormItem from '../formItem';
+import { migrateV0toV1 } from './migrations/migrate-v1';
 import { entityPickerSettings } from './settingsForm';
-import { migrateDynamicExpression } from 'designer-components/_common-migrations/migrateUseExpression';
 
 export interface IEntityPickerComponentProps extends IConfigurableFormComponent {
   placeholder?: string;
@@ -91,13 +91,13 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
           addNewRecordsProps={
             model.allowNewRecord
               ? {
-                modalFormId: model.modalFormId,
-                modalTitle: model.modalTitle,
-                showModalFooter: model.showModalFooter,
-                submitHttpVerb: model.submitHttpVerb,
-                onSuccessRedirectUrl: model.onSuccessRedirectUrl,
-                modalWidth: customWidth ? `${customWidth}${widthUnits}` : modalWidth,
-              }
+                  modalFormId: model.modalFormId,
+                  modalTitle: model.modalTitle,
+                  showModalFooter: model.showModalFooter,
+                  submitHttpVerb: model.submitHttpVerb,
+                  onSuccessRedirectUrl: model.onSuccessRedirectUrl,
+                  modalWidth: customWidth ? `${customWidth}${widthUnits}` : modalWidth,
+                }
               : undefined
           }
           name={model?.name}
@@ -107,9 +107,9 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       </ConfigurableFormItem>
     );
   },
-  migrator: m =>
+  migrator: (m) =>
     m
-      .add<IEntityPickerComponentProps>(0, prev => {
+      .add<IEntityPickerComponentProps>(0, (prev) => {
         return {
           ...prev,
           items: prev['items'] ?? [],
@@ -118,10 +118,10 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
         };
       })
       .add<IEntityPickerComponentProps>(1, migrateV0toV1)
-      .add<IEntityPickerComponentProps>(2, prev => {
+      .add<IEntityPickerComponentProps>(2, (prev) => {
         return { ...prev, useRawValues: true };
       })
-      .add<IEntityPickerComponentProps>(3, prev => {
+      .add<IEntityPickerComponentProps>(3, (prev) => {
         const result = { ...prev };
         const useExpression = Boolean(result['useExpression']);
         delete result['useExpression'];
@@ -134,7 +134,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
         return result;
       }),
   settingsFormMarkup: entityPickerSettings,
-  validateSettings: model => validateConfigurableComponentSettings(entityPickerSettings, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(entityPickerSettings, model),
   linkToModelMetadata: (model, metadata): IEntityPickerComponentProps => {
     return {
       ...model,

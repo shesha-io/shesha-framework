@@ -8,12 +8,15 @@ export enum GlobalStateActionEnums {
   /* NEW_ACTION_TYPE_GOES_HERE */
 }
 
-export const setStateAction = createAction<ISetStatePayload, ISetStatePayload>(GlobalStateActionEnums.SetState, p => p);
+export const setStateAction = createAction<ISetStatePayload, ISetStatePayload>(
+  GlobalStateActionEnums.SetState,
+  (p) => p
+);
 
-export const clearStateAction = createAction<string, string>(GlobalStateActionEnums.ClearState, p => p);
+export const clearStateAction = createAction<string, string>(GlobalStateActionEnums.ClearState, (p) => p);
 
 export const setPubsubAction = createAction<ISetPubSubPayload, ISetPubSubPayload>(
   GlobalStateActionEnums.SetPubSub,
-  p => p
+  (p) => p
 );
 /* NEW_ACTION_GOES_HERE */

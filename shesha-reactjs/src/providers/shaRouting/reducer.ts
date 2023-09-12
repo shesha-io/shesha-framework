@@ -1,5 +1,5 @@
-import { IShaRoutingStateContext } from './contexts';
 import { RouteActionEnums } from './actions';
+import { IShaRoutingStateContext } from './contexts';
 
 export function shaRoutingReducer(
   incomingState: IShaRoutingStateContext,

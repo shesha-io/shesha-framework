@@ -1,14 +1,13 @@
-import React, { FC, useReducer, useContext, PropsWithChildren } from 'react';
-import { uiReducer } from './reducer';
+import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
+import { getFlagSetters } from '../utils/flagsSetters';
 import {
   setControlsSizeAction,
   toggleModalInvisibleAction,
-  toggleRoleAppointmentVisibleAction,
   togglePersonPickerVisibleAction,
-  /* NEW_ACTION_IMPORT_GOES_HERE */
+  toggleRoleAppointmentVisibleAction,
 } from './actions';
-import { ControlSize, IUiStateContext, UiActionsContext, UiStateContext, UI_CONTEXT_INITIAL_STATE } from './contexts';
-import { getFlagSetters } from '../utils/flagsSetters';
+import { ControlSize, IUiStateContext, UI_CONTEXT_INITIAL_STATE, UiActionsContext, UiStateContext } from './contexts';
+import { uiReducer } from './reducer';
 
 export interface UiProviderProps {
   settings?: IUiStateContext;
@@ -78,4 +77,4 @@ function useUi() {
   return { ...useUiState(), ...useUiActions() };
 }
 
-export { UiProvider, useUiState, useUiActions, useUi };
+export { UiProvider, useUi, useUiActions, useUiState };

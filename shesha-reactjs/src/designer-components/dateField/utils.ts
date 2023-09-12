@@ -1,5 +1,5 @@
-import { IPropertyMetadata } from 'interfaces/metadata';
 import moment, { Moment } from 'moment';
+import { IPropertyMetadata } from '../../interfaces/metadata';
 import { getPropertyMetadata } from '../../utils/date';
 import { IDateFieldProps, RangeValue } from './interfaces';
 

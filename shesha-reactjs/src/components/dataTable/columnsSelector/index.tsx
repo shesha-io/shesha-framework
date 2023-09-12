@@ -1,16 +1,16 @@
 import Checkbox from 'antd/lib/checkbox/Checkbox';
 import Search from 'antd/lib/input/Search';
-import React, { ChangeEvent, FC, useState } from 'react';
-import { useDataTable } from 'providers';
-import { getSafelyTrimmedString } from 'utils';
 import { nanoid } from 'nanoid/non-secure';
+import React, { ChangeEvent, FC, useState } from 'react';
+import { useDataTable } from '../../../providers';
+import { getSafelyTrimmedString } from '../../../utils';
 
 export interface IDatatableColumnsSelectorProps {}
 
 export const DatatableColumnsSelector: FC<IDatatableColumnsSelectorProps> = () => {
   const { columns, toggleColumnVisibility } = useDataTable();
 
-  const visibleColumns = columns.filter(c => c.isVisible === true && c.allowShowHide === true);
+  const visibleColumns = columns.filter((c) => c.isVisible === true && c.allowShowHide === true);
 
   const [columnFilter, setColumnFilter] = useState('');
 
@@ -24,10 +24,11 @@ export const DatatableColumnsSelector: FC<IDatatableColumnsSelectorProps> = () =
 
       <div className="column-names">
         {(columnFilter
-          ? visibleColumns.filter(({ header }) =>
-              getSafelyTrimmedString(header)
-                ?.toLowerCase()
-                ?.includes(getSafelyTrimmedString(columnFilter)?.toLowerCase())
+          ? visibleColumns.filter(
+              ({ header }) =>
+                getSafelyTrimmedString(header)
+                  ?.toLowerCase()
+                  ?.includes(getSafelyTrimmedString(columnFilter)?.toLowerCase())
             )
           : visibleColumns
         ).map(({ header, show, id }) => {

@@ -1,7 +1,7 @@
-import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { ButtonType } from 'antd/lib/button';
-import { IConfigurableActionConfiguration } from '../../interfaces/configurableAction';
+import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { VisibilityType } from '..';
+import { IConfigurableActionConfiguration } from '../../interfaces/configurableAction';
 
 type ButtonGroupItemType = 'item' | 'group';
 

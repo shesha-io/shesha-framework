@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { IFlagsState, IFlagsSetters } from '../../interfaces';
+import { IFlagsSetters, IFlagsState } from '../../interfaces';
 import { IConfigurableComponentProps } from './models';
 
 export type IFlagProgressFlags = 'load' | 'save' /* NEW_IN_PROGRESS_FLAG_GOES_HERE */;

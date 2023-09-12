@@ -1,6 +1,6 @@
-import { IUiStateContext } from './contexts';
-import { UiActionEnums } from './actions';
 import flagsReducer from '../utils/flagsReducer';
+import { UiActionEnums } from './actions';
+import { IUiStateContext } from './contexts';
 
 export function uiReducer(
   incomingState: IUiStateContext,

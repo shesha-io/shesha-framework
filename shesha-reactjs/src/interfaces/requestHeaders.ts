@@ -1,3 +1,3 @@
 export default interface IRequestHeaders {
-    [key: string]: string;
+  [key: string]: string;
 }

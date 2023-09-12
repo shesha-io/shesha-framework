@@ -5,13 +5,13 @@ import { useMeasure, usePrevious } from 'react-use';
 import { FormFullName, IFormDto, IPersistedFormProps, useAppConfigurator, useSheshaApplication } from '../../providers';
 import { useConfigurationItemsLoader } from '../../providers/configurationItemsLoader';
 import { getFormConfiguration, getMarkupFromResponse } from '../../providers/form/api';
+import { asFormFullName, asFormRawId } from '../../providers/form/utils';
 import ConditionalWrap from '../conditionalWrapper';
 import ConfigurableForm from '../configurableForm';
 import FormInfo from '../configurableForm/formInfo';
 import ShaSpin from '../shaSpin';
 import Show from '../show';
 import { IDataListProps } from './models';
-import { asFormRawId, asFormFullName } from '../../providers/form/utils';
 import './styles/index.less';
 
 interface EntityForm {

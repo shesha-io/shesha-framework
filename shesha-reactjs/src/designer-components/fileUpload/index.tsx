@@ -1,16 +1,16 @@
-import { IFormItem, IToolboxComponent } from 'interfaces';
-import { IConfigurableFormComponent } from 'providers/form/models';
 import { FileAddOutlined } from '@ant-design/icons';
-import ConfigurableFormItem from 'components/formDesigner/components/formItem';
-import { FileUpload } from 'components';
-import { StoredFileProvider, useFormData, useGlobalState, useSheshaApplication } from 'providers';
-import { useForm } from 'providers/form';
+import React from 'react';
+import { FileUpload } from '../../components';
+import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
+import { IFormItem, IToolboxComponent } from '../../interfaces';
+import { StoredFileProvider, useFormData, useGlobalState, useSheshaApplication } from '../../providers';
+import { useForm } from '../../providers/form';
+import { IConfigurableFormComponent } from '../../providers/form/models';
 import {
   evaluateValue,
   executeCustomExpression,
   validateConfigurableComponentSettings,
 } from '../../providers/form/utils';
-import React from 'react';
 import { getSettings } from './settings';
 
 export interface IFileUploadProps extends IConfigurableFormComponent, IFormItem {

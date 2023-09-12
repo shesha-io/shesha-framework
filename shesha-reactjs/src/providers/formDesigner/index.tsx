@@ -1,47 +1,5 @@
-import React, { FC, useContext, PropsWithChildren, useEffect, MutableRefObject } from 'react';
-import formReducer from './reducer';
-import {
-  FormDesignerActionsContext,
-  FormDesignerStateContext,
-  UndoableFormDesignerStateContext,
-  FORM_DESIGNER_CONTEXT_INITIAL_STATE,
-  IComponentAddPayload,
-  IComponentDeletePayload,
-  IComponentUpdatePayload,
-  IUpdateChildComponentsPayload,
-  IFormDesignerStateContext,
-  IFormDesignerActionsContext,
-  IAddDataPropertyPayload,
-  IComponentAddFromTemplatePayload,
-  IComponentDuplicatePayload,
-} from './contexts';
-import { IFormSettings, IFlatComponentsStructure } from '../form/models';
-import { getFlagSetters } from '../utils/flagsSetters';
-import {
-  setReadOnlyAction,
-  setFlatComponentsAction,
-  componentAddAction,
-  componentDeleteAction,
-  componentDuplicateAction,
-  componentUpdateAction,
-  componentUpdateSettingsValidationAction,
-  setDebugModeAction,
-  startDraggingNewItemAction,
-  endDraggingNewItemAction,
-  startDraggingAction,
-  endDraggingAction,
-  updateChildComponentsAction,
-  setValidationErrorsAction,
-  setSelectedComponentAction,
-  updateFormSettingsAction,
-  addDataSourceAction,
-  removeDataSourceAction,
-  setActiveDataSourceAction,
-  dataPropertyAddAction,
-  componentAddFromTemplateAction,
-  updateToolboxComponentGroupsAction,
-} from './actions';
-import { useFormDesignerComponentGroups, useFormDesignerComponents } from '../form/hooks';
+import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect } from 'react';
+import { useDeepCompareEffect } from 'react-use';
 import useThunkReducer from '../../hooks/thunkReducer';
 import {
   IAsyncValidationError,
@@ -49,10 +7,52 @@ import {
   IToolboxComponent,
   IToolboxComponentGroup,
 } from '../../interfaces';
-import { IDataSource } from '../formDesigner/models';
 import { useMetadataDispatcher } from '../../providers';
-import { useDeepCompareEffect } from 'react-use';
-import { UndoableActionCreators } from 'utils/undoable';
+import { UndoableActionCreators } from '../../utils/undoable';
+import { useFormDesignerComponentGroups, useFormDesignerComponents } from '../form/hooks';
+import { IFlatComponentsStructure, IFormSettings } from '../form/models';
+import { IDataSource } from '../formDesigner/models';
+import { getFlagSetters } from '../utils/flagsSetters';
+import {
+  addDataSourceAction,
+  componentAddAction,
+  componentAddFromTemplateAction,
+  componentDeleteAction,
+  componentDuplicateAction,
+  componentUpdateAction,
+  componentUpdateSettingsValidationAction,
+  dataPropertyAddAction,
+  endDraggingAction,
+  endDraggingNewItemAction,
+  removeDataSourceAction,
+  setActiveDataSourceAction,
+  setDebugModeAction,
+  setFlatComponentsAction,
+  setReadOnlyAction,
+  setSelectedComponentAction,
+  setValidationErrorsAction,
+  startDraggingAction,
+  startDraggingNewItemAction,
+  updateChildComponentsAction,
+  updateFormSettingsAction,
+  updateToolboxComponentGroupsAction,
+} from './actions';
+import {
+  FORM_DESIGNER_CONTEXT_INITIAL_STATE,
+  FormDesignerActionsContext,
+  FormDesignerStateContext,
+  IAddDataPropertyPayload,
+  IComponentAddFromTemplatePayload,
+  IComponentAddPayload,
+  IComponentDeletePayload,
+  IComponentDuplicatePayload,
+  IComponentUpdatePayload,
+  IFormDesignerActionsContext,
+  IFormDesignerStateContext,
+  IUpdateChildComponentsPayload,
+  UndoableFormDesignerStateContext,
+} from './contexts';
+import formReducer from './reducer';
 
 export interface IFormDesignerProviderProps {
   flatComponents: IFlatComponentsStructure;
@@ -334,4 +334,4 @@ function useFormDesigner(require: boolean = true) {
     : undefined;
 }
 
-export { FormDesignerProvider, useFormDesignerState, useFormDesignerActions, useFormDesigner };
+export { FormDesignerProvider, useFormDesigner, useFormDesignerActions, useFormDesignerState };

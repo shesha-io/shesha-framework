@@ -1,4 +1,3 @@
-
 export enum IndexViewActionEnums {
   ToggleIsSelectingColumns = 'TOGGLE_IS_SELECTING_COLUMNS',
   ToggleIsFiltering = 'TOGGLE_IS_FILTERING',

@@ -2,14 +2,14 @@ import { createContext } from 'react';
 import { IFlagsSetters, IFlagsState } from '../../interfaces';
 import { IConfigurableColumnsProps } from '../datatableColumnsConfigurator/models';
 import {
-  ITableColumn,
-  IStoredFilter,
-  ITableFilter,
-  IColumnSorting,
-  IndexColumnFilterOption,
   ColumnFilter,
-  IPublicDataTableActions,
   DataFetchingMode,
+  IColumnSorting,
+  IPublicDataTableActions,
+  IStoredFilter,
+  ITableColumn,
+  ITableFilter,
+  IndexColumnFilterOption,
 } from './interfaces';
 import { IHasModelType, IRepository } from './repository/interfaces';
 
@@ -54,8 +54,8 @@ export interface IDataTableStoredConfig {
 }
 
 export interface IDataTableStateContext
-  extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags>, IHasModelType {
-
+  extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags>,
+    IHasModelType {
   exportToExcelError?: string;
 
   exportToExcelWarning?: string;
@@ -129,7 +129,7 @@ export interface IDataTableStateContext
 
 export interface IDataTableActionsContext
   extends IFlagsSetters<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags>,
-  IPublicDataTableActions {
+    IPublicDataTableActions {
   toggleColumnVisibility?: (val: string) => void;
   setCurrentPage?: (page: number) => void;
   changePageSize?: (size: number) => void;
@@ -162,7 +162,7 @@ export interface IDataTableActionsContext
 
   changeDisplayColumn: (displayColumnName: string) => void;
   changePersistedFiltersToggle: (persistSelectedFilters: boolean) => void;
-  
+
   /**
    * Get current repository of the datatable
    */
@@ -202,7 +202,7 @@ export const DATA_TABLE_CONTEXT_INITIAL_STATE: IDataTableStateContext = {
   dataFetchingMode: 'paging',
 };
 
-export interface DataTableFullInstance extends IDataTableStateContext, IDataTableActionsContext { }
+export interface DataTableFullInstance extends IDataTableStateContext, IDataTableActionsContext {}
 
 export const DataTableStateContext = createContext<IDataTableStateContext>(DATA_TABLE_CONTEXT_INITIAL_STATE);
 

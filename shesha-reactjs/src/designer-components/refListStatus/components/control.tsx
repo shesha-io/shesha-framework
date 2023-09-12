@@ -1,12 +1,12 @@
-import React, { FC } from 'react';
-import { FormMode, useForm, useGlobalState } from 'providers';
-import '../styles/index.less';
-import { IRefListStatusProps } from '../models';
-import convertCssColorNameToHex from 'convert-css-color-name-to-hex';
 import { Alert, Skeleton, Tag, Tooltip } from 'antd';
-import { getStyle } from 'utils/publicUtils';
+import convertCssColorNameToHex from 'convert-css-color-name-to-hex';
+import React, { FC } from 'react';
+import { FormMode, useForm, useGlobalState } from '../../../providers';
+import { useReferenceListItem } from '../../../providers/referenceListDispatcher';
+import { getStyle } from '../../../utils/publicUtils';
+import { IRefListStatusProps } from '../models';
+import '../styles/index.less';
 import ToolTipTittle from './tooltip';
-import { useReferenceListItem } from 'providers/referenceListDispatcher';
 
 interface IProps {
   formMode?: FormMode;

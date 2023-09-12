@@ -1,6 +1,6 @@
-import { IIndexViewStateContext } from './contexts';
-import { IndexViewActionEnums } from './actions';
 import flagsReducer from '../utils/flagsReducer';
+import { IndexViewActionEnums } from './actions';
+import { IIndexViewStateContext } from './contexts';
 
 export function indexViewReducer(
   incomingState: IIndexViewStateContext,
@@ -21,7 +21,7 @@ export function indexViewReducer(
         ...payload,
       };
 
-    default: 
+    default:
       return state;
   }
 }

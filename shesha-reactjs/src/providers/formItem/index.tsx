@@ -8,7 +8,12 @@ export interface FormItemProviderProps {
   namePrefix?: string;
 }
 
-const FormItemProvider: FC<PropsWithChildren<FormItemProviderProps>> = ({ children, labelCol, wrapperCol, namePrefix }) => {
+const FormItemProvider: FC<PropsWithChildren<FormItemProviderProps>> = ({
+  children,
+  labelCol,
+  wrapperCol,
+  namePrefix,
+}) => {
   return (
     <FormItemStateContext.Provider
       value={{

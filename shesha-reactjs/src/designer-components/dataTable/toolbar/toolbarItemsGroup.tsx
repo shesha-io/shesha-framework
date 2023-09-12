@@ -17,7 +17,7 @@ export interface IToolbarItemsGroupProps extends IButtonGroup {
   containerRendering: (args: IContainerRenderArgs) => React.ReactNode;
 }
 
-export const ToolbarItemsGroup: FC<IToolbarItemsGroupProps> = props => {
+export const ToolbarItemsGroup: FC<IToolbarItemsGroupProps> = (props) => {
   const { deleteGroup, selectedItemId, readOnly } = useToolbarConfigurator();
 
   const onDeleteClick = () => {

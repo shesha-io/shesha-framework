@@ -17,9 +17,10 @@ export interface IReferenceListDispatcherActionsContext {
 }
 
 /** initial state */
-export const REFERENCELIST_DISPATCHER_CONTEXT_INITIAL_STATE: IReferenceListDispatcherStateContext = {
-};
+export const REFERENCELIST_DISPATCHER_CONTEXT_INITIAL_STATE: IReferenceListDispatcherStateContext = {};
 
-export const ReferenceListDispatcherStateContext = createContext<IReferenceListDispatcherStateContext>(REFERENCELIST_DISPATCHER_CONTEXT_INITIAL_STATE);
+export const ReferenceListDispatcherStateContext = createContext<IReferenceListDispatcherStateContext>(
+  REFERENCELIST_DISPATCHER_CONTEXT_INITIAL_STATE
+);
 
 export const ReferenceListDispatcherActionsContext = createContext<IReferenceListDispatcherActionsContext>(undefined);

@@ -1,27 +1,27 @@
-import React from 'react';
-import { IToolboxComponent } from '../../../../interfaces';
 import { OrderedListOutlined } from '@ant-design/icons';
-import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import { useForm, useFormItem } from '../../../../providers';
-import { listSettingsForm } from './settings';
-import ConfigurableFormItem from '../formItem';
-import './styles/index.less';
-import { ListControlSettings } from './settingsv2';
-import { IListComponentProps, IListItemsProps } from './models';
+import classNames from 'classnames';
 import { nanoid } from 'nanoid';
+import React from 'react';
+import { migrateDynamicExpression } from '../../../../designer-components/_common-migrations/migrateUseExpression';
+import { IToolboxComponent } from '../../../../interfaces';
+import { useForm, useFormItem } from '../../../../providers';
+import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';
+import ConfigurableFormItem from '../formItem';
+import { DEFAULT_CONFIRM_MESSAGE } from './constants';
 import ListControl from './listControl';
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
-import classNames from 'classnames';
-import { DEFAULT_CONFIRM_MESSAGE } from './constants';
-import { migrateDynamicExpression } from 'designer-components/_common-migrations/migrateUseExpression';
+import { IListComponentProps, IListItemsProps } from './models';
+import { listSettingsForm } from './settings';
+import { ListControlSettings } from './settingsv2';
+import './styles/index.less';
 
 /** @deprecated: Use DataListComponent instead */
 const ListComponent: IToolboxComponent<IListComponentProps> = {
   type: 'list',
   name: 'List',
   icon: <OrderedListOutlined />,
-  isHidden: true, /* Use DataList instead */
+  isHidden: true /* Use DataList instead */,
   factory: ({ ...model }: IListComponentProps) => {
     const { isComponentHidden, formMode } = useForm();
 
@@ -50,16 +50,16 @@ const ListComponent: IToolboxComponent<IListComponentProps> = {
     return (
       <ListControlSettings
         readOnly={readOnly}
-        model={(model as unknown) as IListItemsProps}
+        model={model as unknown as IListItemsProps}
         onSave={onSave as any}
         onCancel={onCancel}
         onValuesChange={onValuesChange as any}
       />
     );
   },
-  migrator: m =>
+  migrator: (m) =>
     m
-      .add<IListComponentProps>(0, prev => {
+      .add<IListComponentProps>(0, (prev) => {
         const uniqueStateId = `FORM_LIST_${nanoid()}`;
 
         const customProps: IListComponentProps = {
@@ -96,19 +96,19 @@ const ListComponent: IToolboxComponent<IListComponentProps> = {
       })
       .add<IListComponentProps>(1, migrateV0toV1)
       .add<IListComponentProps>(2, migrateV1toV2)
-      .add<IListComponentProps>(3, prev => {
-        const result = {...prev};
+      .add<IListComponentProps>(3, (prev) => {
+        const result = { ...prev };
         const useExpression = Boolean(result['useExpression']);
         delete result['useExpression'];
-    
-        if (useExpression){
+
+        if (useExpression) {
           const migratedExpression = migrateDynamicExpression(prev.filters);
           result.filters = migratedExpression;
         }
-    
+
         return result;
       }),
-  validateSettings: model => validateConfigurableComponentSettings(listSettingsForm, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(listSettingsForm, model),
 };
 
 export default ListComponent;

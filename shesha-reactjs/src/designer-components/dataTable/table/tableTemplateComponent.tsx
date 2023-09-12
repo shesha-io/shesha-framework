@@ -1,6 +1,6 @@
-import { IConfigurableFormComponent, IToolboxComponent } from '../../../interfaces';
 import { TableOutlined } from '@ant-design/icons';
 import React from 'react';
+import { IConfigurableFormComponent, IToolboxComponent } from '../../../interfaces';
 import templateJson from './tableTemplate.json';
 import { generateNewKey } from './utils';
 

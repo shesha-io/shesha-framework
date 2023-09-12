@@ -1,10 +1,10 @@
 import React, { FC } from 'react';
-import { ToolbarItem } from './toolbarItem';
-import { ToolbarItemsGroup } from './toolbarItemsGroup';
+import { ItemInterface, ReactSortable } from 'react-sortablejs';
+import { removeEmptyArrayValues as rmvEmpty } from 'utils';
 import { useToolbarConfigurator } from '../../../providers/toolbarConfigurator';
 import { IButtonGroup, IToolbarButton, ToolbarItemProps } from '../../../providers/toolbarConfigurator/models';
-import { ReactSortable, ItemInterface } from 'react-sortablejs';
-import { removeEmptyArrayValues as rmvEmpty } from 'utils';
+import { ToolbarItem } from './toolbarItem';
+import { ToolbarItemsGroup } from './toolbarItemsGroup';
 
 export interface IToolbarItemsContainerProps {
   index?: number[];

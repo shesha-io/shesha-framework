@@ -1,20 +1,22 @@
-import { IFetchDataErrorPayload, ISubFormStateContext } from './contexts';
-import { SubFormActionEnums } from './actions';
 import { handleActions } from 'redux-actions';
-import { SUB_FORM_CONTEXT_INITIAL_STATE } from './contexts';
+import { SubFormActionEnums } from './actions';
+import { IFetchDataErrorPayload, ISubFormStateContext, SUB_FORM_CONTEXT_INITIAL_STATE } from './contexts';
 
 export const subFormReducer = handleActions<ISubFormStateContext, any>(
   {
-    [SubFormActionEnums.SetMarkupWithSettings]: (state: ISubFormStateContext, action: ReduxActions.Action<ISubFormStateContext>) => {
+    [SubFormActionEnums.SetMarkupWithSettings]: (
+      state: ISubFormStateContext,
+      action: ReduxActions.Action<ISubFormStateContext>
+    ) => {
       const { payload } = action;
-      const { 
-        components, 
-        formSettings, 
-        versionNo, 
-        versionStatus, 
-        description, 
-        hasFetchedConfig, 
-        id, 
+      const {
+        components,
+        formSettings,
+        versionNo,
+        versionStatus,
+        description,
+        hasFetchedConfig,
+        id,
         module,
         allComponents,
         componentRelations,
@@ -33,13 +35,12 @@ export const subFormReducer = handleActions<ISubFormStateContext, any>(
         allComponents,
         componentRelations,
       };
-
     },
 
     [SubFormActionEnums.FetchDataRequest]: (state: ISubFormStateContext) => {
       const { errors, loading } = state;
       return {
-        ...state, 
+        ...state,
         errors: { ...errors, getData: null },
         loading: { ...loading, getData: true },
       };
@@ -48,17 +49,20 @@ export const subFormReducer = handleActions<ISubFormStateContext, any>(
     [SubFormActionEnums.FetchDataSuccess]: (state: ISubFormStateContext) => {
       const { errors, loading } = state;
       return {
-        ...state, 
+        ...state,
         errors: { ...errors, getData: null },
         loading: { ...loading, getData: false },
       };
     },
 
-    [SubFormActionEnums.FetchDataError]: (state: ISubFormStateContext, action: ReduxActions.Action<IFetchDataErrorPayload>) => {
+    [SubFormActionEnums.FetchDataError]: (
+      state: ISubFormStateContext,
+      action: ReduxActions.Action<IFetchDataErrorPayload>
+    ) => {
       const { errors, loading } = state;
       const { payload } = action;
       return {
-        ...state, 
+        ...state,
         errors: { ...errors, getData: payload.error },
         loading: { ...loading, getData: false },
       };

@@ -1,8 +1,8 @@
 import React, { createContext, FC, useContext, useState } from 'react';
-import { CollapsiblePanel, ICollapsiblePanelProps } from 'components';
+import { CollapsiblePanel, ICollapsiblePanelProps } from '../../components';
 
 interface ISettingsCollapsiblePanelProps extends ICollapsiblePanelProps {
-    propertyFilter: (name: string) => boolean;
+  propertyFilter: (name: string) => boolean;
 }
 
 /*export interface IRegisterFieldPayload {
@@ -10,53 +10,57 @@ interface ISettingsCollapsiblePanelProps extends ICollapsiblePanelProps {
 }*/
 
 export interface ISettingsCollapsiblePanelActionsContext {
-    registerField: (name: string) => void;
-    getPropertyFilter: () => (name: string) => boolean;
+  registerField: (name: string) => void;
+  getPropertyFilter: () => (name: string) => boolean;
 }
-  
+
 export const SettingsCollapsiblePanelActionsContext = createContext<ISettingsCollapsiblePanelActionsContext>(undefined);
 
 const SettingsCollapsiblePanel: FC<ISettingsCollapsiblePanelProps> = (props) => {
-    const [fields, setFields] = useState([]);
+  const [fields, setFields] = useState([]);
 
-    const registerField = (name: string) => {
-        if (!Boolean(fields.find(x => {
-            return x === name;
-        })))
-            setFields(prev => {
-                return [...prev, name];
-            });
-    };
+  const registerField = (name: string) => {
+    if (
+      !Boolean(
+        fields.find((x) => {
+          return x === name;
+        })
+      )
+    )
+      setFields((prev) => {
+        return [...prev, name];
+      });
+  };
 
-    const getPropertyFilter = () => {
-        return props.propertyFilter;
-    };
+  const getPropertyFilter = () => {
+    return props.propertyFilter;
+  };
 
-    const settingsCollapsiblePanelActions: ISettingsCollapsiblePanelActionsContext =
-    {
-        registerField,
-        getPropertyFilter
-    };
+  const settingsCollapsiblePanelActions: ISettingsCollapsiblePanelActionsContext = {
+    registerField,
+    getPropertyFilter,
+  };
 
-    const show = !fields || fields.length === 0  || typeof props.propertyFilter !== 'function'
-        || Boolean(fields.find(x => {
-                return props.propertyFilter(x);
-            }));
-
-    return (
-        <SettingsCollapsiblePanelActionsContext.Provider value={settingsCollapsiblePanelActions}>
-            {show
-            ? <CollapsiblePanel ghost={true} expandIconPosition='left' {...props} />
-            : null}
-        </SettingsCollapsiblePanelActionsContext.Provider>
+  const show =
+    !fields ||
+    fields.length === 0 ||
+    typeof props.propertyFilter !== 'function' ||
+    Boolean(
+      fields.find((x) => {
+        return props.propertyFilter(x);
+      })
     );
+
+  return (
+    <SettingsCollapsiblePanelActionsContext.Provider value={settingsCollapsiblePanelActions}>
+      {show ? <CollapsiblePanel ghost={true} expandIconPosition="left" {...props} /> : null}
+    </SettingsCollapsiblePanelActionsContext.Provider>
+  );
 };
 
 export function useSettingsPanel() {
-    const actionsContext = useContext(SettingsCollapsiblePanelActionsContext);
-    return actionsContext !== undefined
-        ? actionsContext
-        : undefined;
+  const actionsContext = useContext(SettingsCollapsiblePanelActionsContext);
+  return actionsContext !== undefined ? actionsContext : undefined;
 }
 
 export default SettingsCollapsiblePanel;

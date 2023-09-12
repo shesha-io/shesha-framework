@@ -1,16 +1,16 @@
-import React, { FC, ReactNode, useMemo } from 'react';
-import { IToolboxComponent } from 'interfaces';
 import { ThunderboltOutlined } from '@ant-design/icons';
 import { Collapse, Form, Switch, TreeSelect } from 'antd';
-import { useForm, useConfigurableActionDispatcher } from 'providers';
+import React, { FC, ReactNode, useMemo } from 'react';
 import { validateConfigurableComponentSettings } from '../..';
-import { configurableActionsConfiguratorSettingsForm } from './settings';
-import { IConfigurableActionConfiguration } from 'interfaces/configurableAction';
-import { IConfigurableActionGroupDictionary } from 'providers/configurableActionsDispatcher/models';
+import { ICodeExposedVariable } from '../../components/codeVariablesTable';
+import HelpTextPopover from '../../components/helpTextPopover';
+import { IToolboxComponent } from '../../interfaces';
+import { IConfigurableActionConfiguration } from '../../interfaces/configurableAction';
+import { useConfigurableActionDispatcher, useForm } from '../../providers';
+import { IConfigurableActionGroupDictionary } from '../../providers/configurableActionsDispatcher/models';
 import ActionArgumentsEditor from './actionArgumensEditor';
-import HelpTextPopover from 'components/helpTextPopover';
 import { IConfigurableActionConfiguratorComponentProps } from './interfaces';
-import { ICodeExposedVariable } from 'components/codeVariablesTable';
+import { configurableActionsConfiguratorSettingsForm } from './settings';
 
 const { Panel } = Collapse;
 
@@ -33,7 +33,8 @@ const ConfigurableActionConfiguratorComponent: IToolboxComponent<IConfigurableAc
     );
   },
   settingsFormMarkup: configurableActionsConfiguratorSettingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(configurableActionsConfiguratorSettingsForm, model),
+  validateSettings: (model) =>
+    validateConfigurableComponentSettings(configurableActionsConfiguratorSettingsForm, model),
 };
 
 interface IConfigurableActionConfiguratorProps {
@@ -52,9 +53,7 @@ interface IActionFormModel extends Omit<IConfigurableActionConfiguration, 'actio
 }
 
 const getActionFullName = (actionOwner: string, actionName: string): string => {
-  return actionName
-    ? `${actionOwner}:${actionName}`
-    : null;
+  return actionName ? `${actionOwner}:${actionName}` : null;
 };
 interface IActionIdentifier {
   actionName: string;
@@ -62,12 +61,10 @@ interface IActionIdentifier {
 }
 const parseActionFullName = (fullName: string): IActionIdentifier => {
   const parts = fullName?.split(':') ?? [];
-  return parts && parts.length === 2
-    ? { actionOwner: parts[0], actionName: parts[1] }
-    : null;
+  return parts && parts.length === 2 ? { actionOwner: parts[0], actionName: parts[1] } : null;
 };
 
-export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorProps> = props => {
+export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorProps> = (props) => {
   const [form] = Form.useForm();
   const { formSettings } = useForm();
   const { value, onChange, readOnly = false, label = 'Action Name', description } = props;
@@ -76,13 +73,12 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
   const actions = getActions();
 
   const formValues = useMemo<IActionFormModel>(() => {
-    if (!value)
-      return null;
+    if (!value) return null;
 
     const { actionName, actionOwner, ...restProps } = value;
     const result: IActionFormModel = {
       ...restProps,
-      actionFullName: getActionFullName(actionOwner, actionName)
+      actionFullName: getActionFullName(actionOwner, actionName),
     };
     return result;
   }, [value]);
@@ -104,15 +100,11 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
 
   const { actionName, actionOwner } = value ?? {};
   const selectedAction = useMemo(() => {
-    return actionName
-      ? getConfigurableActionOrNull({ owner: actionOwner, name: actionName })
-      : null;
+    return actionName ? getConfigurableActionOrNull({ owner: actionOwner, name: actionName }) : null;
   }, [actionName, actionOwner]);
 
   return (
-    <div
-      style={props.level > 1 ? { paddingLeft: 10 } : {}} className="sha-action-props"
-    >
+    <div style={props.level > 1 ? { paddingLeft: 10 } : {}} className="sha-action-props">
       <Form
         component={false}
         form={form}
@@ -136,45 +128,47 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
         )}
         {selectedAction && (
           <>
-            <Form.Item name="handleSuccess" label="Handle Success" valuePropName='checked'>
-              <Switch disabled={readOnly} />
-            </Form.Item >
-            {
-              value?.handleSuccess && (
-                <Collapse defaultActiveKey={['1']}>
-                  <Panel header="On Success handler" key="1">
-                    <Form.Item name="onSuccess">
-                      <ConfigurableActionConfigurator editorConfig={props.editorConfig} level={props.level + 1} readOnly={readOnly} />
-                    </Form.Item >
-                  </Panel>
-                </Collapse>
-              )
-            }
-            <Form.Item name="handleFail" label="Handle Fail" valuePropName='checked'>
+            <Form.Item name="handleSuccess" label="Handle Success" valuePropName="checked">
               <Switch disabled={readOnly} />
             </Form.Item>
-            {
-              value?.handleFail && (
-                <Collapse defaultActiveKey={['1']}>
-                  <Panel header="On Fail handler" key="1">
-                    <Form.Item name="onFail">
-                      <ConfigurableActionConfigurator editorConfig={props.editorConfig} level={props.level + 1} readOnly={readOnly} />
-                    </Form.Item>
-                  </Panel>
-                </Collapse>
-              )
-            }
+            {value?.handleSuccess && (
+              <Collapse defaultActiveKey={['1']}>
+                <Panel header="On Success handler" key="1">
+                  <Form.Item name="onSuccess">
+                    <ConfigurableActionConfigurator
+                      editorConfig={props.editorConfig}
+                      level={props.level + 1}
+                      readOnly={readOnly}
+                    />
+                  </Form.Item>
+                </Panel>
+              </Collapse>
+            )}
+            <Form.Item name="handleFail" label="Handle Fail" valuePropName="checked">
+              <Switch disabled={readOnly} />
+            </Form.Item>
+            {value?.handleFail && (
+              <Collapse defaultActiveKey={['1']}>
+                <Panel header="On Fail handler" key="1">
+                  <Form.Item name="onFail">
+                    <ConfigurableActionConfigurator
+                      editorConfig={props.editorConfig}
+                      level={props.level + 1}
+                      readOnly={readOnly}
+                    />
+                  </Form.Item>
+                </Panel>
+              </Collapse>
+            )}
           </>
         )}
-      </Form >
+      </Form>
     </div>
   );
 };
 
 const getConfigurableActionFullName = (owner: string, name: string) => {
-  return owner
-    ? `${owner}:${name}`
-    : name;
+  return owner ? `${owner}:${name}` : name;
 };
 
 interface IActionSelectProps {
@@ -191,27 +185,23 @@ interface IActionSelectItem {
   selectable: boolean;
 }
 const ActionSelect: FC<IActionSelectProps> = ({ value, onChange, actions, readOnly = false }) => {
-
   const treeData = useMemo<IActionSelectItem[]>(() => {
     const result: IActionSelectItem[] = [];
 
     //console.log('build actions', actions)
 
     for (const owner in actions) {
-      if (!actions.hasOwnProperty(owner))
-        continue;
+      if (!actions.hasOwnProperty(owner)) continue;
       const ownerActions = actions[owner];
       const ownerNodes: IActionSelectItem[] = [];
 
-      ownerActions.actions.forEach(action => {
+      ownerActions.actions.forEach((action) => {
         const displayName = action.label ?? action.name;
 
         ownerNodes.push({
           title: (
             <div>
-              <HelpTextPopover content={action.description}>
-                {displayName}
-              </HelpTextPopover>
+              <HelpTextPopover content={action.description}>{displayName}</HelpTextPopover>
             </div>
           ),
           displayText: `${ownerActions.ownerName}: ${displayName}`,
@@ -248,10 +238,9 @@ const ActionSelect: FC<IActionSelectProps> = ({ value, onChange, actions, readOn
       allowClear
       //treeDefaultExpandAll
       onChange={onChange}
-      treeNodeLabelProp='displayText'
+      treeNodeLabelProp="displayText"
       treeData={treeData}
-    >
-    </TreeSelect>
+    ></TreeSelect>
   );
 };
 

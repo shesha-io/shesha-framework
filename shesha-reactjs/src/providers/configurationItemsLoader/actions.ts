@@ -8,8 +8,7 @@ export enum ConfigurationItemsLoaderActionEnums {
 
 export const activateProviderAction = createAction<string, string>(
   ConfigurationItemsLoaderActionEnums.ActivateProvider,
-  p => p
+  (p) => p
 );
-
 
 /* NEW_ACTION_GOES_HERE */

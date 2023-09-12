@@ -1,20 +1,20 @@
 import React, { FC } from 'react';
-import { Column } from './column';
-import { ColumnsGroup } from './columnsGroup';
+import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { useColumnsConfigurator } from '../../../../providers/datatableColumnsConfigurator';
 import {
   IConfigurableColumnGroup,
-  IConfigurableColumnsProps,
   IConfigurableColumnsBase,
+  IConfigurableColumnsProps,
 } from '../../../../providers/datatableColumnsConfigurator/models';
-import { ReactSortable, ItemInterface } from 'react-sortablejs';
+import { Column } from './column';
+import { ColumnsGroup } from './columnsGroup';
 
 export interface IColumnsContainerProps {
   index?: number[];
   items: IConfigurableColumnsBase[];
 }
 
-export const ColumnsContainer: FC<IColumnsContainerProps> = props => {
+export const ColumnsContainer: FC<IColumnsContainerProps> = (props) => {
   const { updateChildItems } = useColumnsConfigurator();
 
   const renderItem = (item: IConfigurableColumnsBase, index: number) => {
@@ -30,7 +30,7 @@ export const ColumnsContainer: FC<IColumnsContainerProps> = props => {
             key={index}
             {...groupProps}
             index={[...props.index, index]}
-            containerRendering={(args) => (<ColumnsContainer {...args} />)}
+            containerRendering={(args) => <ColumnsContainer {...args} />}
           />
         );
     }
@@ -41,7 +41,7 @@ export const ColumnsContainer: FC<IColumnsContainerProps> = props => {
     const listChanged = true; //!newState.some(item => item.chosen !== null && item.chosen !== undefined);
 
     if (listChanged) {
-      const newChilds = newState.map<IConfigurableColumnsBase>(item => item as IConfigurableColumnsBase);
+      const newChilds = newState.map<IConfigurableColumnsBase>((item) => item as IConfigurableColumnsBase);
       updateChildItems({ index: props.index, childs: newChilds });
     }
     return;

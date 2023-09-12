@@ -1,20 +1,20 @@
-import { createContext } from 'react';
-import { IToolboxComponentGroup, IToolboxComponent, IFormValidationErrors } from '../../interfaces';
-import {
-  FormMode,
-  IConfigurableFormComponent,
-  ROOT_COMPONENT_KEY,
-  IFormActions,
-  IFormAction,
-  FormAction,
-  FormSection,
-  IFormSection,
-  IFlatComponentsStructure,
-  IFormSettings,
-  DEFAULT_FORM_SETTINGS,
-  FormRawMarkup,
-} from './models';
 import { FormInstance } from 'antd';
+import { createContext } from 'react';
+import { IFormValidationErrors, IToolboxComponent, IToolboxComponentGroup } from '../../interfaces';
+import {
+  DEFAULT_FORM_SETTINGS,
+  FormAction,
+  FormMode,
+  FormRawMarkup,
+  FormSection,
+  IConfigurableFormComponent,
+  IFlatComponentsStructure,
+  IFormAction,
+  IFormActions,
+  IFormSection,
+  IFormSettings,
+  ROOT_COMPONENT_KEY,
+} from './models';
 
 export interface IHasComponentGroups {
   toolboxComponentGroups: IToolboxComponentGroup[];
@@ -44,9 +44,7 @@ export interface IFormStateInternalContext {
   visibleComponentIdsIsSet: boolean;
 }
 
-export interface IFormStateContext extends IFormStateInternalContext, IFlatComponentsStructure {
-
-}
+export interface IFormStateContext extends IFormStateInternalContext, IFlatComponentsStructure {}
 
 export interface ISetVisibleComponentsPayload {
   componentIds: string[];
@@ -107,7 +105,7 @@ export interface IFormActionsContext {
 export const FORM_CONTEXT_INITIAL_STATE: IFormStateContext = {
   allComponents: {},
   componentRelations: { [ROOT_COMPONENT_KEY]: [] },
-  
+
   visibleComponentIds: [],
   visibleComponentIdsIsSet: false,
   enabledComponentIds: [],

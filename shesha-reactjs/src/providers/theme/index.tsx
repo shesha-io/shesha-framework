@@ -1,11 +1,11 @@
-import React, { FC, useReducer, useContext, PropsWithChildren, useEffect } from 'react';
-import { uiReducer } from './reducer';
-import { setThemeAction } from './actions';
-import { UiActionsContext, UiStateContext, THEME_CONTEXT_INITIAL_STATE, IConfigurableTheme } from './contexts';
 import { ConfigProvider } from 'antd';
-import { THEME_CONFIG_NAME } from 'shesha-constants';
+import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
+import { THEME_CONFIG_NAME } from '../../shesha-constants';
 import { useDebouncedCallback } from 'use-debounce';
 import { useConfigurationItemsLoader } from '../configurationItemsLoader';
+import { setThemeAction } from './actions';
+import { IConfigurableTheme, THEME_CONTEXT_INITIAL_STATE, UiActionsContext, UiStateContext } from './contexts';
+import { uiReducer } from './reducer';
 
 export interface ThemeProviderProps {
   prefixCls?: string;
@@ -27,13 +27,13 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
   // fetch theme
   useEffect(() => {
     const promisedTheme = getComponent({ name: THEME_CONFIG_NAME, isApplicationSpecific: true, skipCache: false });
-    promisedTheme.promise.then(data => {
+    promisedTheme.promise.then((data) => {
       const theme = data?.settings as IConfigurableTheme;
       if (theme) dispatch(setThemeAction(theme));
     });
   }, []);
 
-  const debouncedSave = useDebouncedCallback(themeToSave => {
+  const debouncedSave = useDebouncedCallback((themeToSave) => {
     updateComponent({ name: THEME_CONFIG_NAME, isApplicationSpecific: true, settings: themeToSave });
   }, 300);
 
@@ -93,4 +93,4 @@ function useTheme() {
   return { ...useThemeState(), ...useThemeActions() };
 }
 
-export { ThemeProvider, useThemeState, useThemeActions, useTheme };
+export { ThemeProvider, useTheme, useThemeActions, useThemeState };

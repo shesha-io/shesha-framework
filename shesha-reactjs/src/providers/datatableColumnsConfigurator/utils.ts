@@ -1,4 +1,4 @@
-import { IConfigurableColumnGroup, ColumnsItemProps } from './models';
+import { ColumnsItemProps, IConfigurableColumnGroup } from './models';
 
 export const getItemById = (items: ColumnsItemProps[], id: string): ColumnsItemProps => {
   const position = getItemPositionById(items, id);

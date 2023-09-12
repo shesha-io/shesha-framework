@@ -1,9 +1,9 @@
 import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
 import { setCurrentNavigatorAction } from './actions';
 import {
+  STACKED_NAVIGATION_CONTEXT_INITIAL_STATE,
   StackedNavigationActionsContext,
   StackedNavigationStateContext,
-  STACKED_NAVIGATION_CONTEXT_INITIAL_STATE,
 } from './contexts';
 import { stakedNavigationReducer } from './reducer';
 
@@ -47,4 +47,4 @@ function useStackedNavigation() {
   return { ...useStackedNavigationState(), ...useStackedNavigationActions() };
 }
 
-export { StackedNavigationProvider, useStackedNavigationState, useStackedNavigationActions, useStackedNavigation };
+export { StackedNavigationProvider, useStackedNavigation, useStackedNavigationActions, useStackedNavigationState };

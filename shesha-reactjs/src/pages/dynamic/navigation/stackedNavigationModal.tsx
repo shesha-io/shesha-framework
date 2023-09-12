@@ -1,8 +1,7 @@
 import { CloseOutlined, ExpandAltOutlined, ShrinkOutlined } from '@ant-design/icons';
 import { Button, Modal, ModalProps } from 'antd';
 import Link from 'next/link';
-import React from 'react';
-import { CSSProperties, FC, useEffect, useState } from 'react';
+import React, { CSSProperties, FC, useEffect, useState } from 'react';
 import { useShaRouting } from '../../../providers';
 import { removeURLParameter } from '../../../utils/url';
 import { StackedNavigationModalProvider, useStackedModal } from './stackedNavigationModalProvider';
@@ -28,7 +27,7 @@ const StackedNavigationModal: FC<IStackedNavigationModalProps> = ({
     }
   }, [isMaxWidth]);
 
-  const toggleMaxWidth = () => setMaxWidth(prev => !prev);
+  const toggleMaxWidth = () => setMaxWidth((prev) => !prev);
 
   const closeDialog = (e: any) => {
     onCancel(e);
@@ -62,7 +61,7 @@ const StackedNavigationModal: FC<IStackedNavigationModalProps> = ({
                 type="link"
               />
 
-              <Button type="link" onClick={event => closeDialog(event)} icon={<CloseOutlined />} />
+              <Button type="link" onClick={(event) => closeDialog(event)} icon={<CloseOutlined />} />
             </span>
           </div>
         }

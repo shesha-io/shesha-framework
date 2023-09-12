@@ -1,28 +1,33 @@
-import React, { FC, useReducer, useContext, PropsWithChildren, useEffect, MutableRefObject } from 'react';
-import modelReducer from './reducer';
+import { FormInstance } from 'antd';
+import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
 import {
-  ModelConfiguratorActionsContext,
-  ModelConfiguratorStateContext,
-  MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE,
-} from './contexts';
+  ModelConfigurationDto,
+  entityConfigDelete,
+  modelConfigurationsCreate,
+  modelConfigurationsGetById,
+  modelConfigurationsUpdate,
+} from '../../apis/modelConfigurations';
+import { useSheshaApplication } from '../../providers';
 import {
-  createNewAction,
   changeModelIdAction,
-  loadRequestAction,
-  loadSuccessAction,
-  loadErrorAction,
-  saveRequestAction,
-  saveSuccessAction,
-  saveErrorAction,
+  createNewAction,
+  deleteErrorAction,
   deleteRequestAction,
   deleteSuccessAction,
-  deleteErrorAction,
-  /* NEW_ACTION_IMPORT_GOES_HERE */
+  loadErrorAction,
+  loadRequestAction,
+  loadSuccessAction,
+  saveErrorAction,
+  saveRequestAction,
+  saveSuccessAction,
 } from './actions';
-import { useSheshaApplication } from '../../providers';
-import { FormInstance } from 'antd';
+import {
+  MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE,
+  ModelConfiguratorActionsContext,
+  ModelConfiguratorStateContext,
+} from './contexts';
 import { IModelConfiguratorInstance } from './interfaces';
-import { ModelConfigurationDto, modelConfigurationsGetById, modelConfigurationsUpdate, modelConfigurationsCreate, entityConfigDelete } from 'apis/modelConfigurations';
+import modelReducer from './reducer';
 
 export interface IModelConfiguratorProviderPropsBase {
   baseUrl?: string;
@@ -34,7 +39,7 @@ export interface IModelConfiguratorProviderProps {
   configuratorRef?: MutableRefObject<IModelConfiguratorInstance | null>;
 }
 
-const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProviderProps>> = props => {
+const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProviderProps>> = (props) => {
   const { children } = props;
 
   const { backendUrl, httpHeaders } = useSheshaApplication();
@@ -64,17 +69,16 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
       dispatch(loadRequestAction());
 
       // { name: state.className, namespace: state.namespace }
-      modelConfigurationsGetById({}, { id: state.id, base: backendUrl, headers: httpHeaders})
-        .then(response => {
+      modelConfigurationsGetById({}, { id: state.id, base: backendUrl, headers: httpHeaders })
+        .then((response) => {
           if (response.success) {
             dispatch(loadSuccessAction(response.result));
-          } else
-            dispatch(loadErrorAction(response.error));
+          } else dispatch(loadErrorAction(response.error));
         })
-        .catch(e => {
+        .catch((e) => {
           dispatch(loadErrorAction({ message: 'Failed to load model', details: e }));
         });
-    }/*
+    } /*
     else
       console.error("Failed to fetch a model configuraiton by Id - Id not specified");*/
   };
@@ -84,75 +88,77 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
   };
 
   const prepareValues = (values: ModelConfigurationDto): ModelConfigurationDto => {
-    return {...values, id: state.id };
+    return { ...values, id: state.id };
   };
 
-  const save = (values: ModelConfigurationDto): Promise<ModelConfigurationDto> => new Promise<ModelConfigurationDto>((resolve, reject) => {
-    // todo: validate all properties
-    const preparedValues = prepareValues(values);
+  const save = (values: ModelConfigurationDto): Promise<ModelConfigurationDto> =>
+    new Promise<ModelConfigurationDto>((resolve, reject) => {
+      // todo: validate all properties
+      const preparedValues = prepareValues(values);
 
-    dispatch(saveRequestAction());
+      dispatch(saveRequestAction());
 
-    const mutate = state.id
-      ? modelConfigurationsUpdate
-      : modelConfigurationsCreate;
+      const mutate = state.id ? modelConfigurationsUpdate : modelConfigurationsCreate;
 
-    mutate(preparedValues, { base: backendUrl, headers: httpHeaders })
-      .then(response => {
-        if (response.success) {
-          dispatch(saveSuccessAction(response.result));
-          resolve(response.result);
-        } else {
-          dispatch(saveErrorAction(response.error));
+      mutate(preparedValues, { base: backendUrl, headers: httpHeaders })
+        .then((response) => {
+          if (response.success) {
+            dispatch(saveSuccessAction(response.result));
+            resolve(response.result);
+          } else {
+            dispatch(saveErrorAction(response.error));
+            reject();
+          }
+        })
+        .catch((error) => {
+          dispatch(saveErrorAction({ message: 'Failed to save model', details: error }));
           reject();
-        }
-      })
-      .catch(error => {
-        dispatch(saveErrorAction({ message: 'Failed to save model', details: error }));
-        reject();
-      });
-  });
+        });
+    });
 
   const getModelSettings = () => prepareValues(state.form.getFieldsValue());
 
-  const savePromise: () => Promise<ModelConfigurationDto> = () => new Promise<ModelConfigurationDto>((resolve, reject) => {
-    state.form.validateFields()
-      .then((values) => {
-        // merge values to avoid losing invisible data
-        save({...state.modelConfiguration, ...values})
-          .then((item) => resolve(item))
-          .catch(() => reject());
-      })
-      .catch((error) => reject(error));
-  });
+  const savePromise: () => Promise<ModelConfigurationDto> = () =>
+    new Promise<ModelConfigurationDto>((resolve, reject) => {
+      state.form
+        .validateFields()
+        .then((values) => {
+          // merge values to avoid losing invisible data
+          save({ ...state.modelConfiguration, ...values })
+            .then((item) => resolve(item))
+            .catch(() => reject());
+        })
+        .catch((error) => reject(error));
+    });
 
-  const deleteFunc = (values: ModelConfigurationDto): Promise<void> => new Promise<void>((resolve, reject) => {
-    dispatch(deleteRequestAction());
+  const deleteFunc = (values: ModelConfigurationDto): Promise<void> =>
+    new Promise<void>((resolve, reject) => {
+      dispatch(deleteRequestAction());
 
-    entityConfigDelete({ base: backendUrl, queryParams: {id: values.id}, headers: httpHeaders })
-      .then(() => {
+      entityConfigDelete({ base: backendUrl, queryParams: { id: values.id }, headers: httpHeaders })
+        .then(() => {
           dispatch(deleteSuccessAction());
           resolve();
-        }
-      )
-      .catch(error => {
-        dispatch(deleteErrorAction({ message: 'Failed to save model', details: error }));
-        reject();
-      });
-  });
+        })
+        .catch((error) => {
+          dispatch(deleteErrorAction({ message: 'Failed to save model', details: error }));
+          reject();
+        });
+    });
 
-  const deletePromise: () => Promise<void> = () => new Promise<void>((resolve, reject) => {
-    deleteFunc(state.modelConfiguration)
+  const deletePromise: () => Promise<void> = () =>
+    new Promise<void>((resolve, reject) => {
+      deleteFunc(state.modelConfiguration)
         .then(() => resolve())
         .catch(() => reject());
-  });
+    });
 
   if (props.configuratorRef) {
     props.configuratorRef.current = {
       save: savePromise,
       changeModelId: changeModelId,
       createNew: createNew,
-      delete: deletePromise
+      delete: deletePromise,
     };
   }
 

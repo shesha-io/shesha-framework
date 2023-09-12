@@ -18,22 +18,22 @@ export enum ButtonGroupActionEnums {
 
 export const addButtonAction = createAction(ButtonGroupActionEnums.AddButton);
 
-export const deleteButtonAction = createAction<string, string>(ButtonGroupActionEnums.DeleteButton, p => p);
+export const deleteButtonAction = createAction<string, string>(ButtonGroupActionEnums.DeleteButton, (p) => p);
 
 export const addGroupAction = createAction(ButtonGroupActionEnums.AddGroup);
 
-export const deleteGroupAction = createAction<string, string>(ButtonGroupActionEnums.DeleteGroup, p => p);
+export const deleteGroupAction = createAction<string, string>(ButtonGroupActionEnums.DeleteGroup, (p) => p);
 
-export const selectItemAction = createAction<string, string>(ButtonGroupActionEnums.SelectItem, p => p);
+export const selectItemAction = createAction<string, string>(ButtonGroupActionEnums.SelectItem, (p) => p);
 
 export const updateChildItemsAction = createAction<IUpdateChildItemsPayload, IUpdateChildItemsPayload>(
   ButtonGroupActionEnums.UpdateChildItems,
-  p => p
+  (p) => p
 );
 
 export const updateItemAction = createAction<IUpdateItemSettingsPayload, IUpdateItemSettingsPayload>(
   ButtonGroupActionEnums.UpdateItem,
-  p => p
+  (p) => p
 );
 
 /* NEW_ACTION_GOES_HERE */

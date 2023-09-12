@@ -1,7 +1,7 @@
-import { QUERY_BUILDER_CONTEXT_INITIAL_STATE, IQueryBuilderStateContext } from './contexts';
-import { IProperty } from './models';
-import { QueryBuilderActionEnums } from './actions';
 import { handleActions } from 'redux-actions';
+import { QueryBuilderActionEnums } from './actions';
+import { IQueryBuilderStateContext, QUERY_BUILDER_CONTEXT_INITIAL_STATE } from './contexts';
+import { IProperty } from './models';
 
 export default handleActions<IQueryBuilderStateContext, any>(
   {

@@ -1,5 +1,5 @@
-import { IErrorInfo } from 'interfaces/errorInfo';
 import { createContext } from 'react';
+import { IErrorInfo } from '../../interfaces/errorInfo';
 import { CrudMode } from './models';
 
 export interface ICrudStateContext {
@@ -10,7 +10,7 @@ export interface ICrudStateContext {
   initialValuesLoading: boolean;
   initialValues?: object;
   allowChangeMode: boolean;
-  
+
   autoSave: boolean;
   isSaving: boolean;
   saveError?: IErrorInfo;

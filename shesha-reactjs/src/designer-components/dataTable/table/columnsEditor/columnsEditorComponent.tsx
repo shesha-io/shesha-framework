@@ -1,10 +1,10 @@
 import { ColumnWidthOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import React, { FC, Fragment, useState } from 'react';
+import ConfigurableFormItem from '../../../../components/formDesigner/components/formItem';
 import { IToolboxComponent } from '../../../../interfaces';
 import { ColumnsItemProps } from '../../../../providers/datatableColumnsConfigurator/models';
 import { ColumnsEditorModal } from './columnsEditorModal';
-import ConfigurableFormItem from '../../../../components/formDesigner/components/formItem';
 import { IColumnsEditorComponentProps } from './interfaces';
 
 /**
@@ -40,7 +40,7 @@ interface IColumnsConfigProps {
 const ColumnsConfig: FC<IColumnsConfigProps> = ({ value, onChange }) => {
   const [modalVisible, setModalVisible] = useState(false);
 
-  const toggleModalVisibility = () => setModalVisible(prev => !prev);
+  const toggleModalVisibility = () => setModalVisible((prev) => !prev);
 
   return (
     <Fragment>

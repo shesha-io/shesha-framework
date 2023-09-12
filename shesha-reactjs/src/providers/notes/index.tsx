@@ -1,34 +1,32 @@
-import React, { FC, useReducer, useContext, PropsWithChildren, useEffect } from 'react';
-import { notesReducer } from './reducer';
-import {
-  NotesActionsContext,
-  NotesStateContext,
-  COMMENTS_CONTEXT_INITIAL_STATE,
-  INote,
-  ICreateNotePayload,
-  INoteSettings,
-} from './contexts';
+import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
+import { CreateNoteDto, NoteDto, useNoteCreate, useNoteGetList } from '../../apis/note';
+import { useMutate } from '../../hooks';
+import { IShaHttpResponse } from '../../interfaces/shaHttpResponse';
+import { useSignalR } from '../signalR';
 import { getFlagSetters } from '../utils/flagsSetters';
 import {
-  fetchNotesRequestAction,
-  fetchNotesSuccessAction,
-  fetchNotesErrorAction,
-  postNotesRequestAction,
-  postNotesSuccessAction,
-  postNotesErrorAction,
+  deleteNotesErrorAction,
   deleteNotesRequestAction,
   deleteNotesSuccessAction,
-  deleteNotesErrorAction,
+  fetchNotesErrorAction,
+  fetchNotesRequestAction,
+  fetchNotesSuccessAction,
   onNoteAddedAction,
   onNoteRemovedAction,
+  postNotesErrorAction,
+  postNotesRequestAction,
+  postNotesSuccessAction,
   setSettingsAction,
-  /* NEW_ACTION_IMPORT_GOES_HERE */
 } from './actions';
-import { useNoteGetList, useNoteCreate } from 'apis/note';
-import { CreateNoteDto, NoteDto } from 'apis/note';
-import { useMutate } from 'hooks';
-import { useSignalR } from '../signalR';
-import { IShaHttpResponse } from '../../interfaces/shaHttpResponse';
+import {
+  COMMENTS_CONTEXT_INITIAL_STATE,
+  ICreateNotePayload,
+  INote,
+  INoteSettings,
+  NotesActionsContext,
+  NotesStateContext,
+} from './contexts';
+import { notesReducer } from './reducer';
 
 const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
   children,
@@ -62,7 +60,12 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
   }, [ownerId, ownerType, category, allCategories]);
 
   //#region Fetch notes
-  const { refetch: refetchNotesHttp, loading: fetchingNotes, data, error: fetchNotesResError } = useNoteGetList({
+  const {
+    refetch: refetchNotesHttp,
+    loading: fetchingNotes,
+    data,
+    error: fetchNotesResError,
+  } = useNoteGetList({
     queryParams: { ownerId, ownerType, category, allCategories },
     lazy: true,
   });
@@ -77,7 +80,7 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
   useEffect(() => {
     if (!fetchingNotes && data) {
       // The Api is misleading us in here by saying it returns `NoteDto[]` when it actually returns IShaHttpResponse<NoteDto[]>
-      const { result, success } = (data as unknown) as IShaHttpResponse<NoteDto[]>;
+      const { result, success } = data as unknown as IShaHttpResponse<NoteDto[]>;
 
       if (success && result && Array.isArray(result)) {
         fetchNotesSuccess(result);
@@ -202,4 +205,4 @@ function useNotes() {
 
 export default NotesProvider;
 
-export { NotesProvider, useNotesState, useNotesActions, useNotes };
+export { NotesProvider, useNotes, useNotesActions, useNotesState };

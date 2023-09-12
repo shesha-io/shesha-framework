@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import { Form, Button, Select, Input, InputNumber } from 'antd';
-import { ITableComponentBaseProps, ITableComponentProps, RowDroppedMode } from './models';
-import { ColumnsEditorModal } from './columnsEditor/columnsEditorModal';
+import { Button, Form, Input, InputNumber, Select } from 'antd';
 import Checkbox from 'antd/lib/checkbox/Checkbox';
-import SectionSeparator from '../../../components/sectionSeparator';
+import { nanoid } from 'nanoid';
+import React, { useState } from 'react';
+import { YesNoInherit } from '../../../components/dataTable/interfaces';
 import CodeEditor from '../../../components/formDesigner/components/codeEditor/codeEditor';
 import PropertyAutocomplete from '../../../components/propertyAutocomplete/propertyAutocomplete';
+import { InlineEditMode, InlineSaveMode, NewRowCapturePosition } from '../../../components/reactTable/interfaces';
+import SectionSeparator from '../../../components/sectionSeparator';
 import { ConfigurableActionConfigurator } from '../../configurableActionsConfigurator';
-import { YesNoInherit } from 'components/dataTable/interfaces';
-import { InlineEditMode, InlineSaveMode, NewRowCapturePosition } from 'components/reactTable/interfaces';
-import { nanoid } from 'nanoid';
+import { ColumnsEditorModal } from './columnsEditor/columnsEditorModal';
+import { ITableComponentBaseProps, ITableComponentProps, RowDroppedMode } from './models';
 
 interface ITypedOption<T = string> {
   label: React.ReactNode;
@@ -23,15 +23,15 @@ const yesNoInheritOptions: ITypedOption<YesNoInherit>[] = [
 ];
 const inlineEditModes: ITypedOption<InlineEditMode>[] = [
   { label: 'One by one', value: 'one-by-one' },
-  { label: 'All at once', value: 'all-at-once' }
+  { label: 'All at once', value: 'all-at-once' },
 ];
 const inlineSaveModes: ITypedOption<InlineSaveMode>[] = [
   { label: 'Auto', value: 'auto' },
-  { label: 'Manual', value: 'manual' }
+  { label: 'Manual', value: 'manual' },
 ];
 const rowCapturePositions: ITypedOption<NewRowCapturePosition>[] = [
   { label: 'Top', value: 'top' },
-  { label: 'Bottom', value: 'bottom' }
+  { label: 'Bottom', value: 'bottom' },
 ];
 
 const NEW_ROW_EXPOSED_VARIABLES = [
@@ -58,7 +58,7 @@ const NEW_ROW_EXPOSED_VARIABLES = [
     name: 'moment',
     description: 'The moment.js object',
     type: 'object',
-  }
+  },
 ];
 
 const ROW_SAVE_EXPOSED_VARIABLES = [
@@ -91,7 +91,7 @@ const ROW_SAVE_EXPOSED_VARIABLES = [
     name: 'moment',
     description: 'The moment.js object',
     type: 'object',
-  }
+  },
 ];
 
 const ROW_SAVED_SUCCESS_EXPOSED_VARIABLES = [
@@ -124,7 +124,7 @@ const ROW_SAVED_SUCCESS_EXPOSED_VARIABLES = [
     name: 'moment',
     description: 'The moment.js object',
     type: 'object',
-  }
+  },
 ];
 
 const ENABLE_CRUD_EXPOSED_VARIABLES = [
@@ -145,7 +145,7 @@ const ENABLE_CRUD_EXPOSED_VARIABLES = [
     name: 'moment',
     description: 'The moment.js object',
     type: 'object',
-  }
+  },
 ];
 
 export interface IProps {
@@ -171,14 +171,14 @@ function TableSettings(props: IProps) {
   const canAddInline = Form.useWatch('canAddInline', form);
   const canDeleteInline = Form.useWatch('canDeleteInline', form);
 
-  const toggleColumnsModal = () => setState(prev => ({ ...prev, showColumnsModal: !prev?.showColumnsModal }));
+  const toggleColumnsModal = () => setState((prev) => ({ ...prev, showColumnsModal: !prev?.showColumnsModal }));
 
   const initialState: ITableComponentBaseProps = {
     ...props?.model,
   };
 
   const onValuesChange = (changedValues, values: ITableComponentBaseProps) => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       allowRowDragAndDrop: values?.allowRowDragAndDrop,
     }));
@@ -218,7 +218,7 @@ function TableSettings(props: IProps) {
       <Form.Item
         name="canEditInline"
         label="Can edit inline"
-      // label={<>Can edit inline <Switch size="small" defaultChecked unCheckedChildren="static" checkedChildren="JS" style={{ marginLeft: '8px' }}/></>}
+        // label={<>Can edit inline <Switch size="small" defaultChecked unCheckedChildren="static" checkedChildren="JS" style={{ marginLeft: '8px' }}/></>}
       >
         <Select disabled={props.readOnly} options={yesNoInheritOptions} />
       </Form.Item>
@@ -264,7 +264,11 @@ function TableSettings(props: IProps) {
       <Form.Item name="newRowCapturePosition" label="New row capture position" hidden={canAddInline === 'no'}>
         <Select disabled={props.readOnly} options={rowCapturePositions} />
       </Form.Item>
-      <Form.Item name="newRowInsertPosition" label="New row insert position" /*hidden={canAddInline === 'no'}*/ hidden={true} /* note: hidden until review of rows drag&drop */>
+      <Form.Item
+        name="newRowInsertPosition"
+        label="New row insert position"
+        /*hidden={canAddInline === 'no'}*/ hidden={true} /* note: hidden until review of rows drag&drop */
+      >
         <Select disabled={props.readOnly} options={rowCapturePositions} />
       </Form.Item>
       <Form.Item name="customCreateUrl" label="Custom create url" hidden={canEditInline === 'no'}>
@@ -318,7 +322,11 @@ function TableSettings(props: IProps) {
       <Form.Item name="canDeleteInline" label="Can delete inline">
         <Select disabled={props.readOnly} options={yesNoInheritOptions} />
       </Form.Item>
-      <Form.Item name="canDeleteInlineExpression" label="Can delete inline expression" hidden={canDeleteInline !== 'js'}>
+      <Form.Item
+        name="canDeleteInlineExpression"
+        label="Can delete inline expression"
+        hidden={canDeleteInline !== 'js'}
+      >
         <CodeEditor
           id={''}
           name="canDeleteInlineExpression"
@@ -330,7 +338,7 @@ function TableSettings(props: IProps) {
           description="Return true to enable inline deletion and false to disable."
           exposedVariables={ENABLE_CRUD_EXPOSED_VARIABLES}
         />
-      </Form.Item>      
+      </Form.Item>
       <Form.Item name="customDeleteUrl" label="Custom delete url" hidden={canDeleteInline === 'no'}>
         <Input readOnly={props.readOnly} />
       </Form.Item>
@@ -352,11 +360,19 @@ function TableSettings(props: IProps) {
 
       <SectionSeparator title="Layout" />
 
-      <Form.Item name="minHeight" label="Min Height" tooltip="The minimum height of the table (e.g. even when 0 rows). If blank then minimum height is 0.">
+      <Form.Item
+        name="minHeight"
+        label="Min Height"
+        tooltip="The minimum height of the table (e.g. even when 0 rows). If blank then minimum height is 0."
+      >
         <InputNumber />
       </Form.Item>
 
-      <Form.Item name="maxHeight" label="Max Height" tooltip="The maximum height of the table. If left blank should grow to display all rows, otherwise should allow for vertical scrolling.">
+      <Form.Item
+        name="maxHeight"
+        label="Max Height"
+        tooltip="The maximum height of the table. If left blank should grow to display all rows, otherwise should allow for vertical scrolling."
+      >
         <InputNumber />
       </Form.Item>
 

@@ -1,16 +1,16 @@
 import { createContext } from 'react';
+import { UserLoginInfoDto } from '../../apis/session';
 import {
+  ResetPasswordUsingTokenInput,
   ResetPasswordVerifyOtpInput,
   ResetPasswordVerifyOtpResponse,
-  ResetPasswordUsingTokenInput,
   UserResetPasswordSendOtpQueryParams,
-} from 'apis/user';
-import { IErrorInfo } from '../../interfaces/errorInfo';
-import IRequestHeaders from '../../interfaces/requestHeaders';
+} from '../../apis/user';
 import { IFlagsSetters, IFlagsState } from '../../interfaces';
+import { IAjaxResponseBase } from '../../interfaces/ajaxResponse';
+import { IErrorInfo } from '../../interfaces/errorInfo';
 import { EMPTY_FLAGS_STATE } from '../../interfaces/flagsState';
-import { UserLoginInfoDto } from 'apis/session';
-import { IAjaxResponseBase } from 'interfaces/ajaxResponse';
+import IRequestHeaders from '../../interfaces/requestHeaders';
 
 export type IFlagProgressFlags =
   | 'isIdle'
@@ -42,7 +42,7 @@ export interface ILoginForm {
   /**
    * Optional IMEI number. Is used for mobile applications
    */
-  imei?: string | null;  
+  imei?: string | null;
   rememberMe?: boolean;
 }
 

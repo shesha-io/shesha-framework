@@ -1,5 +1,5 @@
-import { createContext } from 'react';
 import { Theme } from 'antd/lib/config-provider/context';
+import { createContext } from 'react';
 
 interface ITextTheme {
   default?: string;

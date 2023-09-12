@@ -1,13 +1,13 @@
+import { handleActions } from 'redux-actions';
+import { ItemListConfiguratorActionEnums } from './actions';
 import {
-  IItemListConfiguratorStateContext,
-  IUpdateChildItemsPayload,
-  IUpdateItemSettingsPayload,
-  ITEM_LIST_CONFIGURATOR_CONTEXT_INITIAL_STATE,
   IConfigurableItemBase,
   IConfigurableItemGroup,
+  IItemListConfiguratorStateContext,
+  ITEM_LIST_CONFIGURATOR_CONTEXT_INITIAL_STATE,
+  IUpdateChildItemsPayload,
+  IUpdateItemSettingsPayload,
 } from './contexts';
-import { ItemListConfiguratorActionEnums } from './actions';
-import { handleActions } from 'redux-actions';
 import { getItemById, getItemPositionById } from './utils';
 
 const itemListConfiguratorReducer = handleActions<IItemListConfiguratorStateContext, any>(
@@ -70,7 +70,7 @@ const itemListConfiguratorReducer = handleActions<IItemListConfiguratorStateCont
     ) => {
       const { payload } = action;
 
-      const newItems = [...state.items].map(item => ({ ...item, label: item?.title }));
+      const newItems = [...state.items].map((item) => ({ ...item, label: item?.title }));
 
       const position = getItemPositionById(newItems, payload.id);
 
@@ -105,7 +105,7 @@ const itemListConfiguratorReducer = handleActions<IItemListConfiguratorStateCont
       }
       // copy all items
       //minor modifications to allow autocomplete of the label
-      const newItems = [...state.items].map(item => ({ ...item, label: item?.title }));
+      const newItems = [...state.items].map((item) => ({ ...item, label: item?.title }));
       // blockIndex - full index of the current container
       const blockIndex = [...index];
       // lastIndex - index of the current element in its' parent
@@ -145,7 +145,7 @@ const itemListConfiguratorReducer = handleActions<IItemListConfiguratorStateCont
 
       return {
         ...state,
-        items: state.items.filter(item => item.id !== payload),
+        items: state.items.filter((item) => item.id !== payload),
         selectedItemId: state.selectedItemId === payload ? null : state.selectedItemId,
       };
     },
@@ -157,9 +157,9 @@ const itemListConfiguratorReducer = handleActions<IItemListConfiguratorStateCont
 export default itemListConfiguratorReducer;
 
 function removeIdDeep(list: IConfigurableItemBase[], idToRemove: string, childrenKey: string = 'children') {
-  const filtered = list.filter(entry => entry.id !== idToRemove);
+  const filtered = list.filter((entry) => entry.id !== idToRemove);
 
-  return filtered.map(entry => {
+  return filtered.map((entry) => {
     if (!entry[childrenKey]) return entry;
     return { ...entry, [childrenKey]: removeIdDeep(entry[childrenKey], idToRemove, childrenKey) };
   });

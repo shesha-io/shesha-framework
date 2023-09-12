@@ -1,16 +1,12 @@
-import React, { FC, useReducer, useContext, PropsWithChildren } from 'react';
-import DataTableSelectionReducer from './reducer';
+import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
+import { Row } from 'react-table';
+import { setMultiSelectedRowAction, setSelectedRowAction } from './actions';
 import {
+  DATATABLE_SELECTION_CONTEXT_INITIAL_STATE,
   DataTableSelectionActionsContext,
   DataTableSelectionStateContext,
-  DATATABLE_SELECTION_CONTEXT_INITIAL_STATE,
 } from './contexts';
-import {
-  setSelectedRowAction,
-  setMultiSelectedRowAction,
-  /* NEW_ACTION_IMPORT_GOES_HERE */
-} from './actions';
-import { Row } from 'react-table';
+import DataTableSelectionReducer from './reducer';
 
 export interface IDataTableSelectionProviderProps {}
 
@@ -79,4 +75,4 @@ function useDataTableSelection(require: boolean = true) {
     : undefined;
 }
 
-export { DataTableSelectionProvider, useDataTableSelectionState, useDataTableSelectionActions, useDataTableSelection };
+export { DataTableSelectionProvider, useDataTableSelection, useDataTableSelectionActions, useDataTableSelectionState };

@@ -10,5 +10,5 @@ export enum MetadataActionEnums {
 
 export const setMetadataAction = createAction<ISetMetadataPayload, ISetMetadataPayload>(
   MetadataActionEnums.SetMetadata,
-  p => p
+  (p) => p
 );

@@ -1,23 +1,22 @@
-import React, { FC, useReducer, useContext, PropsWithChildren } from 'react';
-import buttonGroupReducer from './reducer';
-import {
-  IUpdateChildItemsPayload,
-  IUpdateItemSettingsPayload,
-  ButtonGroupConfiguratorActionsContext,
-  ButtonGroupConfiguratorStateContext,
-  BUTTON_GROUP_CONTEXT_INITIAL_STATE,
-} from './contexts';
+import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
 import {
   addButtonAction,
-  deleteButtonAction,
   addGroupAction,
+  deleteButtonAction,
   deleteGroupAction,
   selectItemAction,
   updateChildItemsAction,
   updateItemAction,
-  /* NEW_ACTION_IMPORT_GOES_HERE */
 } from './actions';
+import {
+  BUTTON_GROUP_CONTEXT_INITIAL_STATE,
+  ButtonGroupConfiguratorActionsContext,
+  ButtonGroupConfiguratorStateContext,
+  IUpdateChildItemsPayload,
+  IUpdateItemSettingsPayload,
+} from './contexts';
 import { ButtonGroupItemProps } from './models';
+import buttonGroupReducer from './reducer';
 import { getItemById } from './utils';
 
 export interface IButtonGroupConfiguratorProviderPropsBase {
@@ -31,11 +30,8 @@ export interface IButtonGroupConfiguratorProviderProps {
   readOnly: boolean;
 }
 
-const ButtonGroupConfiguratorProvider: FC<PropsWithChildren<IButtonGroupConfiguratorProviderProps>> = props => {
-  const {
-    children,
-    readOnly,
-  } = props;
+const ButtonGroupConfiguratorProvider: FC<PropsWithChildren<IButtonGroupConfiguratorProviderProps>> = (props) => {
+  const { children, readOnly } = props;
 
   const [state, dispatch] = useReducer(buttonGroupReducer, {
     ...BUTTON_GROUP_CONTEXT_INITIAL_STATE,
@@ -44,23 +40,19 @@ const ButtonGroupConfiguratorProvider: FC<PropsWithChildren<IButtonGroupConfigur
   });
 
   const addButton = () => {
-    if (!state.readOnly)
-      dispatch(addButtonAction());
+    if (!state.readOnly) dispatch(addButtonAction());
   };
 
   const deleteButton = (uid: string) => {
-    if (!state.readOnly)
-      dispatch(deleteButtonAction(uid));
+    if (!state.readOnly) dispatch(deleteButtonAction(uid));
   };
 
   const addGroup = () => {
-    if (!state.readOnly)
-      dispatch(addGroupAction());
+    if (!state.readOnly) dispatch(addGroupAction());
   };
 
   const deleteGroup = (uid: string) => {
-    if (!state.readOnly)
-      dispatch(deleteGroupAction(uid));
+    if (!state.readOnly) dispatch(deleteGroupAction(uid));
   };
 
   const selectItem = (uid: string) => {
@@ -68,8 +60,7 @@ const ButtonGroupConfiguratorProvider: FC<PropsWithChildren<IButtonGroupConfigur
   };
 
   const updateChildItems = (payload: IUpdateChildItemsPayload) => {
-    if (!state.readOnly)
-      dispatch(updateChildItemsAction(payload));
+    if (!state.readOnly) dispatch(updateChildItemsAction(payload));
   };
 
   const getItem = (uid: string): ButtonGroupItemProps => {
@@ -77,8 +68,7 @@ const ButtonGroupConfiguratorProvider: FC<PropsWithChildren<IButtonGroupConfigur
   };
 
   const updateItem = (payload: IUpdateItemSettingsPayload) => {
-    if (!state.readOnly)
-      dispatch(updateItemAction(payload));
+    if (!state.readOnly) dispatch(updateItemAction(payload));
   };
 
   /* NEW_ACTION_DECLARATION_GOES_HERE */

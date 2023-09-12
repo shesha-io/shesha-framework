@@ -14,7 +14,9 @@ export interface IDataTableSelectionActionsContext {
   /* NEW_ACTION_ACTION_DECLARATION_GOES_HERE */
 }
 
-export interface DataTableSelectionFullInstance extends IDataTableSelectionStateContext, IDataTableSelectionActionsContext {}
+export interface DataTableSelectionFullInstance
+  extends IDataTableSelectionStateContext,
+    IDataTableSelectionActionsContext {}
 
 export const DATATABLE_SELECTION_CONTEXT_INITIAL_STATE: IDataTableSelectionStateContext = {
   selectedRow: null,

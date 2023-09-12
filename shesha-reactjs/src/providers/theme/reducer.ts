@@ -1,5 +1,5 @@
-import { IThemeStateContext } from './contexts';
 import { ThemeActionEnums } from './actions';
+import { IThemeStateContext } from './contexts';
 
 export function uiReducer(
   state: IThemeStateContext,
