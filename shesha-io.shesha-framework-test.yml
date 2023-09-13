@@ -270,6 +270,13 @@ stages:
           cp -R shesha-reactjs $(Build.ArtifactStagingDirectory)/shesha-reactjs
           cp -R shesha-functional-tests $(Build.ArtifactStagingDirectory)/shesha-functional-tests
         workingDirectory: '$(System.DefaultWorkingDirectory)'
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: 'shesha-starter/frontend'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/adminportal.zip'
+        replaceExistingArchive: true
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: shesha-adminportal-functional'
       inputs:
