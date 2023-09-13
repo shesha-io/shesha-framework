@@ -42,9 +42,8 @@ namespace Shesha.Email
             if (!EmailsEnabled())
                 return false;
 
-            using (var mail = BuildMessageWith(fromAddress, toAddress, subject, body, cc))
+            using (var mail = BuildMessageWith(fromAddress, toAddress, subject, body, isBodyHtml, cc))
             {
-                mail.IsBodyHtml = isBodyHtml;
                 if (attachments != null)
                 {
                     foreach (var attachment in attachments)
@@ -134,13 +133,13 @@ namespace Shesha.Email
             return true;
         }
 
-        private MailMessage BuildMessageWith(string fromAddress, string toAddress, string subject, string body, string cc)
+        private MailMessage BuildMessageWith(string fromAddress, string toAddress, string subject, string body, bool isBodyHtml, string cc)
         {
             var message = new MailMessage
             {
                 Subject = (subject ?? "").Replace("\r", " ").Replace("\n", " ").RemoveDoubleSpaces(),
-                Body = body,
-                IsBodyHtml = Regex.IsMatch(body, @"\</html>") && Regex.IsMatch(body, @"\</body\>"),
+                Body = isBodyHtml ? body.WrapAsHtmlDocument() : body,
+                IsBodyHtml = isBodyHtml,
             };
             if (!string.IsNullOrWhiteSpace(fromAddress))
                 message.From = new MailAddress(fromAddress);
