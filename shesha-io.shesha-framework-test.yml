@@ -265,14 +265,14 @@ stages:
         targetType: 'inline'
         script: |
           # Write your PowerShell commands here.
-          
+          mkdir $(System.DefaultWorkingDirectory)/consolodate
           Write-Host "Copying Shesha ReactJS Artifacts"
-          cp -R shesha-reactjs $(Build.ArtifactStagingDirectory)/shesha-reactjs
-          cp -R shesha-functional-tests $(Build.ArtifactStagingDirectory)/shesha-functional-tests
+          cp -R shesha-reactjs $(System.DefaultWorkingDirectory)/temp/shesha-reactjs
+          cp -R shesha-functional-tests $(System.DefaultWorkingDirectory)/temp/shesha-functional-tests
         workingDirectory: '$(System.DefaultWorkingDirectory)'
     - task: ArchiveFiles@2
       inputs:
-        rootFolderOrFile: 'shesha-starter/frontend'
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/temp'
         includeRootFolder: false
         archiveType: 'zip'
         archiveFile: '$(Build.ArtifactStagingDirectory)/adminportal.zip'
