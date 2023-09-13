@@ -15,9 +15,8 @@ variables:
 pr:
   branches:
     include:
-    - feat/for-j
     - releases/*
-    #- main
+    - main
 trigger:
   tags:
     include:
@@ -25,7 +24,7 @@ trigger:
   branches:
     include:
     - releases/*
-    #- main
+    - main
     
 pool: 
   name: Azure Pipelines
