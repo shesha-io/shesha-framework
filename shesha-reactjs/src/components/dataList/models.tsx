@@ -1,3 +1,4 @@
+import { IConfigurableActionConfiguration } from 'interfaces/configurableAction';
 import { FormIdentifier, IConfigurableFormComponent } from '../..';
 import { ISelectionProps } from '../../providers/dataTableSelection/models';
 
@@ -36,6 +37,11 @@ export interface IDataListProps {
   orientation?: Orientation;
   listItemWidth?: ListItemWidth;
   customListItemWidth?: number;
+
+  defaultSortBy?: string;
+  defaultSortOrder?: string;
+
+  actionConfiguration?: IConfigurableActionConfiguration;
 }
 
 export interface IDataListComponentProps extends IDataListProps, IConfigurableFormComponent {}

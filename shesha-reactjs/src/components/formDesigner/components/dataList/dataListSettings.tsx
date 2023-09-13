@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Form, Select, AutoComplete, InputNumber } from 'antd';
+import { Form, Select, AutoComplete, InputNumber, Input } from 'antd';
 import SectionSeparator from '../../../sectionSeparator';
 import CodeEditor from '../codeEditor/codeEditor';
 import PropertyAutocomplete from '../../../propertyAutocomplete/propertyAutocomplete';
 import { FormSelectionMode, IDataListComponentProps, ListItemWidth, Orientation } from '../../../dataList/models';
 import FormAutocomplete from '../../../formAutocomplete';
 import Show from 'components/show';
+import { ConfigurableActionConfigurator } from 'src/designer-components/configurableActionsConfigurator';
 
 export interface IProps {
   readOnly: boolean;
@@ -55,7 +56,7 @@ function DataListSettings(props: IProps) {
         </Form.Item>*/}
 
       <Form.Item name="name" label="Name">
-        <PropertyAutocomplete readOnly={props.readOnly} showFillPropsButton={false} />
+        <Input readOnly={props.readOnly} />
       </Form.Item>
 
       {/*<Button onClick={toggleColumnsModal}>{props.readOnly ? 'View Properties' : 'Customize Properties'}</Button>
@@ -67,6 +68,21 @@ function DataListSettings(props: IProps) {
           readOnly={props.readOnly}
         />
       </Form.Item>*/}
+
+      <Form.Item name="defaultSortBy" label="Default sort by">
+        <PropertyAutocomplete readOnly={props.readOnly} showFillPropsButton={false} />
+      </Form.Item>
+
+      <Form.Item name="defaultSortOrder" label="Default sort order">
+        <Select disabled={props.readOnly} allowClear>
+          <Select.Option key='asc' value='asc'>Ascending</Select.Option>
+          <Select.Option key='desc' value='desc'>Descending</Select.Option>
+        </Select>
+      </Form.Item>
+
+      <Form.Item name="actionConfiguration">
+        <ConfigurableActionConfigurator editorConfig={null} level={1} label="On Double Click" readOnly={props.readOnly} />
+      </Form.Item>
 
       <SectionSeparator title="Selection" />
 
