@@ -895,6 +895,25 @@ namespace Shesha.Utilities
             return result;
         }
 
+        /// <summary>
+        /// Wrap <paramref name="html"/> into the html and body tags if not wrapped
+        /// </summary>
+        /// <param name="html"></param>
+        /// <returns></returns>
+        public static string WrapAsHtmlDocument(this string html)
+        {
+            if (html == null)
+                return html;
+
+            if (!Regex.IsMatch(html, @"\</body\>"))
+                html = "<body>" + html + "</body>";
+
+            if (!Regex.IsMatch(html, @"\</html\>"))
+                html = "<html>" + html + "</html>";
+
+            return html;
+        }
+
         private static string HtmlTrim(string html, params char[] trimChars)
         {
             if (!html?.Trim().StartsWith("<") ?? true)
