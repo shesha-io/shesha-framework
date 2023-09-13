@@ -17,7 +17,7 @@
     "test": "jest -c test/jest.config.js"
   },
   "dependencies": {
-    "@ant-design/icons": "^5.1.0",
+    "@ant-design/icons": "^4.7.0",
     "@microsoft/applicationinsights-react-js": "^3.1.2",
     "@microsoft/applicationinsights-web": "^2.6.2",
     "@microsoft/signalr": "^5.0.6",
