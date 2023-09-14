@@ -94,7 +94,7 @@ export const ButtonGroup: FC<IButtonGroupProps> = ({ items, id, size, spaceSize 
         {...itemProps}
         size={size}
         style={getStyle(item?.style, allData.data)}
-        disabled={disabled}
+        disabled={disabled || itemProps.disabled}
         buttonType={isChild ? 'link' : item.buttonType}
       />
     ;

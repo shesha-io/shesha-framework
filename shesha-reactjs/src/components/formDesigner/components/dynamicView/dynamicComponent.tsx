@@ -1,4 +1,3 @@
-import { useDataContext } from 'providers/dataContextProvider';
 import React, { FC, useRef } from 'react';
 import { getActualModel, useApplicationContext } from 'utils/publicUtils';
 import { CustomErrorBoundary } from '../../..';
@@ -11,7 +10,7 @@ export interface IConfigurableFormComponentProps {
 
 const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model }) => {
   const { form, getToolboxComponent, isComponentHidden, isComponentDisabled } = useForm();
-  const allData = useApplicationContext(useDataContext(false)?.id);
+  const allData = useApplicationContext();
 
   const componentRef = useRef();
   const toolboxComponent = getToolboxComponent(model.type);

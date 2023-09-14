@@ -2,7 +2,7 @@ import React, { FC, ReactNode, useMemo } from 'react';
 import { IConfigurableFormComponent } from '../../../providers/form/models';
 import { ColProps, Form, FormItemProps } from 'antd';
 import { useForm } from '../../../providers/form';
-import { getValidationRules } from '../../../providers/form/utils';
+import { getFieldNameFromExpression, getValidationRules } from '../../../providers/form/utils';
 import classNames from 'classnames';
 import './styles.less';
 import { useFormItem } from '../../../providers';
@@ -90,7 +90,7 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
     );
   }
 
-  formItemProps.name = propName;
+  formItemProps.name = getFieldNameFromExpression(propName);
 
   // binding to from data for upgraded components
   if (typeof funcChildren === 'function') 

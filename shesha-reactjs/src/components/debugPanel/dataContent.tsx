@@ -1,16 +1,31 @@
-import React, { FC,  useMemo } from "react";
+import React, { FC,  useEffect,  useMemo, useState } from "react";
 import { DebugDataTree } from "./dataTree";
 import { useDataContextManager } from "providers/dataContextManager";
 import { getFieldNameFromExpression } from "formDesignerUtils";
-import { useGlobalState } from "providers";
+import { useGlobalState, useMetadataDispatcher } from "providers";
+import { useFormDesigner } from "providers/formDesigner";
+import { IModelMetadata } from "interfaces/metadata";
 
 const DebugPanelDataContent: FC = () => {
     const globalState = useGlobalState();
 
     const contextManager = useDataContextManager();
     const formInstance = contextManager.getFormInstance();
-  
-    const contexts =  useMemo(() => contextManager.getDataContexts('all'), [contextManager.lastUpdate]);
+    const designer = useFormDesigner(false);
+
+    const modelType = formInstance?.formSettings?.modelType ?? designer?.formSettings?.modelType;
+    const [formMetadata, setFormMetadata] = useState<IModelMetadata>(null);
+    const metadataDispatcher = useMetadataDispatcher(false);
+    useEffect(() => {
+      if (metadataDispatcher && modelType && !formMetadata)
+        metadataDispatcher
+          .getMetadata({modelType: formInstance.formSettings.modelType, dataType: 'entity'})
+          .then(r => {
+            setFormMetadata(r);
+          });
+    },[]);
+
+    const contexts = useMemo(() => contextManager.getDataContexts('all'), [contextManager.lastUpdate]);
   
     const onChangeContext = (contextId: string, propName: string, val: any) => {
       const ctx = contextManager.getDataContext(contextId);
@@ -51,12 +66,14 @@ const DebugPanelDataContent: FC = () => {
           <DebugDataTree 
             data={globalState}
             onChange={(propName, val) => onChangeGloablState(propName, val)} 
-            name={'GlobalState (deprecated)'}
+            name={'GlobalState (obsolete)'}
           />
         }
         {formInstance &&
           <DebugDataTree 
             data={formInstance?.formData}
+            metadata={formMetadata}
+            editAll
             onChange={(propName, val) => onChangeFormData(propName, val)} 
             name={'Form data'}
           />

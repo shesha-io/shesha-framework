@@ -1,7 +1,6 @@
 import React from 'react';
 import { IToolboxComponent } from 'interfaces';
 import { GroupOutlined } from '@ant-design/icons';
-import { useForm } from 'providers/form';
 import { getStyle, validateConfigurableComponentSettings } from 'providers/form/utils';
 import { getSettings } from './settingsForm';
 import { useFormData } from 'providers';
@@ -14,10 +13,9 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   name: 'Container',
   icon: <GroupOutlined />,
   factory: (model: IContainerComponentProps) => {
-    const { isComponentHidden } = useForm();
     const { data: formData } = useFormData();
 
-    if (isComponentHidden(model)) return null;
+    if (model.hidden) return null;
 
     const flexAndGridStyles: ICommonContainerProps = {
       display: model?.display,

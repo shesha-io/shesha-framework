@@ -1,67 +1,23 @@
 import React, { FC, useEffect, useState } from "react";
-import { Col, Input, Popover, Row, Tree } from "antd";
+import { Tree } from "antd";
 import { DataNode } from "antd/lib/tree";
+import { IPropertyMetadata } from "interfaces/metadata";
+import { toCamelCase } from "utils/string";
+import { IDebugDataTreeProps } from "./model";
+import { DebugDataTreeProp } from "./debugDataTreeProp";
+import { DebugDataTreeFunc } from "./debugDataTreeFunc";
+import { useLocalStorage } from "hooks";
 
-function getFnParamNames(fn: Function) {
-    var fstr = fn.toString();
-    return fstr.match(/\(.*?\)/)[0].replace(/[()]/gi,'').replace(/\s/gi,'').split(',');
-}
+export const DebugDataTree: FC<IDebugDataTreeProps> = ({editAll, name, data, metadata, onChange}) => {
 
-export interface DebugDataTreeProps {
-    name: string;
-    data: any;
-    onChange: (propName: string, val: any) => void;
-    onFunctionExecute?: (path: string) => void;
-}
+    const title = name + (metadata?.name ? `(${metadata?.name})` : '');
 
-interface DebugDataTreeItemProps {
-    name: string;
-    value: any;
-    onChange?: (val: any) => void;
-    onClick?: () => void;
-}
-
-const DebugDataTreeProp: FC<DebugDataTreeItemProps> = (props) => {
-    return <Row >
-        <Col span={6}><Popover content={props.name}>{props.name}{props.onChange ? ':' : ''}</Popover></Col>
-        <Col span={18}>
-            {props.onChange && <> 
-                <Input 
-                    style={{fontSize: 14}}
-                    value={props.value?.toString()} 
-                    onChange={(e) => {
-                        if (props.onChange)
-                            props.onChange(e.target.value);
-                    }}
-                />
-            </>}
-        </Col>
-    </Row>;
-};
-
-const DebugDataTreeFunc: FC<DebugDataTreeItemProps> = (props) => {
-
-    const onClick = (_e) => {
-        //alert(props.name);
-        if (props.value)
-            props.value();
-    };
-
-    return <>
-        <span style={{ color: 'green', fontWeight: 'bold' }} onClick={onClick}>{props.name}</span>
-        <span style={{ color: 'black' }} >(</span>
-        <span style={{ color: 'blue' }}>{getFnParamNames(props.value).join(', ')}</span>
-        <span style={{ color: 'balck' }}>)</span>
-    </>;
-};
-
-export const DebugDataTree: FC<DebugDataTreeProps> = ({name, data, onChange}) => {
-
-    const initTreeData: DataNode = { title: name, key: 'root', isLeaf: false};
+    const initTreeData: DataNode = { title, key: 'root', isLeaf: false};
 
     const [treeData, setTreeData] = useState([initTreeData]);
 
-    const [expanded, setExpanded] = useState([]);
+    const [expanded, setExpanded] = useLocalStorage(`debug_panel_${name}`, []);
+    const [loaded, setLoaded] = useState([]);
 
     //let node = treeData[0];
 
@@ -96,20 +52,24 @@ export const DebugDataTree: FC<DebugDataTreeProps> = ({name, data, onChange}) =>
     
     //addProps(node, data, '');
 
-    const getChildren = (prop: any, pkey: string): DataNode[] => {
+    const getChildren = (prop: any, pkey: string, meta: IPropertyMetadata[]): DataNode[] => {
         if (!prop)
-            return undefined;
+            return null;
 
         let parts = pkey.split('.').slice(1);
         
         let p = prop;
+        let pm: IPropertyMetadata = null;
+        let pl: IPropertyMetadata[] = meta;
 
         while (parts.length > 0) {
             p = p[parts[0]];
+            pm = pl?.find(x => toCamelCase(x.path) === parts[0]);
+            pl = pm?.properties;
             parts = parts.slice(1);
         }
 
-        if (!p) return undefined;
+        if (!p) return null;
 
         const members = Object.getOwnPropertyNames(p);
         
@@ -120,12 +80,20 @@ export const DebugDataTree: FC<DebugDataTreeProps> = ({name, data, onChange}) =>
         
         properties.forEach(item => {
             const key = pkey + '.' + item;
+            pm = pl?.find(x => toCamelCase(x.path) === item);
 
             if (typeof p[item] === 'object') {
-                const n: DataNode = {title: <DebugDataTreeProp name={item} value={undefined}/>, key, isLeaf: false };
+                const n: DataNode = {title: <DebugDataTreeProp name={item} metadata={pm} value={undefined}/>, key, isLeaf: false };
                 res.push(n);
             } else {
-                res.push({title: <DebugDataTreeProp name={item} value={p[item]} onChange={(val) => onPropChange(key, val)}/>, key, children:[], isLeaf: true});
+                const readonly = !editAll && (!pm || pm?.readonly);
+                res.push({title: <DebugDataTreeProp 
+                    name={item} 
+                    metadata={pm} 
+                    value={p[item]} 
+                    onChange={(val) => onPropChange(key, val)}
+                    readonly={readonly}
+                />, key, children:[], isLeaf: true});
             }
         });
 
@@ -133,11 +101,11 @@ export const DebugDataTree: FC<DebugDataTreeProps> = ({name, data, onChange}) =>
             res.push({title: <DebugDataTreeFunc name={item} value={p[item]}/>, key: pkey + '.' + item, isLeaf: true});
         });
 
-        return res.length === 0 ? undefined : res; // return undefined to refresh node on next expand
+        return res?.length > 0 ? res : null;
     };
 
     const loadTreeData = (list: DataNode[], key: React.Key, children: DataNode[]): DataNode[] =>
-        list.map(node => {
+        list?.map(node => {
             if (node.key === key)
                 return { ...node, children };
             if (node.children) 
@@ -147,38 +115,34 @@ export const DebugDataTree: FC<DebugDataTreeProps> = ({name, data, onChange}) =>
         
     const onLoadData = ({ key, children }: any) =>
         new Promise<void>(resolve => {
+            if (loaded.filter(x => x === key)?.length === 0)
+                setLoaded([...loaded, key]);
+
             if (!children) {
-                const c = getChildren(data, key);
-                if (c)
-                    setTreeData(origin => loadTreeData(origin, key, c));
+                const c = getChildren(data, key, metadata?.properties);
+                setTreeData(prev => loadTreeData(prev, key, c));
             }
             resolve();
         });
 
-    const updateTreeData = (list: DataNode[], data: any) =>
-        list.forEach(node => {
-            if (expanded.filter(x => x === node.key)?.length > 0) {
-                const c = getChildren(data, node.key.toString());
-                if (c) {
-                    node.children = c;
-                    updateTreeData(node.children, data);
-                }
+    const updateTreeData = (list: DataNode[], nodedata: any) =>
+        list?.forEach(node => {
+            if (expanded.filter(x => x === node.key)?.length > 0 || loaded.filter(x => x === node.key)?.length > 0) {
+                const c = getChildren(nodedata, node.key.toString(), metadata?.properties);
+                node.children = c;
+                updateTreeData(node.children, nodedata);
             }
         });
 
     useEffect(() => {
-        if (expanded.filter(x => x === 'root')?.length > 0) {
-
-            const n = {...initTreeData};
-
-            const c = getChildren(data, 'root');
-            if (c) {
-                n.children = c;
-                updateTreeData(n.children, data);
-            }
-            setTreeData([n]);
+        const n = treeData[0];
+        if (expanded.filter(x => x === 'root')?.length > 0 || loaded.filter(x => x === 'root')?.length > 0) {
+            const c = getChildren(data, 'root', metadata?.properties);
+            n.children = c;
+            updateTreeData(n.children, data);
         }
-    }, [data]);
+        setTreeData([n]);
+    }, [data, metadata]);
 
     return (
         <Tree
@@ -186,6 +150,7 @@ export const DebugDataTree: FC<DebugDataTreeProps> = ({name, data, onChange}) =>
             treeData={treeData}
             loadData={onLoadData}
             blockNode
+            defaultExpandedKeys={expanded}
             onExpand={(e) => setExpanded(e)}
         />
     );

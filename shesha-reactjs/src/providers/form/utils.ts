@@ -55,6 +55,7 @@ import { useDataContextManager } from 'providers/dataContextManager';
 import moment from 'moment';
 import { message } from 'antd';
 import { ISelectionProps } from 'providers/dataTable/contexts';
+import { useDataContext } from 'providers/dataContextProvider';
 
 /** Interface to geat all avalilable data */
 export interface IApplicationContext {
@@ -75,6 +76,8 @@ export interface IApplicationContext {
 }
 
 export function useApplicationContext(topContextId?: string): IApplicationContext {
+  let tcId = useDataContext(false)?.id;
+  tcId = topContextId || tcId;
   const { backendUrl } = useSheshaApplication();
   const dcm = useDataContextManager(false);
   const { formMode, form, setFormDataAndInstance: setFormData } = useForm(false) ?? dcm.getFormInstance();
@@ -84,7 +87,7 @@ export function useApplicationContext(topContextId?: string): IApplicationContex
     setFormData,
     formMode,
     form,
-    contexts: {...useDataContextManager(false)?.getDataContextsData(topContextId), lastUpdate: dcm.lastUpdate},
+    contexts: {...useDataContextManager(false)?.getDataContextsData(tcId), lastUpdate: dcm.lastUpdate},
     globalState,
     setGlobalState,
     selectedRow: useDataTableStore(false)?.selectedRow,
@@ -142,7 +145,7 @@ export const getActualModel = (model: any, allData: any) => {//, formData: any, 
     if (!value) 
       return value;
   
-    if (typeof value === 'object') {
+    if (typeof value === 'object' && !Array.isArray(value)) {
       if (isPropertySettings(value)) {
         // update setting value to actual
         const v = value as IPropertySetting;
@@ -152,9 +155,9 @@ export const getActualModel = (model: any, allData: any) => {//, formData: any, 
         } else {
           return v?._value;
         }
-      } //else
+      } else
         // update nested objects
-        //return getActualModel(value, formData, formMode);
+        return getActualModel(value, allData);
     }
     return value;
   };
@@ -188,7 +191,9 @@ export const getActualModel = (model: any, allData: any) => {//, formData: any, 
   for (var propName in m) {
     if (!Object.prototype.hasOwnProperty.call(m, propName)) continue;
     
-    const propNames = propName.split('.');
+    m[propName] = getSettingValue(m[propName], calcValue);
+
+    /*const propNames = propName.split('.');
     let obj = m;
     let i = 1;
     while(i < propNames.length) {
@@ -200,7 +205,7 @@ export const getActualModel = (model: any, allData: any) => {//, formData: any, 
 
     const value = obj[propNames[propNames.length - 1]];
 
-    obj[propNames[propNames.length - 1]] = getSettingValue(value, calcValue);
+    obj[propNames[propNames.length - 1]] = getSettingValue(value, calcValue);*/
   }
   return m;
 };
@@ -791,6 +796,7 @@ export const getFieldNameFromExpression = (expression: string) => {
 
   return expression.includes('.') ? expression.split('.') : expression;
 };
+
 export const getBoolean = (value: any) => {
   if (typeof value == 'boolean') {
     return value;
@@ -1415,18 +1421,10 @@ export const convertToMarkupWithSettings = (markup: FormMarkup, isSettingsForm?:
     if (typeof isSettingsForm === 'undefined')
       return result;
     else
-      return {
-        ...result,
-        formSettings: {
-          ...result.formSettings,
-          isSettingsForm: 
-            isSettingsForm === true 
-              ? true 
-              : isSettingsForm === false 
-                ? false 
-                : result.formSettings.isSettingsForm
-        }
-      };
+      if (typeof isSettingsForm !== 'undefined' && isSettingsForm !== null) {
+        result.formSettings.isSettingsForm = isSettingsForm;
+        return result;
+      }
   if (Array.isArray(markup)) return { components: markup, formSettings: {...DEFAULT_FORM_SETTINGS, isSettingsForm} };
 
   return { components: [], formSettings: {...DEFAULT_FORM_SETTINGS, isSettingsForm} };

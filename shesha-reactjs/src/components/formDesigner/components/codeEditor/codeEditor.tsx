@@ -72,7 +72,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
   const renderCodeEditor = () => (
     <BaseCodeEditor
       name={props.id}
-      style={{ width: 'unset' }}
+      style={mode === 'dialog' ? { width: 'unset' } : null}
       placeholder={props.placeholder}
       mode={language}
       theme="monokai"

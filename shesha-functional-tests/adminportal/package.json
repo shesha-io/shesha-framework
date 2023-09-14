@@ -18,7 +18,7 @@
         "@microsoft/applicationinsights-react-js": "^3.1.2",
         "@microsoft/applicationinsights-web": "^2.6.2",
         "@microsoft/signalr": "^5.0.6",
-        "@shesha/reactjs": "shesha-reactjs-4.21.1-canary.tgz",
+        "@shesha/reactjs": "shesha-reactjs-4.22.0-canary.tgz",
         "@types/react-dom": "^18.2.4",
         "antd": "^4.24.0",
         "axios": "^0.21.1",
