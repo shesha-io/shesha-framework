@@ -14,6 +14,7 @@ import { getStyle, validateConfigurableComponentSettings } from '../../providers
 import { axiosHttp } from '../../utils/fetchers';
 import { getNumericValue } from '../../utils/string';
 import settingsFormJson from './settingsForm.json';
+import './styles/index.less';
 
 type RangeType = 'start' | 'end';
 // tslint:disable-next-line:interface-over-type-literal
@@ -182,6 +183,7 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
         defaultValue={getDefaultRangePickerValues() as RangeValue}
         {...steps}
         style={getStyle(style, formData)}
+        className="sha-timepicker"
         {...rest}
         placeholder={null}
       />
@@ -196,6 +198,7 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
       defaultValue={defaultValue && moment(defaultValue)}
       {...steps}
       style={getStyle(style, formData)}
+      className="sha-timepicker"
       // show
       {...rest}
     />
