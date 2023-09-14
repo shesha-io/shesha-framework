@@ -1,4 +1,5 @@
-import { FieldSettings } from '@react-awesome-query-builder/antd';
+import { FieldOrGroup, FieldSettings } from '@react-awesome-query-builder/antd';
+import { IPropertyMetadata } from 'interfaces/metadata';
 
 //Fields
 
@@ -15,6 +16,29 @@ export interface IProperty {
   dataType: string;
   visible: boolean;
   fieldSettings?: FieldSettings | CustomFieldSettings;
-  preferWidgets?: string[];
   childProperties?: IProperty[];
+  [key: string]: any;
 }
+
+export interface IHasQueryBuilderConfig extends IProperty {
+  convert: (property: IProperty) => FieldOrGroup;
+}
+
+export const propertyHasQBConfig = (property: IProperty): property is IHasQueryBuilderConfig => {
+  return property && typeof((property as IHasQueryBuilderConfig).convert) === 'function';
+};
+
+export interface IHasCustomQBSettings {
+  toQueryBuilderField: (defaultConverter: () => FieldOrGroup) => FieldOrGroup;
+}
+
+export interface IPropertyMetadataWithQBSettings extends IPropertyMetadata, IHasCustomQBSettings {
+  
+}
+export interface IPropertyWithCustomQBSettings extends IProperty, IHasCustomQBSettings {
+
+}
+
+export const hasCustomQBSettings = (property: any): property is IHasCustomQBSettings => {
+  return property && typeof((property as IPropertyMetadataWithQBSettings).toQueryBuilderField) === 'function';
+};

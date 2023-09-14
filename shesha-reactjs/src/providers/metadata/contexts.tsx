@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { IModelMetadata } from '../../interfaces/metadata';
+import { IModelMetadata } from 'interfaces/metadata';
 
 export type MetadataType = 'entity' | 'context';
 

@@ -31,7 +31,8 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
   };
 
   const onChange = (result: JsonLogicResult) => {
-    setJsonLogicResult(result);
+    if (result !== jsonLogicResult)
+      setJsonLogicResult(result);
   };
 
   const onExpandClick = () => {
@@ -121,8 +122,6 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
         <QueryBuilder
           value={props.value}
           onChange={onChange}
-          fields={props.fields}
-          fetchFields={props.fetchFields}
           readOnly={readOnly}
         />
       </Modal>

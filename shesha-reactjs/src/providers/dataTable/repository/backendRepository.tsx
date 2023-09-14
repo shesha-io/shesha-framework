@@ -13,11 +13,12 @@ import { convertDotNotationPropertiesToGraphQL } from "providers/form/utils";
 import { IConfigurableColumnsProps, IDataColumnsProps } from "providers/datatableColumnsConfigurator/models";
 import { IMetadataDispatcherActionsContext } from "providers/metadataDispatcher/contexts";
 import { IEntityEndpointsEvaluator, useModelApiHelper } from "components/configurableForm/useActionEndpoint";
-import { IApiEndpoint, StandardEntityActions } from "interfaces/metadata";
+import { IApiEndpoint, isEntityReferencePropertyMetadata, StandardEntityActions } from "interfaces/metadata";
 import { IUseMutateResponse, useMutate } from "hooks/useMutate";
 import { IErrorInfo } from "interfaces/errorInfo";
 import { IAjaxResponseBase } from "interfaces/ajaxResponse";
 import FileSaver from "file-saver";
+import { DataTypes } from "interfaces/dataTypes";
 
 export interface IWithBackendRepositoryArgs {
     entityType: string;
@@ -150,7 +151,7 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
             return Promise.resolve([]);
 
         // fetch columns config from server
-        return metadataDispatcher.getPropertiesMetadata({ modelType: entityType, properties: dataProperties })
+        return metadataDispatcher.getPropertiesMetadata({ dataType: DataTypes.entityReference, modelType: entityType, properties: dataProperties })
             .then(response => {
 
                 return dataProperties.map<DataTableColumnDto>(p => {
@@ -169,7 +170,7 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
                             dataFormat: propMeta.dataFormat,
                             referenceListName: propMeta.referenceListName,
                             referenceListModule: propMeta.referenceListModule,
-                            entityReferenceTypeShortAlias: propMeta.entityType,
+                            entityReferenceTypeShortAlias: isEntityReferencePropertyMetadata(propMeta) ? propMeta.entityType : undefined,
                             allowInherited: false, // todo: add to metadata
                             isFilterable: true, // todo: add to metadata
                             isSortable: true, // todo: add to metadata

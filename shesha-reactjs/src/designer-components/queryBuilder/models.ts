@@ -1,5 +1,4 @@
 import { FC } from "react";
-import { IProperty } from "providers/queryBuilder/models";
 
 export interface IQueryBuilderProps {
     jsonExpanded?: boolean;
@@ -12,8 +11,6 @@ export interface IQueryBuilderProps {
 
   export interface IQueryBuilderFieldProps {
     jsonExpanded?: boolean;
-    fields: IProperty[];
-    fetchFields: (fieldNames: string[]) => void;
     value?: object;
     onChange?: (value: any) => void;
     readOnly?: boolean;

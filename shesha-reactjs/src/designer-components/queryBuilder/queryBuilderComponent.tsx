@@ -47,7 +47,6 @@ export const QueryBuilderComponentRenderer: FC<IQueryBuilderComponentProps> = pr
   const { fieldsUnavailableHint } = props;
 
   const queryBuilder = useQueryBuilder(false);
-
   const fieldsAvailable = Boolean(queryBuilder);
 
   if (!fieldsAvailable && formMode === 'designer' && !fieldsUnavailableHint)
@@ -59,9 +58,6 @@ export const QueryBuilderComponentRenderer: FC<IQueryBuilderComponentProps> = pr
       />
     );
 
-  const fields = queryBuilder?.fields || [];
-  const fetchFields = queryBuilder?.fetchFields;
-
   return !fieldsAvailable && fieldsUnavailableHint ? (
     <ConfigurableFormItem model={props}>
       <Typography.Text type="secondary">{fieldsUnavailableHint}</Typography.Text>
@@ -72,8 +68,6 @@ export const QueryBuilderComponentRenderer: FC<IQueryBuilderComponentProps> = pr
         return <QueryBuilderField
           value={value}
           onChange={onChange}
-          fields={fields}
-          fetchFields={fetchFields}
           jsonExpanded={props.jsonExpanded}
           readOnly={props.readOnly}
         />;

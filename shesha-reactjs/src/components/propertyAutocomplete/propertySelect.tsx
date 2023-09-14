@@ -1,13 +1,12 @@
-import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
+import React, { CSSProperties, FC, useEffect, useMemo, useRef, useState } from 'react';
 import { Select, Tooltip } from 'antd';
-import { useMetadata, useQueryBuilder } from '../../providers';
+import { useQueryBuilder } from '../../providers';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { IModelMetadata, IPropertyMetadata, ISpecification } from '../../interfaces/metadata';
+import { IModelMetadata, IPropertyMetadata, isEntityMetadata, ISpecification, metadataHasNestedProperties } from '../../interfaces/metadata';
 import camelcase from 'camelcase';
 import { getIconByPropertyMetadata } from '../../utils/metadata';
 import { BulbOutlined, BulbTwoTone } from '@ant-design/icons';
 import { DataTypes } from '../../interfaces/dataTypes';
-
 
 export interface IPropertySelectProps {
   id?: string;
@@ -18,6 +17,13 @@ export interface IPropertySelectProps {
   onChange?: (value: string) => void;
   onSelect?: (value: string, selectedProperty: IPropertyItem) => void;
   readOnly?: boolean;
+  containerInfo: IContainerInfo;
+}
+
+export interface IQbItem {
+  label: string;
+  key: string;
+  items?: IQbItem[];
 }
 
 interface IOption {
@@ -28,6 +34,11 @@ interface IOption {
 interface IAutocompleteState {
   options: IOption[];
   propertyItems: IPropertyItem[];
+}
+
+export interface IContainerInfo {
+  properties: IPropertyMetadata[];
+  specifications: ISpecification[];
 }
 
 const getFullPath = (path: string, prefix: string) => {
@@ -80,23 +91,30 @@ export interface IHasPropertyType {
 
 export type IPropertyItem = (IPropertyMetadata | ISpecification) & IHasPropertyType;
 
-const getPropertiesWithSpecs = (metadata?: IModelMetadata): IPropertyItem[] => {
-  if (!metadata)
-    return [];
-    
-  const properties = (metadata.properties ?? []).map<IPropertyItem>(p => ({...p, itemType: 'property'}));
-  const specifications = (metadata.specifications ?? []).map<IPropertyItem>(p => ({...p, itemType: 'specification'}));
+const isSpecification = (item: IPropertyItem): item is ISpecification & IHasPropertyType => {
+  return item.itemType === 'specification';
+};
 
+const modelMetadata2Properties = (modelMetadata?: IModelMetadata): IPropertyItem[] => {
+  if (!modelMetadata)
+    return [];
+
+  const properties = metadataHasNestedProperties(modelMetadata) 
+    ? (modelMetadata.properties).map<IPropertyItem>(p => ({...p, itemType: 'property'}))
+    : [];
+  
+  const specifications = isEntityMetadata(modelMetadata)
+    ? (modelMetadata.specifications ?? []).map<IPropertyItem>(p => ({...p, itemType: 'specification'}))
+    : [];
 
   return [...properties, ...specifications];
 };
 
 export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, ...props }) => {
-  const meta = useMetadata(false);
-  const { fetchContainer } = useQueryBuilder();
-  const { metadata } = meta || {};
 
-  const initialProperties = getPropertiesWithSpecs(metadata);
+  const { fetchContainer } = useQueryBuilder();
+
+  const initialProperties = [];
 
   const [state, setState] = useState<IAutocompleteState>({ options: propertyItems2options(initialProperties, null), propertyItems: initialProperties });
 
@@ -113,9 +131,9 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, ...
 
     const lastIdx = props.value.lastIndexOf('.');
 
-    if (metadata && lastIdx > -1){
+    if (state.propertyItems && state.propertyItems.length > 0 && lastIdx > -1){
       // Check specifications, specification name may contain namespace and it shouldn't be recognized as a container
-      const spec = metadata.specifications?.find(s => s.name === props.value);
+      const spec = state.propertyItems.find(s => isSpecification(s) && s.name === props.value);
       if (spec)
         return null;
     }
@@ -125,13 +143,21 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, ...
       : props.value.substring(0, lastIdx);
   }, [props.value]);
 
+  const isFirstLoading = useRef<boolean>(true);
   useEffect(() => {
+    if (!containerPath && !isFirstLoading.current)
+      return;
+      
+    if (isFirstLoading.current === true){
+      isFirstLoading.current = false;
+    }
+    
     // fetch container if changed
     fetchContainer(containerPath).then(m => {
-      const propertyItems = getPropertiesWithSpecs(m);
+      const propertyItems = modelMetadata2Properties(m);
       setProperties(propertyItems, containerPath);
     });
-  }, [metadata?.properties, containerPath]);
+  }, [containerPath]);
 
   const getPropertyItem = (path: string): IPropertyItem => {
     return state.propertyItems.find(p => getPropertyItemIdentifier(p, containerPath) === path);

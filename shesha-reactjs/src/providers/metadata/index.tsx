@@ -42,7 +42,7 @@ const MetadataProvider: FC<PropsWithChildren<IMetadataProviderProps>> = ({ id, m
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
   const getMetadata = () => {
-    return fetchMeta({ modelType });
+    return fetchMeta({ dataType, modelType });
   };
 
   const metadataActions: IMetadataActionsContext = {

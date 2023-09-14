@@ -26,6 +26,7 @@ import { ConfigurationItemsViewMode } from '../appConfigurator/models';
 import { useModelApiEndpoint, useModelApiHelper } from '../../components/configurableForm/useActionEndpoint';
 import { getQueryParams, joinUrlAndPath } from '../../utils/url';
 import { removeNullUndefined } from '../utils';
+import { DataTypes } from 'interfaces/dataTypes';
 
 /**
  * Form configuration DTO
@@ -485,7 +486,7 @@ export const getGqlFields = (payload: GetGqlFieldsPayload): Promise<IFieldData[]
 
   if (!formMarkup || !formSettings.modelType) return Promise.resolve([]);
 
-  return getMetadata({ modelType: formSettings.modelType }).then((metadata) => {
+  return getMetadata({ dataType: DataTypes.entityReference, modelType: formSettings.modelType }).then((metadata) => {
     let fields: IFieldData[] = [];
 
     const fieldNames = getFormFields(payload);

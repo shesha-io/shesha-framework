@@ -12,7 +12,7 @@ import { executeScriptSync } from '../../../../providers/form/utils';
 import ComponentsContainer from '../../containers/componentsContainer';
 import { IDrawerProps } from './models';
 
-export interface IShaDrawerProps extends Omit<IDrawerProps, 'style' | 'size'>, DrawerProps {}
+export interface IShaDrawerProps extends Omit<IDrawerProps, 'style' | 'size'>, Omit<DrawerProps, 'id'> {}
 
 interface IShaDrawerState {
   open?: boolean;

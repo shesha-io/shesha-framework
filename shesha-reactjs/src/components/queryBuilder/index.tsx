@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo } from 'react';
+import React, { FC, useEffect, useMemo, useRef } from 'react';
 import {
   Query,
   Builder,
@@ -14,13 +14,14 @@ import {
 } from '@react-awesome-query-builder/antd';
 import classNames from 'classnames';
 import { ITableColumn } from '../../interfaces';
-import { IProperty } from '../../providers/queryBuilder/models';
+import { hasCustomQBSettings, IProperty, propertyHasQBConfig } from '../../providers/queryBuilder/models';
 import { DataTypes } from '../../interfaces/dataTypes';
 import { config as InitialConfig } from './config';
 import { FieldSelect } from './fieldSelect';
 import { FieldAutocomplete } from './fieldAutocomplete';
 import { extractVars } from '../../utils/jsonLogic';
 import { Skeleton } from 'antd';
+import { useQueryBuilder } from 'providers';
 
 export interface IQueryBuilderColumn extends ITableColumn {
   fieldSettings?: FieldSettings;
@@ -36,14 +37,13 @@ export interface IQueryBuilderProps {
   value?: object;
   onChange?: (result: JsonLogicResult) => void;
   columns?: IQueryBuilderColumn[];
-  fields: IProperty[];
-  fetchFields: (fieldNames: string[]) => void;
   showActionBtnOnHover?: boolean;
   readOnly?: boolean;
 }
 
 export const QueryBuilder: FC<IQueryBuilderProps> = props => {
-  const { value, fields, fetchFields } = props;
+  const { value } = props;
+  const { fields, fetchFields, customWidgets } = useQueryBuilder();
 
   const missingFields = useMemo(() => {
     const vars = extractVars(value);
@@ -62,14 +62,18 @@ export const QueryBuilder: FC<IQueryBuilderProps> = props => {
 
   const qbSettings = {
     ...InitialConfig.settings,
-    renderField: props => (true ? <FieldAutocomplete {...props} /> : <FieldSelect {...props} />),
+    removeIncompleteRulesOnLoad: false,
+    renderField: props => (true ? <FieldAutocomplete {...props} fields={fields} /> : <FieldSelect {...props} />),
   };
 
   const convertFields = (fields: IProperty[]): Fields => {
     const confFields: Fields = {};
 
     const convertField = (property: IProperty): FieldOrGroup => {
-      const { dataType, visible, label, fieldSettings, preferWidgets, childProperties: childProps } = property;
+      if (propertyHasQBConfig(property))
+        return property.convert(property);
+
+      const { dataType, visible, label, fieldSettings, childProperties: childProps } = property;
       let type: string = dataType;
       let defaultPreferWidgets = [];
 
@@ -108,7 +112,6 @@ export const QueryBuilder: FC<IQueryBuilderProps> = props => {
         case 'entityReference':
         case DataTypes.entityReference:
           type = 'entityReference';
-          //defaultPreferWidgets = ['entityAutocomplete'];
           break;
 
         case 'refList':
@@ -116,9 +119,6 @@ export const QueryBuilder: FC<IQueryBuilderProps> = props => {
           type = 'refList';
           defaultPreferWidgets = ['refListDropdown'];
           break;
-        // case 'multiValueRefList':
-        //   type = 'multiselect';
-        //   break;
         case '!struct':
           type = dataType;
           break;
@@ -126,16 +126,16 @@ export const QueryBuilder: FC<IQueryBuilderProps> = props => {
           break;
       }
 
-      const fieldPreferWidgets = preferWidgets || defaultPreferWidgets || [];
+      const fieldPreferWidgets = defaultPreferWidgets || [];
 
       const subfields = dataType === '!struct' ? {} : undefined;
-      if (subfields){
-          childProps.forEach(p => {
-            const converted = convertField(p);
-            if (converted)
-              subfields[p.propertyName] = converted;
-          });
-      }     
+      if (subfields) {
+        childProps.forEach(p => {
+          const converted = convertField(p);
+          if (converted)
+            subfields[p.propertyName] = converted;
+        });
+      }
 
       return {
         label,
@@ -148,7 +148,10 @@ export const QueryBuilder: FC<IQueryBuilderProps> = props => {
     };
 
     fields?.forEach((property) => {
-      const converted = convertField(property);
+      const converted = hasCustomQBSettings(property)
+        ? property.toQueryBuilderField(() => convertField(property))
+        : convertField(property);
+      
       if (converted)
         confFields[property.propertyName] = converted;
     });
@@ -158,6 +161,7 @@ export const QueryBuilder: FC<IQueryBuilderProps> = props => {
   const qbConfig = useMemo(() => {
     const conf: Config = {
       ...InitialConfig,
+      widgets: { ...InitialConfig.widgets, ...customWidgets },
       settings: qbSettings,
       fields: convertFields(fields),
     };
@@ -171,7 +175,7 @@ export const QueryBuilder: FC<IQueryBuilderProps> = props => {
     }
 
     return conf;
-  }, [fields, props.readOnly]);
+  }, [fields, customWidgets, props.readOnly]);
 
   return missingFields.length > 0 ? <Skeleton></Skeleton> : <QueryBuilderContent {...props} qbConfig={qbConfig} />;
 };
@@ -195,6 +199,9 @@ const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
   value,
   qbConfig,
 }) => {
+  const lastLocallyChangedValue = useRef(value);
+  const changedOutside = value !== lastLocallyChangedValue.current;
+
   const tree = useMemo(() => {
     const loadedTree = value
       ? loadJsonLogic(value, qbConfig) // QbUtils.loadFromJsonLogic(value, qbConfig)
@@ -202,7 +209,7 @@ const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
 
     const checkedTree = QbUtils.checkTree(loadedTree, qbConfig);
     return checkedTree;
-  }, [value]);
+  }, [changedOutside]);
 
   const renderBuilder = (props: BuilderProps) => {
     return (
@@ -216,8 +223,10 @@ const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
 
   const handleChange = (_tree: ImmutableTree, _config: Config) => {
     if (onChange) {
-      const jsonLogic = QbUtils.jsonLogicFormat(_tree, _config);
-      onChange(jsonLogic);
+      const jsonLogicResult = QbUtils.jsonLogicFormat(_tree, _config);
+      
+      lastLocallyChangedValue.current = jsonLogicResult.logic;
+      onChange(jsonLogicResult);
     }
   };
 

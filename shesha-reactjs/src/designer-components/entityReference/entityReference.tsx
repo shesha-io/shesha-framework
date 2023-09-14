@@ -7,6 +7,7 @@ import { EntityReference, IEntityReferenceProps } from 'components/entityReferen
 import { LinkExternalOutlined } from 'icons/linkExternalOutlined';
 import { EntityReferenceSettingsForm } from './settings';
 import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
+import { isEntityReferencePropertyMetadata } from 'interfaces/metadata';
 
 export type IActionParameters = [{ key: string; value: string }];
 
@@ -56,10 +57,10 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
     })
     .add<IEntityReferenceControlProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
   ,
-  linkToModelMetadata: (model, metadata): IEntityReferenceControlProps => {
+  linkToModelMetadata: (model, propMetadata): IEntityReferenceControlProps => {
     return {
       ...model,
-      entityType: metadata.entityType,
+      entityType: isEntityReferencePropertyMetadata(propMetadata) ? propMetadata.entityType : undefined,
     };
   },
 };

@@ -4,7 +4,7 @@ import { SidebarContainer } from 'components';
 import { TableViewProperties } from './tableViewProperties';
 import { useTableViewSelectorConfigurator } from 'providers/tableViewSelectorConfigurator';
 import { CodeVariablesTables } from 'components/codeVariablesTable';
-import { QueryBuilderProvider, useMetadataFields } from '../../../providers';
+import { QueryBuilderProvider, useMetadata } from 'providers';
 import { QueryBuilderPlainRenderer } from 'designer-components/queryBuilder/queryBuilderFieldPlain';
 import QueryBuilderExpressionViewer from 'designer-components/queryBuilder/queryBuilderExpressionViewer';
 
@@ -26,7 +26,7 @@ export const TableViewSelectorConfigurator = forwardRef<
     },
   }));
 
-  const fields = useMetadataFields();
+  const metadata = useMetadata(false);
 
   const { selectedItemId, updateItem, items, readOnly } = useTableViewSelectorConfigurator();
   const selectedItem = useMemo(() => items?.find(({ id }) => id === selectedItemId), [items, selectedItemId]);
@@ -64,7 +64,7 @@ export const TableViewSelectorConfigurator = forwardRef<
           />
         )}
 
-        <QueryBuilderProvider fields={fields}>
+        <QueryBuilderProvider metadata={metadata?.metadata}>
           <Tabs
             defaultActiveKey="queryBuilderConfigureTab"
             className="sha-toolbar-configurator-body-tabs"

@@ -21,7 +21,7 @@ import ShaRoutingProvider from '../shaRouting';
 import { AppConfiguratorProvider } from '../appConfigurator';
 import { DynamicModalProvider } from '../dynamicModal';
 import { UiProvider } from '../ui';
-import { MetadataDispatcherProvider } from '../metadataDispatcher';
+import { MetadataDispatcherProvider } from 'providers';
 import {
   FormIdentifier,
   IAuthProviderRefProps,
@@ -121,7 +121,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
 
   const testMetadata: IModelMetadata = {
     name: 'testProp',
-    type: '',
+    entityType: '',
     dataType: 'string',
     apiEndpoints: {},
     specifications: [],

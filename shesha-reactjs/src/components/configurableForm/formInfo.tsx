@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { useAppConfigurator, useSheshaApplication } from '../../providers';
 import { FormIdentifier, IPersistedFormProps } from '../../providers/form/models';
 import { Card } from 'antd';
-import { FORM_STATUS_MAPPING } from '../../utils/configurationFramework/models';
+import { CONFIGURATION_ITEM_STATUS_MAPPING } from '../../utils/configurationFramework/models';
 import { getFormFullName } from '../../utils/form';
 import StatusTag from '../statusTag';
 import HelpTextPopover from '../helpTextPopover';
@@ -35,7 +35,7 @@ export const FormInfo: FC<IPersistedFormProps> = ({ id, versionNo, description, 
             Form: {getFormFullName(module, name)} v{versionNo}
           </span>
           {false && <HelpTextPopover content={description}></HelpTextPopover>}
-          <StatusTag value={versionStatus} mappings={FORM_STATUS_MAPPING} color={null}></StatusTag>
+          <StatusTag value={versionStatus} mappings={CONFIGURATION_ITEM_STATUS_MAPPING} color={null}></StatusTag>
         </>
       }
       extra={<CloseOutlined onClick={() => toggleShowInfoBlock(false)} title="Click to hide form info" />}

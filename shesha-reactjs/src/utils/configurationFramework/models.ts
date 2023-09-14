@@ -45,7 +45,7 @@ export const ConfigurationItemVersionStatusMap: VersionStatusMap = {
     [ConfigurationItemVersionStatus.Retired]: { text: 'Retired', color: '#FF7518' },
 };
 
-export const FORM_STATUS_MAPPING: IStatusMappings = { 
+export const CONFIGURATION_ITEM_STATUS_MAPPING: IStatusMappings = { 
     mapping: Object.values(ConfigurationItemVersionStatus)
         .map<IStatusMap>(v => {
             const code = Number(v);
