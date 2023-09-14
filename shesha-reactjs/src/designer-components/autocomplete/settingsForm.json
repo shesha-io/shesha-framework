@@ -927,7 +927,7 @@
             "parentId": "FcmCvh3CcsJbPrg0ryOI3",
             "hidden": false,
             "customVisibility": null,
-            "description": "Enter custom even handler on changing of event. (form, value, option) are exposed. Called when select an option or input value change",
+            "description": "Enter custom event handler on changing of event. (form, value, option) are exposed. Called when select an option or input value change",
             "validate": {},
             "settingsValidationErrors": [],
             "exposedVariables": [
@@ -1019,7 +1019,7 @@
               "parentId": "FcmCvh3CcsJbPrg0ryOI3",
               "hidden": false,
               "customVisibility": null,
-              "description": "Enter custom even handler on changing of event. (form, value, option) are exposed. Called when select an option or input value change",
+              "description": "Enter custom event handler on changing of event. (form, value, option) are exposed. Called when select an option or input value change",
               "validate": {},
               "settingsValidationErrors": [],
               "exposedVariables": [
