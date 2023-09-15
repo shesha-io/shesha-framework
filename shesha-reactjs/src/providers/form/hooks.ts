@@ -18,7 +18,9 @@ export const toolbarGroupsToComponents = (availableComponents: IToolboxComponent
   if (availableComponents) {
     availableComponents.forEach((group) => {
       group.components.forEach((component) => {
-        allComponents[component.type] = component;
+        if (component?.type) {
+          allComponents[component.type] = component;
+        }
       });
     });
   }
