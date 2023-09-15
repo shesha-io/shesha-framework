@@ -1017,7 +1017,7 @@
             "parentId": "_m7e9WBdpkz4CsCrpVx8d",
             "hidden": false,
             "customVisibility": null,
-            "description": "Enter custom even handler on changing of event. (form, value, dateString) are exposed",
+            "description": "Enter custom event handler on changing of event. (form, value, dateString) are exposed",
             "validate": {},
             "settingsValidationErrors": [],
             "exposedVariables": [
@@ -1097,7 +1097,7 @@
               "parentId": "_m7e9WBdpkz4CsCrpVx8d",
               "hidden": false,
               "customVisibility": null,
-              "description": "Enter custom even handler on changing of event. (form, value, dateString) are exposed",
+              "description": "Enter custom event handler on changing of event. (form, value, dateString) are exposed",
               "validate": {},
               "settingsValidationErrors": [],
               "exposedVariables": [

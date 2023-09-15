@@ -123,7 +123,7 @@ export const getSettings = (data: any) =>
       parentId: 'root',
       hidden: false,
       customVisibility: null,
-      description: 'Enter custom even handler on changing of event. (form, value, option) are exposed',
+      description: 'Enter custom event handler on changing of event. (form, value, option) are exposed',
       validate: {},
       settingsValidationErrors: [],
       exposedVariables: [
@@ -190,10 +190,10 @@ export const getSettings = (data: any) =>
         },
         {
           id: '8d1541db-2151-4568-b925-d8777cea7f0f',
-          "name": "setGlobalState",
-          "description": "Setting the global state of the application",
-          "type": "(payload: { key: string, data: any } ) => void"
-        }
+          name: 'setGlobalState',
+          description: 'Setting the global state of the application',
+          type: '(payload: { key: string, data: any } ) => void',
+        },
       ],
     })
     .addSectionSeparator({
@@ -221,7 +221,7 @@ export const getSettings = (data: any) =>
       parentId: 'root',
       label: 'Custom Visibility',
       description:
-        'Enter custom visibility code.  You must return true to show the component. ' + 
+        'Enter custom visibility code.  You must return true to show the component. ' +
         'The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
     })
     .toJson();
