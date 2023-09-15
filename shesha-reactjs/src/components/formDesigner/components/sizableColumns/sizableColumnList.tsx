@@ -7,7 +7,6 @@ import {
   DraggableStateSnapshot,
   Droppable,
   DroppableProvided,
-  DroppableStateSnapshot,
 } from 'react-beautiful-dnd';
 
 import { ISizableColumnProps } from './interfaces';
@@ -26,7 +25,9 @@ const DragHandleContext = React.createContext(null);
 const EditableCell = ({ title, editable, children, dataIndex, record, handleSave, ...restProps }) => {
   const [editing, setEditing] = useState(false);
   const inputRef = useRef(null);
+
   const form = useContext(EditableContext);
+
   useEffect(() => {
     if (editing) {
       inputRef.current.focus();
@@ -66,7 +67,6 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
           },
         ]}
       >
-        {/* <Input ref={inputRef} onPressEnter={save} onBlur={save} /> */}
         <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} />
       </Form.Item>
     ) : (
@@ -98,7 +98,9 @@ const DraggableBodyRowInner = ({ columns, className, style, ...restProps }) => {
 
   // function findIndex base on Table rowKey props and should always be a right array index
   const rowKey = restProps['data-row-key'];
+
   const index = columns.findIndex((x) => x.id === restProps['data-row-key']);
+
   return (
     <Draggable key={rowKey} draggableId={rowKey} index={index}>
       {(providedDraggable: DraggableProvided, snapshotDraggable: DraggableStateSnapshot) => (
@@ -198,11 +200,6 @@ export const SizableColumnsList: FC<IProps> = ({ value, onChange, readOnly }) =>
     };
   });
 
-  const getListStyle = (_isDraggingOver: boolean) => ({
-    //background: isDraggingOver ? "lightgrey" : "inherit",
-    //overflow: "scroll" as "scroll",
-  });
-
   const onDragEnd = (result: DropResult) => {
     const { source, destination } = result;
 
@@ -247,8 +244,8 @@ export const SizableColumnsList: FC<IProps> = ({ value, onChange, readOnly }) =>
         <Space direction="vertical" style={{ width: '100%' }}>
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId={'columns'}>
-              {(provided: DroppableProvided, snapshot: DroppableStateSnapshot) => (
-                <div ref={provided.innerRef} {...provided.droppableProps} style={getListStyle(snapshot.isDraggingOver)}>
+              {(provided: DroppableProvided) => (
+                <div ref={provided.innerRef} {...provided.droppableProps}>
                   <Table
                     scroll={{ x: 'mex-content' }}
                     bordered
