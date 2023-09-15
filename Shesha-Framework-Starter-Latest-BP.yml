@@ -4,11 +4,11 @@ variables:
 - name: isMain
   value: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
 
-trigger:
-  branches:
-    include:
-    - releases/*
-    - main
+# trigger:
+#   branches:
+#     include:
+#     - releases/*
+#     - main
 
 pool: 
   name: Azure Pipelines
