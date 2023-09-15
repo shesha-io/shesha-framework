@@ -66,13 +66,6 @@ stages:
         versionSpec: 18.15.0
       retryCountOnTaskFailure: 5
     - task: Npm@1
-      displayName: 'Npm Update Version'
-      inputs:
-        command: custom
-        workingDir: shesha-starter/frontend
-        verbose: false
-        customCommand: 'version $(versionNo)--allow-same-version'
-    - task: Npm@1
       displayName: 'Npm Install'
       inputs:
         command: custom
@@ -85,7 +78,7 @@ stages:
         command: custom
         workingDir: 'shesha-functional-tests/adminportal'
         verbose: true
-        customCommand: install @shesha-io/reactjs@latest
+        customCommand: install @shesha-io/reactjs@$(releaseVersion)
     - task: Npm@1
       displayName: Npm Build
       inputs:
