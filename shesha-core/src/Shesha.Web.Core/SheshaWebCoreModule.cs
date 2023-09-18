@@ -26,7 +26,6 @@ namespace Shesha
     [DependsOn(
         typeof(SheshaFrameworkModule),
         typeof(SheshaCoreModule),
-        typeof(SheshaApplicationModule),
         typeof(SheshaNHibernateModule),
         typeof(AbpAspNetCoreModule),
         typeof(AbpAspNetCoreSignalRModule),
@@ -54,11 +53,6 @@ namespace Shesha
 
             // Use database for language management
             Configuration.Modules.Zero().LanguageManagement.EnableDbLocalization();
-
-            Configuration.Modules.AbpAspNetCore()
-                 .CreateControllersForAppServices(
-                     typeof(SheshaApplicationModule).GetAssembly()
-                 );
 
             ConfigureTokenAuth();
 
