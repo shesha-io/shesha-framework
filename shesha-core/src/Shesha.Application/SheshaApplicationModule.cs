@@ -1,4 +1,5 @@
 ﻿using Abp;
+using Abp.AspNetCore.Configuration;
 using Abp.AutoMapper;
 using Abp.Configuration.Startup;
 using Abp.Dependency;
@@ -7,6 +8,7 @@ using Abp.Net.Mail;
 using Abp.Net.Mail.Smtp;
 using Abp.Notifications;
 using Abp.Reflection;
+using Abp.Reflection.Extensions;
 using Castle.MicroKernel.Registration;
 using Shesha.Authorization;
 using Shesha.Email;
@@ -116,6 +118,11 @@ namespace Shesha
             );
 
             #endregion
+
+            Configuration.Modules.AbpAspNetCore()
+                 .CreateControllersForAppServices(
+                     typeof(SheshaApplicationModule).GetAssembly()
+                 );
         }
 
         public override void Initialize()
