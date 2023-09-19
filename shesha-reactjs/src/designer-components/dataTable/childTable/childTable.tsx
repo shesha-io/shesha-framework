@@ -12,7 +12,7 @@ import React, { FC, Fragment, MutableRefObject, useEffect } from 'react';
 import { useDeepCompareEffect } from 'react-use';
 import { IChildTableComponentProps } from '.';
 import { CollapsiblePanel, GlobalTableFilter, Show, TablePager } from '../../../components';
-import { ButtonGroup } from '../../../components/formDesigner/components/button/buttonGroup/buttonGroupComponent';
+import { ButtonGroup } from '../../../components/formDesigner/components/button/buttonGroup/buttonGroup';
 import ComponentsContainer from '../../../components/formDesigner/containers/componentsContainer';
 import { DEFAULT_DT_USER_CONFIG } from '../../../providers/dataTable/contexts';
 import { hasDynamicFilter } from '../../../providers/dataTable/utils';

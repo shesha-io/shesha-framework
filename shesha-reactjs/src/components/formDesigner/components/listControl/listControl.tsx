@@ -3,7 +3,14 @@ import React, { FC, useCallback, useMemo, useState } from 'react';
 import { useGet, useMutate } from 'hooks';
 import { useEntitiesGetAll } from 'apis/entities';
 import { EntitiesGetAllQueryParams } from 'apis/entities';
-import { FormItemProvider, SubFormProvider, useAppConfigurator, useForm, useGlobalState, useNestedPropertyMetadatAccessor } from 'providers';
+import {
+  FormItemProvider,
+  SubFormProvider,
+  useAppConfigurator,
+  useForm,
+  useGlobalState,
+  useNestedPropertyMetadatAccessor,
+} from 'providers';
 import { getQueryParams } from 'utils/url';
 import camelCaseKeys from 'camelcase-keys';
 import { IListControlProps, IListComponentRenderState, IEvaluatedFilters } from './models';
@@ -25,7 +32,7 @@ import {
 import SubForm from '../subForm/subForm';
 import CollapsiblePanel from '../../../panel';
 import Show from '../../../show';
-import { ButtonGroup } from '../button/buttonGroup/buttonGroupComponent';
+import { ButtonGroup } from '../button/buttonGroup/buttonGroup';
 import ComponentsContainer from '../../containers/componentsContainer';
 import ValidationErrors from '../../../validationErrors';
 import ShaSpin from '../../../shaSpin';
@@ -45,7 +52,7 @@ import { useAsyncMemo } from 'hooks/useAsyncMemo';
 import { evaluateDynamicFilters } from 'utils';
 
 /** @deprecated: Use DataList instead */
-const ListControl: FC<IListControlProps> = props => {
+const ListControl: FC<IListControlProps> = (props) => {
   const {
     containerId,
     dataSource,
@@ -88,7 +95,11 @@ const ListControl: FC<IListControlProps> = props => {
 
   const { formInfoBlockVisible } = useAppConfigurator();
 
-  const { formConfiguration, refetch: refetchFormConfig, error: fetchFormError } = useFormConfiguration({
+  const {
+    formConfiguration,
+    refetch: refetchFormConfig,
+    error: fetchFormError,
+  } = useFormConfiguration({
     formId: formId,
     lazy: !Boolean(formId),
   });
@@ -110,9 +121,12 @@ const ListControl: FC<IListControlProps> = props => {
   const useGetAll = apiSource === 'custom' ? useGet : useEntitiesGetAll;
   const getAllProps = apiSource === 'custom' ? { path: customApiUrl || '', lazy: true } : { lazy: true };
 
-  const { refetch: fetchAllEntities, loading: isFetchingEntities, data, error: fetchEntitiesError } = useGetAll(
-    getAllProps as any
-  );
+  const {
+    refetch: fetchAllEntities,
+    loading: isFetchingEntities,
+    data,
+    error: fetchEntitiesError,
+  } = useGetAll(getAllProps as any);
 
   const fetchEntities = (params: object) => {
     if (apiSource === 'custom') {
@@ -170,7 +184,7 @@ const ListControl: FC<IListControlProps> = props => {
     );
 
     return {
-      ready: !response.some(f => f?.unevaluatedExpressions?.length),
+      ready: !response.some((f) => f?.unevaluatedExpressions?.length),
       filter: JSON.stringify(response[0]?.expression) || '',
     };
   }, [filters, formData, globalState]);
@@ -223,7 +237,7 @@ const ListControl: FC<IListControlProps> = props => {
               ? value?.filter((_, index) => state?.selectedItemIndexes?.includes(index))
               : null,
           selectedItem: selectionMode === 'single' ? value[state?.selectedItemIndex] : null,
-        }
+        },
       });
       setGlobalStateState({
         key: uniqueStateId,
@@ -247,7 +261,7 @@ const ListControl: FC<IListControlProps> = props => {
   }, [state, uniqueStateId, value]);
 
   useDeepCompareEffect(() => {
-    setState(prev => ({ ...prev, selectedItemIndexes: [] }));
+    setState((prev) => ({ ...prev, selectedItemIndexes: [] }));
   }, [value]);
 
   useDeepCompareEffect(() => {
@@ -317,7 +331,7 @@ const ListControl: FC<IListControlProps> = props => {
     [state]
   );
 
-  const debouncedAddItems = useDebouncedCallback(data => {
+  const debouncedAddItems = useDebouncedCallback((data) => {
     onChange(Array.isArray(value) ? [...value, data] : [data]);
   }, 300);
 
@@ -336,7 +350,7 @@ const ListControl: FC<IListControlProps> = props => {
         onChange={(page: number, pageSize) => {
           const skipCount = pageSize * (page - 1);
 
-          setState(prev => ({ ...prev, skipCount, maxResultCount: pageSize }));
+          setState((prev) => ({ ...prev, skipCount, maxResultCount: pageSize }));
 
           if (evaluatedFilters?.ready) {
             fetchEntities({ queryParams: { ...queryParams, skipCount: skipCount, maxResultCount: pageSize } });
@@ -410,10 +424,10 @@ const ListControl: FC<IListControlProps> = props => {
   );
 
   const setQuickSearch = useDebouncedCallback((text: string) => {
-    setState(prev => ({ ...prev, quickSearch: text }));
+    setState((prev) => ({ ...prev, quickSearch: text }));
   }, 200);
 
-  const submitListItems = useDebouncedCallback(url => {
+  const submitListItems = useDebouncedCallback((url) => {
     if (!url) {
       notification.error({
         message: 'submitUrl missing',
@@ -437,10 +451,9 @@ const ListControl: FC<IListControlProps> = props => {
         payload = Boolean(onSubmit) ? getOnSubmitPayload() : value;
       }
 
-      submitHttp({ url: getEvaluatedUrl(submitUrl), httpVerb: submitHttpVerb }, payload)
-        .then(() => {
-          message.success('Data saved successfully!');
-        });
+      submitHttp({ url: getEvaluatedUrl(submitUrl), httpVerb: submitHttpVerb }, payload).then(() => {
+        message.success('Data saved successfully!');
+      });
     }
   }, 500);
 
@@ -449,17 +462,17 @@ const ListControl: FC<IListControlProps> = props => {
   const hasNoData = value?.length === 0 && !isFetchingEntities;
 
   const onSelect = useCallback(
-    index => {
+    (index) => {
       if (selectionMode === 'multiple') {
         const selectedItemIndexes = state?.selectedItemIndexes?.includes(index)
-          ? state?.selectedItemIndexes?.filter(item => item !== index)
+          ? state?.selectedItemIndexes?.filter((item) => item !== index)
           : [...state?.selectedItemIndexes, index];
 
-        setState(prev => ({ ...prev, selectedItemIndexes, selectedItemIndex: -1 }));
+        setState((prev) => ({ ...prev, selectedItemIndexes, selectedItemIndex: -1 }));
       } else if (selectionMode === 'single') {
         if (state?.selectedItemIndex === index) {
-          setState(prev => ({ ...prev, selectedItemIndex: -1, selectedItemIndexes: [] }));
-        } else setState(prev => ({ ...prev, selectedItemIndex: index, selectedItemIndexes: [index] }));
+          setState((prev) => ({ ...prev, selectedItemIndex: -1, selectedItemIndexes: [] }));
+        } else setState((prev) => ({ ...prev, selectedItemIndex: index, selectedItemIndexes: [index] }));
       }
     },
     [state, selectionMode]
@@ -519,7 +532,7 @@ const ListControl: FC<IListControlProps> = props => {
   };
 
   const onSelectAll = (e: CheckboxChangeEvent) => {
-    setState(prev => ({ ...prev, selectedItemIndexes: e?.target?.checked ? value?.map((_, index) => index) : [] }));
+    setState((prev) => ({ ...prev, selectedItemIndexes: e?.target?.checked ? value?.map((_, index) => index) : [] }));
   };
 
   const [ref, measured] = useMeasure();
@@ -621,7 +634,7 @@ const ListControl: FC<IListControlProps> = props => {
                   return (
                     <ConditionalWrap
                       condition={orientation === 'horizontal'}
-                      wrap={c => (
+                      wrap={(c) => (
                         <Space size={'middle'} className="sha-list-space-horizontal" direction="horizontal">
                           {c}
                         </Space>
@@ -633,7 +646,7 @@ const ListControl: FC<IListControlProps> = props => {
                           <ConditionalWrap
                             key={index}
                             condition={selectionMode !== 'none'}
-                            wrap={children => (
+                            wrap={(children) => (
                               <Checkbox
                                 className={classNames('sha-list-component-item-checkbox', {
                                   selected: state?.selectedItemIndexes?.includes(index),
