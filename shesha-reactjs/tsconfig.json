@@ -18,7 +18,7 @@
       "esnext"
     ],
     "module": "esnext",
-    "moduleResolution": "Bundler",
+    "moduleResolution": "NodeNext",
     "noEmit": true,
     "noImplicitAny": false, // todo: change to true after first successfull build
     "noImplicitReturns": true,

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { FC } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { ConfigItemDataNode, ITreeState } from '../models';
+import { Key } from 'rc-tree/lib/interface';
 
 const { Text } = Typography;
 
@@ -18,19 +19,19 @@ interface TreeNodesWithStat {
 }
 
 export const ItemsTree: FC<IItemsTreeProps> = ({ treeState, onChangeSelection }) => {
-    const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
+    const [expandedKeys, setExpandedKeys] = useState<Key[]>([]);
     const [autoExpandParent, setAutoExpandParent] = useState(true);
     const [checkedIds, setCheckedIds] = useState<string[]>([]);
     const [searchValue, setSearchValue] = useState('');
 
     const [treeDataWithStat, setTreeDataWithStat] = useState<TreeNodesWithStat>(null);
 
-    const onExpand = (newExpandedKeys: React.Key[]) => {
+    const onExpand = (newExpandedKeys: Key[]) => {
         setExpandedKeys(newExpandedKeys);
         setAutoExpandParent(false);
     };
 
-    const onCheck = (_checkedKeysValue: React.Key[], { checkedNodes }) => {
+    const onCheck = (_checkedKeysValue: Key[], { checkedNodes }) => {
         const checkedItemIds = (checkedNodes as ConfigItemDataNode[] ?? []).map(item => item.itemId).filter(id => Boolean(id));
         setCheckedIds(checkedItemIds);
         if (onChangeSelection)
@@ -109,8 +110,8 @@ export const ItemsTree: FC<IItemsTreeProps> = ({ treeState, onChangeSelection })
         setTreeDataWithStat(withStat);
     }, [treeState.treeNodes, searchValue]);
 
-    const getParentKey = (key: React.Key, tree: DataNode[]): React.Key => {
-        let parentKey: React.Key;
+    const getParentKey = (key: Key, tree: DataNode[]): Key => {
+        let parentKey: Key;
         for (let i = 0; i < tree.length; i++) {
             const node = tree[i];
             if (node.children) {
@@ -131,7 +132,7 @@ export const ItemsTree: FC<IItemsTreeProps> = ({ treeState, onChangeSelection })
                 ? treeState.indexes
                     .map((item) => {
                         if (item.title.indexOf(localValue) > -1) {
-                            return getParentKey(item.key, treeState.treeNodes);
+                            return getParentKey(item.key as Key, treeState.treeNodes);
                         }
                         return null;
                     })
@@ -139,7 +140,7 @@ export const ItemsTree: FC<IItemsTreeProps> = ({ treeState, onChangeSelection })
                 : [];
             //console.timeEnd('filter');
 
-            setExpandedKeys(newExpandedKeys as React.Key[]);
+            setExpandedKeys(newExpandedKeys);
             setSearchValue(localValue);
             setAutoExpandParent(true);
         },

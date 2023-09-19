@@ -1,7 +1,7 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { message, Space, Spin, Tooltip, Tree, Tag } from 'antd';
 import { DataNode, EventDataNode } from 'antd/lib/tree';
-import React, { Key, ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { FC } from 'react';
 import { useLocalStorage } from 'react-use';
 import { useConfigurableAction, useForm } from '../..';
@@ -13,6 +13,7 @@ import {
 } from '../../apis/permission';
 import SearchBox from '../formDesigner/toolboxSearchBox';
 import { IUpdateItemArguments, updateItemArgumentsForm } from './update-item-arguments';
+import { Key } from 'rc-tree/lib/interface';
 
 export interface IDataNode {
   title: JSX.Element;
