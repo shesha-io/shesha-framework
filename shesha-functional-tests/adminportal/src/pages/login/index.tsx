@@ -6,7 +6,7 @@ import Link from 'next/link';
 import React from 'react';
 import { URL_FORGOT_PASSWORD } from 'routes';
 import { useAuth, ValidationErrors } from '@shesha/reactjs';
-import { LoginPageWrapper } from './styles';
+import { LoginPageWrapper } from '../../components/pages/login/styles';
 
 export const Login = () => {
   const {
@@ -60,8 +60,8 @@ export const Login = () => {
         <div className="custom-form-item">
           <Checkbox>Remember me</Checkbox>
 
-          <Link href={URL_FORGOT_PASSWORD}>
-            <a className="login-form-forgot">Forgot password</a>
+          <Link href={URL_FORGOT_PASSWORD} className="login-form-forgot">
+            Forgot password
           </Link>
         </div>
       </Form>
