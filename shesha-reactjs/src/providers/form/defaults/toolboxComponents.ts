@@ -84,6 +84,7 @@ import RefListStatusComponent from '../../../designer-components/refListStatus';
 import TextFieldComponent from '../../../designer-components/textField/textField';
 import TimeField from '../../../designer-components/timeField';
 import { IToolboxComponentGroup } from '../../../interfaces/formDesigner';
+import SizableColumnsComponent from 'components/formDesigner/components/sizableColumns/sizableColumns';
 
 export const ToolboxComponents: IToolboxComponentGroup[] = [
   {
@@ -184,7 +185,18 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
   {
     name: 'Layout',
     visible: true,
-    components: [CollapsiblePanel, Columns, ContainerComponent, Drawer, Divider, SectionSeprator, Space, Tabs, Wizard],
+    components: [
+      CollapsiblePanel,
+      Columns,
+      ContainerComponent,
+      Drawer,
+      Divider,
+      SectionSeprator,
+      Space,
+      Tabs,
+      Wizard,
+      SizableColumnsComponent,
+    ],
   },
   {
     visible: false,

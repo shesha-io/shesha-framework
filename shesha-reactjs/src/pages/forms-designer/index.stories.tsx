@@ -27,6 +27,10 @@ export const EpmDesignerUserManagement = addStory(Template, {
   formId: 'd1d69771-07ec-46e0-9710-0c840295ecd2',
 });
 
+export const EpmPlayGround = addStory(Template, {
+  formId: '623a1462-768a-4e74-85a9-d8b1ff70b91e',
+});
+
 export const FncDesignerTSchoolDetails = addStory(Template, {
   formId: '9da17eae-3099-4835-b196-200bfb955ae7',
 });
