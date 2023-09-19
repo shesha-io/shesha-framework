@@ -1,13 +1,13 @@
-import React, { FC } from 'react';
-import { useForm, useQueryBuilder } from 'providers';
 import { Alert, Typography } from 'antd';
+import { useForm, useQueryBuilder } from '../../providers';
+import React, { FC } from 'react';
 import { IQueryBuilderProps } from './models';
 import QueryBuilderPlain from './queryBuilderPlain';
 
-export const QueryBuilderPlainRenderer: FC<IQueryBuilderProps> = props => {
+export const QueryBuilderPlainRenderer: FC<IQueryBuilderProps> = (props) => {
   const { fieldsUnavailableHint } = props;
 
- const queryBuilder = useQueryBuilder(false);
+  const queryBuilder = useQueryBuilder(false);
   const { formMode } = useForm();
 
   const fieldsAvailable = Boolean(queryBuilder);

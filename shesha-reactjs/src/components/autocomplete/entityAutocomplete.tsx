@@ -3,7 +3,7 @@ import { Select } from 'antd';
 import { useDebouncedCallback } from 'use-debounce';
 import { useSubscribe } from '../..';
 import { ReadOnlyDisplayFormItem } from './../readOnlyDisplayFormItem';
-import { useEntityAutocomplete } from 'utils/autocomplete';
+import { useEntityAutocomplete } from '../../utils/autocomplete';
 import { AutocompleteItemDto, CustomLabeledValue, IEntityAutocompleteProps, ISelectOption } from './models';
 
 /**

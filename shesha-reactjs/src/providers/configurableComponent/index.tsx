@@ -1,24 +1,24 @@
-import React, { useContext, PropsWithChildren, useEffect, Context, useReducer, useMemo } from 'react';
-import reducerFactory from './reducer';
+import React, { Context, PropsWithChildren, useContext, useEffect, useMemo, useReducer } from 'react';
+import { PromisedValue } from '../../utils/promises';
+import { IComponentSettings } from '../appConfigurator/models';
+import { useConfigurationItemsLoader } from '../configurationItemsLoader';
+import { getFlagSetters } from '../utils/flagsSetters';
 import {
+  loadErrorAction,
+  loadRequestAction,
+  loadSuccessAction,
+  saveErrorAction,
+  saveRequestAction,
+  saveSuccessAction,
+} from './actions';
+import {
+  IConfigurableComponentActionsContext,
+  IConfigurableComponentStateContext,
   getConfigurableComponentActionsContext,
   getConfigurableComponentStateContext,
   getContextInitialState,
-  IConfigurableComponentActionsContext,
-  IConfigurableComponentStateContext,
 } from './contexts';
-import { getFlagSetters } from '../utils/flagsSetters';
-import {
-  loadRequestAction,
-  loadSuccessAction,
-  loadErrorAction,
-  saveRequestAction,
-  saveSuccessAction,
-  saveErrorAction,
-} from './actions';
-import { useConfigurationItemsLoader } from '../configurationItemsLoader';
-import { PromisedValue } from '../../utils/promises';
-import { IComponentSettings } from '../appConfigurator/models';
+import reducerFactory from './reducer';
 
 export interface IGenericConfigurableComponentProviderProps<TSettings extends any> {
   initialState: IConfigurableComponentStateContext<TSettings>;
@@ -36,7 +36,7 @@ const GenericConfigurableComponentProvider = <TSettings extends any>({
   name,
   isApplicationSpecific,
 }: PropsWithChildren<IGenericConfigurableComponentProviderProps<TSettings>>) => {
-  const reducer = useMemo(() => (reducerFactory(initialState)), []);
+  const reducer = useMemo(() => reducerFactory(initialState), []);
 
   const { getComponent, updateComponent } = useConfigurationItemsLoader();
 
@@ -53,19 +53,20 @@ const GenericConfigurableComponentProvider = <TSettings extends any>({
   });
 
   useEffect(() => {
-    if (!Boolean(name) || Boolean(state.settings))
-      return;
+    if (!Boolean(name) || Boolean(state.settings)) return;
 
     fetchInternal(getComponent({ name, isApplicationSpecific, skipCache: false }));
   }, []);
 
   const fetchInternal = (loader: PromisedValue<IComponentSettings>) => {
     dispatch(loadRequestAction({ name, isApplicationSpecific }));
-    loader.promise.then(settings => {
-      dispatch(loadSuccessAction({ ...settings }));
-    }).catch((error) => {
-      dispatch(loadErrorAction({ error: error?.['message'] || 'Failed to load component' }));
-    });
+    loader.promise
+      .then((settings) => {
+        dispatch(loadSuccessAction({ ...settings }));
+      })
+      .catch((error) => {
+        dispatch(loadErrorAction({ error: error?.['message'] || 'Failed to load component' }));
+      });
   };
 
   /* NEW_ACTION_DECLARATION_GOES_HERE */
@@ -87,13 +88,13 @@ const GenericConfigurableComponentProvider = <TSettings extends any>({
       module: null,
       name: state.name,
       isApplicationSpecific: isApplicationSpecific,
-      settings: settings as object
+      settings: settings as object,
     };
     return updateComponent(payload)
-      .then(_response => {
+      .then((_response) => {
         dispatch(saveSuccessAction({ settings: payload.settings }));
       })
-      .catch(_error => {
+      .catch((_error) => {
         dispatch(saveErrorAction({ error: '' }));
       });
   };

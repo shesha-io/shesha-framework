@@ -1,12 +1,12 @@
-import React from 'react';
-import { IToolboxComponent } from 'interfaces';
 import { GroupOutlined } from '@ant-design/icons';
-import { useForm } from 'providers/form';
-import { getStyle, validateConfigurableComponentSettings } from 'providers/form/utils';
-import { getSettings } from './settingsForm';
-import { useFormData } from 'providers';
+import React from 'react';
+import ComponentsContainer from '../../components/formDesigner/containers/componentsContainer';
+import { IToolboxComponent } from '../../interfaces';
+import { useFormData } from '../../providers';
+import { useForm } from '../../providers/form';
+import { getStyle, validateConfigurableComponentSettings } from '../../providers/form/utils';
 import { ICommonContainerProps, IContainerComponentProps } from './interfaces';
-import ComponentsContainer from 'components/formDesigner/containers/componentsContainer';
+import { getSettings } from './settingsForm';
 
 const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   type: 'container',
@@ -46,20 +46,20 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
         className={model.className}
         wrapperStyle={getStyle(model?.wrapperStyle, formData)}
         style={getStyle(model?.style, formData)}
-        dynamicComponents={model?.isDynamic ? model?.components?.map(c => ({ ...c, readOnly: model?.readOnly })) : []}
+        dynamicComponents={model?.isDynamic ? model?.components?.map((c) => ({ ...c, readOnly: model?.readOnly })) : []}
       />
     );
   },
-  settingsFormMarkup: data => getSettings(data),
-  validateSettings: model => validateConfigurableComponentSettings(getSettings(model), model),
-  migrator: m =>
-    m.add<IContainerComponentProps>(0, prev => ({
+  settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  migrator: (m) =>
+    m.add<IContainerComponentProps>(0, (prev) => ({
       ...prev,
       direction: prev['direction'] ?? 'vertical',
       justifyContent: prev['justifyContent'] ?? 'left',
-      display: prev['display']/* ?? 'block'*/,
+      display: prev['display'] /* ?? 'block'*/,
       flexWrap: prev['flexWrap'] ?? 'wrap',
-      components: prev['components'] ?? []
+      components: prev['components'] ?? [],
     })),
 };
 

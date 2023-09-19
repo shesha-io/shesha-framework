@@ -11,7 +11,7 @@ const handlePreserveConsecutiveUppercase = (decamelized: string, separator: stri
   // `data_For_USACounties` → `data_for_USACounties`
   const result = decamelized.replace(
     /([\p{Uppercase_Letter}\d])[\p{Uppercase_Letter}\d](?![\p{Uppercase_Letter}\d])/gu,
-    $0 => $0?.toLowerCase()
+    ($0) => $0?.toLowerCase()
   );
 
   // Remaining uppercase sequences will be separated from lowercase sequences.
@@ -100,11 +100,11 @@ export function updateQueryStringParameter(uri, key, value) {
 
 export function toCamelCase(str: string) {
   return str
-    .replace(/\s(.)/g, function($1) {
+    .replace(/\s(.)/g, function ($1) {
       return $1.toUpperCase();
     })
     .replace(/\s/g, '')
-    .replace(/^(.)/, function($1) {
+    .replace(/^(.)/, function ($1) {
       return $1.toLowerCase();
     });
 }
@@ -135,8 +135,8 @@ export function getNumberFormat(str: any, format: string) {
 }
 
 /* Convert string to camelCase */
-export const camelcaseDotNotation = str =>
+export const camelcaseDotNotation = (str) =>
   str
     .split('.')
-    .map(s => camelcase(s))
+    .map((s) => camelcase(s))
     .join('.');

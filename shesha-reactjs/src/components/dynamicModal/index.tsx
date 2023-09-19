@@ -7,8 +7,8 @@ import { evaluateString, useGlobalState, useShaRouting } from '../..';
 import _ from 'lodash';
 import { useMedia } from 'react-use';
 import { StandardEntityActions } from '../../interfaces/metadata';
-import { MODAL_DATA } from 'shesha-constants';
-import { ButtonGroup } from 'components/formDesigner/components/button/buttonGroup/buttonGroupComponent';
+import { MODAL_DATA } from '../../shesha-constants';
+import { ButtonGroup } from 'components/formDesigner/components/button/buttonGroup/buttonGroup';
 
 export interface IDynamicModalWithFormProps extends Omit<IModalWithConfigurableFormProps, 'fetchUrl'> {
   isVisible: boolean;

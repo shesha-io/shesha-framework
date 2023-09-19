@@ -1,57 +1,51 @@
-import React, { FC, useContext, PropsWithChildren, useEffect, MutableRefObject, useMemo } from 'react';
-import formReducer from './reducer';
-import {
-  FormActionsContext,
-  FormStateContext,
-  FORM_CONTEXT_INITIAL_STATE,
-  ISetVisibleComponentsPayload,
-  ISetFormDataPayload,
-  ConfigurableFormInstance,
-  IFormActionsContext,
-  ISetEnabledComponentsPayload,
-  ISetFormControlsDataPayload,
-  IFormStateInternalContext,
-} from './contexts';
-import {
-  IFormActions,
-  IFormSections,
-  FormMode,
-  IFormSettings,
-  FormRawMarkup,
-} from './models';
-import { getFlagSetters } from '../utils/flagsSetters';
-import {
-  setSettingsAction,
-  setFormModeAction,
-  setVisibleComponentsAction,
-  setFormDataAction,
-  registerComponentActionsAction,
-  setEnabledComponentsAction,
-  setValidationErrorsAction,
-  setFormControlsDataAction,
-} from './actions';
-import {
-  convertActions,
-  getVisibleComponentIds,
-  convertSectionsToList,
-  getEnabledComponentIds,
-} from './utils';
-import { useFormDesignerComponents } from './hooks';
 import { FormInstance } from 'antd';
-import useThunkReducer from '../../hooks/thunkReducer';
+import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useMemo } from 'react';
+import { useDeepCompareEffect } from 'react-use';
 import { useDebouncedCallback } from 'use-debounce';
-import { IComponentRelations, IComponentsDictionary, IConfigurableFormComponent, IFormValidationErrors } from '../../interfaces';
+import useThunkReducer from '../../hooks/thunkReducer';
+import {
+  IComponentRelations,
+  IComponentsDictionary,
+  IConfigurableFormComponent,
+  IFormValidationErrors,
+} from '../../interfaces';
+import { DelayedUpdateProvider } from '../../providers/delayedUpdateProvider';
 import { useConfigurableAction } from '../configurableActionsDispatcher';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { useGlobalState } from '../globalState';
-import { useDeepCompareEffect } from 'react-use';
-import { DelayedUpdateProvider } from 'providers/delayedUpdateProvider';
+import { getFlagSetters } from '../utils/flagsSetters';
+import {
+  registerComponentActionsAction,
+  setEnabledComponentsAction,
+  setFormControlsDataAction,
+  setFormDataAction,
+  setFormModeAction,
+  setSettingsAction,
+  setValidationErrorsAction,
+  setVisibleComponentsAction,
+} from './actions';
+import {
+  ConfigurableFormInstance,
+  FORM_CONTEXT_INITIAL_STATE,
+  FormActionsContext,
+  FormStateContext,
+  IFormActionsContext,
+  IFormStateInternalContext,
+  ISetEnabledComponentsPayload,
+  ISetFormControlsDataPayload,
+  ISetFormDataPayload,
+  ISetVisibleComponentsPayload,
+} from './contexts';
+import { useFormDesignerComponents } from './hooks';
+import { FormMode, FormRawMarkup, IFormActions, IFormSections, IFormSettings } from './models';
+import formReducer from './reducer';
+import { convertActions, convertSectionsToList, getEnabledComponentIds, getVisibleComponentIds } from './utils';
 
 export interface IFormProviderProps {
   name: string;
   allComponents: IComponentsDictionary;
   componentRelations: IComponentRelations;
-  
+
   formSettings: IFormSettings;
   formMarkup?: FormRawMarkup;
   mode: FormMode;
@@ -207,7 +201,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     }
   }, [mode]);
 
-  const getComponentModel = componentId => {
+  const getComponentModel = (componentId) => {
     return allComponents[componentId];
   };
 
@@ -228,7 +222,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   const getChildComponents = (componentId: string) => {
     const childIds = componentRelations[componentId];
     if (!childIds) return [];
-    const components = childIds.map(childId => {
+    const components = childIds.map((childId) => {
       return allComponents[childId];
     });
     return components;
@@ -258,13 +252,13 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
       formContext.formData,
       globalState,
       formContext?.formMode,
-      propertyFilter,
+      propertyFilter
     );
     setVisibleComponents({ componentIds: visibleComponents });
   };
 
   const debouncedUpdateVisibleComponents = useDebouncedCallback<(context: IFormStateInternalContext) => void>(
-    formContext => {
+    (formContext) => {
       updateVisibleComponents(formContext);
     },
     // delay in ms
@@ -290,7 +284,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   };
 
   const debouncedUpdateEnabledComponents = useDebouncedCallback<(context: IFormStateInternalContext) => void>(
-    formContext => {
+    (formContext) => {
       updateEnabledComponents(formContext);
     },
     // delay in ms
@@ -316,7 +310,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
       updateVisibleComponents(newState);
       updateEnabledComponents(newState);
     });
-  }, [allComponents, componentRelations]);  
+  }, [allComponents, componentRelations]);
 
   const setFormControlsData = (payload: ISetFormControlsDataPayload) => {
     dispatch(setFormControlsDataAction(payload));
@@ -370,7 +364,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     do {
       const component = allComponents[currentId];
 
-      const action = state.actions.find(a => a.owner === (component?.parentId ?? null) && a.name === name);
+      const action = state.actions.find((a) => a.owner === (component?.parentId ?? null) && a.name === name);
       if (action) return (data, parameters) => action.body(data, parameters);
 
       currentId = component?.parentId;
@@ -387,8 +381,8 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     do {
       const component = allComponents[currentId];
 
-      const section = state.sections.find(a => a.owner === (component?.parentId ?? null) && a.name === name);
-      if (section) return data => section.body(data);
+      const section = state.sections.find((a) => a.owner === (component?.parentId ?? null) && a.name === name);
+      if (section) return (data) => section.body(data);
 
       currentId = component?.parentId;
     } while (currentId);
@@ -398,8 +392,8 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
 
   const hasVisibleChilds = (id: string): boolean => {
     const childs = getChildComponents(id);
-    const visibleChildIndex = childs.findIndex(component => !isComponentHidden(component));
-    
+    const visibleChildIndex = childs.findIndex((component) => !isComponentHidden(component));
+
     return visibleChildIndex !== -1;
   };
 
@@ -425,11 +419,9 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   if (formRef) formRef.current = { ...configurableFormActions, ...state, allComponents, componentRelations };
 
   return (
-    <FormStateContext.Provider value={{...state, allComponents, componentRelations }}>
+    <FormStateContext.Provider value={{ ...state, allComponents, componentRelations }}>
       <FormActionsContext.Provider value={configurableFormActions}>
-        <DelayedUpdateProvider>
-          {children}
-        </DelayedUpdateProvider>
+        <DelayedUpdateProvider>{children}</DelayedUpdateProvider>
       </FormActionsContext.Provider>
     </FormStateContext.Provider>
   );
@@ -475,13 +467,13 @@ const isInDesignerMode = () => {
 /** Returns component model by component id  */
 export const useComponentModel = (id: string): IConfigurableFormComponent => {
   const form = useForm();
-  
+
   return useMemo(() => {
     //console.log('LOG: component calculation', id);
 
-    const componentModel = form.getComponentModel(id);  
+    const componentModel = form.getComponentModel(id);
     return componentModel;
   }, [id]);
 };
 
-export { FormProvider, useFormState, useFormActions, useForm, isInDesignerMode };
+export { FormProvider, isInDesignerMode, useForm, useFormActions, useFormState };

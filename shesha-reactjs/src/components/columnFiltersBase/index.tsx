@@ -6,7 +6,7 @@ import {
   ColumnFilter,
   ITableFilter,
 } from '../../providers/dataTable/interfaces';
-import { getTableDataColumns } from 'providers/dataTable/utils';
+import { getTableDataColumns } from '../../providers/dataTable/utils';
 
 export interface IColumnFiltersBaseProps {
   columns: ITableColumn[];
@@ -25,7 +25,9 @@ export const ColumnFiltersBase: FC<IColumnFiltersBaseProps> = ({
   applyFilters,
   currentFilter,
 }) => {
-  const filterableColumns = getTableDataColumns(columns).filter(c => Boolean(currentFilter.find(f => f.columnId === c.id)));
+  const filterableColumns = getTableDataColumns(columns).filter((c) =>
+    Boolean(currentFilter.find((f) => f.columnId === c.id))
+  );
 
   return (
     <div className="sha-column-filters">
@@ -42,7 +44,7 @@ export const ColumnFiltersBase: FC<IColumnFiltersBaseProps> = ({
         }) => {
           if (isFilterable) {
             const onRemoveFilter = (idOfFilter: string) => {
-              const newIds = currentFilter.filter(f => f.columnId !== idOfFilter).map(f => f.columnId);
+              const newIds = currentFilter.filter((f) => f.columnId !== idOfFilter).map((f) => f.columnId);
 
               toggleColumnFilter(newIds);
             };
@@ -59,14 +61,13 @@ export const ColumnFiltersBase: FC<IColumnFiltersBaseProps> = ({
               }
             };
 
-            const existingFilter = currentFilter.find(f => f.columnId === id);
+            const existingFilter = currentFilter.find((f) => f.columnId === id);
 
             return (
               <ColumnItemFilter
                 onRemoveFilter={onRemoveFilter}
                 onChangeFilterOption={onChangeFilterOption}
                 onChangeFilter={onChangeFilter}
-                
                 id={id}
                 filterName={header}
                 accessor={accessor}
@@ -77,7 +78,6 @@ export const ColumnFiltersBase: FC<IColumnFiltersBaseProps> = ({
                 referenceListName={referenceListName}
                 referenceListModule={referenceListModule}
                 entityReferenceTypeShortAlias={entityReferenceTypeShortAlias}
-                
                 key={id}
               />
             );

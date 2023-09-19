@@ -1,18 +1,18 @@
 import { createAction } from 'redux-actions';
 import { IFormValidationErrors, IToolboxComponentGroup } from '../../interfaces';
+import { IFlatComponentsStructure, IFormSettings } from '../form/models';
 import { IDataSource } from '../formDesigner/models';
 import {
-  IComponentAddPayload,
-  IComponentDeletePayload,
-  IComponentUpdatePayload,
-  IUpdateChildComponentsPayload,
-  ISetSelectedComponentPayload,
-  IComponentUpdateSettingsValidationPayload,
   IAddDataPropertyPayload,
   IComponentAddFromTemplatePayload,
+  IComponentAddPayload,
+  IComponentDeletePayload,
   IComponentDuplicatePayload,
+  IComponentUpdatePayload,
+  IComponentUpdateSettingsValidationPayload,
+  ISetSelectedComponentPayload,
+  IUpdateChildComponentsPayload,
 } from './contexts';
-import { IFlatComponentsStructure, IFormSettings } from '../form/models';
 
 export enum FormActionEnums {
   /*

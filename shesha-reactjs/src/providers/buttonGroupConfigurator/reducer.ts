@@ -1,19 +1,19 @@
+import { nanoid } from 'nanoid/non-secure';
+import { handleActions } from 'redux-actions';
+import { ButtonGroupActionEnums } from './actions';
 import {
+  BUTTON_GROUP_CONTEXT_INITIAL_STATE,
   IButtonGroupConfiguratorStateContext,
   IUpdateChildItemsPayload,
   IUpdateItemSettingsPayload,
-  BUTTON_GROUP_CONTEXT_INITIAL_STATE,
 } from './contexts';
-import { ButtonGroupActionEnums } from './actions';
-import { IButtonGroupButton, IButtonGroup } from './models';
-import { handleActions } from 'redux-actions';
+import { IButtonGroup, IButtonGroupButton } from './models';
 import { getItemById, getItemPositionById } from './utils';
-import { nanoid } from 'nanoid/non-secure';
 
 const buttonGroupReducer = handleActions<IButtonGroupConfiguratorStateContext, any>(
   {
     [ButtonGroupActionEnums.AddButton]: (state: IButtonGroupConfiguratorStateContext) => {
-      const buttonsCount = state.items.filter(i => i.itemType === 'item').length;
+      const buttonsCount = state.items.filter((i) => i.itemType === 'item').length;
       const buttonProps: IButtonGroupButton = {
         id: nanoid(),
         itemType: 'item',
@@ -43,7 +43,7 @@ const buttonGroupReducer = handleActions<IButtonGroupConfiguratorStateContext, a
     ) => {
       const { payload } = action;
 
-      const newItems = state.items.filter(item => item.id !== payload);
+      const newItems = state.items.filter((item) => item.id !== payload);
 
       return {
         ...state,
@@ -53,7 +53,7 @@ const buttonGroupReducer = handleActions<IButtonGroupConfiguratorStateContext, a
     },
 
     [ButtonGroupActionEnums.AddGroup]: (state: IButtonGroupConfiguratorStateContext) => {
-      const groupsCount = state.items.filter(i => i.itemType === 'group').length;
+      const groupsCount = state.items.filter((i) => i.itemType === 'group').length;
       const groupProps: IButtonGroup = {
         id: nanoid(),
         itemType: 'group',
@@ -75,7 +75,7 @@ const buttonGroupReducer = handleActions<IButtonGroupConfiguratorStateContext, a
     ) => {
       const { payload } = action;
 
-      const newItems = state.items.filter(item => item.id !== payload);
+      const newItems = state.items.filter((item) => item.id !== payload);
 
       return {
         ...state,

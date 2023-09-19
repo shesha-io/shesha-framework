@@ -1,9 +1,9 @@
+import { ColProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
+import { FormLayout } from 'antd/lib/form/Form';
 import { ReactNode } from 'react';
 import { IAsyncValidationError } from '../../interfaces';
-import { FormLayout } from 'antd/lib/form/Form';
 import { IKeyValue } from '../../interfaces/keyValue';
-import { ColProps } from 'antd';
 import { IHasVersion } from '../../utils/fluentMigrator/migrator';
 
 export const ROOT_COMPONENT_KEY: string = 'root'; // root key of the flat components structure
@@ -104,14 +104,13 @@ export interface IComponentVisibilityProps {
 /**
  * Base model of the configurable component
  */
-export interface IConfigurableFormComponent extends 
-  IFormComponentContainer, 
-  IHasVersion, 
-  IComponentBindingProps,
-  IComponentLabelProps, 
-  IComponentVisibilityProps,
-  IComponentRuntimeProps {
-
+export interface IConfigurableFormComponent
+  extends IFormComponentContainer,
+    IHasVersion,
+    IComponentBindingProps,
+    IComponentLabelProps,
+    IComponentVisibilityProps,
+    IComponentRuntimeProps {
   /** Type of the component */
   type: string;
 

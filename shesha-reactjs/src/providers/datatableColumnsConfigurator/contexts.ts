@@ -37,8 +37,7 @@ export const TOOLBAR_CONTEXT_INITIAL_STATE: IColumnsConfiguratorStateContext = {
   readOnly: false,
 };
 
-export const ColumnsConfiguratorStateContext = createContext<IColumnsConfiguratorStateContext>(
-  TOOLBAR_CONTEXT_INITIAL_STATE
-);
+export const ColumnsConfiguratorStateContext =
+  createContext<IColumnsConfiguratorStateContext>(TOOLBAR_CONTEXT_INITIAL_STATE);
 
 export const ColumnsConfiguratorActionsContext = createContext<IColumnsConfiguratorActionsContext>(undefined);

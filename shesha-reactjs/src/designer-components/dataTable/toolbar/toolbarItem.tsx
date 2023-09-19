@@ -1,16 +1,16 @@
-import React, { FC } from 'react';
-import { IToolbarButton } from '../../../providers/toolbarConfigurator/models';
-import { Button, Tooltip } from 'antd';
 import { DeleteFilled, QuestionCircleOutlined } from '@ant-design/icons';
-import { useToolbarConfigurator } from '../../../providers/toolbarConfigurator';
-import DragHandle from './dragHandle';
+import { Button, Tooltip } from 'antd';
+import React, { FC } from 'react';
 import ShaIcon, { IconType } from '../../../components/shaIcon';
+import { useToolbarConfigurator } from '../../../providers/toolbarConfigurator';
+import { IToolbarButton } from '../../../providers/toolbarConfigurator/models';
+import DragHandle from './dragHandle';
 
 export interface IToolbarItemProps extends IToolbarButton {
   index: number[];
 }
 
-export const ToolbarItem: FC<IToolbarItemProps> = props => {
+export const ToolbarItem: FC<IToolbarItemProps> = (props) => {
   const { deleteButton, selectedItemId, readOnly } = useToolbarConfigurator();
 
   const onDeleteClick = () => {

@@ -1,4 +1,4 @@
-import { IButtonGroup, ButtonGroupItemProps } from './models';
+import { ButtonGroupItemProps, IButtonGroup } from './models';
 
 export const getItemById = (items: ButtonGroupItemProps[], id: string): ButtonGroupItemProps => {
   const position = getItemPositionById(items, id);

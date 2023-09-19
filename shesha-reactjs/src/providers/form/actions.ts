@@ -1,13 +1,13 @@
 import { createAction } from 'redux-actions';
 import { IFormValidationErrors } from '../../interfaces';
 import {
-  ISetVisibleComponentsPayload,
-  ISetFormDataPayload,
   IRegisterActionsPayload,
   ISetEnabledComponentsPayload,
   ISetFormControlsDataPayload,
+  ISetFormDataPayload,
+  ISetVisibleComponentsPayload,
 } from './contexts';
-import { IFlatComponentsStructure, FormMode, IFormSettings } from './models';
+import { FormMode, IFlatComponentsStructure, IFormSettings } from './models';
 
 export enum FormActionEnums {
   SetFlatComponentsAction = 'SET_FLAT_COMPONENTS',
@@ -21,38 +21,44 @@ export enum FormActionEnums {
   RegisterActions = 'REGISTER_ACTIONS',
 }
 
-export const setFlatComponentsAction = createAction<IFlatComponentsStructure, IFlatComponentsStructure>(FormActionEnums.SetFlatComponentsAction, p => p);
+export const setFlatComponentsAction = createAction<IFlatComponentsStructure, IFlatComponentsStructure>(
+  FormActionEnums.SetFlatComponentsAction,
+  (p) => p
+);
 
-export const setSettingsAction = createAction<IFormSettings, IFormSettings>(FormActionEnums.SetSettingsAction, p => p);
+export const setSettingsAction = createAction<IFormSettings, IFormSettings>(
+  FormActionEnums.SetSettingsAction,
+  (p) => p
+);
 
-export const setFormModeAction = createAction<FormMode, FormMode>(FormActionEnums.SetFormMode, p => p);
+export const setFormModeAction = createAction<FormMode, FormMode>(FormActionEnums.SetFormMode, (p) => p);
 
 export const setVisibleComponentsAction = createAction<ISetVisibleComponentsPayload, ISetVisibleComponentsPayload>(
   FormActionEnums.SetVisibleComponents,
-  p => p
+  (p) => p
 );
 
 export const setEnabledComponentsAction = createAction<ISetEnabledComponentsPayload, ISetEnabledComponentsPayload>(
   FormActionEnums.SetEnabledComponents,
-  p => p
+  (p) => p
 );
 
 export const setFormControlsDataAction = createAction<ISetFormControlsDataPayload, ISetFormControlsDataPayload>(
   FormActionEnums.SetFormControlsData,
-  p => p
+  (p) => p
 );
 
 export const setFormDataAction = createAction<ISetFormDataPayload, ISetFormDataPayload>(
   FormActionEnums.SetFormData,
-  p => p
+  (p) => p
 );
 
 export const setValidationErrorsAction = createAction<IFormValidationErrors, IFormValidationErrors>(
   FormActionEnums.SetValidationErrors,
-  p => p
+  (p) => p
 );
 
 export const registerComponentActionsAction = createAction<IRegisterActionsPayload, IRegisterActionsPayload>(
   FormActionEnums.RegisterActions,
-  p => p
+  (p) => p
 );

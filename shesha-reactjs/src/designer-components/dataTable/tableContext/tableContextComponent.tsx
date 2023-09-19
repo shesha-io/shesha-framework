@@ -2,15 +2,15 @@ import { LayoutOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
 import FormItem from 'antd/lib/form/FormItem';
 import React, { FC, Fragment, useEffect, useMemo } from 'react';
-import { IToolboxComponent } from 'interfaces';
-import { MetadataProvider, useDataTableStore, useForm, useFormData } from 'providers';
-import DataTableProvider from 'providers/dataTable';
-import { DataTableSelectionProvider, useDataTableSelection } from 'providers/dataTableSelection';
-import { FormMarkup, IConfigurableFormComponent } from 'providers/form/models';
-import { evaluateString, validateConfigurableComponentSettings } from 'providers/form/utils';
-import ComponentsContainer from 'components/formDesigner/containers/componentsContainer';
+import ComponentsContainer from '../../../components/formDesigner/containers/componentsContainer';
+import { IToolboxComponent } from '../../../interfaces';
+import { MetadataProvider, useDataTableStore, useForm, useFormData } from '../../../providers';
+import DataTableProvider from '../../../providers/dataTable';
+import { DataFetchingMode } from '../../../providers/dataTable/interfaces';
+import { DataTableSelectionProvider, useDataTableSelection } from '../../../providers/dataTableSelection';
+import { FormMarkup, IConfigurableFormComponent } from '../../../providers/form/models';
+import { evaluateString, validateConfigurableComponentSettings } from '../../../providers/form/utils';
 import settingsFormJson from './settingsForm.json';
-import { DataFetchingMode } from 'providers/dataTable/interfaces';
 
 export interface ITableContextComponentProps extends IConfigurableFormComponent {
   sourceType?: 'Form' | 'Entity' | 'Url';

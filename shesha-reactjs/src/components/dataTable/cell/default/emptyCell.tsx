@@ -1,11 +1,9 @@
 import { FC } from 'react';
 
-export interface IEmptyCellProps {
-    
-}
+export interface IEmptyCellProps {}
 
 export const EmptyCell: FC<IEmptyCellProps> = () => {
-    return null;
+  return null;
 };
 
 export default EmptyCell;

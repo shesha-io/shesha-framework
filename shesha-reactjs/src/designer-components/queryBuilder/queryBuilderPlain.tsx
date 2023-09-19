@@ -1,7 +1,7 @@
-import React, { FC } from 'react';
 import { JsonLogicResult } from '@react-awesome-query-builder/antd';
-import { IProperty } from 'providers/queryBuilder/models';
-import { QueryBuilder } from 'components';
+import React, { FC } from 'react';
+import { QueryBuilder } from '../../components';
+import { IProperty } from '../../providers/queryBuilder/models';
 import './styles/queryBuilderPlain.less';
 
 export interface IQueryBuilderPlainProps {
@@ -12,10 +12,15 @@ export interface IQueryBuilderPlainProps {
   readOnly?: boolean;
 }
 
-export const QueryBuilderPlain: FC<IQueryBuilderPlainProps> = ({ value, fields, fetchFields, onChange, readOnly = false }) => {
+export const QueryBuilderPlain: FC<IQueryBuilderPlainProps> = ({
+  value,
+  fields,
+  fetchFields,
+  onChange,
+  readOnly = false,
+}) => {
   const handleChange = (jsonLogicResult: JsonLogicResult) => {
-    if (readOnly)
-      return;
+    if (readOnly) return;
     if (jsonLogicResult) {
       if (jsonLogicResult && jsonLogicResult.errors && jsonLogicResult.errors.length > 0) {
         console.log(jsonLogicResult);
@@ -31,9 +36,9 @@ export const QueryBuilderPlain: FC<IQueryBuilderPlainProps> = ({ value, fields, 
 
   return (
     <div className="sha-query-builder-plain-wrapper">
-      <QueryBuilder 
-        value={value} 
-        onChange={handleChange} 
+      <QueryBuilder
+        value={value}
+        onChange={handleChange}
         fields={fields}
         fetchFields={fetchFields}
         readOnly={readOnly}

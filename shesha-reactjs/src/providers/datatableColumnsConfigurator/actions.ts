@@ -18,21 +18,21 @@ export enum ColumnsActionEnums {
 
 export const addColumnAction = createAction(ColumnsActionEnums.AddColumn);
 
-export const deleteColumnAction = createAction<string, string>(ColumnsActionEnums.DeleteColumn, p => p);
+export const deleteColumnAction = createAction<string, string>(ColumnsActionEnums.DeleteColumn, (p) => p);
 
 export const addGroupAction = createAction(ColumnsActionEnums.AddGroup);
-export const deleteGroupAction = createAction<string, string>(ColumnsActionEnums.DeleteGroup, p => p);
+export const deleteGroupAction = createAction<string, string>(ColumnsActionEnums.DeleteGroup, (p) => p);
 
-export const selectItemAction = createAction<string, string>(ColumnsActionEnums.SelectItem, p => p);
+export const selectItemAction = createAction<string, string>(ColumnsActionEnums.SelectItem, (p) => p);
 
 export const updateChildItemsAction = createAction<IUpdateChildItemsPayload, IUpdateChildItemsPayload>(
   ColumnsActionEnums.UpdateChildItems,
-  p => p
+  (p) => p
 );
 
 export const updateItemAction = createAction<IUpdateItemSettingsPayload, IUpdateItemSettingsPayload>(
   ColumnsActionEnums.UpdateItem,
-  p => p
+  (p) => p
 );
 
 /* NEW_ACTION_GOES_HERE */

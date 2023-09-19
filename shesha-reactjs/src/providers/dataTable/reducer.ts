@@ -1,4 +1,6 @@
-import { DATA_TABLE_CONTEXT_INITIAL_STATE, DEFAULT_PAGE_SIZE_OPTIONS, IDataTableStateContext } from './contexts';
+import { handleActions } from 'redux-actions';
+import { getFilterOptions } from '../../components/columnItemFilter';
+import flagsReducer from '../utils/flagsReducer';
 import {
   DataTableActionEnums,
   IChangeFilterAction,
@@ -8,7 +10,7 @@ import {
   ISetPredefinedFiltersPayload,
   ISetRowDataPayload,
 } from './actions';
-import flagsReducer from '../utils/flagsReducer';
+import { DATA_TABLE_CONTEXT_INITIAL_STATE, DEFAULT_PAGE_SIZE_OPTIONS, IDataTableStateContext } from './contexts';
 import {
   DataFetchingMode,
   IColumnSorting,
@@ -17,8 +19,6 @@ import {
   ITableDataInternalResponse,
   ITableFilter,
 } from './interfaces';
-import { handleActions } from 'redux-actions';
-import { getFilterOptions } from '../../components/columnItemFilter';
 import { getTableDataColumn, getTableDataColumns, prepareColumn } from './utils';
 
 /** get dirty filter if exists and fallback to current filter state */

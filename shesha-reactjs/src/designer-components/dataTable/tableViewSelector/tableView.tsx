@@ -1,10 +1,10 @@
-import React, { FC, useState } from 'react';
-import { ITableViewProps } from '../../../providers/tableViewSelectorConfigurator/models';
-import { Button, Space, Tooltip } from 'antd';
 import { DeleteFilled, QuestionCircleOutlined, SettingOutlined } from '@ant-design/icons';
-import { useTableViewSelectorConfigurator } from '../../../providers/tableViewSelectorConfigurator';
-import DragHandle from './dragHandle';
+import { Button, Space, Tooltip } from 'antd';
 import classNames from 'classnames';
+import React, { FC, useState } from 'react';
+import { useTableViewSelectorConfigurator } from '../../../providers/tableViewSelectorConfigurator';
+import { ITableViewProps } from '../../../providers/tableViewSelectorConfigurator/models';
+import DragHandle from './dragHandle';
 
 export interface IProps extends ITableViewProps {
   index: number[];
@@ -46,7 +46,7 @@ export const TableView: FC<IProps> = ({ onConfigClick, tooltip, id, name }) => {
         <div className="sha-toolbar-item-controls">
           <Button icon={<SettingOutlined />} onClick={onEditBtnClick} size="small" />
 
-          {!readOnly && (<Button icon={<DeleteFilled color="red" />} onClick={onDeleteClick} size="small" danger />)}
+          {!readOnly && <Button icon={<DeleteFilled color="red" />} onClick={onDeleteClick} size="small" danger />}
         </div>
       </div>
     </div>

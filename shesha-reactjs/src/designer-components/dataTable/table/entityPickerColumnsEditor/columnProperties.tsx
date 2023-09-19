@@ -1,13 +1,13 @@
-import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
-import { useColumnsConfigurator } from '../../../../providers/datatableColumnsConfigurator';
 import { Empty, Form } from 'antd';
-import { ConfigurableForm } from '../../../../components';
-import columnSettingsJson from './columnSettings.json';
-import { FormMarkup } from '../../../../providers/form/models';
+import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
-import { ConfigurableFormInstance } from '../../../../providers/form/contexts';
-import { IDataColumnsProps } from '../../../../providers/datatableColumnsConfigurator/models';
+import { ConfigurableForm } from '../../../../components';
 import { IPropertyMetadata } from '../../../../interfaces/metadata';
+import { useColumnsConfigurator } from '../../../../providers/datatableColumnsConfigurator';
+import { IDataColumnsProps } from '../../../../providers/datatableColumnsConfigurator/models';
+import { ConfigurableFormInstance } from '../../../../providers/form/contexts';
+import { FormMarkup } from '../../../../providers/form/models';
+import columnSettingsJson from './columnSettings.json';
 
 export interface IProps {}
 
@@ -20,7 +20,7 @@ export const ColumnProperties: FC<IProps> = () => {
   const formRef = useRef<ConfigurableFormInstance>(null);
 
   const debouncedSave = useDebouncedCallback(
-    values => {
+    (values) => {
       updateItem({ id: selectedItemId, settings: values });
     },
     // delay in ms
@@ -67,7 +67,7 @@ export const ColumnProperties: FC<IProps> = () => {
         initialValues={componentModel}
         onValuesChange={debouncedSave}
         actions={{
-          linkToModelMetadata
+          linkToModelMetadata,
         }}
       />
     );
@@ -86,7 +86,7 @@ export const ColumnProperties: FC<IProps> = () => {
     );
   }
 
-  const onSettingsSave = values => {
+  const onSettingsSave = (values) => {
     console.log(values);
   };
 

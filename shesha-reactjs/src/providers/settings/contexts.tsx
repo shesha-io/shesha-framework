@@ -6,21 +6,15 @@ export interface ILoadSettingPayload {
   name: string;
 }
 
-export interface ISettingsStateContext {
-
-}
+export interface ISettingsStateContext {}
 
 export interface ISettingsActionsContext {
   getSetting: (settingId: ISettingIdentifier) => Promise<any>;
 }
 
-export interface ISettingsContext extends ISettingsStateContext, ISettingsActionsContext {
-
-}
+export interface ISettingsContext extends ISettingsStateContext, ISettingsActionsContext {}
 
 /** initial state */
-export const SETTINGS_CONTEXT_INITIAL_STATE: ISettingsStateContext = {
-
-};
+export const SETTINGS_CONTEXT_INITIAL_STATE: ISettingsStateContext = {};
 
 export const SettingsContext = createContext<ISettingsActionsContext>(undefined);

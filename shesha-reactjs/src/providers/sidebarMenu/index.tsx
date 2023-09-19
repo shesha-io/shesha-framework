@@ -1,19 +1,16 @@
-import React, { FC, useReducer, useContext, PropsWithChildren } from 'react';
-import SidebarMenuReducer from './reducer';
+import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
+import { useSheshaApplication } from '../..';
+import { ISidebarMenuItem } from '../../interfaces/sidebar';
+import { getFlagSetters } from '../utils/flagsSetters';
+import { toggleSidebarAction } from './actions';
 import {
+  SIDEBAR_MENU_CONTEXT_INITIAL_STATE,
   SidebarMenuActionsContext,
   SidebarMenuDefaultsContext,
   SidebarMenuStateContext,
-  SIDEBAR_MENU_CONTEXT_INITIAL_STATE,
 } from './contexts';
-import { getFlagSetters } from '../utils/flagsSetters';
-import {
-  toggleSidebarAction,
-  /* NEW_ACTION_IMPORT_GOES_HERE */
-} from './actions';
 import { IHeaderAction } from './models';
-import { ISidebarMenuItem } from '../../interfaces/sidebar';
-import { useSheshaApplication } from '../..';
+import SidebarMenuReducer from './reducer';
 
 export interface ISidebarMenuProviderProps {
   items: ISidebarMenuItem[];
@@ -46,7 +43,7 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
     }
 
     return item.childItems && item.childItems.length > 0
-      ? item.childItems.some(childItem => isItemVisible(childItem))
+      ? item.childItems.some((childItem) => isItemVisible(childItem))
       : true;
   };
 
@@ -135,12 +132,12 @@ function useSidebarMenuDefaults() {
 //#endregion
 
 export {
+  SidebarMenuDefaultsProvider,
+  SidebarMenuProvider,
+  useSidebarMenu,
+  useSidebarMenuActions, // note: to be removed
+  useSidebarMenuDefaults,
+  useSidebarMenuState,
   type IHeaderAction,
   type ISidebarMenuItem,
-  SidebarMenuProvider,
-  useSidebarMenuState,
-  useSidebarMenuActions,
-  useSidebarMenu,
-  SidebarMenuDefaultsProvider, // note: to be removed
-  useSidebarMenuDefaults, // note: to be removed
 };

@@ -1,37 +1,36 @@
-import React, { FC, useReducer, useContext, PropsWithChildren, useEffect } from 'react';
-import { storedFilesReducer as storedFileReducer } from './reducer';
-import {
-  StoredFileActionsContext,
-  StoredFileStateContext,
-  STORED_FILE_CONTEXT_INITIAL_STATE,
-  IStoredFile,
-  IUploadFilePayload,
-  IDownloadFilePayload,
-} from './contexts';
-import { getFlagSetters } from '../utils/flagsSetters';
-import {
-  downloadFileRequestAction,
-  downloadFileSuccessAction,
-  downloadFileErrorAction,
-  uploadFileSuccessAction,
-  uploadFileErrorAction,
-  deleteFileRequestAction,
-  deleteFileSuccessAction,
-  deleteFileErrorAction,
-  fetchFileInfoRequestAction,
-  fetchFileInfoSuccessAction,
-  fetchFileInfoErrorAction,
-  uploadFileRequestAction,
-  /* NEW_ACTION_IMPORT_GOES_HERE */
-} from './actions';
-import { useStoredFileGet, useStoredFileGetEntityProperty, StoredFileDeleteQueryParams } from 'apis/storedFile';
 import axios from 'axios';
 import FileSaver from 'file-saver';
 import qs from 'qs';
-import { useMutate } from 'hooks';
+import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
 import { useSheshaApplication } from '../..';
-import { useDelayedUpdate } from 'providers/delayedUpdateProvider';
-import { STORED_FILES_DELAYED_UPDATE } from 'providers/delayedUpdateProvider/models';
+import { StoredFileDeleteQueryParams, useStoredFileGet, useStoredFileGetEntityProperty } from '../../apis/storedFile';
+import { useMutate } from '../../hooks';
+import { useDelayedUpdate } from '../../providers/delayedUpdateProvider';
+import { STORED_FILES_DELAYED_UPDATE } from '../../providers/delayedUpdateProvider/models';
+import { getFlagSetters } from '../utils/flagsSetters';
+import {
+  deleteFileErrorAction,
+  deleteFileRequestAction,
+  deleteFileSuccessAction,
+  downloadFileErrorAction,
+  downloadFileRequestAction,
+  downloadFileSuccessAction,
+  fetchFileInfoErrorAction,
+  fetchFileInfoRequestAction,
+  fetchFileInfoSuccessAction,
+  uploadFileErrorAction,
+  uploadFileRequestAction,
+  uploadFileSuccessAction,
+} from './actions';
+import {
+  IDownloadFilePayload,
+  IStoredFile,
+  IUploadFilePayload,
+  STORED_FILE_CONTEXT_INITIAL_STATE,
+  StoredFileActionsContext,
+  StoredFileStateContext,
+} from './contexts';
+import { storedFilesReducer as storedFileReducer } from './reducer';
 
 export interface IStoredFileProviderPropsBase {
   baseUrl?: string;
@@ -60,7 +59,7 @@ export interface IStoredFileProviderProps {
   onChange?: (value: any) => void;
 }
 
-const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = props => {
+const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (props) => {
   const {
     ownerId,
     ownerType,
@@ -84,15 +83,17 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = prop
   const { httpHeaders: headers } = useSheshaApplication();
 
   const fileFetcher = useStoredFileGet({
-    lazy: true,    
+    lazy: true,
   });
 
   const propertyFetcher = useStoredFileGetEntityProperty({
-    lazy: true,    
+    lazy: true,
   });
-  const { loading: isFetchingFileInfo, error: fetchingFileInfoError, data: fetchingFileInfoResponse } = state.fileId
-    ? fileFetcher
-    : propertyFetcher;
+  const {
+    loading: isFetchingFileInfo,
+    error: fetchingFileInfoError,
+    data: fetchingFileInfoResponse,
+  } = state.fileId ? fileFetcher : propertyFetcher;
 
   const { addItem: addDelayedUpdate, removeItem: removeDelayedUpdate } = useDelayedUpdate(false) ?? {};
 
@@ -167,7 +168,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = prop
       responseType: 'blob',
       headers,
     })
-      .then(response => {
+      .then((response) => {
         dispatch(downloadFileSuccessAction());
         FileSaver.saveAs(new Blob([response.data]), payload.fileName);
       })
@@ -218,9 +219,15 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = prop
       originFileObj: null,
     };
 
-    if (!(Boolean(state.fileId)) && !(Boolean(state.ownerId) && Boolean(state.propertyName)) && typeof addDelayedUpdate !== 'function') {
+    if (
+      !Boolean(state.fileId) &&
+      !(Boolean(state.ownerId) && Boolean(state.propertyName)) &&
+      typeof addDelayedUpdate !== 'function'
+    ) {
       console.error('File component is not configured');
-      dispatch(uploadFileErrorAction({ ...newFile, uid: '-1', status: 'error', error: 'File component is not configured' }));
+      dispatch(
+        uploadFileErrorAction({ ...newFile, uid: '-1', status: 'error', error: 'File component is not configured' })
+      );
       return;
     }
 
@@ -236,14 +243,12 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = prop
         responseFile.uid = newFile.uid;
 
         dispatch(uploadFileSuccessAction({ ...responseFile }));
-        if (typeof onChange === 'function')
-          onChange(responseFile?.id);
-        if (callback) 
-          callback(responseFile);
-        if (responseFile.temporary &&  typeof addDelayedUpdate === 'function')
+        if (typeof onChange === 'function') onChange(responseFile?.id);
+        if (callback) callback(responseFile);
+        if (responseFile.temporary && typeof addDelayedUpdate === 'function')
           addDelayedUpdate(STORED_FILES_DELAYED_UPDATE, responseFile.id, { propertyName });
       })
-      .catch(e => {
+      .catch((e) => {
         console.error(e);
         dispatch(uploadFileErrorAction({ ...newFile, uid: '-1', status: 'error', error: 'uploading failed' }));
       });
@@ -253,16 +258,13 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = prop
   const uploadFileSync = (payload: IUploadFilePayload, callback?: (...args: any) => any) => {
     if (typeof onChange === 'function') {
       onChange(payload.file);
-      if (typeof callback === 'function') 
-        callback();
+      if (typeof callback === 'function') callback();
     }
   };
 
   const uploadFile = (payload: IUploadFilePayload, callback?: (...args: any) => any) => {
-    if (uploadMode === 'async') 
-      return uploadFileAsync(payload, callback);
-    if (uploadMode === 'sync') 
-      return uploadFileSync(payload, callback);
+    if (uploadMode === 'async') return uploadFileAsync(payload, callback);
+    if (uploadMode === 'sync') return uploadFileSync(payload, callback);
   };
 
   const { mutate: deleteFileHttp } = useMutate();
@@ -280,8 +282,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = prop
     deleteFileHttp({ url: '/api/StoredFile/Delete?' + qs.stringify(deleteFileInput), httpVerb: 'DELETE' }, {})
       .then(() => {
         deleteFileSuccess();
-        if (typeof onChange === 'function') 
-          onChange(null);
+        if (typeof onChange === 'function') onChange(null);
         if (typeof removeDelayedUpdate === 'function')
           removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, deleteFileInput.fileId);
       })
@@ -289,15 +290,12 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = prop
   };
 
   const deleteFileSync = () => {
-    if (typeof onChange === 'function')
-      onChange(null);
+    if (typeof onChange === 'function') onChange(null);
   };
 
   const deleteFile = () => {
-    if (uploadMode === 'async') 
-      deleteFileAsync();
-    else
-      deleteFileSync();
+    if (uploadMode === 'async') deleteFileAsync();
+    else deleteFileSync();
   };
 
   const deleteFileSuccess = () => {
@@ -364,4 +362,4 @@ function useStoredFile() {
   return { ...useStoredFileState(), ...useStoredFileActions() };
 }
 
-export { StoredFileProvider, useStoredFileState, useStoredFileActions, useStoredFile };
+export { StoredFileProvider, useStoredFile, useStoredFileActions, useStoredFileState };

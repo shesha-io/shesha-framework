@@ -6,7 +6,6 @@ import { RowCell } from './rowCell';
 import { CrudProvider } from 'providers/crudContext';
 import { InlineSaveMode } from './interfaces';
 import { IFlatComponentsStructure } from 'providers/form/models';
-import { useDataTableStore } from 'index';
 
 export type RowEditMode = 'read' | 'edit';
 
@@ -76,8 +75,6 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
       setSelected(row?.index);
     }
   };
-
-  const {} = useDataTableStore();
 
   const handleRowDoubleClick = () => {
     onDoubleClick(row, index);

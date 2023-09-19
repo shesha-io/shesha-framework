@@ -1,12 +1,12 @@
-import React, { FC } from 'react';
 import { Modal } from 'antd';
+import React, { FC } from 'react';
+import { useMedia } from 'react-use';
 import {
   ColumnsConfiguratorProvider,
   useColumnsConfigurator,
 } from '../../../../providers/datatableColumnsConfigurator';
-import { ColumnsConfigurator } from './columnsConfigurator';
 import { IConfigurableColumnsBase } from '../../../../providers/datatableColumnsConfigurator/models';
-import { useMedia } from 'react-use';
+import { ColumnsConfigurator } from './columnsConfigurator';
 
 export interface IColumnsEditorModal {
   readOnly: boolean;
@@ -33,7 +33,6 @@ export const ColumnsEditorModalInner: FC<IColumnsEditorModal> = ({ visible, onCh
       okText="Save"
       okButtonProps={{ hidden: readOnly }}
       cancelText={readOnly ? 'Close' : undefined}
-
       onCancel={hideModal}
       onOk={onOkClick}
     >
@@ -42,7 +41,7 @@ export const ColumnsEditorModalInner: FC<IColumnsEditorModal> = ({ visible, onCh
   );
 };
 
-export const ColumnsEditorModal: FC<IColumnsEditorModal> = props => {
+export const ColumnsEditorModal: FC<IColumnsEditorModal> = (props) => {
   return (
     <ColumnsConfiguratorProvider items={(props.value as IConfigurableColumnsBase[]) || []} readOnly={props.readOnly}>
       <ColumnsEditorModalInner {...props} />

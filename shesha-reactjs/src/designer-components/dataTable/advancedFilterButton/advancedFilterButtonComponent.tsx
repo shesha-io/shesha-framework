@@ -1,14 +1,14 @@
-import React, { FC } from 'react';
-import { IToolboxComponent } from '../../../interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '../../../providers/form/models';
 import { FilterOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
-import { useForm } from '../../../providers/form';
-import settingsFormJson from './settingsForm.json';
+import React, { FC } from 'react';
+import { IToolboxComponent } from '../../../interfaces';
 import { useDataTableStore } from '../../../providers';
+import { useForm } from '../../../providers/form';
+import { FormMarkup, IConfigurableFormComponent } from '../../../providers/form/models';
 import { validateConfigurableComponentSettings } from '../../../providers/form/utils';
+import settingsFormJson from './settingsForm.json';
 
-export interface IPagerComponentProps extends IConfigurableFormComponent { }
+export interface IPagerComponentProps extends IConfigurableFormComponent {}
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -30,11 +30,11 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IPagerComponentProps> = {
     };
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
-  isHidden: true // note: to be removed, now is used only for backward compatibility
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  isHidden: true, // note: to be removed, now is used only for backward compatibility
 };
 
-export const AdvancedFilterButton: FC<IPagerComponentProps> = ({ }) => {
+export const AdvancedFilterButton: FC<IPagerComponentProps> = ({}) => {
   const {
     isInProgress: { isFiltering },
     setIsInProgressFlag,

@@ -1,6 +1,6 @@
-import { createAction } from 'redux-actions';
-import { IScheduledJobExecutionStateContext, IExecutionLogEvent } from './contexts';
 import { HubConnection } from '@microsoft/signalr';
+import { createAction } from 'redux-actions';
+import { IExecutionLogEvent, IScheduledJobExecutionStateContext } from './contexts';
 
 export enum ScheduledJobExecutionActionEnums {
   GetExecutionLogRequest = 'GET_EXECUTION_LOG_REQUEST',
@@ -20,7 +20,7 @@ export const getExecutionLogRequestAction = createAction<IScheduledJobExecutionS
 );
 export const getExecutionLogSuccessAction = createAction<IScheduledJobExecutionStateContext, IExecutionLogEvent[]>(
   ScheduledJobExecutionActionEnums.GetExecutionLogSuccess,
-  executionLogEvents => ({ executionLogEvents })
+  (executionLogEvents) => ({ executionLogEvents })
 );
 export const getExecutionLogErrorAction = createAction<IScheduledJobExecutionStateContext>(
   ScheduledJobExecutionActionEnums.GetExecutionLogError,
@@ -28,11 +28,11 @@ export const getExecutionLogErrorAction = createAction<IScheduledJobExecutionSta
 );
 export const addExecutionLogEventAction = createAction<IScheduledJobExecutionStateContext, IExecutionLogEvent>(
   ScheduledJobExecutionActionEnums.AddExecutionLogEvent,
-  eventToAdd => ({ eventToAdd })
+  (eventToAdd) => ({ eventToAdd })
 );
 export const setHubConnectionAction = createAction<IScheduledJobExecutionStateContext, HubConnection>(
   ScheduledJobExecutionActionEnums.SetHubConnection,
-  hubConnection => ({ hubConnection })
+  (hubConnection) => ({ hubConnection })
 );
 
 export const downloadLogFileRequestAction = createAction<IScheduledJobExecutionStateContext>(

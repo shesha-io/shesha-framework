@@ -1,4 +1,4 @@
-import { IDictionary } from "..";
+import { IDictionary } from '..';
 
 export interface IPropertyMetadata {
   isVisible?: boolean;

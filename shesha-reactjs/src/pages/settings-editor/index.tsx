@@ -1,15 +1,13 @@
 import React from 'react';
-import { PageWithLayout } from '../../interfaces';
 import { SettingsEditor } from '../../components';
+import { PageWithLayout } from '../../interfaces';
 
 export interface ISettingsEditorPageProps {
-    id?: string;
+  id?: string;
 }
 
 const SettingsEditorPage: PageWithLayout<ISettingsEditorPageProps> = () => {
-    return (
-        <SettingsEditor />
-    );
+  return <SettingsEditor />;
 };
 
 export default SettingsEditorPage;

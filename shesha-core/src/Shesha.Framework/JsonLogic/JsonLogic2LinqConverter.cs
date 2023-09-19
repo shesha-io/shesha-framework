@@ -1059,6 +1059,17 @@ namespace Shesha.JsonLogic
             return query;
         }
 
+        public Func<T, bool> ParsePredicateOf<T>(string rule) 
+        {
+            if (string.IsNullOrWhiteSpace(rule))
+                return null;
+
+            // Parse json into hierarchical structure
+            var jsonLogic = JObject.Parse(rule);
+
+            return ParsePredicateOf<T>(jsonLogic);
+        }
+
         public Func<T, bool> ParsePredicateOf<T>(JObject rule)
         {
             if (rule.IsNullOrEmpty())

@@ -1,41 +1,41 @@
-import { useGet, UseGetProps } from "hooks/useGet";
-import { IAjaxResponse, IAjaxResponseBase } from "interfaces/ajaxResponse";
+import { useGet, UseGetProps } from '../hooks/useGet';
+import { IAjaxResponse, IAjaxResponseBase } from '../interfaces/ajaxResponse';
 
 export interface PermissionedObjectDto {
-    id?: string;
-    object?: string | null;
-    category?: string | null;
-    module?: string | null;
-    type?: string | null;
-    name?: string | null;
-    description?: string | null;
-    permissions?: string[] | null;
-    actualPermissions?: string[] | null;
-    inherited?: boolean;
-    access?: number | null;
-    parent?: string | null;
-    dependency?: string | null;
-    child?: PermissionedObjectDto[] | null;
-    hidden?: boolean;
+  id?: string;
+  object?: string | null;
+  category?: string | null;
+  module?: string | null;
+  type?: string | null;
+  name?: string | null;
+  description?: string | null;
+  permissions?: string[] | null;
+  actualPermissions?: string[] | null;
+  inherited?: boolean;
+  access?: number | null;
+  parent?: string | null;
+  dependency?: string | null;
+  child?: PermissionedObjectDto[] | null;
+  hidden?: boolean;
 }
 
 export type PermissionedObjectDtoListAjaxResponse = IAjaxResponse<PermissionedObjectDto[] | null>;
 
 export interface PermissionedObjectGetAllTreeQueryParams {
-    type?: string;
-    showHidden?: boolean;
+  type?: string;
+  showHidden?: boolean;
 }
 
 export type UsePermissionedObjectGetAllTreeProps = Omit<
-    UseGetProps<PermissionedObjectDtoListAjaxResponse, PermissionedObjectGetAllTreeQueryParams, void>,
-    'path'
+  UseGetProps<PermissionedObjectDtoListAjaxResponse, PermissionedObjectGetAllTreeQueryParams, void>,
+  'path'
 >;
 
 /**
  * Get hierarchical list of protected objects
  */
 export const usePermissionedObjectGetAllTree = (props: UsePermissionedObjectGetAllTreeProps) =>
-    useGet<PermissionedObjectDtoListAjaxResponse, IAjaxResponseBase, PermissionedObjectGetAllTreeQueryParams, void>(
-        `/api/services/app/PermissionedObject/GetAllTree`,
-        props
-    );
+  useGet<PermissionedObjectDtoListAjaxResponse, IAjaxResponseBase, PermissionedObjectGetAllTreeQueryParams, void>(
+    `/api/services/app/PermissionedObject/GetAllTree`,
+    props
+  );

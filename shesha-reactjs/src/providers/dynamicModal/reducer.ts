@@ -1,8 +1,8 @@
-import { DYNAMIC_MODAL_CONTEXT_INITIAL_STATE, IDynamicModalStateContext } from './contexts';
-import { DynamicModalActionEnums, ICreateModalPayload } from './actions';
-import { handleActions } from 'redux-actions';
-import { IModalInstance, IModalProps } from './models';
 import { nanoid } from 'nanoid/non-secure';
+import { handleActions } from 'redux-actions';
+import { DynamicModalActionEnums, ICreateModalPayload } from './actions';
+import { DYNAMIC_MODAL_CONTEXT_INITIAL_STATE, IDynamicModalStateContext } from './contexts';
+import { IModalInstance, IModalProps } from './models';
 
 export default handleActions<IDynamicModalStateContext, any>(
   {

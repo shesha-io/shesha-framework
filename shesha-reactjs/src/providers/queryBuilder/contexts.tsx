@@ -11,7 +11,7 @@ export interface IQueryBuilderStateContext {
 export interface IQueryBuilderActionsContext {
   setFields: (fields: IProperty[]) => void;
   fetchFields: (fieldNames: string[]) => void;
-  fetchContainer: (containerPath: string) =>  Promise<IModelMetadata>;
+  fetchContainer: (containerPath: string) => Promise<IModelMetadata>;
   //appendItems: (properties: IPropertyItem[], prefix: string) => void;
 
   /* NEW_ACTION_ACTION_DECLARATIO_GOES_HERE */

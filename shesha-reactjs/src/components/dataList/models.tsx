@@ -1,43 +1,47 @@
-import { FormIdentifier, IConfigurableFormComponent } from "../..";
-import { ISelectionProps } from "../../providers/dataTableSelection/models";
+import { IConfigurableActionConfiguration } from 'interfaces/configurableAction';
+import { FormIdentifier, IConfigurableFormComponent } from '../..';
+import { ISelectionProps } from '../../providers/dataTableSelection/models';
 
 export type FormSelectionMode = 'name' | 'view' | 'expression';
 export type Orientation = 'vertical' | 'horizontal';
 export type ListItemWidth = number | 'custom';
 
 export interface IDataListProps {
+  dataSource?: string;
 
-    dataSource?: string;
+  formSelectionMode?: FormSelectionMode;
+  formId?: FormIdentifier;
+  formType?: string;
+  selectionMode?: 'none' | 'single' | 'multiple';
+  formIdExpression?: string;
 
-    formSelectionMode?: FormSelectionMode;
-    formId?: FormIdentifier;
-    formType?: string;
-    selectionMode?: 'none' | 'single' | 'multiple';
-    formIdExpression?: string;
-    
-    records?: object[];
+  records?: object[];
 
-    selectedRow?: ISelectionProps;
-    selectedRows?: { [key in string]: string }[];
-    onSelectRow?: (index: number, row: any) => void;
-    onMultiSelectRows?: (rows: any[]) => void;
-    onSelectedIdsChanged?: (selectedRowIds: string[]) => void;
-    onDblClick?: (data: any, index?: number) => void;
+  selectedRow?: ISelectionProps;
+  selectedRows?: { [key in string]: string }[];
+  onSelectRow?: (index: number, row: any) => void;
+  onMultiSelectRows?: (rows: any[]) => void;
+  onSelectedIdsChanged?: (selectedRowIds: string[]) => void;
+  onDblClick?: (data: any, index?: number) => void;
 
-    /** Called when fetch data or refresh is complete is complete */
-    onFetchDataSuccess?: () => void;
-    onRowsChanged?: (rows: object[]) => void;
+  /** Called when fetch data or refresh is complete is complete */
+  onFetchDataSuccess?: () => void;
+  onRowsChanged?: (rows: object[]) => void;
 
-    isFetchingTableData?: boolean;
+  isFetchingTableData?: boolean;
 
-    entityType?: string;
-    selectedIds?: string[];
-    changeSelectedIds?: (selectedIds: string[]) => void;
+  entityType?: string;
+  selectedIds?: string[];
+  changeSelectedIds?: (selectedIds: string[]) => void;
 
-    orientation?: Orientation;
-    listItemWidth?: ListItemWidth;
-    customListItemWidth?: number;
+  orientation?: Orientation;
+  listItemWidth?: ListItemWidth;
+  customListItemWidth?: number;
+
+  defaultSortBy?: string;
+  defaultSortOrder?: string;
+
+  actionConfiguration?: IConfigurableActionConfiguration;
 }
 
-export interface IDataListComponentProps extends IDataListProps, IConfigurableFormComponent {
-}
+export interface IDataListComponentProps extends IDataListProps, IConfigurableFormComponent {}

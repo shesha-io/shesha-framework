@@ -15,9 +15,8 @@ variables:
 pr:
   branches:
     include:
-    - feat/for-j
     - releases/*
-    #- main
+    - main
 trigger:
   tags:
     include:
@@ -25,7 +24,7 @@ trigger:
   branches:
     include:
     - releases/*
-    #- main
+    - main
     
 pool: 
   name: Azure Pipelines
@@ -266,11 +265,18 @@ stages:
         targetType: 'inline'
         script: |
           # Write your PowerShell commands here.
-          
+          mkdir $(System.DefaultWorkingDirectory)/temp
           Write-Host "Copying Shesha ReactJS Artifacts"
-          cp -R shesha-reactjs $(Build.ArtifactStagingDirectory)/shesha-reactjs
-          cp -R shesha-functional-tests $(Build.ArtifactStagingDirectory)/shesha-functional-tests
+          cp -R shesha-reactjs $(System.DefaultWorkingDirectory)/temp/shesha-reactjs
+          cp -R shesha-functional-tests $(System.DefaultWorkingDirectory)/temp/shesha-functional-tests
         workingDirectory: '$(System.DefaultWorkingDirectory)'
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/temp'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/adminportal.zip'
+        replaceExistingArchive: true
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: shesha-adminportal-functional'
       inputs:

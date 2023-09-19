@@ -1,5 +1,5 @@
 import { createAction } from 'redux-actions';
-import { INotesStateContext, INote, ICreateNotePayload, INoteSettings } from './contexts';
+import { ICreateNotePayload, INote, INoteSettings, INotesStateContext } from './contexts';
 
 export enum NotesActionEnums {
   FetchNotesRequest = 'FETCH_NOTES_REQUEST',
@@ -22,27 +22,27 @@ export const fetchNotesRequestAction = createAction<INotesStateContext>(NotesAct
 
 export const fetchNotesSuccessAction = createAction<INotesStateContext, INote[]>(
   NotesActionEnums.FetchNotesSuccess,
-  notes => ({ notes })
+  (notes) => ({ notes })
 );
 
 export const fetchNotesErrorAction = createAction<INotesStateContext, any>(
   NotesActionEnums.FetchNotesError,
-  errorInfo => ({ errorInfo })
+  (errorInfo) => ({ errorInfo })
 );
 //#endregion
 
 //#region Post notes
 export const postNotesRequestAction = createAction<INotesStateContext, ICreateNotePayload>(
   NotesActionEnums.PostNotesRequest,
-  newNotes => ({ newNotes })
+  (newNotes) => ({ newNotes })
 );
 export const postNotesSuccessAction = createAction<INotesStateContext, ICreateNotePayload | INote>(
   NotesActionEnums.PostNotesSuccess,
-  newNotes => ({ newNotes })
+  (newNotes) => ({ newNotes })
 );
 export const postNotesErrorAction = createAction<INotesStateContext, any>(
   NotesActionEnums.PostNotesError,
-  errorInfo => ({
+  (errorInfo) => ({
     errorInfo,
   })
 );
@@ -51,31 +51,31 @@ export const postNotesErrorAction = createAction<INotesStateContext, any>(
 //#region Delete notes
 export const deleteNotesRequestAction = createAction<INotesStateContext, string>(
   NotesActionEnums.DeleteNotesRequest,
-  commentIdToBeDeleted => ({ commentIdToBeDeleted })
+  (commentIdToBeDeleted) => ({ commentIdToBeDeleted })
 );
 export const deleteNotesSuccessAction = createAction<INotesStateContext, string>(
   NotesActionEnums.DeleteNotesSuccess,
-  commentIdToBeDeleted => ({ commentIdToBeDeleted })
+  (commentIdToBeDeleted) => ({ commentIdToBeDeleted })
 );
 export const deleteNotesErrorAction = createAction<INotesStateContext, any>(
   NotesActionEnums.DeleteNotesError,
-  errorInfo => ({ errorInfo })
+  (errorInfo) => ({ errorInfo })
 );
 //#endregion
 
 //#region SignalR Events
-export const onNoteAddedAction = createAction<INotesStateContext, INote>(NotesActionEnums.OnNoteAdded, newNotes => ({
+export const onNoteAddedAction = createAction<INotesStateContext, INote>(NotesActionEnums.OnNoteAdded, (newNotes) => ({
   newNotes,
 }));
 
 export const onNoteRemovedAction = createAction<INotesStateContext, string>(
   NotesActionEnums.OnNoteRemoved,
-  commentIdToBeDeleted => ({ commentIdToBeDeleted })
+  (commentIdToBeDeleted) => ({ commentIdToBeDeleted })
 );
 //#endregion
 
 export const setSettingsAction = createAction<INotesStateContext, INoteSettings>(
   NotesActionEnums.SetSettings,
-  settings => ({ settings })
+  (settings) => ({ settings })
 );
 /* NEW_ACTION_GOES_HERE */

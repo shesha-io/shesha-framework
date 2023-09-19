@@ -9,25 +9,25 @@ export function getFlagSetters<A extends string, B extends string, C extends str
   //#region Set flags
   const setIsInProgressFlagAction = createAction<IState, { [key in A]?: boolean }>(
     FlagsActionTypes.SetIsInProgressFlag,
-    key => ({
+    (key) => ({
       isInProgress: key,
     })
   );
 
   const setSucceededFlagAction = createAction<IState, { [key in B]?: boolean }>(
     FlagsActionTypes.SetSucceededFlag,
-    key => ({
+    (key) => ({
       succeeded: key,
     })
   );
 
-  const setFailedFlagAction = createAction<IState, { [key in C]?: boolean }>(FlagsActionTypes.SetErrorFlag, key => ({
+  const setFailedFlagAction = createAction<IState, { [key in C]?: boolean }>(FlagsActionTypes.SetErrorFlag, (key) => ({
     error: key,
   }));
 
   const setActionedFlagAction = createAction<IState, { [key in D]?: boolean }>(
     FlagsActionTypes.SetActionedFlag,
-    key => ({
+    (key) => ({
       actioned: key,
     })
   );

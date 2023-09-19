@@ -1,5 +1,5 @@
-import React, { FC } from 'react';
 import { Form } from 'antd';
+import React, { FC } from 'react';
 import { IConfigurableActionConfiguration } from '../../interfaces/configurableAction';
 
 export interface IConfigurableActionSettingsProps {
@@ -9,7 +9,7 @@ export interface IConfigurableActionSettingsProps {
   onValuesChange?: (changedValues: any, values: IConfigurableActionConfiguration) => void;
 }
 
-const ConfigurableActionSettings: FC<IConfigurableActionSettingsProps> = props => {
+const ConfigurableActionSettings: FC<IConfigurableActionSettingsProps> = (props) => {
   const [form] = Form.useForm();
 
   const onValuesChange = (changedValues, values) => {

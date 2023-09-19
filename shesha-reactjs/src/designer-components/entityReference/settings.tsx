@@ -1,21 +1,21 @@
-import { AutoComplete, Checkbox, Form, Input, InputNumber, Select, Switch, } from 'antd';
+import { AutoComplete, Checkbox, Form, Input, InputNumber, Select, Switch } from 'antd';
 import React, { FC, useState } from 'react';
-import PropertyAutocomplete from 'components/propertyAutocomplete/propertyAutocomplete';
-import CodeEditor from 'components/formDesigner/components/codeEditor/codeEditor';
-import Show from 'components/show';
-import { AutocompleteRaw } from 'components/autocomplete';
-import FormAutocomplete from 'components/formAutocomplete';
-import EndpointsAutocomplete from 'components/endpointsAutocomplete/endpointsAutocomplete';
-import { MetadataProvider } from 'providers';
-import LabelValueEditor from 'components/formDesigner/components/labelValueEditor/labelValueEditor';
-import CollapsiblePanel from 'components/panel';
+import { AutocompleteRaw } from '../../components/autocomplete';
+import EndpointsAutocomplete from '../../components/endpointsAutocomplete/endpointsAutocomplete';
+import FormAutocomplete from '../../components/formAutocomplete';
+import CodeEditor from '../../components/formDesigner/components/codeEditor/codeEditor';
+import LabelValueEditor from '../../components/formDesigner/components/labelValueEditor/labelValueEditor';
+import CollapsiblePanel from '../../components/panel';
+import PropertyAutocomplete from '../../components/propertyAutocomplete/propertyAutocomplete';
+import Show from '../../components/show';
+import SettingsCollapsiblePanel from '../../designer-components/_settings/settingsCollapsiblePanel';
+import SettingsFormItem from '../../designer-components/_settings/settingsFormItem';
+import { DEFAULT_FORM_LAYOUT_SETTINGS, ISettingsFormFactoryArgs } from '../../interfaces';
+import { MetadataProvider } from '../../providers';
 import { ConfigurableActionConfigurator } from '../configurableActionsConfigurator';
-import { DEFAULT_FORM_LAYOUT_SETTINGS, ISettingsFormFactoryArgs } from 'interfaces';
 import { IEntityReferenceControlProps } from './entityReference';
-import SettingsFormItem from 'designer-components/_settings/settingsFormItem';
-import SettingsCollapsiblePanel from 'designer-components/_settings/settingsCollapsiblePanel';
 
-interface IEntityReferenceSettingsState extends IEntityReferenceControlProps { }
+interface IEntityReferenceSettingsState extends IEntityReferenceControlProps {}
 
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 
@@ -26,13 +26,13 @@ export const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferen
   onValuesChange,
   propertyFilter,
   formRef,
-  layoutSettings = DEFAULT_FORM_LAYOUT_SETTINGS
+  layoutSettings = DEFAULT_FORM_LAYOUT_SETTINGS,
 }) => {
   const [state, setState] = useState<IEntityReferenceSettingsState>(model);
   const [form] = Form.useForm();
 
   const [formTypesOptions, setFormTypesOptions] = useState<{ value: string }[]>(
-    formTypes.map(i => {
+    formTypes.map((i) => {
       return { value: i };
     })
   );
@@ -59,9 +59,9 @@ export const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferen
           if (values.entityReferenceType === 'Quickview')
             view = 'Quickview';
         }*/
-        const incomingState = { ...values/*, formType: view ?? state.formType*/ };
+        const incomingState = { ...values /*, formType: view ?? state.formType*/ };
 
-        setState(prev => ({ ...prev, ...incomingState }));
+        setState((prev) => ({ ...prev, ...incomingState }));
 
         onValuesChange(changedValues, incomingState);
       }}
@@ -69,7 +69,7 @@ export const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferen
         ...model,
       }}
     >
-      <SettingsCollapsiblePanel propertyFilter={propertyFilter} header='Display'>
+      <SettingsCollapsiblePanel propertyFilter={propertyFilter} header="Display">
         <SettingsFormItem name="name" label="Name" required>
           <PropertyAutocomplete id="fb71cb51-884f-4f34-aa77-820c12276c95" readOnly={readOnly} />
         </SettingsFormItem>
@@ -90,7 +90,7 @@ export const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferen
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel propertyFilter={propertyFilter} header='Entity reference configuration'>
+      <SettingsCollapsiblePanel propertyFilter={propertyFilter} header="Entity reference configuration">
         <SettingsFormItem name="placeholder" label="Placeholder">
           <Input readOnly={readOnly} />
         </SettingsFormItem>
@@ -99,7 +99,7 @@ export const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferen
           <EndpointsAutocomplete readOnly={readOnly} />
         </SettingsFormItem>
 
-        <SettingsFormItem name="entityType" label="Entity type" style={{width: '100%'}}>
+        <SettingsFormItem name="entityType" label="Entity type" style={{ width: '100%' }}>
           <AutocompleteRaw
             dataSourceType="url"
             dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete"
@@ -133,14 +133,14 @@ export const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferen
             <AutoComplete
               disabled={readOnly}
               options={formTypesOptions}
-              onSearch={t =>
+              onSearch={(t) =>
                 setFormTypesOptions(
                   (t
-                    ? formTypes.filter(f => {
-                      return f.toLowerCase().includes(t.toLowerCase());
-                    })
+                    ? formTypes.filter((f) => {
+                        return f.toLowerCase().includes(t.toLowerCase());
+                      })
                     : formTypes
-                  ).map(i => {
+                  ).map((i) => {
                     return { value: i };
                   })
                 )
@@ -148,7 +148,7 @@ export const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferen
             />
           </SettingsFormItem>
         )}
-        {(state?.formSelectionMode === 'name') && (
+        {state?.formSelectionMode === 'name' && (
           <SettingsFormItem name="formIdentifier" label="Form">
             <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
           </SettingsFormItem>
@@ -156,7 +156,7 @@ export const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferen
       </SettingsCollapsiblePanel>
 
       <Show when={state?.entityReferenceType === 'Quickview'}>
-        <SettingsCollapsiblePanel propertyFilter={propertyFilter} header='Quickview settings'>
+        <SettingsCollapsiblePanel propertyFilter={propertyFilter} header="Quickview settings">
           <SettingsFormItem name="quickviewWidth" label="Quickview width">
             <InputNumber min={0} defaultValue={600} step={1} readOnly={readOnly} />
           </SettingsFormItem>
@@ -164,7 +164,7 @@ export const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferen
       </Show>
 
       <Show when={state?.entityReferenceType === 'Dialog'}>
-        <SettingsCollapsiblePanel propertyFilter={propertyFilter} header='Dialog settings'>
+        <SettingsCollapsiblePanel propertyFilter={propertyFilter} header="Dialog settings">
           <SettingsFormItem name="modalTitle" label="Title">
             <Input readOnly={readOnly} />
           </SettingsFormItem>
@@ -173,33 +173,34 @@ export const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferen
             <Checkbox disabled={readOnly} />
           </SettingsFormItem>
 
-          {state?.showModalFooter &&
+          {state?.showModalFooter && (
             <SettingsFormItem name="submitHttpVerb" initialValue={'POST'} label="Submit Http Verb">
               <Select disabled={readOnly}>
                 <Select.Option value="POST">POST</Select.Option>
                 <Select.Option value="PUT">PUT</Select.Option>
               </Select>
             </SettingsFormItem>
-          }
+          )}
           <SettingsFormItem name="additionalProperties" label="Additional properties">
             <LabelValueEditor
-              labelName='key'
-              labelTitle='Key'
-              valueName='value'
-              valueTitle='Value'
-              description={'Additional properties you want to be passed when the form gets submitted like parentId in the case where the modal is used in a childTable. ' +
+              labelName="key"
+              labelTitle="Key"
+              valueName="value"
+              valueTitle="Value"
+              description={
+                'Additional properties you want to be passed when the form gets submitted like parentId in the case where the modal is used in a childTable. ' +
                 'Also note you can use Mustache expression like {{id}} for value property. \n\n' +
                 'Id initial value is already initialised with {{entityReference.id}} but you can override it'
               }
               exposedVariables={[
-                {name: 'data', description: 'This form data', type: 'object'},
-                {name: 'form', description: 'Form instance', type: 'object'},
-                {name: 'formMode', description: 'Current form mode', type: "'designer' | 'edit' | 'readonly'"},
-                {name: 'globalState', description: 'Global state', type: 'object'},
-                {name: 'entityReference.id', description: 'Id of entity reference entity', type: 'object'},
-                {name: 'entityReference.entity', description: 'Entity', type: 'object'},
-                {name: 'moment', description: 'moment', type: ''},
-                {name: 'http', description: 'axiosHttp', type: ''},
+                { name: 'data', description: 'This form data', type: 'object' },
+                { name: 'form', description: 'Form instance', type: 'object' },
+                { name: 'formMode', description: 'Current form mode', type: "'designer' | 'edit' | 'readonly'" },
+                { name: 'globalState', description: 'Global state', type: 'object' },
+                { name: 'entityReference.id', description: 'Id of entity reference entity', type: 'object' },
+                { name: 'entityReference.entity', description: 'Entity', type: 'object' },
+                { name: 'moment', description: 'moment', type: '' },
+                { name: 'http', description: 'axiosHttp', type: '' },
               ]}
             />
           </SettingsFormItem>
@@ -212,7 +213,7 @@ export const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferen
               <Select.Option value="custom">Custom</Select.Option>
             </Select>
           </SettingsFormItem>
-          {state?.modalWidth === 'custom' &&
+          {state?.modalWidth === 'custom' && (
             <>
               <SettingsFormItem name="widthUnits" label="Units">
                 <Select disabled={readOnly}>
@@ -224,33 +225,33 @@ export const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferen
                 <InputNumber min={0} readOnly={readOnly} />
               </SettingsFormItem>
             </>
-          }
+          )}
 
           <SettingsFormItem name="handleSuccess" label="Handle Success" valuePropName="checked">
             <Switch />
           </SettingsFormItem>
-          {state?.handleSuccess &&
+          {state?.handleSuccess && (
             <CollapsiblePanel header="On Success handler">
               <SettingsFormItem name="onSuccess" label="On Success">
                 <ConfigurableActionConfigurator editorConfig={null} level={0} />
               </SettingsFormItem>
             </CollapsiblePanel>
-          }
+          )}
 
           <SettingsFormItem name="handleFail" label="Handle Fail" valuePropName="checked">
             <Switch />
           </SettingsFormItem>
-          {state?.handleFail &&
+          {state?.handleFail && (
             <CollapsiblePanel header="On Fail handler">
               <SettingsFormItem name="onFail" label="On Fail">
                 <ConfigurableActionConfigurator editorConfig={null} level={0} />
               </SettingsFormItem>
             </CollapsiblePanel>
-          }
+          )}
         </SettingsCollapsiblePanel>
       </Show>
 
-      <SettingsCollapsiblePanel propertyFilter={propertyFilter} header='Layout'>
+      <SettingsCollapsiblePanel propertyFilter={propertyFilter} header="Layout">
         <SettingsFormItem name="labelCol" label="Label Col">
           <InputNumber min={0} max={24} defaultValue={5} step={1} readOnly={readOnly} />
         </SettingsFormItem>
@@ -281,7 +282,7 @@ export const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferen
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel propertyFilter={propertyFilter} header='Visibility'>
+      <SettingsCollapsiblePanel propertyFilter={propertyFilter} header="Visibility">
         <SettingsFormItem name="readOnly" label="Read Only" valuePropName="checked">
           <Checkbox disabled={readOnly} />
         </SettingsFormItem>
@@ -294,8 +295,9 @@ export const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferen
           propertyFilter={propertyFilter}
           label="Custom Visibility"
           name="customVisibility"
-          tooltip={"Enter custom visibility code.  You must return true to show the component. " + 
-            "The global variable data is provided, and allows you to access the data of any form component, by using its API key."
+          tooltip={
+            'Enter custom visibility code.  You must return true to show the component. ' +
+            'The global variable data is provided, and allows you to access the data of any form component, by using its API key.'
           }
         >
           <CodeEditor
@@ -306,8 +308,9 @@ export const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferen
             name="customVisibility"
             type={''}
             id={''}
-            description={"Enter custom visibility code.  You must return true to show the component. " + 
-              "The global variable data is provided, and allows you to access the data of any form component, by using its API key."
+            description={
+              'Enter custom visibility code.  You must return true to show the component. ' +
+              'The global variable data is provided, and allows you to access the data of any form component, by using its API key.'
             }
             exposedVariables={[
               {

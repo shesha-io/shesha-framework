@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { ReferenceListItemDto } from 'apis/referenceList';
+import { ReferenceListItemDto } from '../../../apis/referenceList';
 
 interface IToolTipProps {
   currentStatus: ReferenceListItemDto;
@@ -7,12 +7,13 @@ interface IToolTipProps {
 }
 
 const ToolTipTittle: FC<IToolTipProps> = ({ currentStatus, showReflistName }) => {
-
   const hasDescription = !!currentStatus?.description;
   return (
     <>
       {hasDescription && showReflistName ? (
-        !!currentStatus?.description ? <span>Description: {currentStatus?.description}</span> : null
+        !!currentStatus?.description ? (
+          <span>Description: {currentStatus?.description}</span>
+        ) : null
       ) : (
         <>
           {!!currentStatus?.item ? <span>DisplayName: {currentStatus?.item}</span> : null}
@@ -23,6 +24,5 @@ const ToolTipTittle: FC<IToolTipProps> = ({ currentStatus, showReflistName }) =>
     </>
   );
 };
-
 
 export default ToolTipTittle;

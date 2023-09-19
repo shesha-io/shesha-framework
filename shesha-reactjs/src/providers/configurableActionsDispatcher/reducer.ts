@@ -1,8 +1,8 @@
+import { handleActions } from 'redux-actions';
 import {
   CONFIGURABLE_ACTION_DISPATCHER_CONTEXT_INITIAL_STATE,
   IConfigurableActionDispatcherStateContext,
 } from './contexts';
-import { handleActions } from 'redux-actions';
 
 const reducer = handleActions<IConfigurableActionDispatcherStateContext, any>(
   {

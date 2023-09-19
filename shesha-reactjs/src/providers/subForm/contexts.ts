@@ -1,10 +1,10 @@
-import { createContext } from 'react';
 import { GetDataError } from 'hooks';
+import { createContext } from 'react';
 import { IConfigurableFormComponent, IFlatComponentsStructure } from '../../interfaces';
 import { IFormSettings, IPersistedFormProps } from '../form/models';
 
 export interface IPersistedFormPayload
-  extends Pick<IPersistedFormProps, 'id' | 'versionNo' | 'versionStatus' | 'description' | 'module'> { }
+  extends Pick<IPersistedFormProps, 'id' | 'versionNo' | 'versionStatus' | 'description' | 'module'> {}
 
 export interface IFetchDataErrorPayload {
   error: GetDataError<unknown>;

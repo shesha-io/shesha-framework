@@ -437,7 +437,7 @@
             "parentId": "Scip2BCqWk6HniFIJTgtA",
             "hidden": false,
             "customVisibility": null,
-            "description": "Enter custom even handler on changing of event. (form, event) are exposed",
+            "description": "Enter custom event handler on changing of event. (form, event) are exposed",
             "validate": {},
             "settingsValidationErrors": [],
             "exposedVariables": [
@@ -562,7 +562,7 @@
             "parentId": "Scip2BCqWk6HniFIJTgtA",
             "hidden": false,
             "customVisibility": null,
-            "description": "Enter custom even handler on blur of event. (form, event) are exposed",
+            "description": "Enter custom event handler on blur of event. (form, event) are exposed",
             "validate": {},
             "settingsValidationErrors": [],
             "exposedVariables": [
@@ -632,7 +632,7 @@
               "parentId": "Scip2BCqWk6HniFIJTgtA",
               "hidden": false,
               "customVisibility": null,
-              "description": "Enter custom even handler on changing of event. (form, event) are exposed",
+              "description": "Enter custom event handler on changing of event. (form, event) are exposed",
               "validate": {},
               "settingsValidationErrors": [],
               "exposedVariables": [
@@ -757,7 +757,7 @@
               "parentId": "Scip2BCqWk6HniFIJTgtA",
               "hidden": false,
               "customVisibility": null,
-              "description": "Enter custom even handler on blur of event. (form, event) are exposed",
+              "description": "Enter custom event handler on blur of event. (form, event) are exposed",
               "validate": {},
               "settingsValidationErrors": [],
               "exposedVariables": [

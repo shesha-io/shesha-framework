@@ -1,5 +1,5 @@
 import { createAction } from 'redux-actions';
-import { IStoredFileStateContext, IStoredFile } from './contexts';
+import { IStoredFile, IStoredFileStateContext } from './contexts';
 
 export enum StoredFileActionEnums {
   DownloadFileRequest = 'DOWNLOAD_FILE_REQUEST',
@@ -33,15 +33,15 @@ export const downloadFileErrorAction = createAction<IStoredFileStateContext>(
 
 export const uploadFileRequestAction = createAction<IStoredFileStateContext, IStoredFile>(
   StoredFileActionEnums.UploadFileRequest,
-  fileInfo => ({ fileInfo })
+  (fileInfo) => ({ fileInfo })
 );
 export const uploadFileSuccessAction = createAction<IStoredFileStateContext, IStoredFile>(
   StoredFileActionEnums.UploadFileSuccess,
-  fileInfo => ({ fileInfo })
+  (fileInfo) => ({ fileInfo })
 );
 export const uploadFileErrorAction = createAction<IStoredFileStateContext, IStoredFile>(
   StoredFileActionEnums.UploadFileError,
-  fileInfo => ({ fileInfo })
+  (fileInfo) => ({ fileInfo })
 );
 
 export const deleteFileRequestAction = createAction<IStoredFileStateContext>(
@@ -64,7 +64,7 @@ export const fetchFileInfoRequestAction = createAction<IStoredFileStateContext>(
 );
 export const fetchFileInfoSuccessAction = createAction<IStoredFileStateContext, IStoredFile>(
   StoredFileActionEnums.FetchFileInfoSuccess,
-  fileInfo => ({ fileInfo })
+  (fileInfo) => ({ fileInfo })
 );
 export const fetchFileInfoErrorAction = createAction<IStoredFileStateContext>(
   StoredFileActionEnums.FetchFileInfoError,

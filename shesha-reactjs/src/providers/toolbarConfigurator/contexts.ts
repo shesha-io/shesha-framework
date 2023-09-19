@@ -38,8 +38,7 @@ export const TOOLBAR_CONTEXT_INITIAL_STATE: IToolbarConfiguratorStateContext = {
   readOnly: false,
 };
 
-export const ToolbarConfiguratorStateContext = createContext<IToolbarConfiguratorStateContext>(
-  TOOLBAR_CONTEXT_INITIAL_STATE
-);
+export const ToolbarConfiguratorStateContext =
+  createContext<IToolbarConfiguratorStateContext>(TOOLBAR_CONTEXT_INITIAL_STATE);
 
 export const ToolbarConfiguratorActionsContext = createContext<IToolbarConfiguratorActionsContext>(undefined);

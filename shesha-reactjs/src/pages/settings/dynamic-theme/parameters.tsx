@@ -22,7 +22,7 @@ const ThemeParameters: FC = () => {
     section: keyof IConfigurableTheme,
     update: Partial<IConfigurableTheme[keyof IConfigurableTheme]>
   ) => {
-    return { ...((theme[section] as unknown) as Record<string, unknown>), ...(update as Record<string, unknown>) };
+    return { ...(theme[section] as unknown as Record<string, unknown>), ...(update as Record<string, unknown>) };
   };
 
   const updateTheme = (
@@ -85,7 +85,7 @@ const ThemeParameters: FC = () => {
       <SectionSeparator title="Theme" />
 
       <Space direction="vertical" align="start">
-        {colorConfigs.map(config =>
+        {colorConfigs.map((config) =>
           renderColor(config.name, theme?.application?.[config.name], ({ hex }) => config.onChange(hex))
         )}
 
@@ -105,7 +105,7 @@ const ThemeParameters: FC = () => {
       <SectionSeparator title="Text" />
 
       <Space direction="vertical" align="start">
-        {textConfigs.map(config =>
+        {textConfigs.map((config) =>
           renderColor(
             config.name,
             theme?.text?.[config.name],
@@ -125,7 +125,7 @@ const ThemeParameters: FC = () => {
           <Radio.Group
             name="sidebarTheme"
             value={theme?.sidebar}
-            onChange={e => {
+            onChange={(e) => {
               changeTheme({
                 ...theme,
                 sidebar: e.target.value,

@@ -1,12 +1,12 @@
-import React, { FC, useState } from 'react';
 import { Checkbox, Form, Input, InputNumber, Select } from 'antd';
+import React, { FC, useState } from 'react';
 import { EditableTagGroup, SectionSeparator, Show } from '../../../components';
-import { IChildTableSettingsProps } from './models';
-import CodeEditor from '../../../components/formDesigner/components/codeEditor/codeEditor';
-import { CustomFilter } from '../filter/filterComponent';
 import ButtonGroupSettingsModal from '../../../components/formDesigner/components/button/buttonGroup/buttonGroupSettingsModal';
-import { getValidDefaultBool } from 'utils';
-import { DEFAULT_PAGE_SIZE_OPTIONS } from 'providers/dataTable/contexts';
+import CodeEditor from '../../../components/formDesigner/components/codeEditor/codeEditor';
+import { DEFAULT_PAGE_SIZE_OPTIONS } from '../../../providers/dataTable/contexts';
+import { getValidDefaultBool } from '../../../utils';
+import { CustomFilter } from '../filter/filterComponent';
+import { IChildTableSettingsProps } from './models';
 
 export interface IChildDataTableSettingsProps {
   readOnly: boolean;

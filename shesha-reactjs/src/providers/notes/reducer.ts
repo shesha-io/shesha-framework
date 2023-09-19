@@ -1,6 +1,6 @@
-import { INotesStateContext, INote } from './contexts';
-import { NotesActionEnums } from './actions';
 import flagsReducer from '../utils/flagsReducer';
+import { NotesActionEnums } from './actions';
+import { INote, INotesStateContext } from './contexts';
 
 export function notesReducer(
   incomingState: INotesStateContext,
@@ -35,7 +35,7 @@ export function notesReducer(
 
       const notesToAdd = newNotes as INote;
 
-      const foundNote = notes?.find(note => note?.id === notesToAdd?.id);
+      const foundNote = notes?.find((note) => note?.id === notesToAdd?.id);
 
       if (settings?.ownerId !== notesToAdd?.ownerId || foundNote) {
         return {

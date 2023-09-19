@@ -1,16 +1,15 @@
-import {
-  FORM_PERSISTER_CONTEXT_INITIAL_STATE,
-  IFormPersisterStateContext,
-  ILoadRequestPayload,
-} from './contexts';
-import { FormPersisterActionEnums } from './actions';
 import { handleActions } from 'redux-actions';
-import { IFormSettings, IPersistedFormProps } from '../form/models';
 import { IErrorInfo } from '../../interfaces/errorInfo';
+import { IFormSettings, IPersistedFormProps } from '../form/models';
+import { FormPersisterActionEnums } from './actions';
+import { FORM_PERSISTER_CONTEXT_INITIAL_STATE, IFormPersisterStateContext, ILoadRequestPayload } from './contexts';
 
 const reducer = handleActions<IFormPersisterStateContext, any>(
   {
-    [FormPersisterActionEnums.LoadRequest]: (state: IFormPersisterStateContext, action: ReduxActions.Action<ILoadRequestPayload>) => {
+    [FormPersisterActionEnums.LoadRequest]: (
+      state: IFormPersisterStateContext,
+      action: ReduxActions.Action<ILoadRequestPayload>
+    ) => {
       const { payload } = action;
 
       return {
@@ -21,7 +20,10 @@ const reducer = handleActions<IFormPersisterStateContext, any>(
       };
     },
 
-    [FormPersisterActionEnums.LoadSuccess]: (state: IFormPersisterStateContext, action: ReduxActions.Action<IPersistedFormProps>) => {
+    [FormPersisterActionEnums.LoadSuccess]: (
+      state: IFormPersisterStateContext,
+      action: ReduxActions.Action<IPersistedFormProps>
+    ) => {
       const { payload } = action;
 
       return {
@@ -44,7 +46,10 @@ const reducer = handleActions<IFormPersisterStateContext, any>(
       };
     },
 
-    [FormPersisterActionEnums.LoadError]: (state: IFormPersisterStateContext, action: ReduxActions.Action<IErrorInfo>) => {
+    [FormPersisterActionEnums.LoadError]: (
+      state: IFormPersisterStateContext,
+      action: ReduxActions.Action<IErrorInfo>
+    ) => {
       const { payload } = action;
 
       return {
@@ -55,7 +60,10 @@ const reducer = handleActions<IFormPersisterStateContext, any>(
       };
     },
 
-    [FormPersisterActionEnums.UpdateFormSettings]: (state: IFormPersisterStateContext, action: ReduxActions.Action<IFormSettings>) => {
+    [FormPersisterActionEnums.UpdateFormSettings]: (
+      state: IFormPersisterStateContext,
+      action: ReduxActions.Action<IFormSettings>
+    ) => {
       const { payload } = action;
 
       return {
@@ -80,7 +88,10 @@ const reducer = handleActions<IFormPersisterStateContext, any>(
         saveError: null,
       };
     },
-    [FormPersisterActionEnums.SaveError]: (state: IFormPersisterStateContext, action: ReduxActions.Action<IErrorInfo>) => {
+    [FormPersisterActionEnums.SaveError]: (
+      state: IFormPersisterStateContext,
+      action: ReduxActions.Action<IErrorInfo>
+    ) => {
       const { payload } = action;
 
       return {

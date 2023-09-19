@@ -1,19 +1,15 @@
-import axios, { AxiosResponse } from "axios";
-import qs from "qs";
-import { IAjaxResponse } from "../interfaces/ajaxResponse";
+import axios, { AxiosResponse } from 'axios';
+import qs from 'qs';
+import { IAjaxResponse } from '../interfaces/ajaxResponse';
 import { DEFAULT_ACCESS_TOKEN_NAME } from '../providers/sheshaApplication/contexts';
 import { requestHeaders } from './requestHeaders';
 
-export function constructUrl<TQueryParams>(
-  base: string,
-  path: string,
-  queryParams?: TQueryParams,
-) {
+export function constructUrl<TQueryParams>(base: string, path: string, queryParams?: TQueryParams) {
   let normalizedBase = Boolean(base) ? base : '';
-  normalizedBase = normalizedBase.endsWith("/") ? normalizedBase : `${normalizedBase}/`;
+  normalizedBase = normalizedBase.endsWith('/') ? normalizedBase : `${normalizedBase}/`;
 
   let trimmedPath = Boolean(path) ? path : '';
-  trimmedPath = trimmedPath.startsWith("/") ? trimmedPath.slice(1) : trimmedPath;
+  trimmedPath = trimmedPath.startsWith('/') ? trimmedPath.slice(1) : trimmedPath;
 
   const encodedPathWithParams = Object.keys(queryParams || {}).length
     ? `${trimmedPath}?${qs.stringify(queryParams)}`
@@ -42,7 +38,7 @@ export interface GetProps<
     [key: string]: any;
   },
   _TPathParams = any,
-  > extends BaseRequestOptions {
+> extends BaseRequestOptions {
   queryParams?: TQueryParams;
 }
 
@@ -52,23 +48,23 @@ export const get = <
   TQueryParams = {
     [key: string]: any;
   },
-  _TPathParams = any
+  _TPathParams = any,
 >(
   path: string,
   queryParams: TQueryParams,
   props: Omit<GetProps<TData, TError, TQueryParams, _TPathParams>, 'queryParams'>,
-  signal?: RequestInit["signal"],
+  signal?: RequestInit['signal']
 ): Promise<TData | null> => {
   const url = constructUrl(props?.base, path, queryParams);
   const headers = {
-    "content-type": "application/json",
-    ...(props?.headers || {})
+    'content-type': 'application/json',
+    ...(props?.headers || {}),
   };
 
   return fetch(url, {
     headers,
-    signal
-  }).then(res => {
+    signal,
+  }).then((res) => {
     return res.ok ? res.json() : res;
   });
 };
@@ -81,11 +77,11 @@ export interface MutateProps<
   },
   TRequestBody = any,
   /** is used by the react hooks only */
-  _TPathParams = any
-  > extends BaseRequestOptions {
+  _TPathParams = any,
+> extends BaseRequestOptions {
   data: TRequestBody | null;
   queryParams?: TQueryParams;
-  signal?: RequestInit["signal"];
+  signal?: RequestInit['signal'];
   //options?: MutateRequestOptions<TQueryParams, TPathParams>
 }
 
@@ -97,22 +93,22 @@ export const mutate = <
   },
   TRequestBody = any,
   /** is used by the react hooks only */
-  _TPathParams = any
+  _TPathParams = any,
 >(
   method: string,
   path: string,
   data: TRequestBody,
-  props: Omit<MutateProps<TData, TError, TQueryParams, TRequestBody, _TPathParams>, 'data'>,
+  props: Omit<MutateProps<TData, TError, TQueryParams, TRequestBody, _TPathParams>, 'data'>
 ): Promise<TData | null> => {
   let fixedPath = path;
-  if (method === "DELETE" && typeof data === "string") {
+  if (method === 'DELETE' && typeof data === 'string') {
     fixedPath += `/${data}`;
   }
   const url = constructUrl(props.base, fixedPath, props.queryParams);
 
   const headers = {
-    "content-type": "application/json",
-    ...(props?.headers || {})
+    'content-type': 'application/json',
+    ...(props?.headers || {}),
   };
 
   const { signal } = props || {};
@@ -122,12 +118,11 @@ export const mutate = <
     body: JSON.stringify(data),
     headers,
     signal,
-  }).then(res => res.json());
+  }).then((res) => res.json());
 };
 
 export const getFileNameFromContentDisposition = (disposition: string): string => {
-  if (!disposition)
-    return null;
+  if (!disposition) return null;
   const utf8FilenameRegex = /filename\*=UTF-8''([\w%\-\.]+)(?:; ?|$)/i;
   const asciiFilenameRegex = /^filename=(["']?)(.*?[^\\])\1(?:; ?|$)/i;
 
@@ -154,13 +149,10 @@ export const getFileNameFromResponse = (fileResponse: AxiosResponse<any>): strin
 };
 
 export const unwrapAbpResponse = <TResponse extends any, TData extends any>(response: TResponse): TData | TResponse => {
-  if (!response)
-    return response;
+  if (!response) return response;
 
   const ajaxResponse = response as IAjaxResponse<TData>;
-  const result = ajaxResponse.success && ajaxResponse.result
-    ? ajaxResponse.result
-    : response;
+  const result = ajaxResponse.success && ajaxResponse.result ? ajaxResponse.result : response;
 
   return result;
 };
