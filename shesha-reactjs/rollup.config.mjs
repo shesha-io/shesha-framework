@@ -14,12 +14,12 @@ import pkg from './package.json' assert { type: 'json' };
 export default {
   input: ['src/index.tsx', 'src/providers/index.ts'],
   output: [
-    {
-      file: pkg.main,
-      format: 'cjs',
-      exports: 'named',
-      inlineDynamicImports: true,
-    },
+    // {
+    //   file: pkg.main,
+    //   format: 'cjs',
+    //   exports: 'named',
+    //   inlineDynamicImports: true,
+    // },
     {
       file: pkg.module,
       format: 'es',
