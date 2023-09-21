@@ -19,7 +19,7 @@
         "@microsoft/applicationinsights-web": "^2.6.2",
         "@microsoft/signalr": "^5.0.6",
         "@next/bundle-analyzer": "13.4.12",
-        "@shesha/reactjs": "file:shesha-reactjs-4.23.36-canary.tgz",
+        "@shesha/reactjs": "file:shesha-reactjs-4.23.37-canary.tgz",
         "@types/nprogress": "^0.2.0",
         "@types/react-dom": "^18.2.4",
         "antd": "^4.24.7",
