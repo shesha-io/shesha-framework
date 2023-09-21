@@ -1,6 +1,6 @@
-import React, { useRef, useState } from 'react';
-import { QueryBuilderProvider, JsonLogicResult } from '../..';
-import { Story, Meta } from '@storybook/react';
+import React, { FC, useRef, useState } from 'react';
+import { QueryBuilderProvider, JsonLogicResult, MetadataProvider, useMetadata } from '../..';
+import { Story } from '@storybook/react';
 import StoryApp from '../storyBookApp';
 import { QueryBuilder } from '.';
 import { addStory } from 'stories/utils';
@@ -8,21 +8,19 @@ import isDeepEqual from 'fast-deep-equal/react';
 import { IEntityReferencePropertyMetadata, IModelMetadata, IObjectMetadata } from 'interfaces/metadata';
 import { DataTypes } from 'interfaces/dataTypes';
 import QueryBuilderField from 'designer-components/queryBuilder/queryBuilderField';
-import { Button, Select } from 'antd';
-import { NodeExpandOutlined } from '@ant-design/icons';
+import { Button } from 'antd';
 import { IPropertyMetadataWithQBSettings } from 'providers/queryBuilder/models';
 
 export default {
   title: 'Components/QueryBuilder',
   component: QueryBuilder
-} as Meta;
-
+};
 
 interface IQueryBuilderStoryArgs {
 
 }
 
-const metadata: IObjectMetadata = {
+const StaticMetadata: IObjectMetadata = {
   dataType: DataTypes.object,
   properties: [
     {
@@ -65,6 +63,13 @@ const metadata: IObjectMetadata = {
       isVisible: true,
       entityType: 'Shesha.Enterprise.Workflow.WorkflowInstance'
     } as IEntityReferencePropertyMetadata,
+    {
+      label: 'Person',
+      dataType: DataTypes.entityReference,
+      path: 'person',
+      isVisible: true,
+      entityType: 'Shesha.Core.Person'
+    } as IEntityReferencePropertyMetadata,
   ]
 };
 
@@ -89,11 +94,16 @@ export interface ISimpleQueryBuilderProps {
 const TestQB = () => {
 
   const [value, setValue] = useState<object>(undefined);
+
+  const onChange = (newValue: object) => {
+    setValue(newValue);
+  };
+
   return (
     <SimpleQueryBuilder
       value={value}
-      onChange={setValue}
-      metadata={metadata}
+      onChange={onChange}
+      metadata={StaticMetadata}
     />
   );
 };
@@ -145,32 +155,33 @@ const SimpleQueryBuilder = ({ value, onChange, metadata }) => {
   );
 };
 
-const { Option } = Select;
-const ModalTemplate: Story<IQueryBuilderStoryArgs> = () => {
+//const { Option } = Select;
+// const onExpandClick = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+//   event?.preventDefault();
+//   event.stopPropagation();
 
-  const onExpandClick = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
-    event?.preventDefault();
-    event.stopPropagation();
-
-    console.log('LOG: expand clicked');
-  };
-
-  return (
-    <StoryApp>
-      <TestQBModal />
-      <Select dropdownMatchSelectWidth style={{ width: '200px' }}>
+//   console.log('LOG: expand clicked');
+// };
+{/* <Select dropdownMatchSelectWidth style={{ width: '200px' }}>
         <Option value="1" label="item 1">Item 1</Option>
         <Option value="2" label="item 2">Item 2 <Button onClick={onExpandClick} shape="circle" size='small' title='Click to expand'><NodeExpandOutlined /></Button></Option>
-      </Select>
+      </Select> */}
+
+const ModalTemplate: Story<IQueryBuilderStoryArgs> = () => {
+  return (
+    <StoryApp>
+      <TestQBModal metadata={StaticMetadata} />
     </StoryApp>
   );
 };
 
-const TestQBModal = () => {
+interface ITestQBModalProps {
+  metadata: IModelMetadata;
+}
+const TestQBModal: FC<ITestQBModalProps> = ({ metadata }) => {
   const [value, setValue] = useState<object>(undefined);
 
   const onChange = (newValue: object) => {
-    console.log('LOG: onChange', newValue);
     setValue(newValue);
   };
 
@@ -181,5 +192,27 @@ const TestQBModal = () => {
   );
 };
 export const InsideModal = addStory(ModalTemplate, {
+
+});
+
+const ModalTemplateWithMetaProvider: Story<IQueryBuilderStoryArgs> = () => {
+  return (
+    <StoryApp>
+      <MetadataProvider dataType='entity' modelType='Shesha.Core.Person'>
+        <TestQBModalWrapper />
+      </MetadataProvider>
+    </StoryApp>
+  );
+};
+
+const TestQBModalWrapper = () => {
+  const meta = useMetadata(true);
+
+  return meta.metadata
+    ? <TestQBModal metadata={meta.metadata} />
+    : null;
+};
+
+export const InsideModalWithMetaProvider = addStory(ModalTemplateWithMetaProvider, {
 
 });

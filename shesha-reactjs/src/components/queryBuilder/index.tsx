@@ -22,6 +22,7 @@ import { FieldAutocomplete } from './fieldAutocomplete';
 import { extractVars } from '../../utils/jsonLogic';
 import { Skeleton } from 'antd';
 import { useQueryBuilder } from 'providers';
+import { usePrevious } from 'react-use';
 
 export interface IQueryBuilderColumn extends ITableColumn {
   fieldSettings?: FieldSettings;
@@ -63,6 +64,8 @@ export const QueryBuilder: FC<IQueryBuilderProps> = props => {
   const qbSettings = {
     ...InitialConfig.settings,
     removeIncompleteRulesOnLoad: false,
+    removeEmptyGroupsOnLoad: false,
+    removeInvalidMultiSelectValuesOnLoad: false,
     renderField: props => (true ? <FieldAutocomplete {...props} fields={fields} /> : <FieldSelect {...props} />),
   };
 
@@ -201,15 +204,26 @@ const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
 }) => {
   const lastLocallyChangedValue = useRef(value);
   const changedOutside = value !== lastLocallyChangedValue.current;
+  const prevValue = usePrevious(value);
+  const prevTree = useRef<ImmutableTree>(null);
 
   const tree = useMemo(() => {
+    const needRebuildTree = value !== prevValue && changedOutside;
+
+    if (!needRebuildTree && prevTree.current)
+      return prevTree.current;
+
     const loadedTree = value
-      ? loadJsonLogic(value, qbConfig) // QbUtils.loadFromJsonLogic(value, qbConfig)
+      ? loadJsonLogic(value, qbConfig)
       : QbUtils.loadTree({ id: QbUtils.uuid(), type: 'group' });
 
     const checkedTree = QbUtils.checkTree(loadedTree, qbConfig);
+
+    prevTree.current = checkedTree;
+    lastLocallyChangedValue.current = value;
+
     return checkedTree;
-  }, [changedOutside]);
+  }, [value]);
 
   const renderBuilder = (props: BuilderProps) => {
     return (

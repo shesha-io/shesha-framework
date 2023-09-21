@@ -116,6 +116,6 @@ export const TableProps = addStory(DesignerTemplate, {
 
 //TestModule/ivan-test-form
 export const IvanTestForm = addStory(DesignerTemplate, {
-  formId: 'c3d4cc51-ca52-4be6-9607-ece7f1cd7709'
+  formId: '18b0219c-737e-4045-a511-cf1dcac35c26'
 });
 
