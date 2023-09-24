@@ -17,9 +17,10 @@ interface ILayoutHeaderProps {
   searchQuery?: string;
   collapsed?: boolean;
   customComponent?: ReactNode;
+  imgSrc?: string;
 }
 
-const LayoutHeader: FC<ILayoutHeaderProps> = ({ collapsed, onSearch, customComponent }) => {
+const LayoutHeader: FC<ILayoutHeaderProps> = ({ collapsed, onSearch, customComponent, imgSrc }) => {
   const { loginInfo, logoutUser } = useAuth();
   const sidebar = useSidebarMenu(false);
   const { accountDropdownListItems, actions } = sidebar || {};
@@ -49,7 +50,7 @@ const LayoutHeader: FC<ILayoutHeaderProps> = ({ collapsed, onSearch, customCompo
   return (
     <div className={classNames('layout-header', { collapsed })}>
       <div className="layout-header-left">
-        <ConfigurableLogo />
+        <ConfigurableLogo imgSrc={imgSrc} />
 
         {onSearch && (
           <div className="search">
@@ -78,7 +79,7 @@ const LayoutHeader: FC<ILayoutHeaderProps> = ({ collapsed, onSearch, customCompo
         <div className="account">
           <span className="separator" />
           <Dropdown overlay={menu} trigger={['click']}>
-            <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
+            <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
               {loginInfo?.fullName} <DownOutlined />
             </a>
           </Dropdown>
