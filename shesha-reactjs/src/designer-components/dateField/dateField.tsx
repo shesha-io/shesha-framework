@@ -207,7 +207,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
   return (
     <DatePicker
       className="sha-date-picker"
-      value={formattedValue}
+      defaultValue={formattedValue}
       disabledDate={(e) => disabledDate(props, e, formData, globalState)}
       disabled={isDisabled}
       onChange={handleDatePickerChange}
