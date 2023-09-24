@@ -176,6 +176,7 @@
     "react-places-autocomplete": "^7.3.0",
     "react-responsive": "^8.2.0",
     "react-spinners": "^0.13.8",
+    "react-split": "^2.0.14",
     "react-syntax-highlighter": "^15.5.0",
     "react-table": "^7.7.0",
     "remark-gfm": "^3.0.1",
