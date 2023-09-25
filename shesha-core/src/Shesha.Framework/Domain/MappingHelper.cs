@@ -106,7 +106,7 @@ namespace Shesha.Domain
         /// </summary>
         /// <param name="entityType"></param>
         /// <returns></returns>
-        public static string GetSchemaName(Type entityType) 
+        public static string GetSchemaName(Type entityType)
         {
             if (IsRootEntity(entityType))
             {
@@ -153,7 +153,7 @@ namespace Shesha.Domain
         /// </summary>
         /// <param name="memberInfo"></param>
         /// <returns></returns>
-        public static string GetIdColumnName(MemberInfo memberInfo) 
+        public static string GetIdColumnName(MemberInfo memberInfo)
         {
             var columnAttribute = memberInfo.GetAttribute<ColumnAttribute>(true);
 
@@ -166,15 +166,29 @@ namespace Shesha.Domain
         /// <summary>
         /// Get column name for the specified member (property/field) with explicitly specified prefix, name and suffix
         /// </summary>
-        public static string GetNameForMember(MemberInfo memberInfo, string prefix, string name, string suffix) 
+        public static string GetNameForMember(MemberInfo memberInfo, string prefix, string name, string suffix)
         {
             var conventions = GetNamingConventions(memberInfo);
             return conventions.GetColumnName(prefix, name, suffix);
         }
 
-        private static INamingConventions GetNamingConventions(MemberInfo memberInfo) 
+        /// <summary>
+        /// Get column name for the specified entity type
+        /// </summary>
+        public static string GetNameForColumn(Type type, string prefix, string name, string suffix) 
         {
-            var conventionsType = memberInfo.ReflectedType.GetAttribute<NamingConventionsAttribute>(true)?.ConventionsType ?? typeof(DefaultNamingConventions);
+            var conventions = GetNamingConventions(type);
+            return conventions.GetColumnName(prefix, name, suffix);
+        }
+
+        private static INamingConventions GetNamingConventions(MemberInfo memberInfo)
+        {
+            return GetNamingConventions(memberInfo.ReflectedType);            
+        }
+
+        private static INamingConventions GetNamingConventions(Type type) 
+        {
+            var conventionsType = type.GetAttribute<NamingConventionsAttribute>(true)?.ConventionsType ?? typeof(DefaultNamingConventions);
             return Activator.CreateInstance(conventionsType) as INamingConventions;
         }
 
@@ -388,9 +402,12 @@ namespace Shesha.Domain
                 .Where(a => a is DiscriminatorAttribute)
                 .Cast<DiscriminatorAttribute>().FirstOrDefault();
 
-            return attribute?.UseDiscriminator == true
+            if (attribute == null || !attribute.UseDiscriminator)
+                return null;
+
+            return !string.IsNullOrWhiteSpace(attribute.DiscriminatorColumn)
                 ? attribute.DiscriminatorColumn
-                : null;
+                : GetNameForColumn(type, DiscriminatorAttribute.DefaultPrefix, DiscriminatorAttribute.DefaultName, null);
         }
 
         /// <summary>
