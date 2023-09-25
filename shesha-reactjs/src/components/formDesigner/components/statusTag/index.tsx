@@ -50,6 +50,10 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
       return expression?.includes('{{') ? evaluateString(expression, data) : expression;
     };
 
+    const isVisibleByCondition = executeCustomExpression(model.customVisibility, true, data, globalState);
+
+    if (!isVisibleByCondition && formMode !== 'designer') return null;
+
     if (allEmpty) {
       return <Alert type="info" message="Status tag not configured properly" />;
     }
@@ -87,10 +91,6 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
       color: computedColorByCode || localColorByExpression,
       mappings: getParsedMappings(),
     };
-
-    const isVisibleByCondition = executeCustomExpression(model.customVisibility, true, data, globalState);
-
-    if (!isVisibleByCondition && formMode !== 'designer') return null;
 
     return (
       <ConfigurableFormItem model={model}>
