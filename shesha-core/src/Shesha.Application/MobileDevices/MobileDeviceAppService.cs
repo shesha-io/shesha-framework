@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.MobileDevices;
 
-public class MobileDeviceAppService : SheshaCrudServiceBase<MobileDevice, DynamicDto<MobileDevice, Guid>, Guid>
+public class MobileDeviceAppService : SheshaCrudServiceBase<MobileDevice, MobileDeviceDto, Guid>
 {
     public MobileDeviceAppService(IRepository<MobileDevice, Guid> repository) : base(repository)
     {
