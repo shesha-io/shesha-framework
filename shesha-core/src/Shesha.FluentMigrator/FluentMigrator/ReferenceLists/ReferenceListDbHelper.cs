@@ -31,13 +31,13 @@ namespace Shesha.FluentMigrator.ReferenceLists
             var id = Guid.NewGuid();
             if (IsLegacyRefListStructure())
             {
-                var sql = @"INSERT INTO Frwk_ReferenceLists
-           (Id
-           ,TenantId
-           ,Description
-           ,Name
-           ,Namespace
-           ,HardLinkToApplication)
+                var sql = @"INSERT INTO ""Frwk_ReferenceLists""
+           (""Id""
+           ,""TenantId""
+           ,""Description""
+           ,""Name""
+           ,""Namespace""
+           ,""HardLinkToApplication"")
      VALUES
            (
 		   @id
@@ -61,41 +61,39 @@ namespace Shesha.FluentMigrator.ReferenceLists
             }
             else 
             {
-                ExecuteNonQuery(@"INSERT INTO Frwk_ConfigurationItems
-           (Id
-           ,CreationTime
-           ,IsDeleted
-           ,Description
-           ,Name
-           ,VersionNo
-           ,VersionStatusLkp
-           ,ItemType
-           ,IsLast
-           ,OriginId
-           ,Suppress
+                ExecuteNonQuery(@"INSERT INTO ""Frwk_ConfigurationItems""
+           (""Id""
+           ,""Description""
+           ,""Name""
+           ,""VersionNo""
+           ,""VersionStatusLkp""
+           ,""ItemType""
+           ,""IsLast""
+           ,""OriginId""
+           ,""Suppress""
 		   )
      VALUES
            (@id
-           ,getdate()
-           ,0
            ,@description
            ,@fullName
            ,1
            ,3 /*Live*/
            ,'reference-list'
-           ,1
+           ,@isLast
            ,@id
-           ,0
+           ,@suppress
            )", command =>
                 {
                     command.AddParameter("@id", id);
                     command.AddParameter("@description", description);
                     command.AddParameter("@fullName", GetFullName(@namespace, name));
+                    command.AddParameter("@isLast", true);
+                    command.AddParameter("@suppress", false);
                 });
 
-                ExecuteNonQuery(@"INSERT INTO Frwk_ReferenceLists
-           (Id
-           ,HardLinkToApplication
+                ExecuteNonQuery(@"INSERT INTO ""Frwk_ReferenceLists""
+           (""Id""
+           ,""HardLinkToApplication""
             )
      VALUES
            (@id
@@ -103,7 +101,7 @@ namespace Shesha.FluentMigrator.ReferenceLists
            )", command =>
                 {
                     command.AddParameter("@id", id);
-                    command.AddParameter("@hardLinkToApplication", 0);
+                    command.AddParameter("@hardLinkToApplication", false);
                 });
             }
 
@@ -114,7 +112,7 @@ namespace Shesha.FluentMigrator.ReferenceLists
         {
             if (IsLegacyRefListStructure())
             {
-                ExecuteNonQuery("update Frwk_ReferenceLists set Description = @Description where Id = @Id", command => {
+                ExecuteNonQuery("update \"Frwk_ReferenceLists\" set \"Description\" = @Description where \"Id\" = @Id", command => {
                     command.AddParameter("@Description", description);
                     command.AddParameter("@Id", id);
                 });
@@ -122,14 +120,12 @@ namespace Shesha.FluentMigrator.ReferenceLists
             else 
             {
                 var sql = @"update 
-	ci
+	""Frwk_ConfigurationItems""
 set
-	ci.Description = @Description
-from 
-	Frwk_ReferenceLists rl
-	inner join Frwk_ConfigurationItems ci on ci.Id = rl.Id
+	""Description"" = @Description
 where
-	ci.Id = @Id";
+	""Id"" = @Id
+    and ""ItemType"" = 'reference-list'";
                 ExecuteNonQuery(sql, command => {
                     command.AddParameter("@Description", description);
                     command.AddParameter("@Id", id);
@@ -139,7 +135,7 @@ where
 
         internal void UpdateReferenceListNoSelectionValue(Guid? id, long? value)
         {
-            ExecuteNonQuery("update Frwk_ReferenceLists set NoSelectionValue = @NoSelectionValue where Id = @Id", command =>
+            ExecuteNonQuery("update \"Frwk_ReferenceLists\" set \"NoSelectionValue\" = @NoSelectionValue where \"Id\" = @Id", command =>
             {
                 command.AddParameter("@NoSelectionValue", value);
                 command.AddParameter("@Id", id);
@@ -151,7 +147,7 @@ where
         {
             if (IsLegacyRefListStructure())
             {
-                return ExecuteScalar<Guid?>(@"select Id from Frwk_ReferenceLists where Namespace = @Namespace and Name = @Name", command =>
+                return ExecuteScalar<Guid?>(@"select ""Id"" from ""Frwk_ReferenceLists"" where ""Namespace"" = @Namespace and ""Name"" = @Name", command =>
                 {
                     command.AddParameter("@namespace", @namespace);
                     command.AddParameter("@name", name);
@@ -159,17 +155,18 @@ where
             }
             else {
                 var sql = @"select 
-	ci.Id 
+	ci.""Id"" 
 from 
-	Frwk_ReferenceLists rl
-	inner join Frwk_ConfigurationItems ci on ci.Id = rl.Id
+	""Frwk_ReferenceLists"" rl
+	inner join ""Frwk_ConfigurationItems"" ci on ci.""Id"" = rl.""Id""
 where 
-	ci.Name = @FullName
-	and ci.IsLast = 1";
+	ci.""Name"" = @FullName
+	and ci.""IsLast"" = @isLast";
 
                 return ExecuteScalar<Guid?>(sql, command =>
                 {
                     command.AddParameter("@fullName", GetFullName(@namespace, name));
+                    command.AddParameter("@isLast", true);                    
                 });
             }            
         }
@@ -185,7 +182,7 @@ where
         {
             if (IsLegacyRefListStructure())
             {
-                ExecuteNonQuery(@"delete from Frwk_ReferenceLists where Namespace = @Namespace and Name = @Name",
+                ExecuteNonQuery(@"delete from ""Frwk_ReferenceLists"" where ""Namespace"" = @Namespace and ""Name"" = @Name",
                     command =>
                     {
                         command.AddParameter("@namespace", @namespace);
@@ -197,28 +194,28 @@ where
             {
                 // delete items if any
                 ExecuteNonQuery(@"update 
-	Frwk_ReferenceListItems 
+	""Frwk_ReferenceListItems"" 
 set
-	ParentId = null
+	""ParentId"" = null
 where 
-	ReferenceListId in (
+	""ReferenceListId"" in (
 		select 
 			rl.Id 
 		from 
-			Frwk_ReferenceLists rl
-			inner join Frwk_ConfigurationItems ci on ci.Id = rl.Id and ci.Name = @FullName
+			""Frwk_ReferenceLists"" rl
+			inner join ""Frwk_ConfigurationItems"" ci on ci.""Id"" = rl.""Id"" and ci.""Name"" = @FullName
 	)",
                     command => {
                         command.AddParameter("@fullName", GetFullName(@namespace, name));
                     }
                 );
 
-                ExecuteNonQuery(@"delete from Frwk_ReferenceListItems where ReferenceListId in (
+                ExecuteNonQuery(@"delete from ""Frwk_ReferenceListItems"" where ""ReferenceListId"" in (
 	select 
-		rl.Id 
+		rl.""Id"" 
 	from 
-		Frwk_ReferenceLists rl
-		inner join Frwk_ConfigurationItems ci on ci.Id = rl.Id and ci.Name = @FullName
+		""Frwk_ReferenceLists"" rl
+		inner join ""Frwk_ConfigurationItems"" ci on ci.""Id"" = rl.""Id"" and ci.""Name"" = @FullName
 )",
                     command => {
                         command.AddParameter("@fullName", GetFullName(@namespace, name));
@@ -227,14 +224,14 @@ where
 
                 ExecuteNonQuery(@"delete 
 from 
-	Frwk_ReferenceLists 
+	""Frwk_ReferenceLists"" 
 where 
-	Id in (
+	""Id"" in (
 		select 
-			rl.Id 
+			rl.""Id"" 
 		from 
-			Frwk_ReferenceLists rl
-			inner join Frwk_ConfigurationItems ci on ci.Id = rl.Id and ci.Name = @FullName
+			""Frwk_ReferenceLists"" rl
+			inner join ""Frwk_ConfigurationItems"" ci on ci.""Id"" = rl.""Id"" and ci.""Name"" = @FullName
 	)",
                     command => {
                         command.AddParameter("@fullName", GetFullName(@namespace, name));
@@ -243,10 +240,10 @@ where
 
                 ExecuteNonQuery(@"delete 
 from 
-	Frwk_ConfigurationItems
+	""Frwk_ConfigurationItems""
 where 
-	Name = @FullName
-	and ItemType = 'reference-list'",
+	""Name"" = @FullName
+	and ""ItemType"" = 'reference-list'",
                     command => {
                         command.AddParameter("@fullName", GetFullName(@namespace, name));
                     }
@@ -261,16 +258,16 @@ where
         internal Guid InsertReferenceListItem(Guid refListId, ReferenceListItemDefinition item)
         {
             var id = Guid.NewGuid();
-            var sql = @"INSERT INTO Frwk_ReferenceListItems
-           (Id
-           ,TenantId
-           ,Description
-           ,HardLinkToApplication
-           ,Item
-           ,ItemValue
-           ,OrderIndex
-           ,ParentId
-           ,ReferenceListId)
+            var sql = @"INSERT INTO ""Frwk_ReferenceListItems""
+           (""Id""
+           ,""TenantId""
+           ,""Description""
+           ,""HardLinkToApplication""
+           ,""Item""
+           ,""ItemValue""
+           ,""OrderIndex""
+           ,""ParentId""
+           ,""ReferenceListId"")
      VALUES
            (@Id
            ,@TenantId
@@ -286,7 +283,7 @@ where
                 command.AddParameter("@Id", id);
                 command.AddParameter("@TenantId", null);
                 command.AddParameter("@Description", item.Description);
-                command.AddParameter("@HardLinkToApplication", 0);
+                command.AddParameter("@HardLinkToApplication", false);
                 command.AddParameter("@Item", item.Item);
                 command.AddParameter("@ItemValue", item.ItemValue);
                 command.AddParameter("@OrderIndex", item.OrderIndex ?? item.ItemValue);
