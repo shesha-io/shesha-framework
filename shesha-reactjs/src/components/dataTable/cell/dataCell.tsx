@@ -31,8 +31,9 @@ export const DataCell = <D extends object = {}, V = number>(props: IDataCellProp
       return <ReadDataCell {...props} />;
     case 'update':
       return <UpdateDataCell {...props} />;
+    default:
+      return null;
   }
-  return null;
 };
 
 const ReadDataCell = <D extends object = {}, V = number>(props: IDataCellProps<D, V>) => {
