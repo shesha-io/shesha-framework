@@ -1,4 +1,4 @@
-import { Alert, Skeleton, Tag, Tooltip } from 'antd';
+import { Alert, Tag, Tooltip } from 'antd';
 import convertCssColorNameToHex from 'convert-css-color-name-to-hex';
 import React, { FC } from 'react';
 import { FormMode, useForm, useGlobalState } from '../../../providers';
@@ -47,23 +47,12 @@ const RefListStatusControl: FC<IProps> = ({ model, value }) => {
     (itemData?.description && showReflistName) || (!showReflistName && (itemData?.item || itemData?.description));
 
   return (
-    <Skeleton loading={listItem?.loading}>
-      <div className="sha-status-tag-container">
-        {showToolTip ? (
-          <Tooltip
-            placement="rightTop"
-            title={<ToolTipTittle showReflistName={showReflistName} currentStatus={itemData} />}
-          >
-            <Tag
-              className="sha-status-tag"
-              color={memoizedColor}
-              style={{ ...getStyle(style, data, globalState) }}
-              icon={canShowIcon ? <Icon type={itemData?.icon} /> : null}
-            >
-              {showReflistName && itemData?.item}
-            </Tag>
-          </Tooltip>
-        ) : (
+    <div className="sha-status-tag-container">
+      {showToolTip ? (
+        <Tooltip
+          placement="rightTop"
+          title={<ToolTipTittle showReflistName={showReflistName} currentStatus={itemData} />}
+        >
           <Tag
             className="sha-status-tag"
             color={memoizedColor}
@@ -72,9 +61,18 @@ const RefListStatusControl: FC<IProps> = ({ model, value }) => {
           >
             {showReflistName && itemData?.item}
           </Tag>
-        )}
-      </div>
-    </Skeleton>
+        </Tooltip>
+      ) : (
+        <Tag
+          className="sha-status-tag"
+          color={memoizedColor}
+          style={{ ...getStyle(style, data, globalState) }}
+          icon={canShowIcon ? <Icon type={itemData?.icon} /> : null}
+        >
+          {showReflistName && itemData?.item}
+        </Tag>
+      )}
+    </div>
   );
 };
 
