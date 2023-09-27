@@ -151,7 +151,7 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
   const deleteNotesRequest = (commentIdToBeDeleted: string) => {
     dispatch(deleteNotesRequestAction(commentIdToBeDeleted));
 
-    deleteNotesHttp({ url: '/api/services/app/Note', httpVerb: 'DELETE' }, { Id: commentIdToBeDeleted })
+    deleteNotesHttp({ url: `/api/services/app/Note/Delete?id=${commentIdToBeDeleted}`, httpVerb: 'DELETE' })
       .then(() => {
         dispatch(deleteNotesSuccessAction(commentIdToBeDeleted));
       })
