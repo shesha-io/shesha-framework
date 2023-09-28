@@ -41,11 +41,17 @@ const ReadDataCell = <D extends object = {}, V = number>(props: IDataCellProps<D
   const customComponent = columnConfig?.displayComponent;
 
   const componentType = customComponent?.type ?? standardCellComponentTypes.defaultDisplay;
+  const row = props?.row?.original;
 
   return componentType === standardCellComponentTypes.defaultDisplay ? (
     <DefaultDataDisplayCell {...props} />
   ) : (
-    <ComponentWrapper propertyMeta={propertyMeta} columnConfig={columnConfig} customComponent={customComponent} />
+    <ComponentWrapper
+      propertyMeta={propertyMeta}
+      columnConfig={columnConfig}
+      customComponent={customComponent}
+      defaultRow={row}
+    />
   );
 };
 
@@ -108,19 +114,22 @@ interface IComponentWrapperProps {
   customComponent: IFieldComponentProps;
   columnConfig: ITableDataColumn;
   propertyMeta?: IPropertyMetadata;
+  defaultRow?: { [key in string]?: any };
 }
 
 const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
-  const { columnConfig, propertyMeta, customComponent } = props;
+  const { columnConfig, propertyMeta, customComponent, defaultRow } = props;
 
   const toolboxComponents = useFormDesignerComponents();
   const { form } = useForm();
 
   const component = toolboxComponents[customComponent.type];
+  const injectables = defaultRow ? { injectedTableRow: defaultRow } : {};
 
   const componentModel = useMemo(() => {
     let model: IColumnEditorProps = {
       ...customComponent.settings,
+      ...injectables,
       id: props.columnConfig.columnId,
       type: customComponent.type,
       name: columnConfig.propertyName,

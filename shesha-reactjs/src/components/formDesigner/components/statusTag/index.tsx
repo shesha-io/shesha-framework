@@ -37,7 +37,7 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
       // tslint:disable-next-line:function-constructor
       const func = new Function('data', 'formMode', expression);
 
-      return func(data, formMode);
+      return func(model?.injectedTableRow || data, formMode);
     };
 
     const { colorCodeEvaluator, overrideCodeEvaluator, valueCodeEvaluator, override, value, color } = model;
