@@ -17,7 +17,7 @@ const config: StorybookConfig = {
     autodocs: false,
   },
   framework: {
-    name: '@storybook/nextjs',
+    name: '@storybook/react-webpack5',
     options: {},
   },
   typescript: {
@@ -62,6 +62,13 @@ const config: StorybookConfig = {
     // Make whatever fine-grained changes you need
     // Return the altered config
 
+    if (!config.resolve)
+      config.resolve = {};
+    if (!config.resolve.fallback)
+      config.resolve.fallback = {};
+      
+    config.resolve.fallback['zlib'] = false;
+    
     // Make whatever fine-grained changes you need
     const rules = config.module?.rules;
     if (rules) {

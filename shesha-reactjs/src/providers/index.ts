@@ -4,6 +4,7 @@ export * from './dataTable';
 export * from './itemListConfigurator';
 export * from './dynamicModal';
 export * from './form';
+export { useFormWithData } from './form/api';
 export * from './formContext';
 export * from './form/models';
 export * from './indexView';
