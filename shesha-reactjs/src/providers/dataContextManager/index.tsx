@@ -190,7 +190,7 @@ const useDataContextRegister = (payload: IRegisterDataContextPayload, deps?: Rea
     const manager = useDataContextManager(false);
 
     useEffect(() => {
-        if (manager)
+        if (!manager)
             return undefined;
 
         manager.registerDataContext(payload);
