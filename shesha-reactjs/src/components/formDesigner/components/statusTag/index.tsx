@@ -37,7 +37,7 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
       // tslint:disable-next-line:function-constructor
       const func = new Function('data', 'formMode', expression);
 
-      return func(data, formMode);
+      return func(model?.injectedTableRow || data, formMode);
     };
 
     const { colorCodeEvaluator, overrideCodeEvaluator, valueCodeEvaluator, override, value, color } = model;
@@ -49,6 +49,10 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
     const getValueByExpression = (expression: string = '') => {
       return expression?.includes('{{') ? evaluateString(expression, data) : expression;
     };
+
+    const isVisibleByCondition = executeCustomExpression(model.customVisibility, true, data, globalState);
+
+    if (!isVisibleByCondition && formMode !== 'designer') return null;
 
     if (allEmpty) {
       return <Alert type="info" message="Status tag not configured properly" />;
@@ -87,10 +91,6 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
       color: computedColorByCode || localColorByExpression,
       mappings: getParsedMappings(),
     };
-
-    const isVisibleByCondition = executeCustomExpression(model.customVisibility, true, data, globalState);
-
-    if (!isVisibleByCondition && formMode !== 'designer') return null;
 
     return (
       <ConfigurableFormItem model={model}>

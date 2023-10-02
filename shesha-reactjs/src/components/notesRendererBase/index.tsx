@@ -118,8 +118,8 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
               <div className="comment-item-body">
                 <DeleteOutlined onClick={() => deleteNotes(id)} />
                 <Comment
+                  className="comment-item"
                   author={postedBy || 'Anonymous'}
-                  // avatar={item.avatar}
                   content={content}
                   datetime={postedDate}
                 />

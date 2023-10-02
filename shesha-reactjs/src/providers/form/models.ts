@@ -101,6 +101,11 @@ export interface IComponentVisibilityProps {
   customVisibility?: string;
 }
 
+export interface IComponentMetadata {
+  /** Injectable field from the data cell */
+  injectedTableRow?: { [key in string]?: any };
+}
+
 /**
  * Base model of the configurable component
  */
@@ -110,7 +115,8 @@ export interface IConfigurableFormComponent
     IComponentBindingProps,
     IComponentLabelProps,
     IComponentVisibilityProps,
-    IComponentRuntimeProps {
+    IComponentRuntimeProps,
+    IComponentMetadata {
   /** Type of the component */
   type: string;
 

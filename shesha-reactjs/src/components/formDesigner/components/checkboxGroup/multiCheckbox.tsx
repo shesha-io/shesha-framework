@@ -7,7 +7,7 @@ import { getDataSourceList } from '../radio/utils';
 import { getSpan, ICheckboxGroupProps } from './utils';
 
 const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
-  const { formMode } = useForm();
+  const { formMode, isComponentDisabled } = useForm();
   const { data: formData } = useFormData();
   const { globalState } = useGlobalState();
   const { items, referenceListId, direction, value, onChange } = model;
@@ -49,12 +49,14 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
 
   const isReadOnly = model?.readOnly || formMode === 'readonly';
 
+  const disabled = isComponentDisabled(model) || isReadOnly;
+
   return (
     <Checkbox.Group className="sha-multi-checkbox" value={value} onChange={onChange} style={model?.style}>
       <Row>
         {options.map(({ id, label, value: v }) => (
           <Col id={id} span={getSpan(direction, options.length)} key={id}>
-            <Checkbox id={id} value={v} disabled={isReadOnly}>
+            <Checkbox id={id} value={v} disabled={disabled}>
               {label}
             </Checkbox>
           </Col>

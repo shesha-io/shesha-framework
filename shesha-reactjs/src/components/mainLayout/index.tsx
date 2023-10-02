@@ -54,6 +54,10 @@ export interface IMainLayoutProps extends IHtmlHeadProps {
    * Used to display the statuses of the entity as well as the reference numbers
    */
   headerControls?: ReactNodeOrFunc;
+  /**
+   * Used to override image logo src
+   */
+  imgSrc?: string;
 }
 
 const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
@@ -78,6 +82,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
     toolbar,
     headerControls,
     customComponent,
+    imgSrc,
   } = props;
   const { theme: themeFromStorage } = useTheme();
   const sidebarDefaults = useSidebarMenuDefaults();
@@ -153,7 +158,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
 
       <Layout className="site-layout">
         <Header className="site-layout-background" style={headerStyle}>
-          <LayoutHeader collapsed={collapsed} customComponent={customComponent} />
+          <LayoutHeader collapsed={collapsed} customComponent={customComponent} imgSrc={imgSrc} />
         </Header>
         <Content className={classNames({ collapsed })} style={contentStyle}>
           <>

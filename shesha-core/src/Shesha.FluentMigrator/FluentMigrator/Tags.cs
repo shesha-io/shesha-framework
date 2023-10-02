@@ -1,6 +1,4 @@
-﻿using FluentMigrator;
-
-namespace FluentMigrator
+﻿namespace FluentMigrator
 {
     /// <summary>
     /// Tag migration that is developed for MS Sql server only
@@ -16,9 +14,9 @@ namespace FluentMigrator
     /// <summary>
     /// Tag migration that is developed for MS Sql server
     /// </summary>
-    public class PostgreSqlOnlyAttribute : TagsAttribute
+    public class PostgreSqlOnlyAttribute: TagsAttribute
     {
-        public PostgreSqlOnlyAttribute() : base("PostgreSQL")
+        public PostgreSqlOnlyAttribute(): base("PostgreSQL")
         {
 
         }

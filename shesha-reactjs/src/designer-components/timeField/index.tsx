@@ -192,10 +192,9 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
 
   return (
     <TimePicker
-      value={evaluatedValue}
       onChange={handleTimePickerChange}
       format={format}
-      defaultValue={defaultValue && moment(defaultValue)}
+      defaultValue={evaluatedValue || (defaultValue && moment(defaultValue))}
       {...steps}
       style={getStyle(style, formData)}
       className="sha-timepicker"

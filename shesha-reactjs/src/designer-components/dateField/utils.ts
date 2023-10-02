@@ -31,7 +31,7 @@ export const getDefaultFormat = ({ dateOnly, resolveToUTC }: IDateFieldProps) =>
   }
 
   if (!resolveToUTC) {
-    return 'YYYY-MM-DDThh:mm:ss';
+    return 'YYYY-MM-DDTHH:mm:ss';
   }
 
   return null;
