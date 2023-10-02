@@ -37,6 +37,7 @@ import { useDelayedUpdate } from 'providers/delayedUpdateProvider';
 import { STORED_FILES_DELAYED_UPDATE } from 'providers/delayedUpdateProvider/models';
 import { IApiEndpoint } from 'interfaces/metadata';
 import { useDeleteFileById } from 'apis/storedFile';
+import { IAjaxResponse } from 'index';
 export interface IStoredFilesProviderProps {
   ownerId: string;
   ownerType: string;
@@ -51,7 +52,7 @@ const fileReducer = (data: IStoredFile): IStoredFile => {
   return { ...data, uid: data.id };
 };
 
-const filesReducer = (data: IStoredFile[]): IStoredFile[] => data.map(file => fileReducer(file));
+const filesReducer = (data: IStoredFile[]): IStoredFile[] => data?.map(file => fileReducer(file));
 
 const uploadFileEndpoint: IApiEndpoint = { url: '/api/StoredFile/Upload', httpVerb: 'POST' };
 const filesListEndpoint: IApiEndpoint = { url: '/api/StoredFile/FilesList', httpVerb: 'GET' };
@@ -82,7 +83,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   const { config } = useApplicationConfiguration();
   const { addItem: addDelayedUpdate, removeItem: removeDelayedUpdate } = useDelayedUpdate(false) ?? {};
 
-  const { loading: isFetchingFileList, refetch: fetchFileListHttp, data: fileListResponse } = useGet(
+  const { loading: isFetchingFileList, refetch: fetchFileListHttp, data: fileListResponse } = useGet<IAjaxResponse<IStoredFile[]>>(
     {
       path: filesListEndpoint.url,
       queryParams: {
@@ -107,7 +108,6 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   useEffect(() => {
     if (!isFetchingFileList) {
       if (fileListResponse) {
-        // @ts-ignore
         const { result } = fileListResponse;
         const fileList = filesReducer(result as IStoredFile[]);
 
