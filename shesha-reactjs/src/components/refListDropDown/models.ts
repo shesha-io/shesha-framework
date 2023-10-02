@@ -3,7 +3,7 @@ import { IReadOnly } from 'interfaces/readOnly';
 import { LabeledValue, SelectProps } from 'antd/lib/select';
 import { Key, CSSProperties } from 'react';
 import { ReferenceListItemDto } from 'apis/referenceList';
-import { IReferenceListIdentifier } from 'providers/referenceListDispatcher/models';
+import { IReferenceListIdentifier } from 'interfaces/referenceList';
 
 export interface IGenericRefListDropDownProps<TValue = any> extends IRefListDropDownProps<TValue> {
   /**

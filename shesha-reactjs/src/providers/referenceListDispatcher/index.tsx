@@ -9,7 +9,8 @@ import {
   IGetReferenceListPayload,
 } from './contexts';
 import useThunkReducer from '../../hooks/thunkReducer';
-import { ILoadingState, IReferenceListIdentifier } from './models';
+import { ILoadingState } from './models';
+import { IReferenceListIdentifier } from 'interfaces/referenceList';
 import { IReferenceList, IReferenceListItem } from '../../interfaces/referenceList';
 import { PromisedValue } from '../../utils/promises';
 import { useConfigurationItemsLoader } from '../configurationItemsLoader';

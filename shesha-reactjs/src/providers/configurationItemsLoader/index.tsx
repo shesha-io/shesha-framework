@@ -22,7 +22,7 @@ import { ConfigurationItemsViewMode, IComponentSettings } from '../appConfigurat
 import { IReferenceList } from 'interfaces/referenceList';
 import { MakePromiseWithState, PromisedValue } from 'utils/promises';
 import { isValidRefListId } from '../referenceListDispatcher/utils';
-import { IReferenceListIdentifier } from '../referenceListDispatcher/models';
+import { IReferenceListIdentifier } from 'interfaces/referenceList';
 import localForage from 'localforage';
 import { IDictionary } from 'interfaces';
 

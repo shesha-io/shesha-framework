@@ -3,7 +3,7 @@ import { RadioChangeEvent, SpaceProps } from 'antd';
 import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 import { IConfigurableFormComponent } from '../../../../providers/form/models';
 import { DataSourceType, ILabelValue } from '../../../../designer-components/dropdown/interfaces';
-import { IReferenceListIdentifier } from '../../../../providers/referenceListDispatcher/models';
+import { IReferenceListIdentifier } from 'interfaces/referenceList';
 
 type CheckboxGroupMode = 'single' | 'multiple';
 export interface ICheckboxGroupProps extends Omit<IConfigurableFormComponent, 'style'> {

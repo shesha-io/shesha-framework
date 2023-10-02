@@ -1,7 +1,7 @@
 import { getFormFullName } from "../../utils/form";
 import { FormIdentifier } from "../form/models";
 import { asFormFullName, asFormRawId } from "../form/utils";
-import { IReferenceListIdentifier } from "../referenceListDispatcher/models";
+import { IReferenceListIdentifier } from "interfaces/referenceList";
 import { getReferenceListFullName } from "../referenceListDispatcher/utils";
 
 export const getClassNameFromFullName = (name: string): string => {

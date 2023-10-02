@@ -38,6 +38,7 @@ export type { IColor, IHsl, IHsv, IRgb } from './color';
 export type { IApiEndpoint, IObjectMetadata, IModelMetadata, IEntityMetadata } from './metadata';
 export type { IAjaxResponse, IAjaxResponseBase } from './ajaxResponse';
 export { DataTypes } from './dataTypes';
+export { type IReferenceListIdentifier } from './referenceList';
 
 export * from './formDesigner';
 export * from './shesha';

@@ -27,3 +27,8 @@ export interface IReferenceListItem {
      */
     shortAlias?: string | null;
 }
+
+export interface IReferenceListIdentifier {
+    module?: string;
+    name: string;
+}

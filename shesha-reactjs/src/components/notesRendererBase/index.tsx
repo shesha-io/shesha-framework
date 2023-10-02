@@ -97,7 +97,7 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
         </div>
       )}
 
-      <Skeleton loading={isFetchingNotes} active paragraph={{ rows: 15 }}>
+      <Skeleton loading={isFetchingNotes} active>
         <Card className={classNames('comment-list-card', commentListClassName)} size="small">
           <List
             locale={{ emptyText: <Empty description="The are no notes" /> }}

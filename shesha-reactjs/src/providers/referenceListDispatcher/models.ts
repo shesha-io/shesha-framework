@@ -10,8 +10,3 @@ export interface ILoadingState<TData> {
   error?: any;
   loading: boolean;
 }
-
-export interface IReferenceListIdentifier {
-  module?: string;
-  name: string;
-}

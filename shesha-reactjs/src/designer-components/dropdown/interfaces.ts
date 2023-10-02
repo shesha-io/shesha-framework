@@ -1,5 +1,5 @@
 import { IConfigurableFormComponent } from 'providers/form/models';
-import { IReferenceListIdentifier } from 'providers/referenceListDispatcher/models';
+import { IReferenceListIdentifier } from 'interfaces/referenceList';
 
 export type DataSourceType = 'values' | 'referenceList' | 'url';
 

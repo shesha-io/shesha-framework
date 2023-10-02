@@ -4,7 +4,7 @@ import { RadioChangeEvent, SpaceProps } from 'antd';
 import { ReferenceListItemDto } from 'apis/referenceList';
 import { IConfigurableFormComponent } from 'interfaces';
 import { DataSourceType, ILabelValue } from 'designer-components/dropdown/interfaces';
-import { IReferenceListIdentifier } from 'providers/referenceListDispatcher/models';
+import { IReferenceListIdentifier } from 'interfaces/referenceList';
 
 export interface IRadioProps extends Omit<IConfigurableFormComponent, 'style'> {
   items?: ILabelValue[];

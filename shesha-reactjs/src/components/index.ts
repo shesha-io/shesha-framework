@@ -169,3 +169,4 @@ export { default as ColorPicker } from '../../src/components/colorPicker';
 export { default as ComponentsContainer } from './formDesigner/containers/componentsContainer';
 export { HelpTextPopover } from './helpTextPopover';
 export { StatusTag } from './statusTag';
+export { RefListStatus, type IRefListStatusProps } from './refListStatus';
