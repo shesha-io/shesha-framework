@@ -9,6 +9,9 @@ namespace Shesha.Domain.Attributes
     [AttributeUsage(AttributeTargets.Class)]
     public class DiscriminatorAttribute : Attribute
     {
+        public static string DefaultPrefix = "Frwk_";
+        public static string DefaultName = "Discriminator";
+
         /// <summary>
         /// Name of the discriminator column
         /// </summary>
@@ -26,7 +29,6 @@ namespace Shesha.Domain.Attributes
 
         public DiscriminatorAttribute()
         {
-            DiscriminatorColumn = "Frwk_Discriminator";
             UseDiscriminator = true;
             FilterUnknownDiscriminators = true;
         }

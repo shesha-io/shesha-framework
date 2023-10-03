@@ -1,11 +1,12 @@
 ﻿using Abp.Domain.Repositories;
 using Shesha.Domain;
+using Shesha.DynamicEntities.Dtos;
 using System;
 using System.Threading.Tasks;
 
 namespace Shesha.MobileDevices;
 
-public class MobileDeviceAppService: SheshaCrudServiceBase<MobileDevice, MobileDeviceDto, Guid>
+public class MobileDeviceAppService : SheshaCrudServiceBase<MobileDevice, DynamicDto<MobileDevice, Guid>, Guid>
 {
     public MobileDeviceAppService(IRepository<MobileDevice, Guid> repository) : base(repository)
     {
