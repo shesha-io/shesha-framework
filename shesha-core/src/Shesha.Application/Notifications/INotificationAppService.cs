@@ -45,8 +45,9 @@ namespace Shesha.Notifications
         /// <param name="emailAddress">Recipient email address</param>
         /// <param name="attachments">Notification attachments</param>
         /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
+        /// <param name="cc"></param>
         /// <returns></returns>
-        Task PublishEmailNotificationAsync<TData>(Guid templateId, TData data, string emailAddress, List<NotificationAttachmentDto> attachments, GenericEntityReference sourceEntity = null) where TData : NotificationData;
+        Task PublishEmailNotificationAsync<TData>(Guid templateId, TData data, string emailAddress, List<NotificationAttachmentDto> attachments, GenericEntityReference sourceEntity = null, string cc = "") where TData : NotificationData;
 
         /// <summary>
         /// Publish sms notification
@@ -99,6 +100,6 @@ namespace Shesha.Notifications
         /// <summary>
         /// Send Notification to specified person
         /// </summary>
-        Task<Guid?> SendNotification<TData>(string notificationName, Person recipient, TData data, RefListNotificationType? notificationType = null, GenericEntityReference sourceEntity = null, List<NotificationAttachmentDto> attachments = null) where TData : NotificationData;
+        Task<Guid?> SendNotification<TData>(string notificationName, Person recipient, TData data, RefListNotificationType? notificationType = null, GenericEntityReference sourceEntity = null, List<NotificationAttachmentDto> attachments = null, string cc = "") where TData : NotificationData;
     }
 }
