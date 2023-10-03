@@ -112,7 +112,7 @@ namespace Shesha.Notifications
         {
             var attachments = await GetAttachmentsAsync(message);
 
-            _emailSender.SendMail(null, message.RecipientText, message.Subject, message.Body, message.Template?.BodyFormat == RefListNotificationTemplateType.Html, attachments, throwException: true);
+            _emailSender.SendMail(null, message.RecipientText, message.Subject, message.Body, message.Template?.BodyFormat == RefListNotificationTemplateType.Html, attachments, message.Cc, throwException: true);
         }
 
         protected override void DoSendNotificationMessage(NotificationMessage message)

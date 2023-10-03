@@ -513,6 +513,7 @@ namespace Shesha.Notifications
 
                         message.Notification = template.Notification;
                         message.Template = template;
+                        message.Cc = shaNotificationData.Cc;
                         message.Subject = GenerateContent(template.Subject, notificationData, true);
                         message.Body = GenerateContent(template.Body, notificationData,
                             template.BodyFormat == RefListNotificationTemplateType.PlainText,

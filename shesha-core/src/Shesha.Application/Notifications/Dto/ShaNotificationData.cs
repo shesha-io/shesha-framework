@@ -41,6 +41,8 @@ namespace Shesha.Notifications.Dto
 
         public virtual string SourceEntityDisplayName { get; internal set; }
 
+        public virtual string Cc { get; set; }
+
         protected string Data {
             get => Properties[nameof(Data)] as string;
             set => Properties[nameof(Data)] = value;
