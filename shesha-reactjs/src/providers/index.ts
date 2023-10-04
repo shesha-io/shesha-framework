@@ -35,3 +35,5 @@ export * from './buttonGroupConfigurator';
 export * from './configurableActionsDispatcher';
 export * from './settings';
 export * from './configurationItemsLoader';
+export * from './dynamicActions';
+export * from './dynamicActionsDispatcher';

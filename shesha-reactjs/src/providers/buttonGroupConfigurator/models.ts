@@ -51,6 +51,14 @@ export interface IButtonGroupButton extends IButtonGroupItemBase {
   actionConfiguration?: IConfigurableActionConfiguration;
 }
 
+export const isItem = (item: IButtonGroupItemBase): item is IButtonGroupButton => {
+  return item && item.itemType === 'item';
+};
+
 export interface IButtonGroup extends IButtonGroupItemBase {
   childItems?: ButtonGroupItemProps[];
 }
+
+export const isGroup = (item: IButtonGroupItemBase): item is IButtonGroup => {
+  return item && item.itemType === 'group';
+};

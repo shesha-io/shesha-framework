@@ -1,4 +1,4 @@
-import { IButtonGroupProps } from "../models";
+import { IButtonGroupComponentProps } from "../models";
 import { IConfigurableActionConfiguration } from "../../../../../../interfaces/configurableAction";
 import { SettingsMigrationContext } from "../../../../../../interfaces/formDesigner";
 import { IKeyValue } from "../../../../../../interfaces/keyValue";
@@ -7,7 +7,7 @@ import { IShowModalActionArguments as IShowModalActionArguments } from "../../..
 import { getClosestTableId } from "../../../../../../providers/form/utils";
 import { getDispatchEventReplacement } from "../../../_common-migrations/migrate-events";
 
-export const migrateV0toV1 = (props: IButtonGroupProps, context: SettingsMigrationContext): IButtonGroupProps => {
+export const migrateV0toV1 = (props: IButtonGroupComponentProps, context: SettingsMigrationContext): IButtonGroupComponentProps => {
     const { items } = props;
 
     const newItems = items.map(item => {

@@ -5,12 +5,13 @@ import { useSettingsForm } from './settingsForm';
 import { useSettingsPanel } from './settingsCollapsiblePanel';
 import { getPropertySettingsFromData } from './utils';
 import { PropertySettingMode } from 'index';
+import './styles/index.less';
 
 interface ISettingsFormItemProps extends Omit<FormItemProps<any>, 'children'> {
     jsSetting?: boolean;
     readonly children?: ReactNode | SettingsControlChildrenType;
 }
-  
+
 const SettingsFormItem: FC<ISettingsFormItemProps> = (props) => {
     const settingsPanel = useSettingsPanel(false);
     if (settingsPanel && props.name) {
@@ -19,7 +20,7 @@ const SettingsFormItem: FC<ISettingsFormItemProps> = (props) => {
 
     const { propertyFilter } = useSettingsForm<any>();
     return !Boolean(propertyFilter) || typeof propertyFilter === 'function' && propertyFilter(props.name?.toString())
-        ? <SettingsFormComponent {...props}/>
+        ? <SettingsFormComponent {...props} />
         : null;
 };
 
@@ -28,7 +29,7 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
     const formData = getFieldsValue();
     const initSettings = getPropertySettingsFromData(formData, props.name?.toString());
 
-    const [ mode, setMode ] = useState<PropertySettingMode>(initSettings._mode ?? 'value');
+    const [mode, setMode] = useState<PropertySettingMode>(initSettings._mode ?? 'value');
     const switchMode = () => setMode(mode === 'code' ? 'value' : 'code');
 
     if (!props.name)
@@ -39,9 +40,12 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
             <label>{props.label}</label>
             <Button
                 shape="round"
-                style={{marginLeft: 5, marginRight: 5}}
-                type='primary' ghost  size='small' 
-                onClick={switchMode}>
+                className="sha-js-switch"
+                type='primary'
+                ghost
+                size='small'
+                onClick={switchMode}
+            >
                 {mode === 'code' ? 'VALUE' : 'JS'}
             </Button>
         </>
@@ -57,7 +61,7 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
             </Form.Item>
         );
     }
-    
+
     if (!props.jsSetting) {
         return <Form.Item {...props as FormItemProps<any>}>{props.children}</Form.Item>;
     }

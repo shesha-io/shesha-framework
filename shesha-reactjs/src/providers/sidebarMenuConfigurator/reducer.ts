@@ -93,7 +93,6 @@ const sidebarMenuReducer = handleActions<ISidebarMenuConfiguratorStateContext, a
       state: ISidebarMenuConfiguratorStateContext,
       action: ReduxActions.Action<IUpdateChildItemsPayload>
     ) => {
-      // console.log('[SidebarMenuActionEnums.UpdateChildItems]');
       const {
         payload: { index, childs: childIds },
       } = action;

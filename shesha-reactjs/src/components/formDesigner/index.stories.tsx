@@ -1,5 +1,5 @@
 import React from 'react';
-import { Story, Meta } from '@storybook/react';
+import { Story } from '@storybook/react';
 import FormDesigner from './formDesigner';
 import { addStory } from '../../stories/utils';
 import { FormIdentifier, FormMode } from '../../providers/form/models';
@@ -8,7 +8,7 @@ import StoryApp from '../storyBookApp';
 export default {
   title: 'Components/Temp/FormDesigner',
   component: FormDesigner,
-} as Meta;
+};
 
 export interface IFormDesignerStoryProps {
   formId: FormIdentifier;
@@ -114,8 +114,12 @@ export const TableProps = addStory(DesignerTemplate, {
   formId: 'e9f6a715-cbe2-42c0-844f-fe97b5b8f476'
 });
 
+export const UserManagement = addStory(DesignerTemplate, {
+  formId: '2c318a27-fab1-417d-b203-c263aaaeeebb'
+});
+
 //TestModule/ivan-test-form
 export const IvanTestForm = addStory(DesignerTemplate, {
-  formId: '18b0219c-737e-4045-a511-cf1dcac35c26'
+  formId: 'fc8e3f36-793b-4a30-ab6f-f4dd56bfa3c0'
 });
 

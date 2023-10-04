@@ -116,10 +116,18 @@ export const Fetchers = addStory(Template, {
   mode: 'edit'
 });
 
+export const WorkflowDefinitions = addStory(Template, {
+  formId: {
+    name: 'workflow-definitions',
+    module: 'Shesha.Enterprise.Workflow'
+  }
+});
+
 export const BugFix = addStory(Template, {
   formId: {
-    name: 'auto-complete-component-table',
+    name: 'role-details',
     module: 'Shesha'
   },
-  mode: 'edit'
+  mode: 'edit',
+  id: 'b83ceadd-cd9d-41db-9951-1fda1ab61f1e'
 });

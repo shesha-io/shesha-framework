@@ -158,8 +158,6 @@ export const ChildTable: FC<IChildTableProps> = (props) => {
 
                 <ButtonGroup
                   items={props?.toolbarItems || []}
-                  propertyName={''}
-                  type={''}
                   id={props.id}
                   isInline={props?.isInline}
                 />

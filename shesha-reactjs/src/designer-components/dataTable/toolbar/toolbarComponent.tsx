@@ -1,9 +1,9 @@
 import React, { FC } from 'react';
 import { IToolboxComponent } from '../../../interfaces';
-import { DashOutlined } from '@ant-design/icons';
+import { DashOutlined, DownOutlined } from '@ant-design/icons';
 import ToolbarSettings from './toolbarSettingsPanel';
 import { IToolbarProps } from './models';
-import { Alert, Menu, Dropdown } from 'antd';
+import { Alert, Menu, Dropdown, Button, Divider } from 'antd';
 import { IButtonGroup, IToolbarButton, ToolbarItemProps } from '../../../providers/toolbarConfigurator/models';
 import { isInDesignerMode } from '../../../providers/form';
 import { getActualModel, getVisibilityFunc2, useApplicationContext } from '../../../providers/form/utils';
@@ -15,6 +15,7 @@ import { nanoid } from 'nanoid/non-secure';
 import { migrateV0toV1, IToolbarPropsV0 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
 import { migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+//import { ButtonGroup } from 'components/formDesigner/components/button/buttonGroup/buttonGroupComponent';
 
 const ToolbarComponent: IToolboxComponent<IToolbarProps> = {
   type: 'toolbar',
@@ -53,6 +54,19 @@ const ToolbarComponent: IToolboxComponent<IToolbarProps> = {
   },
 };
 
+/* for Alex: uncomment this part to check the difference
+export const Toolbar: FC<IToolbarProps> = ({ items, id }) => {
+  console.log('LOG: toolbar', items);
+  return (
+    <ButtonGroup 
+      items={items}
+      id={id}
+      isInline
+    />
+  );
+};
+*/
+
 export const Toolbar: FC<IToolbarProps> = ({ items, id }) => {
   const allData = useApplicationContext();
   const { anyOfPermissionsGranted } = useSheshaApplication();
@@ -66,7 +80,7 @@ export const Toolbar: FC<IToolbarProps> = ({ items, id }) => {
       const visibilityFunc = getVisibilityFunc2(item.customVisibility, item.name);
 
       const isVisible = visibilityFunc(
-        allData.data, 
+        allData.data,
         { selectedRow: selectedRow?.row }, // ToDo: Need to review for contexts use
         allData.formMode
       );
@@ -83,8 +97,8 @@ export const Toolbar: FC<IToolbarProps> = ({ items, id }) => {
             return <ToolbarButton formComponentId={id} key={uuid} selectedRow={selectedRow} {...itemProps} />;
 
           case 'separator':
-            return <div key={uuid} className="sha-toolbar-separator" />;
-
+            return <Divider type='vertical' />;
+            
           default:
             return null;
         }
@@ -105,13 +119,18 @@ export const Toolbar: FC<IToolbarProps> = ({ items, id }) => {
           </Menu>
         );
         return (
-          <Dropdown.Button
+          <Dropdown
             key={uuid}
             overlay={menu}
-            icon={item.icon ? <ShaIcon iconName={item.icon as IconType} /> : undefined}
           >
-            {item.name}
-          </Dropdown.Button>
+            <Button
+              icon={item.icon ? <ShaIcon iconName={item.icon as IconType} /> : undefined}
+              type={group.buttonType}
+            >
+              {item.name}
+              <DownOutlined />
+            </Button>
+          </Dropdown>
         );
     }
     return null;
@@ -127,10 +146,8 @@ export const Toolbar: FC<IToolbarProps> = ({ items, id }) => {
     );
 
   return (
-    <div style={{ minHeight: '30px' }}>
-      {actualItems
-        ?.filter(({ permissions }) => anyOfPermissionsGranted(permissions || []))
-        .map(item => renderItem(item, nanoid()))}
+    <div style={{ minHeight: '30px' }} className="sha-responsive-button-group-inline-container">
+      {actualItems?.filter(({ permissions }) => anyOfPermissionsGranted(permissions || [])).map(item => renderItem(item, nanoid()))}
     </div>
   );
 };
