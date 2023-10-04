@@ -3,7 +3,7 @@ import { IReferenceList } from '../../interfaces/referenceList';
 import { PromisedValue } from '../../utils/promises';
 import { ConfigurationItemsViewMode, IComponentSettings } from '../appConfigurator/models';
 import { FormFullName, FormIdentifier, IFormDto } from '../form/models';
-import { IReferenceListIdentifier } from '../referenceListDispatcher/models';
+import { IReferenceListIdentifier } from 'interfaces/referenceList';
 
 export interface IConfigurationItemsLoaderStateContext {
   activeProvider?: string;

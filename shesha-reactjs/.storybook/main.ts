@@ -8,7 +8,11 @@ const tsConfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 const config: StorybookConfig = {
   stories: ['../src/**/*.mdx', '../src/**/*.stories.@(ts|tsx)'],
-  addons: ['@storybook/addon-links', '@storybook/addon-essentials'],
+  addons: [
+    '@storybook/addon-links',
+    '@storybook/addon-essentials',
+    '@storybook/addon-mdx-gfm'
+  ],
   docs: {
     autodocs: false,
   },
@@ -58,6 +62,13 @@ const config: StorybookConfig = {
     // Make whatever fine-grained changes you need
     // Return the altered config
 
+    if (!config.resolve)
+      config.resolve = {};
+    if (!config.resolve.fallback)
+      config.resolve.fallback = {};
+      
+    config.resolve.fallback['zlib'] = false;
+    
     // Make whatever fine-grained changes you need
     const rules = config.module?.rules;
     if (rules) {

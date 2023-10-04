@@ -5,7 +5,7 @@ import { IToolboxComponent } from '../../../../interfaces';
 import { DataTypes } from '../../../../interfaces/dataTypes';
 import { FormMarkup } from '../../../../providers/form/models';
 import { getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import { IReferenceListIdentifier } from '../../../../providers/referenceListDispatcher/models';
+import { IReferenceListIdentifier } from 'interfaces/referenceList';
 import { getLegacyReferenceListIdentifier } from '../../../../utils/referenceList';
 import ConfigurableFormItem from '../formItem';
 import RefListCheckboxGroup from './refListCheckboxGroup';

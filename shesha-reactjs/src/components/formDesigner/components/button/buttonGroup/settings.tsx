@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { Select, Input, Checkbox } from 'antd';
-import { IButtonGroupProps } from './models';
+import { IButtonGroupComponentProps } from './models';
 import { ButtonGroupSettingsModal } from './buttonGroupSettingsModal';
 import EditableTagGroup from '../../../../editableTagGroup';
 import { ISettingsFormFactoryArgs } from 'interfaces';
@@ -10,13 +10,13 @@ import SettingsFormItem from 'designer-components/_settings/settingsFormItem';
 
 const { Option } = Select;
 
-export const ButtonGroupSettingsForm: FC<ISettingsFormFactoryArgs<IButtonGroupProps>> = (props) => {
+export const ButtonGroupSettingsForm: FC<ISettingsFormFactoryArgs<IButtonGroupComponentProps>> = (props) => {
   return (
-    SettingsForm<IButtonGroupProps>({...props, children: <ButtonGroupSettings {...props}/>})
+    SettingsForm<IButtonGroupComponentProps>({...props, children: <ButtonGroupSettings {...props}/>})
   );
 };
 
-const ButtonGroupSettings: FC<ISettingsFormFactoryArgs<IButtonGroupProps>> = ({readOnly}) => {
+const ButtonGroupSettings: FC<ISettingsFormFactoryArgs<IButtonGroupComponentProps>> = ({readOnly}) => {
 
   return (
     <>

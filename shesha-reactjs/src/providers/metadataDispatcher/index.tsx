@@ -22,7 +22,7 @@ import useThunkReducer from '../../hooks/thunkReducer';
 import { metadataGet, PropertyMetadataDto } from 'apis/metadata';
 import { IModelsDictionary, IProvidersDictionary } from './models';
 import { useSheshaApplication } from '../../providers';
-import { IModelMetadata, IPropertyMetadata, ISpecification } from '../../interfaces/metadata';
+import { IModelMetadata, IPropertyMetadata, isEntityReferencePropertyMetadata, isObjectReferencePropertyMetadata, ISpecification } from '../../interfaces/metadata';
 import camelcase from 'camelcase';
 import { DataTypes } from '../../interfaces/dataTypes';
 import { IDictionary } from '../../interfaces';
@@ -53,47 +53,47 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
   };
 
   const getMetadata = (payload: IGetMetadataPayload) => {
-    const { modelType, dataType = 'entity' } = payload;
-    const loadedModel = models.current[payload.modelType];
+    const { modelType, dataType } = payload;
+    const loadedModel = models.current[payload.modelType]; // todo: split list by types
     if (loadedModel) return loadedModel;
 
-    if (dataType === 'entity') {
+    if (dataType === DataTypes.entityReference || dataType === DataTypes.objectReference || dataType === null) {
       const metaPromise = new Promise<IModelMetadata>((resolve, reject) => {
-      metadataGet({ container: modelType }, { base: backendUrl, headers: httpHeaders })
-        .then(response => {
-          if (!response.success) {
-            reject(response.error);
-          }
-
-          const properties = response.result.properties.map<IPropertyMetadata>(p => mapProperty(p));
-          const specifications = response.result.specifications.map<ISpecification>(s => ({
-            name: s.name,
-            friendlyName: s.friendlyName,
-            description: s.description,
-          }));
-          const apiEndpoints = {};
-          for (const actionName in response.result.apiEndpoints) {
-            if (response.result.apiEndpoints.hasOwnProperty(actionName)){
-              const endpoint = response.result.apiEndpoints[actionName];
-              if (endpoint)
-                apiEndpoints[actionName] = { ...endpoint };
+        metadataGet({ container: modelType }, { base: backendUrl, headers: httpHeaders })
+          .then(response => {
+            if (!response.success) {
+              reject(response.error);
             }
-          }
 
-          const meta: IModelMetadata = {
-            type: payload.modelType,
-            dataType: response.result.dataType,
-            name: payload.modelType, // todo: fetch name from server
-            properties,
-            specifications,
-            apiEndpoints,
-          };
+            const properties = response.result.properties.map<IPropertyMetadata>(p => mapProperty(p));
+            const specifications = response.result.specifications.map<ISpecification>(s => ({
+              name: s.name,
+              friendlyName: s.friendlyName,
+              description: s.description,
+            }));
+            const apiEndpoints = {};
+            for (const actionName in response.result.apiEndpoints) {
+              if (response.result.apiEndpoints.hasOwnProperty(actionName)) {
+                const endpoint = response.result.apiEndpoints[actionName];
+                if (endpoint)
+                  apiEndpoints[actionName] = { ...endpoint };
+              }
+            }
 
-          resolve(meta);
-        })
-        .catch(e => {
-          reject(e);
-        });
+            const meta: IModelMetadata = {
+              entityType: payload.modelType,
+              dataType: response.result.dataType,
+              name: payload.modelType, // todo: fetch name from server
+              properties,
+              specifications,
+              apiEndpoints,
+            };
+
+            resolve(meta);
+          })
+          .catch(e => {
+            reject(e);
+          });
       });
 
       models.current[payload.modelType] = metaPromise;
@@ -110,7 +110,7 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
   };
 
   const updateModel = (modelType: string, model: Promise<IModelMetadata>) => {
-      models.current[modelType] = model;
+    models.current[modelType] = model;
   };
 
   const getPropertyByName = (properties: IPropertyMetadata[], name: string): IPropertyMetadata => {
@@ -118,22 +118,22 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
   };
 
   const extractNestedProperty = (mainProperty: IPropertyMetadata, name: string): Promise<IPropertyMetadata> => {
-    return mainProperty.dataType === 'entity'
-      ? getMetadata({ modelType: mainProperty.entityType }).then(entityMeta => {
+    return isEntityReferencePropertyMetadata(mainProperty)
+      ? getMetadata({ dataType: mainProperty.dataType, modelType: mainProperty.entityType }).then(entityMeta => {
         return getPropertyByName(entityMeta?.properties, name);
       })
       : Promise.resolve(getPropertyByName(mainProperty.properties, name));
   };
 
   const getPropertyMetadata = (payload: IGetPropertyMetadataPayload): Promise<IPropertyMetadata> => {
-    const { modelType, propertyPath } = payload;
+    const { dataType, modelType, propertyPath } = payload;
 
     const pathParts = propertyPath.split('.');
     if (pathParts.length === 0)
       return Promise.reject('Failed to build property path');
 
     // get container metadata
-    const rootMetaPromise = getMetadata({ modelType: modelType });
+    const rootMetaPromise = getMetadata({ dataType, modelType: modelType });
     // get first level property and its metadata
     const level1 = pathParts.shift();
     const level1Promise = rootMetaPromise.then(m => {
@@ -155,9 +155,9 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
     metadata: IPropertyMetadata;
   }
   const getPropertiesMetadata = (payload: IGetPropertiesMetadataPayload): Promise<IDictionary<IPropertyMetadata>> => {
-    const { properties, modelType } = payload;
+    const { dataType, properties, modelType } = payload;
 
-    const promises = properties.map(p => getPropertyMetadata({ modelType: modelType, propertyPath: p })
+    const promises = properties.map(p => getPropertyMetadata({ dataType, modelType: modelType, propertyPath: p })
       .then<IPropertyPathWithMetadata>(propMeta => ({ path: p, metadata: propMeta }))
     );
 
@@ -203,14 +203,19 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
     if (!propMeta)
       return Promise.reject(`property '${propName}' not found`);
 
-    if (propMeta.dataType === DataTypes.entityReference)
-      return getMetadata({ modelType: propMeta.entityType });
+    if (isEntityReferencePropertyMetadata(propMeta))
+      return getMetadata({ dataType: DataTypes.entityReference, modelType: propMeta.entityType });
 
-    if (propMeta.dataType === DataTypes.objectReference)
-      return getMetadata({ modelType: propMeta.entityType });
+    if (isObjectReferencePropertyMetadata(propMeta)){
+      return getMetadata({ dataType: DataTypes.objectReference, modelType: propMeta.entityType });
+    }      
 
     if (propMeta.dataType === DataTypes.object)
-      return Promise.resolve({ type: DataTypes.object, properties: propMeta.properties, specifications: [], apiEndpoints: {}, dataType: DataTypes.object });
+      return Promise.resolve({
+        type: DataTypes.object,
+        properties: propMeta.properties,
+        dataType: DataTypes.object
+      });
 
     return Promise.reject(`data type '${propMeta.dataType}' doesn't support nested properties`);
   };
@@ -241,7 +246,7 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
     if (!modelType)
       return Promise.resolve(false);
 
-    return getMetadata({ modelType: modelType }).then(m => {
+    return getMetadata({ dataType: null, modelType: modelType }).then(m => {
       return m.dataType === DataTypes.entityReference;
     });
   };
@@ -304,11 +309,11 @@ function useMetadataDispatcher(require: boolean = true): IMetadataDispatcherFull
 
 const useNestedPropertyMetadatAccessor = (modelType: string): NestedPropertyMetadatAccessor => {
   const dispatcher = useMetadataDispatcher();
-  
+
   const accessor: NestedPropertyMetadatAccessor = (propertyPath: string) => modelType
-    ? dispatcher.getPropertyMetadata({ modelType, propertyPath })
+    ? dispatcher.getPropertyMetadata({ dataType: DataTypes.entityReference, modelType, propertyPath })
     : Promise.resolve(null);
-  
+
   return accessor;
 };
 

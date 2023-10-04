@@ -274,7 +274,7 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
         extra={
           <Button type="primary">
             <Link href={'/'}>
-              <a>Back Home</a>
+              Back Home
             </Link>
           </Button>
         }

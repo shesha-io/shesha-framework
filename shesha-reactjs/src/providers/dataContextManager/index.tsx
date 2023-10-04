@@ -186,18 +186,19 @@ function useDataContextManager(require: boolean = true) {
       : undefined;
 }
 
-function useDataContextRegister(payload: IRegisterDataContextPayload, deps?: ReadonlyArray<any>): void {
-    const { registerDataContext, unregisterDataContext } = useDataContextManager(false) ?? {};
-
-    if (!!registerDataContext) {
-        registerDataContext(payload);
-    }
+const useDataContextRegister = (payload: IRegisterDataContextPayload, deps?: ReadonlyArray<any>) => {
+    const manager = useDataContextManager(false);
 
     useEffect(() => {
+        if (!manager)
+            return undefined;
+
+        manager.registerDataContext(payload);
+
         return () => {
-            unregisterDataContext(payload);
+            manager.unregisterDataContext(payload);
         };
     }, deps);
-}
- 
+};
+
 export { DataContextManager, useDataContextManager, useDataContextRegister };

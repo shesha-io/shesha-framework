@@ -1,4 +1,4 @@
-import { IReferenceListIdentifier } from "providers/referenceListDispatcher/models";
+import { IReferenceListIdentifier } from "interfaces/referenceList";
 import { IFormItem } from "../..";
 import { IConfigurableFormComponent } from "../../providers";
 

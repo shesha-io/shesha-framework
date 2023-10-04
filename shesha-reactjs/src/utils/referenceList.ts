@@ -1,5 +1,5 @@
 import { ReferenceListItemDto } from "apis/referenceList";
-import { IReferenceListIdentifier } from "providers/referenceListDispatcher/models";
+import { IReferenceListIdentifier } from "interfaces/referenceList";
 
 export const CACHED_REF_LIST_ITEMS = 'CACHED_REF_LIST_ITEMS';
 

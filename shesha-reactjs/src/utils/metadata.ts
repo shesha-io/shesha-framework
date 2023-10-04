@@ -1,6 +1,6 @@
 import { IconType } from "../components/shaIcon";
 import { DataTypes } from "../interfaces/dataTypes";
-import { IPropertyMetadata } from "../interfaces/metadata";
+import { IPropertyMetadata, isEntityReferencePropertyMetadata } from "../interfaces/metadata";
 import { camelcaseDotNotation } from "../utils/string";
 import ShaIcon from '../components/shaIcon';
 import GenericOutlined from "../icons/genericOutlined";
@@ -26,7 +26,7 @@ export const getIconByDataType = (dataType: string): IconType => {
 };
 
 export const getIconByPropertyMetadata = (metadata: IPropertyMetadata) => {
-  if (metadata.dataType === DataTypes.entityReference && !metadata.entityType)
+  if (isEntityReferencePropertyMetadata(metadata) && !metadata.entityType)
     return GenericOutlined(null);
 
   if (metadata.dataType === DataTypes.objectReference)

@@ -1,5 +1,5 @@
 import { BaseWidget, BasicConfig, SelectFieldSettings } from '@react-awesome-query-builder/antd';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { CodeEditor } from '../../../formDesigner/components/codeEditor/codeEditor';
 
 export type SpecificationWidgetType = BaseWidget & SelectFieldSettings;
@@ -7,9 +7,13 @@ const SpecificationWidget: SpecificationWidgetType = {
   ...BasicConfig.widgets.select,
   type: 'specification',
   factory: props => {
-    const { /*fieldDefinition ,*/ value, setValue } = props;
-    //const customSettings = fieldDefinition.fieldSettings as CustomFieldSettings;
-    //console.log('custom settings', customSettings);
+    const { value, setValue } = props;
+    
+    useEffect(() => {
+      // default value to empty string to prevent auto removal of the rule
+      if (value === null || value === undefined)
+        setValue('');
+    }, []);
 
     return (
       <CodeEditor 

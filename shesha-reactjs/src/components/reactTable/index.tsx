@@ -269,8 +269,6 @@ const ReactTable: FC<IReactTableProps> = ({
     if (chosen)
       return;
 
-    //console.log('LOG: onSortEnd', chosen, newState, {_sortable, _store});
-
     if (rows.length === newState.length){
       let isModified = false;
       // detect changes using references

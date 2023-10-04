@@ -3,6 +3,7 @@ export * from './utils/publicUtils';
 export { ConfigurationFrameworkActions } from './utils/configurationFramework/actions';
 
 export { mutate, MutateProps, get, GetProps } from './utils/fetchers';
+export { CONFIGURATION_ITEM_STATUS_MAPPING } from './utils/configurationFramework/models';
 export * from './interfaces';
 export * from './providers';
 export * from './components';

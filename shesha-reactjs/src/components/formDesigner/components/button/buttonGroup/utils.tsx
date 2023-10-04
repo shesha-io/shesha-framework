@@ -3,9 +3,9 @@ import classNames from 'classnames';
 import React, { ReactNode } from 'react';
 import { VisibilityType } from '../../../../..';
 import ShaIcon, { IconType } from '../../../../shaIcon';
-import { IButtonGroupProps } from './models';
+import { IButtonGroupComponentProps } from './models';
 
-type MenuItem = Required<MenuProps>['items'][number];
+type MenuItem = MenuProps['items'][number];
 
 export function getButtonGroupMenuItem(
   label: React.ReactNode,
@@ -30,5 +30,5 @@ export const getButtonGroupIcon = (icon: ReactNode, isParent?: boolean) => {
   return null;
 };
 
-export const getButtonGroupItems = (model: IButtonGroupProps): IButtonGroupProps['items'] =>
+export const getButtonGroupItems = (model: IButtonGroupComponentProps): IButtonGroupComponentProps['items'] =>
   (model?.items || []).filter(({ visibility }) => !(['No', 'Removed'] as VisibilityType[]).includes(visibility));

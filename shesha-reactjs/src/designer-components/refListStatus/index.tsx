@@ -5,12 +5,12 @@ import React from 'react';
 import { useForm, useFormData, useGlobalState } from '../../providers';
 import { IRefListStatusProps } from './models';
 import { RefListStatusSettingsForm } from './settings';
-import RefListStatusControl from './components/control';
 import { validateConfigurableComponentSettings } from '../../formDesignerUtils';
-import { executeCustomExpression } from '../../utils/publicUtils';
+import { executeCustomExpression, getStyle } from '../../utils/publicUtils';
 import { Alert } from 'antd';
 import { IRefListStatusPropsV0 } from './migrations/models';
 import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { RefListStatus } from 'components/refListStatus/index';
 
 const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
   type: 'refListStatus',
@@ -19,13 +19,15 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
   icon: <FileSearchOutlined />,
 
   factory: (model: IRefListStatusProps) => {
-    const { formMode } = useForm();
+    const { formMode, formData: data } = useForm();
     const { hideLabel = true, solidBackground = true, referenceListId, showReflistName = true } = model;
 
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
 
     const isVisibleByCondition = executeCustomExpression(model?.customVisibility, true, formData, globalState);
+
+    const style = {...getStyle(model.style, data, globalState)};
 
     if (!isVisibleByCondition && formMode !== 'designer') return null;
 
@@ -39,11 +41,19 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
         />
       );
     }
-
+    
     return (
       <ConfigurableFormItem model={{ ...model, hideLabel }}>
         {(value) => {
-          return <RefListStatusControl model={{ ...model, solidBackground, showReflistName }} value={value} />;
+          return (
+            <RefListStatus
+              value={value}
+              referenceListId={model.referenceListId}
+              showIcon={model.showIcon}
+              showReflistName={showReflistName}
+              solidBackground={solidBackground}
+              style={style} />
+          );
         }}
       </ConfigurableFormItem>
     );

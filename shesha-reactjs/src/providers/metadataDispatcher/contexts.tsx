@@ -1,7 +1,7 @@
 import { createContext } from 'react';
 import { IDictionary } from '../../interfaces';
 import { IModelMetadata, IPropertyMetadata } from '../../interfaces/metadata';
-import { IMetadataContext, MetadataType } from '../metadata/contexts';
+import { IMetadataContext } from '../metadata/contexts';
 
 export interface IMetadataDispatcherStateContext {
   activeProvider?: string;
@@ -9,15 +9,17 @@ export interface IMetadataDispatcherStateContext {
 
 export interface IGetMetadataPayload {
   modelType: string;
-  dataType?: MetadataType;
+  dataType: string;
 }
 
 export interface IGetPropertyMetadataPayload {
+  dataType: string;
   modelType: string;
   propertyPath: string;
 }
 
 export interface IGetPropertiesMetadataPayload {
+  dataType: string;
   modelType: string;
   properties: string[];
 }

@@ -2,13 +2,12 @@ import React, { FC, useState } from "react";
 import { BasicConfig } from '@react-awesome-query-builder/antd';
 import {  } from '@react-awesome-query-builder/ui';
 import { SELECT_WIDTH_OFFSET_RIGHT, calcTextWidth } from "../domUtils";
-import { PropertySelect } from "../../propertyAutocomplete/propertySelect";
+import { IContainerInfo, PropertySelect } from "../../propertyAutocomplete/propertySelect";
 import { IPropertyMetadata } from "interfaces/metadata";
 
 export interface IFieldSelectProps {
     config: BasicConfig;
     customProps?: { [key: string]: any };
-    items: [];
     placeholder?: string;
     selectedKey?: string;
     selectedKeys?: [];
@@ -20,6 +19,8 @@ export interface IFieldSelectProps {
     readonly?: boolean;
     //actions
     setField: (key: string) => void;
+
+    containerInfo: IContainerInfo;
 }
 
 export const FieldAutocomplete: FC<IFieldSelectProps> = (props) => {
@@ -37,7 +38,9 @@ export const FieldAutocomplete: FC<IFieldSelectProps> = (props) => {
     const {
         config, customProps, /*items,*/ placeholder,
         selectedKey, selectedLabel, /*selectedOpts,*/ selectedAltLabel, selectedFullLabel, /*readonly,*/
+        containerInfo,
     } = props;
+
     const { showSearch } = customProps || {};
 
     const selectText = text || selectedLabel || placeholder;
@@ -54,6 +57,7 @@ export const FieldAutocomplete: FC<IFieldSelectProps> = (props) => {
 
     return (
         <PropertySelect
+            containerInfo={containerInfo}
             readOnly={readOnly}
             value={text}
             onChange={onChange}

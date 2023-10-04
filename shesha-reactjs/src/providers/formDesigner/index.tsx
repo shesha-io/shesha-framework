@@ -192,7 +192,6 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
 
 
   const setFlatComponents = (flatComponents: IFlatComponentsStructure) => {
-    console.log('LOG: setFlatComponents');
     dispatch((dispatchThunk, _getState) => {
       dispatchThunk(setFlatComponentsAction(flatComponents));
       dispatchThunk(UndoableActionCreators.clearHistory());

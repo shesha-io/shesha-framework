@@ -11,7 +11,7 @@ import ConditionalWrap from '../conditionalWrapper';
 import { useFormPersister } from '../../providers/formPersisterProvider';
 import { useFormDesigner } from '../../providers/formDesigner';
 import StatusTag from '../statusTag';
-import { FORM_STATUS_MAPPING } from '../../utils/configurationFramework/models';
+import { CONFIGURATION_ITEM_STATUS_MAPPING } from '../../utils/configurationFramework/models';
 import { getFormFullName } from '../../utils/form';
 import HelpTextPopover from '../helpTextPopover';
 import { useDataContextManager } from 'providers/dataContextManager';
@@ -48,7 +48,7 @@ export const FormDesignerRenderer: FC = ({}) => {
               </Title>
             )}
             <HelpTextPopover content={formProps.description}></HelpTextPopover>
-            <StatusTag value={formProps.versionStatus} mappings={FORM_STATUS_MAPPING} color={null}></StatusTag>
+            <StatusTag value={formProps.versionStatus} mappings={CONFIGURATION_ITEM_STATUS_MAPPING} color={null}></StatusTag>
           </Space>
         </div>
       </div>

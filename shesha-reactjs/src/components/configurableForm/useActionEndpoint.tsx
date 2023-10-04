@@ -1,7 +1,8 @@
+import { DataTypes } from 'interfaces/dataTypes';
 import { useState } from 'react';
 import { useDeepCompareEffect } from 'react-use';
 import { IMatchData, removeZeroWidthCharsFromString, useMetadataDispatcher } from '../..';
-import { IApiEndpoint, StandardEntityActions } from '../../interfaces/metadata';
+import { IApiEndpoint, isEntityMetadata, StandardEntityActions } from '../../interfaces/metadata';
 import { IFormSettings } from '../../providers/form/models';
 import { evaluateComplexString } from '../../providers/form/utils';
 
@@ -30,8 +31,8 @@ export const useModelApiHelper = (): IEntityEndpointsEvaluator => {
     if (!payload.actionName)
       return Promise.reject('`name` is not provided');
 
-    return getMetadata({ modelType: payload.modelType }).then(m => {
-      const endpoint = m.apiEndpoints
+    return getMetadata({ dataType: DataTypes.entityReference, modelType: payload.modelType }).then(m => {
+      const endpoint = isEntityMetadata(m)
         ? m.apiEndpoints[payload.actionName]
         : null;
       return endpoint;

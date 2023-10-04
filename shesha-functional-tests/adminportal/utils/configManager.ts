@@ -2,7 +2,7 @@ import getGlobalConfig from 'next/config';
 import { camelCase } from './string';
 const { publicRuntimeConfig } = getGlobalConfig();
 
-const { shaEnv }: IShaEnvAppConfig = publicRuntimeConfig;
+const { shaEnv } = publicRuntimeConfig as IShaEnvAppConfig ?? {};
 
 type IShaEnvAppConfig = { shaEnv: IAppConfigManager };
 

@@ -565,8 +565,6 @@ const ListControl: FC<IListControlProps> = props => {
 
             <ButtonGroup
               items={buttons || []}
-              propertyName={''}
-              type={''}
               id={containerId}
               size="small"
               isInline={isButtonInline}

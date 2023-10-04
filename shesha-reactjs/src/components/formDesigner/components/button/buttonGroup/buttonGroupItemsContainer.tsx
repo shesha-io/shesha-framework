@@ -27,13 +27,13 @@ export const ButtonGroupItemsContainer: FC<IButtonGroupItemsContainerProps> = pr
     switch (actualModel.itemType) {
       case 'item':
         const itemProps = actualModel as IButtonGroupButton;
-        return <ButtonGroupItem key={index} index={[...props.index, index]} {...itemProps} />;
+        return <ButtonGroupItem key={item.id} index={[...props.index, index]} {...itemProps} />;
 
       case 'group':
         const groupProps = actualModel as IButtonGroup;
         return (
           <ButtonGroupItemsGroup 
-            key={index} 
+            key={item.id} 
             {...groupProps} 
             index={[...props.index, index]}
             containerRendering={(args) => (<ButtonGroupItemsContainer {...args}/>)}
@@ -47,7 +47,7 @@ export const ButtonGroupItemsContainer: FC<IButtonGroupItemsContainerProps> = pr
     // temporary commented out, the behavoiur of the sortablejs differs sometimes
     const listChanged = true; //!newState.some(item => item.chosen !== null && item.chosen !== undefined);
 
-    if (listChanged) {
+    if (listChanged && newState?.length) {
       const newChildren = newState.map<ButtonGroupItemProps>(item => item as ButtonGroupItemProps);
 
       updateChildItems({ index: props.index, id: props.id, children: newChildren });

@@ -14,6 +14,7 @@ import { ITableViewProps } from '../../../../providers/tableViewSelectorConfigur
 import { entityPickerSettings } from './settingsForm';
 import { migrateDynamicExpression } from 'designer-components/_common-migrations/migrateUseExpression';
 import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { isEntityReferencePropertyMetadata } from 'interfaces/metadata';
 
 export interface IEntityPickerComponentProps extends IConfigurableFormComponent {
   placeholder?: string;
@@ -141,10 +142,10 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
   ,
   settingsFormMarkup: entityPickerSettings,
   validateSettings: model => validateConfigurableComponentSettings(entityPickerSettings, model),
-  linkToModelMetadata: (model, metadata): IEntityPickerComponentProps => {
+  linkToModelMetadata: (model, propMetadata): IEntityPickerComponentProps => {
     return {
       ...model,
-      entityType: metadata.entityType,
+      entityType: isEntityReferencePropertyMetadata(propMetadata) ? propMetadata.entityType : undefined,
       useRawValues: true,
     };
   },

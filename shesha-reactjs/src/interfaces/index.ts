@@ -35,9 +35,12 @@ export { type ITableColumn, type IDataTableInstance } from '../providers/dataTab
 export type { PageWithLayout } from './pageWithLayout';
 export type { InsertMode } from './insertMode';
 export type { IColor, IHsl, IHsv, IRgb } from './color';
-export type { IApiEndpoint } from './metadata';
+export type { IApiEndpoint, IObjectMetadata, IModelMetadata, IEntityMetadata } from './metadata';
 export type { IAjaxResponse, IAjaxResponseBase } from './ajaxResponse';
+export { DataTypes } from './dataTypes';
+export { type IReferenceListIdentifier } from './referenceList';
 
 export * from './formDesigner';
 export * from './shesha';
-export * from '../providers/form/models';
+export * from 'providers/form/models';
+export { IStoredFile } from 'providers/storedFile/contexts';

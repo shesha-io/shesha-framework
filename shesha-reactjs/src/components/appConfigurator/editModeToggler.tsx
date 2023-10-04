@@ -5,7 +5,7 @@ import SwitchToEditModeConfirmation from './switchToEditModeConfirmation';
 import SwitchToLiveModeConfirmation from './switchToLiveModeConfirmation';
 import { Button } from 'antd';
 
-export interface IAppEditModeTogglerProps {}
+export interface IAppEditModeTogglerProps { }
 
 export const AppEditModeToggler: FC<IAppEditModeTogglerProps> = () => {
   const { mode, toggleCloseEditModeConfirmation, toggleEditModeConfirmation } = useAppConfigurator();
@@ -13,7 +13,9 @@ export const AppEditModeToggler: FC<IAppEditModeTogglerProps> = () => {
   const content =
     mode === 'edit' ? (
       <>
-        <CheckCircleOutlined title="Click to close Edit Mode" onClick={() => toggleCloseEditModeConfirmation(true)} />
+        <Button type="link" title="Click to close Edit Mode" onClick={() => toggleCloseEditModeConfirmation(true)}>
+          <CheckCircleOutlined />
+        </Button>
         <SwitchToLiveModeConfirmation />
       </>
     ) : (

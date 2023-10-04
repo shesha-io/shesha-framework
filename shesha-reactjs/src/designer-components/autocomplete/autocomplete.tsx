@@ -20,6 +20,7 @@ import { migrateDynamicExpression } from 'designer-components/_common-migrations
 import { useAsyncMemo } from 'hooks/useAsyncMemo';
 import { evaluateDynamicFilters } from 'utils';
 import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
+import { isEntityReferencePropertyMetadata } from 'interfaces/metadata';
 
 interface IQueryParams {
   // tslint:disable-next-line:typedef-whitespace
@@ -228,12 +229,12 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     })
     .add<IAutocompleteComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
   ,
-  linkToModelMetadata: (model, metadata): IAutocompleteComponentProps => {
+  linkToModelMetadata: (model, propMetadata): IAutocompleteComponentProps => {
     return {
       ...model,
       //useRawValues: true,
       dataSourceType: 'entitiesList',
-      entityTypeShortAlias: metadata.entityType,
+      entityTypeShortAlias: isEntityReferencePropertyMetadata(propMetadata) ? propMetadata.entityType : undefined,
       mode: undefined,
     };
   },

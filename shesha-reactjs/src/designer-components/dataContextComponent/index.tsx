@@ -25,7 +25,6 @@ const DataContextComponent: IToolboxComponent<IDataContextComponentProps> = {
       const metadata: Promise<IModelMetadata> = useMemo(() => {
         return Promise.resolve({
           name: model.componentName,
-          type: model.componentName + '_' + model.id,
           dataType: DataTypes.context,
           apiEndpoints: {},
           specifications: {},

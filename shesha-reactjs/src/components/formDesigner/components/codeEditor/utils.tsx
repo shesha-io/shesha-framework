@@ -1,5 +1,5 @@
 import { ICodeTreeLevel } from "components/codeEditor/utils";
-import { IModelMetadata, IPropertyMetadata } from "interfaces/metadata";
+import { IModelMetadata, IPropertyMetadata, isEntityReferencePropertyMetadata } from "interfaces/metadata";
 import { IDataContextDescriptor } from "providers/dataContextManager/models";
 import { IMetadataDispatcherFullinstance } from "providers/metadataDispatcher/contexts";
 import { toCamelCase } from "utils/string";
@@ -16,10 +16,10 @@ export const getFormDataMetadata = (dispatcher: IMetadataDispatcherFullinstance,
             caption: p.label,
             loaded: true,
         };
-        if (p.dataType === 'entity' && !!p.entityType && dispatcher) {
+        if (isEntityReferencePropertyMetadata(p) && !!p.entityType && dispatcher) {
           result[path].loaded = false;
           result[path].childRefresh = (resolve: (data: ICodeTreeLevel) => void) => {
-            dispatcher.getMetadata({modelType: p.entityType})
+            dispatcher.getMetadata({ dataType: null, modelType: p.entityType })
               .then(res => {
                 const m = propsToLevel(res.properties);
                 result[path].loaded = true;
