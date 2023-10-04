@@ -39,6 +39,12 @@ namespace Shesha.Authorization
         DeviceNotRegistered = 11,
 
         [Description("Invalid username")]
-        InvalidUserName = 12
+        InvalidUserName = 12,
+
+        [Description("User not found")]
+        UserNotFound = 13,
+
+        [Description("Invalid OTP")]
+        InvalidOTP = 14,
     }
 }
