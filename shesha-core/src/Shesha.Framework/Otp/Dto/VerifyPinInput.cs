@@ -2,7 +2,10 @@
 
 namespace Shesha.Otp.Dto
 {
-    public class SendPinDto
+    /// <summary>
+    /// Verify OTP input
+    /// </summary>
+    public class VerifyPinInput: IVerifyPinInput
     {
         /// <summary>
         /// Unique runtime identifier of the operation. Is used for resending
@@ -10,8 +13,8 @@ namespace Shesha.Otp.Dto
         public Guid OperationId { get; set; }
 
         /// <summary>
-        /// Mobile number/email address (depending on the `send type`) to which the OTP has been sent. Is used when we send OTP to the user or another entity
+        /// Value of the One Time Pin
         /// </summary>
-        public string SentTo { get; set; }
+        public string Pin { get; set; }
     }
 }
