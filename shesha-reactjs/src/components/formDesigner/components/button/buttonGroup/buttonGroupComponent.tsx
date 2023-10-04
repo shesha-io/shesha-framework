@@ -110,7 +110,7 @@ export const ButtonGroup: FC<ButtonGroupProps> = ({ items, id, size, spaceSize =
           return renderButton(itemProps, uuid);
         case 'separator':
         case 'line':
-          return <Divider type='vertical' />;
+          return <Divider type='vertical' key={uuid}/>;
         default:
           return null;
       }

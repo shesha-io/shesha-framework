@@ -37,7 +37,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
     return (
       <CollapsiblePanel
         header={label}
-        expandIconPosition={expandIconPosition !== 'hide' ? (expandIconPosition as ExpandIconPosition) : 'left'}
+        expandIconPosition={expandIconPosition !== 'hide' ? (expandIconPosition as ExpandIconPosition) : 'start'}
         collapsedByDefault={collapsedByDefault}
         extra={extra}
         collapsible={collapsible === 'header' ? 'header' : 'icon'}

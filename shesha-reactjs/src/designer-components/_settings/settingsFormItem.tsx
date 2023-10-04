@@ -1,4 +1,4 @@
-import React, { cloneElement, FC, ReactElement, ReactNode, useState } from 'react';
+import React, { cloneElement, FC, ReactElement, ReactNode, useEffect, useState } from 'react';
 import { Button, Form, FormItemProps } from "antd";
 import SettingsControl, { SettingsControlChildrenType } from './settingsControl';
 import { useSettingsForm } from './settingsForm';
@@ -14,9 +14,12 @@ interface ISettingsFormItemProps extends Omit<FormItemProps<any>, 'children'> {
 
 const SettingsFormItem: FC<ISettingsFormItemProps> = (props) => {
     const settingsPanel = useSettingsPanel(false);
-    if (settingsPanel && props.name) {
-        settingsPanel.registerField(props.name.toString());
-    }
+
+    useEffect(() => {
+        if (settingsPanel && props.name) {
+            settingsPanel.registerField(props.name.toString());
+        }
+    }, [settingsPanel, props.name]);
 
     const { propertyFilter } = useSettingsForm<any>();
     return !Boolean(propertyFilter) || typeof propertyFilter === 'function' && propertyFilter(props.name?.toString())

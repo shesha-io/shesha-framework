@@ -46,7 +46,7 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
       <Collapse
         className="sha-query-builder-field"
         activeKey={jsonExpanded ? '1' : null}
-        expandIconPosition="right"
+        expandIconPosition="end"
         bordered={false}
         ghost={true}
         expandIcon={({ isActive }) =>

@@ -97,7 +97,7 @@ export const Toolbar: FC<IToolbarProps> = ({ items, id }) => {
             return <ToolbarButton formComponentId={id} key={uuid} selectedRow={selectedRow} {...itemProps} />;
 
           case 'separator':
-            return <Divider type='vertical' />;
+            return <Divider type='vertical' key={uuid}/>;
             
           default:
             return null;
