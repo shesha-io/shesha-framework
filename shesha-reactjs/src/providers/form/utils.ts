@@ -114,21 +114,9 @@ export const getValuesModel = (model: any, postfix: string = null) => {
   const m = {...model};
 
   for (var propName in m) {
-    if (!Object.prototype.hasOwnProperty.call(m, propName)) continue;
-    
-    const propNames = propName.split('.');
-    let obj = m;
-    let i = 1;
-    while(i < propNames.length) {
-      if (typeof obj[propNames[i - 1]] === 'undefined')
-        obj[propNames[i - 1]] = {};
-      obj = obj[propNames[i - 1]];
-      i++;
-    }
+    if (!m.hasOwnProperty(propName)) continue;
 
-    const value = obj[propNames[propNames.length - 1]];
-
-    obj[propNames[propNames.length - 1]] = getSettingValue(value);
+    m[propName] = getSettingValue(m[propName]);
   }
   return m;
 };
@@ -137,17 +125,29 @@ export const getValuesModel = (model: any, postfix: string = null) => {
  * Convert model to values calculated from JS code if provided (for each fields)
  *
  * @param model - model
+ * @param allData - all form, contexts data and other data/objects/functions needed to calculate Actual Model
  * @returns - converted model
  */
-export const getActualModel = (model: any, allData: any) => {//, formData: any, formMode: FormMode, allData: {name: string; data: any}[] = []) => {
+export const getActualModel = (model: any, allData: any) => {
 
   const getSettingValue = (value: any, calcFunction: (setting: IPropertySetting) => any) => {
     if (!value) 
       return value;
   
-    if (typeof value === 'object' && !Array.isArray(value)) {
+    if (typeof value === 'object') {
+      // If array - update all items
+      if (Array.isArray(value)) {
+        return value;
+        if (value.length === 0)
+          return value;
+        const v = value.map(x => {
+          return getActualModel(x, allData);
+        });
+        return v;
+      }
+
+      // update setting value to actual
       if (isPropertySettings(value)) {
-        // update setting value to actual
         const v = value as IPropertySetting;
         if (v?._mode === 'code' && Boolean(v?._code)) {
           const val = calcFunction(v);
@@ -155,9 +155,10 @@ export const getActualModel = (model: any, allData: any) => {//, formData: any, 
         } else {
           return v?._value;
         }
-      } else
-        // update nested objects
-        return getActualModel(value, allData);
+      }
+
+      // update nested objects
+      return getActualModel(value, allData);
     }
     return value;
   };
@@ -168,18 +169,16 @@ export const getActualModel = (model: any, allData: any) => {//, formData: any, 
 
   const calcValue = (setting) => {
     try {
-      //let vars = 'value, data, staticValue, formMode, getSettingValue';
-      //const datas = [formData?.[model.propertyName], formData, setting?._value, formMode, getValue];
       let vars = 'staticValue, getSettingValue';
       const datas = [setting?._value, getValue];
-      for (let key in allData) {
-        if (Object.hasOwn(allData, key)) {
-          vars+= `, ${key}`;
-          datas.push(allData[key]);
+      if (allData)
+        for (let key in allData) {
+          if (Object.hasOwn(allData, key)) {
+            vars+= `, ${key}`;
+            datas.push(allData[key]);
+          }
         }
-      }
       const res = new Function(vars, setting?._code)(...datas);
-        //(formData?.[model.propertyName], formData, setting?._value, formMode, getValue, allData[0]?.data);
       return res;
     } catch {
       return undefined;
@@ -189,23 +188,9 @@ export const getActualModel = (model: any, allData: any) => {//, formData: any, 
   const m = {...model};
 
   for (var propName in m) {
-    if (!Object.prototype.hasOwnProperty.call(m, propName)) continue;
+    if (!m.hasOwnProperty(propName)) continue;
     
     m[propName] = getSettingValue(m[propName], calcValue);
-
-    /*const propNames = propName.split('.');
-    let obj = m;
-    let i = 1;
-    while(i < propNames.length) {
-      if (typeof obj[propNames[i - 1]] === 'undefined')
-        obj[propNames[i - 1]] = {};
-      obj = obj[propNames[i - 1]];
-      i++;
-    }
-
-    const value = obj[propNames[propNames.length - 1]];
-
-    obj[propNames[propNames.length - 1]] = getSettingValue(value, calcValue);*/
   }
   return m;
 };

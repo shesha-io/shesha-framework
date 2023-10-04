@@ -16,6 +16,8 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
     name: 'DataList',
     icon: <UnorderedListOutlined />,
     factory: (model: IDataListComponentProps) => {
+      if (model.hidden) return null;
+      
       return <DataListWrapper {...model} />;
     },
     migrator: m => m
