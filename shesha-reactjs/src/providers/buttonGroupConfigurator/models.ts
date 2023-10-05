@@ -1,13 +1,12 @@
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { ButtonType } from 'antd/lib/button';
 import { IConfigurableActionConfiguration } from '../../interfaces/configurableAction';
-import { VisibilityType } from '..';
 
 type ButtonGroupItemType = 'item' | 'group';
 
 export type ButtonGroupItemProps = IButtonGroupButton | IButtonGroup;
 
-export type ToolbarItemSubType = 'button' | 'separator' | 'line';
+export type ToolbarItemSubType = 'button' | 'separator' | 'line' | 'dynamic';
 
 export type ButtonActionType =
   | 'navigate'
