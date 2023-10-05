@@ -61,7 +61,7 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
       />
     );
   },
-  customContainerNames: ['sizableColumns'],
+  customContainerNames: ['columns'],
 };
 
 export default SizableColumnsComponent;
