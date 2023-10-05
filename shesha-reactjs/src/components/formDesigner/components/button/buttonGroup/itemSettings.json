@@ -21,36 +21,11 @@
           "id": "cc268f50-47ca-4e4e-966f-7f2abfec902f",
           "label": "Separator",
           "value": "separator"
-        },
-        {
-          "id": "b4117249-8c2f-4991-a96c-9ea434293120",
-          "label": "Line",
-          "value": "line"
         }
       ],
       "validate": {
         "required": true
       }
-    },
-    {
-      "id": "5d4d56fb-d7f8-4835-a529-c4fa93f3596d",
-      "type": "textField",
-      "propertyName": "name",
-      "label": "Name",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "jsSetting": false,
-      "validate": {
-        "required": true
-      }
-    },
-    {
-      "id": "d498779d-012a-4c6a-82a9-77231245ae28",
-      "type": "textField",
-      "propertyName": "label",
-      "parentId": "root",
-      "label": "Label"
     },
     {
       "id": "345c2181-fb9f-48ed-9631-864ac357807b",
@@ -59,10 +34,29 @@
       "label": "Container2",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": {"_code": "return  getSettingValue(data?.itemSubType) !== 'button';", "_mode": "code", "_value": false},
+      "hidden": {"_code": "return getSettingValue(data?.itemSubType) !== 'button';", "_mode": "code", "_value": false},
       "direction": "vertical",
       "justifyContent": "left",
       "components": [
+        {
+          "id": "5d4d56fb-d7f8-4835-a529-c4fa93f3596d",
+          "type": "textField",
+          "propertyName": "name",
+          "label": "Name",
+          "labelAlign": "right",
+          "parentId": "root",
+          "jsSetting": false,
+          "validate": {
+            "required": true
+          }
+        },
+        {
+          "id": "d498779d-012a-4c6a-82a9-77231245ae28",
+          "type": "textField",
+          "propertyName": "label",
+          "parentId": "root",
+          "label": "Label"
+        },
         {
           "id": "9b671866-072e-4688-8b48-ddf5e12d70d4",
           "type": "textArea",
@@ -141,33 +135,6 @@
           "validate": {}
         },
         {
-          "id": "df8a8f35-a50b-42f9-9642-73d390ceddbf",
-          "type": "dropdown",
-          "propertyName": "visibility",
-          "parentId": "root",
-          "label": "Visibility",
-          "description": "This property will eventually replace the 'hidden' property and other properties that toggle visibility on the UI and payload",
-          "allowClear": true,
-          "values": [
-            {
-              "label": "Yes (Display in UI and include in payload)",
-              "value": "Yes",
-              "id": "53cd10ce-26af-474b-af75-8e7b1f19e51d"
-            },
-            {
-              "label": "No (Only include in payload)",
-              "value": "No",
-              "id": "f07a228c-cb9c-4da7-a8bc-bc2be518a058"
-            },
-            {
-              "label": "Removed (Remove from UI and exlude from payload)",
-              "value": "Removed",
-              "id": "3b6282ee-2eee-47ec-bab9-4cba52b970a0"
-            }
-          ],
-          "dataSourceType": "values"
-        },
-        {
           "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
           "type": "checkbox",
           "propertyName": "hidden",
@@ -207,18 +174,18 @@
           "settingsValidationErrors": [],
           "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
           "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }]
+        },
+        {
+          "id": "26c68b22-3211-475d-91e1-0745a4447329",
+          "type": "editableTagGroup",
+          "propertyName": "permissions",
+          "label": "Permissions",
+          "labelAlign": "right",
+          "parentId": "root",
+          "hidden": false,
+          "validate": {}
         }
       ]
-    },
-    {
-      "id": "26c68b22-3211-475d-91e1-0745a4447329",
-      "type": "editableTagGroup",
-      "propertyName": "permissions",
-      "label": "Permissions",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "validate": {}
     }
   ],
   "formSettings": {
