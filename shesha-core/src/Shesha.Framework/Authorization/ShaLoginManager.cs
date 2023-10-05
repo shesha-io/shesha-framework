@@ -12,8 +12,14 @@ using Abp.IdentityFramework;
 using Abp.MultiTenancy;
 using Abp.Zero.Configuration;
 using Microsoft.AspNetCore.Identity;
+using NetTopologySuite.Operation.Valid;
+using Shesha.Configuration;
 using Shesha.Domain;
+using Shesha.Domain.Enums;
 using Shesha.Extensions;
+using Shesha.MultiTenancy;
+using Shesha.Otp;
+using Shesha.Otp.Dto;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
@@ -38,6 +44,8 @@ namespace Shesha.Authorization
         protected IUserManagementConfig UserManagementConfig { get; }
         protected IIocResolver IocResolver { get; }
         protected AbpRoleManager<TRole, TUser> RoleManager { get; }
+        public IOtpManager OtpManager { get; set; }
+        private readonly IAuthenticationSettings _authSettings;
 
         private readonly IPasswordHasher<TUser> _passwordHasher;
 
@@ -57,7 +65,8 @@ namespace Shesha.Authorization
             AbpRoleManager<TRole, TUser> roleManager,
             AbpUserClaimsPrincipalFactory<TUser, TRole> claimsPrincipalFactory,
             IRepository<ShaUserLoginAttempt, Guid> shaLoginAttemptRepository,
-            IRepository<MobileDevice, Guid> mobileDeviceRepository)
+            IRepository<MobileDevice, Guid> mobileDeviceRepository,
+            IAuthenticationSettings authSettings)
         {
             _passwordHasher = passwordHasher;
             _claimsPrincipalFactory = claimsPrincipalFactory;
@@ -68,15 +77,16 @@ namespace Shesha.Authorization
             IocResolver = iocResolver;
             RoleManager = roleManager;
             UserManager = userManager;
+            _authSettings = authSettings;
 
             ClientInfoProvider = NullClientInfoProvider.Instance;
             ShaLoginAttemptRepository = shaLoginAttemptRepository;
             _mobileDeviceRepository = mobileDeviceRepository;
         }
 
-        public virtual async Task<ShaLoginResult<TTenant, TUser>> LoginAsync(UserLoginInfo login, string imei = null, string tenancyName = null)
+        public virtual async Task<ShaLoginResult<TUser>> LoginAsync(UserLoginInfo login, string imei = null, string tenancyName = null)
         {
-            ShaLoginResult<TTenant, TUser> result = null;
+            ShaLoginResult<TUser> result = null;
             using (var uow = UnitOfWorkManager.Begin(TransactionScopeOption.RequiresNew))
             {
                 result = await LoginAsyncInternal(login, tenancyName);
@@ -88,49 +98,113 @@ namespace Shesha.Authorization
             return result;
         }
 
-        protected virtual async Task<ShaLoginResult<TTenant, TUser>> LoginAsyncInternal(UserLoginInfo login, string tenancyName)
+        protected virtual async Task<ShaLoginResult<TUser>> LoginAsyncInternal(UserLoginInfo login, string tenancyName)
         {
             if (login == null || login.LoginProvider.IsNullOrEmpty() || login.ProviderKey.IsNullOrEmpty())
             {
                 throw new ArgumentException("login");
             }
 
-            //Get and check tenant
-            TTenant tenant = null;
-            if (!MultiTenancyConfig.IsEnabled)
-            {
-                tenant = await GetDefaultTenantAsync();
-            }
-            else if (!string.IsNullOrWhiteSpace(tenancyName))
-            {
-                tenant = await TenantRepository.FirstOrDefaultAsync(t => t.TenancyName == tenancyName);
-                if (tenant == null)
-                {
-                    return new ShaLoginResult<TTenant, TUser>(ShaLoginResultType.InvalidTenancyName);
-                }
-
-                if (!tenant.IsActive)
-                {
-                    return new ShaLoginResult<TTenant, TUser>(ShaLoginResultType.TenantIsNotActive, tenant);
-                }
-            }
-
-            int? tenantId = tenant == null ? (int?)null : tenant.Id;
-            using (UnitOfWorkManager.Current.SetTenantId(tenantId))
-            {
-                var user = await UserManager.FindAsync(tenantId, login);
+            return await ProcessTenancyLoginActionAsync(null, tenancyName, true, async (tenant) => {
+                var user = await UserManager.FindAsync(tenant?.Id, login);
                 if (user == null)
                 {
-                    return new ShaLoginResult<TTenant, TUser>(ShaLoginResultType.UnknownExternalLogin, tenant);
+                    return new ShaLoginResult<TUser>(ShaLoginResultType.UnknownExternalLogin, tenant);
                 }
 
                 return await CreateLoginResultAsync(user, tenant);
-            }
+            });
         }
 
-        public virtual async Task<ShaLoginResult<TTenant, TUser>> LoginAsync(string userNameOrEmailAddress, string plainPassword, string imei = null, string tenancyName = null, bool shouldLockout = true)
+        private void CheckOtpAuthAvailability() 
         {
-            ShaLoginResult<TTenant, TUser> result = null;
+            if (OtpManager == null)
+                throw new NotSupportedException("OTP authentication is not supported");
+        }
+
+        public virtual async Task<ISendPinResponse> SendLoginOtpAsync(TUser user, string mobileNumber)
+        {
+            CheckOtpAuthAvailability();
+
+            var lifetime = await _authSettings.MobileLoginPinLifetime.GetValueAsync();
+
+            var response = await OtpManager.SendPinAsync(new SendPinInput()
+            {
+                SendTo = mobileNumber,
+                SendType = OtpSendType.Sms,
+                Lifetime = lifetime,
+                ActionType = "OTP login",
+                RecipientId = user.Id.ToString(),
+            });
+
+            // save operation Id to 
+            user.PasswordResetCode = response.OperationId.ToString();
+            await UserManager.UpdateAsync(user);
+
+            return response;
+        }
+
+        public virtual async Task<ShaLoginResult<TUser>> LoginViaOtpAsync(string mobileNo, Guid operationId, string code, string imei = null, string tenancyName = null, bool shouldLockout = true)
+        {
+            CheckOtpAuthAvailability();
+            
+            ShaLoginResult<TUser> result = null;
+
+            using (var uow = UnitOfWorkManager.Begin(TransactionScopeOption.RequiresNew)) 
+            {
+                result = await ProcessTenancyLoginActionAsync(imei, tenancyName, shouldLockout, async (tenant) => {
+
+                    var otp = await OtpManager.GetAsync(operationId);
+                    if (otp == null)
+                        return new ShaLoginResult<TUser>(ShaLoginResultType.InvalidOTP, tenant);
+                    var verificationResult = await OtpManager.VerifyPinAsync(new VerifyPinInput
+                    {
+                        OperationId = operationId,
+                        Pin = code
+                    });
+
+                    var user = !string.IsNullOrWhiteSpace(otp.RecipientId)
+                            ? await UserManager.FindByIdAsync(otp.RecipientId)
+                            : null;
+
+                    if (user == null)
+                        return new ShaLoginResult<TUser>(ShaLoginResultType.UserNotFound, tenant);
+
+                    if (await UserManager.IsLockedOutAsync(user))
+                        return new ShaLoginResult<TUser>(ShaLoginResultType.LockedOut, tenant, user);
+
+                    if (!verificationResult.IsSuccess || user.PasswordResetCode != otp.OperationId.ToString())
+                    {
+                        if (shouldLockout)
+                        {
+                            if (await TryLockOutAsync(tenant?.Id, user.Id))
+                                return new ShaLoginResult<TUser>(ShaLoginResultType.LockedOut, tenant, user);
+                        }
+
+                        return new ShaLoginResult<TUser>(ShaLoginResultType.InvalidOTP, tenant, user);
+                    }
+
+                    // authenticated using internal account, check IMEI
+                    if (!(await CheckImeiAsync(imei)))
+                        return new ShaLoginResult<TUser>(ShaLoginResultType.DeviceNotRegistered, tenant, user);
+
+                    // clear reset code
+                    user.PasswordResetCode = null;
+                    await UserManager.UpdateAsync(user);
+
+                    return await CreateLoginResultAsync(user, tenant);
+                });
+
+            }
+
+            await SaveLoginAttemptAsync(result, imei, tenancyName, mobileNo);
+
+            return result;
+        }
+
+        public virtual async Task<ShaLoginResult<TUser>> LoginAsync(string userNameOrEmailAddress, string plainPassword, string imei = null, string tenancyName = null, bool shouldLockout = true)
+        {
+            ShaLoginResult<TUser> result = null;
             using (var uow = UnitOfWorkManager.Begin(TransactionScopeOption.RequiresNew))
             {
                 result = await LoginAsyncInternal(userNameOrEmailAddress, plainPassword, imei, tenancyName, shouldLockout);
@@ -141,19 +215,9 @@ namespace Shesha.Authorization
             return result;
         }
 
-        protected virtual async Task<ShaLoginResult<TTenant, TUser>> LoginAsyncInternal(string userNameOrEmailAddress, string plainPassword, string imei, string tenancyName, bool shouldLockout)
+        private async Task<ShaLoginResult<TUser>> ProcessTenancyLoginActionAsync(string imei, string tenancyName, bool shouldLockout, Func<TTenant, Task<ShaLoginResult<TUser>>> action) 
         {
-            if (userNameOrEmailAddress.IsNullOrEmpty())
-            {
-                throw new ArgumentNullException(nameof(userNameOrEmailAddress));
-            }
-
-            if (plainPassword.IsNullOrEmpty())
-            {
-                throw new ArgumentNullException(nameof(plainPassword));
-            }
-
-            //Get and check tenant
+            // Get and check tenant
             TTenant tenant = null;
             using (UnitOfWorkManager.Current.SetTenantId(null))
             {
@@ -166,12 +230,12 @@ namespace Shesha.Authorization
                     tenant = await TenantRepository.FirstOrDefaultAsync(t => t.TenancyName == tenancyName);
                     if (tenant == null)
                     {
-                        return new ShaLoginResult<TTenant, TUser>(ShaLoginResultType.InvalidTenancyName);
+                        return new ShaLoginResult<TUser>(ShaLoginResultType.InvalidTenancyName);
                     }
 
                     if (!tenant.IsActive)
                     {
-                        return new ShaLoginResult<TTenant, TUser>(ShaLoginResultType.TenantIsNotActive, tenant);
+                        return new ShaLoginResult<TUser>(ShaLoginResultType.TenantIsNotActive, tenant);
                     }
                 }
             }
@@ -181,23 +245,41 @@ namespace Shesha.Authorization
             {
                 await UserManager.InitializeOptionsAsync(tenantId);
 
+                return await action.Invoke(tenant);
+            }
+        }
+
+        protected virtual async Task<ShaLoginResult<TUser>> LoginAsyncInternal(string userNameOrEmailAddress, string plainPassword, string imei, string tenancyName, bool shouldLockout)
+        {
+            if (userNameOrEmailAddress.IsNullOrEmpty())
+            {
+                throw new ArgumentNullException(nameof(userNameOrEmailAddress));
+            }
+
+            if (plainPassword.IsNullOrEmpty())
+            {
+                throw new ArgumentNullException(nameof(plainPassword));
+            }
+
+            return await ProcessTenancyLoginActionAsync(imei, tenancyName, shouldLockout, async (tenant) => {
                 //TryLoginFromExternalAuthenticationSources method may create the user, that's why we are calling it before AbpUserStore.FindByNameOrEmailAsync
                 var loggedInFromExternalSource = await TryLoginFromExternalAuthenticationSourcesAsync(userNameOrEmailAddress, plainPassword, tenant);
 
-                var user = await UserManager.FindByNameOrEmailAsync(tenantId, userNameOrEmailAddress);
+                var user = await UserManager.FindByNameOrEmailAsync(tenant?.Id, userNameOrEmailAddress);
                 if (user == null)
                 {
-                    return new ShaLoginResult<TTenant, TUser>(ShaLoginResultType.InvalidUserNameOrEmailAddress, tenant);
-                } else if (IocResolver.IsRegistered<IEmailLoginFilter<TUser>>() && userNameOrEmailAddress.IsEmail())
+                    return new ShaLoginResult<TUser>(ShaLoginResultType.InvalidUserNameOrEmailAddress, tenant);
+                }
+                else if (IocResolver.IsRegistered<IEmailLoginFilter<TUser>>() && userNameOrEmailAddress.IsEmail())
                 {
                     var filter = IocResolver.Resolve<IEmailLoginFilter<TUser>>();
                     if (!filter.AllowToLoginUsingEmail(userNameOrEmailAddress, user))
-                        return new ShaLoginResult<TTenant, TUser>(ShaLoginResultType.InvalidUserName, tenant, user);
+                        return new ShaLoginResult<TUser>(ShaLoginResultType.InvalidUserName, tenant, user);
                 }
 
                 if (await UserManager.IsLockedOutAsync(user))
                 {
-                    return new ShaLoginResult<TTenant, TUser>(ShaLoginResultType.LockedOut, tenant, user);
+                    return new ShaLoginResult<TUser>(ShaLoginResultType.LockedOut, tenant, user);
                 }
 
                 if (!loggedInFromExternalSource)
@@ -206,18 +288,18 @@ namespace Shesha.Authorization
                     {
                         if (shouldLockout)
                         {
-                            if (await TryLockOutAsync(tenantId, user.Id))
+                            if (await TryLockOutAsync(tenant?.Id, user.Id))
                             {
-                                return new ShaLoginResult<TTenant, TUser>(ShaLoginResultType.LockedOut, tenant, user);
+                                return new ShaLoginResult<TUser>(ShaLoginResultType.LockedOut, tenant, user);
                             }
                         }
 
-                        return new ShaLoginResult<TTenant, TUser>(ShaLoginResultType.InvalidPassword, tenant, user);
+                        return new ShaLoginResult<TUser>(ShaLoginResultType.InvalidPassword, tenant, user);
                     }
 
                     // authenticated using internal account, check IMEI
                     if (!(await CheckImeiAsync(imei)))
-                        return new ShaLoginResult<TTenant, TUser>(ShaLoginResultType.DeviceNotRegistered, tenant, user);
+                        return new ShaLoginResult<TUser>(ShaLoginResultType.DeviceNotRegistered, tenant, user);
 
                     await UserManager.ResetAccessFailedCountAsync(user);
                 }
@@ -225,11 +307,10 @@ namespace Shesha.Authorization
                 {
                     // authenticated using external source, check IMEI
                     if (!(await CheckImeiAsync(imei)))
-                        return new ShaLoginResult<TTenant, TUser>(ShaLoginResultType.DeviceNotRegistered, tenant, user);
+                        return new ShaLoginResult<TUser>(ShaLoginResultType.DeviceNotRegistered, tenant, user);
                 }
-
                 return await CreateLoginResultAsync(user, tenant);
-            }
+            });
         }
 
         private async Task<bool> CheckImeiAsync(string imei)
@@ -240,23 +321,23 @@ namespace Shesha.Authorization
             return await _mobileDeviceRepository.GetAll().Where(d => d.IMEI == imei.Trim() && !d.IsLocked).AnyAsync();
         }
 
-        protected virtual async Task<ShaLoginResult<TTenant, TUser>> CreateLoginResultAsync(TUser user, TTenant tenant = null)
+        protected virtual async Task<ShaLoginResult<TUser>> CreateLoginResultAsync(TUser user, TTenant tenant = null)
         {
             if (!user.IsActive)
             {
-                return new ShaLoginResult<TTenant, TUser>(ShaLoginResultType.UserIsNotActive);
+                return new ShaLoginResult<TUser>(ShaLoginResultType.UserIsNotActive);
             }
 
             var principal = await _claimsPrincipalFactory.CreateAsync(user);
 
-            return new ShaLoginResult<TTenant, TUser>(
+            return new ShaLoginResult<TUser>(
                 tenant,
                 user,
                 principal.Identity as ClaimsIdentity
             );
         }
 
-        public virtual async Task SaveLoginAttemptAsync(ShaLoginResult<TTenant, TUser> loginResult, string imei,
+        public virtual async Task SaveLoginAttemptAsync(ShaLoginResult<TUser> loginResult, string imei,
             string tenancyName, string userNameOrEmailAddress)
         {
             if (UnitOfWorkManager.Current != null)
@@ -264,7 +345,7 @@ namespace Shesha.Authorization
 
             using (var uow = UnitOfWorkManager.Begin(TransactionScopeOption.Suppress))
             {
-                var tenantId = loginResult.Tenant?.Id;
+                var tenantId = loginResult.TenantId;
                 using (UnitOfWorkManager.Current.SetTenantId(tenantId))
                 {
                     var loginAttempt = new ShaUserLoginAttempt
@@ -301,13 +382,13 @@ namespace Shesha.Authorization
                 : (await _mobileDeviceRepository.GetAll().Where(d => d.IMEI == imei).FirstOrDefaultAsync())?.Name;
         }
 
-        protected virtual void SaveLoginAttempt(ShaLoginResult<TTenant, TUser> loginResult, string tenancyName, string userNameOrEmailAddress)
+        protected virtual void SaveLoginAttempt(ShaLoginResult<TUser> loginResult, string tenancyName, string userNameOrEmailAddress)
         {
             UnitOfWorkManager.Current?.SaveChanges();
 
             using (var uow = UnitOfWorkManager.Begin(TransactionScopeOption.Suppress))
             {
-                var tenantId = loginResult.Tenant?.Id;
+                var tenantId = loginResult.TenantId;
                 using (UnitOfWorkManager.Current.SetTenantId(tenantId))
                 {
                     var loginAttempt = new ShaUserLoginAttempt

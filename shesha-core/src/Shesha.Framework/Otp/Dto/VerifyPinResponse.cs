@@ -1,6 +1,6 @@
 ﻿namespace Shesha.Otp.Dto
 {
-    public class VerifyPinResponse
+    public class VerifyPinResponse: IVerifyPinResponse
     {
         /// <summary>
         /// Indicates that the OTP matches to the sent one
