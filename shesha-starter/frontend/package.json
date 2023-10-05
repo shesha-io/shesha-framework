@@ -1,5 +1,5 @@
 {
-  "name": "@shesha-io",
+  "name": "pd-",
   "version": "0.0.1",
   "private": true,
   "postinstall": "next",
@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && npm run build --workspace=*",
     "export": "next export",
     "start": "NODE_ENV=production node --max-old-space-size=8192 server.js",
     "build:analyze": "ANALYZE=true npm run build",
@@ -16,13 +16,15 @@
     "prettier": "prettier --write **/*.{js,jsx,ts,tsx}",
     "test": "jest -c test/jest.config.js"
   },
+  "publishConfig": {
+    "registry": "https://pkgs.dev.azure.com/boxfusion/_packaging/npm.shesha.dev/npm/registry/"
+  },
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
     "@microsoft/applicationinsights-react-js": "^3.1.2",
     "@microsoft/applicationinsights-web": "^2.6.2",
     "@microsoft/signalr": "^5.0.6",
-    "@shesha/reactjs": "^4.37.4",
-    "@shesha-reactjs-starter/template": "1.0.0",
+    "@shesha-io/reactjs": "^0.26.0-beta",
     "@types/react-dom": "^18.2.4",
     "antd": "^4.24.0",
     "axios": "^0.21.1",
