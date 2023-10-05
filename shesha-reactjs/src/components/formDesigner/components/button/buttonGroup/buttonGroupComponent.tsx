@@ -49,15 +49,23 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
     })
     .add<IButtonGroupComponentProps>(5, (prev) => {
       const newModel = { ...prev };
-      newModel.items = prev.items?.map((item) => {
+
+      const updateItemDefaults = (item: ButtonGroupItemProps): ButtonGroupItemProps => {
         if (isItem(item) && item.itemSubType === 'line')
-          return { ...item, itemSubType: 'separator' }; // remove `line`, it works by the same way as `separator`
+          return { ...item, itemSubType: 'separator', buttonType: item.buttonType ?? 'link' }; // remove `line`, it works by the same way as `separator`
 
         if (isGroup(item) && typeof (item.hideWhenEmpty) === 'undefined')
-          return { ...item, hideWhenEmpty: true }; // set default `hideWhenEmpty` to true by default
+          return { 
+            ...item, 
+            buttonType: item.buttonType ?? 'link', 
+            hideWhenEmpty: true, // set default `hideWhenEmpty` to true by default
+            childItems: (item.childItems ?? []).map(updateItemDefaults),
+          }; 
 
-        return item;
-      });
+        return {...item};
+      };
+
+      newModel.items = prev.items?.map(updateItemDefaults);
       return newModel;
     })
   ,
@@ -88,14 +96,14 @@ export const ButtonGroup: FC<ButtonGroupProps> = ({ items, id, size, spaceSize =
     if (!isVisibleBase(group))
       return false;
 
-    if (group.hideWhenEmpty){
+    if (group.hideWhenEmpty) {
       const firstVisibleItem = group.childItems.find(item => {
         // analyze buttons and groups only
         return (isItem(item) && item.itemSubType === 'button' || isGroup(item)) && getIsVisible(item);
       });
       if (!firstVisibleItem)
         return false;
-    }      
+    }
 
     return true;
   };
@@ -104,7 +112,7 @@ export const ButtonGroup: FC<ButtonGroupProps> = ({ items, id, size, spaceSize =
   const getIsVisible = (item: ButtonGroupItemProps) => {
     if (isDesignMode)
       return true; // show visibility indicator
-    
+
     return isItem(item) && isVisibleBase(item) || isGroup(item) && isGroupVisible(item);
   };
 
