@@ -87,7 +87,7 @@ export function useApplicationContext(topContextId?: string): IApplicationContex
     setFormData,
     formMode,
     form,
-    contexts: {...useDataContextManager(false)?.getDataContextsData(tcId), lastUpdate: dcm.lastUpdate},
+    contexts: {...dcm?.getDataContextsData(tcId), lastUpdate: dcm?.lastUpdate},
     globalState,
     setGlobalState,
     selectedRow: useDataTableStore(false)?.selectedRow,
@@ -97,29 +97,6 @@ export function useApplicationContext(topContextId?: string): IApplicationContex
    };
 };
 
-export const getValuesModel = (model: any, postfix: string = null) => {
-
-  const getSettingValue = (value: any) => {
-    if (!value) 
-      return value;
-
-    if (typeof value === 'object') {
-      return typeof value?._value === 'string'
-        ? `${value?._value}${!!postfix ? ` (${postfix})` : ""}`
-        : value?._value;
-    }
-    return value;
-  };
-
-  const m = {...model};
-
-  for (var propName in m) {
-    if (!m.hasOwnProperty(propName)) continue;
-
-    m[propName] = getSettingValue(m[propName]);
-  }
-  return m;
-};
 
 /**
  * Convert model to values calculated from JS code if provided (for each fields)

@@ -76,6 +76,8 @@ export const ButtonGroup: FC<ButtonGroupProps> = ({ items, id, size, spaceSize =
     const buttonProps = props.itemType === 'item' ? (props as IButtonGroupButton) : null;
     const isDivider = buttonProps && (buttonProps.itemSubType === 'line' || buttonProps.itemSubType === 'separator');
 
+    const actualItems =  props?.childItems?.map((item) => getActualModel(item, allData));
+
     return isDivider
       ? { type: 'divider' }
       : getButtonGroupMenuItem(
@@ -83,7 +85,7 @@ export const ButtonGroup: FC<ButtonGroupProps> = ({ items, id, size, spaceSize =
         props.id,
         props.disabled,
         hasChildren
-          ? props?.childItems?.filter(getIsVisible)?.map((props) => renderMenuButton(props))
+          ? actualItems?.filter(getIsVisible)?.map((props) => renderMenuButton(props))
           : null
       );
   };
@@ -116,7 +118,10 @@ export const ButtonGroup: FC<ButtonGroupProps> = ({ items, id, size, spaceSize =
       }
     }
     if (isGroup(itemProps)) {
-      const menuItems = itemProps.childItems.map(childItem => (renderMenuButton({ ...childItem, buttonType: 'link' }))); 
+      const menuItems = itemProps.childItems.map(childItem => {
+        const actualChildModel = getActualModel(childItem, allData);
+        return renderMenuButton({ ...actualChildModel, buttonType: 'link' });
+      }); 
       return (
         <Dropdown
           key={uuid}

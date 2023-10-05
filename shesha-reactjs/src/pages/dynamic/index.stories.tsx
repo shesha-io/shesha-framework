@@ -73,7 +73,7 @@ export const OrganisationEdit = addStory(Template, {
     module: 'Test Module',
     version: 1,
   },
-  id: '5BC9A277-63ED-4A71-919F-0B4064363BBC'
+  id: '543031C4-A5AE-4813-855B-2A86F32F70F1'
 });
 
 export const PersonEdit = addStory(Template, {

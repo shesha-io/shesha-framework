@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { ListItem } from './listItem';
 import { ListItemsGroup } from './listItemsGroup';
 import { ReactSortable, ItemInterface } from 'react-sortablejs';
-import { getValuesModel, useItemListConfigurator } from '../../../..';
+import { getActualModel, useApplicationContext, useItemListConfigurator } from '../../../..';
 import { IConfigurableItemBase, IConfigurableItemGroup } from '../../../../providers/itemListConfigurator/contexts';
 
 export interface IItemListContainerProps {
@@ -13,10 +13,11 @@ export interface IItemListContainerProps {
 
 export const ItemListContainer: FC<IItemListContainerProps> = ({ index, id, items }) => {
   const { updateChildItems } = useItemListConfigurator();
+  const allData = useApplicationContext();
 
   const renderItem = (item: IConfigurableItemBase, localIndex: number) => {
     
-    const actualModel = getValuesModel(item);
+    const actualModel = getActualModel(item, allData);
 
     switch (actualModel?.itemType) {
       case 'item':

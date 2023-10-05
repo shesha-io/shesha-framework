@@ -33,6 +33,7 @@ import { StandardEntityActions } from 'interfaces/metadata';
 import { useMutate } from 'hooks/useMutate';
 import { useDelayedUpdate } from 'providers/delayedUpdateProvider';
 import { ComponentsContainerProvider } from 'providers/form/nesting/containerContext';
+import { useDataContextManager } from 'providers/dataContextManager/index';
 
 export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRendererProps>> = ({
   children,
@@ -72,6 +73,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
     uniqueFormId,
   } = formSettings;
   const { globalState, setState: setGlobalState } = useGlobalState();
+  const dcm = useDataContextManager(false);
 
   const urlEvaluationData: IMatchData[] = [
     { match: 'initialValues', data: initialValues },
@@ -268,7 +270,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
     }
     // tslint:disable-next-line:function-constructor
     return new Function(
-      'data, parentFormValues, initialValues, globalState, moment, http, message, shesha, form, setFormData, setGlobalState',
+      'data, parentFormValues, initialValues, globalState, moment, http, message, shesha, form, setFormData, setGlobalState, contexts',
       expression
     )(
       exposedData || formData,
@@ -281,7 +283,8 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
       sheshaUtils,
       form,
       setFormDataAndInstance,
-      setGlobalState
+      setGlobalState,
+      {...dcm?.getDataContextsData(), lastUpdate: dcm?.lastUpdate},
     );
   };
 

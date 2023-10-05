@@ -104,9 +104,10 @@ export const Toolbar: FC<IToolbarProps> = ({ items, id }) => {
         }
       case 'group':
         const group = item as IButtonGroup;
+        const actualGroupItems = group.childItems?.map((item) => getActualModel(item, allData));
         const menu = (
           <Menu>
-            {group.childItems.map(childItem => (
+            {actualGroupItems.map(childItem => (
               <Menu.Item
                 key={childItem?.id}
                 title={childItem.tooltip}
