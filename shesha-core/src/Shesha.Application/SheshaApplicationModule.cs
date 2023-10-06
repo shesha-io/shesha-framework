@@ -15,6 +15,7 @@ using Shesha.Email;
 using Shesha.GraphQL;
 using Shesha.Modules;
 using Shesha.Notifications;
+using Shesha.Otp;
 using Shesha.Otp.Configuration;
 using Shesha.Push;
 using Shesha.Push.Configuration;
@@ -63,7 +64,8 @@ namespace Shesha
             Configuration.ReplaceService<INotificationPublisher, ShaNotificationPublisher>(DependencyLifeStyle.Transient);
 
             IocManager.IocContainer.Register(
-                Component.For<IEmailSender>().Forward<ISheshaEmailSender>().Forward<SheshaEmailSender>().ImplementedBy<SheshaEmailSender>().LifestyleTransient()
+                Component.For<IEmailSender>().Forward<ISheshaEmailSender>().Forward<SheshaEmailSender>().ImplementedBy<SheshaEmailSender>().LifestyleTransient(),
+                Component.For<IOtpManager>().Forward<IOtpAppService>().Forward<OtpAppService>().ImplementedBy<OtpAppService>().LifestyleTransient()
             );
 
             #region Push notifications
@@ -137,8 +139,6 @@ namespace Shesha
                 s.DefaultEmailSubjectTemplate.WithDefaultValue(OtpDefaults.DefaultEmailSubjectTemplate);
                 s.DefaultEmailSubjectTemplate.WithDefaultValue(OtpDefaults.DefaultEmailBodyTemplate);
             });
-            
-            
 
             IocManager.Register<ISheshaAuthorizationHelper, ApiAuthorizationHelper>(DependencyLifeStyle.Transient);
             IocManager.Register<ISheshaAuthorizationHelper, EntityCrudAuthorizationHelper>(DependencyLifeStyle.Transient);

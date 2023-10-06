@@ -101,6 +101,8 @@ namespace Shesha.Bootstrappers
                             if (displayAttribute != null && displayAttribute.GetAutoGenerateField() == false)
                                 continue;
 
+                            var refListItemAttribute = memberInfo.GetAttribute<ReferenceListItemAttribute>();
+
                             listInCode.Add(new ListItemInfo
                             {
                                 Name = displayAttribute != null
@@ -110,7 +112,8 @@ namespace Shesha.Bootstrappers
                                     ? descriptionAttribute.Description
                                     : displayAttribute?.GetDescription(),
                                 Value = intValue,
-                                OrderIndex = displayAttribute?.GetOrder() ?? intValue
+                                OrderIndex = displayAttribute?.GetOrder() ?? intValue,
+                                Color = refListItemAttribute?.Color,
                             });
                         }
 
@@ -183,7 +186,8 @@ namespace Shesha.Bootstrappers
                                 Item = item.Name,
                                 Description = item.Description,
                                 OrderIndex = item.OrderIndex,
-                                ReferenceList = listInDb
+                                ReferenceList = listInDb,
+                                Color = item.Color,
                             };
                             newItem.SetHardLinkToApplication(true);
 
@@ -228,6 +232,7 @@ namespace Shesha.Bootstrappers
             public string Description { get; set; }
             public Int64 Value { get; set; }
             public Int64 OrderIndex { get; set; }
+            public string Color { get; set; }
         }
     }
 }

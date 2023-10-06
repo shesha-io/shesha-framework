@@ -63,9 +63,16 @@ namespace Shesha.Configuration
         /// <summary>
         /// OTP lifetime
         /// </summary>
-        [Display(Name = "OTP lifetime")]
+        [Display(Name = "Reset password OTP lifetime")]
         [Setting(SheshaSettingNames.Security.ResetPasswordWithSmsOtpExpiryDelay)]
         ISettingAccessor<int> ResetPasswordSmsOtpLifetime { get; }
+
+        /// <summary>
+        /// OTP lifetime
+        /// </summary>
+        [Display(Name = "Mobile login OTP lifetime")]
+        [Setting(SheshaSettingNames.Security.MobileLoginPinLifetime)]
+        ISettingAccessor<int> MobileLoginPinLifetime { get; }
 
         /// <summary>
         /// Use reset password via security questions

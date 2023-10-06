@@ -14,6 +14,7 @@ namespace Shesha.Domain
     /// </summary>
     public abstract class ConfigurationItemIdentifier: IEquatable<ConfigurationItemIdentifier>
     {
+        [JsonIgnore]
         public abstract string ItemType { get; }
 
         /// <summary>

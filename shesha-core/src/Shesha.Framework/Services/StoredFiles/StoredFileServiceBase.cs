@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
@@ -197,16 +198,18 @@ namespace Shesha.Services.StoredFiles
             if (config != null)
             {
                 var className = config.EntityType.FullName;
-                query = FileRepository.GetAll()
-                    .Where(e => e.Owner.Id == id.ToString() 
-                                && (e.Owner._className == className || e.Owner._className == config.TypeShortAlias));
+
+                query = FileRepository.GetAll().Where(e => e.Owner.Id == id.ToString());
+                query = config.HasTypeShortAlias
+                    ? query.Where(e => e.Owner._className == className || e.Owner._className == config.TypeShortAlias)
+                    : query.Where(e => e.Owner._className == className);
+
                 if (filterPredicate != null)
                     query = query.Where(filterPredicate);
             }
             else
             {
-                query = FileRepository.GetAll()
-                    .Where(e => e.Owner.Id == id.ToString() && e.Owner._className == typeShortAlias);
+                query = FileRepository.GetAll().Where(e => e.Owner.Id == id.ToString() && e.Owner._className == typeShortAlias);
                 if (filterPredicate != null)
                     query = query.Where(filterPredicate);
             }

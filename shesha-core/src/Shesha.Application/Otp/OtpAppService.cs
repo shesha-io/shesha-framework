@@ -32,7 +32,7 @@ namespace Shesha.Otp
         /// <summary>
         /// Send one-time-pin
         /// </summary>
-        public async Task<SendPinDto> SendPinAsync(SendPinInput input)
+        public async Task<ISendPinResponse> SendPinAsync(ISendPinInput input)
         {
             if (string.IsNullOrWhiteSpace(input.SendTo))
                 throw new Exception($"{input.SendTo} must be specified");
@@ -93,7 +93,7 @@ namespace Shesha.Otp
             await _otpStorage.SaveAsync(otp);
             
             // return response
-            var response = new SendPinDto
+            var response = new SendPinResponse
             {
                 OperationId = otp.OperationId,
                 SentTo = otp.SendTo
@@ -104,7 +104,7 @@ namespace Shesha.Otp
         /// <summary>
         /// Resend one-time-pin
         /// </summary>
-        public async Task<SendPinDto> ResendPinAsync(ResendPinInput input)
+        public async Task<ISendPinResponse> ResendPinAsync(IResendPinInput input)
         {
             var otp = await _otpStorage.GetAsync(input.OperationId);
             if (otp == null)
@@ -147,7 +147,7 @@ namespace Shesha.Otp
             });
 
             // return response
-            var response = new SendPinDto
+            var response = new SendPinResponse
             {
                 OperationId = otp.OperationId,
                 SentTo = otp.SendTo
@@ -199,7 +199,7 @@ namespace Shesha.Otp
         /// <summary>
         /// Verify one-time-pin
         /// </summary>
-        public async Task<VerifyPinResponse> VerifyPinAsync(VerifyPinInput input)
+        public async Task<IVerifyPinResponse> VerifyPinAsync(IVerifyPinInput input)
         {
             if (!await _otpSettings.IgnoreOtpValidation.GetValueAsync())
             {
@@ -221,7 +221,7 @@ namespace Shesha.Otp
         }
 
         /// inheritedDoc
-        public async Task<OtpDto> GetAsync(Guid operationId)
+        public async Task<IOtpDto> GetAsync(Guid operationId)
         {
             return await _otpStorage.GetAsync(operationId);
         }
