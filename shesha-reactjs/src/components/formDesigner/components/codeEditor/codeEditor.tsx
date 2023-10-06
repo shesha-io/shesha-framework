@@ -87,7 +87,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
   const effectiveValue = mode === 'inline' ? value : internalValue;
   const renderCodeEditor = () => (
     <BaseCodeEditor
-      name={props.id}
+      name={props?.id || ''}
       style={{ width: 'unset' }}
       placeholder={props.placeholder}
       mode={language}
