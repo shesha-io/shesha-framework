@@ -193,8 +193,6 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
               mode="inline"
               setOptions={{ minLines: 15, maxLines: 500, fixedWidthGutter: true }}
               name="properties"
-              type={''}
-              id={''}
               language="graphqlschema"
               label="Query Params"
               description="Properties in GraphQL-like syntax"
@@ -262,8 +260,6 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
               setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
               name="deleteUrl"
               label="Delete URL"
-              type={''}
-              id={''}
               description="The API url that will be used delete the list item. Write the code that returns the string"
               exposedVariables={[
                 {
@@ -299,8 +295,6 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
               label="Delete Confirm Message"
               setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
               name="deleteConfirmMessage"
-              type={''}
-              id={''}
               description="The confirm message that will be displayed before you delete an item. Write the code that returns the string"
               exposedVariables={[
                 {
@@ -340,8 +334,6 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
           mode="dialog"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           name="onSubmit"
-          type={''}
-          id={''}
           description="Write a code that return tha payload to be sent to the server when submitting this items"
           exposedVariables={[
             {
@@ -379,8 +371,6 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
           label="Submit URL"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           name="submitUrl"
-          type={''}
-          id={''}
           description="The URL to submit the list items to"
           exposedVariables={[
             {
@@ -411,8 +401,6 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
           label="Target URL"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           name="targetUrl"
-          type={''}
-          id={''}
           description="The URL to forward to after event is triggered"
           exposedVariables={[
             {
@@ -503,8 +491,6 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
           label="Custom Visibility"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           name="customVisibility"
-          type={''}
-          id={''}
           description={
             'Enter custom visibility code.  You must return true to show the component. ' +
             'The global variable data is provided, and allows you to access the data of any form component, by using its API key.'

@@ -16,7 +16,7 @@ export interface IButtonGroupSettingsProps {
   onValuesChange?: (changedValues: any, values: IButtonGroupProps) => void;
 }
 
-const ButtonGroupSettings: FC<IButtonGroupSettingsProps> = props => {
+const ButtonGroupSettings: FC<IButtonGroupSettingsProps> = (props) => {
   const [form] = Form.useForm();
 
   const onValuesChange = (changedValues, values) => {
@@ -80,8 +80,6 @@ const ButtonGroupSettings: FC<IButtonGroupSettingsProps> = props => {
           mode="dialog"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           name="customVisibility"
-          type={''}
-          id={''}
           label="Custom Visibility"
           description="Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
         />

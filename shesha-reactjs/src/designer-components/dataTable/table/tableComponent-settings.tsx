@@ -224,13 +224,11 @@ function TableSettings(props: IProps) {
       </Form.Item>
       <Form.Item name="canEditInlineExpression" label="Can edit inline expression" hidden={canEditInline !== 'js'}>
         <CodeEditor
-          id={''}
           name="canEditInlineExpression"
           readOnly={props.readOnly}
           mode="dialog"
           label="Can edit inline expression"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          type={''}
           description="Return true to enable inline editing and false to disable."
           exposedVariables={ENABLE_CRUD_EXPOSED_VARIABLES}
         />
@@ -250,13 +248,11 @@ function TableSettings(props: IProps) {
       </Form.Item>
       <Form.Item name="canAddInlineExpression" label="Can add inline expression" hidden={canAddInline !== 'js'}>
         <CodeEditor
-          id={''}
           name="canAddInlineExpression"
           readOnly={props.readOnly}
           mode="dialog"
           label="Can add inline expression"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          type={''}
           description="Return true to enable inline creation of new rows and false to disable."
           exposedVariables={ENABLE_CRUD_EXPOSED_VARIABLES}
         />
@@ -281,13 +277,11 @@ function TableSettings(props: IProps) {
         hidden={canAddInline === 'no'}
       >
         <CodeEditor
-          id={''}
           name="onNewRowInitialize"
           readOnly={props.readOnly}
           mode="dialog"
           label="New row init"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          type={''}
           description="Specify logic to initialise the object bound to a new row. This handler should return an object or a Promise<object>."
           exposedVariables={NEW_ROW_EXPOSED_VARIABLES}
         />
@@ -299,13 +293,11 @@ function TableSettings(props: IProps) {
         hidden={canAddInline === 'no' && canEditInline === 'no'}
       >
         <CodeEditor
-          id={''}
           name="onRowSave"
           readOnly={props.readOnly}
           mode="dialog"
           label="On row save"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          type={''}
           description="Allows custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations)."
           exposedVariables={ROW_SAVE_EXPOSED_VARIABLES}
         />
@@ -328,13 +320,11 @@ function TableSettings(props: IProps) {
         hidden={canDeleteInline !== 'js'}
       >
         <CodeEditor
-          id={''}
           name="canDeleteInlineExpression"
           readOnly={props.readOnly}
           mode="dialog"
           label="Can delete inline expression"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          type={''}
           description="Return true to enable inline deletion and false to disable."
           exposedVariables={ENABLE_CRUD_EXPOSED_VARIABLES}
         />
@@ -382,8 +372,6 @@ function TableSettings(props: IProps) {
           mode="dialog"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           name="containerStyle"
-          type={''}
-          id={''}
           label="Table container style"
           description="The style that will be applied to the table container/wrapper"
           exposedVariables={[]}
@@ -396,8 +384,6 @@ function TableSettings(props: IProps) {
           mode="dialog"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           name="tableStyle"
-          type={''}
-          id={''}
           label="Table style"
           description="The style that will be applied to the table"
           exposedVariables={[]}

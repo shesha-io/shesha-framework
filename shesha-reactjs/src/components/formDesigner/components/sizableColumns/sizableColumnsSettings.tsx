@@ -37,13 +37,11 @@ const SizableColumnsSettings = ({ readonly, onSave, model, onValuesChange }: IPr
 
       <FormItem name="style" label="Style" initialValue={model?.style}>
         <CodeEditor
-          id=""
           name="style"
           readOnly={readonly}
           mode="dialog"
           label="Style"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          type={''}
           description="A script that returns the style of the element as an object. This should conform to CSSProperties"
           exposedVariables={EXPOSED_VARIABLES}
         />
@@ -53,13 +51,11 @@ const SizableColumnsSettings = ({ readonly, onSave, model, onValuesChange }: IPr
 
       <FormItem name="customVisibility" label="Custom Visibility" initialValue={model?.customVisibility}>
         <CodeEditor
-          id=""
           name="customVisibility"
           readOnly={readonly}
           mode="dialog"
           label="Custom Visibility"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          type={''}
           description="Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
           exposedVariables={EXPOSED_VARIABLES}
         />

@@ -6,20 +6,18 @@ export type SpecificationWidgetType = BaseWidget & SelectFieldSettings;
 const SpecificationWidget: SpecificationWidgetType = {
   ...BasicConfig.widgets.select,
   type: 'specification',
-  factory: props => {
+  factory: (props) => {
     const { /*fieldDefinition ,*/ value, setValue } = props;
     //const customSettings = fieldDefinition.fieldSettings as CustomFieldSettings;
     //console.log('custom settings', customSettings);
 
     return (
-      <CodeEditor 
+      <CodeEditor
         value={value}
         onChange={setValue}
-        mode='dialog' 
-        name={'specificationCondition'} 
-        type={''} 
-        id={''}
-        label='Specification: condition to apply'
+        mode="dialog"
+        name="specificationCondition"
+        label="Specification: condition to apply"
         description="Enter a condition that determines whether the Specification should be  applied or not. Return true to apply the Specification or false to ignore it."
       />
     );

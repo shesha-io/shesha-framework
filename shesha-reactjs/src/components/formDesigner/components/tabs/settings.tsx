@@ -131,19 +131,19 @@ const TabSettings: FC<ITabSettingsProps> = (props) => {
       <Form.Item
         label="Custom Visibility"
         name="customVisibility"
-        tooltip={ "Enter custom visibility code.  You must return true to show the component. " + 
-          "The global variable data is provided, and allows you to access the data of any form component, by using its API key." 
+        tooltip={
+          'Enter custom visibility code.  You must return true to show the component. ' +
+          'The global variable data is provided, and allows you to access the data of any form component, by using its API key.'
         }
       >
         <CodeEditor
           mode="dialog"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           name="customVisibility"
-          type={''}
-          id={''}
           label="Custom Visibility"
-          description={ "Enter custom visibility code.  You must return true to show the component. " + 
-            "The global variable data is provided, and allows you to access the data of any form component, by using its API key." 
+          description={
+            'Enter custom visibility code.  You must return true to show the component. ' +
+            'The global variable data is provided, and allows you to access the data of any form component, by using its API key.'
           }
         />
       </Form.Item>

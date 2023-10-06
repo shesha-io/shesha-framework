@@ -18,19 +18,19 @@ export interface ITabSettingsProps {
   onValuesChange?: (changedValues: any, values: IWizardComponentProps) => void;
 }
 
-const WizardSettings: FC<ITabSettingsProps> = props => {
+const WizardSettings: FC<ITabSettingsProps> = (props) => {
   const [state, setState] = useState<IWizardComponentProps>(props?.model);
   const [form] = Form.useForm();
 
   const onValuesChange = (changedValues: any, values: IWizardComponentProps) => {
     // whenever the tabs change, check to see if `defaultActiveStep` is still present within the tabs. If not, remove it
     const foundIndex = values?.defaultActiveStep
-      ? values?.steps?.findIndex(item => item?.id === values?.defaultActiveStep)
+      ? values?.steps?.findIndex((item) => item?.id === values?.defaultActiveStep)
       : 0;
 
     const newValues = { ...state, ...values, defaultActiveStep: foundIndex < 0 ? null : values?.defaultActiveStep };
 
-    setState(prev => ({ ...prev, ...values, defaultActiveStep: foundIndex < 0 ? null : values?.defaultActiveStep }));
+    setState((prev) => ({ ...prev, ...values, defaultActiveStep: foundIndex < 0 ? null : values?.defaultActiveStep }));
 
     if (props.onValuesChange) props.onValuesChange(changedValues, newValues);
   };
@@ -54,7 +54,7 @@ const WizardSettings: FC<ITabSettingsProps> = props => {
     return buttonProps;
   };
 
-  const steps = props?.model?.steps?.map(item => ({ ...item, label: item?.title }));
+  const steps = props?.model?.steps?.map((item) => ({ ...item, label: item?.title }));
 
   const selectRef = useRef<RefSelectProps>();
 
@@ -175,19 +175,19 @@ const WizardSettings: FC<ITabSettingsProps> = props => {
       <Form.Item
         label="Custom Visibility"
         name="customVisibility"
-        tooltip={"Enter custom visibility code.  You must return true to show the component. " +
-          "The global variable data is provided, and allows you to access the data of any form component, by using its API key."
+        tooltip={
+          'Enter custom visibility code.  You must return true to show the component. ' +
+          'The global variable data is provided, and allows you to access the data of any form component, by using its API key.'
         }
       >
         <CodeEditor
           mode="dialog"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           name="customVisibility"
-          type={''}
-          id={''}
           label="Custom Visibility"
-          description={"Enter custom visibility code.  You must return true to show the component. " +
-            "The global variable data is provided, and allows you to access the data of any form component, by using its API key."
+          description={
+            'Enter custom visibility code.  You must return true to show the component. ' +
+            'The global variable data is provided, and allows you to access the data of any form component, by using its API key.'
           }
         />
       </Form.Item>

@@ -131,8 +131,6 @@ export const ChildDataTableSettings: FC<IChildDataTableSettingsProps> = ({
           mode="dialog"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           name="customVisibility"
-          type={''}
-          id={''}
           description="Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
         />
       </Form.Item>

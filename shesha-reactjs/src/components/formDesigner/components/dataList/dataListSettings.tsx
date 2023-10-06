@@ -32,7 +32,7 @@ function DataListSettings(props: IProps) {
 
   const [state, setState] = useState<IDataListComponentProps>(initialState);
   const [formTypesOptions, setFormTypesOptions] = useState<{ value: string }[]>(
-    formTypes.map(i => {
+    formTypes.map((i) => {
       return { value: i };
     })
   );
@@ -75,101 +75,144 @@ function DataListSettings(props: IProps) {
 
       <Form.Item name="defaultSortOrder" label="Default sort order">
         <Select disabled={props.readOnly} allowClear>
-          <Select.Option key='asc' value='asc'>Ascending</Select.Option>
-          <Select.Option key='desc' value='desc'>Descending</Select.Option>
+          <Select.Option key="asc" value="asc">
+            Ascending
+          </Select.Option>
+          <Select.Option key="desc" value="desc">
+            Descending
+          </Select.Option>
         </Select>
       </Form.Item>
 
       <Form.Item name="actionConfiguration">
-        <ConfigurableActionConfigurator editorConfig={null} level={1} label="On Double Click" readOnly={props.readOnly} />
+        <ConfigurableActionConfigurator
+          editorConfig={null}
+          level={1}
+          label="On Double Click"
+          readOnly={props.readOnly}
+        />
       </Form.Item>
 
       <SectionSeparator title="Selection" />
 
       <Form.Item name="selectionMode" label="Selection mode">
         <Select disabled={props.readOnly} defaultValue={'none'}>
-          <Select.Option key='1' value='none'>None</Select.Option>
-          <Select.Option key='2' value='single'>Single</Select.Option>
-          <Select.Option key='3' value='multiple'>Multiple</Select.Option>
+          <Select.Option key="1" value="none">
+            None
+          </Select.Option>
+          <Select.Option key="2" value="single">
+            Single
+          </Select.Option>
+          <Select.Option key="3" value="multiple">
+            Multiple
+          </Select.Option>
         </Select>
       </Form.Item>
 
       <SectionSeparator title="Render" />
 
       <Form.Item name="formSelectionMode" label="Form selection mode">
-        <Select disabled={props.readOnly} defaultValue={'none'} onChange={(item) => {
-          setState({...state, formSelectionMode: (item as FormSelectionMode)}); 
-        }}>
-          <Select.Option key='name' value='name'>Named form</Select.Option>
-          <Select.Option key='view' value='view'>View type</Select.Option>
-          <Select.Option key='expression' value='expression'>Expression</Select.Option>
+        <Select
+          disabled={props.readOnly}
+          defaultValue={'none'}
+          onChange={(item) => {
+            setState({ ...state, formSelectionMode: item as FormSelectionMode });
+          }}
+        >
+          <Select.Option key="name" value="name">
+            Named form
+          </Select.Option>
+          <Select.Option key="view" value="view">
+            View type
+          </Select.Option>
+          <Select.Option key="expression" value="expression">
+            Expression
+          </Select.Option>
         </Select>
       </Form.Item>
 
-      {state.formSelectionMode === 'name' &&
-      <Form.Item name="formId" label="Form">
-        <FormAutocomplete convertToFullId={true} readOnly={props.readOnly} />
-      </Form.Item>
-      }
+      {state.formSelectionMode === 'name' && (
+        <Form.Item name="formId" label="Form">
+          <FormAutocomplete convertToFullId={true} readOnly={props.readOnly} />
+        </Form.Item>
+      )}
 
-      {state.formSelectionMode === 'view' &&
+      {state.formSelectionMode === 'view' && (
         <Form.Item name="formType" label="formType">
           <AutoComplete
             disabled={props.readOnly}
             options={formTypesOptions}
-            onSearch={t =>
+            onSearch={(t) =>
               setFormTypesOptions(
                 (t
-                  ? formTypes.filter(f => {
+                  ? formTypes.filter((f) => {
                       return f.toLowerCase().includes(t.toLowerCase());
                     })
                   : formTypes
-                ).map(i => {
+                ).map((i) => {
                   return { value: i };
                 })
               )
             }
           />
         </Form.Item>
-      }
+      )}
 
-      {state.formSelectionMode === 'expression' && 
+      {state.formSelectionMode === 'expression' && (
         <Form.Item name="formIdExpression" label="Form identifer expression">
           <CodeEditor
             readOnly={props.readOnly}
             mode="dialog"
             setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
             name="formIdExpression"
-            type={''}
-            id={''}
             label="Form identifer expression"
             description="Enter code to get form identifier. You must return { name: string; module?: string; version?: number; } object. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
-            exposedVariables={[
-              { "name": "item", "description": "List item", "type": "object" },
-            ]}
+            exposedVariables={[{ name: 'item', description: 'List item', type: 'object' }]}
           />
         </Form.Item>
-      }
+      )}
 
       <Form.Item name="orientation" label="Orientation">
-        <Select disabled={props.readOnly} defaultValue="vertical" onChange={(item) => {
-          setState({...state, orientation: (item as Orientation)}); 
-        }}>
-          <Select.Option key={1} value="vertical">Vertical</Select.Option>
-          <Select.Option key={2} value="horizontal">Horizontal</Select.Option>
+        <Select
+          disabled={props.readOnly}
+          defaultValue="vertical"
+          onChange={(item) => {
+            setState({ ...state, orientation: item as Orientation });
+          }}
+        >
+          <Select.Option key={1} value="vertical">
+            Vertical
+          </Select.Option>
+          <Select.Option key={2} value="horizontal">
+            Horizontal
+          </Select.Option>
         </Select>
       </Form.Item>
 
       <Show when={state?.orientation === 'horizontal'}>
         <Form.Item name="listItemWidth" label="List Item Width">
-          <Select disabled={props.readOnly} defaultValue={1} onChange={(item) => {
-            setState({...state, listItemWidth: (item as ListItemWidth)}); 
-          }}>
-            <Select.Option key={1} value={1}>100%</Select.Option>
-            <Select.Option key={2} value={0.5}>50%</Select.Option>
-            <Select.Option key={3} value={0.33}>33%</Select.Option>
-            <Select.Option key={4} value={0.25}>25%</Select.Option>
-            <Select.Option key={5} value="custom">(Custom)</Select.Option>
+          <Select
+            disabled={props.readOnly}
+            defaultValue={1}
+            onChange={(item) => {
+              setState({ ...state, listItemWidth: item as ListItemWidth });
+            }}
+          >
+            <Select.Option key={1} value={1}>
+              100%
+            </Select.Option>
+            <Select.Option key={2} value={0.5}>
+              50%
+            </Select.Option>
+            <Select.Option key={3} value={0.33}>
+              33%
+            </Select.Option>
+            <Select.Option key={4} value={0.25}>
+              25%
+            </Select.Option>
+            <Select.Option key={5} value="custom">
+              (Custom)
+            </Select.Option>
           </Select>
         </Form.Item>
 
@@ -186,13 +229,11 @@ function DataListSettings(props: IProps) {
           mode="dialog"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           name="customVisibility"
-          type={''}
-          id={''}
           label="Custom visibility"
           description="Enter custom visibility code. You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
           exposedVariables={[
-            { "name": "value", "description": "Component current value", "type": "string | any" },
-            { "name": "data", "description": "Selected form values", "type": "object" }            
+            { name: 'value', description: 'Component current value', type: 'string | any' },
+            { name: 'data', description: 'Selected form values', type: 'object' },
           ]}
         />
       </Form.Item>

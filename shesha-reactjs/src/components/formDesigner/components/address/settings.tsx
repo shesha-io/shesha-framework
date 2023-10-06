@@ -172,13 +172,11 @@ const AddressSettings: FC<IButtonGroupSettingsProps> = ({ readOnly, model, onSav
         tooltip="Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
       >
         <CodeEditor
-          id={''}
           name="onChangeCustom"
           readOnly={readOnly}
           mode="dialog"
           label="On Change"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          type={''}
           description="Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
           exposedVariables={EXPOSED_VARIABLES}
         />
@@ -190,13 +188,11 @@ const AddressSettings: FC<IButtonGroupSettingsProps> = ({ readOnly, model, onSav
         tooltip="Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
       >
         <CodeEditor
-          id={''}
           name="onSelectCustom"
           readOnly={readOnly}
           mode="dialog"
           label="On Select"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          type={''}
           description="Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
           exposedVariables={EXPOSED_VARIABLES}
         />
@@ -209,13 +205,11 @@ const AddressSettings: FC<IButtonGroupSettingsProps> = ({ readOnly, model, onSav
         tooltip="Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
       >
         <CodeEditor
-          id={''}
           name="customVisibility"
           readOnly={readOnly}
           mode="dialog"
           label="Custom Visibility"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          type={''}
           description="Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
           exposedVariables={[
             {
