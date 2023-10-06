@@ -1,3 +1,5 @@
+import { EntityCrudActions } from 'providers/dynamicActions/implementations/entityCrudActions';
+import { ReportingActions } from 'providers/dynamicActions/implementations/reportingActions';
 import React, { FC, PropsWithChildren } from 'react';
 import { GlobalStateProvider, ShaApplicationProvider, SidebarMenuDefaultsProvider } from '../../providers';
 import AuthContainer from '../authedContainer';
@@ -40,9 +42,13 @@ export const StoryApp: FC<PropsWithChildren<{ layout?: boolean }>> = ({ children
         backendUrl={process.env.STORYBOOK_BASE_URL}
         router={DEFAULT_ROUTER as any}
       >
-        <AuthContainer layout={layout}>
-          <SidebarMenuDefaultsProvider items={[]}>{renderChildren()}</SidebarMenuDefaultsProvider>
-        </AuthContainer>
+        <EntityCrudActions>
+          <ReportingActions>
+            <AuthContainer layout={layout}>
+              <SidebarMenuDefaultsProvider items={[]}>{renderChildren()}</SidebarMenuDefaultsProvider>
+            </AuthContainer>
+          </ReportingActions>
+        </EntityCrudActions>
       </ShaApplicationProvider>
     </GlobalStateProvider>
   );

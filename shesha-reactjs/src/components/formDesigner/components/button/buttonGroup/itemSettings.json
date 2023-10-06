@@ -21,11 +21,19 @@
           "id": "cc268f50-47ca-4e4e-966f-7f2abfec902f",
           "label": "Separator",
           "value": "separator"
+        },
+        {
+          "id": "58B3C738-46C7-4486-BDE6-22D99C8349BE",
+          "label": "Dynamic item(s)",
+          "value": "dynamic"
         }
       ],
       "validate": {
         "required": true
-      }
+      },
+      "version": 2,
+      "useRawValues": false,
+      "referenceListId": null
     },
     {
       "id": "345c2181-fb9f-48ed-9631-864ac357807b",
@@ -34,7 +42,11 @@
       "label": "Container2",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": {"_code": "return getSettingValue(data?.itemSubType) !== 'button';", "_mode": "code", "_value": false},
+      "hidden": {
+        "_value": false,
+        "_code": "return getSettingValue(data?.itemSubType) !== 'button';",
+        "_mode": "code"
+      },
       "direction": "vertical",
       "justifyContent": "left",
       "components": [
@@ -44,22 +56,37 @@
           "propertyName": "name",
           "label": "Name",
           "labelAlign": "right",
-          "parentId": "root",
+          "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
           "jsSetting": false,
           "validate": {
             "required": true
-          }
+          },
+          "version": 1,
+          "textType": "text"
         },
         {
-          "id": "d498779d-012a-4c6a-82a9-77231245ae28",
-          "type": "textField",
+          "id": "mwI8bhzkGyQOVpkttIKyc",
+          "type": "setting",
           "propertyName": "label",
-          "parentId": "root",
-          "label": "Label"
+          "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
+          "label": "Label",
+          "jsSetting": false,
+          "components": [
+            {
+              "id": "d498779d-012a-4c6a-82a9-77231245ae28",
+              "type": "textField",
+              "propertyName": "label",
+              "parentId": "mwI8bhzkGyQOVpkttIKyc",
+              "label": "Label",
+              "jsSetting": false,
+              "version": 1,
+              "textType": "text"
+            }
+          ]
         },
         {
-          "id": "9b671866-072e-4688-8b48-ddf5e12d70d4",
-          "type": "textArea",
+          "id": "po1qeQwn48ykEB4EI9J8y",
+          "type": "setting",
           "propertyName": "tooltip",
           "label": "Tooltip",
           "labelAlign": "right",
@@ -68,20 +95,52 @@
           "autoSize": false,
           "showCount": false,
           "allowClear": false,
-          "validate": {}
+          "validate": {},
+          "jsSetting": false,
+          "components": [
+            {
+              "id": "9b671866-072e-4688-8b48-ddf5e12d70d4",
+              "type": "textArea",
+              "propertyName": "tooltip",
+              "label": "Tooltip",
+              "labelAlign": "right",
+              "parentId": "po1qeQwn48ykEB4EI9J8y",
+              "hidden": false,
+              "autoSize": false,
+              "showCount": false,
+              "allowClear": false,
+              "validate": {},
+              "jsSetting": false,
+              "version": 0
+            }
+          ]
         },
         {
-          "id": "91b404a6-4021-4b0a-b9ef-007167a93075",
-          "type": "iconPicker",
+          "id": "o35jdddk8jxDNC6uj0ae3",
+          "type": "setting",
           "propertyName": "icon",
           "label": "Icon",
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
-          "settingsValidationErrors": []
+          "settingsValidationErrors": [],
+          "jsSetting": false,
+          "components": [
+            {
+              "id": "91b404a6-4021-4b0a-b9ef-007167a93075",
+              "type": "iconPicker",
+              "propertyName": "icon",
+              "label": "Icon",
+              "labelAlign": "right",
+              "parentId": "o35jdddk8jxDNC6uj0ae3",
+              "settingsValidationErrors": [],
+              "jsSetting": false,
+              "version": 0
+            }
+          ]
         },
         {
-          "id": "be15598e-5c23-40bc-8245-6b5385bb7963",
-          "type": "dropdown",
+          "id": "Vl0_92ZM-SeCukk5VlgXm",
+          "type": "setting",
           "propertyName": "buttonType",
           "label": "Button Type",
           "labelAlign": "right",
@@ -122,31 +181,122 @@
               "label": "default",
               "value": "default"
             }
+          ],
+          "jsSetting": false,
+          "components": [
+            {
+              "id": "be15598e-5c23-40bc-8245-6b5385bb7963",
+              "type": "dropdown",
+              "propertyName": "buttonType",
+              "label": "Button Type",
+              "labelAlign": "right",
+              "parentId": "Vl0_92ZM-SeCukk5VlgXm",
+              "hidden": false,
+              "validate": {
+                "required": true
+              },
+              "dataSourceType": "values",
+              "values": [
+                {
+                  "id": "c4a96833-8ed7-4085-8848-169d5607136d",
+                  "label": "primary",
+                  "value": "primary"
+                },
+                {
+                  "id": "c6f974da-ad28-44e5-8e4d-50280cf24ae7",
+                  "label": "ghost",
+                  "value": "ghost"
+                },
+                {
+                  "id": "71c0dc14-0473-4748-ae75-a4ed3bd6cffd",
+                  "label": "dashed",
+                  "value": "dashed"
+                },
+                {
+                  "id": "789d5733-2d4f-4969-890f-613e5b4a7d59",
+                  "label": "link",
+                  "value": "link"
+                },
+                {
+                  "id": "36abe636-40b2-476c-95b0-78a50478146b",
+                  "label": "text",
+                  "value": "text"
+                },
+                {
+                  "id": "de08ea36-a831-4373-ab10-ce25fadf80cd",
+                  "label": "default",
+                  "value": "default"
+                }
+              ],
+              "jsSetting": false,
+              "version": 2,
+              "useRawValues": false,
+              "referenceListId": null
+            }
           ]
         },
         {
-          "id": "4e9b886a-6186-4467-a688-639b30a0e06f",
-          "type": "checkbox",
+          "id": "oXQyiI2WU5P0E4lVO-uLW",
+          "type": "setting",
           "propertyName": "danger",
           "label": "Danger",
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
           "hidden": false,
-          "validate": {}
+          "validate": {},
+          "jsSetting": false,
+          "components": [
+            {
+              "id": "4e9b886a-6186-4467-a688-639b30a0e06f",
+              "type": "checkbox",
+              "propertyName": "danger",
+              "label": "Danger",
+              "labelAlign": "right",
+              "parentId": "oXQyiI2WU5P0E4lVO-uLW",
+              "hidden": false,
+              "validate": {},
+              "jsSetting": false,
+              "version": 0
+            }
+          ]
         },
         {
-          "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
-          "type": "checkbox",
+          "id": "oW5driq-fQt8oyUTeB8rX",
+          "type": "setting",
           "propertyName": "hidden",
-          "parentId": "root",
-          "label": "Hidden"
+          "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
+          "label": "Hidden",
+          "jsSetting": false,
+          "components": [
+            {
+              "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
+              "type": "checkbox",
+              "propertyName": "hidden",
+              "parentId": "oW5driq-fQt8oyUTeB8rX",
+              "label": "Hidden",
+              "jsSetting": false,
+              "version": 0
+            }
+          ]
         },
         {
-          "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
-          "type": "checkbox",
+          "id": "4WkyaTKgq5eX7HaDn1R7d",
+          "type": "setting",
           "propertyName": "disabled",
-          "parentId": "root",
-          "label": "Disabled"
+          "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
+          "label": "Disabled",
+          "jsSetting": false,
+          "components": [
+            {
+              "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
+              "type": "checkbox",
+              "propertyName": "disabled",
+              "parentId": "4WkyaTKgq5eX7HaDn1R7d",
+              "label": "Disabled",
+              "jsSetting": false,
+              "version": 0
+            }
+          ]
         },
         {
           "id": "F3B46A95-703F-4465-96CA-A58496A5F78C",
@@ -155,25 +305,38 @@
           "label": "Action configuration",
           "hidden": false,
           "validate": {},
-          "settingsValidationErrors": []
-        },        
+          "settingsValidationErrors": [],
+          "jsSetting": false,
+          "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
+          "version": 0
+        },
         {
           "id": "6befdd49-41aa-41d6-a29e-76fa00590b75",
           "type": "sectionSeparator",
           "propertyName": "sectionStyle",
-          "parentId": "root",
-          "label": "Style"
+          "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
+          "label": "Style",
+          "jsSetting": false,
+          "version": 0
         },
         {
           "id": "06ab0599-914d-4d2d-875c-765a495472f8",
           "type": "codeEditor",
           "propertyName": "style",
           "label": "Style",
-          "parentId": "root",
+          "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
           "validate": {},
           "settingsValidationErrors": [],
           "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
-          "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }]
+          "exposedVariables": [
+            {
+              "propertyName": "data",
+              "description": "Form values",
+              "type": "object"
+            }
+          ],
+          "jsSetting": false,
+          "version": 0
         },
         {
           "id": "26c68b22-3211-475d-91e1-0745a4447329",
@@ -181,11 +344,61 @@
           "propertyName": "permissions",
           "label": "Permissions",
           "labelAlign": "right",
-          "parentId": "root",
+          "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
           "hidden": false,
-          "validate": {}
+          "validate": {},
+          "jsSetting": false,
+          "version": 0
         }
-      ]
+      ],
+      "jsSetting": false,
+      "version": 1,
+      "flexWrap": "wrap",
+      "componentName": "cntButton",
+      "settingsValidationErrors": []
+    },
+    {
+      "id": "P4lhbrJsly_2yCjgicaql",
+      "type": "container",
+      "propertyName": "container2",
+      "componentName": "container2",
+      "label": "Container2",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": {
+        "_value": false,
+        "_code": "return getSettingValue(data?.itemSubType) !== 'dynamic';",
+        "_mode": "code"
+      },
+      "visibility": "Yes",
+      "customVisibility": null,
+      "isDynamic": false,
+      "version": 1,
+      "direction": "vertical",
+      "justifyContent": "left",
+      "flexWrap": "wrap",
+      "components": [
+        {
+          "id": "BobKODSk3NmsjzWl2E8ED",
+          "type": "dynamicItemsConfigurator",
+          "propertyName": "dynamicItemsConfiguration",
+          "componentName": "configurableActionConfigurator1",
+          "label": "Configurable Action Configurator1",
+          "labelAlign": "right",
+          "parentId": "P4lhbrJsly_2yCjgicaql",
+          "hidden": false,
+          "visibility": "Yes",
+          "customVisibility": null,
+          "isDynamic": false,
+          "settingsValidationErrors": [],
+          "_formFields": [
+            "propertyName",
+            "description",
+            "customVisibility"
+          ]
+        }
+      ],
+      "settingsValidationErrors": []
     }
   ],
   "formSettings": {

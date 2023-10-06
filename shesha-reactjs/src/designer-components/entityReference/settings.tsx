@@ -9,7 +9,7 @@ import EndpointsAutocomplete from 'components/endpointsAutocomplete/endpointsAut
 import { MetadataProvider, useForm } from 'providers';
 import LabelValueEditor from 'components/formDesigner/components/labelValueEditor/labelValueEditor';
 import CollapsiblePanel from 'components/panel';
-import { ConfigurableActionConfigurator } from '../configurableActionsConfigurator';
+import { ConfigurableActionConfigurator } from '../configurableActionsConfigurator/configurator';
 import { ISettingsFormFactoryArgs } from 'interfaces';
 import { IEntityReferenceControlProps } from './entityReference';
 import SettingsFormItem from 'designer-components/_settings/settingsFormItem';

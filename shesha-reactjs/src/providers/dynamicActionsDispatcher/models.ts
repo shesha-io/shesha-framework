@@ -1,3 +1,5 @@
+import { ButtonGroupItemProps } from "providers/buttonGroupConfigurator/models";
+import { ComponentType, FC } from "react";
 import { IDynamicActionsRegistration } from "./contexts";
 
 export interface IProvidersDictionary {
@@ -7,3 +9,9 @@ export interface IProvidersDictionary {
 export interface DynamicAction {
   
 }
+
+export interface IHasActions {
+  items: ButtonGroupItemProps[]; // todo: make a generic interface with minimal number of properties, ButtonGroupItemProps will implement/extend this interface
+}
+
+export type DynamicRenderingHoc = <T>(WrappedComponent: ComponentType<T & IHasActions>) => FC<T>;

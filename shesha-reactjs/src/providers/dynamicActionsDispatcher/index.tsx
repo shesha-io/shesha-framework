@@ -35,13 +35,18 @@ const DynamicActionsDispatcherProvider: FC<PropsWithChildren<IDynamicActionsDisp
     }
   };
 
-  const metadataActions: IDynamicActionsDispatcherActionsContext = {
+  const getProviders = () => {
+    return providers.current;
+  };
+
+  const dispatcherActions: IDynamicActionsDispatcherActionsContext = {
     registerProvider,
+    getProviders,
   };
 
   return (
     <DynamicActionsDispatcherStateContext.Provider value={state}>
-      <DynamicActionsDispatcherActionsContext.Provider value={metadataActions}>
+      <DynamicActionsDispatcherActionsContext.Provider value={dispatcherActions}>
         {children}
       </DynamicActionsDispatcherActionsContext.Provider>
     </DynamicActionsDispatcherStateContext.Provider>
