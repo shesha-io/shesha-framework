@@ -7,6 +7,7 @@ import { getStyle } from '../../../utils/publicUtils';
 import { IRefListStatusProps } from '../models';
 import '../styles/index.less';
 import ToolTipTittle from './tooltip';
+import RefTag from './tag';
 
 interface IProps {
   formMode?: FormMode;
@@ -53,24 +54,22 @@ const RefListStatusControl: FC<IProps> = ({ model, value }) => {
           placement="rightTop"
           title={<ToolTipTittle showReflistName={showReflistName} currentStatus={itemData} />}
         >
-          <Tag
-            className="sha-status-tag"
+          <RefTag
             color={memoizedColor}
             style={{ ...getStyle(style, data, globalState) }}
             icon={canShowIcon ? <Icon type={itemData?.icon} /> : null}
           >
             {showReflistName && itemData?.item}
-          </Tag>
+          </RefTag>
         </Tooltip>
       ) : (
-        <Tag
-          className="sha-status-tag"
+        <RefTag
           color={memoizedColor}
           style={{ ...getStyle(style, data, globalState) }}
           icon={canShowIcon ? <Icon type={itemData?.icon} /> : null}
         >
           {showReflistName && itemData?.item}
-        </Tag>
+        </RefTag>
       )}
     </div>
   );
