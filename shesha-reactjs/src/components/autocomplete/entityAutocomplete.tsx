@@ -39,7 +39,10 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
     filter,
   } = props;
 
-  const rawValue = typeof value === 'string' ? value : (value as any)?.id ?? undefined;
+  const rawValue =
+    (mode === 'single' && typeof value === 'string') || (mode === 'multiple' && Array.isArray(value))
+      ? value
+      : (value as any)?.id ?? undefined;
   /* todo: uncomment and test with arrays and numbers
       : Array.isArray(value)
         ? value
@@ -99,7 +102,7 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
 
   const wrapValue = (localValue: TValue | TValue[]): CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[] => {
     if (!Boolean(localValue)) return undefined;
-    if (mode === 'multiple' || mode === 'tags') {
+    if (mode === 'multiple') {
       return Array.isArray(localValue)
         ? (localValue as TValue[]).map<CustomLabeledValue<TValue>>((o) => {
             return getLabeledValue(o, options);
@@ -148,7 +151,7 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
         : (option as ISelectOption<TValue>).data
       : undefined;
 
-    if (mode === 'multiple' || mode === 'tags') {
+    if (mode === 'multiple') {
       onChange(Array.isArray(selectedValue) ? selectedValue : [selectedValue]);
     } else onChange(selectedValue);
   };
@@ -179,7 +182,7 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
     return (
       <ReadOnlyDisplayFormItem
         value={autocompleteValue}
-        type={mode === 'multiple' || mode === 'tags' ? 'dropdownMultiple' : 'dropdown'}
+        type={mode === 'multiple' ? 'dropdownMultiple' : 'dropdown'}
         disabled={disabled}
         quickviewEnabled={quickviewEnabled}
         quickviewFormPath={quickviewFormPath}
@@ -218,7 +221,7 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
       style={style}
       size={size}
       ref={selectRef}
-      mode={value ? mode : undefined} // When mode is multiple and value is null, the control shows an empty tag
+      mode={value && mode === 'multiple' ? mode : undefined} // When mode is multiple and value is null, the control shows an empty tag
     >
       {options?.map(({ value: localValue, label, data }) => (
         <Select.Option value={localValue} key={localValue} data={data}>

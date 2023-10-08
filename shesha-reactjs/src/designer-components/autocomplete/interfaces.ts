@@ -15,7 +15,7 @@ export interface IAutocompleteComponentProps extends IConfigurableFormComponent 
   hideBorder?: boolean;
   dataSourceUrl?: string;
   dataSourceType: AutocompleteDataSourceType;
-  mode?: 'tags' | 'multiple';
+  mode?: 'single' | 'multiple';
   useRawValues: boolean;
   queryParams?: IQueryParamProp[];
   keyPropName?: string;
