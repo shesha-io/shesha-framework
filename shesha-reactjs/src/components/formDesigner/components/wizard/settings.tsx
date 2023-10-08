@@ -7,6 +7,7 @@ import { IWizardStepProps, IWizardComponentProps } from './models';
 import ItemListSettingsModal from '../itemListConfigurator/itemListSettingsModal';
 import { getSettings } from './itemSettings';
 import { nanoid } from 'nanoid/non-secure';
+import { EXPOSED_VARIABLES } from './utils';
 
 const { Option } = Select;
 
@@ -119,7 +120,7 @@ const WizardSettings: FC<ITabSettingsProps> = (props) => {
         name="defaultActiveStep"
         initialValue={props.model.defaultActiveStep}
         label="Default Active Step"
-        tooltip="This will be the default step tha"
+        tooltip="This will be the default step that is set"
       >
         <Select allowClear ref={selectRef} value={state?.defaultActiveStep}>
           {state?.steps?.map(({ id, title }) => (
@@ -128,6 +129,20 @@ const WizardSettings: FC<ITabSettingsProps> = (props) => {
             </Option>
           ))}
         </Select>
+      </Form.Item>
+
+      <Form.Item
+        label="Default Active Value"
+        name="defaultActiveValue"
+        tooltip="An express to specify the Default Active Step number"
+      >
+        <CodeEditor
+          mode="dialog"
+          name="defaultActiveValue"
+          label="Default Active Value"
+          description="Enter an express to specify the Default Active Step number. Note that this will supersede the Default Active Step configuration. This will only excute if the value is a valid number and exists on the steps."
+          exposedVariables={EXPOSED_VARIABLES}
+        />
       </Form.Item>
 
       <Form.Item
