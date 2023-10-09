@@ -1,11 +1,11 @@
-import { DynamicItemsEvaluator, DynamicRenderingHoc } from 'providers/dynamicActionsDispatcher/models';
+import { DynamicItemsEvaluationHook, DynamicRenderingHoc } from 'providers/dynamicActionsDispatcher/models';
 import { createContext } from 'react';
 
 export interface IDynamicActionsStateContext {
   id: string;
   name: string;
   renderingHoc: DynamicRenderingHoc;
-  evaluator: DynamicItemsEvaluator;
+  evaluator: DynamicItemsEvaluationHook;
 }
 
 export interface IDynamicActionsActionsContext {

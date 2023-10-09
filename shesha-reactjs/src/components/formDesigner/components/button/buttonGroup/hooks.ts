@@ -83,15 +83,15 @@ const getItemsLevel = (items: ButtonGroupItemProps[], onPromiseCreated: (promise
                     const provider = providers[item.dynamicItemsConfiguration.providerUid]?.contextValue;
                     if (provider) {
                         // todo: fetch items and add a promise to the list
-                        const promise = new Promise<DynamicNodeResolveResponse>((resolve, _reject) => {
-                            provider.evaluator(/* pass settings and context */).then(items => {
-                                // call provider!
-                                dynamicItem.resolvedItems = items;
-                                dynamicItem.isResolved = true;
-                                resolve({});
-                            });
-                        });
-                        onPromiseCreated(promise);
+                        // const promise = new Promise<DynamicNodeResolveResponse>((resolve, _reject) => {
+                        //     provider.evaluator(/* pass settings and context */).then(items => {
+                        //         // call provider!
+                        //         dynamicItem.resolvedItems = items;
+                        //         dynamicItem.isResolved = true;
+                        //         resolve({});
+                        //     });
+                        // });
+                        // onPromiseCreated(promise);
                     }
                 }
 

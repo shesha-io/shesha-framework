@@ -16,7 +16,7 @@ import { migrateCustomFunctions, migratePropertyName } from 'designer-components
 import type { MenuProps } from 'antd';
 import ShaIcon, { IconType } from 'components/shaIcon/index';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { useButtonItems } from './hooks';
+import { DynamicActionsEvaluator } from 'providers/dynamicActions/evaluator/index';
 
 type MenuItem = MenuProps['items'][number];
 
@@ -79,9 +79,15 @@ type MenuButton = ButtonGroupItemProps & {
 };
 
 type ButtonGroupProps = Pick<IButtonGroupComponentProps, 'items' | 'id' | 'size' | 'spaceSize' | 'isInline' | 'noStyles'>;
-export const ButtonGroup: FC<ButtonGroupProps> = ({ items: providedItems, size, spaceSize = 'middle', isInline, noStyles }) => {
-  const items = useButtonItems({ items: providedItems });
+export const ButtonGroup: FC<ButtonGroupProps> = (props) => {
+  return (
+    <DynamicActionsEvaluator items={props.items}>
+      {(items) => (<ButtonGroupInner {...props} items={items}/>)}
+    </DynamicActionsEvaluator>
+  );
+};
 
+export const ButtonGroupInner: FC<ButtonGroupProps> = ({ items, size, spaceSize = 'middle', isInline, noStyles }) => {
   const allData = useApplicationContext();
   const { anyOfPermissionsGranted } = useSheshaApplication();
 

@@ -1,6 +1,6 @@
 import { ButtonGroupItemProps } from 'providers/buttonGroupConfigurator/models';
-import { DynamicItemsEvaluator, DynamicRenderingHoc } from 'providers/dynamicActionsDispatcher/models';
-import React, { PropsWithChildren, useMemo } from 'react';
+import { DynamicItemsEvaluationHook, DynamicRenderingHoc } from 'providers/dynamicActionsDispatcher/models';
+import React, { PropsWithChildren, useEffect, useMemo } from 'react';
 import { FC } from 'react';
 import { DynamicActionsProvider } from '../index';
 
@@ -15,8 +15,10 @@ const ReportTestItems: ButtonGroupItemProps[] = [
 ];
 
 export const ReportingActions: FC<PropsWithChildren<IReportingActionsProps>> = ({ children }) => {
-    const evaluator: DynamicItemsEvaluator = () => {
-        return Promise.resolve(ReportTestItems);
+    const evaluator: DynamicItemsEvaluationHook = (args) => {
+        useEffect(() => {
+            args.onEvaluated(ReportTestItems);
+        }, []);
     };
 
     return (
@@ -24,7 +26,7 @@ export const ReportingActions: FC<PropsWithChildren<IReportingActionsProps>> = (
             id='reports'
             name='Reports'
             renderingHoc={reportingActionsHoc}
-            evaluator={evaluator}
+            useEvaluator={evaluator}
         >
             {children}
         </DynamicActionsProvider>

@@ -1,4 +1,4 @@
-import { ButtonGroupItemProps } from "providers/buttonGroupConfigurator/models";
+import { ButtonGroupItemProps, IDynamicItem } from "providers/buttonGroupConfigurator/models";
 import { ComponentType, FC } from "react";
 import { IDynamicActionsRegistration } from "./contexts";
 
@@ -16,4 +16,8 @@ export interface IHasActions {
 
 export type DynamicRenderingHoc = <T>(WrappedComponent: ComponentType<T & IHasActions>) => FC<T>;
 
-export type DynamicItemsEvaluator = (/* generic settings */) => Promise<ButtonGroupItemProps[]>;
+export interface DynamicItemsEvaluationHookArgs {
+  item: IDynamicItem;
+  onEvaluated: (response: ButtonGroupItemProps[]) => void;
+}
+export type DynamicItemsEvaluationHook = (args: DynamicItemsEvaluationHookArgs) => void;

@@ -1,6 +1,6 @@
 import { ButtonGroupItemProps } from 'providers/buttonGroupConfigurator/models';
-import { DynamicItemsEvaluator, DynamicRenderingHoc } from 'providers/dynamicActionsDispatcher/models';
-import React, { PropsWithChildren, useMemo } from 'react';
+import { DynamicItemsEvaluationHook, DynamicRenderingHoc } from 'providers/dynamicActionsDispatcher/models';
+import React, { PropsWithChildren, useEffect, useMemo } from 'react';
 import { FC } from 'react';
 import { DynamicActionsProvider } from '../index';
 
@@ -14,15 +14,17 @@ const EntityTestItems: ButtonGroupItemProps[] = [
 ];
 
 export const EntityCrudActions: FC<PropsWithChildren<IEntityCrudActionsProps>> = ({ children }) => {
-    const evaluator: DynamicItemsEvaluator = () => {
-        return Promise.resolve(EntityTestItems);
+    const evaluator: DynamicItemsEvaluationHook = (args) => {
+        useEffect(() => {
+            args.onEvaluated(EntityTestItems);
+        }, []);
     };
     return (
         <DynamicActionsProvider
             id='entity-crud'
             name='CRUD Actions'
             renderingHoc={entityActionsHoc}
-            evaluator={evaluator}
+            useEvaluator={evaluator}
         >
             {children}
         </DynamicActionsProvider>
