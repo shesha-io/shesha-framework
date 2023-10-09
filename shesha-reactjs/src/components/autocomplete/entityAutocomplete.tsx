@@ -39,10 +39,7 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
     filter,
   } = props;
 
-  const rawValue =
-    (mode === 'single' && typeof value === 'string') || (mode === 'multiple' && Array.isArray(value))
-      ? value
-      : (value as any)?.id ?? undefined;
+  const rawValue = typeof value === 'string' || Array.isArray(value) ? value : (value as any)?.id ?? undefined;
   /* todo: uncomment and test with arrays and numbers
       : Array.isArray(value)
         ? value
