@@ -7,7 +7,7 @@ import {
   IDynamicActionsDispatcherStateContext,
   IDynamicActionsDispatcherActionsContext,
   IRegisterProviderPayload,
-  IDynamicActionsDispatcherFullinstance,
+  IDynamicActionsDispatcherFullInstance,
 } from './contexts';
 import useThunkReducer from '../../hooks/thunkReducer';
 import { IProvidersDictionary } from './models';
@@ -73,7 +73,7 @@ function useDynamicActionsDispatcherActions(require: boolean) {
   return context;
 }
 
-function useDynamicActionsDispatcher(require: boolean = true): IDynamicActionsDispatcherFullinstance {
+function useDynamicActionsDispatcher(require: boolean = true): IDynamicActionsDispatcherFullInstance {
   const actionsContext = useDynamicActionsDispatcherActions(require);
   const stateContext = useDynamicActionsDispatcherState(require);
 

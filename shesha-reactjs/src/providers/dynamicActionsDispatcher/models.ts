@@ -15,3 +15,5 @@ export interface IHasActions {
 }
 
 export type DynamicRenderingHoc = <T>(WrappedComponent: ComponentType<T & IHasActions>) => FC<T>;
+
+export type DynamicItemsEvaluator = (/* generic settings */) => Promise<ButtonGroupItemProps[]>;

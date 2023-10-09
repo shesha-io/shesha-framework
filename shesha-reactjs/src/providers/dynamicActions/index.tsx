@@ -10,23 +10,25 @@ import {
 import useThunkReducer from '../../hooks/thunkReducer';
 import { useDynamicActionsDispatcher } from '../dynamicActionsDispatcher';
 import { ButtonGroupItemProps } from 'providers/buttonGroupConfigurator/models';
-import { DynamicRenderingHoc } from 'providers/dynamicActionsDispatcher/models';
+import { DynamicItemsEvaluator, DynamicRenderingHoc } from 'providers/dynamicActionsDispatcher/models';
 
 export interface IDynamicActionsProps {
   id?: string;
   name: string;
   renderingHoc: DynamicRenderingHoc;
+  evaluator: DynamicItemsEvaluator;
 }
 export interface IHasActions {
   items: ButtonGroupItemProps[]; // todo: make a generic interface with minimal number of properties, ButtonGroupItemProps will implement/extend this interface
 }
 
-const DynamicActionsProvider: FC<PropsWithChildren<IDynamicActionsProps>> = ({ id, name, renderingHoc, children }) => {
+const DynamicActionsProvider: FC<PropsWithChildren<IDynamicActionsProps>> = ({ id, name, evaluator, renderingHoc, children }) => {
   const initial: IDynamicActionsStateContext = {
     ...DYNAMIC_ACTIONS_CONTEXT_INITIAL_STATE,
     id,
     name,
     renderingHoc,
+    evaluator,
   };
 
   const [state/*, dispatch*/] = useThunkReducer(metadataReducer, initial);

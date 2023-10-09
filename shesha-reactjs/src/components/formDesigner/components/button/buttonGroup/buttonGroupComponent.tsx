@@ -16,6 +16,7 @@ import { migrateCustomFunctions, migratePropertyName } from 'designer-components
 import type { MenuProps } from 'antd';
 import ShaIcon, { IconType } from 'components/shaIcon/index';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
+import { useButtonItems } from './hooks';
 
 type MenuItem = MenuProps['items'][number];
 
@@ -78,7 +79,9 @@ type MenuButton = ButtonGroupItemProps & {
 };
 
 type ButtonGroupProps = Pick<IButtonGroupComponentProps, 'items' | 'id' | 'size' | 'spaceSize' | 'isInline' | 'noStyles'>;
-export const ButtonGroup: FC<ButtonGroupProps> = ({ items, size, spaceSize = 'middle', isInline, noStyles }) => {
+export const ButtonGroup: FC<ButtonGroupProps> = ({ items: providedItems, size, spaceSize = 'middle', isInline, noStyles }) => {
+  const items = useButtonItems({ items: providedItems });
+
   const allData = useApplicationContext();
   const { anyOfPermissionsGranted } = useSheshaApplication();
 
@@ -221,7 +224,7 @@ const InlineItem: FC<InlineItemProps> = (props) => {
   }
 
   if (isDynamicItem(item)) {
-    return (<DynamicInlineItem {...props} item={item} />);
+    return (<DynamicInlineItem {...props} item={item} key={uuid} />);
   }
 
   if (isItem(itemProps)) {
@@ -278,6 +281,7 @@ const ButtonsList: FC<IButtonsListComponent & IHasActions> = (props) => {
           getIsVisible={() => true} 
           appContext={props.appContext}
           size={props.size}
+          key={item.id}
         />
       ))}
     </>

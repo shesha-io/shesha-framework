@@ -16,7 +16,7 @@ export interface IDynamicActionsDispatcherActionsContext {
   getProviders: () => IProvidersDictionary;
 }
 
-export interface IDynamicActionsDispatcherFullinstance extends IDynamicActionsDispatcherStateContext, IDynamicActionsDispatcherActionsContext {}
+export interface IDynamicActionsDispatcherFullInstance extends IDynamicActionsDispatcherStateContext, IDynamicActionsDispatcherActionsContext {}
 
 export interface IDynamicActionsRegistration {
   id: string;
