@@ -7,11 +7,11 @@ interface ITagProps {
   style: React.CSSProperties;
 }
 
-const RefTag: FC<PropsWithChildren<ITagProps>> = ({ children, color, icon, style }) => {
+const RefTag: FC<PropsWithChildren<ITagProps>> = ({ children, ...props }) => {
   if (!children) return null;
 
   return (
-    <Tag className="sha-status-tag" color={color} style={style} icon={icon}>
+    <Tag className="sha-status-tag" {...props}>
       {children}
     </Tag>
   );
