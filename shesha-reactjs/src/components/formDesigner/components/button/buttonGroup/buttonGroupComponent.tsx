@@ -1,12 +1,12 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC } from 'react';
 import { IToolboxComponent } from 'interfaces';
 import { DownOutlined, GroupOutlined } from '@ant-design/icons';
 import { IButtonGroupComponentProps } from './models';
 import { Alert, Button, Divider, Dropdown, Menu, Space } from 'antd';
-import { IButtonGroupItem, ButtonGroupItemProps, IButtonGroup, isItem, isGroup, isDynamicItem, IDynamicItem } from 'providers/buttonGroupConfigurator/models';
+import { IButtonGroupItem, ButtonGroupItemProps, IButtonGroup, isItem, isGroup } from 'providers/buttonGroupConfigurator/models';
 import { useForm } from 'providers/form';
 import { ConfigurableButton } from '../configurableButton';
-import { IHasActions, useDynamicActionsDispatcher, useSheshaApplication } from 'providers';
+import { useSheshaApplication } from 'providers';
 import { getActualModel, getStyle, IApplicationContext, useApplicationContext } from 'providers/form/utils';
 import { getButtonGroupMenuItem } from './utils';
 import { migrateV0toV1 } from './migrations/migrate-v1';
@@ -229,10 +229,6 @@ const InlineItem: FC<InlineItemProps> = (props) => {
     );
   }
 
-  if (isDynamicItem(item)) {
-    return (<DynamicInlineItem {...props} item={item} key={uuid} />);
-  }
-
   if (isItem(itemProps)) {
     switch (itemProps.itemSubType) {
       case 'button':
@@ -246,52 +242,6 @@ const InlineItem: FC<InlineItemProps> = (props) => {
   }
 
   return null;
-};
-
-interface DynamicInlineItemProps extends InlineItemBaseProps {
-  item: IDynamicItem;
-}
-const DynamicInlineItem: FC<DynamicInlineItemProps> = (props) => {
-  const { item } = props;
-  const { getProviders } = useDynamicActionsDispatcher();
-
-  const providerUid = item.dynamicItemsConfiguration?.providerUid;
-
-  const provider = useMemo(() => {
-    return providerUid
-      ? getProviders()[providerUid]
-      : null;
-  }, [providerUid]);
-
-  const Component = useMemo(() => {
-    return provider
-      ? provider.contextValue.renderingHoc(ButtonsList)
-      : null;
-  }, [provider]);
-
-  return Component
-    ? <Component {...props} customProp={'test'} />
-    : null;
-};
-
-interface IButtonsListComponent extends InlineItemBaseProps {
-  customProp: string;
-}
-const ButtonsList: FC<IButtonsListComponent & IHasActions> = (props) => {
-  return (
-    <>
-      {props.items.map(item => (
-        <InlineItem
-          item={item}
-          uuid={item.id}
-          getIsVisible={() => true} 
-          appContext={props.appContext}
-          size={props.size}
-          key={item.id}
-        />
-      ))}
-    </>
-  );
 };
 
 export default ButtonGroupComponent;
