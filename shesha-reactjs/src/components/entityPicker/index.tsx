@@ -1,5 +1,5 @@
 import { EllipsisOutlined } from '@ant-design/icons';
-import { Button, Input, Modal, Select, Skeleton } from 'antd';
+import { Alert, Button, Input, Modal, Select, Skeleton } from 'antd';
 import { DefaultOptionType } from 'antd/lib/select';
 import _, { isEmpty } from 'lodash';
 import { nanoid } from 'nanoid/non-secure';
@@ -200,7 +200,6 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
 
   const onDblClick = (row: IAnyObject) => {
     if (!row) return;
-
     if (onSelect) {
       onSelect(row);
     } else {
@@ -271,11 +270,13 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
 
   const footer = (
     <Fragment>
-      {canAddNew && (
-        <Button type="primary" onClick={onAddNew} size={size}>
-          Add New
-        </Button>
-      )}
+      <div>
+        {canAddNew && (
+          <Button type="primary" onClick={onAddNew} size={size}>
+            Add New
+          </Button>
+        )}
+      </div>
       <Button onClick={handleCancel} size={size}>
         Close
       </Button>
@@ -293,7 +294,7 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
           <Input.Group style={{ width: '100%' }}>
             <Select
               size={size}
-              onFocus={() => {
+              onClick={() => {
                 selectRef.current.blur();
                 showPickerDialog();
               }}
@@ -336,10 +337,10 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
         footer={footer}
       >
         <>
+          <Alert message="Double click an item to select" type="info" />
           <GlobalTableFilter
             searchProps={{ size: 'middle', autoFocus: true, placeholder: 'Search by Title, Type or Keyword...' }}
           />
-
           <div className="entity-picker-modal-pager-container">
             <TablePager />
           </div>

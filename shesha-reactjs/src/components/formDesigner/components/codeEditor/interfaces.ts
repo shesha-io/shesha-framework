@@ -3,7 +3,8 @@ import { IConfigurableFormComponent } from '../../../../interfaces';
 import { ICodeExposedVariable } from '../../../codeVariablesTable';
 import { EditorModes } from './types';
 
-export interface ICodeEditorProps extends Omit<IConfigurableFormComponent, 'type'> {
+export interface ICodeEditorProps extends Omit<IConfigurableFormComponent, 'type' | 'id'> {
+  id?: string;
   placeholder?: string;
   value?: string;
   onChange?: (value: string) => void;
