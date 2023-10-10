@@ -2,8 +2,8 @@ import React from 'react';
 import { StoryFn, Meta } from '@storybook/react';
 import FormComponentSelector, { IFormComponentSelectorProps } from './';
 import { Button, Form } from 'antd';
-import { addStory } from 'stories/utils';
 import StoryApp from 'components/storyBookApp';
+import { addStory } from 'src/stories/utils';
 
 export default {
   title: 'Components/FormComponentSelector',

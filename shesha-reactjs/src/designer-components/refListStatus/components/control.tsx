@@ -1,4 +1,4 @@
-import { Alert, Tag, Tooltip } from 'antd';
+import { Alert, Tooltip } from 'antd';
 import convertCssColorNameToHex from 'convert-css-color-name-to-hex';
 import React, { FC } from 'react';
 import { FormMode, useForm, useGlobalState } from '../../../providers';

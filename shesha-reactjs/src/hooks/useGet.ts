@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useSheshaApplication } from '../providers';
 import { IHttpHeadersDictionary } from '../providers/sheshaApplication/contexts';
 import * as RestfulShesha from '../utils/fetchers';
-import { useDeepCompareCallback } from './useDeepCompareEffect';
+import { useDeepCompareCallback, useDeepCompareEffect } from './useDeepCompareEffect';
 
 export interface GetDataError<TError> {
   message: string;
@@ -102,9 +102,9 @@ export const useGetInternal = <TData = any, TError = any, TQueryParams = IQueryP
     [props.lazy, props.path, props.base, props.resolve, props.queryParams, props.pathParams]
   );
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     if (!props.lazy) refetch(props);
-  }, [props.lazy]);
+  }, [props.lazy, props.path, props.base, props.queryParams, props.pathParams]);
 
   return {
     ...state,

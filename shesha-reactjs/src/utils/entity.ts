@@ -51,13 +51,14 @@ export const useEntitySelectionData = (props: IUseEntityDisplayTextProps): IEnti
 
   const displayProperty = normalizePropertyName(propertyName) ?? '_displayName';
 
-  const getValuePayload: IGetEntityPayload = {
+  const getValuePayload = useMemo<IGetEntityPayload>(() => ({
     skipCount: 0,
     maxResultCount: 1000,
     entityType: entityType,
     properties: `id ${displayProperty}`,
-    filter: buildFilterById(selection),
-  };
+    filter: buildFilterById(selection),    
+  }), [entityType, displayProperty, selection]);
+
   const isEmptySelection = !selection || (Array.isArray(selection) && selection.length === 0);
   const canFetch = !isEmptySelection && entityType;
   const mustFetch = canFetch && !itemsAlreadyLoaded;
@@ -85,10 +86,10 @@ export const useEntitySelectionData = (props: IUseEntityDisplayTextProps): IEnti
     lastSelection.current =
       valueFetcher?.loading === false && selection && Array.isArray(selection)
         ? {
-            keys: result.map((e) => e.id.toString()),
-            entityType: entityType,
-            propertyName: propertyName,
-          }
+          keys: result.map((e) => e.id.toString()),
+          entityType: entityType,
+          propertyName: propertyName,
+        }
         : null;
 
     return result;

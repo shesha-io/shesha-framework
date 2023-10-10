@@ -90,7 +90,7 @@ export default {
       // browser: false,
       modulesOnly: true,
     }),
-    typescript({}),
+    typescript({ noEmitOnError: true }),
     commonjs({
       include: 'node_modules/**',
       defaultIsModuleExports: true,

@@ -24,7 +24,7 @@ export type VisibilityType = 'Yes' | 'No' | 'Removed';
  */
 export interface IFormComponentContainer {
   /** Unique Id of the component */
-  id?: string;
+  id: string;
   /** Id of the parent component */
   parentId?: string;
 }
