@@ -100,14 +100,6 @@ export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
 
   const repository = getRepository();
 
-  if (isDesignMode 
-    && (
-      !repository 
-      || !props.formId && props.formSelectionMode === "name"
-      || !props.formType && props.formSelectionMode === "view"
-      || !props.formIdExpression && props.formSelectionMode === "expression"
-      )) return <NotConfiguredWarning />;
-
   const onSelectRow = useCallback((index: number, row: any) => {
     if (row) {
       setSelectedRow(index, row);
@@ -123,6 +115,14 @@ export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
         : [{}, {}, {}, {}]
       : tableData; 
   }, [isDesignMode, tableData, props.orientation]);
+
+  if (isDesignMode 
+    && (
+      !repository 
+      || !props.formId && props.formSelectionMode === "name"
+      || !props.formType && props.formSelectionMode === "view"
+      || !props.formIdExpression && props.formSelectionMode === "expression"
+      )) return <NotConfiguredWarning />;
 
   //console.log(`DataListWrapper render, ${data?.length} records`);
 
