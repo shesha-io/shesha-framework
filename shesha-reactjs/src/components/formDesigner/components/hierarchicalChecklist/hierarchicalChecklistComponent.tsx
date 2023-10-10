@@ -3,7 +3,7 @@ import { Skeleton } from 'antd';
 import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 import React, { MutableRefObject } from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
-import { useForm, useFormData } from '../../../../providers';
+import { useFormData } from '../../../../providers';
 import { FormMarkup, IConfigurableFormComponent } from '../../../../providers/form/models';
 import { evaluateString, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import { IHierarchicalCheckListProps } from '../../../hierarchicalCheckList';
@@ -32,8 +32,6 @@ const HierarchicalChecklistComponent: IToolboxComponent<IHierarchicalChecklistPr
   name: 'Hierarchical Checklist',
   icon: <ApartmentOutlined />,
   factory: (model: IHierarchicalChecklistProps, _componentRef: MutableRefObject<any>) => {
-    const { isComponentHidden } = useForm();
-
     const { data: formData } = useFormData();
 
     // TODO:: Review - formData?.ownerType, formData?.ownerId and formData?.checklistId need to be removed
@@ -61,7 +59,7 @@ const HierarchicalChecklistComponent: IToolboxComponent<IHierarchicalChecklistPr
       );
     };
 
-    if (isComponentHidden(model)) return null;
+    if (model.hidden) return null;
 
     const wrapperColProps: Omit<IConfigurableFormItemProps, 'model'> = model?.dropdown
       ? {}

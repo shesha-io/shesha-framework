@@ -60,6 +60,8 @@ const buttonGroupReducer = handleActions<IButtonGroupConfiguratorStateContext, a
         sortOrder: state.items.length,
         name: `group${groupsCount + 1}`,
         label: `Group ${groupsCount + 1}`,
+        buttonType: 'link',
+        hideWhenEmpty: true,
         childItems: [],
       };
       return {

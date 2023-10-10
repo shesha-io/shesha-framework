@@ -3,7 +3,6 @@ import { ControlOutlined } from '@ant-design/icons';
 import { getSettings } from './settingsForm';
 import { ITablePagerProps, TablePager } from 'components';
 import React from 'react';
-import { useForm } from 'providers';
 import { IConfigurableFormComponent } from 'providers/form/models';
 import { validateConfigurableComponentSettings } from 'providers/form/utils';
 import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
@@ -15,9 +14,7 @@ const PagerComponent: IToolboxComponent<IPagerComponentProps> = {
   name: 'Table Pager',
   icon: <ControlOutlined />,
   factory: (model: IPagerComponentProps) => {
-    const { isComponentHidden } = useForm();
-
-    if (isComponentHidden(model)) return null;
+    if (model.hidden) return null;
 
     return <TablePager {...model} />;
   },

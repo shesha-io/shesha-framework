@@ -1,15 +1,12 @@
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { ButtonType } from 'antd/lib/button';
 import { IConfigurableActionConfiguration } from '../../interfaces/configurableAction';
-import { VisibilityType } from '..';
 
 type ButtonGroupItemType = 'item' | 'group';
 
-type ButtonGroupType = 'inline' | 'dropdown';
-
 export type ButtonGroupItemProps = IButtonGroupButton | IButtonGroup;
 
-export type ToolbarItemSubType = 'button' | 'separator' | 'line';
+export type ToolbarItemSubType = 'button' | 'separator' | 'line' | 'dynamic';
 
 export type ButtonActionType =
   | 'navigate'
@@ -35,7 +32,6 @@ export interface IButtonGroupItemBase {
   disabled?: boolean;
   isDynamic?: boolean;
   itemType: ButtonGroupItemType;
-  groupType?: ButtonGroupType;
   icon?: string;
   buttonType?: ButtonType;
   customVisibility?: string;
@@ -43,7 +39,6 @@ export interface IButtonGroupItemBase {
   permissions?: string[];
   style?: string;
   size?: SizeType;
-  visibility?: VisibilityType;
 }
 
 export interface IButtonGroupButton extends IButtonGroupItemBase {
@@ -56,6 +51,13 @@ export const isItem = (item: IButtonGroupItemBase): item is IButtonGroupButton =
 };
 
 export interface IButtonGroup extends IButtonGroupItemBase {
+  /**
+   * If true, indicates that the group should be hidden when it has no visible items
+   */
+  hideWhenEmpty?: boolean;
+  /**
+   * Chid items (buttons or nested groups)
+   */
   childItems?: ButtonGroupItemProps[];
 }
 

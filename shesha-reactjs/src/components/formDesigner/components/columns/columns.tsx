@@ -3,7 +3,7 @@ import { IToolboxComponent } from '../../../../interfaces';
 import { SplitCellsOutlined } from '@ant-design/icons';
 import { Row, Col } from 'antd';
 import ComponentsContainer from '../../containers/componentsContainer';
-import { useForm, useFormData, useGlobalState } from '../../../../providers';
+import { useFormData, useGlobalState } from '../../../../providers';
 import { nanoid } from 'nanoid/non-secure';
 import { IColumnsComponentProps } from './interfaces';
 import { getStyle } from 'utils/publicUtils';
@@ -15,12 +15,11 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
   name: 'Columns',
   icon: <SplitCellsOutlined />,
   factory: (model) => {
-    const { isComponentHidden } = useForm();
     const { data } = useFormData();
     const { globalState } = useGlobalState();
     const { columns, gutterX = 0, gutterY = 0 } = model as IColumnsComponentProps;
 
-    if (isComponentHidden(model)) return null;
+    if (model.hidden) return null;
 
     return (
       <Row gutter={[gutterX, gutterY]} style={getStyle(model?.style, data, globalState)}>

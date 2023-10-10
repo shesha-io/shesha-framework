@@ -3,12 +3,12 @@ import { IToolboxComponent } from 'interfaces';
 import { DownOutlined, GroupOutlined } from '@ant-design/icons';
 import { IButtonGroupComponentProps } from './models';
 import { Alert, Button, Divider, Dropdown, Menu, Space } from 'antd';
-import { IButtonGroupButton, ButtonGroupItemProps, isItem, isGroup } from 'providers/buttonGroupConfigurator/models';
+import { IButtonGroupButton, ButtonGroupItemProps, IButtonGroup, isItem, isGroup } from 'providers/buttonGroupConfigurator/models';
 import { useForm } from 'providers/form';
 import { ConfigurableButton } from '../configurableButton';
 import { useSheshaApplication } from 'providers';
 import { getActualModel, getStyle, useApplicationContext } from 'providers/form/utils';
-import { getButtonGroupItems, getButtonGroupMenuItem } from './utils';
+import { getButtonGroupMenuItem } from './utils';
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
 import { ButtonGroupSettingsForm } from './settings';
@@ -22,13 +22,12 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   type: 'buttonGroup',
   name: 'Button Group',
   icon: <GroupOutlined />,
-  factory: (props: IButtonGroupComponentProps) => {
-    const model = { ...props, items: getButtonGroupItems(props) } as IButtonGroupComponentProps;
+  factory: (model: IButtonGroupComponentProps) => {
     const { formMode } = useForm();
     const { anyOfPermissionsGranted } = useSheshaApplication();
     const granted = anyOfPermissionsGranted(model?.permissions || []);
 
-    if ((props.hidden || !granted) && formMode !== 'designer') return null;
+    if ((model.hidden || !granted) && formMode !== 'designer') return null;
 
     // TODO: Wrap this component within ConfigurableFormItem so that it will be the one handling the hidden state. Currently, it's failing. Always hide the component
     return <ButtonGroup {...model} />;
@@ -48,6 +47,19 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
       newModel.items = prev.items?.map((item) => migrateCustomFunctions(item as any));
       return migratePropertyName(migrateCustomFunctions(newModel));
     })
+    .add<IButtonGroupComponentProps>(5, (prev) => {
+      const newModel = { ...prev };
+      newModel.items = prev.items?.map((item) => {
+        if (isItem(item) && item.itemSubType === 'line')
+          return { ...item, itemSubType: 'separator' }; // remove `line`, it works by the same way as `separator`
+
+        if (isGroup(item) && typeof (item.hideWhenEmpty) === 'undefined')
+          return { ...item, hideWhenEmpty: true }; // set default `hideWhenEmpty` to true by default
+
+        return item;
+      });
+      return newModel;
+    })
   ,
   settingsFormFactory: (props) => (<ButtonGroupSettingsForm {...props} />),
 };
@@ -56,18 +68,44 @@ type MenuButton = ButtonGroupItemProps & {
   childItems?: MenuButton[];
 };
 
-type ButtonGroupProps = Pick<IButtonGroupComponentProps, 'items' | 'id' | 'size' | 'spaceSize' | 'isInline' | 'noStyles' >;
+type ButtonGroupProps = Pick<IButtonGroupComponentProps, 'items' | 'id' | 'size' | 'spaceSize' | 'isInline' | 'noStyles'>;
 export const ButtonGroup: FC<ButtonGroupProps> = ({ items, id, size, spaceSize = 'middle', isInline, noStyles }) => {
   const allData = useApplicationContext();
   const { anyOfPermissionsGranted } = useSheshaApplication();
 
   const isDesignMode = allData.formMode === 'designer';
 
+  const isVisibleBase = (item: ButtonGroupItemProps): boolean => {
+    const { permissions, hidden } = item;
+    if (hidden)
+      return false;
+
+    const granted = anyOfPermissionsGranted(permissions || []);
+    return granted;
+  };
+
+  const isGroupVisible = (group: IButtonGroup): boolean => {
+    if (!isVisibleBase(group))
+      return false;
+
+    if (group.hideWhenEmpty){
+      const firstVisibleItem = group.childItems.find(item => {
+        // analyze buttons and groups only
+        return (isItem(item) && item.itemSubType === 'button' || isGroup(item)) && getIsVisible(item);
+      });
+      if (!firstVisibleItem)
+        return false;
+    }      
+
+    return true;
+  };
+
   // Return the visibility state of a button. A button is visible is it's not hidden and the user is permitted to view it
   const getIsVisible = (item: ButtonGroupItemProps) => {
-    const { permissions, hidden } = item;
-    const granted = anyOfPermissionsGranted(permissions || []);
-    return isDesignMode || !hidden && granted;
+    if (isDesignMode)
+      return true; // show visibility indicator
+    
+    return isItem(item) && isVisibleBase(item) || isGroup(item) && isGroupVisible(item);
   };
 
   const renderMenuButton = (props: MenuButton): MenuItem => {
@@ -112,16 +150,15 @@ export const ButtonGroup: FC<ButtonGroupProps> = ({ items, id, size, spaceSize =
           return renderButton(itemProps, uuid);
         case 'separator':
         case 'line':
-          return <Divider type='vertical' key={uuid}/>;
+          return <Divider type='vertical' key={uuid} />;
         default:
           return null;
       }
     }
     if (isGroup(itemProps)) {
-      const menuItems = itemProps.childItems.map(childItem => {
-        const actualChildModel = getActualModel(childItem, allData);
-        return renderMenuButton({ ...actualChildModel, buttonType: 'link' });
-      }); 
+      const actualItemsModel = itemProps.childItems.map(childItem => (getActualModel(childItem, allData))); 
+      const menuItems = actualItemsModel.filter(item => (getIsVisible(item))).map(childItem => (renderMenuButton({ ...childItem, buttonType: 'link' })));
+
       return (
         <Dropdown
           key={uuid}
@@ -130,6 +167,7 @@ export const ButtonGroup: FC<ButtonGroupProps> = ({ items, id, size, spaceSize =
           <Button
             icon={item.icon ? <ShaIcon iconName={item.icon as IconType} /> : undefined}
             type={itemProps.buttonType}
+            title={itemProps.tooltip}
           >
             {item.label}
             <DownOutlined />

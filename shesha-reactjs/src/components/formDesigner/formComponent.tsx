@@ -17,8 +17,8 @@ const FormComponent: FC<IFormComponentProps> = ({ id, componentRef }) => {
 
   const actualModel = getActualModel(model, allData);
 
-  actualModel.hidden = allData.formMode !== 'designer' && (actualModel.hidden || isComponentHidden(actualModel));
-  actualModel.disabled = actualModel.disabled || isComponentDisabled(actualModel);
+  actualModel.hidden = isComponentHidden(actualModel);
+  actualModel.disabled = isComponentDisabled(actualModel);
   actualModel.readOnly = actualModel.readOnly || allData.formMode === 'readonly';
 
   return <>{toolboxComponent.factory(actualModel, componentRef, form, null, allData)}</>;

@@ -31,13 +31,11 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
   labelCol,
   wrapperCol,
 }) => {
-  const { isComponentHidden, formData, form } = useForm();
+  const { formData, form } = useForm();
 
   const formItem = useFormItem();
 
   const { namePrefix, wrapperCol: formItemWrapperCol, labelCol: formItemlabelCol } = formItem;
-
-  const isHidden = isComponentHidden(model) || model.hidden;
 
   const layout = useMemo(() => {
     // Make sure the `wrapperCol` and `labelCol` from `FormItemProver` override the ones from the main form
@@ -52,11 +50,11 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
     className: classNames(className),//, { 'form-item-hidden': hideLabel }),
     label: hideLabel ? null : model.label,
     labelAlign: model.labelAlign,
-    hidden: isHidden,
+    hidden: model.hidden,
     valuePropName: valuePropName,
     initialValue: initialValue,
     tooltip: model.description,
-    rules: isHidden ? [] : getValidationRules(model, { formData }),
+    rules: model.hidden ? [] : getValidationRules(model, { formData }),
     labelCol: layout?.labelCol,
     wrapperCol: hideLabel ? { span: 24 } : layout?.wrapperCol
   };

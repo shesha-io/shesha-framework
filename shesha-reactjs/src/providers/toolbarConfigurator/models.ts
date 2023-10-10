@@ -3,8 +3,6 @@ import { IConfigurableActionConfiguration } from '../../interfaces/configurableA
 
 type ToolbarItemType = 'item' | 'group';
 
-type ButtonGroupType = 'inline' | 'dropdown';
-
 export type ToolbarItemProps = IToolbarButton | IButtonGroup;
 
 type ToolbarItemSubType = 'button' | 'separator' | 'line';
@@ -28,7 +26,6 @@ export interface IToolbarItemBase {
   sortOrder: number;
   danger?: boolean;
   itemType: ToolbarItemType;
-  groupType?: ButtonGroupType;
   icon?: string;
   buttonType?: ButtonType;
   customVisibility?: string;

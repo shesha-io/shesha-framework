@@ -40,7 +40,7 @@ const RateComponent: IToolboxComponent<IRateProps> = {
   name: 'Rate',
   icon: <LikeOutlined />,
   factory: (model: IRateProps, _c, form) => {
-    const { isComponentHidden, formMode, setFormDataAndInstance } = useForm();
+    const { formMode, setFormDataAndInstance } = useForm();
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
@@ -60,9 +60,7 @@ const RateComponent: IToolboxComponent<IRateProps> = {
       setGlobalState,
     };
 
-    const isHidden = isComponentHidden(model);
-
-    if (isHidden) return null;
+    if (model.hidden) return null;
 
     const localCount = !_.isNaN(count) ? count : 5;
 

@@ -352,18 +352,27 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
 };
 
 export const EntityPickerEditable = (props: IEntityPickerProps) => {
-  const { entityType, displayEntityKey } = props;
-
+  const { entityType, displayEntityKey, disabled } = props;
   return (
-    <DataTableProvider
-      userConfigId={'table_' + props.name}
-      actionOwnerName={'table_' + props.name}
-      sourceType='Entity'
-      entityType={entityType}
-      dataFetchingMode='paging'
-    >
-      <EntityPickerEditableInner {...props} displayEntityKey={displayEntityKey} />
-    </DataTableProvider>
+    <>
+      <span>{disabled.toString()} </span>
+      {console.log('1: ', disabled)}
+
+      <DataTableProvider
+        userConfigId={'table_' + props.name}
+        actionOwnerName={'table_' + props.name}
+        sourceType='Entity'
+        entityType={entityType}
+        dataFetchingMode='paging'
+      >
+        <>
+        <span>{disabled.toString()} </span>
+        {console.log(`2: ${disabled.toString()} - `, disabled)}
+
+        <EntityPickerEditableInner {...props} disabled={disabled} displayEntityKey={displayEntityKey} />
+        </>
+      </DataTableProvider>
+    </>
   );
 };
 

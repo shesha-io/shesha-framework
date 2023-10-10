@@ -49,6 +49,7 @@ import { DelayedUpdateProvider } from 'providers/delayedUpdateProvider';
 import { useDataContextManager } from 'providers/dataContextManager';
 
 export interface IFormProviderProps {
+  needDebug?: boolean;
   name: string;
   allComponents: IComponentsDictionary;
   componentRelations: IComponentRelations;
@@ -90,6 +91,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   refetchData,
   isActionsOwner,
   propertyFilter,
+  needDebug,
   ...props
 }) => {
   const toolboxComponents = useFormDesignerComponents();
@@ -225,7 +227,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     const hiddenByCondition =
       model.isDynamic !== true && state.visibleComponentIds && !state.visibleComponentIds.includes(model.id);
 
-    return state.formMode !== 'designer' && hiddenByCondition;
+    return state.formMode !== 'designer' && (model.hidden || hiddenByCondition);
   };
 
   const getChildComponents = (componentId: string) => {
@@ -435,8 +437,11 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   };
   if (formRef) formRef.current = { ...configurableFormActions, ...state, allComponents, componentRelations };
 
+
   useEffect(() => {
-    contextManager.updateFormInstance({...state, ...configurableFormActions} as ConfigurableFormInstance);
+    // set main form if empty
+    if (needDebug)
+      contextManager.updateFormInstance({...state, ...configurableFormActions} as ConfigurableFormInstance);
   }, [state]);
 
   return (

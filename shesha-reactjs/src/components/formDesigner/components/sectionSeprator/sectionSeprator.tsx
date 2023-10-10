@@ -4,7 +4,7 @@ import { LineOutlined } from '@ant-design/icons';
 import settingsFormJson from './settingsForm.json';
 import React from 'react';
 import { getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import { useForm, useFormData } from '../../../../providers';
+import { useFormData } from '../../../../providers';
 import SectionSeparator from '../../../sectionSeparator';
 import { ISectionSeparatorComponentProps } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
@@ -16,10 +16,9 @@ const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentPro
   name: 'Section Separator',
   icon: <LineOutlined />,
   factory: (model: ISectionSeparatorComponentProps) => {
-    const { isComponentHidden } = useForm();
     const { data: formData } = useFormData();
 
-    if (isComponentHidden(model)) return null;
+    if (model.hidden) return null;
 
     return (
       <SectionSeparator

@@ -23,13 +23,10 @@ const ListComponent: IToolboxComponent<IListComponentProps> = {
   icon: <OrderedListOutlined />,
   isHidden: true, /* Use DataList instead */
   factory: ({ ...model }: IListComponentProps) => {
-    const { isComponentHidden, formMode } = useForm();
-
-    const isHidden = isComponentHidden(model);
-
+    const { formMode } = useForm();
     const { namePrefix } = useFormItem();
 
-    if (isHidden) return null;
+    if (model.hidden) return null;
 
     return (
       <ConfigurableFormItem

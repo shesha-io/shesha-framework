@@ -199,7 +199,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
         );
 
     return <Button className="entity-reference-btn" type="link" onClick={dialogExecute}>{displayText}</Button>;
-  }, [formIdentifier, displayText, entityId]);
+  }, [formIdentifier, displayText, entityId, props.disabled]);
 
   if (props.formSelectionMode === 'name' && !Boolean(formIdentifier))
     return (

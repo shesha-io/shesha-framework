@@ -1,9 +1,7 @@
 import { MenuProps } from 'antd';
 import classNames from 'classnames';
 import React, { ReactNode } from 'react';
-import { VisibilityType } from '../../../../..';
 import ShaIcon, { IconType } from '../../../../shaIcon';
-import { IButtonGroupComponentProps } from './models';
 
 type MenuItem = MenuProps['items'][number];
 
@@ -29,6 +27,3 @@ export const getButtonGroupIcon = (icon: ReactNode, isParent?: boolean) => {
   if (React.isValidElement(icon)) return icon;
   return null;
 };
-
-export const getButtonGroupItems = (model: IButtonGroupComponentProps): IButtonGroupComponentProps['items'] =>
-  (model?.items || []).filter(({ visibility }) => !(['No', 'Removed'] as VisibilityType[]).includes(visibility));

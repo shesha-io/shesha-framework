@@ -4,7 +4,6 @@ import { IConfigurableFormComponent } from '../../../../providers/form/models';
 import { LineOutlined } from '@ant-design/icons';
 import { Progress, ProgressProps } from 'antd';
 import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import { useForm } from '../../../../providers';
 import { alertSettingsForm } from './settings';
 import { ProgressType } from 'antd/lib/progress/progress';
 import ConfigurableFormItem from '../formItem';
@@ -26,7 +25,6 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
   name: 'Progress',
   icon: <LineOutlined />,
   factory: (model: IProgressProps) => {
-    const { isComponentHidden } = useForm();
     const {
       progressType,
       lineStrokeColor,
@@ -45,9 +43,7 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
       width,
     } = model;
 
-    const isHidden = isComponentHidden(model);
-
-    if (isHidden) return null;
+    if (model.hidden) return null;
 
     const getEvaluatedSuccessColor = () => {
       // tslint:disable-next-line:function-constructor
