@@ -6,12 +6,13 @@ import { useForm } from '../../../../providers/form';
 import { useReferenceList } from '../../../../providers/referenceListDispatcher';
 import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
 import { getDataSourceList, IRadioProps } from './utils';
+import { evaluateValue } from 'utils/publicUtils';
 
 const RadioGroup: FC<IRadioProps> = (model) => {
   const { formMode, isComponentDisabled } = useForm();
   const { data: formData } = useFormData();
   const { globalState } = useGlobalState();
-  const { referenceListId, items = [], value, onChange } = model;
+  const { referenceListId, items = [], value, onChange, defaultValue } = model;
   const { data: refListItems } = useReferenceList(referenceListId);
 
   //#region Data source is url
@@ -55,6 +56,7 @@ const RadioGroup: FC<IRadioProps> = (model) => {
     <Radio.Group
       className="sha-radio-group"
       disabled={isReadOnly}
+      defaultValue={evaluateValue(defaultValue, { data: formData, globalState })}
       value={value}
       onChange={onChange}
       style={model?.style}

@@ -115,6 +115,16 @@
       "label": "Data"
     },
     {
+      "id": "6ad2237c-1c35-4b4d-8c71-cd3116aa0c29",
+      "type": "textField",
+      "name": "defaultValue",
+      "parentId": "root",
+      "label": "Default Value",
+      "validate": {},
+      "settingsValidationErrors": [],
+      "description": "Enter default value of component. (formData, globalState) are exposed"
+    },
+    {
       "id": "f93134cb-049c-47ce-8ad4-6193ffe43ecf",
       "type": "dropdown",
       "name": "dataSourceType",
