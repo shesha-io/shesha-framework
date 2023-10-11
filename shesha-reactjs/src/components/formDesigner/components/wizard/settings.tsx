@@ -1,5 +1,5 @@
 import React, { FC, useRef, useState } from 'react';
-import { Form, Select, Input, RefSelectProps } from 'antd';
+import { Form, Select, Input, RefSelectProps, Button, Checkbox } from 'antd';
 import SectionSeparator from '../../../sectionSeparator';
 import CodeEditor from '../codeEditor/codeEditor';
 import EditableTagGroup from '../../../editableTagGroup';
@@ -8,6 +8,8 @@ import ItemListSettingsModal from '../itemListConfigurator/itemListSettingsModal
 import { getSettings } from './itemSettings';
 import { nanoid } from 'nanoid/non-secure';
 import { EXPOSED_VARIABLES } from './utils';
+import StepStatusModal from './components/stepStatusModal';
+import Show from 'components/show';
 
 const { Option } = Select;
 
@@ -20,7 +22,9 @@ export interface ITabSettingsProps {
 }
 
 const WizardSettings: FC<ITabSettingsProps> = (props) => {
-  const [state, setState] = useState<IWizardComponentProps>(props?.model);
+  const [model, setModel] = useState<IWizardComponentProps>(props?.model);
+  const [state, setState] = useState({ open: false });
+
   const [form] = Form.useForm();
 
   const onValuesChange = (changedValues: any, values: IWizardComponentProps) => {
@@ -29,9 +33,9 @@ const WizardSettings: FC<ITabSettingsProps> = (props) => {
       ? values?.steps?.findIndex((item) => item?.id === values?.defaultActiveStep)
       : 0;
 
-    const newValues = { ...state, ...values, defaultActiveStep: foundIndex < 0 ? null : values?.defaultActiveStep };
+    const newValues = { ...model, ...values, defaultActiveStep: foundIndex < 0 ? null : values?.defaultActiveStep };
 
-    setState((prev) => ({ ...prev, ...values, defaultActiveStep: foundIndex < 0 ? null : values?.defaultActiveStep }));
+    setModel((prev) => ({ ...prev, ...values, defaultActiveStep: foundIndex < 0 ? null : values?.defaultActiveStep }));
 
     if (props.onValuesChange) props.onValuesChange(changedValues, newValues);
   };
@@ -122,8 +126,8 @@ const WizardSettings: FC<ITabSettingsProps> = (props) => {
         label="Default Active Step"
         tooltip="This will be the default step that is set"
       >
-        <Select allowClear ref={selectRef} value={state?.defaultActiveStep}>
-          {state?.steps?.map(({ id, title }) => (
+        <Select allowClear ref={selectRef} value={model?.defaultActiveStep}>
+          {model?.steps?.map(({ id, title }) => (
             <Option value={id} key={id}>
               {title}
             </Option>
@@ -185,6 +189,17 @@ const WizardSettings: FC<ITabSettingsProps> = (props) => {
         />
       </Form.Item>
 
+      <Form.Item name="showStepStatus" label="Show Step Status" valuePropName="checked">
+        <Checkbox />
+      </Form.Item>
+
+      <Show when={model.showStepStatus}>
+        <Button onClick={() => setState((s) => ({ ...s, open: true }))}>Configure Step Status</Button>
+      </Show>
+
+      <Form.Item name="sequence">
+        <StepStatusModal open={state?.open} onClose={() => setState((s) => ({ ...s, open: false }))} />
+      </Form.Item>
       <SectionSeparator title="Security" />
 
       <Form.Item

@@ -22,6 +22,7 @@ import './styles.less';
 import classNames from 'classnames';
 import { findLastIndex } from 'lodash';
 import ConditionalWrap from '../../../conditionalWrapper';
+import { getStepDescritpion } from './utils';
 
 const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   type: 'wizard',
@@ -239,7 +240,9 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
       executeActionIfConfigured((tab) => tab.doneButtonActionConfiguration);
     };
 
-    const steps = visibleSteps?.map<IStepProps>(({ id, title, subTitle, description, icon, customEnabled }) => {
+    const content = getStepDescritpion(model?.showStepStatus, model?.sequence, current);
+
+    const steps = visibleSteps?.map<IStepProps>(({ id, title, subTitle, description, icon, customEnabled }, index) => {
       const isDisabledByCondition = !executeBooleanExpression(customEnabled, true) && formMode !== 'designer';
 
       const iconProps = icon ? { icon: <ShaIcon iconName={icon as any} /> } : {};
@@ -248,7 +251,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
         id,
         title,
         subTitle,
-        description,
+        description: content(description, index),
         disabled: isDisabledByCondition,
         ...iconProps,
         content: (

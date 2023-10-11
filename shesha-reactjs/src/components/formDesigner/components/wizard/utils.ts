@@ -1,3 +1,5 @@
+import { IWizardSequence } from './models';
+
 export const EXPOSED_VARIABLES = [
   {
     name: 'data',
@@ -33,3 +35,24 @@ export const EXPOSED_VARIABLES = [
     type: 'object',
   },
 ];
+
+export const getStepDescritpion =
+  (show: boolean, sequence: IWizardSequence, currentIndex: number) => (description: string, index: number) => {
+    if (show) {
+      switch (true) {
+        case index === currentIndex:
+          return sequence.active;
+
+        case index > currentIndex:
+          return sequence.pending;
+
+        case index > currentIndex:
+          return sequence.finshed;
+
+        default:
+          return sequence.finshed;
+      }
+    }
+
+    return description;
+  };
