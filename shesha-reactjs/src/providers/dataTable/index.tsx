@@ -32,6 +32,7 @@ import {
   setDataFetchingModeAction,
   setModelTypeAction,
   setPredefinedFiltersAction,
+  setHiddenFilterAction,
   setRowDataAction,
   toggleColumnFilterAction,
   toggleColumnVisibilityAction,
@@ -61,6 +62,7 @@ import { IHasModelType, IHasRepository, IRepository } from './repository/interfa
 import { withNullRepository } from './repository/nullRepository';
 import { withUrlRepository } from './repository/urlRepository';
 import { advancedFilter2JsonLogic, getTableDataColumns } from './utils';
+import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 
 interface IDataTableProviderBaseProps {
   /** Configurable columns. Is used in pair with entityType  */
@@ -132,17 +134,19 @@ const getTableProviderComponent = (
 };
 
 const getFilter = (state: IDataTableStateContext): string => {
-  const activePredefinedFilters = state.predefinedFilters || [];
-  const filters = (state.selectedStoredFilterIds ?? [])
-    .map((id) => activePredefinedFilters.find((f) => f.id === id))
-    .filter((f) => Boolean(f));
+  const allFilters = state.predefinedFilters ?? [];
 
-  // If filter not selected - use first filter with `defaultSelected` = true
-  if (filters.length === 0 && activePredefinedFilters.length) {
-    const defraultFilter = activePredefinedFilters.find(({ defaultSelected }) => defaultSelected);
-    if (defraultFilter) filters.push(defraultFilter);
+  const filters = allFilters.filter(f => (state.selectedStoredFilterIds && state.selectedStoredFilterIds.indexOf(f.id) > -1));
+  const { hiddenFilters } = state;
+
+  if (hiddenFilters){
+    for(const owner in hiddenFilters) {
+      if (hiddenFilters.hasOwnProperty(owner) && hiddenFilters[owner]){
+        filters.push(hiddenFilters[owner]);
+      }
+    }
   }
-
+  
   let expressions = [];
   filters.forEach((f) => {
     if (f.expression) {
@@ -237,27 +241,19 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     state.tableConfigLoaded,
     state.columns?.length,
     state.tableSorting,
+    state.hiddenFilters,
+    state.predefinedFilters,
     repository,
   ]);
 
   // fetch table data when config is ready or something changed (selected filter, changed current page etc.)
   const fetchDataIfReady = () => {
-    if (repository) {
+    if (repository && state.columns && state.columns.length > 0) {
       // fecth using entity type
       tableIsReady.current = true; // is used to prevent unneeded data fetch by the ReactTable. Any data fetch requests before this line should be skipped
       refreshTable();
     }
   };
-
-  const debouncedRefreshTable = useDebouncedCallback(() => {
-    fetchDataIfReady();
-  }, 500);
-
-  useEffect(() => {
-    if (state.predefinedFilters) {
-      debouncedRefreshTable();
-    }
-  }, [state.predefinedFilters]);
 
   const refreshTable = () => {
     if (tableIsReady.current === true) {
@@ -419,6 +415,10 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     }
   };
 
+  const setHiddenFilter = (owner: string, filter: IStoredFilter) => {
+    dispatch(setHiddenFilterAction({ owner, filter }));
+  };
+
   const changeSelectedIds = (selectedIds: string[]) => {
     dispatch(changeSelectedIdsAction(selectedIds));
   };
@@ -491,15 +491,23 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   //#endregion
 
   //#region Subscriptions
-  useEffect(() => {
+  const getPartialState = () => {
+    const { actionedRow, selectedIds, selectedRow, tableData } = state;
+    return { actionedRow, selectedIds, selectedRow, tableData };
+  };
+  const partialState = getPartialState();
+  
+  useDeepCompareEffect(() => {
     // write state by name
     if (actionOwnerName) {
       setGlobalState({
         key: actionOwnerName,
-        data: { ...state, refreshTable },
+        data: { 
+          ...partialState,
+          refreshTable },
       });
     }
-  }, [state, actionOwnerName]);
+  }, [partialState, actionOwnerName]);
   /*
     useConfigurableAction(
       {
@@ -641,6 +649,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
           changeActionedRow,
           changeSelectedStoredFilterIds,
           setPredefinedFilters,
+          setHiddenFilter,
           changeSelectedIds,
           refreshTable,
           registerConfigurableColumns,

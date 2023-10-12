@@ -9,7 +9,7 @@ import {
   useSheshaApplication,
 } from '../../../providers';
 import React, { FC, Fragment, MutableRefObject, useEffect } from 'react';
-import { useDeepCompareEffect } from 'react-use';
+import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { IChildTableComponentProps } from '.';
 import { CollapsiblePanel, GlobalTableFilter, Show, TablePager } from '../../../components';
 import { ButtonGroup } from '../../../components/formDesigner/components/button/buttonGroup/buttonGroup';
@@ -26,7 +26,7 @@ export interface IChildTableProps extends IChildTableComponentProps {
 
 export const ChildTable: FC<IChildTableProps> = (props) => {
   const { formData, formMode, isComponentHidden } = useForm();
-  const { columns, setPredefinedFilters, modelType, changePageSize, totalRows } = useDataTable();
+  const { columns, setHiddenFilter, modelType, changePageSize, totalRows } = useDataTable();
 
   const { globalState } = useGlobalState();
   const { anyOfPermissionsGranted } = useSheshaApplication();
@@ -58,7 +58,6 @@ export const ChildTable: FC<IChildTableProps> = (props) => {
   const hasManyFiltersButNoSelected = hasFilters && !defaultSelectedFilterId;
 
   const hasFormData = !isEmpty(formData);
-  const hasGlobalState = !isEmpty(formData);
 
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(modelType);
 
@@ -73,37 +72,10 @@ export const ChildTable: FC<IChildTableProps> = (props) => {
       ],
       propertyMetadataAccessor
     ).then((evaluatedFilters) => {
-      let parsedFilters = evaluatedFilters;
-
-      if (defaultSelectedFilterId) {
-        parsedFilters = evaluatedFilters?.map((filter) => {
-          const localFilter = { ...filter };
-
-          if (localFilter.id === defaultSelectedFilterId) {
-            localFilter.defaultSelected = true;
-            localFilter.selected = true;
-          }
-
-          return localFilter;
-        });
-      } else {
-        const firstElement = evaluatedFilters[0];
-
-        firstElement.defaultSelected = true;
-        firstElement.selected = true;
-
-        evaluatedFilters[0] = firstElement;
-      }
-
-      if (hasFormData || hasGlobalState) {
-        // Here we know we have evaluated our filters
-
-        // TODO: Deal with the situation whereby the expression value evaluated to empty string because the action GetData will fail
-        setPredefinedFilters(parsedFilters);
-      } else if (!foundDynamicFilter) {
-        // Here we do not need dynamic filters
-        setPredefinedFilters(parsedFilters);
-      }
+      const filter = defaultSelectedFilterId
+        ? evaluatedFilters.find(f => f.id === defaultSelectedFilterId)
+        : null;
+      setHiddenFilter(props.id, filter);
     });
   };
 
@@ -111,7 +83,7 @@ export const ChildTable: FC<IChildTableProps> = (props) => {
     if (hasFilters) {
       evaluateDynamicFiltersHelper();
     }
-  }, [props?.filters, formData, globalState]);
+  }, [props?.filters, formData, globalState, defaultSelectedFilterId]);
   //#endregion
 
   const showTablePager =

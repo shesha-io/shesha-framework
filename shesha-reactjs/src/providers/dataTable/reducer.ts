@@ -7,6 +7,7 @@ import {
   IChangeFilterOptionPayload,
   IFetchColumnsSuccessSuccessPayload,
   IRegisterConfigurableColumnsPayload,
+  ISetHiddenFilterActionPayload,
   ISetPredefinedFiltersPayload,
   ISetRowDataPayload,
 } from './actions';
@@ -366,6 +367,20 @@ const reducer = handleActions<IDataTableStateContext, any>(
         ...state,
         predefinedFilters,
         selectedStoredFilterIds,
+      };
+    },
+
+    [DataTableActionEnums.SetHiddenFilter]: (
+      state: IDataTableStateContext,
+      action: ReduxActions.Action<ISetHiddenFilterActionPayload>
+    ) => {
+      const { filter, owner } = action.payload;
+      
+      const hiddenFilters = {...state.hiddenFilters, [owner]: filter};
+
+      return {
+        ...state,
+        hiddenFilters: hiddenFilters,
       };
     },
 
