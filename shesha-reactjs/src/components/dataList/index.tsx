@@ -62,9 +62,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         })
       );
     } else {
-      if (typeof onSelectRow !== 'function') return;
-
-      if (onSelectRow) onSelectRow(index, row);
+      if (onSelectRow ?? typeof onSelectRow === 'function') onSelectRow(index, row);
     }
   };
 
@@ -313,7 +311,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   const renderSubForm = (item?: any) => {
     let values: { [key: string]: any; id: string } = { ...item };
 
-    let formConfig = null; //formConfiguration;
+    let formConfig: IFormDto = null; //formConfiguration;
 
     if (!Boolean(formConfig)) {
       if (formSelectionMode === 'name') {
@@ -362,6 +360,9 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         }
       }
     }
+
+    if (!formConfig) 
+      return null;
 
     return (
       <ConfigurableForm

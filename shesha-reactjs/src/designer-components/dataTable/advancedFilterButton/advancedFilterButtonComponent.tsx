@@ -3,7 +3,6 @@ import { IToolboxComponent } from '../../../interfaces';
 import { FormMarkup, IConfigurableFormComponent } from '../../../providers/form/models';
 import { FilterOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
-import { useForm } from '../../../providers/form';
 import settingsFormJson from './settingsForm.json';
 import { useDataTableStore } from '../../../providers';
 import { validateConfigurableComponentSettings } from '../../../providers/form/utils';
@@ -17,9 +16,7 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IPagerComponentProps> = {
   name: 'Table Advanced Filter Button',
   icon: <FilterOutlined />,
   factory: (model: IPagerComponentProps) => {
-    const { isComponentHidden } = useForm();
-
-    if (isComponentHidden(model)) return null;
+    if (model.hidden) return null;
 
     return <AdvancedFilterButton {...model} />;
   },

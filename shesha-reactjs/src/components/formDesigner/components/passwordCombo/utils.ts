@@ -6,7 +6,7 @@ import { IFormSettings, SILENT_KEY } from '../../../../providers/form/models';
 import { getStyle } from '../../../../providers/form/utils';
 
 export interface IFormPropOptions {
-  isComponentHidden: (model: Pick<IConfigurableFormComponent, 'id' | 'isDynamic' | 'hidden'>) => boolean;
+  hidden: boolean;
   formData: any;
 }
 
@@ -61,15 +61,15 @@ export const getFormProps = (formSettings: IFormSettings): FormProps => ({
 
 export const getFormItemProps = (
   model: IPasswordComponentProps,
-  { formData, isComponentHidden }: IFormPropOptions
+  { formData, hidden }: IFormPropOptions
 ): FormItemProps => ({
   className: classNames({ 'form-item-hidden': model?.hideLabel }),
   name: getFieldNameFromExpression(model?.propertyName),
   label: model?.hideLabel ? null : model?.label,
   labelAlign: model?.labelAlign,
-  hidden: isComponentHidden(model),
+  hidden: hidden,
   tooltip: model?.description,
-  rules: isComponentHidden(model) ? [] : getValidationRules(model, { formData }),
+  rules: hidden ? [] : getValidationRules(model, { formData }),
   style: model?.hidden ? { display: 'none' } : {},
 });
 

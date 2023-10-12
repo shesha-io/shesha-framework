@@ -16,6 +16,8 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
     name: 'DataList',
     icon: <UnorderedListOutlined />,
     factory: (model: IDataListComponentProps) => {
+      if (model.hidden) return null;
+      
       return <DataListWrapper {...model} />;
     },
     migrator: m => m
@@ -48,13 +50,11 @@ export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
   const isDesignMode = formMode === 'designer';
 
   const ds = useDataSources();
-
   const dts = useDataTableStore(false);
 
   const dataSource = props.dataSource
     ? ds.getDataSource(props.dataSource)?.dataSource
     : dts;
-
 
   if (!dataSource)
     return <NotConfiguredWarning />;
@@ -106,6 +106,7 @@ export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
       labelCol={{ span: 0 }}
       wrapperCol={{ span: 24 }}
     >
+      <></>
       <DataList
         {...props}
         entityType={modelType}

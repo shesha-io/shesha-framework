@@ -17,7 +17,8 @@ import { Result } from 'antd';
 import { getFormNotFoundMessage } from 'providers/configurationItemsLoader/utils';
 
 export const ConfigurableForm: FC<IConfigurableFormProps> = props => {
-  const { 
+  const {
+    needDebug,
     formId, 
     markup, 
     mode,
@@ -70,6 +71,7 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = props => {
       <FormMarkupConverter markup={providedMarkup} formSettings={formSettings}>
         {flatComponents => (
           <FormProvider
+            needDebug={needDebug}
             name="Form"
             {...flatComponents}
             formSettings={formSettings}

@@ -18,8 +18,9 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model }) => {
   if (!toolboxComponent) return null;
 
   const actualModel = getActualModel(model, allData);
-  actualModel.hidden = allData.formMode !== 'designer' && (actualModel.hidden || isComponentHidden(actualModel));
-  actualModel.disabled = actualModel.disabled || isComponentDisabled(actualModel);
+  actualModel.hidden = isComponentHidden(actualModel);
+  actualModel.disabled = isComponentDisabled(actualModel);
+  actualModel.readOnly = actualModel.readOnly || allData.formMode === 'readonly';
 
   const renderComponent = () => {
     return <CustomErrorBoundary>{toolboxComponent.factory(actualModel, componentRef, form)}</CustomErrorBoundary>;

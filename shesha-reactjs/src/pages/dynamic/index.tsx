@@ -31,6 +31,7 @@ import { DEFAULT_FORM_SETTINGS } from '../../providers/form/models';
 import { useModelApiEndpoint } from '../../components/configurableForm/useActionEndpoint';
 import { StandardEntityActions } from '../../interfaces/metadata';
 import { getInitialValues } from '../../components/configurableForm/useInitialValues';
+import { useDataContextManager } from 'providers/dataContextManager/index';
 
 const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
   const { backendUrl } = useSheshaApplication();
@@ -39,6 +40,7 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
   const { globalState, setState: setGlobalState } = useGlobalState();
   const { router } = useShaRouting();
   const { configurationItemMode } = useAppConfigurator();
+  const dcm = useDataContextManager(false);
 
   const { publish } = usePubSub();
 
@@ -213,6 +215,7 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
       http: axiosHttp(backendUrl),
       query: getQueryParams(),
       form,
+      contexts: {...dcm?.getDataContextsData(), lastUpdate: dcm?.lastUpdate},
       ...context,
     };
 
@@ -302,6 +305,7 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
             <MetadataProvider id="dynamic" modelType={formSettings?.modelType}>
               {formWithData.loadingState === 'ready' && (
                 <ConfigurableForm
+                  needDebug
                   markup={finalMarkup}
                   formId={formId}
                   formProps={formWithData.form}

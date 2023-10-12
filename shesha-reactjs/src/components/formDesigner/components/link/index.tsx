@@ -39,7 +39,7 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
   name: 'link',
   icon: <LinkOutlined />,
   factory: (model: ILinkProps) => {
-    const { isComponentHidden, formMode } = useForm();
+    const { formMode } = useForm();
 
     const { data } = useFormData();
 
@@ -65,10 +65,9 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
       linkStyle['justifyItems'] = justifyItems;
     }
 
-    const isHidden = isComponentHidden(model);
     const isDesignerMode = formMode === 'designer';
 
-    if (isHidden)
+    if (model.hidden)
       return null;
 
     return (

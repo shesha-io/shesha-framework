@@ -15,11 +15,9 @@ const ConfigurableActionConfiguratorComponent: IToolboxComponent<IConfigurableAc
   icon: <ThunderboltOutlined />,
   isHidden: true,
   factory: (model: IConfigurableActionConfiguratorComponentProps) => {
-    const { isComponentHidden, formMode } = useForm();
+    const { formMode } = useForm();
 
-    const isHidden = isComponentHidden(model);
-
-    if (isHidden) return null;
+    if (model.hidden) return null;
 
     return (
       <Form.Item name={model.propertyName} labelCol={{ span: 0 }} wrapperCol={{ span: 24 }} noStyle>

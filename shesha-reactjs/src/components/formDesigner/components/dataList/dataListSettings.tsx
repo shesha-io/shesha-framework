@@ -148,7 +148,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
         </Show>
       </Show>
   
-      <SettingsFormItem name="hidden" label="Hidden" jsSetting>
+      <SettingsFormItem name="hidden" label="Hidden" valuePropName='checked' jsSetting>
           <Checkbox disabled={readOnly} />
       </SettingsFormItem>
     </>

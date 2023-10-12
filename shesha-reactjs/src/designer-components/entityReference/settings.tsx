@@ -258,7 +258,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
     </SettingsCollapsiblePanel>
 
     <SettingsCollapsiblePanel header='Visibility'>
-      <SettingsFormItem name="readOnly" label="Read Only" valuePropName="checked" jsSetting>
+      <SettingsFormItem name="disabled" label="Disabled" valuePropName="checked" jsSetting>
         <Checkbox disabled={readOnly} />
       </SettingsFormItem>
 

@@ -1,6 +1,6 @@
 import React, { FC, Fragment, useMemo, useState } from 'react';
 import { useMetadata } from '../../../../providers';
-import { Show, useMetadataDispatcher } from '../../../..';
+import { Show, useForm, useMetadataDispatcher } from '../../../..';
 import { Alert, Button, Modal, Space, Tabs } from 'antd';
 import { CodeOutlined } from '@ant-design/icons';
 import { ICodeEditorProps } from './interfaces';
@@ -9,6 +9,8 @@ import { CodeEditor as BaseCodeEditor } from 'components/codeEditor';
 import { useDataContextManager } from 'providers/dataContextManager';
 import { ICodeTreeLevel } from 'components/codeEditor/utils';
 import { getContextMetadata, getFormDataMetadata } from './utils';
+import { IModelMetadata } from 'interfaces/metadata';
+import { useFormDesigner } from 'providers/formDesigner';
 
 const { TabPane } = Tabs;
 
@@ -40,11 +42,20 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
     setInternalValue(null);
     if (props.onChange) props.onChange(null);
   };
-  const meta = useMetadata(false);
+  
   const dataContextManager = useDataContextManager(false);
   const metaDispatcher = useMetadataDispatcher(false);
+  
+  // Get the form model type (from the form or form designer)
+  const designer = useFormDesigner(false);
+  const formInstance = useForm(false) ?? dataContextManager?.getFormInstance();
+  const modelType = formInstance?.formSettings?.modelType ?? designer?.formSettings?.modelType;
+  
+  const meta = modelType
+    ? metaDispatcher.getMetadata({modelType, dataType: 'entity'})
+    : new Promise<IModelMetadata>((resolve) => resolve(useMetadata(false)?.metadata));
 
-  const metaItems = useMemo<ICodeTreeLevel>(() => getFormDataMetadata(metaDispatcher, meta?.metadata), [meta]);
+  const metaItems = useMemo<ICodeTreeLevel>(() => getFormDataMetadata(metaDispatcher, meta), [meta]);
   const ctxItems = useMemo<ICodeTreeLevel>(() => getContextMetadata(dataContextManager?.getDataContexts(dataContextManager?.getActiveContext()?.id)), [dataContextManager.lastUpdate]);
 
   const editorProps: any = {};
@@ -53,8 +64,6 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
   if (!exposedVariables || exposedVariables.find(x => x.name === 'contexts'))
     editorProps.shaContext = ctxItems;
   
-  editorProps.shaTest = {dispatcher: metaDispatcher, metadata: meta?.metadata};
-
   const openEditorDialog = () => setShowDialog(true);
 
   const onDialogCancel = () => {

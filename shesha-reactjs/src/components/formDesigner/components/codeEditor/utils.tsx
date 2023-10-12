@@ -4,10 +4,10 @@ import { IDataContextDescriptor } from "providers/dataContextManager/models";
 import { IMetadataDispatcherFullinstance } from "providers/metadataDispatcher/contexts";
 import { toCamelCase } from "utils/string";
 
-export const getFormDataMetadata = (dispatcher: IMetadataDispatcherFullinstance, metadata: IModelMetadata) => {
+export const getFormDataMetadata = (dispatcher: IMetadataDispatcherFullinstance, metadata: Promise<IModelMetadata>) => {
     if (!Boolean(metadata)) return null;
 
-    const propsToLevel = (disp: IMetadataDispatcherFullinstance, properties: IPropertyMetadata[]): ICodeTreeLevel => {
+    const propsToLevel = (properties: IPropertyMetadata[]): ICodeTreeLevel => {
       const result: ICodeTreeLevel = {};
       properties?.forEach((p) => {
         const path = toCamelCase(p.path);
@@ -21,7 +21,7 @@ export const getFormDataMetadata = (dispatcher: IMetadataDispatcherFullinstance,
           result[path].childRefresh = (resolve: (data: ICodeTreeLevel) => void) => {
             dispatcher.getMetadata({ dataType: null, modelType: p.entityType })
               .then(res => {
-                const m = propsToLevel(disp, res.properties);
+                const m = propsToLevel(res.properties);
                 result[path].loaded = true;
                 result[path].childs = m;
                 resolve(m);
@@ -30,7 +30,7 @@ export const getFormDataMetadata = (dispatcher: IMetadataDispatcherFullinstance,
         }
 
         if (p.properties?.length > 0)
-            result[path].childs = propsToLevel(disp, p.properties);
+            result[path].childs = propsToLevel(p.properties);
       });
       return result;
     };
@@ -38,11 +38,18 @@ export const getFormDataMetadata = (dispatcher: IMetadataDispatcherFullinstance,
     const metaTree: ICodeTreeLevel = {
       data: {
         value: 'data',
-        caption: metadata.name,
-        loaded: true,
-        childs: propsToLevel(dispatcher, metadata.properties),
-      },
+        caption: 'data',
+        loaded: false,
+      }
     };
+
+    metadata.then(res => {
+      const m = propsToLevel(res.properties);
+      metaTree.data.loaded = true;
+      metaTree.data.childs = m;
+      metaTree.data.caption = res.name;
+    });
+
     return metaTree;
 };
 

@@ -4,7 +4,7 @@ import { ToolbarItemsGroup } from './toolbarItemsGroup';
 import { useToolbarConfigurator } from '../../../providers/toolbarConfigurator';
 import { IButtonGroup, IToolbarButton, ToolbarItemProps } from '../../../providers/toolbarConfigurator/models';
 import { ReactSortable, ItemInterface } from 'react-sortablejs';
-//import { getValuesModel } from 'utils/publicUtils';
+import { getActualModel, useApplicationContext } from 'index';
 
 export interface IToolbarItemsContainerProps {
   index?: number[];
@@ -14,11 +14,11 @@ export interface IToolbarItemsContainerProps {
 
 export const ToolbarItemsContainer: FC<IToolbarItemsContainerProps> = (props) => {
   const { updateChildItems, readOnly } = useToolbarConfigurator();
+  const allData = useApplicationContext();
 
   const renderItem = (item: ToolbarItemProps, index: number) => {
 
-    //todo:review&uncomment const actualModel = getValuesModel(item);
-    const actualModel = item;
+    const actualModel = getActualModel(item, allData);
 
     switch (actualModel.itemType) {
       case 'item':

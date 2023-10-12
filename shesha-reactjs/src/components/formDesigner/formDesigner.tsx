@@ -60,6 +60,7 @@ const FormProviderWrapper: FC<{ form: FormInstance }> = ({ form }) => {
 
   return (
     <FormProvider
+      needDebug
       name="Designer Form"
       mode="designer"
       allComponents={allComponents}

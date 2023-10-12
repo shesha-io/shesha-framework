@@ -7,7 +7,6 @@ import { ILabelValueEditorComponentProps } from './interfaces';
 import settingsFormJson from './settingsForm.json';
 import React from 'react';
 import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import { useForm } from '../../../../providers';
 import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -18,10 +17,9 @@ const LabelValueEditorComponent: IToolboxComponent<ILabelValueEditorComponentPro
   icon: <OneToOneOutlined />,
   canBeJsSetting: true,
   factory: model => {
-    const { isComponentHidden, formMode } = useForm();
     const customProps = model as ILabelValueEditorComponentProps;
 
-    if (isComponentHidden(model)) return null;
+    if (model.hidden) return null;
 
     return (
       <ConfigurableFormItem model={model}>

@@ -21,9 +21,9 @@ const PasswordComboComponent: IToolboxComponent<IPasswordComponentProps> = {
   factory: (model: IPasswordComponentProps) => {
     const defaultModel = getDefaultModel(model);
     const { placeholder, confirmPlaceholder, message, minLength } = defaultModel || {};
-    const { formData, isComponentHidden } = useForm();
+    const { formData } = useForm();
 
-    const options = { isComponentHidden, formData };
+    const options = { hidden: model.hidden, formData };
 
     return (
       <Fragment>

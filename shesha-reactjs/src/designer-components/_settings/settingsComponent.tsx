@@ -20,7 +20,7 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
     isInput: true,
     isOutput: true,
     name: 'Setting',
-    //isHidden: false,
+    isHidden: true,
     icon: <SettingOutlined />,
     factory: (model: ISettingsComponentProps) => {
 
@@ -41,26 +41,22 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
             return model?.components?.map(c => ({ ...c, hideLabel: true, readOnly: model?.readOnly, context: model.id }));
         }, [model?.components, model?.readOnly, model?.id]);
 
-        const label =
-            <>
-                <label>{props.label}</label>
-                <Button
-                    disabled={model.disabled || model.readOnly}
-                    shape="round"
-                    className="sha-js-switch"
-                    type='primary'
-                    ghost
-                    size='small'
-                    onClick={switchMode}
-                >
-                    {mode === 'code' ? 'VALUE' : 'JS'}
-                </Button>
-            </>;
-
         return (
-            <ConfigurableFormItem model={{ ...props, label: label }}  >
+            <ConfigurableFormItem model={{ ...props, label: props.label, }} className='sha-js-label' >
                 {(value, onChange) => {
                     return (
+                    <div className={ mode === 'code' ? 'sha-js-content-code' : 'sha-js-content-js'}>
+                        <Button
+                            disabled={model.disabled || model.readOnly}
+                            shape="round"
+                            className='sha-js-switch'
+                            type='primary'
+                            ghost
+                            size='small'
+                            onClick={switchMode}
+                        >
+                            {mode === 'code' ? 'Value' : 'JS'}
+                        </Button>
                         <SettingsControl id={model.id} propertyName={internalProps?.propertyName} mode={mode} value={value} onChange={onChange}>
                             {(value, onChange, propertyName) =>
                                 <DataContextProvider id={model.id} name={props.componentName} description={props.label.toString()} type={'settings'}
@@ -76,6 +72,7 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
                                 </DataContextProvider>
                             }
                         </SettingsControl>
+                    </div>
                     );
                 }}
             </ConfigurableFormItem>
