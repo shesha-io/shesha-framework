@@ -74,7 +74,7 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
                 validate: {required: props.required},
                 hidden: props.hidden
             }} 
-            className='sha-js-label' 
+            className='sha-js-label'
         >
             {(value, onChange) => {
                 return (
