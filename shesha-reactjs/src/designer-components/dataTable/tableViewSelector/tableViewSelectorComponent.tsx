@@ -3,7 +3,6 @@ import { Alert } from 'antd';
 import camelCaseKeys from 'camelcase-keys';
 import _ from 'lodash';
 import React, { FC, MutableRefObject, useEffect } from 'react';
-import { useDeepCompareEffect } from 'react-use';
 import TableViewSelectorRenderer from '../../../components/tableViewSelectorRenderer';
 import { migrateFilterMustacheExpressions } from '../../../designer-components/_common-migrations/migrateUseExpression';
 import { IToolboxComponent } from '../../../interfaces';
@@ -11,6 +10,7 @@ import { useDataTableStore, useForm, useGlobalState, useNestedPropertyMetadatAcc
 import { evaluateDynamicFilters } from '../../../utils';
 import { ITableViewSelectorComponentProps } from './models';
 import TableViewSelectorSettings from './tableViewSelectorSettings';
+import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 
 const TableViewSelectorComponent: IToolboxComponent<ITableViewSelectorComponentProps> = {
   type: 'tableViewSelector',

@@ -859,6 +859,15 @@ namespace Shesha.JsonLogic
                 else if (constExpr.Type == typeof(string) && Int64.TryParse((string)constExpr.Value, out var int64Value))
                     numericConstToConvert = Expression.Constant(int64Value);
             }
+            if (memberExpr.Type.GetUnderlyingTypeIfNullable() == typeof(Double))
+            {
+                if (constExpr.Type == typeof(string)) 
+                {
+                    if (double.TryParse((string)constExpr.Value, out var doubleValue))
+                        numericConstToConvert = Expression.Constant(doubleValue);
+                } else
+                    numericConstToConvert = Expression.Constant(Convert.ToDouble(constExpr.Value));
+            }
         }
 
         private void ConvertTicksTimeSpan(Expression a, ref Expression b)

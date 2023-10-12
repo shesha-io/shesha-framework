@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { IFlagsSetters, IFlagsState } from '../../interfaces';
+import { IDictionary, IFlagsSetters, IFlagsState } from '../../interfaces';
 import { IConfigurableColumnsProps } from '../datatableColumnsConfigurator/models';
 import {
   ColumnFilter,
@@ -64,6 +64,7 @@ export interface IDataTableStateContext
   configurableColumns?: IConfigurableColumnsProps[];
   /** Pre-defined stored filters. configurable in the forms designer */
   predefinedFilters?: IStoredFilter[];
+  hiddenFilters: IDictionary<IStoredFilter>;
 
   /** table columns */
   columns?: ITableColumn[];
@@ -149,6 +150,7 @@ export interface IDataTableActionsContext
   changeSelectedStoredFilterIds?: (selectedStoredFilterIds: string[]) => void;
 
   setPredefinedFilters: (filters: IStoredFilter[]) => void;
+  setHiddenFilter: (owner: string, filter: IStoredFilter) => void;
 
   onSort?: (sorting: IColumnSorting[]) => void;
 
@@ -200,6 +202,7 @@ export const DATA_TABLE_CONTEXT_INITIAL_STATE: IDataTableStateContext = {
   userConfigId: null,
   modelType: null,
   dataFetchingMode: 'paging',
+  hiddenFilters: {},
 };
 
 export interface DataTableFullInstance extends IDataTableStateContext, IDataTableActionsContext {}

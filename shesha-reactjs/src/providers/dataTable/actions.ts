@@ -41,6 +41,7 @@ export enum DataTableActionEnums {
   ChangeActionedRow = 'CHANGE_ACTIONED_ROW',
   ChangeSelectedStoredFilterIds = 'CHANGE_SELECTED_STORED_FILTER_IDS',
   SetPredefinedFilters = 'REGISTER_STORED_FILTER',
+  SetHiddenFilter = 'SET_HIDDEN_FILTER',
   ChangeSelectedIds = 'CHANGE_SELECTED_IDS',
   RegisterConfigurableColumns = 'REGISTER_CONFIGURABLE_COLUMNS',
   OnSelectRow = 'ON_SELECT_ROW',
@@ -150,6 +151,15 @@ export interface ISetPredefinedFiltersPayload {
 }
 export const setPredefinedFiltersAction = createAction<ISetPredefinedFiltersPayload, ISetPredefinedFiltersPayload>(
   DataTableActionEnums.SetPredefinedFilters,
+  (p) => p
+);
+
+export interface ISetHiddenFilterActionPayload {
+  filter: IStoredFilter;
+  owner: string;
+}
+export const setHiddenFilterAction = createAction<ISetHiddenFilterActionPayload, ISetHiddenFilterActionPayload>(
+  DataTableActionEnums.SetHiddenFilter,
   (p) => p
 );
 
