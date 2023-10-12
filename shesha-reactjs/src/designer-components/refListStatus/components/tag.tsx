@@ -8,7 +8,7 @@ interface ITagProps {
 }
 
 const RefTag: FC<PropsWithChildren<ITagProps>> = ({ children, ...props }) => {
-  if (!children) return null;
+  if (!children && !props?.icon) return null;
 
   return (
     <Tag className="sha-status-tag" {...props}>
