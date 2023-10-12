@@ -63,7 +63,7 @@ const RadioGroup: FC<IRadioProps> = (model) => {
     >
       <Space direction={model?.direction}>
         {options?.map((checkItem, index) => (
-          <Radio key={index} value={checkItem.value} disabled={disabled}>
+          <Radio key={index} value={`${checkItem.value}`} disabled={disabled}>
             {checkItem.label}
           </Radio>
         ))}
