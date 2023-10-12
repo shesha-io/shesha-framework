@@ -183,13 +183,9 @@ const getFetchListDataPayload = (state: IDataTableStateContext): IGetListDataPay
 const DataTableWithMetadataProvider: FC<PropsWithChildren<IDataTableProviderProps>> = (props) => {
   const modelType = (props as IHasEntityDataSourceConfig).entityType;
 
-  const table = useMemo(() => {
-    return props.sourceType === 'Entity' && modelType
+  return props.sourceType === 'Entity' && modelType
     ? <MetadataProvider id={props.userConfigId} modelType={modelType}>{props.children}</MetadataProvider>
     : <>{props.children}</>;
-  }, [props.sourceType, modelType]);
-
-  return table;
 };
 
 const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = (props) => {

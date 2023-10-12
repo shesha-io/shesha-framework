@@ -42,11 +42,11 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = ({readOnl
   return (
     <>
       <SectionSeparator title="Display" />
-      <SettingsFormItem name="componentName" label="Component name" rules={[{ required: true }]}>
+      <SettingsFormItem name="componentName" label="Component name" required={true}>
         <Input />
       </SettingsFormItem>
 
-      <SettingsFormItem name="defaultActiveKey" label="Default Active Key" rules={[{ required: true }]}>
+      <SettingsFormItem name="defaultActiveKey" label="Default Active Key" required={true}>
         <Input />
       </SettingsFormItem>
 

@@ -84,7 +84,7 @@
             "type": "textField",
             "propertyName": "placeholder",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
-            "label": "Placeholder 1",
+            "label": "Placeholder",
             "version": 0,
             "textType": "text"
           },
@@ -148,6 +148,13 @@
             "propertyName": "disableSearch",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
             "label": "Disable Search"
+          },
+          {
+            "id": "cfd7d45e-c7e3-4a27-987b-dc525c412466",
+            "type": "checkbox",
+            "propertyName": "hidden",
+            "parentId": "WngUqinrTrAiWGINTk0z6",
+            "label": "Hidden"
           },
           {
             "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",

@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useEffect } from "react";
 import { useGet } from "hooks";
 import { GENERIC_ENTITIES_ENDPOINT } from "shesha-constants";
 import { EntityData, IAbpWrappedGetEntityListResponse, IGetAllPayload } from "interfaces/gql";
@@ -65,10 +65,15 @@ export const useEntitySelectionData = (props: IUseEntityDisplayTextProps): IEnti
     const valueFetcher = useGet<IAbpWrappedGetEntityListResponse, any, IGetEntityPayload>(
         `${GENERIC_ENTITIES_ENDPOINT}/GetAll`,
         {
-            lazy: !mustFetch,
+            //lazy: !mustFetch,
             queryParams: getValuePayload,
         }
     );
+    
+    useEffect(() => {
+        if (mustFetch)
+            valueFetcher.refetch({queryParams: getValuePayload});
+    }, [getValuePayload.filter]);
 
     const valueItems = valueFetcher.data?.result?.items;
     const result = useMemo<EntityData[]>(() => {

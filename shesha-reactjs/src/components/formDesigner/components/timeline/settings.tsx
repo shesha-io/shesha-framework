@@ -27,7 +27,7 @@ const TimelineSettings: FC<ISettingsFormFactoryArgs<ITimelineProps>> = ({readOnl
     <>
       <SettingsCollapsiblePanel header='Data'>
 
-      <SettingsFormItem name="componentName" initialValue={state.propertyName} label="Component name" rules={[{ required: true }]}>
+      <SettingsFormItem name="componentName" initialValue={state.propertyName} label="Component name" required={true}>
         <Input disabled={readOnly} />
       </SettingsFormItem>
 
