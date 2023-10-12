@@ -41,16 +41,16 @@ export const getStepDescritpion =
     if (show) {
       switch (true) {
         case index === currentIndex:
-          return sequence.active;
+          return sequence?.active || '';
 
         case index > currentIndex:
-          return sequence.pending;
+          return sequence?.pending || '';
 
         case index > currentIndex:
-          return sequence.finshed;
+          return sequence?.finshed || '';
 
         default:
-          return sequence.finshed;
+          return sequence?.finshed || '';
       }
     }
 
