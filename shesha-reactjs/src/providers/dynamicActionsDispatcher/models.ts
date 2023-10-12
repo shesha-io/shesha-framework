@@ -18,6 +18,5 @@ export type DynamicRenderingHoc = <T>(WrappedComponent: ComponentType<T & IHasAc
 
 export interface DynamicItemsEvaluationHookArgs {
   item: IDynamicItem;
-  onEvaluated: (response: ButtonGroupItemProps[]) => void;
 }
-export type DynamicItemsEvaluationHook = (args: DynamicItemsEvaluationHookArgs) => void;
+export type DynamicItemsEvaluationHook = (args: DynamicItemsEvaluationHookArgs) => ButtonGroupItemProps[];

@@ -1,6 +1,8 @@
+import { useMetadata } from 'index';
+import { isEntityMetadata } from 'interfaces/metadata';
 import { ButtonGroupItemProps } from 'providers/buttonGroupConfigurator/models';
 import { DynamicItemsEvaluationHook, DynamicRenderingHoc } from 'providers/dynamicActionsDispatcher/models';
-import React, { PropsWithChildren, useEffect, useMemo } from 'react';
+import React, { PropsWithChildren, useMemo } from 'react';
 import { FC } from 'react';
 import { DynamicActionsProvider } from '../index';
 
@@ -15,22 +17,29 @@ const ReportTestItems: ButtonGroupItemProps[] = [
 ];
 
 export const ReportingActions: FC<PropsWithChildren<IReportingActionsProps>> = ({ children }) => {
-    const evaluator: DynamicItemsEvaluationHook = (args) => {
-        useEffect(() => {
-            args.onEvaluated(ReportTestItems);
-        }, []);
-    };
-
     return (
         <DynamicActionsProvider
             id='reports'
             name='Reports'
             renderingHoc={reportingActionsHoc}
-            useEvaluator={evaluator}
+            useEvaluator={useReportingActions}
         >
             {children}
         </DynamicActionsProvider>
     );
+};
+
+const useReportingActions: DynamicItemsEvaluationHook = (args) => {
+    const { metadata } = useMetadata(false) ?? {};
+    
+    const operations = useMemo<ButtonGroupItemProps[]>(() => {
+        if (!isEntityMetadata(metadata))
+            return [];
+
+        return ReportTestItems;
+    }, [args.item, metadata]);
+
+    return operations;
 };
 
 const reportingActionsHoc: DynamicRenderingHoc = (WrappedComponent) => {

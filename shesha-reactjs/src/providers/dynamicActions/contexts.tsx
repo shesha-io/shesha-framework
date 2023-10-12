@@ -1,11 +1,10 @@
-import { DynamicItemsEvaluationHook, DynamicRenderingHoc } from 'providers/dynamicActionsDispatcher/models';
+import { DynamicItemsEvaluationHook } from 'providers/dynamicActionsDispatcher/models';
 import { createContext } from 'react';
 
 export interface IDynamicActionsStateContext {
   id: string;
   name: string;
-  renderingHoc: DynamicRenderingHoc;
-  evaluator: DynamicItemsEvaluationHook;
+  useEvaluator: DynamicItemsEvaluationHook;
 }
 
 export interface IDynamicActionsActionsContext {
@@ -24,8 +23,7 @@ export interface ITestActionPayload {
 export const DYNAMIC_ACTIONS_CONTEXT_INITIAL_STATE: IDynamicActionsContext = {
   id: null,
   name: 'unknown',
-  renderingHoc: null,
-  evaluator: null,
+  useEvaluator: null,
 };
 
 export const DynamicActionsContext = createContext<IDynamicActionsContext>(undefined);

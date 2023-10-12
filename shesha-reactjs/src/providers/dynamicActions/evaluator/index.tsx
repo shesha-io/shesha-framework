@@ -1,6 +1,6 @@
 import { ButtonGroupItemProps, IButtonGroupItemBase, IDynamicItem, isDynamicItem, isGroup } from 'providers/buttonGroupConfigurator/models';
 import { useDynamicActionsDispatcher } from 'providers/index';
-import React, { FC, useMemo, useState } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 
 export interface IDynamicActionsEvaluatorProps {
     items: ButtonGroupItemProps[];
@@ -101,17 +101,16 @@ const SingleDynamicItemEvaluator: FC<SingleDynamicItemEvaluatorProps> = ({ item,
     const providers = dispatcher.getProviders();
     const provider = providers[item.dynamicItemsConfiguration.providerUid].contextValue;
 
-    const onLocalEvaluated = (response: ButtonGroupItemProps[]) => {
-        item.resolvedItems = response;
-        item.isResolved = true;
-        onEvaluated(response);
-    };
-
     // call a hook
-    provider.evaluator({
-        item,
-        onEvaluated: onLocalEvaluated
+    const evaluatedItems = provider.useEvaluator({
+        item        
     });
+    
+    useEffect(() => {
+        item.resolvedItems = evaluatedItems;
+        item.isResolved = true;
+        onEvaluated(evaluatedItems);
+    }, [evaluatedItems]);
     
     return null;
 };

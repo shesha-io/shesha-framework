@@ -10,7 +10,7 @@ import {
   IDynamicActionsDispatcherFullInstance,
 } from './contexts';
 import useThunkReducer from '../../hooks/thunkReducer';
-import { IProvidersDictionary } from './models';
+import { DynamicItemsEvaluationHook, IProvidersDictionary } from './models';
 
 export interface IDynamicActionsDispatcherProviderProps { }
 
@@ -82,4 +82,10 @@ function useDynamicActionsDispatcher(require: boolean = true): IDynamicActionsDi
     : undefined;
 }
 
-export { DynamicActionsDispatcherProvider, useDynamicActionsDispatcherState, useDynamicActionsDispatcherActions, useDynamicActionsDispatcher };
+export { 
+  DynamicActionsDispatcherProvider, 
+  useDynamicActionsDispatcherState, 
+  useDynamicActionsDispatcherActions, 
+  useDynamicActionsDispatcher,
+  DynamicItemsEvaluationHook,  
+};

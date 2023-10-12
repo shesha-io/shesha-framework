@@ -15,20 +15,19 @@ import { DynamicItemsEvaluationHook, DynamicRenderingHoc } from 'providers/dynam
 export interface IDynamicActionsProps {
   id?: string;
   name: string;
-  renderingHoc: DynamicRenderingHoc;
+  renderingHoc?: DynamicRenderingHoc;
   useEvaluator: DynamicItemsEvaluationHook;
 }
 export interface IHasActions {
   items: ButtonGroupItemProps[]; // todo: make a generic interface with minimal number of properties, ButtonGroupItemProps will implement/extend this interface
 }
 
-const DynamicActionsProvider: FC<PropsWithChildren<IDynamicActionsProps>> = ({ id, name, useEvaluator: evaluator, renderingHoc, children }) => {
+const DynamicActionsProvider: FC<PropsWithChildren<IDynamicActionsProps>> = ({ id, name, useEvaluator, children }) => {
   const initial: IDynamicActionsStateContext = {
     ...DYNAMIC_ACTIONS_CONTEXT_INITIAL_STATE,
     id,
     name,
-    renderingHoc,
-    evaluator,
+    useEvaluator,
   };
 
   const [state/*, dispatch*/] = useThunkReducer(metadataReducer, initial);
