@@ -229,7 +229,8 @@
           "settingsValidationErrors": [],
           "description": "",
           "noSelectionItemText": "Not editable",
-          "noSelectionItemValue": "[not-editable]"
+          "noSelectionItemValue": "[not-editable]",
+          "propertyName": "{{data.propertyName}}"
         },
         {
           "id": "L2bRSuStgiAmWfd5Z09CR",
@@ -248,7 +249,8 @@
           "settingsValidationErrors": [],
           "description": "",
           "noSelectionItemText": "Not editable",
-          "noSelectionItemValue": "[not-editable]"
+          "noSelectionItemValue": "[not-editable]",
+          "propertyName": "{{data.propertyName}}"
         }
       ],
       "gap": "",

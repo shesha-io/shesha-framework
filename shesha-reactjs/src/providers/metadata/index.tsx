@@ -11,6 +11,7 @@ import {
   MetadataContext,
 } from './contexts';
 import metadataReducer from './reducer';
+import camelcase from 'camelcase';
 
 export interface IMetadataProviderProps {
   id?: string;
@@ -42,9 +43,14 @@ const MetadataProvider: FC<PropsWithChildren<IMetadataProviderProps>> = ({ id, m
     return fetchMeta({ modelType });
   };
 
+  const getPropertyMeta = (name: string): IPropertyMetadata => {
+    return state?.metadata?.properties.find(p => camelcase(p.path) === name);
+  };
+
   const metadataActions: IMetadataActionsContext = {
     /* NEW_ACTION_GOES_HERE */
     getMetadata,
+    getPropertyMeta,
   };
 
   const contextValue: IMetadataContext = { ...state, ...metadataActions };

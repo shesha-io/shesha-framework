@@ -1,9 +1,9 @@
 import { BorderOutlined } from '@ant-design/icons';
-import { validateConfigurableComponentSettings } from 'providers/form/utils';
+import { evaluateString, validateConfigurableComponentSettings } from 'providers/form/utils';
 import React from 'react';
 import { ConfigurableFormItem, FormComponentSelector } from '../../components';
 import { IToolboxComponent } from '../../interfaces';
-import { useForm } from '../../providers';
+import { useForm, useFormData, useMetadata } from '../../providers';
 import { IComponentSelectorComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
 
@@ -16,8 +16,17 @@ export const ComponentSelectorComponent: IToolboxComponent<IComponentSelectorCom
   isHidden: true,
   factory: ({ style, ...model }: IComponentSelectorComponentProps) => {
     const { formMode } = useForm();
+    const { data: formData } = useFormData();
 
+    const propertyName = model.propertyName 
+      ? evaluateString(model.propertyName, { data: formData }) 
+      : null;
     const { noSelectionItemText, noSelectionItemValue } = model;
+    const meta = useMetadata(false);
+
+    const propertyMeta = propertyName && meta
+      ? meta.getPropertyMeta(propertyName)
+      : null;
 
     return (
       <ConfigurableFormItem model={model}>
@@ -27,6 +36,7 @@ export const ComponentSelectorComponent: IToolboxComponent<IComponentSelectorCom
             noSelectionItemText ? { label: noSelectionItemText, value: noSelectionItemValue } : undefined
           }
           readOnly={formMode === 'readonly'}
+          propertyMeta={propertyMeta}
         />
       </ConfigurableFormItem>
     );
