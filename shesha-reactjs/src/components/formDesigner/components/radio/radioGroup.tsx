@@ -57,7 +57,7 @@ const RadioGroup: FC<IRadioProps> = (model) => {
       className="sha-radio-group"
       disabled={isReadOnly}
       defaultValue={evaluateValue(defaultValue, { data: formData, globalState })}
-      value={value}
+      value={`${value}`}
       onChange={onChange}
       style={model?.style}
     >
