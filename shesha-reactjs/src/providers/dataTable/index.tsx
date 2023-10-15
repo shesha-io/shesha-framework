@@ -248,7 +248,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   // fetch table data when config is ready or something changed (selected filter, changed current page etc.)
   const fetchDataIfReady = () => {
-    if (repository && state.columns && state.columns.length > 0) {
+    if (repository) { // && state.columns && state.columns.length > 0) { // Don't check state.columns because dataList doesn't contain columns
       // fecth using entity type
       tableIsReady.current = true; // is used to prevent unneeded data fetch by the ReactTable. Any data fetch requests before this line should be skipped
       refreshTable();
