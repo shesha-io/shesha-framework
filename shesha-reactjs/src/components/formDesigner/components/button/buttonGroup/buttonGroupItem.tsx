@@ -1,14 +1,15 @@
 import React, { FC } from 'react';
-import { IButtonGroupButton } from '../../../../../providers/buttonGroupConfigurator/models';
+import { IButtonGroupItem, IDynamicItem, isDynamicItem } from '../../../../../providers/buttonGroupConfigurator/models';
 import { Button, Tooltip, Typography } from 'antd';
 import { DeleteFilled, QuestionCircleOutlined } from '@ant-design/icons';
 import { useButtonGroupConfigurator } from '../../../../../providers/buttonGroupConfigurator';
 import DragHandle from './dragHandle';
 import ShaIcon, { IconType } from '../../../../shaIcon';
+import { useDynamicActionsDispatcher } from 'index';
 
 const { Text } = Typography;
 
-export interface IButtonGroupItemProps extends IButtonGroupButton {
+export interface IButtonGroupItemProps extends IButtonGroupItem {
   index: number[];
 }
 
@@ -38,6 +39,7 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = props => {
           </>
         )}
         {props.itemSubType === 'separator' && (<Text type="secondary">— separator —</Text>)}
+        {isDynamicItem(props) && (<DynamicGroupDetails {...props}/>)}
         {!readOnly && (
           <div className="sha-button-group-item-controls">
             <Button icon={<DeleteFilled color="red" />} onClick={onDeleteClick} size="small" danger />
@@ -45,6 +47,18 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = props => {
         )}
       </div>
     </div>
+  );
+};
+
+const DynamicGroupDetails: FC<IDynamicItem> = (props) => {
+  const { getProviders } = useDynamicActionsDispatcher();
+  
+  const provider = props.dynamicItemsConfiguration?.providerUid
+    ? getProviders()[props.dynamicItemsConfiguration?.providerUid]
+    : null;
+
+  return (
+    <Text type="secondary">{ `Dynamic Item(s): ${provider ? provider.contextValue.name : "(not selected)"}` }</Text>
   );
 };
 

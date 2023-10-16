@@ -14,6 +14,7 @@ import useThunkReducer from '../../hooks/thunkReducer';
 import { IConfigurableActionGroupDictionary } from './models';
 import {
   IConfigurableActionArguments,
+  IConfigurableActionConfiguration,
   IConfigurableActionDescriptor,
   IConfigurableActionIdentifier,
 } from '../../interfaces/configurableAction';
@@ -211,4 +212,5 @@ export {
   useConfigurableActionDispatcher,
   ConfigurableActionDispatcherConsumer,
   useConfigurableAction,
+  IConfigurableActionConfiguration
 };

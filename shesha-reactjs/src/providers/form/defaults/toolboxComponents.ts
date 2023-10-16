@@ -89,6 +89,7 @@ import DataContextSelector from 'designer-components/dataContextSelector';
 import DataContextComponent from 'designer-components/dataContextComponent';
 import ContextPropertyAutocompleteComponent from 'designer-components/contextPropertyAutocomplete';
 import TextAreaComponent from 'designer-components/textArea/textArea';
+import { DynamicActionsConfiguratorComponent } from 'designer-components/dynamicActionsConfigurator/index';
 
 export const ToolboxComponents: IToolboxComponentGroup[] = [
   {
@@ -103,6 +104,7 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
       ColorPickerComponent,
       ComponentSelectorComponent,
       ConfigurableActionConfigurator,
+      DynamicActionsConfiguratorComponent,
       DynamicView,
       EditableTagGroup,
       EndpointsAutocompleteComponent,

@@ -17,7 +17,7 @@ import {
   updateItemAction,
   /* NEW_ACTION_IMPORT_GOES_HERE */
 } from './actions';
-import { ButtonGroupItemProps } from './models';
+import { ButtonGroupItemProps, IButtonGroup, IButtonGroupItem, IButtonItem } from './models';
 import { getItemById } from './utils';
 
 export interface IButtonGroupConfiguratorProviderPropsBase {
@@ -129,4 +129,11 @@ function useButtonGroupConfigurator() {
   return { ...useButtonGroupConfiguratorState(), ...useButtonGroupConfiguratorActions() };
 }
 
-export { ButtonGroupConfiguratorProvider, useButtonGroupConfigurator };
+export { 
+  ButtonGroupConfiguratorProvider, 
+  useButtonGroupConfigurator, 
+  IButtonGroup, 
+  IButtonItem, 
+  IButtonGroupItem,
+  ButtonGroupItemProps,
+};

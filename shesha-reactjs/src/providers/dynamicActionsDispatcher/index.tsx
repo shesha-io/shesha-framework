@@ -7,10 +7,10 @@ import {
   IDynamicActionsDispatcherStateContext,
   IDynamicActionsDispatcherActionsContext,
   IRegisterProviderPayload,
-  IDynamicActionsDispatcherFullinstance,
+  IDynamicActionsDispatcherFullInstance,
 } from './contexts';
 import useThunkReducer from '../../hooks/thunkReducer';
-import { IProvidersDictionary } from './models';
+import { DynamicItemsEvaluationHook, IProvidersDictionary } from './models';
 
 export interface IDynamicActionsDispatcherProviderProps { }
 
@@ -35,13 +35,18 @@ const DynamicActionsDispatcherProvider: FC<PropsWithChildren<IDynamicActionsDisp
     }
   };
 
-  const metadataActions: IDynamicActionsDispatcherActionsContext = {
+  const getProviders = () => {
+    return providers.current;
+  };
+
+  const dispatcherActions: IDynamicActionsDispatcherActionsContext = {
     registerProvider,
+    getProviders,
   };
 
   return (
     <DynamicActionsDispatcherStateContext.Provider value={state}>
-      <DynamicActionsDispatcherActionsContext.Provider value={metadataActions}>
+      <DynamicActionsDispatcherActionsContext.Provider value={dispatcherActions}>
         {children}
       </DynamicActionsDispatcherActionsContext.Provider>
     </DynamicActionsDispatcherStateContext.Provider>
@@ -68,7 +73,7 @@ function useDynamicActionsDispatcherActions(require: boolean) {
   return context;
 }
 
-function useDynamicActionsDispatcher(require: boolean = true): IDynamicActionsDispatcherFullinstance {
+function useDynamicActionsDispatcher(require: boolean = true): IDynamicActionsDispatcherFullInstance {
   const actionsContext = useDynamicActionsDispatcherActions(require);
   const stateContext = useDynamicActionsDispatcherState(require);
 
@@ -77,4 +82,10 @@ function useDynamicActionsDispatcher(require: boolean = true): IDynamicActionsDi
     : undefined;
 }
 
-export { DynamicActionsDispatcherProvider, useDynamicActionsDispatcherState, useDynamicActionsDispatcherActions, useDynamicActionsDispatcher };
+export { 
+  DynamicActionsDispatcherProvider, 
+  useDynamicActionsDispatcherState, 
+  useDynamicActionsDispatcherActions, 
+  useDynamicActionsDispatcher,
+  DynamicItemsEvaluationHook,  
+};

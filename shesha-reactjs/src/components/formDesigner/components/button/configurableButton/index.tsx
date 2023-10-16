@@ -2,13 +2,12 @@ import React, { FC } from 'react';
 import { Button } from 'antd';
 import { ShaIcon, IconType } from 'components';
 import classNames from 'classnames';
-import { IButtonGroupButton } from 'providers/buttonGroupConfigurator/models';
+import { IButtonItem } from 'providers/buttonGroupConfigurator/models';
 import { CSSProperties } from 'react';
 import { useConfigurableActionDispatcher } from 'providers/configurableActionsDispatcher';
 import { useApplicationContext } from 'utils/publicUtils';
 
-export interface IConfigurableButtonProps extends Omit<IButtonGroupButton, 'style' | 'itemSubType'> {
-  formComponentId: string;
+export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'itemSubType'> {
   disabled?: boolean;
   hidden?: boolean;
   style?: CSSProperties;

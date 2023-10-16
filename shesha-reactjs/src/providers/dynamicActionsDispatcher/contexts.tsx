@@ -1,3 +1,4 @@
+import { IProvidersDictionary } from './models';
 import { createContext } from 'react';
 import { IDynamicActionsContext } from '../dynamicActions/contexts';
 
@@ -12,9 +13,10 @@ export interface IRegisterProviderPayload {
 
 export interface IDynamicActionsDispatcherActionsContext {
   registerProvider: (payload: IRegisterProviderPayload) => void;
+  getProviders: () => IProvidersDictionary;
 }
 
-export interface IDynamicActionsDispatcherFullinstance extends IDynamicActionsDispatcherStateContext, IDynamicActionsDispatcherActionsContext {}
+export interface IDynamicActionsDispatcherFullInstance extends IDynamicActionsDispatcherStateContext, IDynamicActionsDispatcherActionsContext {}
 
 export interface IDynamicActionsRegistration {
   id: string;

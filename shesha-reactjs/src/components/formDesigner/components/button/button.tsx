@@ -40,7 +40,6 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
         <ConfigurableButton
           {...model}
           block={model?.block}
-          formComponentId={model?.id}
           style={getStyle(style, data)}
         />
       </ConfigurableFormItem>

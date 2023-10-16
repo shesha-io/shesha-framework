@@ -4,7 +4,7 @@ import { ButtonGroupItemsGroup } from './buttonGroupItemsGroup';
 import { useButtonGroupConfigurator } from '../../../../../providers/buttonGroupConfigurator';
 import {
   IButtonGroup,
-  IButtonGroupButton,
+  IButtonGroupItem,
   ButtonGroupItemProps,
 } from '../../../../../providers/buttonGroupConfigurator/models';
 import { ReactSortable, ItemInterface } from 'react-sortablejs';
@@ -26,7 +26,7 @@ export const ButtonGroupItemsContainer: FC<IButtonGroupItemsContainerProps> = pr
 
     switch (actualModel.itemType) {
       case 'item':
-        const itemProps = actualModel as IButtonGroupButton;
+        const itemProps = actualModel as IButtonGroupItem;
         return <ButtonGroupItem key={item.id} index={[...props.index, index]} {...itemProps} />;
 
       case 'group':

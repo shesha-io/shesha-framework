@@ -5,7 +5,7 @@ import {
   BUTTON_GROUP_CONTEXT_INITIAL_STATE,
 } from './contexts';
 import { ButtonGroupActionEnums } from './actions';
-import { IButtonGroupButton, IButtonGroup } from './models';
+import { IButtonGroupItem, IButtonGroup } from './models';
 import { handleActions } from 'redux-actions';
 import { getItemById, getItemPositionById } from './utils';
 import { nanoid } from 'nanoid/non-secure';
@@ -14,7 +14,7 @@ const buttonGroupReducer = handleActions<IButtonGroupConfiguratorStateContext, a
   {
     [ButtonGroupActionEnums.AddButton]: (state: IButtonGroupConfiguratorStateContext) => {
       const buttonsCount = state.items.filter(i => i.itemType === 'item').length;
-      const buttonProps: IButtonGroupButton = {
+      const buttonProps: IButtonGroupItem = {
         id: nanoid(),
         itemType: 'item',
         sortOrder: state.items.length,

@@ -1,10 +1,11 @@
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { ButtonType } from 'antd/lib/button';
 import { IConfigurableActionConfiguration } from '../../interfaces/configurableAction';
+import { IDynamicActionsConfiguration } from 'designer-components/dynamicActionsConfigurator/models';
 
 type ButtonGroupItemType = 'item' | 'group';
 
-export type ButtonGroupItemProps = IButtonGroupButton | IButtonGroup;
+export type ButtonGroupItemProps = IButtonGroupItem | IButtonGroup;
 
 export type ToolbarItemSubType = 'button' | 'separator' | 'line' | 'dynamic';
 
@@ -41,12 +42,15 @@ export interface IButtonGroupItemBase {
   size?: SizeType;
 }
 
-export interface IButtonGroupButton extends IButtonGroupItemBase {
+export interface IButtonGroupItem extends IButtonGroupItemBase {
   itemSubType: ToolbarItemSubType;
+}
+
+export interface IButtonItem extends IButtonGroupItem {
   actionConfiguration?: IConfigurableActionConfiguration;
 }
 
-export const isItem = (item: IButtonGroupItemBase): item is IButtonGroupButton => {
+export const isItem = (item: IButtonGroupItemBase): item is IButtonGroupItem => {
   return item && item.itemType === 'item';
 };
 
@@ -63,4 +67,16 @@ export interface IButtonGroup extends IButtonGroupItemBase {
 
 export const isGroup = (item: IButtonGroupItemBase): item is IButtonGroup => {
   return item && item.itemType === 'group';
+};
+
+export interface IDynamicItem extends IButtonGroupItem {
+  dynamicItemsConfiguration: IDynamicActionsConfiguration;
+}
+
+export const isDynamicItem = (item: IButtonGroupItemBase): item is IDynamicItem => {
+  return isItem(item) && item.itemSubType === 'dynamic';
+};
+
+export const isButtonItem = (item: IButtonGroupItemBase): item is IButtonItem => {
+  return isItem(item) && item.itemSubType === 'button';
 };
