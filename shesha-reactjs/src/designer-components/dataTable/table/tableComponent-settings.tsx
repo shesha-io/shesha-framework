@@ -309,7 +309,7 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({read
           exposedVariables={ROW_SAVE_EXPOSED_VARIABLES}
         />
       </SettingsFormItem>
-      <SettingsFormItem name="onRowSaveSuccessAction" labelCol={{ span: 0 }} wrapperCol={{ span: 24 }} noStyle>
+      <SettingsFormItem name="onRowSaveSuccessAction" labelCol={{ span: 0 }} wrapperCol={{ span: 24 }}>
         <ConfigurableActionConfigurator
           editorConfig={null}
           level={1}

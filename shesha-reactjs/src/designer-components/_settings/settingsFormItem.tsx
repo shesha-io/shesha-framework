@@ -14,6 +14,9 @@ interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps, 'model
     readOnly?: boolean;
     disabled?: boolean;
     style?: React.CSSProperties;
+    required?: boolean;
+    tooltip?: string;
+    hidden?: boolean;
 }
 
 const SettingsFormItem: FC<ISettingsFormItemProps> = (props) => {
@@ -61,7 +64,18 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
     const children = props.children as ReactElement;
     return (
         //<Form.Item {...props} label={props.label} valuePropName='value' >
-        <ConfigurableFormItem model={{ propertyName: props.name, label: props.label, type: '', id: '' }} className='sha-js-label' >
+        <ConfigurableFormItem 
+            model={{ 
+                propertyName: props.name,
+                label: props.label,
+                type: '',
+                id: '',
+                description: props.tooltip,
+                validate: {required: props.required},
+                hidden: props.hidden
+            }} 
+            className='sha-js-label'
+        >
             {(value, onChange) => {
                 return (
                 <div className={ mode === 'code' ? 'sha-js-content-code' : 'sha-js-content-js'}>

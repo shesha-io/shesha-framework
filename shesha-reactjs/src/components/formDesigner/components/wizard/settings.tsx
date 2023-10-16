@@ -65,7 +65,7 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
     <>
     <SettingsCollapsiblePanel header='Display'>
 
-      <SettingsFormItem name="componentName" label="Component name" rules={[{ required: true }]}>
+      <SettingsFormItem name="componentName" label="Component name" required={true}>
         <Input disabled={readOnly}/>
       </SettingsFormItem>
 

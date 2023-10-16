@@ -355,9 +355,6 @@ export const EntityPickerEditable = (props: IEntityPickerProps) => {
   const { entityType, displayEntityKey, disabled } = props;
   return (
     <>
-      <span>{disabled.toString()} </span>
-      {console.log('1: ', disabled)}
-
       <DataTableProvider
         userConfigId={'table_' + props.name}
         actionOwnerName={'table_' + props.name}
@@ -365,12 +362,7 @@ export const EntityPickerEditable = (props: IEntityPickerProps) => {
         entityType={entityType}
         dataFetchingMode='paging'
       >
-        <>
-        <span>{disabled.toString()} </span>
-        {console.log(`2: ${disabled.toString()} - `, disabled)}
-
         <EntityPickerEditableInner {...props} disabled={disabled} displayEntityKey={displayEntityKey} />
-        </>
       </DataTableProvider>
     </>
   );

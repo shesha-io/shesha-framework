@@ -21,7 +21,7 @@ const ButtonGroupSettings: FC<ISettingsFormFactoryArgs<IButtonGroupComponentProp
   return (
     <>
       <SettingsCollapsiblePanel header='UX'>
-        <SettingsFormItem name="componentName" label="Component name" rules={[{ required: true }]}>
+        <SettingsFormItem name="componentName" label="Component name" required={true}>
           <Input readOnly={readOnly} />
         </SettingsFormItem>
 

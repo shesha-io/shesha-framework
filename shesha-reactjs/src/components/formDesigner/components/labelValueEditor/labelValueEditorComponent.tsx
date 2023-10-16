@@ -23,7 +23,7 @@ const LabelValueEditorComponent: IToolboxComponent<ILabelValueEditorComponentPro
 
     return (
       <ConfigurableFormItem model={model}>
-        {(value, onChange) => <LabelValueEditor {...customProps} readOnly={ formMode === 'readonly' } value={value} onChange={onChange}/>}
+        {(value, onChange) => <LabelValueEditor {...customProps} value={value} onChange={onChange}/>}
       </ConfigurableFormItem>
     );
   },

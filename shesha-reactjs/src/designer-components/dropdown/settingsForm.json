@@ -322,10 +322,7 @@
             "propertyName": "dataSourceUrl",
             "parentId": "PSXX7u5GWT0W8RXnVW3Ao",
             "label": "Data Source Url",
-            "hidden_setting": {
-              "code": "return data.dataSourceType !== 'url'",
-              "mode": "code"
-            },
+            "hidden": {"_code": "return  getSettingValue(data.dataSourceType) !== 'url';", "_mode": "code", "_value": false},
             "version": 0,
             "textType": "text"
           },
@@ -339,10 +336,7 @@
             "labelName": "label",
             "valueTitle": "Value",
             "valueName": "value",
-            "hidden_setting": {
-              "code": "return data.dataSourceType !== 'values'",
-              "mode": "code"
-            }
+            "hidden": {"_code": "return  getSettingValue(data.dataSourceType) !== 'values';", "_mode": "code", "_value": false}
           }
         ]
       },
