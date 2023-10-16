@@ -74,11 +74,13 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   settingsFormFactory: (props) => (<ButtonGroupSettingsForm {...props} />),
 };
 
+type PrepareItemFunc = (item: ButtonGroupItemProps) => ButtonGroupItemProps;
+
 type MenuButton = ButtonGroupItemProps & {
   childItems?: MenuButton[];
 };
 
-type ButtonGroupProps = Pick<IButtonGroupComponentProps, 'items' | 'id' | 'size' | 'spaceSize' | 'isInline' | 'noStyles'>;
+type ButtonGroupProps = Pick<IButtonGroupComponentProps, 'items' | 'id' | 'size' | 'spaceSize' | 'isInline' | 'noStyles' | 'disabled'>;
 export const ButtonGroup: FC<ButtonGroupProps> = (props) => {
   return (
     <DynamicActionsEvaluator items={props.items}>
@@ -87,7 +89,7 @@ export const ButtonGroup: FC<ButtonGroupProps> = (props) => {
   );
 };
 
-export const ButtonGroupInner: FC<ButtonGroupProps> = ({ items, size, spaceSize = 'middle', isInline, noStyles }) => {
+export const ButtonGroupInner: FC<ButtonGroupProps> = ({ items, size, spaceSize = 'middle', isInline, noStyles, disabled }) => {
   const allData = useApplicationContext();
   const { anyOfPermissionsGranted } = useSheshaApplication();
 
@@ -126,7 +128,11 @@ export const ButtonGroupInner: FC<ButtonGroupProps> = ({ items, size, spaceSize 
     return isItem(item) && isVisibleBase(item) || isGroup(item) && isGroupVisible(item);
   };
 
-  const actualItems = items?.map((item) => getActualModel(item, allData));
+  const prepareItem: PrepareItemFunc = (item) => {
+    return getActualModel(item, allData);
+  };
+
+  const actualItems = items?.map((item) => prepareItem(item));
   const filteredItems = actualItems?.filter(getIsVisible);
 
   if (actualItems.length === 0 && isDesignMode)
@@ -143,13 +149,13 @@ export const ButtonGroupInner: FC<ButtonGroupProps> = ({ items, size, spaceSize 
       <div className={noStyles ? null : 'sha-responsive-button-group-inline-container'}>
         <Space>
           {filteredItems?.map((item) =>
-            (<InlineItem item={item} uuid={item.id} size={size} getIsVisible={getIsVisible} appContext={allData} key={item.id} />)
+            (<InlineItem item={item} uuid={item.id} size={size} getIsVisible={getIsVisible} appContext={allData} key={item.id} prepareItem={prepareItem}/>)
           )}
         </Space>
       </div>
     );
   } else {
-    const menuItems = filteredItems?.map((props) => createMenuItem(props, size, getIsVisible, allData));
+    const menuItems = filteredItems?.map((props) => createMenuItem(props, size, getIsVisible, allData, prepareItem));
     return (
       <div className="sha-responsive-button-group-container">
         <Menu
@@ -178,11 +184,13 @@ const renderButton = (props: ButtonGroupItemProps, uuid: string, size: SizeType,
 
 type VisibilityEvaluator = (item: ButtonGroupItemProps) => boolean;
 
-const createMenuItem = (props: MenuButton, size: SizeType, getIsVisible: VisibilityEvaluator, appContext: IApplicationContext): MenuItem => {
-  const hasChildren = props?.childItems?.length > 0;
-
+const createMenuItem = (props: MenuButton, size: SizeType, getIsVisible: VisibilityEvaluator, appContext: IApplicationContext, prepareItem: PrepareItemFunc): MenuItem => {
   const buttonProps = props.itemType === 'item' ? (props as IButtonGroupItem) : null;
   const isDivider = buttonProps && (buttonProps.itemSubType === 'line' || buttonProps.itemSubType === 'separator');
+
+  const childItems = props.childItems && props.childItems.length > 0
+    ? props.childItems.map(prepareItem).filter(getIsVisible)?.map((props) => createMenuItem(props, size, getIsVisible, appContext, prepareItem))
+    : null;
 
   return isDivider
     ? { type: 'divider' }
@@ -190,9 +198,7 @@ const createMenuItem = (props: MenuButton, size: SizeType, getIsVisible: Visibil
       renderButton(props, props?.id, size, appContext),
       props.id,
       props.disabled,
-      hasChildren
-        ? props?.childItems?.filter(getIsVisible)?.map((props) => createMenuItem(props, size, getIsVisible, appContext))
-        : null
+      childItems
     );
 };
 
@@ -205,13 +211,14 @@ interface InlineItemBaseProps {
 
 interface InlineItemProps extends InlineItemBaseProps {
   item: ButtonGroupItemProps;
+  prepareItem: PrepareItemFunc;
 }
 const InlineItem: FC<InlineItemProps> = (props) => {
-  const { item, uuid, size, getIsVisible, appContext } = props;
+  const { item, uuid, size, getIsVisible, appContext, prepareItem } = props;
 
-  const itemProps = getActualModel(item, appContext) as ButtonGroupItemProps;
+  const itemProps = prepareItem(item) as ButtonGroupItemProps;
   if (isGroup(itemProps)) {
-    const menuItems = itemProps.childItems.filter(item => (getIsVisible(item))).map(childItem => (createMenuItem({ ...childItem, buttonType: 'link' }, size, getIsVisible, appContext)));
+    const menuItems = itemProps.childItems.map(prepareItem).filter(item => (getIsVisible(item))).map(childItem => (createMenuItem({ ...childItem, buttonType: 'link' }, size, getIsVisible, appContext)));
     return (
       <Dropdown
         key={uuid}
