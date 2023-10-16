@@ -2,6 +2,7 @@
 using Abp.Authorization.Roles;
 using Abp.Authorization.Users;
 using Abp.Domain.Entities;
+using Abp.Domain.Uow;
 using Abp.Reflection;
 using Abp.Web.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +26,13 @@ namespace Shesha.Services
     /// </summary>
     public class NHibernateAppService: IApplicationService
     {
+        private readonly IUnitOfWorkManager _unitOfWorkManager;
+
+        public NHibernateAppService(IUnitOfWorkManager unitOfWorkManager)
+        {
+            _unitOfWorkManager = unitOfWorkManager;
+        }
+
         /// <summary>
         /// Get last compiled mapping conventions
         /// </summary>
@@ -67,18 +75,21 @@ namespace Shesha.Services
 
                 var errors = new Dictionary<Type, Exception>();
 
-                var session = sessionFactory.GetCurrentSession();
-
                 foreach (var type in types)
                 {
-                    try
+                    using (var uow = _unitOfWorkManager.Begin(System.Transactions.TransactionScopeOption.RequiresNew)) 
                     {
-                        var hql = $"from {type.FullName}";
-                        var list = session.CreateQuery(hql).SetMaxResults(1).List();
-                    }
-                    catch (Exception e)
-                    {
-                        errors.Add(type, e);
+                        try
+                        {
+                            var hql = $"from {type.FullName}";
+                            var session = sessionFactory.GetCurrentSession();
+                            var list = session.CreateQuery(hql).SetMaxResults(1).List();
+                        }
+                        catch (Exception e)
+                        {
+                            errors.Add(type, e);
+                        }
+                        uow.Complete();
                     }
                 }
 
