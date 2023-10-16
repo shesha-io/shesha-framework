@@ -129,7 +129,8 @@ export const ButtonGroupInner: FC<ButtonGroupProps> = ({ items, size, spaceSize 
   };
 
   const prepareItem: PrepareItemFunc = (item) => {
-    return getActualModel(item, allData);
+    const result = getActualModel(item, allData);
+    return { ...result, disabled: result.disabled || disabled };
   };
 
   const actualItems = items?.map((item) => prepareItem(item));
@@ -218,7 +219,7 @@ const InlineItem: FC<InlineItemProps> = (props) => {
 
   const itemProps = prepareItem(item) as ButtonGroupItemProps;
   if (isGroup(itemProps)) {
-    const menuItems = itemProps.childItems.map(prepareItem).filter(item => (getIsVisible(item))).map(childItem => (createMenuItem({ ...childItem, buttonType: 'link' }, size, getIsVisible, appContext)));
+    const menuItems = itemProps.childItems.map(prepareItem).filter(item => (getIsVisible(item))).map(childItem => (createMenuItem({ ...childItem, buttonType: 'link' }, size, getIsVisible, appContext, prepareItem)));
     return (
       <Dropdown
         key={uuid}
