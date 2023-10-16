@@ -117,8 +117,20 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
             label="Form identifer expression"
             description="Enter code to get form identifier. You must return { name: string; module?: string; version?: number; } object. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
             exposedVariables={[
-              { "name": "item", "description": "List item", "type": "object" },
-            ]}
+              { name: "item", description: "List item", type: "object" },
+              { name: "data", description: "Selected form values", type: "object" },
+              { name: "contexts", description: "Contexts data", type: "object" },
+              { name: "globalState", description: "Global state", type: "object" },
+              { name: "setGlobalState", description: "Functiont to set globalState", type: "function" },
+              { name: "formMode", description: "Form mode", type: "object" },
+              { name: "staticValue", description: "Static value of this setting", type: "any" },
+              { name: "getSettingValue", description: "Functiont to get actual setting value", type: "function" },
+              { name: "form", description: "Form instance", type: "object" },
+              { name: "selectedRow", description: "Selected row of nearest table (null if not available)", type: "object" },
+              { name: "moment", description: "moment", type: "object" },
+              { name: "http", description: "axiosHttp", type: "object" },
+              { name: "message", description: "message framework", type: "object" },
+          ]}
           />
         </SettingsFormItem>
       }

@@ -3,6 +3,8 @@ import { FormMarkupWithSettings, IChangeable, IValuable } from '../../interfaces
 import { FormIdentifier } from '../form/models';
 
 export interface ISubFormProviderProps extends IValuable, IChangeable {
+  context?: string;
+
   propertyName?: string;
   markup?: FormMarkupWithSettings;
   value?: string | { id: string; [key: string]: any };

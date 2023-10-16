@@ -84,12 +84,12 @@ export function useApplicationContext(topContextId?: string): IApplicationContex
   const { globalState, setState: setGlobalState } = useGlobalState();
   return {
     data: useFormData()?.data,
+    contexts: {...dcm?.getDataContextsData(tcId), lastUpdate: dcm?.lastUpdate},
     setFormData,
     formMode,
-    form,
-    contexts: {...dcm?.getDataContextsData(tcId), lastUpdate: dcm?.lastUpdate},
     globalState,
     setGlobalState,
+    form,
     selectedRow: useDataTableStore(false)?.selectedRow,
     moment: moment,
     http: axiosHttp(backendUrl),
@@ -115,6 +115,7 @@ export const getActualModel = (model: any, allData: any) => {
       // If array - update all items
       if (Array.isArray(value)) {
         return value;
+        // ToDo: infinity loop
         if (value.length === 0)
           return value;
         const v = value.map(x => {

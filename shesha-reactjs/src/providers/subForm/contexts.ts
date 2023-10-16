@@ -32,6 +32,7 @@ export interface ISubFormStateContext extends IPersistedFormPayload, IFlatCompon
     putData?: boolean;
   };
   value?: any;
+  context?: string;
 }
 
 export interface ISubFormActionsContext {

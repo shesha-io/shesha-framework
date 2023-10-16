@@ -74,6 +74,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = ({
   onChange,
   defaultValue,
   entityType,
+  context,
 }) => {
   const [state, dispatch] = useReducer(subFormReducer, SUB_FORM_CONTEXT_INITIAL_STATE);
   const { publish } = usePubSub();
@@ -254,7 +255,8 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = ({
 
     // Skip loading if we work with entity and the `id` is not specified
     if (internalEntityType && !finalQueryParams?.id) {
-      onChange({});
+      if (typeof onChange === 'function')
+        onChange({});
       return;
     }
 
@@ -501,6 +503,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = ({
         },
         propertyName,
         value: value || defaultValue,
+        context
       }}
     >
       <SubFormActionsContext.Provider

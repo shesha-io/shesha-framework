@@ -12,7 +12,7 @@ interface IComponentsContainerSubFormProps extends IComponentsContainerBaseProps
 
 export const ComponentsContainerSubForm: FC<IComponentsContainerSubFormProps> = (props) => {
   const { containerId, readOnly } = props;
-  const { getChildComponents } = useSubForm();
+  const { getChildComponents, context } = useSubForm();
   const components = getChildComponents(containerId);
 
   const style = getAlignmentStyle(props);
@@ -45,6 +45,7 @@ export const ComponentsContainerSubForm: FC<IComponentsContainerSubFormProps> = 
             <DynamicComponent
               model={{
                 ...model,
+                context,
                 isDynamic: true,
                 readOnly: getReadOnlyState(model?.readOnly),
                 disabled,

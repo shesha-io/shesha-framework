@@ -1,8 +1,10 @@
+import { useDeepCompareEffect } from "hooks/useDeepCompareEffect";
 import { getFieldNameFromExpression, MetadataProvider, useMetadataDispatcher } from "index";
 import { IModelMetadata } from "interfaces/metadata";
 import { useDataContextManager, useDataContextRegister } from "providers/dataContextManager";
 import React, { FC, PropsWithChildren, useContext, useEffect, useRef, useState } from "react";
 import { createContext } from 'react';
+import { setValueByPropertyName } from "utils/object";
 
 export interface IDataContextProviderStateContext {
     id: string;
@@ -40,13 +42,14 @@ export interface IDataContextProviderProps {
     description?: string;
     type: DataContextType | string;
     initialData?: Promise<object>;
+    dynamicData?: any;
     metadata?: Promise<IModelMetadata>;
     onChangeData?: IContextOnChangeData;
 }
 
 const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = ({ children, ...props }) => {
     
-    const { id, name, description, type = 'custom', initialData, metadata } = props;
+    const { id, name, description, type = 'custom', initialData, metadata, dynamicData } = props;
 
     const { onChangeContext, getDataContextData, onChangeContextData } = useDataContextManager();
     const metadataDispatcher = useMetadataDispatcher();
@@ -83,27 +86,12 @@ const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = ({
     };
 
     const setFieldValue = (name: string, value: any) => {
-        const data = {...getDataContextData(props.id)} ?? {};
-        const propName = getFieldNameFromExpression(name);
-
-        const changedData = {};
-
-        if (typeof propName === 'string')
-            changedData[propName] = value;
-        else if (Array.isArray(propName) && propName.length > 0) {
-            let prop = changedData;
-            propName.forEach((item, index) => {
-                if (index < propName.length - 1) {
-                    prop[item] = {};
-                    prop = prop[item];
-                }
-            });
-            prop[propName[propName.length - 1]] = value;
-        }
+        const data = setValueByPropertyName({...getDataContextData(props.id) ?? {}}, name, value, true);
+        const changedData = setValueByPropertyName({}, name, value);
 
         if (onChangeData.current)
-            onChangeData.current({...data, ...changedData}, changedData);
-        onChangeContextData(props.id, {...data, ...changedData});
+            onChangeData.current(data, changedData);
+        onChangeContextData(props.id, data);
     };
 
     const setData = (data: any) => {
@@ -154,6 +142,14 @@ const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = ({
         ...actionContext,
         api: state.api
     }, []);
+
+    useDeepCompareEffect(() => {
+        if (dynamicData) {
+            if (onChangeData.current)
+                onChangeData.current(dynamicData, dynamicData);
+            onChangeContextData(props.id, dynamicData);
+        }
+    }, [dynamicData]);
 
     useEffect(() => {
         initialData?.then(res => {

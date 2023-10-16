@@ -33,7 +33,7 @@ function useBinding(require: boolean = true) {
     const stateContext = useContext(BindingProviderStateContext);
   
     if ((stateContext === undefined) && require)
-      throw new Error('useDataContext must be used within a DataSourcesProvider');
+      throw new Error('useBinding must be used within a BindingProvider');
 
     return stateContext;
 }

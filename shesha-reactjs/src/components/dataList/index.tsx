@@ -11,7 +11,7 @@ import FormInfo from '../configurableForm/formInfo';
 import ShaSpin from '../shaSpin';
 import Show from '../show';
 import { IDataListProps } from './models';
-import { asFormRawId, asFormFullName } from '../../providers/form/utils';
+import { asFormRawId, asFormFullName, useApplicationContext, executeScriptSync } from '../../providers/form/utils';
 import './styles/index.less';
 
 interface EntityForm {
@@ -44,6 +44,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   ...props
 }) => {
   const { backendUrl, httpHeaders } = useSheshaApplication();
+  const allData = useApplicationContext();
   const [formConfigs, setFormConfigs] = useState<IFormDto[]>([]);
   const [entityForms, setEntityForms] = useState<EntityForm[]>([]);
   const [entityTypes, setEntityTypes] = useState<string[]>([]);
@@ -106,19 +107,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   const getFormIdFromExpression = (item): FormFullName => {
     if (!formIdExpression) return null;
 
-    // tslint:disable-next-line:function-constructor
-    return new Function(
-      'item',
-      //globalState, http, message, data, refreshTable',
-      formIdExpression
-    )(
-      item /*,
-            globalState,
-            axiosHttp(backendUrl),
-            message,
-            formData,
-            refreshTable*/
-    );
+    return executeScriptSync(formIdExpression, {...allData, item});
   };
 
   const { formInfoBlockVisible } = useAppConfigurator();

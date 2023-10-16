@@ -63,7 +63,6 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
     const valuePropName = props.valuePropName ?? 'value';
     const children = props.children as ReactElement;
     return (
-        //<Form.Item {...props} label={props.label} valuePropName='value' >
         <ConfigurableFormItem 
             model={{ 
                 propertyName: props.name,
