@@ -61,6 +61,11 @@ const asVarNode = (node: object): IJsonLogicVarNode => {
   return typeof typed?.var === 'string' ? typed : null;
 };
 
+interface NestedNodeParsingResult {
+  hasOptionalNonEvaluatedExpressions: boolean;
+  value: object | string;
+}
+
 export const convertJsonLogicNode = async (
   jsonLogic: object,
   options: IJsonLogicConversionOptions
@@ -73,7 +78,7 @@ export const convertJsonLogicNode = async (
     node: object,
     allArgs: any[],
     nestedOptions: IJsonLogicConversionOptions
-  ): Promise<object | string> => {
+  ): Promise<NestedNodeParsingResult> => {
     // special handling for evaluation nodes
     const evaluationNodeParsing = tryParseAsEvaluationOperation(node);
     if (evaluationNodeParsing.isEvaluationNode) {
@@ -118,11 +123,20 @@ export const convertJsonLogicNode = async (
           unevaluatedExpressions,
         });
 
-      return convertedResult;
-    } else return await convertJsonLogicNode(node, nestedOptions);
+      return {
+        hasOptionalNonEvaluatedExpressions: (convertedResult === '') && !evaluationNodeParsing.evaluationArguments.required,
+        value: convertedResult
+      };
+    } else {
+      const value = await convertJsonLogicNode(node, nestedOptions);
+      return {
+        hasOptionalNonEvaluatedExpressions: false,
+        value
+      };
+    }
   };
 
-  const result = {};
+  let result = undefined;
   for (const operatorName in jsonLogic) {
     if (!jsonLogic.hasOwnProperty(operatorName)) continue;
 
@@ -130,26 +144,46 @@ export const convertJsonLogicNode = async (
 
     let convertedArgs = null;
 
+    let hasInvalidArguments = false;
+
     if (Array.isArray(args)) {
       convertedArgs = await Promise.all(
         args.map(async (arg, argIdx) => {
-          if (typeof arg === 'object') return await parseNestedNode(arg, args, options);
+          if (typeof arg === 'object') {
+            const nestedResult = await parseNestedNode(arg, args, options);
+            hasInvalidArguments = hasInvalidArguments || nestedResult.hasOptionalNonEvaluatedExpressions;
+            return nestedResult.value;
+          };
 
           const evaluationResult = argumentEvaluator(operatorName, args, argIdx);
           return evaluationResult.handled ? evaluationResult.value : arg;
         })
       );
+      convertedArgs = convertedArgs.filter(a => a !== undefined);
     } else {
       // note: single arguments may be presented as objects, example: {"!!": {"var": "user.userName"}}
       if (typeof args === 'object') {
-        convertedArgs = await parseNestedNode(args, [], options);
+        const nestedResult = await parseNestedNode(args, [], options);
+        hasInvalidArguments = hasInvalidArguments || nestedResult.hasOptionalNonEvaluatedExpressions;
+        convertedArgs = nestedResult.value;
       } else {
         const evaluationResult = argumentEvaluator(operatorName, [args], 0);
         convertedArgs = evaluationResult.handled ? evaluationResult.value : args;
       }
     }
-    result[operatorName] = convertedArgs;
+    
+    if (!hasInvalidArguments){
+      const argumentsAreValid = ['and', 'or'].indexOf(operatorName) > -1 
+        ? Array.isArray(convertedArgs) && convertedArgs.length > 0
+        : true;
+      if (argumentsAreValid){
+        if (!result)
+          result = {};
+        result[operatorName] = convertedArgs;
+      }
+    }
   }
+  
   return result;
 };
 

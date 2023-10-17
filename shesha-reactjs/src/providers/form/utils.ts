@@ -445,14 +445,15 @@ export const evaluateComplexStringWithResult = (
         // This is useful for backward compatibility
         // Initially expression would simply be {{expression}} and they wou be evaluated against formData
         // But dynamic expression now can use formData and globalState, so as a result the expressions need to use dot notation
+
         const evaluatedValue = evaluateString(template, match ? { [match]: data } : data);
 
         if (requireNonEmptyResult && !evaluatedValue?.trim()) {
           success = false;
           unevaluatedExpressions?.push(template);
-        } else {
-          result = result.replaceAll(template, evaluatedValue);
         }
+
+        result = result.replaceAll(template, evaluatedValue);
       }
     });
   });

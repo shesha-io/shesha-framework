@@ -79,7 +79,7 @@ export const FormDesignerRenderer: FC = ({}) => {
               placeholder: 'Properties',
             }}
           >
-            <ConfigurableFormRenderer form={form}>
+            <ConfigurableFormRenderer form={form} skipFetchData={true}>
               {isDebug && (
                 <>
                   <Row>

@@ -60,18 +60,18 @@ namespace Shesha.EntityReferences
 
         public bool Equals(GenericEntityReference obj)
         {
-            return Id == obj.Id && _className == obj._className;
+            return obj != null && 
+                Id == obj.Id && _className == obj._className;
         }
 
         public static bool operator ==(GenericEntityReference l, GenericEntityReference r)
         {
-            if (l is null)
-            {
-                if (r is null)
-                    return true;
-                // Only the left side is null.
+            if (l is null && r is null)
+                return true;
+
+            if ((l is null) != (r is null))
                 return false;
-            }
+
             // Equals handles case of null on right side.
             return l.Equals(r);
         }
