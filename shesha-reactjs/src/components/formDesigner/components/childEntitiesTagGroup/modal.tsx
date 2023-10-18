@@ -16,7 +16,6 @@ interface IProps extends IChildEntitiesTagGroupProps {
   readOnly?: boolean;
   loading: boolean;
   open: boolean;
-  onSetData: Function;
   onToggle: Function;
   onChange: (data: any) => void;
 }

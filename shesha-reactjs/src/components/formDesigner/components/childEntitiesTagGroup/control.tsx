@@ -157,7 +157,6 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
               error={error}
               open={open}
               onToggle={setOpen}
-              onSetData={setOption}
               loading={loading}
               onChange={onModalChange}
             />
