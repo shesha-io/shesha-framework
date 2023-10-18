@@ -129,10 +129,6 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
 
   const formattedValue = getMoment(value, pickerFormat);
 
-  const showDatePickerTime = showTime ? (defaultToMidnight ? { defaultValue: MIDNIGHT_MOMENT } : true) : false;
-
-  const datePickerValue = showDatePickerTime ? { defaultValue: formattedValue } : { value: formattedValue };
-
   const handleDatePickerChange = (localValue: any | null, dateString: string) => {
     if (!dateString?.trim()) {
       (onChange as TimePickerChangeEvent)(null, '');
@@ -211,18 +207,18 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
   return (
     <DatePicker
       className="sha-date-picker"
+      value={formattedValue}
       disabledDate={(e) => disabledDate(props, e, formData, globalState)}
       disabled={isDisabled}
       onChange={handleDatePickerChange}
       bordered={!hideBorder}
-      showTime={showDatePickerTime}
+      showTime={showTime ? (defaultToMidnight ? { defaultValue: MIDNIGHT_MOMENT } : true) : false}
       showNow={showNow}
       showToday={showToday}
       showSecond={true}
       picker={picker}
       format={pickerFormat}
       style={evaluatedStyle}
-      {...datePickerValue}
       {...rest}
       allowClear
     />
