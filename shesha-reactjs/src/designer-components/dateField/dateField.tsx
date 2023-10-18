@@ -16,7 +16,14 @@ import { getMoment, getPropertyMetadata } from '../../utils/date';
 import { axiosHttp } from '../../utils/fetchers';
 import { IDateFieldProps, IRangeInfo, RangePickerChangeEvent, TimePickerChangeEvent } from './interfaces';
 import settingsFormJson from './settingsForm.json';
-import { DATE_TIME_FORMATS, disabledDate, getDefaultFormat, getFormat, getRangePickerValues } from './utils';
+import {
+  DATE_TIME_FORMATS,
+  disabledDate,
+  getDatePickerValue,
+  getDefaultFormat,
+  getFormat,
+  getRangePickerValues,
+} from './utils';
 
 const META_DATA_FILTERS: ProperyDataType[] = ['date', 'date-time', 'time'];
 
@@ -207,7 +214,6 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
   return (
     <DatePicker
       className="sha-date-picker"
-      value={formattedValue}
       disabledDate={(e) => disabledDate(props, e, formData, globalState)}
       disabled={isDisabled}
       onChange={handleDatePickerChange}
@@ -220,6 +226,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
       format={pickerFormat}
       style={evaluatedStyle}
       {...rest}
+      {...getDatePickerValue(props, pickerFormat)}
       allowClear
     />
   );
