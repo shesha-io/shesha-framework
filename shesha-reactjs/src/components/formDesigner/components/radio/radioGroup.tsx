@@ -51,13 +51,15 @@ const RadioGroup: FC<IRadioProps> = (model) => {
   const isReadOnly = model?.readOnly || formMode === 'readonly';
 
   const disabled = isComponentDisabled(model);
+  const defaultVal = evaluateValue(defaultValue, { data: formData, globalState });
+  const val = !!value ? `${value}` : defaultVal;
 
   const renderCheckGroup = () => (
     <Radio.Group
       className="sha-radio-group"
       disabled={isReadOnly}
-      defaultValue={evaluateValue(defaultValue, { data: formData, globalState })}
-      value={value}
+      defaultValue={defaultVal}
+      value={val}
       onChange={onChange}
       style={model?.style}
     >
