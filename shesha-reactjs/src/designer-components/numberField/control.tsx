@@ -42,6 +42,7 @@ const NumberFieldControl: FC<IProps> = ({ disabled, form, model, onChange, value
     bordered: !model.hideBorder,
     min: model?.min,
     max: model?.max,
+    placeholder: model?.placeholder,
     size: model?.size,
     style: style ? getStyle(style, formData, globalState) : { width: '100%' },
     step: model?.highPrecision ? model?.stepNumeric : model?.stepNumeric,
