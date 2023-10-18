@@ -1,31 +1,10 @@
-import { FormMode } from './../../pages/dynamic/interfaces';
-import { IAnyObject } from './../../interfaces/anyObject';
-import {
-  IFlatComponentsStructure,
-  IConfigurableFormComponent,
-  ROOT_COMPONENT_KEY,
-  IComponentsDictionary,
-  IComponentsContainer,
-  IFormActions,
-  IFormAction,
-  FormMarkup,
-  FormMarkupWithSettings,
-  IFormSection,
-  IFormSections,
-  ViewType,
-  IFormValidationRulesOptions,
-  SILENT_KEY,
-  FormIdentifier,
-  FormFullName,
-  FormUid,
-  IFormSettings,
-  DEFAULT_FORM_SETTINGS,
-  ActionArguments,
-  ActionParameters,
-  ActionParametersDictionary,
-  GenericDictionary,
-} from './models';
+import { Rule, RuleObject } from 'antd/lib/form';
+import Schema, { Rules, ValidateSource } from 'async-validator';
+import camelcase from 'camelcase';
 import Mustache from 'mustache';
+import { nanoid } from 'nanoid';
+import nestedProperty from 'nested-property';
+import { CSSProperties } from 'react';
 import {
   IPropertySetting,
   IToolboxComponent,
@@ -33,12 +12,11 @@ import {
   IToolboxComponents,
   SettingsMigrationContext,
 } from '../../interfaces';
-import Schema, { Rules, ValidateSource } from 'async-validator';
 import { IPropertyMetadata } from '../../interfaces/metadata';
-import { nanoid } from 'nanoid';
-import { Rule, RuleObject } from 'antd/lib/form';
-import nestedProperty from 'nested-property';
+import { Migrator } from '../../utils/fluentMigrator/migrator';
 import { getFullPath } from '../../utils/metadata';
+import { IAnyObject } from './../../interfaces/anyObject';
+import { FormMode } from './../../pages/dynamic/interfaces';
 import blankViewMarkup from './defaults/markups/blankView.json';
 import dashboardViewMarkup from './defaults/markups/dashboardView.json';
 import detailsViewMarkup from './defaults/markups/detailsView.json';
@@ -46,16 +24,39 @@ import formViewMarkup from './defaults/markups/formView.json';
 import masterDetailsViewMarkup from './defaults/markups/masterDetailsView.json';
 import menuViewMarkup from './defaults/markups/menuView.json';
 import tableViewMarkup from './defaults/markups/tableView.json';
-import { CSSProperties } from 'react';
-import camelcase from 'camelcase';
-import { Migrator } from '../../utils/fluentMigrator/migrator';
-import { isPropertySettings } from 'designer-components/_settings/utils';
-import { axiosHttp, useDataTableStore, useForm, useFormData, useGlobalState, useSheshaApplication } from 'index';
+import {
+  ActionArguments,
+  ActionParameters,
+  ActionParametersDictionary,
+  DEFAULT_FORM_SETTINGS,
+  FormFullName,
+  FormIdentifier,
+  FormMarkup,
+  FormMarkupWithSettings,
+  FormUid,
+  GenericDictionary,
+  IComponentsContainer,
+  IComponentsDictionary,
+  IConfigurableFormComponent,
+  IFlatComponentsStructure,
+  IFormAction,
+  IFormActions,
+  IFormSection,
+  IFormSections,
+  IFormSettings,
+  IFormValidationRulesOptions,
+  ROOT_COMPONENT_KEY,
+  SILENT_KEY,
+  ViewType,
+} from './models';
+import { isPropertySettings } from '../../designer-components/_settings/utils';
 import { useDataContextManager } from 'providers/dataContextManager';
 import moment from 'moment';
 import { message } from 'antd';
 import { ISelectionProps } from 'providers/dataTable/contexts';
 import { useDataContext } from 'providers/dataContextProvider';
+import { useDataTableStore, useForm, useFormData, useGlobalState, useSheshaApplication } from 'providers';
+import { axiosHttp } from 'utils/fetchers';
 
 /** Interface to geat all avalilable data */
 export interface IApplicationContext {
@@ -571,14 +572,15 @@ export const evaluateComplexStringWithResult = (
         // This is useful for backward compatibility
         // Initially expression would simply be {{expression}} and they wou be evaluated against formData
         // But dynamic expression now can use formData and globalState, so as a result the expressions need to use dot notation
+
         const evaluatedValue = evaluateString(template, match ? { [match]: data } : data);
 
         if (requireNonEmptyResult && !evaluatedValue?.trim()) {
           success = false;
           unevaluatedExpressions?.push(template);
-        } else {
-          result = result.replaceAll(template, evaluatedValue);
         }
+
+        result = result.replaceAll(template, evaluatedValue);
       }
     });
   });

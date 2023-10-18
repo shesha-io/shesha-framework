@@ -1,8 +1,8 @@
-import { createContext } from 'react';
-import { FormProps } from 'antd/lib/form';
 import { ColProps } from 'antd/lib/col';
-import { IFlagsState, IFlagsSetters } from '../../interfaces';
+import { FormProps } from 'antd/lib/form';
 import { Gutter } from 'antd/lib/grid/row';
+import { createContext } from 'react';
+import { IFlagsSetters, IFlagsState } from '../../interfaces';
 
 export type ControlSize = 'large' | 'default' | 'small';
 

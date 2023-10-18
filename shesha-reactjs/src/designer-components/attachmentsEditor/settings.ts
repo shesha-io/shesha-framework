@@ -130,7 +130,89 @@ export const getSettings = () =>
             label: 'Allow Remove',
             validate: {},
             hidden: {_code: 'return  getSettingValue(data?.disabled) ?? false;', _mode: 'code', _value: false} as any,
-          }).toJson()
+          })
+          .addCodeEditor({
+            id: '48ff91b3-5fb1-4e1b-a17f-ff86bce22e0b',
+            propertyName: 'onFileChanged',
+            label: 'On File List Changed',
+            labelAlign: 'right',
+            parentId: 'root',
+            hidden: false,
+            customVisibility: null,
+            description: 'Callback that is triggered when the file is changed.',
+            validate: {},
+            settingsValidationErrors: [],
+            exposedVariables: [
+              {
+                id: 'c5d111c0-4025-4713-a4f9-345160b6effa',
+                name: 'fileList',
+                description: 'The list of selected files',
+                type: 'Array<objects>',
+              },
+              {
+                id: 'c2dee12a-a94d-48a9-b7c9-9a33e998d936',
+                name: 'data',
+                description: 'Selected form values',
+                type: 'object',
+              },
+              {
+                id: 'd7ca9de9-d1b7-4185-b0d8-c82941fcbb37',
+                name: 'form',
+                description: 'Form instance',
+                type: 'FormInstance',
+              },
+              {
+                id: 'fa7cec46-48e3-4be0-9e74-a594c65b5e07',
+                name: 'formMode',
+                description: 'Selected form values',
+                type: "'edit' | 'readonly' | 'designer'",
+              },
+              {
+                id: '2f0ea080-82d4-4aa0-8732-181c7dab9db6',
+                name: 'formMode',
+                description: 'The form mode',
+                type: "'readonly' | 'edit' | 'designer'",
+              },
+              {
+                id: 'c68ca119-fc0a-4f0f-8d95-0a0bf61171e0',
+                name: 'globalState',
+                description: 'The global state of the application',
+                type: 'object',
+              },
+              {
+                id: '62e97a94-e5bd-480c-ade5-1dd60ae768d5',
+                name: 'http',
+                description: 'axios instance used to make http requests',
+                type: 'object',
+              },
+              {
+                id: '9a91a1d1-b36c-4b08-9e07-4d102e2cebf5',
+                name: 'message',
+                description:
+                  'This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header',
+                type: 'object',
+              },
+              {
+                id: 'aea147a3-26e8-4bbb-8327-11bbc899c079',
+                name: 'moment',
+                description: 'The moment.js object',
+                type: 'object',
+              },
+              {
+                id: '43d7af7c-8df7-44b6-8e7f-451429c1ab26',
+                name: 'setFormData',
+                description: 'A function used to update the form data',
+                type: '({ values: object, mergeValues: boolean}) => void',
+              },
+              {
+                id: '12685017-814a-4788-87f2-526bea6d78fd',
+                name: 'setGlobalState',
+                description: 'Setting the global state of the application',
+                type: '(payload: { key: string, data: any } ) => void',
+              },
+            ],
+          })
+          .toJson()
         ]
       }
     })

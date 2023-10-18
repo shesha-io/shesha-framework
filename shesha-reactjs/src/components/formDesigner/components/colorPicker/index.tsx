@@ -7,7 +7,7 @@ import { iconPickerFormSettings } from './settings';
 import ColorPicker from '../../../colorPicker';
 import { ColorResult } from 'react-color';
 import { IColorPickerComponentProps } from './interfaces';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 
 const ColorPickerComponent: IToolboxComponent<IColorPickerComponentProps> = {
   type: 'colorPicker',

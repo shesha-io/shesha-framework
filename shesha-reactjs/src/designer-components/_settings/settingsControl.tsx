@@ -33,7 +33,6 @@ export const SettingsControl: FC<ISettingsControlProps> = ({ id, propertyName, r
                     onChange(!!value || mode === 'code' ? { _value: settings._value, _code: value, _mode: mode } : settings._value);
             }}
             mode='dialog'
-            type='codeEditor'
             language='typescript'
             id={id}
             propertyName={propertyName + 'Code'}
@@ -42,7 +41,7 @@ export const SettingsControl: FC<ISettingsControlProps> = ({ id, propertyName, r
                 { name: "contexts", description: "Contexts data", type: "object" },
                 { name: "globalState", description: "Global state", type: "object" },
                 { name: "setGlobalState", description: "Functiont to set globalState", type: "function" },
-                { name: "formMode", description: "Form mode", type: "object" },
+                { name: "formMode", description: "Form mode", type: "'designer' | 'edit' | 'readonly'" },
                 { name: "staticValue", description: "Static value of this setting", type: "any" },
                 { name: "getSettingValue", description: "Functiont to get actual setting value", type: "function" },
                 { name: "form", description: "Form instance", type: "object" },

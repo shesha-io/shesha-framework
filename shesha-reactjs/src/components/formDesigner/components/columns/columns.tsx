@@ -7,7 +7,7 @@ import { useFormData, useGlobalState } from '../../../../providers';
 import { nanoid } from 'nanoid/non-secure';
 import { IColumnsComponentProps } from './interfaces';
 import { getStyle } from 'utils/publicUtils';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 import { ColumnsSettingsForm } from './columnsSettings';
 
 const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {

@@ -41,7 +41,7 @@ export const getQueryParams = (url?: string): QueryStringParams => {
   const urlSearchParams = new URLSearchParams(search ?? '');
   const params = Object.fromEntries(urlSearchParams.entries()) as QueryStringParams;
 
-  Object.keys(params).forEach(key => {
+  Object.keys(params).forEach((key) => {
     if (!isNaN(Number(params[key]))) {
       params[key] = Number(params[key]);
     }

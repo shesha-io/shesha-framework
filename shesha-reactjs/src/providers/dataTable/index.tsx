@@ -1,67 +1,67 @@
-import React, { FC, useContext, PropsWithChildren, useEffect, useRef, useMemo } from 'react';
-import { useThunkReducer } from 'hooks/thunkReducer';
-import { dataTableReducer } from './reducer';
-import {
-  DataTableActionsContext,
-  DataTableStateContext,
-  DATA_TABLE_CONTEXT_INITIAL_STATE,
-  IDataTableStateContext,
-  IDataTableUserConfig
-} from './contexts';
+import camelCaseKeys from 'camelcase-keys';
+import { isEqual, sortBy } from 'lodash';
+import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useRef } from 'react';
+import { useDebouncedCallback } from 'use-debounce';
+import { useLocalStorage } from '../../hooks';
+import { useThunkReducer } from '../../hooks/thunkReducer';
+import { useConfigurableAction } from '../configurableActionsDispatcher';
+import { IConfigurableColumnsProps } from '../datatableColumnsConfigurator/models';
+import { useGlobalState } from '../globalState';
 import { getFlagSetters } from '../utils/flagsSetters';
 import {
-  fetchTableDataAction,
-  fetchTableDataSuccessAction,
-  fetchTableDataErrorAction,
-  setCurrentPageAction,
-  changePageSizeAction,
-  toggleColumnVisibilityAction,
-  toggleColumnFilterAction,
-  changeFilterOptionAction,
-  changeFilterAction,
   applyFilterAction,
-  changeQuickSearchAction,
-  toggleSaveFilterModalAction,
-  changeSelectedStoredFilterIdsAction,
-  setPredefinedFiltersAction,
-  changeSelectedIdsAction,
-  registerConfigurableColumnsAction,
-  onSortAction,
-  changeDisplayColumnAction,
   changeActionedRowAction,
+  changeDisplayColumnAction,
+  changeFilterAction,
+  changeFilterOptionAction,
+  changePageSizeAction,
   changePersistedFiltersToggleAction,
+  changeQuickSearchAction,
+  changeSelectedIdsAction,
+  changeSelectedStoredFilterIdsAction,
   fetchColumnsSuccessSuccessAction,
-  setRowDataAction,
-  setModelTypeAction,
+  fetchTableDataAction,
+  fetchTableDataErrorAction,
+  fetchTableDataSuccessAction,
+  onSortAction,
+  registerConfigurableColumnsAction,
+  setCurrentPageAction,
   setDataFetchingModeAction,
+  setModelTypeAction,
+  setPredefinedFiltersAction,
+  setHiddenFilterAction,
+  setRowDataAction,
+  toggleColumnFilterAction,
+  toggleColumnVisibilityAction,
+  toggleSaveFilterModalAction,
   setSelectedRowAction,
   setMultiSelectedRowAction,
 } from './actions';
 import {
-  IndexColumnFilterOption,
+  DATA_TABLE_CONTEXT_INITIAL_STATE,
+  DataTableActionsContext,
+  DataTableStateContext,
+  IDataTableStateContext,
+  IDataTableUserConfig,
+} from './contexts';
+import {
   ColumnFilter,
+  DataFetchingMode,
+  IColumnSorting,
   IFilterItem,
+  IGetListDataPayload,
   IStoredFilter,
   ITableFilter,
-  IColumnSorting,
-  IGetListDataPayload,
-  DataFetchingMode,
+  IndexColumnFilterOption,
 } from './interfaces';
-import { isEqual, sortBy } from 'lodash';
-import { useDebouncedCallback } from 'use-debounce';
-import {
-  IConfigurableColumnsProps,
-} from '../datatableColumnsConfigurator/models';
-import { useGlobalState } from '../globalState';
-import camelCaseKeys from 'camelcase-keys';
-import { useConfigurableAction } from '../configurableActionsDispatcher';
-import { IHasModelType, IHasRepository, IRepository } from './repository/interfaces';
+import { dataTableReducer } from './reducer';
 import { withBackendRepository } from './repository/backendRepository';
 import { withFormFieldRepository } from './repository/inMemoryRepository';
-import { advancedFilter2JsonLogic, getTableDataColumns } from './utils';
-import { useLocalStorage } from 'hooks';
+import { IHasModelType, IHasRepository, IRepository } from './repository/interfaces';
 import { withNullRepository } from './repository/nullRepository';
 import { withUrlRepository } from './repository/urlRepository';
+import { advancedFilter2JsonLogic, getTableDataColumns } from './utils';
+import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { DataContextProvider, useDataContext } from 'providers/dataContextProvider';
 import { MetadataProvider } from 'providers/metadata';
 import { Row } from 'react-table';
@@ -87,9 +87,7 @@ interface IDataTableProviderBaseProps {
   userConfigId?: string;
 }
 
-interface IDataTableProviderWithRepositoryProps extends IDataTableProviderBaseProps, IHasRepository, IHasModelType {
-
-}
+interface IDataTableProviderWithRepositoryProps extends IDataTableProviderBaseProps, IHasRepository, IHasModelType {}
 
 interface IHasDataSourceType {
   sourceType: 'Form' | 'Entity' | 'Url';
@@ -108,9 +106,9 @@ interface IHasEntityDataSourceConfig extends IUrlDataSourceConfig {
   entityType: string;
 }
 
-type IDataTableProviderProps = IDataTableProviderBaseProps & IHasDataSourceType & (IHasFormDataSourceConfig | IUrlDataSourceConfig | IHasEntityDataSourceConfig) & {
-  
-};
+type IDataTableProviderProps = IDataTableProviderBaseProps &
+  IHasDataSourceType &
+  (IHasFormDataSourceConfig | IUrlDataSourceConfig | IHasEntityDataSourceConfig) & {};
 
 const getTableProviderComponent = (props: IDataTableProviderProps): FC<IDataTableProviderBaseProps> => {
   const { sourceType } = props;
@@ -118,7 +116,7 @@ const getTableProviderComponent = (props: IDataTableProviderProps): FC<IDataTabl
     case 'Entity': {
       const { entityType, getDataPath } = props as IHasEntityDataSourceConfig;
       return withBackendRepository(DataTableProviderWithRepository, { entityType, getListUrl: getDataPath });
-    };
+    }
     case 'Form': {
       const { propertyName, getFieldValue, onChange } = props as IHasFormDataSourceConfig;
 
@@ -134,18 +132,21 @@ const getTableProviderComponent = (props: IDataTableProviderProps): FC<IDataTabl
 };
 
 const getFilter = (state: IDataTableStateContext): string => {
-  const activePredefinedFilters = state.predefinedFilters || [];
-  const filters = (state.selectedStoredFilterIds ?? []).map(id => activePredefinedFilters.find(f => f.id === id)).filter(f => Boolean(f));
+  const allFilters = state.predefinedFilters ?? [];
 
-  // If filter not selected - use first filter with `defaultSelected` = true
-  if (filters.length === 0 && activePredefinedFilters.length) {
-    const defraultFilter = activePredefinedFilters.find(({ defaultSelected }) => defaultSelected);
-    if (defraultFilter)
-      filters.push(defraultFilter);
+  const filters = allFilters.filter(f => (state.selectedStoredFilterIds && state.selectedStoredFilterIds.indexOf(f.id) > -1));
+  const { hiddenFilters } = state;
+
+  if (hiddenFilters){
+    for(const owner in hiddenFilters) {
+      if (hiddenFilters.hasOwnProperty(owner) && hiddenFilters[owner]){
+        filters.push(hiddenFilters[owner]);
+      }
+    }
   }
-
+  
   let expressions = [];
-  filters.forEach(f => {
+  filters.forEach((f) => {
     if (f.expression) {
       const jsonLogic = typeof f.expression === 'string' ? JSON.parse(f.expression) : f.expression;
       expressions.push(jsonLogic);
@@ -154,8 +155,7 @@ const getFilter = (state: IDataTableStateContext): string => {
 
   if (state.tableFilter) {
     const advancedFilter = advancedFilter2JsonLogic(state.tableFilter, state.columns);
-    if (advancedFilter && advancedFilter.length > 0)
-      expressions = expressions.concat(advancedFilter);
+    if (advancedFilter && advancedFilter.length > 0) expressions = expressions.concat(advancedFilter);
   }
 
   if (expressions.length === 0) return null;
@@ -207,7 +207,9 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = (props
   );
 };
 
-export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTableProviderWithRepositoryProps>> = (props) => {
+export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTableProviderWithRepositoryProps>> = (
+  props
+) => {
   const {
     children,
     configurableColumns,
@@ -235,18 +237,13 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   // sync dataFetchingMode
   useEffect(() => {
-    if (state.dataFetchingMode !== dataFetchingMode)
-      dispatch(setDataFetchingModeAction(dataFetchingMode));
+    if (state.dataFetchingMode !== dataFetchingMode) dispatch(setDataFetchingModeAction(dataFetchingMode));
   }, [dataFetchingMode]);
 
-  const [userConfig, setUserConfig] = useLocalStorage<IDataTableUserConfig>(
-    userConfigId,
-    null,
-  );
+  const [userConfig, setUserConfig] = useLocalStorage<IDataTableUserConfig>(userConfigId, null);
 
   useEffect(() => {
-    if (modelType !== state.modelType)
-      dispatch(setModelTypeAction(modelType));
+    if (modelType !== state.modelType) dispatch(setModelTypeAction(modelType));
   }, [modelType]);
 
   // fetch table data when config is ready or something changed (selected filter, changed current page etc.)
@@ -261,27 +258,19 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     state.tableConfigLoaded,
     state.columns?.length,
     state.tableSorting,
+    state.hiddenFilters,
+    state.predefinedFilters,
     repository,
   ]);
 
   // fetch table data when config is ready or something changed (selected filter, changed current page etc.)
   const fetchDataIfReady = () => {
-    if (repository) {
+    if (repository) { // && state.columns && state.columns.length > 0) { // Don't check state.columns because dataList doesn't contain columns
       // fecth using entity type
       tableIsReady.current = true; // is used to prevent unneeded data fetch by the ReactTable. Any data fetch requests before this line should be skipped
       refreshTable();
     }
   };
-
-  const debouncedRefreshTable = useDebouncedCallback(() => {
-    fetchDataIfReady();
-  }, 500);
-
-  useEffect(() => {
-    if (state.predefinedFilters) {
-      debouncedRefreshTable();
-    }
-  }, [state.predefinedFilters]);
 
   const refreshTable = () => {
     if (tableIsReady.current === true) {
@@ -294,11 +283,12 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
       // todo: check payload and skip fetching if the filters (or other required things) are not calculated
       const canFetch = true;
       if (canFetch) {
-        repository.fetch(payload)
-          .then(response => {
+        repository
+          .fetch(payload)
+          .then((response) => {
             dispatch(fetchTableDataSuccessAction(response));
           })
-          .catch(e => {
+          .catch((e) => {
             console.log(e);
             dispatch(fetchTableDataErrorAction());
           });
@@ -412,9 +402,17 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     const rowId = val?.id;
     const currentId = state.selectedRow?.id;
 
+    // Initialize selectedRow to null
+    let selectedRow = null;
+
+    // If IDs are different and newRow exists, convert the newRow keys to camelCase
+    if (newRowId !== currentRowId && newRow) {
+      selectedRow = camelCaseKeys(newRow, { deep: true });
+    }
+
     // todo: check current row mode and allow to toggle selection if row is in the read mode
-    if (rowId !== currentId)
-      dispatch(changeSelectedRowAction(val ? camelCaseKeys(val, { deep: true }) : null));
+    // Dispatch the updated row
+    dispatch(changeSelectedRowAction(selectedRow));
   };*/
 
   const changeActionedRow = (val: any) => {
@@ -429,8 +427,12 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     const filtersChanged = !isEqual(sortBy(state?.predefinedFilters), sortBy(predefinedFilters));
 
     if (filtersChanged) {
-      dispatch(setPredefinedFiltersAction({predefinedFilters, userConfig}));
+      dispatch(setPredefinedFiltersAction({ predefinedFilters, userConfig }));
     }
+  };
+
+  const setHiddenFilter = (owner: string, filter: IStoredFilter) => {
+    dispatch(setHiddenFilterAction({ owner, filter }));
   };
 
   const changeSelectedIds = (selectedIds: string[]) => {
@@ -441,7 +443,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     dispatch((dispatchThunk, _getState) => {
       dispatchThunk(registerConfigurableColumnsAction({ ownerId, columns: configurableColumns }));
 
-      repository.prepareColumns(configurableColumns).then(preparedColumns => {
+      repository.prepareColumns(configurableColumns).then((preparedColumns) => {
         dispatchThunk(fetchColumnsSuccessSuccessAction({ configurableColumns, columns: preparedColumns, userConfig }));
       });
     });
@@ -460,12 +462,16 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   //#region public
 
   const toggleColumnsSelector = () => {
-    const { isInProgress: { isSelectingColumns } } = state;
+    const {
+      isInProgress: { isSelectingColumns },
+    } = state;
     flagSetters?.setIsInProgressFlag({ isSelectingColumns: !isSelectingColumns, isFiltering: false });
   };
 
   const toggleAdvancedFilter = () => {
-    const { isInProgress: { isFiltering } } = state;
+    const {
+      isInProgress: { isFiltering },
+    } = state;
     flagSetters?.setIsInProgressFlag({ isFiltering: !isFiltering, isSelectingColumns: false });
   };
   /*
@@ -501,15 +507,23 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   //#endregion
 
   //#region Subscriptions
-  useEffect(() => {
+  const getPartialState = () => {
+    const { actionedRow, selectedIds, selectedRow, tableData } = state;
+    return { actionedRow, selectedIds, selectedRow, tableData };
+  };
+  const partialState = getPartialState();
+  
+  useDeepCompareEffect(() => {
     // write state by name
     if (actionOwnerName) {
       setGlobalState({
         key: actionOwnerName,
-        data: { ...state, refreshTable },
+        data: { 
+          ...partialState,
+          refreshTable },
       });
     }
-  }, [state, actionOwnerName]);
+  }, [partialState, actionOwnerName]);
   /*
     useConfigurableAction(
       {
@@ -657,6 +671,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     changeActionedRow,
     changeSelectedStoredFilterIds,
     setPredefinedFilters,
+    setHiddenFilter,
     changeSelectedIds,
     refreshTable,
     registerConfigurableColumns,
@@ -756,4 +771,4 @@ function useDataTableStore(require: boolean = true) {
 const useDataTable = useDataTableStore;
 
 export default DataTableProvider;
-export { DataTableProvider, useDataTableState, useDataTableActions, useDataTable, useDataTableStore };
+export { DataTableProvider, useDataTable, useDataTableActions, useDataTableState, useDataTableStore };

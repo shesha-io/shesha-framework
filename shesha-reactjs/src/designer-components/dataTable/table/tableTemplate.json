@@ -179,7 +179,7 @@
                     "buttonType": "link",
                     "buttonAction": "executeFormAction",
                     "formAction": "exportToExcel",
-                    "selected": false                    
+                    "selected": false
                   }
                 ]
               }

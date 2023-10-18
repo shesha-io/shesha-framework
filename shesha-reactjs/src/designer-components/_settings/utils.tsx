@@ -1,4 +1,4 @@
-import { IContainerComponentProps } from "designer-components/container/interfaces";
+import { IContainerComponentProps } from "../../designer-components/container/interfaces";
 import { IComponentsDictionary, IConfigurableFormComponent, IPropertySetting, IToolboxComponents } from "interfaces";
 import { nanoid } from "nanoid";
 

@@ -1,10 +1,11 @@
 import { useDeepCompareEffect } from "hooks/useDeepCompareEffect";
-import { getFieldNameFromExpression, MetadataProvider, useMetadataDispatcher } from "index";
 import { IModelMetadata } from "interfaces/metadata";
+import { MetadataProvider, useMetadataDispatcher } from "providers";
 import { useDataContextManager, useDataContextRegister } from "providers/dataContextManager";
 import React, { FC, PropsWithChildren, useContext, useEffect, useRef, useState } from "react";
 import { createContext } from 'react';
 import { setValueByPropertyName } from "utils/object";
+import { getFieldNameFromExpression } from "utils/publicUtils";
 
 export interface IDataContextProviderStateContext {
     id: string;

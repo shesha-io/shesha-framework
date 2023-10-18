@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
-import { TableView } from './tableView';
+import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { useTableViewSelectorConfigurator } from '../../../providers/tableViewSelectorConfigurator';
 import { ITableViewProps } from '../../../providers/tableViewSelectorConfigurator/models';
-import { ReactSortable, ItemInterface } from 'react-sortablejs';
+import { TableView } from './tableView';
 
 export interface ITableViewContainerProps {
   index?: number[];
@@ -19,7 +19,7 @@ export const TableViewContainer: FC<ITableViewContainerProps> = ({ onConfigClick
     const listChanged = true; //!newState.some(item => item.chosen !== null && item.chosen !== undefined);
 
     if (listChanged) {
-      const newChilds = newState.map<ITableViewProps>(item => item as ITableViewProps);
+      const newChilds = newState.map<ITableViewProps>((item) => item as ITableViewProps);
       updateChildItems({ index: props.index, childs: newChilds });
     }
     return;

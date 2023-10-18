@@ -9,11 +9,11 @@ import { IAddressCompomentProps } from './models';
 import { EXPOSED_VARIABLES } from './utils';
 import { useFormDesigner } from 'providers/formDesigner';
 import { ISettingsFormFactoryArgs } from 'interfaces';
-import SettingsForm, { useSettingsForm } from 'designer-components/_settings/settingsForm';
+import SettingsForm, { useSettingsForm } from '../../../../designer-components/_settings/settingsForm';
 import { useForm } from 'providers';
-import SettingsCollapsiblePanel from 'designer-components/_settings/settingsCollapsiblePanel';
-import { ContextPropertyAutocomplete } from 'designer-components/contextPropertyAutocomplete';
-import SettingsFormItem from 'designer-components/_settings/settingsFormItem';
+import SettingsCollapsiblePanel from '../../../../designer-components/_settings/settingsCollapsiblePanel';
+import { ContextPropertyAutocomplete } from '../../../../designer-components/contextPropertyAutocomplete';
+import SettingsFormItem from '../../../../designer-components/_settings/settingsFormItem';
 
 interface IEntityReferenceSettingsState extends IAddressCompomentProps { }
 
@@ -70,6 +70,10 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
         </SettingsFormItem>
 
         <SettingsFormItem name="disabled" label="Disabled" valuePropName="checked" jsSetting>
+          <Checkbox disabled={readOnly} />
+        </SettingsFormItem>
+
+        <SettingsFormItem name="hidden" label="Hidden" valuePropName="checked" jsSetting>
           <Checkbox disabled={readOnly} />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
@@ -184,13 +188,11 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
           tooltip="Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
         >
           <CodeEditor
-            id={''}
             propertyName="onChangeCustom"
             readOnly={readOnly}
             mode="dialog"
             label="On Change"
             setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-            type={''}
             description="Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
             exposedVariables={EXPOSED_VARIABLES}
           />
@@ -202,13 +204,11 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
           tooltip="Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
         >
           <CodeEditor
-            id={''}
             propertyName="onSelectCustom"
             readOnly={readOnly}
             mode="dialog"
             label="On Select"
             setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-            type={''}
             description="Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
             exposedVariables={EXPOSED_VARIABLES}
           />

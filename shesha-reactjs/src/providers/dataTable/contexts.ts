@@ -1,16 +1,16 @@
 import { createContext } from 'react';
 import { Row } from 'react-table';
-import { IFlagsSetters, IFlagsState } from '../../interfaces';
+import { IDictionary, IFlagsSetters, IFlagsState } from '../../interfaces';
 import { IConfigurableColumnsProps } from '../datatableColumnsConfigurator/models';
 import {
-  ITableColumn,
-  IStoredFilter,
-  ITableFilter,
-  IColumnSorting,
-  IndexColumnFilterOption,
   ColumnFilter,
-  IPublicDataTableActions,
   DataFetchingMode,
+  IColumnSorting,
+  IPublicDataTableActions,
+  IStoredFilter,
+  ITableColumn,
+  ITableFilter,
+  IndexColumnFilterOption,
 } from './interfaces';
 import { IHasModelType, IRepository } from './repository/interfaces';
 
@@ -65,8 +65,8 @@ export interface IDataTableStoredConfig {
 }
 
 export interface IDataTableStateContext
-  extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags>, IHasModelType {
-
+  extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags>,
+    IHasModelType {
   exportToExcelError?: string;
 
   exportToExcelWarning?: string;
@@ -75,6 +75,7 @@ export interface IDataTableStateContext
   configurableColumns?: IConfigurableColumnsProps[];
   /** Pre-defined stored filters. configurable in the forms designer */
   predefinedFilters?: IStoredFilter[];
+  hiddenFilters: IDictionary<IStoredFilter>;
 
   /** table columns */
   columns?: ITableColumn[];
@@ -144,7 +145,7 @@ export interface IDataTableStateContext
 
 export interface IDataTableActionsContext
   extends IFlagsSetters<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags>,
-  IPublicDataTableActions {
+    IPublicDataTableActions {
   toggleColumnVisibility?: (val: string) => void;
   setCurrentPage?: (page: number) => void;
   changePageSize?: (size: number) => void;
@@ -163,6 +164,7 @@ export interface IDataTableActionsContext
   changeSelectedStoredFilterIds?: (selectedStoredFilterIds: string[]) => void;
 
   setPredefinedFilters: (filters: IStoredFilter[]) => void;
+  setHiddenFilter: (owner: string, filter: IStoredFilter) => void;
 
   onSort?: (sorting: IColumnSorting[]) => void;
 
@@ -176,7 +178,7 @@ export interface IDataTableActionsContext
 
   changeDisplayColumn: (displayColumnName: string) => void;
   changePersistedFiltersToggle: (persistSelectedFilters: boolean) => void;
-  
+
   /**
    * Get current repository of the datatable
    */
@@ -219,9 +221,10 @@ export const DATA_TABLE_CONTEXT_INITIAL_STATE: IDataTableStateContext = {
   dataFetchingMode: 'paging',
   selectedRow: null,
   selectedRows: [],
+  hiddenFilters: {},
 };
 
-export interface DataTableFullInstance extends IDataTableStateContext, IDataTableActionsContext { }
+export interface DataTableFullInstance extends IDataTableStateContext, IDataTableActionsContext {}
 
 export const DataTableStateContext = createContext<IDataTableStateContext>(DATA_TABLE_CONTEXT_INITIAL_STATE);
 

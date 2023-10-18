@@ -1,7 +1,8 @@
-import { IConfigurableActionConfiguration } from 'interfaces/configurableAction';
-import { ProperyDataType } from 'interfaces/metadata';
 import { Moment } from 'moment';
+import { IConfigurableActionConfiguration } from '../../interfaces/configurableAction';
+import { ProperyDataType } from '../../interfaces/metadata';
 import { IDataColumnsProps, IEditableColumnProps } from '../datatableColumnsConfigurator/models';
+
 export type ColumnFilter = string[] | number[] | Moment[] | Date[] | string | number | Moment | Date | boolean;
 
 export type IndexColumnFilterOption =
@@ -30,7 +31,7 @@ export interface ITableColumn {
   accessor: string;
   header: string;
   caption?: string;
-  
+
   isVisible: boolean; // is visible in the table (including columns selector, filter etc.)
   show?: boolean; // is visible on client
   isFilterable: boolean;
@@ -41,7 +42,7 @@ export interface ITableColumn {
 
   filterOption?: IndexColumnFilterOption;
   filter?: any;
-  
+
   defaultSorting?: SortDirection;
   name?: string;
   allowShowHide?: boolean;
@@ -51,20 +52,16 @@ export interface ITableDataColumn extends ITableColumn, IEditableColumnProps {
   propertyName?: string;
   dataType?: ProperyDataType;
   dataFormat?: string;
-  
+
   referenceListName?: string;
   referenceListModule?: string;
   entityReferenceTypeShortAlias?: string;
   allowInherited?: boolean;
 }
 
-export interface ITableActionColumn extends ITableColumn, IActionColumnProps {
+export interface ITableActionColumn extends ITableColumn, IActionColumnProps {}
 
-}
-
-export interface ITableCrudOperationsColumn extends ITableColumn {
-
-}
+export interface ITableCrudOperationsColumn extends ITableColumn {}
 
 export interface ICustomFilterOptions {
   readonly id: string;
@@ -184,7 +181,7 @@ export interface IPublicDataTableActions {
   exportToExcel?: () => void;
 }
 
-export interface IDataTableInstance extends IPublicDataTableActions { }
+export interface IDataTableInstance extends IPublicDataTableActions {}
 
 export type ListSortDirection = 0 | 1;
 
@@ -242,10 +239,10 @@ export interface IActionColumnProps {
   /**
    * Icon, is used for action columns
    */
-   icon?: string;
+  icon?: string;
 
-   /**
-    * Configurable action configuration
-    */
-   actionConfiguration?: IConfigurableActionConfiguration;  
+  /**
+   * Configurable action configuration
+   */
+  actionConfiguration?: IConfigurableActionConfiguration;
 }

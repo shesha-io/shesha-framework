@@ -1,6 +1,6 @@
 import { LineOutlined } from '@ant-design/icons';
 import { Divider, DividerProps } from 'antd';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 import React from 'react';
 import { validateConfigurableComponentSettings } from '../../../../formDesignerUtils';
 import { IConfigurableFormComponent, IToolboxComponent } from '../../../../interfaces/formDesigner';

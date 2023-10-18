@@ -16,8 +16,8 @@ interface IAutoCompletePlacesFieldProps extends IAddressCompomentProps {
   onChange?: (...args) => void;
 }
 
-const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = model => {
-  const { debounce, minCharactersSearch, onChange, openCageApiKey, placeholder, prefix, value } = model;
+const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => {
+  const { debounce, minCharactersSearch, onChange, openCageApiKey, placeholder, prefix, value, disabled } = model;
 
   const { loading, error, refetch } = useGet<IOpenCageResponse>({
     base: 'https://api.opencagedata.com',
@@ -36,7 +36,7 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = model => {
       try {
         if (openCageApiKey) {
           refetch({ queryParams: { key: openCageApiKey, q: `${lat} ${lng}` } })
-            .then(result => resolve({ ...selected, ...result }))
+            .then((result) => resolve({ ...selected, ...result }))
             .catch(reject);
         } else resolve(selected);
       } catch (error) {
@@ -72,6 +72,7 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = model => {
         externalLoader={loading}
         placeholder={placeholder}
         prefix={prefix}
+        disabled={disabled}
         disableGoogleEvent={disableGoogleEvent}
         searchOptions={getSearchOptions(model)}
         {...customAddressEventHandler(eventProps)}

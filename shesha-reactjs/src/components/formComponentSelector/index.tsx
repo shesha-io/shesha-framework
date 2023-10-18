@@ -1,6 +1,7 @@
 import { Button, Input, Select } from 'antd';
 import { DefaultOptionType } from 'antd/lib/select';
 import { DEFAULT_FORM_SETTINGS, IConfigurableFormComponent, IToolboxComponent } from 'interfaces';
+import { IPropertyMetadata } from 'interfaces/metadata';
 import { nanoid } from 'nanoid';
 import { useFormDesignerComponents } from 'providers/form/hooks';
 import { upgradeComponent } from 'providers/form/utils';
@@ -21,10 +22,11 @@ export interface IFormComponentSelectorProps {
   value?: ComponentSelectorValue;
   onChange?: (value?: ComponentSelectorValue) => void;
   readOnly?: boolean;
+  propertyMeta?: IPropertyMetadata;
 }
 
 export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) => {
-  const { componentType, noSelectionItem, value, onChange, readOnly = false } = props;
+  const { componentType, noSelectionItem, value, onChange, readOnly = false, propertyMeta } = props;
 
   const [isSettingsVisible, setIsSettingsVisible] = useState<boolean>(false);
   const allComponents = useFormDesignerComponents();
@@ -84,6 +86,10 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
         componentRelations: {},
       });
     }
+    if (toolboxComponent.linkToModelMetadata && propertyMeta) {
+      componentModel = toolboxComponent.linkToModelMetadata(componentModel, propertyMeta);
+    }
+
     return componentModel;
   };
 
@@ -98,6 +104,18 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
   const onClear = () => {
     if (onChange) onChange(null);
   };
+
+  // this part is required only for old forms to call the linkToModelMetadata
+  const modalData = useMemo(() => {
+    if (!value?.settings)
+      return undefined;
+
+    const component = value && value.type ? allComponents[value.type] : null;
+    if (!component || !component.linkToModelMetadata || !propertyMeta)
+      return value?.settings;
+
+    return component.linkToModelMetadata(value.settings, propertyMeta);
+  }, [value?.type, value?.settings, componentType, propertyMeta]);
 
   const onConfigureClick = () => {
     setIsSettingsVisible(true);
@@ -142,7 +160,7 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
         readOnly={readOnly}
         formComponent={formComponent}
         isVisible={isSettingsVisible}
-        model={value?.settings}
+        model={modalData}
         onSave={onSettingsSaveClick}
         onCancel={onCancelConfigureClick}
         propertyFilter={propertyFilter}

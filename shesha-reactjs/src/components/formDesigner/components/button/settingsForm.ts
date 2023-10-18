@@ -38,7 +38,7 @@ export const getSettings = (data: any) =>
       label: 'Icon',
       labelAlign: 'right',
       parentId: '345c2181-fb9f-48ed-9631-864ac357807b',
-      hidden: {_code: 'return  getSettingValue(data?.itemSubType) !== "button";', _mode: 'code', _value: false} as any,
+      hidden: false,
       settingsValidationErrors: [],
     })
     .addDropdown({

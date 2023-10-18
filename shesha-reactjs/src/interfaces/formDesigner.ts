@@ -1,17 +1,17 @@
-import { ReactNode, MutableRefObject } from 'react';
+import { ColProps, FormInstance } from 'antd';
+import { FormLayout } from 'antd/lib/form/Form';
+import { InternalNamePath } from 'rc-field-form/lib/interface';
+import { MutableRefObject, ReactNode } from 'react';
+import { ConfigurableFormInstance } from '../providers/form/contexts';
 import {
-  IConfigurableFormComponent,
-  IFormComponentContainer,
   FormMarkup,
+  IConfigurableFormComponent,
   IFlatComponentsStructure,
+  IFormComponentContainer,
   IFormSettings,
 } from '../providers/form/models';
-import { ColProps, FormInstance } from 'antd';
-import { InternalNamePath } from 'rc-field-form/lib/interface';
-import { IPropertyMetadata } from './metadata';
-import { ConfigurableFormInstance } from '../providers/form/contexts';
 import { Migrator, MigratorFluent } from '../utils/fluentMigrator/migrator';
-import { FormLayout } from 'antd/lib/form/Form';
+import { IPropertyMetadata } from './metadata';
 import { IApplicationContext } from 'utils/publicUtils';
 
 export interface ISettingsFormInstance {
@@ -170,7 +170,7 @@ export interface IAsyncValidationError {
   message: string;
 }
 
-export interface IFormValidationErrors { }
+export interface IFormValidationErrors {}
 
 export { type ConfigurableFormInstance };
 

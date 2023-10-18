@@ -1,0 +1,100 @@
+# Variable 'artifactName' was defined in the Variables tab - This is from my fix branch
+# Agent Queue 'Azure Pipelines' was used with unrecognized Agent Specification, vmImage property must be specified to determine image - https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops&tabs=yaml#software
+variables:
+- name: isMain
+  value: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
+
+# trigger:
+#   branches:
+#     include:
+#     - releases/*
+#     - main
+
+pool: 
+  name: Azure Pipelines
+  vmImage1: windows-latest
+  vmImage2: ubuntu-latest
+
+# name: 2.0.0.$(BuildID)
+stages:
+- stage: build
+  jobs:
+  - job: Job_1
+    displayName: Build_Starter_Shesha_API
+    pool:
+      name: Azure Pipelines
+      vmImage: windows-latest
+    steps:
+    - checkout: self
+    - task: UseDotNet@2
+      displayName: Use .NET Core sdk 7.x
+      inputs:
+        version: 7.x
+    - task: DotNetCoreCLI@2
+      displayName: dotnet Restore
+      inputs:
+        command: 'restore'
+        projects: shesha-starter/backend/**/*.csproj
+        feedsToUse: 'select'
+        vstsFeed: '44b4667a-8963-403d-9962-bde66225adbd'
+    - task: DotNetCoreCLI@2
+      displayName: dotnet build
+      inputs:
+        projects: shesha-starter/backend/ShaCompanyName.ShaProjectName.sln
+        arguments: --configuration release
+    - task: DotNetCoreCLI@2
+      displayName: dotnet publish
+      inputs:
+        command: publish
+        publishWebProjects: false
+        projects: shesha-starter/backend/ShaCompanyName.ShaProjectName.sln
+        arguments: --configuration $(BuildParameters.configuration) --output $(build.artifactstagingdirectory) --no-build
+        zipAfterPublish: false
+        modifyOutputPath: false
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: starter-shesha-api'
+      inputs:
+        ArtifactName: starter-shesha-api
+  - job: Job_2
+    displayName: Build_Starter_Shesha_AdminPortal
+    pool:
+      vmImage: windows-latest
+    steps:
+    - task: NodeTool@0
+      displayName: 'Use Node 18.15.0'
+      inputs:
+        versionSpec: 18.15.0
+      retryCountOnTaskFailure: 5
+    - task: Npm@1
+      displayName: 'Npm Install'
+      inputs:
+        command: custom
+        workingDir: shesha-starter/frontend
+        verbose: false
+        customCommand: 'install'
+    - task: Npm@1
+      displayName: Install Latest Shesha
+      inputs:
+        command: custom
+        workingDir: 'shesha-functional-tests/adminportal'
+        verbose: true
+        customCommand: install @shesha-io/reactjs@$(releaseVersion)
+    - task: Npm@1
+      displayName: Npm Build
+      inputs:
+        command: custom
+        workingDir: 'shesha-starter/frontend'
+        verbose: true
+        customCommand: run build
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: 'shesha-starter/frontend'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/shesha-adminportal-starter.zip'
+        replaceExistingArchive: true  
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: shesha-adminportal-starter'
+      inputs:
+        ArtifactName: adminportal-starter
+ 

@@ -5,7 +5,8 @@ import { DeleteFilled, QuestionCircleOutlined } from '@ant-design/icons';
 import { useButtonGroupConfigurator } from '../../../../../providers/buttonGroupConfigurator';
 import DragHandle from './dragHandle';
 import ShaIcon, { IconType } from '../../../../shaIcon';
-import { useDynamicActionsDispatcher } from 'index';
+import { useDynamicActionsDispatcher } from 'providers';
+
 
 const { Text } = Typography;
 

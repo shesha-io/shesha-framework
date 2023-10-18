@@ -6,7 +6,7 @@ import { getFieldNameFromExpression, getValidationRules } from '../../../provide
 import classNames from 'classnames';
 import './styles.less';
 import { useFormItem } from '../../../providers';
-import { DataBinder } from 'hocs/dataBinder';
+import { DataBinder } from '../../../hocs/dataBinder';
 import { useDataContextManager } from 'providers/dataContextManager';
 
 export type IConfigurableFormItemChildFunc = (value: any, onChange: (...args: any[]) => void, propertyName?: string, getFieldValue?: (propertyName: string) => object[]) => ReactNode;

@@ -1,4 +1,4 @@
-import { IConfigurableActionDescriptor } from "../../interfaces/configurableAction";
+import { IConfigurableActionDescriptor } from '../../interfaces/configurableAction';
 
 export interface IConfigurableActionDictionary {
   [key: string]: IConfigurableActionDescriptor[];
@@ -6,7 +6,7 @@ export interface IConfigurableActionDictionary {
 
 export interface IConfigurableActionGroup {
   ownerName: string;
-  actions: IConfigurableActionDescriptor[]; 
+  actions: IConfigurableActionDescriptor[];
 }
 export interface IConfigurableActionGroupDictionary {
   [key: string]: IConfigurableActionGroup;

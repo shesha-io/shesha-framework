@@ -18,16 +18,28 @@ namespace Shesha.NHibernate.Filters
         /// </summary>
         public static FilterDefinition GetDefinition()
         {
+            var defaultColumnName = nameof(IMayHaveTenant.TenantId);
 
             var filterDef = new FilterDefinition(
                 AbpDataFilters.MayHaveTenant,
-                $"({nameof(IMayHaveTenant.TenantId).EscapeDbObjectNameForNH()} = :{AbpDataFilters.Parameters.TenantId} or {nameof(IMayHaveTenant.TenantId).EscapeDbObjectNameForNH()} is null and :{AbpDataFilters.Parameters.TenantId} is null)",
+                GetCondition(defaultColumnName),
                 new Dictionary<string, IType>
                 {
                     { AbpDataFilters.Parameters.TenantId, NHibernateUtil.Int32 }
                 },
                 false);
             return filterDef;
+        }
+
+        /// <summary>
+        /// Get filtering condition
+        /// </summary>
+        /// <param name="columnName">Name of the `TenantId` column</param>
+        /// <returns></returns>
+        public static string GetCondition(string columnName) 
+        {
+            var escapedColumnName = columnName.EscapeDbObjectNameForNH();
+            return $"({escapedColumnName} = :{AbpDataFilters.Parameters.TenantId} or {escapedColumnName} is null and :{AbpDataFilters.Parameters.TenantId} is null)";
         }
     }
 }

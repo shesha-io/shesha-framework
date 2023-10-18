@@ -1,6 +1,6 @@
-import { IAnyObject } from './../../interfaces/anyObject';
 import { createContext } from 'react';
 import { IPubSubPayload } from '../../interfaces/pubsub';
+import { IAnyObject } from './../../interfaces/anyObject';
 
 export type PubSubType = PubSubJS.Base<IPubSubPayload, PubSubJS.Message>;
 

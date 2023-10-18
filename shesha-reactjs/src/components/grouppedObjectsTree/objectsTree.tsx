@@ -117,7 +117,7 @@ export const ObjectsTree = <TItem,>(props: IProps<TItem>) => {
     };
 
     const refs = nodes.reduce((ref, value) => {
-        ref[value.key] = React.createRef();
+        ref[value.key.toString()] = React.createRef();
         return ref;
     }, {});
 
@@ -143,7 +143,7 @@ export const ObjectsTree = <TItem,>(props: IProps<TItem>) => {
     const renderTitle = (node: DataNodeWithObject<TItem>): React.ReactNode => {
         const icon = Boolean(props.getIcon) ? props.getIcon(node.object) : 'BookOutlined' as IconType;
         const markup = (
-            <div className='sha-toolbox-component' key={node.key} ref={refs[node.key]}>
+            <div className='sha-toolbox-component' key={node.key} ref={refs[node.key.toString()]}>
                 {props.onRenterItem
                     ? props.onRenterItem(node.object)
                     : <>

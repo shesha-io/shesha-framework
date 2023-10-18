@@ -1,13 +1,13 @@
-import { IConfigurableFormComponent } from 'providers/form/models';
-import { IConfigurableActionConfiguration } from 'interfaces/configurableAction';
-import { IConfigurableColumnsProps } from 'providers/datatableColumnsConfigurator/models';
-import { IShaDataTableInlineEditableProps } from 'components/dataTable/interfaces';
+import { IShaDataTableInlineEditableProps } from '../../../components/dataTable/interfaces';
+import { IConfigurableActionConfiguration } from '../../../interfaces/configurableAction';
+import { IConfigurableColumnsProps } from '../../../providers/datatableColumnsConfigurator/models';
+import { IConfigurableFormComponent } from '../../../providers/form/models';
 
 export type RowDroppedMode = 'executeScript' | 'showDialog';
 
 export interface ITableComponentBaseProps extends IShaDataTableInlineEditableProps {
   items: IConfigurableColumnsProps[];
-  
+
   useMultiselect?: boolean;
   allowRowDragAndDrop?: boolean;
   onRowDropped?: string;

@@ -1,6 +1,5 @@
 import axios, { AxiosResponse } from "axios";
 import { useMetadataDispatcher, useSheshaApplication } from "providers";
-import { GENERIC_ENTITIES_ENDPOINT } from "shesha-constants";
 import { IResult } from "interfaces/result";
 import { IHttpHeadersDictionary } from "providers/sheshaApplication/contexts";
 import qs from "qs";
@@ -19,6 +18,7 @@ import { IErrorInfo } from "interfaces/errorInfo";
 import { IAjaxResponseBase } from "interfaces/ajaxResponse";
 import FileSaver from "file-saver";
 import { DataTypes } from "interfaces/dataTypes";
+import { GENERIC_ENTITIES_ENDPOINT } from "src/index";
 
 export interface IWithBackendRepositoryArgs {
     entityType: string;

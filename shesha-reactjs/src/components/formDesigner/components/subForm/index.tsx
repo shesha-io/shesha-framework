@@ -16,7 +16,7 @@ import {
 import SubForm from './subForm';
 import ConfigurableFormItem from '../formItem';
 import { SubFormSettingsForm } from './settings';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 import { ISubFormProviderProps } from 'providers/subForm/interfaces';
 
 export interface ISubFormComponentProps

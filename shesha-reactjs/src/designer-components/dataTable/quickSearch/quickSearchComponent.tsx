@@ -1,13 +1,13 @@
+import { SearchOutlined } from '@ant-design/icons';
+import React from 'react';
+import { GlobalTableFilter } from '../../..';
 import { IToolboxComponent } from '../../../interfaces';
 import { FormMarkup, IConfigurableFormComponent } from '../../../providers/form/models';
-import { SearchOutlined } from '@ant-design/icons';
-import settingsFormJson from './settingsForm.json';
-import { GlobalTableFilter } from '../../..';
-import React from 'react';
 import { validateConfigurableComponentSettings } from '../../../providers/form/utils';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import settingsFormJson from './settingsForm.json';
+import { migrateCustomFunctions, migratePropertyName } from '../../../designer-components/_common-migrations/migrateSettings';
 
-export interface IQuickSearchComponentProps extends IConfigurableFormComponent { }
+export interface IQuickSearchComponentProps extends IConfigurableFormComponent {}
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -28,7 +28,7 @@ const QuickSearchComponent: IToolboxComponent<IQuickSearchComponentProps> = {
     .add(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
   ,
   settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
 };
 
 export default QuickSearchComponent;

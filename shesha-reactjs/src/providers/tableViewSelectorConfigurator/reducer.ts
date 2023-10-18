@@ -1,14 +1,14 @@
+import { nanoid } from 'nanoid/non-secure';
+import { handleActions } from 'redux-actions';
+import { TableViewSelectorActionEnums } from './actions';
 import {
   ITableViewSelectorConfiguratorStateContext,
   IUpdateChildItemsPayload,
   IUpdateItemSettingsPayload,
   TOOLBAR_CONTEXT_INITIAL_STATE as TABLE_VIEWS_SELECTOR_CONTEXT_INITIAL_STATE,
 } from './contexts';
-import { TableViewSelectorActionEnums } from './actions';
 import { ITableViewProps } from './models';
-import { handleActions } from 'redux-actions';
 import { getItemPositionById } from './utils';
-import { nanoid } from 'nanoid/non-secure';
 
 const toolbarReducer = handleActions<ITableViewSelectorConfiguratorStateContext, any>(
   {
@@ -34,7 +34,7 @@ const toolbarReducer = handleActions<ITableViewSelectorConfiguratorStateContext,
     ) => {
       const { payload } = action;
 
-      const newItems = state.items.filter(item => item.id !== payload);
+      const newItems = state.items.filter((item) => item.id !== payload);
 
       return {
         ...state,

@@ -1,9 +1,9 @@
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { IReadOnly } from 'interfaces/readOnly';
 import { LabeledValue, SelectProps } from 'antd/lib/select';
-import { Key, CSSProperties } from 'react';
-import { ReferenceListItemDto } from 'apis/referenceList';
 import { IReferenceListIdentifier } from 'interfaces/referenceList';
+import { CSSProperties, Key } from 'react';
+import { ReferenceListItemDto } from '../../apis/referenceList';
+import { IReadOnly } from '../../interfaces/readOnly';
 
 export interface IGenericRefListDropDownProps<TValue = any> extends IRefListDropDownProps<TValue> {
   /**

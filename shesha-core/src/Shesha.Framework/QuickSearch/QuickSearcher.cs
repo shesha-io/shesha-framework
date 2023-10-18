@@ -125,16 +125,20 @@ namespace Shesha.QuickSearch
                                 {
                                     var nestedPropertyDisplayName = nestedEntityConfig.DisplayNamePropertyInfo.Name;
 
-                                    var propExpression = ExpressionExtensions.GetMemberExpression(parameter, $"{prop.Name}.{nestedPropertyDisplayName}");
-                                    var constExpression = Expression.Constant(quickSearch);
+                                    var propConfig = nestedEntityConfig.Properties[nestedPropertyDisplayName];
+                                    if (propConfig != null && propConfig.IsMapped) 
+                                    {
+                                        var propExpression = ExpressionExtensions.GetMemberExpression(parameter, $"{prop.Name}.{nestedPropertyDisplayName}");
+                                        var constExpression = Expression.Constant(quickSearch);
 
-                                    // note: `in` arguments are reversed
-                                    var containsExpression = Expression.Call(
-                                            propExpression,
-                                            stringContainsMethod,
-                                            constExpression);
+                                        // note: `in` arguments are reversed
+                                        var containsExpression = Expression.Call(
+                                                propExpression,
+                                                stringContainsMethod,
+                                                constExpression);
 
-                                    subExpressions.Add(containsExpression);
+                                        subExpressions.Add(containsExpression);
+                                    }
                                 }
                             }
                             break;

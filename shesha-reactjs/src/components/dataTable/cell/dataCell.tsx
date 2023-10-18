@@ -1,122 +1,137 @@
 import React, { FC, useMemo, useRef } from 'react';
+import { CustomErrorBoundary } from '../../../components';
+import { IPropertyMetadata } from '../../../interfaces/metadata';
+import { useForm } from '../../../providers';
+import { useCrud } from '../../../providers/crudContext';
+import { ITableDataColumn } from '../../../providers/dataTable/interfaces';
+import {
+  IColumnEditorProps,
+  IFieldComponentProps,
+  standardCellComponentTypes,
+} from '../../../providers/datatableColumnsConfigurator/models';
+import { useFormDesignerComponents } from '../../../providers/form/hooks';
+import BooleanCell from './default/booleanCell';
+import DateCell from './default/dateCell';
+import DateTimeCell from './default/dateTimeCell';
+import EntityCell from './default/entityCell';
+import MultivalueReferenceListCell from './default/multivalueReferenceListCell';
+import NumberCell from './default/numberCell';
+import ReferenceListCell from './default/referenceListCell';
+import StringCell from './default/stringCell';
+import TimeCell from './default/timeCell';
 import { IConfigurableCellProps, IDataCellProps } from './interfaces';
-import BooleanCell from "./default/booleanCell";
-import DateCell from "./default/dateCell";
-import DateTimeCell from "./default/dateTimeCell";
-import EntityCell from "./default/entityCell";
-import MultivalueReferenceListCell from "./default/multivalueReferenceListCell";
-import NumberCell from "./default/numberCell";
-import ReferenceListCell from "./default/referenceListCell";
-import StringCell from "./default/stringCell";
-import TimeCell from "./default/timeCell";
-import { useCrud } from 'providers/crudContext';
-import { CustomErrorBoundary } from 'components';
-import { useFormDesignerComponents } from 'providers/form/hooks';
-import { useForm } from 'providers';
-import { IColumnEditorProps, IFieldComponentProps, standardCellComponentTypes } from 'providers/datatableColumnsConfigurator/models';
-import { IPropertyMetadata } from 'interfaces/metadata';
-import { ITableDataColumn } from 'providers/dataTable/interfaces';
 import { getActualModel, useApplicationContext } from 'utils/publicUtils';
 
 export const DataCell = <D extends object = {}, V = number>(props: IDataCellProps<D, V>) => {
-    const { mode } = useCrud();
+  const { mode } = useCrud();
 
-    switch (mode) {
-        case 'create': return <CreateDataCell {...props} />;
-        case 'read': return <ReadDataCell {...props} />;
-        case 'update': return <UpdateDataCell {...props} />;
-    }
-    return null;
+  switch (mode) {
+    case 'create':
+      return <CreateDataCell {...props} />;
+    case 'read':
+      return <ReadDataCell {...props} />;
+    case 'update':
+      return <UpdateDataCell {...props} />;
+    default:
+      return null;
+  }
 };
 
 const ReadDataCell = <D extends object = {}, V = number>(props: IDataCellProps<D, V>) => {
-    const { columnConfig, propertyMeta } = props;
-    const customComponent = columnConfig?.displayComponent;
+  const { columnConfig, propertyMeta } = props;
+  const customComponent = columnConfig?.displayComponent;
 
-    const componentType = customComponent?.type ?? standardCellComponentTypes.defaultDisplay;
+  const componentType = customComponent?.type ?? standardCellComponentTypes.defaultDisplay;
+  const row = props?.row?.original;
 
-    return componentType === standardCellComponentTypes.defaultDisplay
-        ? <DefaultDataDisplayCell {...props} />
-        : <ComponentWrapper
-            propertyMeta={propertyMeta}
-            columnConfig={columnConfig}
-            customComponent={customComponent}
-        />;
+  return componentType === standardCellComponentTypes.defaultDisplay ? (
+    <DefaultDataDisplayCell {...props} />
+  ) : (
+    <ComponentWrapper
+      propertyMeta={propertyMeta}
+      columnConfig={columnConfig}
+      customComponent={customComponent}
+      defaultRow={row}
+    />
+  );
 };
 
 export const CreateDataCell = (props: IConfigurableCellProps<ITableDataColumn>) => {
-    const { columnConfig, propertyMeta } = props;
-    const customComponent = columnConfig?.createComponent;
-    const componentType = customComponent?.type ?? standardCellComponentTypes.notEditable;
+  const { columnConfig, propertyMeta } = props;
+  const customComponent = columnConfig?.createComponent;
+  const componentType = customComponent?.type ?? standardCellComponentTypes.notEditable;
 
-    return componentType === standardCellComponentTypes.notEditable
-        ? null
-        : <ComponentWrapper
-            propertyMeta={propertyMeta}
-            columnConfig={columnConfig}
-            customComponent={customComponent}
-        />;
+  return componentType === standardCellComponentTypes.notEditable ? null : (
+    <ComponentWrapper propertyMeta={propertyMeta} columnConfig={columnConfig} customComponent={customComponent} />
+  );
 };
 
 const UpdateDataCell = <D extends object = {}, V = number>(props: IDataCellProps<D, V>) => {
-    const { columnConfig, propertyMeta } = props;
-    const customComponent = columnConfig?.editComponent;
-    const componentType = customComponent?.type ?? standardCellComponentTypes.notEditable;
+  const { columnConfig, propertyMeta } = props;
+  const customComponent = columnConfig?.editComponent;
+  const componentType = customComponent?.type ?? standardCellComponentTypes.notEditable;
 
-    if (componentType === standardCellComponentTypes.notEditable)
-        return <DefaultDataDisplayCell {...props} />;
+  if (componentType === standardCellComponentTypes.notEditable) return <DefaultDataDisplayCell {...props} />;
 
-    return (
-        <ComponentWrapper
-            propertyMeta={propertyMeta}
-            columnConfig={columnConfig}
-            customComponent={customComponent}
-        />
-    );
+  return <ComponentWrapper propertyMeta={propertyMeta} columnConfig={columnConfig} customComponent={customComponent} />;
 };
 
 const DefaultDataDisplayCell = <D extends object = {}, V = number>(props: IDataCellProps<D, V>) => {
-    const { columnConfig } = props;
-    const { form } = useForm();
-    const value = form.getFieldValue(columnConfig.propertyName?.split('.'));
-    const cellProps = { ...props, value };
+  const { columnConfig } = props;
+  const { form } = useForm();
+  const value = form.getFieldValue(columnConfig.propertyName?.split('.'));
+  const cellProps = { ...props, value };
 
-    switch (columnConfig.dataType) {
-        case 'number': return (<NumberCell<D, V> {...cellProps} />);
-        case 'date': return (<DateCell<D, V> {...cellProps} />);
-        case 'date-time': return (<DateTimeCell<D, V> {...cellProps} />);
-        case 'time': return (<TimeCell<D, V> {...cellProps} />);
-        case 'reference-list-item': return (<ReferenceListCell<D, V> {...cellProps} />);
-        case 'boolean': return (<BooleanCell<D, V> {...cellProps} />);
-        case 'entity': return (<EntityCell<D, V> {...cellProps} />);
-        case 'array': {
-            return columnConfig.dataFormat === 'reference-list-item'
-                ? <MultivalueReferenceListCell<D, V> {...cellProps} />
-                : <StringCell<D, V> {...props} />;
-        }
-        case 'string': return <StringCell<D, V> {...cellProps} />;
-        default: return <StringCell<D, V> {...cellProps} />;
-    };
+  switch (columnConfig.dataType) {
+    case 'number':
+      return <NumberCell<D, V> {...cellProps} />;
+    case 'date':
+      return <DateCell<D, V> {...cellProps} />;
+    case 'date-time':
+      return <DateTimeCell<D, V> {...cellProps} />;
+    case 'time':
+      return <TimeCell<D, V> {...cellProps} />;
+    case 'reference-list-item':
+      return <ReferenceListCell<D, V> {...cellProps} />;
+    case 'boolean':
+      return <BooleanCell<D, V> {...cellProps} />;
+    case 'entity':
+      return <EntityCell<D, V> {...cellProps} />;
+    case 'array': {
+      return columnConfig.dataFormat === 'reference-list-item' ? (
+        <MultivalueReferenceListCell<D, V> {...cellProps} />
+      ) : (
+        <StringCell<D, V> {...props} />
+      );
+    }
+    case 'string':
+      return <StringCell<D, V> {...cellProps} />;
+    default:
+      return <StringCell<D, V> {...cellProps} />;
+  }
 };
 
 interface IComponentWrapperProps {
-    customComponent: IFieldComponentProps;
-    columnConfig: ITableDataColumn;
-    propertyMeta?: IPropertyMetadata;
-};
+  customComponent: IFieldComponentProps;
+  columnConfig: ITableDataColumn;
+  propertyMeta?: IPropertyMetadata;
+  defaultRow?: { [key in string]?: any };
+}
 
 const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
-    const { columnConfig, propertyMeta, customComponent } = props;
+  const { columnConfig, propertyMeta, customComponent, defaultRow } = props;
 
-    const toolboxComponents = useFormDesignerComponents();
-    const appallData = useApplicationContext();
+  const toolboxComponents = useFormDesignerComponents();
+  const appallData = useApplicationContext();
 
-    const component = toolboxComponents[customComponent.type];
+  const component = toolboxComponents[customComponent.type];
+  const injectables = defaultRow ? { injectedTableRow: defaultRow } : {};
 
     const componentModel = useMemo(() => {
         const actualModel = getActualModel(customComponent.settings, appallData);
         let model: IColumnEditorProps = {
             ...actualModel,
+            ...injectables,
             id: props.columnConfig.columnId,
             type: customComponent.type,
             propertyName: columnConfig.propertyName,
@@ -124,18 +139,18 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
             hideLabel: true,
         };
 
-        if (component.linkToModelMetadata && propertyMeta) {
-            model = component.linkToModelMetadata(model, propertyMeta);
-        }
-
-        return model;
-    }, []);
-
-    const componentRef = useRef();
-
-    if (!component) {
-        return <div>Component not found</div>;
+    if (component.linkToModelMetadata && propertyMeta) {
+      model = component.linkToModelMetadata(model, propertyMeta);
     }
+
+    return model;
+  }, []);
+
+  const componentRef = useRef();
+
+  if (!component) {
+    return <div>Component not found</div>;
+  }
 
     return (
         <CustomErrorBoundary>

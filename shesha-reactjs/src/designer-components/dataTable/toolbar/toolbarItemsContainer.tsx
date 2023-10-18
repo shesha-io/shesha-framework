@@ -4,7 +4,7 @@ import { ToolbarItemsGroup } from './toolbarItemsGroup';
 import { useToolbarConfigurator } from '../../../providers/toolbarConfigurator';
 import { IButtonGroup, IToolbarButton, ToolbarItemProps } from '../../../providers/toolbarConfigurator/models';
 import { ReactSortable, ItemInterface } from 'react-sortablejs';
-import { getActualModel, useApplicationContext } from 'index';
+import { getActualModel, useApplicationContext } from 'utils/publicUtils';
 
 export interface IToolbarItemsContainerProps {
   index?: number[];

@@ -1,19 +1,19 @@
+import { nanoid } from 'nanoid/non-secure';
+import { handleActions } from 'redux-actions';
+import { ToolbarActionEnums } from './actions';
 import {
   IToolbarConfiguratorStateContext,
   IUpdateChildItemsPayload,
   IUpdateItemSettingsPayload,
   TOOLBAR_CONTEXT_INITIAL_STATE,
 } from './contexts';
-import { ToolbarActionEnums } from './actions';
-import { IToolbarButton, IButtonGroup } from './models';
-import { handleActions } from 'redux-actions';
+import { IButtonGroup, IToolbarButton } from './models';
 import { getItemById, getItemPositionById } from './utils';
-import { nanoid } from 'nanoid/non-secure';
 
 const toolbarReducer = handleActions<IToolbarConfiguratorStateContext, any>(
   {
     [ToolbarActionEnums.AddButton]: (state: IToolbarConfiguratorStateContext) => {
-      const buttonsCount = state.items.filter(i => i.itemType === 'item').length;
+      const buttonsCount = state.items.filter((i) => i.itemType === 'item').length;
       const buttonProps: IToolbarButton = {
         id: nanoid(),
         itemType: 'item',
@@ -43,7 +43,7 @@ const toolbarReducer = handleActions<IToolbarConfiguratorStateContext, any>(
     ) => {
       const { payload } = action;
 
-      const newItems = state.items.filter(item => item.id !== payload);
+      const newItems = state.items.filter((item) => item.id !== payload);
 
       return {
         ...state,
@@ -53,7 +53,7 @@ const toolbarReducer = handleActions<IToolbarConfiguratorStateContext, any>(
     },
 
     [ToolbarActionEnums.AddGroup]: (state: IToolbarConfiguratorStateContext) => {
-      const groupsCount = state.items.filter(i => i.itemType === 'group').length;
+      const groupsCount = state.items.filter((i) => i.itemType === 'group').length;
       const groupProps: IButtonGroup = {
         id: nanoid(),
         itemType: 'group',
@@ -75,7 +75,7 @@ const toolbarReducer = handleActions<IToolbarConfiguratorStateContext, any>(
     ) => {
       const { payload } = action;
 
-      const newItems = state.items.filter(item => item.id !== payload);
+      const newItems = state.items.filter((item) => item.id !== payload);
 
       return {
         ...state,

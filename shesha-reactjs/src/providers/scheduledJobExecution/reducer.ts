@@ -1,6 +1,6 @@
-import { IScheduledJobExecutionStateContext } from './contexts';
-import { ScheduledJobExecutionActionEnums } from './actions';
 import flagsReducer from '../utils/flagsReducer';
+import { ScheduledJobExecutionActionEnums } from './actions';
+import { IScheduledJobExecutionStateContext } from './contexts';
 
 export function scheduledJobExecutionReducer(
   incomingState: IScheduledJobExecutionStateContext,

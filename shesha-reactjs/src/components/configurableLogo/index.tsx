@@ -1,8 +1,13 @@
 import React, { FC } from 'react';
 import { ConfigurableComponent } from '../appConfigurator/configurableComponent';
 import CustomErrorBoundary from '../customErrorBoundary';
+import { getImgSrc } from './utils';
 
-export const ConfigurableLogo: FC = () => {
+interface IProps {
+  imgSrc?: string;
+}
+
+export const ConfigurableLogo: FC<IProps> = ({ imgSrc }) => {
   return (
     <ConfigurableComponent>
       {(componentState, BlockOverlay) => (
@@ -10,7 +15,7 @@ export const ConfigurableLogo: FC = () => {
           <div className={`logo ${componentState.wrapperClassName}`}>
             <BlockOverlay />
             <a href="/">
-              <img src="/images/app-logo.png" />
+              <img src={getImgSrc(imgSrc)} />
             </a>
           </div>
         </CustomErrorBoundary>

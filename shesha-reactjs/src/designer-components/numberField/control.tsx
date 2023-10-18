@@ -2,10 +2,10 @@ import { InputNumber, InputNumberProps, message } from 'antd';
 import { FormInstance } from 'antd/es/form/Form';
 import moment from 'moment';
 import React, { FC } from 'react';
-import { axiosHttp } from '../../utils/fetchers';
+import { customInputNumberEventHandler } from '../../components/formDesigner/components/utils';
 import { useForm, useGlobalState, useSheshaApplication } from '../../providers';
 import { getStyle } from '../../providers/form/utils';
-import { customInputNumberEventHandler } from '../../components/formDesigner/components/utils';
+import { axiosHttp } from '../../utils/fetchers';
 import { INumberFieldComponentProps } from './interfaces';
 
 interface IProps {
@@ -43,7 +43,7 @@ const NumberFieldControl: FC<IProps> = ({ disabled, form, model, onChange, value
     min: model?.min,
     max: model?.max,
     size: model?.size,
-    style: !!style ? getStyle(style, formData) : { width: '100%' },
+    style: style ? getStyle(style, formData, globalState) : { width: '100%' },
     step: model?.highPrecision ? model?.stepNumeric : model?.stepNumeric,
     ...customInputNumberEventHandler(eventProps, onChange),
     defaultValue: model?.defaultValue,

@@ -1,4 +1,5 @@
 import { IHttpResponseError } from './httpResponseError';
+
 export interface IShaHttpResponse<T> {
   readonly result: T;
   readonly targetUrl: string;

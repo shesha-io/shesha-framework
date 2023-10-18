@@ -1,5 +1,5 @@
-import { createContext } from 'react';
 import { GetDataError } from 'hooks';
+import { createContext } from 'react';
 import { IConfigurableFormComponent, IFlatComponentsStructure } from '../../interfaces';
 import { IFormSettings, IPersistedFormProps } from '../form/models';
 

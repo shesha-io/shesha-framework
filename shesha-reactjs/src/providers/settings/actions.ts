@@ -12,6 +12,6 @@ export enum SettingsActionEnums {
 /* NEW_ACTION_GOES_HERE */
 
 export const loadSettingAction = createAction<ILoadSettingPayload, ILoadSettingPayload>(
-    SettingsActionEnums.LoadSettingRequest,
-  p => p
+  SettingsActionEnums.LoadSettingRequest,
+  (p) => p
 );

@@ -10,8 +10,8 @@ import { YesNoInherit } from 'components/dataTable/interfaces';
 import { InlineEditMode, InlineSaveMode, NewRowCapturePosition } from 'components/reactTable/interfaces';
 import { nanoid } from 'nanoid';
 import { ISettingsFormFactoryArgs } from 'interfaces';
-import SettingsForm, { useSettingsForm } from 'designer-components/_settings/settingsForm';
-import SettingsFormItem from 'designer-components/_settings/settingsFormItem';
+import SettingsForm, { useSettingsForm } from '../../../designer-components/_settings/settingsForm';
+import SettingsFormItem from '../../../designer-components/_settings/settingsFormItem';
 
 interface ITypedOption<T = string> {
   label: React.ReactNode;
@@ -227,13 +227,11 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({read
       </SettingsFormItem>
       <SettingsFormItem name="canEditInlineExpression" label="Can edit inline expression" hidden={model.canEditInline !== 'js'}>
         <CodeEditor
-          id={''}
           propertyName="canEditInlineExpression"
           readOnly={readOnly}
           mode="dialog"
           label="Can edit inline expression"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          type={''}
           description="Return true to enable inline editing and false to disable."
           exposedVariables={ENABLE_CRUD_EXPOSED_VARIABLES}
         />
@@ -253,13 +251,11 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({read
       </SettingsFormItem>
       <SettingsFormItem name="canAddInlineExpression" label="Can add inline expression" hidden={model.canAddInline !== 'js'}>
         <CodeEditor
-          id={''}
           propertyName="canAddInlineExpression"
           readOnly={readOnly}
           mode="dialog"
           label="Can add inline expression"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          type={''}
           description="Return true to enable inline creation of new rows and false to disable."
           exposedVariables={ENABLE_CRUD_EXPOSED_VARIABLES}
         />
@@ -280,13 +276,11 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({read
         hidden={model.canAddInline === 'no'}
       >
         <CodeEditor
-          id={''}
           propertyName="onNewRowInitialize"
           readOnly={readOnly}
           mode="dialog"
           label="New row init"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          type={''}
           description="Specify logic to initialise the object bound to a new row. This handler should return an object or a Promise<object>."
           exposedVariables={NEW_ROW_EXPOSED_VARIABLES}
         />
@@ -298,13 +292,11 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({read
         hidden={model.canAddInline === 'no' && model.canEditInline === 'no'}
       >
         <CodeEditor
-          id={''}
           propertyName="onRowSave"
           readOnly={readOnly}
           mode="dialog"
           label="On row save"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          type={''}
           description="Allows custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations)."
           exposedVariables={ROW_SAVE_EXPOSED_VARIABLES}
         />
@@ -323,13 +315,11 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({read
       </SettingsFormItem>
       <SettingsFormItem name="canDeleteInlineExpression" label="Can delete inline expression" hidden={model.canDeleteInline !== 'js'}>
         <CodeEditor
-          id={''}
           propertyName="canDeleteInlineExpression"
           readOnly={readOnly}
           mode="dialog"
           label="Can delete inline expression"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          type={''}
           description="Return true to enable inline deletion and false to disable."
           exposedVariables={ENABLE_CRUD_EXPOSED_VARIABLES}
         />
@@ -371,8 +361,6 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({read
           mode="dialog"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           propertyName="containerStyle"
-          type={''}
-          id={''}
           label="Table container style"
           description="The style that will be applied to the table container/wrapper"
           exposedVariables={[]}
@@ -385,8 +373,6 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({read
           mode="dialog"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           propertyName="tableStyle"
-          type={''}
-          id={''}
           label="Table style"
           description="The style that will be applied to the table"
           exposedVariables={[]}

@@ -5,7 +5,7 @@ import ShaDrawer from './drawer';
 import { IDrawerProps } from './models';
 import { getSettings } from './settings';
 import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 
 const DrawerComponent: IToolboxComponent<IDrawerProps> = {
   type: 'drawer',

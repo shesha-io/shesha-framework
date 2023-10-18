@@ -11,8 +11,7 @@ export interface IQueryBuilderPlainProps {
 
 export const QueryBuilderPlain: FC<IQueryBuilderPlainProps> = ({ value, onChange, readOnly = false }) => {
   const handleChange = (jsonLogicResult: JsonLogicResult) => {
-    if (readOnly)
-      return;
+    if (readOnly) return;
     if (jsonLogicResult) {
       if (jsonLogicResult && jsonLogicResult.errors && jsonLogicResult.errors.length > 0) {
         console.log(jsonLogicResult);
@@ -28,9 +27,9 @@ export const QueryBuilderPlain: FC<IQueryBuilderPlainProps> = ({ value, onChange
 
   return (
     <div className="sha-query-builder-plain-wrapper">
-      <QueryBuilder 
-        value={value} 
-        onChange={handleChange} 
+      <QueryBuilder
+        value={value}
+        onChange={handleChange}
         readOnly={readOnly}
       />
     </div>

@@ -1,8 +1,8 @@
 import { Checkbox, Input, Select } from 'antd';
-import { ContextPropertyAutocomplete } from 'designer-components/contextPropertyAutocomplete';
-import SettingsCollapsiblePanel from 'designer-components/_settings/settingsCollapsiblePanel';
-import SettingsForm, { useSettingsForm } from 'designer-components/_settings/settingsForm';
-import SettingsFormItem from 'designer-components/_settings/settingsFormItem';
+import { ContextPropertyAutocomplete } from '../../../../designer-components/contextPropertyAutocomplete';
+import SettingsCollapsiblePanel from '../../../../designer-components/_settings/settingsCollapsiblePanel';
+import SettingsForm, { useSettingsForm } from '../../../../designer-components/_settings/settingsForm';
+import SettingsFormItem from '../../../../designer-components/_settings/settingsFormItem';
 import { ISettingsFormFactoryArgs } from 'interfaces';
 import { useForm } from 'providers';
 import { useFormDesigner } from 'providers/formDesigner';
@@ -95,29 +95,22 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
             mode="dialog"
             setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
             propertyName="labelFormat"
-            type={''}
-            id={''}
             label="Label Format"
             description="Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
             exposedVariables={[
-              {
-                id: 'ee243565-14ba-4c98-af34-adac37c83baa',
-                name: 'data',
-                description: 'Form data',
-                type: 'object',
-              },
-              {
-                id: '3d53b1ae-1e15-4519-9d07-af6b4225416e',
-                name: 'globalState',
-                description: 'The global state',
-                type: 'object',
-              },
-              {
-                id: '3a288d08-a00c-4458-a6ff-a00da9bd070b',
-                name: 'formMode',
-                description: 'Editable state of form',
-                type: "'designer' | 'edit' | 'readonly'",
-              },
+              { name: "item", description: "Properties of the edited object", type: "object" },
+              { name: "data", description: "Form values", type: "object" },
+              { name: "contexts", description: "Contexts data", type: "object" },
+              { name: "globalState", description: "Global state", type: "object" },
+              { name: "setGlobalState", description: "Functiont to set globalState", type: "function" },
+              { name: "formMode", description: "Form mode", type: "'designer' | 'edit' | 'readonly'" },
+              { name: "staticValue", description: "Static value of this setting", type: "any" },
+              { name: "getSettingValue", description: "Functiont to get actual setting value", type: "function" },
+              { name: "form", description: "Form instance", type: "object" },
+              { name: "selectedRow", description: "Selected row of nearest table (null if not available)", type: "object" },
+              { name: "moment", description: "moment", type: "object" },
+              { name: "http", description: "axiosHttp", type: "object" },
+              { name: "message", description: "message framework", type: "object" },
             ]}
           />
         </SettingsFormItem>

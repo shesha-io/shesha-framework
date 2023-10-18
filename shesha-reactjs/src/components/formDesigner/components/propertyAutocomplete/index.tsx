@@ -9,7 +9,7 @@ import { PropertyAutocomplete } from '../../../propertyAutocomplete/propertyAuto
 import { evaluateString, MetadataProvider, useForm, useFormData } from '../../../..';
 import ConditionalWrap from '../../../conditionalWrapper';
 import { IPropertyAutocompleteComponentProps } from './interfaces';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

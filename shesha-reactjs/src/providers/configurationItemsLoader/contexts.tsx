@@ -48,9 +48,10 @@ export interface IConfigurationItemsLoaderActionsContext {
 }
 
 /** initial state */
-export const CONFIGURATION_ITEMS_LOADER_CONTEXT_INITIAL_STATE: IConfigurationItemsLoaderStateContext = {
-};
+export const CONFIGURATION_ITEMS_LOADER_CONTEXT_INITIAL_STATE: IConfigurationItemsLoaderStateContext = {};
 
-export const ConfigurationItemsLoaderStateContext = createContext<IConfigurationItemsLoaderStateContext>(CONFIGURATION_ITEMS_LOADER_CONTEXT_INITIAL_STATE);
+export const ConfigurationItemsLoaderStateContext = createContext<IConfigurationItemsLoaderStateContext>(
+  CONFIGURATION_ITEMS_LOADER_CONTEXT_INITIAL_STATE
+);
 
 export const ConfigurationItemsLoaderActionsContext = createContext<IConfigurationItemsLoaderActionsContext>(undefined);

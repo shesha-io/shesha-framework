@@ -1,10 +1,14 @@
 import { createContext } from 'react';
-import { IConfigurableActionArguments, IConfigurableActionConfiguration, IConfigurableActionDescriptor, IConfigurableActionIdentifier } from '../../interfaces/configurableAction';
+import {
+  IConfigurableActionArguments,
+  IConfigurableActionConfiguration,
+  IConfigurableActionDescriptor,
+  IConfigurableActionIdentifier,
+} from '../../interfaces/configurableAction';
 import { GenericDictionary } from '../form/models';
 import { IConfigurableActionGroupDictionary } from './models';
 
-export interface IConfigurableActionDispatcherStateContext {
-}
+export interface IConfigurableActionDispatcherStateContext {}
 
 export interface IGetConfigurableActionPayload {
   owner: string;
@@ -14,15 +18,18 @@ export interface IGetConfigurableActionPayload {
 export interface IExecuteActionPayload {
   actionConfiguration: IConfigurableActionConfiguration;
   argumentsEvaluationContext: GenericDictionary;
+  success?: (actionResponse: any) => void;
+  fail?: (error: any) => void;
 }
 
-export interface IRegisterActionPayload<TArguments = IConfigurableActionArguments, TReponse = any> extends IConfigurableActionDescriptor<TArguments, TReponse> {
-}
+export interface IRegisterActionPayload<TArguments = IConfigurableActionArguments, TReponse = any>
+  extends IConfigurableActionDescriptor<TArguments, TReponse> {}
 
 export interface RegisterActionType {
-  <TArguments = IConfigurableActionArguments, TResponse = any>(arg: IRegisterActionPayload<TArguments, TResponse>): void;
+  <TArguments = IConfigurableActionArguments, TResponse = any>(
+    arg: IRegisterActionPayload<TArguments, TResponse>
+  ): void;
 }
-
 
 export interface IConfigurableActionDispatcherActionsContext {
   getConfigurableAction: (payload: IGetConfigurableActionPayload) => IConfigurableActionDescriptor;
@@ -35,9 +42,11 @@ export interface IConfigurableActionDispatcherActionsContext {
 }
 
 /** initial state */
-export const CONFIGURABLE_ACTION_DISPATCHER_CONTEXT_INITIAL_STATE: IConfigurableActionDispatcherStateContext = {
-};
+export const CONFIGURABLE_ACTION_DISPATCHER_CONTEXT_INITIAL_STATE: IConfigurableActionDispatcherStateContext = {};
 
-export const ConfigurableActionDispatcherStateContext = createContext<IConfigurableActionDispatcherStateContext>(CONFIGURABLE_ACTION_DISPATCHER_CONTEXT_INITIAL_STATE);
+export const ConfigurableActionDispatcherStateContext = createContext<IConfigurableActionDispatcherStateContext>(
+  CONFIGURABLE_ACTION_DISPATCHER_CONTEXT_INITIAL_STATE
+);
 
-export const ConfigurableActionDispatcherActionsContext = createContext<IConfigurableActionDispatcherActionsContext>(undefined);
+export const ConfigurableActionDispatcherActionsContext =
+  createContext<IConfigurableActionDispatcherActionsContext>(undefined);

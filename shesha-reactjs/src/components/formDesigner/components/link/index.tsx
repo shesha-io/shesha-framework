@@ -8,7 +8,7 @@ import settingsFormJson from './settingsForm.json';
 import ComponentsContainer from '../../containers/componentsContainer';
 import { AlignItems, JustifyContent, JustifyItems } from '../../../../designer-components/container/interfaces';
 import { ContainerDirection } from '../../common/interfaces';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 import ConfigurableFormItem from '../formItem';
 
 export interface IAlertProps extends IConfigurableFormComponent {

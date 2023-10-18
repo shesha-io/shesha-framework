@@ -15,6 +15,7 @@ using Shesha.JsonEntities;
 using Shesha.Reflection;
 using Shesha.Utilities;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -48,7 +49,9 @@ namespace Shesha.GraphQL.Provider.GraphTypes
             if (propsInfo == null || propsInfo.Length == 0)
                 throw new GraphQLSchemaException(genericType.Name, $"Unable to create generic GraphQL type from type {genericType.Name} because it has no properties");
 
-            var properties = genericType.GetProperties(BindingFlags.Public | BindingFlags.Instance).ToList();
+            var properties = genericType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(p => p.PropertyType != typeof(Type))
+                .ToList();
             foreach (var property in properties) 
             {
                 EmitField(property);
@@ -234,6 +237,7 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                 {
                     case "List`1":
                     case "IList`1":
+                    case "IEnumerable`1":
                     case "ICollection`1":
                         {
                             var gtn = propertyInfo.PropertyType.GetGenericArguments().First();

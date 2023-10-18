@@ -1,24 +1,24 @@
-import React, { FC, useReducer, useContext, PropsWithChildren } from 'react';
-import DynamicModalReducer from './reducer';
-import {
-  DynamicModalActionsContext,
-  DynamicModalInstanceContext,
-  DynamicModalStateContext,
-  DYNAMIC_MODAL_CONTEXT_INITIAL_STATE,
-} from './contexts';
-import { openAction, createModalAction, removeModalAction } from './actions';
-import { IModalProps } from './models';
+import { Modal } from 'antd';
+import { nanoid } from 'nanoid/non-secure';
+import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
 import { DynamicModal } from '../../components/dynamicModal';
 import { useConfigurableAction } from '../configurableActionsDispatcher';
-import { dialogArgumentsForm, IShowModalActionArguments } from './configurable-actions/show-dialog-arguments';
+import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
+import { evaluateKeyValuesToObject } from '../form/utils';
+import { createModalAction, openAction, removeModalAction } from './actions';
 import {
   IShowConfirmationArguments,
   showConfirmationArgumentsForm,
 } from './configurable-actions/show-confirmation-arguments';
-import { nanoid } from 'nanoid/non-secure';
-import { evaluateKeyValuesToObject } from '../form/utils';
-import { Modal } from 'antd';
-import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
+import { IShowModalActionArguments, dialogArgumentsForm } from './configurable-actions/show-dialog-arguments';
+import {
+  DYNAMIC_MODAL_CONTEXT_INITIAL_STATE,
+  DynamicModalActionsContext,
+  DynamicModalInstanceContext,
+  DynamicModalStateContext,
+} from './contexts';
+import { IModalProps } from './models';
+import DynamicModalReducer from './reducer';
 
 export interface IDynamicModalProviderProps {}
 
@@ -250,4 +250,4 @@ function useClosestModal() {
   return context;
 }
 
-export { DynamicModalProvider, useDynamicModals, useModal, useClosestModal };
+export { DynamicModalProvider, useClosestModal, useDynamicModals, useModal };

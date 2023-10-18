@@ -6,8 +6,10 @@ import { IDataListComponentProps } from '../../../dataList/models';
 import FormAutocomplete from '../../../formAutocomplete';
 import Show from 'components/show';
 import { ISettingsFormFactoryArgs } from 'interfaces';
-import SettingsForm, { useSettingsForm } from 'designer-components/_settings/settingsForm';
-import SettingsFormItem from 'designer-components/_settings/settingsFormItem';
+import SettingsForm, { useSettingsForm } from '../../../../designer-components/_settings/settingsForm';
+import SettingsFormItem from '../../../../designer-components/_settings/settingsFormItem';
+import { PropertyAutocomplete } from 'components';
+import { ConfigurableActionConfigurator } from 'src/designer-components/configurableActionsConfigurator/configurator';
 
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 
@@ -57,6 +59,30 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
           readOnly={props.readOnly}
         />
       </SettingsFormItem>*/}
+
+      <SettingsFormItem name="defaultSortBy" label="Default sort by" jsSetting>
+        <PropertyAutocomplete readOnly={readOnly} showFillPropsButton={false} />
+      </SettingsFormItem>
+
+      <SettingsFormItem name="defaultSortOrder" label="Default sort order" jsSetting>
+        <Select disabled={readOnly} allowClear>
+          <Select.Option key="asc" value="asc">
+            Ascending
+          </Select.Option>
+          <Select.Option key="desc" value="desc">
+            Descending
+          </Select.Option>
+        </Select>
+      </SettingsFormItem>
+
+      <SettingsFormItem name="actionConfiguration">
+        <ConfigurableActionConfigurator
+          editorConfig={null}
+          level={1}
+          label="On Double Click"
+          readOnly={readOnly}
+        />
+      </SettingsFormItem>
 
       <SectionSeparator title="Selection" />
 
@@ -112,8 +138,6 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
             mode="dialog"
             setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
             propertyName="formIdExpression"
-            type={''}
-            id={''}
             label="Form identifer expression"
             description="Enter code to get form identifier. You must return { name: string; module?: string; version?: number; } object. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
             exposedVariables={[

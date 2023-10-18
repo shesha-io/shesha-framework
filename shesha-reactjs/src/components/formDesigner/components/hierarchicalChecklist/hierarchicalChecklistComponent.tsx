@@ -1,6 +1,6 @@
 import { ApartmentOutlined } from '@ant-design/icons';
 import { Skeleton } from 'antd';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 import React, { MutableRefObject } from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
 import { useFormData } from '../../../../providers';

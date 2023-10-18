@@ -8,7 +8,7 @@ import { useForm } from '../../../../providers';
 import { IImageProps } from './model';
 import ImageAnnotationControl from './control';
 import { Alert } from 'antd';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 
 const ImageAnnotationComponent: IToolboxComponent<IImageProps> = {
   type: 'imageAnnotation',

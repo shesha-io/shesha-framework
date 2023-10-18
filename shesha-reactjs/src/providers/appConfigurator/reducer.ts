@@ -1,7 +1,7 @@
+import { handleActions } from 'redux-actions';
+import { AppConfiguratorActionEnums } from './actions';
 import { APP_CONTEXT_INITIAL_STATE, IAppStateContext } from './contexts';
 import { ApplicationMode, ConfigurationItemsViewMode } from './models';
-import { AppConfiguratorActionEnums } from './actions';
-import { handleActions } from 'redux-actions';
 
 export default handleActions<IAppStateContext, any>(
   {
@@ -63,7 +63,7 @@ export default handleActions<IAppStateContext, any>(
         ...state,
         formInfoBlockVisible: payload,
       };
-    },    
+    },
   },
 
   APP_CONTEXT_INITIAL_STATE

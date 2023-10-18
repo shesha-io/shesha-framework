@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Shesha.AutoMapper.Dto;
 using Shesha.Configuration.Runtime;
+using Shesha.DelayedUpdate;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.EntityReferences;
@@ -72,6 +73,7 @@ namespace Shesha.DynamicEntities.Binder
             && x.Name != nameof(IHasJObjectField._jObject).ToCamelCase()
             && x.Name != nameof(IHasClassNameField._className)
             && x.Name != nameof(IHasDisplayNameField._displayName)
+            && x.Name != nameof(IHasDelayedUpdateField._delayedUpdate)
             ).ToList();
         }
 
@@ -81,7 +83,9 @@ namespace Shesha.DynamicEntities.Binder
                 || prop.Name == nameof(IHasFormFieldsList._formFields)
                 || prop.Name == nameof(IHasJObjectField._jObject).ToCamelCase()
                 || prop.Name == nameof(IHasClassNameField._className)
-                || prop.Name == nameof(IHasDisplayNameField._displayName);
+                || prop.Name == nameof(IHasDisplayNameField._displayName)
+                || prop.Name == nameof(IHasDelayedUpdateField._delayedUpdate)
+            ;
         }
 
         public async Task<bool> BindPropertiesAsync(JObject jobject, object entity, EntityModelBindingContext context,

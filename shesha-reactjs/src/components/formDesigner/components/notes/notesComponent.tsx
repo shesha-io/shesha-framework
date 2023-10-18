@@ -6,11 +6,13 @@ import { NotesRenderer, useFormData } from '../../../../';
 import { evaluateValue, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import React from 'react';
 import NotesProvider from '../../../../providers/notes';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migrateFunctionToProp, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 
 export interface INotesProps extends IConfigurableFormComponent {
   ownerId: string;
   ownerType: string;
+  ownerIdExpression: string;
+  ownerTypeExpression: string;
   savePlacement?: 'left' | 'right';
   autoSize?: boolean;
 }
@@ -22,8 +24,10 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
   name: 'Notes',
   icon: <FormOutlined />,
   factory: (model: INotesProps) => {
-    const { data: formData } = useFormData();
-    const ownerId = evaluateValue(model.ownerId, { data: formData });
+    const { data } = useFormData();
+
+    // TODO:: Change to use Mustache
+    const ownerId = evaluateValue(model.ownerId, { data });
 
     if (model.hidden) return null;
 
@@ -37,7 +41,6 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
       </NotesProvider>
     );
   },
-  settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   initModel: (model) => {
     const customModel: INotesProps = {
@@ -47,9 +50,15 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
     };
     return customModel;
   },
+  settingsFormMarkup: settingsForm,
   migrator: (m) => m
-    .add<INotesProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)) as INotesProps)
-  ,
+    .add<INotesProps>(0, (prev) =>
+    migratePropertyName(
+      migrateCustomFunctions(
+        migrateFunctionToProp(
+          migrateFunctionToProp(prev, 'ownerId', 'ownerIdExpression')
+        , 'ownerType', 'ownerTypeExpression')
+      )) as INotesProps),
 };
 
 export default NotesComponent;

@@ -157,6 +157,8 @@ export { default as QuickView, type IQuickViewProps } from './quickView';
 export { default as CurrencyConverter, type ICurrencyConverterProps } from './currencyConverter';
 
 export { default as ToolbarSettingsModal } from '../designer-components/dataTable/toolbar/toolbarSettingsModal';
+export { QueryBuilderComponentRenderer } from '../designer-components/queryBuilder/queryBuilderComponent';
+export { QueryBuilderWithModelType } from '../designer-components/queryBuilder/queryBuilderWithModelType';
 export { default as SidebarConfigurator } from './configurableSidebarMenu/configurator';
 export { default as ButtonGroupConfigurator } from './formDesigner/components/button/buttonGroup/configurator';
 export { default as CodeEditorModal } from './formDesigner/components/codeEditor/codeEditor';
@@ -167,6 +169,7 @@ export { FormComponentSelector, type IFormComponentSelectorProps } from './formC
 export { default as PropertyAutocomplete } from '../../src/components/propertyAutocomplete/propertyAutocomplete';
 export { default as ColorPicker } from '../../src/components/colorPicker';
 export { default as ComponentsContainer } from './formDesigner/containers/componentsContainer';
+export { default as Properties } from '../../src/components/properties';
 export { HelpTextPopover } from './helpTextPopover';
 export { StatusTag } from './statusTag';
 export { RefListStatus, type IRefListStatusProps } from './refListStatus';

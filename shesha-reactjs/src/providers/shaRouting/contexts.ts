@@ -1,5 +1,5 @@
-import { createContext } from 'react';
 import { Router } from 'next/router';
+import { createContext } from 'react';
 import { FormIdentifier } from '../..';
 
 export interface IShaRoutingStateContext {

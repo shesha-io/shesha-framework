@@ -1,9 +1,9 @@
-import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import React, { ReactNode } from 'react';
-import { IAsyncValidationError } from '../../interfaces';
-import { FormLayout } from 'antd/lib/form/Form';
-import { IKeyValue } from '../../interfaces/keyValue';
 import { ColProps } from 'antd';
+import { SizeType } from 'antd/lib/config-provider/SizeContext';
+import { FormLayout } from 'antd/lib/form/Form';
+import { ReactNode } from 'react';
+import { IAsyncValidationError } from '../../interfaces';
+import { IKeyValue } from '../../interfaces/keyValue';
 import { IHasVersion } from '../../utils/fluentMigrator/migrator';
 
 export const ROOT_COMPONENT_KEY: string = 'root'; // root key of the flat components structure
@@ -116,17 +116,22 @@ export interface IComponentVisibilityProps {
   customVisibility?: string;
 }
 
+export interface IComponentMetadata {
+  /** Injectable field from the data cell */
+  injectedTableRow?: { [key in string]?: any };
+}
+
 /**
  * Base model of the configurable component
  */
-export interface IConfigurableFormComponent extends 
-  IFormComponentContainer, 
-  IHasVersion, 
-  IComponentBindingProps,
-  IComponentLabelProps, 
-  IComponentVisibilityProps,
-  IComponentRuntimeProps {
-
+export interface IConfigurableFormComponent
+  extends IFormComponentContainer,
+    IHasVersion,
+    IComponentBindingProps,
+    IComponentLabelProps,
+    IComponentVisibilityProps,
+    IComponentRuntimeProps,
+    IComponentMetadata {
   /** Type of the component */
   type: string;
 

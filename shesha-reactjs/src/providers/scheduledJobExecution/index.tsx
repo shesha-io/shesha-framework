@@ -1,37 +1,36 @@
-import React, { FC, useReducer, useContext, PropsWithChildren, useEffect } from 'react';
-import { scheduledJobExecutionReducer } from './reducer';
-import {
-  ScheduledJobExecutionActionsContext,
-  ScheduledJobExecutionStateContext,
-  SCHEDULED_JOB_EXECUTION_CONTEXT_INITIAL_STATE,
-  IExecutionLogEvent,
-} from './contexts';
-import { getFlagSetters } from '../utils/flagsSetters';
-import {
-  getExecutionLogRequestAction,
-  getExecutionLogSuccessAction,
-  getExecutionLogErrorAction,
-  addExecutionLogEventAction,
-  setHubConnectionAction,
-  downloadLogFileRequestAction,
-  downloadLogFileSuccessAction,
-  downloadLogFileErrorAction,
-  /* NEW_ACTION_IMPORT_GOES_HERE */
-} from './actions';
-import { useScheduledJobExecutionGetEventLogItems } from 'apis/scheduledJobExecution';
-import moment from 'moment';
 import { HubConnectionBuilder } from '@microsoft/signalr';
 import axios from 'axios';
 import FileSaver from 'file-saver';
+import moment from 'moment';
+import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
+import { useScheduledJobExecutionGetEventLogItems } from '../../apis/scheduledJobExecution';
+import { getFileNameFromResponse } from '../../utils/fetchers';
 import { useSheshaApplication } from '../sheshaApplication';
-import { getFileNameFromResponse } from 'utils/fetchers';
+import { getFlagSetters } from '../utils/flagsSetters';
+import {
+  addExecutionLogEventAction,
+  downloadLogFileErrorAction,
+  downloadLogFileRequestAction,
+  downloadLogFileSuccessAction,
+  getExecutionLogErrorAction,
+  getExecutionLogRequestAction,
+  getExecutionLogSuccessAction,
+  setHubConnectionAction,
+} from './actions';
+import {
+  IExecutionLogEvent,
+  SCHEDULED_JOB_EXECUTION_CONTEXT_INITIAL_STATE,
+  ScheduledJobExecutionActionsContext,
+  ScheduledJobExecutionStateContext,
+} from './contexts';
+import { scheduledJobExecutionReducer } from './reducer';
 
 export interface IScheduledJobExecutionProviderProps {
   id: string;
   baseUrl?: string;
 }
 
-const idIsEmpty = id => !Boolean(id) && id !== '00000000-0000-0000-0000-000000000000';
+const idIsEmpty = (id) => !Boolean(id) && id !== '00000000-0000-0000-0000-000000000000';
 
 const ScheduledJobExecutionProvider: FC<PropsWithChildren<IScheduledJobExecutionProviderProps>> = ({
   children,
@@ -67,7 +66,7 @@ const ScheduledJobExecutionProvider: FC<PropsWithChildren<IScheduledJobExecution
         // @ts-ignore
         const { result } = executionLogResponse;
         const events = result.map(
-          e => ({ message: e.message, timeStamp: moment(e.timeStamp), level: e.level } as IExecutionLogEvent)
+          (e) => ({ message: e.message, timeStamp: moment(e.timeStamp), level: e.level }) as IExecutionLogEvent
         );
 
         dispatch(getExecutionLogSuccessAction(events));
@@ -126,7 +125,7 @@ const ScheduledJobExecutionProvider: FC<PropsWithChildren<IScheduledJobExecution
       responseType: 'blob',
       headers,
     })
-      .then(response => {
+      .then((response) => {
         dispatch(downloadLogFileSuccessAction());
         const fileName = getFileNameFromResponse(response) ?? 'logfile.log';
         FileSaver.saveAs(new Blob([response.data]), fileName);
@@ -192,7 +191,7 @@ function useScheduledJobExecution() {
 
 export {
   ScheduledJobExecutionProvider,
-  useScheduledJobExecutionState,
-  useScheduledJobExecutionActions,
   useScheduledJobExecution,
+  useScheduledJobExecutionActions,
+  useScheduledJobExecutionState,
 };

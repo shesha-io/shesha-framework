@@ -7,7 +7,7 @@ import { useFormData, useGlobalState } from 'providers';
 import { getSettings } from './settings';
 import ShaIcon from '../../../shaIcon';
 import { IAlertComponentProps } from './interfaces';
-import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
+import { migratePropertyName, migrateCustomFunctions } from '../../../../designer-components/_common-migrations/migrateSettings';
 
 const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
   type: 'alert',

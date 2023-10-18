@@ -1,11 +1,11 @@
 import React, { FC, useState } from 'react';
 import CodeEditor from 'components/formDesigner/components/codeEditor/codeEditor';
 import { ISettingsFormFactoryArgs } from 'interfaces';
-import SettingsFormItem from 'designer-components/_settings/settingsFormItem';
-import SettingsForm, { useSettingsForm } from 'designer-components/_settings/settingsForm';
+import SettingsFormItem from '../../designer-components/_settings/settingsFormItem';
+import SettingsForm, { useSettingsForm } from '../../designer-components/_settings/settingsForm';
 import { IDataContextComponentProps } from '.';
 import { Button, Input, Modal } from 'antd';
-import SettingsCollapsiblePanel from 'designer-components/_settings/settingsCollapsiblePanel';
+import SettingsCollapsiblePanel from '../../designer-components/_settings/settingsCollapsiblePanel';
 import { IPropertyMetadata } from 'interfaces/metadata';
 import { PropertiesEditor } from 'components/modelConfigurator/propertiesEditor';
 import { IModelItem } from 'interfaces/modelConfigurator';
@@ -76,8 +76,6 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
           label="Initial Data"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           propertyName="initialDataCode"
-          type={''}
-          id={''}
           description="Initial Data"
           exposedVariables={[
             {

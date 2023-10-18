@@ -8,7 +8,7 @@ import { validateConfigurableComponentSettings } from '../../../../providers/for
 import { useForm } from '../../../../providers';
 import FormAutocomplete from '../../../formAutocomplete';
 import { IFormAutocompleteComponentProps } from './interfaces';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

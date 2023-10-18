@@ -4,9 +4,9 @@ import { IButtonGroupComponentProps } from './models';
 import { ButtonGroupSettingsModal } from './buttonGroupSettingsModal';
 import EditableTagGroup from '../../../../editableTagGroup';
 import { ISettingsFormFactoryArgs } from 'interfaces';
-import SettingsForm from 'designer-components/_settings/settingsForm';
-import SettingsCollapsiblePanel from 'designer-components/_settings/settingsCollapsiblePanel';
-import SettingsFormItem from 'designer-components/_settings/settingsFormItem';
+import SettingsForm from '../../../../../designer-components/_settings/settingsForm';
+import SettingsCollapsiblePanel from '../../../../../designer-components/_settings/settingsCollapsiblePanel';
+import SettingsFormItem from '../../../../../designer-components/_settings/settingsFormItem';
 
 const { Option } = Select;
 

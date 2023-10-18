@@ -81,7 +81,7 @@ export interface ICommonAutocompleteProps<TValue = any> extends IReadOnly {
   /**
    * The size of the control
    */
-  mode?: 'multiple' | 'tags';
+  mode?: 'multiple' | 'single';
 
   allowClear?: boolean;
 
@@ -188,7 +188,7 @@ export interface IUrlFetcherQueryParams {
 /**
  * Generic DTO of the simple autocomplete item
  */
- export interface AutocompleteItemDto {
+export interface AutocompleteItemDto {
   value?: string | null;
   displayText?: string | null;
 }

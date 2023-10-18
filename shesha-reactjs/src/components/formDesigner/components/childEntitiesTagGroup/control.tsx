@@ -1,7 +1,7 @@
 import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Input, message, Modal, Select, Tag } from 'antd';
 import React, { FC, useMemo, useState, useEffect } from 'react';
-import { SubFormProvider, useForm, useGlobalState, } from '../../../..';
+import { executeScriptSync, SubFormProvider, useApplicationContext } from '../../../..';
 import { useFormConfiguration } from 'providers/form/api';
 import ChildEntitiesTagGroupModal from './modal';
 import { IChildEntitiesTagGroupProps, IChildEntitiesTagGroupSelectOptions } from './models';
@@ -35,9 +35,7 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
   const { activeValue, open, options } = state;
   const { capturedProperties, deleteConfirmationBody, deleteConfirmationTitle, formId, labelFormat, propertyName } = model;
 
-  const { globalState } = useGlobalState();
-
-  const { formMode, formData } = useForm();
+  const allData = useApplicationContext();
 
   const {
     formConfiguration,
@@ -50,17 +48,7 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
   });
 
   const calculateLabel = (value: any, func: string) => {
-    let vars = 'data, globalState, formMode';
-    const datas = [formData, globalState, formMode];
-    if (value)
-      for (let key in value) {
-        if (Object.hasOwn(value, key)) {
-          vars+= `, ${key}`;
-          datas.push(value[key]);
-        }
-      }
-    const res = new Function(vars, func)(...datas);
-    return res;
+    return executeScriptSync(func, {...allData, item: value});
   };
 
   useEffect(() => {

@@ -7,7 +7,7 @@ import { validateConfigurableComponentSettings } from '../../../../../providers/
 import { PermissionsTree, PermissionsTreeMode } from '../../../../permissionsTree';
 import { useForm } from '../../../../..';
 import ConfigurableFormItem from '../../formItem';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../../designer-components/_common-migrations/migrateSettings';
 
 export interface IPermissionsTreeComponentProps extends IConfigurableFormComponent {
   value?: string[];

@@ -10,7 +10,7 @@ import { useDeepCompareMemoKeepReference, useForm, useFormData } from '../../../
 import { IRichTextEditorProps } from './interfaces';
 import { getStyle } from '../../../../providers/form/utils';
 import { IJoditEditorProps } from '../../../richTextEditor/joditEditor';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

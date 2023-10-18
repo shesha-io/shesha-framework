@@ -7,7 +7,7 @@ import { validateConfigurableComponentSettings } from '../../../../providers/for
 import { alertSettingsForm } from './settings';
 import { EVENTS } from './eventNames';
 import ConfigurableFormItem from '../formItem';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 
 export interface IEventNamesComponentProps extends IConfigurableFormComponent {}
 

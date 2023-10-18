@@ -82,7 +82,14 @@ export const usePubSub = (): ISubscription<IPubSubPayload> => {
     window.addEventListener(token, handleEvent, false);
   };
 
-  const unsubscribe = (token: string) => removeEventListener(token, () => { /*nop*/ }, false);
+  const unsubscribe = (token: string) =>
+    removeEventListener(
+      token,
+      () => {
+        /*nop*/
+      },
+      false
+    );
 
   const publish = (token: string, data?: IPubSubPayload) =>
     dispatchEvent(new CustomEvent(token, { detail: data || {} }));
@@ -108,12 +115,12 @@ export function useSubscribe<T extends IPubSubPayload>(
   eventHandler: (data: T) => void
 ): void {
   // it's important to use the same event listener to be able to unsubscribe correctly
-  const eventListener = e => eventHandler((e as any).detail);
+  const eventListener = (e) => eventHandler((e as any).detail);
   useEffect(() => {
     if (typeof eventName === 'string') {
       window.addEventListener(eventName, eventListener);
     } else if (Array.isArray(eventName)) {
-      eventName.forEach(name => {
+      eventName.forEach((name) => {
         if (name) {
           window.addEventListener(name, eventListener);
         }
@@ -124,7 +131,7 @@ export function useSubscribe<T extends IPubSubPayload>(
       if (typeof eventName === 'string') {
         window.removeEventListener(eventName, eventListener, false);
       } else if (Array.isArray(eventName)) {
-        eventName.forEach(name => {
+        eventName.forEach((name) => {
           if (name) {
             window.removeEventListener(name, eventListener, false);
           }
@@ -149,13 +156,19 @@ export function useSubscribedValue<T extends IPubSubPayload>(
 
   useEffect(() => {
     window.addEventListener(eventName, (e: any) => {
-      const newState = (e as unknown) as any;
+      const newState = e as unknown as any;
 
       setState(newState?.detail as T);
     });
 
     return () => {
-      window.removeEventListener(eventName, () => { /**/ }, false);
+      window.removeEventListener(
+        eventName,
+        () => {
+          /**/
+        },
+        false
+      );
     };
   }, [eventName, deps]);
 
@@ -175,8 +188,6 @@ export function usePublish<T extends IPubSubPayload>(
   deps?: ReadonlyArray<any>
 ): void {
   useEffect(() => {
-    dispatchEvent(
-      new CustomEvent<T>(eventName, { detail: computer() })
-    );
+    dispatchEvent(new CustomEvent<T>(eventName, { detail: computer() }));
   }, deps);
 }

@@ -1,16 +1,16 @@
-import React, { forwardRef, useImperativeHandle, useMemo, useState } from 'react';
 import { Alert, Tabs } from 'antd';
-import { SidebarContainer } from 'components';
+import React, { forwardRef, useImperativeHandle, useMemo, useState } from 'react';
+import { SidebarContainer } from '../../../components';
+import { CodeVariablesTables } from '../../../components/codeVariablesTable';
+import QueryBuilderExpressionViewer from '../../../designer-components/queryBuilder/queryBuilderExpressionViewer';
+import { QueryBuilderPlainRenderer } from '../../../designer-components/queryBuilder/queryBuilderFieldPlain';
+import { QueryBuilderProvider, useMetadata } from '../../../providers';
+import { useTableViewSelectorConfigurator } from '../../../providers/tableViewSelectorConfigurator';
 import { TableViewProperties } from './tableViewProperties';
-import { useTableViewSelectorConfigurator } from 'providers/tableViewSelectorConfigurator';
-import { CodeVariablesTables } from 'components/codeVariablesTable';
-import { QueryBuilderProvider, useMetadata } from 'providers';
-import { QueryBuilderPlainRenderer } from 'designer-components/queryBuilder/queryBuilderFieldPlain';
-import QueryBuilderExpressionViewer from 'designer-components/queryBuilder/queryBuilderExpressionViewer';
 
 const { TabPane } = Tabs;
 
-export interface ITableViewSelectorConfiguratorProps { }
+export interface ITableViewSelectorConfiguratorProps {}
 
 export interface ITableViewSelectorConfiguratorHandles {
   saveFilters: () => void;
@@ -19,7 +19,7 @@ export interface ITableViewSelectorConfiguratorHandles {
 export const TableViewSelectorConfigurator = forwardRef<
   ITableViewSelectorConfiguratorHandles,
   ITableViewSelectorConfiguratorProps
->(({ }, forwardedRef) => {
+>(({}, forwardedRef) => {
   useImperativeHandle(forwardedRef, () => ({
     saveFilters() {
       onQueryBuilderValueChange();
@@ -58,10 +58,7 @@ export const TableViewSelectorConfigurator = forwardRef<
         }}
       >
         {!readOnly && (
-          <Alert
-            message="Here you can adjust filter settings"
-            className="sha-toolbar-configurator-alert"
-          />
+          <Alert message="Here you can adjust filter settings" className="sha-toolbar-configurator-alert" />
         )}
 
         <QueryBuilderProvider metadata={metadata?.metadata}>

@@ -1,5 +1,5 @@
-import { IConfigurableFormComponent } from 'interfaces';
-import { DatatableColumnType, IActionColumnProps } from 'providers/dataTable/interfaces';
+import { IConfigurableFormComponent } from '../../interfaces';
+import { DatatableColumnType, IActionColumnProps } from '../../providers/dataTable/interfaces';
 
 type ColumnsItemType = 'item' | 'group';
 
@@ -24,6 +24,7 @@ export interface IEditableColumnProps {
 export interface IConfigurableColumnsBase {
   id: string;
   caption: string;
+  columnType?: DatatableColumnType;
   sortOrder: number;
   itemType: ColumnsItemType;
   description?: string;

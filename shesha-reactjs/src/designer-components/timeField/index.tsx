@@ -1,19 +1,20 @@
 import React, { FC } from 'react';
-import { IToolboxComponent } from '../../interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '../../providers/form/models';
 import { ClockCircleOutlined } from '@ant-design/icons';
 import { TimePicker, message } from 'antd';
-import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
-import settingsFormJson from './settingsForm.json';
 import moment, { Moment, isMoment } from 'moment';
+import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
 import { customTimeEventHandler } from '../../components/formDesigner/components/utils';
-import { getStyle, validateConfigurableComponentSettings } from '../../providers/form/utils';
-import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../../providers';
-import { DataTypes } from '../../interfaces/dataTypes';
 import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
+import { IToolboxComponent } from '../../interfaces';
+import { DataTypes } from '../../interfaces/dataTypes';
+import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../../providers';
+import { FormMarkup, IConfigurableFormComponent } from '../../providers/form/models';
+import { getStyle, validateConfigurableComponentSettings } from '../../providers/form/utils';
+import { axiosHttp } from '../../utils/fetchers';
 import { getNumericValue } from '../../utils/string';
-import { axiosHttp } from 'utils/fetchers';
-import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
+import settingsFormJson from './settingsForm.json';
+import './styles/index.less';
+import { migratePropertyName, migrateCustomFunctions } from '../../designer-components/_common-migrations/migrateSettings';
 
 type RangeValue = [moment.Moment, moment.Moment];
 
@@ -161,6 +162,7 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
         defaultValue={getDefaultRangePickerValues() as RangeValue}
         {...steps}
         style={getStyle(style, formData)}
+        className="sha-timepicker"
         {...rest}
         placeholder={null}
       />
@@ -169,12 +171,12 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
 
   return (
     <TimePicker
-      value={evaluatedValue}
       onChange={handleTimePickerChange}
       format={format}
-      defaultValue={defaultValue && moment(defaultValue)}
+      defaultValue={evaluatedValue || (defaultValue && moment(defaultValue))}
       {...steps}
       style={getStyle(style, formData)}
+      className="sha-timepicker"
       // show
       {...rest}
     />

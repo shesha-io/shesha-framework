@@ -49,12 +49,14 @@ export const getEvaluateFunc = (type: string): Func => {
             expression: {
                 label: "Expression",
                 type: 'text',
+                defaultValue: '',
                 valueSources: ['value'],
             },
             required: {
                 label: 'Allow empty',
                 type: 'boolean',
                 valueSources: ['value'],
+                defaultValue: false,
                 fieldSettings: requiredFieldSettings
             }            
         }

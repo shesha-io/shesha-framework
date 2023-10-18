@@ -6,8 +6,8 @@ import { ISettingsFormFactoryArgs, SectionSeparator } from '../../../../';
 import EndpointsAutocomplete from '../../../endpointsAutocomplete/endpointsAutocomplete';
 import { RawAutocomplete } from '../../../autocomplete';
 import TableViewSelectorSettingsModal from '../../../../designer-components/dataTable/tableViewSelector/tableViewSelectorSettingsModal';
-import SettingsForm, { useSettingsForm } from 'designer-components/_settings/settingsForm';
-import SettingsFormItem from 'designer-components/_settings/settingsFormItem';
+import SettingsForm, { useSettingsForm } from '../../../../designer-components/_settings/settingsForm';
+import SettingsFormItem from '../../../../designer-components/_settings/settingsFormItem';
 
 export const DataSourceSettingsForm: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>> = (props) => {
   return (

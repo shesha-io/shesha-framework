@@ -9,7 +9,7 @@ import { CodeEditor } from './codeEditor';
 import { DataTypes, StringFormats } from '../../../../interfaces/dataTypes';
 import { ICodeEditorComponentProps, ICodeEditorProps } from './interfaces';
 import { useForm } from '../../../..';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

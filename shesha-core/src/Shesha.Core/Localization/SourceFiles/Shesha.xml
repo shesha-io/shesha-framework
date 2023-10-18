@@ -7,7 +7,9 @@
     <text name="FormIsNotValidMessage" value="Form is not valid. Please check and fix errors." />
     <text name="TenantNameCanNotBeEmpty" value="Tenant name can not be empty" />
     <text name="InvalidUserNameOrPassword" value="Invalid user name or password" />
-    <text name="ThereIsNoTenantDefinedWithName{0}" value="There is no tenant defined with name {0}" />
+	<text name="UserNotFound" value="User not found" />
+	<text name="InvalidOTP" value="Invalid one time pin" />
+	<text name="ThereIsNoTenantDefinedWithName{0}" value="There is no tenant defined with name {0}" />
     <text name="TenantIsNotActive" value="Tenant {0} is not active." />
     <text name="UserIsNotActiveAndCanNotLogin" value="User {0} is not active and can not log in." />
     <text name="UserEmailIsNotConfirmedAndCanNotLogin">Your email address is not confirmed. You can not login.</text>

@@ -1,9 +1,9 @@
-import React, { FC, ReactNode } from 'react';
 import { Modal } from 'antd';
-import { ToolbarConfiguratorProvider, useToolbarConfigurator } from '../../../providers/toolbarConfigurator';
-import { ToolbarConfigurator } from './toolbarConfigurator';
-import { ToolbarItemProps } from '../../../providers/toolbarConfigurator/models';
+import React, { FC, ReactNode } from 'react';
 import { useMedia } from 'react-use';
+import { ToolbarConfiguratorProvider, useToolbarConfigurator } from '../../../providers/toolbarConfigurator';
+import { ToolbarItemProps } from '../../../providers/toolbarConfigurator/models';
+import { ToolbarConfigurator } from './toolbarConfigurator';
 
 export interface IToolbarSettingsModal {
   visible: boolean;
@@ -36,22 +36,22 @@ export const ToolbarSettingsModalInner: FC<IToolbarSettingsModal> = ({
   };
 
   return (
-    <Modal 
-      width={isSmall ? '90%' : '60%'} 
-      open={visible} 
-      title={title} 
-      okText="Save" 
-      onCancel={hideModal} 
+    <Modal
+      width={isSmall ? '90%' : '60%'}
+      open={visible}
+      title={title}
+      okText="Save"
+      onCancel={hideModal}
       cancelText={readOnly ? 'Close' : undefined}
       onOk={onOkClick}
       okButtonProps={{ hidden: readOnly }}
     >
-      <ToolbarConfigurator allowAddGroups={allowAddGroups} heading={heading} render={render} readOnly={readOnly}/>
+      <ToolbarConfigurator allowAddGroups={allowAddGroups} heading={heading} render={render} readOnly={readOnly} />
     </Modal>
   );
 };
 
-export const ToolbarSettingsModal: FC<IToolbarSettingsModal> = props => {
+export const ToolbarSettingsModal: FC<IToolbarSettingsModal> = (props) => {
   return (
     <ToolbarConfiguratorProvider items={(props.value as ToolbarItemProps[]) || []} readOnly={props.readOnly}>
       <ToolbarSettingsModalInner {...props} />

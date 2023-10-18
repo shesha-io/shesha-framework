@@ -38,7 +38,8 @@ export type { IColor, IHsl, IHsv, IRgb } from './color';
 export type { IApiEndpoint, IObjectMetadata, IModelMetadata, IEntityMetadata } from './metadata';
 export { isEntityMetadata } from './metadata';
 export type { IAjaxResponse, IAjaxResponseBase } from './ajaxResponse';
-export { DataTypes } from './dataTypes';
+export type { ICommonContainerProps, IContainerComponentProps } from '../designer-components/container/interfaces';
+export { DataTypes, StringFormats } from './dataTypes';
 export { type IReferenceListIdentifier } from './referenceList';
 
 export * from './formDesigner';

@@ -3,7 +3,7 @@ import { IFormComponentContainer } from '../../../../providers/form/models';
 import { DoubleRightOutlined } from '@ant-design/icons';
 import { Steps, Button, Space, message } from 'antd';
 import ComponentsContainer from '../../containers/componentsContainer';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useForm, useGlobalState } from '../../../../providers';
 import { IConfigurableFormComponent, useFormData, useSheshaApplication } from '../../../../';
 import { nanoid } from 'nanoid/non-secure';
@@ -22,14 +22,14 @@ import './styles.less';
 import classNames from 'classnames';
 import { findLastIndex } from 'lodash';
 import ConditionalWrap from '../../../conditionalWrapper';
-import { useDeepCompareEffect } from 'react-use';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { getStepDescritpion } from './utils';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 
 const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   type: 'wizard',
   name: 'Wizard',
   icon: <DoubleRightOutlined />,
-  factory: model => {
+  factory: (model) => {
     const { anyOfPermissionsGranted } = useSheshaApplication();
     const { formMode } = useForm();
     const { data: formData } = useFormData();
@@ -47,10 +47,18 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
 
     const [components, setComponents] = useState<IConfigurableFormComponent[]>();
 
-    useDeepCompareEffect(() => {
-      const defaultActiveStep = model?.steps?.findIndex(item => item?.id === model?.defaultActiveStep);
-      setCurrent(defaultActiveStep < 0 ? 0 : defaultActiveStep);
-    }, [model?.defaultActiveStep]);
+    useEffect(() => {
+      const { defaultActiveStep, defaultActiveValue } = model || {};
+
+      if (defaultActiveStep || defaultActiveValue) {
+        const stepNo = defaultActiveValue ? executeExpression(defaultActiveValue) : -1;
+        const activeStep = tabs?.findIndex((item) => item?.id === defaultActiveStep);
+        const activeValue = tabs?.length > stepNo && stepNo > -1 ? stepNo : activeStep;
+        const step = typeof activeValue !== 'number' || activeValue < 0 ? 0 : activeValue;
+
+        setCurrent(step);
+      }
+    }, [model?.defaultActiveValue, model?.defaultActiveStep]);
 
     //#region configurable actions
     const { propertyName: actionOwnerName, id: actionsOwnerId } = model;
@@ -114,7 +122,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
     );
     //#endregion
 
-    const executeExpression = (expression: string, returnBoolean = true) => {
+    const executeBooleanExpression = (expression: string, returnBoolean = true) => {
       if (!expression) {
         if (returnBoolean) {
           return true;
@@ -139,12 +147,23 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
       return typeof evaluated === 'boolean' ? evaluated : true;
     };
 
+    const executeExpression = (expression: string = '') =>
+      new Function('data, formMode, globalState, http, message, setGlobalState, moment', expression)(
+        formData,
+        formMode,
+        globalState,
+        axiosHttp(backendUrl),
+        message,
+        setGlobalState,
+        moment
+      );
+
     //Remove every tab from the equation that isn't visible either by customVisibility or permissions
     const visibleSteps = useMemo(
       () =>
         tabs.filter(({ customVisibility, permissions }) => {
           const granted = anyOfPermissionsGranted(permissions || []);
-          const isVisibleByCondition = executeExpression(customVisibility, true);
+          const isVisibleByCondition = executeBooleanExpression(customVisibility, true);
 
           return !((!granted || !isVisibleByCondition) && formMode !== 'designer');
         }),
@@ -167,56 +186,65 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
     };
 
     /// NAVIGATION
-    const executeActionIfConfigured = (accessor: (IWizardStepProps) => IConfigurableActionConfiguration) => {
+    const executeActionIfConfigured = (
+      accessor: (IWizardStepProps) => IConfigurableActionConfiguration,
+      success?: (actionResponse: any) => void
+    ) => {
       const actionConfiguration = accessor(visibleSteps[current]);
       if (!actionConfiguration) {
         console.warn(`Action not configured: tab '${current}', accessor: '${accessor.toString()}'`);
+        if (success) success(null);
         return;
       }
 
       executeAction({
         actionConfiguration: actionConfiguration,
         argumentsEvaluationContext: actionEvaluationContext,
+        success,
       });
     };
 
     const next = () => {
       if (current >= model.steps.length - 1) return;
-      executeActionIfConfigured(tab => tab.nextButtonActionConfiguration);
-
-      const nextStep = getNextStep();
-
-      if (nextStep >= 0) {
-        setCurrent(nextStep);
-      }
-
-      setComponents(visibleSteps[current]?.components);
+      executeActionIfConfigured(
+        (tab) => tab.nextButtonActionConfiguration,
+        () => {
+          setTimeout(() => {
+            const nextStep = getNextStep();
+            if (nextStep >= 0) setCurrent(nextStep);
+            setComponents(visibleSteps[current]?.components);
+          }, 100); // It is necessary to have time to complete a request
+        }
+      );
     };
 
     const back = () => {
       if (current <= 0) return;
 
-      executeActionIfConfigured(tab => tab.backButtonActionConfiguration);
-
-      const prevStep = getPrevStep();
-
-      if (prevStep >= 0) {
-        setCurrent(prevStep);
-      }
-
-      setComponents(visibleSteps[current]?.components);
+      executeActionIfConfigured(
+        (tab) => tab.backButtonActionConfiguration,
+        () => {
+          setTimeout(() => {
+            const prevStep = getPrevStep();
+            if (prevStep >= 0) setCurrent(prevStep);
+            setComponents(visibleSteps[current]?.components);
+          }, 100); // It is necessary to have time to complete a request
+        }
+      );
     };
 
     const cancel = () => {
-      executeActionIfConfigured(tab => tab.cancelButtonActionConfiguration);
+      executeActionIfConfigured((tab) => tab.cancelButtonActionConfiguration);
     };
 
     const done = () => {
-      executeActionIfConfigured(tab => tab.doneButtonActionConfiguration);
+      executeActionIfConfigured((tab) => tab.doneButtonActionConfiguration);
     };
 
-    const steps = visibleSteps?.map<IStepProps>(({ id, title, subTitle, description, icon, customEnabled }) => {
-      const isDisabledByCondition = !executeExpression(customEnabled, true) && formMode !== 'designer';
+    const content = getStepDescritpion(model?.showStepStatus, model?.sequence, current);
+
+    const steps = visibleSteps?.map<IStepProps>(({ id, title, subTitle, description, icon, customEnabled }, index) => {
+      const isDisabledByCondition = !executeBooleanExpression(customEnabled, true) && formMode !== 'designer';
 
       const iconProps = icon ? { icon: <ShaIcon iconName={icon as any} /> } : {};
 
@@ -224,13 +252,13 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
         id,
         title,
         subTitle,
-        description,
+        description: content(description, index),
         disabled: isDisabledByCondition,
         ...iconProps,
         content: (
           <ComponentsContainer
             containerId={id}
-            dynamicComponents={model?.isDynamic ? components?.map(c => ({ ...c, readOnly: model?.readOnly })) : []}
+            dynamicComponents={model?.isDynamic ? components?.map((c) => ({ ...c, readOnly: model?.readOnly })) : []}
           />
         ),
       };
@@ -257,7 +285,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
           <div className="sha-steps-content">{steps[current]?.content}</div>
         </div>
 
-        <ConditionalWrap condition={buttonsLayout === 'left'} wrap={children => <Space>{children}</Space>}>
+        <ConditionalWrap condition={buttonsLayout === 'left'} wrap={(children) => <Space>{children}</Space>}>
           <div
             className={classNames('sha-steps-buttons-container', {
               split: splitButtons,
@@ -267,7 +295,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
           >
             <ConditionalWrap
               condition={splitButtons}
-              wrap={children => (
+              wrap={(children) => (
                 <Space>
                   <div className={classNames('sha-steps-buttons')}>{children}</div>
                 </Space>
@@ -277,7 +305,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
                 <Button
                   style={{ margin: '0 8px' }}
                   onClick={() => back()}
-                  disabled={!executeExpression(visibleSteps[current]?.backButtonCustomEnabled, true)}
+                  disabled={!executeBooleanExpression(visibleSteps[current]?.backButtonCustomEnabled, true)}
                 >
                   {visibleSteps[current].backButtonText ? visibleSteps[current].backButtonText : 'Back'}
                 </Button>
@@ -286,7 +314,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
               {visibleSteps[current].allowCancel === true && (
                 <Button
                   onClick={() => cancel()}
-                  disabled={!executeExpression(visibleSteps[current]?.cancelButtonCustomEnabled, true)}
+                  disabled={!executeBooleanExpression(visibleSteps[current]?.cancelButtonCustomEnabled, true)}
                 >
                   {visibleSteps[current].cancelButtonText ? visibleSteps[current].cancelButtonText : 'Cancel'}
                 </Button>
@@ -295,7 +323,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
 
             <ConditionalWrap
               condition={splitButtons}
-              wrap={children => (
+              wrap={(children) => (
                 <Space>
                   <div className={classNames('sha-steps-buttons')}>{children}</div>
                 </Space>
@@ -305,7 +333,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
                 <Button
                   type="primary"
                   onClick={() => next()}
-                  disabled={!executeExpression(visibleSteps[current]?.nextButtonCustomEnabled, true)}
+                  disabled={!executeBooleanExpression(visibleSteps[current]?.nextButtonCustomEnabled, true)}
                 >
                   {visibleSteps[current].nextButtonText ? visibleSteps[current].nextButtonText : 'Next'}
                 </Button>
@@ -315,7 +343,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
                 <Button
                   type="primary"
                   onClick={() => done()}
-                  disabled={!executeExpression(visibleSteps[current]?.doneButtonCustomEnabled, true)}
+                  disabled={!executeBooleanExpression(visibleSteps[current]?.doneButtonCustomEnabled, true)}
                 >
                   {visibleSteps[current].doneButtonText ? visibleSteps[current].doneButtonText : 'Done'}
                 </Button>
@@ -359,10 +387,10 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   settingsFormFactory: (props) => <WizardSettingsForm {...props} />,
   // validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
   customContainerNames: ['steps'],
-  getContainers: model => {
+  getContainers: (model) => {
     const { steps } = model as IWizardComponentProps;
 
-    return steps.map<IFormComponentContainer>(t => ({ id: t.id }));
+    return steps.map<IFormComponentContainer>((t) => ({ id: t.id }));
   },
 };
 

@@ -1,7 +1,7 @@
-import { IStoredFilter } from 'providers/dataTable/interfaces';
-import { NestedPropertyMetadatAccessor } from 'providers/metadataDispatcher/contexts';
-import { IMatchData, executeExpression } from './publicUtils';
+import { IStoredFilter } from '../providers/dataTable/interfaces';
+import { NestedPropertyMetadatAccessor } from '../providers/metadataDispatcher/contexts';
 import { IArgumentEvaluationResult, convertJsonLogicNode } from './jsonLogic';
+import { IMatchData, executeExpression } from './publicUtils';
 
 export type NumberOrString = number | string;
 /**

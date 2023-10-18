@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useMemo } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { UnorderedListOutlined } from "@ant-design/icons";
 import { IToolboxComponent } from "../../../../interfaces";
 import { Alert } from 'antd';
@@ -8,7 +8,7 @@ import { IDataListComponentProps } from '../../../dataList/models';
 import { useDataSources } from '../../../../providers/dataSourcesProvider';
 import ConfigurableFormItem from '../formItem';
 import classNames from 'classnames';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 import { DataListSettingsForm } from './dataListSettings';
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
@@ -63,22 +63,26 @@ export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
     tableData,
     isFetchingTableData,
     selectedIds,
+    tableSorting,
     changeSelectedIds,
     getRepository,
+    onSort,
     modelType
   } = dataSource;
+
+  /* ToDo: AS - Need to review and move this feature to DataTableContext/DataSource */
+  const sort = {id: props.defaultSortBy, desc: props.defaultSortOrder === 'desc' };
+  const [sortBy, setSortBy] = useState(sort);
+  useEffect(() => {
+    if (!(tableSorting?.length > 0) || sort.id !== sortBy.id || sort.desc !== sortBy.desc)
+      setTimeout(() => onSort([sort]), 100);
+    setSortBy(sort);
+  }, [props.defaultSortBy, props.defaultSortOrder]);
+  /* ---------------------------------------------------*/
 
   const { selectedRow, selectedRows, setSelectedRow, setMultiSelectedRow } = dataSource;
 
   const repository = getRepository();
-
-  if (isDesignMode 
-    && (
-      !repository 
-      || !props.formId && props.formSelectionMode === "name"
-      || !props.formType && props.formSelectionMode === "view"
-      || !props.formIdExpression && props.formSelectionMode === "expression"
-      )) return <NotConfiguredWarning />;
 
   const onSelectRow = useCallback((index: number, row: any) => {
     if (row) {
@@ -93,6 +97,14 @@ export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
         : [{}, {}, {}, {}]
       : tableData; 
   }, [isDesignMode, tableData, props.orientation]);
+
+  if (isDesignMode 
+    && (
+      !repository 
+      || !props.formId && props.formSelectionMode === "name"
+      || !props.formType && props.formSelectionMode === "view"
+      || !props.formIdExpression && props.formSelectionMode === "expression"
+      )) return <NotConfiguredWarning />;
 
   //console.log(`DataListWrapper render, ${data?.length} records`);
 

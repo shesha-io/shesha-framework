@@ -1,5 +1,5 @@
-import React, { FC } from 'react';
 import { MoreOutlined } from '@ant-design/icons';
+import React, { FC } from 'react';
 import { useToolbarConfigurator } from '../../../providers/toolbarConfigurator';
 
 export interface IDragHandleProps {
