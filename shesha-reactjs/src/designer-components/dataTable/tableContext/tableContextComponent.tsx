@@ -8,7 +8,7 @@ import { FormMarkup, IConfigurableFormComponent } from 'providers/form/models';
 import { evaluateString, validateConfigurableComponentSettings } from 'providers/form/utils';
 import ComponentsContainer from 'components/formDesigner/containers/componentsContainer';
 import settingsFormJson from './settingsForm.json';
-import { DataFetchingMode } from 'providers/dataTable/interfaces';
+import { ColumnSorting, DataFetchingMode, GroupingItem, SortMode } from 'providers/dataTable/interfaces';
 import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 import { ConfigurableFormItem } from 'components';
 
@@ -19,6 +19,10 @@ export interface ITableContextComponentProps extends IConfigurableFormComponent 
   components?: IConfigurableFormComponent[]; // If isDynamic we wanna
   dataFetchingMode?: DataFetchingMode;
   defaultPageSize?: number;
+  grouping?: GroupingItem[];
+  sortMode?: SortMode;
+  strictOrderBy?: string;
+  strictSortOrder?: ColumnSorting;
 }
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -57,6 +61,7 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
         };
       })
       .add<ITableContextComponentProps>(4, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+      .add<ITableContextComponentProps>(5, (prev) => ({ ...prev, sortMode: 'standard', strictSortOrder: 'asc' }))
   ,
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
@@ -86,12 +91,12 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
   const configurationWarningMessage = !sourceType
     ? 'Select `Source type` on the settings panel'
     : sourceType === 'Entity' && !entityType
-    ? 'Select `Entity Type` on the settings panel'
-    : sourceType === 'Url' && !endpoint
-    ? 'Select `Custom Endpoint` on the settings panel'
-    : sourceType === 'Form' && !propertyName
-    ? 'Select `propertyName` on the settings panel'
-    : null;
+      ? 'Select `Entity Type` on the settings panel'
+      : sourceType === 'Url' && !endpoint
+        ? 'Select `Custom Endpoint` on the settings panel'
+        : sourceType === 'Form' && !propertyName
+          ? 'Select `propertyName` on the settings panel'
+          : null;
 
   if (isDesignMode && configurationWarningMessage)
     return (
@@ -104,7 +109,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
       />
     );
 
-  const provider = (getFieldValue = undefined, onChange = undefined) => 
+  const provider = (getFieldValue = undefined, onChange = undefined) =>
     <DataTableProvider
       userConfigId={props.id}
       entityType={entityType}
@@ -117,15 +122,19 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
       dataFetchingMode={props.dataFetchingMode ?? 'paging'}
       getFieldValue={getFieldValue}
       onChange={onChange}
+      grouping={props.grouping}
+      sortMode={props.sortMode}
+      strictOrderBy={props.strictOrderBy}
+      strictSortOrder={props.strictSortOrder}
     >
       <TableContextAccessor {...props} />
     </DataTableProvider>
-  ;
+    ;
 
-  return sourceType === 'Form' 
-    ? <ConfigurableFormItem model={{...props, hideLabel: true}} wrapperCol={{md: 24}}>
-        {(_v, onChange, _p, getFieldValue) => provider(getFieldValue, onChange)}
-      </ConfigurableFormItem> 
+  return sourceType === 'Form'
+    ? <ConfigurableFormItem model={{ ...props, hideLabel: true }} wrapperCol={{ md: 24 }}>
+      {(_v, onChange, _p, getFieldValue) => provider(getFieldValue, onChange)}
+    </ConfigurableFormItem>
     : provider();;
 };
 

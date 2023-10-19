@@ -123,3 +123,6 @@ export const IvanTestForm = addStory(DesignerTemplate, {
   formId: 'fc8e3f36-793b-4a30-ab6f-f4dd56bfa3c0'
 });
 
+export const TableGrouping = addStory(DesignerTemplate, {
+  formId: 'a641bb37-1afb-43f5-a0ae-61dab50e66d5'
+});

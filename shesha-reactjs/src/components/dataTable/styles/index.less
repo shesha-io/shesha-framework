@@ -20,3 +20,55 @@ a:hover {
   color: #40a9ff;
   border-radius: 5px;
 }
+
+@group-border: 1px solid lightgray;
+
+.nestedPaddings (@indexstart, @index) when (@indexstart < @index ) {
+  &.sha-group-level-@{indexstart} {
+    >.ant-collapse-item {
+      >.ant-collapse-header {
+        //padding-left: @indexstart * 15px + 10px;
+        margin-left: @indexstart * 15px;
+
+        border-bottom: @group-border;
+        & when (@indexstart > 0) {
+          border-left: @group-border;
+        }
+        & when (@indexstart = 0) {
+          border-top: @group-border;
+        }
+      }
+    }
+  }
+  .nestedPaddings (@indexstart + 1, @index);
+}
+
+.sha-react-table {
+  .sha-table {
+    .tbody {
+      .ant-collapse {
+        border: none;
+
+        .ant-collapse-item {
+          border: none;
+
+          .ant-collapse-header {
+            font-weight: normal;
+          }
+
+          .ant-collapse-content {
+            .ant-collapse-content-box {
+              padding: unset;
+
+              div.tr.tr-body:last-child {
+                border-bottom: @group-border;
+              }
+            }
+          }
+        }
+
+        .nestedPaddings(0, 9)
+      }
+    }
+  }
+}

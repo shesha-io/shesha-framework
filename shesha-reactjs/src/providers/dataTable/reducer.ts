@@ -9,6 +9,7 @@ import {
   IChangeFilterAction,
   IChangeFilterOptionPayload,
   IFetchColumnsSuccessSuccessPayload,
+  IFetchGroupingColumnsSuccessPayload,
   IRegisterConfigurableColumnsPayload,
   ISetPredefinedFiltersPayload,
   ISetRowDataPayload,
@@ -19,13 +20,15 @@ import {
   IColumnSorting,
   IGetListDataPayload,
   ITableColumn,
+  ITableDataColumn,
   ITableDataInternalResponse,
   ITableFilter,
 } from './interfaces';
 import { handleActions } from 'redux-actions';
 import { getFilterOptions } from '../../components/columnItemFilter';
-import { getTableDataColumn, getTableDataColumns, prepareColumn } from './utils';
+import { getStandardSorting, getTableDataColumn, getTableDataColumns, isStandardSortingUsed, prepareColumn } from './utils';
 import { Row } from 'react-table';
+import { ProperyDataType } from 'interfaces/metadata';
 
 /** get dirty filter if exists and fallback to current filter state */
 const getDirtyFilter = (state: IDataTableStateContext): ITableFilter[] => {
@@ -42,7 +45,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
     ) => {
       const { payload } = action;
       const selectedRow = state?.selectedRow?.id === payload?.id ? null : payload;
-      return {...state, selectedRow};
+      return { ...state, selectedRow };
     },
 
     [DataTableActionEnums.SetMultiSelectedRow]: (
@@ -200,17 +203,12 @@ const reducer = handleActions<IDataTableStateContext, any>(
     ) => {
       const { payload } = action;
 
-      // const selectedStoredFilterIds = state?.selectedStoredFilterIds?.length
-      //   ? state?.selectedStoredFilterIds
-      //   : payload.selectedFilterIds ?? [];
-
       const newState: IDataTableStateContext = {
         ...state,
         isFetchingTableData: true,
-        tableSorting: payload.sorting,
+        // note: don't change standard sorting is it's not used to prevent re-renderings
+        standardSorting: isStandardSortingUsed(state) ? payload.sorting : state.standardSorting,
         currentPage: payload.currentPage,
-        //parentEntityId: payload.parentEntityId,
-        //selectedStoredFilterIds, // TODO: Review the saving of filters
       };
 
       return newState;
@@ -251,25 +249,18 @@ const reducer = handleActions<IDataTableStateContext, any>(
       } = action;
 
       const cols = configurableColumns
-        .map<ITableColumn>(col => prepareColumn(col, columns, userConfig))     
+        .map<ITableColumn>(col => prepareColumn(col, columns, userConfig))
         .filter(c => c !== null);
 
       const dataCols = getTableDataColumns(cols);
-      const configuredTableSorting = dataCols
-        .filter(c => c.defaultSorting !== null && c.defaultSorting !== undefined && c.propertyName)
-        .map<IColumnSorting>(c => ({ id: c.id, desc: c.defaultSorting === 1 }));
-
-      const tableSorting =
-        userConfig && userConfig.tableSorting && userConfig.tableSorting.length > 0
-          ? userConfig.tableSorting
-          : configuredTableSorting;
+      const standardSorting = getStandardSorting(dataCols, userConfig);
 
       const userFilters = userConfig?.selectedFilterIds?.length > 0 && state.predefinedFilters?.length > 0
         ? userConfig?.selectedFilterIds?.filter(x => {
-            return state.predefinedFilters?.find(f => {
-              return f.id === x;
-            });
-          }) ?? []
+          return state.predefinedFilters?.find(f => {
+            return f.id === x;
+          });
+        }) ?? []
         : [];
 
       const selectedStoredFilterIds = state?.selectedStoredFilterIds?.length
@@ -289,7 +280,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
         tableFilter: userConfig?.advancedFilter,
         tableFilterDirty: userConfig?.advancedFilter,
         selectedStoredFilterIds,
-        tableSorting: tableSorting,
+        standardSorting: standardSorting,
       };
     },
 
@@ -394,9 +385,9 @@ const reducer = handleActions<IDataTableStateContext, any>(
         });
       });
 
-      const selectedStoredFilterIds = 
-        (!Boolean(state.selectedStoredFilterIds) || state.selectedStoredFilterIds.length === 0) 
-        && predefinedFilters?.length > 0
+      const selectedStoredFilterIds =
+        (!Boolean(state.selectedStoredFilterIds) || state.selectedStoredFilterIds.length === 0)
+          && predefinedFilters?.length > 0
           ? Boolean(uc) && uc.length > 0
             ? uc
             : [predefinedFilters[0].id]
@@ -426,7 +417,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
       return {
         ...state,
-        tableSorting: [...payload],
+        standardSorting: [...payload],
       };
     },
 
@@ -465,7 +456,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
         tableData: newData,
       };
     },
-    
+
     [DataTableActionEnums.SetDataFetchingMode]: (
       state: IDataTableStateContext,
       action: ReduxActions.Action<DataFetchingMode>
@@ -475,6 +466,46 @@ const reducer = handleActions<IDataTableStateContext, any>(
       return {
         ...state,
         dataFetchingMode: payload,
+      };
+    },
+
+    [DataTableActionEnums.FetchGroupingColumnsSuccess]: (
+      state: IDataTableStateContext,
+      action: ReduxActions.Action<IFetchGroupingColumnsSuccessPayload>
+    ) => {
+      const { payload } = action;
+
+      const columns = payload.columns
+        .map<ITableDataColumn>(column => ({
+          columnType: 'data',
+          propertyName: column.propertyName,
+
+          id: column.propertyName,
+          accessor: column.propertyName,
+          columnId: column.propertyName,
+
+          header: column.caption,
+          caption: column.caption,
+          isVisible: true,
+          show: true,
+          isFilterable: false,
+          isSortable: false,
+          allowShowHide: false,
+
+          dataType: column.dataType as ProperyDataType,
+          dataFormat: column.dataFormat,
+          entityReferenceTypeShortAlias: column.entityReferenceTypeShortAlias,
+          referenceListName: column.referenceListName,
+          referenceListModule: column.referenceListModule,
+          allowInherited: column.allowInherited,
+          metadata: column.metadata,
+        }))
+        .filter(c => c !== null);
+
+      return {
+        ...state,
+        groupingColumns: columns,
+        grouping: payload.grouping,
       };
     },
   },

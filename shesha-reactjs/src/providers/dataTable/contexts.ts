@@ -11,6 +11,10 @@ import {
   ColumnFilter,
   IPublicDataTableActions,
   DataFetchingMode,
+  GroupingItem,
+  SortMode,
+  ColumnSorting,
+  ITableDataColumn,
 } from './interfaces';
 import { IHasModelType, IRepository } from './repository/interfaces';
 
@@ -78,6 +82,7 @@ export interface IDataTableStateContext
 
   /** table columns */
   columns?: ITableColumn[];
+  groupingColumns?: ITableDataColumn[];
 
   /** Datatable data (fetched from the back-end) */
   tableData?: object[];
@@ -97,7 +102,16 @@ export interface IDataTableStateContext
   /** Quick search string */
   quickSearch?: string;
   /** Columns sorting */
-  tableSorting?: IColumnSorting[];
+  standardSorting?: IColumnSorting[];
+
+  /** Rows grouping */
+  grouping?: GroupingItem[];
+  /** Sort mode (standard or strict) */
+  sortMode?: SortMode;
+  /** Sort sorting: order by */
+  strictOrderBy?: string;
+  /** Sort sorting: sorting order */
+  strictSortOrder?: ColumnSorting;
 
   /** Available page sizes */
   pageSizeOptions?: number[];
@@ -139,7 +153,6 @@ export interface IDataTableStateContext
 
   selectedRow?: ISelectionProps;
   selectedRows?: { [key in string]: string }[];
-
 }
 
 export interface IDataTableActionsContext
@@ -207,7 +220,7 @@ export const DATA_TABLE_CONTEXT_INITIAL_STATE: IDataTableStateContext = {
   totalRowsBeforeFilter: null,
   quickSearch: null,
   tableConfigLoaded: false,
-  tableSorting: [],
+  standardSorting: [],
   tableFilter: [],
   saveFilterModalVisible: false,
   selectedIds: [],

@@ -5,7 +5,8 @@
       "type": "sectionSeparator",
       "propertyName": "separator1",
       "parentId": "root",
-      "label": "Display"
+      "label": "Display",
+      "version": 0
     },
     {
       "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
@@ -25,7 +26,7 @@
       "parentId": "root",
       "label": "Title",
       "validate": {},
-      "version": 0,
+      "version": 1,
       "textType": "text"
     },
     {
@@ -34,7 +35,7 @@
       "propertyName": "description",
       "parentId": "root",
       "label": "Description",
-      "version": 0,
+      "version": 1,
       "textType": "text"
     },
     {
@@ -42,7 +43,8 @@
       "type": "checkbox",
       "propertyName": "hidden",
       "parentId": "root",
-      "label": "Hidden"
+      "label": "Hidden",
+      "version": 0
     },
     {
       "id": "ac45ff35-a50b-42f9-9642-73d390ceddbf",
@@ -69,7 +71,7 @@
         }
       ],
       "dataSourceType": "values",
-      "version": 1,
+      "version": 2,
       "useRawValues": false,
       "referenceListId": null
     },
@@ -80,13 +82,17 @@
       "label": "Entity Type",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": {"_code": "return getSettingValue(data.sourceType) !== 'Entity';", "_mode": "code", "_value": false},
+      "hidden": {
+        "_code": "return getSettingValue(data.sourceType) !== 'Entity';",
+        "_mode": "code",
+        "_value": false
+      },
       "dataSourceType": "url",
       "validate": {},
       "dataSourceUrl": "/api/services/app/Metadata/EntityTypeAutocomplete",
       "settingsValidationErrors": [],
       "useRawValues": true,
-      "version": 1
+      "version": 2
     },
     {
       "id": "3B19B03F-8568-4125-9CB0-CDEA52BE207D",
@@ -94,7 +100,11 @@
       "propertyName": "endpoint",
       "parentId": "root",
       "label": "Custom Endpoint",
-      "hidden": {"_code": "return getSettingValue(data.sourceType) !== 'Entity' && getSettingValue(data.sourceType) !== 'Url';", "_mode": "code", "_value": false},
+      "hidden": {
+        "_code": "return getSettingValue(data.sourceType) !== 'Entity' && getSettingValue(data.sourceType) !== 'Url';",
+        "_mode": "code",
+        "_value": false
+      },
       "validate": {
         "minLength": "",
         "maxLength": "",
@@ -106,7 +116,8 @@
       "suffix": "",
       "initialValue": "",
       "quickviewWidth": "",
-      "settingsValidationErrors": []
+      "settingsValidationErrors": [],
+      "version": 0
     },
     {
       "id": "8fQ68T0MS9Y29Q2oSe_mS",
@@ -118,7 +129,7 @@
       "hidden": false,
       "visibility": "Yes",
       "isDynamic": false,
-      "version": 1,
+      "version": 2,
       "dataSourceType": "values",
       "useRawValues": false,
       "referenceListId": null,
@@ -196,7 +207,7 @@
       "validate": {
         "required": true
       },
-      "version": 1,
+      "version": 2,
       "useRawValues": false,
       "referenceListId": null,
       "placeholder": "",
@@ -205,7 +216,145 @@
         "single"
       ],
       "dataSourceUrl": "",
-      "hidden": {"_code": "return getSettingValue(data.dataFetchingMode) !== 'paging';", "_mode": "code", "_value": false},
+      "hidden": {
+        "_code": "return getSettingValue(data.dataFetchingMode) !== 'paging';",
+        "_mode": "code",
+        "_value": false
+      },
+      "settingsValidationErrors": []
+    },
+    {
+      "id": "4rp6NvRdoK4CEuK2jA6re",
+      "type": "textArea",
+      "propertyName": "grouping",
+      "componentName": "grouping",
+      "label": "Grouping",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "visibility": "Yes",
+      "customVisibility": null,
+      "isDynamic": false,
+      "autoSize": false,
+      "showCount": false,
+      "allowClear": false,
+      "version": 0,
+      "validate": {},
+      "settingsValidationErrors": []
+    },
+    {
+      "id": "PzuhHhgdVMESk1pPRVc11",
+      "type": "dropdown",
+      "propertyName": "sortMode",
+      "componentName": "sortMode",
+      "label": "Sort Mode",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "visibility": "Yes",
+      "customVisibility": null,
+      "isDynamic": false,
+      "version": 2,
+      "dataSourceType": "values",
+      "useRawValues": false,
+      "referenceListId": null,
+      "values": [
+        {
+          "id": "1Ju5txy0zso5M_PyvM5MP",
+          "label": "Standard",
+          "value": "standard"
+        },
+        {
+          "id": "fniiyt1SX9T_7DL7cBlID",
+          "label": "Strict",
+          "value": "strict"
+        }
+      ],
+      "validate": {
+        "required": true
+      },
+      "settingsValidationErrors": []
+    },
+    {
+      "id": "zDXvnoMcutlROxXTERzQj",
+      "type": "container",
+      "propertyName": "container1",
+      "componentName": "container1",
+      "label": "Container1",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": {
+        "_value": false,
+        "_code": "return data.sortMode !== 'strict';",
+        "_mode": "code"
+      },
+      "visibility": "Yes",
+      "customVisibility": null,
+      "isDynamic": false,
+      "version": 1,
+      "direction": "vertical",
+      "justifyContent": "left",
+      "flexWrap": "wrap",
+      "components": [
+        {
+          "id": "f0EWngXBbbWIzdRGxC9Vg",
+          "type": "propertyAutocomplete",
+          "propertyName": "strictOrderBy",
+          "componentName": "strictOrderBy",
+          "label": "Order By",
+          "labelAlign": "right",
+          "parentId": "zDXvnoMcutlROxXTERzQj",
+          "hidden": false,
+          "visibility": "Yes",
+          "customVisibility": null,
+          "isDynamic": false,
+          "version": 0,
+          "validate": {
+            "required": {
+              "_code": "return data.sortMode === 'strict';",
+              "_mode": "code"
+            }
+          },
+          "settingsValidationErrors": [],
+          "showFillPropsButton": false
+        },
+        {
+          "id": "BCHGYq-08YVd0PboIn1bU",
+          "type": "dropdown",
+          "propertyName": "strictSortOrder",
+          "componentName": "strictSortOrder",
+          "label": "Sort Order",
+          "labelAlign": "right",
+          "parentId": "zDXvnoMcutlROxXTERzQj",
+          "hidden": false,
+          "visibility": "Yes",
+          "customVisibility": null,
+          "isDynamic": false,
+          "version": 2,
+          "dataSourceType": "values",
+          "useRawValues": false,
+          "referenceListId": null,
+          "validate": {
+            "required": {
+              "_code": "return data.sortMode === 'strict';",
+              "_mode": "code"
+            }
+          },
+          "settingsValidationErrors": [],
+          "values": [
+            {
+              "id": "iEhO_ds0R_wFNF3teQ2kg",
+              "label": "Ascending",
+              "value": "asc"
+            },
+            {
+              "id": "N7lgxyqcrMDF9WnrECJXk",
+              "label": "Descending",
+              "value": "desc"
+            }
+          ]
+        }
+      ],
       "settingsValidationErrors": []
     }
   ],

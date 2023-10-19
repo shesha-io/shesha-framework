@@ -73,6 +73,7 @@ const ReactTable: FC<IReactTableProps> = ({
   inlineCreatorComponents,
   inlineDisplayComponents,
   onRowsReordered,
+  onRowsRendering,
 }) => {
   const [componentState, setComponentState] = useState<IReactTableState>({
     allRows: data,
@@ -260,7 +261,7 @@ const ReactTable: FC<IReactTableProps> = ({
   */
 
   const onSetList = (newState: ItemInterface[], _sortable, _store) => {
-    if (!onRowsReordered){
+    if (!onRowsReordered) {
       console.error('Datatable: re-ordering logic is not specified');
       return;
     }
@@ -269,20 +270,20 @@ const ReactTable: FC<IReactTableProps> = ({
     if (chosen)
       return;
 
-    if (rows.length === newState.length){
+    if (rows.length === newState.length) {
       let isModified = false;
       // detect changes using references
       const newRows = [];
-      for (let i = 0; i < rows.length; i++){
+      for (let i = 0; i < rows.length; i++) {
         const typedRow = newState[i] as Row<any>;
-        if (rows[i] !== typedRow){
+        if (rows[i] !== typedRow) {
           isModified = true;
           //break;
         }
         newRows.push(typedRow.original);
       }
-      
-      if (isModified){
+
+      if (isModified) {
         const payload: OnRowsReorderedArgs = {
           reorderedRows: newRows
         };
@@ -373,6 +374,13 @@ const ReactTable: FC<IReactTableProps> = ({
     );
   };
 
+  const renderRows = () => {
+
+    return onRowsRendering
+      ? (onRowsRendering({ rows: rows, defaultRender: renderRow }))
+      : rows.map((row, rowIndex) => (renderRow(row, rowIndex)));
+  };
+
   return (
     <Spin
       spinning={loading}
@@ -458,7 +466,7 @@ const ReactTable: FC<IReactTableProps> = ({
                 </ReactSortable>
               )}
             >
-              {rows.map((row, rowIndex) => renderRow(row, rowIndex))}
+              {renderRows()}
             </ConditionalWrap>
           </div>
           {canAddInline && newRowCapturePosition === 'bottom' && (renderNewRowEditor())}

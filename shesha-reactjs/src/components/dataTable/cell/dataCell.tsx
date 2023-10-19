@@ -75,7 +75,7 @@ const UpdateDataCell = <D extends object = {}, V = number>(props: IDataCellProps
     );
 };
 
-const DefaultDataDisplayCell = <D extends object = {}, V = number>(props: IDataCellProps<D, V>) => {
+export const DefaultDataDisplayCell = <D extends object = {}, V = number>(props: IDataCellProps<D, V>) => {
     const { columnConfig } = props;
     const { form } = useForm();
     const value = form.getFieldValue(columnConfig.propertyName?.split('.'));

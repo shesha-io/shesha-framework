@@ -1,5 +1,5 @@
 import { IConfigurableActionConfiguration } from 'interfaces/configurableAction';
-import { ProperyDataType } from 'interfaces/metadata';
+import { IPropertyMetadata, ProperyDataType } from 'interfaces/metadata';
 import { Moment } from 'moment';
 import { IDataColumnsProps, IEditableColumnProps } from '../datatableColumnsConfigurator/models';
 export type ColumnFilter = string[] | number[] | Moment[] | Date[] | string | number | Moment | Date | boolean;
@@ -45,6 +45,7 @@ export interface ITableColumn {
   defaultSorting?: SortDirection;
   name?: string;
   allowShowHide?: boolean;
+  metadata?: IPropertyMetadata;
 }
 
 export interface ITableDataColumn extends ITableColumn, IEditableColumnProps {
@@ -57,6 +58,10 @@ export interface ITableDataColumn extends ITableColumn, IEditableColumnProps {
   entityReferenceTypeShortAlias?: string;
   allowInherited?: boolean;
 }
+
+export const isDataColumn = (column: ITableColumn): column is ITableDataColumn => {
+  return column && column.columnType === 'data';
+};
 
 export interface ITableActionColumn extends ITableColumn, IActionColumnProps {
 
@@ -201,6 +206,7 @@ export interface DataTableColumnDto {
   allowInherited?: boolean;
   isFilterable?: boolean;
   isSortable?: boolean;
+  metadata?: IPropertyMetadata;
 }
 
 //#region todo: remove
@@ -249,3 +255,10 @@ export interface IActionColumnProps {
     */
    actionConfiguration?: IConfigurableActionConfiguration;  
 }
+
+export interface GroupingItem {
+  propertyName: string;
+  sorting: ColumnSorting;
+}
+
+export type SortMode = 'standard' | 'strict';

@@ -125,9 +125,10 @@ export const WorkflowDefinitions = addStory(Template, {
 
 export const BugFix = addStory(Template, {
   formId: {
-    name: 'role-details',
-    module: 'Shesha'
+    name: 'form-details',
+    module: 'shesha'
   },
   mode: 'edit',
-  id: 'b83ceadd-cd9d-41db-9951-1fda1ab61f1e'
+  id: '1f52e8de-b0e3-49ce-8830-67a15687505a'
 });
+
