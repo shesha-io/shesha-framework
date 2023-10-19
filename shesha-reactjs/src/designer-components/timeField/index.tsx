@@ -164,7 +164,7 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
         style={getStyle(style, formData)}
         className="sha-timepicker"
         {...rest}
-        placeholder={null}
+        placeholder={[placeholder, placeholder]}
       />
     );
   }
@@ -177,6 +177,7 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
       {...steps}
       style={getStyle(style, formData)}
       className="sha-timepicker"
+      placeholder={placeholder}
       // show
       {...rest}
     />

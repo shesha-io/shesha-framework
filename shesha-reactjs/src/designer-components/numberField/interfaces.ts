@@ -7,4 +7,5 @@ export interface INumberFieldComponentProps extends IConfigurableFormComponent {
   highPrecision?: boolean;
   stepNumeric?: number;
   stepString?: string;
+  placeholder?: string;
 }

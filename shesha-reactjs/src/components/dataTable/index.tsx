@@ -76,8 +76,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   ...props
 }) => {
   const store = useDataTableStore();
-  const { formMode, formData } = useForm(false) ?? { formMode: 'readonly', formData: {} };
-  const { globalState } = useGlobalState();
+  const { formMode, formData, setFormData } = useForm(false) ?? { formMode: 'readonly', formData: {} };
+  const { globalState, setState: setGlobalState } = useGlobalState();
 
   if (tableRef) tableRef.current = store;
 
@@ -312,13 +312,15 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         /*nop*/
       };
 
-    return (data, formData, globalState) => {
+    return (data, formData, globalState, setGlobalState, setFormData) => {
       const evaluationContext = {
-        data: data,
-        formData: formData,
-        globalState: globalState,
+        data,
+        formData,
+        globalState,
+        setGlobalState,
+        setFormData,
         http: axiosHttp(backendUrl),
-        moment: moment,
+        moment,
       };
       // execute the action
       executeAction({
@@ -340,7 +342,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
       return repository.performUpdate(rowIndex, preparedData, options).then((response) => {
         setRowData(rowIndex, preparedData/*, response*/);
-        performOnRowSaveSuccess(preparedData, formData ?? {}, globalState);
+        performOnRowSaveSuccess(preparedData, formData ?? {}, globalState, setGlobalState, setFormData);
         return response;
       });
     });
@@ -358,7 +360,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
       return repository.performCreate(0, preparedData, options).then(() => {
         store.refreshTable();
-        performOnRowSaveSuccess(preparedData, formData ?? {}, globalState);
+        performOnRowSaveSuccess(preparedData, formData ?? {}, globalState, setGlobalState, setFormData);
       });
     });
   };
