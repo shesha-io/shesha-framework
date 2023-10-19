@@ -1,3 +1,4 @@
+import { useDeepCompareMemo } from 'hooks';
 import React, { FC, MutableRefObject } from 'react';
 import { getActualModel, useApplicationContext } from 'utils/publicUtils';
 import { useForm } from '../../providers/form';
@@ -15,7 +16,8 @@ const FormComponent: FC<IFormComponentProps> = ({ id, componentRef }) => {
   const toolboxComponent = getToolboxComponent(model.type);
   if (!toolboxComponent) return <div>Component not found</div>;
 
-  const actualModel = getActualModel(model, allData);
+  const actualModel = useDeepCompareMemo(() => getActualModel(model, allData),
+    [allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
 
   actualModel.hidden = isComponentHidden(actualModel);
   actualModel.disabled = isComponentDisabled(actualModel);

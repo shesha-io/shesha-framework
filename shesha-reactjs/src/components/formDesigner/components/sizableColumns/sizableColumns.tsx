@@ -7,7 +7,8 @@ import Split from 'react-split';
 import ComponentsContainer from 'components/formDesigner/containers/componentsContainer';
 import { getStyle } from 'utils/publicUtils';
 import { nanoid } from 'nanoid';
-import SizableColumnsSettings from './sizableColumnsSettings';
+import { SizableColumnsSettingsForm } from './sizableColumnsSettings';
+import { migrateCustomFunctions, migratePropertyName } from 'src/designer-components/_common-migrations/migrateSettings';
 
 const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> = {
   type: 'sizableColumns',
@@ -40,7 +41,6 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
   initModel: (model) => {
     const tabsModel: ISizableColumnComponentProps = {
       ...model,
-      componentName: 'custom Name',
       columns: [
         { id: nanoid(), size: 50, components: [] },
         { id: nanoid(), size: 50, components: [] },
@@ -49,17 +49,10 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
 
     return tabsModel;
   },
-  settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
-    return (
-      <SizableColumnsSettings
-        readonly={readOnly}
-        model={model as ISizableColumnComponentProps}
-        onSave={onSave}
-        onValuesChange={onValuesChange}
-        onCancel={onCancel}
-      />
-    );
-  },
+  settingsFormFactory: (props) => <SizableColumnsSettingsForm {...props} />,
+  migrator: m => m
+    .add<ISizableColumnComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)) as ISizableColumnComponentProps)
+  ,
   customContainerNames: ['columns'],
 };
 

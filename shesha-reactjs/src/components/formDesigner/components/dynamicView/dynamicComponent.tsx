@@ -1,3 +1,4 @@
+import { useDeepCompareMemo } from 'hooks';
 import React, { FC, useRef } from 'react';
 import { getActualModel, useApplicationContext } from 'utils/publicUtils';
 import { CustomErrorBoundary } from '../../..';
@@ -17,7 +18,9 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model }) => {
 
   if (!toolboxComponent) return null;
 
-  const actualModel = getActualModel(model, allData);
+  const actualModel = useDeepCompareMemo(() => getActualModel(model, allData),
+    [allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
+
   actualModel.hidden = isComponentHidden(actualModel);
   actualModel.disabled = isComponentDisabled(actualModel);
   actualModel.readOnly = actualModel.readOnly || allData.formMode === 'readonly';

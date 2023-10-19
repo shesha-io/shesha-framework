@@ -207,6 +207,33 @@
       "dataSourceUrl": "",
       "hidden": {"_code": "return getSettingValue(data.dataFetchingMode) !== 'paging';", "_mode": "code", "_value": false},
       "settingsValidationErrors": []
+    },
+    {
+      "id": "13579a70-99a0-4825-ae6c-8b933004e119",
+      "type": "textField",
+      "propertyName": "defaultSortBy",
+      "parentId": "root",
+      "label": "Default sort By",
+      "version": 0,
+      "textType": "text"
+    },
+    {
+      "id": "f6c3d710-8d98-ab3c-9fe2-7c6312e9a03c",
+      "type": "dropdown",
+      "propertyName": "defaultSortOrder",
+      "parentId": "root",
+      "label": "Default sort order",
+      "dataSourceType": "values",
+      "values": [
+        {"id": "asc", "label": "asc", "value": "asc"},
+        {"id": "desc", "label": "desc", "value": "desc"}
+      ],
+      "version": 1,
+      "useRawValues": false,
+      "referenceListId": null,
+      "mode": ["single"],
+      "hidden": {"_code": "return !getSettingValue(data.defaultSortBy);", "_mode": "code", "_value": false},
+      "settingsValidationErrors": []
     }
   ],
   "formSettings": {

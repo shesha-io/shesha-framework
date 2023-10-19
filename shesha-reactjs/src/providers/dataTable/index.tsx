@@ -82,6 +82,9 @@ interface IDataTableProviderBaseProps {
   initialPageSize?: number;
 
   dataFetchingMode: DataFetchingMode;
+  
+  defaultSortBy?: string;
+  defaultSortOrder?: string;
 
   /** Id of the user config, is used for saving of the user settings (sorting, paging etc) to the local storage. */
   userConfigId?: string;
@@ -220,6 +223,8 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     userConfigId,
     modelType,
     dataFetchingMode,
+    defaultSortBy,
+    defaultSortOrder,
   } = props;
 
   const [state, dispatch] = useThunkReducer(dataTableReducer, {
@@ -228,6 +233,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     selectedPageSize: initialPageSize ?? DATA_TABLE_CONTEXT_INITIAL_STATE.selectedPageSize,
     dataFetchingMode: dataFetchingMode,
     modelType: modelType,
+    tableSorting: !!defaultSortBy ? [{id: defaultSortBy, desc: defaultSortOrder === 'desc'}] : [],
   });
 
   const { setState: setGlobalState } = useGlobalState();

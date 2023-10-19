@@ -8,7 +8,6 @@ import Show from 'components/show';
 import { ISettingsFormFactoryArgs } from 'interfaces';
 import SettingsForm, { useSettingsForm } from '../../../../designer-components/_settings/settingsForm';
 import SettingsFormItem from '../../../../designer-components/_settings/settingsFormItem';
-import { PropertyAutocomplete } from 'components';
 import { ConfigurableActionConfigurator } from 'src/designer-components/configurableActionsConfigurator/configurator';
 
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
@@ -59,21 +58,6 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
           readOnly={props.readOnly}
         />
       </SettingsFormItem>*/}
-
-      <SettingsFormItem name="defaultSortBy" label="Default sort by" jsSetting>
-        <PropertyAutocomplete readOnly={readOnly} showFillPropsButton={false} />
-      </SettingsFormItem>
-
-      <SettingsFormItem name="defaultSortOrder" label="Default sort order" jsSetting>
-        <Select disabled={readOnly} allowClear>
-          <Select.Option key="asc" value="asc">
-            Ascending
-          </Select.Option>
-          <Select.Option key="desc" value="desc">
-            Descending
-          </Select.Option>
-        </Select>
-      </SettingsFormItem>
 
       <SettingsFormItem name="actionConfiguration">
         <ConfigurableActionConfigurator

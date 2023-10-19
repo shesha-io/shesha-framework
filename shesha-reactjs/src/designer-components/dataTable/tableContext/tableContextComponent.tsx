@@ -19,6 +19,8 @@ export interface ITableContextComponentProps extends IConfigurableFormComponent 
   components?: IConfigurableFormComponent[]; // If isDynamic we wanna
   dataFetchingMode?: DataFetchingMode;
   defaultPageSize?: number;
+  defaultSortBy?: string;
+  defaultSortOrder?: string;
 }
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -75,7 +77,7 @@ interface ITableContextInnerProps extends ITableContextComponentProps {
 }
 
 export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
-  const { sourceType, entityType, endpoint, id, propertyName, componentName } = props;
+  const { sourceType, entityType, endpoint, id, propertyName, componentName, defaultSortBy, defaultSortOrder } = props;
   const { formMode } = useForm();
   const { data } = useFormData();
 
@@ -117,6 +119,8 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
       dataFetchingMode={props.dataFetchingMode ?? 'paging'}
       getFieldValue={getFieldValue}
       onChange={onChange}
+      defaultSortBy={defaultSortBy}
+      defaultSortOrder={defaultSortOrder}
     >
       <TableContextAccessor {...props} />
     </DataTableProvider>

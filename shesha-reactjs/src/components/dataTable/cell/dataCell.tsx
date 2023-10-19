@@ -21,6 +21,7 @@ import StringCell from './default/stringCell';
 import TimeCell from './default/timeCell';
 import { IConfigurableCellProps, IDataCellProps } from './interfaces';
 import { getActualModel, useApplicationContext } from 'utils/publicUtils';
+import { useDeepCompareMemo } from 'hooks';
 
 export const DataCell = <D extends object = {}, V = number>(props: IDataCellProps<D, V>) => {
   const { mode } = useCrud();
@@ -122,13 +123,15 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
   const { columnConfig, propertyMeta, customComponent, defaultRow } = props;
 
   const toolboxComponents = useFormDesignerComponents();
-  const appallData = useApplicationContext();
+  const allData = useApplicationContext();
 
   const component = toolboxComponents[customComponent.type];
   const injectables = defaultRow ? { injectedTableRow: defaultRow } : {};
 
     const componentModel = useMemo(() => {
-        const actualModel = getActualModel(customComponent.settings, appallData);
+        const actualModel = useDeepCompareMemo(() => getActualModel(model, allData),
+          [allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
+    
         let model: IColumnEditorProps = {
             ...actualModel,
             ...injectables,
@@ -154,7 +157,7 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
 
     return (
         <CustomErrorBoundary>
-            {component.factory(componentModel, componentRef, appallData.form)}
+            {component.factory(componentModel, componentRef, allData.form)}
         </CustomErrorBoundary>
     );
 };

@@ -101,8 +101,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
     })
     .add<IFileUploadProps>(1, (prev, context) => ({...prev, useSync: !Boolean(context.formSettings?.modelType)}))
     .add<IFileUploadProps>(2, (prev) => {
-      // update propertyName from old propertyName field, not from name field
-      const pn = prev.propertyName;
+      const pn = prev['name'] ?? prev.propertyName;
       const model = migratePropertyName(migrateCustomFunctions(prev));
       model.propertyName = pn;
       return model;

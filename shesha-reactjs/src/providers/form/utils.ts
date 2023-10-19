@@ -50,13 +50,15 @@ import {
   ViewType,
 } from './models';
 import { isPropertySettings } from '../../designer-components/_settings/utils';
-import { useDataContextManager } from 'providers/dataContextManager';
+import { IDataContextsData, useDataContextManager } from 'providers/dataContextManager';
 import moment from 'moment';
 import { message } from 'antd';
 import { ISelectionProps } from 'providers/dataTable/contexts';
 import { useDataContext } from 'providers/dataContextProvider';
 import { useDataTableStore, useForm, useFormData, useGlobalState, useSheshaApplication } from 'providers';
 import { axiosHttp } from 'utils/fetchers';
+import { AxiosInstance } from 'axios';
+import { MessageApi } from 'antd/lib/message/index';
 
 /** Interface to geat all avalilable data */
 export interface IApplicationContext {
@@ -65,13 +67,17 @@ export interface IApplicationContext {
   /** Form mode */
   formMode: FormMode;
   /** Contexts datas */
-  contexts: any;
+  contexts: IDataContextsData;
   /** Global state */
   globalState: any;
   /** Table selection */
   selectedRow: ISelectionProps;
   /** Moment function */
   moment: Function;
+  /** Axios Http */
+  http: AxiosInstance;
+  /** Message API */
+  message: MessageApi;
   /** Other data */
   [key: string]: any;
 }
@@ -85,7 +91,7 @@ export function useApplicationContext(topContextId?: string): IApplicationContex
   const { globalState, setState: setGlobalState } = useGlobalState();
   return {
     data: useFormData()?.data,
-    contexts: {...dcm?.getDataContextsData(tcId), lastUpdate: dcm?.lastUpdate},
+    contexts: {...dcm?.getDataContextsData(tcId)},
     setFormData,
     formMode,
     globalState,

@@ -9,6 +9,7 @@ import {
 } from '../../../../../providers/buttonGroupConfigurator/models';
 import { ReactSortable, ItemInterface } from 'react-sortablejs';
 import { getActualModel, useApplicationContext } from 'utils/publicUtils';
+import { useDeepCompareMemo } from 'hooks';
 
 export interface IButtonGroupItemsContainerProps {
   index?: number[];
@@ -22,7 +23,8 @@ export const ButtonGroupItemsContainer: FC<IButtonGroupItemsContainerProps> = pr
   
   const renderItem = (item: ButtonGroupItemProps, index: number) => {
 
-    const actualModel = getActualModel(item, allData);
+    const actualModel = useDeepCompareMemo(() => getActualModel(item, allData),
+      [allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
 
     switch (actualModel.itemType) {
       case 'item':
