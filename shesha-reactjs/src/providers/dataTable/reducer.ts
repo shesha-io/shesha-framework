@@ -522,7 +522,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
       return {
         ...state,
-        groupingColumns: columns,
+        groupingColumns: state.groupingColumns.length === 0 && columns.length === 0 ? state.groupingColumns : columns,
         grouping: payload.grouping,
       };
     },

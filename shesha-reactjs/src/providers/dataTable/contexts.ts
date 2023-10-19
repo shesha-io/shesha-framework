@@ -83,7 +83,7 @@ export interface IDataTableStateContext
 
   /** table columns */
   columns?: ITableColumn[];
-  groupingColumns?: ITableDataColumn[];
+  groupingColumns: ITableDataColumn[];
 
   /** Datatable data (fetched from the back-end) */
   tableData?: object[];
@@ -214,6 +214,7 @@ export const DATA_TABLE_CONTEXT_INITIAL_STATE: IDataTableStateContext = {
   error: {},
   actioned: {},
   columns: [],
+  groupingColumns: [],
   tableData: [],
   isFetchingTableData: false,
   hasFetchTableDataError: null,
