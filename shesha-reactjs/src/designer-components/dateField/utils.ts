@@ -15,10 +15,12 @@ export const DATE_TIME_FORMATS = {
 export const getDatePickerValue = (props: IDateFieldProps, pickerFormat: string) => {
   const { value, injectedDefaultValue } = props;
 
+  /** Used to changed value/defaultValue based on whether it's rendered on the table **/
   if (injectedDefaultValue) {
     return { defaultValue: getMoment(value, pickerFormat) };
   }
 
+  /** Used to handle the value based on default date-picker implementation **/
   return { value: getMoment(value, pickerFormat) };
 };
 

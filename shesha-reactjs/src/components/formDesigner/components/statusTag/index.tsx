@@ -37,6 +37,7 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
       // tslint:disable-next-line:function-constructor
       const func = new Function('data', 'formMode', expression);
 
+      /** Used to inject table row in the status tag if rendered on databale. Uses data if not applicable **/
       return func(model?.injectedTableRow || data, formMode);
     };
 
