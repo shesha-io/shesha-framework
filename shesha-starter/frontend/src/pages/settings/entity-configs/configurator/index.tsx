@@ -1,9 +1,9 @@
-import React from 'react';
-import { EntityConfiguratorPage, PageWithLayout } from '@shesha/reactjs';
-import { getLayout } from 'src/components/layouts';
+import React from "react";
+import { EntityConfiguratorPage, PageWithLayout } from "@shesha-io/reactjs";
+import { getLayout } from "src/components/layouts";
 
 export const Page: PageWithLayout<{ id: string }> = () => {
-  return <EntityConfiguratorPage />
+  return <EntityConfiguratorPage />;
 };
 
 Page.getLayout = getLayout;

@@ -1,5 +1,5 @@
-import React, { FC } from 'react';
 import { Space, Typography } from 'antd';
+import React, { FC } from 'react';
 import { GenericText } from '../../../components/formDesigner/components/text/typography';
 
 const TextsExample: FC = () => {

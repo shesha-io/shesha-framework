@@ -7,7 +7,7 @@ import { getStyle, validateConfigurableComponentSettings } from '../../providers
 import { PropertyAutocomplete } from '../../components/propertyAutocomplete/propertyAutocomplete';
 import { IConfigurableFormComponent, MetadataProvider, useForm } from '../..';
 import ConditionalWrap from '../../components/conditionalWrapper';
-import { DataContextSelector } from 'designer-components/dataContextSelector';
+import { DataContextSelector } from '../../designer-components/dataContextSelector';
 import { Button, Form, Input } from 'antd';
 import { useFormDesigner } from 'providers/formDesigner';
 import { MetadataType } from 'providers/metadata/contexts';

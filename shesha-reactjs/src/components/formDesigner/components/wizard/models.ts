@@ -37,6 +37,12 @@ export interface IWizardStepProps extends IConfigurableItemBase {
   status?: StepProps['status'];
 }
 
+export interface IWizardSequence {
+  finshed?: string;
+  active?: string;
+  pending?: string;
+}
+
 export interface IStepProps extends StepProps {
   content?: JSX.Element;
 }
@@ -50,8 +56,11 @@ export interface IWizardComponentProps extends Omit<IConfigurableFormComponent, 
   hidden?: boolean;
   customVisibility?: string;
   defaultActiveStep?: string;
+  defaultActiveValue?: string;
   direction?: 'vertical' | 'horizontal';
   labelPlacement?: 'vertical' | 'horizontal';
   size?: 'default' | 'small';
   buttonsLayout?: 'left' | 'right' | 'spaceBetween';
+  showStepStatus?: boolean;
+  sequence?: IWizardSequence;
 }

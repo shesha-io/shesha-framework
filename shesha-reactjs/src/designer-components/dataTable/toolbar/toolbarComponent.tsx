@@ -1,21 +1,20 @@
+import { nanoid } from 'nanoid/non-secure';
 import React, { FC } from 'react';
-import { IToolboxComponent } from '../../../interfaces';
 import { DashOutlined, DownOutlined } from '@ant-design/icons';
-import ToolbarSettings from './toolbarSettingsPanel';
-import { IToolbarProps } from './models';
 import { Alert, Menu, Dropdown, Button, Divider } from 'antd';
-import { IButtonGroup, IToolbarButton, ToolbarItemProps } from '../../../providers/toolbarConfigurator/models';
-import { isInDesignerMode } from '../../../providers/form';
 import { getActualModel, getVisibilityFunc2, useApplicationContext } from '../../../providers/form/utils';
 import { ToolbarButton } from './toolbarButton';
 import { ShaIcon } from '../../../components';
 import { IconType } from '../../../components/shaIcon';
+import { IToolboxComponent } from '../../../interfaces';
 import { useDataTableState, useSheshaApplication } from '../../../providers';
-import { nanoid } from 'nanoid/non-secure';
-import { migrateV0toV1, IToolbarPropsV0 } from './migrations/migrate-v1';
+import { isInDesignerMode } from '../../../providers/form';
+import { IButtonGroup, IToolbarButton, ToolbarItemProps } from '../../../providers/toolbarConfigurator/models';
+import { IToolbarPropsV0, migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
-import { migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
-//import { ButtonGroup } from 'components/formDesigner/components/button/buttonGroup/buttonGroupComponent';
+import { IToolbarProps } from './models';
+import ToolbarSettings from './toolbarSettingsPanel';
+import { migratePropertyName } from 'src/designer-components/_common-migrations/migrateSettings';
 
 const ToolbarComponent: IToolboxComponent<IToolbarProps> = {
   type: 'toolbar',
@@ -31,9 +30,9 @@ const ToolbarComponent: IToolboxComponent<IToolbarProps> = {
       items: [],
     };
   },
-  migrator: m =>
+  migrator: (m) =>
     m
-      .add<IToolbarPropsV0>(0, prev => {
+      .add<IToolbarPropsV0>(0, (prev) => {
         const items = prev['items'] && Array.isArray(prev['items']) ? prev['items'] : [];
         return { ...prev, items: items };
       })

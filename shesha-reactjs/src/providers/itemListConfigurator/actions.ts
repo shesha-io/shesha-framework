@@ -22,28 +22,28 @@ export enum ItemListConfiguratorActionEnums {
 
 export const addItemAction = createAction<IConfigurableItemBase, IConfigurableItemBase>(
   ItemListConfiguratorActionEnums.AddItem,
-  p => p
+  (p) => p
 );
 
-export const deleteItemAction = createAction<string, string>(ItemListConfiguratorActionEnums.DeleteItem, p => p);
+export const deleteItemAction = createAction<string, string>(ItemListConfiguratorActionEnums.DeleteItem, (p) => p);
 
 export const addGroupAction = createAction<IConfigurableItemGroup, IConfigurableItemGroup>(
   ItemListConfiguratorActionEnums.AddGroup,
-  p => p
+  (p) => p
 );
 
-export const deleteGroupAction = createAction<string, string>(ItemListConfiguratorActionEnums.DeleteGroup, p => p);
+export const deleteGroupAction = createAction<string, string>(ItemListConfiguratorActionEnums.DeleteGroup, (p) => p);
 
-export const selectItemAction = createAction<string, string>(ItemListConfiguratorActionEnums.SelectItem, p => p);
+export const selectItemAction = createAction<string, string>(ItemListConfiguratorActionEnums.SelectItem, (p) => p);
 
 export const updateChildItemsAction = createAction<IUpdateChildItemsPayload, IUpdateChildItemsPayload>(
   ItemListConfiguratorActionEnums.UpdateChildItems,
-  p => p
+  (p) => p
 );
 
 export const updateItemAction = createAction<IUpdateItemSettingsPayload, IUpdateItemSettingsPayload>(
   ItemListConfiguratorActionEnums.UpdateItem,
-  p => p
+  (p) => p
 );
 
 /* NEW_ACTION_GOES_HERE */

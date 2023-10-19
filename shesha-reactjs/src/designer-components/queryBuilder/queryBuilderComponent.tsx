@@ -1,16 +1,16 @@
-import React, { FC } from 'react';
-import { IToolboxComponent } from 'interfaces';
-import { FormMarkup } from 'providers/form/models';
 import { FilterOutlined } from '@ant-design/icons';
-import settingsFormJson from './settingsForm.json';
-import QueryBuilderField from './queryBuilderField';
-import { useForm, useQueryBuilder } from 'providers';
-import { validateConfigurableComponentSettings } from 'providers/form/utils';
 import { Alert, Typography } from 'antd';
-import { QueryBuilderWithModelType } from './queryBuilderWithModelType';
+import { useForm, useQueryBuilder } from '../../providers';
+import React, { FC } from 'react';
+import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
+import { IToolboxComponent } from '../../interfaces';
+import { FormMarkup } from '../../providers/form/models';
+import { validateConfigurableComponentSettings } from '../../providers/form/utils';
 import { IQueryBuilderComponentProps } from './interfaces';
-import ConfigurableFormItem from 'components/formDesigner/components/formItem';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import QueryBuilderField from './queryBuilderField';
+import { QueryBuilderWithModelType } from './queryBuilderWithModelType';
+import settingsFormJson from './settingsForm.json';
+import { migrateCustomFunctions, migratePropertyName } from '../../designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -21,7 +21,7 @@ const QueryBuilderComponent: IToolboxComponent<IQueryBuilderComponentProps> = {
   //dataTypes: [DataTypes.string],
   factory: (model: IQueryBuilderComponentProps) => {
     const { formMode } = useForm();
-    return (<QueryBuilder {...model} readOnly={formMode === 'readonly'}></QueryBuilder>);
+    return <QueryBuilder {...model} readOnly={formMode === 'readonly'}></QueryBuilder>;
   },
   settingsFormMarkup: settingsForm,
   migrator: (m) => m
@@ -30,7 +30,7 @@ const QueryBuilderComponent: IToolboxComponent<IQueryBuilderComponentProps> = {
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
 };
 
-const QueryBuilder: FC<IQueryBuilderComponentProps> = props => {
+const QueryBuilder: FC<IQueryBuilderComponentProps> = (props) => {
   const queryBuilder = useQueryBuilder(false);
 
   return queryBuilder ? (
@@ -42,7 +42,7 @@ const QueryBuilder: FC<IQueryBuilderComponentProps> = props => {
   );
 };
 
-export const QueryBuilderComponentRenderer: FC<IQueryBuilderComponentProps> = props => {
+export const QueryBuilderComponentRenderer: FC<IQueryBuilderComponentProps> = (props) => {
   const { formMode } = useForm();
   const { fieldsUnavailableHint } = props;
 

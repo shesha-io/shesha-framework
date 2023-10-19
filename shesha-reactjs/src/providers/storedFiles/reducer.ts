@@ -1,6 +1,6 @@
-import { IStoredFilesStateContext } from './contexts';
-import { StoredFilesActionEnums } from './actions';
 import flagsReducer from '../utils/flagsReducer';
+import { StoredFilesActionEnums } from './actions';
+import { IStoredFilesStateContext } from './contexts';
 
 export function storedFilesReducer(
   incomingState: IStoredFilesStateContext,
@@ -53,7 +53,7 @@ export function storedFilesReducer(
 
       return {
         ...state,
-        fileList: fileList.map(file => {
+        fileList: fileList.map((file) => {
           if (file.uid === newFile.uid) {
             return {
               ...newFile,
@@ -86,7 +86,7 @@ export function storedFilesReducer(
 
       return {
         ...state,
-        fileList: fileList.map(file => {
+        fileList: fileList.map((file) => {
           if (file.uid === newFile.uid) {
             return {
               ...newFile,

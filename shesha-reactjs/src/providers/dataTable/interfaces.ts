@@ -1,7 +1,8 @@
 import { IConfigurableActionConfiguration } from 'interfaces/configurableAction';
+import { IDataColumnsProps, IEditableColumnProps } from '../datatableColumnsConfigurator/models';
 import { IPropertyMetadata, ProperyDataType } from 'interfaces/metadata';
 import { Moment } from 'moment';
-import { IDataColumnsProps, IEditableColumnProps } from '../datatableColumnsConfigurator/models';
+
 export type ColumnFilter = string[] | number[] | Moment[] | Date[] | string | number | Moment | Date | boolean;
 
 export type IndexColumnFilterOption =
@@ -64,12 +65,10 @@ export const isDataColumn = (column: ITableColumn): column is ITableDataColumn =
 };
 
 export interface ITableActionColumn extends ITableColumn, IActionColumnProps {
-
+  
 }
 
-export interface ITableCrudOperationsColumn extends ITableColumn {
-
-}
+export interface ITableCrudOperationsColumn extends ITableColumn {}
 
 export interface ICustomFilterOptions {
   readonly id: string;

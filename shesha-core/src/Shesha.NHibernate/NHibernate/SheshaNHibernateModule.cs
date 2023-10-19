@@ -27,6 +27,7 @@ using Shesha.Configuration;
 using Shesha.Configuration.Startup;
 using Shesha.Domain;
 using Shesha.Exceptions;
+using Shesha.FluentMigrator;
 using Shesha.Locks;
 using Shesha.NHibernate.Configuration;
 using Shesha.NHibernate.Filters;
@@ -157,7 +158,7 @@ namespace Shesha.NHibernate
             IocManager.IocContainer.Install(new SheshaNHibernateInstaller());
 
             IocManager.IocContainer.Register(
-                Component.For<IConnectionStringResolver, IDbPerTenantConnectionStringResolver>()
+                Component.For<IConnectionStringResolver, IDbPerTenantConnectionStringResolver, IDbConnectionSettingsResolver>()
                     .ImplementedBy<DbPerTenantConnectionStringResolver>()
                     .LifestyleTransient(),
                 Component.For<IAbpZeroDbMigrator>().ImplementedBy<SheshaDbMigrator>().LifestyleTransient()
@@ -165,7 +166,6 @@ namespace Shesha.NHibernate
 
             IocManager.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
         }
-
 
         private IDbmsSpecificConfigurationProvider GetConfigProvider(DbmsType dbmsType) 
         {

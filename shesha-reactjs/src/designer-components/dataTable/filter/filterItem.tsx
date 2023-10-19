@@ -1,16 +1,16 @@
-import React, { FC } from 'react';
-import { ITableViewProps } from '../../../providers/tableViewSelectorConfigurator/models';
-import { Button, Tooltip } from 'antd';
 import { DeleteFilled, QuestionCircleOutlined } from '@ant-design/icons';
-import { useTableViewSelectorConfigurator } from '../../../providers/tableViewSelectorConfigurator';
-import DragHandle from './dragHandle';
+import { Button, Tooltip } from 'antd';
 import classNames from 'classnames';
+import React, { FC } from 'react';
+import { useTableViewSelectorConfigurator } from '../../../providers/tableViewSelectorConfigurator';
+import { ITableViewProps } from '../../../providers/tableViewSelectorConfigurator/models';
+import DragHandle from './dragHandle';
 
 export interface IFilterItemProps extends ITableViewProps {
   index: number[];
 }
 
-export const FilterItem: FC<IFilterItemProps> = props => {
+export const FilterItem: FC<IFilterItemProps> = (props) => {
   const { deleteItem: deleteButton, selectedItemId, readOnly } = useTableViewSelectorConfigurator();
 
   const onDeleteClick = () => {

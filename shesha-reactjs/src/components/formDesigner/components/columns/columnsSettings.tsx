@@ -5,9 +5,9 @@ import ColumnsList from './columnsList';
 import { EXPOSED_VARIABLES } from './exposedVariables';
 import CodeEditor from '../codeEditor/codeEditor';
 import SectionSeparator from 'components/sectionSeparator';
-import SettingsForm from 'designer-components/_settings/settingsForm';
+import SettingsForm from '../../../../designer-components/_settings/settingsForm';
 import { ISettingsFormFactoryArgs } from 'interfaces';
-import SettingsFormItem from 'designer-components/_settings/settingsFormItem';
+import SettingsFormItem from '../../../../designer-components/_settings/settingsFormItem';
 
 export const ColumnsSettingsForm: FC<ISettingsFormFactoryArgs<IColumnsComponentProps>> = (props) => (
     SettingsForm<IColumnsComponentProps>({...props, children: <ColumnsSettings {...props}/>})
@@ -40,13 +40,11 @@ const ColumnsSettings: FC<ISettingsFormFactoryArgs<IColumnsComponentProps>> = ({
 
       <SettingsFormItem name="style" label="Style">
         <CodeEditor
-          id={''}
           propertyName="style"
           readOnly={readOnly}
           mode="dialog"
           label="Style"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          type={''}
           description="A script that returns the style of the element as an object. This should conform to CSSProperties"
           exposedVariables={EXPOSED_VARIABLES}
         />

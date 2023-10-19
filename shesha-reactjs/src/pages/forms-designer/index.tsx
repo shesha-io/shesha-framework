@@ -1,23 +1,21 @@
 import React from 'react';
 import { resetServerContext } from 'react-beautiful-dnd';
-import { FormIdentifier } from '../../providers/form/models';
-import { PageWithLayout } from '../../interfaces';
 import { FormDesigner } from '../../components';
+import { PageWithLayout } from '../../interfaces';
+import { FormIdentifier } from '../../providers/form/models';
 
 export interface IDesignerPageProps {
-    formId: FormIdentifier;
+  formId: FormIdentifier;
 }
 
-const DesignerPage: PageWithLayout<IDesignerPageProps> = props => {
-    return (
-        <FormDesigner formId={props.formId} />
-    );
+const DesignerPage: PageWithLayout<IDesignerPageProps> = (props) => {
+  return <FormDesigner formId={props.formId} />;
 };
 
-DesignerPage["getInitialProps"] = async () => {
-    resetServerContext(); // required for Drag&Drop
+DesignerPage['getInitialProps'] = async () => {
+  resetServerContext(); // required for Drag&Drop
 
-    return {};
+  return {};
 };
 
 export default DesignerPage;

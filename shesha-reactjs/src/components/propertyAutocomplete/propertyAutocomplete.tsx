@@ -171,8 +171,8 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
     const action = form.getAction(props.id, 'linkToModelMetadata');
 
     if (typeof action === 'function') {
-      action(selectedProperty);
-    }
+      action(selectedProperty, form);
+   }
   };
 
   const showFillPropsButton = props.showFillPropsButton !== false && Boolean(form) && !readOnly;

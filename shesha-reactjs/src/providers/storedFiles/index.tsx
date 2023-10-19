@@ -1,43 +1,41 @@
-import React, { FC, useReducer, useContext, PropsWithChildren, useEffect } from 'react';
-import { storedFilesReducer } from './reducer';
-import {
-  StoredFilesActionsContext,
-  StoredFilesStateContext,
-  STORED_FILES_CONTEXT_INITIAL_STATE,
-  IStoredFile,
-  IUploadFilePayload,
-  IDownloadZipPayload,
-  IDownloadFilePayload,
-} from './contexts';
-import { getFlagSetters } from '../utils/flagsSetters';
-import {
-  uploadFileSuccessAction,
-  uploadFileErrorAction,
-  deleteFileRequestAction,
-  deleteFileSuccessAction,
-  deleteFileErrorAction,
-  fetchFileListSuccessAction,
-  fetchFileListErrorAction,
-  uploadFileRequestAction,
-  downloadZipRequestAction,
-  downloadZipSuccessAction,
-  downloadZipErrorAction,
-  onFileAddedAction,
-  onFileDeletedAction,
-  /* NEW_ACTION_IMPORT_GOES_HERE */
-} from './actions';
 import axios from 'axios';
 import FileSaver from 'file-saver';
+import { IAjaxResponse } from 'interfaces';
 import qs from 'qs';
-import { useGet, useMutate } from 'hooks';
-import { useSignalR } from '../signalR';
-import { useApplicationConfiguration } from '../../hooks';
+import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
+import { useDeleteFileById } from '../../apis/storedFile';
+import { useApplicationConfiguration, useGet, useMutate } from '../../hooks';
+import { IApiEndpoint } from '../../interfaces/metadata';
+import { useDelayedUpdate } from '../../providers/delayedUpdateProvider';
+import { STORED_FILES_DELAYED_UPDATE } from '../../providers/delayedUpdateProvider/models';
 import { useSheshaApplication } from '../sheshaApplication';
-import { useDelayedUpdate } from 'providers/delayedUpdateProvider';
-import { STORED_FILES_DELAYED_UPDATE } from 'providers/delayedUpdateProvider/models';
-import { IApiEndpoint } from 'interfaces/metadata';
-import { useDeleteFileById } from 'apis/storedFile';
-import { IAjaxResponse } from 'index';
+import { useSignalR } from '../signalR';
+import { getFlagSetters } from '../utils/flagsSetters';
+import {
+  deleteFileErrorAction,
+  deleteFileRequestAction,
+  deleteFileSuccessAction,
+  downloadZipErrorAction,
+  downloadZipRequestAction,
+  downloadZipSuccessAction,
+  fetchFileListErrorAction,
+  fetchFileListSuccessAction,
+  onFileAddedAction,
+  onFileDeletedAction,
+  uploadFileErrorAction,
+  uploadFileRequestAction,
+  uploadFileSuccessAction,
+} from './actions';
+import {
+  IDownloadFilePayload,
+  IDownloadZipPayload,
+  IStoredFile,
+  IUploadFilePayload,
+  STORED_FILES_CONTEXT_INITIAL_STATE,
+  StoredFilesActionsContext,
+  StoredFilesStateContext,
+} from './contexts';
+import { storedFilesReducer } from './reducer';
 export interface IStoredFilesProviderProps {
   ownerId: string;
   ownerType: string;
@@ -56,7 +54,6 @@ const filesReducer = (data: IStoredFile[]): IStoredFile[] => data?.map(file => f
 
 const uploadFileEndpoint: IApiEndpoint = { url: '/api/StoredFile/Upload', httpVerb: 'POST' };
 const filesListEndpoint: IApiEndpoint = { url: '/api/StoredFile/FilesList', httpVerb: 'GET' };
-
 
 const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   children,
@@ -149,24 +146,33 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     // @ts-ignore
     const newFile: IStoredFile = { uid: '', ...file, status: 'uploading', name: file.name };
 
-    if (!(Boolean(payload.ownerId || state.ownerId)) && typeof addDelayedUpdate !== 'function') {
+    if (!Boolean(payload.ownerId || state.ownerId) && typeof addDelayedUpdate !== 'function') {
       console.error('File list component is not configured');
-      dispatch(uploadFileErrorAction({ ...newFile, uid: '-1', status: 'error', error: 'File list component is not configured' }));
+      dispatch(
+        uploadFileErrorAction({
+          ...newFile,
+          uid: '-1',
+          status: 'error',
+          error: 'File list component is not configured',
+        })
+      );
       return;
     }
 
     dispatch(uploadFileRequestAction(newFile));
 
     uploadFileHttp(uploadFileEndpoint, formData)
-      .then(response => {
+      .then((response) => {
         const responseFile = response.result as IStoredFile;
         responseFile.uid = newFile.uid;
         dispatch(uploadFileSuccessAction({ ...responseFile }));
 
         if (responseFile.temporary && typeof addDelayedUpdate === 'function')
-          addDelayedUpdate(STORED_FILES_DELAYED_UPDATE, responseFile.id, { ownerName: payload.ownerName || state.ownerName });
+          addDelayedUpdate(STORED_FILES_DELAYED_UPDATE, responseFile.id, {
+            ownerName: payload.ownerName || state.ownerName,
+          });
       })
-      .catch(e => {
+      .catch((e) => {
         console.error(e);
         dispatch(uploadFileErrorAction({ ...newFile, status: 'error' }));
       });
@@ -181,8 +187,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     deleteFileHttp({ id: fileIdToDelete })
       .then(() => {
         deleteFileSuccess(fileIdToDelete);
-        if (typeof addDelayedUpdate === 'function')
-          removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, fileIdToDelete);
+        if (typeof addDelayedUpdate === 'function') removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, fileIdToDelete);
       })
       .catch(() => deleteFileError());
   };
@@ -206,7 +211,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       responseType: 'blob',
       headers,
     })
-      .then(response => {
+      .then((response) => {
         dispatch(downloadZipSuccessAction());
         FileSaver.saveAs(new Blob([response.data]), `Files.zip`);
       })
@@ -225,10 +230,10 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       responseType: 'blob',
       headers,
     })
-      .then(response => {
+      .then((response) => {
         FileSaver.saveAs(new Blob([response.data]), payload.fileName);
       })
-      .catch(e => {
+      .catch((e) => {
         console.error(e);
       });
   };
@@ -284,4 +289,4 @@ export default StoredFilesProvider;
  */
 const useStoredFiles = useStoredFilesStore;
 
-export { StoredFilesProvider, useStoredFilesState, useStoredFilesActions, useStoredFiles, useStoredFilesStore };
+export { StoredFilesProvider, useStoredFiles, useStoredFilesActions, useStoredFilesState, useStoredFilesStore };

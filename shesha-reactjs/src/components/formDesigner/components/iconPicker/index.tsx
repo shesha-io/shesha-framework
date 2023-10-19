@@ -7,7 +7,7 @@ import IconPicker, { ShaIconTypes } from '../../../iconPicker';
 import { executeScriptSync } from '../../../..';
 import { iconPickerFormSettings } from './settings';
 import { IIconPickerComponentProps } from './interfaces';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 
 const IconPickerComponent: IToolboxComponent<IIconPickerComponentProps> = {
   type: 'iconPicker',

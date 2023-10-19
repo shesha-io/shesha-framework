@@ -9,7 +9,7 @@ import { useDataSource } from 'providers/dataSourcesProvider';
 import DataTableProvider from 'providers/dataTable';
 import { IDataSourceComponentProps } from './models';
 import { evaluateDynamicFilters } from 'utils';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 import { DataSourceSettingsForm } from './dataSourceSettings';
 
 const getPageSize = (value?: number) => { 

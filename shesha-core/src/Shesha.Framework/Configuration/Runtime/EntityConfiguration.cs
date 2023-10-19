@@ -27,9 +27,6 @@ namespace Shesha.Configuration.Runtime
 
         public EntityConfiguration(Type entityType)
         {
-            if (entityType.Name.Contains("TestPerson"))
-            { 
-            }
             entityType = entityType.StripCastleProxyType();
             EntityType = entityType;
             Properties = new Dictionary<string, PropertyConfiguration>();

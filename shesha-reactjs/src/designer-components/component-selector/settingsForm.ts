@@ -1,5 +1,5 @@
-import { DesignerToolbarSettings } from 'interfaces/toolbarSettings';
 import { nanoid } from 'nanoid';
+import { DesignerToolbarSettings } from '../../interfaces/toolbarSettings';
 
 export const getSettings = (data: any) =>
   new DesignerToolbarSettings(data)
@@ -55,7 +55,7 @@ export const getSettings = (data: any) =>
       values: [
         { id: 'input', label: 'input', value: 'input' },
         { id: 'output', label: 'output', value: 'output' },
-      ]
+      ],
     })
     .addSectionSeparator({
       id: nanoid(),

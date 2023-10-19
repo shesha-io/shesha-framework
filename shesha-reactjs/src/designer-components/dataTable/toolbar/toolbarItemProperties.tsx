@@ -1,11 +1,11 @@
-import React, { FC, ReactNode, useEffect, useState } from 'react';
-import { useToolbarConfigurator } from '../../../providers/toolbarConfigurator';
 import { Empty } from 'antd';
-import { ConfigurableForm } from '../../../components';
-import itemSettingsJson from './itemSettings.json';
-import itemGroupSettingsJson from './itemGroupSettings.json';
-import { FormMarkup } from '../../../providers/form/models';
+import React, { FC, ReactNode, useEffect, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
+import { ConfigurableForm } from '../../../components';
+import { FormMarkup } from '../../../providers/form/models';
+import { useToolbarConfigurator } from '../../../providers/toolbarConfigurator';
+import itemGroupSettingsJson from './itemGroupSettings.json';
+import itemSettingsJson from './itemSettings.json';
 
 export interface IProps {}
 
@@ -61,7 +61,7 @@ export const ToolbarItemProperties: FC<IProps> = () => {
     );
   }
 
-  const onSettingsSave = values => {
+  const onSettingsSave = (values) => {
     console.log(values);
   };
 

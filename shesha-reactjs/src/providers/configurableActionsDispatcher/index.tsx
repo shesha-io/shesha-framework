@@ -1,17 +1,17 @@
-import React, { FC, useContext, PropsWithChildren, useRef, useEffect } from 'react';
-import metadataReducer from './reducer';
+import React, { FC, PropsWithChildren, useContext, useEffect, useRef } from 'react';
+import useThunkReducer from '../../hooks/thunkReducer';
 import {
+  CONFIGURABLE_ACTION_DISPATCHER_CONTEXT_INITIAL_STATE,
   ConfigurableActionDispatcherActionsContext,
   ConfigurableActionDispatcherStateContext,
-  CONFIGURABLE_ACTION_DISPATCHER_CONTEXT_INITIAL_STATE,
-  IConfigurableActionDispatcherStateContext,
   IConfigurableActionDispatcherActionsContext,
+  IConfigurableActionDispatcherStateContext,
+  IExecuteActionPayload,
   IGetConfigurableActionPayload,
   IRegisterActionPayload,
-  IExecuteActionPayload,
 } from './contexts';
-import useThunkReducer from '../../hooks/thunkReducer';
 import { IConfigurableActionGroupDictionary } from './models';
+import metadataReducer from './reducer';
 import {
   IConfigurableActionArguments,
   IConfigurableActionConfiguration,
@@ -20,7 +20,7 @@ import {
 } from '../../interfaces/configurableAction';
 import { genericActionArgumentsEvaluator } from '../form/utils';
 
-export interface IConfigurableActionDispatcherProviderProps { }
+export interface IConfigurableActionDispatcherProviderProps {}
 
 const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableActionDispatcherProviderProps>> = ({
   children,
@@ -79,7 +79,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
     if (!ownerActions) return;
 
     const newActions = ownerActions.actions.filter((action) => action.name !== payload.name);
-    if (newActions.length > 0){
+    if (newActions.length > 0) {
       actions.current = {
         ...actions.current,
         [payload.ownerUid]: { ...ownerActions, actions: newActions },
@@ -116,8 +116,15 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
             if (handleSuccess) {
               if (onSuccess) {
                 const onSuccessContext = { ...argumentsEvaluationContext, actionResponse: actionResponse };
-                executeAction({ actionConfiguration: onSuccess, argumentsEvaluationContext: onSuccessContext });
+                executeAction({
+                  actionConfiguration: onSuccess,
+                  argumentsEvaluationContext: onSuccessContext,
+                  success: payload.success,
+                  fail: payload.fail,
+                });
               } else console.warn(`onSuccess handled is not defined for action '${actionOwner}:${actionName}'`);
+            } else {
+              if (payload.success) payload.success(actionResponse);
             }
           })
           .catch((error) => {
@@ -125,8 +132,15 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
             if (handleFail) {
               if (onFail) {
                 const onFailContext = { ...argumentsEvaluationContext, actionError: error };
-                executeAction({ actionConfiguration: onFail, argumentsEvaluationContext: onFailContext });
+                executeAction({
+                  actionConfiguration: onFail,
+                  argumentsEvaluationContext: onFailContext,
+                  success: payload.success,
+                  fail: payload.fail,
+                });
               } else console.warn(`onSuccess handled is not defined for action '${actionOwner}:${actionName}'`);
+            } else {
+              if (payload.fail) payload.fail(error);
             }
           });
       });
@@ -197,9 +211,8 @@ function useConfigurableAction<TArguments = IConfigurableActionArguments, TRespo
   const { registerAction, unregisterAction } = useConfigurableActionDispatcher();
 
   useEffect(() => {
-    if (!payload.owner || !payload.ownerUid)
-      return undefined;
-      
+    if (!payload.owner || !payload.ownerUid) return undefined;
+
     registerAction(payload);
     return () => {
       unregisterAction(payload);
@@ -208,9 +221,9 @@ function useConfigurableAction<TArguments = IConfigurableActionArguments, TRespo
 }
 
 export {
-  ConfigurableActionDispatcherProvider,
-  useConfigurableActionDispatcher,
   ConfigurableActionDispatcherConsumer,
+  ConfigurableActionDispatcherProvider,
   useConfigurableAction,
+  useConfigurableActionDispatcher,
   IConfigurableActionConfiguration
 };

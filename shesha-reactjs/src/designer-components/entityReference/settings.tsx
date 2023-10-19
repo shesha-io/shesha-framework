@@ -12,10 +12,10 @@ import CollapsiblePanel from 'components/panel';
 import { ConfigurableActionConfigurator } from '../configurableActionsConfigurator/configurator';
 import { ISettingsFormFactoryArgs } from 'interfaces';
 import { IEntityReferenceControlProps } from './entityReference';
-import SettingsFormItem from 'designer-components/_settings/settingsFormItem';
-import SettingsCollapsiblePanel from 'designer-components/_settings/settingsCollapsiblePanel';
-import SettingsForm, { useSettingsForm } from 'designer-components/_settings/settingsForm';
-import { ContextPropertyAutocomplete } from 'designer-components/contextPropertyAutocomplete';
+import SettingsFormItem from '../../designer-components/_settings/settingsFormItem';
+import SettingsCollapsiblePanel from '../../designer-components/_settings/settingsCollapsiblePanel';
+import SettingsForm, { useSettingsForm } from '../../designer-components/_settings/settingsForm';
+import { ContextPropertyAutocomplete } from '../../designer-components/contextPropertyAutocomplete';
 import { useFormDesigner } from 'providers/formDesigner';
 
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
@@ -242,8 +242,6 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
           label="Style"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           propertyName="style"
-          type={''}
-          id={''}
           description="CSS Style"
           exposedVariables={[
             {

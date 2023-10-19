@@ -62,7 +62,7 @@ namespace Shesha.ReferenceLists
                     throw new ContentNotModifiedException("Reference list not changed");
             }
 
-            var refList = await _refListHelper.GetReferenceListAsync(new ReferenceListIdentifier { Module = input.Module, Name = input.Name });
+            var refList = await _refListHelper.GetReferenceListAsync(new ReferenceListIdentifier(input.Module, input.Name));
 
             var dto = ObjectMapper.Map<ReferenceListWithItemsDto>(refList);
 
@@ -82,7 +82,7 @@ namespace Shesha.ReferenceLists
         [HttpGet]
         public async Task<List<ReferenceListItemDto>> GetItemsAsync(string module, string name)
         {
-            return await _refListHelper.GetItemsAsync(new ReferenceListIdentifier { Module = module, Name = name });
+            return await _refListHelper.GetItemsAsync(new ReferenceListIdentifier(module, name));
         }
 
         /// <summary>

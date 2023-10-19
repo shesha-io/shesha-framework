@@ -1,4 +1,4 @@
-import { IDictionary } from "..";
+import { IDictionary } from '..';
 import { DataTypes } from "./dataTypes";
 
 export interface IPropertyMetadataBase {

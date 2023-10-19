@@ -8,7 +8,7 @@ import { IProperty, hasCustomQBSettings, IPropertyWithCustomQBSettings } from ".
  * Convert property metadata to QueryBuilder property
  *
  * @param property property metadata
- * @returns 
+ * @returns
  */
 export const propertyMetadata2QbProperty = (property: IPropertyMetadata): IProperty => {
     const base: IProperty = {
@@ -33,20 +33,19 @@ export const propertyMetadata2QbProperty = (property: IPropertyMetadata): IPrope
 };
 
 export const getPropertyFullPath = (path: string, prefix: string) => {
-    return prefix ? `${prefix}.${camelcase(path)}` : camelcase(path);
+  return prefix ? `${prefix}.${camelcase(path)}` : camelcase(path);
 };
 
 export const useMetadataFields = () => {
-    const metadata = useMetadata(false);
+  const metadata = useMetadata(false);
 
-    const fields = useMemo<IProperty[]>(() => {
-        if (metadata) {
-            const properties = metadata?.metadata?.properties || [];
-            if (Boolean(properties))
-                return properties.map<IProperty>(property => propertyMetadata2QbProperty(property));
-        }
-        return null;
-    }, [metadata, metadata?.metadata]);
+  const fields = useMemo<IProperty[]>(() => {
+    if (metadata) {
+      const properties = metadata?.metadata?.properties || [];
+      if (Boolean(properties)) return properties.map<IProperty>((property) => propertyMetadata2QbProperty(property));
+    }
+    return null;
+  }, [metadata, metadata?.metadata]);
 
-    return fields;
+  return fields;
 };

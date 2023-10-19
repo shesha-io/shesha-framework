@@ -1,18 +1,25 @@
-import React, { FC, useEffect, Fragment, MutableRefObject, useMemo, CSSProperties } from 'react';
-import { Column, SortingRule, TableProps } from 'react-table';
-import {
-  LoadingOutlined,
-} from '@ant-design/icons';
-import { DataTableColumn, IShaDataTableProps, OnSaveHandler, OnSaveSuccessHandler, YesNoInherit } from './interfaces';
-import { DataTableFullInstance } from 'providers/dataTable/contexts';
+import { LoadingOutlined } from '@ant-design/icons';
 import { ModalProps } from 'antd/lib/modal';
-import ReactTable from '../reactTable';
-import { removeUndefinedProperties } from 'utils/array';
-import { ValidationErrors } from '..';
-import { FormMode, IFlatComponentsStructure, ROOT_COMPONENT_KEY, useConfigurableActionDispatcher, useDataTableStore, useForm, useGlobalState, useMetadata, useSheshaApplication } from 'providers';
-import { camelcaseDotNotation, toCamelCase } from 'utils/string';
-import { IReactTableProps, OnRowsRendering, RowDataInitializer, RowRenderer } from '../reactTable/interfaces';
+import React, { CSSProperties, FC, Fragment, MutableRefObject, useEffect, useMemo } from 'react';
+import { Column, SortingRule, TableProps } from 'react-table';
 import { usePrevious } from 'react-use';
+import { ValidationErrors } from '..';
+import {
+  FormMode,
+  IFlatComponentsStructure,
+  ROOT_COMPONENT_KEY,
+  useConfigurableActionDispatcher,
+  useDataTableStore,
+  useForm,
+  useGlobalState,
+  useMetadata,
+  useSheshaApplication,
+} from '../../providers';
+import { DataTableFullInstance } from '../../providers/dataTable/contexts';
+import { removeUndefinedProperties } from '../../utils/array';
+import { camelcaseDotNotation, toCamelCase } from '../../utils/string';
+import ReactTable from '../reactTable';
+import { IReactTableProps, OnRowsRendering, RowDataInitializer, RowRenderer } from '../reactTable/interfaces';
 import { getCellRenderer } from './cell';
 import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions } from 'providers/dataTable/repository/backendRepository';
 import { isDataColumn, ITableDataColumn } from 'providers/dataTable/interfaces';
@@ -22,6 +29,7 @@ import { executeScriptSync } from 'providers/form/utils';
 import moment from 'moment';
 import { axiosHttp } from 'utils/fetchers';
 import { IAnyObject } from 'interfaces';
+import { DataTableColumn, IShaDataTableProps, OnSaveHandler, OnSaveSuccessHandler, YesNoInherit } from './interfaces';
 import { ValueRenderer } from '../valueRenderer/index';
 import { isEqual } from "lodash";
 import { Collapse, Typography } from 'antd';
@@ -194,7 +202,13 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     return result;
   }, [onNewRowInitializeExecuter, formData, globalState]);
 
-  const evaluateYesNoInheritJs = (value: YesNoInherit, jsExpression: string, formMode: FormMode, formData: any, globalState: IAnyObject): boolean => {
+  const evaluateYesNoInheritJs = (
+    value: YesNoInherit,
+    jsExpression: string,
+    formMode: FormMode,
+    formData: any,
+    globalState: IAnyObject
+  ): boolean => {
     switch (value) {
       case 'yes':
         return true;
@@ -203,11 +217,14 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       case 'inherit':
         return formMode === 'edit';
       case 'js': {
-        return jsExpression && executeScriptSync<boolean>(jsExpression, {
-          "formData": formData,
-          "globalState": globalState,
-          "moment": moment
-        });
+        return (
+          jsExpression &&
+          executeScriptSync<boolean>(jsExpression, {
+            formData: formData,
+            globalState: globalState,
+            moment: moment,
+          })
+        );
       }
     }
     return false;
@@ -215,8 +232,20 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
   const crudOptions = useMemo(() => {
     const result = {
-      canDelete: evaluateYesNoInheritJs(props.canDeleteInline, props.canDeleteInlineExpression, formMode, formData, globalState),
-      canEdit: evaluateYesNoInheritJs(props.canEditInline, props.canEditInlineExpression, formMode, formData, globalState),
+      canDelete: evaluateYesNoInheritJs(
+        props.canDeleteInline,
+        props.canDeleteInlineExpression,
+        formMode,
+        formData,
+        globalState
+      ),
+      canEdit: evaluateYesNoInheritJs(
+        props.canEditInline,
+        props.canEditInlineExpression,
+        formMode,
+        formData,
+        globalState
+      ),
       canAdd: evaluateYesNoInheritJs(props.canAddInline, props.canAddInlineExpression, formMode, formData, globalState),
       onNewRowInitialize,
     };
@@ -228,11 +257,12 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
   const preparedColumns = useMemo(() => {
     const localPreparedColumns = columns
-      .filter(column => {
+      .filter((column) => {
         return column.show && !(column.columnType === 'crud-operations' && !crudOptions.enabled);
       })
-      .map<DataTableColumn>(columnItem => {
-        const strictWidth = columnItem.minWidth && columnItem.maxWidth && columnItem.minWidth === columnItem.maxWidth
+      .map<DataTableColumn>((columnItem) => {
+        const strictWidth =
+          columnItem.minWidth && columnItem.maxWidth && columnItem.minWidth === columnItem.maxWidth
           ? columnItem.minWidth
           : undefined;
 
@@ -259,15 +289,14 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
   // sort
   const defaultSorting = tableSorting
-    ? tableSorting.map<SortingRule<string>>(c => ({ id: c.id, desc: c.desc }))
+    ? tableSorting.map<SortingRule<string>>((c) => ({ id: c.id, desc: c.desc }))
     : columns
-      .filter(c => c.defaultSorting !== null)
-      .map<SortingRule<string>>(c => ({ id: c.id, desc: c.defaultSorting === 1 }));
+        .filter((c) => c.defaultSorting !== null)
+        .map<SortingRule<string>>((c) => ({ id: c.id, desc: c.defaultSorting === 1 }));
 
   // http, moment, setFormData
   const performOnRowSave = useMemo<OnSaveHandler>(() => {
-    if (!onRowSave)
-      return data => Promise.resolve(data);
+    if (!onRowSave) return (data) => Promise.resolve(data);
 
     const executer = new Function('data, formData, globalState, http, moment', onRowSave);
     return (data, formData, globalState) => {
@@ -279,7 +308,9 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const { executeAction } = useConfigurableActionDispatcher();
   const performOnRowSaveSuccess = useMemo<OnSaveSuccessHandler>(() => {
     if (!onRowSaveSuccess)
-      return () => {  /*nop*/ };
+      return () => {
+        /*nop*/
+      };
 
     return (data, formData, globalState) => {
       const evaluationContext = {
@@ -287,27 +318,27 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         formData: formData,
         globalState: globalState,
         http: axiosHttp(backendUrl),
-        moment: moment
+        moment: moment,
       };
       // execute the action
       executeAction({
         actionConfiguration: onRowSaveSuccess,
-        argumentsEvaluationContext: evaluationContext
+        argumentsEvaluationContext: evaluationContext,
       });
     };
   }, [onRowSaveSuccess, backendUrl]);
 
   const updater = (rowIndex: number, rowData: any): Promise<any> => {
     const repository = store.getRepository();
-    if (!repository)
-      return Promise.reject('Repository is not specified');
+    if (!repository) return Promise.reject('Repository is not specified');
 
-    return performOnRowSave(rowData, formData ?? {}, globalState).then(preparedData => {
-      const options = repository.repositoryType === BackendRepositoryType
-        ? { customUrl: customUpdateUrl } as IUpdateOptions
+    return performOnRowSave(rowData, formData ?? {}, globalState).then((preparedData) => {
+      const options =
+        repository.repositoryType === BackendRepositoryType
+          ? ({ customUrl: customUpdateUrl } as IUpdateOptions)
         : undefined;
 
-      return repository.performUpdate(rowIndex, preparedData, options).then(response => {
+      return repository.performUpdate(rowIndex, preparedData, options).then((response) => {
         setRowData(rowIndex, preparedData/*, response*/);
         performOnRowSaveSuccess(preparedData, formData ?? {}, globalState);
         return response;
@@ -317,12 +348,12 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
   const creater = (rowData: any): Promise<any> => {
     const repository = store.getRepository();
-    if (!repository)
-      return Promise.reject('Repository is not specified');
+    if (!repository) return Promise.reject('Repository is not specified');
 
-    return performOnRowSave(rowData, formData ?? {}, globalState).then(preparedData => {
-      const options = repository.repositoryType === BackendRepositoryType
-        ? { customUrl: customCreateUrl } as ICreateOptions
+    return performOnRowSave(rowData, formData ?? {}, globalState).then((preparedData) => {
+      const options =
+        repository.repositoryType === BackendRepositoryType
+          ? ({ customUrl: customCreateUrl } as ICreateOptions)
         : undefined;
 
       return repository.performCreate(0, preparedData, options).then(() => {
@@ -334,11 +365,11 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
   const deleter = (rowIndex: number, rowData: any): Promise<any> => {
     const repository = store.getRepository();
-    if (!repository)
-      return Promise.reject('Repository is not specified');
+    if (!repository) return Promise.reject('Repository is not specified');
 
-    const options = repository.repositoryType === BackendRepositoryType
-      ? { customUrl: customDeleteUrl } as IDeleteOptions
+    const options =
+      repository.repositoryType === BackendRepositoryType
+        ? ({ customUrl: customDeleteUrl } as IDeleteOptions)
       : undefined;
 
     return repository.performDelete(rowIndex, rowData, options).then(() => {
@@ -346,22 +377,28 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     });
   };
 
-  const getCrudComponents = (allowEdit: boolean, componentAccessor: (col: ITableDataColumn) => IFieldComponentProps): IFlatComponentsStructure => {
+  const getCrudComponents = (
+    allowEdit: boolean,
+    componentAccessor: (col: ITableDataColumn) => IFieldComponentProps
+  ): IFlatComponentsStructure => {
     const result: IFlatComponentsStructure = {
       allComponents: {},
-      componentRelations: {}
+      componentRelations: {},
     };
     // don't calculate components settings when it's not required
-    if (!allowEdit)
-      return result;
+    if (!allowEdit) return result;
 
     const componentIds: string[] = [];
-    columns?.forEach(col => {
+    columns?.forEach((col) => {
       if (col.columnType === 'data') {
         const dataCol = col as ITableDataColumn;
         const customComponent = componentAccessor(dataCol);
         const componentType = customComponent?.type ?? standardCellComponentTypes.notEditable;
-        if (componentType && componentType !== standardCellComponentTypes.notEditable && componentType !== standardCellComponentTypes.defaultDisplay) {
+        if (
+          componentType &&
+          componentType !== standardCellComponentTypes.notEditable &&
+          componentType !== standardCellComponentTypes.defaultDisplay
+        ) {
           // component found
           const component = toolboxComponents[customComponent.type];
           if (!component) {
@@ -390,8 +427,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
           result.allComponents[model.id] = model;
           componentIds.push(model.id);
-        };
-      };
+        }
+      }
     });
     result.componentRelations[ROOT_COMPONENT_KEY] = componentIds;
 
@@ -399,15 +436,15 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   };
 
   const inlineEditorComponents = useMemo<IFlatComponentsStructure>(() => {
-    return getCrudComponents(crudOptions.canEdit, col => col.editComponent);
+    return getCrudComponents(crudOptions.canEdit, (col) => col.editComponent);
   }, [columns, metadata, crudOptions.canEdit]);
 
   const inlineCreatorComponents = useMemo<IFlatComponentsStructure>(() => {
-    return getCrudComponents(crudOptions.canAdd, col => col.createComponent);
+    return getCrudComponents(crudOptions.canAdd, (col) => col.createComponent);
   }, [columns, metadata, crudOptions.canAdd]);
 
   const inlineDisplayComponents = useMemo<IFlatComponentsStructure>(() => {
-    const result = getCrudComponents(true, col => col.displayComponent);
+    const result = getCrudComponents(true, (col) => col.displayComponent);
     return result;
   }, [columns, metadata]);
 

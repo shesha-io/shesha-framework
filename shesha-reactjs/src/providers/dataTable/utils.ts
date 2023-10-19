@@ -1,7 +1,7 @@
-import { ProperyDataType } from 'interfaces/metadata';
 import moment, { Duration, Moment, isDuration, isMoment } from 'moment';
-import { IConfigurableColumnsProps, IDataColumnsProps } from 'providers/datatableColumnsConfigurator/models';
-import { camelcaseDotNotation } from 'utils/string';
+import { ProperyDataType } from '../../interfaces/metadata';
+import { IConfigurableColumnsProps, IDataColumnsProps } from '../../providers/datatableColumnsConfigurator/models';
+import { camelcaseDotNotation } from '../../utils/string';
 import { IDataTableStateContext, IDataTableUserConfig, MIN_COLUMN_WIDTH } from './contexts';
 import { ColumnSorting, DataTableColumnDto, IActionColumnProps, IColumnSorting, isDataColumn, IStoredFilter, ITableActionColumn, ITableColumn, ITableDataColumn, ITableFilter, SortDirection } from './interfaces';
 
@@ -76,15 +76,14 @@ export const advancedFilter2JsonLogic = (advancedFilter: ITableFilter[], columns
   if (!advancedFilter || advancedFilter.length === 0) return null;
 
   const filterItems = advancedFilter
-    .map(f => {
+    .map((f) => {
       const property = { var: f.columnId };
-      const column = columns.find(c => c.id === f.columnId && c.columnType === 'data') as ITableDataColumn;
+      const column = columns.find((c) => c.id === f.columnId && c.columnType === 'data') as ITableDataColumn;
       // skip incorrect columns
-      if (!column || !column.dataType)
-        return null;
+      if (!column || !column.dataType) return null;
 
       const filterValues = Array.isArray(f.filter)
-        ? f.filter.map(filterValue => convertFilterValue(filterValue, column))
+        ? f.filter.map((filterValue) => convertFilterValue(filterValue, column))
         : convertFilterValue(f.filter, column);
 
       let filterOption = f.filterOption;
@@ -139,7 +138,7 @@ export const advancedFilter2JsonLogic = (advancedFilter: ITableFilter[], columns
 
       return null;
     })
-    .filter(f => Boolean(f));
+    .filter((f) => Boolean(f));
 
   return filterItems;
 };
@@ -160,7 +159,11 @@ export const getIncomingSelectedStoredFilterIds = (filters: IStoredFilter[], id:
   }
 };
 
-export const prepareColumn = (column: IConfigurableColumnsProps, columns: DataTableColumnDto[], userConfig: IDataTableUserConfig): ITableColumn => {
+export const prepareColumn = (
+  column: IConfigurableColumnsProps,
+  columns: DataTableColumnDto[],
+  userConfig: IDataTableUserConfig
+): ITableColumn => {
   const baseProps: ITableColumn = {
     id: column.id,
     accessor: column.id,
@@ -183,15 +186,12 @@ export const prepareColumn = (column: IConfigurableColumnsProps, columns: DataTa
     case 'data': {
       const dataProps = column as IDataColumnsProps;
 
-      const userColumn = userConfig?.columns?.find(c => c.id === dataProps.propertyName);
-      const colVisibility = userColumn?.show === null || userColumn?.show === undefined
-        ? column.isVisible
-        : userColumn?.show;
+      const userColumn = userConfig?.columns?.find((c) => c.id === dataProps.propertyName);
+      const colVisibility =
+        userColumn?.show === null || userColumn?.show === undefined ? column.isVisible : userColumn?.show;
 
       const srvColumn = dataProps.propertyName
-        ? columns.find(
-          c => camelcaseDotNotation(c.propertyName) === camelcaseDotNotation(dataProps.propertyName)
-        )
+        ? columns.find((c) => camelcaseDotNotation(c.propertyName) === camelcaseDotNotation(dataProps.propertyName))
         : {};
 
       const dataCol: ITableDataColumn = {
@@ -225,7 +225,7 @@ export const prepareColumn = (column: IConfigurableColumnsProps, columns: DataTa
       const actionColumn: ITableActionColumn = {
         ...baseProps,
         icon,
-        actionConfiguration
+        actionConfiguration,
       };
 
       return actionColumn;

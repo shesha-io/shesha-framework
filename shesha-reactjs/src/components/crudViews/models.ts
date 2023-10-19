@@ -1,7 +1,7 @@
-import { GetDataError, GetState, UseGetProps } from 'hooks/useGet';
+import { GetDataError, GetState, UseGetProps } from '../../hooks/useGet';
 
 export interface MutateState<TData, TError> {
-  error: GetState<TData, TError>["error"];
+  error: GetState<TData, TError>['error'];
   loading: boolean;
 }
 
@@ -18,19 +18,19 @@ export interface MutateRequestOptions<TQueryParams, TPathParams> extends Request
 
 export type MutateMethod<TData, TRequestBody, TQueryParams, TPathParams> = (
   data: TRequestBody,
-  mutateRequestOptions?: MutateRequestOptions<TQueryParams, TPathParams>,
+  mutateRequestOptions?: MutateRequestOptions<TQueryParams, TPathParams>
 ) => Promise<TData>;
 
 export interface UseMutateReturn<TData, TError, TRequestBody, TQueryParams, TPathParams>
-extends MutateState<TData, TError> {
-/**
- * Cancel the current fetch
- */
-cancel: () => void;
-/**
- * Call the mutate endpoint
- */
-mutate: MutateMethod<TData, TRequestBody, TQueryParams, TPathParams>;
+  extends MutateState<TData, TError> {
+  /**
+   * Cancel the current fetch
+   */
+  cancel: () => void;
+  /**
+   * Call the mutate endpoint
+   */
+  mutate: MutateMethod<TData, TRequestBody, TQueryParams, TPathParams>;
 }
 
 export type UseGenericGetProps = Omit<UseGetProps<any, any, any>, 'path'>;

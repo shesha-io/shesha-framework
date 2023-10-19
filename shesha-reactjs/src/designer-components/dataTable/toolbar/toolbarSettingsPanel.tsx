@@ -1,5 +1,5 @@
+import { Button, Form } from 'antd';
 import React, { useState } from 'react';
-import { Form, Button } from 'antd';
 import { IToolbarProps } from './models';
 import { ToolbarSettingsModal } from './toolbarSettingsModal';
 
@@ -16,14 +16,15 @@ function ColumnsSettings(props: IProps) {
   const [form] = Form.useForm();
 
   const onValuesChange = (changedValues, values) => {
-    if (props.onValuesChange && !props.readOnly) 
-      props.onValuesChange(changedValues, values);
+    if (props.onValuesChange && !props.readOnly) props.onValuesChange(changedValues, values);
   };
 
   return (
     <>
       <Form form={form} onFinish={props.onSave} onValuesChange={onValuesChange}>
-        <Button onClick={() => setModalVisible(true)}>{ props.readOnly ? 'View Toolbar Settings' : 'Customise Toolbar' }</Button>
+        <Button onClick={() => setModalVisible(true)}>
+          {props.readOnly ? 'View Toolbar Settings' : 'Customise Toolbar'}
+        </Button>
         <Form.Item name="items" initialValue={props.model.items}>
           <ToolbarSettingsModal
             readOnly={props.readOnly}

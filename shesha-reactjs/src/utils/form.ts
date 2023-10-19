@@ -13,7 +13,7 @@ export const getFieldNames = (data: object): string[] => {
     if (containerName) fieldsList.push(containerName);
 
     if (container && typeof container === 'object' && !(container instanceof Date) && !(container instanceof File)) {
-      Object.keys(container).forEach(key => {
+      Object.keys(container).forEach((key) => {
         if (container.hasOwnProperty(key))
           processContainer(container[key], containerName ? `${containerName}.${key}` : key, fieldsList);
       });
@@ -33,7 +33,7 @@ export function addFormFieldsList<TData = any>(
   const formFields = [];
 
   // call getFieldsValue to get a fileds list
-  form.getFieldsValue(true, meta => {
+  form.getFieldsValue(true, (meta) => {
     formFields.push(meta.name.join('.'));
 
     return false;
@@ -53,7 +53,7 @@ export const getFormFullName = (moduleName: string, name: string) => {
 export const appendFormData = (formData: FormData, key: string, data: any) => {
   if (data === Object(data) || Array.isArray(data)) {
     for (var i in data) {
-      if (data.hasOwnProperty(i)){
+      if (data.hasOwnProperty(i)) {
         appendFormData(formData, key + '[' + i + ']', data[i]);
       }
     }
@@ -64,7 +64,7 @@ export const appendFormData = (formData: FormData, key: string, data: any) => {
 
 const buildFormData = (formData, data, parentKey) => {
   if (data && typeof data === 'object' && !(data instanceof Date) && !(data instanceof File)) {
-    Object.keys(data).forEach(key => {
+    Object.keys(data).forEach((key) => {
       buildFormData(formData, data[key], parentKey ? `${parentKey}[${key}]` : key);
     });
   } else {
@@ -85,7 +85,7 @@ export const jsonToFormData = (data: any): FormData => {
 export const hasFiles = (data: any): boolean => {
   if (!data || typeof data !== 'object') return false;
 
-  const hasFile = Object.keys(data).find(key => {
+  const hasFile = Object.keys(data).find((key) => {
     const propValue = data[key];
     return propValue instanceof File || hasFiles(propValue);
   });
@@ -98,7 +98,7 @@ export const removeGhostKeys = (form: any): any => {
     .filter(([key]) => !key.includes(GHOST_PAYLOAD_KEY))
     .map(([key, value]) => {
       if (key === '_formFields') {
-        return [[key], ((value as string[]) || [])?.filter(i => !i.includes(GHOST_PAYLOAD_KEY))];
+        return [[key], ((value as string[]) || [])?.filter((i) => !i.includes(GHOST_PAYLOAD_KEY))];
       }
 
       return [[key], value];

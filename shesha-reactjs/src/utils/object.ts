@@ -13,18 +13,25 @@ export const getValueByPropertyName = (data: any, propertyName: string): any => 
     return undefined;
 };
 
-export const setValueByPropertyName = (data: any, propertyName: string, value: any) => {
+export const setValueByPropertyName = (data: any, propertyName: string, value: any, makeCopy: boolean = false) => {
     const propName = propertyName.split('.');
+    const resultData = makeCopy ? {...data} : data;
 
     if (Array.isArray(propName) && propName.length > 0) {
-        let prop = data;
+        let prop = resultData;
         propName.forEach((item, index) => {
             if (index < propName.length - 1) {
-                prop[item] = {};
-                prop = prop[item];
+                if (typeof prop[item] !== 'object') {
+                    prop = prop[item] = {};
+                } else {
+                    if (makeCopy)
+                        prop = prop[item] = {...prop[item]};
+                    else
+                        prop = prop[item];
+                }
             }
         });
         prop[propName[propName.length - 1]] = value;
     }
-    return data;
+    return resultData;
 };

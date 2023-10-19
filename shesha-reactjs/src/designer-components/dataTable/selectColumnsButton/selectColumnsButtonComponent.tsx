@@ -1,14 +1,14 @@
-import React, { FC } from 'react';
-import { IToolboxComponent } from '../../../interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '../../../providers/form/models';
 import { SlidersOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
-import settingsFormJson from './settingsForm.json';
-import { validateConfigurableComponentSettings } from '../../../providers/form/utils';
+import React, { FC } from 'react';
+import { IToolboxComponent } from '../../../interfaces';
 import { useDataTableStore } from '../../../providers';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { FormMarkup, IConfigurableFormComponent } from '../../../providers/form/models';
+import { validateConfigurableComponentSettings } from '../../../providers/form/utils';
+import settingsFormJson from './settingsForm.json';
+import { migrateCustomFunctions, migratePropertyName } from '../../../designer-components/_common-migrations/migrateSettings';
 
-export interface IPagerComponentProps extends IConfigurableFormComponent { }
+export interface IPagerComponentProps extends IConfigurableFormComponent {}
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -29,11 +29,11 @@ const SelectColumnsButtonComponent: IToolboxComponent<IPagerComponentProps> = {
     .add(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
 ,
   settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
-  isHidden: true // note: to be removed, now is used only for backward compatibility
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  isHidden: true, // note: to be removed, now is used only for backward compatibility
 };
 
-export const SelectColumnsButton: FC<IPagerComponentProps> = ({ }) => {
+export const SelectColumnsButton: FC<IPagerComponentProps> = ({}) => {
   const {
     isInProgress: { isSelectingColumns },
     setIsInProgressFlag,

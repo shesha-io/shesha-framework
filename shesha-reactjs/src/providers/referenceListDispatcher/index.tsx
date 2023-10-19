@@ -1,24 +1,26 @@
-import React, { FC, useContext, PropsWithChildren, /*useRef,*/ useState, useEffect } from 'react';
-import metadataReducer from './reducer';
-import {
-  ReferenceListDispatcherActionsContext,
-  ReferenceListDispatcherStateContext,
-  REFERENCELIST_DISPATCHER_CONTEXT_INITIAL_STATE,
-  IReferenceListDispatcherStateContext,
-  IReferenceListDispatcherActionsContext,
-  IGetReferenceListPayload,
-} from './contexts';
+import React, { FC, PropsWithChildren, useContext, useEffect, /*useRef,*/ useState } from 'react';
 import useThunkReducer from '../../hooks/thunkReducer';
-import { ILoadingState } from './models';
-import { IReferenceListIdentifier } from 'interfaces/referenceList';
 import { IReferenceList, IReferenceListItem } from '../../interfaces/referenceList';
 import { PromisedValue } from '../../utils/promises';
-import { useConfigurationItemsLoader } from '../configurationItemsLoader';
 import { useAppConfigurator } from '../appConfigurator';
+import { useConfigurationItemsLoader } from '../configurationItemsLoader';
+import {
+  IGetReferenceListPayload,
+  IReferenceListDispatcherActionsContext,
+  IReferenceListDispatcherStateContext,
+  REFERENCELIST_DISPATCHER_CONTEXT_INITIAL_STATE,
+  ReferenceListDispatcherActionsContext,
+  ReferenceListDispatcherStateContext,
+} from './contexts';
+import { ILoadingState } from './models';
+import { IReferenceListIdentifier } from 'interfaces/referenceList';
+import metadataReducer from './reducer';
 
-export interface IReferenceListDispatcherProviderProps { }
+export interface IReferenceListDispatcherProviderProps {}
 
-const ReferenceListDispatcherProvider: FC<PropsWithChildren<IReferenceListDispatcherProviderProps>> = ({ children }) => {
+const ReferenceListDispatcherProvider: FC<PropsWithChildren<IReferenceListDispatcherProviderProps>> = ({
+  children,
+}) => {
   const initial: IReferenceListDispatcherStateContext = {
     ...REFERENCELIST_DISPATCHER_CONTEXT_INITIAL_STATE,
   };
@@ -29,12 +31,16 @@ const ReferenceListDispatcherProvider: FC<PropsWithChildren<IReferenceListDispat
   const [state] = useThunkReducer(metadataReducer, initial);
 
   const getReferenceList = (payload: IGetReferenceListPayload): PromisedValue<IReferenceList> => {
-    return loader.getRefList({ refListId: payload.refListId, skipCache: false, configurationItemMode: configurationItemMode });
+    return loader.getRefList({
+      refListId: payload.refListId,
+      skipCache: false,
+      configurationItemMode: configurationItemMode,
+    });
   };
 
   const getReferenceListItem = (moduleName: string, name: string, itemValue?: number): Promise<IReferenceListItem> => {
-    return getReferenceList({ refListId: { module: moduleName, name: name } }).promise.then(list => {
-      return list.items.find(i => i.itemValue === itemValue);
+    return getReferenceList({ refListId: { module: moduleName, name: name } }).promise.then((list) => {
+      return list.items.find((i) => i.itemValue === itemValue);
     });
   };
 
@@ -88,7 +94,7 @@ function useReferenceListDispatcher(require: boolean = true) {
 const getRefListItemByValue = (list: IReferenceList, itemValue?: number): IReferenceListItem => {
   return !list || itemValue === null || itemValue === undefined
     ? null
-    : list.items.find(i => i.itemValue === itemValue);
+    : list.items.find((i) => i.itemValue === itemValue);
 };
 
 const useReferenceList = (refListId: IReferenceListIdentifier): ILoadingState<IReferenceList> => {
@@ -98,14 +104,14 @@ const useReferenceList = (refListId: IReferenceListIdentifier): ILoadingState<IR
   const [state, setState] = useState<ILoadingState<IReferenceList>>({
     data: refListPromise.value,
     loading: refListPromise.isPending,
-    error: refListPromise.error
+    error: refListPromise.error,
   });
 
   const updateState = () => {
     setState({
       data: refListPromise.value,
       loading: refListPromise.isPending,
-      error: refListPromise.error
+      error: refListPromise.error,
     });
   };
 
@@ -116,34 +122,38 @@ const useReferenceList = (refListId: IReferenceListIdentifier): ILoadingState<IR
   useEffect(() => {
     // if the reflist is not loaded on first rendering - use promise to return data
     if (refListPromise.isPending)
-      refListPromise.promise.then(() => {
-        updateState();
-      }).catch(() => {
-        updateState();
-      });
+      refListPromise.promise
+        .then(() => {
+          updateState();
+        })
+        .catch(() => {
+          updateState();
+        });
   }, []);
 
   return state;
 };
 
-const useReferenceListItem = (moduleName: string, listName: string, itemValue?: number): ILoadingState<IReferenceListItem> => {
+const useReferenceListItem = (
+  moduleName: string,
+  listName: string,
+  itemValue?: number
+): ILoadingState<IReferenceListItem> => {
   const { getReferenceList } = useReferenceListDispatcher();
 
   const refListPromise = getReferenceList({ refListId: { module: moduleName, name: listName } });
-  const loadedItem = refListPromise.isResolved
-    ? getRefListItemByValue(refListPromise.value, itemValue)
-    : null;
+  const loadedItem = refListPromise.isResolved ? getRefListItemByValue(refListPromise.value, itemValue) : null;
 
   const [data, setData] = useState<IReferenceListItem>(loadedItem);
 
   if (refListPromise.isPending)
-    refListPromise.promise.then(list => {
+    refListPromise.promise.then((list) => {
       const item = getRefListItemByValue(list, itemValue);
       setData(item);
     });
 
   useEffect(() => {
-    refListPromise.promise.then(list => {
+    refListPromise.promise.then((list) => {
       const item = getRefListItemByValue(list, itemValue);
       setData(item);
     });
@@ -152,14 +162,9 @@ const useReferenceListItem = (moduleName: string, listName: string, itemValue?: 
   const result: ILoadingState<IReferenceListItem> = {
     data,
     loading: refListPromise.isPending,
-    error: refListPromise.error
+    error: refListPromise.error,
   };
   return result;
 };
 
-export {
-  ReferenceListDispatcherProvider,
-  useReferenceListDispatcher,
-  useReferenceListItem,
-  useReferenceList
-};
+export { ReferenceListDispatcherProvider, useReferenceList, useReferenceListDispatcher, useReferenceListItem };

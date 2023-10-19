@@ -7,6 +7,7 @@ using System.Reflection;
 using JetBrains.Annotations;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
+using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Utilities;
@@ -239,16 +240,14 @@ namespace Shesha.Configuration.Runtime
             else if (underlyingPropType.IsSubtypeOfGeneric(typeof(IList<>)) ||  underlyingPropType.IsSubtypeOfGeneric(typeof(ICollection<>)))
             {
                 return GeneralDataType.List;
-            }
-            {
-                /*
-                Logger.WriteLog(LogLevel.ERROR,
-                    string.Format("Property: {0}, type '{1}' not accounted for.", propInfo.Name,
-                        propInfo.PropertyType.FullName));
-                */
+            } else 
+            if (underlyingPropType.IsAssignableTo(typeof(IGenericEntityReference)))
+                return GeneralDataType.GenericEntityReference;
+            else
+            if (underlyingPropType == typeof(string))
                 return GeneralDataType.Text;
-            }
-
+            else
+                return GeneralDataType.Unknown;
         }
 
         private static bool IsPropertyStoredFile(PropertyInfo propInfo)

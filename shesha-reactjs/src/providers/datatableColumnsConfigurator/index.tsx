@@ -1,23 +1,22 @@
-import React, { FC, useReducer, useContext, PropsWithChildren } from 'react';
-import toolbarReducer from './reducer';
-import {
-  IUpdateChildItemsPayload,
-  IUpdateItemSettingsPayload,
-  ColumnsConfiguratorActionsContext,
-  ColumnsConfiguratorStateContext,
-  TOOLBAR_CONTEXT_INITIAL_STATE,
-} from './contexts';
+import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
 import {
   addColumnAction,
-  deleteColumnAction,
   addGroupAction,
+  deleteColumnAction,
   deleteGroupAction,
   selectItemAction,
   updateChildItemsAction,
   updateItemAction,
-  /* NEW_ACTION_IMPORT_GOES_HERE */
 } from './actions';
+import {
+  ColumnsConfiguratorActionsContext,
+  ColumnsConfiguratorStateContext,
+  IUpdateChildItemsPayload,
+  IUpdateItemSettingsPayload,
+  TOOLBAR_CONTEXT_INITIAL_STATE,
+} from './contexts';
 import { ColumnsItemProps } from './models';
+import toolbarReducer from './reducer';
 import { getItemById } from './utils';
 
 export interface IColumnsConfiguratorProviderPropsBase {
@@ -31,11 +30,8 @@ export interface IColumnsConfiguratorProviderProps {
   readOnly: boolean;
 }
 
-const ColumnsConfiguratorProvider: FC<PropsWithChildren<IColumnsConfiguratorProviderProps>> = props => {
-  const {
-    children,
-    readOnly,
-  } = props;
+const ColumnsConfiguratorProvider: FC<PropsWithChildren<IColumnsConfiguratorProviderProps>> = (props) => {
+  const { children, readOnly } = props;
 
   const [state, dispatch] = useReducer(toolbarReducer, {
     ...TOOLBAR_CONTEXT_INITIAL_STATE,
@@ -48,18 +44,15 @@ const ColumnsConfiguratorProvider: FC<PropsWithChildren<IColumnsConfiguratorProv
   };
 
   const deleteColumn = (uid: string) => {
-    if (!state.readOnly)
-      dispatch(deleteColumnAction(uid));
+    if (!state.readOnly) dispatch(deleteColumnAction(uid));
   };
 
   const addGroup = () => {
-    if (!state.readOnly)
-      dispatch(addGroupAction());
+    if (!state.readOnly) dispatch(addGroupAction());
   };
 
   const deleteGroup = (uid: string) => {
-    if (!state.readOnly)
-      dispatch(deleteGroupAction(uid));
+    if (!state.readOnly) dispatch(deleteGroupAction(uid));
   };
 
   const selectItem = (uid: string) => {
@@ -67,8 +60,7 @@ const ColumnsConfiguratorProvider: FC<PropsWithChildren<IColumnsConfiguratorProv
   };
 
   const updateChildItems = (payload: IUpdateChildItemsPayload) => {
-    if (!state.readOnly)
-      dispatch(updateChildItemsAction(payload));
+    if (!state.readOnly) dispatch(updateChildItemsAction(payload));
   };
 
   const getItem = (uid: string): ColumnsItemProps => {
@@ -76,10 +68,9 @@ const ColumnsConfiguratorProvider: FC<PropsWithChildren<IColumnsConfiguratorProv
   };
 
   const updateItem = (payload: IUpdateItemSettingsPayload) => {
-    if (!state.readOnly)
-      dispatch(updateItemAction(payload));
+    if (!state.readOnly) dispatch(updateItemAction(payload));
   };
-  
+
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
   return (

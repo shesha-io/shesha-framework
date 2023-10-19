@@ -16,7 +16,7 @@ import {
 import SubForm from './subForm';
 import ConfigurableFormItem from '../formItem';
 import { SubFormSettingsForm } from './settings';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 import { ISubFormProviderProps } from 'providers/subForm/interfaces';
 
 export interface ISubFormComponentProps
@@ -49,7 +49,9 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
         labelCol={{ span: model?.hideLabel ? 0 : model?.labelCol }}
         wrapperCol={{ span: model?.hideLabel ? 24 : model?.wrapperCol }}
       >
-        <SubFormWrapper {...model} propertyName={name} style={getStyle(model?.style, formData)} />
+        {(value) => {
+          return <SubFormWrapper {...model} value={value} propertyName={name} style={getStyle(model?.style, formData)} />;
+        }}
       </ConfigurableFormItem>
     );
   },

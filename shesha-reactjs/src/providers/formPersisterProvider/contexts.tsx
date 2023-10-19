@@ -50,7 +50,9 @@ export const FORM_PERSISTER_CONTEXT_INITIAL_STATE: IFormPersisterStateContext = 
   saving: false,
 };
 
-export const FormPersisterStateContext = createContext<IFormPersisterStateContext>(FORM_PERSISTER_CONTEXT_INITIAL_STATE);
+export const FormPersisterStateContext = createContext<IFormPersisterStateContext>(
+  FORM_PERSISTER_CONTEXT_INITIAL_STATE
+);
 
 export const FormPersisterActionsContext = createContext<IFormPersisterActionsContext>(undefined);
 

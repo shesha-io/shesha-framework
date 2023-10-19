@@ -7,7 +7,7 @@ import React from 'react';
 import { validateConfigurableComponentSettings } from 'providers/form/utils';
 import { useForm } from 'providers';
 import ReferenceListAutocomplete from '../../../referenceListAutocomplete';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 
 export interface IReferenceListAutocompleteProps extends IConfigurableFormComponent {
 }

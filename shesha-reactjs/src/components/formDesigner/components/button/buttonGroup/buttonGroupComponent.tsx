@@ -12,7 +12,7 @@ import { getButtonGroupMenuItem } from './utils';
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
 import { ButtonGroupSettingsForm } from './settings';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../../designer-components/_common-migrations/migrateSettings';
 import type { MenuProps } from 'antd';
 import ShaIcon, { IconType } from 'components/shaIcon/index';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';

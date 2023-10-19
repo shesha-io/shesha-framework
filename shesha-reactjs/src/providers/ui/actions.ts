@@ -1,5 +1,5 @@
 import { createAction } from 'redux-actions';
-import { IUiStateContext, ControlSize } from './contexts';
+import { ControlSize, IUiStateContext } from './contexts';
 
 export enum UiActionEnums {
   SetControlsSize = 'SET_CONTROLS_SIZE',
@@ -11,7 +11,7 @@ export enum UiActionEnums {
 
 export const setControlsSizeAction = createAction<IUiStateContext, ControlSize>(
   UiActionEnums.SetControlsSize,
-  size => ({
+  (size) => ({
     size,
   })
 );
@@ -25,12 +25,12 @@ export const toggleModalInvisibleAction = createAction<IUiStateContext>(UiAction
 
 export const toggleRoleAppointmentVisibleAction = createAction<IUiStateContext, boolean>(
   UiActionEnums.ToggleRoleAppointmentVisible,
-  isRoleAppointmentVisible => ({ isRoleAppointmentVisible })
+  (isRoleAppointmentVisible) => ({ isRoleAppointmentVisible })
 );
 
 export const togglePersonPickerVisibleAction = createAction<IUiStateContext, boolean>(
   UiActionEnums.TogglePersonPickerVisible,
-  isPersonPickerVisible => ({ isPersonPickerVisible })
+  (isPersonPickerVisible) => ({ isPersonPickerVisible })
 );
 
 /* NEW_ACTION_GOES_HERE */

@@ -988,6 +988,28 @@ namespace Shesha.Tests.JsonLogic
             Assert.NotNull(data);
         }
 
+        
+        [Fact]
+        public void EntityReference_Int_Id_Equals_Convert()
+        {
+            var gqlExpression = @"{
+  ""and"": [
+    {
+      ""=="": [
+        {
+          ""var"": ""Child""
+        },
+        ""500""
+      ]
+    }
+  ]
+}";
+
+            var expression = ConvertToExpression<EntityWithIntId>(gqlExpression);
+
+            Assert.Equal($@"ent => (ent.{nameof(EntityWithIntId.Child)}.Id == 500)", expression.ToString());
+        }
+
         [Fact]
         public void EntityReference_IsEmpty_Convert_Test()
         {
@@ -1359,6 +1381,16 @@ namespace Shesha.Tests.JsonLogic
         }
 
         #endregion
+
+        public class ChildEntityWithIntId : Entity<int> 
+        { 
+        }
+
+        public class EntityWithIntId : Entity<int>
+        {
+            public virtual ChildEntityWithIntId Child { get; set; }
+        }
+
 
         public class EntityWithRefListrops : Entity<Guid> 
         { 

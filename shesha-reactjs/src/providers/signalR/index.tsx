@@ -1,21 +1,18 @@
 // tslint:disable-next-line:no-var-requires
 const signalR = require('@microsoft/signalr');
 
-import React, { useReducer, useContext, useEffect, PropsWithChildren } from 'react';
-import { signalRReducer } from './reducer';
+import React, { PropsWithChildren, useContext, useEffect, useReducer } from 'react';
+import { getFlagSetters } from '../utils/flagsSetters';
 import {
   ISignalRConnection,
+  SIGNAL_R_CONTEXT_INITIAL_STATE,
   SignalRActionsContext,
   SignalRStateContext,
-  SIGNAL_R_CONTEXT_INITIAL_STATE,
 } from './contexts';
-import { getFlagSetters } from '../utils/flagsSetters';
+import { signalRReducer } from './reducer';
 //@ts-ignore
-import {
-  setConnectionAction,
-  /* NEW_ACTION_IMPORT_GOES_HERE */
-} from './actions';
 import { useApplicationConfiguration, usePrevious } from '../../hooks';
+import { setConnectionAction } from './actions';
 
 export interface ISignalRProvider {
   hubUrl: string;
@@ -61,7 +58,7 @@ function SignalRProvider({
             onDisconnected();
           }
         })
-        ?.catch(err => console.error('SignalRProvider connection error', err));
+        ?.catch((err) => console.error('SignalRProvider connection error', err));
 
       setConnection();
     };
@@ -120,4 +117,4 @@ function useSignalR(require: boolean = true) {
 
 export default SignalRProvider;
 
-export { SignalRProvider, useSignalRState, useSignalRActions, useSignalR };
+export { SignalRProvider, useSignalR, useSignalRActions, useSignalRState };

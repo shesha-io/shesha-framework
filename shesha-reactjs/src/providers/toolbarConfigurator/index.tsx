@@ -1,23 +1,22 @@
-import React, { FC, useReducer, useContext, PropsWithChildren } from 'react';
-import toolbarReducer from './reducer';
-import {
-  IUpdateChildItemsPayload,
-  IUpdateItemSettingsPayload,
-  ToolbarConfiguratorActionsContext,
-  ToolbarConfiguratorStateContext,
-  TOOLBAR_CONTEXT_INITIAL_STATE,
-} from './contexts';
+import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
 import {
   addButtonAction,
-  deleteButtonAction,
   addGroupAction,
+  deleteButtonAction,
   deleteGroupAction,
   selectItemAction,
   updateChildItemsAction,
   updateItemAction,
-  /* NEW_ACTION_IMPORT_GOES_HERE */
 } from './actions';
+import {
+  IUpdateChildItemsPayload,
+  IUpdateItemSettingsPayload,
+  TOOLBAR_CONTEXT_INITIAL_STATE,
+  ToolbarConfiguratorActionsContext,
+  ToolbarConfiguratorStateContext,
+} from './contexts';
 import { ToolbarItemProps } from './models';
+import toolbarReducer from './reducer';
 import { getItemById } from './utils';
 
 export interface IToolbarConfiguratorProviderPropsBase {
@@ -31,10 +30,8 @@ export interface IToolbarConfiguratorProviderProps {
   readOnly: boolean;
 }
 
-const ToolbarConfiguratorProvider: FC<PropsWithChildren<IToolbarConfiguratorProviderProps>> = props => {
-  const {
-    children,
-  } = props;
+const ToolbarConfiguratorProvider: FC<PropsWithChildren<IToolbarConfiguratorProviderProps>> = (props) => {
+  const { children } = props;
 
   const [state, dispatch] = useReducer(toolbarReducer, {
     ...TOOLBAR_CONTEXT_INITIAL_STATE,
@@ -43,23 +40,19 @@ const ToolbarConfiguratorProvider: FC<PropsWithChildren<IToolbarConfiguratorProv
   });
 
   const addButton = () => {
-    if (!state.readOnly)
-      dispatch(addButtonAction());
+    if (!state.readOnly) dispatch(addButtonAction());
   };
 
   const deleteButton = (uid: string) => {
-    if (!state.readOnly)
-      dispatch(deleteButtonAction(uid));
+    if (!state.readOnly) dispatch(deleteButtonAction(uid));
   };
 
   const addGroup = () => {
-    if (!state.readOnly)
-      dispatch(addGroupAction());
+    if (!state.readOnly) dispatch(addGroupAction());
   };
 
   const deleteGroup = (uid: string) => {
-    if (!state.readOnly)
-      dispatch(deleteGroupAction(uid));
+    if (!state.readOnly) dispatch(deleteGroupAction(uid));
   };
 
   const selectItem = (uid: string) => {
@@ -67,8 +60,7 @@ const ToolbarConfiguratorProvider: FC<PropsWithChildren<IToolbarConfiguratorProv
   };
 
   const updateChildItems = (payload: IUpdateChildItemsPayload) => {
-    if (!state.readOnly)
-      dispatch(updateChildItemsAction(payload));
+    if (!state.readOnly) dispatch(updateChildItemsAction(payload));
   };
 
   const getItem = (uid: string): ToolbarItemProps => {
@@ -76,8 +68,7 @@ const ToolbarConfiguratorProvider: FC<PropsWithChildren<IToolbarConfiguratorProv
   };
 
   const updateItem = (payload: IUpdateItemSettingsPayload) => {
-    if (!state.readOnly)
-      dispatch(updateItemAction(payload));
+    if (!state.readOnly) dispatch(updateItemAction(payload));
   };
 
   /* NEW_ACTION_DECLARATION_GOES_HERE */

@@ -2,7 +2,7 @@ import { Checkbox, Divider } from 'antd';
 import classNames from 'classnames';
 import React, { FC, useEffect, useState } from 'react';
 import { useMeasure, usePrevious } from 'react-use';
-import { FormFullName, IFormDto, IPersistedFormProps, useAppConfigurator, useSheshaApplication } from '../../providers';
+import { FormFullName, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher, useSheshaApplication } from '../../providers';
 import { useConfigurationItemsLoader } from '../../providers/configurationItemsLoader';
 import { getFormConfiguration, getMarkupFromResponse } from '../../providers/form/api';
 import ConditionalWrap from '../conditionalWrapper';
@@ -11,7 +11,7 @@ import FormInfo from '../configurableForm/formInfo';
 import ShaSpin from '../shaSpin';
 import Show from '../show';
 import { IDataListProps } from './models';
-import { asFormRawId, asFormFullName } from '../../providers/form/utils';
+import { asFormRawId, asFormFullName, useApplicationContext, executeScriptSync } from '../../providers/form/utils';
 import './styles/index.less';
 
 interface EntityForm {
@@ -44,6 +44,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   ...props
 }) => {
   const { backendUrl, httpHeaders } = useSheshaApplication();
+  const allData = useApplicationContext();
+  const { executeAction } = useConfigurableActionDispatcher();
   const [formConfigs, setFormConfigs] = useState<IFormDto[]>([]);
   const [entityForms, setEntityForms] = useState<EntityForm[]>([]);
   const [entityTypes, setEntityTypes] = useState<string[]>([]);
@@ -106,19 +108,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   const getFormIdFromExpression = (item): FormFullName => {
     if (!formIdExpression) return null;
 
-    // tslint:disable-next-line:function-constructor
-    return new Function(
-      'item',
-      //globalState, http, message, data, refreshTable',
-      formIdExpression
-    )(
-      item /*,
-            globalState,
-            axiosHttp(backendUrl),
-            message,
-            formData,
-            refreshTable*/
-    );
+    return executeScriptSync(formIdExpression, {...allData, item});
   };
 
   const { formInfoBlockVisible } = useAppConfigurator();
@@ -359,21 +349,38 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           return null;
         }
       }
-    }
+    };
+
+    const handleClick = () => {
+      if (props.actionConfiguration) {
+        // todo: implement generic context collector
+        const evaluationContext = {
+          ...allData,
+          selectedRow: item,
+        };
+        executeAction({
+          actionConfiguration: props.actionConfiguration,
+          argumentsEvaluationContext: evaluationContext,
+        });
+      } else console.error('Action is not configured');
+      return false;
+    };
 
     if (!formConfig) 
       return null;
 
     return (
-      <ConfigurableForm
-        mode="readonly"
-        //labelCol={{span: 3}}
-        //wrapperCol={{span: 17}}
-        markup={{ components: formConfig?.markup, formSettings: formConfig?.settings }}
-        initialValues={values}
-        skipFetchData={true}
-        //onValuesChange={(value, index) => { alert(JSON.stringify(value) + " : " + JSON.stringify(index))}}
-      />
+      <div onDoubleClick={handleClick}>
+        <ConfigurableForm
+          mode="readonly"
+          //labelCol={{span: 3}}
+          //wrapperCol={{span: 17}}
+          markup={{ components: formConfig?.markup, formSettings: formConfig?.settings }}
+          initialValues={values}
+          skipFetchData={true}
+          //onValuesChange={(value, index) => { alert(JSON.stringify(value) + " : " + JSON.stringify(index))}}
+        />
+      </div>
     );
   };
 

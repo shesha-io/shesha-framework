@@ -8,7 +8,7 @@ import { validateConfigurableComponentSettings } from 'providers/form/utils';
 import ConfigurableFormItem from '../formItem';
 import ScheduledJobExecution from './scheduledJobExecution';
 import settingsFormJson from './settingsForm.json';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 
 export interface IScheduledJobExecutionLogProps extends IConfigurableFormComponent {}
 

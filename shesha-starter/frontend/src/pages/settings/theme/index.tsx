@@ -1,11 +1,11 @@
-import React from 'react';
-import dynamic from 'next/dynamic';
-import { getLayout } from 'src/components/layouts';
-import { NextPageWithLayout } from 'models';
+import React from "react";
+import dynamic from "next/dynamic";
+import { getLayout } from "src/components/layouts";
+import { NextPageWithLayout } from "models";
 
 const LazyLoadedPage = dynamic(
   async () => {
-    const modules = await import('@shesha/reactjs');
+    const modules = await import("@shesha-io/reactjs");
     return modules.ConfigurableThemePage;
   },
   { ssr: false }

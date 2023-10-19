@@ -1,21 +1,23 @@
-import { createContext } from "react";
-import { IDelayedUpdateGroup } from "./models";
+import { createContext } from 'react';
+import { IDelayedUpdateGroup } from './models';
 
 export interface IDelayedUpdateStateContext {
-    groups: IDelayedUpdateGroup[];
+  groups: IDelayedUpdateGroup[];
 }
 
 export interface IDelayedUpdateActionContext {
-    addItem: (groupName: string, id: any, data?: any) => void;
-    removeItem: (groupName: string, id: any) => void;
-    getPayload: () => {};
+  addItem: (groupName: string, id: any, data?: any) => void;
+  removeItem: (groupName: string, id: any) => void;
+  getPayload: () => {};
 }
-  
+
 /** initial state */
 export const DELAYED_UPDATE_PROVIDER_CONTEXT_INITIAL_STATE: IDelayedUpdateStateContext = {
-    groups:[]
+  groups: [],
 };
 
-export const DelayedUpdateProviderStateContext = createContext<IDelayedUpdateStateContext>(DELAYED_UPDATE_PROVIDER_CONTEXT_INITIAL_STATE);
+export const DelayedUpdateProviderStateContext = createContext<IDelayedUpdateStateContext>(
+  DELAYED_UPDATE_PROVIDER_CONTEXT_INITIAL_STATE
+);
 
 export const DelayedUpdateProviderActionsContext = createContext<IDelayedUpdateActionContext>(undefined);

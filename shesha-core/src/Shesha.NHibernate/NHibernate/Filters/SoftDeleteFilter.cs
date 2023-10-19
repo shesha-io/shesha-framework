@@ -18,16 +18,27 @@ namespace Shesha.NHibernate.Filters
         /// </summary>
         public static FilterDefinition GetDefinition()
         {
+            var defaultColumnName = nameof(ISoftDelete.IsDeleted);
 
             var filterDef = new FilterDefinition(
                 AbpDataFilters.SoftDelete,
-                $"{nameof(ISoftDelete.IsDeleted).EscapeDbObjectNameForNH()} = :{AbpDataFilters.Parameters.IsDeleted}",
+                GetCondition(defaultColumnName),
                 new Dictionary<string, IType>
                 {
                     { AbpDataFilters.Parameters.IsDeleted, NHibernateUtil.Boolean }
                 },
                 false);
             return filterDef;
+        }
+
+        /// <summary>
+        /// Get filtering condition
+        /// </summary>
+        /// <param name="columnName">Name of the `IsDeleted` column</param>
+        /// <returns></returns>
+        public static string GetCondition(string columnName)
+        {
+            return $"{columnName.EscapeDbObjectNameForNH()} = :{AbpDataFilters.Parameters.IsDeleted}";
         }
     }
 }

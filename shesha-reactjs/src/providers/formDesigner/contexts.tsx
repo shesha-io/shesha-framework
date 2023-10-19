@@ -1,43 +1,31 @@
 import { createContext, MutableRefObject } from 'react';
 import {
-  IFlagsState,
-  IFlagsSetters,
-  IToolboxComponentGroup,
-  IToolboxComponent,
   IAsyncValidationError,
+  IFlagsSetters,
+  IFlagsState,
   IFormValidationErrors,
+  IToolboxComponent,
+  IToolboxComponentGroup,
 } from '../../interfaces';
 
+import { IPropertyMetadata } from '../../interfaces/metadata';
+import { StateWithHistory } from '../../utils/undoable';
 import {
-  IConfigurableFormComponent,
-  ROOT_COMPONENT_KEY,
-  IFormSettings,
   DEFAULT_FORM_SETTINGS,
+  IConfigurableFormComponent,
   IFlatComponentsStructure,
+  IFormSettings,
+  ROOT_COMPONENT_KEY,
 } from '../form/models';
 import { IDataSource } from '../formDesigner/models';
-import { IPropertyMetadata } from '../../interfaces/metadata';
-import { StateWithHistory } from 'utils/undoable';
 import { IDataContextFullInstance } from 'providers/dataContextProvider';
 
-export type IFlagProgressFlags =
-  | 'addComponent'
-  | 'updateComponent'
-  | 'deleteComponent'
-  | 'moveComponent';
-export type IFlagSucceededFlags =
-  | 'addComponent'
-  | 'updateComponent'
-  | 'deleteComponent'
-  | 'moveComponent';
-export type IFlagErrorFlags =
-  | 'addComponent'
-  | 'updateComponent'
-  | 'deleteComponent'
-  | 'moveComponent';
+export type IFlagProgressFlags = 'addComponent' | 'updateComponent' | 'deleteComponent' | 'moveComponent';
+export type IFlagSucceededFlags = 'addComponent' | 'updateComponent' | 'deleteComponent' | 'moveComponent';
+export type IFlagErrorFlags = 'addComponent' | 'updateComponent' | 'deleteComponent' | 'moveComponent';
 export type IFlagActionedFlags = '__DEFAULT__' /* NEW_ACTIONED_FLAG_GOES_HERE */;
 
-export interface IUndoableFormDesignerStateContext extends StateWithHistory<IFormDesignerStateContext> { }
+export interface IUndoableFormDesignerStateContext extends StateWithHistory<IFormDesignerStateContext> {}
 
 export interface IHasComponentGroups {
   toolboxComponentGroups: IToolboxComponentGroup[];
@@ -45,9 +33,8 @@ export interface IHasComponentGroups {
 
 export interface IFormDesignerStateContext
   extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags>,
-  IHasComponentGroups,
-  IFlatComponentsStructure {
-
+    IHasComponentGroups,
+    IFlatComponentsStructure {
   validationErrors?: IFormValidationErrors;
 
   selectedComponentId?: string;
@@ -72,7 +59,7 @@ export interface IComponentAddPayload extends AddComponentPayloadBase {
   componentType: string;
 }
 
-export interface IComponentAddFromTemplatePayload extends AddComponentPayloadBase { }
+export interface IComponentAddFromTemplatePayload extends AddComponentPayloadBase {}
 
 export interface IAddDataPropertyPayload {
   propertyMetadata: IPropertyMetadata;
@@ -158,7 +145,7 @@ export const FORM_DESIGNER_CONTEXT_INITIAL_STATE: IFormDesignerStateContext = {
   isDragging: false,
   isDebug: false,
   formSettings: DEFAULT_FORM_SETTINGS,
-  toolboxComponentGroups: [],//defaultToolboxComponents,
+  toolboxComponentGroups: [], //defaultToolboxComponents,
   dataSources: [],
   activeDataSourceId: null,
   readOnly: true,
@@ -170,7 +157,7 @@ export const UndoableFormDesignerStateContext = createContext<IUndoableFormDesig
   future: [],
 });
 
-export interface ConfigurableFormInstance extends IFormDesignerActionsContext, IFormDesignerStateContext { }
+export interface ConfigurableFormInstance extends IFormDesignerActionsContext, IFormDesignerStateContext {}
 
 export const FormDesignerStateContext = createContext<IFormDesignerStateContext>(FORM_DESIGNER_CONTEXT_INITIAL_STATE);
 

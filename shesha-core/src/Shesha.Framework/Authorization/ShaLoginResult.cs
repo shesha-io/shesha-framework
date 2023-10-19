@@ -1,30 +1,28 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Security.Claims;
-using Abp.Authorization.Users;
+﻿using Abp.Authorization.Users;
 using Abp.MultiTenancy;
+using System.Security.Claims;
 
 namespace Shesha.Authorization
 {
-    public class ShaLoginResult<TTenant, TUser>
-        where TTenant : AbpTenant<TUser>
+    public class ShaLoginResult<TUser>
         where TUser : AbpUserBase
     {
         public ShaLoginResultType Result { get; private set; }
 
-        public TTenant Tenant { get; private set; }
+        public int? TenantId { get; private set; }
 
         public TUser User { get; private set; }
 
         public ClaimsIdentity Identity { get; private set; }
 
-        public ShaLoginResult(ShaLoginResultType result, TTenant tenant = null, TUser user = null)
+        public ShaLoginResult(ShaLoginResultType result, AbpTenantBase tenant = null, TUser user = null)
         {
             Result = result;
-            Tenant = tenant;
+            TenantId = tenant?.Id;
             User = user;
         }
 
-        public ShaLoginResult(TTenant tenant, TUser user, ClaimsIdentity identity)
+        public ShaLoginResult(AbpTenantBase tenant, TUser user, ClaimsIdentity identity)
             : this(ShaLoginResultType.Success, tenant)
         {
             User = user;

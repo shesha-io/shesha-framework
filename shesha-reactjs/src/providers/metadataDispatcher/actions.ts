@@ -8,8 +8,7 @@ export enum MetadataDispatcherActionEnums {
 
 export const activateProviderAction = createAction<string, string>(
   MetadataDispatcherActionEnums.ActivateProvider,
-  p => p
+  (p) => p
 );
-
 
 /* NEW_ACTION_GOES_HERE */

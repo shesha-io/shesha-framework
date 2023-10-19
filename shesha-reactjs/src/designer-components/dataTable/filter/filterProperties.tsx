@@ -1,10 +1,10 @@
-import React, { FC, useEffect, ReactNode, useState } from 'react';
-import { useTableViewSelectorConfigurator } from '../../../providers/tableViewSelectorConfigurator';
 import { Empty, Form } from 'antd';
-import { ConfigurableForm } from '../../../components';
-import tableViewSettingsJson from './settings.json';
-import { FormMarkup } from '../../../providers/form/models';
+import React, { FC, ReactNode, useEffect, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
+import { ConfigurableForm } from '../../../components';
+import { FormMarkup } from '../../../providers/form/models';
+import { useTableViewSelectorConfigurator } from '../../../providers/tableViewSelectorConfigurator';
+import tableViewSettingsJson from './settings.json';
 
 export interface IFilterProps {}
 
@@ -15,7 +15,7 @@ export const FilterProperties: FC<IFilterProps> = () => {
   const [form] = Form.useForm();
 
   const debouncedSave = useDebouncedCallback(
-    values => {
+    (values) => {
       updateItem({ id: selectedItemId, settings: values });
     },
     // delay in ms
@@ -28,7 +28,7 @@ export const FilterProperties: FC<IFilterProps> = () => {
 
     const componentModel = getItem(selectedItemId);
 
-    const onSettingsSave = values => {
+    const onSettingsSave = (values) => {
       console.log(values);
     };
 
@@ -36,7 +36,7 @@ export const FilterProperties: FC<IFilterProps> = () => {
       <ConfigurableForm
         labelCol={{ span: 24 }}
         wrapperCol={{ span: 24 }}
-        mode={ readOnly ? 'readonly' : 'edit' }
+        mode={readOnly ? 'readonly' : 'edit'}
         markup={tableViewSettingsJson as FormMarkup}
         onFinish={onSettingsSave}
         form={form}

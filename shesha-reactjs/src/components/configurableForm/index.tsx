@@ -1,20 +1,20 @@
 import React, { FC } from 'react';
 import ConfigurableFormRenderer from './configurableFormRenderer';
 import { IConfigurableFormProps } from './models';
-import { FormProvider } from 'providers/form';
+import { FormProvider } from '../../providers/form';
 import ConfigurableComponent from '../appConfigurator/configurableComponent';
 import EditViewMsg from '../appConfigurator/editViewMsg';
-import { useAppConfigurator, useShaRouting, useSheshaApplication } from 'providers';
+import { useAppConfigurator, useShaRouting, useSheshaApplication } from '../../providers';
 import classNames from 'classnames';
-import { FormPersisterConsumer, FormPersisterProvider } from 'providers/formPersisterProvider';
-import { FormMarkupConverter } from 'providers/formMarkupConverter';
-import { FormIdentifier, FormRawMarkup, IFormSettings, IPersistedFormProps } from 'providers/form/models';
-import { convertToMarkupWithSettings } from 'providers/form/utils';
-import { ConfigurationItemVersionStatusMap } from 'utils/configurationFramework/models';
+import { FormPersisterConsumer, FormPersisterProvider } from '../../providers/formPersisterProvider';
+import { FormMarkupConverter } from '../../providers/formMarkupConverter';
+import { FormIdentifier, FormRawMarkup, IFormSettings, IPersistedFormProps } from '../../providers/form/models';
+import { convertToMarkupWithSettings } from '../../providers/form/utils';
+import { ConfigurationItemVersionStatusMap } from '../../utils/configurationFramework/models';
 import Show from '../show';
 import FormInfo from './formInfo';
 import { Result } from 'antd';
-import { getFormNotFoundMessage } from 'providers/configurationItemsLoader/utils';
+import { getFormNotFoundMessage } from '../../providers/configurationItemsLoader/utils';
 
 export const ConfigurableForm: FC<IConfigurableFormProps> = props => {
   const {
@@ -22,15 +22,15 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = props => {
     formId, 
     markup, 
     mode,
-    actions, 
-    sections, 
-    context, 
-    formRef, 
-    refetchData, 
-    formProps, 
+    actions,
+    sections,
+    context,
+    formRef,
+    refetchData,
+    formProps,
     isActionsOwner,
     propertyFilter,
-    ...restProps 
+    ...restProps
   } = props;
   const { switchApplicationMode, formInfoBlockVisible } = useAppConfigurator();
   const app = useSheshaApplication();
@@ -42,8 +42,8 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = props => {
     return typeof fId === 'string'
       ? `${app.routes.formsDesigner}?id=${fId}`
       : Boolean(fId?.name)
-        ? `${app.routes.formsDesigner}?module=${fId.module}&name=${fId.name}`
-        : null;
+      ? `${app.routes.formsDesigner}?module=${fId.module}&name=${fId.name}`
+      : null;
   };
   const formDesignerUrl = getDesignerUrl(formId);
   const openInDesigner = () => {
@@ -69,7 +69,7 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = props => {
 
     return (
       <FormMarkupConverter markup={providedMarkup} formSettings={formSettings}>
-        {flatComponents => (
+        {(flatComponents) => (
           <FormProvider
             needDebug={needDebug}
             name="Form"
@@ -109,7 +109,7 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = props => {
           ) : (
             <FormPersisterProvider formId={formId}>
               <FormPersisterConsumer>
-                {persister => (
+                {(persister) => (
                   <>
                     {persister.loadError?.code === 404 && (
                       <Result
@@ -119,10 +119,10 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = props => {
                         subTitle={getFormNotFoundMessage(formId)}
                       />
                     )}
-                    {persister.loaded && renderWithMarkup(persister.markup, persister.formSettings, persister.formProps)}
+                    {persister.loaded &&
+                      renderWithMarkup(persister.markup, persister.formSettings, persister.formProps)}
                   </>
-                )
-                }
+                )}
               </FormPersisterConsumer>
             </FormPersisterProvider>
           )}

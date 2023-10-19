@@ -1,27 +1,27 @@
+import { nanoid } from 'nanoid/non-secure';
+import { handleActions } from 'redux-actions';
+import { ColumnsActionEnums } from './actions';
 import {
   IColumnsConfiguratorStateContext,
   IUpdateChildItemsPayload,
   IUpdateItemSettingsPayload,
   TOOLBAR_CONTEXT_INITIAL_STATE,
 } from './contexts';
-import { ColumnsActionEnums } from './actions';
-import { IDataColumnsProps, IConfigurableColumnGroup, standardCellComponentTypes } from './models';
-import { handleActions } from 'redux-actions';
+import { IConfigurableColumnGroup, IDataColumnsProps, standardCellComponentTypes } from './models';
 import { getItemById, getItemPositionById } from './utils';
-import { nanoid } from 'nanoid/non-secure';
 
 const toolbarReducer = handleActions<IColumnsConfiguratorStateContext, any>(
   {
     [ColumnsActionEnums.AddColumn]: (state: IColumnsConfiguratorStateContext) => {
-      const buttonsCount = state.items.filter(i => i.itemType === 'item').length;
+      const buttonsCount = state.items.filter((i) => i.itemType === 'item').length;
       const columnProps: IDataColumnsProps = {
         id: nanoid(),
         itemType: 'item',
         sortOrder: state.items.length,
         caption: `Column ${buttonsCount + 1}`,
+        minWidth: 100,
         columnType: 'data',
         isVisible: true,
-        minWidth: 100,
         propertyName: '',
         displayComponent: { type: standardCellComponentTypes.defaultDisplay },
         editComponent: { type: standardCellComponentTypes.notEditable },
@@ -49,7 +49,7 @@ const toolbarReducer = handleActions<IColumnsConfiguratorStateContext, any>(
     ) => {
       const { payload } = action;
 
-      const newItems = state.items.filter(item => item.id !== payload);
+      const newItems = state.items.filter((item) => item.id !== payload);
 
       return {
         ...state,
@@ -59,7 +59,7 @@ const toolbarReducer = handleActions<IColumnsConfiguratorStateContext, any>(
     },
 
     [ColumnsActionEnums.AddGroup]: (state: IColumnsConfiguratorStateContext) => {
-      const groupsCount = state.items.filter(i => i.itemType === 'group').length;
+      const groupsCount = state.items.filter((i) => i.itemType === 'group').length;
       const groupProps: IConfigurableColumnGroup = {
         id: nanoid(),
         itemType: 'group',
@@ -81,7 +81,7 @@ const toolbarReducer = handleActions<IColumnsConfiguratorStateContext, any>(
     ) => {
       const { payload } = action;
 
-      const newItems = state.items.filter(item => item.id !== payload);
+      const newItems = state.items.filter((item) => item.id !== payload);
 
       return {
         ...state,
@@ -105,6 +105,19 @@ const toolbarReducer = handleActions<IColumnsConfiguratorStateContext, any>(
     ) => {
       const { payload } = action;
 
+      const {
+        settings: { columnType, minWidth, maxWidth },
+      } = payload;
+
+      if (!!columnType) {
+        const width = payload.settings.columnType === 'action' ? 35 : null;
+        if (!minWidth) {
+          payload.settings.maxWidth = width;
+        }
+        if (!maxWidth) {
+          payload.settings.minWidth = width;
+        }
+      }
       const newItems = [...state.items];
 
       const position = getItemPositionById(newItems, payload.id);
@@ -129,6 +142,7 @@ const toolbarReducer = handleActions<IColumnsConfiguratorStateContext, any>(
       const {
         payload: { index, childs: childIds },
       } = action;
+
       if (!Boolean(index) || index.length === 0) {
         return {
           ...state,

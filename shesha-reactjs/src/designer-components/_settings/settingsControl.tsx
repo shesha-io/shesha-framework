@@ -33,17 +33,22 @@ export const SettingsControl: FC<ISettingsControlProps> = ({ id, propertyName, r
                     onChange(!!value || mode === 'code' ? { _value: settings._value, _code: value, _mode: mode } : settings._value);
             }}
             mode='dialog'
-            type='codeEditor'
             language='typescript'
             id={id}
             propertyName={propertyName + 'Code'}
             exposedVariables={[
                 { name: "data", description: "Selected form values", type: "object" },
                 { name: "contexts", description: "Contexts data", type: "object" },
-                //{ name: "value", description: "Component current value", type: "string | any" },
-                //{ name: "staticValue", description: "Static value of this setting", type: "any" },
                 { name: "globalState", description: "Global state", type: "object" },
-                { name: "formMode", description: "Form mode", type: "object" }
+                { name: "setGlobalState", description: "Functiont to set globalState", type: "function" },
+                { name: "formMode", description: "Form mode", type: "'designer' | 'edit' | 'readonly'" },
+                { name: "staticValue", description: "Static value of this setting", type: "any" },
+                { name: "getSettingValue", description: "Functiont to get actual setting value", type: "function" },
+                { name: "form", description: "Form instance", type: "object" },
+                { name: "selectedRow", description: "Selected row of nearest table (null if not available)", type: "object" },
+                { name: "moment", description: "moment", type: "object" },
+                { name: "http", description: "axiosHttp", type: "object" },
+                { name: "message", description: "message framework", type: "object" },
             ]}
         />;
     }

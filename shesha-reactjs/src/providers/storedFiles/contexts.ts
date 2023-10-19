@@ -1,6 +1,6 @@
-import { createContext } from 'react';
 import { UploadFile } from 'antd/lib/upload/interface';
-import { IFlagsState, IFlagsSetters } from '../..';
+import { createContext } from 'react';
+import { IFlagsSetters, IFlagsState } from '../..';
 
 export type IFlagProgressFlags =
   | 'downloadFile'

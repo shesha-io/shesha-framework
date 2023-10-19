@@ -6,7 +6,7 @@ import { useForm } from 'providers';
 import { validateConfigurableComponentSettings } from '../..';
 import { configurableActionsConfiguratorSettingsForm } from './settings';
 import { IConfigurableActionConfiguratorComponentProps } from './interfaces';
-import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
+import { migratePropertyName, migrateCustomFunctions } from '../../designer-components/_common-migrations/migrateSettings';
 import { ConfigurableActionConfigurator } from './configurator';
 
 const ConfigurableActionConfiguratorComponent: IToolboxComponent<IConfigurableActionConfiguratorComponentProps> = {

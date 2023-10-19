@@ -7,8 +7,8 @@ import { evaluateString, useGlobalState, useShaRouting } from '../..';
 import _ from 'lodash';
 import { useMedia } from 'react-use';
 import { StandardEntityActions } from '../../interfaces/metadata';
-import { MODAL_DATA } from 'shesha-constants';
-import { ButtonGroup } from 'components/formDesigner/components/button/buttonGroup/buttonGroupComponent';
+import { MODAL_DATA } from '../../shesha-constants';
+import { ButtonGroup } from 'components/formDesigner/components/button/buttonGroup/buttonGroup';
 
 export interface IDynamicModalWithFormProps extends Omit<IModalWithConfigurableFormProps, 'fetchUrl'> {
   isVisible: boolean;
@@ -130,7 +130,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
         <ConfigurableForm {...formProps}>
           <Show when={footerButtons === 'custom' && Boolean(buttons?.length)}>
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <ButtonGroup items={buttons || []} id={''} size="middle" isInline noStyles />
+              <ButtonGroup items={buttons || []} id={''} type={''} size="middle" isInline noStyles />
             </div>
           </Show>
         </ConfigurableForm>

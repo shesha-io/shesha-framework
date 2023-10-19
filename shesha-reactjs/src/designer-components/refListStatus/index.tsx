@@ -1,15 +1,15 @@
-import { IToolboxComponent } from '../../interfaces';
 import { FileSearchOutlined } from '@ant-design/icons';
-import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
+import { Alert } from 'antd';
 import React from 'react';
+import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
+import { validateConfigurableComponentSettings } from '../../formDesignerUtils';
+import { IToolboxComponent } from '../../interfaces';
 import { useForm, useFormData, useGlobalState } from '../../providers';
+import { IRefListStatusPropsV0 } from './migrations/models';
 import { IRefListStatusProps } from './models';
 import { RefListStatusSettingsForm } from './settings';
-import { validateConfigurableComponentSettings } from '../../formDesignerUtils';
 import { executeCustomExpression, getStyle } from '../../utils/publicUtils';
-import { Alert } from 'antd';
-import { IRefListStatusPropsV0 } from './migrations/models';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '../../designer-components/_common-migrations/migrateSettings';
 import { RefListStatus } from 'components/refListStatus/index';
 
 const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {

@@ -18,6 +18,8 @@
         MultiValueReferenceList = 9,
         EntityReference = 10,
         StoredFile = 11,
-        List = 12
+        List = 12,
+        GenericEntityReference = 13,
+        Unknown = 999,
     }
 }

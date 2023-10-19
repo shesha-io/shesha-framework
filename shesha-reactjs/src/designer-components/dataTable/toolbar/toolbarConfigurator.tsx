@@ -1,9 +1,9 @@
-import React, { FC, ReactNode } from 'react';
 import { Alert, Button } from 'antd';
+import React, { FC, ReactNode } from 'react';
 import { SidebarContainer } from '../../../components';
+import { useToolbarConfigurator } from '../../../providers/toolbarConfigurator';
 import { ToolbarItemProperties } from './toolbarItemProperties';
 import ToolbarItemsContainer from './toolbarItemsContainer';
-import { useToolbarConfigurator } from '../../../providers/toolbarConfigurator';
 import './styles/index.less';
 
 export interface IToolbarConfiguratorProps {
@@ -13,7 +13,12 @@ export interface IToolbarConfiguratorProps {
   readOnly: boolean;
 }
 
-export const ToolbarConfigurator: FC<IToolbarConfiguratorProps> = ({ allowAddGroups = true, render, heading, readOnly }) => {
+export const ToolbarConfigurator: FC<IToolbarConfiguratorProps> = ({
+  allowAddGroups = true,
+  render,
+  heading,
+  readOnly,
+}) => {
   const { items, addButton, addGroup } = useToolbarConfigurator();
 
   const content = () => {

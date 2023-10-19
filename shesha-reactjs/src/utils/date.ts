@@ -77,7 +77,7 @@ export const getMoment = (value: any, dateFormat: string): Moment => {
 
   const values = [isMoment(value) ? value : null, moment(value as string, dateFormat), moment(value as string)];
 
-  const parsed = values.find(i => isMoment(i) && i.isValid());
+  const parsed = values.find((i) => isMoment(i) && i.isValid());
 
   return parsed;
 };

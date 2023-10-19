@@ -1,8 +1,5 @@
-import {
-  REFERENCELIST_DISPATCHER_CONTEXT_INITIAL_STATE,
-  IReferenceListDispatcherStateContext,
-} from './contexts';
 import { handleActions } from 'redux-actions';
+import { IReferenceListDispatcherStateContext, REFERENCELIST_DISPATCHER_CONTEXT_INITIAL_STATE } from './contexts';
 
 const reducer = handleActions<IReferenceListDispatcherStateContext, any>(
   {

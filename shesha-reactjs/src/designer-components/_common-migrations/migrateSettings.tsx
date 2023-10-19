@@ -1,4 +1,4 @@
-import { getPropertySettingsFromValue } from "designer-components/_settings/utils";
+import { getPropertySettingsFromValue } from "../../designer-components/_settings/utils";
 import { IConfigurableFormComponent } from "providers";
 
 export const migrateFunctionToProp = <T extends IConfigurableFormComponent,>(prev: T, propName: string, funcPropname: string, invert: Boolean = false) => {

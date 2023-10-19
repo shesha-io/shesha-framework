@@ -1,13 +1,13 @@
 import { FC } from "react";
 
 export interface IQueryBuilderProps {
-    jsonExpanded?: boolean;
-    modelType?: string;
-    fieldsUnavailableHint?: string;
-    value?: object;
-    onChange?: (value: Object) => void;
-    readOnly?: boolean;
-  }
+  jsonExpanded?: boolean;
+  modelType?: string;
+  fieldsUnavailableHint?: string;
+  value?: object;
+  onChange?: (value: Object) => void;
+  readOnly?: boolean;
+}
 
   export interface IQueryBuilderFieldProps {
     jsonExpanded?: boolean;
@@ -16,4 +16,4 @@ export interface IQueryBuilderProps {
     readOnly?: boolean;
   }
 
-  export type QueryBuilderFieldType = FC<IQueryBuilderFieldProps>;
+export type QueryBuilderFieldType = FC<IQueryBuilderFieldProps>;

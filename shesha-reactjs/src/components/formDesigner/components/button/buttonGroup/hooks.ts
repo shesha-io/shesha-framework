@@ -1,4 +1,4 @@
-import { useDynamicActionsDispatcher } from "index";
+import { useDynamicActionsDispatcher } from "providers";
 import { ButtonGroupItemProps, IButtonGroupItemBase, IDynamicItem, isDynamicItem, isGroup } from "providers/buttonGroupConfigurator/models";
 import { IDynamicActionsDispatcherFullInstance } from "providers/dynamicActionsDispatcher/contexts";
 import { useMemo, useRef, useState } from "react";

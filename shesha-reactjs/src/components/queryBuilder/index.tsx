@@ -76,7 +76,7 @@ export const QueryBuilder: FC<IQueryBuilderProps> = props => {
       if (propertyHasQBConfig(property))
         return property.convert(property);
 
-      const { dataType, visible, label, fieldSettings, childProperties: childProps } = property;
+      const { dataType, visible, label, fieldSettings, preferWidgets, childProperties: childProps } = property;
       let type: string = dataType;
       let defaultPreferWidgets = [];
 
@@ -129,7 +129,7 @@ export const QueryBuilder: FC<IQueryBuilderProps> = props => {
           break;
       }
 
-      const fieldPreferWidgets = defaultPreferWidgets || [];
+      const fieldPreferWidgets = preferWidgets || defaultPreferWidgets || [];
 
       const subfields = dataType === '!struct' ? {} : undefined;
       if (subfields) {

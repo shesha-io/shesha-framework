@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { Menu } from 'antd';
 import { MenuTheme } from 'antd/lib/menu/MenuContext';
 import { useLocalStorage } from '../../hooks';
@@ -28,13 +28,11 @@ export const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
   const { getItems, isItemVisible } = useSidebarMenu();
   const { router } = useShaRouting();
 
+  const currentPath = normalizeUrl(getCurrentUrl());
   const items = getItems();
+  const [selected, setSelected] = useState(findItem(currentPath, items));
 
   if ((items ?? []).length === 0) return null;
-
-  const currentPath = normalizeUrl(getCurrentUrl());
-  const selectedItem = findItem(currentPath, items);
-  const selectedKey = selectedItem?.id;
 
   const onOpenChange = (openKeys: React.Key[]) => {
     setOpenedKeys(openKeys);
@@ -43,10 +41,10 @@ export const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
   const keys = openedKeys && openedKeys.length > 0 ? openedKeys : undefined;
 
   const handleNavigate = (url: string) => {
-    if (!url)
-      return;
+    if (!url) return;
     if (typeof router === 'object') {
       try {
+        setSelected(findItem(url, items));
         router?.push(url);
       } catch (error) {
         window.location.href = url;
@@ -56,16 +54,17 @@ export const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
     }
   };
 
-
   return (
     <Menu
       mode="inline"
+      selectedKeys={[selected?.id]}
       className="nav-links-renderer sha-sidebar-menu"
-      defaultSelectedKeys={selectedKey ? [selectedKey] : []}
       defaultOpenKeys={keys}
       onOpenChange={onOpenChange}
       theme={theme}
-      items={items.map(item => renderSidebarMenuItem({ ...item, isItemVisible, navigate: handleNavigate, isRootItem: true }))}
+      items={items.map((item) =>
+        renderSidebarMenuItem({ ...item, isItemVisible, navigate: handleNavigate, isRootItem: true })
+      )}
     />
   );
 };

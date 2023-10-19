@@ -1,6 +1,6 @@
+import { MutableRefObject } from 'react';
 import { IConfigurableFormComponent } from '../../../providers/form/models';
 import { ITableViewProps } from '../../../providers/tableViewSelectorConfigurator/models';
-import { MutableRefObject } from 'react';
 
 export type FilterTarget = 'model' | 'table';
 

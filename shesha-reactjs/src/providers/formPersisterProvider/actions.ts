@@ -1,9 +1,7 @@
 import { createAction } from 'redux-actions';
 import { IErrorInfo } from '../../interfaces/errorInfo';
 import { IFlatComponentsStructure, IFormSettings, IPersistedFormProps } from '../form/models';
-import {
-  ILoadRequestPayload,
-} from './contexts';
+import { ILoadRequestPayload } from './contexts';
 
 export enum FormPersisterActionEnums {
   SaveRequest = 'SAVE_REQUEST',
@@ -18,19 +16,25 @@ export enum FormPersisterActionEnums {
   UpdateFormSettings = 'UPDATE_FORM_SETTINGS',
 }
 
-export const loadRequestAction = createAction<ILoadRequestPayload, ILoadRequestPayload>(FormPersisterActionEnums.LoadRequest, p => p);
-export const loadSuccessAction = createAction<IPersistedFormProps, IPersistedFormProps>(FormPersisterActionEnums.LoadSuccess, p => p);
-export const loadErrorAction = createAction<IErrorInfo, IErrorInfo>(FormPersisterActionEnums.LoadError, p => p);
+export const loadRequestAction = createAction<ILoadRequestPayload, ILoadRequestPayload>(
+  FormPersisterActionEnums.LoadRequest,
+  (p) => p
+);
+export const loadSuccessAction = createAction<IPersistedFormProps, IPersistedFormProps>(
+  FormPersisterActionEnums.LoadSuccess,
+  (p) => p
+);
+export const loadErrorAction = createAction<IErrorInfo, IErrorInfo>(FormPersisterActionEnums.LoadError, (p) => p);
 export const changeMarkupAction = createAction<IFlatComponentsStructure, IFlatComponentsStructure>(
   FormPersisterActionEnums.ChangeMarkup,
-  p => p
+  (p) => p
 );
 
 export const saveRequestAction = createAction(FormPersisterActionEnums.SaveRequest, () => ({}));
 export const saveSuccessAction = createAction(FormPersisterActionEnums.SaveSuccess, () => ({}));
-export const saveErrorAction = createAction<IErrorInfo, IErrorInfo>(FormPersisterActionEnums.SaveError, p => p);
+export const saveErrorAction = createAction<IErrorInfo, IErrorInfo>(FormPersisterActionEnums.SaveError, (p) => p);
 
 export const updateFormSettingsAction = createAction<IFormSettings, IFormSettings>(
   FormPersisterActionEnums.UpdateFormSettings,
-  p => p
+  (p) => p
 );

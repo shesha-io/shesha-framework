@@ -1,15 +1,15 @@
 import { Checkbox, Form, Input, InputNumber, Select } from 'antd';
 import React, { FC, useState } from 'react';
-import SectionSeparator from '../../../sectionSeparator';
-import ButtonGroupSettingsModal from '../button/buttonGroup/buttonGroupSettingsModal';
-import PropertyAutocomplete from '../../../propertyAutocomplete/propertyAutocomplete';
-import { IListItemsProps } from './models';
-import CodeEditor from '../codeEditor/codeEditor';
-import Show from '../../../show';
+import { QueryBuilderComponentRenderer } from '../../../../designer-components/queryBuilder/queryBuilderComponent';
+import { QueryBuilderWithModelType } from '../../../../designer-components/queryBuilder/queryBuilderWithModelType';
 import { AutocompleteRaw } from '../../../autocomplete';
-import { QueryBuilderWithModelType } from 'designer-components/queryBuilder/queryBuilderWithModelType';
-import { QueryBuilderComponentRenderer } from 'designer-components/queryBuilder/queryBuilderComponent';
 import FormAutocomplete from '../../../formAutocomplete';
+import PropertyAutocomplete from '../../../propertyAutocomplete/propertyAutocomplete';
+import SectionSeparator from '../../../sectionSeparator';
+import Show from '../../../show';
+import ButtonGroupSettingsModal from '../button/buttonGroup/buttonGroupSettingsModal';
+import CodeEditor from '../codeEditor/codeEditor';
+import { IListItemsProps } from './models';
 
 const Option = Select.Option;
 
@@ -23,7 +23,7 @@ export interface IListControlSettingsProps {
   onValuesChange?: (changedValues: any, values: IListItemsProps) => void;
 }
 
-interface IListSettingsState extends IListItemsProps { }
+interface IListSettingsState extends IListItemsProps {}
 
 export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, onSave, model, onValuesChange }) => {
   const [state, setState] = useState<IListSettingsState>(model);
@@ -83,8 +83,9 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
       <FormItem
         name="uniqueStateId"
         label="Unique State ID"
-        tooltip={"This is important for when you want to dispatch events that are related to the list component. " +
-          "In a case where you have more than one List component, you\'ll need to specify which you want to target. This ID helps identify the correct component"
+        tooltip={
+          'This is important for when you want to dispatch events that are related to the list component. ' +
+          "In a case where you have more than one List component, you'll need to specify which you want to target. This ID helps identify the correct component"
         }
       >
         <Input readOnly={readOnly} />
@@ -192,8 +193,6 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
               mode="inline"
               setOptions={{ minLines: 15, maxLines: 500, fixedWidthGutter: true }}
               propertyName="properties"
-              type={''}
-              id={''}
               language="graphqlschema"
               label="Query Params"
               description="Properties in GraphQL-like syntax"
@@ -247,8 +246,9 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
           name="allowRemoteDelete"
           label="Allow Remote Delete"
           valuePropName="checked"
-          tooltip={"Whether items should also be deleted remotely. " +
-            "If this option is selected, you need to specify the deleteUrl and also make sure the returned data has an Id property to delete against"
+          tooltip={
+            'Whether items should also be deleted remotely. ' +
+            'If this option is selected, you need to specify the deleteUrl and also make sure the returned data has an Id property to delete against'
           }
         >
           <Checkbox disabled={readOnly} />
@@ -266,8 +266,6 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
               setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
               propertyName="deleteUrl"
               label="Delete URL"
-              type={''}
-              id={''}
               description="The API url that will be used delete the list item. Write the code that returns the string"
               exposedVariables={[
                 {
@@ -303,8 +301,6 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
               label="Delete Confirm Message"
               setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
               propertyName="deleteConfirmMessage"
-              type={''}
-              id={''}
               description="The confirm message that will be displayed before you delete an item. Write the code that returns the string"
               exposedVariables={[
                 {
@@ -344,8 +340,6 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
           mode="dialog"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           propertyName="onSubmit"
-          type={''}
-          id={''}
           description="Write a code that return tha payload to be sent to the server when submitting this items"
           exposedVariables={[
             {
@@ -383,8 +377,6 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
           label="Submit URL"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           propertyName="submitUrl"
-          type={''}
-          id={''}
           description="The URL to submit the list items to"
           exposedVariables={[
             {
@@ -415,8 +407,6 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
           label="Target URL"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           propertyName="targetUrl"
-          type={''}
-          id={''}
           description="The URL to forward to after event is triggered"
           exposedVariables={[
             {
@@ -496,8 +486,9 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
       <FormItem
         label="Custom Visibility"
         name="customVisibility"
-        tooltip={"Enter custom visibility code.  You must return true to show the component. " +
-          "The global variable data is provided, and allows you to access the data of any form component, by using its API key."
+        tooltip={
+          'Enter custom visibility code.  You must return true to show the component. ' +
+          'The global variable data is provided, and allows you to access the data of any form component, by using its API key.'
         }
       >
         <CodeEditor
@@ -506,10 +497,9 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
           label="Custom Visibility"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           propertyName="customVisibility"
-          type={''}
-          id={''}
-          description={"Enter custom visibility code.  You must return true to show the component. " +
-            "The global variable data is provided, and allows you to access the data of any form component, by using its API key."
+          description={
+            'Enter custom visibility code.  You must return true to show the component. ' +
+            'The global variable data is provided, and allows you to access the data of any form component, by using its API key.'
           }
           exposedVariables={[
             {

@@ -135,8 +135,8 @@ resources:
             #     periodSeconds: 3
             #     type: Liveness
         scale:
-          maxReplicas: 1
-          minReplicas: 1
+          maxReplicas: 5
+          minReplicas: 0
           rules:
             - custom:
                 metadata:

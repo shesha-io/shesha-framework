@@ -53,6 +53,44 @@ export const FncPaymentDetailsView = addStory(Template, {
   mode: 'edit',
 });
 
+export const FncInLineEditingTable = addStory(Template, {
+  formId: { name: 'in-line-editing-table', module: 'Boxfusion.SheshaFunctionalTests.Common' },
+});
+
+export const FncEmployeeAccountDetail = addStory(Template, {
+  formId: { name: 'employeeaccount-details', module: 'Shesha' },
+  id: '3b918830-9f1e-48e7-8298-0adc4ce1192b',
+});
+
+export const FncSchoolDetails = addStory(Template, {
+  formId: { name: 'School-Details', module: 'Boxfusion.SheshaFunctionalTests.Common' },
+  id: '49d6b802-935e-4527-990a-68a3f1d35368',
+});
+
+export const FncTestCascadeBehavior = addStory(Template, {
+  formId: { name: 'test-cascade-behavior-details', module: 'Shesha' },
+  id: '4a01cced-ac97-40ee-ae28-fb2135d41a0b',
+});
+
+export const FncAddressComponentCreate = addStory(Template, {
+  formId: { name: 'address-component-create', module: 'Shesha' },
+  mode: 'edit',
+});
+
+export const FncMemberTableView = addStory(Template, {
+  formId: { name: 'member-table-view', module: 'Shesha' },
+  mode: 'edit',
+});
+
+export const FncSubjectDetails = addStory(Template, {
+  formId: { name: 'subject-details', module: 'Boxfusion.SheshaFunctionalTests.Common' },
+  id: 'cc9ff707-8cb3-4976-849e-0034e34dff47',
+});
+
+export const FncAddressComponentTable = addStory(Template, {
+  formId: { name: 'address-component-table', module: 'Shesha' },
+});
+
 export const DepCustomerDetails = addStory(Template, {
   formId: { name: 'customer-details', module: 'Boxfusion.Dep' },
   id: '7cd698ce-9e41-4604-8ef6-08f0e1a8144d',

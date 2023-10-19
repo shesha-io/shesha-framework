@@ -1,15 +1,13 @@
 import { Button, Form } from 'antd';
 import React, { useState } from 'react';
-import { FormProvider, Page, PageWithLayout, SubFormProvider } from "../..";
+import { FormProvider, Page, PageWithLayout, SubFormProvider } from '../..';
 import SubForm from '../../components/formDesigner/components/subForm/subForm';
 
-export interface ISubFormTestPageProps {
-
-}
+export interface ISubFormTestPageProps {}
 
 const SubFormTestPage: PageWithLayout<ISubFormTestPageProps> = () => {
+  const [formName, setFormName] = useState('/organisations/edit');
 
-    const [formName, setFormName] = useState('/organisations/edit');
 
     return (
         <Page

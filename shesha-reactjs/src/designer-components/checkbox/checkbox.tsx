@@ -10,7 +10,7 @@ import { DataTypes } from '../../interfaces/dataTypes';
 import { useForm, useFormData } from '../../providers';
 import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
 import { ICheckboxComponentProps } from './interfaces';
-import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
+import { migratePropertyName, migrateCustomFunctions } from '../../designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

@@ -28,14 +28,15 @@ namespace Shesha.Api
             var actionDescriptors = _apiDescriptionsProvider.ApiDescriptionGroups.Items.SelectMany(g => g.Items.Select(gi => gi.ActionDescriptor)).ToList();
 
             var allEndpoints = actionDescriptors.SelectMany(desc => {
-                var verbs = desc.ActionConstraints.OfType<HttpMethodActionConstraint>().SelectMany(c => c.HttpMethods).Distinct().ToList();
+                var verbs = desc.ActionConstraints?.OfType<HttpMethodActionConstraint>().SelectMany(c => c.HttpMethods).Distinct().ToList() ?? new List<string> { "" };
 
                 var actionDescriptor = desc as ControllerActionDescriptor;
 
-                return verbs.Select(v => new ApiEndpointInfo { 
+                return verbs.Select(v => new ApiEndpointInfo
+                {
                     HttpVerb = v.ToLower(),
                     Url = "/" + desc.AttributeRouteInfo?.Template.TrimStart('/'),
-                    
+
                     ActionName = actionDescriptor?.ActionName,
                     ControllerName = actionDescriptor?.ControllerName,
                 });

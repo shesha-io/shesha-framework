@@ -60,12 +60,13 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
                         <SettingsControl id={model.id} propertyName={internalProps?.propertyName} mode={mode} value={value} onChange={onChange}>
                             {(value, onChange, propertyName) =>
                                 <DataContextProvider id={model.id} name={props.componentName} description={props.label.toString()} type={'settings'}
-                                    initialData={new Promise((resolve) => {
+                                    dynamicData={setValueByPropertyName({}, propertyName, value)}
+                                    /*initialData={new Promise((resolve) => {
                                         resolve(setValueByPropertyName({}, propertyName, value));
-                                    })}
-                                    onChangeData={(value) => {
-                                        if (value)
-                                            onChange(getValueByPropertyName(value, propertyName));
+                                    })}*/
+                                    onChangeData={(v) => {
+                                        if (v)
+                                            onChange(getValueByPropertyName(v, propertyName));
                                     }}
                                 >
                                     <ComponentsContainer containerId={props.id} dynamicComponents={components} />

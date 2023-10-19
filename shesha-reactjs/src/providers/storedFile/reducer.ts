@@ -1,6 +1,6 @@
-import { IStoredFileStateContext } from './contexts';
-import { StoredFileActionEnums } from './actions';
 import flagsReducer from '../utils/flagsReducer';
+import { StoredFileActionEnums } from './actions';
+import { IStoredFileStateContext } from './contexts';
 
 export function storedFilesReducer(
   incomingState: IStoredFileStateContext,

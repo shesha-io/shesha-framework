@@ -13,6 +13,7 @@ namespace Shesha.FluentMigrator
     /// </summary>
     public static class SheshaFluentMigratorExtensions
     {
+        private const int MsSqlVarcharMax = 1073741823;
         /// <summary>
         /// Adds foreign key column (Guid) to the table
         /// </summary>
@@ -40,10 +41,10 @@ namespace Shesha.FluentMigrator
         /// <summary>
         /// Adds columns for <see cref="IHasOwningEntityLink"/>
         /// </summary>
-        public static ICreateTableColumnOptionOrWithColumnSyntax WithMultipleOwnerColumns(this ICreateTableWithColumnSyntax table, int ownerIdSize = 40)
+        public static ICreateTableColumnOptionOrWithColumnSyntax WithMultipleOwnerColumns(this ICreateTableWithColumnSyntax table)
         {
             return table
-                .WithColumn(DatabaseConsts.OwnerIdColumn).AsString(ownerIdSize).Nullable().Indexed()
+                .WithColumn(DatabaseConsts.OwnerIdColumn).AsString(40).Nullable().Indexed()
                 .WithColumn(DatabaseConsts.OwnerTypeColumn).AsString(100).Nullable().Indexed();
         }
 
@@ -107,11 +108,11 @@ namespace Shesha.FluentMigrator
         /// <summary>
         /// Adds full auditing fields to a table. See <see cref="IFullAudited"/>.
         /// </summary>
-        public static ICreateTableColumnOptionOrWithColumnSyntax WithFullAuditColumns(this ICreateTableWithColumnSyntax table)
+        public static ICreateTableColumnOptionOrWithColumnSyntax WithFullAuditColumns(this ICreateTableWithColumnSyntax table, IDbObjectNames? names = null)
         {
             return table
-                .WithAuditColumns()
-                .WithDeletionAuditColumns();
+                .WithAuditColumns(names)
+                .WithDeletionAuditColumns(names);
         }
 
         public static ICreateTableColumnOptionOrWithColumnSyntax WithFullAuditedEntityWithExternalSyncColumns(this ICreateTableWithColumnSyntax table)
@@ -129,22 +130,22 @@ namespace Shesha.FluentMigrator
         /// <summary>
         /// Adds full auditing fields and tenant ID to a table. See <see cref="FullPowerEntity"/>.
         /// </summary>
-        public static ICreateTableColumnOptionOrWithColumnSyntax WithFullPowerEntityColumns(this ICreateTableWithColumnSyntax table, bool indexCreatedByUserId = false)
+        public static ICreateTableColumnOptionOrWithColumnSyntax WithFullPowerEntityColumns(this ICreateTableWithColumnSyntax table, IDbObjectNames? names = null)
         {
             return table
-                .WithAuditColumns(indexCreatedByUserId)
-                .WithDeletionAuditColumns()
-                .WithTenantIdAsNullable();
+                .WithAuditColumns(names)
+                .WithDeletionAuditColumns(names)
+                .WithTenantIdAsNullable(names);
         }
 
         /// <summary>
         /// Adds owner entity link, full auditing fields and tenant ID to a table. See <see cref="FullPowerChildEntity"/>.
         /// </summary>
-        public static ICreateTableColumnOptionOrWithColumnSyntax WithFullPowerChildEntityColumns(this ICreateTableWithColumnSyntax table, bool indexCreatedByUserId = false, int ownerIdSize = 40)
+        public static ICreateTableColumnOptionOrWithColumnSyntax WithFullPowerChildEntityColumns(this ICreateTableWithColumnSyntax table)
         {
             return table
-                .WithMultipleOwnerColumns(ownerIdSize: ownerIdSize)
-                .WithAuditColumns(indexCreatedByUserId)
+                .WithMultipleOwnerColumns()
+                .WithAuditColumns()
                 .WithDeletionAuditColumns()
                 .WithTenantIdAsNullable();
         }
@@ -152,12 +153,12 @@ namespace Shesha.FluentMigrator
         /// <summary>
         /// Adds entity link, owner entity link, full auditing fields and tenant ID to a table. See <see cref="FullPowerEntity"/>.
         /// </summary>
-        public static ICreateTableColumnOptionOrWithColumnSyntax WithFullPowerManyToManyColumns(this ICreateTableWithColumnSyntax table, bool indexCreatedByUserId = false)
+        public static ICreateTableColumnOptionOrWithColumnSyntax WithFullPowerManyToManyColumns(this ICreateTableWithColumnSyntax table)
         {
             return table
                 .WithEntityLinkColumns()
                 .WithMultipleOwnerColumns()
-                .WithAuditColumns(indexCreatedByUserId)
+                .WithAuditColumns()
                 .WithDeletionAuditColumns()
                 .WithTenantIdAsNullable();
         }
@@ -165,72 +166,80 @@ namespace Shesha.FluentMigrator
         /// <summary>
         /// Adds auditing fields to a table. See <see cref="IAudited"/>.
         /// </summary>
-        public static ICreateTableColumnOptionOrWithColumnSyntax WithAuditColumns(this ICreateTableWithColumnSyntax table, bool indexCreatedByUserId = false)
+        public static ICreateTableColumnOptionOrWithColumnSyntax WithAuditColumns(this ICreateTableWithColumnSyntax table, IDbObjectNames? names = null)
         {
             return table
-                .WithCreationAuditColumns(indexCreatedByUserId)
-                .WithModificationAuditColumns();
+                .WithCreationAuditColumns(names)
+                .WithModificationAuditColumns(names);
         }
 
         /// <summary>
         /// Adds CreatorUserId field to a table. See <see cref="ICreationAudited"/>.
         /// </summary>
-        public static ICreateTableColumnOptionOrWithColumnSyntax WithCreatorUserIdColumn(this ICreateTableWithColumnSyntax table, bool indexCreatedByUserId = false)
+        public static ICreateTableColumnOptionOrWithColumnSyntax WithCreatorUserIdColumn(this ICreateTableWithColumnSyntax table, IDbObjectNames? names = null)
         {
             var response = table
-                .WithColumn(DatabaseConsts.CreatorUserId).AsInt64().Nullable().ForeignKey(DatabaseConsts.UsersTable, DatabaseConsts.IdColumn);
-            if (indexCreatedByUserId)
-                return response.Indexed();
+                .WithColumn(names.OrDefault().CreatorUserId).AsInt64().Nullable().ForeignKey(DatabaseConsts.UsersTable, DatabaseConsts.IdColumn);
             return response;
         }
 
         /// <summary>
         /// Adds creation auditing fields to a table. See <see cref="ICreationAudited"/>.
         /// </summary>
-        public static ICreateTableColumnOptionOrWithColumnSyntax WithCreationAuditColumns(this ICreateTableWithColumnSyntax table, bool indexCreatedByUserId = false)
+        public static ICreateTableColumnOptionOrWithColumnSyntax WithCreationAuditColumns(this ICreateTableWithColumnSyntax table, IDbObjectNames? names = null)
         {
             return table
-                .WithCreationTimeColumn()
-                .WithCreatorUserIdColumn(indexCreatedByUserId);
+                .WithCreationTimeColumn(names)
+                .WithCreatorUserIdColumn(names);
         }
 
         /// <summary>
         /// Adds LastModifierUserId field to a table. See <see cref="IModificationAudited"/>.
         /// </summary>
-        public static ICreateTableColumnOptionOrWithColumnSyntax WithLastModifierUserIdColumn(this ICreateTableWithColumnSyntax table)
+        public static ICreateTableColumnOptionOrWithColumnSyntax WithLastModifierUserIdColumn(this ICreateTableWithColumnSyntax table, IDbObjectNames? names = null)
         {
             return table
-                .WithColumn(DatabaseConsts.LastModifierUserIdColumn).AsInt64().Nullable().ForeignKey(DatabaseConsts.UsersTable, DatabaseConsts.IdColumn);
+                .WithColumn(names.OrDefault().LastModifierUserIdColumn).AsInt64().Nullable().ForeignKey(DatabaseConsts.UsersTable, DatabaseConsts.IdColumn);
+        }
+
+        /// <summary>
+        /// Return current names or fallback to default ones
+        /// </summary>
+        /// <param name="names"></param>
+        /// <returns></returns>
+        public static IDbObjectNames OrDefault(this IDbObjectNames? names) 
+        {
+            return names ?? new DefaultDbObjectNames();
         }
 
         /// <summary>
         /// Adds modification auditing fields to a table. See <see cref="IModificationAudited"/>.
         /// </summary>
-        public static ICreateTableColumnOptionOrWithColumnSyntax WithModificationAuditColumns(this ICreateTableWithColumnSyntax table)
+        public static ICreateTableColumnOptionOrWithColumnSyntax WithModificationAuditColumns(this ICreateTableWithColumnSyntax table, IDbObjectNames? names = null)
         {
             return table
-                .WithLastModificationTimeColumn()
-                .WithLastModifierUserIdColumn();
+                .WithLastModificationTimeColumn(names)
+                .WithLastModifierUserIdColumn(names);
         }
 
         /// <summary>
         /// Adds DeleterUserId field to a table. See <see cref="IDeletionAudited"/>.
         /// </summary>
-        public static ICreateTableColumnOptionOrWithColumnSyntax WithDeleterUserIdColumn(this ICreateTableWithColumnSyntax table)
+        public static ICreateTableColumnOptionOrWithColumnSyntax WithDeleterUserIdColumn(this ICreateTableWithColumnSyntax table, IDbObjectNames? names = null)
         {
             return table
-                .WithColumn(DatabaseConsts.DeleterUserIdColumn).AsInt64().Nullable().ForeignKey(DatabaseConsts.UsersTable, DatabaseConsts.IdColumn);
+                .WithColumn(names.OrDefault().DeleterUserIdColumn).AsInt64().Nullable().ForeignKey(DatabaseConsts.UsersTable, DatabaseConsts.IdColumn);
         }
 
         /// <summary>
         /// Adds deletion auditing columns to a table. See <see cref="IModificationAudited"/>.
         /// </summary>
-        public static ICreateTableColumnOptionOrWithColumnSyntax WithDeletionAuditColumns(this ICreateTableWithColumnSyntax table)
+        public static ICreateTableColumnOptionOrWithColumnSyntax WithDeletionAuditColumns(this ICreateTableWithColumnSyntax table, IDbObjectNames? names = null)
         {
             return table
-                .WithIsDeletedColumn()
-                .WithDeletionTimeColumn()
-                .WithDeleterUserIdColumn();
+                .WithIsDeletedColumn(names)
+                .WithDeletionTimeColumn(names)
+                .WithDeleterUserIdColumn(names);
         }
 
         /// <summary>
@@ -245,10 +254,10 @@ namespace Shesha.FluentMigrator
         /// <summary>
         /// Adds TenantId column to a table as nullable. See <see cref="AbpTenant{TUser}"/>.
         /// </summary>
-        public static ICreateTableColumnOptionOrForeignKeyCascadeOrWithColumnSyntax WithTenantIdAsNullable(this ICreateTableWithColumnSyntax table)
+        public static ICreateTableColumnOptionOrForeignKeyCascadeOrWithColumnSyntax WithTenantIdAsNullable(this ICreateTableWithColumnSyntax table, IDbObjectNames? names = null)
         {
             return table
-                .WithColumn(DatabaseConsts.TenantIdColumn).AsInt32().Nullable().ForeignKey(DatabaseConsts.TenantsTable, DatabaseConsts.IdColumn);
+                .WithColumn(names.OrDefault().TenantIdColumn).AsInt32().Nullable().ForeignKey(DatabaseConsts.TenantsTable, DatabaseConsts.IdColumn);
         }
 
         public static ICreateTableColumnOptionOrForeignKeyCascadeOrWithColumnSyntax WithUserId(this ICreateTableWithColumnSyntax table, string columnName)
@@ -327,10 +336,10 @@ namespace Shesha.FluentMigrator
                 .AddColumn(DatabaseConsts.TenantIdColumn).AsInt32().Nullable().ForeignKey(DatabaseConsts.TenantsTable, DatabaseConsts.IdColumn);
         }
 
-        public static IAlterTableColumnOptionOrAddColumnOrAlterColumnSyntax AddDiscriminator(this IAlterTableAddColumnOrAlterColumnSyntax table)
+        public static IAlterTableColumnOptionOrAddColumnOrAlterColumnSyntax AddDiscriminator(this IAlterTableAddColumnOrAlterColumnSyntax table, string? name = null)
         {
             return table
-                .AddColumn(DatabaseConsts.DiscriminatorColumn).AsString(DatabaseConsts.DiscriminatorMaxSize);
+                .AddColumn(name ?? DatabaseConsts.DiscriminatorColumn).AsString(DatabaseConsts.DiscriminatorMaxSize);
         }
 
         public static IAlterTableColumnOptionOrAddColumnOrAlterColumnSyntax AddExternalSyncColumns(this IAlterTableAddColumnOrAlterColumnSyntax table)
@@ -349,37 +358,37 @@ namespace Shesha.FluentMigrator
         /// <summary>
         /// Adds an auto increment <see cref="int"/> primary key to the table.
         /// </summary>
-        public static ICreateTableColumnOptionOrWithColumnSyntax WithIdAsInt32(this ICreateTableWithColumnSyntax table)
+        public static ICreateTableColumnOptionOrWithColumnSyntax WithIdAsInt32(this ICreateTableWithColumnSyntax table, string? name = null)
         {
             return table
-                .WithColumn(DatabaseConsts.IdColumn).AsInt32().NotNullable().PrimaryKey().Identity();
+                .WithColumn(name ?? DatabaseConsts.IdColumn).AsInt32().NotNullable().PrimaryKey().Identity();
         }
 
         /// <summary>
         /// Adds an auto increment <see cref="long"/> primary key to the table.
         /// </summary>
-        public static ICreateTableColumnOptionOrWithColumnSyntax WithIdAsInt64(this ICreateTableWithColumnSyntax table)
+        public static ICreateTableColumnOptionOrWithColumnSyntax WithIdAsInt64(this ICreateTableWithColumnSyntax table, string? name = null)
         {
             return table
-                .WithColumn(DatabaseConsts.IdColumn).AsInt64().NotNullable().PrimaryKey().Identity();
+                .WithColumn(name ?? DatabaseConsts.IdColumn).AsInt64().NotNullable().PrimaryKey().Identity();
         }
 
         /// <summary>
         /// Adds an <see cref="Guid"/> primary key to the table.
         /// </summary>
-        public static ICreateTableColumnOptionOrWithColumnSyntax WithIdAsGuid(this ICreateTableWithColumnSyntax table)
+        public static ICreateTableColumnOptionOrWithColumnSyntax WithIdAsGuid(this ICreateTableWithColumnSyntax table, string? name = null)
         {
             return table
-                .WithColumn(DatabaseConsts.IdColumn).AsGuid().NotNullable().PrimaryKey();
+                .WithColumn(name ?? DatabaseConsts.IdColumn).AsGuid().NotNullable().PrimaryKey();
         }
 
         /// <summary>
         /// Adds IsDeleted column to the table. See <see cref="ISoftDelete"/>.
         /// </summary>
-        public static ICreateTableColumnOptionOrWithColumnSyntax WithIsDeletedColumn(this ICreateTableWithColumnSyntax table)
+        public static ICreateTableColumnOptionOrWithColumnSyntax WithIsDeletedColumn(this ICreateTableWithColumnSyntax table, IDbObjectNames? names = null)
         {
             return table
-                .WithColumn(DatabaseConsts.IsDeletedColumn).AsBoolean().NotNullable().WithDefaultValue(false);
+                .WithColumn(names.OrDefault().IsDeletedColumn).AsBoolean().NotNullable().WithDefaultValue(false);
         }
 
         /// <summary>
@@ -394,10 +403,10 @@ namespace Shesha.FluentMigrator
         /// <summary>
         /// Adds DeletionTime column to a table. See <see cref="IDeletionAudited"/>.
         /// </summary>
-        public static ICreateTableColumnOptionOrWithColumnSyntax WithDeletionTimeColumn(this ICreateTableWithColumnSyntax table)
+        public static ICreateTableColumnOptionOrWithColumnSyntax WithDeletionTimeColumn(this ICreateTableWithColumnSyntax table, IDbObjectNames? names = null)
         {
             return table
-                .WithColumn(DatabaseConsts.DeletionTimeColumn).AsDateTime().Nullable();
+                .WithColumn(names.OrDefault().DeletionTimeColumn).AsDateTime().Nullable();
         }
 
         /// <summary>
@@ -412,10 +421,10 @@ namespace Shesha.FluentMigrator
         /// <summary>
         /// Ads CreationTime field to the table for <see cref="IHasCreationTime"/> interface.
         /// </summary>
-        public static ICreateTableColumnOptionOrWithColumnSyntax WithCreationTimeColumn(this ICreateTableWithColumnSyntax table)
+        public static ICreateTableColumnOptionOrWithColumnSyntax WithCreationTimeColumn(this ICreateTableWithColumnSyntax table, IDbObjectNames? names = null)
         {
             return table
-                .WithColumn(DatabaseConsts.CreationTimeColumn).AsDateTime().NotNullable().WithDefault(SystemMethods.CurrentDateTime);
+                .WithColumn(names.OrDefault().CreationTimeColumn).AsDateTime().NotNullable().WithDefault(SystemMethods.CurrentDateTime);
         }
 
         /// <summary>
@@ -439,10 +448,10 @@ namespace Shesha.FluentMigrator
         /// <summary>
         /// Adds LastModificationTime field to a table. See <see cref="IModificationAudited"/>.
         /// </summary>
-        public static ICreateTableColumnOptionOrWithColumnSyntax WithLastModificationTimeColumn(this ICreateTableWithColumnSyntax table, bool defaultValue = true)
+        public static ICreateTableColumnOptionOrWithColumnSyntax WithLastModificationTimeColumn(this ICreateTableWithColumnSyntax table, IDbObjectNames? names = null)
         {
             return table
-                .WithColumn(DatabaseConsts.LastModificationTimeColumn).AsDateTime().Nullable();
+                .WithColumn(names.OrDefault().LastModificationTimeColumn).AsDateTime().Nullable();
         }
 
         /// <summary>
@@ -484,15 +493,15 @@ namespace Shesha.FluentMigrator
         /// <returns></returns>
         public static TNext AsStringMax<TNext>(this IColumnTypeSyntax<TNext> columnSyntax) where TNext: IFluentSyntax
         {
-            return columnSyntax.AsString(1073741823);
+            return columnSyntax.AsString(MsSqlVarcharMax);
         }
 
         /// <summary>
         /// Adds discriminator field to a table.
         /// </summary>
-        public static ICreateTableColumnOptionOrWithColumnSyntax WithDiscriminator(this ICreateTableWithColumnSyntax table)
+        public static ICreateTableColumnOptionOrWithColumnSyntax WithDiscriminator(this ICreateTableWithColumnSyntax table, string? name = null)
         {
-            return table.WithColumn(DatabaseConsts.DiscriminatorColumn).AsString(DatabaseConsts.DiscriminatorMaxSize);
+            return table.WithColumn(name ?? DatabaseConsts.DiscriminatorColumn).AsString(DatabaseConsts.DiscriminatorMaxSize);
         }
 
         /// <summary>
@@ -520,5 +529,43 @@ namespace Shesha.FluentMigrator
         }
 
         #endregion
+
+        public static TNext AsCaseInsensitiveString<TNext>(this IColumnTypeSyntax<TNext> syntax) where TNext : IFluentSyntax
+        {
+            var dbmsType = DbConnectionSettings.Current?.DbmsType;
+            switch (dbmsType) 
+            {
+                case DbmsType.PostgreSQL:
+                    return syntax.AsCustom("citext");
+                case DbmsType.SQLServer:
+                default:
+                    return syntax.AsString();
+            }
+        }
+        public static TNext AsCaseInsensitiveString<TNext>(this IColumnTypeSyntax<TNext> syntax, int size) where TNext : IFluentSyntax
+        {
+            var dbmsType = DbConnectionSettings.Current?.DbmsType;
+            switch (dbmsType)
+            {
+                case DbmsType.PostgreSQL:
+                    return syntax.AsCustom("citext");
+                case DbmsType.SQLServer:
+                default:
+                    return syntax.AsString(size);
+            }
+        }
+
+        public static TNext AsCaseInsensitiveStringMax<TNext>(this IColumnTypeSyntax<TNext> syntax) where TNext : IFluentSyntax
+        {
+            var dbmsType = DbConnectionSettings.Current?.DbmsType;
+            switch (dbmsType)
+            {
+                case DbmsType.PostgreSQL:
+                    return syntax.AsCustom("citext");
+                case DbmsType.SQLServer:
+                default:
+                    return syntax.AsString(MsSqlVarcharMax);
+            }
+        }
     }
 }

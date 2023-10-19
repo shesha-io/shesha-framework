@@ -17,22 +17,22 @@ import {
   getComponentNames,
   getObjectWithOnlyIncludedKeys,
   IMatchData,
-} from 'providers/form/utils';
+} from '../../providers/form/utils';
 import cleanDeep from 'clean-deep';
-import { getQueryParams } from 'utils/url';
+import { getQueryParams } from '../../utils/url';
 import _ from 'lodash';
-import { axiosHttp } from 'utils/fetchers';
+import { axiosHttp } from '../../utils/fetchers';
 import qs from 'qs';
 import axios, { AxiosResponse } from 'axios';
-import { FormConfigurationDto, useFormData } from 'providers/form/api';
-import { IAbpWrappedGetEntityResponse } from 'interfaces/gql';
+import { FormConfigurationDto, useFormData } from '../../providers/form/api';
+import { IAbpWrappedGetEntityResponse } from '../../interfaces/gql';
 import { nanoid } from 'nanoid/non-secure';
-import { useFormDesigner } from 'providers/formDesigner';
+import { useFormDesigner } from '../../providers/formDesigner';
 import { useModelApiEndpoint } from './useActionEndpoint';
-import { StandardEntityActions } from 'interfaces/metadata';
-import { useMutate } from 'hooks/useMutate';
-import { useDelayedUpdate } from 'providers/delayedUpdateProvider';
-import { ComponentsContainerProvider } from 'providers/form/nesting/containerContext';
+import { StandardEntityActions } from '../../interfaces/metadata';
+import { useMutate } from '../../hooks/useMutate';
+import { useDelayedUpdate } from '../../providers/delayedUpdateProvider';
+import { ComponentsContainerProvider } from '../../providers/form/nesting/containerContext';
 import { useDataContextManager } from 'providers/dataContextManager/index';
 
 export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRendererProps>> = ({
@@ -64,14 +64,8 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
     visibleComponentIdsIsSet,
   } = formInstance;
   const { isDragging = false } = useFormDesigner(false) ?? {};
-  const {
-    excludeFormFieldsInPayload,
-    onDataLoaded,
-    onUpdate,
-    onInitialized,
-    formKeysToPersist,
-    uniqueFormId,
-  } = formSettings;
+  const { excludeFormFieldsInPayload, onDataLoaded, onUpdate, onInitialized, formKeysToPersist, uniqueFormId } =
+    formSettings;
   const { globalState, setState: setGlobalState } = useGlobalState();
   const dcm = useDataContextManager(false);
 
@@ -147,21 +141,21 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
     formSettings?.initialValues?.forEach(({ key, value }) => {
       const evaluatedValue = value?.includes('{{')
         ? evaluateComplexString(value, [
-          { match: 'data', data: formData },
-          { match: 'parentFormValues', data: parentFormValues },
-          { match: 'globalState', data: globalState },
-          { match: 'query', data: queryParamsFromAddressBar },
-          { match: 'initialValues', data: initialValues },
-        ])
+            { match: 'data', data: formData },
+            { match: 'parentFormValues', data: parentFormValues },
+            { match: 'globalState', data: globalState },
+            { match: 'query', data: queryParamsFromAddressBar },
+            { match: 'initialValues', data: initialValues },
+          ])
         : value?.includes('{')
-          ? evaluateValue(value, {
+        ? evaluateValue(value, {
             data: formData,
             parentFormValues: parentFormValues,
             globalState: globalState,
             query: queryParamsFromAddressBar,
             initialValues: initialValues,
           })
-          : value;
+        : value;
       _.set(computedInitialValues, key, evaluatedValue);
     });
 
@@ -191,7 +185,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
     if (form) {
       form.resetFields();
     }
-  }, [/*allComponents, */initialValues]); // todo: re-rendering on change of allComponents causes problems in the designer
+  }, [/*allComponents, */ initialValues]); // todo: re-rendering on change of allComponents causes problems in the designer
 
   useEffect(() => {
     let incomingInitialValues = null;
@@ -243,7 +237,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
       const url = `${backendUrl}/api/services/Shesha/FormConfiguration/Query?${qs.stringify(payload)}`;
       return axios
         .get<any, AxiosResponse<IAbpWrappedGetEntityResponse<FormConfigurationDto>>>(url, { headers: httpHeaders })
-        .then(response => {
+        .then((response) => {
           const markup = response.data.result.markup;
 
           const preparedMarkup = evaluateString(markup, {
@@ -325,7 +319,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
     const initialValuesFromFormSettings = getInitialValuesFromFormSettings();
 
     return getDynamicPreparedValues()
-      .then(dynamicValues => {
+      .then((dynamicValues) => {
         const initialValues = getInitialValuesFromFormSettings();
         const nonFormValues = { ...dynamicValues, ...initialValues };
 
@@ -334,8 +328,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
           : removeGhostKeys(addFormFieldsList(formData, nonFormValues, form));
 
         const delayedUpdate = typeof getDelayedUpdate === 'function' ? getDelayedUpdate() : null;
-        if (Boolean(delayedUpdate))
-          postData._delayedUpdate = delayedUpdate;
+        if (Boolean(delayedUpdate)) postData._delayedUpdate = delayedUpdate;
 
         const subFormNamesToIgnore = getComponentNames(
           allComponents,
@@ -344,15 +337,15 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
         );
 
         if (subFormNamesToIgnore?.length) {
-          subFormNamesToIgnore.forEach(key => {
+          subFormNamesToIgnore.forEach((key) => {
             if (Object.hasOwn(postData, key)) {
               delete postData[key];
             }
           });
           const isEqualOrStartsWith = (input: string) =>
-            subFormNamesToIgnore?.some(x => x === input || input.startsWith(`${x}.`));
+            subFormNamesToIgnore?.some((x) => x === input || input.startsWith(`${x}.`));
 
-          postData._formFields = postData._formFields?.filter(x => !isEqualOrStartsWith(x));
+          postData._formFields = postData._formFields?.filter((x) => !isEqualOrStartsWith(x));
         }
 
         if (excludeFormFieldsInPayload) {
@@ -367,11 +360,11 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
 
         return postData;
       })
-      .catch(error => console.error(error));
+      .catch((error) => console.error(error));
   };
 
   const onFinishInternal = () => {
-    prepareDataForSubmit().then(postData => {
+    prepareDataForSubmit().then((postData) => {
       if (props.onFinish) {
         props.onFinish(postData, options);
       } else {
@@ -382,11 +375,11 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
 
           const doPost = () =>
             doSubmit(submitEndpoint, preparedData)
-              .then(response => {
+              .then((response) => {
                 // note: we pass merged values
                 if (props.onSubmitted) props.onSubmitted(postData, response?.result, options);
               })
-              .catch(e => {
+              .catch((e) => {
                 setValidationErrors(e?.data?.error || e);
                 console.error('Submit failed: ', e);
               });
@@ -396,14 +389,13 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
               .then(() => {
                 doPost();
               })
-              .catch(e => {
+              .catch((e) => {
                 console.error('`beforeSubmit` handler failed', e);
               });
           } else {
             doPost();
           }
-        } else
-          throw 'failed to determine a submit endpoint';
+        } else throw 'failed to determine a submit endpoint';
       }
     });
   };
@@ -438,9 +430,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
         className={`sha-form sha-form-${formMode} ${isDragging ? 'sha-dragging' : ''}`}
         {...mergedProps}
       >
-        <ComponentsContainerProvider
-          ContainerComponent={ComponentsContainerForm}
-        >
+        <ComponentsContainerProvider ContainerComponent={ComponentsContainerForm}>
           <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
         </ComponentsContainerProvider>
         {children}

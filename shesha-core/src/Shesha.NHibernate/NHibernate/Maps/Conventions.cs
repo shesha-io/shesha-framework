@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Entities;
+using Abp.Domain.Uow;
 using AutoMapper.Internal;
 using Castle.Core.Internal;
 using NetTopologySuite.Geometries;
@@ -13,8 +14,10 @@ using Shesha.Domain.Attributes;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.NHibernate.Attributes;
+using Shesha.NHibernate.Filters;
 using Shesha.NHibernate.Generators;
 using Shesha.NHibernate.UserTypes;
+using Shesha.NHibernate.Utilites;
 using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Utilities;
@@ -25,7 +28,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
+using static AutoMapper.Internal.ExpressionFactory;
+using static AutoMapper.QueryableExtensions.LetPropertyMaps;
 using NHcfg = NHibernate.Cfg;
 using NHGens = NHibernate.Mapping.ByCode.Generators;
 using NMIMPL = NHibernate.Mapping.ByCode.Impl;
@@ -144,7 +150,7 @@ namespace Shesha.NHibernate.Maps
 
             mapper.IsComponent((mi, declared) =>
             {
-                if (mi == typeof(GenericEntityReference))
+                if (mi == typeof(GenericEntityReference) || mi.IsAssignableTo(typeof(ConfigurationItemIdentifier)))
                 {
                     return true;
                 }
@@ -159,7 +165,7 @@ namespace Shesha.NHibernate.Maps
 
             mapper.IsProperty((mi, declared) =>
             {
-                if (mi.GetMemberType() == typeof(GenericEntityReference))
+                if (mi.GetMemberType() == typeof(GenericEntityReference) || mi.GetMemberType().IsAssignableTo(typeof(ConfigurationItemIdentifier)))
                 {
                     return true;
                 }
@@ -208,12 +214,17 @@ namespace Shesha.NHibernate.Maps
                         subclassMapper.Join(joinPropAttribute.TableName, j =>
                         {
                             j.Table(joinPropAttribute.TableName);
+                            if (!string.IsNullOrWhiteSpace(joinPropAttribute.Schema))
+                                j.Schema(joinPropAttribute.Schema);
 
                             j.Fetch(FetchKind.Join);
 
+                            var idProp = type.GetProperty("Id");
+                            var idColumn = idProp.GetAttribute<ColumnAttribute>()?.Name ?? "Id";
+
                             j.Key(k =>
                             {
-                                k.Column("Id");
+                                k.Column(idColumn);
                             });
                         });
                     }
@@ -249,9 +260,6 @@ namespace Shesha.NHibernate.Maps
 
             mapper.BeforeMapProperty += (modelInspector, member, propertyCustomizer) =>
             {
-                if (member.LocalMember.Name.Equals("Id", StringComparison.InvariantCultureIgnoreCase)) 
-                { 
-                }
                 var propertyType = member.LocalMember.GetPropertyOrFieldType();
 
                 var lazyAttribute = member.LocalMember.GetAttribute<LazyAttribute>(true);
@@ -291,6 +299,21 @@ namespace Shesha.NHibernate.Maps
                     return;
                 }
 
+                if (propertyType.IsAssignableTo(typeof(ConfigurationItemIdentifier))) 
+                {
+                    var prefix = MappingHelper.GetColumnPrefix(member.LocalMember.DeclaringType);
+                    var moduleColumn = MappingHelper.GetNameForMember(member.LocalMember, prefix, member.LocalMember.Name, nameof(FormIdentifier.Module));
+                    var nameColumn = MappingHelper.GetNameForMember(member.LocalMember, prefix, member.LocalMember.Name, nameof(FormIdentifier.Name));
+
+                    propertyCustomizer.Columns(
+                            c => { c.Name(moduleColumn); },
+                            c => { c.Name(nameColumn); }
+                        );
+                    var gtype = typeof(ConfigurationItemIdentifierUserType);
+                    propertyCustomizer.Type(gtype, null);
+                    return;
+                }
+
                 if (propertyType == typeof(DateTime) || propertyType == typeof(DateTime?))
                 {
                     columnType = NHibernateUtil.DateTime;
@@ -298,7 +321,6 @@ namespace Shesha.NHibernate.Maps
                 }
                 else
                     if (member.LocalMember.GetAttribute<StringLengthAttribute>()?.MaximumLength == int.MaxValue)
-                //if (Attribute.IsDefined(member.LocalMember, (typeof(StringClobAttribute))))
                 {
                     columnType = NHibernateUtil.StringClob;
                     sqlType = "nvarchar(max)";
@@ -354,8 +376,12 @@ namespace Shesha.NHibernate.Maps
             mapper.BeforeMapClass += (modelInspector, type, classCustomizer) =>
             {
                 var tableName = MappingHelper.GetTableName(type);
-
                 classCustomizer.Table(tableName);
+
+
+                var schemaName = MappingHelper.GetSchemaName(type);
+                if (!string.IsNullOrWhiteSpace(schemaName))
+                    classCustomizer.Schema(schemaName);
 
                 var imMutable = type.HasAttribute<ImMutableAttribute>(true);
                 if (imMutable)
@@ -380,7 +406,7 @@ namespace Shesha.NHibernate.Maps
                             }
                             else
                             {
-                                var idColumn = idProp.GetAttribute<ColumnAttribute>()?.Name ?? "Id";
+                                var idColumn = MappingHelper.GetIdColumnName(idProp);
 
                                 // get Id mapper
                                 var idMapper = _idMapper.Invoke(idProp.PropertyType);
@@ -421,18 +447,39 @@ namespace Shesha.NHibernate.Maps
                 }
 
                 // IMayHaveTenant support
+                if (typeof(IMustHaveTenant).IsAssignableFrom(type))
+                {
+                    var tenantIdProp = type.GetProperty(nameof(IMustHaveTenant.TenantId));
+                    var tenantIdColumnName = MappingHelper.GetColumnName(tenantIdProp);
+                    classCustomizer.Filter(AbpDataFilters.MustHaveTenant, m =>
+                    {
+                        if (tenantIdColumnName != tenantIdProp.Name)
+                            m.Condition(MustHaveTenantFilter.GetCondition(tenantIdColumnName));
+                    });
+                }
+
+                // IMayHaveTenant support
                 if (typeof(IMayHaveTenant).IsAssignableFrom(type))
                 {
-                    classCustomizer.Filter("MayHaveTenant", m =>
+                    var tenantIdProp = type.GetProperty(nameof(IMayHaveTenant.TenantId));
+                    var tenantIdColumnName = MappingHelper.GetColumnName(tenantIdProp);
+                    classCustomizer.Filter(AbpDataFilters.MayHaveTenant, m =>
                     {
+                        if (tenantIdColumnName != tenantIdProp.Name)
+                            m.Condition(MayHaveTenantFilter.GetCondition(tenantIdColumnName));
                     });
                 }
 
                 // ISoftDelete support
                 if (typeof(ISoftDelete).IsAssignableFrom(type))
                 {
-                    classCustomizer.Filter("SoftDelete", m =>
+                    var isDeletedProp = type.GetProperty(nameof(ISoftDelete.IsDeleted));
+                    var isDeletedColumnName = MappingHelper.GetColumnName(isDeletedProp);
+
+                    classCustomizer.Filter(AbpDataFilters.SoftDelete, m =>
                     {
+                        if (isDeletedColumnName != isDeletedProp.Name)
+                            m.Condition(SoftDeleteFilter.GetCondition(isDeletedColumnName));
                     });
                 }
             };
@@ -454,12 +501,9 @@ namespace Shesha.NHibernate.Maps
                if (lazyRelation != null)
                    map.Lazy(lazyRelation);
 
-               var foreignKeyAttribute = propertyPath.LocalMember.GetAttribute<ForeignKeyAttribute>(true);
-               var foreignKeyColumn = foreignKeyAttribute != null
-                   ? foreignKeyAttribute.Name
-                   : columnPrefix + propertyPath.LocalMember.Name + "Id";
-
                //map.NotFound(NotFoundMode.Ignore); disabled due to performance issues, this option breaks lazy loading
+
+               var foreignKeyColumn = MappingHelper.GetForeignKeyColumn(propertyPath.LocalMember);
                map.Column(foreignKeyColumn);
 
                var directlyMappedFk = propertyPath.LocalMember.DeclaringType?.GetProperty(foreignKeyColumn);

@@ -1,12 +1,12 @@
-import React, { FC } from 'react';
 import { Button } from 'antd';
+import React, { FC } from 'react';
 import { SidebarContainer } from '../../../../components';
+import { useColumnsConfigurator } from '../../../../providers/datatableColumnsConfigurator';
 import { ColumnProperties } from './columnProperties';
 import ColumnsContainer from './columnsContainer';
-import { useColumnsConfigurator } from '../../../../providers/datatableColumnsConfigurator';
 import './styles/index.less';
 
-export interface IColumnsConfiguratorProps { }
+export interface IColumnsConfiguratorProps {}
 
 export const ColumnsConfigurator: FC<IColumnsConfiguratorProps> = () => {
   const { items, addColumn: addButton, addGroup, readOnly } = useColumnsConfigurator();

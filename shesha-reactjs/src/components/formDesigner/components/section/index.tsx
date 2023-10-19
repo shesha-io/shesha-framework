@@ -7,7 +7,7 @@ import { validateConfigurableComponentSettings } from '../../../../providers/for
 import _ from 'lodash';
 import { useForm, useFormData } from '../../../../providers';
 import { Alert } from 'antd';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 
 export interface ISectionProps extends IConfigurableFormComponent {
   // name: string;

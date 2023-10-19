@@ -1,11 +1,11 @@
-import { IToolboxComponent } from 'interfaces';
 import { ControlOutlined } from '@ant-design/icons';
-import { getSettings } from './settingsForm';
 import { ITablePagerProps, TablePager } from 'components';
 import React from 'react';
-import { IConfigurableFormComponent } from 'providers/form/models';
-import { validateConfigurableComponentSettings } from 'providers/form/utils';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { IToolboxComponent } from '../../../interfaces';
+import { IConfigurableFormComponent } from '../../../providers/form/models';
+import { validateConfigurableComponentSettings } from '../../../providers/form/utils';
+import { getSettings } from './settingsForm';
+import { migrateCustomFunctions, migratePropertyName } from '../../../designer-components/_common-migrations/migrateSettings';
 
 export interface IPagerComponentProps extends ITablePagerProps, IConfigurableFormComponent {}
 

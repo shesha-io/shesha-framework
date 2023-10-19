@@ -31,7 +31,7 @@ export function useWebStorage<T>(
       if (ignoredKeys?.length && typeof valueToStore === 'object') {
         const intermediateValue = { ...valueToStore };
 
-        ignoredKeys?.forEach(localKey => {
+        ignoredKeys?.forEach((localKey) => {
           delete intermediateValue[localKey];
         });
 

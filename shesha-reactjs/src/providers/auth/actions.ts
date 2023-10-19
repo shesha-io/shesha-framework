@@ -1,7 +1,8 @@
 import { createAction } from 'redux-actions';
-import { UserLoginInfoDto } from 'apis/session';
-import { ResetPasswordVerifyOtpResponse } from 'apis/user';
-import { IErrorInfo, IHasErrorInfo } from 'interfaces/errorInfo';
+import { UserLoginInfoDto } from '../../apis/session';
+import { ResetPasswordVerifyOtpResponse } from '../../apis/user';
+import { IErrorInfo, IHasErrorInfo } from '../../interfaces/errorInfo';
+
 export enum AuthActionEnums {
   CheckAuthAction = 'CHECK_AUTH_ACTION',
   SetToken = 'SET_TOKEN',
@@ -28,14 +29,11 @@ export const checkAuthAction = createAction(AuthActionEnums.CheckAuthAction);
 //#region  Login user
 export const loginUserAction = createAction(AuthActionEnums.LoginUserRequest);
 
-export const loginUserSuccessAction = createAction(
-  AuthActionEnums.LoginUserSuccess
-);
+export const loginUserSuccessAction = createAction(AuthActionEnums.LoginUserSuccess);
 
-export const loginUserErrorAction = createAction<IHasErrorInfo, IErrorInfo>(
-  AuthActionEnums.LoginUserError,
-  p => ({ errorInfo: p })
-);
+export const loginUserErrorAction = createAction<IHasErrorInfo, IErrorInfo>(AuthActionEnums.LoginUserError, (p) => ({
+  errorInfo: p,
+}));
 
 //#endregion
 
@@ -45,17 +43,14 @@ export const fetchUserDataAction = createAction(AuthActionEnums.FetchUserDataReq
 
 export const fetchUserDataActionSuccessAction = createAction<UserLoginInfoDto, UserLoginInfoDto>(
   AuthActionEnums.FetchUserDataSuccess,
-  p => p
+  (p) => p
 );
 
-export const setIsLoggedInAction = createAction<boolean, boolean>(
-  AuthActionEnums.SetIsLoggedIn,
-  p => p
-);
+export const setIsLoggedInAction = createAction<boolean, boolean>(AuthActionEnums.SetIsLoggedIn, (p) => p);
 
 export const fetchUserDataActionErrorAction = createAction<IHasErrorInfo, IErrorInfo>(
   AuthActionEnums.FetchUserDataError,
-  p => ({ errorInfo: p })
+  (p) => ({ errorInfo: p })
 );
 
 //#endregion
@@ -64,10 +59,10 @@ export const logoutUserAction = createAction(AuthActionEnums.LogoutUser);
 
 export const verifyOtpSuccessAction = createAction<ResetPasswordVerifyOtpResponse, ResetPasswordVerifyOtpResponse>(
   AuthActionEnums.VerifyOtpSuccess,
-  p => p
+  (p) => p
 );
 
 export const resetPasswordSuccessAction = createAction(AuthActionEnums.ResetPasswordSuccess);
 /* NEW_ACTION_GOES_HERE */
 
-export const setAccessTokenAction = createAction<string, string>(AuthActionEnums.SetToken, p => p);
+export const setAccessTokenAction = createAction<string, string>(AuthActionEnums.SetToken, (p) => p);

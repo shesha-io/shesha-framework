@@ -1,0 +1,348 @@
+# Variable 'artifactName' was defined in the Variables tab - This is from my fix branch
+# Agent Queue 'Azure Pipelines' was used with unrecognized Agent Specification, vmImage property must be specified to determine image - https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops&tabs=yaml#software
+variables:
+- name: BuildParameters.solution1
+  value: Boxfusion.SheshaFunctionalTests.sln
+- name: BuildParameters.solution2
+  value: ShaCompanyName.ShaProjectName.sln
+- name: BuildParameters.configuration
+  value: release
+- name: pack-version
+  value: ""
+- name: isMain
+  value: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
+
+pr:
+  branches:
+    include:
+    - releases/*
+    - main
+trigger:
+  tags:
+    include:
+    - 'release-*'
+  branches:
+    include:
+    - releases/*
+    - main
+    
+pool: 
+  name: Azure Pipelines
+  vmImage1: windows-latest
+  vmImage2: ubuntu-latest
+
+# name: 2.0.0.$(BuildID)
+stages:
+- stage: build
+  jobs:
+  - job: Job_1
+    displayName: Build_Functional_Shesha_API
+    pool:
+      name: Azure Pipelines
+      vmImage: windows-latest
+    steps:
+    - checkout: self
+    - task: PowerShell@2
+      displayName: Check if Pull Request
+      retryCountOnTaskFailure: 5
+      inputs:
+        targetType: 'inline'
+        script: |
+          $targetBranch = ""
+          if ("$(Build.SourceBranch)" -like "*/pull/*")
+          {
+              $targetBranch = "$(System.PullRequest.TargetBranch)"
+              write-host "This is a Pull Request and the target branch is: $targetBranch"  
+              write-host "##vso[task.setvariable variable=prTargetBranch]$targetBranch"
+          }
+          else
+          {
+            write-host "This is not a Pull Request and the target branch is set to empty string"  
+            write-host "##vso[task.setvariable variable=prTargetBranch]''"                              
+          }                         
+        workingDirectory: '$(System.DefaultWorkingDirectory)'    
+    - task: PowerShell@2
+      displayName: Check to establish if this pipeline was triggered from a tag
+      inputs:
+        filePath: 'ReleaseFlow.ps1'
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        arguments: '-PipeBuildNumber "$(Build.BuildNumber)" -PipeSourceBranch "$(Build.SourceBranch)" -PipeSourceVersion "$(Build.SourceVersion)" -PipeTargetBranch "$(prTargetBranch)" -PipeBuildId "$(Build.BuildId)"' 
+    - task: PowerShell@2
+      displayName: Output to console the current branch and version
+      inputs:
+        targetType: 'inline'
+        script: |
+          write-host "The current branch is: $(currentBranch)"
+          write-host "The current version is: $(versionNo)"
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+    - task: PowerShell@2
+      displayName: Create a txt file to carry the original branch name to the release pipeline  
+      inputs:
+        targetType: 'inline'
+        script: |
+          $variable = '$(currentBranch)'
+          $variable | Out-File $(Build.ArtifactStagingDirectory)\branchName.txt
+          Get-Content $(Build.ArtifactStagingDirectory)\branchName.txt
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: api-info-1'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'api-info-1'
+    - task: UseDotNet@2
+      displayName: Use .NET Core sdk 7.x
+      inputs:
+        version: 7.x
+    - task: Assembly-Info-NetCore@3
+      displayName: 'Set Assembly Manifest Data'
+      inputs:
+        InsertAttributes: true
+        VersionNumber: "$(versionNo)"
+        FileVersionNumber: "$(versionNo)"
+        InformationalVersion: "$(versionNo)"
+        PackageVersion: "$(versionNo)"
+      # condition: ne(variables['currentBranch'], 'refs/heads/main')
+    - task: DotNetCoreCLI@2
+      displayName: dotnet Restore
+      inputs:
+        command: 'restore'
+        projects: shesha-functional-tests/backend/**/*.csproj        
+        feedsToUse: 'select'
+        vstsFeed: '44b4667a-8963-403d-9962-bde66225adbd'
+    - task: DotNetCoreCLI@2
+      displayName: dotnet build
+      inputs:
+        projects: shesha-functional-tests/backend/Boxfusion.SheshaFunctionalTests.sln
+        arguments: --configuration $(BuildParameters.configuration)
+    - task: DotNetCoreCLI@2
+      displayName: dotnet publish
+      inputs:
+        command: publish
+        publishWebProjects: false
+        projects: shesha-functional-tests/backend/Boxfusion.SheshaFunctionalTests.sln
+        arguments: --configuration $(BuildParameters.configuration) --output $(build.artifactstagingdirectory) --no-build
+        zipAfterPublish: false
+        modifyOutputPath: false
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: functional-shesha-api'
+      inputs:
+        ArtifactName: functional-shesha-api
+    # - task: DotNetCoreCLI@2
+    #   displayName: dotnet pack
+    #   inputs:
+    #     command: 'pack'
+    #     packagesToPack: 'shesha-functional-tests/backend/src/**/*.csproj'
+    #     # packagesToPack: 'shesha-functional-tests/backend/src/Boxfusion.SheshaFunctionalTests.Web.Host.csproj'        
+    #     configuration: '$(BuildParameters.configuration)'
+    #     nobuild: false
+    #     includesymbols: true
+    #     includesource: true
+    #     versioningScheme: 'byEnvVar'
+    #     versionEnvVar: 'versionNo'
+    - task: DotNetCoreCLI@2
+      displayName: dotnet pack
+      inputs:
+        command: 'pack'
+        packagesToPack: 'shesha-core/src/**/*.csproj'
+        # packagesToPack: 'shesha-functional-tests/backend/src/Boxfusion.SheshaFunctionalTests.Web.Host.csproj'        
+        configuration: '$(BuildParameters.configuration)'
+        nobuild: false
+        includesymbols: true
+        includesource: true
+        versioningScheme: 'byEnvVar'
+        versionEnvVar: 'versionNo'
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: Nuget packs'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'packs-functional'
+  - job: Job_2
+    displayName: Build_Functional_Shesha_AdminPortal
+    pool:
+      vmImage: windows-latest
+    steps:
+    - task: PowerShell@2
+      displayName: Check if Pull Request
+      retryCountOnTaskFailure: 5
+      inputs:
+        targetType: 'inline'
+        script: |
+          $targetBranch = ""
+          if ("$(Build.SourceBranch)" -like "*/pull/*")
+          {
+              $targetBranch = "$(System.PullRequest.TargetBranch)"
+              write-host "This is a Pull Request and the target branch is: $targetBranch"  
+              write-host "##vso[task.setvariable variable=prTargetBranch]$targetBranch"
+          }
+          else
+          {
+            write-host "This is not a Pull Request and the target branch is set to empty string"  
+            write-host "##vso[task.setvariable variable=prTargetBranch]''"                              
+          }                                   
+        workingDirectory: '$(System.DefaultWorkingDirectory)'        
+    - task: PowerShell@2
+      displayName: Check to establish if this pipeline was triggered from a tag      
+      inputs:
+        filePath: 'ReleaseFlow.ps1'
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        arguments: '-PipeBuildNumber "$(Build.BuildNumber)" -PipeSourceBranch "$(Build.SourceBranch)" -PipeSourceVersion "$(Build.SourceVersion)" -PipeTargetBranch "$(prTargetBranch)" -PipeBuildId "$(Build.BuildId)"' 
+    - task: PowerShell@2
+      displayName: Output to console the current branch
+      retryCountOnTaskFailure: 5      
+      inputs:
+        targetType: 'inline'
+        script: |
+          # Write your PowerShell commands here.
+          write-host "The current branch is: $(currentBranch)"
+          write-host "The current version is: $(versionNo)"
+        workingDirectory: 'shesha-functional-tests/adminportal'
+    - task: NodeTool@0
+      displayName: 'Use Node 18.15.0'
+      inputs:
+        versionSpec: 18.15.0
+      retryCountOnTaskFailure: 5
+    - task: Npm@1
+      displayName: 'Npm Update Version'
+      inputs:
+        command: custom
+        workingDir: shesha-reactjs
+        verbose: false
+        customCommand: 'version $(versionNo) --allow-same-version'
+      # condition: ne(variables['currentBranch'], 'refs/heads/main')        
+    - task: Npm@1
+      displayName: 'Npm Install'
+      inputs:
+        command: custom
+        workingDir: shesha-reactjs
+        verbose: false
+        customCommand: 'install'
+    # - task: Npm@1
+    #   displayName: Install Latest Shesha
+    #   inputs:
+    #     command: custom
+    #     workingDir: 'shesha-functional-tests/adminportal'
+    #     verbose: true
+    #     customCommand: install @shesha/reactjs@latest
+    - task: Npm@1
+      displayName: Npm Build
+      inputs:
+        command: custom
+        workingDir: shesha-reactjs
+        verbose: true
+        customCommand: run build
+    - task: Npm@1
+      displayName: 'Npm Update Version'
+      inputs:
+        command: custom
+        workingDir: shesha-functional-tests/adminportal
+        verbose: false
+        customCommand: 'version $(versionNo) --allow-same-version'
+      # condition: ne(variables['currentBranch'], 'refs/heads/main')        
+    - task: Npm@1
+      displayName: 'Npm Install'
+      inputs:
+        command: custom
+        workingDir: shesha-functional-tests/adminportal
+        verbose: false
+        customCommand: 'install'
+    # - task: Npm@1
+    #   displayName: Install Latest Shesha
+    #   inputs:
+    #     command: custom
+    #     workingDir: 'shesha-functional-tests/adminportal'
+    #     verbose: true
+    #     customCommand: install @shesha/reactjs@latest
+    - task: Npm@1
+      displayName: Npm Build
+      inputs:
+        command: custom
+        workingDir: 'shesha-functional-tests/adminportal'
+        verbose: true
+        customCommand: run build
+    # Creating a temporary directory to copy both node apps
+    - task: PowerShell@2
+      displayName: 'Preparing ReactJS for Archiving'
+      inputs:
+        targetType: 'inline'
+        script: |
+          # Write your PowerShell commands here.
+          mkdir $(System.DefaultWorkingDirectory)/temp
+          Write-Host "Copying Shesha ReactJS Artifacts"
+          cp -R shesha-reactjs $(System.DefaultWorkingDirectory)/temp/shesha-reactjs
+          cp -R shesha-functional-tests $(System.DefaultWorkingDirectory)/temp/shesha-functional-tests
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/temp'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/adminportal.zip'
+        replaceExistingArchive: true
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: shesha-adminportal-functional'
+      inputs:
+        ArtifactName: adminportal-functional
+  - job: Job_3
+    displayName: Prepare Release if published
+    pool:
+      vmImage: windows-latest
+    steps:
+    - task: PowerShell@2
+      displayName: Check if Pull Request
+      retryCountOnTaskFailure: 5      
+      inputs:
+        targetType: 'inline'
+        script: |
+          $targetBranch = ""
+          if ("$(Build.SourceBranch)" -like "*/pull/*")
+          {
+              $targetBranch = "$(System.PullRequest.TargetBranch)"
+              write-host "This is a Pull Request and the target branch is: $targetBranch"  
+              write-host "##vso[task.setvariable variable=prTargetBranch]$targetBranch"
+          }
+          else
+          {
+            write-host "This is not a Pull Request and the target branch is set to empty string"  
+            write-host "##vso[task.setvariable variable=prTargetBranch]''"                              
+          }
+        workingDirectory: '$(System.DefaultWorkingDirectory)'        
+    - task: PowerShell@2
+      displayName: Check to establish if this pipeline was triggered from a tag
+      inputs:
+        filePath: 'ReleaseFlow.ps1'
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        arguments: '-PipeBuildNumber "$(Build.BuildNumber)" -PipeSourceBranch "$(Build.SourceBranch)" -PipeSourceVersion "$(Build.SourceVersion)" -PipeTargetBranch "$(prTargetBranch)" -PipeBuildId "$(Build.BuildId)"' 
+    - task: PowerShell@2
+      displayName: Delete Pipeline and Actions Yaml Files
+      inputs:
+        targetType: 'inline'
+        script: |
+          # Write your PowerShell commands here.
+          ls
+          Remove-Item -Recurse -Force .github
+          ls
+          Remove-Item -Force Starter-and-Functional-BP.yaml          
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: '$(System.DefaultWorkingDirectory)'
+        Contents: 'ChangeLog.md'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+        OverWrite: true
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/shesha-framework-$(version).zip'
+        replaceExistingArchive: true
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+        includeRootFolder: false
+        archiveType: 'tar'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/shesha-framework-$(version).tar.gz'
+        replaceExistingArchive: true        
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: Release Version'
+      inputs:
+        ArtifactName: release-version

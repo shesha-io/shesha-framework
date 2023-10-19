@@ -10,7 +10,7 @@ import { nanoid } from 'nanoid/non-secure';
 import { TabSettingsForm } from './settings';
 import { ITabsComponentProps } from './models';
 import ShaIcon from '../../../shaIcon';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 
 const { TabPane } = Tabs;
 

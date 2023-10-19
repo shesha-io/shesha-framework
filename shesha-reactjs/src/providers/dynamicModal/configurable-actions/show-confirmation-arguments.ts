@@ -1,5 +1,5 @@
-import { nanoid } from "nanoid";
-import { DesignerToolbarSettings } from "../../../interfaces/toolbarSettings";
+import { nanoid } from 'nanoid';
+import { DesignerToolbarSettings } from '../../../interfaces/toolbarSettings';
 
 export interface IShowConfirmationArguments {
   title: string;

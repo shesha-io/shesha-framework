@@ -274,7 +274,7 @@ namespace Shesha.Notifications
                             Status = RefListNotificationStatus.Preparing,                            
                         };
                         if (!string.IsNullOrEmpty(notificationInfo.EntityId) && !string.IsNullOrEmpty(notificationInfo.EntityTypeName))
-                            notificationMessage.SourceEntity = new GenericEntityReference(notificationInfo.EntityId, notificationInfo.EntityTypeName, "");
+                            notificationMessage.SourceEntity = new GenericEntityReference(notificationInfo.EntityId.Replace('"', ' ').Trim(), notificationInfo.EntityTypeName, "");
 
                         await _messageRepository.InsertAsync(notificationMessage);
 

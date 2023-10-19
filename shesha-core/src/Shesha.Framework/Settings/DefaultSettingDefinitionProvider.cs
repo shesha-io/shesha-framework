@@ -1,5 +1,6 @@
 ﻿using Abp.Dependency;
 using Shesha.ConfigurationItems;
+using Shesha.Domain;
 using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Settings.Ioc;
@@ -78,7 +79,7 @@ namespace Shesha.Settings
 
             definition.ModuleName = moduleName;
             definition.EditForm = !string.IsNullOrWhiteSpace(settingAttribute?.EditorFormName)
-                ? new ConfigurationItemIdentifier() { Name = settingAttribute.EditorFormName, Module = definition.ModuleName }
+                ? new SettingConfigurationIdentifier(definition.ModuleName, settingAttribute.EditorFormName)
                 : null;            
 
             definition.Category = property.GetCategory() ?? property.DeclaringType.GetCategory();

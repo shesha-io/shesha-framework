@@ -1,6 +1,6 @@
-import { InsertMode } from './../../interfaces/insertMode';
 import { createContext } from 'react';
 import { FormMarkup } from '../form/models';
+import { InsertMode } from './../../interfaces/insertMode';
 
 export interface IConfigurableItemBase {
   id: string;

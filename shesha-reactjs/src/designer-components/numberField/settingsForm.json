@@ -125,7 +125,7 @@
             "defaultValue": 1,
             "validate": {},
             "settingsValidationErrors": [],
-            "customVisibility": "return !data.highPrecision"
+            "hidden": {"_mode": "code", "_value": null, "_code": "return getSettingValue(data.highPrecision);"}
           },
           {
             "id": "7eef80f0-041c-49bf-a9dd-8ee3dff2ee3f",
@@ -135,7 +135,7 @@
             "label": "Step",
             "initialValue": "0.1",
             "validate": {},
-            "customVisibility": "return data.highPrecision",
+            "hidden": {"_mode": "code", "_value": null, "_code": "return !getSettingValue(data.highPrecision);"},
             "version": 0,
             "textType": "text"
           },
@@ -250,7 +250,7 @@
             "parentId": "mIU4FmT5-lSGV_z7Wtqnv",
             "hidden": false,
             "customVisibility": null,
-            "description": "Enter custom eventhandler on changing of event. (form, value) are exposed. The callback triggered when the value is changed",
+            "description": "Enter custom event handler on changing of event. (form, value) are exposed. The callback triggered when the value is changed",
             "validate": {},
             "settingsValidationErrors": [],
             "exposedVariables": [

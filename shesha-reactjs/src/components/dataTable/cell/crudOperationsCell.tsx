@@ -1,13 +1,12 @@
 import { CloseOutlined, DeleteOutlined, EditOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
 import { Button, Popconfirm, Popover } from 'antd';
-import { IErrorInfo } from 'interfaces/errorInfo';
-import { useCrud } from 'providers/crudContext';
-import { ITableCrudOperationsColumn } from 'providers/dataTable/interfaces';
 import React, { FC, useMemo } from 'react';
+import { IErrorInfo } from '../../../interfaces/errorInfo';
+import { useCrud } from '../../../providers/crudContext';
+import { ITableCrudOperationsColumn } from '../../../providers/dataTable/interfaces';
 import { IHasColumnConfig } from './interfaces';
 
-export interface ICrudOperationsCellProps extends IHasColumnConfig<ITableCrudOperationsColumn> {
-}
+export interface ICrudOperationsCellProps extends IHasColumnConfig<ITableCrudOperationsColumn> {}
 
 interface IActionButtonProps {
   title: string;
@@ -25,42 +24,40 @@ const ActionButton: FC<IActionButtonProps> = ({ icon, title, executer, confirmat
     <Button
       shape="circle"
       icon={icon}
-      onClick={mustConfirm
-        ? undefined
-        : e => {
-          e.stopPropagation();
-          executer();
-        }}
+      onClick={
+        mustConfirm
+          ? undefined
+          : (e) => {
+              e.stopPropagation();
+              executer();
+            }
+      }
       title={title}
-      size='small'
+      size="small"
       style={{ margin: '0 3px' }}
       loading={loading}
       danger={Boolean(error)}
     />
   );
 
-  const withConfirmation = confirmationText
-    ? <Popconfirm title={confirmationText} onConfirm={() => executer()}>{button}</Popconfirm>
-    : button;
+  const withConfirmation = confirmationText ? (
+    <Popconfirm title={confirmationText} onConfirm={() => executer()}>
+      {button}
+    </Popconfirm>
+  ) : (
+    button
+  );
 
-  return error
-    ? (
-      <Popover
-        title={error.message}
-        content={
-          <>{error.details}</>
-        }
-        trigger="hover"
-        placement="topLeft"
-      >
-        {withConfirmation}
-      </Popover>
-    )
-    : <>{withConfirmation}</>;
+  return error ? (
+    <Popover title={error.message} content={<>{error.details}</>} trigger="hover" placement="topLeft">
+      {withConfirmation}
+    </Popover>
+  ) : (
+    <>{withConfirmation}</>
+  );
 };
 
 export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
-
   const {
     mode,
     switchMode,
@@ -113,7 +110,7 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
   const buttons = useMemo<IActionButtonProps[]>(() => {
     const allButtons: IActionButtonProps[] = [
       {
-        title: "Add",
+        title: 'Add',
         executer: onSaveCreateClick,
         icon: <PlusOutlined />,
         isVisible: isNewObject,
@@ -121,15 +118,15 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
         error: saveError,
       },
       {
-        title: "Edit",
+        title: 'Edit',
         executer: onEditClick,
         icon: <EditOutlined />,
-        isVisible: allowEdit && mode === 'read'
+        isVisible: allowEdit && mode === 'read',
       },
       {
-        title: "Save",
-        executer: () => { 
-          onSaveUpdateClick(); 
+        title: 'Save',
+        executer: () => {
+          onSaveUpdateClick();
         },
         icon: <SaveOutlined />,
         isVisible: /*!autoSave &&*/ allowEdit && mode === 'update',
@@ -137,37 +134,51 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
         error: saveError,
       },
       {
-        title: "Cancel edit",
+        title: 'Cancel edit',
         executer: () => {
-          onCancelEditClick(); 
+          onCancelEditClick();
         },
         icon: <CloseOutlined />,
-        isVisible: /*!autoSave &&*/ (allowEdit && mode === 'update' && allowChangeMode)
+        isVisible: /*!autoSave &&*/ allowEdit && mode === 'update' && allowChangeMode,
       },
       {
-        title: "Reset",
-        executer: () => { 
-          onCancelEditClick(); 
+        title: 'Reset',
+        executer: () => {
+          onCancelEditClick();
         },
         icon: <CloseOutlined />,
-        isVisible: /*!autoSave &&*/ (isNewObject || allowEdit && mode === 'update' && !allowChangeMode)
+        isVisible: /*!autoSave &&*/ isNewObject || (allowEdit && mode === 'update' && !allowChangeMode),
       },
       {
-        title: "Delete",
+        title: 'Delete',
         confirmationText: 'Are you sure want to delete this item?',
         executer: onDeleteClick,
         icon: <DeleteOutlined />,
-        isVisible: allowDelete && (mode === 'read' || mode === 'update' && !allowChangeMode),
+        isVisible: allowDelete && (mode === 'read' || (mode === 'update' && !allowChangeMode)),
         loading: isDeleting,
         error: deletingError,
       },
     ];
-    return allButtons.filter(b => b.isVisible);
-  }, [isNewObject, allowDelete, allowEdit, mode, performCreate, allowChangeMode, autoSave, isSaving, saveError, isDeleting, deletingError]);
+    return allButtons.filter((b) => b.isVisible);
+  }, [
+    isNewObject,
+    allowDelete,
+    allowEdit,
+    mode,
+    performCreate,
+    allowChangeMode,
+    autoSave,
+    isSaving,
+    saveError,
+    isDeleting,
+    deletingError,
+  ]);
 
   return (
     <div style={{ width: '100%', textAlign: 'center' }}>
-      {buttons.map((btn, idx) => (<ActionButton {...btn} key={idx} />))}
+      {buttons.map((btn, idx) => (
+        <ActionButton {...btn} key={idx} />
+      ))}
     </div>
   );
 };

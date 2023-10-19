@@ -1,94 +1,70 @@
 import { Modal, Skeleton } from 'antd';
+import { useDataContext } from 'providers/dataContextProvider/index';
 import React, { FC } from 'react';
-import { useDeepCompareEffect } from 'react-use';
-import { FormMode, SubFormProvider, useAppConfigurator, useForm } from '../../../../providers';
+import { useAppConfigurator } from '../../../../providers';
 import { IFormMarkupResponse } from '../../../../providers/form/api';
 import { ConfigurationItemVersionStatusMap } from '../../../../utils/configurationFramework/models';
-import { GHOST_PAYLOAD_KEY } from '../../../../utils/form';
 import FormInfo from '../../../configurableForm/formInfo';
 import Show from '../../../show';
 import ValidationErrors from '../../../validationErrors';
 import SubForm from '../subForm/subForm';
-import { IChildEntitiesTagGroupProps, IChildEntitiesTagGroupSelectOptions } from './models';
-import { formatOptions, getChildEntitiesFormInfo } from './utils';
+import { IChildEntitiesTagGroupProps } from './models';
 
 interface IProps extends IChildEntitiesTagGroupProps {
-  data?: IFormMarkupResponse['formConfiguration'];
+  formInfo?: IFormMarkupResponse['formConfiguration'];
   error: IFormMarkupResponse['error'] | any;
-  formMode?: FormMode;
-  initialValues?: IChildEntitiesTagGroupSelectOptions;
-  labelExecutor: Function;
-  labelKeys: string[];
+  readOnly?: boolean;
   loading: boolean;
   open: boolean;
-  onSetData: Function;
   onToggle: Function;
+  onChange: (data: any) => void;
 }
 
 const ChildEntitiesTagGroupModal: FC<IProps> = ({
-  data,
+  formInfo,
   error,
-  formMode,
-  initialValues,
-  labelExecutor,
-  labelKeys,
+  readOnly,
   loading,
   modalTitle: title,
   modalWidth: width = '60%',
-  propertyName,
   open,
-  onSetData,
   onToggle,
+  onChange
 }) => {
-  const { formData, form } = useForm();
-
   const { formInfoBlockVisible } = useAppConfigurator();
-
-  useDeepCompareEffect(() => {
-    if (open && initialValues?.metadata) {
-      form.setFieldsValue({ [mutatedName]: initialValues?.metadata });
-    }
-  }, [open, initialValues?.metadata]);
+  const context = useDataContext();
 
   const onOk = () => {
-    onSetData(formatOptions(formData?.[mutatedName], labelExecutor, labelKeys, initialValues));
-    onCancel();
+    onChange(context.getData());
+    onToggle(false);
   };
 
   const onCancel = () => {
     onToggle(false);
-    form.setFieldsValue({ [mutatedName]: undefined });
   };
 
-  const mutatedName = `${GHOST_PAYLOAD_KEY}_${propertyName}`;
-  const markup = {
-    components: data?.markup,
-    formSettings: data?.settings,
-  };
-
-  const showFormInfo = !!data && formInfoBlockVisible && !!ConfigurationItemVersionStatusMap?.[data?.versionStatus];
+  const showFormInfo = !!formInfo && formInfoBlockVisible && !!ConfigurationItemVersionStatusMap?.[formInfo?.versionStatus];
 
   return (
-    <Modal
-      open={open}
-      onOk={onOk}
-      onCancel={onCancel}
-      title={title}
-      width={width}
-      okButtonProps={{ disabled: formMode === 'readonly' }}
-    >
-      <Skeleton loading={loading}>
-        <Show when={showFormInfo}>
-          <FormInfo {...getChildEntitiesFormInfo(data)} />
-        </Show>
+        <Modal
+          open={open}
+          onOk={onOk}
+          onCancel={onCancel}
+          title={title}
+          width={width}
+          okButtonProps={{ disabled: readOnly }}
+        >
+          Shurik!
+          <Skeleton loading={loading}>
+            <Show when={showFormInfo}>
+              <FormInfo {...formInfo} />
+            </Show>
 
-        <ValidationErrors error={error} />
+            <ValidationErrors error={error} />
 
-        <SubFormProvider propertyName={mutatedName} markup={markup} properties={[]} defaultValue={initialValues?.metadata}>
-          <SubForm readOnly={formMode === 'readonly'} />
-        </SubFormProvider>
-      </Skeleton>
-    </Modal>
+              <SubForm readOnly={readOnly} />
+          </Skeleton>
+        </Modal>
   );
 };
 

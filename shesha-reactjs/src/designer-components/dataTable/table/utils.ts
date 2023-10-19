@@ -1,10 +1,10 @@
 import { nanoid } from 'nanoid/non-secure';
 import { GenericDictionary } from '../../../providers';
 import { IExecuteActionPayload } from '../../../providers/configurableActionsDispatcher/contexts';
+import { IConfigurableColumnsProps } from '../../../providers/datatableColumnsConfigurator/models';
 import { IShowModalActionArguments } from '../../../providers/dynamicModal/configurable-actions/show-dialog-arguments';
+import { IExpressionExecuterArguments, executeScriptSync } from '../../../utils/publicUtils';
 import { ITableComponentProps } from './models';
-import { IConfigurableColumnsProps } from 'providers/datatableColumnsConfigurator/models';
-import { IExpressionExecuterArguments, executeScriptSync } from 'utils/publicUtils';
 
 const NEW_KEY = ['{{NEW_KEY}}', '{{GEN_KEY}}'];
 

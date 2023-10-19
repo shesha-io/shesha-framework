@@ -8,7 +8,7 @@ import { validateConfigurableComponentSettings } from '../../../../formDesignerU
 import { IMarkdownProps } from './interfaces';
 import Markdown from './markdown';
 import ConfigurableFormItem from '../formItem';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

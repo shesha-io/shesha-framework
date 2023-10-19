@@ -6,13 +6,13 @@ import Show from '../../../show';
 import { AutocompleteRaw } from '../../../autocomplete';
 import FormAutocomplete from '../../../formAutocomplete';
 import { ISettingsFormFactoryArgs } from 'interfaces';
-import SettingsForm, { useSettingsForm } from 'designer-components/_settings/settingsForm';
+import SettingsForm, { useSettingsForm } from '../../../../designer-components/_settings/settingsForm';
 import { useFormDesigner } from 'providers/formDesigner';
 import { useForm } from 'providers';
 import { ISubFormComponentProps } from '.';
-import SettingsCollapsiblePanel from 'designer-components/_settings/settingsCollapsiblePanel';
-import { ContextPropertyAutocomplete } from 'designer-components/contextPropertyAutocomplete';
-import SettingsFormItem from 'designer-components/_settings/settingsFormItem';
+import SettingsCollapsiblePanel from '../../../../designer-components/_settings/settingsCollapsiblePanel';
+import { ContextPropertyAutocomplete } from '../../../../designer-components/contextPropertyAutocomplete';
+import SettingsFormItem from '../../../../designer-components/_settings/settingsFormItem';
 
 const Option = Select.Option;
 
@@ -165,8 +165,6 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
                       mode="inline"
                       setOptions={{ minLines: 15, maxLines: 500, fixedWidthGutter: true }}
                       propertyName="properties"
-                      type={''}
-                      id={''}
                       value={typeof value === 'string' ? value : value?.join(' ')}
                       onChange={(val) => {
                         onValuesChange({properties: val});
@@ -189,8 +187,6 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
                 mode="dialog"
                 setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
                 propertyName="getUrl"
-                type={''}
-                id={''}
                 label="Query Params"
                 description="The code that returns the query parameters to be used to fetch the data. Ideally this should be a function that returns an object with the entity id"
                 exposedVariables={[
@@ -239,8 +235,6 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
                   mode="dialog"
                   setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
                   propertyName="getUrl"
-                  type={''}
-                  id={''}
                   value={value}
                   onChange={(val) => {
                     onValuesChange({getUrl: val});
@@ -283,8 +277,6 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
                 setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
                 propertyName="postUrl"
                 label="POST Url"
-                type={''}
-                id={''}
                 description="The API url that will be used to update data. Write the code that returns the string"
                 exposedVariables={[
                   {
@@ -320,8 +312,6 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
                 setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
                 propertyName="putUrl"
                 label="PUT Url"
-                type={''}
-                id={''}
                 description="The API url that will be used to update data. Write the code that returns the string"
                 exposedVariables={[
                   {
@@ -361,8 +351,6 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           propertyName="beforeGet"
           label="On Submit"
-          type={''}
-          id={''}
           description="Triggered before retrieving the sub-form object from the back-end"
           exposedVariables={[
             {
@@ -405,8 +393,6 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           propertyName="onCreated"
           label="On Created"
-          type={''}
-          id={''}
           description="Triggered after successfully creating a new sub-form object in the back-end"
           exposedVariables={[
             {
@@ -454,8 +440,6 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           propertyName="onUpdated"
           label="On Updated"
-          type={''}
-          id={''}
           description="Triggered after successfully updating the sub-form object in the back-end"
           exposedVariables={[
             {
@@ -509,8 +493,6 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
           label="Style"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           propertyName="style"
-          type={''}
-          id={''}
           description="CSS Style"
           exposedVariables={[
             {

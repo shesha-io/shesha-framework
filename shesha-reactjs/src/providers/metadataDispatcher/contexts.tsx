@@ -59,8 +59,7 @@ export interface IMetadataProviderRegistration {
 }
 
 /** initial state */
-export const METADATA_DISPATCHER_CONTEXT_INITIAL_STATE: IMetadataDispatcherStateContext = {
-};
+export const METADATA_DISPATCHER_CONTEXT_INITIAL_STATE: IMetadataDispatcherStateContext = {};
 
 export const MetadataDispatcherStateContext = createContext<IMetadataDispatcherStateContext>({...METADATA_DISPATCHER_CONTEXT_INITIAL_STATE});
 

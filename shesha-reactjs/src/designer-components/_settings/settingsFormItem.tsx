@@ -4,8 +4,9 @@ import SettingsControl, { SettingsControlChildrenType } from './settingsControl'
 import { useSettingsForm } from './settingsForm';
 import { useSettingsPanel } from './settingsCollapsiblePanel';
 import { getPropertySettingsFromData } from './utils';
-import { ConfigurableFormItem, IConfigurableFormItemProps, PropertySettingMode } from 'index';
 import './styles/index.less';
+import { ConfigurableFormItem, IConfigurableFormItemProps } from 'components';
+import { PropertySettingMode } from 'providers';
 
 interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps, 'model'> {
     name?: string;
@@ -63,7 +64,6 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
     const valuePropName = props.valuePropName ?? 'value';
     const children = props.children as ReactElement;
     return (
-        //<Form.Item {...props} label={props.label} valuePropName='value' >
         <ConfigurableFormItem 
             model={{ 
                 propertyName: props.name,

@@ -1,3 +1,6 @@
+import { handleActions } from 'redux-actions';
+import { getFilterOptions } from '../../components/columnItemFilter';
+import flagsReducer from '../utils/flagsReducer';
 import {
   DATA_TABLE_CONTEXT_INITIAL_STATE,
   DEFAULT_PAGE_SIZE_OPTIONS,
@@ -11,10 +14,10 @@ import {
   IFetchColumnsSuccessSuccessPayload,
   IFetchGroupingColumnsSuccessPayload,
   IRegisterConfigurableColumnsPayload,
+  ISetHiddenFilterActionPayload,
   ISetPredefinedFiltersPayload,
   ISetRowDataPayload,
 } from './actions';
-import flagsReducer from '../utils/flagsReducer';
 import {
   DataFetchingMode,
   IColumnSorting,
@@ -24,8 +27,6 @@ import {
   ITableDataInternalResponse,
   ITableFilter,
 } from './interfaces';
-import { handleActions } from 'redux-actions';
-import { getFilterOptions } from '../../components/columnItemFilter';
 import { getStandardSorting, getTableDataColumn, getTableDataColumns, isStandardSortingUsed, prepareColumn } from './utils';
 import { Row } from 'react-table';
 import { ProperyDataType } from 'interfaces/metadata';
@@ -249,15 +250,16 @@ const reducer = handleActions<IDataTableStateContext, any>(
       } = action;
 
       const cols = configurableColumns
-        .map<ITableColumn>(col => prepareColumn(col, columns, userConfig))
-        .filter(c => c !== null);
+        .map<ITableColumn>((col) => prepareColumn(col, columns, userConfig))
+        .filter((c) => c !== null);
 
       const dataCols = getTableDataColumns(cols);
       const standardSorting = getStandardSorting(dataCols, userConfig);
 
-      const userFilters = userConfig?.selectedFilterIds?.length > 0 && state.predefinedFilters?.length > 0
-        ? userConfig?.selectedFilterIds?.filter(x => {
-          return state.predefinedFilters?.find(f => {
+      const userFilters =
+        userConfig?.selectedFilterIds?.length > 0 && state.predefinedFilters?.length > 0
+          ? userConfig?.selectedFilterIds?.filter((x) => {
+              return state.predefinedFilters?.find((f) => {
             return f.id === x;
           });
         }) ?? []
@@ -291,8 +293,8 @@ const reducer = handleActions<IDataTableStateContext, any>(
       const { payload: appliedFiltersColumnIds } = action;
 
       const currentFilter = getDirtyFilter(state);
-      const filter = appliedFiltersColumnIds.map<ITableFilter>(id => {
-        const existingFilter = currentFilter.find(f => f.columnId === id);
+      const filter = appliedFiltersColumnIds.map<ITableFilter>((id) => {
+        const existingFilter = currentFilter.find((f) => f.columnId === id);
         if (existingFilter) return existingFilter;
 
         const column = getTableDataColumn(state.columns, id);
@@ -341,7 +343,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
       const currentFilter = getDirtyFilter(state);
 
-      const filter = currentFilter.map<ITableFilter>(f => ({
+      const filter = currentFilter.map<ITableFilter>((f) => ({
         ...f,
         filterOption: f.columnId === filterColumnId ? filterOptionValue : f.filterOption,
       }));
@@ -362,7 +364,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
       const currentFilter = getDirtyFilter(state);
 
-      const filter = currentFilter.map<ITableFilter>(f => ({
+      const filter = currentFilter.map<ITableFilter>((f) => ({
         ...f,
         filter: f.columnId === filterColumnId ? filterValue : f.filter,
       }));
@@ -379,15 +381,15 @@ const reducer = handleActions<IDataTableStateContext, any>(
     ) => {
       const { predefinedFilters, userConfig } = action.payload;
 
-      const uc = userConfig?.selectedFilterIds?.filter(x => {
-        return predefinedFilters?.find(f => {
+      const uc = userConfig?.selectedFilterIds?.filter((x) => {
+        return predefinedFilters?.find((f) => {
           return f.id === x;
         });
       });
 
       const selectedStoredFilterIds =
-        (!Boolean(state.selectedStoredFilterIds) || state.selectedStoredFilterIds.length === 0)
-          && predefinedFilters?.length > 0
+        (!Boolean(state.selectedStoredFilterIds) || state.selectedStoredFilterIds.length === 0) &&
+        predefinedFilters?.length > 0
           ? Boolean(uc) && uc.length > 0
             ? uc
             : [predefinedFilters[0].id]
@@ -396,7 +398,21 @@ const reducer = handleActions<IDataTableStateContext, any>(
       return {
         ...state,
         predefinedFilters,
-        selectedStoredFilterIds
+        selectedStoredFilterIds,
+      };
+    },
+
+    [DataTableActionEnums.SetHiddenFilter]: (
+      state: IDataTableStateContext,
+      action: ReduxActions.Action<ISetHiddenFilterActionPayload>
+    ) => {
+      const { filter, owner } = action.payload;
+      
+      const hiddenFilters = {...state.hiddenFilters, [owner]: filter};
+
+      return {
+        ...state,
+        hiddenFilters: hiddenFilters,
       };
     },
 
@@ -445,7 +461,9 @@ const reducer = handleActions<IDataTableStateContext, any>(
       state: IDataTableStateContext,
       action: ReduxActions.Action<ISetRowDataPayload>
     ) => {
-      const { payload: { rowData, rowIndex } } = action;
+      const {
+        payload: { rowData, rowIndex },
+      } = action;
       const { tableData } = state;
 
       const newData = [...tableData];

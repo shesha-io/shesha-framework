@@ -1,48 +1,48 @@
-import React, { FC, useContext, PropsWithChildren, useEffect } from 'react';
-import formReducer from './reducer';
+import React, { FC, PropsWithChildren, useContext, useEffect } from 'react';
+import { FormUpdateMarkupInput, formConfigurationUpdateMarkup } from '../../apis/formConfiguration';
+import useThunkReducer from '../../hooks/thunkReducer';
+import { useAppConfigurator, useSheshaApplication } from '../../providers';
+import { useConfigurationItemsLoader } from '../configurationItemsLoader';
 import {
+  DEFAULT_FORM_SETTINGS,
+  FormIdentifier,
+  FormMarkupWithSettings,
+  IFormSettings,
+  IPersistedFormProps,
+} from '../form/models';
+import { getFlagSetters } from '../utils/flagsSetters';
+import {
+  loadErrorAction,
+  loadRequestAction,
+  loadSuccessAction,
+  saveErrorAction,
+  saveRequestAction,
+  saveSuccessAction,
+  updateFormSettingsAction,
+} from './actions';
+import {
+  FORM_PERSISTER_CONTEXT_INITIAL_STATE,
   FormPersisterActionsContext,
   FormPersisterStateConsumer,
   FormPersisterStateContext,
-  FORM_PERSISTER_CONTEXT_INITIAL_STATE,
   IFormPersisterActionsContext,
   IFormPersisterStateContext,
   ILoadFormPayload,
-  // DEFAULT_FORM_SETTINGS,
 } from './contexts';
-import { getFlagSetters } from '../utils/flagsSetters';
-import {
-  loadRequestAction,
-  loadSuccessAction,
-  loadErrorAction,
-  saveRequestAction,
-  saveSuccessAction,
-  saveErrorAction,
-  updateFormSettingsAction,
-  /* NEW_ACTION_IMPORT_GOES_HERE */
-} from './actions';
-import { FormUpdateMarkupInput, formConfigurationUpdateMarkup } from 'apis/formConfiguration';
-import useThunkReducer from 'hooks/thunkReducer';
-import { DEFAULT_FORM_SETTINGS, FormIdentifier, FormMarkupWithSettings, IFormSettings, IPersistedFormProps } from '../form/models';
-import { useConfigurationItemsLoader } from '../configurationItemsLoader';
-import { useAppConfigurator, useSheshaApplication } from 'providers';
+import formReducer from './reducer';
 
 export interface IFormProviderProps {
   formId: FormIdentifier;
   skipCache?: boolean;
 }
 
-const FormPersisterProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
-  children,
-  formId,
-  skipCache = false,
-}) => {
+const FormPersisterProvider: FC<PropsWithChildren<IFormProviderProps>> = ({ children, formId, skipCache = false }) => {
   const initial: IFormPersisterStateContext = {
     ...FORM_PERSISTER_CONTEXT_INITIAL_STATE,
     formId: formId,
     skipCache: skipCache,
   };
-  
+
   const [state, dispatch] = useThunkReducer(formReducer, initial);
 
   const { getForm, clearFormCache } = useConfigurationItemsLoader();
@@ -53,7 +53,7 @@ const FormPersisterProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     if (formId) {
       dispatch(loadRequestAction({ formId }));
       getForm({ formId, configurationItemMode: configurationItemMode, skipCache: payload.skipCache })
-        .then(form => {
+        .then((form) => {
           const formContent: IPersistedFormProps = {
             id: form.id,
             name: form.name,
@@ -66,13 +66,13 @@ const FormPersisterProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
             versionStatus: form.versionStatus,
             isLastVersion: form.isLastVersion,
           };
-  
+
           // parse json content
           dispatch((dispatchThunk, _getState) => {
             dispatchThunk(loadSuccessAction(formContent));
           });
         })
-        .catch(e => {
+        .catch((e) => {
           dispatch(loadErrorAction(e));
         });
     }
@@ -101,14 +101,14 @@ const FormPersisterProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     };
 
     await formConfigurationUpdateMarkup(dto, { base: backendUrl, headers: httpHeaders })
-      .then(_response => {
+      .then((_response) => {
         // clear cache
         clearFormCache({ formId: state.formId });
 
         dispatch(saveSuccessAction());
         return Promise.resolve();
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch(saveErrorAction(error));
         return Promise.reject();
       });
@@ -167,4 +167,4 @@ function useFormPersister(require: boolean = true) {
     : undefined;
 }
 
-export { FormPersisterProvider, FormPersisterStateConsumer as FormPersisterConsumer, useFormPersister };
+export { FormPersisterStateConsumer as FormPersisterConsumer, FormPersisterProvider, useFormPersister };

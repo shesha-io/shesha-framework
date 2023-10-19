@@ -152,7 +152,7 @@ namespace Shesha.Services.Settings
 
         private async Task<SettingConfiguration> GetSettingConfiguration(SettingDefinition setting) 
         {
-            return await GetSettingConfigurationAsync(new ConfigurationItemIdentifier() { Name = setting.Name, Module = setting .ModuleName });
+            return await GetSettingConfigurationAsync(new SettingConfigurationIdentifier(setting.ModuleName, setting.Name));
         }
 
         private async Task<TResult> WithUnitOfWorkAsync<TResult>(Func<Task<TResult>> action)

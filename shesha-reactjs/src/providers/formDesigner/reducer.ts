@@ -1,26 +1,16 @@
+import { nanoid } from 'nanoid/non-secure';
+import { handleActions } from 'redux-actions';
+import { IFormValidationErrors, IToolboxComponentGroup } from '../../interfaces';
+import { camelcaseDotNotation } from '../../utils/string';
+import undoable from '../../utils/undoable';
 import {
-  FORM_DESIGNER_CONTEXT_INITIAL_STATE,
-  IFormDesignerStateContext,
-  IComponentAddPayload,
-  IComponentDeletePayload,
-  IComponentUpdatePayload,
-  IUpdateChildComponentsPayload,
-  ISetSelectedComponentPayload,
-  IComponentUpdateSettingsValidationPayload,
-  IAddDataPropertyPayload,
-  IHasComponentGroups,
-  IComponentDuplicatePayload,
-} from './contexts';
-import {
+  IComponentRelations,
+  IComponentsDictionary,
   IConfigurableFormComponent,
   IFlatComponentsStructure,
-  IComponentRelations,
   IFormSettings,
-  IComponentsDictionary,
   ROOT_COMPONENT_KEY,
 } from '../form/models';
-import { FormActionEnums } from './actions';
-import { handleActions } from 'redux-actions';
 import {
   cloneComponents,
   createComponentModelForDataProperty,
@@ -28,11 +18,21 @@ import {
   processRecursive,
   upgradeComponent,
 } from '../form/utils';
-import { camelcaseDotNotation } from '../../utils/string';
-import { IFormValidationErrors, IToolboxComponentGroup } from '../../interfaces';
 import { IDataSource } from '../formDesigner/models';
-import { nanoid } from 'nanoid/non-secure';
-import undoable from 'utils/undoable';
+import { FormActionEnums } from './actions';
+import {
+  FORM_DESIGNER_CONTEXT_INITIAL_STATE,
+  IAddDataPropertyPayload,
+  IComponentAddPayload,
+  IComponentDeletePayload,
+  IComponentDuplicatePayload,
+  IComponentUpdatePayload,
+  IComponentUpdateSettingsValidationPayload,
+  IFormDesignerStateContext,
+  IHasComponentGroups,
+  ISetSelectedComponentPayload,
+  IUpdateChildComponentsPayload,
+} from './contexts';
 
 const addComponentToFlatStructure = (
   structure: IFlatComponentsStructure & IHasComponentGroups,
@@ -246,7 +246,6 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
         // handle nested components by id of the parent
         const srcNestedComponents = state.componentRelations[component.id];
         if (srcNestedComponents) {
-
           nestedRelations[clone.id] = [];
           const relations = nestedRelations[clone.id];
 
@@ -278,7 +277,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
             };
 
             clone[cntName] = Array.isArray(srcContainer)
-              ? srcContainer.map(c => cloneChild(c))
+              ? srcContainer.map((c) => cloneChild(c))
               : cloneChild(srcContainer);
           }
         });
@@ -547,7 +546,7 @@ const undoableActions: string[] = [
   FormActionEnums.EndDragging,
 ];
 const undoableReducer = undoable(reducer, {
-  includeAction: action => (undoableActions.indexOf(action) > -1),
+  includeAction: (action) => undoableActions.indexOf(action) > -1,
   limit: 20, // set a limit for the size of the history
 });
 

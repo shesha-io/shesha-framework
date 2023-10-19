@@ -9,7 +9,7 @@ import ShaIcon from '../../../shaIcon';
 import { useFormData } from '../../../../providers';
 import _ from 'lodash';
 import ConfigurableFormItem from '../formItem';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

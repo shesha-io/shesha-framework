@@ -1,24 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Abp.Authorization;
 using Abp.Authorization.Users;
 using Abp.Domain.Repositories;
 using Abp.MultiTenancy;
 using Abp.Runtime.Security;
+using Abp.Runtime.Validation;
 using Abp.UI;
+using DocumentFormat.OpenXml.EMMA;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NHibernate.Linq;
 using Shesha.Authentication.External;
 using Shesha.Authentication.JwtBearer;
+using Shesha.Authorization.Models;
 using Shesha.Authorization.Users;
+using Shesha.Configuration;
 using Shesha.Controllers;
 using Shesha.Domain;
+using Shesha.Domain.Enums;
 using Shesha.Models.TokenAuth;
 using Shesha.MultiTenancy;
+using Shesha.Otp;
+using Shesha.Otp.Dto;
 
 namespace Shesha.Authorization
 {
@@ -68,9 +78,14 @@ namespace Shesha.Authorization
                 GetTenancyNameOrNull()
             );
 
+            return await GetAuthenticateResultAsync(loginResult, model.IMEI);
+        }
+
+        private async Task<AuthenticateResultModel> GetAuthenticateResultAsync(ShaLoginResult<User> loginResult, string imei) 
+        {
             var accessToken = CreateAccessToken(CreateJwtClaims(loginResult.Identity));
 
-            var expireInSeconds = (int) _configuration.Expiration.TotalSeconds;
+            var expireInSeconds = (int)_configuration.Expiration.TotalSeconds;
 
             var personId = loginResult?.User != null
                 ? _personRepository.GetAll()
@@ -78,8 +93,8 @@ namespace Shesha.Authorization
                     .OrderBy(p => p.CreationTime)
                     .Select(p => p.Id).FirstOrDefault()
                 : (Guid?)null;
-            var device = !string.IsNullOrWhiteSpace(model.IMEI)
-                ? await _mobileDeviceRepository.GetAll().FirstOrDefaultAsync(e => e.IMEI == model.IMEI.Trim())
+            var device = !string.IsNullOrWhiteSpace(imei)
+                ? await _mobileDeviceRepository.GetAll().FirstOrDefaultAsync(e => e.IMEI == imei.Trim())
                 : null;
 
             return new AuthenticateResultModel
@@ -99,6 +114,50 @@ namespace Shesha.Authorization
         {
             return true;
         }
+
+        #region OTP Login
+
+        /// <summary>
+        /// Send authentication one-time pin to the user with a specified <paramref name="mobileNo"/>
+        /// </summary>
+        [AbpAllowAnonymous]
+        [HttpPost]
+        public async Task<OtpAuthenticateSendPinResponse> OtpAuthenticateSendPin(string mobileNo)
+        {
+            var persons = await _personRepository.GetAll().Where(u => u.MobileNumber1 == mobileNo).ToListAsync();
+            if (!persons.Any())
+                throw new UserFriendlyException("User with the specified mobile number not found");
+            if (persons.Count() > 1)
+                throw new UserFriendlyException("Found more that one user with the specified mobile number");
+
+            var person = persons.First();
+
+            if (person.User == null)
+                throw new UserFriendlyException("User with the specified mobile has no internal account");
+
+            var sendPinResponse = await _logInManager.SendLoginOtpAsync(person.User, mobileNo);
+
+            return new OtpAuthenticateSendPinResponse { 
+                OperationId = sendPinResponse.OperationId
+            };
+        }
+
+        [HttpPost]
+        public async Task<AuthenticateResultModel> OtpAuthenticate([FromBody] OtpAuthenticateModel model)
+        {
+            var tenancyName = GetTenancyNameOrNull();
+            var loginResult = await _logInManager.LoginViaOtpAsync(model.MobileNo, model.OperationId, model.Code, model.IMEI, tenancyName);
+
+            switch (loginResult.Result)
+            {
+                case ShaLoginResultType.Success:
+                    return await GetAuthenticateResultAsync(loginResult, model.IMEI);
+                default:
+                    throw _shaLoginResultTypeHelper.CreateExceptionForFailedLoginAttempt(loginResult.Result, model.MobileNo, tenancyName);
+            }
+        }
+
+        #endregion
 
         [HttpGet]
         public List<ExternalLoginProviderInfoModel> GetExternalAuthenticationProviders()
@@ -201,6 +260,7 @@ namespace Shesha.Authorization
             return userInfo;
         }
 
+        [DebuggerStepThrough]
         private string GetTenancyNameOrNull()
         {
             if (!AbpSession.TenantId.HasValue)
@@ -211,7 +271,7 @@ namespace Shesha.Authorization
             return _tenantCache.GetOrNull(AbpSession.TenantId.Value)?.TenancyName;
         }
 
-        private async Task<ShaLoginResult<Tenant, User>> GetLoginResultAsync(string usernameOrEmailAddress, string password, string imei, string tenancyName)
+        private async Task<ShaLoginResult<User>> GetLoginResultAsync(string usernameOrEmailAddress, string password, string imei, string tenancyName)
         {
             var loginResult = await _logInManager.LoginAsync(usernameOrEmailAddress, password, imei, tenancyName);
 

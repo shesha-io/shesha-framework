@@ -1,5 +1,5 @@
 import { LockOutlined } from '@ant-design/icons';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 import React, { Fragment } from 'react';
 import { useForm } from '../../../..';
 import { IToolboxComponent } from '../../../../interfaces';

@@ -6,7 +6,7 @@ import settingsFormJson from './settingsForm.json';
 import { getString, getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import React from 'react';
 import { useFormData } from '../../../../providers';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 
 export interface IImageProps extends IConfigurableFormComponent, IFormItem {
   height: number | string;

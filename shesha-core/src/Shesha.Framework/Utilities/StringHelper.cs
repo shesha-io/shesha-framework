@@ -895,6 +895,25 @@ namespace Shesha.Utilities
             return result;
         }
 
+        /// <summary>
+        /// Wrap <paramref name="html"/> into the html and body tags if not wrapped
+        /// </summary>
+        /// <param name="html"></param>
+        /// <returns></returns>
+        public static string WrapAsHtmlDocument(this string html)
+        {
+            if (html == null)
+                return html;
+
+            if (!Regex.IsMatch(html, @"\</body\>"))
+                html = "<body>" + html + "</body>";
+
+            if (!Regex.IsMatch(html, @"\</html\>"))
+                html = "<html>" + html + "</html>";
+
+            return html;
+        }
+
         private static string HtmlTrim(string html, params char[] trimChars)
         {
             if (!html?.Trim().StartsWith("<") ?? true)
@@ -946,6 +965,27 @@ namespace Shesha.Utilities
             return !string.IsNullOrWhiteSpace(value)
                 ? "\"" + value + "\""
                 : value;
+        }
+
+        /// <summary>
+        /// Converts string to the snake_case format
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static string ToSnakeCase(this string input)
+        {
+            if (string.IsNullOrEmpty(input)) { return input; }
+
+            return Regex.Replace(Regex.Replace(input, "(.)([A-Z][a-z]+)", "$1_$2"), "([a-z0-9])([A-Z])", "$1_$2").ToLower().RemoveDoubleUndescores();
+        }
+
+        /// <summary>
+        /// Remove multiple underacore `_` characters from string
+        /// </summary>
+        /// <returns></returns>
+        public static string RemoveDoubleUndescores(this string input)
+        {
+            return Regex.Replace(input, @"[_]{2,}", "_");
         }
     }
 }

@@ -1,4 +1,4 @@
-import { CONFIG_KEY } from "shesha-constants";
+import { CONFIG_KEY } from '../shesha-constants';
 
 export interface IAppConfigManager {
   readonly baseUrl?: string;

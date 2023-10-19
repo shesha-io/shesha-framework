@@ -1,9 +1,8 @@
 import { UnorderedListOutlined } from '@ant-design/icons';
-import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
+import { migratePropertyName, migrateCustomFunctions } from '../../../../designer-components/_common-migrations/migrateSettings';
 import React from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
 import { DataTypes } from '../../../../interfaces/dataTypes';
-import { useForm } from '../../../../providers';
 import ConfigurableFormItem from '../formItem';
 import ChildEntitiesTagGroupControl from './control';
 import { IChildEntitiesTagGroupProps } from './models';
@@ -15,16 +14,12 @@ const ChildEntitiesTagGroup: IToolboxComponent<IChildEntitiesTagGroupProps> = {
   icon: <UnorderedListOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.array,
   factory: (model: IChildEntitiesTagGroupProps) => {
-    const { isComponentHidden, formMode } = useForm();
-
-    const isHidden = isComponentHidden(model);
-
-    if (isHidden) return null;
+    if (model.hidden) return null;
 
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) =>
-          <ChildEntitiesTagGroupControl model={model} formMode={formMode} value={value} onChange={onChange} />
+          <ChildEntitiesTagGroupControl model={model} value={value} onChange={onChange} />
         }
       </ConfigurableFormItem>
     );

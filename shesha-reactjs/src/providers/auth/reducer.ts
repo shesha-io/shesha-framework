@@ -1,26 +1,22 @@
 import { handleActions } from 'redux-actions';
-import { UserLoginInfoDto } from 'apis/session';
-import { ResetPasswordVerifyOtpResponse } from 'apis/user';
-import { IErrorInfo } from 'interfaces/errorInfo';
+import { UserLoginInfoDto } from '../../apis/session';
+import { ResetPasswordVerifyOtpResponse } from '../../apis/user';
+import { IErrorInfo } from '../../interfaces/errorInfo';
+import { getHttpHeaders } from '../../utils/auth';
+import flagsReducer from '../utils/flagsReducer';
 import { AuthActionEnums } from './actions';
 import { AUTH_CONTEXT_INITIAL_STATE, IAuthStateContext } from './contexts';
-import flagsReducer from '../utils/flagsReducer';
-import { getHttpHeaders } from 'utils/auth';
 
 const baseAuthReducer = handleActions<IAuthStateContext, any>(
   {
-    [AuthActionEnums.LoginUserRequest]: (
-      state: IAuthStateContext,
-    ) => {
+    [AuthActionEnums.LoginUserRequest]: (state: IAuthStateContext) => {
       return {
         ...state,
         errorInfo: null,
       };
     },
 
-    [AuthActionEnums.LoginUserSuccess]: (
-      state: IAuthStateContext,
-    ) => {
+    [AuthActionEnums.LoginUserSuccess]: (state: IAuthStateContext) => {
       return {
         ...state,
         isCheckingAuth: false,
@@ -28,10 +24,7 @@ const baseAuthReducer = handleActions<IAuthStateContext, any>(
       };
     },
 
-    [AuthActionEnums.LoginUserError]: (
-      state: IAuthStateContext,
-      action: ReduxActions.Action<IErrorInfo>
-    ) => {
+    [AuthActionEnums.LoginUserError]: (state: IAuthStateContext, action: ReduxActions.Action<IErrorInfo>) => {
       const { payload } = action;
       return { ...state, errorInfo: payload, isCheckingAuth: false };
     },
@@ -40,9 +33,7 @@ const baseAuthReducer = handleActions<IAuthStateContext, any>(
       return { ...AUTH_CONTEXT_INITIAL_STATE };
     },
 
-    [AuthActionEnums.CheckAuthAction]: (
-      state: IAuthStateContext,
-    ) => {
+    [AuthActionEnums.CheckAuthAction]: (state: IAuthStateContext) => {
       return {
         ...state,
         isCheckingAuth: true,
@@ -50,9 +41,7 @@ const baseAuthReducer = handleActions<IAuthStateContext, any>(
       };
     },
 
-    [AuthActionEnums.FetchUserDataRequest]: (
-      state: IAuthStateContext
-    ) => {
+    [AuthActionEnums.FetchUserDataRequest]: (state: IAuthStateContext) => {
       return { ...state, isFetchingUserInfo: true };
     },
 
@@ -70,10 +59,7 @@ const baseAuthReducer = handleActions<IAuthStateContext, any>(
       };
     },
 
-    [AuthActionEnums.FetchUserDataError]: (
-      state: IAuthStateContext,
-      action: ReduxActions.Action<IErrorInfo>
-    ) => {
+    [AuthActionEnums.FetchUserDataError]: (state: IAuthStateContext, action: ReduxActions.Action<IErrorInfo>) => {
       const { payload } = action;
 
       return {
@@ -82,7 +68,6 @@ const baseAuthReducer = handleActions<IAuthStateContext, any>(
         isFetchingUserInfo: false,
       };
     },
-
 
     [AuthActionEnums.VerifyOtpSuccess]: (
       state: IAuthStateContext,
@@ -93,35 +78,27 @@ const baseAuthReducer = handleActions<IAuthStateContext, any>(
       return { ...state, verifyOtpResPayload: payload };
     },
 
-    [AuthActionEnums.ResetPasswordSuccess]: (
-      state: IAuthStateContext,
-    ) => {
+    [AuthActionEnums.ResetPasswordSuccess]: (state: IAuthStateContext) => {
       return {
         ...state,
         verifyOtpResPayload: null,
       };
     },
 
-    [AuthActionEnums.SetToken]: (
-      state: IAuthStateContext,
-      action: ReduxActions.Action<string>
-    ) => {
+    [AuthActionEnums.SetToken]: (state: IAuthStateContext, action: ReduxActions.Action<string>) => {
       const { payload: token } = action;
 
-      return { 
-        ...state, 
+      return {
+        ...state,
         token,
       };
     },
 
-    [AuthActionEnums.SetIsLoggedIn]: (
-      state: IAuthStateContext,
-      action: ReduxActions.Action<boolean>
-    ) => {
+    [AuthActionEnums.SetIsLoggedIn]: (state: IAuthStateContext, action: ReduxActions.Action<boolean>) => {
       const { payload } = action;
 
-      return { 
-        ...state, 
+      return {
+        ...state,
         isLoggedIn: payload,
       };
     },
@@ -129,12 +106,9 @@ const baseAuthReducer = handleActions<IAuthStateContext, any>(
   AUTH_CONTEXT_INITIAL_STATE
 );
 
-export function authReducer(
-  incomingState: IAuthStateContext,
-  action: ReduxActions.Action<any>
-): IAuthStateContext {
+export function authReducer(incomingState: IAuthStateContext, action: ReduxActions.Action<any>): IAuthStateContext {
   const state = flagsReducer(incomingState, action);
-  
+
   // temporary solution, headers will be reviewed
   state.headers = getHttpHeaders(state.token);
 

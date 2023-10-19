@@ -1,16 +1,16 @@
 import { NumberOutlined } from '@ant-design/icons';
 import React from 'react';
+import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
+import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
 import { IToolboxComponent } from '../../interfaces';
 import { DataTypes } from '../../interfaces/dataTypes';
 import { useForm, useGlobalState, useMetaProperties } from '../../providers';
 import { FormMarkup } from '../../providers/form/models';
 import { evaluateString, validateConfigurableComponentSettings } from '../../providers/form/utils';
-import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
-import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
 import NumberFieldControl from './control';
 import { INumberFieldComponentProps } from './interfaces';
 import settingsFormJson from './settingsForm.json';
-import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
+import { migratePropertyName, migrateCustomFunctions } from '../../designer-components/_common-migrations/migrateSettings';
 import { getNumberFormat } from 'utils/string';
 import { getDataFormat } from 'utils/metadata';
 
@@ -49,7 +49,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
     );
   },
   settingsFormMarkup: settingsForm,
-  initModel: model => ({
+  initModel: (model) => ({
     ...model,
   }),
   migrator: (m) => m

@@ -14,7 +14,7 @@ import { ITextAreaComponentProps } from './interfaces';
 import { ConfigurableFormItem } from 'components';
 import ReadOnlyDisplayFormItem from 'components/readOnlyDisplayFormItem';
 import { customEventHandler } from 'components/formDesigner/components/utils';
-import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
+import { migratePropertyName, migrateCustomFunctions } from '../../designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
