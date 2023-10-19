@@ -1,14 +1,9 @@
 import React, { FC, useMemo, useRef } from 'react';
 import { CustomErrorBoundary } from '../../../components';
-import { IPropertyMetadata } from '../../../interfaces/metadata';
 import { useForm } from '../../../providers';
 import { useCrud } from '../../../providers/crudContext';
 import { ITableDataColumn } from '../../../providers/dataTable/interfaces';
-import {
-  IColumnEditorProps,
-  IFieldComponentProps,
-  standardCellComponentTypes,
-} from '../../../providers/datatableColumnsConfigurator/models';
+import { IColumnEditorProps, standardCellComponentTypes } from '../../../providers/datatableColumnsConfigurator/models';
 import { useFormDesignerComponents } from '../../../providers/form/hooks';
 import BooleanCell from './default/booleanCell';
 import DateCell from './default/dateCell';
@@ -19,7 +14,8 @@ import NumberCell from './default/numberCell';
 import ReferenceListCell from './default/referenceListCell';
 import StringCell from './default/stringCell';
 import TimeCell from './default/timeCell';
-import { IConfigurableCellProps, IDataCellProps } from './interfaces';
+import { IComponentWrapperProps, IConfigurableCellProps, IDataCellProps } from './interfaces';
+import { getInjectables } from './utils';
 
 export const DataCell = <D extends object = {}, V = number>(props: IDataCellProps<D, V>) => {
   const { mode } = useCrud();
@@ -66,13 +62,20 @@ export const CreateDataCell = (props: IConfigurableCellProps<ITableDataColumn>) 
 };
 
 const UpdateDataCell = <D extends object = {}, V = number>(props: IDataCellProps<D, V>) => {
-  const { columnConfig, propertyMeta } = props;
+  const { columnConfig, propertyMeta, value } = props;
   const customComponent = columnConfig?.editComponent;
   const componentType = customComponent?.type ?? standardCellComponentTypes.notEditable;
 
   if (componentType === standardCellComponentTypes.notEditable) return <DefaultDataDisplayCell {...props} />;
 
-  return <ComponentWrapper propertyMeta={propertyMeta} columnConfig={columnConfig} customComponent={customComponent} />;
+  return (
+    <ComponentWrapper
+      propertyMeta={propertyMeta}
+      columnConfig={columnConfig}
+      customComponent={customComponent}
+      defaultValue={value}
+    />
+  );
 };
 
 const DefaultDataDisplayCell = <D extends object = {}, V = number>(props: IDataCellProps<D, V>) => {
@@ -110,21 +113,14 @@ const DefaultDataDisplayCell = <D extends object = {}, V = number>(props: IDataC
   }
 };
 
-interface IComponentWrapperProps {
-  customComponent: IFieldComponentProps;
-  columnConfig: ITableDataColumn;
-  propertyMeta?: IPropertyMetadata;
-  defaultRow?: { [key in string]?: any };
-}
-
 const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
-  const { columnConfig, propertyMeta, customComponent, defaultRow } = props;
+  const { columnConfig, propertyMeta, customComponent } = props;
 
   const toolboxComponents = useFormDesignerComponents();
   const { form } = useForm();
 
   const component = toolboxComponents[customComponent.type];
-  const injectables = defaultRow ? { injectedTableRow: defaultRow } : {};
+  const injectables = getInjectables(props);
 
   const componentModel = useMemo(() => {
     let model: IColumnEditorProps = {

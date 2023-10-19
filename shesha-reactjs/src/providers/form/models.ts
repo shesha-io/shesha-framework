@@ -104,6 +104,7 @@ export interface IComponentVisibilityProps {
 export interface IComponentMetadata {
   /** Injectable field from the data cell */
   injectedTableRow?: { [key in string]?: any };
+  injectedDefaultValue?: any;
 }
 
 /**

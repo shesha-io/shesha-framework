@@ -1,6 +1,6 @@
 import moment, { Moment } from 'moment';
 import { IPropertyMetadata } from '../../interfaces/metadata';
-import { getPropertyMetadata } from '../../utils/date';
+import { getMoment, getPropertyMetadata } from '../../utils/date';
 import { IDateFieldProps, RangeValue } from './interfaces';
 
 export const DATE_TIME_FORMATS = {
@@ -10,6 +10,18 @@ export const DATE_TIME_FORMATS = {
   quarter: 'YYYY-\\QQ',
   month: 'YYYY-MM',
   year: 'YYYY',
+};
+
+export const getDatePickerValue = (props: IDateFieldProps, pickerFormat: string) => {
+  const { value, injectedDefaultValue } = props;
+
+  /** Used to changed value/defaultValue based on whether it's rendered on the table **/
+  if (injectedDefaultValue) {
+    return { defaultValue: getMoment(value, pickerFormat) };
+  }
+
+  /** Used to handle the value based on default date-picker implementation **/
+  return { value: getMoment(value, pickerFormat) };
 };
 
 export function disabledDate(props: IDateFieldProps, current: Moment, data: object, globalState: object) {
