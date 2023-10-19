@@ -114,8 +114,12 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     registerConfigurableColumns,
     tableData,
     selectedRow,
-    setMultiSelectedRow
+    setMultiSelectedRow,
+    requireColumns,
   } = useDataTableStore();
+
+  requireColumns(); // our component requires columns loading. it's safe to call on each render
+
   const repository = getRepository();
 
   useEffect(() => {

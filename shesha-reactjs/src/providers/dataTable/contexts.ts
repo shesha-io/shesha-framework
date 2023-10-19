@@ -11,6 +11,10 @@ import {
   ITableColumn,
   ITableFilter,
   IndexColumnFilterOption,
+  GroupingItem,
+  SortMode,
+  ColumnSorting,
+  ITableDataColumn,
 } from './interfaces';
 import { IHasModelType, IRepository } from './repository/interfaces';
 
@@ -79,6 +83,7 @@ export interface IDataTableStateContext
 
   /** table columns */
   columns?: ITableColumn[];
+  groupingColumns: ITableDataColumn[];
 
   /** Datatable data (fetched from the back-end) */
   tableData?: object[];
@@ -102,7 +107,16 @@ export interface IDataTableStateContext
   /** Quick search string */
   quickSearch?: string;
   /** Columns sorting */
-  tableSorting?: IColumnSorting[];
+  standardSorting?: IColumnSorting[];
+
+  /** Rows grouping */
+  grouping?: GroupingItem[];
+  /** Sort mode (standard or strict) */
+  sortMode?: SortMode;
+  /** Sort sorting: order by */
+  strictOrderBy?: string;
+  /** Sort sorting: sorting order */
+  strictSortOrder?: ColumnSorting;
 
   /** Available page sizes */
   pageSizeOptions?: number[];
@@ -131,7 +145,6 @@ export interface IDataTableStateContext
   //#region todo: review!
   isFetchingTableData?: boolean;
   hasFetchTableDataError?: boolean;
-  tableConfigLoaded?: boolean;
 
   properties?: string[];
 
@@ -144,12 +157,11 @@ export interface IDataTableStateContext
 
   selectedRow?: ISelectionProps;
   selectedRows?: { [key in string]: string }[];
-
 }
 
 export interface IDataTableActionsContext
   extends IFlagsSetters<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags>,
-    IPublicDataTableActions {
+  IPublicDataTableActions {
   toggleColumnVisibility?: (val: string) => void;
   setCurrentPage?: (page: number) => void;
   changePageSize?: (size: number) => void;
@@ -179,10 +191,14 @@ export interface IDataTableActionsContext
    * Register columns in the table context. Is used for configurable tables
    */
   registerConfigurableColumns: (ownerId: string, columns: IConfigurableColumnsProps[]) => void;
+  /**
+   * Call this function to indicate that your component (table/list) require columns
+   */
+  requireColumns: () => void;
 
   changeDisplayColumn: (displayColumnName: string) => void;
   changePersistedFiltersToggle: (persistSelectedFilters: boolean) => void;
-
+  
   /**
    * Get current repository of the datatable
    */
@@ -202,6 +218,7 @@ export const DATA_TABLE_CONTEXT_INITIAL_STATE: IDataTableStateContext = {
   error: {},
   actioned: {},
   columns: [],
+  groupingColumns: [],
   tableData: [],
   isFetchingTableData: false,
   hasFetchTableDataError: null,
@@ -212,8 +229,7 @@ export const DATA_TABLE_CONTEXT_INITIAL_STATE: IDataTableStateContext = {
   totalRows: null,
   totalRowsBeforeFilter: null,
   quickSearch: null,
-  tableConfigLoaded: false,
-  tableSorting: [],
+  standardSorting: [],
   tableFilter: [],
   saveFilterModalVisible: false,
   selectedIds: [],
@@ -228,7 +244,7 @@ export const DATA_TABLE_CONTEXT_INITIAL_STATE: IDataTableStateContext = {
   hiddenFilters: {},
 };
 
-export interface DataTableFullInstance extends IDataTableStateContext, IDataTableActionsContext {}
+export interface DataTableFullInstance extends IDataTableStateContext, IDataTableActionsContext { }
 
 export const DataTableStateContext = createContext<IDataTableStateContext>(DATA_TABLE_CONTEXT_INITIAL_STATE);
 

@@ -32,7 +32,6 @@ const useEntityCrudActions: DynamicItemsEvaluationHook = (args) => {
     const { metadata } = useMetadata(false) ?? {};
 
     const operations = useMemo<ButtonGroupItemProps[]>(() => {
-        console.log('LOG: calculate entity actions');
         if (!isEntityMetadata(metadata))
             return [];
 

@@ -1,5 +1,5 @@
 import { IConfigurableFormComponent } from '../../interfaces';
-import { DatatableColumnType, IActionColumnProps } from '../../providers/dataTable/interfaces';
+import { DatatableColumnType, IActionColumnProps, SortDirection } from '../../providers/dataTable/interfaces';
 
 type ColumnsItemType = 'item' | 'group';
 
@@ -32,6 +32,7 @@ export interface IConfigurableColumnsBase {
   maxWidth?: number;
   isVisible: boolean;
   permissions?: string[];
+  defaultSorting?: SortDirection;
 }
 
 /**

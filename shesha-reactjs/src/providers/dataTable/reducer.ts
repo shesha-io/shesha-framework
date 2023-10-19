@@ -12,6 +12,7 @@ import {
   IChangeFilterAction,
   IChangeFilterOptionPayload,
   IFetchColumnsSuccessSuccessPayload,
+  IFetchGroupingColumnsSuccessPayload,
   IRegisterConfigurableColumnsPayload,
   ISetHiddenFilterActionPayload,
   ISetPredefinedFiltersPayload,
@@ -22,11 +23,13 @@ import {
   IColumnSorting,
   IGetListDataPayload,
   ITableColumn,
+  ITableDataColumn,
   ITableDataInternalResponse,
   ITableFilter,
 } from './interfaces';
-import { getTableDataColumn, getTableDataColumns, prepareColumn } from './utils';
+import { getStandardSorting, getTableDataColumn, getTableDataColumns, isStandardSortingUsed, prepareColumn } from './utils';
 import { Row } from 'react-table';
+import { ProperyDataType } from 'interfaces/metadata';
 
 /** get dirty filter if exists and fallback to current filter state */
 const getDirtyFilter = (state: IDataTableStateContext): ITableFilter[] => {
@@ -43,7 +46,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
     ) => {
       const { payload } = action;
       const selectedRow = state?.selectedRow?.id === payload?.id ? null : payload;
-      return {...state, selectedRow};
+      return { ...state, selectedRow };
     },
 
     [DataTableActionEnums.SetMultiSelectedRow]: (
@@ -201,17 +204,12 @@ const reducer = handleActions<IDataTableStateContext, any>(
     ) => {
       const { payload } = action;
 
-      // const selectedStoredFilterIds = state?.selectedStoredFilterIds?.length
-      //   ? state?.selectedStoredFilterIds
-      //   : payload.selectedFilterIds ?? [];
-
       const newState: IDataTableStateContext = {
         ...state,
         isFetchingTableData: true,
-        tableSorting: payload.sorting,
+        // note: don't change standard sorting is it's not used to prevent re-renderings
+        standardSorting: isStandardSortingUsed(state) ? payload.sorting : state.standardSorting,
         currentPage: payload.currentPage,
-        //parentEntityId: payload.parentEntityId,
-        //selectedStoredFilterIds, // TODO: Review the saving of filters
       };
 
       return newState;
@@ -256,23 +254,20 @@ const reducer = handleActions<IDataTableStateContext, any>(
         .filter((c) => c !== null);
 
       const dataCols = getTableDataColumns(cols);
-      const configuredTableSorting = dataCols
-        .filter((c) => c.defaultSorting !== null && c.defaultSorting !== undefined && c.propertyName)
-        .map<IColumnSorting>((c) => ({ id: c.id, desc: c.defaultSorting === 1 }));
 
-      const tableSorting =
-        userConfig && userConfig.tableSorting && userConfig.tableSorting.length > 0
-          ? userConfig.tableSorting
-          : configuredTableSorting;
+      // use default sorting if column sorting is not configured
+      const columnSorting = getStandardSorting(dataCols, userConfig);
+      const standardSorting = columnSorting?.length > 0 ? columnSorting : [...state.standardSorting];
+      //const standardSorting = getStandardSorting(dataCols, userConfig);
 
       const userFilters =
         userConfig?.selectedFilterIds?.length > 0 && state.predefinedFilters?.length > 0
           ? userConfig?.selectedFilterIds?.filter((x) => {
               return state.predefinedFilters?.find((f) => {
-                return f.id === x;
-              });
-            }) ?? []
-          : [];
+            return f.id === x;
+          });
+        }) ?? []
+        : [];
 
       const selectedStoredFilterIds = state?.selectedStoredFilterIds?.length
         ? [...state.selectedStoredFilterIds]
@@ -291,7 +286,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
         tableFilter: userConfig?.advancedFilter,
         tableFilterDirty: userConfig?.advancedFilter,
         selectedStoredFilterIds,
-        tableSorting: tableSorting,
+        standardSorting: standardSorting,
       };
     },
 
@@ -442,7 +437,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
       return {
         ...state,
-        tableSorting: [...payload],
+        standardSorting: [...payload],
       };
     },
 
@@ -493,6 +488,46 @@ const reducer = handleActions<IDataTableStateContext, any>(
       return {
         ...state,
         dataFetchingMode: payload,
+      };
+    },
+
+    [DataTableActionEnums.FetchGroupingColumnsSuccess]: (
+      state: IDataTableStateContext,
+      action: ReduxActions.Action<IFetchGroupingColumnsSuccessPayload>
+    ) => {
+      const { payload } = action;
+
+      const columns = payload.columns
+        .map<ITableDataColumn>(column => ({
+          columnType: 'data',
+          propertyName: column.propertyName,
+
+          id: column.propertyName,
+          accessor: column.propertyName,
+          columnId: column.propertyName,
+
+          header: column.caption,
+          caption: column.caption,
+          isVisible: true,
+          show: true,
+          isFilterable: false,
+          isSortable: false,
+          allowShowHide: false,
+
+          dataType: column.dataType as ProperyDataType,
+          dataFormat: column.dataFormat,
+          entityReferenceTypeShortAlias: column.entityReferenceTypeShortAlias,
+          referenceListName: column.referenceListName,
+          referenceListModule: column.referenceListModule,
+          allowInherited: column.allowInherited,
+          metadata: column.metadata,
+        }))
+        .filter(c => c !== null);
+
+      return {
+        ...state,
+        groupingColumns: state.groupingColumns.length === 0 && columns.length === 0 ? state.groupingColumns : columns,
+        grouping: payload.grouping,
       };
     },
   },

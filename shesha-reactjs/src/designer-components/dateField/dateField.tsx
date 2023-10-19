@@ -11,7 +11,8 @@ import { ProperyDataType } from '../../interfaces/metadata';
 import { useForm, useFormData, useGlobalState, useMetaProperties, useSheshaApplication } from '../../providers';
 import { FormMarkup } from '../../providers/form/models';
 import { getStyle, validateConfigurableComponentSettings } from '../../providers/form/utils';
-import { getMoment, getPropertyMetadata } from '../../utils/date';
+import { getMoment } from 'utils/date';
+import { getDataFormat } from 'utils/metadata';
 import { axiosHttp } from '../../utils/fetchers';
 import { IDateFieldProps, RangePickerChangeEvent, TimePickerChangeEvent } from './interfaces';
 import settingsFormJson from './settingsForm.json';
@@ -113,7 +114,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     ...rest
   } = props;
 
-  const dateFormat = props?.dateFormat || getPropertyMetadata(properties, name) || DATE_TIME_FORMATS.date;
+  const dateFormat = props?.dateFormat || getDataFormat(properties, name) || DATE_TIME_FORMATS.date;
   const timeFormat = props?.timeFormat || DATE_TIME_FORMATS.time;
 
   const defaultFormat = getDefaultFormat(props);

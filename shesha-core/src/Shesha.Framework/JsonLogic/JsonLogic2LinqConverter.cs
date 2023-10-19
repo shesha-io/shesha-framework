@@ -417,8 +417,15 @@ namespace Shesha.JsonLogic
 
                             var arg = ParseTree<T>(@operator.Arguments[0], param);
 
-                            if (arg is MemberExpression memberExpr)
-                                return Expression.NotEqual(memberExpr, Expression.Constant(null));
+                            if (arg is MemberExpression memberExpr) 
+                            {
+                                return memberExpr.Type == typeof(string)
+                                    ? Expression.AndAlso(
+                                        Expression.NotEqual(memberExpr, Expression.Constant(null)),
+                                        Expression.NotEqual(TrimStringMember(memberExpr), Expression.Constant(string.Empty))
+                                    )
+                                    : Expression.NotEqual(memberExpr, Expression.Constant(null));
+                            }
 
                             return Expression.Not(Expression.Not(arg));
                         }
@@ -1086,6 +1093,13 @@ namespace Shesha.JsonLogic
 
             var query = ParseExpressionOf<T>(rule);
             return query.Compile();
+        }
+
+        private Expression TrimStringMember(MemberExpression member) 
+        {
+            var trimMethod = typeof(string).GetMethod(nameof(string.Trim), new Type[] { });
+
+            return Expression.Call(member, trimMethod);
         }
     }
 

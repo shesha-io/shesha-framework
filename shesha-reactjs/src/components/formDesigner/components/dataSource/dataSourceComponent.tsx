@@ -105,7 +105,6 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, propertyName: n
   const dataSource = useDataTableStore();
   const { 
     refreshTable, 
-    tableConfigLoaded, 
     setPredefinedFilters,
     changePageSize,
     modelType,
@@ -154,7 +153,7 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, propertyName: n
         refresh: refreshTable,
         //deleteRow,
       }),
-    [tableConfigLoaded, id]
+    [id]
   );
 
   if (!isDesignMode)

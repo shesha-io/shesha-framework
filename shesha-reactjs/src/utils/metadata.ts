@@ -5,6 +5,7 @@ import { camelcaseDotNotation } from "../utils/string";
 import ShaIcon from '../components/shaIcon';
 import GenericOutlined from "../icons/genericOutlined";
 import { JsonOutlined } from "../icons/jsonOutlined";
+import { toCamelCase } from './string';
 
 export const getIconByDataType = (dataType: string): IconType => {
   switch (dataType) {
@@ -45,7 +46,7 @@ export const getIconByPropertyMetadata = (metadata: IPropertyMetadata) => {
   if (metadata.dataType === DataTypes.objectReference) return JsonOutlined(null);
 
   var iconType = getIconByDataType(metadata.dataType);
-  if (iconType) return ShaIcon({ iconName: iconType });
+  if (iconType) return ShaIcon({iconName:iconType});
   return null;
 };
 
@@ -53,5 +54,10 @@ export const getFullPath = (property: IPropertyMetadata) => {
   const name = camelcaseDotNotation(property.path);
   const prefix = property.prefix ? camelcaseDotNotation(property.prefix) : null;
 
-  return (prefix ?? '') === '' ? camelcaseDotNotation(name) : `${prefix}.${name}`;
+  return (prefix ?? '') === ''
+    ? camelcaseDotNotation(name)
+    : `${prefix}.${name}`;
 };
+
+export const getDataFormat = (properties: IPropertyMetadata[], name: string) =>
+  properties.find(({ path }) => toCamelCase(path) === name)?.dataFormat;

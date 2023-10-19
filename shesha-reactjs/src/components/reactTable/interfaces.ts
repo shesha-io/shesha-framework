@@ -1,5 +1,5 @@
 import { IFlatComponentsStructure } from 'providers/form/models';
-import { ReactNode, CSSProperties } from 'react';
+import React, { ReactNode, CSSProperties } from 'react';
 import { Column, Row, SortingRule, TableState } from 'react-table';
 
 export interface IColumnWidth {
@@ -207,5 +207,13 @@ export interface IReactTableProps extends ITableRowDragProps {
   inlineEditorComponents?: IFlatComponentsStructure;
   inlineCreatorComponents?: IFlatComponentsStructure;
   inlineDisplayComponents?: IFlatComponentsStructure;
+  onRowsRendering?: OnRowsRendering;
 }
 
+
+export type RowRenderer<T = any> = (row: T, index: number) => React.ReactElement;
+export interface OnRowRenderingArgs<T = any> {
+  rows: T[];
+  defaultRender: RowRenderer<T>;
+}
+export type OnRowsRendering<T = any> = (args: OnRowRenderingArgs<T>) => React.ReactElement;

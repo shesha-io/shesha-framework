@@ -1,7 +1,5 @@
 import moment, { isMoment, Moment } from 'moment';
-import { IPropertyMetadata } from '../interfaces/metadata';
 import { getSafelyTrimmedString } from './index';
-import { toCamelCase } from './string';
 
 /**
  * Checks if the date provided is within the date range
@@ -83,6 +81,3 @@ export const getMoment = (value: any, dateFormat: string): Moment => {
 
   return parsed;
 };
-
-export const getPropertyMetadata = (properties: IPropertyMetadata[], name: string) =>
-  properties.find(({ path }) => toCamelCase(path) === name)?.dataFormat;

@@ -12,7 +12,7 @@ import { INumberFieldComponentProps } from './interfaces';
 import settingsFormJson from './settingsForm.json';
 import { migratePropertyName, migrateCustomFunctions } from '../../designer-components/_common-migrations/migrateSettings';
 import { getNumberFormat } from 'utils/string';
-import { getPropertyMetadata } from 'utils/date';
+import { getDataFormat } from 'utils/metadata';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -40,7 +40,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
       >
         {(value, onChange) => {
           return isReadOnly ? (
-            <ReadOnlyDisplayFormItem disabled={disabled} value={getNumberFormat(value, getPropertyMetadata(properties, model.propertyName))}/>
+            <ReadOnlyDisplayFormItem disabled={disabled} value={getNumberFormat(value, getDataFormat(properties, model.propertyName))}/>
           ) : (
             <NumberFieldControl form={form} disabled={disabled} model={model} value={value} onChange={onChange} />
           );

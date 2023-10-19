@@ -153,7 +153,6 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
         // fetch columns config from server
         return metadataDispatcher.getPropertiesMetadata({ dataType: DataTypes.entityReference, modelType: entityType, properties: dataProperties })
             .then(response => {
-
                 return dataProperties.map<DataTableColumnDto>(p => {
 
                     const baseProps = {
@@ -174,6 +173,7 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
                             allowInherited: false, // todo: add to metadata
                             isFilterable: true, // todo: add to metadata
                             isSortable: true, // todo: add to metadata
+                            metadata: propMeta,
                         }
                         : baseProps;
                 });

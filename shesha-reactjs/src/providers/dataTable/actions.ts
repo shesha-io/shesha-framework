@@ -11,6 +11,7 @@ import {
   ITableDataInternalResponse,
   ITableFilter,
   IndexColumnFilterOption,
+  GroupingItem,
 } from './interfaces';
 
 export enum DataTableActionEnums {
@@ -57,7 +58,8 @@ export enum DataTableActionEnums {
   SetSelectedRow = 'SET_SELECTED_ROW',
   SetMultiSelectedRow = 'SET_MULTI_SELECTED_ROW',
 
-  /* NEW_ACTION_TYPE_GOES_HERE */
+  FetchGroupingColumns = 'FETCH_GROUPING_COLUMNS',
+  FetchGroupingColumnsSuccess = 'FETCH_GROUPING_COLUMNS_SUCCESS',
 }
 
 export const setSelectedRowAction = createAction<ISelectionProps, ISelectionProps>(
@@ -221,5 +223,24 @@ export const changePersistedFiltersToggleAction = createAction<boolean, boolean>
 
 export const setDataFetchingModeAction = createAction<DataFetchingMode, DataFetchingMode>(
   DataTableActionEnums.SetDataFetchingMode,
-  (p) => p
+  p => p
 );
+
+export interface IFetchGroupingColumnsSuccessPayload {
+  grouping: GroupingItem[];
+  columns: DataTableColumnDto[];
+}
+export const fetchGroupingColumnsSuccessAction = createAction<
+  IFetchGroupingColumnsSuccessPayload,
+  IFetchGroupingColumnsSuccessPayload
+>(DataTableActionEnums.FetchGroupingColumnsSuccess, p => p);
+
+/*
+export interface IFetchGroupingColumnsActionPayload {
+  grouping: GroupingItem[];
+}
+export const fetchGroupingColumnsAction = createAction<
+IFetchGroupingColumnsActionPayload,
+  IFetchGroupingColumnsActionPayload
+>(DataTableActionEnums.FetchGroupingColumns, p => p);
+*/

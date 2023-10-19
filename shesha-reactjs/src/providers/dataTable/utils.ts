@@ -2,18 +2,8 @@ import moment, { Duration, Moment, isDuration, isMoment } from 'moment';
 import { ProperyDataType } from '../../interfaces/metadata';
 import { IConfigurableColumnsProps, IDataColumnsProps } from '../../providers/datatableColumnsConfigurator/models';
 import { camelcaseDotNotation } from '../../utils/string';
-import { IDataTableUserConfig, MIN_COLUMN_WIDTH } from './contexts';
-import {
-  ColumnSorting,
-  DataTableColumnDto,
-  IActionColumnProps,
-  IStoredFilter,
-  ITableActionColumn,
-  ITableColumn,
-  ITableDataColumn,
-  ITableFilter,
-  SortDirection,
-} from './interfaces';
+import { IDataTableStateContext, IDataTableUserConfig, MIN_COLUMN_WIDTH } from './contexts';
+import { ColumnSorting, DataTableColumnDto, IActionColumnProps, IColumnSorting, isDataColumn, IStoredFilter, ITableActionColumn, ITableColumn, ITableDataColumn, ITableFilter, SortDirection } from './interfaces';
 
 // Filters should read properties as camelCase ?:(
 export const hasDynamicFilter = (filters: IStoredFilter[]) => {
@@ -190,6 +180,7 @@ export const prepareColumn = (
     isFilterable: false,
     isSortable: false,
     allowShowHide: false,
+    defaultSorting: column.defaultSorting
   };
 
   switch (column.columnType) {
@@ -225,6 +216,7 @@ export const prepareColumn = (
 
         allowShowHide: true,
         show: colVisibility,
+        metadata: srvColumn.metadata,
       };
       return dataCol;
     }
@@ -253,13 +245,54 @@ export const prepareColumn = (
  */
 export const getTableDataColumns = (columns: ITableColumn[]): ITableDataColumn[] => {
   const result: ITableDataColumn[] = [];
-  columns.forEach((col) => {
-    if (col.columnType === 'data') result.push(col as ITableDataColumn);
+  columns.forEach(col => {
+    if (isDataColumn(col))
+      result.push(col);
   });
   return result;
 };
 
 export const getTableDataColumn = (columns: ITableColumn[], id: string): ITableDataColumn => {
-  const column = columns.find((c) => c.id === id);
-  return column?.columnType === 'data' ? (column as ITableDataColumn) : null;
+  const column = columns.find(c => c.id === id);
+  return isDataColumn(column)
+    ? column
+    : null;
+};
+
+export const getStandardSorting = (dataCols: ITableDataColumn[], userConfig: IDataTableUserConfig): IColumnSorting[] => {
+  const configuredTableSorting = dataCols
+    .filter(c => c.defaultSorting !== null && c.defaultSorting !== undefined && c.propertyName)
+    .map<IColumnSorting>(c => ({ id: c.id, desc: c.defaultSorting === 1 }));
+
+  const tableSorting =
+    userConfig && userConfig.tableSorting && userConfig.tableSorting.length > 0
+      ? userConfig.tableSorting
+      : configuredTableSorting;
+  return tableSorting;
+};
+
+export const isStandardSortingUsed = (state: IDataTableStateContext): Boolean => {
+  return state.sortMode === 'standard' && (!state.grouping || state.grouping.length === 0);
+};
+
+export const getCurrentSorting = (state: IDataTableStateContext): IColumnSorting[] => {
+  if (state.grouping && state.grouping.length > 0) {
+    const groupSorting = state.grouping.map<IColumnSorting>(item => ({ id: item.propertyName, desc: item.sorting === 'desc' }));
+    if (state.sortMode === 'standard' && state.standardSorting.length > 0){
+      state.standardSorting.forEach(item => {
+        if (!groupSorting.find(c => c.id === item.id))
+          groupSorting.push(item);
+      });
+    }
+    return groupSorting;
+  }
+
+  if (state.sortMode === 'strict') {
+    return [{ id: state.strictOrderBy, desc: state.strictSortOrder === 'desc' }];
+  }
+
+  if (!isStandardSortingUsed(state))
+    console.error('Unexpected configuration of the dataTableContext', state);
+
+  return state.standardSorting;
 };

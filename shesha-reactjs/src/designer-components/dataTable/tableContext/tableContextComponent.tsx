@@ -5,10 +5,11 @@ import ComponentsContainer from '../../../components/formDesigner/containers/com
 import { IToolboxComponent } from '../../../interfaces';
 import { useDataTableStore, useForm, useFormData } from '../../../providers';
 import DataTableProvider from '../../../providers/dataTable';
-import { DataFetchingMode } from '../../../providers/dataTable/interfaces';
 import { FormMarkup, IConfigurableFormComponent } from '../../../providers/form/models';
 import { evaluateString, validateConfigurableComponentSettings } from '../../../providers/form/utils';
 import settingsFormJson from './settingsForm.json';
+import { ColumnSorting, DataFetchingMode, GroupingItem, SortMode } from 'providers/dataTable/interfaces';
+//import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 import { migrateCustomFunctions, migratePropertyName } from '../../../designer-components/_common-migrations/migrateSettings';
 import { ConfigurableFormItem } from 'components';
 
@@ -19,8 +20,12 @@ export interface ITableContextComponentProps extends IConfigurableFormComponent 
   components?: IConfigurableFormComponent[]; // If isDynamic we wanna
   dataFetchingMode?: DataFetchingMode;
   defaultPageSize?: number;
-  defaultSortBy?: string;
-  defaultSortOrder?: string;
+  grouping?: GroupingItem[];
+  sortMode?: SortMode;
+  strictOrderBy?: string;
+  strictSortOrder?: ColumnSorting;
+  defaultOrderBy?: string;
+  defaultSortOrder?: ColumnSorting;
 }
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -59,6 +64,7 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
         };
       })
       .add<ITableContextComponentProps>(4, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+      .add<ITableContextComponentProps>(5, (prev) => ({ ...prev, sortMode: 'standard', strictSortOrder: 'asc' }))
   ,
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
@@ -77,7 +83,7 @@ interface ITableContextInnerProps extends ITableContextComponentProps {
 }
 
 export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
-  const { sourceType, entityType, endpoint, id, propertyName, componentName, defaultSortBy, defaultSortOrder } = props;
+  const { sourceType, entityType, endpoint, id, propertyName, componentName, defaultOrderBy, defaultSortOrder } = props;
   const { formMode } = useForm();
   const { data } = useFormData();
 
@@ -88,12 +94,12 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
   const configurationWarningMessage = !sourceType
     ? 'Select `Source type` on the settings panel'
     : sourceType === 'Entity' && !entityType
-    ? 'Select `Entity Type` on the settings panel'
-    : sourceType === 'Url' && !endpoint
-    ? 'Select `Custom Endpoint` on the settings panel'
-    : sourceType === 'Form' && !propertyName
-    ? 'Select `propertyName` on the settings panel'
-    : null;
+      ? 'Select `Entity Type` on the settings panel'
+      : sourceType === 'Url' && !endpoint
+        ? 'Select `Custom Endpoint` on the settings panel'
+        : sourceType === 'Form' && !propertyName
+          ? 'Select `propertyName` on the settings panel'
+          : null;
 
   if (isDesignMode && configurationWarningMessage)
     return (
@@ -106,7 +112,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
       />
     );
 
-  const provider = (getFieldValue = undefined, onChange = undefined) => 
+  const provider = (getFieldValue = undefined, onChange = undefined) =>
     <DataTableProvider
       userConfigId={props.id}
       entityType={entityType}
@@ -119,23 +125,27 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
       dataFetchingMode={props.dataFetchingMode ?? 'paging'}
       getFieldValue={getFieldValue}
       onChange={onChange}
-      defaultSortBy={defaultSortBy}
+      grouping={props.grouping}
+      sortMode={props.sortMode}
+      strictOrderBy={props.strictOrderBy}
+      strictSortOrder={props.strictSortOrder}
+      defaultOrderBy={defaultOrderBy}
       defaultSortOrder={defaultSortOrder}
     >
       <TableContextAccessor {...props} />
     </DataTableProvider>
-  ;
+    ;
 
-  return sourceType === 'Form' 
-    ? <ConfigurableFormItem model={{...props, hideLabel: true}} wrapperCol={{md: 24}}>
-        {(_v, onChange, _p, getFieldValue) => provider(getFieldValue, onChange)}
-      </ConfigurableFormItem> 
+  return sourceType === 'Form'
+    ? <ConfigurableFormItem model={{ ...props, hideLabel: true }} wrapperCol={{ md: 24 }}>
+      {(_v, onChange, _p, getFieldValue) => provider(getFieldValue, onChange)}
+    </ConfigurableFormItem>
     : provider();;
 };
 
 const TableContextAccessor: FC<ITableContextComponentProps> = ({ id }) => {
   const { registerActions } = useForm();
-  const { selectedRow, refreshTable, exportToExcel, tableConfigLoaded, setIsInProgressFlag } = useDataTableStore();
+  const { selectedRow, refreshTable, exportToExcel, setIsInProgressFlag } = useDataTableStore();
 
   const toggleColumnsSelector = () => {
     setIsInProgressFlag({ isSelectingColumns: true, isFiltering: false });
@@ -154,7 +164,7 @@ const TableContextAccessor: FC<ITableContextComponentProps> = ({ id }) => {
         toggleAdvancedFilter,
         exportToExcel,
       }),
-    [tableConfigLoaded, selectedRow]
+    [selectedRow]
   );
 
   return (
