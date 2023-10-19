@@ -275,7 +275,7 @@ export const getSettings = (_data?: IWizardStepProps) =>
     })
     .addConfigurableActionConfigurator({
       id: 'F940D7A0-AA6D-4368-A745-E130F8627472',
-      name: 'cancelButtonConfiguration',
+      name: 'cancelButtonActionConfiguration',
       label: 'Action configuration',
       hidden: false,
       customVisibility: '',
@@ -383,7 +383,7 @@ export const getSettings = (_data?: IWizardStepProps) =>
       hidden: false,
       customVisibility: null,
       description:
-        'Enter custom visibility code.  You must return true to show the component. ' + 
+        'Enter custom visibility code.  You must return true to show the component. ' +
         'The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
       validate: {},
       settingsValidationErrors: [],
@@ -411,7 +411,7 @@ export const getSettings = (_data?: IWizardStepProps) =>
       hidden: false,
       customEnabled: null,
       description:
-        'Enter custom enabled code.  You must return true to enable the component. ' + 
+        'Enter custom enabled code.  You must return true to enable the component. ' +
         'The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
       validate: {},
       settingsValidationErrors: [],
