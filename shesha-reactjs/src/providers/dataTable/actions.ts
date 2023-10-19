@@ -12,6 +12,8 @@ import {
   ITableFilter,
   IndexColumnFilterOption,
   GroupingItem,
+  SortMode,
+  ColumnSorting,
 } from './interfaces';
 
 export enum DataTableActionEnums {
@@ -60,6 +62,7 @@ export enum DataTableActionEnums {
 
   FetchGroupingColumns = 'FETCH_GROUPING_COLUMNS',
   FetchGroupingColumnsSuccess = 'FETCH_GROUPING_COLUMNS_SUCCESS',
+  SetSortingSettings = 'SET_SORTING_SETTINGS',
 }
 
 export const setSelectedRowAction = createAction<ISelectionProps, ISelectionProps>(
@@ -235,12 +238,12 @@ export const fetchGroupingColumnsSuccessAction = createAction<
   IFetchGroupingColumnsSuccessPayload
 >(DataTableActionEnums.FetchGroupingColumnsSuccess, p => p);
 
-/*
-export interface IFetchGroupingColumnsActionPayload {
-  grouping: GroupingItem[];
+export interface ISortingSettingsActionPayload {
+  sortMode?: SortMode;
+  strictOrderBy?: string;
+  strictSortOrder?: ColumnSorting;
 }
-export const fetchGroupingColumnsAction = createAction<
-IFetchGroupingColumnsActionPayload,
-  IFetchGroupingColumnsActionPayload
->(DataTableActionEnums.FetchGroupingColumns, p => p);
-*/
+export const setSortingSettingsAction = createAction<
+  ISortingSettingsActionPayload,
+  ISortingSettingsActionPayload
+>(DataTableActionEnums.SetSortingSettings, p => p);

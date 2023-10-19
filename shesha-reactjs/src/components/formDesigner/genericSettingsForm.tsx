@@ -69,8 +69,6 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
 
   const markupWithSettings = convertToMarkupWithSettings(markup, true);
 
-  console.log('Settings form render');
-
   return (
     <ConfigurableForm
       labelCol={layoutSettings?.labelCol}

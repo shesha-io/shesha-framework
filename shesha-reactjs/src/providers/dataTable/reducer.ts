@@ -17,6 +17,7 @@ import {
   ISetHiddenFilterActionPayload,
   ISetPredefinedFiltersPayload,
   ISetRowDataPayload,
+  ISortingSettingsActionPayload,
 } from './actions';
 import {
   DataFetchingMode,
@@ -484,6 +485,20 @@ const reducer = handleActions<IDataTableStateContext, any>(
       return {
         ...state,
         dataFetchingMode: payload,
+      };
+    },
+
+    [DataTableActionEnums.SetSortingSettings]: (
+      state: IDataTableStateContext,
+      action: ReduxActions.Action<ISortingSettingsActionPayload>
+    ) => {
+      const { payload } = action;
+
+      return {
+        ...state,
+        sortMode: payload.sortMode,
+        strictOrderBy: payload.strictOrderBy,
+        strictSortOrder: payload.strictSortOrder,
       };
     },
 

@@ -54,6 +54,7 @@ import {
   setSelectedRowAction,
   setMultiSelectedRowAction,
   fetchGroupingColumnsSuccessAction,
+  setSortingSettingsAction,
 } from './actions';
 import {
   DATA_TABLE_CONTEXT_INITIAL_STATE,
@@ -288,6 +289,12 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   }, [grouping]);
 
   const ctx = useDataContext(false);
+
+  // sync sorting
+  useEffect(() => {
+    if (sortMode !== state.sortMode || strictOrderBy !== state.strictOrderBy || strictSortOrder !== state.strictSortOrder)
+        dispatch(setSortingSettingsAction({ sortMode, strictOrderBy, strictSortOrder }));
+  }, [sortMode, strictOrderBy, strictSortOrder]);
 
   // sync dataFetchingMode
   useEffect(() => {
