@@ -95,16 +95,16 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     onDblClick: onDblClickDeprecated,
     selectedRow,
     selectedIds,
-    standardSorting: tableSorting,
+    standardSorting,
     quickSearch,
     onSort,
     changeSelectedIds,
     setRowData,
     setSelectedRow,
-    // succeeded,
     succeeded: { exportToExcel: exportToExcelSuccess },
     error: { exportToExcel: exportToExcelError },
     grouping,
+    sortMode,
   } = store;
 
   const onSelectRowLocal = (index: number, row: any) => {
@@ -165,7 +165,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     tableFilter,
     selectedRow,
     quickSearch,
-    tableSorting,
+    standardSorting,
   ]);
 
   useEffect(() => {
@@ -263,8 +263,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       .map<DataTableColumn>((columnItem) => {
         const strictWidth =
           columnItem.minWidth && columnItem.maxWidth && columnItem.minWidth === columnItem.maxWidth
-          ? columnItem.minWidth
-          : undefined;
+            ? columnItem.minWidth
+            : undefined;
 
         const cellRenderer = getCellRenderer(columnItem, metadata);
 
@@ -276,7 +276,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
           maxWidth: Boolean(columnItem.maxWidth) ? columnItem.maxWidth : undefined,
           width: strictWidth,
           resizable: !strictWidth,
-          disableSortBy: !columnItem.isSortable,
+          disableSortBy: !columnItem.isSortable || sortMode === 'strict',
           disableResizing: Boolean(strictWidth),
           Cell: cellRenderer,
           originalConfig: columnItem,
@@ -285,14 +285,16 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       });
 
     return localPreparedColumns;
-  }, [columns, crudOptions.enabled]);
+  }, [columns, crudOptions.enabled, sortMode]);
 
   // sort
-  const defaultSorting = tableSorting
-    ? tableSorting.map<SortingRule<string>>((c) => ({ id: c.id, desc: c.desc }))
-    : columns
+  const defaultSorting = sortMode === 'standard'
+    ? standardSorting
+      ? standardSorting.map<SortingRule<string>>((c) => ({ id: c.id, desc: c.desc }))
+      : columns
         .filter((c) => c.defaultSorting !== null)
-        .map<SortingRule<string>>((c) => ({ id: c.id, desc: c.defaultSorting === 1 }));
+        .map<SortingRule<string>>((c) => ({ id: c.id, desc: c.defaultSorting === 1 }))
+    : undefined;
 
   // http, moment, setFormData
   const performOnRowSave = useMemo<OnSaveHandler>(() => {
@@ -338,7 +340,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       const options =
         repository.repositoryType === BackendRepositoryType
           ? ({ customUrl: customUpdateUrl } as IUpdateOptions)
-        : undefined;
+          : undefined;
 
       return repository.performUpdate(rowIndex, preparedData, options).then((response) => {
         setRowData(rowIndex, preparedData/*, response*/);
@@ -356,7 +358,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       const options =
         repository.repositoryType === BackendRepositoryType
           ? ({ customUrl: customCreateUrl } as ICreateOptions)
-        : undefined;
+          : undefined;
 
       return repository.performCreate(0, preparedData, options).then(() => {
         store.refreshTable();
@@ -372,7 +374,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     const options =
       repository.repositoryType === BackendRepositoryType
         ? ({ customUrl: customDeleteUrl } as IDeleteOptions)
-      : undefined;
+        : undefined;
 
     return repository.performDelete(rowIndex, rowData, options).then(() => {
       store.refreshTable();
@@ -468,9 +470,9 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     return item && Array.isArray(item.$childs);
   };
   const convertRowsToGroups = (rows: any[]): RowsGroup[] => {
-    const groupLevels: GroupLevels = grouping.map<GroupLevelInfo>((g, index) => ({ 
-      currentGroup: null, 
-      propertyName: g.propertyName, 
+    const groupLevels: GroupLevels = grouping.map<GroupLevelInfo>((g, index) => ({
+      currentGroup: null,
+      propertyName: g.propertyName,
       index: index,
       propertyPath: g.propertyName.split('.')
     }));

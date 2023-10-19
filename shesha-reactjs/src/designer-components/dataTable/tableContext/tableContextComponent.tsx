@@ -140,7 +140,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
     ? <ConfigurableFormItem model={{ ...props, hideLabel: true }} wrapperCol={{ md: 24 }}>
       {(_v, onChange, _p, getFieldValue) => provider(getFieldValue, onChange)}
     </ConfigurableFormItem>
-    : provider();;
+    : provider();
 };
 
 const TableContextAccessor: FC<ITableContextComponentProps> = ({ id }) => {
