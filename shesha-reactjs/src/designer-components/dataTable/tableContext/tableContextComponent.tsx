@@ -141,7 +141,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
 
 const TableContextAccessor: FC<ITableContextComponentProps> = ({ id }) => {
   const { registerActions } = useForm();
-  const { selectedRow, refreshTable, exportToExcel, tableConfigLoaded, setIsInProgressFlag } = useDataTableStore();
+  const { selectedRow, refreshTable, exportToExcel, setIsInProgressFlag } = useDataTableStore();
 
   const toggleColumnsSelector = () => {
     setIsInProgressFlag({ isSelectingColumns: true, isFiltering: false });
@@ -160,7 +160,7 @@ const TableContextAccessor: FC<ITableContextComponentProps> = ({ id }) => {
         toggleAdvancedFilter,
         exportToExcel,
       }),
-    [tableConfigLoaded, selectedRow]
+    [selectedRow]
   );
 
   return (

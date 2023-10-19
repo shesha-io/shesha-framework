@@ -170,3 +170,16 @@ export const BugFix = addStory(Template, {
   id: '1f52e8de-b0e3-49ce-8830-67a15687505a'
 });
 
+export const DataList = addStory(Template, {
+  formId: {
+    name: 'alex-test',
+    module: 'TestModule'
+  },
+});
+
+export const DataTable = addStory(Template, {
+  formId: {
+    name: 'forms',
+    module: 'shesha'
+  },
+});

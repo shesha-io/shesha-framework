@@ -61,6 +61,7 @@ import {
   DataTableStateContext,
   IDataTableStateContext,
   IDataTableUserConfig,
+  IDataTableActionsContext,
 } from './contexts';
 import {
   ColumnFilter,
@@ -253,7 +254,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   const [state, dispatch] = useThunkReducer(dataTableReducer, {
     ...DATA_TABLE_CONTEXT_INITIAL_STATE,
-    configurableColumns: configurableColumns ?? [],
+    configurableColumns: configurableColumns,
     selectedPageSize: initialPageSize ?? DATA_TABLE_CONTEXT_INITIAL_STATE.selectedPageSize,
     dataFetchingMode: dataFetchingMode,
     modelType: modelType,
@@ -308,7 +309,6 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     state.selectedStoredFilterIds,
     state.selectedPageSize,
     state.dataFetchingMode,
-    state.tableConfigLoaded,
     state.columns?.length,
     state.standardSorting,
     state.hiddenFilters,
@@ -322,11 +322,21 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     */
   ]);
 
+  const requireColumnRef = useRef<Boolean>(false);
+  const requireColumns = () => {
+    requireColumnRef.current = true;
+  };
+
   // fetch table data when config is ready or something changed (selected filter, changed current page etc.)
   const fetchDataIfReady = () => {
     const groupingIsReady = (grouping ?? []).length === (state.groupingColumns ?? []).length;
-    // Don't check state.columns because dataList doesn't contain columns
-    if (repository && groupingIsReady) {
+    const columnsAreReady = !(requireColumnRef.current) || Boolean(state.configurableColumns) && state.columns.length === state.configurableColumns.length;
+
+    const readyToFetch = repository && groupingIsReady && columnsAreReady;
+
+    //console.log('LOG: fetchDataIfReady', readyToFetch);
+
+    if (readyToFetch) {
       // fecth using entity type
       tableIsReady.current = true; // is used to prevent unneeded data fetch by the ReactTable. Any data fetch requests before this line should be skipped
       refreshTable();
@@ -370,6 +380,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   );
 
   const debouncedFetch = (payload: IGetListDataPayload) => {
+    //console.log('LOG: fetch', payload);
     debouncedFetchInternal(payload);
   };
 
@@ -395,7 +406,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   const fetchTableData = (providedState: IDataTableStateContext) => {
     // save user settings before fetch
-    //saveUserSettings(providedState);
+    saveUserSettings(providedState);
 
     const payload = getFetchListDataPayload(providedState);
     fetchTableDataInternal(payload);
@@ -647,8 +658,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     dispatch(setMultiSelectedRowAction(rows));
   };
 
-
-  const actions = {
+  const actions: IDataTableActionsContext = {
     onSort,
     ...flagSetters,
     changeDisplayColumn,
@@ -675,7 +685,8 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     getRepository,
     setRowData,
     setSelectedRow,
-    setMultiSelectedRow
+    setMultiSelectedRow,
+    requireColumns,
   };
 
   const contextOnChangeData = <T,>(_data: T, changedData: IDataTableStateContext) => {

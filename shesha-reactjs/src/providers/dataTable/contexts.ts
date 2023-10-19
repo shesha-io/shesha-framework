@@ -141,7 +141,6 @@ export interface IDataTableStateContext
   //#region todo: review!
   isFetchingTableData?: boolean;
   hasFetchTableDataError?: boolean;
-  tableConfigLoaded?: boolean;
 
   properties?: string[];
 
@@ -188,6 +187,10 @@ export interface IDataTableActionsContext
    * Register columns in the table context. Is used for configurable tables
    */
   registerConfigurableColumns: (ownerId: string, columns: IConfigurableColumnsProps[]) => void;
+  /**
+   * Call this function to indicate that your component (table/list) require columns
+   */
+  requireColumns: () => void;
 
   changeDisplayColumn: (displayColumnName: string) => void;
   changePersistedFiltersToggle: (persistSelectedFilters: boolean) => void;
@@ -221,7 +224,6 @@ export const DATA_TABLE_CONTEXT_INITIAL_STATE: IDataTableStateContext = {
   totalRows: null,
   totalRowsBeforeFilter: null,
   quickSearch: null,
-  tableConfigLoaded: false,
   standardSorting: [],
   tableFilter: [],
   saveFilterModalVisible: false,

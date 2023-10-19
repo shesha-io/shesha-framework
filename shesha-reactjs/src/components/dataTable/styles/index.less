@@ -27,19 +27,21 @@ a:hover {
   &.sha-group-level-@{indexstart} {
     >.ant-collapse-item {
       >.ant-collapse-header {
-        //padding-left: @indexstart * 15px + 10px;
         margin-left: @indexstart * 15px;
 
         border-bottom: @group-border;
+
         & when (@indexstart > 0) {
           border-left: @group-border;
         }
-        & when (@indexstart = 0) {
+
+        & when (@indexstart =0) {
           border-top: @group-border;
         }
       }
     }
   }
+
   .nestedPaddings (@indexstart + 1, @index);
 }
 
@@ -53,7 +55,13 @@ a:hover {
           border: none;
 
           .ant-collapse-header {
+            padding-top: unset !important;
+            padding-bottom: unset !important;
             font-weight: normal;
+            font-size: 14px;
+            min-height: 30px;
+            display: flex !important;
+            align-items: center !important;
           }
 
           .ant-collapse-content {
