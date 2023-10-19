@@ -32,6 +32,12 @@ const RadioGroup: FC<IRadioProps> = (model) => {
     }
   }, [model?.dataSourceType, model?.dataSourceUrl]);
 
+  useEffect(() => {
+    if (defaultValue) {
+      onChange(evaluateValue(defaultValue, { data: formData, globalState }));
+    }
+  }, [defaultValue]);
+
   const reducedData = useMemo(() => {
     const list = Array.isArray(data?.result) ? data?.result : data?.result?.items;
 
