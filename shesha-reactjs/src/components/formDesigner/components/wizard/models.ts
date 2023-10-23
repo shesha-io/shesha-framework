@@ -36,6 +36,8 @@ export interface IWizardStepProps extends IConfigurableItemBase {
   childItems?: IWizardStepProps[];
   status?: StepProps['status'];
 
+  onBeforeRenderActionConfiguration?: IConfigurableActionConfiguration;
+
   onBeforeNext?: string;
   onAfterNext?: string;
   onBeforeBack?: string;

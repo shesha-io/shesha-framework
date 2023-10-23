@@ -338,85 +338,25 @@ export const getSettings = (_data?: IWizardStepProps) =>
       settingsValidationErrors: [],
     })
     .addSectionSeparator({
+      id: 'e576bbdf-8d92-4285-acae-dff5fcfb4ea4',
+      name: 'onBeforeRenderSeparatorVisibility',
+      parentId: 'root',
+      label: 'On Before Render',
+    })
+    .addConfigurableActionConfigurator({
+      id: 'ca210f0c-ac55-4b33-a7f5-be17cb3eeda5',
+      name: 'onBeforeRenderActionConfiguration',
+      label: 'Action configuration',
+      hidden: false,
+      customVisibility: '',
+      validate: {},
+      settingsValidationErrors: [],
+    })
+    .addSectionSeparator({
       id: 'ae7ae12f-afb8-44a7-a8cb-805550415aeb',
       name: 'otherSeparatorVisibility',
       parentId: 'root',
       label: 'Other',
-    })
-    .addCodeEditor({
-      id: '9e6ead7b-a14c-481a-97cf-5b8363974625',
-      name: 'onBeforeRender',
-      label: 'On Before Render',
-      labelAlign: 'right',
-      parentId: 'root',
-      hidden: false,
-      customVisibility: null,
-      description: 'Enter custom event handler on changing of event. (form, event) are exposed',
-      validate: {},
-      settingsValidationErrors: [],
-      exposedVariables: [
-        {
-          id: '94234565-4d7b-41ab-b692-48620d9db7ee',
-          name: 'data',
-          description: 'Selected form values',
-          type: 'object',
-        },
-        {
-          id: '1defb26f-e6e4-4a49-a478-0b4744fb419f',
-          name: 'event',
-          description: 'Event callback when user input',
-          type: 'object',
-        },
-        {
-          id: '1c2ac0e5-9520-48e5-8aec-6907439584e6',
-          name: 'form',
-          description: 'Form instance',
-          type: 'FormInstance',
-        },
-        {
-          id: '4f7e62cd-3744-4d22-9d6d-7fcf79a01d2d',
-          name: 'formMode',
-          description: 'The form mode',
-          type: "'readonly' | 'edit' | 'designer'",
-        },
-        {
-          id: '39ecb74f-9e5a-443b-89e1-5d9ce2cf109c',
-          name: 'globalState',
-          description: 'The global state of the application',
-          type: 'object',
-        },
-        {
-          id: 'b57970b8-2af7-4b5e-b791-6efd26412948',
-          name: 'http',
-          description: 'axios instance used to make http requests',
-          type: 'object',
-        },
-        {
-          id: '',
-          name: 'message',
-          description:
-            'This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header',
-          type: 'object',
-        },
-        {
-          id: 'b6afda9c-d9aa-410b-a35d-f9585ae248d4',
-          name: 'moment',
-          description: 'The moment.js object',
-          type: 'object',
-        },
-        {
-          id: 'b6afda9c-d9aa-410b-a35d-f9585ae248d5',
-          name: 'setFormData',
-          description: 'A function used to update the form data',
-          type: '({ values: object, mergeValues: boolean}) => void',
-        },
-        {
-          id: 'b6afda9c-d9aa-410b-a35d-f9585ae248d5',
-          name: 'setGlobalState',
-          description: 'A function used to update the globalState data',
-          type: '({ values: object, mergeValues: boolean}) => void',
-        },
-      ],
     })
     .addCodeEditor({
       id: 'd2f01684-31e5-41a3-b32a-c23abc20e700',
