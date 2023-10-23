@@ -80,8 +80,7 @@ export const getWizardButtonStyle =
     }
   };
 
-export const isEmptyArgument = (configuration: IConfigurableActionConfiguration) => {
-  const args = configuration?.actionArguments || {};
-
-  return Object.getOwnPropertyNames(args).some((key) => args[key]);
-};
+export const isEmptyArgument = (args: IConfigurableActionConfiguration) =>
+  Object.getOwnPropertyNames(args || {})
+    .filter((key) => !['handleSuccess', 'handleFail'].includes(key))
+    .some((key) => args[key]);
