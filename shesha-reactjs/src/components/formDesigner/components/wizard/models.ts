@@ -35,6 +35,13 @@ export interface IWizardStepProps extends IConfigurableItemBase {
   components?: IConfigurableFormComponent[];
   childItems?: IWizardStepProps[];
   status?: StepProps['status'];
+
+  onBeforeNext?: string;
+  onAfterNext?: string;
+  onBeforeBack?: string;
+  onAfterBack?: string;
+  onBeforeCancel?: string;
+  onAfterCancel?: string;
 }
 
 export interface IWizardSequence {

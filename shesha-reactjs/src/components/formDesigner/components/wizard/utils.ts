@@ -1,39 +1,26 @@
+import { nanoid } from 'nanoid';
+import { IConfigurableActionConfiguration } from '../../../../interfaces/configurableAction';
 import { IWizardSequence } from './models';
 
 export const EXPOSED_VARIABLES = [
+  { id: nanoid(), name: 'data', description: 'The form data', type: 'object' },
+  { id: nanoid(), name: 'formMode', description: 'The form mode', type: "'readonly' | 'edit' | 'designer'" },
+  { id: nanoid(), name: 'globalState', description: 'The global state of the application', type: 'object' },
+  { id: nanoid(), name: 'http', description: 'axios instance used to make http requests', type: 'object' },
   {
-    name: 'data',
-    description: 'The form data',
-    type: 'object',
-  },
-  { name: 'formMode', description: 'The form mode', type: "'readonly' | 'edit' | 'designer'" },
-  {
-    name: 'globalState',
-    description: 'The global state of the application',
-    type: 'object',
-  },
-  {
-    name: 'http',
-    description: 'axios instance used to make http requests',
-    type: 'object',
-  },
-  {
+    id: nanoid(),
     name: 'message',
     description:
       'This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header',
     type: 'object',
   },
   {
+    id: nanoid(),
     name: 'setGlobalState',
     description: 'Setting the global state of the application',
     type: '(payload: { key: string, data: any } ) => void',
   },
-  ,
-  {
-    name: 'moment',
-    description: 'The moment.js object',
-    type: 'object',
-  },
+  { id: nanoid(), name: 'moment', description: 'The moment.js object', type: 'object' },
 ];
 
 export const getStepDescritpion =
@@ -92,3 +79,9 @@ export const getWizardButtonStyle =
         return {};
     }
   };
+
+export const isEmptyArgument = (configuration: IConfigurableActionConfiguration) => {
+  const args = configuration?.actionArguments || {};
+
+  return Object.getOwnPropertyNames(args).some((key) => args[key]);
+};

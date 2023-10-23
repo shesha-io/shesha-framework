@@ -1,5 +1,6 @@
 import { DesignerToolbarSettings } from '../../../../interfaces';
 import { IWizardStepProps } from './models';
+import { EXPOSED_VARIABLES } from './utils';
 
 export const getSettings = (_data?: IWizardStepProps) =>
   new DesignerToolbarSettings()
@@ -139,6 +140,24 @@ export const getSettings = (_data?: IWizardStepProps) =>
         },
       ],
     })
+    .addCodeEditor({
+      id: '70fdea84-c8fd-46d7-9558-f6bbe99a1c83',
+      name: 'onBeforeNext',
+      label: 'On Before Next',
+      description: 'Enter functionality that will get triggered before next action.',
+      labelAlign: 'right',
+      parentId: 'root',
+      exposedVariables: EXPOSED_VARIABLES,
+    })
+    .addCodeEditor({
+      id: '1d0091ab-875b-496d-9add-67c2d2f5212c',
+      name: 'onAfterNext',
+      label: 'On After Next',
+      description: 'Enter functionality that will get triggered after next action.',
+      labelAlign: 'right',
+      parentId: 'root',
+      exposedVariables: EXPOSED_VARIABLES,
+    })
     .addConfigurableActionConfigurator({
       id: 'F3B46A95-703F-4465-96CA-A58496A5F78C',
       name: 'nextButtonActionConfiguration',
@@ -184,6 +203,24 @@ export const getSettings = (_data?: IWizardStepProps) =>
           type: 'object',
         },
       ],
+    })
+    .addCodeEditor({
+      id: '39a6c902-2d58-4e92-a139-20b6c85f5cbb',
+      name: 'onBeforeBack',
+      label: 'On Before Back',
+      description: 'Enter functionality that will get triggered before back action.',
+      labelAlign: 'right',
+      parentId: 'root',
+      exposedVariables: EXPOSED_VARIABLES,
+    })
+    .addCodeEditor({
+      id: 'cd362420-f884-470e-80bc-d72315fc3f8e',
+      name: 'onAfterBack',
+      label: 'On After Back',
+      description: 'Enter functionality that will get triggered after back action.',
+      labelAlign: 'right',
+      parentId: 'root',
+      exposedVariables: EXPOSED_VARIABLES,
     })
     .addConfigurableActionConfigurator({
       id: '8CC6A43F-54EE-4756-9B87-6E9204F5AEFB',
@@ -272,6 +309,24 @@ export const getSettings = (_data?: IWizardStepProps) =>
           type: 'object',
         },
       ],
+    })
+    .addCodeEditor({
+      id: '3a50c750-a5ec-4152-8a50-2fdefef4d37c',
+      name: 'onBeforeCancel',
+      label: 'On Before Cancel',
+      description: 'Enter functionality that will get triggered before cancel action.',
+      labelAlign: 'right',
+      parentId: 'root',
+      exposedVariables: EXPOSED_VARIABLES,
+    })
+    .addCodeEditor({
+      id: '417fa50e-6b37-4cbf-826a-c8b9d5117cdd',
+      name: 'onAfterCancel',
+      label: 'On After Cancel',
+      description: 'Enter functionality that will get triggered after cancel action.',
+      labelAlign: 'right',
+      parentId: 'root',
+      exposedVariables: EXPOSED_VARIABLES,
     })
     .addConfigurableActionConfigurator({
       id: 'F940D7A0-AA6D-4368-A745-E130F8627472',

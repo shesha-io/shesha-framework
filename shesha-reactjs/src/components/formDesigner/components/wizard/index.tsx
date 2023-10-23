@@ -8,7 +8,7 @@ import { useForm, useGlobalState } from '../../../../providers';
 import { IConfigurableFormComponent, useFormData, useSheshaApplication } from '../../../../';
 import { nanoid } from 'nanoid/non-secure';
 import WizardSettings from './settings';
-import { IStepProps, IWizardComponentProps } from './models';
+import { IStepProps, IWizardComponentProps, IWizardStepProps } from './models';
 import ShaIcon from '../../../shaIcon';
 import moment from 'moment';
 import { axiosHttp } from '../../../../utils/fetchers';
@@ -22,7 +22,7 @@ import './styles.less';
 import classNames from 'classnames';
 import { findLastIndex } from 'lodash';
 import ConditionalWrap from '../../../conditionalWrapper';
-import { getStepDescritpion, getWizardButtonStyle } from './utils';
+import { getStepDescritpion, getWizardButtonStyle, isEmptyArgument } from './utils';
 
 const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   type: 'wizard',
@@ -176,21 +176,45 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
 
     const actionEvaluationContext = {
       data: formData,
-      formMode: formMode,
-      globalState: globalState,
+      formMode,
+      globalState,
       http: axiosHttp(backendUrl),
-      message: message,
-      setGlobalState: setGlobalState,
-      moment: moment,
+      message,
+      setGlobalState,
+      moment,
+    };
+
+    const onAfterCallback = (callback: () => void, after?: (step: IWizardStepProps) => void) => {
+      try {
+        callback();
+      } finally {
+        if (after) after(visibleSteps[current]);
+      }
+    };
+
+    const successCallback = (type: 'back' | 'next') => {
+      setTimeout(() => {
+        const getStep = type === 'back' ? getPrevStep : getNextStep;
+        const step = getStep();
+
+        if (step >= 0) {
+          setCurrent(step);
+        }
+        setComponents(visibleSteps[current]?.components);
+      }, 100); // It is necessary to have time to complete a request
     };
 
     /// NAVIGATION
     const executeActionIfConfigured = (
-      accessor: (IWizardStepProps) => IConfigurableActionConfiguration,
-      success?: (actionResponse: any) => void
+      accessor: (step: IWizardStepProps) => IConfigurableActionConfiguration,
+      success?: (actionResponse: any) => void,
+      before?: (step: IWizardStepProps) => void
     ) => {
       const actionConfiguration = accessor(visibleSteps[current]);
-      if (!actionConfiguration) {
+
+      if (before) before(visibleSteps[current]);
+
+      if (!isEmptyArgument(actionConfiguration)) {
         console.warn(`Action not configured: tab '${current}', accessor: '${accessor.toString()}'`);
         if (success) success(null);
         return;
@@ -205,15 +229,15 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
 
     const next = () => {
       if (current >= model.steps.length - 1) return;
+
       executeActionIfConfigured(
         (tab) => tab.nextButtonActionConfiguration,
-        () => {
-          setTimeout(() => {
-            const nextStep = getNextStep();
-            if (nextStep >= 0) setCurrent(nextStep);
-            setComponents(visibleSteps[current]?.components);
-          }, 100); // It is necessary to have time to complete a request
-        }
+        () =>
+          onAfterCallback(
+            () => successCallback('next'),
+            (tab) => executeExpression(tab.onAfterNext)
+          ),
+        (tab) => executeExpression(tab.onBeforeNext)
       );
     };
 
@@ -222,18 +246,21 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
 
       executeActionIfConfigured(
         (tab) => tab.backButtonActionConfiguration,
-        () => {
-          setTimeout(() => {
-            const prevStep = getPrevStep();
-            if (prevStep >= 0) setCurrent(prevStep);
-            setComponents(visibleSteps[current]?.components);
-          }, 100); // It is necessary to have time to complete a request
-        }
+        () =>
+          onAfterCallback(
+            () => successCallback('back'),
+            (tab) => executeExpression(tab.onAfterBack)
+          ),
+        (tab) => executeExpression(tab.onBeforeBack)
       );
     };
 
     const cancel = () => {
-      executeActionIfConfigured((tab) => tab.cancelButtonActionConfiguration);
+      executeActionIfConfigured(
+        (tab) => tab.cancelButtonActionConfiguration,
+        () => executeExpression(visibleSteps[current]?.onAfterCancel),
+        (tab) => executeExpression(tab.onBeforeCancel)
+      );
     };
 
     const done = () => {
