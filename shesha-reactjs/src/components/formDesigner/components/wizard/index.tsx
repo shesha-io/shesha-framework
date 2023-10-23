@@ -5,7 +5,7 @@ import { Steps, Button, Space, message } from 'antd';
 import ComponentsContainer from '../../containers/componentsContainer';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useForm, useGlobalState } from '../../../../providers';
-import { IConfigurableFormComponent, useFormData, useSheshaApplication } from '../../../../';
+import { IConfigurableFormComponent, useFormData, useFormExpression, useSheshaApplication } from '../../../../';
 import { nanoid } from 'nanoid/non-secure';
 import WizardSettings from './settings';
 import { IStepProps, IWizardComponentProps, IWizardStepProps } from './models';
@@ -35,6 +35,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
     const { executeAction } = useConfigurableActionDispatcher();
+    const { executeBooleanExpression, executeExpression } = useFormExpression();
     const { steps: tabs, wizardType = 'default' } = model as IWizardComponentProps;
     const [current, setCurrent] = useState(() => {
       const localCurrent = model?.defaultActiveStep
@@ -45,6 +46,18 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
     });
 
     const [components, setComponents] = useState<IConfigurableFormComponent[]>();
+
+    //Remove every tab from the equation that isn't visible either by customVisibility or permissions
+    const visibleSteps = useMemo(
+      () =>
+        tabs.filter(({ customVisibility, permissions }) => {
+          const granted = anyOfPermissionsGranted(permissions || []);
+          const isVisibleByCondition = executeBooleanExpression(customVisibility, true);
+
+          return !((!granted || !isVisibleByCondition) && formMode !== 'designer');
+        }),
+      [tabs]
+    );
 
     useEffect(() => {
       const { defaultActiveStep, defaultActiveValue } = model || {};
@@ -58,6 +71,17 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
         setCurrent(step);
       }
     }, [model?.defaultActiveValue, model?.defaultActiveStep]);
+
+    useEffect(() => {
+      const actionConfiguration = visibleSteps[current]?.onBeforeRenderActionConfiguration;
+
+      if (isEmptyArgument(actionConfiguration)) {
+        executeAction({
+          actionConfiguration: actionConfiguration,
+          argumentsEvaluationContext: actionEvaluationContext,
+        });
+      }
+    }, [visibleSteps[current]?.onBeforeRenderActionConfiguration]);
 
     //#region configurable actions
     const { name: actionOwnerName, id: actionsOwnerId } = model;
@@ -120,54 +144,6 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
       actionDependencies
     );
     //#endregion
-
-    const executeBooleanExpression = (expression: string, returnBoolean = true) => {
-      if (!expression) {
-        if (returnBoolean) {
-          return true;
-        } else {
-          console.error('Expected expression to be defined but it was found to be empty.');
-          return false;
-        }
-      }
-
-      /* tslint:disable:function-constructor */
-      const evaluated = new Function('data, formMode, globalState, http, message, setGlobalState, moment', expression)(
-        formData,
-        formMode,
-        globalState,
-        axiosHttp(backendUrl),
-        message,
-        setGlobalState,
-        moment
-      );
-
-      // tslint:disable-next-line:function-constructor
-      return typeof evaluated === 'boolean' ? evaluated : true;
-    };
-
-    const executeExpression = (expression: string = '') =>
-      new Function('data, formMode, globalState, http, message, setGlobalState, moment', expression)(
-        formData,
-        formMode,
-        globalState,
-        axiosHttp(backendUrl),
-        message,
-        setGlobalState,
-        moment
-      );
-
-    //Remove every tab from the equation that isn't visible either by customVisibility or permissions
-    const visibleSteps = useMemo(
-      () =>
-        tabs.filter(({ customVisibility, permissions }) => {
-          const granted = anyOfPermissionsGranted(permissions || []);
-          const isVisibleByCondition = executeBooleanExpression(customVisibility, true);
-
-          return !((!granted || !isVisibleByCondition) && formMode !== 'designer');
-        }),
-      [tabs]
-    );
 
     const getNextStep = () => visibleSteps?.findIndex(({}, index) => index > current);
 
