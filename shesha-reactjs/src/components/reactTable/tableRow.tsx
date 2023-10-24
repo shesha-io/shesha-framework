@@ -27,7 +27,6 @@ export interface ISortableRowProps {
   inlineSaveMode?: InlineSaveMode;
   inlineEditorComponents?: IFlatComponentsStructure;
   inlineDisplayComponents?: IFlatComponentsStructure;
-  isDragging: boolean;
 }
 
 export const SortableRow: FC<ISortableRowProps> = (props) => {

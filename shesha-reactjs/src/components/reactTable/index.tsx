@@ -309,8 +309,6 @@ export const ReactTable: FC<IReactTableProps> = ({
 
   const Row = useMemo(() => (allowReordering ? SortableRow : TableRow), [allowReordering]);
 
-  const [isDragging] = useState<boolean>(false);
-
   const renderNewRowEditor = () => (
     <NewTableRowEditor
       columns={tableColumns}
@@ -355,7 +353,6 @@ export const ReactTable: FC<IReactTableProps> = ({
         inlineSaveMode={inlineSaveMode}
         inlineEditorComponents={inlineEditorComponents}
         inlineDisplayComponents={inlineDisplayComponents}
-        isDragging={isDragging}
       />
     );
   };
