@@ -275,7 +275,7 @@ export const getSettings = (_data?: IWizardStepProps) =>
     })
     .addConfigurableActionConfigurator({
       id: 'F940D7A0-AA6D-4368-A745-E130F8627472',
-      propertyName: 'cancelButtonConfiguration',
+      propertyName: 'cancelButtonActionConfiguration',
       label: 'Action configuration',
       hidden: false,
       customVisibility: '',

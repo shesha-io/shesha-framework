@@ -11,6 +11,7 @@ using Abp.Reflection;
 using Abp.Reflection.Extensions;
 using Castle.MicroKernel.Registration;
 using Shesha.Authorization;
+using Shesha.DynamicEntities;
 using Shesha.Email;
 using Shesha.GraphQL;
 using Shesha.Modules;
@@ -65,7 +66,8 @@ namespace Shesha
 
             IocManager.IocContainer.Register(
                 Component.For<IEmailSender>().Forward<ISheshaEmailSender>().Forward<SheshaEmailSender>().ImplementedBy<SheshaEmailSender>().LifestyleTransient(),
-                Component.For<IOtpManager>().Forward<IOtpAppService>().Forward<OtpAppService>().ImplementedBy<OtpAppService>().LifestyleTransient()
+                Component.For<IOtpManager>().Forward<IOtpAppService>().Forward<OtpAppService>().ImplementedBy<OtpAppService>().LifestyleTransient(),
+                Component.For(typeof(IEntityReorderer<,,>)).ImplementedBy(typeof(EntityReorderer<,,>)).LifestyleTransient()
             );
 
             #region Push notifications
