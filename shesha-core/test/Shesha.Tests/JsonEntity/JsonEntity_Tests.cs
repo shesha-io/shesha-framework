@@ -6,6 +6,7 @@ using Castle.DynamicProxy;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NHibernate.Linq;
+using NHibernate.Proxy;
 using Shesha.AutoMapper.Dto;
 using Shesha.Configuration.MappingMetadata;
 using Shesha.Domain;
@@ -17,13 +18,14 @@ using Shesha.Extensions;
 using Shesha.JsonEntities.Proxy;
 using Shesha.NHibernate.UoW;
 using Shesha.Services;
-using Shesha.Web.Core._Test;
+using Shesha.Test;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -84,6 +86,26 @@ namespace Shesha.Tests.JsonEntity
         {
             public int I { get; set; }
             public Int64? Ii { get; set; }
+        }
+
+        [Fact]
+        public async Task DynamicExpression()
+        {
+            LoginAsHostAdmin();
+
+            using var uow = (NhUnitOfWork)_unitOfWorkManager.Begin();
+
+            var session = uow.GetSession();
+
+            var myType = typeof(Organisation);
+
+            var parameterExpression = Expression.Parameter(myType, "x");
+            var memberExpression = Expression.PropertyOrField(parameterExpression, "PrimaryContact");
+            var idExpression = Expression.PropertyOrField(memberExpression, "Id");
+            var action = Expression.Equal(idExpression, Expression.Constant(Guid.Parse("32E2B3DD-4D99-4542-AF71-134EC7C0E2CE")));
+            var lambda = Expression.Lambda(action, parameterExpression);
+
+            var res = await _dynamicRepository.Where(myType, lambda).ToDynamicListAsync();
         }
 
         [Fact]

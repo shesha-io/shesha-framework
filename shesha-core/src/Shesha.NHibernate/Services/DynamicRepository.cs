@@ -10,6 +10,8 @@ using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Shesha.Services
@@ -133,5 +135,19 @@ namespace Shesha.Services
         {
             return CurrentSession.Query<T>();
         }
+
+        public IQueryable Query<T>(string entityType)
+        {
+            return CurrentSession.Query<T>(entityType);
+        }
+
+        public IQueryable Where(Type entityType, LambdaExpression lambda)
+        {
+            var where = new Func<IQueryable<int>, Expression<Func<int, bool>>, IQueryable<int>>(Queryable.Where).Method;
+            var whereForMyType = where.GetGenericMethodDefinition().MakeGenericMethod(entityType);
+            var query = CurrentSession.Query<object>(entityType.FullName).Cast(entityType.FullName);
+            return (IQueryable)whereForMyType.Invoke(query, new object[] { query, lambda });
+        }
+
     }
 }

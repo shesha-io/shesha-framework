@@ -43,7 +43,7 @@ namespace Shesha.Tests.Otp
             response.ErrorMessage.ShouldBeNullOrEmpty();
         }
 
-        private async Task<VerifyPinResponse> CheckOtpCommon(Action<VerifyPinInput> transformAction)
+        private async Task<IVerifyPinResponse> CheckOtpCommon(Action<VerifyPinInput> transformAction)
         {
             // todo: implement settings and register using normal way
             /*
@@ -95,7 +95,7 @@ namespace Shesha.Tests.Otp
             return await otp.VerifyPinAsync(verificationInput);
         }
     
-        private async Task<VerifyPinResponse> CheckEmailLink(Action<VerifyPinInput> action)
+        private async Task<IVerifyPinResponse> CheckEmailLink(Action<VerifyPinInput> action)
         {
             var settings = LocalIocManager.Resolve<IOtpSettings>();
 

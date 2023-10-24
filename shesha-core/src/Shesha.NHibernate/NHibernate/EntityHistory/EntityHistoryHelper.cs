@@ -287,15 +287,15 @@ namespace Shesha.NHibernate.EntityHistory
                                     ? StaticContext.IocManager.Resolve<IReferenceListHelper>()
                                         .GetItemDisplayText(new ReferenceListIdentifier(refListProperty.Module, refListProperty.Name),
                                             property.OldValue.GetType().IsEnum
-                                                ? (int?)Convert.ChangeType(property.OldValue, Enum.GetUnderlyingType(property.OldValue.GetType()))
-                                                : (int?)property.OldValue)
+                                                ? (long?)Convert.ChangeType(property.OldValue, Enum.GetUnderlyingType(property.OldValue.GetType()))
+                                                : (long?)property.OldValue)
                                     : null;
                                 newValue = property.NewValue != null
                                     ? StaticContext.IocManager.Resolve<IReferenceListHelper>()
                                         .GetItemDisplayText(new ReferenceListIdentifier(refListProperty.Module, refListProperty.Name),
                                             property.NewValue.GetType().IsEnum
-                                                ? (int?)Convert.ChangeType(property.NewValue, Enum.GetUnderlyingType(property.NewValue.GetType()))
-                                                : (int?)property.NewValue)
+                                                ? (long?)Convert.ChangeType(property.NewValue, Enum.GetUnderlyingType(property.NewValue.GetType()))
+                                                : (long?)property.NewValue)
                                     : null;
                             }
 
