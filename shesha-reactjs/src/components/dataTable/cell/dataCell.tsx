@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useRef } from 'react';
+import React, { FC, useRef } from 'react';
 import { CustomErrorBoundary } from '../../../components';
 import { useForm } from '../../../providers';
 import { useCrud } from '../../../providers/crudContext';
@@ -124,10 +124,9 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
     const component = toolboxComponents[customComponent.type];
     const injectables = getInjectables(props);
 
-    const componentModel = useMemo(() => {
-        const actualModel = useDeepCompareMemo(() => getActualModel(customComponent.settings, {...allData, tableRow: injectables.injectedTableRow}),
-          [allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
-    
+    const componentModel = useDeepCompareMemo(() => {
+        const actualModel = getActualModel(customComponent.settings, {...allData, tableRow: injectables.injectedTableRow});
+          
         let editorModel: IColumnEditorProps = {
             ...actualModel,
             ...injectables,
@@ -143,7 +142,7 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
         }
 
         return editorModel;
-    }, []);
+    }, [allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow, propertyMeta, injectables]);
 
     const componentRef = useRef();
 

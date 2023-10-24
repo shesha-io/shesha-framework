@@ -29,14 +29,13 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
 
     const actionKey = defaultActiveKey || (tabs?.length && tabs[0]?.key);
 
+    const items = useDeepCompareMemo(() => tabs?.map((item) =>  getActualModel(item, allData)),
+      [tabs, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
+
     return (
       <Tabs defaultActiveKey={actionKey} size={size} type={tabType} tabPosition={position}>
-        {tabs?.map(
+        {items?.map(
           (item) => {
-
-            const actualItem = useDeepCompareMemo(() => getActualModel(item, allData),
-              [allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
-        
             const {
               id,
               key,
@@ -52,7 +51,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
               hidden,
               disabled,
               components,
-            } = actualItem;
+            } = item;
 
             const granted = anyOfPermissionsGranted(permissions || []);
 
