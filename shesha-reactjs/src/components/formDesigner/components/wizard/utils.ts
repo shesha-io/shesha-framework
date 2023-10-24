@@ -1,6 +1,7 @@
+import { findLastIndex } from 'lodash';
 import { nanoid } from 'nanoid';
 import { IConfigurableActionConfiguration } from '../../../../interfaces/configurableAction';
-import { IWizardSequence } from './models';
+import { IWizardSequence, IWizardStepProps } from './models';
 
 export const EXPOSED_VARIABLES = [
   { id: nanoid(), name: 'data', description: 'The form data', type: 'object' },
@@ -22,6 +23,19 @@ export const EXPOSED_VARIABLES = [
   },
   { id: nanoid(), name: 'moment', description: 'The moment.js object', type: 'object' },
 ];
+
+export const getDefaultStep = (
+  tabs: IWizardStepProps[],
+  defaultVal: string,
+  active: string,
+  executeExpression: Function
+) => {
+  const stepNo = defaultVal ? executeExpression(defaultVal) : -1;
+  const activeStep = tabs?.findIndex((item) => item?.id === active);
+  const activeValue = tabs?.length > stepNo && stepNo > -1 ? stepNo : activeStep;
+
+  return typeof activeValue !== 'number' || activeValue < 0 ? 0 : activeValue;
+};
 
 export const getStepDescritpion =
   (show: boolean, sequence: IWizardSequence, currentIndex: number) => (description: string, index: number) => {
@@ -79,6 +93,11 @@ export const getWizardButtonStyle =
         return {};
     }
   };
+
+export const getWizardStep = (steps: IWizardStepProps[], current: number, type: 'back' | 'next') =>
+  type === 'next'
+    ? steps?.findIndex(({}, index) => index > current)
+    : findLastIndex(steps, ({}, index) => index < current);
 
 export const isEmptyArgument = (args: IConfigurableActionConfiguration) =>
   Object.getOwnPropertyNames(args || {})
