@@ -56,3 +56,39 @@ export const getStepDescritpion =
 
     return description;
   };
+
+export const getWizardButtonStyle =
+  (buttonsLayout: 'left' | 'right' | 'spaceBetween') => (type: 'back' | 'cancel' | 'next') => {
+    const left = { marginLeft: '8px' };
+    const right = { marginRight: '8px' };
+
+    switch (type) {
+      case 'back':
+        if (buttonsLayout === 'right') {
+          return {};
+        }
+
+        return right;
+
+      case 'cancel':
+        if (buttonsLayout === 'left') {
+          return right;
+        }
+
+        if (buttonsLayout === 'right') {
+          return left;
+        }
+
+        return {};
+
+      case 'next':
+        if (buttonsLayout === 'left') {
+          return {};
+        }
+
+        return left;
+
+      default:
+        return {};
+    }
+  };

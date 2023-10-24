@@ -611,26 +611,5 @@ namespace Shesha.Utilities
             else
                 throw new Exception($"Can't convert string to type {type.Name}");
         }
-
-        /*
-        public static EntityIdentificationInfo ParseFullyQualifiedEntityId(string idValue)
-        {
-            var result = new EntityIdentificationInfo();
-
-            var idParts = idValue.Split('|');
-
-            result.EntityType = Type.GetType(idParts[0]);
-            if (result.EntityType == null)
-                throw new Exception($"Type '{idParts[0]}' not found");
-
-            var idProp = result.EntityType.GetProperty("Id");
-            if (idProp == null)
-                throw new Exception($"Id property not found in the Type '{result.EntityType.Name}' class");
-
-            result.IdValue = ParseTo(idParts[1], idProp.PropertyType);
-
-            return result;
-        }
-        */
     }
 }

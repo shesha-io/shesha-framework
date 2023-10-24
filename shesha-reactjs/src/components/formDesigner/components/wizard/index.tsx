@@ -22,7 +22,7 @@ import './styles.less';
 import classNames from 'classnames';
 import { findLastIndex } from 'lodash';
 import ConditionalWrap from '../../../conditionalWrapper';
-import { getStepDescritpion } from './utils';
+import { getStepDescritpion, getWizardButtonStyle } from './utils';
 import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 
 const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
@@ -269,6 +269,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
     const splitButtons = buttonsLayout === 'spaceBetween';
 
     if (model?.hidden) return null;
+    const btnStyle = getWizardButtonStyle(buttonsLayout);
 
     return (
       <div className="sha-wizard">
@@ -303,7 +304,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
             >
               {current > 0 && (
                 <Button
-                  style={{ margin: '0 8px' }}
+                  style={btnStyle('back')}
                   onClick={() => back()}
                   disabled={!executeBooleanExpression(visibleSteps[current]?.backButtonCustomEnabled, true)}
                 >
@@ -313,6 +314,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
 
               {visibleSteps[current].allowCancel === true && (
                 <Button
+                  style={btnStyle('cancel')}
                   onClick={() => cancel()}
                   disabled={!executeBooleanExpression(visibleSteps[current]?.cancelButtonCustomEnabled, true)}
                 >
@@ -332,6 +334,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
               {current < visibleSteps.length - 1 && (
                 <Button
                   type="primary"
+                  style={btnStyle('next')}
                   onClick={() => next()}
                   disabled={!executeBooleanExpression(visibleSteps[current]?.nextButtonCustomEnabled, true)}
                 >
@@ -342,6 +345,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
               {current === visibleSteps.length - 1 && (
                 <Button
                   type="primary"
+                  style={btnStyle('next')}
                   onClick={() => done()}
                   disabled={!executeBooleanExpression(visibleSteps[current]?.doneButtonCustomEnabled, true)}
                 >

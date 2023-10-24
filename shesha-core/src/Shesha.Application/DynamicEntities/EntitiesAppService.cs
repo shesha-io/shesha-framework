@@ -1,4 +1,5 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.ObjectMapping;
@@ -13,12 +14,14 @@ using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.Domain;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Excel;
+using Shesha.Reflection;
 using Shesha.Specifications;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,7 +33,6 @@ namespace Shesha.DynamicEntities
         private readonly IExcelUtility _excelUtility;
         private readonly IObjectPermissionChecker _objectPermissionChecker;
         private readonly ISpecificationsFinder _specificationsFinder;
-        private readonly IRepository<EntityConfig, Guid> _entityConfigRepository;
 
         public IObjectMapper AutoMapper { get; set; }
 
@@ -38,15 +40,13 @@ namespace Shesha.DynamicEntities
             IEntityConfigurationStore entityConfigStore,
             IExcelUtility excelUtility,
             IObjectPermissionChecker objectPermissionChecker,
-            ISpecificationsFinder specificationsFinder,
-            IRepository<EntityConfig, Guid> entityConfigRepository
+            ISpecificationsFinder specificationsFinder
             )
         {
             _entityConfigStore = entityConfigStore;
             _excelUtility = excelUtility;
             _objectPermissionChecker = objectPermissionChecker;
             _specificationsFinder = specificationsFinder;
-            _entityConfigRepository= entityConfigRepository;
         }
 
         protected async Task CheckPermissionAsync(EntityConfiguration entityConfig, string method)
@@ -65,9 +65,9 @@ namespace Shesha.DynamicEntities
 
                 var typeName = entityConfig.EntityType.FullName;
 
-                var config = _entityConfigRepository.GetAll().FirstOrDefault(x => (x.Namespace + "." + x.ClassName) == typeName || x.TypeShortAlias == typeName);
-                if (!(config?.GenerateAppService ?? true))
-                    throw new NotSupportedException($"Application service is not configured for entity of type {typeName}");
+                //var config = _entityConfigRepository.GetAll().FirstOrDefault(x => (x.Namespace + "." + x.ClassName) == typeName || x.TypeShortAlias == typeName);
+                //if (!(config?.GenerateAppService ?? true))
+                //    throw new NotSupportedException($"Application service is not configured for entity of type {typeName}");
 
                 var appServiceType = entityConfig.ApplicationServiceType;
 
@@ -234,6 +234,28 @@ namespace Shesha.DynamicEntities
                 .ToList();
 
             return Task.FromResult(dtos);
+        }
+
+        /// <summary>
+        /// Reorder passed list of entities
+        /// </summary>
+        /// <returns>List of ids with new values of the OrderIndex</returns>
+        [HttpPut]
+        [ProducesResponseType(typeof(ReorderingItem<Guid, double>), 200)]
+        public async Task<IReorderResponse> ReorderAsync(ReorderRequest input)
+        {
+            var entityConfig = _entityConfigStore.Get(input.EntityType);
+            if (entityConfig == null)
+                throw new EntityTypeNotFoundException(input.EntityType);
+
+            var property = ReflectionHelper.GetProperty(entityConfig.EntityType, input.PropertyName, true);
+            if (property == null)
+                throw new ArgumentException($"Property `{input.PropertyName}` not found in the type `{input.EntityType}`");
+
+            var reordererType = typeof(IEntityReorderer<,,>).MakeGenericType(entityConfig.EntityType, entityConfig.IdType, property.PropertyType.GetUnderlyingTypeIfNullable());
+            var reorderer = IocManager.Resolve(reordererType) as IEntityReorderer;
+
+            return await reorderer.ReorderAsync(input, property);
         }
     }
 }
