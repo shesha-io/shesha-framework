@@ -23,7 +23,7 @@ export {
 } from './multiReadCheckBoxrefList';
 export { default as SimpleLayoutHeading, type ISimpleLayoutHeadingProps } from './simpleLayoutHeading';
 export { default as PageBtnContainer, type IPageBtnContainerProps } from './pageBtnContainer';
-export { default as ReactTable } from './reactTable';
+export { ReactTable } from './reactTable';
 export { type IReactTableProps } from './reactTable/interfaces';
 export {
   default as ConfigurableFormComponent,
@@ -65,7 +65,7 @@ export { default as GooglePlacesAutocomplete, type IGooglePlacesAutocompleteProp
 export { default as HtmlHead, type IHtmlHeadProps } from './htmlHead';
 export { default as IdleTimerRenderer, type IIdleTimerRendererProps } from './idleTimerRenderer';
 export { default as ChildTable, type IChildTableProps } from './childTable';
-export { default as DataTable, type IIndexTableProps, type IExtendedModalProps } from './dataTable';
+export { DataTable, type IIndexTableProps, type IExtendedModalProps } from './dataTable';
 export {
   default as DatatableAdvancedFilter,
   type IDatatableAdvancedFilterProps as IIndexTableColumnFiltersProps,

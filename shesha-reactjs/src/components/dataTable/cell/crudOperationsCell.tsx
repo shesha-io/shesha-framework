@@ -1,4 +1,4 @@
-import { CloseOutlined, DeleteOutlined, EditOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, DeleteOutlined, EditOutlined, PlusCircleOutlined, SaveOutlined } from '@ant-design/icons';
 import { Button, Popconfirm, Popover } from 'antd';
 import React, { FC, useMemo } from 'react';
 import { IErrorInfo } from '../../../interfaces/errorInfo';
@@ -22,6 +22,7 @@ const ActionButton: FC<IActionButtonProps> = ({ icon, title, executer, confirmat
   const mustConfirm = Boolean(confirmationText);
   const button = (
     <Button
+      type='link'
       shape="circle"
       icon={icon}
       onClick={
@@ -33,10 +34,9 @@ const ActionButton: FC<IActionButtonProps> = ({ icon, title, executer, confirmat
             }
       }
       title={title}
-      size="small"
-      style={{ margin: '0 3px' }}
       loading={loading}
       danger={Boolean(error)}
+      className="sha-link"
     />
   );
 
@@ -112,7 +112,7 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
       {
         title: 'Add',
         executer: onSaveCreateClick,
-        icon: <PlusOutlined />,
+        icon: <PlusCircleOutlined />,
         isVisible: isNewObject,
         loading: isSaving,
         error: saveError,
@@ -138,7 +138,7 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
         executer: () => {
           onCancelEditClick();
         },
-        icon: <CloseOutlined />,
+        icon: <CloseCircleOutlined />,
         isVisible: /*!autoSave &&*/ allowEdit && mode === 'update' && allowChangeMode,
       },
       {
@@ -146,7 +146,7 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
         executer: () => {
           onCancelEditClick();
         },
-        icon: <CloseOutlined />,
+        icon: <CloseCircleOutlined />,
         isVisible: /*!autoSave &&*/ isNewObject || (allowEdit && mode === 'update' && !allowChangeMode),
       },
       {
@@ -175,7 +175,7 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
   ]);
 
   return (
-    <div style={{ width: '100%', textAlign: 'center' }}>
+    <div className="sha-crud-cell">
       {buttons.map((btn, idx) => (
         <ActionButton {...btn} key={idx} />
       ))}

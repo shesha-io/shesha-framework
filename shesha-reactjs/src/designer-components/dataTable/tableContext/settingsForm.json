@@ -353,6 +353,42 @@
               "value": "desc"
             }
           ]
+        },
+        {
+          "id": "N3tW70oVHnRXeHX2zXfER",
+          "type": "dropdown",
+          "propertyName": "allowReordering",
+          "componentName": "allowReordering",
+          "label": "Allow reordering",
+          "labelAlign": "right",
+          "parentId": "zDXvnoMcutlROxXTERzQj",
+          "hidden": false,
+          "visibility": "Yes",
+          "customVisibility": null,
+          "isDynamic": false,
+          "version": 2,
+          "dataSourceType": "values",
+          "useRawValues": false,
+          "referenceListId": null,
+          "values": [
+            {
+              "id": "H1AvnU50WzwSbLpGH2yAm",
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "id": "JaPo9A-8BeUGuNiz23qIY",
+              "label": "No",
+              "value": "no"
+            },
+            {
+              "id": "f24l8a0fmiB5AbdHcX8oF",
+              "label": "Inherit",
+              "value": "inherit"
+            }
+          ],
+          "validate": {},
+          "settingsValidationErrors": []
         }
       ],
       "settingsValidationErrors": []

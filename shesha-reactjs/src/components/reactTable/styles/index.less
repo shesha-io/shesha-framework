@@ -34,10 +34,35 @@
         box-shadow: 0 2px 15px 0 rgb(0 0 0 / 15%);
       }
 
-      &.tr-body {
-        &:not(.sha-tr-selected) {
-          &:hover {
-            background: rgba(0, 0, 0, 0.03);
+      .sha-crud-cell {
+        display: flex;
+        width: 100%;
+        min-height: 22px;
+        justify-content: center;
+
+        .sha-link {
+          border: none;
+          padding: 0 5px;
+          width: auto;
+          height: auto;
+
+          .anticon {
+            font-size: 14px;
+            width: 14px;
+            min-width: 14px;
+          }
+        }
+      }
+
+      &.sha-new-row {
+        .sha-crud-cell {
+          height: 100%;
+          .sha-link {
+            .anticon {
+              font-size: 18px;
+              width: 18px;
+              min-width: 18px;
+            }
           }
         }
       }
@@ -47,15 +72,6 @@
         border-radius: 2px;
         opacity: 0.7;
       }
-
-      /*
-      :last-child {
-        .td {
-          border-bottom: 0;
-        }
-      }
-      */
-      /* border-bottom: 1px solid black; */
 
       &.tr-odd {
         background: rgba(0, 0, 0, 0.03);
@@ -78,13 +94,11 @@
 
     .th {
       &.sorted-asc {
-        // border-top: 3px solid @primary-color;
         border-top: 3px solid var(--ant-primary-color);
         padding-top: 5px;
       }
 
       &.sorted-desc {
-        // border-bottom: 3px solid @primary-color;
         border-bottom: 3px solid var(--ant-primary-color);
       }
     }
@@ -100,10 +114,6 @@
 
       /* In this example we use an absolutely position resizer, so this is required. */
       position: relative;
-
-      // :last-child {
-      //   border-right: 0;
-      // }
 
       .resizer {
         /* prevents from scrolling while dragging on touch devices */
@@ -126,9 +136,5 @@
         z-index: 10;
       }
     }
-
-    // .td {
-    //   align-items: center !important;
-    // }
   }
 }

@@ -6,6 +6,7 @@ import { RowCell } from './rowCell';
 import { CrudProvider } from 'providers/crudContext';
 import { InlineSaveMode } from './interfaces';
 import { IFlatComponentsStructure } from 'providers/form/models';
+import { useDataTableStore } from 'providers/index';
 
 export type RowEditMode = 'read' | 'edit';
 
@@ -28,22 +29,28 @@ export interface ISortableRowProps {
   inlineDisplayComponents?: IFlatComponentsStructure;
 }
 
-/*
-export const SortableRow = SortableElement<ISortableRowProps>(props => <TableRow {...props} />);
+export const SortableRow: FC<ISortableRowProps> = (props) => {
+  return <TableRow {...props} />;
+};
 
-export const RowDragHandle = SortableHandle(() => (
-  <div className="row-handle" style={{ cursor: 'grab' }}>
-    <MoreOutlined />
-  </div>
-));
-*/
-export const SortableRow: FC<ISortableRowProps> = (props) => <TableRow {...props} />;
 
-export const RowDragHandle = () => (
-  <div className="row-handle" style={{ cursor: 'grab' }}>
-    <MoreOutlined />
-  </div>
-);
+interface RowDragHandleProps {
+  row: Row<any>;
+}
+export const RowDragHandle: FC<RowDragHandleProps> = () => {
+  const { setDragState } = useDataTableStore();
+  const handleMouseDown = () => {
+    setDragState('started');
+  };
+  const handleMouseUp = () => {
+    setDragState(null);
+  };
+  return (
+    <div className="row-handle" style={{ cursor: 'grab' }} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp}>
+      <MoreOutlined />
+    </div>
+  );
+};
 
 export const TableRow: FC<ISortableRowProps> = (props) => {
   const {
@@ -64,6 +71,7 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
     inlineDisplayComponents,
   } = props;
 
+  const { hoverRowId, setHoverRowId, dragState: draggingRowId, setDragState } = useDataTableStore();
   const tableRef = useRef(null);
   const [selected, setSelected] = useState<Number>(selectedRowIndex);
 
@@ -91,6 +99,8 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
     document.addEventListener('click', onClickOutside);
   }, []);
 
+  const rowId = row.original.id ?? row.id;
+
   return (
     <CrudProvider
       isNewObject={false}
@@ -106,6 +116,19 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
       displayComponents={inlineDisplayComponents}
     >
       <div
+        key={rowId}
+        onMouseEnter={() => {
+          if (!draggingRowId){
+            if (hoverRowId !== rowId)
+              setHoverRowId(rowId);
+          } else {
+            if (draggingRowId === 'finished')
+              setDragState(null);
+          }
+        }}
+        onMouseLeave={() => {
+          setHoverRowId(null);
+        }}
         ref={tableRef}
         onClick={handleRowClick}
         onDoubleClick={handleRowDoubleClick}
@@ -113,7 +136,8 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
         className={classNames(
           'tr tr-body',
           { 'tr-odd': index % 2 === 0 },
-          { 'sha-tr-selected': selected === row?.index }
+          { 'sha-tr-selected': selected === row?.index },
+          { 'sha-hover': hoverRowId === rowId },
         )}
       >
         {row.cells.map((cell, index) => {

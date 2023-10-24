@@ -7,7 +7,7 @@ import React, { ComponentType, useMemo } from "react";
 import { FC } from "react";
 import { camelcaseDotNotation } from "utils/string";
 import { DataTableColumnDto, IExcelColumn, IExportExcelPayload, IGetDataFromBackendPayload, IGetListDataPayload, ITableDataColumn, ITableDataInternalResponse, ITableDataResponse } from "../interfaces";
-import { IRepository, IHasRepository, IHasModelType, RowsReorderPayload } from "./interfaces";
+import { IRepository, IHasRepository, IHasModelType, RowsReorderPayload, EntityReorderPayload, EntityReorderItem, EntityReorderResponse } from "./interfaces";
 import { convertDotNotationPropertiesToGraphQL } from "providers/form/utils";
 import { IConfigurableColumnsProps, IDataColumnsProps } from "providers/datatableColumnsConfigurator/models";
 import { IMetadataDispatcherActionsContext } from "providers/metadataDispatcher/contexts";
@@ -261,7 +261,7 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
             maxResultCount: 2147483647,
             columns: excelColumns,
         };
-        
+
         const excelEndpoint = `${GENERIC_ENTITIES_ENDPOINT}/ExportToExcel`;
         const excelDataUrl = `${backendUrl}${excelEndpoint}`;
 
@@ -277,8 +277,48 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
             });
     };
 
-    const reorder = (_payload: RowsReorderPayload) => {
-        return Promise.reject('Not implemented');
+    const reorder = (payload: RowsReorderPayload) => {
+        const reorderEndpoint = `${GENERIC_ENTITIES_ENDPOINT}/Reorder`;
+        const reorderUrl = `${backendUrl}${reorderEndpoint}`;
+
+        const oldRows = payload.getOld();
+        const newRows = payload.getNew();
+        const reorderedRows: EntityReorderItem[] = [];
+        newRows.forEach((row, index) => {
+            if (row !== oldRows[index])
+                reorderedRows.push({ id: row['id'], orderIndex: row[payload.propertyName] });
+        });
+
+        const reorderPayload: EntityReorderPayload = {
+            entityType: entityType,
+            propertyName: payload.propertyName,
+            items: reorderedRows,
+        };
+
+        // optimistic update
+        payload.applyOrder(newRows);
+
+        return axios({
+            url: reorderUrl,
+            method: 'PUT',
+            data: reorderPayload,
+            headers: httpHeaders,
+        })
+            .then(response => {
+                const dataResponse = response.data as IResult<EntityReorderResponse>;
+                if (dataResponse) {
+                   const responseItems = dataResponse.result.items;
+                    const orderedRows = newRows.map(row => {
+                        const newOrder = responseItems[row['id']];
+                        return newOrder 
+                            ? { ...row, [payload.propertyName]: newOrder }
+                            : row;
+                    });
+                    // real update
+                    payload.applyOrder(orderedRows);
+                }
+                return;
+            });
     };
 
     const repository: IBackendRepository = {
@@ -318,6 +358,6 @@ export const useBackendRepository = (args: IWithBackendRepositoryArgs): IBackend
 export function withBackendRepository<WrappedProps>(WrappedComponent: ComponentType<WrappedProps & IHasRepository & IHasModelType>, args: IWithBackendRepositoryArgs): FC<WrappedProps> {
     return props => {
         const repository = useBackendRepository(args);
-        return (<WrappedComponent {...props} repository={repository} modelType={args.entityType}/>);
+        return (<WrappedComponent {...props} repository={repository} modelType={args.entityType} />);
     };
 };

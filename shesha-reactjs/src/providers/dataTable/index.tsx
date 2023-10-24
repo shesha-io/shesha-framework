@@ -55,6 +55,8 @@ import {
   setMultiSelectedRowAction,
   fetchGroupingColumnsSuccessAction,
   setSortingSettingsAction,
+  setHoverRowAction,
+  setDraggingRowAction,
 } from './actions';
 import {
   DATA_TABLE_CONTEXT_INITIAL_STATE,
@@ -63,6 +65,7 @@ import {
   IDataTableStateContext,
   IDataTableUserConfig,
   IDataTableActionsContext,
+  DragState,
 } from './contexts';
 import {
   ColumnFilter,
@@ -97,7 +100,7 @@ interface IDataTableProviderBaseProps {
   initialPageSize?: number;
 
   dataFetchingMode: DataFetchingMode;
-  
+
   defaultOrderBy?: string;
   defaultSortOrder?: string;
 
@@ -108,6 +111,7 @@ interface IDataTableProviderBaseProps {
   sortMode?: SortMode;
   strictOrderBy?: string;
   strictSortOrder?: ColumnSorting;
+  allowReordering?: boolean;
 }
 
 interface IDataTableProviderWithRepositoryProps extends IDataTableProviderBaseProps, IHasRepository, IHasModelType {}
@@ -256,6 +260,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     strictSortOrder,
     defaultOrderBy: defaultSortBy,
     defaultSortOrder,
+    allowReordering = false,
   } = props;
 
   const [state, dispatch] = useThunkReducer(dataTableReducer, {
@@ -268,6 +273,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     sortMode,
     strictOrderBy,
     strictSortOrder,
+    allowReordering,
     standardSorting: !!defaultSortBy ? [{id: defaultSortBy, desc: defaultSortOrder === 'desc'}] : [],
   });
 
@@ -296,11 +302,11 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   const ctx = useDataContext(false);
 
-  // sync sorting
+  // sync ordering
   useEffect(() => {
-    if (sortMode !== state.sortMode || strictOrderBy !== state.strictOrderBy || strictSortOrder !== state.strictSortOrder)
-        dispatch(setSortingSettingsAction({ sortMode, strictOrderBy, strictSortOrder }));
-  }, [sortMode, strictOrderBy, strictSortOrder]);
+    if (sortMode !== state.sortMode || strictOrderBy !== state.strictOrderBy || strictSortOrder !== state.strictSortOrder || allowReordering !== state.allowReordering)
+        dispatch(setSortingSettingsAction({ sortMode, strictOrderBy, strictSortOrder, allowReordering }));
+  }, [sortMode, strictOrderBy, strictSortOrder, allowReordering]);
 
   // sync dataFetchingMode
   useEffect(() => {
@@ -346,8 +352,6 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     const columnsAreReady = !(requireColumnRef.current) || Boolean(state.configurableColumns) && state.columns.length === state.configurableColumns.length;
 
     const readyToFetch = repository && groupingIsReady && columnsAreReady;
-
-    //console.log('LOG: fetchDataIfReady', readyToFetch);
 
     if (readyToFetch) {
       // fecth using entity type
@@ -667,6 +671,16 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     dispatch(setSelectedRowAction(state.selectedRow?.id !== row?.id ? { index, row, id: row?.id } : null));
   };
 
+  const setHoverRowId = (id: string) => {
+    if (state.hoverRowId !== id)
+      dispatch(setHoverRowAction(id));
+  };
+  
+  const setDraggingState = (dragState: DragState) => {
+    if (state.dragState !== dragState)
+      dispatch(setDraggingRowAction(dragState));
+  };
+
   const setMultiSelectedRow = (rows: Row[] | Row) => {
     dispatch(setMultiSelectedRowAction(rows));
   };
@@ -698,6 +712,8 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     getRepository,
     setRowData,
     setSelectedRow,
+    setHoverRowId,
+    setDragState: setDraggingState,
     setMultiSelectedRow,
     requireColumns,
   };

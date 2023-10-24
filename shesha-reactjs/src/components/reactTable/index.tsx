@@ -22,13 +22,14 @@ import { IndeterminateCheckbox } from './indeterminateCheckbox';
 import { getPlainValue } from '../../utils';
 import NewTableRowEditor from './newTableRowEditor';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
+import { useDataTableStore } from 'providers/index';
 
 interface IReactTableState {
   allRows: any[];
   allColumns: Column<any>[];
 }
 
-const ReactTable: FC<IReactTableProps> = ({
+export const ReactTable: FC<IReactTableProps> = ({
   columns = [],
   data = [],
   useMultiSelect = false,
@@ -49,20 +50,17 @@ const ReactTable: FC<IReactTableProps> = ({
   onSort,
   scrollBodyHorizontally = false,
   height = 250,
-  allowRowDragAndDrop = false,
+  allowReordering = false,
   selectedRowIndex,
   containerStyle,
   minHeight,
   maxHeight,
   omitClick,
   tableStyle,
-
   canDeleteInline = false,
   deleteAction,
-
   canEditInline = false,
   updateAction,
-
   canAddInline = false,
   newRowCapturePosition,
   newRowInitData,
@@ -72,13 +70,15 @@ const ReactTable: FC<IReactTableProps> = ({
   inlineEditorComponents,
   inlineCreatorComponents,
   inlineDisplayComponents,
-  onRowsReordered,
   onRowsRendering,
+  onRowsReordered,
 }) => {
   const [componentState, setComponentState] = useState<IReactTableState>({
     allRows: data,
     allColumns: columns,
   });
+
+  const { setDragState } = useDataTableStore();
 
   const { allColumns, allRows } = componentState;
 
@@ -95,7 +95,7 @@ const ReactTable: FC<IReactTableProps> = ({
   const preparedColumns = useMemo(() => {
     const localColumns = [...allColumns];
 
-    if (allowRowDragAndDrop) {
+    if (allowReordering) {
       localColumns.unshift({
         accessor: nanoid(),
         // id: accessor, // This needs to be fixed
@@ -105,12 +105,12 @@ const ReactTable: FC<IReactTableProps> = ({
         maxWidth: 35,
         disableSortBy: true,
         disableResizing: true,
-        Cell: () => <RowDragHandle />,
+        Cell: ({ row }) => <RowDragHandle row={row}/>,
       });
     }
 
     return localColumns;
-  }, [allColumns, allowRowDragAndDrop]);
+  }, [allColumns, allowReordering]);
 
   const getColumnAccessor = cid => {
     const column = columns.find(c => c.id === cid);
@@ -251,15 +251,6 @@ const ReactTable: FC<IReactTableProps> = ({
     }
   }, [selectedRowIds]);
 
-  /*
-  const onSortEnd = useCallback(({ oldIndex, newIndex }) => {
-    if (onRowDropped) {
-      onRowDropped(camelCaseKeys(allRowsRef?.current[oldIndex], { deep: true, pascalCase: true }), oldIndex, newIndex);
-    }
-    setComponentState(prev => ({ ...prev, allRows: arrayMove(prev?.allRows, oldIndex, newIndex) }));
-  }, []);
-  */
-
   const onSetList = (newState: ItemInterface[], _sortable, _store) => {
     if (!onRowsReordered) {
       console.error('Datatable: re-ordering logic is not specified');
@@ -271,29 +262,21 @@ const ReactTable: FC<IReactTableProps> = ({
       return;
 
     if (rows.length === newState.length) {
-      let isModified = false;
-      // detect changes using references
-      const newRows = [];
-      for (let i = 0; i < rows.length; i++) {
-        const typedRow = newState[i] as Row<any>;
-        if (rows[i] !== typedRow) {
-          isModified = true;
-          //break;
-        }
-        newRows.push(typedRow.original);
-      }
-
-      if (isModified) {
+      const changedIndex = newState.find((item, index) => {
+        const typedRow = item as Row<any>;
+        return typedRow.original !== rows[index].original;
+      });
+      if (changedIndex) {
         const payload: OnRowsReorderedArgs = {
-          reorderedRows: newRows
+          getOld: () => rows.map(row => row.original),
+          getNew: () => newState.map(row => row.original),
+          applyOrder: (orderedItems) => {
+            setComponentState(prev => ({ ...prev, allRows: orderedItems }));
+          }
         };
-        onRowsReordered(payload).then(() => {
-          // optimistic update
-          setComponentState(prev => ({ ...prev, allRows: newRows }));
-        });
-      }
-    } else
-      console.log('LOG: length differs', { rowsLength: rows.length, newStateLength: newState.length });
+        onRowsReordered(payload);
+      };
+    };
   };
 
 
@@ -324,7 +307,7 @@ const ReactTable: FC<IReactTableProps> = ({
     }
   };
 
-  const Row = useMemo(() => (allowRowDragAndDrop ? SortableRow : TableRow), [allowRowDragAndDrop]);
+  const Row = useMemo(() => (allowReordering ? SortableRow : TableRow), [allowReordering]);
 
   const renderNewRowEditor = () => (
     <NewTableRowEditor
@@ -356,7 +339,7 @@ const ReactTable: FC<IReactTableProps> = ({
         onDoubleClick={handleDoubleClickRow}
         row={row}
         index={rowIndex}
-        allowSort={allowRowDragAndDrop}
+        allowSort={allowReordering}
         selectedRowIndex={selectedRowIndex}
 
         allowEdit={canEditInline}
@@ -443,9 +426,12 @@ const ReactTable: FC<IReactTableProps> = ({
             )}
 
             <ConditionalWrap
-              condition={allowRowDragAndDrop}
+              condition={allowReordering}
               wrap={children => (
                 <ReactSortable
+                  onUnchoose={(_evt) => {
+                    setDragState('finished');
+                  }}
                   list={rows}
                   setList={onSetList}
                   fallbackOnBody={true}
@@ -475,5 +461,3 @@ const ReactTable: FC<IReactTableProps> = ({
     </Spin>
   );
 };
-
-export default ReactTable;

@@ -106,10 +106,6 @@ export const IdBug = addStory(DesignerTemplate, {
   formId: '26a5e494-a632-468e-aec8-401a192c56f0'
 });
 
-export const InMemoryTable = addStory(DesignerTemplate, {
-  formId: 'c2773e2b-6cd8-4892-ad30-7b92e5132229'
-});
-
 export const TableProps = addStory(DesignerTemplate, {
   formId: 'e9f6a715-cbe2-42c0-844f-fe97b5b8f476'
 });
@@ -124,9 +120,18 @@ export const IvanTestForm = addStory(DesignerTemplate, {
 });
 
 export const TableGrouping = addStory(DesignerTemplate, {
-  formId: 'a641bb37-1afb-43f5-a0ae-61dab50e66d5'
+  formId: 'c4f61a79-f03f-4a63-bf02-bf72f7d66f0e'
 });
 
 export const DataList = addStory(DesignerTemplate, {
   formId: 'b0109b98-0660-427f-b373-4ca78f9a50ff'
+});
+
+export const HomeUrls = addStory(DesignerTemplate, {
+  formId: '52b8ffd5-9d50-40a1-9856-f6d2ab30eb1b'
+});
+
+export const InMemoryTable = addStory(DesignerTemplate, {
+  formId: '4866ae36-17ef-4df0-bff9-5d29e23dd03c'
+  // formId: 'c2773e2b-6cd8-4892-ad30-7b92e5132229'
 });

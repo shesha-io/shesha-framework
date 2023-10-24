@@ -112,8 +112,6 @@ export const useExecuteScriptAction = () => {
         if (!actionArgs.expression)
           return Promise.reject('Expected expression to be defined but it was found to be empty.');
 
-        console.log('context is: ', context);
-
         return executeScript(actionArgs.expression, context);
       },
     },

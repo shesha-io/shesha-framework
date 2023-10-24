@@ -13,7 +13,7 @@ import { IModalProps } from 'providers/dynamicModal/models';
 import { useEntitySelectionData } from 'utils/entity';
 import GlobalTableFilter from '../globalTableFilter';
 import camelCaseKeys from 'camelcase-keys';
-import DataTable from '../dataTable';
+import { DataTable } from '../dataTable';
 import ReadOnlyDisplayFormItem from '../readOnlyDisplayFormItem';
 import TablePager from '../tablePager';
 import { IEntityPickerProps, IEntityPickerState } from './models';

@@ -1,8 +1,12 @@
 import { IConfigurableColumnsProps } from "providers/datatableColumnsConfigurator/models";
+import { IDictionary } from "src/index";
 import { DataTableColumnDto, IGetListDataPayload, ITableDataInternalResponse } from "../interfaces";
 
 export interface RowsReorderPayload {
-    reorderedRows: object[];
+    propertyName: string;
+    getOld: () => object[];
+    getNew: () => object[];
+    applyOrder: (orderedItems: object[]) => void;
 }
 
 export interface IRepository<TCreateOptions = any, TUpdateOptions = any, TDeleteOptions = any> {
@@ -22,4 +26,17 @@ export interface IHasModelType {
 
 export interface IHasRepository {
     repository: IRepository;
+}
+
+export interface EntityReorderItem {
+    id: string;
+    orderIndex: number;
+}
+export interface EntityReorderPayload {
+    entityType: string;
+    propertyName: string;
+    items: EntityReorderItem[];
+}
+export interface EntityReorderResponse {
+    items: IDictionary<number>;
 }

@@ -1,4 +1,6 @@
 import { FormInstance } from 'antd';
+import { YesNoInherit } from 'interfaces/formDesigner';
+import { FormMode } from 'providers/form/models';
 
 interface IDataWithFields {
   _formFields: string[];
@@ -107,4 +109,19 @@ export const removeGhostKeys = (form: any): any => {
   const payload = entries.reduce((acc, [key, value]) => ({ ...acc, ...{ [key as string]: value } }), {});
 
   return payload;
+};
+
+export const evaluateYesNo = (
+  value: YesNoInherit,
+  formMode: FormMode
+): boolean => {
+  switch (value) {
+    case 'yes':
+      return true;
+    case 'no':
+      return false;
+    case 'inherit':
+      return formMode === 'edit';
+  }
+  return false;
 };

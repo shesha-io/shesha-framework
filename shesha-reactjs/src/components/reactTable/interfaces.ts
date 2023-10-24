@@ -18,13 +18,16 @@ export interface IColumnResizing {
 }
 
 export interface OnRowsReorderedArgs {
-  reorderedRows: object[];
+  // allRows: object[];
+  // reorderedRows: object[];
+
+  getOld: () => object[];
+  getNew: () => object[];
+  applyOrder: (orderedItems: object[]) => void;
 }
 
 export interface ITableRowDragProps {
-  allowRowDragAndDrop?: boolean;
-
-  onRowsReordered?: (payload: OnRowsReorderedArgs) => Promise<void>;
+  allowReordering?: boolean;
 }
 
 export type RowDataInitializer = () => Promise<object>;
@@ -208,6 +211,7 @@ export interface IReactTableProps extends ITableRowDragProps {
   inlineCreatorComponents?: IFlatComponentsStructure;
   inlineDisplayComponents?: IFlatComponentsStructure;
   onRowsRendering?: OnRowsRendering;
+  onRowsReordered?: (payload: OnRowsReorderedArgs) => Promise<void>;
 }
 
 
