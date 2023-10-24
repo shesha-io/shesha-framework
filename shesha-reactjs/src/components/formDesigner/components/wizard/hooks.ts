@@ -257,7 +257,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
   };
 
   const next = () => {
-    if (!(current >= tabs.length - 1))
+    if (current < tabs.length - 1)
       executeActionIfConfigured(
         (tab) => tab.nextButtonActionConfiguration,
         () =>
