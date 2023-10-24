@@ -1,7 +1,7 @@
 import { Row } from 'react-table';
 import { createAction } from 'redux-actions';
 import { IConfigurableColumnsProps } from '../datatableColumnsConfigurator/models';
-import { IDataTableUserConfig, ISelectionProps } from './contexts';
+import { DragState, IDataTableUserConfig, ISelectionProps } from './contexts';
 import {
   DataFetchingMode,
   DataTableColumnDto,
@@ -58,6 +58,8 @@ export enum DataTableActionEnums {
 
   // selections
   SetSelectedRow = 'SET_SELECTED_ROW',
+  SetHoverRow = 'SET_HOVER_ROW',
+  SetDraggingState = 'SET_DRAGGING_STATE',
   SetMultiSelectedRow = 'SET_MULTI_SELECTED_ROW',
 
   FetchGroupingColumns = 'FETCH_GROUPING_COLUMNS',
@@ -67,6 +69,16 @@ export enum DataTableActionEnums {
 
 export const setSelectedRowAction = createAction<ISelectionProps, ISelectionProps>(
   DataTableActionEnums.SetSelectedRow,
+  p => p
+);
+
+export const setHoverRowAction = createAction<string, string>(
+  DataTableActionEnums.SetHoverRow,
+  p => p
+);
+
+export const setDraggingRowAction = createAction<DragState, DragState>(
+  DataTableActionEnums.SetDraggingState,
   p => p
 );
 
@@ -242,6 +254,7 @@ export interface ISortingSettingsActionPayload {
   sortMode?: SortMode;
   strictOrderBy?: string;
   strictSortOrder?: ColumnSorting;
+  allowReordering: boolean;
 }
 export const setSortingSettingsAction = createAction<
   ISortingSettingsActionPayload,

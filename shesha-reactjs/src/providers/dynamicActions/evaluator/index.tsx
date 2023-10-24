@@ -1,6 +1,7 @@
 import { ButtonGroupItemProps, IButtonGroupItemBase, IDynamicItem, isDynamicItem, isGroup } from 'providers/buttonGroupConfigurator/models';
 import { useDynamicActionsDispatcher } from 'providers/index';
 import React, { FC, useEffect, useMemo, useState } from 'react';
+import { DYNAMIC_ACTIONS_CONTEXT_INITIAL_STATE, IDynamicActionsContext } from '../contexts';
 
 export interface IDynamicActionsEvaluatorProps {
     items: ButtonGroupItemProps[];
@@ -39,7 +40,7 @@ export const DynamicActionsEvaluator: FC<IDynamicActionsEvaluatorProps> = ({ ite
 
     return (
         <>
-            {evaluation.dynamicItems.map(item => (<SingleDynamicItemEvaluator item={item} onEvaluated={onDynamicItemEvaluated} key={item.id}/>))}
+            {evaluation.dynamicItems.map(item => (<SingleDynamicItemEvaluator item={item} onEvaluated={onDynamicItemEvaluated} key={item.id} />))}
             {children(finalItems)}
         </>
     );
@@ -99,20 +100,29 @@ const SingleDynamicItemEvaluator: FC<SingleDynamicItemEvaluatorProps> = ({ item,
     const dispatcher = useDynamicActionsDispatcher();
 
     const providers = dispatcher.getProviders();
-    const provider = providers[item.dynamicItemsConfiguration.providerUid].contextValue;
+    const provider = providers[item.dynamicItemsConfiguration.providerUid];
+    const actionsContext = provider 
+        ? provider.contextValue 
+        : DEFAULT_DYNAMIC_EVALUATOR;
 
     // call a hook
-    const evaluatedItems = provider.useEvaluator({
-        item        
+    const evaluatedItems = actionsContext.useEvaluator({
+        item
     });
-    
+
     useEffect(() => {
         item.resolvedItems = evaluatedItems;
         item.isResolved = true;
         onEvaluated(evaluatedItems);
     }, [evaluatedItems]);
-    
+
     return null;
+};
+
+const EMPTY_ITEMS = [];
+const DEFAULT_DYNAMIC_EVALUATOR: IDynamicActionsContext = {
+    ...DYNAMIC_ACTIONS_CONTEXT_INITIAL_STATE,
+    useEvaluator: () => (EMPTY_ITEMS), // note: it's important to use constant to prevent infinite re-calculation ([] !== [])
 };
 
 interface IResolvedDynamicItem extends IDynamicItem {

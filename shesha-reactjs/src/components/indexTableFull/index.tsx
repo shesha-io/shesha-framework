@@ -1,7 +1,7 @@
 import React, { FC, Fragment, ReactNode } from 'react';
 import { IndexTableControls } from '../indexTableControls';
 import CollapsibleSidebarContainer from '../collapsibleSidebarContainer';
-import DataTable from '../dataTable';
+import { DataTable } from '../dataTable';
 import { IShaDataTableProps } from '../dataTable/interfaces';
 import { useDataTableStore } from '../../providers';
 import DatatableAdvancedFilter from '../dataTable/advancedFilter';

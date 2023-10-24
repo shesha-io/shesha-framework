@@ -153,7 +153,13 @@ export interface IDataTableStateContext
 
   selectedRow?: ISelectionProps;
   selectedRows?: { [key in string]: string }[];
+
+  allowReordering: boolean;
+  hoverRowId?: string;
+  dragState?: DragState;
 }
+
+export type DragState = 'started' | 'finished' | null;
 
 export interface IDataTableActionsContext
   extends IFlagsSetters<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags>,
@@ -205,6 +211,8 @@ export interface IDataTableActionsContext
   setRowData: (rowIndex: number, data: any) => void;
 
   setSelectedRow: (index: number, row: any) => void;
+  setHoverRowId: (id: string) => void;
+  setDragState: (dragState: DragState) => void;
   setMultiSelectedRow: (rows: Row[] | Row) => void;
 }
 
@@ -238,6 +246,7 @@ export const DATA_TABLE_CONTEXT_INITIAL_STATE: IDataTableStateContext = {
   selectedRow: null,
   selectedRows: [],
   hiddenFilters: {},
+  allowReordering: false,
 };
 
 export interface DataTableFullInstance extends IDataTableStateContext, IDataTableActionsContext { }

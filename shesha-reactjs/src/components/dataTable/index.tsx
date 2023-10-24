@@ -18,8 +18,8 @@ import {
 import { DataTableFullInstance } from '../../providers/dataTable/contexts';
 import { removeUndefinedProperties } from '../../utils/array';
 import { camelcaseDotNotation, toCamelCase } from '../../utils/string';
-import ReactTable from '../reactTable';
-import { IReactTableProps, OnRowsRendering, RowDataInitializer, RowRenderer } from '../reactTable/interfaces';
+import { ReactTable } from '../reactTable';
+import { IReactTableProps, OnRowsRendering, OnRowsReorderedArgs, RowDataInitializer, RowRenderer } from '../reactTable/interfaces';
 import { getCellRenderer } from './cell';
 import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions } from 'providers/dataTable/repository/backendRepository';
 import { isDataColumn, ITableDataColumn } from 'providers/dataTable/interfaces';
@@ -29,10 +29,11 @@ import { executeScriptSync } from 'providers/form/utils';
 import moment from 'moment';
 import { axiosHttp } from 'utils/fetchers';
 import { IAnyObject } from 'interfaces';
-import { DataTableColumn, IShaDataTableProps, OnSaveHandler, OnSaveSuccessHandler, YesNoInherit } from './interfaces';
+import { DataTableColumn, IShaDataTableProps, OnSaveHandler, OnSaveSuccessHandler, YesNoInheritJs } from './interfaces';
 import { ValueRenderer } from '../valueRenderer/index';
 import { isEqual } from "lodash";
 import { Collapse, Typography } from 'antd';
+import { RowsReorderPayload } from 'providers/dataTable/repository/interfaces';
 
 export interface IIndexTableOptions {
   omitClick?: boolean;
@@ -63,8 +64,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   onExportError,
   onFetchDataSuccess,
   onSelectedIdsChanged,
-  onRowsReordered,
-  allowRowDragAndDrop,
+  allowReordering,
   options,
   containerStyle,
   tableStyle,
@@ -105,6 +105,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     error: { exportToExcel: exportToExcelError },
     grouping,
     sortMode,
+    strictOrderBy,
   } = store;
 
   const onSelectRowLocal = (index: number, row: any) => {
@@ -203,7 +204,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   }, [onNewRowInitializeExecuter, formData, globalState]);
 
   const evaluateYesNoInheritJs = (
-    value: YesNoInherit,
+    value: YesNoInheritJs,
     jsExpression: string,
     formMode: FormMode,
     formData: any,
@@ -540,6 +541,27 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     );
   };
 
+  const handleRowsReordered = (payload: OnRowsReorderedArgs): Promise<void> => {
+    /*
+    if (sortMode !== 'strict' || !strictOrderBy)
+      return Promise.reject('`sortMode` and `strictOrderBy` properties are mandatory for the generic reordering functionality');
+    */
+      if (sortMode !== 'strict')
+      return Promise.reject('`sortMode` property is mandatory for the generic reordering functionality');
+
+    const repository = store.getRepository();
+    if (!repository) 
+      return Promise.reject('Repository is not specified');
+
+    const reorderPayload: RowsReorderPayload = {
+      //reorderedRows: payload.reorderedRows,
+      ...payload,
+      propertyName: strictOrderBy,
+    };
+    
+    return repository.reorder(reorderPayload);
+  };
+
   const tableProps: IReactTableProps = {
     data: tableData,
     // Disable sorting if we're in create mode so that the new row is always the first
@@ -561,8 +583,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         <LoadingOutlined /> loading...
       </span>
     ),
-    onRowsReordered,
-    allowRowDragAndDrop,
+    onRowsReordered: handleRowsReordered,
+    allowReordering,
     containerStyle,
     tableStyle,
     omitClick: options?.omitClick,
@@ -597,5 +619,3 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     </Fragment>
   );
 };
-
-export default DataTable;

@@ -33,6 +33,8 @@
       "apis/*": ["src/apis/*"],
       "components": ["src/components"],
       "components/*": ["src/components/*"],
+      "designer-components": ["src/designer-components"],
+      "designer-components/*": ["src/designer-components/*"],
       "hooks": ["src/hooks"],
       "hooks/*": ["src/hooks/*"],
       "interfaces": ["src/interfaces"],

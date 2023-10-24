@@ -1,17 +1,17 @@
 import { LayoutOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
 import React, { FC, Fragment, useEffect, useMemo } from 'react';
-import ComponentsContainer from '../../../components/formDesigner/containers/componentsContainer';
-import { IToolboxComponent } from '../../../interfaces';
-import { useDataTableStore, useForm, useFormData } from '../../../providers';
-import DataTableProvider from '../../../providers/dataTable';
-import { FormMarkup, IConfigurableFormComponent } from '../../../providers/form/models';
-import { evaluateString, validateConfigurableComponentSettings } from '../../../providers/form/utils';
+import ComponentsContainer from 'components/formDesigner/containers/componentsContainer';
+import { IToolboxComponent, YesNoInherit } from 'interfaces';
+import { useDataTableStore, useForm, useFormData } from 'providers';
+import DataTableProvider from 'providers/dataTable';
+import { FormMarkup, IConfigurableFormComponent } from 'providers/form/models';
+import { evaluateString, validateConfigurableComponentSettings } from 'providers/form/utils';
 import settingsFormJson from './settingsForm.json';
 import { ColumnSorting, DataFetchingMode, GroupingItem, SortMode } from 'providers/dataTable/interfaces';
-//import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
-import { migrateCustomFunctions, migratePropertyName } from '../../../designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 import { ConfigurableFormItem } from 'components';
+import { evaluateYesNo } from 'utils/form';
 
 export interface ITableContextComponentProps extends IConfigurableFormComponent {
   sourceType?: 'Form' | 'Entity' | 'Url';
@@ -24,6 +24,7 @@ export interface ITableContextComponentProps extends IConfigurableFormComponent 
   sortMode?: SortMode;
   strictOrderBy?: string;
   strictSortOrder?: ColumnSorting;
+  allowReordering?: YesNoInherit;
 }
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -62,7 +63,7 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
         };
       })
       .add<ITableContextComponentProps>(4, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-      .add<ITableContextComponentProps>(5, (prev) => ({ ...prev, sortMode: 'standard', strictSortOrder: 'asc' }))
+      .add<ITableContextComponentProps>(5, (prev) => ({ ...prev, sortMode: 'standard', strictSortOrder: 'asc', allowReordering: 'no' }))
   ,
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
@@ -81,7 +82,7 @@ interface ITableContextInnerProps extends ITableContextComponentProps {
 }
 
 export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
-  const { sourceType, entityType, endpoint, id, propertyName, componentName } = props;
+  const { sourceType, entityType, endpoint, id, propertyName, componentName, allowReordering } = props;
   const { formMode } = useForm();
   const { data } = useFormData();
 
@@ -127,6 +128,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
       sortMode={props.sortMode}
       strictOrderBy={props.strictOrderBy}
       strictSortOrder={props.strictSortOrder}
+      allowReordering={evaluateYesNo(allowReordering, formMode)}
     >
       <TableContextAccessor {...props} />
     </DataTableProvider>

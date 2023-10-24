@@ -4,6 +4,7 @@ import flagsReducer from '../utils/flagsReducer';
 import {
   DATA_TABLE_CONTEXT_INITIAL_STATE,
   DEFAULT_PAGE_SIZE_OPTIONS,
+  DragState,
   IDataTableStateContext,
   ISelectionProps,
 } from './contexts';
@@ -48,6 +49,30 @@ const reducer = handleActions<IDataTableStateContext, any>(
       const { payload } = action;
       const selectedRow = state?.selectedRow?.id === payload?.id ? null : payload;
       return { ...state, selectedRow };
+    },
+
+    [DataTableActionEnums.SetHoverRow]: (
+      state: IDataTableStateContext,
+      action: ReduxActions.Action<string>
+    ) => {
+      const { payload } = action;
+      return { 
+        ...state, 
+        hoverRowId: payload,
+      };
+    },
+
+    [DataTableActionEnums.SetDraggingState]: (
+      state: IDataTableStateContext,
+      action: ReduxActions.Action<DragState>
+    ) => {
+      const { payload } = action;
+      return { 
+        ...state, 
+        dragState: payload,
+        selectedRow: null,
+        selectedIds: null,
+      };
     },
 
     [DataTableActionEnums.SetMultiSelectedRow]: (
@@ -499,6 +524,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
         sortMode: payload.sortMode,
         strictOrderBy: payload.strictOrderBy,
         strictSortOrder: payload.strictSortOrder,
+        allowReordering: payload.allowReordering,
       };
     },
 

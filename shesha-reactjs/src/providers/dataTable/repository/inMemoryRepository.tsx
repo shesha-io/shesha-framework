@@ -48,7 +48,7 @@ const createRepository = (args: IWithInMemoryRepositoryArgs): IRepository => {
             const dataCol = col.columnType === 'data'
                 ? col as IDataColumnsProps
                 : null;
-            if (dataCol){
+            if (dataCol) {
                 converted.push({
                     propertyName: dataCol.propertyName,
                     name: dataCol.propertyName,
@@ -73,7 +73,7 @@ const createRepository = (args: IWithInMemoryRepositoryArgs): IRepository => {
         const newRows = [...args.valueAccessor() ?? []];
         newRows[rowIndex] = data;
         args.onChange(newRows);
-        
+
         return Promise.resolve(data);
     };
 
@@ -81,14 +81,14 @@ const createRepository = (args: IWithInMemoryRepositoryArgs): IRepository => {
         const newRows = [...args.valueAccessor() ?? []];
         newRows.splice(rowIndex, 1);
         args.onChange(newRows);
-        
+
         return Promise.resolve(data);
     };
 
     const performCreate = (_rowIndex: number, data: any): Promise<any> => {
         const newRows = [...args.valueAccessor() ?? []];
         newRows.push(data);
-        
+
         args.onChange(newRows);
 
         return Promise.resolve(data);
@@ -99,8 +99,10 @@ const createRepository = (args: IWithInMemoryRepositoryArgs): IRepository => {
     };
 
     const reorder = (payload: RowsReorderPayload) => {
-        args.onChange(payload.reorderedRows);
-        
+        const newRows = payload.getNew();
+        args.onChange(newRows);
+
+        payload.applyOrder(newRows);
         return Promise.resolve();
     };
 
@@ -133,7 +135,7 @@ export function withInMemoryRepository<WrappedProps>(WrappedComponent: Component
 export interface IWithFormFieldRepositoryArgs {
     propertyName: string;
     getFieldValue?: (propertyName: string) => object[];
-    onChange?:  (...args: any[]) => void;
+    onChange?: (...args: any[]) => void;
 }
 export function withFormFieldRepository<WrappedProps>(WrappedComponent: ComponentType<WrappedProps & IHasRepository & IHasModelType>, args: IWithFormFieldRepositoryArgs): FC<WrappedProps> {
     const { propertyName, getFieldValue, onChange } = args;
@@ -144,7 +146,7 @@ export function withFormFieldRepository<WrappedProps>(WrappedComponent: Componen
             if (onChange)
                 onChange(newValue);
         }, [propertyName]);
-               
+
         const repository = useInMemoryRepository({ valueAccessor, onChange: onChangeAccessor });
 
         return (<WrappedComponent {...props} repository={repository} modelType={null} />);

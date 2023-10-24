@@ -6,7 +6,7 @@ import Checkbox from 'antd/lib/checkbox/Checkbox';
 import SectionSeparator from '../../../components/sectionSeparator';
 import CodeEditor from '../../../components/formDesigner/components/codeEditor/codeEditor';
 import { ConfigurableActionConfigurator } from '../../configurableActionsConfigurator/configurator';
-import { YesNoInherit } from 'components/dataTable/interfaces';
+import { YesNoInheritJs } from 'components/dataTable/interfaces';
 import { InlineEditMode, InlineSaveMode, NewRowCapturePosition } from 'components/reactTable/interfaces';
 import { nanoid } from 'nanoid';
 import { ISettingsFormFactoryArgs } from 'interfaces';
@@ -17,7 +17,7 @@ interface ITypedOption<T = string> {
   label: React.ReactNode;
   value: T;
 }
-const yesNoInheritOptions: ITypedOption<YesNoInherit>[] = [
+const yesNoInheritOptions: ITypedOption<YesNoInheritJs>[] = [
   { label: 'Yes', value: 'yes' },
   { label: 'No', value: 'no' },
   { label: 'Inherit', value: 'inherit' },
@@ -176,25 +176,8 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({read
   const [state, setState] = useState<IColumnsSettingsState>({
     showColumnsModal: false,
   });
-  /*const [form] = Form.useForm();
-  const canEditInline = Form.useWatch('canEditInline', form);
-  const canAddInline = Form.useWatch('canAddInline', form);
-  const canDeleteInline = Form.useWatch('canDeleteInline', form);*/
 
   const toggleColumnsModal = () => setState(prev => ({ ...prev, showColumnsModal: !prev?.showColumnsModal }));
-
-  /*const initialState: ITableComponentBaseProps = {
-    ...props?.model,
-  };
-
-  const onValuesChange = (changedValues, values: ITableComponentBaseProps) => {
-    setState(prev => ({
-      ...prev,
-      allowRowDragAndDrop: values?.allowRowDragAndDrop,
-    }));
-
-    if (props.onValuesChange) props.onValuesChange(changedValues, values as any);
-  };*/
 
   return (
     <>
@@ -328,7 +311,7 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({read
         <Input readOnly={readOnly} />
       </SettingsFormItem>
 
-      <SectionSeparator title="Row drag and drop" />
+      {/* <SectionSeparator title="Row drag and drop" />
 
       <SettingsFormItem  jsSetting
         name="allowRowDragAndDrop"
@@ -339,9 +322,9 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({read
         <Checkbox disabled={readOnly} />
       </SettingsFormItem>
 
-      <SettingsFormItem name="rowDroppedActionConfiguration">
+      <SettingsFormItem name="rowDroppedActionConfiguration" hidden={model.allowReordering === 'no'}>
         <ConfigurableActionConfigurator editorConfig={null} level={1} label="On Row Dropped Action" />
-      </SettingsFormItem>
+      </SettingsFormItem> */}
 
       <SectionSeparator title="Layout" />
 

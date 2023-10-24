@@ -19,8 +19,8 @@ export const ComponentSelectorComponent: IToolboxComponent<IComponentSelectorCom
     const { formMode } = useForm();
     const { data: formData } = useFormData();
 
-    const propertyName = model.propertyName 
-      ? evaluateString(model.propertyName, { data: formData }) 
+    const propertyName = model.propertyAccessor
+      ? evaluateString(model.propertyAccessor, { data: formData }) 
       : null;
     const { noSelectionItemText, noSelectionItemValue } = model;
     const meta = useMetadata(false);

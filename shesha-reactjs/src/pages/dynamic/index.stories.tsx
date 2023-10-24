@@ -166,8 +166,10 @@ export const BugFix = addStory(Template, {
     name: 'form-details',
     module: 'shesha'
   },
-  mode: 'edit',
-  id: '1f52e8de-b0e3-49ce-8830-67a15687505a'
+  mode: 'readonly',
+  id: '94b73a6f-6387-4167-89f6-6649846d7665'
+  // shesha/form-details?id=
+  //shesha/form-details?id=
 });
 
 export const DataList = addStory(Template, {
@@ -181,5 +183,12 @@ export const DataTable = addStory(Template, {
   formId: {
     name: 'forms',
     module: 'shesha'
+  },
+});
+
+export const MyItems = addStory(Template, {
+  formId: {
+    name: 'workflows-my-items',
+    module: 'Shesha.Enterprise.Workflow'
   },
 });

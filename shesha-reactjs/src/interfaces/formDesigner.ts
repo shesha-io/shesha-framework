@@ -178,3 +178,5 @@ export interface IComponentsContainerBaseProps {
   containerId: string;
   readOnly?: boolean;
 }
+
+export type YesNoInherit = 'yes' | 'no' | 'inherit';

@@ -8,7 +8,6 @@ import {
   DatatableAdvancedFilter,
   DatatableColumnsSelector,
 } from '../../../components';
-import { OnRowsReorderedArgs } from '../../../components/reactTable/interfaces';
 import { IToolboxComponent } from '../../../interfaces';
 import {
   useDataTableStore,
@@ -18,7 +17,6 @@ import {
   useSheshaApplication,
 } from '../../../providers';
 import { SheshaActionOwners } from '../../../providers/configurableActionsDispatcher/models';
-import { RowsReorderPayload } from '../../../providers/dataTable/repository/interfaces';
 import { getStyle } from '../../../providers/form/utils';
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
@@ -98,7 +96,7 @@ const NotConfiguredWarning: FC = () => {
 };
 
 export const TableWrapper: FC<ITableComponentProps> = (props) => {
-  const { id, items, useMultiselect, allowRowDragAndDrop, tableStyle, containerStyle } = props as ITableComponentProps;
+  const { id, items, useMultiselect, tableStyle, containerStyle } = props;
 
   const { formMode } = useForm();
   const { data: formData } = useFormData();
@@ -116,6 +114,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     selectedRow,
     setMultiSelectedRow,
     requireColumns,
+    allowReordering,
   } = useDataTableStore();
 
   requireColumns(); // our component requires columns loading. it's safe to call on each render
@@ -153,43 +152,6 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
 
   if (isDesignMode && !repository) return <NotConfiguredWarning />;
 
-  /*
-  const handleOnRowDropped = (row: any, oldIndex: number, newIndex: number) => {
-    changeActionedRow(row);
-
-    const evaluationContext = {
-      items: tableDataItems?.current,
-      selectedRow: row,
-      newIndex,
-      oldIndex,
-      data: formData,
-      moment: moment,
-      form,
-      formMode,
-      http: axiosHttp(backendUrl),
-      message,
-      globalState,
-      setFormData: setFormDataAndInstance,
-      setGlobalState,
-    };
-
-    if (rowDroppedActionConfiguration) {
-      executeAction({
-        actionConfiguration: rowDroppedActionConfiguration,
-        argumentsEvaluationContext: evaluationContext,
-      });
-    } else {
-      executeAction(getOnRowDroppedAction(props, evaluationContext));
-    }
-  };
-  */
-  const handleRowsReordered = (payload: OnRowsReorderedArgs): Promise<void> => {
-    const reorderPayload: RowsReorderPayload = {
-      reorderedRows: payload.reorderedRows,
-    };
-    return repository.reorder(reorderPayload);
-  };
-
   const toggleFieldPropertiesSidebar = () => {
     if (!isSelectingColumns && !isFiltering) setIsInProgressFlag({ isFiltering: true });
     else setIsInProgressFlag({ isFiltering: false, isSelectingColumns: false });
@@ -211,8 +173,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
         onMultiRowSelect={setMultiSelectedRow}
         selectedRowIndex={selectedRow?.index}
         useMultiselect={useMultiselect}
-        allowRowDragAndDrop={allowRowDragAndDrop}
-        onRowsReordered={handleRowsReordered}
+        allowReordering={allowReordering}
         tableStyle={getStyle(tableStyle, formData, globalState)}
         containerStyle={getStyle(containerStyle, formData, globalState)}
         canAddInline={props.canAddInline}

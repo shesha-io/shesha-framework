@@ -196,7 +196,7 @@
         {
           "id": "FGIcguhDkag6a801GXSgm",
           "type": "component-selector",
-          "componentName": "displayComponent",
+          "name": "displayComponent",
           "label": "Display component",
           "labelAlign": "right",
           "parentId": "EhERYkBRv066KGKNaRA7j",
@@ -210,12 +210,13 @@
           "settingsValidationErrors": [],
           "description": "",
           "noSelectionItemText": "Default",
-          "noSelectionItemValue": "[default]"
+          "noSelectionItemValue": "[default]",
+          "propertyAccessor": "{{data.propertyName}}"
         },
         {
           "id": "rYYm0wT-TDnBfqmOMVmIX",
           "type": "component-selector",
-          "componentName": "editComponent",
+          "name": "editComponent",
           "label": "Edit component",
           "labelAlign": "right",
           "parentId": "EhERYkBRv066KGKNaRA7j",
@@ -230,12 +231,12 @@
           "description": "",
           "noSelectionItemText": "Not editable",
           "noSelectionItemValue": "[not-editable]",
-          "propertyName": "{{data.propertyName}}"
+          "propertyAccessor": "{{data.propertyName}}"
         },
         {
           "id": "L2bRSuStgiAmWfd5Z09CR",
           "type": "component-selector",
-          "componentName": "createComponent",
+          "name": "createComponent",
           "label": "Create component",
           "labelAlign": "right",
           "parentId": "EhERYkBRv066KGKNaRA7j",
@@ -250,7 +251,7 @@
           "description": "",
           "noSelectionItemText": "Not editable",
           "noSelectionItemValue": "[not-editable]",
-          "propertyName": "{{data.propertyName}}"
+          "propertyAccessor": "{{data.propertyName}}"
         }
       ],
       "gap": "",
