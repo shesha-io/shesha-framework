@@ -1,10 +1,15 @@
 import { message } from 'antd';
 import moment from 'moment';
 import { useFormData, useSheshaApplication } from '..';
-import { useForm, useGlobalState } from '../providers';
+import { IConfigurableActionConfiguration } from '../interfaces/configurableAction';
+import { GenericDictionary, useForm, useGlobalState } from '../providers';
+import { useConfigurableActionDispatcher } from '../providers/configurableActionsDispatcher';
+import { IExecuteActionPayload } from '../providers/configurableActionsDispatcher/contexts';
 import { axiosHttp } from '../utils/fetchers';
 
 interface IFormExpression {
+  argumentsEvaluationContext: GenericDictionary;
+  executeAction: (payload: IExecuteActionPayload | IConfigurableActionConfiguration) => void;
   executeBooleanExpression: (expression: string, returnBoolean?: boolean) => boolean;
   executeExpression: (expression?: string) => any;
 }
@@ -14,6 +19,27 @@ export const useFormExpression = (): IFormExpression => {
   const { data: formData } = useFormData();
   const { globalState, setState: setGlobalState } = useGlobalState();
   const { backendUrl } = useSheshaApplication();
+  const { executeAction: executeConfig } = useConfigurableActionDispatcher();
+
+  const argumentsEvaluationContext: GenericDictionary = {
+    data: formData,
+    formMode,
+    globalState,
+    form,
+    http: axiosHttp(backendUrl),
+    message,
+    setGlobalState,
+    setFormData: setFormDataAndInstance,
+    moment,
+  };
+
+  const executeAction = (payload: IExecuteActionPayload | IConfigurableActionConfiguration) => {
+    if ((payload as IExecuteActionPayload)?.argumentsEvaluationContext) {
+      executeConfig(payload as IExecuteActionPayload);
+    } else {
+      executeConfig({ actionConfiguration: payload as IConfigurableActionConfiguration, argumentsEvaluationContext });
+    }
+  };
 
   const executeBooleanExpression = (expression: string, returnBoolean = true) => {
     if (!expression) {
@@ -56,5 +82,5 @@ export const useFormExpression = (): IFormExpression => {
       moment
     );
 
-  return { executeBooleanExpression, executeExpression };
+  return { argumentsEvaluationContext, executeAction, executeBooleanExpression, executeExpression };
 };
