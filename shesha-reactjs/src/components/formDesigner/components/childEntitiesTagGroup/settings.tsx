@@ -81,9 +81,9 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
       </SettingsCollapsiblePanel>
 
       <SettingsCollapsiblePanel header='Render'>
-        <SettingsFormItem name="capturedProperties" label="Captured Properties" jsSetting>
+        {/*<SettingsFormItem name="capturedProperties" label="Captured Properties" jsSetting>
           <Select mode="tags" />
-        </SettingsFormItem>
+  </SettingsFormItem>*/}
 
         <SettingsFormItem name="formId" label="Form Path"  jsSetting>
           <FormAutocomplete readOnly={readOnly} convertToFullId={true} />

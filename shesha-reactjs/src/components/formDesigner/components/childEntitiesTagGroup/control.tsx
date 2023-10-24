@@ -6,7 +6,7 @@ import { useFormConfiguration } from 'providers/form/api';
 import ChildEntitiesTagGroupModal from './modal';
 import { IChildEntitiesTagGroupProps, IChildEntitiesTagGroupSelectOptions } from './models';
 import './styles/index.less';
-import { addChildEntitiesTagGroupOption, filterObjFromKeys } from './utils';
+import { addChildEntitiesTagGroupOption } from './utils';
 import { DataContextProvider } from 'providers/dataContextProvider/index';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { nanoid } from 'nanoid';
@@ -33,7 +33,7 @@ const WARNING_BIND_FORM = 'Please bind an appropriate form to this component.';
 const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) => {
   const [state, setState] = useState<IState>(INIT_STATE);
   const { activeValue, open, options } = state;
-  const { capturedProperties, deleteConfirmationBody, deleteConfirmationTitle, formId, labelFormat, propertyName } = model;
+  const { deleteConfirmationBody, deleteConfirmationTitle, formId, labelFormat, propertyName } = model;
 
   const allData = useApplicationContext();
 
@@ -88,7 +88,7 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
     const opts = addChildEntitiesTagGroupOption(state.options, option);
     setState((s) => ({ ...s, options:  opts}));
 
-    onChange(opts.map(item => filterObjFromKeys(item.data, capturedProperties)));// morphTagGroup(opts, origin, capturedProperties));
+    onChange(opts.map(item => item.data));
   };
 
   const onClickTag = (val: IChildEntitiesTagGroupSelectOptions) => () => {
@@ -108,17 +108,9 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
       onOk: () => {
         const opts = options.filter(({ value }) => value !== item);
         setState((s) => ({ ...s, options: opts}));
-        onChange(opts.map(item => filterObjFromKeys(item.data, capturedProperties)));
+        onChange(opts.map(item => item.data));
       },
     });
-
-    /*onChange(
-      morphTagGroup(
-        options.filter(({ value }) => value !== item),
-        origin,
-        capturedProperties
-      )
-    );*/
   };
 
   const onOpenModal = () => {

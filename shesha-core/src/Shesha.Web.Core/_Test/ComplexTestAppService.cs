@@ -13,7 +13,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Shesha.Web.Core._Test
+namespace Shesha.Test
 {
     public class ValidateDto : IValidatableObject
     {

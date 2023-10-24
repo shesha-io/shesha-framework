@@ -1,9 +1,12 @@
-﻿using Abp.Domain.Entities;
+﻿using Abp.Auditing;
+using Abp.Domain.Entities;
 using Newtonsoft.Json;
 using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Dtos;
+using Shesha.EntityHistory;
 using Shesha.EntityReferences;
 using Shesha.JsonEntities;
 using System;
@@ -12,12 +15,22 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 
-namespace Shesha.Web.Core._Test
+namespace Shesha.Test
 {
     public class ComplexTestDto : DynamicDto<ComplexTest, Guid>//, IValidatableObject
     {
         public virtual string Name { get; set; }
+
         public virtual string Description { get; set; }
+
+        public virtual DateTime? TestDateTime { get; set; }
+
+        public virtual bool TestBoolean { get; set; }
+
+        public virtual bool TestBooleanAudited { get; set; }
+
+        public virtual RefListGender RefListGender { get; set; }
+
         public virtual EntityReferenceDto<Guid> Person { get; set; }
 
         public virtual List<JsonEntity> JsonList { get; set; }
@@ -36,8 +49,38 @@ namespace Shesha.Web.Core._Test
     [Entity(GenerateApplicationService = GenerateApplicationServiceState.AlwaysGenerateApplicationService)]
     public class ComplexTest : Entity<Guid>// where T : JsonEntity
     {
+        [Audited]
         public virtual string Name { get; set; }
+
+        [Audited]
         public virtual string Description { get; set; }
+
+        [Audited]
+        public virtual DateTime? TestDateTime { get; set; }
+
+        [Audited]
+        public virtual bool? TestBoolean { get; set; }
+
+        [AuditedBoolean("Good", "Bad")]
+        public virtual bool? TestBooleanAudited { get; set; }
+
+        private class RefListGenderEventCreator : EntityHistoryEventCreatorBase<ComplexTest, RefListGender>
+        {
+            public override EntityHistoryEventInfo CreateEvent(EntityChangesInfo<ComplexTest, RefListGender> change)
+            {
+                return CreateEvent("ComplexTest gender changed", 
+                    change.NewValue == Domain.Enums.RefListGender.Female
+                        ? "Female!!!!!"
+                        : change.NewValue == Domain.Enums.RefListGender.Male
+                            ? "Male!!!!!"
+                            : "AAAAAA Panic!!!!");
+            }
+        }
+
+        [AuditedAsEvent(typeof(RefListGenderEventCreator))]
+        public virtual RefListGender? RefListGender { get; set; }
+
+        [Audited]
         public virtual Person Person { get; set; }
 
         [SaveAsJson]

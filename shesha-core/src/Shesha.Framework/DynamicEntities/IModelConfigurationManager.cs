@@ -32,5 +32,21 @@ namespace Shesha.DynamicEntities
         /// Get model configuration
         /// </summary>
         Task<ModelConfigurationDto> GetModelConfigurationOrNullAsync(string @namespace, string name, List<PropertyMetadataDto> hardCodedProps = null);
+
+        /// <summary>
+        /// Create model configuration
+        /// </summary>
+        /// <param name="input">Model configuration Dto</param>
+        /// <returns></returns>
+        Task<ModelConfigurationDto> CreateAsync(ModelConfigurationDto input);
+
+        /// <summary>
+        /// Update model configuration
+        /// </summary>
+        /// <param name="input">Model configuration Dto</param>
+        /// <returns></returns>
+        Task<ModelConfigurationDto> UpdateAsync(ModelConfigurationDto input);
+
+
     }
 }

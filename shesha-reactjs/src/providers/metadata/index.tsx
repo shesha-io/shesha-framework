@@ -47,7 +47,7 @@ const MetadataProvider: FC<PropsWithChildren<IMetadataProviderProps>> = ({ id, m
   };
 
   const getPropertyMeta = (name: string): IPropertyMetadata => {
-    return state?.metadata?.properties.find(p => camelcase(p.path) === name);
+    return (state?.metadata?.properties ?? []).find(p => camelcase(p.path) === name);
   };
 
   const metadataActions: IMetadataActionsContext = {
