@@ -1,6 +1,5 @@
 import { DesignerToolbarSettings } from '../../../../interfaces';
 import { IWizardStepProps } from './models';
-import { EXPOSED_VARIABLES } from './utils';
 
 export const getSettings = (_data?: IWizardStepProps) =>
   new DesignerToolbarSettings()
@@ -104,7 +103,21 @@ export const getSettings = (_data?: IWizardStepProps) =>
       customVisibility: null,
       validate: {},
     })
-
+    .addSectionSeparator({
+      id: 'c43e439d-5aa3-40e0-993e-ef53203ac834',
+      name: 'beforeNextSeparator',
+      parentId: 'root',
+      label: 'Before: Next Button',
+    })
+    .addConfigurableActionConfigurator({
+      id: '43150331-8bde-41d7-9515-502aee566470',
+      name: 'beforeNextActionConfiguration',
+      label: 'Action configuration',
+      hidden: false,
+      customVisibility: '',
+      validate: {},
+      settingsValidationErrors: [],
+    })
     .addSectionSeparator({
       id: '4d2ca388-22ef-4e24-924b-2c2e3a7e0161',
       name: 'nextButtonSeparatorVisibility',
@@ -140,27 +153,39 @@ export const getSettings = (_data?: IWizardStepProps) =>
         },
       ],
     })
-    .addCodeEditor({
-      id: '70fdea84-c8fd-46d7-9558-f6bbe99a1c83',
-      name: 'onBeforeNext',
-      label: 'On Before Next',
-      description: 'Enter functionality that will get triggered before next action.',
-      labelAlign: 'right',
-      parentId: 'root',
-      exposedVariables: EXPOSED_VARIABLES,
-    })
-    .addCodeEditor({
-      id: '1d0091ab-875b-496d-9add-67c2d2f5212c',
-      name: 'onAfterNext',
-      label: 'On After Next',
-      description: 'Enter functionality that will get triggered after next action.',
-      labelAlign: 'right',
-      parentId: 'root',
-      exposedVariables: EXPOSED_VARIABLES,
-    })
     .addConfigurableActionConfigurator({
       id: 'F3B46A95-703F-4465-96CA-A58496A5F78C',
       name: 'nextButtonActionConfiguration',
+      label: 'Action configuration',
+      hidden: false,
+      customVisibility: '',
+      validate: {},
+      settingsValidationErrors: [],
+    })
+    .addSectionSeparator({
+      id: '53028e99-557f-4b82-aea9-463dc9627fcc',
+      name: 'afterNextSeparator',
+      parentId: 'root',
+      label: 'After: Next Button',
+    })
+    .addConfigurableActionConfigurator({
+      id: 'ac7c19c4-f75a-4ce0-b96a-1698b6bdb289',
+      name: 'afterNextActionConfiguration',
+      label: 'Action configuration',
+      hidden: false,
+      customVisibility: '',
+      validate: {},
+      settingsValidationErrors: [],
+    })
+    .addSectionSeparator({
+      id: 'ee027e9e-9cc1-45bb-a81a-a57efaaf830a',
+      name: 'beforeBackSeparator',
+      parentId: 'root',
+      label: 'Before: Back Button',
+    })
+    .addConfigurableActionConfigurator({
+      id: '39a6c902-2d58-4e92-a139-20b6c85f5cbb',
+      name: 'beforeBackActionConfiguration',
       label: 'Action configuration',
       hidden: false,
       customVisibility: '',
@@ -173,7 +198,6 @@ export const getSettings = (_data?: IWizardStepProps) =>
       parentId: 'root',
       label: 'Back Button',
     })
-
     .addTextField({
       id: 'ed059dec-4f1b-408b-8739-05f0242d662a',
       name: 'backButtonText',
@@ -181,7 +205,6 @@ export const getSettings = (_data?: IWizardStepProps) =>
       labelAlign: 'right',
       parentId: 'root',
     })
-
     .addCodeEditor({
       id: 'fbc47133-caf4-45c7-bebf-ddc54159bfeb',
       name: 'backButtonCustomEnabled',
@@ -204,27 +227,24 @@ export const getSettings = (_data?: IWizardStepProps) =>
         },
       ],
     })
-    .addCodeEditor({
-      id: '39a6c902-2d58-4e92-a139-20b6c85f5cbb',
-      name: 'onBeforeBack',
-      label: 'On Before Back',
-      description: 'Enter functionality that will get triggered before back action.',
-      labelAlign: 'right',
-      parentId: 'root',
-      exposedVariables: EXPOSED_VARIABLES,
-    })
-    .addCodeEditor({
-      id: 'cd362420-f884-470e-80bc-d72315fc3f8e',
-      name: 'onAfterBack',
-      label: 'On After Back',
-      description: 'Enter functionality that will get triggered after back action.',
-      labelAlign: 'right',
-      parentId: 'root',
-      exposedVariables: EXPOSED_VARIABLES,
-    })
     .addConfigurableActionConfigurator({
       id: '8CC6A43F-54EE-4756-9B87-6E9204F5AEFB',
       name: 'backButtonActionConfiguration',
+      label: 'Action configuration',
+      hidden: false,
+      customVisibility: '',
+      validate: {},
+      settingsValidationErrors: [],
+    })
+    .addSectionSeparator({
+      id: '4cee4a23-4ef3-4de6-a369-8000719c4186',
+      name: 'afterBackSeparator',
+      parentId: 'root',
+      label: 'After: Back Button',
+    })
+    .addConfigurableActionConfigurator({
+      id: '59bb6f37-55b9-496e-8eff-dc20f610baee',
+      name: 'afterBackActionConfiguration',
       label: 'Action configuration',
       hidden: false,
       customVisibility: '',
@@ -276,6 +296,21 @@ export const getSettings = (_data?: IWizardStepProps) =>
       settingsValidationErrors: [],
     })
     .addSectionSeparator({
+      id: '8e398332-1134-4c6d-b73d-aef1cd771817',
+      name: 'beforeCancelSeparator',
+      parentId: 'root',
+      label: 'Before: Cancel Button',
+    })
+    .addConfigurableActionConfigurator({
+      id: 'd2fde7ff-bc23-4fe3-ab4c-6ad0eb79d8bf',
+      name: 'beforeCancelActionConfiguration',
+      label: 'Action configuration',
+      hidden: false,
+      customVisibility: '',
+      validate: {},
+      settingsValidationErrors: [],
+    })
+    .addSectionSeparator({
       id: '83304267-84ad-4489-8800-0f7aeb5bb7ce',
       name: 'cancelButtonSeparatorVisibility',
       parentId: 'root',
@@ -310,27 +345,24 @@ export const getSettings = (_data?: IWizardStepProps) =>
         },
       ],
     })
-    .addCodeEditor({
-      id: '3a50c750-a5ec-4152-8a50-2fdefef4d37c',
-      name: 'onBeforeCancel',
-      label: 'On Before Cancel',
-      description: 'Enter functionality that will get triggered before cancel action.',
-      labelAlign: 'right',
-      parentId: 'root',
-      exposedVariables: EXPOSED_VARIABLES,
-    })
-    .addCodeEditor({
-      id: '417fa50e-6b37-4cbf-826a-c8b9d5117cdd',
-      name: 'onAfterCancel',
-      label: 'On After Cancel',
-      description: 'Enter functionality that will get triggered after cancel action.',
-      labelAlign: 'right',
-      parentId: 'root',
-      exposedVariables: EXPOSED_VARIABLES,
-    })
     .addConfigurableActionConfigurator({
       id: 'F940D7A0-AA6D-4368-A745-E130F8627472',
       name: 'cancelButtonActionConfiguration',
+      label: 'Action configuration',
+      hidden: false,
+      customVisibility: '',
+      validate: {},
+      settingsValidationErrors: [],
+    })
+    .addSectionSeparator({
+      id: '5ed8302d-9fbb-4da3-9582-a042ac6cf424',
+      name: 'afterCancelSeparator',
+      parentId: 'root',
+      label: 'After: Cancel Button',
+    })
+    .addConfigurableActionConfigurator({
+      id: '1721b07a-612d-4d4a-9640-b1180bd042d2',
+      name: 'afterCancelActionConfiguration',
       label: 'Action configuration',
       hidden: false,
       customVisibility: '',
