@@ -101,6 +101,9 @@ interface IDataTableProviderBaseProps {
 
   dataFetchingMode: DataFetchingMode;
 
+  defaultOrderBy?: string;
+  defaultSortOrder?: string;
+
   /** Id of the user config, is used for saving of the user settings (sorting, paging etc) to the local storage. */
   userConfigId?: string;
 
@@ -255,6 +258,8 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     sortMode,
     strictOrderBy,
     strictSortOrder,
+    defaultOrderBy: defaultSortBy,
+    defaultSortOrder,
     allowReordering = false,
   } = props;
 
@@ -269,6 +274,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     strictOrderBy,
     strictSortOrder,
     allowReordering,
+    standardSorting: !!defaultSortBy ? [{id: defaultSortBy, desc: defaultSortOrder === 'desc'}] : [],
   });
 
   const { setState: setGlobalState } = useGlobalState();

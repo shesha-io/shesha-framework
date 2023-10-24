@@ -16,7 +16,14 @@ import { getDataFormat } from 'utils/metadata';
 import { axiosHttp } from '../../utils/fetchers';
 import { IDateFieldProps, RangePickerChangeEvent, TimePickerChangeEvent } from './interfaces';
 import settingsFormJson from './settingsForm.json';
-import { DATE_TIME_FORMATS, disabledDate, getDefaultFormat, getFormat, getRangePickerValues } from './utils';
+import {
+  DATE_TIME_FORMATS,
+  disabledDate,
+  getDatePickerValue,
+  getDefaultFormat,
+  getFormat,
+  getRangePickerValues,
+} from './utils';
 import { migratePropertyName, migrateCustomFunctions } from '../../designer-components/_common-migrations/migrateSettings';
 
 const META_DATA_FILTERS: ProperyDataType[] = ['date', 'date-time', 'time'];
@@ -129,10 +136,6 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
 
   const formattedValue = getMoment(value, pickerFormat);
 
-  const showDatePickerTime = showTime ? (defaultToMidnight ? { defaultValue: MIDNIGHT_MOMENT } : true) : false;
-
-  const datePickerValue = showDatePickerTime ? { defaultValue: formattedValue } : { value: formattedValue };
-
   const handleDatePickerChange = (localValue: any | null, dateString: string) => {
     if (!dateString?.trim()) {
       (onChange as TimePickerChangeEvent)(null, '');
@@ -202,15 +205,15 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
       disabled={isDisabled}
       onChange={handleDatePickerChange}
       bordered={!hideBorder}
-      showTime={showDatePickerTime}
+      showTime={showTime ? (defaultToMidnight ? { defaultValue: MIDNIGHT_MOMENT } : true) : false}
       showNow={showNow}
       showToday={showToday}
       showSecond={true}
       picker={picker}
       format={pickerFormat}
       style={evaluatedStyle}
-      {...datePickerValue}
       {...rest}
+      {...getDatePickerValue(props, pickerFormat)}
       allowClear
     />
   );

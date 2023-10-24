@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { FC, useCallback, useMemo } from 'react';
 import { UnorderedListOutlined } from "@ant-design/icons";
 import { IToolboxComponent } from "../../../../interfaces";
 import { Alert } from 'antd';
@@ -63,22 +63,10 @@ export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
     tableData,
     isFetchingTableData,
     selectedIds,
-    standardSorting: tableSorting,
     changeSelectedIds,
     getRepository,
-    onSort,
     modelType
   } = dataSource;
-
-  /* ToDo: AS - Need to review and move this feature to DataTableContext/DataSource */
-  const sort = {id: props.defaultSortBy, desc: props.defaultSortOrder === 'desc' };
-  const [sortBy, setSortBy] = useState(sort);
-  useEffect(() => {
-    if (!(tableSorting?.length > 0) || sort.id !== sortBy.id || sort.desc !== sortBy.desc)
-      setTimeout(() => onSort([sort]), 100);
-    setSortBy(sort);
-  }, [props.defaultSortBy, props.defaultSortOrder]);
-  /* ---------------------------------------------------*/
 
   const { selectedRow, selectedRows, setSelectedRow, setMultiSelectedRow } = dataSource;
 

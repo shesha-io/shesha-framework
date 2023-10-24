@@ -100,4 +100,10 @@ export interface ITableCustomTypesRender<D extends object, V = any> {
 }
 
 export type OnSaveHandler = (data: object, formData: object, globalState: object) => Promise<object>;
-export type OnSaveSuccessHandler = (data: object, formData: object, globalState: object) => void;
+export type OnSaveSuccessHandler = (
+  data: object,
+  formData: object,
+  globalState: object,
+  setGlobalState: Function,
+  setFormData: Function
+) => void;

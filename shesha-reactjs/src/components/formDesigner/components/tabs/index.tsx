@@ -11,6 +11,7 @@ import { TabSettingsForm } from './settings';
 import { ITabsComponentProps } from './models';
 import ShaIcon from '../../../shaIcon';
 import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
+import { useDeepCompareMemo } from 'hooks';
 
 const { TabPane } = Tabs;
 
@@ -33,8 +34,9 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
         {tabs?.map(
           (item) => {
 
-            const actualItem = getActualModel(item, allData);
-
+            const actualItem = useDeepCompareMemo(() => getActualModel(item, allData),
+              [allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
+        
             const {
               id,
               key,

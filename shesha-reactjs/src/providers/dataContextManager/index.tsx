@@ -8,11 +8,16 @@ export interface IDataContextManagerStateContext {
     lastUpdate: string;
 }
 
+export interface IDataContextsData {
+    [key: string]: any;
+    lastUpdate: string;
+}
+
 export interface IDataContextManagerActionsContext {
     registerDataContext: (payload: IRegisterDataContextPayload) => void;
     unregisterDataContext: (payload: IRegisterDataContextPayload) => void;
     getDataContexts: (topId?: string) => IDataContextDescriptor[];
-    getDataContextsData: (topId?: string) => {};
+    getDataContextsData: (topId?: string) => IDataContextsData;
     getDataContext: (contextId: string) => IDataContextDescriptor;
     getDataContextData: (contextId: string) => any;
     onChangeContext: (dataContext: IDataContextDescriptor) => void;
@@ -69,7 +74,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
     };
 
     const getDataContextsData =(topId?: string) => {
-        const res = {};
+        const res = {lastUpdate: state.lastUpdate};
         getDataContexts(topId).forEach(item => {
             res[item.name] = getDataContextData(item.id);
         });

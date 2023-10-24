@@ -38,9 +38,6 @@ export interface IDataListProps {
   listItemWidth?: ListItemWidth;
   customListItemWidth?: number;
 
-  defaultSortBy?: string;
-  defaultSortOrder?: string;
-
   actionConfiguration?: IConfigurableActionConfiguration;
 }
 

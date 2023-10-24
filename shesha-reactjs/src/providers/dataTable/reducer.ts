@@ -280,7 +280,10 @@ const reducer = handleActions<IDataTableStateContext, any>(
         .filter((c) => c !== null);
 
       const dataCols = getTableDataColumns(cols);
-      const standardSorting = getStandardSorting(dataCols, userConfig);
+
+      // use default sorting if column sorting is not configured
+      const columnSorting = getStandardSorting(dataCols, userConfig);
+      const standardSorting = columnSorting?.length > 0 ? columnSorting : [...state.standardSorting];
 
       const userFilters =
         userConfig?.selectedFilterIds?.length > 0 && state.predefinedFilters?.length > 0

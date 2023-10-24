@@ -25,6 +25,8 @@ export interface ITableContextComponentProps extends IConfigurableFormComponent 
   strictOrderBy?: string;
   strictSortOrder?: ColumnSorting;
   allowReordering?: YesNoInherit;
+  defaultOrderBy?: string;
+  defaultSortOrder?: ColumnSorting;
 }
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -82,7 +84,7 @@ interface ITableContextInnerProps extends ITableContextComponentProps {
 }
 
 export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
-  const { sourceType, entityType, endpoint, id, propertyName, componentName, allowReordering } = props;
+  const { sourceType, entityType, endpoint, id, propertyName, componentName, defaultOrderBy, defaultSortOrder, allowReordering } = props;
   const { formMode } = useForm();
   const { data } = useFormData();
 
@@ -128,6 +130,8 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
       sortMode={props.sortMode}
       strictOrderBy={props.strictOrderBy}
       strictSortOrder={props.strictSortOrder}
+      defaultOrderBy={defaultOrderBy}
+      defaultSortOrder={defaultSortOrder}
       allowReordering={evaluateYesNo(allowReordering, formMode)}
     >
       <TableContextAccessor {...props} />

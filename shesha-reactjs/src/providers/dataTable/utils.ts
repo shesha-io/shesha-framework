@@ -180,6 +180,7 @@ export const prepareColumn = (
     isFilterable: false,
     isSortable: false,
     allowShowHide: false,
+    defaultSorting: column.defaultSorting
   };
 
   switch (column.columnType) {

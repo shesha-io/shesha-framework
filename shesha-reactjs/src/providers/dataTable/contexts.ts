@@ -87,6 +87,10 @@ export interface IDataTableStateContext
 
   /** Datatable data (fetched from the back-end) */
   tableData?: object[];
+  /** Default sort by */
+  defaultSortBy?: string;
+  /** Default sort order */
+  defaultSortOrder?: string;
   /** Selected page size */
   selectedPageSize?: number;
   /** Data fetching mode (paging or fetch all) */

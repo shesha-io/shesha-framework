@@ -392,6 +392,64 @@
         }
       ],
       "settingsValidationErrors": []
+    },
+    {
+      "id": "zaFvnoMcutlROxXTERzQj",
+      "type": "container",
+      "propertyName": "container2",
+      "componentName": "container2",
+      "label": "Container2",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": {
+        "_value": false,
+        "_code": "return data.sortMode === 'strict';",
+        "_mode": "code"
+      },
+      "visibility": "Yes",
+      "customVisibility": null,
+      "isDynamic": false,
+      "version": 1,
+      "direction": "vertical",
+      "justifyContent": "left",
+      "flexWrap": "wrap",
+      "components": [
+        {
+          "id": "13579a70-99a0-4825-ae6c-8b933004e119",
+          "type": "propertyAutocomplete",
+          "propertyName": "defaultOrderBy",
+          "componentName": "strictOrderBy",
+          "label": "Default Order By",
+          "labelAlign": "right",
+          "parentId": "zaFvnoMcutlROxXTERzQj",
+          "hidden": false,
+          "visibility": "Yes",
+          "customVisibility": null,
+          "isDynamic": false,
+          "version": 0,
+          "settingsValidationErrors": [],
+          "showFillPropsButton": false
+        },
+        {
+          "id": "f6c3d710-8d98-ab3c-9fe2-7c6312e9a03c",
+          "type": "dropdown",
+          "propertyName": "defaultSortOrder",
+          "parentId": "zaFvnoMcutlROxXTERzQj",
+          "label": "Default Sort Order",
+          "dataSourceType": "values",
+          "values": [
+            {"id": "asc", "label": "Ascending", "value": "asc"},
+            {"id": "desc", "label": "Descending", "value": "desc"}
+          ],
+          "version": 1,
+          "useRawValues": false,
+          "referenceListId": null,
+          "mode": ["single"],
+          "hidden": {"_code": "return !getSettingValue(data.defaultSortBy);", "_mode": "code", "_value": false},
+          "settingsValidationErrors": []
+        }
+      ],
+      "settingsValidationErrors": []
     }
   ],
   "formSettings": {

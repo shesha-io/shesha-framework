@@ -17,6 +17,7 @@ import type { MenuProps } from 'antd';
 import ShaIcon, { IconType } from 'components/shaIcon/index';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { DynamicActionsEvaluator } from 'providers/dynamicActions/evaluator/index';
+import { useDeepCompareMemo } from 'hooks';
 
 type MenuItem = MenuProps['items'][number];
 
@@ -129,7 +130,8 @@ export const ButtonGroupInner: FC<ButtonGroupProps> = ({ items, size, spaceSize 
   };
 
   const prepareItem: PrepareItemFunc = (item) => {
-    const result = getActualModel(item, allData);
+    const result = useDeepCompareMemo(() => getActualModel(item, allData),
+      [allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
     return { ...result, disabled: result.disabled || disabled };
   };
 
