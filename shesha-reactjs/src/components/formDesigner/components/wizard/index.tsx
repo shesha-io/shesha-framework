@@ -25,7 +25,16 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
     const { isComponentHidden, formMode } = useForm();
     const { executeBooleanExpression } = useFormExpression();
 
-    const { back, components, cancel, content, current, done, next, visibleSteps } = useWizard(model);
+    const { back, components, cancel, content, current, currentStep, done, next, visibleSteps } = useWizard(model);
+
+    const {
+      buttonsLayout = 'spaceBetween',
+      direction,
+      isDynamic,
+      labelPlacement,
+      readOnly,
+      wizardType = 'default',
+    } = model;
 
     const steps = visibleSteps?.map<IStepProps>(({ id, title, subTitle, description, icon, customEnabled }, index) => {
       const isDisabledByCondition = !executeBooleanExpression(customEnabled, true) && formMode !== 'designer';
@@ -42,13 +51,11 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
         content: (
           <ComponentsContainer
             containerId={id}
-            dynamicComponents={model?.isDynamic ? components?.map((c) => ({ ...c, readOnly: model?.readOnly })) : []}
+            dynamicComponents={isDynamic ? components?.map((c) => ({ ...c, readOnly })) : []}
           />
         ),
       };
     });
-
-    const { buttonsLayout = 'spaceBetween' } = model;
 
     const splitButtons = buttonsLayout === 'spaceBetween';
 
@@ -58,14 +65,14 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
 
     return (
       <div className="sha-wizard">
-        <div className={classNames('sha-wizard-container', { vertical: model?.direction === 'vertical' })}>
+        <div className={classNames('sha-wizard-container', { vertical: direction === 'vertical' })}>
           <Steps
-            type={model?.wizardType || 'default'}
+            type={wizardType}
             current={current}
             items={steps}
             size={model['size']}
-            direction={model?.direction}
-            labelPlacement={model?.labelPlacement}
+            direction={direction}
+            labelPlacement={labelPlacement}
           />
 
           <div className="sha-steps-content">{steps[current]?.content}</div>
@@ -91,19 +98,19 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
                 <Button
                   style={btnStyle('back')}
                   onClick={back}
-                  disabled={!executeBooleanExpression(visibleSteps[current]?.backButtonCustomEnabled, true)}
+                  disabled={!executeBooleanExpression(currentStep?.backButtonCustomEnabled, true)}
                 >
-                  {visibleSteps[current].backButtonText ? visibleSteps[current].backButtonText : 'Back'}
+                  {currentStep.backButtonText ? currentStep.backButtonText : 'Back'}
                 </Button>
               )}
 
-              {visibleSteps[current].allowCancel === true && (
+              {currentStep.allowCancel === true && (
                 <Button
                   style={btnStyle('cancel')}
                   onClick={cancel}
-                  disabled={!executeBooleanExpression(visibleSteps[current]?.cancelButtonCustomEnabled, true)}
+                  disabled={!executeBooleanExpression(currentStep?.cancelButtonCustomEnabled, true)}
                 >
-                  {visibleSteps[current].cancelButtonText ? visibleSteps[current].cancelButtonText : 'Cancel'}
+                  {currentStep.cancelButtonText ? currentStep.cancelButtonText : 'Cancel'}
                 </Button>
               )}
             </ConditionalWrap>
@@ -121,9 +128,9 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
                   type="primary"
                   style={btnStyle('next')}
                   onClick={next}
-                  disabled={!executeBooleanExpression(visibleSteps[current]?.nextButtonCustomEnabled, true)}
+                  disabled={!executeBooleanExpression(currentStep?.nextButtonCustomEnabled, true)}
                 >
-                  {visibleSteps[current].nextButtonText ? visibleSteps[current].nextButtonText : 'Next'}
+                  {currentStep.nextButtonText ? currentStep.nextButtonText : 'Next'}
                 </Button>
               )}
 
@@ -132,9 +139,9 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
                   type="primary"
                   style={btnStyle('next')}
                   onClick={done}
-                  disabled={!executeBooleanExpression(visibleSteps[current]?.doneButtonCustomEnabled, true)}
+                  disabled={!executeBooleanExpression(currentStep?.doneButtonCustomEnabled, true)}
                 >
-                  {visibleSteps[current].doneButtonText ? visibleSteps[current].doneButtonText : 'Done'}
+                  {currentStep.doneButtonText ? currentStep.doneButtonText : 'Done'}
                 </Button>
               )}
             </ConditionalWrap>
