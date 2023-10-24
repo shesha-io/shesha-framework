@@ -2,7 +2,7 @@ import { IConfigurableColumnsProps, IDataColumnsProps } from "providers/datatabl
 import React, { ComponentType, useCallback, useMemo } from "react";
 import { FC } from "react";
 import { DataTableColumnDto, IGetListDataPayload, ITableDataInternalResponse } from "../interfaces";
-import { IHasModelType, IHasRepository, IRepository, RowsReorderPayload } from "./interfaces";
+import { IHasModelType, IHasRepository, IRepository, RowsReorderPayload, SupportsReorderingArgs } from "./interfaces";
 
 export interface IWithInMemoryRepositoryArgs {
     valueAccessor: () => object[];
@@ -106,6 +106,10 @@ const createRepository = (args: IWithInMemoryRepositoryArgs): IRepository => {
         return Promise.resolve();
     };
 
+    const supportsReordering = (_args: SupportsReorderingArgs) => {
+        return true;
+    };
+
     const repository: IRepository = {
         repositoryType: 'inMemory-repository',
         fetch,
@@ -115,6 +119,7 @@ const createRepository = (args: IWithInMemoryRepositoryArgs): IRepository => {
         performCreate,
         performUpdate,
         performDelete,
+        supportsReordering,
     };
     return repository;
 };

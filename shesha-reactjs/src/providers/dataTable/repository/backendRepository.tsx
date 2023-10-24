@@ -7,7 +7,7 @@ import React, { ComponentType, useMemo } from "react";
 import { FC } from "react";
 import { camelcaseDotNotation } from "utils/string";
 import { DataTableColumnDto, IExcelColumn, IExportExcelPayload, IGetDataFromBackendPayload, IGetListDataPayload, ITableDataColumn, ITableDataInternalResponse, ITableDataResponse } from "../interfaces";
-import { IRepository, IHasRepository, IHasModelType, RowsReorderPayload, EntityReorderPayload, EntityReorderItem, EntityReorderResponse } from "./interfaces";
+import { IRepository, IHasRepository, IHasModelType, RowsReorderPayload, EntityReorderPayload, EntityReorderItem, EntityReorderResponse, SupportsReorderingArgs } from "./interfaces";
 import { convertDotNotationPropertiesToGraphQL } from "providers/form/utils";
 import { IConfigurableColumnsProps, IDataColumnsProps } from "providers/datatableColumnsConfigurator/models";
 import { IMetadataDispatcherActionsContext } from "providers/metadataDispatcher/contexts";
@@ -307,10 +307,10 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
             .then(response => {
                 const dataResponse = response.data as IResult<EntityReorderResponse>;
                 if (dataResponse) {
-                   const responseItems = dataResponse.result.items;
+                    const responseItems = dataResponse.result.items;
                     const orderedRows = newRows.map(row => {
                         const newOrder = responseItems[row['id']];
-                        return newOrder 
+                        return newOrder
                             ? { ...row, [payload.propertyName]: newOrder }
                             : row;
                     });
@@ -319,6 +319,12 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
                 }
                 return;
             });
+    };
+
+    const supportsReordering = (args: SupportsReorderingArgs) => {
+        return args.sortMode !== 'strict' || !args.strictOrderBy
+            ? '`sortMode` and `strictOrderBy` properties are mandatory for the generic reordering functionality'
+            : true;
     };
 
     const repository: IBackendRepository = {
@@ -331,6 +337,7 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
         performCreate,
         performUpdate,
         performDelete,
+        supportsReordering,
     };
     return repository;
 };

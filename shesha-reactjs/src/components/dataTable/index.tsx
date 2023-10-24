@@ -176,7 +176,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   }, [tableData]);
 
   const metadata = useMetadata(false)?.metadata;
-  //const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(isEntityMetadata(metadata) ? metadata.entityType : null);
 
   const { backendUrl } = useSheshaApplication();
 
@@ -544,24 +543,20 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   };
 
   const handleRowsReordered = (payload: OnRowsReorderedArgs): Promise<void> => {
-    /*
-    if (sortMode !== 'strict' || !strictOrderBy)
-      return Promise.reject('`sortMode` and `strictOrderBy` properties are mandatory for the generic reordering functionality');
-    */
-      if (sortMode !== 'strict')
-      return Promise.reject('`sortMode` property is mandatory for the generic reordering functionality');
-
     const repository = store.getRepository();
-    if (!repository) 
+    if (!repository)
       return Promise.reject('Repository is not specified');
 
-    const reorderPayload: RowsReorderPayload = {
-      //reorderedRows: payload.reorderedRows,
-      ...payload,
-      propertyName: strictOrderBy,
-    };
-    
-    return repository.reorder(reorderPayload);
+    const supported = repository.supportsReordering({ sortMode, strictOrderBy });
+    if (supported === true){
+      const reorderPayload: RowsReorderPayload = {
+        ...payload,
+        propertyName: strictOrderBy,
+      };
+  
+      return repository.reorder(reorderPayload);
+    } else
+      return Promise.reject(typeof(supported) === 'string' ? supported : 'Reordering is not supported');
   };
 
   const tableProps: IReactTableProps = {
