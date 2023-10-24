@@ -90,7 +90,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
               {current > 0 && (
                 <Button
                   style={btnStyle('back')}
-                  onClick={() => back()}
+                  onClick={back}
                   disabled={!executeBooleanExpression(visibleSteps[current]?.backButtonCustomEnabled, true)}
                 >
                   {visibleSteps[current].backButtonText ? visibleSteps[current].backButtonText : 'Back'}
@@ -100,7 +100,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
               {visibleSteps[current].allowCancel === true && (
                 <Button
                   style={btnStyle('cancel')}
-                  onClick={() => cancel()}
+                  onClick={cancel}
                   disabled={!executeBooleanExpression(visibleSteps[current]?.cancelButtonCustomEnabled, true)}
                 >
                   {visibleSteps[current].cancelButtonText ? visibleSteps[current].cancelButtonText : 'Cancel'}
@@ -120,7 +120,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
                 <Button
                   type="primary"
                   style={btnStyle('next')}
-                  onClick={() => next()}
+                  onClick={next}
                   disabled={!executeBooleanExpression(visibleSteps[current]?.nextButtonCustomEnabled, true)}
                 >
                   {visibleSteps[current].nextButtonText ? visibleSteps[current].nextButtonText : 'Next'}
@@ -131,7 +131,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
                 <Button
                   type="primary"
                   style={btnStyle('next')}
-                  onClick={() => done()}
+                  onClick={done}
                   disabled={!executeBooleanExpression(visibleSteps[current]?.doneButtonCustomEnabled, true)}
                 >
                   {visibleSteps[current].doneButtonText ? visibleSteps[current].doneButtonText : 'Done'}
