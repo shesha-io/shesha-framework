@@ -125,7 +125,7 @@ export interface IToolboxComponent<T extends IConfigurableFormComponent = any> {
   dataTypeSupported?: (dataTypeInfo: { dataType: string; dataFormat?: string }) => boolean;
 
   isTemplate?: boolean;
-  build?: () => IConfigurableFormComponent[];
+  build?: (allComponents: IToolboxComponents) => IConfigurableFormComponent[];
 
   /**
    * Settings migrations. Returns last version of settings
