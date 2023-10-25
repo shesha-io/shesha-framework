@@ -5,6 +5,12 @@ import { getPropertySettingsFromValue } from './utils';
 
 export type SettingsControlChildrenType = (value: any, onChange:  (...args: any[]) => void, propertyName: string) => ReactElement;
 
+export interface IContextSettingsRef {
+    value: any;
+    onChange: (...args: any[]) => void;
+}
+
+
 interface ISettingsControlProps {
     id: string;
     propertyName: string;
@@ -13,9 +19,10 @@ interface ISettingsControlProps {
     mode: PropertySettingMode;
     onChange?: (value: any) => void;
     readonly children?: SettingsControlChildrenType;
+    contextRef?: React.MutableRefObject<IContextSettingsRef>;
 }
 
-export const SettingsControl: FC<ISettingsControlProps> = ({ id, propertyName, readonly, value, mode, onChange, children }) => {
+export const SettingsControl: FC<ISettingsControlProps> = ({ id, propertyName, readonly, value, mode, onChange, children, contextRef }) => {
 
     const settings = getPropertySettingsFromValue(value);
 
@@ -52,11 +59,19 @@ export const SettingsControl: FC<ISettingsControlProps> = ({ id, propertyName, r
             ]}
         />;
     }
-    
-    return children(settings._value, (value) => {
+
+    const internalOnChange = (value) => {
         if (onChange)
             onChange(!!settings._code ? { _value: value, _code: settings._code, _mode: mode } : value);
-    }, propertyName);
+    };
+
+    if (contextRef)
+        contextRef.current = {
+            onChange: internalOnChange,
+            value: settings._value
+        };
+
+    return children(settings._value, internalOnChange, propertyName);
 };
 
 export default SettingsControl;
