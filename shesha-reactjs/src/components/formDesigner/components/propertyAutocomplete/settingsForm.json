@@ -106,7 +106,7 @@
         "id":"IcJf6tgl3N6HbQ2Wmnuzd",
         "type":"textField",
         "propertyName":"modelType",
-        "label":"Entity",
+        "label":"Entity type",
         "labelAlign":"right",
         "parentId":"root",
         "hidden":false,

@@ -4,9 +4,10 @@ import { ListEditor } from './index';
 import StoryApp from 'components/storyBookApp/index';
 import { MainLayout, PropertyAutocomplete } from 'components/index';
 import { addStory } from 'src/stories/utils';
-import { Col, Input, Row, Select } from 'antd';
+import { Checkbox, Col, Input, Row, Select } from 'antd';
 import { MetadataProvider } from 'providers/index';
 import { getNanoId } from 'utils/uuid';
+import { ColumnSorting } from 'providers/dataTable/interfaces';
 
 export default {
   title: 'Components/ListEditor',
@@ -19,23 +20,30 @@ export interface IUserDecisionsEditorStoryProps {
 
 }
 
-type SortOrder = 'asc' | 'desc';
 export interface CustomListItem {
-  id: string;
   propertyName: string;
-  sortOrder: SortOrder;
+  sortOrder: ColumnSorting;
 }
 
 const Template: StoryFn<IUserDecisionsEditorStoryProps> = ({ }) => {
   const [value, setValue] = useState<CustomListItem[]>([
-    { id: '1', propertyName: 'gender', sortOrder: 'asc' },
-    { id: '2', propertyName: 'title', sortOrder: 'asc' },
-    { id: '3', propertyName: 'primarySite', sortOrder: 'desc' },
+    { propertyName: 'gender', sortOrder: 'asc' },
+    { propertyName: 'title', sortOrder: 'asc' },
+    { propertyName: 'primarySite', sortOrder: 'desc' },
   ]);
+  const [readOnly, setReadOnly] = useState(null);
 
   return (
     <StoryApp>
       <MainLayout>
+        <Row>
+          <Col md={12}>
+            Read Only: <Checkbox checked={readOnly} 
+            onChange={e => { 
+              setReadOnly(e.target.checked); 
+            }}></Checkbox>
+          </Col>
+        </Row>
         <Row>
           <Col md={12}>
             <MetadataProvider modelType='Shesha.Core.Person'>
@@ -43,8 +51,9 @@ const Template: StoryFn<IUserDecisionsEditorStoryProps> = ({ }) => {
                 value={value}
                 onChange={setValue}
                 initNewItem={(_items) => ({ id: getNanoId(), propertyName: '', sortOrder: 'asc' })}
+                readOnly={readOnly}
               >
-                {(item, itemOnChange, _index) => {
+                {({ item, itemOnChange, readOnly: nestedReadOnly }) => {
                   return (
                     <div>
                       <Input.Group style={{ width: '100%' }}>
@@ -56,13 +65,15 @@ const Template: StoryFn<IUserDecisionsEditorStoryProps> = ({ }) => {
                             if (!Array.isArray(value))
                               itemOnChange({ ...item, propertyName: value });
                           }}
+                          readOnly={nestedReadOnly}
                         />
-                        <Select<SortOrder>
+                        <Select<ColumnSorting>
                           value={item.sortOrder}
                           onChange={(value) => {
                             itemOnChange({ ...item, sortOrder: value });
                           }}
                           style={{ width: '120px' }}
+                          disabled={nestedReadOnly}
                         >
                           <Option value="asc">Ascending</Option>
                           <Option value="desc">Descending</Option>
@@ -77,7 +88,7 @@ const Template: StoryFn<IUserDecisionsEditorStoryProps> = ({ }) => {
         </Row>
       </MainLayout>
     </StoryApp>
-  )
+  );
 };
 
 export const Base = addStory(Template, {

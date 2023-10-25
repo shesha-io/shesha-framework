@@ -9,6 +9,7 @@ export interface IGenericListEditorProviderProps<TItem extends object> {
     value: TItem[];
     onChange: ValueMutator<TItem[]>;
     initNewItem: (items: TItem[]) => TItem;
+    readOnly: boolean;
 }
 
 const GenericListEditorProvider = <TItem extends object>({
@@ -19,8 +20,9 @@ const GenericListEditorProvider = <TItem extends object>({
     value,
     onChange,
     initNewItem,
+    readOnly,
 }: PropsWithChildren<IGenericListEditorProviderProps<TItem>>) => {
-   const state = { ...initialState, value: value };
+   const state: IListEditorStateContext<TItem> = { ...initialState, value: value, readOnly: readOnly };
 
    const updateItem = (index: number, item: TItem) => {
         const newValue = [...state.value];
@@ -30,10 +32,8 @@ const GenericListEditorProvider = <TItem extends object>({
 
     const addItem = () => {
         const newItem = initNewItem(state.value);
-        const newValue = [...state.value];
+        const newValue = state.value ? [...state.value] : [];
         newValue.push(newItem);
-
-        console.log('addItem', { value: state.value, newValue, newItem });
 
         onChange(newValue);
     };

@@ -85,9 +85,9 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": {
+        "_value": false,
         "_code": "return getSettingValue(data.sourceType) !== 'Entity';",
-        "_mode": "code",
-        "_value": false
+        "_mode": "code"
       },
       "dataSourceType": "url",
       "validate": {},
@@ -247,25 +247,6 @@
       "flexWrap": "wrap",
       "components": [
         {
-          "id": "4rp6NvRdoK4CEuK2jA6re",
-          "type": "textArea",
-          "propertyName": "grouping",
-          "componentName": "grouping",
-          "label": "Grouping",
-          "labelAlign": "right",
-          "parentId": "Z8z0Kj-kyHyiQBflSy86w",
-          "hidden": false,
-          "visibility": "Yes",
-          "customVisibility": null,
-          "isDynamic": false,
-          "autoSize": false,
-          "showCount": false,
-          "allowClear": false,
-          "version": 0,
-          "validate": {},
-          "settingsValidationErrors": []
-        },
-        {
           "id": "PzuhHhgdVMESk1pPRVc11",
           "type": "dropdown",
           "propertyName": "sortMode",
@@ -339,7 +320,8 @@
                 }
               },
               "settingsValidationErrors": [],
-              "showFillPropsButton": false
+              "showFillPropsButton": false,
+              "modelType": "{{data.entityType}}"
             },
             {
               "id": "BCHGYq-08YVd0PboIn1bU",
@@ -423,6 +405,27 @@
       ],
       "validate": {},
       "settingsValidationErrors": []
+    },
+    {
+      "id": "hWKZzsgtRKKXBy8TdBFMy",
+      "type": "dataGroupingEditor",
+      "propertyName": "grouping",
+      "componentName": "grouping",
+      "label": "Grouping",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": {
+        "_value": false,
+        "_code": "return !(data && data.sourceType === 'Entity' && data.sortMode !== 'strict');\n",
+        "_mode": "code"
+      },
+      "visibility": "Yes",
+      "customVisibility": null,
+      "isDynamic": false,
+      "version": 0,
+      "validate": {},
+      "settingsValidationErrors": [],
+      "modelType": "{{data.entityType}}"
     }
   ],
   "formSettings": {

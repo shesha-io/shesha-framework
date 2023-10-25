@@ -2,6 +2,7 @@ import { createContext } from "react";
 
 export interface IListEditorStateContext<TItem = any> {
   value: TItem[];
+  readOnly?: boolean;
 }
 
 export interface IListEditorActionsContext<TItem = any> {
