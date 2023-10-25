@@ -28,7 +28,7 @@ const ConfigurableActionConfiguratorComponent: IToolboxComponent<IConfigurableAc
 
     return (
       <Form.Item name={model.name} labelCol={{ span: 0 }} wrapperCol={{ span: 24 }} noStyle>
-        <ConfigurableActionConfigurator editorConfig={model} level={1} readOnly={formMode === 'readonly'} />
+        <ConfigurableActionConfigurator editorConfig={model} level={1} readOnly={formMode === 'readonly'} label={model.label} description={model.description} />
       </Form.Item>
     );
   },

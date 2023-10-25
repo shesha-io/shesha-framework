@@ -1,15 +1,16 @@
+import { StepProps } from 'antd';
 import { IConfigurableActionConfiguration } from '../../../../../interfaces/configurableAction';
 import { IConfigurableFormComponent, SettingsMigrationContext } from '../../../../../interfaces/formDesigner';
 import { SheshaActionOwners } from '../../../../../providers/configurableActionsDispatcher/models';
 import { IConfigurableItemBase } from '../../../../../providers/itemListConfigurator/contexts';
 import { getDispatchEventReplacement } from '../../_common-migrations/migrate-events';
 import { upgradeActionConfig } from '../../_common-migrations/upgrade-action-owners';
-import { IWizardComponentProps, IWizardStepProps } from '../models';
+import { IWizardSequence, IWizardStepProps } from '../models';
 
 export const migrateV0toV1 = (
   props: IWizardComponentPropsV0,
   context: SettingsMigrationContext
-): IWizardComponentProps => {
+): IWizardComponentPropsV1 => {
   const { tabs, ...restProps } = props;
 
   const steps = tabs?.map<IWizardStepProps>(tab => {
@@ -176,6 +177,56 @@ export interface IWizardComponentPropsV0 extends IConfigurableFormComponent {
   hidden?: boolean;
   customVisibility?: string;
   defaultActiveStep?: string;
+}
+
+export interface IWizardStepPropsV1 extends IConfigurableItemBase {
+  id: string;
+  icon?: string;
+  key: string;
+  title: string;
+  subTitle: string;
+  description: string;
+  allowCancel?: boolean;
+
+  cancelButtonText?: string;
+  nextButtonText?: string;
+  backButtonText?: string;
+  doneButtonText?: string;
+
+  cancelButtonCustomEnabled?: string;
+  nextButtonCustomEnabled?: string;
+  backButtonCustomEnabled?: string;
+  doneButtonCustomEnabled?: string;
+
+  cancelButtonActionConfiguration?: IConfigurableActionConfiguration;
+  nextButtonActionConfiguration?: IConfigurableActionConfiguration;
+  backButtonActionConfiguration?: IConfigurableActionConfiguration;
+  doneButtonActionConfiguration?: IConfigurableActionConfiguration;
+
+  customVisibility?: string;
+  customEnabled?: string;
+  permissions?: string[];
+  components?: IConfigurableFormComponent[];
+  childItems?: IWizardStepProps[];
+  status?: StepProps['status'];
+}
+
+export interface IWizardComponentPropsV1 extends Omit<IConfigurableFormComponent, 'size'>, Pick<StepProps, 'status'> {
+  steps: IWizardStepPropsV1[];
+  wizardType?: 'default' | 'navigation';
+  visibility?: 'Yes' | 'No' | 'Removed';
+  //uniqueStateId?: string;
+  permissions?: string[];
+  hidden?: boolean;
+  customVisibility?: string;
+  defaultActiveStep?: string;
+  defaultActiveValue?: string;
+  direction?: 'vertical' | 'horizontal';
+  labelPlacement?: 'vertical' | 'horizontal';
+  size?: 'default' | 'small';
+  buttonsLayout?: 'left' | 'right' | 'spaceBetween';
+  showStepStatus?: boolean;
+  sequence?: IWizardSequence;
 }
 
 //#endregion

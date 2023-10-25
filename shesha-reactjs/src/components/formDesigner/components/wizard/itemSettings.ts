@@ -103,7 +103,6 @@ export const getSettings = (_data?: IWizardStepProps) =>
       customVisibility: null,
       validate: {},
     })
-
     .addSectionSeparator({
       id: '4d2ca388-22ef-4e24-924b-2c2e3a7e0161',
       name: 'nextButtonSeparatorVisibility',
@@ -141,8 +140,17 @@ export const getSettings = (_data?: IWizardStepProps) =>
     })
     .addConfigurableActionConfigurator({
       id: 'F3B46A95-703F-4465-96CA-A58496A5F78C',
-      name: 'nextButtonActionConfiguration',
-      label: 'Action configuration',
+      name: 'beforeNextActionConfiguration',
+      label: 'Before Next action',
+      hidden: false,
+      customVisibility: '',
+      validate: {},
+      settingsValidationErrors: [],
+    })
+    .addConfigurableActionConfigurator({
+      id: 'ac7c19c4-f75a-4ce0-b96a-1698b6bdb289',
+      name: 'afterNextActionConfiguration',
+      label: 'After Next action',
       hidden: false,
       customVisibility: '',
       validate: {},
@@ -154,7 +162,6 @@ export const getSettings = (_data?: IWizardStepProps) =>
       parentId: 'root',
       label: 'Back Button',
     })
-
     .addTextField({
       id: 'ed059dec-4f1b-408b-8739-05f0242d662a',
       name: 'backButtonText',
@@ -162,7 +169,6 @@ export const getSettings = (_data?: IWizardStepProps) =>
       labelAlign: 'right',
       parentId: 'root',
     })
-
     .addCodeEditor({
       id: 'fbc47133-caf4-45c7-bebf-ddc54159bfeb',
       name: 'backButtonCustomEnabled',
@@ -186,9 +192,18 @@ export const getSettings = (_data?: IWizardStepProps) =>
       ],
     })
     .addConfigurableActionConfigurator({
-      id: '8CC6A43F-54EE-4756-9B87-6E9204F5AEFB',
-      name: 'backButtonActionConfiguration',
-      label: 'Action configuration',
+      id: '39a6c902-2d58-4e92-a139-20b6c85f5cbb',
+      name: 'beforeBackActionConfiguration',
+      label: 'Before Back action',
+      hidden: false,
+      customVisibility: '',
+      validate: {},
+      settingsValidationErrors: [],
+    })
+    .addConfigurableActionConfigurator({
+      id: '59bb6f37-55b9-496e-8eff-dc20f610baee',
+      name: 'afterBackActionConfiguration',
+      label: 'After Back action',
       hidden: false,
       customVisibility: '',
       validate: {},
@@ -231,8 +246,17 @@ export const getSettings = (_data?: IWizardStepProps) =>
     })
     .addConfigurableActionConfigurator({
       id: 'D5133335-4349-459A-8E9E-4371C814CE1A',
-      name: 'doneButtonActionConfiguration',
-      label: 'Action configuration',
+      name: 'beforeDoneActionConfiguration',
+      label: 'Before Done action',
+      hidden: false,
+      customVisibility: '',
+      validate: {},
+      settingsValidationErrors: [],
+    })
+    .addConfigurableActionConfigurator({
+      id: 'D5133335-4349-459A-8E9E-4371C814C111',
+      name: 'afterDoneActionConfiguration',
+      label: 'After Done action',
       hidden: false,
       customVisibility: '',
       validate: {},
@@ -274,8 +298,32 @@ export const getSettings = (_data?: IWizardStepProps) =>
       ],
     })
     .addConfigurableActionConfigurator({
-      id: 'F940D7A0-AA6D-4368-A745-E130F8627472',
-      name: 'cancelButtonActionConfiguration',
+      id: 'd2fde7ff-bc23-4fe3-ab4c-6ad0eb79d8bf',
+      name: 'beforeCancelActionConfiguration',
+      label: 'Before Cancel action',
+      hidden: false,
+      customVisibility: '',
+      validate: {},
+      settingsValidationErrors: [],
+    })
+    .addConfigurableActionConfigurator({
+      id: '1721b07a-612d-4d4a-9640-b1180bd042d2',
+      name: 'afterCancelActionConfiguration',
+      label: 'After Cancel action',
+      hidden: false,
+      customVisibility: '',
+      validate: {},
+      settingsValidationErrors: [],
+    })
+    .addSectionSeparator({
+      id: 'e576bbdf-8d92-4285-acae-dff5fcfb4e11',
+      name: 'onBeforeRenderSeparatorVisibility',
+      parentId: 'root',
+      label: 'On Before Render',
+    })
+    .addConfigurableActionConfigurator({
+      id: 'ca210f0c-ac55-4b33-a7f5-be17cb3eeda5',
+      name: 'onBeforeRenderActionConfiguration',
       label: 'Action configuration',
       hidden: false,
       customVisibility: '',
@@ -287,81 +335,6 @@ export const getSettings = (_data?: IWizardStepProps) =>
       name: 'otherSeparatorVisibility',
       parentId: 'root',
       label: 'Other',
-    })
-    .addCodeEditor({
-      id: '9e6ead7b-a14c-481a-97cf-5b8363974625',
-      name: 'onBeforeRender',
-      label: 'On Before Render',
-      labelAlign: 'right',
-      parentId: 'root',
-      hidden: false,
-      customVisibility: null,
-      description: 'Enter custom event handler on changing of event. (form, event) are exposed',
-      validate: {},
-      settingsValidationErrors: [],
-      exposedVariables: [
-        {
-          id: '94234565-4d7b-41ab-b692-48620d9db7ee',
-          name: 'data',
-          description: 'Selected form values',
-          type: 'object',
-        },
-        {
-          id: '1defb26f-e6e4-4a49-a478-0b4744fb419f',
-          name: 'event',
-          description: 'Event callback when user input',
-          type: 'object',
-        },
-        {
-          id: '1c2ac0e5-9520-48e5-8aec-6907439584e6',
-          name: 'form',
-          description: 'Form instance',
-          type: 'FormInstance',
-        },
-        {
-          id: '4f7e62cd-3744-4d22-9d6d-7fcf79a01d2d',
-          name: 'formMode',
-          description: 'The form mode',
-          type: "'readonly' | 'edit' | 'designer'",
-        },
-        {
-          id: '39ecb74f-9e5a-443b-89e1-5d9ce2cf109c',
-          name: 'globalState',
-          description: 'The global state of the application',
-          type: 'object',
-        },
-        {
-          id: 'b57970b8-2af7-4b5e-b791-6efd26412948',
-          name: 'http',
-          description: 'axios instance used to make http requests',
-          type: 'object',
-        },
-        {
-          id: '',
-          name: 'message',
-          description:
-            'This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header',
-          type: 'object',
-        },
-        {
-          id: 'b6afda9c-d9aa-410b-a35d-f9585ae248d4',
-          name: 'moment',
-          description: 'The moment.js object',
-          type: 'object',
-        },
-        {
-          id: 'b6afda9c-d9aa-410b-a35d-f9585ae248d5',
-          name: 'setFormData',
-          description: 'A function used to update the form data',
-          type: '({ values: object, mergeValues: boolean}) => void',
-        },
-        {
-          id: 'b6afda9c-d9aa-410b-a35d-f9585ae248d5',
-          name: 'setGlobalState',
-          description: 'A function used to update the globalState data',
-          type: '({ values: object, mergeValues: boolean}) => void',
-        },
-      ],
     })
     .addCodeEditor({
       id: 'd2f01684-31e5-41a3-b32a-c23abc20e700',
