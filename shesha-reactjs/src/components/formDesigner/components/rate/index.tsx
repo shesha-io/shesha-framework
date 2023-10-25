@@ -44,7 +44,7 @@ const RateComponent: IToolboxComponent<IRateProps> = {
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
 
-    const { allowClear, icon, disabled, count, tooltips, className, style } = model;
+    const { allowClear, icon, disabled, count, tooltips, className, style, readOnly } = model;
 
     const eventProps = {
       model,
@@ -65,13 +65,16 @@ const RateComponent: IToolboxComponent<IRateProps> = {
 
     const localCount = !_.isNaN(count) ? count : 5;
 
+    const isReadOnly = readOnly || formMode === 'readonly';
+
+
     return (
       <ConfigurableFormItem model={model}>
         <Rate
           allowClear={allowClear}
           //allowHalf={allowHalf}
           character={icon ? <ShaIcon iconName={icon as IconType} /> : <StarFilled />}
-          disabled={disabled}
+          disabled={disabled || isReadOnly}
           count={localCount}
           tooltips={tooltips}
           className={classNames(className, 'sha-rate')}
