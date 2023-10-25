@@ -70,7 +70,7 @@ export const JUSTIFY_SELF = [
   { id: nanoid(), label: 'auto', value: 'auto' },
   { id: nanoid(), label: 'normal', value: 'normal' },
   { id: nanoid(), label: 'stretch', value: 'stretch' },
-  { id: nanoid(), label: 'center;', value: 'center;' },
+  { id: nanoid(), label: 'center', value: 'center' },
   { id: nanoid(), label: 'start', value: 'start' },
   { id: nanoid(), label: 'end', value: 'end' },
   { id: nanoid(), label: 'flex-start', value: 'flex-start' },
