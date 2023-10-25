@@ -275,24 +275,25 @@ export const isStandardSortingUsed = (state: IDataTableStateContext): Boolean =>
   return state.sortMode === 'standard' && (!state.grouping || state.grouping.length === 0);
 };
 
-export const getCurrentSorting = (state: IDataTableStateContext): IColumnSorting[] => {
-  if (state.grouping && state.grouping.length > 0) {
-    const groupSorting = state.grouping.map<IColumnSorting>(item => ({ id: item.propertyName, desc: item.sorting === 'desc' }));
-    if (state.sortMode === 'standard' && state.standardSorting.length > 0){
-      state.standardSorting.forEach(item => {
-        if (!groupSorting.find(c => c.id === item.id))
-          groupSorting.push(item);
-      });
+export const getCurrentSorting = (state: IDataTableStateContext, groupingSupported: boolean): IColumnSorting[] => {
+  switch (state.sortMode){
+    case 'standard': {
+      if (groupingSupported && state.grouping && state.grouping.length > 0) {
+        const groupSorting = state.grouping.map<IColumnSorting>(item => ({ id: item.propertyName, desc: item.sorting === 'desc' }));
+        if (state.sortMode === 'standard' && state.standardSorting.length > 0){
+          state.standardSorting.forEach(item => {
+            if (!groupSorting.find(c => c.id === item.id))
+              groupSorting.push(item);
+          });
+        }
+        return groupSorting;
+      }
+
+      return state.standardSorting;
     }
-    return groupSorting;
+    case 'strict': {
+      return [{ id: state.strictOrderBy, desc: state.strictSortOrder === 'desc' }];
+    }
   }
-
-  if (state.sortMode === 'strict') {
-    return [{ id: state.strictOrderBy, desc: state.strictSortOrder === 'desc' }];
-  }
-
-  if (!isStandardSortingUsed(state))
-    console.error('Unexpected configuration of the dataTableContext', state);
-
-  return state.standardSorting;
+  return [];
 };

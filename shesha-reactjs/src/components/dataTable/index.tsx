@@ -542,12 +542,21 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     );
   };
 
+  const repository = store.getRepository();
+  const reorderingAvailable = useMemo<boolean>(() => {
+    return repository && repository?.supportsReordering({ sortMode, strictOrderBy }) === true;
+  }, [repository, sortMode, strictOrderBy]);
+
+  const groupingAvailable = useMemo<boolean>(() => {
+    return repository && repository?.supportsGrouping({ sortMode });
+  }, [repository, sortMode]);
+
   const handleRowsReordered = (payload: OnRowsReorderedArgs): Promise<void> => {
     const repository = store.getRepository();
     if (!repository)
       return Promise.reject('Repository is not specified');
 
-    const supported = repository.supportsReordering({ sortMode, strictOrderBy });
+    const supported = repository?.supportsReordering({ sortMode, strictOrderBy });
     if (supported === true){
       const reorderPayload: RowsReorderPayload = {
         ...payload,
@@ -580,8 +589,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         <LoadingOutlined /> loading...
       </span>
     ),
-    onRowsReordered: handleRowsReordered,
-    allowReordering,
     containerStyle,
     tableStyle,
     omitClick: options?.omitClick,
@@ -603,7 +610,11 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     inlineDisplayComponents,
     minHeight: props.minHeight,
     maxHeight: props.maxHeight,
-    onRowsRendering: grouping && grouping.length > 0 ? onRowsRenderingWithGrouping : undefined,
+    
+    allowReordering: allowReordering && reorderingAvailable,
+    onRowsReordered: handleRowsReordered,
+
+    onRowsRendering: grouping && grouping.length > 0 && groupingAvailable ? onRowsRenderingWithGrouping : undefined,
   };
 
   return (

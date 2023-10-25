@@ -14,7 +14,7 @@ import {
   ITableDataInternalResponse,
   ITableDataResponse,
 } from '../interfaces';
-import { IRepository, IHasRepository, RowsReorderPayload, SupportsReorderingArgs } from './interfaces';
+import { IRepository, IHasRepository, RowsReorderPayload } from './interfaces';
 import { convertDotNotationPropertiesToGraphQL } from 'providers/form/utils';
 import { IConfigurableColumnsProps } from 'providers/datatableColumnsConfigurator/models';
 import { IMetadataDispatcherActionsContext } from 'providers/metadataDispatcher/contexts';
@@ -137,10 +137,6 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
     return Promise.reject(`Reordering is not supported by the repository '${UrlRepositoryType}'`);
   };
 
-  const supportsReordering = (_args: SupportsReorderingArgs) => {
-    return `Reordering is not supported by the repository '${UrlRepositoryType}'`;
-  };
-
   const repository: IUrlRepository = {
     repositoryType: UrlRepositoryType,
     fetch,
@@ -150,7 +146,6 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
     performCreate,
     performUpdate,
     performDelete,
-    supportsReordering,
   };
   return repository;
 };

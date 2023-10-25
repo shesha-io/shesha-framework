@@ -7,7 +7,7 @@ import React, { ComponentType, useMemo } from "react";
 import { FC } from "react";
 import { camelcaseDotNotation } from "utils/string";
 import { DataTableColumnDto, IExcelColumn, IExportExcelPayload, IGetDataFromBackendPayload, IGetListDataPayload, ITableDataColumn, ITableDataInternalResponse, ITableDataResponse } from "../interfaces";
-import { IRepository, IHasRepository, IHasModelType, RowsReorderPayload, EntityReorderPayload, EntityReorderItem, EntityReorderResponse, SupportsReorderingArgs } from "./interfaces";
+import { IRepository, IHasRepository, IHasModelType, RowsReorderPayload, EntityReorderPayload, EntityReorderItem, EntityReorderResponse, SupportsReorderingArgs, SupportsGroupingArgs } from "./interfaces";
 import { convertDotNotationPropertiesToGraphQL } from "providers/form/utils";
 import { IConfigurableColumnsProps, IDataColumnsProps } from "providers/datatableColumnsConfigurator/models";
 import { IMetadataDispatcherActionsContext } from "providers/metadataDispatcher/contexts";
@@ -327,6 +327,10 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
             : true;
     };
 
+    const supportsGrouping = (args: SupportsGroupingArgs) => {
+        return args.sortMode === "standard" && Boolean(entityType);
+    };
+
     const repository: IBackendRepository = {
         repositoryType: BackendRepositoryType,
         entityType: args.entityType,
@@ -338,6 +342,7 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
         performUpdate,
         performDelete,
         supportsReordering,
+        supportsGrouping,
     };
     return repository;
 };

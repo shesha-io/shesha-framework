@@ -2,7 +2,7 @@ import { IConfigurableColumnsProps } from "providers/datatableColumnsConfigurato
 import React, { ComponentType, useMemo } from "react";
 import { FC } from "react";
 import { DataTableColumnDto, IGetListDataPayload, ITableDataInternalResponse } from "../interfaces";
-import { IHasRepository, IRepository, RowsReorderPayload, SupportsReorderingArgs } from "./interfaces";
+import { IHasRepository, IRepository, RowsReorderPayload } from "./interfaces";
 
 export interface IWithNullRepositoryArgs {
     value?: object;
@@ -39,10 +39,6 @@ const createRepository = (_args: IWithNullRepositoryArgs): IRepository => {
         return Promise.reject(HAS_NO_IMPLEMENTATION_MESSAGE);
     };
 
-    const supportsReordering = (_args: SupportsReorderingArgs) => {
-        return HAS_NO_IMPLEMENTATION_MESSAGE;
-    };
-
     const repository: IRepository = {
         repositoryType: 'null-repository',
         fetch,
@@ -52,7 +48,6 @@ const createRepository = (_args: IWithNullRepositoryArgs): IRepository => {
         performCreate,
         performUpdate,
         performDelete,
-        supportsReordering,
     };
     return repository;
 };

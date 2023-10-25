@@ -191,10 +191,12 @@ const getFilter = (state: IDataTableStateContext): string => {
   return JSON.stringify(jsonLogicFilters);
 };
 
-const getFetchListDataPayload = (state: IDataTableStateContext): IGetListDataPayload => {
+const getFetchListDataPayload = (state: IDataTableStateContext, repository: IRepository): IGetListDataPayload => {
   const dataColumns = getTableDataColumns(state.columns);
 
-  if (state.groupingColumns && state.groupingColumns.length > 0){
+  const groupingSupported = repository.supportsGrouping && repository.supportsGrouping({ sortMode: state.sortMode });
+
+  if (groupingSupported && state.groupingColumns && state.groupingColumns.length > 0){
     state.groupingColumns.forEach(groupColumn => {
       if (!dataColumns.find(column => column.propertyName === groupColumn.propertyName)){
         dataColumns.push(groupColumn);
@@ -207,7 +209,7 @@ const getFetchListDataPayload = (state: IDataTableStateContext): IGetListDataPay
     columns: dataColumns,
     pageSize: state.dataFetchingMode === 'paging' ? state.selectedPageSize : -1,
     currentPage: state.dataFetchingMode === 'paging' ? state.currentPage : 1,
-    sorting: getCurrentSorting(state),
+    sorting: getCurrentSorting(state, groupingSupported),
     quickSearch: state.quickSearch,
     filter: filter,
   };
@@ -281,7 +283,9 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   const tableIsReady = useRef(false);
 
   useDeepCompareEffect(() => {
-    if (!grouping || grouping.length === 0) {
+    const supported = repository.supportsGrouping && repository.supportsGrouping({ sortMode });
+
+    if (!grouping || grouping.length === 0 || !supported) {
       dispatch(fetchGroupingColumnsSuccessAction({ grouping: [], columns: [] }));
     } else {
       const groupColumns = grouping.map<IDataColumnsProps>((col, index) => ({
@@ -298,7 +302,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
         dispatch(fetchGroupingColumnsSuccessAction({ grouping: grouping, columns: preparedColumns }));
       });
     }
-  }, [grouping]);
+  }, [grouping, sortMode]);
 
   const ctx = useDataContext(false);
 
@@ -334,11 +338,9 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     state.predefinedFilters,
     repository,
     state.groupingColumns,
-    /*
     state.sortMode,
     state.strictOrderBy,
     state.strictSortOrder,
-    */
   ]);
 
   const requireColumnRef = useRef<Boolean>(false);
@@ -348,7 +350,9 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   // fetch table data when config is ready or something changed (selected filter, changed current page etc.)
   const fetchDataIfReady = () => {
-    const groupingIsReady = (grouping ?? []).length === (state.groupingColumns ?? []).length;
+    const groupingSupported = repository.supportsGrouping && repository.supportsGrouping({ sortMode: state.sortMode });
+    const groupingIsReady = !groupingSupported || (grouping ?? []).length === (state.groupingColumns ?? []).length;
+
     const columnsAreReady = !(requireColumnRef.current) || Boolean(state.configurableColumns) && state.columns.length === state.configurableColumns.length;
 
     const readyToFetch = repository && groupingIsReady && columnsAreReady;
@@ -425,7 +429,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     // save user settings before fetch
     saveUserSettings(providedState);
 
-    const payload = getFetchListDataPayload(providedState);
+    const payload = getFetchListDataPayload(providedState, repository);
     fetchTableDataInternal(payload);
   };
 
@@ -577,7 +581,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   };
 
   const exportToExcel = (): Promise<void> => {
-    const payload = getFetchListDataPayload(state);
+    const payload = getFetchListDataPayload(state, repository);
     return repository.exportToExcel(payload);
   };
 

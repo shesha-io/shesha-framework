@@ -15,7 +15,8 @@ export interface IRepository<TCreateOptions = any, TUpdateOptions = any, TDelete
     fetch: (payload: IGetListDataPayload) => Promise<ITableDataInternalResponse>;
     exportToExcel: (payload: IGetListDataPayload) => Promise<void>;
     reorder: (payload: RowsReorderPayload) => Promise<void>;
-    supportsReordering: (args: SupportsReorderingArgs) => boolean | string;
+    supportsReordering?: (args: SupportsReorderingArgs) => boolean | string;
+    supportsGrouping?: (args: SupportsGroupingArgs) => boolean;
     performCreate: (rowIndex: number, data: any, options: TCreateOptions) => Promise<any>;
     performUpdate: (rowIndex: number, data: any, options: TUpdateOptions) => Promise<any>;
     performDelete: (rowIndex: number, data: any, options: TDeleteOptions) => Promise<any>;
@@ -45,4 +46,8 @@ export interface EntityReorderResponse {
 export interface SupportsReorderingArgs {
     sortMode?: SortMode; 
     strictOrderBy?: string;
+}
+
+export interface SupportsGroupingArgs {
+    sortMode?: SortMode; 
 }
