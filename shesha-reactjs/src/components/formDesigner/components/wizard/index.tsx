@@ -178,7 +178,21 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
         };
         return model;
       })
-      .add(1, migrateV0toV1),
+      .add(1, migrateV0toV1)
+      .add(2, (prev) => {
+        return {
+          ...prev,
+          steps: prev.steps.map((step) => {
+            return {
+              ...step,
+              beforeBackActionConfiguration: step.backButtonActionConfiguration,
+              beforeNextActionConfiguration: step.nextButtonActionConfiguration,
+              beforeCancelActionConfiguration: step.cancelButtonActionConfiguration,
+              beforeDoneActionConfiguration: step.doneButtonActionConfiguration
+            };
+          })
+        };
+      }),
 
   settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
     return (

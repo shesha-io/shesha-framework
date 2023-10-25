@@ -66,28 +66,17 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
   useEffect(() => {
     const actionConfiguration = currentStep?.onBeforeRenderActionConfiguration;
 
-    if (isEmptyArgument(actionConfiguration)) {
-      executeAction(actionConfiguration);
+    if (!isEmptyArgument(actionConfiguration)) {
+      executeAction({
+        actionConfiguration: actionConfiguration,
+        argumentsEvaluationContext
+      });
     }
-  }, [currentStep?.onBeforeRenderActionConfiguration]);
+  }, [currentStep]);
 
   const actionDependencies = [actionOwnerName, actionsOwnerId, current];
 
   // #region configurable actions
-  useConfigurableAction(
-    {
-      name: 'Before: Back',
-      owner: actionOwnerName,
-      ownerUid: actionsOwnerId,
-      hasArguments: false,
-      executer: () => {
-        executeAction(currentStep?.beforeBackActionConfiguration);
-        return Promise.resolve();
-      },
-    },
-    actionDependencies
-  );
-
   useConfigurableAction(
     {
       name: 'Back',
@@ -96,34 +85,6 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
       hasArguments: false,
       executer: () => {
         back();
-        return Promise.resolve();
-      },
-    },
-    actionDependencies
-  );
-
-  useConfigurableAction(
-    {
-      name: 'After: Back',
-      owner: actionOwnerName,
-      ownerUid: actionsOwnerId,
-      hasArguments: false,
-      executer: () => {
-        executeAction(currentStep?.afterBackActionConfiguration);
-        return Promise.resolve();
-      },
-    },
-    actionDependencies
-  );
-
-  useConfigurableAction(
-    {
-      name: 'Before: Next',
-      owner: actionOwnerName,
-      ownerUid: actionsOwnerId,
-      hasArguments: false,
-      executer: () => {
-        executeAction(currentStep?.beforeNextActionConfiguration);
         return Promise.resolve();
       },
     },
@@ -146,54 +107,12 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
 
   useConfigurableAction(
     {
-      name: 'After: Next',
-      owner: actionOwnerName,
-      ownerUid: actionsOwnerId,
-      hasArguments: false,
-      executer: () => {
-        executeAction(currentStep?.afterNextActionConfiguration);
-        return Promise.resolve();
-      },
-    },
-    actionDependencies
-  );
-
-  useConfigurableAction(
-    {
-      name: 'Before: Cancel',
-      owner: actionOwnerName,
-      ownerUid: actionsOwnerId,
-      hasArguments: false,
-      executer: () => {
-        executeAction(currentStep?.beforeCancelActionConfiguration);
-        return Promise.resolve();
-      },
-    },
-    actionDependencies
-  );
-
-  useConfigurableAction(
-    {
       name: 'Cancel',
       owner: actionOwnerName,
       ownerUid: actionsOwnerId,
       hasArguments: false,
       executer: () => {
         cancel();
-        return Promise.resolve();
-      },
-    },
-    actionDependencies
-  );
-
-  useConfigurableAction(
-    {
-      name: 'After: Cancel',
-      owner: actionOwnerName,
-      ownerUid: actionsOwnerId,
-      hasArguments: false,
-      executer: () => {
-        executeAction(currentStep?.afterCancelActionConfiguration);
         return Promise.resolve();
       },
     },
@@ -227,7 +146,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     setTimeout(() => {
       const step = getWizardStep(visibleSteps, current, type);
 
-      if (step >= 0) {
+      if (step >= 0 && step !== current) {
         setCurrent(step);
       }
       setComponents(currentStep?.components);
@@ -236,60 +155,70 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
 
   /// NAVIGATION
   const executeActionIfConfigured = (
-    accessor: (step: IWizardStepProps) => IConfigurableActionConfiguration,
+    beforeAccessor: (step: IWizardStepProps) => IConfigurableActionConfiguration,
+    afterAccessor: (step: IWizardStepProps) => IConfigurableActionConfiguration,
     success?: (actionResponse: any) => void,
-    before?: (step: IWizardStepProps) => void
   ) => {
-    const actionConfiguration = accessor(currentStep);
+    const beforeAction = beforeAccessor(currentStep);
 
-    if (before) before(currentStep);
+    const successFunc = (response: any) => {
+      onAfterCallback(
+        () => { 
+          if (success) success(response);
+        },
+        () => {
+          const afterAction = afterAccessor(currentStep);
+          if (!isEmptyArgument(afterAction))
+            executeAction({
+              actionConfiguration: afterAction,
+              argumentsEvaluationContext
+            });
+        }
+      );
+    };
 
-    if (!isEmptyArgument(actionConfiguration)) {
-      if (success) success(null);
+    if (isEmptyArgument(beforeAction)) {
+      successFunc(null);
       return;
     }
 
     executeAction({
-      actionConfiguration: actionConfiguration,
+      actionConfiguration: beforeAction,
       argumentsEvaluationContext,
-      success,
+      success: successFunc,
     });
   };
 
   const next = () => {
     if (current < tabs.length - 1)
       executeActionIfConfigured(
-        (tab) => tab.nextButtonActionConfiguration,
-        () =>
-          onAfterCallback(
-            () => successCallback('next'),
-            (tab) => executeAction(tab.afterNextActionConfiguration)
-          ),
-        (tab) => executeAction(tab.beforeNextActionConfiguration)
+        (tab) => tab.beforeNextActionConfiguration,
+        (tab) => tab.afterNextActionConfiguration,
+        () => successCallback('next'),
       );
   };
 
   const back = () => {
     if (current > 0)
       executeActionIfConfigured(
-        (tab) => tab.backButtonActionConfiguration,
-        () =>
-          onAfterCallback(
-            () => successCallback('back'),
-            (tab) => executeAction(tab.afterBackActionConfiguration)
-          ),
-        (tab) => executeAction(tab.beforeBackActionConfiguration)
+        (tab) => tab.beforeBackActionConfiguration,
+        (tab) => tab.afterBackActionConfiguration,
+        () => successCallback('back'),
       );
   };
 
   const cancel = () =>
     executeActionIfConfigured(
-      (tab) => tab.cancelButtonActionConfiguration,
-      () => executeAction(currentStep?.afterCancelActionConfiguration),
-      (tab) => executeAction(tab.beforeCancelActionConfiguration)
+      (tab) => tab.beforeCancelActionConfiguration,
+      (tab) => tab.afterCancelActionConfiguration
     );
 
-  const done = () => executeActionIfConfigured((tab) => tab.doneButtonActionConfiguration);
+  const done = () =>
+    executeActionIfConfigured(
+      (tab) => tab.beforeDoneActionConfiguration,
+      (tab) => tab.afterDoneActionConfiguration
+    );
+
 
   const content = getStepDescritpion(showStepStatus, sequence, current);
 

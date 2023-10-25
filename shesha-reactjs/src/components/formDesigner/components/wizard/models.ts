@@ -40,10 +40,15 @@ export interface IWizardStepProps extends IConfigurableItemBase {
 
   beforeNextActionConfiguration?: IConfigurableActionConfiguration;
   afterNextActionConfiguration?: IConfigurableActionConfiguration;
+
   beforeBackActionConfiguration?: IConfigurableActionConfiguration;
   afterBackActionConfiguration?: IConfigurableActionConfiguration;
+
   beforeCancelActionConfiguration?: IConfigurableActionConfiguration;
   afterCancelActionConfiguration?: IConfigurableActionConfiguration;
+
+  beforeDoneActionConfiguration?: IConfigurableActionConfiguration;
+  afterDoneActionConfiguration?: IConfigurableActionConfiguration;
 }
 
 export interface IWizardSequence {

@@ -104,21 +104,6 @@ export const getSettings = (_data?: IWizardStepProps) =>
       validate: {},
     })
     .addSectionSeparator({
-      id: 'c43e439d-5aa3-40e0-993e-ef53203ac834',
-      name: 'beforeNextSeparator',
-      parentId: 'root',
-      label: 'Before: Next Button',
-    })
-    .addConfigurableActionConfigurator({
-      id: '43150331-8bde-41d7-9515-502aee566470',
-      name: 'beforeNextActionConfiguration',
-      label: 'Action configuration',
-      hidden: false,
-      customVisibility: '',
-      validate: {},
-      settingsValidationErrors: [],
-    })
-    .addSectionSeparator({
       id: '4d2ca388-22ef-4e24-924b-2c2e3a7e0161',
       name: 'nextButtonSeparatorVisibility',
       parentId: 'root',
@@ -155,38 +140,17 @@ export const getSettings = (_data?: IWizardStepProps) =>
     })
     .addConfigurableActionConfigurator({
       id: 'F3B46A95-703F-4465-96CA-A58496A5F78C',
-      name: 'nextButtonActionConfiguration',
-      label: 'Action configuration',
+      name: 'beforeNextActionConfiguration',
+      label: 'Before Next action',
       hidden: false,
       customVisibility: '',
       validate: {},
       settingsValidationErrors: [],
-    })
-    .addSectionSeparator({
-      id: '53028e99-557f-4b82-aea9-463dc9627fcc',
-      name: 'afterNextSeparator',
-      parentId: 'root',
-      label: 'After: Next Button',
     })
     .addConfigurableActionConfigurator({
       id: 'ac7c19c4-f75a-4ce0-b96a-1698b6bdb289',
       name: 'afterNextActionConfiguration',
-      label: 'Action configuration',
-      hidden: false,
-      customVisibility: '',
-      validate: {},
-      settingsValidationErrors: [],
-    })
-    .addSectionSeparator({
-      id: 'ee027e9e-9cc1-45bb-a81a-a57efaaf830a',
-      name: 'beforeBackSeparator',
-      parentId: 'root',
-      label: 'Before: Back Button',
-    })
-    .addConfigurableActionConfigurator({
-      id: '39a6c902-2d58-4e92-a139-20b6c85f5cbb',
-      name: 'beforeBackActionConfiguration',
-      label: 'Action configuration',
+      label: 'After Next action',
       hidden: false,
       customVisibility: '',
       validate: {},
@@ -228,24 +192,18 @@ export const getSettings = (_data?: IWizardStepProps) =>
       ],
     })
     .addConfigurableActionConfigurator({
-      id: '8CC6A43F-54EE-4756-9B87-6E9204F5AEFB',
-      name: 'backButtonActionConfiguration',
-      label: 'Action configuration',
+      id: '39a6c902-2d58-4e92-a139-20b6c85f5cbb',
+      name: 'beforeBackActionConfiguration',
+      label: 'Before Back action',
       hidden: false,
       customVisibility: '',
       validate: {},
       settingsValidationErrors: [],
     })
-    .addSectionSeparator({
-      id: '4cee4a23-4ef3-4de6-a369-8000719c4186',
-      name: 'afterBackSeparator',
-      parentId: 'root',
-      label: 'After: Back Button',
-    })
     .addConfigurableActionConfigurator({
       id: '59bb6f37-55b9-496e-8eff-dc20f610baee',
       name: 'afterBackActionConfiguration',
-      label: 'Action configuration',
+      label: 'After Back action',
       hidden: false,
       customVisibility: '',
       validate: {},
@@ -288,23 +246,17 @@ export const getSettings = (_data?: IWizardStepProps) =>
     })
     .addConfigurableActionConfigurator({
       id: 'D5133335-4349-459A-8E9E-4371C814CE1A',
-      name: 'doneButtonActionConfiguration',
-      label: 'Action configuration',
+      name: 'beforeDoneActionConfiguration',
+      label: 'Before Done action',
       hidden: false,
       customVisibility: '',
       validate: {},
       settingsValidationErrors: [],
     })
-    .addSectionSeparator({
-      id: '8e398332-1134-4c6d-b73d-aef1cd771817',
-      name: 'beforeCancelSeparator',
-      parentId: 'root',
-      label: 'Before: Cancel Button',
-    })
     .addConfigurableActionConfigurator({
-      id: 'd2fde7ff-bc23-4fe3-ab4c-6ad0eb79d8bf',
-      name: 'beforeCancelActionConfiguration',
-      label: 'Action configuration',
+      id: 'D5133335-4349-459A-8E9E-4371C814C111',
+      name: 'afterDoneActionConfiguration',
+      label: 'After Done action',
       hidden: false,
       customVisibility: '',
       validate: {},
@@ -346,31 +298,25 @@ export const getSettings = (_data?: IWizardStepProps) =>
       ],
     })
     .addConfigurableActionConfigurator({
-      id: 'F940D7A0-AA6D-4368-A745-E130F8627472',
-      name: 'cancelButtonActionConfiguration',
-      label: 'Action configuration',
+      id: 'd2fde7ff-bc23-4fe3-ab4c-6ad0eb79d8bf',
+      name: 'beforeCancelActionConfiguration',
+      label: 'Before Cancel action',
       hidden: false,
       customVisibility: '',
       validate: {},
       settingsValidationErrors: [],
-    })
-    .addSectionSeparator({
-      id: '5ed8302d-9fbb-4da3-9582-a042ac6cf424',
-      name: 'afterCancelSeparator',
-      parentId: 'root',
-      label: 'After: Cancel Button',
     })
     .addConfigurableActionConfigurator({
       id: '1721b07a-612d-4d4a-9640-b1180bd042d2',
       name: 'afterCancelActionConfiguration',
-      label: 'Action configuration',
+      label: 'After Cancel action',
       hidden: false,
       customVisibility: '',
       validate: {},
       settingsValidationErrors: [],
     })
     .addSectionSeparator({
-      id: 'e576bbdf-8d92-4285-acae-dff5fcfb4ea4',
+      id: 'e576bbdf-8d92-4285-acae-dff5fcfb4e11',
       name: 'onBeforeRenderSeparatorVisibility',
       parentId: 'root',
       label: 'On Before Render',

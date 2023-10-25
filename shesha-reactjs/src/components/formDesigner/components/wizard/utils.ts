@@ -102,4 +102,4 @@ export const getWizardStep = (steps: IWizardStepProps[], current: number, type: 
 export const isEmptyArgument = (args: IConfigurableActionConfiguration) =>
   Object.getOwnPropertyNames(args || {})
     .filter((key) => !['handleSuccess', 'handleFail'].includes(key))
-    .some((key) => args[key]);
+    .some((key) => !args[key]);
