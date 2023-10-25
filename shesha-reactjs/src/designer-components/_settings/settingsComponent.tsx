@@ -6,10 +6,11 @@ import { ComponentsContainer, ConfigurableFormItem } from 'components';
 import { DataContextProvider } from 'providers/dataContextProvider';
 import { Button } from 'antd';
 import { getPropertySettingsFromData } from './utils';
-import { SettingsControl } from './settingsControl';
+import { IContextSettingsRef, SettingsControl } from './settingsControl';
 import { getSettings } from './settings';
 import { getValueByPropertyName, setValueByPropertyName } from 'utils/object';
 import './styles/index.less';
+import { useRef } from 'react';
 
 export interface ISettingsComponentProps extends IConfigurableFormComponent {
     components?: IConfigurableFormComponent[];
@@ -41,6 +42,8 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
             return model?.components?.map(c => ({ ...c, hideLabel: true, readOnly: model?.readOnly, context: model.id }));
         }, [model?.components, model?.readOnly, model?.id]);
 
+        const ctxRef = useRef<IContextSettingsRef>();
+
         return (
             <ConfigurableFormItem model={{ ...props, label: props.label, }} className='sha-js-label' >
                 {(value, onChange) => {
@@ -57,22 +60,26 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
                         >
                             {mode === 'code' ? 'Value' : 'JS'}
                         </Button>
-                        <SettingsControl id={model.id} propertyName={internalProps?.propertyName} mode={mode} value={value} onChange={onChange}>
-                            {(value, onChange, propertyName) =>
-                                <DataContextProvider id={model.id} name={props.componentName} description={props.label.toString()} type={'settings'}
-                                    dynamicData={setValueByPropertyName({}, propertyName, value)}
-                                    /*initialData={new Promise((resolve) => {
-                                        resolve(setValueByPropertyName({}, propertyName, value));
-                                    })}*/
-                                    onChangeData={(v) => {
-                                        if (v)
-                                            onChange(getValueByPropertyName(v, propertyName));
-                                    }}
-                                >
-                                    <ComponentsContainer containerId={props.id} dynamicComponents={components} />
-                                </DataContextProvider>
+                        <DataContextProvider id={model.id} name={props.componentName} description={props.label.toString()} type={'settings'}
+                            initialData={new Promise((resolve) => {
+                                resolve(setValueByPropertyName({}, internalProps?.propertyName, value));
+                            })}
+                            dynamicData={
+                                internalProps?.propertyName && ctxRef.current?.value
+                                    ? setValueByPropertyName({}, internalProps?.propertyName, ctxRef.current?.value)
+                                    : null
                             }
-                        </SettingsControl>
+                            onChangeData={(v) => {
+                                if (v && ctxRef.current?.onChange)
+                                    ctxRef.current?.onChange(getValueByPropertyName(v, internalProps?.propertyName));
+                            }}
+                        >
+                            <SettingsControl id={model.id} propertyName={internalProps?.propertyName} mode={mode} value={value} onChange={onChange} contextRef={ctxRef}>
+                                {() =>
+                                    <ComponentsContainer containerId={props.id} dynamicComponents={components} />
+                                }
+                            </SettingsControl>
+                        </DataContextProvider>
                     </div>
                     );
                 }}
