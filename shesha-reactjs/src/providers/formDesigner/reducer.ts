@@ -1,5 +1,6 @@
 import { nanoid } from 'nanoid/non-secure';
 import { handleActions } from 'redux-actions';
+import { toolbarGroupsToComponents } from 'src/formDesignerUtils';
 import { IFormValidationErrors, IToolboxComponentGroup } from '../../interfaces';
 import { camelcaseDotNotation } from '../../utils/string';
 import undoable from '../../utils/undoable';
@@ -141,7 +142,8 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 
       let newComponents: IConfigurableFormComponent[] = [];
       if (toolboxComponent.isTemplate) {
-        newComponents = cloneComponents(state.toolboxComponentGroups, toolboxComponent.build());
+        const allComponents = toolbarGroupsToComponents(state.toolboxComponentGroups);
+        newComponents = cloneComponents(state.toolboxComponentGroups, toolboxComponent.build(allComponents));
       } else {
         // create new component
         let count = 0;

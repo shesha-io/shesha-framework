@@ -1,6 +1,7 @@
 import { TableOutlined } from '@ant-design/icons';
+import { componentsFlatStructureToTree, componentsTreeToFlatStructure, upgradeComponents } from 'providers/form/utils';
 import React from 'react';
-import { IConfigurableFormComponent, IToolboxComponent } from '../../../interfaces';
+import { DEFAULT_FORM_SETTINGS, IConfigurableFormComponent, IToolboxComponent } from '../../../interfaces';
 import templateJson from './tableTemplate.json';
 import { generateNewKey } from './utils';
 
@@ -12,10 +13,14 @@ const TableTemplateComponent: IToolboxComponent = {
   factory: () => {
     return <>test</>;
   },
-  build: () => {
+  build: (designerComponents) => {
     const components: IConfigurableFormComponent[] = generateNewKey(templateJson) as IConfigurableFormComponent[];
 
-    return components;
+    const flatStructure = componentsTreeToFlatStructure(designerComponents, components);
+    upgradeComponents(designerComponents, DEFAULT_FORM_SETTINGS, flatStructure);
+    const tree = componentsFlatStructureToTree(designerComponents, flatStructure);
+
+    return tree;
   },
 };
 

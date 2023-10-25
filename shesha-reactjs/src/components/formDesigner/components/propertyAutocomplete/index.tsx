@@ -13,10 +13,11 @@ import { migrateCustomFunctions, migratePropertyName } from '../../../../designe
 
 const settingsForm = settingsFormJson as FormMarkup;
 
-const PropertyAutocompleteComponent: IToolboxComponent<IPropertyAutocompleteComponentProps> = {
+export const PropertyAutocompleteComponent: IToolboxComponent<IPropertyAutocompleteComponentProps> = {
   type: 'propertyAutocomplete',
   name: 'Property Autocomplete',
   icon: <FileSearchOutlined />,
+  isHidden: true,
   factory: (model: IPropertyAutocompleteComponentProps) => {
     const { formMode } = useForm();
     const { data: formData } = useFormData();
@@ -54,5 +55,3 @@ const PropertyAutocompleteComponent: IToolboxComponent<IPropertyAutocompleteComp
   migrator: (m) => m
     .add<IPropertyAutocompleteComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
 };
-
-export default PropertyAutocompleteComponent;

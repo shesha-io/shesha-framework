@@ -73,7 +73,9 @@
       "dataSourceType": "values",
       "version": 2,
       "useRawValues": false,
-      "referenceListId": null
+      "referenceListId": null,
+      "validate": {},
+      "settingsValidationErrors": []
     },
     {
       "id": "6b0bd9c6-6a53-4a05-9de0-ad1b17eb0018",
@@ -83,9 +85,9 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": {
+        "_value": false,
         "_code": "return getSettingValue(data.sourceType) !== 'Entity';",
-        "_mode": "code",
-        "_value": false
+        "_mode": "code"
       },
       "dataSourceType": "url",
       "validate": {},
@@ -224,33 +226,159 @@
       "settingsValidationErrors": []
     },
     {
-      "id": "4rp6NvRdoK4CEuK2jA6re",
-      "type": "textArea",
-      "propertyName": "grouping",
-      "componentName": "grouping",
-      "label": "Grouping",
+      "id": "Z8z0Kj-kyHyiQBflSy86w",
+      "type": "container",
+      "propertyName": "container2",
+      "componentName": "container2",
+      "label": "Container2",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": false,
+      "hidden": {
+        "_value": false,
+        "_code": "return !data?.sourceType || data.sourceType !== 'Entity';",
+        "_mode": "code"
+      },
       "visibility": "Yes",
       "customVisibility": null,
       "isDynamic": false,
-      "autoSize": false,
-      "showCount": false,
-      "allowClear": false,
-      "version": 0,
-      "validate": {},
-      "settingsValidationErrors": []
+      "version": 1,
+      "direction": "vertical",
+      "justifyContent": "left",
+      "flexWrap": "wrap",
+      "components": [
+        {
+          "id": "PzuhHhgdVMESk1pPRVc11",
+          "type": "dropdown",
+          "propertyName": "sortMode",
+          "componentName": "sortMode",
+          "label": "Sort Mode",
+          "labelAlign": "right",
+          "parentId": "Z8z0Kj-kyHyiQBflSy86w",
+          "hidden": false,
+          "visibility": "Yes",
+          "customVisibility": null,
+          "isDynamic": false,
+          "version": 2,
+          "dataSourceType": "values",
+          "useRawValues": false,
+          "referenceListId": null,
+          "values": [
+            {
+              "id": "1Ju5txy0zso5M_PyvM5MP",
+              "label": "Standard",
+              "value": "standard"
+            },
+            {
+              "id": "fniiyt1SX9T_7DL7cBlID",
+              "label": "Strict",
+              "value": "strict"
+            }
+          ],
+          "validate": {
+            "required": true
+          },
+          "settingsValidationErrors": []
+        },
+        {
+          "id": "zDXvnoMcutlROxXTERzQj",
+          "type": "container",
+          "propertyName": "container1",
+          "componentName": "container1",
+          "label": "Container1",
+          "labelAlign": "right",
+          "parentId": "Z8z0Kj-kyHyiQBflSy86w",
+          "hidden": {
+            "_value": false,
+            "_code": "return !data?.sortMode || data.sortMode !== 'strict';",
+            "_mode": "code"
+          },
+          "visibility": "Yes",
+          "customVisibility": null,
+          "isDynamic": false,
+          "version": 1,
+          "direction": "vertical",
+          "justifyContent": "left",
+          "flexWrap": "wrap",
+          "components": [
+            {
+              "id": "f0EWngXBbbWIzdRGxC9Vg",
+              "type": "propertyAutocomplete",
+              "propertyName": "strictOrderBy",
+              "componentName": "strictOrderBy",
+              "label": "Order By",
+              "labelAlign": "right",
+              "parentId": "zDXvnoMcutlROxXTERzQj",
+              "hidden": false,
+              "visibility": "Yes",
+              "customVisibility": null,
+              "isDynamic": false,
+              "version": 0,
+              "validate": {
+                "required": {
+                  "_code": "return data.sortMode === 'strict';",
+                  "_mode": "code"
+                }
+              },
+              "settingsValidationErrors": [],
+              "showFillPropsButton": false,
+              "modelType": "{{data.entityType}}"
+            },
+            {
+              "id": "BCHGYq-08YVd0PboIn1bU",
+              "type": "dropdown",
+              "propertyName": "strictSortOrder",
+              "componentName": "strictSortOrder",
+              "label": "Sort Order",
+              "labelAlign": "right",
+              "parentId": "zDXvnoMcutlROxXTERzQj",
+              "hidden": false,
+              "visibility": "Yes",
+              "customVisibility": null,
+              "isDynamic": false,
+              "version": 2,
+              "dataSourceType": "values",
+              "useRawValues": false,
+              "referenceListId": null,
+              "validate": {
+                "required": {
+                  "_code": "return data.sortMode === 'strict';",
+                  "_mode": "code"
+                }
+              },
+              "settingsValidationErrors": [],
+              "values": [
+                {
+                  "id": "iEhO_ds0R_wFNF3teQ2kg",
+                  "label": "Ascending",
+                  "value": "asc"
+                },
+                {
+                  "id": "N7lgxyqcrMDF9WnrECJXk",
+                  "label": "Descending",
+                  "value": "desc"
+                }
+              ]
+            }
+          ],
+          "settingsValidationErrors": []
+        }
+      ],
+      "settingsValidationErrors": [],
+      "display": "block"
     },
     {
-      "id": "PzuhHhgdVMESk1pPRVc11",
+      "id": "N3tW70oVHnRXeHX2zXfER",
       "type": "dropdown",
-      "propertyName": "sortMode",
-      "componentName": "sortMode",
-      "label": "Sort Mode",
+      "propertyName": "allowReordering",
+      "componentName": "allowReordering",
+      "label": "Allow reordering",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": false,
+      "hidden": {
+        "_value": false,
+        "_code": "return !data?.sourceType || !(data.sourceType === 'Entity' && data.sortMode === 'strict' || data.sourceType === 'Form');",
+        "_mode": "code"
+      },
       "visibility": "Yes",
       "customVisibility": null,
       "isDynamic": false,
@@ -260,196 +388,44 @@
       "referenceListId": null,
       "values": [
         {
-          "id": "1Ju5txy0zso5M_PyvM5MP",
-          "label": "Standard",
-          "value": "standard"
+          "id": "H1AvnU50WzwSbLpGH2yAm",
+          "label": "Yes",
+          "value": "yes"
         },
         {
-          "id": "fniiyt1SX9T_7DL7cBlID",
-          "label": "Strict",
-          "value": "strict"
+          "id": "JaPo9A-8BeUGuNiz23qIY",
+          "label": "No",
+          "value": "no"
+        },
+        {
+          "id": "f24l8a0fmiB5AbdHcX8oF",
+          "label": "Inherit",
+          "value": "inherit"
         }
       ],
-      "validate": {
-        "required": true
-      },
+      "validate": {},
       "settingsValidationErrors": []
     },
     {
-      "id": "zDXvnoMcutlROxXTERzQj",
-      "type": "container",
-      "propertyName": "container1",
-      "componentName": "container1",
-      "label": "Container1",
+      "id": "hWKZzsgtRKKXBy8TdBFMy",
+      "type": "dataGroupingEditor",
+      "propertyName": "grouping",
+      "componentName": "grouping",
+      "label": "Grouping",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": {
         "_value": false,
-        "_code": "return data.sortMode !== 'strict';",
+        "_code": "return !(data && data.sourceType === 'Entity' && data.sortMode !== 'strict');\n",
         "_mode": "code"
       },
       "visibility": "Yes",
       "customVisibility": null,
       "isDynamic": false,
-      "version": 1,
-      "direction": "vertical",
-      "justifyContent": "left",
-      "flexWrap": "wrap",
-      "components": [
-        {
-          "id": "f0EWngXBbbWIzdRGxC9Vg",
-          "type": "propertyAutocomplete",
-          "propertyName": "strictOrderBy",
-          "componentName": "strictOrderBy",
-          "label": "Order By",
-          "labelAlign": "right",
-          "parentId": "zDXvnoMcutlROxXTERzQj",
-          "hidden": false,
-          "visibility": "Yes",
-          "customVisibility": null,
-          "isDynamic": false,
-          "version": 0,
-          "validate": {
-            "required": {
-              "_code": "return data.sortMode === 'strict';",
-              "_mode": "code"
-            }
-          },
-          "settingsValidationErrors": [],
-          "showFillPropsButton": false
-        },
-        {
-          "id": "BCHGYq-08YVd0PboIn1bU",
-          "type": "dropdown",
-          "propertyName": "strictSortOrder",
-          "componentName": "strictSortOrder",
-          "label": "Sort Order",
-          "labelAlign": "right",
-          "parentId": "zDXvnoMcutlROxXTERzQj",
-          "hidden": false,
-          "visibility": "Yes",
-          "customVisibility": null,
-          "isDynamic": false,
-          "version": 2,
-          "dataSourceType": "values",
-          "useRawValues": false,
-          "referenceListId": null,
-          "validate": {
-            "required": {
-              "_code": "return data.sortMode === 'strict';",
-              "_mode": "code"
-            }
-          },
-          "settingsValidationErrors": [],
-          "values": [
-            {
-              "id": "iEhO_ds0R_wFNF3teQ2kg",
-              "label": "Ascending",
-              "value": "asc"
-            },
-            {
-              "id": "N7lgxyqcrMDF9WnrECJXk",
-              "label": "Descending",
-              "value": "desc"
-            }
-          ]
-        },
-        {
-          "id": "N3tW70oVHnRXeHX2zXfER",
-          "type": "dropdown",
-          "propertyName": "allowReordering",
-          "componentName": "allowReordering",
-          "label": "Allow reordering",
-          "labelAlign": "right",
-          "parentId": "zDXvnoMcutlROxXTERzQj",
-          "hidden": false,
-          "visibility": "Yes",
-          "customVisibility": null,
-          "isDynamic": false,
-          "version": 2,
-          "dataSourceType": "values",
-          "useRawValues": false,
-          "referenceListId": null,
-          "values": [
-            {
-              "id": "H1AvnU50WzwSbLpGH2yAm",
-              "label": "Yes",
-              "value": "yes"
-            },
-            {
-              "id": "JaPo9A-8BeUGuNiz23qIY",
-              "label": "No",
-              "value": "no"
-            },
-            {
-              "id": "f24l8a0fmiB5AbdHcX8oF",
-              "label": "Inherit",
-              "value": "inherit"
-            }
-          ],
-          "validate": {},
-          "settingsValidationErrors": []
-        }
-      ],
-      "settingsValidationErrors": []
-    },
-    {
-      "id": "zaFvnoMcutlROxXTERzQj",
-      "type": "container",
-      "propertyName": "container2",
-      "componentName": "container2",
-      "label": "Container2",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": {
-        "_value": false,
-        "_code": "return data.sortMode === 'strict';",
-        "_mode": "code"
-      },
-      "visibility": "Yes",
-      "customVisibility": null,
-      "isDynamic": false,
-      "version": 1,
-      "direction": "vertical",
-      "justifyContent": "left",
-      "flexWrap": "wrap",
-      "components": [
-        {
-          "id": "13579a70-99a0-4825-ae6c-8b933004e119",
-          "type": "propertyAutocomplete",
-          "propertyName": "defaultOrderBy",
-          "componentName": "strictOrderBy",
-          "label": "Default Order By",
-          "labelAlign": "right",
-          "parentId": "zaFvnoMcutlROxXTERzQj",
-          "hidden": false,
-          "visibility": "Yes",
-          "customVisibility": null,
-          "isDynamic": false,
-          "version": 0,
-          "settingsValidationErrors": [],
-          "showFillPropsButton": false
-        },
-        {
-          "id": "f6c3d710-8d98-ab3c-9fe2-7c6312e9a03c",
-          "type": "dropdown",
-          "propertyName": "defaultSortOrder",
-          "parentId": "zaFvnoMcutlROxXTERzQj",
-          "label": "Default Sort Order",
-          "dataSourceType": "values",
-          "values": [
-            {"id": "asc", "label": "Ascending", "value": "asc"},
-            {"id": "desc", "label": "Descending", "value": "desc"}
-          ],
-          "version": 1,
-          "useRawValues": false,
-          "referenceListId": null,
-          "mode": ["single"],
-          "hidden": {"_code": "return !getSettingValue(data.defaultSortBy);", "_mode": "code", "_value": false},
-          "settingsValidationErrors": []
-        }
-      ],
-      "settingsValidationErrors": []
+      "version": 0,
+      "validate": {},
+      "settingsValidationErrors": [],
+      "modelType": "{{data.entityType}}"
     }
   ],
   "formSettings": {
