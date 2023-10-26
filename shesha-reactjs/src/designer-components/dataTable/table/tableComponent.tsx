@@ -24,6 +24,7 @@ import { ITableComponentProps } from './models';
 import TableSettings from './tableComponent-settings';
 import { filterVisibility } from './utils';
 import { migrateCustomFunctions, migratePropertyName } from '../../../designer-components/_common-migrations/migrateSettings';
+import { IDataColumnsProps } from 'providers/datatableColumnsConfigurator/models';
 
 const TableComponent: IToolboxComponent<ITableComponentProps> = {
   type: 'datatable',
@@ -87,6 +88,10 @@ const TableComponent: IToolboxComponent<ITableComponentProps> = {
           : null
       }))
       .add<ITableComponentProps>(5, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+      .add<ITableComponentProps>(6, (prev) => {
+        const columns = (prev.items ?? []).map(c => (c.columnType === 'data' ? { ...c, allowSorting: true } as IDataColumnsProps : c));
+        return { ...prev, items: columns };
+      })
   ,
   settingsFormFactory: (props) => <TableSettings {...props}/>,
 };
