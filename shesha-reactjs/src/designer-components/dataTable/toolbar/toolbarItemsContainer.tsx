@@ -5,6 +5,7 @@ import { useToolbarConfigurator } from '../../../providers/toolbarConfigurator';
 import { IButtonGroup, IToolbarButton, ToolbarItemProps } from '../../../providers/toolbarConfigurator/models';
 import { ReactSortable, ItemInterface } from 'react-sortablejs';
 import { getActualModel, useApplicationContext } from 'utils/publicUtils';
+import { useDeepCompareMemo } from 'hooks';
 
 export interface IToolbarItemsContainerProps {
   index?: number[];
@@ -16,17 +17,19 @@ export const ToolbarItemsContainer: FC<IToolbarItemsContainerProps> = (props) =>
   const { updateChildItems, readOnly } = useToolbarConfigurator();
   const allData = useApplicationContext();
 
+  const actualItems = useDeepCompareMemo(() =>
+    props.items.map((item) => getActualModel(item, allData))
+  , [props.items, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
+
+
   const renderItem = (item: ToolbarItemProps, index: number) => {
-
-    const actualModel = getActualModel(item, allData);
-
-    switch (actualModel.itemType) {
+    switch (item.itemType) {
       case 'item':
-        const itemProps = actualModel as IToolbarButton;
+        const itemProps = item as IToolbarButton;
         return <ToolbarItem key={item.id} index={[...props.index, index]} {...itemProps} />;
 
       case 'group':
-        const groupProps = actualModel as IButtonGroup;
+        const groupProps = item as IButtonGroup;
         return (
           <ToolbarItemsGroup
             key={item.id}
@@ -53,10 +56,14 @@ export const ToolbarItemsContainer: FC<IToolbarItemsContainerProps> = (props) =>
     return;
   };
 
+  return <>{actualItems.map((item) => {
+        return <>{item.name}: {item.itemType} _</>;
+  })}</>;
+
   return (
     <ReactSortable
       disabled={readOnly}
-      list={props.items}
+      list={actualItems}
       setList={onSetList}
       fallbackOnBody={true}
       swapThreshold={0.5}

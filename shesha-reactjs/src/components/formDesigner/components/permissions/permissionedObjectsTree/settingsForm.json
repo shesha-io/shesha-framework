@@ -7,7 +7,6 @@
     "labelAlign": "right",
     "parentId": "root",
     "hidden": false,
-    "customVisibility": null,
     "isDynamic": false,
     "description": "",
     "settingsValidationErrors": []
@@ -20,7 +19,6 @@
     "labelAlign": "right",
     "parentId": "root",
     "hidden": false,
-    "customVisibility": null,
     "isDynamic": false,
     "placeholder": "",
     "description": "",

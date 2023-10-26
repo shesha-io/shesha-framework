@@ -1187,7 +1187,6 @@ export const createComponentModelForDataProperty = (
     //parentId: containerId,
     hidden: false,
     visibility: 'Yes',
-    customVisibility: null,
     visibilityFunc: (_data) => true,
     isDynamic: false,
     validate: {},

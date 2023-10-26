@@ -8,7 +8,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": true,
-      "customVisibility": null,
       "dataSourceType": "values",
       "values": [
         { "id": "8400a8ec-577d-4468-9347-5601f952b44c", "label": "Button", "value": "button" },
@@ -25,7 +24,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "autoSize": false,
       "showCount": false,
       "allowClear": false,
@@ -39,7 +37,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": "",
       "autoSize": false,
       "showCount": false,
       "allowClear": false,
@@ -53,7 +50,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": "",
       "settingsValidationErrors": []
     },
     {
@@ -64,7 +60,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": "",
       "autoSize": false,
       "showCount": false,
       "allowClear": false,
@@ -82,7 +77,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "validate": {}
     }
   ],

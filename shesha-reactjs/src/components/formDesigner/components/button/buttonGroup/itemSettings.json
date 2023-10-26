@@ -8,7 +8,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "dataSourceType": "values",
       "jsSetting": false,
       "values": [
@@ -371,7 +370,6 @@
         "_mode": "code"
       },
       "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 1,
       "direction": "vertical",
@@ -388,7 +386,6 @@
           "parentId": "P4lhbrJsly_2yCjgicaql",
           "hidden": false,
           "visibility": "Yes",
-          "customVisibility": null,
           "isDynamic": false,
           "settingsValidationErrors": [],
           "_formFields": [

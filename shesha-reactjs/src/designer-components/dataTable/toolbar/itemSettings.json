@@ -50,8 +50,7 @@
       "label": "Container2",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": false,
-      "customVisibility": "return data.itemSubType === 'button'",
+      "hidden": {"_code": "return  getSettingValue(data?.itemSubType) !== 'button';", "_mode": "code", "_value": false},
       "direction": "vertical",
       "justifyContent": "left",
       "components": [
@@ -93,8 +92,7 @@
           "label": "Icon",
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
-          "hidden": false,
-          "customVisibility": "return data.itemSubType === 'button'",
+          "hidden": {"_code": "return  getSettingValue(data?.itemSubType) !== 'button';", "_mode": "code", "_value": false},
           "settingsValidationErrors": []
         },
         {
@@ -171,7 +169,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
       "validate": {},
       "settingsValidationErrors": [],

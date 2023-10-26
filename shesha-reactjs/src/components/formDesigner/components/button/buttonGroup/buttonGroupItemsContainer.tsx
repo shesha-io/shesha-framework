@@ -21,18 +21,18 @@ export const ButtonGroupItemsContainer: FC<IButtonGroupItemsContainerProps> = pr
   const { updateChildItems, readOnly } = useButtonGroupConfigurator();
   const allData = useApplicationContext();
   
+  const actualItems = useDeepCompareMemo(() =>
+    props.items.map((item) => getActualModel(item, allData))
+  , [props.items, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
+
   const renderItem = (item: ButtonGroupItemProps, index: number) => {
-
-    const actualModel = useDeepCompareMemo(() => getActualModel(item, allData),
-      [allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
-
-    switch (actualModel.itemType) {
+    switch (item.itemType) {
       case 'item':
-        const itemProps = actualModel as IButtonGroupItem;
+        const itemProps = item as IButtonGroupItem;
         return <ButtonGroupItem key={item.id} index={[...props.index, index]} {...itemProps} />;
 
       case 'group':
-        const groupProps = actualModel as IButtonGroup;
+        const groupProps = item as IButtonGroup;
         return (
           <ButtonGroupItemsGroup 
             key={item.id} 
@@ -77,7 +77,7 @@ export const ButtonGroupItemsContainer: FC<IButtonGroupItemsContainerProps> = pr
       scroll={true}
       bubbleScroll={true}
     >
-      {props.items.map((item, index) => renderItem(item, index))}
+      {actualItems.map((item, index) => renderItem(item, index))}
     </ReactSortable>
   );
 };

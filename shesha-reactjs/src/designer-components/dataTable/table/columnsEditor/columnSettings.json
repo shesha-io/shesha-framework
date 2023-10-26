@@ -8,7 +8,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "dataSourceType": "values",
       "values": [
         {
@@ -50,11 +49,7 @@
       "label": "Container3",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": {
-        "_mode": "code",
-        "_code": "// Automatically updated from 'customVisibility', please review\n\nreturn !(() => {\n    // Source code\n\nreturn data.columnType === 'data'\n\n})();",
-        "_value": false
-      },
+      "hidden": {"_code": "return  getSettingValue(data?.columnType) !== 'data';", "_mode": "code", "_value": false},
       "direction": "vertical",
       "justifyContent": "left",
       "settingsValidationErrors": [],
@@ -67,7 +62,6 @@
           "labelAlign": "right",
           "parentId": "d2ba51c1-13cc-4952-a25c-5b03442097a0",
           "hidden": false,
-          "customVisibility": null,
           "validate": {},
           "settingsValidationErrors": [],
           "version": 0
@@ -84,7 +78,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "autoSize": false,
       "showCount": false,
       "allowClear": false,
@@ -100,7 +93,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "autoSize": false,
       "showCount": false,
       "allowClear": false,
@@ -115,11 +107,7 @@
       "label": "Container2",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": {
-        "_mode": "code",
-        "_code": "// Automatically updated from 'customVisibility', please review\n\nreturn !(() => {\n    // Source code\n\nreturn data.columnType === 'action'\n\n})();",
-        "_value": false
-      },
+      "hidden": {"_code": "return  getSettingValue(data?.columnType) !== 'action';", "_mode": "code", "_value": false},
       "direction": "vertical",
       "justifyContent": "left",
       "components": [
@@ -131,7 +119,6 @@
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
           "hidden": false,
-          "customVisibility": "",
           "settingsValidationErrors": [],
           "version": 0
         },
@@ -141,7 +128,6 @@
           "propertyName": "actionConfiguration",
           "label": "Action configuration",
           "hidden": false,
-          "customVisibility": "",
           "validate": {},
           "settingsValidationErrors": [],
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
@@ -160,7 +146,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "validate": {},
       "settingsValidationErrors": [],
       "version": 0
@@ -173,7 +158,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "validate": {},
       "settingsValidationErrors": [],
       "version": 0
@@ -186,7 +170,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "validate": {},
       "settingsValidationErrors": [],
       "version": 0
@@ -198,11 +181,7 @@
       "label": "Container3",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": {
-        "_mode": "code",
-        "_code": "// Automatically updated from 'customVisibility', please review\n\nreturn !(() => {\n    // Source code\n\nreturn data.columnType === 'data'\n\n})();",
-        "_value": false
-      },
+      "hidden": {"_code": "return  getSettingValue(data?.columnType) !== 'data';", "_mode": "code", "_value": false},
       "visibility": "Yes",
       "isDynamic": false,
       "version": 1,
@@ -220,7 +199,6 @@
           "parentId": "EhERYkBRv066KGKNaRA7j",
           "hidden": false,
           "visibility": "Yes",
-          "customVisibility": null,
           "isDynamic": false,
           "version": 1,
           "componentType": "input",
@@ -242,7 +220,6 @@
           "parentId": "EhERYkBRv066KGKNaRA7j",
           "hidden": false,
           "visibility": "Yes",
-          "customVisibility": null,
           "isDynamic": false,
           "version": 1,
           "componentType": "output",
@@ -264,7 +241,6 @@
           "parentId": "EhERYkBRv066KGKNaRA7j",
           "hidden": false,
           "visibility": "Yes",
-          "customVisibility": null,
           "isDynamic": false,
           "version": 1,
           "componentType": "output",
@@ -292,8 +268,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 0,
       "validate": {},
@@ -307,9 +281,7 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
-      "validate": {},
-      "version": 0
+      "validate": {}
     },
     {
       "id": "52c604d6-0183-4331-a960-0b9551e88b09",
@@ -327,7 +299,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
       "validate": {},
       "settingsValidationErrors": [],

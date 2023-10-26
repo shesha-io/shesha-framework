@@ -8,7 +8,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "components": [
         {
           "textType": "text",
@@ -19,7 +18,6 @@
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
           "hidden": false,
-          "customVisibility": null,
           "validate": {},
           "settingsValidationErrors": []
         },
@@ -32,7 +30,6 @@
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
           "hidden": false,
-          "customVisibility": null,
           "validate": {},
           "settingsValidationErrors": []
         },
@@ -45,7 +42,6 @@
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
           "hidden": false,
-          "customVisibility": null,
           "validate": {},
           "settingsValidationErrors": []
         },
@@ -57,7 +53,6 @@
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
           "hidden": false,
-          "customVisibility": null,
           "mode": "multiple",
           "dataSourceType": "referenceList",
           "referenceListNamespace": "BursMan",
@@ -73,7 +68,6 @@
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
           "hidden": false,
-          "customVisibility": null,
           "dataSourceType": "entitiesList",
           "useRawValues": false,
           "validate": {},
@@ -95,7 +89,6 @@
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
           "hidden": false,
-          "customVisibility": null,
           "dataSourceType": "entitiesList",
           "useRawValues": false,
           "mode": "multiple",
@@ -111,7 +104,6 @@
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
           "hidden": false,
-          "customVisibility": null,
           "dataSourceType": "referenceList",
           "useRawValues": false,
           "validate": {},
@@ -128,7 +120,6 @@
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
           "hidden": false,
-          "customVisibility": null,
           "validate": {},
           "settingsValidationErrors": []
         },
@@ -140,7 +131,6 @@
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
           "hidden": false,
-          "customVisibility": null,
           "picker": "date",
           "showTime": false,
           "dateFormat": "DD/MM/YYYY",
@@ -163,7 +153,6 @@
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
           "hidden": false,
-          "customVisibility": "",
           "dateFormat": "DD/MM/YYYY",
           "timeFormat": "HH:mm",
           "yearFormat": "YYYY",
@@ -189,7 +178,6 @@
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
           "hidden": false,
-          "customVisibility": null,
           "disabled": false,
           "validate": {},
           "settingsValidationErrors": []
@@ -202,7 +190,6 @@
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
           "hidden": false,
-          "customVisibility": null,
           "autoSize": false,
           "showCount": false,
           "allowClear": false,
@@ -217,7 +204,6 @@
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
           "hidden": false,
-          "customVisibility": null,
           "settingsValidationErrors": []
         },
         {
@@ -228,7 +214,6 @@
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
           "hidden": false,
-          "customVisibility": null,
           "disabled": false,
           "settingsValidationErrors": []
         },
@@ -240,7 +225,6 @@
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
           "hidden": false,
-          "customVisibility": null,
           "settingsValidationErrors": []
         }
       ],

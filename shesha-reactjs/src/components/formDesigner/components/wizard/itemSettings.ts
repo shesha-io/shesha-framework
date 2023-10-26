@@ -45,7 +45,6 @@ export const getSettings = (_data?: IWizardStepProps) =>
       labelAlign: 'right',
       parentId: 'root',
       hidden: true,
-      customVisibility: null,
       dataSourceType: 'values',
       values: [
         { id: '8400a8ec-577d-4468-9347-5601f952b44c', label: 'wait', value: 'wait' },
@@ -78,7 +77,6 @@ export const getSettings = (_data?: IWizardStepProps) =>
       labelAlign: 'right',
       parentId: 'root',
       hidden: false,
-      customVisibility: null,
       validate: {},
     })
     .addCheckbox({
@@ -89,7 +87,6 @@ export const getSettings = (_data?: IWizardStepProps) =>
       parentId: 'root',
       hidden: false,
       defaultValue: false,
-      customVisibility: null,
       validate: {},
     })
     .addCheckbox({
@@ -100,7 +97,6 @@ export const getSettings = (_data?: IWizardStepProps) =>
       parentId: 'root',
       hidden: false,
       defaultValue: false,
-      customVisibility: null,
       validate: {},
     })
 
@@ -144,7 +140,6 @@ export const getSettings = (_data?: IWizardStepProps) =>
       propertyName: 'nextButtonActionConfiguration',
       label: 'Action configuration',
       hidden: false,
-      customVisibility: '',
       validate: {},
       settingsValidationErrors: [],
     })
@@ -190,7 +185,6 @@ export const getSettings = (_data?: IWizardStepProps) =>
       propertyName: 'backButtonActionConfiguration',
       label: 'Action configuration',
       hidden: false,
-      customVisibility: '',
       validate: {},
       settingsValidationErrors: [],
     })
@@ -234,7 +228,6 @@ export const getSettings = (_data?: IWizardStepProps) =>
       propertyName: 'doneButtonActionConfiguration',
       label: 'Action configuration',
       hidden: false,
-      customVisibility: '',
       validate: {},
       settingsValidationErrors: [],
     })
@@ -278,7 +271,6 @@ export const getSettings = (_data?: IWizardStepProps) =>
       propertyName: 'cancelButtonActionConfiguration',
       label: 'Action configuration',
       hidden: false,
-      customVisibility: '',
       validate: {},
       settingsValidationErrors: [],
     })
@@ -295,7 +287,6 @@ export const getSettings = (_data?: IWizardStepProps) =>
       labelAlign: 'right',
       parentId: 'root',
       hidden: false,
-      customVisibility: null,
       description: 'Enter custom event handler on changing of event. (form, event) are exposed',
       validate: {},
       settingsValidationErrors: [],
@@ -381,7 +372,6 @@ export const getSettings = (_data?: IWizardStepProps) =>
       labelAlign: 'right',
       parentId: 'root',
       hidden: false,
-      customVisibility: null,
       description:
         'Enter custom visibility code.  You must return true to show the component. ' + 
         'The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
@@ -437,7 +427,6 @@ export const getSettings = (_data?: IWizardStepProps) =>
       labelAlign: 'right',
       parentId: 'root',
       hidden: false,
-      customVisibility: null,
       validate: {},
     })
     .toJson();

@@ -14,7 +14,6 @@ export const configurableActionsConfiguratorSettingsForm = new DesignerToolbarSe
     propertyName: 'description',
     parentId: 'root',
     hidden: false,
-    customVisibility: null,
     label: 'Description',
     autoSize: false,
     showCount: false,
@@ -33,7 +32,6 @@ export const configurableActionsConfiguratorSettingsForm = new DesignerToolbarSe
     labelAlign: 'right',
     parentId: 'root',
     hidden: false,
-    customVisibility: null,
     description:
       'Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
     validate: {},

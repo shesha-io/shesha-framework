@@ -53,17 +53,6 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
 
     const disabled = isComponentDisabled(model);
 
-    if (formMode === 'designer' && !model.entityType) {
-      return (
-        <Alert
-          showIcon
-          message="EntityPicker not configured properly"
-          description="Please make sure that you've specified 'entityType' property."
-          type="warning"
-        />
-      );
-    }
-
     const entityPickerFilter = useMemo<ITableViewProps[]>(() => {
       return [
         {
@@ -76,6 +65,17 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
         },
       ];
     }, [filters]);
+
+    if (formMode === 'designer' && !model.entityType) {
+      return (
+        <Alert
+          showIcon
+          message="EntityPicker not configured properly"
+          description="Please make sure that you've specified 'entityType' property."
+          type="warning"
+        />
+      );
+    }
 
     const width = modalWidth === 'custom' && customWidth ? `${customWidth}${widthUnits}` : modalWidth;
 

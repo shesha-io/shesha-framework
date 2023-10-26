@@ -9,7 +9,6 @@
       "parentId": "root",
       "hidden": false,
       "jsSetting": false,
-      "customVisibility": null,
       "validate": {
         "required": true
       },
@@ -44,7 +43,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "autoSize": false,
       "showCount": false,
       "allowClear": false,
@@ -60,7 +58,6 @@
           "labelAlign": "right",
           "parentId": "rupsZ1fuRwqetjQ0BC5sk",
           "hidden": false,
-          "customVisibility": null,
           "autoSize": false,
           "showCount": false,
           "allowClear": false,
@@ -79,7 +76,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "settingsValidationErrors": [],
       "jsSetting": false,
       "components": [
@@ -91,7 +87,6 @@
           "labelAlign": "right",
           "parentId": "XZ_7OvzMkfC3GEzzrduwu",
           "hidden": false,
-          "customVisibility": null,
           "settingsValidationErrors": [],
           "jsSetting": false,
           "version": 0
@@ -106,7 +101,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "dataSourceType": "values",
       "useRawValues": false,
       "validate": {},
@@ -133,7 +127,6 @@
           "labelAlign": "right",
           "parentId": "LKVj_90JMwALpmLN_6iZn",
           "hidden": false,
-          "customVisibility": null,
           "dataSourceType": "values",
           "useRawValues": false,
           "validate": {},
@@ -193,7 +186,6 @@
       "parentId": "root",
       "hidden": false,
       "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 0,
       "description": "Enable this setting to hide a group automatically when it has no any visible items",

@@ -1,4 +1,4 @@
-import React, { FC, ReactElement, useEffect } from 'react';
+import React, { FC, ReactElement, useEffect, useMemo } from 'react';
 import { PropertySettingMode } from '../../providers';
 import { CodeEditor } from 'components/formDesigner/components/codeEditor/codeEditor';
 import { getPropertySettingsFromValue } from './utils';
@@ -6,7 +6,6 @@ import { getPropertySettingsFromValue } from './utils';
 export type SettingsControlChildrenType = (value: any, onChange:  (...args: any[]) => void, propertyName: string) => ReactElement;
 
 export interface IContextSettingsRef {
-    value: any;
     onChange: (...args: any[]) => void;
 }
 
@@ -30,6 +29,11 @@ export const SettingsControl: FC<ISettingsControlProps> = ({ id, propertyName, r
         if (onChange)
             onChange(!!settings._code || mode === 'code' ? { _value: settings._value, _code: settings._code, _mode: mode } : settings._value);
     }, [mode]);
+
+    const internalOnChange = useMemo(() => (value) => {
+        if (onChange)
+            onChange(!!settings._code ? { _value: value, _code: settings._code, _mode: mode } : value);
+    }, [settings._code, mode]);
 
     if (mode === 'code') {
         return <CodeEditor
@@ -60,16 +64,8 @@ export const SettingsControl: FC<ISettingsControlProps> = ({ id, propertyName, r
         />;
     }
 
-    const internalOnChange = (value) => {
-        if (onChange)
-            onChange(!!settings._code ? { _value: value, _code: settings._code, _mode: mode } : value);
-    };
-
-    if (contextRef)
-        contextRef.current = {
-            onChange: internalOnChange,
-            value: settings._value
-        };
+    if (contextRef && contextRef.current?.onChange !== internalOnChange)
+        contextRef.current = { onChange: internalOnChange };
 
     return children(settings._value, internalOnChange, propertyName);
 };

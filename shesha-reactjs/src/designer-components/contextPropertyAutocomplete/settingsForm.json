@@ -90,7 +90,6 @@
         "label":"Hide border",
         "parentId":"root",
         "hidden":false,
-        "customVisibility":null,
         "validate":{
            
         }
@@ -112,7 +111,6 @@
         "parentId":"root",
         "hidden":false,
         "visibility":"Yes",
-        "customVisibility":null,
         "isDynamic":false,
         "version":0,
         "placeholder":"",
@@ -139,7 +137,6 @@
         "parentId":"root",
         "hidden":false,
         "visibility":"Yes",
-        "customVisibility":null,
         "isDynamic":false,
         "description":"",
         "validate":{
@@ -223,35 +220,6 @@
         "propertyName":"sectionVisibility",
         "parentId":"root",
         "label":"Visibility"
-     },
-     {
-        "id":"76f350de-47c4-4f38-8487-d546d084013c",
-        "type":"codeEditor",
-        "propertyName":"customVisibility",
-        "label":"Custom Visibility",
-        "labelAlign":"right",
-        "parentId":"root",
-        "hidden":false,
-        "customVisibility":null,
-        "description":"Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-        "validate":{
-           
-        },
-        "settingsValidationErrors":[
-           
-        ],
-        "exposedVariables":[
-           {
-              "propertyName":"value",
-              "description":"Component current value",
-              "type":"string | any"
-           },
-           {
-              "propertyName":"data",
-              "description":"Selected form values",
-              "type":"object"
-           }
-        ]
      }
   ],
   "formSettings":{

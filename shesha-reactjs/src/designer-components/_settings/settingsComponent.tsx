@@ -5,7 +5,7 @@ import { IConfigurableFormComponent, PropertySettingMode, useForm } from '../../
 import { ComponentsContainer, ConfigurableFormItem } from 'components';
 import { DataContextProvider } from 'providers/dataContextProvider';
 import { Button } from 'antd';
-import { getPropertySettingsFromData } from './utils';
+import { getPropertySettingsFromData, getValueFromPropertySettings } from './utils';
 import { IContextSettingsRef, SettingsControl } from './settingsControl';
 import { getSettings } from './settings';
 import { getValueByPropertyName, setValueByPropertyName } from 'utils/object';
@@ -44,9 +44,12 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
 
         const ctxRef = useRef<IContextSettingsRef>();
 
+        console.log('settings rendering');
+
         return (
             <ConfigurableFormItem model={{ ...props, label: props.label, }} className='sha-js-label' >
                 {(value, onChange) => {
+                    const localValue = getValueFromPropertySettings(value);
                     return (
                     <div className={ mode === 'code' ? 'sha-js-content-code' : 'sha-js-content-js'}>
                         <Button
@@ -65,8 +68,8 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
                                 resolve(setValueByPropertyName({}, internalProps?.propertyName, value));
                             })}
                             dynamicData={
-                                internalProps?.propertyName && ctxRef.current?.value
-                                    ? setValueByPropertyName({}, internalProps?.propertyName, ctxRef.current?.value)
+                                internalProps?.propertyName && localValue
+                                    ? setValueByPropertyName({}, internalProps?.propertyName, localValue)
                                     : null
                             }
                             onChangeData={(v) => {

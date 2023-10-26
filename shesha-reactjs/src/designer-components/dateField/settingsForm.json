@@ -494,6 +494,7 @@
             "description": "",
             "version": 1,
             "useRawValues": false,
+            "jsSetting": false,
             "referenceListId": null
           },
           {

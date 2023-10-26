@@ -7,7 +7,6 @@
     "labelAlign": "right",
     "parentId": "root",
     "hidden": false,
-    "customVisibility": null,
     "items": [],
     "components": [
       {
@@ -18,7 +17,6 @@
         "labelAlign": "right",
         "parentId": "{{NEW_KEY}}",
         "hidden": false,
-        "customVisibility": null,
         "justifyContent": "space-between",
         "items": [],
         "components": [
@@ -30,7 +28,6 @@
             "labelAlign": "right",
             "parentId": "fwQ-yyXEThNSF4Bt4msUH",
             "hidden": false,
-            "customVisibility": null,
             "justifyContent": "left",
             "items": [],
             "components": [
@@ -42,7 +39,6 @@
                 "labelAlign": "right",
                 "parentId": "CTI0XKjHMiwet4AuHx__4",
                 "hidden": false,
-                "customVisibility": null,
                 "filters": []
               }
             ],
@@ -56,7 +52,6 @@
             "labelAlign": "right",
             "parentId": "fwQ-yyXEThNSF4Bt4msUH",
             "hidden": false,
-            "customVisibility": null,
             "components": [
               {
                 "id": "ItrB5cnWA8ej79HX-eok5",
@@ -66,7 +61,6 @@
                 "labelAlign": "right",
                 "parentId": "O-ieWwy7eZB-jepFIUeiO",
                 "hidden": false,
-                "customVisibility": null,
                 "items": []
               },
               {
@@ -77,7 +71,6 @@
                 "labelAlign": "right",
                 "parentId": "O-ieWwy7eZB-jepFIUeiO",
                 "hidden": false,
-                "customVisibility": null,
                 "items": []
               }
             ],
@@ -95,7 +88,6 @@
         "labelAlign": "right",
         "parentId": "{{NEW_KEY}}",
         "hidden": false,
-        "customVisibility": null,
         "components": [
           {
             "id": "46jNfZhuX5Qf-6cmtqWrO",
@@ -105,7 +97,6 @@
             "labelAlign": "right",
             "parentId": "g38qlSIIoUYVnzqVaaNEy",
             "hidden": false,
-            "customVisibility": null,
             "components": [
               {
                 "id": "r_K43R86pKL4mbwRVynvE",
@@ -115,13 +106,12 @@
                 "labelAlign": "right",
                 "parentId": "46jNfZhuX5Qf-6cmtqWrO",
                 "hidden": false,
-                "customVisibility": null,
                 "items": [
                   {
                     "id": "udkemPOwpE4itKlDsYpL4",
                     "itemType": "item",
                     "sortOrder": 0,
-                    "propertyName": "Add",
+                    "name": "Add",
                     "itemSubType": "button",
                     "icon": "PlusOutlined",
                     "buttonType": "link",
@@ -133,7 +123,7 @@
                     "id": "GhFkay6EZ8BoMYr88mWW1",
                     "itemType": "item",
                     "sortOrder": 5,
-                    "propertyName": "separator",
+                    "name": "separator",
                     "itemSubType": "separator",
                     "selected": false
                   },
@@ -141,7 +131,7 @@
                     "id": "nvnj0Q1wivGgkrCcfl9Jc",
                     "itemType": "item",
                     "sortOrder": 4,
-                    "propertyName": "Open",
+                    "name": "Open",
                     "itemSubType": "button",
                     "buttonAction": "navigate",
                     "buttonType": "link",
@@ -153,7 +143,7 @@
                     "id": "cWvZyb0P456Ndcpyb7vrz",
                     "itemType": "item",
                     "sortOrder": 5,
-                    "propertyName": "Edit",
+                    "name": "Edit",
                     "itemSubType": "button",
                     "buttonType": "link",
                     "buttonAction": "navigate",
@@ -165,7 +155,7 @@
                     "id": "D0xNVk62p9GFliocBS9jA",
                     "itemType": "item",
                     "sortOrder": 3,
-                    "propertyName": "separator",
+                    "name": "separator",
                     "itemSubType": "separator",
                     "selected": false
                   },
@@ -173,7 +163,7 @@
                     "id": "RjL_C607edu-_k4r5Oj_g",
                     "itemType": "item",
                     "sortOrder": 2,
-                    "propertyName": "Export",
+                    "name": "Export",
                     "itemSubType": "button",
                     "icon": "DownloadOutlined",
                     "buttonType": "link",
@@ -195,7 +185,6 @@
             "labelAlign": "right",
             "parentId": "g38qlSIIoUYVnzqVaaNEy",
             "hidden": false,
-            "customVisibility": null,
             "components": [
               {
                 "id": "BZZMhqzXrNLISIR67oHar",
@@ -205,7 +194,6 @@
                 "labelAlign": "right",
                 "parentId": "m9o4pOhm-t4mb4JKH-1It",
                 "hidden": false,
-                "customVisibility": null,
                 "actionType": "custom",
                 "buttonType": "link",
                 "settingsValidationErrors": [],
@@ -220,7 +208,6 @@
                 "labelAlign": "right",
                 "parentId": "m9o4pOhm-t4mb4JKH-1It",
                 "hidden": false,
-                "customVisibility": null,
                 "actionType": "custom",
                 "buttonType": "link",
                 "settingsValidationErrors": [],
@@ -235,7 +222,6 @@
                 "labelAlign": "right",
                 "parentId": "m9o4pOhm-t4mb4JKH-1It",
                 "hidden": false,
-                "customVisibility": null,
                 "actionType": "custom",
                 "buttonType": "link",
                 "settingsValidationErrors": [],
@@ -259,7 +245,6 @@
         "labelAlign": "right",
         "parentId": "{{NEW_KEY}}",
         "hidden": false,
-        "customVisibility": null,
         "items": [
           {
             "id": "2c717c38-30a0-4a51-b7a8-ae2b025636ed",
