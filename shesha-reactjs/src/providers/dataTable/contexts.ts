@@ -108,13 +108,14 @@ export interface IDataTableStateContext
   quickSearch?: string;
   /** Columns sorting */
   standardSorting?: IColumnSorting[];
+  userSorting?: IColumnSorting[];
 
   /** Rows grouping */
   grouping?: GroupingItem[];
   /** Sort mode (standard or strict) */
   sortMode?: SortMode;
   /** Sort sorting: order by */
-  strictOrderBy?: string;
+  strictSortBy?: string;
   /** Sort sorting: sorting order */
   strictSortOrder?: ColumnSorting;
 

@@ -45,7 +45,7 @@ export interface EntityReorderResponse {
 
 export interface SupportsReorderingArgs {
     sortMode?: SortMode; 
-    strictOrderBy?: string;
+    strictSortBy?: string;
 }
 
 export interface SupportsGroupingArgs {

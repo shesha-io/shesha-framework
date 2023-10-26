@@ -95,7 +95,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     onDblClick: onDblClickDeprecated,
     selectedRow,
     selectedIds,
-    standardSorting,
+    userSorting,
     quickSearch,
     onSort,
     changeSelectedIds,
@@ -105,7 +105,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     error: { exportToExcel: exportToExcelError },
     grouping,
     sortMode,
-    strictOrderBy,
+    strictSortBy,
   } = store;
 
   const onSelectRowLocal = (index: number, row: any) => {
@@ -166,7 +166,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     tableFilter,
     selectedRow,
     quickSearch,
-    standardSorting,
+    userSorting,
   ]);
 
   useEffect(() => {
@@ -267,7 +267,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
             : undefined;
 
         const cellRenderer = getCellRenderer(columnItem, metadata);
-
         const column: DataTableColumn = {
           ...columnItem,
           accessor: camelcaseDotNotation(columnItem.accessor),
@@ -289,11 +288,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
   // sort
   const defaultSorting = sortMode === 'standard'
-    ? standardSorting
-      ? standardSorting.map<SortingRule<string>>((c) => ({ id: c.id, desc: c.desc }))
-      : columns
-        .filter((c) => c.defaultSorting !== null)
-        .map<SortingRule<string>>((c) => ({ id: c.id, desc: c.defaultSorting === 1 }))
+    ? userSorting?.map<SortingRule<string>>((c) => ({ id: c.id, desc: c.desc }))
     : undefined;
 
   // http, moment, setFormData
@@ -544,8 +539,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
   const repository = store.getRepository();
   const reorderingAvailable = useMemo<boolean>(() => {
-    return repository && repository.supportsReordering && repository.supportsReordering({ sortMode, strictOrderBy }) === true;
-  }, [repository, sortMode, strictOrderBy]);
+    return repository && repository.supportsReordering && repository.supportsReordering({ sortMode, strictSortBy }) === true;
+  }, [repository, sortMode, strictSortBy]);
 
   const groupingAvailable = useMemo<boolean>(() => {
     return repository && repository.supportsGrouping && repository?.supportsGrouping({ sortMode });
@@ -556,11 +551,11 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     if (!repository)
       return Promise.reject('Repository is not specified');
 
-    const supported = repository.supportsReordering && repository.supportsReordering({ sortMode, strictOrderBy });
+    const supported = repository.supportsReordering && repository.supportsReordering({ sortMode, strictSortBy });
     if (supported === true){
       const reorderPayload: RowsReorderPayload = {
         ...payload,
-        propertyName: strictOrderBy,
+        propertyName: strictSortBy,
       };
   
       return repository.reorder(reorderPayload);

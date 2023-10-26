@@ -90,7 +90,7 @@ import DataContextComponent from '../../../designer-components/dataContextCompon
 import ContextPropertyAutocompleteComponent from '../../../designer-components/contextPropertyAutocomplete';
 import TextAreaComponent from '../../../designer-components/textArea/textArea';
 import { DynamicActionsConfiguratorComponent } from '../../../designer-components/dynamicActionsConfigurator/index';
-import { GroupingEditorComponent } from 'designer-components/groupingEditor/index';
+import { SortingEditorComponent } from 'designer-components/sortingEditor/index';
 
 export const ToolboxComponents: IToolboxComponentGroup[] = [
   {
@@ -217,7 +217,7 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
   {
     visible: true,
     name: 'Internal',
-    components: [PropertyAutocompleteComponent, GroupingEditorComponent]
+    components: [PropertyAutocompleteComponent, SortingEditorComponent]
   }
 ];
 

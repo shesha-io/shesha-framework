@@ -303,8 +303,8 @@
             {
               "id": "f0EWngXBbbWIzdRGxC9Vg",
               "type": "propertyAutocomplete",
-              "propertyName": "strictOrderBy",
-              "componentName": "strictOrderBy",
+              "propertyName": "strictSortBy",
+              "componentName": "strictSortBy",
               "label": "Order By",
               "labelAlign": "right",
               "parentId": "zDXvnoMcutlROxXTERzQj",
@@ -361,6 +361,27 @@
             }
           ],
           "settingsValidationErrors": []
+        },
+        {
+          "id": "casrMotX62bQPBNc9D6jK",
+          "type": "dataSortingEditor",
+          "propertyName": "standardSorting",
+          "componentName": "standardSorting",
+          "label": "Sort By",
+          "labelAlign": "right",
+          "parentId": "Z8z0Kj-kyHyiQBflSy86w",
+          "hidden": {
+            "_value": false,
+            "_code": "return !data?.sortMode || data.sortMode !== 'standard';",
+            "_mode": "code"
+          },
+          "visibility": "Yes",
+          "customVisibility": null,
+          "isDynamic": false,
+          "version": 0,
+          "modelType": "{{data.entityType}}",
+          "validate": {},
+          "settingsValidationErrors": []
         }
       ],
       "settingsValidationErrors": [],
@@ -408,7 +429,7 @@
     },
     {
       "id": "hWKZzsgtRKKXBy8TdBFMy",
-      "type": "dataGroupingEditor",
+      "type": "dataSortingEditor",
       "propertyName": "grouping",
       "componentName": "grouping",
       "label": "Grouping",

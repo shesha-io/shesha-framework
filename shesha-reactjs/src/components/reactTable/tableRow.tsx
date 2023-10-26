@@ -17,7 +17,6 @@ export interface ISortableRowProps {
   row: Row<any>;
   index: number;
   selectedRowIndex?: number;
-  allowSort?: boolean;
   allowEdit: boolean;
   updater?: (data: any) => Promise<any>;
   allowDelete: boolean;

@@ -119,9 +119,8 @@ export const ReactTable: FC<IReactTableProps> = ({
 
   const initialSorting = useMemo(() => {
     if (!defaultSorting) return [];
-    return defaultSorting.map(s => {
-      return { ...s, id: getColumnAccessor(s.id) };
-    });
+    const result = defaultSorting.map(s => ({ ...s, id: getColumnAccessor(s.id) })).filter(s => (Boolean(s.id)));
+    return result;
   }, [defaultSorting]);
 
   useDeepCompareEffect(() => {
@@ -339,7 +338,6 @@ export const ReactTable: FC<IReactTableProps> = ({
         onDoubleClick={handleDoubleClickRow}
         row={row}
         index={rowIndex}
-        allowSort={allowReordering}
         selectedRowIndex={selectedRowIndex}
 
         allowEdit={canEditInline}
@@ -390,8 +388,8 @@ export const ReactTable: FC<IReactTableProps> = ({
                       key={index}
                       {...column.getHeaderProps(column.getSortByToggleProps())}
                       className={classNames('th', {
-                        'sorted-asc': column.isSorted && column.isSortedDesc,
-                        'sorted-desc': column.isSorted && !column.isSortedDesc,
+                        'sorted-asc': !column.disableSortBy && column.isSorted && column.isSortedDesc,
+                        'sorted-desc': !column.disableSortBy && column.isSorted && !column.isSortedDesc,
                       })}
                     >
                       {column.render('Header')}

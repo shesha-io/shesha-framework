@@ -65,6 +65,7 @@ export enum DataTableActionEnums {
   FetchGroupingColumns = 'FETCH_GROUPING_COLUMNS',
   FetchGroupingColumnsSuccess = 'FETCH_GROUPING_COLUMNS_SUCCESS',
   SetSortingSettings = 'SET_SORTING_SETTINGS',
+  SetStandardSorting = 'SET_STANDARD_SORTING',
 }
 
 export const setSelectedRowAction = createAction<ISelectionProps, ISelectionProps>(
@@ -252,7 +253,7 @@ export const fetchGroupingColumnsSuccessAction = createAction<
 
 export interface ISortingSettingsActionPayload {
   sortMode?: SortMode;
-  strictOrderBy?: string;
+  strictSortBy?: string;
   strictSortOrder?: ColumnSorting;
   allowReordering: boolean;
 }
@@ -260,3 +261,8 @@ export const setSortingSettingsAction = createAction<
   ISortingSettingsActionPayload,
   ISortingSettingsActionPayload
 >(DataTableActionEnums.SetSortingSettings, p => p);
+
+export const setStandardSortingAction = createAction<
+  IColumnSorting[],
+  IColumnSorting[]
+>(DataTableActionEnums.SetStandardSorting, p => p);

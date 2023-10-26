@@ -1,24 +1,24 @@
 import { Input, Select } from 'antd';
 import { ListEditor, PropertyAutocomplete } from 'components/index';
-import { ColumnSorting, GroupingItem } from 'providers/dataTable/interfaces';
+import { ColumnSorting, GroupingItem as SortingItem } from 'providers/dataTable/interfaces';
 import { MetadataProvider } from 'providers/index';
 import React, { FC } from 'react';
 import { getNanoId } from 'utils/uuid';
 
 const { Option } = Select;
 
-export interface IGroupingEditorProps {
-    value?: GroupingItem[];
-    onChange: (newValue?: GroupingItem[]) => void;
+export interface ISortingEditorProps {
+    value?: SortingItem[];
+    onChange: (newValue?: SortingItem[]) => void;
     modelType: string;
     readOnly?: boolean;
 }
 
-export const GroupingEditor: FC<IGroupingEditorProps> = (props) => {
+export const SortingEditor: FC<ISortingEditorProps> = (props) => {
     const { value, onChange, modelType, readOnly: editorReadOnly } = props;
     return (
         <MetadataProvider modelType={modelType}>
-            <ListEditor<GroupingItem>
+            <ListEditor<SortingItem>
                 value={value}
                 onChange={onChange}
                 initNewItem={(_items) => ({ id: getNanoId(), propertyName: '', sorting: 'asc' })}

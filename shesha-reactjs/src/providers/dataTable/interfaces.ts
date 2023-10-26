@@ -43,7 +43,6 @@ export interface ITableColumn {
   filterOption?: IndexColumnFilterOption;
   filter?: any;
   
-  defaultSorting?: SortDirection;
   name?: string;
   allowShowHide?: boolean;
   metadata?: IPropertyMetadata;
@@ -255,9 +254,11 @@ export interface IActionColumnProps {
    actionConfiguration?: IConfigurableActionConfiguration;  
 }
 
-export interface GroupingItem {
+export interface SortingItem {
   propertyName: string;
   sorting: ColumnSorting;
 }
+
+export type GroupingItem = SortingItem;
 
 export type SortMode = 'standard' | 'strict';

@@ -8,7 +8,7 @@ import DataTableProvider from 'providers/dataTable';
 import { FormMarkup, IConfigurableFormComponent } from 'providers/form/models';
 import { evaluateString, validateConfigurableComponentSettings } from 'providers/form/utils';
 import settingsFormJson from './settingsForm.json';
-import { ColumnSorting, DataFetchingMode, GroupingItem, SortMode } from 'providers/dataTable/interfaces';
+import { ColumnSorting, DataFetchingMode, GroupingItem, SortingItem, SortMode } from 'providers/dataTable/interfaces';
 import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 import { ConfigurableFormItem } from 'components';
 import { evaluateYesNo } from 'utils/form';
@@ -22,11 +22,10 @@ export interface ITableContextComponentProps extends IConfigurableFormComponent 
   defaultPageSize?: number;
   grouping?: GroupingItem[];
   sortMode?: SortMode;
-  strictOrderBy?: string;
+  strictSortBy?: string;
   strictSortOrder?: ColumnSorting;
+  standardSorting?: SortingItem[];
   allowReordering?: YesNoInherit;
-  defaultOrderBy?: string;
-  defaultSortOrder?: ColumnSorting;
 }
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -84,7 +83,7 @@ interface ITableContextInnerProps extends ITableContextComponentProps {
 }
 
 export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
-  const { sourceType, entityType, endpoint, id, propertyName, componentName, defaultOrderBy, defaultSortOrder, allowReordering } = props;
+  const { sourceType, entityType, endpoint, id, propertyName, componentName, allowReordering } = props;
   const { formMode } = useForm();
   const { data } = useFormData();
 
@@ -128,10 +127,9 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
       onChange={onChange}
       grouping={props.grouping}
       sortMode={props.sortMode}
-      strictOrderBy={props.strictOrderBy}
+      strictSortBy={props.strictSortBy}
       strictSortOrder={props.strictSortOrder}
-      defaultOrderBy={defaultOrderBy}
-      defaultSortOrder={defaultSortOrder}
+      standardSorting={props.standardSorting}
       allowReordering={evaluateYesNo(allowReordering, formMode)}
     >
       <TableContextAccessor {...props} />

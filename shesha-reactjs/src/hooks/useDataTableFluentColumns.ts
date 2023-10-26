@@ -16,6 +16,7 @@ const getColumnsBuilder = (): ITableColumnsBuilder => {
 
         propertyName: name,
         caption,
+        allowSorting: true,
       });
       return this;
     },

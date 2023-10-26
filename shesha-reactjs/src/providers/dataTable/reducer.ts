@@ -29,7 +29,7 @@ import {
   ITableDataInternalResponse,
   ITableFilter,
 } from './interfaces';
-import { getStandardSorting, getTableDataColumn, getTableDataColumns, isStandardSortingUsed, prepareColumn } from './utils';
+import { getTableDataColumn, prepareColumn } from './utils';
 import { Row } from 'react-table';
 import { ProperyDataType } from 'interfaces/metadata';
 
@@ -56,8 +56,8 @@ const reducer = handleActions<IDataTableStateContext, any>(
       action: ReduxActions.Action<string>
     ) => {
       const { payload } = action;
-      return { 
-        ...state, 
+      return {
+        ...state,
         hoverRowId: payload,
       };
     },
@@ -67,8 +67,8 @@ const reducer = handleActions<IDataTableStateContext, any>(
       action: ReduxActions.Action<DragState>
     ) => {
       const { payload } = action;
-      return { 
-        ...state, 
+      return {
+        ...state,
         dragState: payload,
         selectedRow: null,
         selectedIds: null,
@@ -234,7 +234,8 @@ const reducer = handleActions<IDataTableStateContext, any>(
         ...state,
         isFetchingTableData: true,
         // note: don't change standard sorting is it's not used to prevent re-renderings
-        standardSorting: isStandardSortingUsed(state) ? payload.sorting : state.standardSorting,
+        // standardSorting: isStandardSortingUsed(state) ? payload.sorting : state.standardSorting,
+        //userSorting
         currentPage: payload.currentPage,
       };
 
@@ -279,20 +280,14 @@ const reducer = handleActions<IDataTableStateContext, any>(
         .map<ITableColumn>((col) => prepareColumn(col, columns, userConfig))
         .filter((c) => c !== null);
 
-      const dataCols = getTableDataColumns(cols);
-
-      // use default sorting if column sorting is not configured
-      const columnSorting = getStandardSorting(dataCols, userConfig);
-      const standardSorting = columnSorting?.length > 0 ? columnSorting : [...state.standardSorting];
-
       const userFilters =
         userConfig?.selectedFilterIds?.length > 0 && state.predefinedFilters?.length > 0
           ? userConfig?.selectedFilterIds?.filter((x) => {
-              return state.predefinedFilters?.find((f) => {
-            return f.id === x;
-          });
-        }) ?? []
-        : [];
+            return state.predefinedFilters?.find((f) => {
+              return f.id === x;
+            });
+          }) ?? []
+          : [];
 
       const selectedStoredFilterIds = state?.selectedStoredFilterIds?.length
         ? [...state.selectedStoredFilterIds]
@@ -300,6 +295,11 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
       if (selectedStoredFilterIds.length === 0 && state.predefinedFilters?.length > 0)
         selectedStoredFilterIds.push(state.predefinedFilters[0].id);
+
+      const userSorting =
+        userConfig && userConfig.tableSorting && userConfig.tableSorting.length > 0
+          ? userConfig.tableSorting
+          : [];
 
       return {
         ...state,
@@ -311,7 +311,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
         tableFilter: userConfig?.advancedFilter,
         tableFilterDirty: userConfig?.advancedFilter,
         selectedStoredFilterIds,
-        standardSorting: standardSorting,
+        userSorting: userSorting,
       };
     },
 
@@ -418,7 +418,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
       const selectedStoredFilterIds =
         (!Boolean(state.selectedStoredFilterIds) || state.selectedStoredFilterIds.length === 0) &&
-        predefinedFilters?.length > 0
+          predefinedFilters?.length > 0
           ? Boolean(uc) && uc.length > 0
             ? uc
             : [predefinedFilters[0].id]
@@ -436,8 +436,8 @@ const reducer = handleActions<IDataTableStateContext, any>(
       action: ReduxActions.Action<ISetHiddenFilterActionPayload>
     ) => {
       const { filter, owner } = action.payload;
-      
-      const hiddenFilters = {...state.hiddenFilters, [owner]: filter};
+
+      const hiddenFilters = { ...state.hiddenFilters, [owner]: filter };
 
       return {
         ...state,
@@ -459,10 +459,9 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
     [DataTableActionEnums.OnSort]: (state: IDataTableStateContext, action: ReduxActions.Action<IColumnSorting[]>) => {
       const { payload } = action;
-
       return {
         ...state,
-        standardSorting: [...payload],
+        userSorting: [...payload],
       };
     },
 
@@ -525,9 +524,21 @@ const reducer = handleActions<IDataTableStateContext, any>(
       return {
         ...state,
         sortMode: payload.sortMode,
-        strictOrderBy: payload.strictOrderBy,
+        strictSortBy: payload.strictSortBy,
         strictSortOrder: payload.strictSortOrder,
         allowReordering: payload.allowReordering,
+      };
+    },
+
+    [DataTableActionEnums.SetStandardSorting]: (
+      state: IDataTableStateContext,
+      action: ReduxActions.Action<IColumnSorting[]>
+    ) => {
+      const { payload } = action;
+
+      return {
+        ...state,
+        standard: [...payload],
       };
     },
 

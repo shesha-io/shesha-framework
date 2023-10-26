@@ -6,7 +6,7 @@ import React, {
   useEffect,
   useMemo,
   useRef
-  } from 'react';
+} from 'react';
 import { advancedFilter2JsonLogic, getCurrentSorting, getTableDataColumns } from './utils';
 import { DataContextProvider, useDataContext } from 'providers/dataContextProvider';
 import { dataTableReducer } from './reducer';
@@ -57,6 +57,7 @@ import {
   setSortingSettingsAction,
   setHoverRowAction,
   setDraggingRowAction,
+  setStandardSortingAction,
 } from './actions';
 import {
   DATA_TABLE_CONTEXT_INITIAL_STATE,
@@ -79,6 +80,7 @@ import {
   SortMode,
   ColumnSorting,
   GroupingItem,
+  SortingItem,
 } from './interfaces';
 import {
   IConfigurableColumnsProps, IDataColumnsProps,
@@ -101,20 +103,19 @@ interface IDataTableProviderBaseProps {
 
   dataFetchingMode: DataFetchingMode;
 
-  defaultOrderBy?: string;
-  defaultSortOrder?: string;
+  standardSorting?: SortingItem[];
 
   /** Id of the user config, is used for saving of the user settings (sorting, paging etc) to the local storage. */
   userConfigId?: string;
 
   grouping?: GroupingItem[];
   sortMode?: SortMode;
-  strictOrderBy?: string;
+  strictSortBy?: string;
   strictSortOrder?: ColumnSorting;
   allowReordering?: boolean;
 }
 
-interface IDataTableProviderWithRepositoryProps extends IDataTableProviderBaseProps, IHasRepository, IHasModelType {}
+interface IDataTableProviderWithRepositoryProps extends IDataTableProviderBaseProps, IHasRepository, IHasModelType { }
 
 interface IHasDataSourceType {
   sourceType: 'Form' | 'Entity' | 'Url';
@@ -163,11 +164,11 @@ const getFilter = (state: IDataTableStateContext): string => {
   const filters = allFilters.filter(f => (state.selectedStoredFilterIds && state.selectedStoredFilterIds.indexOf(f.id) > -1));
   const { hiddenFilters } = state;
 
-  if (hiddenFilters){
-    for(const owner in hiddenFilters) {
-      if (hiddenFilters.hasOwnProperty(owner) && hiddenFilters[owner]){
+  if (hiddenFilters) {
+    for (const owner in hiddenFilters) {
+      if (hiddenFilters.hasOwnProperty(owner) && hiddenFilters[owner]) {
         filters.push(hiddenFilters[owner]);
-  }
+      }
     }
   }
 
@@ -196,13 +197,13 @@ const getFetchListDataPayload = (state: IDataTableStateContext, repository: IRep
 
   const groupingSupported = repository.supportsGrouping && repository.supportsGrouping({ sortMode: state.sortMode });
 
-  if (groupingSupported && state.groupingColumns && state.groupingColumns.length > 0){
+  if (groupingSupported && state.groupingColumns && state.groupingColumns.length > 0) {
     state.groupingColumns.forEach(groupColumn => {
-      if (!dataColumns.find(column => column.propertyName === groupColumn.propertyName)){
+      if (!dataColumns.find(column => column.propertyName === groupColumn.propertyName)) {
         dataColumns.push(groupColumn);
-      }        
+      }
     });
-  }  
+  }
   const filter = getFilter(state);
 
   const payload: IGetListDataPayload = {
@@ -243,6 +244,12 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = (props
   );
 };
 
+const sortingItems2ColumnSorting = (items: SortingItem[]): IColumnSorting[] => {
+  return items
+    ? items.map<IColumnSorting>(item => ({ id: item.propertyName, desc: item.sorting === 'desc' }))
+    : [];
+};
+
 export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTableProviderWithRepositoryProps>> = (
   props
 ) => {
@@ -258,10 +265,9 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     dataFetchingMode,
     grouping,
     sortMode,
-    strictOrderBy,
+    strictSortBy,
     strictSortOrder,
-    defaultOrderBy: defaultSortBy,
-    defaultSortOrder,
+    standardSorting: sortingItems,
     allowReordering = false,
   } = props;
 
@@ -273,14 +279,20 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     modelType: modelType,
     grouping,
     sortMode,
-    strictOrderBy,
+    strictSortBy,
     strictSortOrder,
     allowReordering,
-    standardSorting: !!defaultSortBy ? [{id: defaultSortBy, desc: defaultSortOrder === 'desc'}] : [],
+    standardSorting: sortingItems2ColumnSorting(sortingItems),
   });
 
   const { setState: setGlobalState } = useGlobalState();
   const tableIsReady = useRef(false);
+
+  // sync standard sorting
+  useDeepCompareEffect(() => {
+    const sorting = sortingItems2ColumnSorting(sortingItems);
+    dispatch(setStandardSortingAction(sorting));
+  }, [sortingItems]);
 
   useDeepCompareEffect(() => {
     const supported = repository.supportsGrouping && repository.supportsGrouping({ sortMode });
@@ -295,9 +307,10 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
         isVisible: true,
         caption: col.propertyName,
         sortOrder: index,
-        itemType: 'item'
+        itemType: 'item',
+        allowSorting: true,
       }));
-      
+
       repository.prepareColumns(groupColumns).then(preparedColumns => {
         dispatch(fetchGroupingColumnsSuccessAction({ grouping: grouping, columns: preparedColumns }));
       });
@@ -308,9 +321,9 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   // sync ordering
   useEffect(() => {
-    if (sortMode !== state.sortMode || strictOrderBy !== state.strictOrderBy || strictSortOrder !== state.strictSortOrder || allowReordering !== state.allowReordering)
-        dispatch(setSortingSettingsAction({ sortMode, strictOrderBy, strictSortOrder, allowReordering }));
-  }, [sortMode, strictOrderBy, strictSortOrder, allowReordering]);
+    if (sortMode !== state.sortMode || strictSortBy !== state.strictSortBy || strictSortOrder !== state.strictSortOrder || allowReordering !== state.allowReordering)
+      dispatch(setSortingSettingsAction({ sortMode, strictSortBy, strictSortOrder, allowReordering }));
+  }, [sortMode, strictSortBy, strictSortOrder, allowReordering]);
 
   // sync dataFetchingMode
   useEffect(() => {
@@ -334,12 +347,13 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     state.dataFetchingMode,
     state.columns?.length,
     state.standardSorting,
+    state.userSorting,
     state.hiddenFilters,
     state.predefinedFilters,
     repository,
     state.groupingColumns,
     state.sortMode,
-    state.strictOrderBy,
+    state.strictSortBy,
     state.strictSortOrder,
   ]);
 
@@ -411,7 +425,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
       currentPage: state.currentPage,
       quickSearch: state.quickSearch,
       columns: state.columns,
-      tableSorting: state.standardSorting,
+      tableSorting: state.userSorting,
       advancedFilter: state.tableFilter,
       selectedFilterIds: state.selectedStoredFilterIds,
     });
@@ -551,7 +565,9 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   };
 
   const onSort = (sorting: IColumnSorting[]) => {
-    dispatch(onSortAction(sorting));
+    if (tableIsReady.current === true){
+      dispatch(onSortAction(sorting));
+    }      
   };
 
   const flagSetters = getFlagSetters(dispatch);
@@ -593,15 +609,16 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     return { actionedRow, selectedIds, selectedRow, tableData };
   };
   const partialState = getPartialState();
-  
+
   useDeepCompareEffect(() => {
     // write state by name
     if (actionOwnerName) {
       setGlobalState({
         key: actionOwnerName,
-        data: { 
+        data: {
           ...partialState,
-          refreshTable },
+          refreshTable
+        },
       });
     }
   }, [partialState, actionOwnerName]);
@@ -679,7 +696,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     if (state.hoverRowId !== id)
       dispatch(setHoverRowAction(id));
   };
-  
+
   const setDraggingState = (dragState: DragState) => {
     if (state.dragState !== dragState)
       dispatch(setDraggingRowAction(dragState));
