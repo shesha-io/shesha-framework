@@ -138,7 +138,6 @@ export const getSettings = () =>
             labelAlign: 'right',
             parentId: 'root',
             hidden: false,
-            customVisibility: null,
             description: 'Callback that is triggered when the file is changed.',
             validate: {},
             settingsValidationErrors: [],

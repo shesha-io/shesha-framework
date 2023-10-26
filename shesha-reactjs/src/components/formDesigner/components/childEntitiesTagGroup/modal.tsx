@@ -54,7 +54,6 @@ const ChildEntitiesTagGroupModal: FC<IProps> = ({
           width={width}
           okButtonProps={{ disabled: readOnly }}
         >
-          Shurik!
           <Skeleton loading={loading}>
             <Show when={showFormInfo}>
               <FormInfo {...formInfo} />

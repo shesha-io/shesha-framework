@@ -239,7 +239,6 @@
         "_mode": "code"
       },
       "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 1,
       "direction": "vertical",
@@ -256,7 +255,6 @@
           "parentId": "Z8z0Kj-kyHyiQBflSy86w",
           "hidden": false,
           "visibility": "Yes",
-          "customVisibility": null,
           "isDynamic": false,
           "version": 2,
           "dataSourceType": "values",
@@ -293,7 +291,6 @@
             "_mode": "code"
           },
           "visibility": "Yes",
-          "customVisibility": null,
           "isDynamic": false,
           "version": 1,
           "direction": "vertical",
@@ -310,7 +307,6 @@
               "parentId": "zDXvnoMcutlROxXTERzQj",
               "hidden": false,
               "visibility": "Yes",
-              "customVisibility": null,
               "isDynamic": false,
               "version": 0,
               "validate": {
@@ -333,7 +329,6 @@
               "parentId": "zDXvnoMcutlROxXTERzQj",
               "hidden": false,
               "visibility": "Yes",
-              "customVisibility": null,
               "isDynamic": false,
               "version": 2,
               "dataSourceType": "values",
@@ -380,7 +375,6 @@
         "_mode": "code"
       },
       "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 2,
       "dataSourceType": "values",
@@ -420,7 +414,6 @@
         "_mode": "code"
       },
       "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 0,
       "validate": {},

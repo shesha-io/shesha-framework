@@ -10,7 +10,6 @@ export const getSettings = (data: any) =>
       labelAlign: 'right',
       parentId: 'root',
       hidden: false,
-      customVisibility: null,
       validate: {
         required: true,
       },
@@ -28,7 +27,6 @@ export const getSettings = (data: any) =>
       labelAlign: 'right',
       parentId: 'root',
       hidden: false,
-      customVisibility: '',
       autoSize: false,
       showCount: false,
       allowClear: false,

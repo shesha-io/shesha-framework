@@ -86,14 +86,14 @@ export const dialogArgumentsForm = new DesignerToolbarSettings()
       },
     ],
     dataSourceType: 'values',
-    customVisibility: 'return data.showModalFooter === true || data.footerButtons === "default" || !data.footerButtons',
+    hidden: {_code: 'return !(getSettingValue(data?.showModalFooter) === true || getSettingValue(data?.footerButtons) === "default" || !getSettingValue(data?.footerButtons));', _mode: 'code', _value: false},
     defaultValue: 'POST',
     useRawValues: true,
   })
   .addButtons({
     id: nanoid(),
     propertyName: 'buttons',
-    customVisibility: 'return data.footerButtons === "custom"',
+    hidden: {_code: 'return !(getSettingValue(data?.footerButtons) === "custom");', _mode: 'code', _value: false},
     label: 'Configure Modal Buttons',
   })
   .addSectionSeparator({ id: nanoid(), propertyName: 'separatorModalFooterEnd' })
@@ -156,13 +156,13 @@ export const dialogArgumentsForm = new DesignerToolbarSettings()
       },
     ],
     dataSourceType: 'values',
-    customVisibility: 'return data.modalWidth === "custom"',
+    hidden: {_code: 'return !(getSettingValue(data?.modalWidth) === "custom");', _mode: 'code', _value: false},
   })
   .addNumberField({
     id: nanoid(),
     propertyName: 'customWidth',
     label: 'Enter Custom Width',
-    customVisibility: 'return data.modalWidth === "custom" && data.widthUnits',
+    hidden: {_code: 'return !(getSettingValue(data?.modalWidth) === "custom" && getSettingValue(data?.widthUnits));', _mode: 'code', _value: false},
     min: 0,
   })
   .toJson();

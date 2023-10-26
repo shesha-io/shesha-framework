@@ -130,12 +130,14 @@ export const ButtonGroupInner: FC<ButtonGroupProps> = ({ items, size, spaceSize 
   };
 
   const prepareItem: PrepareItemFunc = (item) => {
-    const result = useDeepCompareMemo(() => getActualModel(item, allData),
-      [allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
+    const result = getActualModel(item, allData);
     return { ...result, disabled: result.disabled || disabled };
   };
 
-  const actualItems = items?.map((item) => prepareItem(item));
+  const actualItems =  useDeepCompareMemo(() => 
+    items?.map((item) => prepareItem(item))
+  , [items, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
+
   const filteredItems = actualItems?.filter(getIsVisible);
 
   if (actualItems.length === 0 && isDesignMode)

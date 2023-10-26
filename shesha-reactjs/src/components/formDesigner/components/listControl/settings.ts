@@ -78,7 +78,6 @@ export const listSettingsForm = new DesignerToolbarSettings()
     propertyName: 'dataSource',
     parentId: 'root',
     hidden: false,
-    customVisibility: null,
     description: 'The list data to be used can be the data that comes with the form of can be fetched from the API',
     label: 'Data source',
     useRawValues: false,
@@ -127,7 +126,6 @@ export const listSettingsForm = new DesignerToolbarSettings()
     propertyName: 'renderStrategy',
     parentId: 'root',
     hidden: false,
-    customVisibility: null,
     description:
       'Which form should be used to render the data? If current form, you can drag items, else specify form path',
     label: 'Render Strategy',
@@ -199,7 +197,6 @@ export const listSettingsForm = new DesignerToolbarSettings()
         propertyName: 'submitHttpVerb',
         parentId: '6a528a62-537a-4a89-a2f1-fc2ea6f5caf7',
         hidden: false,
-        customVisibility: null,
         label: 'Submit verb',
         useRawValues: false,
         defaultValue: 'POST',

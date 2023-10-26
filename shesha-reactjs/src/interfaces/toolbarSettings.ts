@@ -1,4 +1,4 @@
-import { IConfigurableFormComponent } from '.';
+import { IConfigurableFormComponent, IPropertySetting } from '.';
 import { IAlertComponentProps } from '../components/formDesigner/components/alert/interfaces';
 import { ICodeEditorComponentProps } from '../components/formDesigner/components/codeEditor/interfaces';
 import { IColorPickerComponentProps } from '../components/formDesigner/components/colorPicker/interfaces';
@@ -26,62 +26,63 @@ import { ILabelValueEditorComponentProps } from './../components/formDesigner/co
 import { IContextPropertyAutocompleteComponentProps } from '../designer-components/contextPropertyAutocomplete';
 import { ITextAreaComponentProps } from '../designer-components/textArea/interfaces';
 
-interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'type'> {
-  jsSetting?: boolean;  
+interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'hidden' | 'type'> {
+  hidden?: boolean | IPropertySetting;
+  jsSetting?: boolean;
 }
 
-type DropdownType = ToolbarSettingsProp & Omit<IDropdownComponentProps, 'type'>;
+type DropdownType = ToolbarSettingsProp & Omit<IDropdownComponentProps, 'hidden' | 'type'>;
 
-type SectionSeparatorType = ToolbarSettingsProp & Omit<ISectionSeparatorComponentProps, 'type'>;
+type SectionSeparatorType = ToolbarSettingsProp & Omit<ISectionSeparatorComponentProps, 'hidden' | 'type'>;
 
-type TextFieldType = ToolbarSettingsProp & Omit<ITextFieldComponentProps, 'type'>;
+type TextFieldType = ToolbarSettingsProp & Omit<ITextFieldComponentProps, 'hidden' | 'type'>;
 
-type ContextPropertyAutocompleteType = ToolbarSettingsProp & Omit<IContextPropertyAutocompleteComponentProps, 'type'>;
+type ContextPropertyAutocompleteType = ToolbarSettingsProp & Omit<IContextPropertyAutocompleteComponentProps, 'hidden' | 'type'>;
 
-type PropertyAutocompleteType = ToolbarSettingsProp & Omit<IPropertyAutocompleteComponentProps, 'type'>;
+type PropertyAutocompleteType = ToolbarSettingsProp & Omit<IPropertyAutocompleteComponentProps, 'hidden' | 'type'>;
 
-type TextAreaType = ToolbarSettingsProp & Omit<ITextAreaComponentProps, 'type'>;
+type TextAreaType = ToolbarSettingsProp & Omit<ITextAreaComponentProps, 'hidden' | 'type'>;
 
-type IconPickerType = ToolbarSettingsProp & Omit<IIconPickerComponentProps, 'type'>;
+type IconPickerType = ToolbarSettingsProp & Omit<IIconPickerComponentProps, 'hidden' | 'type'>;
 
-type AutocompleteType = ToolbarSettingsProp & Omit<IAutocompleteComponentProps, 'type'>;
+type AutocompleteType = ToolbarSettingsProp & Omit<IAutocompleteComponentProps, 'hidden' | 'type'>;
 
-type EndpointsAutocompleteType = ToolbarSettingsProp & Omit<IEndpointsAutocompleteComponentProps, 'type'>;
+type EndpointsAutocompleteType = ToolbarSettingsProp & Omit<IEndpointsAutocompleteComponentProps, 'hidden' | 'type'>;
 
-type FormAutocompleteType = ToolbarSettingsProp & Omit<IFormAutocompleteComponentProps, 'type'>;
+type FormAutocompleteType = ToolbarSettingsProp & Omit<IFormAutocompleteComponentProps, 'hidden' | 'type'>;
 
-type ReferenceListAutocompleteType = ToolbarSettingsProp & Omit<IReferenceListAutocompleteProps, 'type'>;
+type ReferenceListAutocompleteType = ToolbarSettingsProp & Omit<IReferenceListAutocompleteProps, 'hidden' | 'type'>;
 
-type CheckboxType = ToolbarSettingsProp & Omit<ICheckboxComponentProps, 'type'>;
+type CheckboxType = ToolbarSettingsProp & Omit<ICheckboxComponentProps, 'hidden' | 'type'>;
 
-type SwitchType = ToolbarSettingsProp & Omit<ISwitchComponentProps, 'type'>;
+type SwitchType = ToolbarSettingsProp & Omit<ISwitchComponentProps, 'hidden' | 'type'>;
 
-type NumberFieldType = ToolbarSettingsProp & Omit<INumberFieldComponentProps, 'type'>;
+type NumberFieldType = ToolbarSettingsProp & Omit<INumberFieldComponentProps, 'hidden' | 'type'>;
 
-type LabelValueEditorType = ToolbarSettingsProp & Omit<ILabelValueEditorComponentProps, 'type'>;
+type LabelValueEditorType = ToolbarSettingsProp & Omit<ILabelValueEditorComponentProps, 'hidden' | 'type'>;
 
-type QueryBuilderType = ToolbarSettingsProp & Omit<IQueryBuilderComponentProps, 'type'>;
+type QueryBuilderType = ToolbarSettingsProp & Omit<IQueryBuilderComponentProps, 'hidden' | 'type'>;
 
-type CodeEditorType = ToolbarSettingsProp & Omit<ICodeEditorComponentProps, 'type'>;
+type CodeEditorType = ToolbarSettingsProp & Omit<ICodeEditorComponentProps, 'hidden' | 'type'>;
 
-type ContainerType = ToolbarSettingsProp & Omit<IContainerComponentProps, 'type'>;
+type ContainerType = ToolbarSettingsProp & Omit<IContainerComponentProps, 'hidden' | 'type'>;
 
-type ButtonGroupType = ToolbarSettingsProp & Omit<IButtonsProps, 'type'>;
+type ButtonGroupType = ToolbarSettingsProp & Omit<IButtonsProps, 'hidden' | 'type'>;
 
-type CustomFilterType = ToolbarSettingsProp & Omit<ICustomFilterComponentProps, 'type'>;
+type CustomFilterType = ToolbarSettingsProp & Omit<ICustomFilterComponentProps, 'hidden' | 'type'>;
 
 type ConfigurableActionConfiguratorType = ToolbarSettingsProp &
-  Omit<IConfigurableActionConfiguratorComponentProps, 'type'>;
+  Omit<IConfigurableActionConfiguratorComponentProps, 'hidden' | 'type'>;
 
-type EditableTagGroupType = ToolbarSettingsProp & Omit<IEditableTagGroupComponentProps, 'type'>;
+type EditableTagGroupType = ToolbarSettingsProp & Omit<IEditableTagGroupComponentProps, 'hidden' | 'type'>;
 
-type ColorPickerType = ToolbarSettingsProp & Omit<IColorPickerComponentProps, 'type'>;
+type ColorPickerType = ToolbarSettingsProp & Omit<IColorPickerComponentProps, 'hidden' | 'type'>;
 
-type EntityPickerColumnsEditorType = ToolbarSettingsProp & Omit<IColumnsEditorComponentProps, 'type'>;
+type EntityPickerColumnsEditorType = ToolbarSettingsProp & Omit<IColumnsEditorComponentProps, 'hidden' | 'type'>;
 
-type ICollapsiblePanelPropsEditorType = ToolbarSettingsProp & Omit<ICollapsiblePanelComponentProps, 'type'>;
+type ICollapsiblePanelPropsEditorType = ToolbarSettingsProp & Omit<ICollapsiblePanelComponentProps, 'hidden' | 'type'>;
 
-type AlertType = ToolbarSettingsProp & Omit<IAlertComponentProps, 'type'>;
+type AlertType = ToolbarSettingsProp & Omit<IAlertComponentProps, 'hidden' | 'type'>;
 
 export class DesignerToolbarSettings<T> {
   protected readonly form: IConfigurableFormComponent[];
@@ -207,7 +208,7 @@ export class DesignerToolbarSettings<T> {
   private addProperty(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp), type: string) {
     const obj = typeof props !== 'function' ? props : props(this.data);
 
-    this.form.push({ ...obj, type, version: 'latest' });
+    this.form.push({ ...obj, type, hidden: obj.hidden as any, version: 'latest' });
 
     return this;
   }

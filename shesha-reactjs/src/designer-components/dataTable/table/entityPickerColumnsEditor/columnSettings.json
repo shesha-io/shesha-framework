@@ -8,7 +8,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "dataSourceType": "values",
       "values": [
         {
@@ -34,8 +33,7 @@
       "label": "Container3",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": false,
-      "customVisibility": "return data.columnType === 'data'",
+      "hidden": {"_code": "return  getSettingValue(data?.columnType) !== 'data';", "_mode": "code", "_value": false},
       "direction": "vertical",
       "justifyContent": "left",
       "settingsValidationErrors": [],
@@ -48,7 +46,6 @@
           "labelAlign": "right",
           "parentId": "d2ba51c1-13cc-4952-a25c-5b03442097a0",
           "hidden": false,
-          "customVisibility": null,
           "validate": {},
           "settingsValidationErrors": []
         }
@@ -62,7 +59,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "autoSize": false,
       "showCount": false,
       "allowClear": false,
@@ -76,7 +72,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "autoSize": false,
       "showCount": false,
       "allowClear": false,
@@ -90,8 +85,7 @@
       "label": "Container2",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": false,
-      "customVisibility": "return data.columnType === 'action'",
+      "hidden": {"_code": "return  getSettingValue(data?.columnType) !== 'action';", "_mode": "code", "_value": false},
       "direction": "vertical",
       "justifyContent": "left",
       "components": [
@@ -103,7 +97,6 @@
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
           "hidden": false,
-          "customVisibility": "",
           "settingsValidationErrors": []
         },
         {
@@ -112,7 +105,6 @@
           "propertyName": "actionConfiguration",
           "label": "Action configuration",
           "hidden": false,
-          "customVisibility": "",
           "validate": {},
           "settingsValidationErrors": []
         }        
@@ -127,7 +119,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "validate": {},
       "settingsValidationErrors": []
     },
@@ -139,7 +130,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "validate": {},
       "settingsValidationErrors": []
     },
@@ -151,7 +141,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "validate": {},
       "settingsValidationErrors": []
     },
@@ -163,7 +152,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "validate": {},
       "settingsValidationErrors": [],
       "description": "Whether this column is editable in inline mode"
@@ -176,7 +164,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "validate": {}
     },
     {
@@ -186,8 +173,7 @@
       "label": "Default Sorting",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": false,
-      "customVisibility": "return data.columnType === 'data'",
+      "hidden": {"_code": "return  getSettingValue(data?.columnType) !== 'data';", "_mode": "code", "_value": false},
       "isDynamic": false,
       "dataSourceType": "values",
       "useRawValues": false,

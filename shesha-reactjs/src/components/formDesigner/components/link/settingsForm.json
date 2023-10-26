@@ -416,7 +416,6 @@
             "labelAlign": "right",
             "parentId": "19SNudmMM0Wd1Sc_YI1ng",
             "hidden": false,
-            "customVisibility": null,
             "description": "Custom CSS Class to add to this component",
             "validate": {},
             "settingsValidationErrors": []

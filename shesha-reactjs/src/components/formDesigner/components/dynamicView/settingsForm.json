@@ -16,7 +16,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "jsSetting": false,
       "validate": {
         "required": true

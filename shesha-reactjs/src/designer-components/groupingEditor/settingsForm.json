@@ -103,7 +103,6 @@
             "parentId": "s4gmBg31azZC0UjZjpfTm",
             "hidden": false,
             "visibility": "Yes",
-            "customVisibility": null,
             "isDynamic": false,
             "version": 0,
             "validate": {},
@@ -146,7 +145,6 @@
             "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
             "hidden": false,
             "visibility": "Yes",
-            "customVisibility": null,
             "isDynamic": false,
             "version": 1,
             "validate": {

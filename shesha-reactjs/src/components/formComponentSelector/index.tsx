@@ -74,7 +74,6 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
       propertyName: 'editor',
       hidden: false,
       visibility: 'Yes',
-      customVisibility: null,
       visibilityFunc: (_data) => true,
       enabledFunc: (_data) => true,
       isDynamic: false,
