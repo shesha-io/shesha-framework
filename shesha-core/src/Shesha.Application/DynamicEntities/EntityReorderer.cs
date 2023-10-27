@@ -104,14 +104,6 @@ namespace Shesha.DynamicEntities
             throw new NotSupportedException($"Conversion of double to `{typeof(TOrderIndex).FullName}` type is not supported");
         }
 
-        private IHasOrderIndex CreatePartialInstance(Type type, int orderIndex) 
-        {
-            var instanceUntyped = Activator.CreateInstance(type);
-            var instance = instanceUntyped as IHasOrderIndex;
-            instance.OrderIndex = orderIndex;
-            return instance;
-        }
-
         private Expression<Func<T, bool>> GetFindByIdExpression(TId id) 
         {
             var entParam = Expression.Parameter(typeof(T), "ent");
@@ -134,22 +126,22 @@ namespace Shesha.DynamicEntities
             return lambda;
         }
 
-        private Expression<Func<T, ReorderingItem<TId, int>>> CreateSelectExpression(PropertyInfo orderIndexProperty)
+        private Expression<Func<T, ReorderingItem<TId, TOrderIndex>>> CreateSelectExpression(PropertyInfo orderIndexProperty)
         {
             // input parameter "ent"
             var entParam = Expression.Parameter(typeof(T), "ent");
 
             // new statement "new ReorderingItem()"
-            var newExpression = Expression.New(typeof(ReorderingItem<TId, int>));
+            var newExpression = Expression.New(typeof(ReorderingItem<TId, TOrderIndex>));
 
             var bindings = new MemberBinding[]{
-                Expression.Bind(typeof(ReorderingItem<TId, int>).GetProperty(nameof(ReorderingItem<TId, int>.Id)), Expression.Property(entParam, typeof(T).GetProperty("Id"))),
-                Expression.Bind(typeof(ReorderingItem<TId, int>).GetProperty(nameof(ReorderingItem<TId, int>.OrderIndex)), Expression.Property(entParam, orderIndexProperty)),
+                Expression.Bind(typeof(ReorderingItem<TId, TOrderIndex>).GetProperty(nameof(ReorderingItem<TId, TOrderIndex>.Id)), Expression.Property(entParam, typeof(T).GetProperty("Id"))),
+                Expression.Bind(typeof(ReorderingItem<TId, TOrderIndex>).GetProperty(nameof(ReorderingItem<TId, TOrderIndex>.OrderIndex)), Expression.Property(entParam, orderIndexProperty)),
             };
             var initExpression = Expression.MemberInit(newExpression, bindings);
 
             // expression "ent => new Data { Id = ent.Id, OrderIndex = ent.OrderIndex }"
-            var lambda = Expression.Lambda<Func<T, ReorderingItem<TId, int>>>(initExpression, entParam);
+            var lambda = Expression.Lambda<Func<T, ReorderingItem<TId, TOrderIndex>>>(initExpression, entParam);
 
             return lambda;
         }
@@ -191,6 +183,7 @@ namespace Shesha.DynamicEntities
                 var ctorIL = constructorBuilder.GetILGenerator();
 
                 ctorIL.Emit(OpCodes.Ldarg_0); // Loads the argument at index 0 onto the evaluation stack.
+                ctorIL.Emit(OpCodes.Ldarg_S, 1);
                 ctorIL.Emit(OpCodes.Stfld, field); // Replaces the value stored in the field of an object reference or pointer with a new value.
 
                 ctorIL.Emit(OpCodes.Ret);
@@ -202,32 +195,8 @@ namespace Shesha.DynamicEntities
             return type;
         }
 
-        private static void CreateConstructor(TypeBuilder typeBuilder, IReadOnlyList<dynamic> backingFields)
-        {
-            var constructorBuilder = typeBuilder.DefineConstructor(
-                MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName,
-                CallingConventions.Standard,
-                new[] {typeof(KeyValuePair<string, string>),
-                typeof(Dictionary<string, Type>)}
-            );
-            var ctorIL = constructorBuilder.GetILGenerator();
-
-            // Load the current instance ref in arg 0, along
-            // with the value of parameter "x" stored in arg X, into stfld.
-
-            for (var x = 0; x < backingFields.Count; x++)
-            {
-                ctorIL.Emit(OpCodes.Ldarg_0); // Loads the argument at index 0 onto the evaluation stack.
-                ctorIL.Emit(OpCodes.Ldarg_S, x + 1); // Loads the argument (referenced by a specified short form index) onto the evaluation stack.
-                ctorIL.Emit(OpCodes.Stfld, backingFields[x]); // Replaces the value stored in the field of an object reference or pointer with a new value.
-            }
-
-            ctorIL.Emit(OpCodes.Ret);
-        }
-
         public interface IHasOrderIndex 
         { 
-            public int OrderIndex { get; set; }
         }
     }
 }
