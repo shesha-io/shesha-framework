@@ -64,9 +64,6 @@ const RateComponent: IToolboxComponent<IRateProps> = {
 
     const localCount = !_.isNaN(count) ? count : 5;
 
-    const isReadOnly = readOnly || formMode === 'readonly';
-
-
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) =>
@@ -74,7 +71,7 @@ const RateComponent: IToolboxComponent<IRateProps> = {
             allowClear={allowClear}
             //allowHalf={allowHalf}
             character={icon ? <ShaIcon iconName={icon as IconType} /> : <StarFilled />}
-            disabled={disabled}
+            disabled={disabled || readOnly}
             count={localCount}
             tooltips={tooltips}
             className={classNames(className, 'sha-rate')}
