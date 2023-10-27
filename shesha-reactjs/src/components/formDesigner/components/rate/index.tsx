@@ -45,7 +45,7 @@ const RateComponent: IToolboxComponent<IRateProps> = {
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
 
-    const { allowClear, icon, disabled, count, tooltips, className, style } = model;
+    const { allowClear, icon, disabled, count, tooltips, className, style, readOnly } = model;
 
     const eventProps = {
       model,
@@ -63,6 +63,9 @@ const RateComponent: IToolboxComponent<IRateProps> = {
     if (model.hidden) return null;
 
     const localCount = !_.isNaN(count) ? count : 5;
+
+    const isReadOnly = readOnly || formMode === 'readonly';
+
 
     return (
       <ConfigurableFormItem model={model}>

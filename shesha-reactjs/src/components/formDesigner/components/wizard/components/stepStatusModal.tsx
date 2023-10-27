@@ -29,7 +29,7 @@ const StepStatusModal: FC<ISeqModal> = ({ open, onChange, onClose, value: values
 
   return (
     <Modal open={open} title="Configure Step Status" onCancel={onClose} onOk={onClose}>
-      <Form form={form} onFinish={() => {}} onValuesChange={() => {}} initialValues={{}} {...formLayout}>
+      <Form form={form} initialValues={{}} {...formLayout}>
         <Form.Item name="finshed" initialValue={values?.finshed} label="Finished" rules={[{ required: true }]}>
           <Input onChange={onFormChange('finshed')} />
         </Form.Item>

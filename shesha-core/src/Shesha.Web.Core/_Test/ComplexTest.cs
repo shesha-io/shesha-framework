@@ -68,7 +68,7 @@ namespace Shesha.Test
         {
             public override EntityHistoryEventInfo CreateEvent(EntityChangesInfo<ComplexTest, RefListGender> change)
             {
-                return CreateEvent("ComplexTest gender changed", 
+                return CreateEvent("ComplexTest gender changed",
                     change.NewValue == Domain.Enums.RefListGender.Female
                         ? "Female!!!!!"
                         : change.NewValue == Domain.Enums.RefListGender.Male
