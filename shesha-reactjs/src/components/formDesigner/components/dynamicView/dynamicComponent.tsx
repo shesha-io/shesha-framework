@@ -19,7 +19,7 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model }) => {
   if (!toolboxComponent) return null;
 
   const actualModel = useDeepCompareMemo(() => getActualModel(model, allData),
-    [allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
+    [model, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
 
   actualModel.hidden = isComponentHidden(actualModel);
   actualModel.disabled = isComponentDisabled(actualModel);

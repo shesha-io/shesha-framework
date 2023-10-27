@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { ListItem } from './listItem';
 import { ListItemsGroup } from './listItemsGroup';
 import { ReactSortable, ItemInterface } from 'react-sortablejs';
-import { getActualModel, useApplicationContext, useItemListConfigurator } from '../../../..';
+import { getActualModel, useApplicationContext, useDeepCompareMemo, useItemListConfigurator } from '../../../..';
 import { IConfigurableItemBase, IConfigurableItemGroup } from '../../../../providers/itemListConfigurator/contexts';
 
 export interface IItemListContainerProps {
@@ -15,17 +15,19 @@ export const ItemListContainer: FC<IItemListContainerProps> = ({ index, id, item
   const { updateChildItems } = useItemListConfigurator();
   const allData = useApplicationContext();
 
-  const renderItem = (item: IConfigurableItemBase, localIndex: number) => {
-    
-    const actualModel = getActualModel(item, allData);
+  const actualItems = useDeepCompareMemo(() =>
+    items.map((item) => getActualModel(item, allData))
+  , [items, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
 
-    switch (actualModel?.itemType) {
+
+  const renderItem = (item: IConfigurableItemBase, localIndex: number) => {
+    switch (item?.itemType) {
       case 'item':
-        const itemProps = actualModel as IConfigurableItemBase;
+        const itemProps = item as IConfigurableItemBase;
         return <ListItem title={''} key={localIndex} index={[...index, localIndex]} {...itemProps} />;
 
       case 'group':
-        const groupProps = actualModel as IConfigurableItemGroup;
+        const groupProps = item as IConfigurableItemGroup;
         return (
           <ListItemsGroup 
             key={localIndex} 
@@ -53,7 +55,7 @@ export const ItemListContainer: FC<IItemListContainerProps> = ({ index, id, item
 
   return (
     <ReactSortable
-      list={items}
+      list={actualItems}
       setList={onSetList}
       fallbackOnBody={true}
       swapThreshold={0.5}
@@ -69,7 +71,7 @@ export const ItemListContainer: FC<IItemListContainerProps> = ({ index, id, item
       scroll={true}
       bubbleScroll={true}
     >
-      {items?.map((item, localIndex) => renderItem(item, localIndex))}
+      {actualItems?.map((item, localIndex) => renderItem(item, localIndex))}
     </ReactSortable>
   );
 };

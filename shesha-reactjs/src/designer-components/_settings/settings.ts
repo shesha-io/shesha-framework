@@ -24,7 +24,7 @@ export const getSettings = () =>
       parentId: 'root',
       label: 'Allow Remove',
       validate: {},
-      hidden: {_code: 'return data?.disabled ?? false;', _mode: 'value', _value: false} as any,
+      hidden: {_code: 'return getSettingValue(data?.disabled) ?? false;', _mode: 'value', _value: false} as any,
       jsSetting: true,
     })
     .addCollapsiblePanel({

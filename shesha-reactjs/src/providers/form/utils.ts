@@ -105,6 +105,84 @@ export function useApplicationContext(topContextId?: string): IApplicationContex
 };
 
 
+/*export const getActualModel = (model: any, allData: any) => {
+
+  const calcValue = (setting) => {
+    try {
+      let vars = 'staticValue';
+      const datas = [setting?._value];
+      if (allData)
+        for (let key in allData) {
+          if (Object.hasOwn(allData, key)) {
+            vars+= `, ${key}`;
+            datas.push(allData[key]);
+          }
+        }
+      const res = new Function(vars, setting?._code)(...datas);
+      return res;
+    } catch {
+      return undefined;
+    }
+  };
+
+  const getSettingValue = (value: any) => {
+    if (!value) 
+      return value;
+  
+    if (typeof value === 'object') {
+      // If array - update all items
+      if (Array.isArray(value)) {
+        return value;
+        // ToDo: infinity loop
+        if (value.length === 0)
+          return value;
+        const v = value.map(x => {
+          return getActualModelx(x, allData);
+        });
+        return v;
+      }
+
+      // update setting value to actual
+      if (!!value && isPropertySettings(value)) {
+        if (value['_mode'] === 'code' && !!value['_code']) {
+          const val = calcValue(value);
+          return val;
+        } else {
+          return value['_value'];
+        }
+      }
+
+      // update nested objects
+      return getActualModelx(value, allData);
+    }
+    return value;
+  };
+
+
+  const props = Object.getOwnPropertyNames(model);
+
+  const proxy = {
+    origin_proxy: model
+  };
+
+  props.map((prop) => {
+    Object.defineProperty(proxy, prop, {
+      get() { 
+        return getSettingValue(this.origin_proxy[prop]); 
+      },
+      set(v) {
+        this.origin_proxy[prop] = v;
+      },
+    });
+  });
+
+  const res = {};
+
+  props.map((prop) => res[prop] = proxy[prop] );
+
+  return res;
+};*/
+
 /**
  * Convert model to values calculated from JS code if provided (for each fields)
  *

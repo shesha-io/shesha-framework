@@ -235,7 +235,7 @@
       "parentId": "root",
       "hidden": {
         "_value": false,
-        "_code": "return !data?.sourceType || data.sourceType !== 'Entity';",
+        "_code": "return !getSettingValue(data?.sourceType) || getSettingValue(data.sourceType) !== 'Entity';",
         "_mode": "code"
       },
       "visibility": "Yes",
@@ -287,7 +287,7 @@
           "parentId": "Z8z0Kj-kyHyiQBflSy86w",
           "hidden": {
             "_value": false,
-            "_code": "return !data?.sortMode || data.sortMode !== 'strict';",
+            "_code": "return !getSettingValue(data?.sortMode) || getSettingValue(data.sortMode) !== 'strict';",
             "_mode": "code"
           },
           "visibility": "Yes",
@@ -367,7 +367,7 @@
           "parentId": "Z8z0Kj-kyHyiQBflSy86w",
           "hidden": {
             "_value": false,
-            "_code": "return !data?.sortMode || data.sortMode !== 'standard';",
+            "_code": "return !getSettingValue(data?.sortMode) || getSettingValue(data.sortMode) !== 'standard';",
             "_mode": "code"
           },
           "visibility": "Yes",
@@ -392,7 +392,7 @@
       "parentId": "root",
       "hidden": {
         "_value": false,
-        "_code": "return !data?.sourceType || !(data.sourceType === 'Entity' && data.sortMode === 'strict' || data.sourceType === 'Form');",
+        "_code": "return !getSettingValue(data?.sourceType) || !(getSettingValue(data.sourceType) === 'Entity' && getSettingValue(data.sortMode) === 'strict' || getSettingValue(data.sourceType) === 'Form');",
         "_mode": "code"
       },
       "visibility": "Yes",
@@ -431,7 +431,7 @@
       "parentId": "root",
       "hidden": {
         "_value": false,
-        "_code": "return !(data && data.sourceType === 'Entity' && data.sortMode !== 'strict');\n",
+        "_code": "return !(getSettingValue(data && data.sourceType) === 'Entity' && getSettingValue(data.sortMode) !== 'strict');\n",
         "_mode": "code"
       },
       "visibility": "Yes",

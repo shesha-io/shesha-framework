@@ -142,7 +142,7 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
         }
 
         return editorModel;
-    }, [allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow, propertyMeta, injectables]);
+    }, [customComponent.settings, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow, propertyMeta, injectables]);
 
     const componentRef = useRef();
 
