@@ -24,13 +24,13 @@ const IconPickerComponent: IToolboxComponent<IIconPickerComponentProps> = {
             if (customColor) return executeScriptSync<string>(customColor, applicationContext);
         
             return color?.hex;
-          }, [applicationContext, customColor]);
+          }, [applicationContext, customColor, color]);
         
           const computedIcon = useMemo(() => {
             if (customIcon) return executeScriptSync<string>(customIcon, applicationContext);
         
             return value;
-          }, [applicationContext, customIcon]);
+          }, [applicationContext, customIcon, value]);
         
           const onIconChange = (_icon: ReactNode, iconName: ShaIconTypes) => {
             if (onChange) onChange(iconName);

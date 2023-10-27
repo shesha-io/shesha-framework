@@ -17,27 +17,14 @@
     },
     {
       "id": "A-qcRVk-qlnGDLtFvK-2X",
-      "type": "setting",
+      "type": "textField",
       "propertyName": "label",
       "parentId": "root",
-      "label": "Label",
-      "jsSetting": false,
-      "components": [
-        {
-          "id": "9b976b38-5c09-41c9-9e5a-70e6734ef38f",
-          "type": "textField",
-          "propertyName": "label",
-          "parentId": "A-qcRVk-qlnGDLtFvK-2X",
-          "label": "Label",
-          "jsSetting": false,
-          "version": 1,
-          "textType": "text"
-        }
-      ]
+      "label": "Label"
     },
     {
       "id": "rupsZ1fuRwqetjQ0BC5sk",
-      "type": "setting",
+      "type": "textArea",
       "propertyName": "tooltip",
       "label": "Group Tooltip",
       "labelAlign": "right",
@@ -47,55 +34,21 @@
       "showCount": false,
       "allowClear": false,
       "validate": {},
-      "settingsValidationErrors": [],
-      "jsSetting": false,
-      "components": [
-        {
-          "id": "uuIhAV7hqfVvjC4vLYUKo",
-          "type": "textArea",
-          "propertyName": "tooltip",
-          "label": "Group Tooltip",
-          "labelAlign": "right",
-          "parentId": "rupsZ1fuRwqetjQ0BC5sk",
-          "hidden": false,
-          "autoSize": false,
-          "showCount": false,
-          "allowClear": false,
-          "validate": {},
-          "settingsValidationErrors": [],
-          "jsSetting": false,
-          "version": 0
-        }
-      ]
+      "settingsValidationErrors": []
     },
     {
       "id": "XZ_7OvzMkfC3GEzzrduwu",
-      "type": "setting",
+      "type": "iconPicker",
       "propertyName": "icon",
       "label": "Icon",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "settingsValidationErrors": [],
-      "jsSetting": false,
-      "components": [
-        {
-          "id": "4lmhhHM0xpvA0ERbkfkVS",
-          "type": "iconPicker",
-          "propertyName": "icon",
-          "label": "Icon",
-          "labelAlign": "right",
-          "parentId": "XZ_7OvzMkfC3GEzzrduwu",
-          "hidden": false,
-          "settingsValidationErrors": [],
-          "jsSetting": false,
-          "version": 0
-        }
-      ]
+      "settingsValidationErrors": []
     },
     {
       "id": "LKVj_90JMwALpmLN_6iZn",
-      "type": "setting",
+      "type": "dropdown",
       "propertyName": "buttonType",
       "label": "Button Type",
       "labelAlign": "right",
@@ -106,68 +59,40 @@
       "validate": {},
       "values": [
         {
-          "id": "jXrt8KEcHsdEIyQfHBML2",
+          "id": "c4a96833-8ed7-4085-8848-169d5607136d",
           "label": "primary",
           "value": "primary"
         },
         {
-          "id": "koMn2kfxndn8im_30g0da",
+          "id": "c6f974da-ad28-44e5-8e4d-50280cf24ae7",
+          "label": "ghost",
+          "value": "ghost"
+        },
+        {
+          "id": "71c0dc14-0473-4748-ae75-a4ed3bd6cffd",
+          "label": "dashed",
+          "value": "dashed"
+        },
+        {
+          "id": "789d5733-2d4f-4969-890f-613e5b4a7d59",
+          "label": "link",
+          "value": "link"
+        },
+        {
+          "id": "36abe636-40b2-476c-95b0-78a50478146b",
+          "label": "text",
+          "value": "text"
+        },
+        {
+          "id": "de08ea36-a831-4373-ab10-ce25fadf80cd",
           "label": "default",
           "value": "default"
         }
       ],
       "settingsValidationErrors": [],
       "jsSetting": false,
-      "components": [
-        {
-          "id": "WddtQisTgpi7GMg2qMASD",
-          "type": "dropdown",
-          "propertyName": "buttonType",
-          "label": "Button Type",
-          "labelAlign": "right",
-          "parentId": "LKVj_90JMwALpmLN_6iZn",
-          "hidden": false,
-          "dataSourceType": "values",
-          "useRawValues": false,
-          "validate": {},
-          "values": [
-            {
-              "id": "c4a96833-8ed7-4085-8848-169d5607136d",
-              "label": "primary",
-              "value": "primary"
-            },
-            {
-              "id": "c6f974da-ad28-44e5-8e4d-50280cf24ae7",
-              "label": "ghost",
-              "value": "ghost"
-            },
-            {
-              "id": "71c0dc14-0473-4748-ae75-a4ed3bd6cffd",
-              "label": "dashed",
-              "value": "dashed"
-            },
-            {
-              "id": "789d5733-2d4f-4969-890f-613e5b4a7d59",
-              "label": "link",
-              "value": "link"
-            },
-            {
-              "id": "36abe636-40b2-476c-95b0-78a50478146b",
-              "label": "text",
-              "value": "text"
-            },
-            {
-              "id": "de08ea36-a831-4373-ab10-ce25fadf80cd",
-              "label": "default",
-              "value": "default"
-            }
-          ],
-          "settingsValidationErrors": [],
-          "jsSetting": false,
-          "version": 2,
-          "referenceListId": null
-        }
-      ]
+      "version": 2,
+      "referenceListId": null
     },
     {
       "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",

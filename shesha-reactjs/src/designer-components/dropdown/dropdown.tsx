@@ -87,7 +87,6 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
 };
 
 export const Dropdown: FC<IDropdownComponentProps> = ({
-  id,
   dataSourceType,
   values,
   onChange,
@@ -101,12 +100,11 @@ export const Dropdown: FC<IDropdownComponentProps> = ({
   placeholder,
   useRawValues,
   readOnly,
-  isDynamic,
   style,
   size,
   allowClear = true,
 }) => {
-  const { formMode, isComponentDisabled } = useForm();
+  const { formMode } = useForm();
   const { data: formData } = useFormData();
   const { globalState } = useGlobalState();
 
@@ -115,10 +113,6 @@ export const Dropdown: FC<IDropdownComponentProps> = ({
   };
 
   const selectedMode = mode === 'single' ? undefined : mode;
-
-  const isReadOnly = formMode === 'readonly' || readOnly;
-
-  const isDisabled = isComponentDisabled({ id, isDynamic, disabled });
 
   const localStyle = getStyle(style, formData);
 
@@ -132,7 +126,7 @@ export const Dropdown: FC<IDropdownComponentProps> = ({
       <RefListDropDown.Raw
         onChange={onChange}
         referenceListId={referenceListId}
-        disabled={isDisabled}
+        disabled={disabled}
         value={value}
         bordered={!hideBorder}
         defaultValue={defaultValue}
@@ -140,7 +134,7 @@ export const Dropdown: FC<IDropdownComponentProps> = ({
         filters={ignoredValues}
         includeFilters={false}
         placeholder={placeholder}
-        readOnly={isReadOnly}
+        readOnly={readOnly}
         size={size}
         style={localStyle}
         allowClear={allowClear}
@@ -149,7 +143,7 @@ export const Dropdown: FC<IDropdownComponentProps> = ({
       <RefListDropDown.Dto
         onChange={onChange}
         referenceListId={referenceListId}
-        disabled={isDisabled}
+        disabled={disabled}
         value={value}
         bordered={!hideBorder}
         defaultValue={defaultValue}
@@ -157,7 +151,7 @@ export const Dropdown: FC<IDropdownComponentProps> = ({
         filters={ignoredValues}
         includeFilters={false}
         placeholder={placeholder}
-        readOnly={isReadOnly}
+        readOnly={readOnly}
         size={size}
         style={localStyle}
         allowClear={allowClear}
@@ -173,8 +167,8 @@ export const Dropdown: FC<IDropdownComponentProps> = ({
     return options?.find(({ value: currentValue }) => currentValue === selectedValue)?.label;
   };
 
-  if (isReadOnly) {
-    return <ReadOnlyDisplayFormItem disabled={isDisabled} type="string" value={getSelectValue()} />;
+  if (readOnly) {
+    return <ReadOnlyDisplayFormItem disabled={disabled} type="string" value={getSelectValue()} />;
   }
 
   return (
@@ -184,7 +178,7 @@ export const Dropdown: FC<IDropdownComponentProps> = ({
       value={options.length > 0 ? value || defaultValue : undefined}
       defaultValue={defaultValue}
       bordered={!hideBorder}
-      disabled={isDisabled}
+      disabled={disabled}
       mode={selectedMode}
       placeholder={placeholder}
       showSearch

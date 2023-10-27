@@ -32,7 +32,7 @@ export const getPropertySettingsFromData = (data: any, propName: string): IPrope
         return { _mode: 'value', _code: undefined, _value: val };
 };
 
-export const getValueFromPropertySettings = (value: any): IPropertySetting => {
+export const getValueFromPropertySettings = (value: any): any => {
     if (isPropertySettings(value))
         return value._value;
     else

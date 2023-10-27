@@ -26,12 +26,9 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.number,
   factory: (model: INumberFieldComponentProps, _c, form) => {
     const properties = useMetaProperties(['number']);
-    const { formMode, isComponentDisabled, formData } = useForm();
+    const { formMode, formData } = useForm();
     const { globalState } = useGlobalState();
 
-    const isReadOnly = model?.readOnly || formMode === 'readonly';
-
-    const disabled = isComponentDisabled(model);
 
     return (
       <ConfigurableFormItem
@@ -39,10 +36,10 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
         initialValue={evaluateString(model?.defaultValue, { formData, formMode, globalState })}
       >
         {(value, onChange) => {
-          return isReadOnly ? (
-            <ReadOnlyDisplayFormItem disabled={disabled} value={getNumberFormat(value, getDataFormat(properties, model.propertyName))}/>
+          return model.readOnly ? (
+            <ReadOnlyDisplayFormItem disabled={model.disabled} value={getNumberFormat(value, getDataFormat(properties, model.propertyName))}/>
           ) : (
-            <NumberFieldControl form={form} disabled={disabled} model={model} value={value} onChange={onChange} />
+            <NumberFieldControl form={form} disabled={model.disabled} model={model} value={value} onChange={onChange} />
           );
         }}
       </ConfigurableFormItem>

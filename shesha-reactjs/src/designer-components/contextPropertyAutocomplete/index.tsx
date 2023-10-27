@@ -110,10 +110,9 @@ const ContextPropertyAutocompleteComponent: IToolboxComponent<IContextPropertyAu
   icon: <FileSearchOutlined />,
   factory: (model: IContextPropertyAutocompleteComponentProps) => {
     const designerModelType = useFormDesigner(false)?.formSettings?.modelType;
-    const { formData, formMode, isComponentDisabled, formSettings, setFormData } = useForm();
+    const { formData, formSettings, setFormData } = useForm();
   
-    const disabled = isComponentDisabled(model);
-    const readOnly = model?.readOnly || disabled || (formMode === 'readonly');
+    const readOnly = model?.readOnly || model.disabled;
 
     return (
       <ContextPropertyAutocomplete {...model}

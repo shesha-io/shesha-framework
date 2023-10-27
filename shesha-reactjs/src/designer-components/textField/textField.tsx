@@ -41,12 +41,10 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       dataFormat === StringFormats.phoneNumber ||
       dataFormat === StringFormats.password),
   factory: (model: ITextFieldComponentProps, _c, form) => {
-    const { formMode, isComponentDisabled, setFormDataAndInstance } = useForm();
+    const { formMode, setFormDataAndInstance } = useForm();
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
-
-    const disabled = isComponentDisabled(model);
 
     const readOnly = model?.readOnly || (formMode === 'readonly' && model.textType !== 'password');
 
@@ -60,7 +58,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       bordered: !model.hideBorder,
       maxLength: model.validate?.maxLength,
       size: model?.size,
-      disabled,
+      disabled: model.disabled,
       readOnly,
       style: getStyle(model?.style, formData),
     };
@@ -88,8 +86,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       >
           {(value, onChange) => 
             readOnly 
-              ? <ReadOnlyDisplayFormItem value={value} disabled={disabled} />
-              : <InputComponentType {...inputProps} {...customEventHandler(eventProps)} disabled={disabled} value={value} onChange={onChange} />
+              ? <ReadOnlyDisplayFormItem value={value} disabled={model.disabled} />
+              : <InputComponentType {...inputProps} {...customEventHandler(eventProps)} disabled={model.disabled} value={value} onChange={onChange} />
           }
       </ConfigurableFormItem>
     );

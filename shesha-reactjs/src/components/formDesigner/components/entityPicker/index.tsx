@@ -47,11 +47,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
   factory: (model: IEntityPickerComponentProps) => {
     const { filters, modalWidth, customWidth, widthUnits } = model;
-    const { formMode, isComponentDisabled } = useForm();
-
-    const isReadOnly = model.readOnly || formMode === 'readonly';
-
-    const disabled = isComponentDisabled(model);
+    const { formMode } = useForm();
 
     const entityPickerFilter = useMemo<ITableViewProps[]>(() => {
       return [
@@ -84,8 +80,8 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
         {(value, onChange) => (
           <EntityPicker
             formId={model.id}
-            disabled={disabled}
-            readOnly={isReadOnly}
+            disabled={model.disabled}
+            readOnly={model.readOnly}
             displayEntityKey={model.displayEntityKey}
             entityType={model.entityType}
             filters={entityPickerFilter}

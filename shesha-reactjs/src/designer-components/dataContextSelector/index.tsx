@@ -2,7 +2,7 @@ import { IToolboxComponent } from '../../interfaces';
 import { CodeOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
 import React, { FC } from 'react';
-import { IConfigurableFormComponent, useForm, useMetadataDispatcher } from '../../providers';
+import { IConfigurableFormComponent, useMetadataDispatcher } from '../../providers';
 import { DataTypes, StringFormats } from '../../interfaces/dataTypes';
 import { Select } from 'antd';
 import { useDataContextManager } from 'providers/dataContextManager';
@@ -45,9 +45,7 @@ const DataContextSelectorComponent: IToolboxComponent<IDataContextSelectorCompon
     icon: <CodeOutlined />,
     dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.string && dataFormat === StringFormats.singleline,
     factory: (model: IDataContextSelectorComponentProps, _c, _f, _ch) => {
-      const { formMode, isComponentDisabled } = useForm();
-      const disabled = isComponentDisabled(model);
-      const readOnly = model?.readOnly || disabled || (formMode === 'readonly');
+      const readOnly = model?.readOnly || model.disabled;
 
       return (
         <ConfigurableFormItem model={{...model, readOnly}}>

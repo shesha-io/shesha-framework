@@ -44,7 +44,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
   factory: (model: IAutocompleteComponentProps, _c, form) => {
     const { queryParams, filter } = model;
-    const { formMode, isComponentDisabled, setFormDataAndInstance } = useForm();
+    const { formMode, setFormDataAndInstance } = useForm();
     const { data } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
@@ -54,7 +54,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
 
     const dataSourceUrl = model.dataSourceUrl ? replaceTags(model.dataSourceUrl, { data: data }) : model.dataSourceUrl;
 
-    const disabled = isComponentDisabled(model);
+    const disabled = model.readOnly;
 
     const evaluatedFilters = useAsyncMemo(async () => {
       if (!filter) return '';

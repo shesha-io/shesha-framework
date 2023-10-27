@@ -1,13 +1,12 @@
 import { Checkbox, Col, Row } from 'antd';
 import React, { FC, useEffect, useMemo } from 'react';
 import { useGet } from 'hooks';
-import { useForm, useFormData, useGlobalState } from '../../../../providers';
+import { useFormData, useGlobalState } from '../../../../providers';
 import { useReferenceList } from '../../../../providers/referenceListDispatcher';
 import { getDataSourceList } from '../radio/utils';
 import { getSpan, ICheckboxGroupProps } from './utils';
 
 const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
-  const { formMode, isComponentDisabled } = useForm();
   const { data: formData } = useFormData();
   const { globalState } = useGlobalState();
   const { items, referenceListId, direction, value, onChange } = model;
@@ -47,9 +46,8 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
     [model?.dataSourceType, items, refList?.items, reducedData]
   );
 
-  const isReadOnly = model?.readOnly || formMode === 'readonly';
 
-  const disabled = isComponentDisabled(model) || isReadOnly;
+  const disabled = model.disabled || model.readOnly;
 
   return (
     <Checkbox.Group className="sha-multi-checkbox" value={value} onChange={onChange} style={model?.style}>

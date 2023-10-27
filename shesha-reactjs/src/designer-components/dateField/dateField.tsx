@@ -126,14 +126,9 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
 
   const defaultFormat = getDefaultFormat(props);
 
-  const { formMode, isComponentDisabled, formData } = useForm();
-
-  const isDisabled = isComponentDisabled(props);
-
-  const isReadOnly = readOnly || formMode === 'readonly';
+  const { formData } = useForm();
 
   const pickerFormat = getFormat(props, properties);
-
   const formattedValue = getMoment(value, pickerFormat);
 
   const handleDatePickerChange = (localValue: any | null, dateString: string) => {
@@ -162,13 +157,13 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     (onChange as RangePickerChangeEvent)(dates, formatString);
   };
 
-  if (isReadOnly) {
+  if (readOnly) {
     const format = `${dateFormat}${showTime ? timeFormat : ''}`;
 
     return (
       <ReadOnlyDisplayFormItem
         value={formattedValue?.toISOString()}
-        disabled={isDisabled}
+        disabled={disabled}
         type="datetime"
         dateFormat={format}
         timeFormat={timeFormat}
@@ -191,7 +186,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         picker={picker}
         showTime={showTime ? (defaultToMidnight ? { defaultValue: [MIDNIGHT_MOMENT, MIDNIGHT_MOMENT] } : true) : false}
         showSecond
-        disabled={isDisabled}
+        disabled={disabled}
         style={evaluatedStyle}
         allowClear
       />
@@ -202,7 +197,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     <DatePicker
       className="sha-date-picker"
       disabledDate={(e) => disabledDate(props, e, formData, globalState)}
-      disabled={isDisabled}
+      disabled={disabled}
       onChange={handleDatePickerChange}
       bordered={!hideBorder}
       showTime={showTime ? (defaultToMidnight ? { defaultValue: MIDNIGHT_MOMENT } : true) : false}

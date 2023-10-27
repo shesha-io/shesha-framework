@@ -20,7 +20,7 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
 
   factory: (model: IRefListStatusProps) => {
     const { formMode, formData: data } = useForm();
-    const { hideLabel = true, solidBackground = true, referenceListId, showReflistName = true } = model;
+    const { solidBackground = true, referenceListId, showReflistName = true } = model;
 
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
@@ -43,7 +43,7 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
     }
     
     return (
-      <ConfigurableFormItem model={{ ...model, hideLabel }}>
+      <ConfigurableFormItem model={{ ...model }}>
         {(value) => {
           return (
             <RefListStatus
@@ -62,6 +62,7 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
   initModel: (model) => {
     const customModel: IRefListStatusProps = {
       ...model,
+      hideLabel: true
     };
     return customModel;
   },

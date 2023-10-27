@@ -1,4 +1,4 @@
-import React, { FC, ReactElement, useEffect, useMemo } from 'react';
+import React, { FC, ReactElement, useMemo } from 'react';
 import { PropertySettingMode } from '../../providers';
 import { CodeEditor } from 'components/formDesigner/components/codeEditor/codeEditor';
 import { getPropertySettingsFromValue } from './utils';
@@ -7,6 +7,10 @@ export type SettingsControlChildrenType = (value: any, onChange:  (...args: any[
 
 export interface IContextSettingsRef {
     onChange: (...args: any[]) => void;
+}
+
+export interface ISwitchModeSettingsRef {
+    onChange: (mode: PropertySettingMode) => void;
 }
 
 
@@ -19,21 +23,28 @@ interface ISettingsControlProps {
     onChange?: (value: any) => void;
     readonly children?: SettingsControlChildrenType;
     contextRef?: React.MutableRefObject<IContextSettingsRef>;
+    modeRef?: React.MutableRefObject<ISwitchModeSettingsRef>;
 }
 
-export const SettingsControl: FC<ISettingsControlProps> = ({ id, propertyName, readonly, value, mode, onChange, children, contextRef }) => {
+export const SettingsControl: FC<ISettingsControlProps> = ({ id, propertyName, readonly, value, mode, onChange, children, contextRef, modeRef }) => {
 
     const settings = getPropertySettingsFromValue(value);
 
-    useEffect(() => {
+    const internalOnSwitchMode = useMemo(() => (mode) => {
         if (onChange)
             onChange(!!settings._code || mode === 'code' ? { _value: settings._value, _code: settings._code, _mode: mode } : settings._value);
-    }, [mode]);
+    }, [settings._code, settings._value, mode]);
 
     const internalOnChange = useMemo(() => (value) => {
         if (onChange)
             onChange(!!settings._code ? { _value: value, _code: settings._code, _mode: mode } : value);
     }, [settings._code, mode]);
+
+    if (contextRef && contextRef.current?.onChange !== internalOnChange)
+        contextRef.current = { onChange: internalOnChange };
+
+    if (modeRef && modeRef.current?.onChange !== internalOnSwitchMode)
+        modeRef.current = { onChange: internalOnSwitchMode };
 
     if (mode === 'code') {
         return <CodeEditor
@@ -63,9 +74,6 @@ export const SettingsControl: FC<ISettingsControlProps> = ({ id, propertyName, r
             ]}
         />;
     }
-
-    if (contextRef && contextRef.current?.onChange !== internalOnChange)
-        contextRef.current = { onChange: internalOnChange };
 
     return children(settings._value, internalOnChange, propertyName);
 };

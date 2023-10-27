@@ -89,7 +89,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
         </SettingsFormItem>
       </MetadataProvider>
 
-      <SettingsFormItem name="entityReferenceType" initialValue={'Quickview'} label="Entity Reference Type" jsSetting>
+      <SettingsFormItem name="entityReferenceType" initialValue={'Quickview'} label="Entity Reference Type">
         <Select disabled={readOnly}>
           <Select.Option value="Quickview">Quickview</Select.Option>
           <Select.Option value="NavigateLink">Navigate Link</Select.Option>
@@ -97,7 +97,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
         </Select>
       </SettingsFormItem>
 
-      <SettingsFormItem name="formSelectionMode" initialValue={'name'} label="Form selection mode" jsSetting>
+      <SettingsFormItem name="formSelectionMode" initialValue={'name'} label="Form selection mode">
         <Select disabled={readOnly}>
           <Select.Option value="name">Name</Select.Option>
           <Select.Option value="dynamic">Dynamic</Select.Option>

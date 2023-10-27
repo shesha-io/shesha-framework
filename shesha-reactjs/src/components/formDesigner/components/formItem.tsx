@@ -66,7 +66,7 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
   const reactChildren = children as ReactNode;
   const funcChildren = children as IConfigurableFormItemChildFunc;
 
-  // binding to context data for upgraded components 
+    // binding to context data for upgraded components 
   if (!!context && typeof funcChildren === 'function') {
     
     const value = getFieldValue(propName);

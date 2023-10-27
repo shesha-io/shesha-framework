@@ -44,7 +44,7 @@ export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = () => {
         : [];
     return (
       <ConfigurableForm
-        key={selectedItemId} // rerender for each item to initialize all controls
+        //key={selectedItemId} // rerender for each item to initialize all controls
         formRef={formRef}
         labelCol={{ span: 24 }}
         wrapperCol={{ span: 24 }}

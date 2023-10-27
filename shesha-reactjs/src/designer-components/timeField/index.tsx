@@ -115,9 +115,9 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
   hourStep,
   minuteStep,
   secondStep,
+  disabled,
   ...rest
 }) => {
-  const { formMode, isComponentDisabled } = useForm();
   const { data: formData } = useFormData();
   const evaluatedValue = getMoment(value, format);
 
@@ -131,10 +131,7 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
     secondStep: 60 % secondStepLocal === 0 ? secondStepLocal : 1, // It should be a factor of 60.
   };
 
-  const isDisabled = isComponentDisabled(rest);
-
-  const isReadOnly = readOnly || formMode === 'readonly';
-
+  
   const getDefaultRangePickerValues = () =>
     Array.isArray(defaultValue) && defaultValue?.length === 2
       ? defaultValue?.map((v) => moment(new Date(v), format))
@@ -150,8 +147,8 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
     (onChange as RangePickerChangeEvent)(values, formatString);
   };
 
-  if (isReadOnly) {
-    return <ReadOnlyDisplayFormItem value={evaluatedValue?.toISOString()} disabled={isDisabled} type="time" />;
+  if (readOnly) {
+    return <ReadOnlyDisplayFormItem value={evaluatedValue?.toISOString()} disabled={disabled} type="time" />;
   }
 
   if (range) {

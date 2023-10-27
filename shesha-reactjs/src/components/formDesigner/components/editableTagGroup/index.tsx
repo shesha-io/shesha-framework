@@ -7,7 +7,6 @@ import settingsFormJson from './settingsForm.json';
 import { EditableTagGroup } from '../../..';
 import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import { DataTypes } from '../../../../interfaces/dataTypes';
-import { useForm } from '../../../../providers';
 import { IEditableTagGroupComponentProps } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 
@@ -19,9 +18,7 @@ const EditableTagGroupComponent: IToolboxComponent<IEditableTagGroupComponentPro
   icon: <HomeOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.array,
   factory: (model: IEditableTagGroupComponentProps) => {
-    const { formMode, isComponentDisabled } = useForm();
-
-    const disabled = isComponentDisabled(model) || formMode === 'readonly';
+    const disabled = model.disabled || model.readOnly;
 
     return (
       <ConfigurableFormItem model={model}>

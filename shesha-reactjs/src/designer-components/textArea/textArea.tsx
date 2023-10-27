@@ -40,7 +40,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string && dataFormat === StringFormats.multiline,
   factory: (model: ITextAreaComponentProps, _c, form) => {
-    const { formMode, isComponentDisabled, setFormDataAndInstance } = useForm();
+    const { formMode, setFormDataAndInstance } = useForm();
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
@@ -58,10 +58,6 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
       style: getStyle(model?.style, formData),
     };
 
-    const isReadOnly = model?.readOnly || formMode === 'readonly';
-
-    const disabled = isComponentDisabled(model);
-
     const eventProps = {
       model,
       form,
@@ -75,9 +71,6 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
       setGlobalState,
     };
 
-    const currentValue = form?.getFieldValue(model.propertyName);
-    const showAsJson = Boolean(currentValue) && typeof currentValue === 'object';
-
     return (
       <ConfigurableFormItem
         model={model}
@@ -87,15 +80,16 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
         }
       >
         {(value, onChange) => {
+          const showAsJson = Boolean(value) && typeof value === 'object';
           return showAsJson ? (
               <JsonTextArea value={value} textAreaProps={textAreaProps} customEventHandler={customEventHandler(eventProps)} />
-            ) : isReadOnly ? (
-              <ReadOnlyDisplayFormItem value={value} disabled={disabled} />
+            ) : model.readOnly ? (
+              <ReadOnlyDisplayFormItem value={value} disabled={model.disabled} />
             ) : (
               <Input.TextArea
                 rows={2}
                 {...textAreaProps}
-                disabled={disabled ? disabled : undefined}
+                disabled={model.disabled ? model.disabled : undefined}
                 {...customEventHandler(eventProps)}
                 value={value}
                 onChange={onChange}

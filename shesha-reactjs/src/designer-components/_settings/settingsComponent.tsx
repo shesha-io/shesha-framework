@@ -1,16 +1,17 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { IToolboxComponent } from '../../interfaces';
 import { SettingOutlined } from '@ant-design/icons';
-import { IConfigurableFormComponent, PropertySettingMode, useForm } from '../../providers';
+import { IConfigurableFormComponent, useForm } from '../../providers';
 import { ComponentsContainer, ConfigurableFormItem } from 'components';
 import { DataContextProvider } from 'providers/dataContextProvider';
 import { Button } from 'antd';
 import { getPropertySettingsFromData, getValueFromPropertySettings } from './utils';
-import { IContextSettingsRef, SettingsControl } from './settingsControl';
+import { IContextSettingsRef, ISwitchModeSettingsRef, SettingsControl } from './settingsControl';
 import { getSettings } from './settings';
 import { getValueByPropertyName, setValueByPropertyName } from 'utils/object';
 import './styles/index.less';
 import { useRef } from 'react';
+import { isEqual } from 'lodash';
 
 export interface ISettingsComponentProps extends IConfigurableFormComponent {
     components?: IConfigurableFormComponent[];
@@ -27,15 +28,13 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
 
         const { formData } = useForm();
 
-        const initSettings = getPropertySettingsFromData(formData, model.propertyName);
-
-        const [mode, setMode] = useState<PropertySettingMode>(initSettings._mode ?? 'value');
+        const { _mode: mode } = getPropertySettingsFromData(formData, model.propertyName);
 
         const internalProps = model?.components?.length > 0 ? model?.components[0] : model;
         const props = Boolean(model?.label) ? model : internalProps;
 
         const switchMode = () => {
-            setMode(mode === 'code' ? 'value' : 'code');
+            modeRef.current?.onChange(mode === 'code' ? 'value' : 'code');
         };
 
         const components = useMemo(() => {
@@ -43,8 +42,7 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
         }, [model?.components, model?.readOnly, model?.id]);
 
         const ctxRef = useRef<IContextSettingsRef>();
-
-        console.log('settings rendering');
+        const modeRef = useRef<ISwitchModeSettingsRef>();
 
         return (
             <ConfigurableFormItem model={{ ...props, label: props.label, }} className='sha-js-label' >
@@ -65,7 +63,7 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
                         </Button>
                         <DataContextProvider id={model.id} name={props.componentName} description={props.label.toString()} type={'settings'}
                             initialData={new Promise((resolve) => {
-                                resolve(setValueByPropertyName({}, internalProps?.propertyName, value));
+                                resolve(setValueByPropertyName({}, internalProps?.propertyName, localValue));
                             })}
                             dynamicData={
                                 internalProps?.propertyName && localValue
@@ -73,11 +71,19 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
                                     : null
                             }
                             onChangeData={(v) => {
-                                if (v && ctxRef.current?.onChange)
+                                if (v && ctxRef.current?.onChange && !isEqual(v[internalProps?.propertyName], localValue))
                                     ctxRef.current?.onChange(getValueByPropertyName(v, internalProps?.propertyName));
                             }}
                         >
-                            <SettingsControl id={model.id} propertyName={internalProps?.propertyName} mode={mode} value={value} onChange={onChange} contextRef={ctxRef}>
+                            <SettingsControl 
+                                id={model.id}
+                                propertyName={internalProps?.propertyName}
+                                mode={mode}
+                                value={value}
+                                onChange={onChange}
+                                contextRef={ctxRef}
+                                modeRef={modeRef}
+                            >
                                 {() =>
                                     <ComponentsContainer containerId={props.id} dynamicComponents={components} />
                                 }
