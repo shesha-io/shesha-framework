@@ -56,10 +56,6 @@ export const ToolbarItemsContainer: FC<IToolbarItemsContainerProps> = (props) =>
     return;
   };
 
-  return <>{actualItems.map((item) => {
-        return <>{item.name}: {item.itemType} _</>;
-  })}</>;
-
   return (
     <ReactSortable
       disabled={readOnly}
