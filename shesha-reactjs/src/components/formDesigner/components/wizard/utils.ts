@@ -99,7 +99,13 @@ export const getWizardStep = (steps: IWizardStepProps[], current: number, type: 
     ? steps?.findIndex(({}, index) => index > current)
     : findLastIndex(steps, ({}, index) => index < current);
 
-export const isEmptyArgument = (args: IConfigurableActionConfiguration) =>
-  Object.getOwnPropertyNames(args || {})
-    .filter((key) => !['handleSuccess', 'handleFail'].includes(key))
-    .some((key) => !args[key]);
+export const isEmptyArgument = (args: IConfigurableActionConfiguration) => {
+  if (!args)
+    return true;
+
+  var fields = Object.getOwnPropertyNames(args)
+    .filter((key) => !['handleSuccess', 'handleFail'].includes(key));
+  return fields?.length > 0
+    ? fields.some((key) => !args[key])
+    : true;
+};
