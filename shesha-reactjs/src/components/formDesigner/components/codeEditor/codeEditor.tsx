@@ -1,13 +1,16 @@
 import React, { FC, Fragment, useMemo, useState } from 'react';
 import { useMetadata } from '../../../../providers';
-import { Show } from '../../../..';
-import { ICodeTreeLevel } from '../../../codeEditor/codeCompleter';
-import { IPropertyMetadata } from '../../../../interfaces/metadata';
+import { Show, useForm, useMetadataDispatcher } from '../../../..';
 import { Alert, Button, Modal, Space, Tabs } from 'antd';
 import { CodeOutlined } from '@ant-design/icons';
 import { ICodeEditorProps } from './interfaces';
 import { CodeVariablesTables } from '../../../codeVariablesTable';
 import { CodeEditor as BaseCodeEditor } from 'components/codeEditor';
+import { useDataContextManager } from 'providers/dataContextManager';
+import { ICodeTreeLevel } from 'components/codeEditor/utils';
+import { getContextMetadata, getFormDataMetadata } from './utils';
+import { IModelMetadata } from 'interfaces/metadata';
+import { useFormDesigner } from 'providers/formDesigner';
 
 const { TabPane } = Tabs;
 
@@ -39,38 +42,28 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
     setInternalValue(null);
     if (props.onChange) props.onChange(null);
   };
-  const meta = useMetadata(false);
+  
+  const dataContextManager = useDataContextManager(false);
+  const metaDispatcher = useMetadataDispatcher(false);
+  
+  // Get the form model type (from the form or form designer)
+  const designer = useFormDesigner(false);
+  const formInstance = useForm(false) ?? dataContextManager?.getFormInstance();
+  const modelType = formInstance?.formSettings?.modelType ?? designer?.formSettings?.modelType;
+  
+  const meta = modelType
+    ? metaDispatcher.getMetadata({modelType, dataType: 'entity'})
+    : new Promise<IModelMetadata>((resolve) => resolve(useMetadata(false)?.metadata));
 
-  const metaItems = useMemo<ICodeTreeLevel>(() => {
-    if (!Boolean(meta?.metadata)) return null;
+  const metaItems = useMemo<ICodeTreeLevel>(() => getFormDataMetadata(metaDispatcher, meta), [meta]);
+  const ctxItems = useMemo<ICodeTreeLevel>(() => getContextMetadata(dataContextManager?.getDataContexts(dataContextManager?.getActiveContext()?.id)), [dataContextManager.lastUpdate]);
 
-    const propsToLevel = (properties: IPropertyMetadata[]): ICodeTreeLevel => {
-      const result: ICodeTreeLevel = {};
-      properties.forEach((p) => {
-        result[p.path] = {
-          value: p.path,
-          caption: p.label,
-          loaded: true,
-        };
-      });
-      return result;
-    };
-
-    const metaTree: ICodeTreeLevel = {
-      data: {
-        value: 'data',
-        caption: meta.metadata.name,
-        loaded: true,
-        childs: propsToLevel(meta.metadata.properties),
-      },
-    };
-    return metaTree;
-  }, [meta]);
-
-  const editorProps = {
-    shaMetadata: metaItems,
-  };
-
+  const editorProps: any = {};
+  if (!exposedVariables || exposedVariables.find(x => x.name === 'data'))
+    editorProps.shaMetadata = metaItems;
+  if (!exposedVariables || exposedVariables.find(x => x.name === 'contexts'))
+    editorProps.shaContext = ctxItems;
+  
   const openEditorDialog = () => setShowDialog(true);
 
   const onDialogCancel = () => {
@@ -88,7 +81,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
   const renderCodeEditor = () => (
     <BaseCodeEditor
       name={props?.id || ''}
-      style={{ width: 'unset' }}
+      style={mode === 'dialog' ? { width: 'unset' } : null}
       placeholder={props.placeholder}
       mode={language}
       theme="monokai"

@@ -2,25 +2,36 @@ import { handleActions } from 'redux-actions';
 import { getFilterOptions } from '../../components/columnItemFilter';
 import flagsReducer from '../utils/flagsReducer';
 import {
+  DATA_TABLE_CONTEXT_INITIAL_STATE,
+  DEFAULT_PAGE_SIZE_OPTIONS,
+  DragState,
+  IDataTableStateContext,
+  ISelectionProps,
+} from './contexts';
+import {
   DataTableActionEnums,
   IChangeFilterAction,
   IChangeFilterOptionPayload,
   IFetchColumnsSuccessSuccessPayload,
+  IFetchGroupingColumnsSuccessPayload,
   IRegisterConfigurableColumnsPayload,
   ISetHiddenFilterActionPayload,
   ISetPredefinedFiltersPayload,
   ISetRowDataPayload,
+  ISortingSettingsActionPayload,
 } from './actions';
-import { DATA_TABLE_CONTEXT_INITIAL_STATE, DEFAULT_PAGE_SIZE_OPTIONS, IDataTableStateContext } from './contexts';
 import {
   DataFetchingMode,
   IColumnSorting,
   IGetListDataPayload,
   ITableColumn,
+  ITableDataColumn,
   ITableDataInternalResponse,
   ITableFilter,
 } from './interfaces';
-import { getTableDataColumn, getTableDataColumns, prepareColumn } from './utils';
+import { getTableDataColumn, prepareColumn } from './utils';
+import { Row } from 'react-table';
+import { ProperyDataType } from 'interfaces/metadata';
 
 /** get dirty filter if exists and fallback to current filter state */
 const getDirtyFilter = (state: IDataTableStateContext): ITableFilter[] => {
@@ -29,6 +40,73 @@ const getDirtyFilter = (state: IDataTableStateContext): ITableFilter[] => {
 
 const reducer = handleActions<IDataTableStateContext, any>(
   {
+    /** Table Selection */
+
+    [DataTableActionEnums.SetSelectedRow]: (
+      state: IDataTableStateContext,
+      action: ReduxActions.Action<ISelectionProps>
+    ) => {
+      const { payload } = action;
+      const selectedRow = state?.selectedRow?.id === payload?.id ? null : payload;
+      return { ...state, selectedRow };
+    },
+
+    [DataTableActionEnums.SetHoverRow]: (
+      state: IDataTableStateContext,
+      action: ReduxActions.Action<string>
+    ) => {
+      const { payload } = action;
+      return {
+        ...state,
+        hoverRowId: payload,
+      };
+    },
+
+    [DataTableActionEnums.SetDraggingState]: (
+      state: IDataTableStateContext,
+      action: ReduxActions.Action<DragState>
+    ) => {
+      const { payload } = action;
+      return {
+        ...state,
+        dragState: payload,
+        selectedRow: null,
+        selectedIds: null,
+      };
+    },
+
+    [DataTableActionEnums.SetMultiSelectedRow]: (
+      state: IDataTableStateContext,
+      action: ReduxActions.Action<Row[] | Row>
+    ) => {
+      const { payload } = action;
+      const { selectedRows: rows } = state;
+      let selectedRows;
+
+      if (Array.isArray(payload)) {
+        selectedRows = payload?.filter(({ isSelected }) => isSelected).map(({ original }) => original);
+      } else {
+        const data = payload.original as any;
+        const exists = rows.some(({ id }) => id === data?.id);
+        const isSelected = payload.isSelected;
+
+        if (exists && isSelected) {
+          selectedRows = [...rows.filter(({ id }) => id !== data?.id), data];
+        } else if (exists && !isSelected) {
+          selectedRows = rows.filter(({ id }) => id !== data?.id);
+        } else if (!exists && isSelected) {
+          selectedRows = [...rows, data];
+        }
+      }
+
+      return {
+        ...state,
+        selectedRows,
+      };
+    },
+
+    /** Table Context */
+
     [DataTableActionEnums.SetModelType]: (state: IDataTableStateContext, action: ReduxActions.Action<string>) => {
       const { payload } = action;
 
@@ -43,14 +121,6 @@ const reducer = handleActions<IDataTableStateContext, any>(
       return {
         ...state,
         userConfigId: payload,
-      };
-    },
-    [DataTableActionEnums.ChangeSelectedRow]: (state: IDataTableStateContext, action: ReduxActions.Action<any>) => {
-      const { payload } = action;
-
-      return {
-        ...state,
-        selectedRow: payload?.id === state?.selectedRow?.id ? null : payload,
       };
     },
     [DataTableActionEnums.ChangeActionedRow]: (state: IDataTableStateContext, action: ReduxActions.Action<any>) => {
@@ -160,17 +230,13 @@ const reducer = handleActions<IDataTableStateContext, any>(
     ) => {
       const { payload } = action;
 
-      // const selectedStoredFilterIds = state?.selectedStoredFilterIds?.length
-      //   ? state?.selectedStoredFilterIds
-      //   : payload.selectedFilterIds ?? [];
-
       const newState: IDataTableStateContext = {
         ...state,
         isFetchingTableData: true,
-        tableSorting: payload.sorting,
+        // note: don't change standard sorting is it's not used to prevent re-renderings
+        // standardSorting: isStandardSortingUsed(state) ? payload.sorting : state.standardSorting,
+        //userSorting
         currentPage: payload.currentPage,
-        //parentEntityId: payload.parentEntityId,
-        //selectedStoredFilterIds, // TODO: Review the saving of filters
       };
 
       return newState;
@@ -214,23 +280,13 @@ const reducer = handleActions<IDataTableStateContext, any>(
         .map<ITableColumn>((col) => prepareColumn(col, columns, userConfig))
         .filter((c) => c !== null);
 
-      const dataCols = getTableDataColumns(cols);
-      const configuredTableSorting = dataCols
-        .filter((c) => c.defaultSorting !== null && c.defaultSorting !== undefined && c.propertyName)
-        .map<IColumnSorting>((c) => ({ id: c.id, desc: c.defaultSorting === 1 }));
-
-      const tableSorting =
-        userConfig && userConfig.tableSorting && userConfig.tableSorting.length > 0
-          ? userConfig.tableSorting
-          : configuredTableSorting;
-
       const userFilters =
         userConfig?.selectedFilterIds?.length > 0 && state.predefinedFilters?.length > 0
           ? userConfig?.selectedFilterIds?.filter((x) => {
-              return state.predefinedFilters?.find((f) => {
-                return f.id === x;
-              });
-            }) ?? []
+            return state.predefinedFilters?.find((f) => {
+              return f.id === x;
+            });
+          }) ?? []
           : [];
 
       const selectedStoredFilterIds = state?.selectedStoredFilterIds?.length
@@ -239,6 +295,11 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
       if (selectedStoredFilterIds.length === 0 && state.predefinedFilters?.length > 0)
         selectedStoredFilterIds.push(state.predefinedFilters[0].id);
+
+      const userSorting =
+        userConfig && userConfig.tableSorting && userConfig.tableSorting.length > 0
+          ? userConfig.tableSorting
+          : [];
 
       return {
         ...state,
@@ -250,7 +311,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
         tableFilter: userConfig?.advancedFilter,
         tableFilterDirty: userConfig?.advancedFilter,
         selectedStoredFilterIds,
-        tableSorting: tableSorting,
+        userSorting: userSorting,
       };
     },
 
@@ -357,7 +418,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
       const selectedStoredFilterIds =
         (!Boolean(state.selectedStoredFilterIds) || state.selectedStoredFilterIds.length === 0) &&
-        predefinedFilters?.length > 0
+          predefinedFilters?.length > 0
           ? Boolean(uc) && uc.length > 0
             ? uc
             : [predefinedFilters[0].id]
@@ -375,8 +436,8 @@ const reducer = handleActions<IDataTableStateContext, any>(
       action: ReduxActions.Action<ISetHiddenFilterActionPayload>
     ) => {
       const { filter, owner } = action.payload;
-      
-      const hiddenFilters = {...state.hiddenFilters, [owner]: filter};
+
+      const hiddenFilters = { ...state.hiddenFilters, [owner]: filter };
 
       return {
         ...state,
@@ -398,10 +459,9 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
     [DataTableActionEnums.OnSort]: (state: IDataTableStateContext, action: ReduxActions.Action<IColumnSorting[]>) => {
       const { payload } = action;
-
       return {
         ...state,
-        tableSorting: [...payload],
+        userSorting: [...payload],
       };
     },
 
@@ -452,6 +512,73 @@ const reducer = handleActions<IDataTableStateContext, any>(
       return {
         ...state,
         dataFetchingMode: payload,
+      };
+    },
+
+    [DataTableActionEnums.SetSortingSettings]: (
+      state: IDataTableStateContext,
+      action: ReduxActions.Action<ISortingSettingsActionPayload>
+    ) => {
+      const { payload } = action;
+
+      return {
+        ...state,
+        sortMode: payload.sortMode,
+        strictSortBy: payload.strictSortBy,
+        strictSortOrder: payload.strictSortOrder,
+        allowReordering: payload.allowReordering,
+      };
+    },
+
+    [DataTableActionEnums.SetStandardSorting]: (
+      state: IDataTableStateContext,
+      action: ReduxActions.Action<IColumnSorting[]>
+    ) => {
+      const { payload } = action;
+
+      return {
+        ...state,
+        standard: [...payload],
+      };
+    },
+
+    [DataTableActionEnums.FetchGroupingColumnsSuccess]: (
+      state: IDataTableStateContext,
+      action: ReduxActions.Action<IFetchGroupingColumnsSuccessPayload>
+    ) => {
+      const { payload } = action;
+
+      const columns = payload.columns
+        .map<ITableDataColumn>(column => ({
+          columnType: 'data',
+          propertyName: column.propertyName,
+
+          id: column.propertyName,
+          accessor: column.propertyName,
+          columnId: column.propertyName,
+
+          header: column.caption,
+          caption: column.caption,
+          isVisible: true,
+          show: true,
+          isFilterable: false,
+          isSortable: false,
+          allowShowHide: false,
+
+          dataType: column.dataType as ProperyDataType,
+          dataFormat: column.dataFormat,
+          entityReferenceTypeShortAlias: column.entityReferenceTypeShortAlias,
+          referenceListName: column.referenceListName,
+          referenceListModule: column.referenceListModule,
+          allowInherited: column.allowInherited,
+          metadata: column.metadata,
+        }))
+        .filter(c => c !== null);
+
+      return {
+        ...state,
+        groupingColumns: state.groupingColumns.length === 0 && columns.length === 0 ? state.groupingColumns : columns,
+        grouping: payload.grouping,
       };
     },
   },

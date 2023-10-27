@@ -11,7 +11,6 @@ export const QueryBuilderPlainRenderer: FC<IQueryBuilderProps> = (props) => {
   const { formMode } = useForm();
 
   const fieldsAvailable = Boolean(queryBuilder);
-
   if (!fieldsAvailable && formMode === 'designer' && !fieldsUnavailableHint)
     return (
       <Alert
@@ -21,15 +20,10 @@ export const QueryBuilderPlainRenderer: FC<IQueryBuilderProps> = (props) => {
       />
     );
 
-  const fields = queryBuilder?.fields || [];
-  const fetchFields = queryBuilder?.fetchFields;
-
   return !fieldsAvailable && fieldsUnavailableHint ? (
     <Typography.Text type="secondary">{fieldsUnavailableHint}</Typography.Text>
   ) : (
     <QueryBuilderPlain
-      fields={fields}
-      fetchFields={fetchFields}
       onChange={props?.onChange}
       value={props?.value}
       readOnly={props.readOnly}

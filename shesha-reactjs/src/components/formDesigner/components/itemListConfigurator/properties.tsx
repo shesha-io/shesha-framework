@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useMemo, useRef } from 'react';
 import { Empty, Form } from 'antd';
 import { ConfigurableForm } from '../../..';
 import { useDebouncedCallback } from 'use-debounce';
@@ -10,8 +10,6 @@ export interface IItemConfigPropertiesProps {}
 export const ItemConfigProperties: FC<IItemConfigPropertiesProps> = ({}) => {
   const { selectedItemId, getItem, updateItem, itemTypeMarkup, groupTypeMarkup } = useItemListConfigurator();
 
-  // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus
-  const [editor, setEditor] = useState<ReactNode>(<></>);
   const [form] = Form.useForm();
 
   const formRef = useRef<ConfigurableFormInstance>(null);
@@ -25,20 +23,13 @@ export const ItemConfigProperties: FC<IItemConfigPropertiesProps> = ({}) => {
   );
 
   useEffect(() => {
-    form.resetFields();
-
-    if (formRef.current) {
-      const values = form.getFieldsValue();
-
-      formRef.current.setFormData({ values, mergeValues: false });
-    }
+    const componentModel = getItem(selectedItemId);
+    form?.setFieldsValue(componentModel);
   }, [selectedItemId]);
 
-  useEffect(() => {
-    setEditor(getEditor());
-  }, [selectedItemId]);
 
-  const getEditor = () => {
+  // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus
+  const editor = useMemo(() => {
     const emptyEditor = null;
     if (!selectedItemId) return emptyEditor;
 
@@ -48,6 +39,7 @@ export const ItemConfigProperties: FC<IItemConfigPropertiesProps> = ({}) => {
       componentModel.itemType === 'item' ? itemTypeMarkup : componentModel.itemType === 'group' ? groupTypeMarkup : [];
     return (
       <ConfigurableForm
+        key={selectedItemId} // rerender for each item to initialize all controls
         formRef={formRef}
         labelCol={{ span: 24 }}
         wrapperCol={{ span: 24 }}
@@ -59,7 +51,7 @@ export const ItemConfigProperties: FC<IItemConfigPropertiesProps> = ({}) => {
         onValuesChange={debouncedSave}
       />
     );
-  };
+  }, [selectedItemId]);
 
   if (!Boolean(selectedItemId)) {
     return (

@@ -4,7 +4,7 @@ import { SidebarContainer } from '../../../components';
 import { CodeVariablesTables } from '../../../components/codeVariablesTable';
 import QueryBuilderExpressionViewer from '../../../designer-components/queryBuilder/queryBuilderExpressionViewer';
 import { QueryBuilderPlainRenderer } from '../../../designer-components/queryBuilder/queryBuilderFieldPlain';
-import { QueryBuilderProvider, useMetadataFields } from '../../../providers';
+import { QueryBuilderProvider, useMetadata } from '../../../providers';
 import { useTableViewSelectorConfigurator } from '../../../providers/tableViewSelectorConfigurator';
 import { TableViewProperties } from './tableViewProperties';
 
@@ -26,7 +26,7 @@ export const TableViewSelectorConfigurator = forwardRef<
     },
   }));
 
-  const fields = useMetadataFields();
+  const metadata = useMetadata(false);
 
   const { selectedItemId, updateItem, items, readOnly } = useTableViewSelectorConfigurator();
   const selectedItem = useMemo(() => items?.find(({ id }) => id === selectedItemId), [items, selectedItemId]);
@@ -61,7 +61,7 @@ export const TableViewSelectorConfigurator = forwardRef<
           <Alert message="Here you can adjust filter settings" className="sha-toolbar-configurator-alert" />
         )}
 
-        <QueryBuilderProvider fields={fields}>
+        <QueryBuilderProvider metadata={metadata?.metadata}>
           <Tabs
             defaultActiveKey="queryBuilderConfigureTab"
             className="sha-toolbar-configurator-body-tabs"

@@ -55,7 +55,7 @@ function ComponentSettingsModal<T extends IConfigurableFormComponent>({
         <Form form={form} onFinish={onSave} {...formLayout}>
           <Tabs type="card" defaultActiveKey="1" size={size} style={{ marginBottom: 32 }}>
             <TabPane tab="Display" key="1">
-              <Form.Item name="name" label="Name" rules={[{ required: true }]} initialValue={model?.name}>
+              <Form.Item name="propertyName" label="Property name" rules={[{ required: true }]} initialValue={model?.propertyName}>
                 <Input />
               </Form.Item>
               <Form.Item name="label" label="Label" initialValue={model?.label}>

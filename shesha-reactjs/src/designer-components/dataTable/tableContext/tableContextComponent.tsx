@@ -1,16 +1,17 @@
 import { LayoutOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
-import FormItem from 'antd/lib/form/FormItem';
 import React, { FC, Fragment, useEffect, useMemo } from 'react';
-import ComponentsContainer from '../../../components/formDesigner/containers/componentsContainer';
-import { IToolboxComponent } from '../../../interfaces';
-import { MetadataProvider, useDataTableStore, useForm, useFormData } from '../../../providers';
-import DataTableProvider from '../../../providers/dataTable';
-import { DataFetchingMode } from '../../../providers/dataTable/interfaces';
-import { DataTableSelectionProvider, useDataTableSelection } from '../../../providers/dataTableSelection';
-import { FormMarkup, IConfigurableFormComponent } from '../../../providers/form/models';
-import { evaluateString, validateConfigurableComponentSettings } from '../../../providers/form/utils';
+import ComponentsContainer from 'components/formDesigner/containers/componentsContainer';
+import { IToolboxComponent, YesNoInherit } from 'interfaces';
+import { useDataTableStore, useForm, useFormData } from 'providers';
+import DataTableProvider from 'providers/dataTable';
+import { FormMarkup, IConfigurableFormComponent } from 'providers/form/models';
+import { evaluateString, validateConfigurableComponentSettings } from 'providers/form/utils';
 import settingsFormJson from './settingsForm.json';
+import { ColumnSorting, DataFetchingMode, GroupingItem, SortingItem, SortMode } from 'providers/dataTable/interfaces';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { ConfigurableFormItem } from 'components';
+import { evaluateYesNo } from 'utils/form';
 
 export interface ITableContextComponentProps extends IConfigurableFormComponent {
   sourceType?: 'Form' | 'Entity' | 'Url';
@@ -19,6 +20,12 @@ export interface ITableContextComponentProps extends IConfigurableFormComponent 
   components?: IConfigurableFormComponent[]; // If isDynamic we wanna
   dataFetchingMode?: DataFetchingMode;
   defaultPageSize?: number;
+  grouping?: GroupingItem[];
+  sortMode?: SortMode;
+  strictSortBy?: string;
+  strictSortOrder?: ColumnSorting;
+  standardSorting?: SortingItem[];
+  allowReordering?: YesNoInherit;
 }
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -35,7 +42,7 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
       .add<ITableContextComponentProps>(0, (prev) => {
         return {
           ...prev,
-          name: prev['uniqueStateId'] ?? prev.name,
+          name: prev['uniqueStateId'] ?? prev['name'],
         };
       })
       .add<ITableContextComponentProps>(1, (prev) => {
@@ -55,29 +62,28 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
           ...prev,
           dataFetchingMode: 'paging',
         };
-      }),
+      })
+      .add<ITableContextComponentProps>(4, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+      .add<ITableContextComponentProps>(5, (prev) => ({ ...prev, sortMode: 'standard', strictSortOrder: 'asc', allowReordering: 'no' }))
+  ,
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
 };
 
 export const TableContext: FC<ITableContextComponentProps> = (props) => {
-  const { entityType, sourceType } = props;
 
   const uniqueKey = useMemo(() => {
-    return `${props.sourceType}_${props.name}_${props.entityType ?? 'empty'}`; // is used just for re-rendering
-  }, [props.sourceType, props.name, props.entityType]);
+    return `${props.sourceType}_${props.propertyName}_${props.entityType ?? 'empty'}`; // is used just for re-rendering
+  }, [props.sourceType, props.propertyName, props.entityType]);
 
-  return sourceType === 'Entity' && entityType ? (
-    <MetadataProvider id={props.id} modelType={entityType}>
-      <TableContextInner key={uniqueKey} {...props} />
-    </MetadataProvider>
-  ) : (
-    <TableContextInner key={uniqueKey} {...props} />
-  );
+  return <TableContextInner key={uniqueKey} {...props} />;
 };
 
-export const TableContextInner: FC<ITableContextComponentProps> = (props) => {
-  const { sourceType, entityType, endpoint, id, name } = props;
+interface ITableContextInnerProps extends ITableContextComponentProps {
+}
+
+export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
+  const { sourceType, entityType, endpoint, id, propertyName, componentName, allowReordering } = props;
   const { formMode } = useForm();
   const { data } = useFormData();
 
@@ -88,12 +94,12 @@ export const TableContextInner: FC<ITableContextComponentProps> = (props) => {
   const configurationWarningMessage = !sourceType
     ? 'Select `Source type` on the settings panel'
     : sourceType === 'Entity' && !entityType
-    ? 'Select `Entity Type` on the settings panel'
-    : sourceType === 'Url' && !endpoint
-    ? 'Select `Custom Endpoint` on the settings panel'
-    : sourceType === 'Form' && !name
-    ? 'Select `Name` on the settings panel'
-    : null;
+      ? 'Select `Entity Type` on the settings panel'
+      : sourceType === 'Url' && !endpoint
+        ? 'Select `Custom Endpoint` on the settings panel'
+        : sourceType === 'Form' && !propertyName
+          ? 'Select `propertyName` on the settings panel'
+          : null;
 
   if (isDesignMode && configurationWarningMessage)
     return (
@@ -106,31 +112,40 @@ export const TableContextInner: FC<ITableContextComponentProps> = (props) => {
       />
     );
 
-  const provider = (
+  const provider = (getFieldValue = undefined, onChange = undefined) =>
     <DataTableProvider
       userConfigId={props.id}
       entityType={entityType}
       getDataPath={getDataPath}
-      propertyName={name}
+      propertyName={propertyName}
       actionOwnerId={id}
-      actionOwnerName={name}
+      actionOwnerName={componentName}
       sourceType={props.sourceType}
       initialPageSize={props.defaultPageSize ?? 10}
       dataFetchingMode={props.dataFetchingMode ?? 'paging'}
+      getFieldValue={getFieldValue}
+      onChange={onChange}
+      grouping={props.grouping}
+      sortMode={props.sortMode}
+      strictSortBy={props.strictSortBy}
+      strictSortOrder={props.strictSortOrder}
+      standardSorting={props.standardSorting}
+      allowReordering={evaluateYesNo(allowReordering, formMode)}
     >
       <TableContextAccessor {...props} />
     </DataTableProvider>
-  );
+    ;
 
-  const providerWrapper = sourceType === 'Form' ? <FormItem name={props.name}>{provider}</FormItem> : provider;
-
-  return <DataTableSelectionProvider>{providerWrapper}</DataTableSelectionProvider>;
+  return sourceType === 'Form'
+    ? <ConfigurableFormItem model={{ ...props, hideLabel: true }} wrapperCol={{ md: 24 }}>
+      {(_v, onChange, _p, getFieldValue) => provider(getFieldValue, onChange)}
+    </ConfigurableFormItem>
+    : provider();
 };
 
 const TableContextAccessor: FC<ITableContextComponentProps> = ({ id }) => {
   const { registerActions } = useForm();
-  const { refreshTable, exportToExcel, tableConfigLoaded, setIsInProgressFlag } = useDataTableStore();
-  const { selectedRow } = useDataTableSelection();
+  const { selectedRow, refreshTable, exportToExcel, setIsInProgressFlag } = useDataTableStore();
 
   const toggleColumnsSelector = () => {
     setIsInProgressFlag({ isSelectingColumns: true, isFiltering: false });
@@ -149,7 +164,7 @@ const TableContextAccessor: FC<ITableContextComponentProps> = ({ id }) => {
         toggleAdvancedFilter,
         exportToExcel,
       }),
-    [tableConfigLoaded, selectedRow]
+    [selectedRow]
   );
 
   return (

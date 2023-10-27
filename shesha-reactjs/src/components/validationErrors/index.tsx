@@ -18,6 +18,7 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({ error, renderMode
   if (!error) return null;
 
   const renderValidationErrors = (props: AlertProps) => {
+
     if (renderMode === 'alert') {
       return <Alert className="sha-validation-error-alert" type="error" showIcon closable {...props} />;
     }
@@ -45,12 +46,12 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({ error, renderMode
     errorObj = error['error'] as IErrorInfo;
   }
 
-  if (Object.keys(error).includes('errorInfo') && Object.keys(error['errorInfo']).includes('error')) {
+  if (Object.keys(error).includes('errorInfo') && error['errorInfo'] && Object.keys(error['errorInfo']).includes('error')) {
     errorObj = error['errorInfo']['error'] as IErrorInfo;
   }
 
   // IAjaxResponseBase
-  if (Object.keys(error).includes('data')) {
+  if (Object.keys(error).includes('data') && error['data'] && Object.keys(error['data']).includes('error')) {
     errorObj = error['data']['error'] as IErrorInfo;
   }
 

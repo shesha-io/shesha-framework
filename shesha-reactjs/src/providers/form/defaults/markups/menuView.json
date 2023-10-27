@@ -3,12 +3,11 @@
     {
       "id": "uwD4KH1u1ncU3Zmhu4F3j",
       "type": "menuView",
-      "name": "menuViewDefault",
+      "propertyName": "menuViewDefault",
       "label": "Menu View Default",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "components": []
     }
   ]

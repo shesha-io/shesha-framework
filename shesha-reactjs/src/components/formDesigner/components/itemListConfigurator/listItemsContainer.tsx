@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { ListItem } from './listItem';
 import { ListItemsGroup } from './listItemsGroup';
 import { ReactSortable, ItemInterface } from 'react-sortablejs';
-import { useItemListConfigurator } from '../../../..';
+import { getActualModel, useApplicationContext, useDeepCompareMemo, useItemListConfigurator } from '../../../..';
 import { IConfigurableItemBase, IConfigurableItemGroup } from '../../../../providers/itemListConfigurator/contexts';
 
 export interface IItemListContainerProps {
@@ -13,11 +13,15 @@ export interface IItemListContainerProps {
 
 export const ItemListContainer: FC<IItemListContainerProps> = ({ index, id, items }) => {
   const { updateChildItems } = useItemListConfigurator();
+  const allData = useApplicationContext();
+
+  const actualItems = useDeepCompareMemo(() =>
+    items.map((item) => getActualModel(item, allData))
+  , [items, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
+
 
   const renderItem = (item: IConfigurableItemBase, localIndex: number) => {
     switch (item?.itemType) {
-
-      
       case 'item':
         const itemProps = item as IConfigurableItemBase;
         return <ListItem title={''} key={localIndex} index={[...index, localIndex]} {...itemProps} />;
@@ -31,6 +35,8 @@ export const ItemListContainer: FC<IItemListContainerProps> = ({ index, id, item
             index={[...index, localIndex]} 
             containerRendering={(args) => (<ItemListContainer {...args}/>)}
           />);
+      default:
+        return null;
     }
   };
 
@@ -49,7 +55,7 @@ export const ItemListContainer: FC<IItemListContainerProps> = ({ index, id, item
 
   return (
     <ReactSortable
-      list={items}
+      list={actualItems}
       setList={onSetList}
       fallbackOnBody={true}
       swapThreshold={0.5}
@@ -65,7 +71,7 @@ export const ItemListContainer: FC<IItemListContainerProps> = ({ index, id, item
       scroll={true}
       bubbleScroll={true}
     >
-      {items?.map((item, localIndex) => renderItem(item, localIndex))}
+      {actualItems?.map((item, localIndex) => renderItem(item, localIndex))}
     </ReactSortable>
   );
 };

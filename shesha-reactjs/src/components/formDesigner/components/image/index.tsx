@@ -6,6 +6,7 @@ import settingsFormJson from './settingsForm.json';
 import { getString, getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import React from 'react';
 import { useFormData } from '../../../../providers';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 
 export interface IImageProps extends IConfigurableFormComponent, IFormItem {
   height: number | string;
@@ -23,21 +24,25 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
   factory: (model: IImageProps) => {
     const { data: formData } = useFormData();
 
-    // TODO:: Update the settings such that an option in the settings is added so allow the form to pass url through value.
-    // TODO:: Add ImgWrapper component
-    const url: string = getString(model?.url, formData) || formData?.[model.name];
-
     return (
       <ConfigurableFormItem model={model}>
-        <div className="container">
-          <img
-            src={url}
-            alt="Avatar"
-            width={model?.width}
-            height={model?.height}
-            style={getStyle(model.style, formData)}
-          />
-        </div>
+        {(value) => {
+          // TODO:: Update the settings such that an option in the settings is added so allow the form to pass url through value.
+          // TODO:: Add ImgWrapper component
+          const url: string = getString(model?.url, formData) || value;
+
+          return (
+            <div className="container">
+              <img
+                src={url}
+                alt="Avatar"
+                width={model?.width}
+                height={model?.height}
+                style={getStyle(model.style, formData)}
+              />
+            </div>
+          );
+        }}
       </ConfigurableFormItem>
     );
   },
@@ -47,6 +52,9 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
     };
     return customModel;
   },
+  migrator: (m) => m
+    .add<IImageProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev) as IImageProps))
+  ,
   settingsFormMarkup: settingsForm,
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
 };

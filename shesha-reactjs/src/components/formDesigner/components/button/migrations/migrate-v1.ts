@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import { SettingsMigrationContext } from "../../../../..";
 import { IConfigurableActionConfiguration } from "../../../../../interfaces/configurableAction";
 import { IKeyValue } from "../../../../../interfaces/keyValue";
@@ -12,7 +13,8 @@ export const migrateV0toV1 = (props: IButtonGroupButtonV0, context: SettingsMigr
     const result: IButtonComponentProps = {
         ...props,
         actionConfiguration: actionConfiguration,
-        type: props['type'] ?? "button"
+        type: props['type'] ?? "button",
+        propertyName: props['name']
     };
     return result;
 };
@@ -187,7 +189,7 @@ type ButtonTypeV0 = "default" | "primary" | "ghost" | "dashed" | "link" | "text"
 export interface IButtonGroupItemBaseV0 {
     id: string;
     name: string;
-    label?: string;
+    label?: string | ReactNode;
     tooltip?: string;
     sortOrder: number;
     danger?: boolean;

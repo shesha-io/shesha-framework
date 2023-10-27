@@ -1,10 +1,9 @@
+import React, { FC } from 'react';
 import { ClockCircleOutlined } from '@ant-design/icons';
 import { TimePicker, message } from 'antd';
 import moment, { Moment, isMoment } from 'moment';
-import React, { FC, Fragment } from 'react';
 import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
 import { customTimeEventHandler } from '../../components/formDesigner/components/utils';
-import { HiddenFormItem } from '../../components/hiddenFormItem';
 import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
 import { IToolboxComponent } from '../../interfaces';
 import { DataTypes } from '../../interfaces/dataTypes';
@@ -15,12 +14,7 @@ import { axiosHttp } from '../../utils/fetchers';
 import { getNumericValue } from '../../utils/string';
 import settingsFormJson from './settingsForm.json';
 import './styles/index.less';
-
-type RangeType = 'start' | 'end';
-// tslint:disable-next-line:interface-over-type-literal
-type RangeInfo = {
-  range: RangeType;
-};
+import { migratePropertyName, migrateCustomFunctions } from '../../designer-components/_common-migrations/migrateSettings';
 
 type RangeValue = [moment.Moment, moment.Moment];
 
@@ -67,6 +61,7 @@ const TimeField: IToolboxComponent<ITimePickerProps> = {
   name: 'Time Picker',
   isInput: true,
   isOutput: true,
+  canBeJsSetting: true,
   icon: <ClockCircleOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.time,
   factory: (model: ITimePickerProps, _c, form) => {
@@ -89,18 +84,9 @@ const TimeField: IToolboxComponent<ITimePickerProps> = {
     };
 
     return (
-      <Fragment>
-        <ConfigurableFormItem model={model}>
-          <TimePickerWrapper {...model} {...customTimeEventHandler(eventProps)} />
-        </ConfigurableFormItem>
-
-        {model?.range && (
-          <Fragment>
-            <HiddenFormItem name={`${model?.name}Start`} />
-            <HiddenFormItem name={`${model?.name}End`} />
-          </Fragment>
-        )}
-      </Fragment>
+      <ConfigurableFormItem model={model}>
+        {(value, onChange) => <TimePickerWrapper {...model} {...customTimeEventHandler(eventProps)} value={value} onChange={onChange} />}
+      </ConfigurableFormItem>
     );
   },
   settingsFormMarkup: settingsForm,
@@ -112,6 +98,9 @@ const TimeField: IToolboxComponent<ITimePickerProps> = {
     };
     return customModel;
   },
+  migrator: (m) => m
+    .add<ITimePickerProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
 };
 
 export const TimePickerWrapper: FC<ITimePickerProps> = ({
@@ -126,9 +115,9 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
   hourStep,
   minuteStep,
   secondStep,
+  disabled,
   ...rest
 }) => {
-  const { form, formMode, isComponentDisabled } = useForm();
   const { data: formData } = useFormData();
   const evaluatedValue = getMoment(value, format);
 
@@ -142,10 +131,7 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
     secondStep: 60 % secondStepLocal === 0 ? secondStepLocal : 1, // It should be a factor of 60.
   };
 
-  const isDisabled = isComponentDisabled(rest);
-
-  const isReadOnly = readOnly || formMode === 'readonly';
-
+  
   const getDefaultRangePickerValues = () =>
     Array.isArray(defaultValue) && defaultValue?.length === 2
       ? defaultValue?.map((v) => moment(new Date(v), format))
@@ -161,24 +147,14 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
     (onChange as RangePickerChangeEvent)(values, formatString);
   };
 
-  const onCalendarChange = (_, formatString: [string, string], info: RangeInfo) => {
-    if (info?.range === 'end' && form) {
-      form.setFieldsValue({
-        [`${rest?.name}Start`]: formatString[0],
-        [`${rest?.name}End`]: formatString[1],
-      });
-    }
-  };
-
-  if (isReadOnly) {
-    return <ReadOnlyDisplayFormItem value={evaluatedValue?.toISOString()} disabled={isDisabled} type="time" />;
+  if (readOnly) {
+    return <ReadOnlyDisplayFormItem value={evaluatedValue?.toISOString()} disabled={disabled} type="time" />;
   }
 
   if (range) {
     return (
       <TimePicker.RangePicker
         onChange={handleRangePicker}
-        onCalendarChange={onCalendarChange}
         format={format}
         defaultValue={getDefaultRangePickerValues() as RangeValue}
         {...steps}

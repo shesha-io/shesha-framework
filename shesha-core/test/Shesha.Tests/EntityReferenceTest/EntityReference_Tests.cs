@@ -3,6 +3,7 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Timing;
 using DocumentFormat.OpenXml.Vml.Office;
+using Newtonsoft.Json;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.DynamicEntities;
@@ -13,6 +14,7 @@ using Shesha.NHibernate.Session;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using Xunit;
 using static Shesha.Tests.JsonEntity.JsonEntity_Tests;
@@ -43,6 +45,38 @@ namespace Shesha.Tests.EntityReferenceTest
             _moduleRepo = Resolve<IRepository<Module, Guid>>();
         }
 
+        private static EntityIdentifier GetEntityIdentifier(GenericEntityReference genericEntity)
+        {
+            EntityIdentifier entityIdentifier = null;
+
+            Entity<Guid> entity = genericEntity;
+
+            if (entity is not null)
+            {
+                entityIdentifier = new EntityIdentifier(entity.GetType(), entity.Id);
+            }
+
+            return entityIdentifier;
+        }
+
+        [Fact]
+        public async Task TestGnericEntityReferenceConvert()
+        {
+            LoginAsHostAdmin();
+
+            using (var uow = _unitOfWorkManager.Begin())
+            {
+                GenericEntityReference i = new GenericEntityReference("32E2B3DD-4D99-4542-AF71-134EC7C0E2CE", "Shesha.Domain.Person");
+                //i = new Person();
+
+                Entity<Guid> e = i;
+
+                var t = e.GetType();
+                var id = e.Id;
+                await uow.CompleteAsync();
+            }
+        }
+
         [Fact]
         public async Task TestGnericEntityReference()
         {
@@ -50,6 +84,7 @@ namespace Shesha.Tests.EntityReferenceTest
 
             using (var uow = _unitOfWorkManager.Begin())
             {
+
                 var repo = LocalIocManager.Resolve<IRepository<ShaRoleAppointedPerson, Guid>>();
                 var items = await repo.GetAllListAsync();
 
@@ -66,7 +101,7 @@ namespace Shesha.Tests.EntityReferenceTest
                     var dirty = session.GetDirtyProperties(item);
                 }
 
-                await uow.CompleteAsync();
+            await uow.CompleteAsync();
             }
         }
 

@@ -12,7 +12,9 @@ const reducer = handleActions<IMetadataStateContext, any>(
 
       return {
         ...state,
-        metadata: { ...payload.metadata },
+        modelType: !!payload.modelType ? payload.modelType : state.modelType,
+        dataType: !!payload.dataType ? payload.dataType : state.dataType,
+        metadata: {...payload.metadata},
       };
     },
   },

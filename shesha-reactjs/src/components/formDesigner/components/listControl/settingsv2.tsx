@@ -56,7 +56,7 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
     >
       <SectionSeparator title="Display" />
 
-      <FormItem name="name" label="Name" rules={[{ required: true }]}>
+      <FormItem name="propertyName" label="Property name" rules={[{ required: true }]}>
         <PropertyAutocomplete id="fb71cb51-884f-4f34-aa77-820c12276c95" readOnly={readOnly} />
       </FormItem>
 
@@ -192,7 +192,7 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
               readOnly={readOnly}
               mode="inline"
               setOptions={{ minLines: 15, maxLines: 500, fixedWidthGutter: true }}
-              name="properties"
+              propertyName="properties"
               language="graphqlschema"
               label="Query Params"
               description="Properties in GraphQL-like syntax"
@@ -203,7 +203,13 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
           <SectionSeparator title="Query builder" />
 
           <QueryBuilderWithModelType modelType={state?.entityType}>
-            <QueryBuilderComponentRenderer readOnly={readOnly} name="filters" type={''} id={''} label="Query builder" />
+            <QueryBuilderComponentRenderer
+              readOnly={readOnly}
+              propertyName="filters"
+              type={''}
+              id={''}
+              label="Query builder"
+            />
           </QueryBuilderWithModelType>
         </Show>
       </Show>
@@ -258,7 +264,7 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
               readOnly={readOnly}
               mode="dialog"
               setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-              name="deleteUrl"
+              propertyName="deleteUrl"
               label="Delete URL"
               description="The API url that will be used delete the list item. Write the code that returns the string"
               exposedVariables={[
@@ -294,7 +300,7 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
               mode="dialog"
               label="Delete Confirm Message"
               setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-              name="deleteConfirmMessage"
+              propertyName="deleteConfirmMessage"
               description="The confirm message that will be displayed before you delete an item. Write the code that returns the string"
               exposedVariables={[
                 {
@@ -333,7 +339,7 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
           label="On Submit"
           mode="dialog"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          name="onSubmit"
+          propertyName="onSubmit"
           description="Write a code that return tha payload to be sent to the server when submitting this items"
           exposedVariables={[
             {
@@ -370,7 +376,7 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
           mode="dialog"
           label="Submit URL"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          name="submitUrl"
+          propertyName="submitUrl"
           description="The URL to submit the list items to"
           exposedVariables={[
             {
@@ -400,7 +406,7 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
           mode="dialog"
           label="Target URL"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          name="targetUrl"
+          propertyName="targetUrl"
           description="The URL to forward to after event is triggered"
           exposedVariables={[
             {
@@ -490,7 +496,7 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
           mode="dialog"
           label="Custom Visibility"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          name="customVisibility"
+          propertyName="customVisibility"
           description={
             'Enter custom visibility code.  You must return true to show the component. ' +
             'The global variable data is provided, and allows you to access the data of any form component, by using its API key.'

@@ -1,6 +1,6 @@
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { LabeledValue, SelectProps } from 'antd/lib/select';
-import { IReferenceListIdentifier } from 'providers/referenceListDispatcher/models';
+import { IReferenceListIdentifier } from 'interfaces/referenceList';
 import { CSSProperties, Key } from 'react';
 import { ReferenceListItemDto } from '../../apis/referenceList';
 import { IReadOnly } from '../../interfaces/readOnly';

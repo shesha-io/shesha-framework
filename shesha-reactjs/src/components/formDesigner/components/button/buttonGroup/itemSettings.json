@@ -3,13 +3,13 @@
     {
       "id": "840aee56-42d2-40ed-a2c6-57abb255fb95",
       "type": "dropdown",
-      "name": "itemSubType",
+      "propertyName": "itemSubType",
       "label": "Item Type",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "dataSourceType": "values",
+      "jsSetting": false,
       "values": [
         {
           "id": "8400a8ec-577d-4468-9347-5601f952b44c",
@@ -22,56 +22,62 @@
           "value": "separator"
         },
         {
-          "id": "b4117249-8c2f-4991-a96c-9ea434293120",
-          "label": "Line",
-          "value": "line"
+          "id": "58B3C738-46C7-4486-BDE6-22D99C8349BE",
+          "label": "Dynamic item(s)",
+          "value": "dynamic"
         }
       ],
       "validate": {
         "required": true
-      }
-    },
-    {
-      "id": "5d4d56fb-d7f8-4835-a529-c4fa93f3596d",
-      "type": "textField",
-      "name": "name",
-      "label": "Name",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "customVisibility": null,
-      "validate": {
-        "required": true
-      }
-    },
-    {
-      "id": "d498779d-012a-4c6a-82a9-77231245ae28",
-      "type": "textField",
-      "name": "label",
-      "parentId": "root",
-      "label": "Label"
+      },
+      "version": 2,
+      "useRawValues": false,
+      "referenceListId": null
     },
     {
       "id": "345c2181-fb9f-48ed-9631-864ac357807b",
       "type": "container",
-      "name": "cntButton",
+      "propertyName": "cntButton",
       "label": "Container2",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": false,
-      "customVisibility": "return data.itemSubType === 'button'",
+      "hidden": {
+        "_value": false,
+        "_code": "return getSettingValue(data?.itemSubType) !== 'button';",
+        "_mode": "code"
+      },
       "direction": "vertical",
       "justifyContent": "left",
       "components": [
         {
-          "id": "9b671866-072e-4688-8b48-ddf5e12d70d4",
+          "id": "5d4d56fb-d7f8-4835-a529-c4fa93f3596d",
+          "type": "textField",
+          "propertyName": "name",
+          "label": "Name",
+          "labelAlign": "right",
+          "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
+          "jsSetting": false,
+          "validate": {
+            "required": true
+          },
+          "version": 1,
+          "textType": "text"
+        },
+        {
+          "id": "mwI8bhzkGyQOVpkttIKyc",
+          "type": "textField",
+          "propertyName": "label",
+          "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
+          "label": "Label"
+        },
+        {
+          "id": "po1qeQwn48ykEB4EI9J8y",
           "type": "textArea",
-          "name": "tooltip",
+          "propertyName": "tooltip",
           "label": "Tooltip",
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
           "hidden": false,
-          "customVisibility": "",
           "autoSize": false,
           "showCount": false,
           "allowClear": false,
@@ -80,23 +86,22 @@
         {
           "id": "91b404a6-4021-4b0a-b9ef-007167a93075",
           "type": "iconPicker",
-          "name": "icon",
+          "propertyName": "icon",
           "label": "Icon",
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
-          "hidden": false,
-          "customVisibility": "return data.itemSubType === 'button'",
-          "settingsValidationErrors": []
+          "settingsValidationErrors": [],
+          "version": 0,
+          "jsSetting": true
         },
         {
-          "id": "be15598e-5c23-40bc-8245-6b5385bb7963",
+          "id": "Vl0_92ZM-SeCukk5VlgXm",
           "type": "dropdown",
-          "name": "buttonType",
+          "propertyName": "buttonType",
           "label": "Button Type",
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
           "hidden": false,
-          "customVisibility": null,
           "validate": {
             "required": true
           },
@@ -135,147 +140,127 @@
           ]
         },
         {
-          "id": "4e9b886a-6186-4467-a688-639b30a0e06f",
+          "id": "oXQyiI2WU5P0E4lVO-uLW",
           "type": "checkbox",
-          "name": "danger",
+          "propertyName": "danger",
           "label": "Danger",
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
           "hidden": false,
-          "customVisibility": null,
           "validate": {}
         },
         {
-          "id": "df8a8f35-a50b-42f9-9642-73d390ceddbf",
-          "type": "dropdown",
-          "name": "visibility",
-          "parentId": "root",
-          "label": "Visibility",
-          "description": "This property will eventually replace the 'hidden' property and other properties that toggle visibility on the UI and payload",
-          "allowClear": true,
-          "values": [
-            {
-              "label": "Yes (Display in UI and include in payload)",
-              "value": "Yes",
-              "id": "53cd10ce-26af-474b-af75-8e7b1f19e51d"
-            },
-            {
-              "label": "No (Only include in payload)",
-              "value": "No",
-              "id": "f07a228c-cb9c-4da7-a8bc-bc2be518a058"
-            },
-            {
-              "label": "Removed (Remove from UI and exlude from payload)",
-              "value": "Removed",
-              "id": "3b6282ee-2eee-47ec-bab9-4cba52b970a0"
-            }
-          ],
-          "dataSourceType": "values"
-        },
-        {
-          "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
+          "id": "oW5driq-fQt8oyUTeB8rX",
           "type": "checkbox",
-          "name": "hidden",
-          "parentId": "root",
+          "propertyName": "hidden",
+          "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
           "label": "Hidden"
         },
         {
-          "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
+          "id": "4WkyaTKgq5eX7HaDn1R7d",
           "type": "checkbox",
-          "name": "disabled",
-          "parentId": "root",
+          "propertyName": "disabled",
+          "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
           "label": "Disabled"
         },
         {
           "id": "F3B46A95-703F-4465-96CA-A58496A5F78C",
           "type": "configurableActionConfigurator",
-          "name": "actionConfiguration",
+          "propertyName": "actionConfiguration",
           "label": "Action configuration",
           "hidden": false,
-          "customVisibility": "",
           "validate": {},
-          "settingsValidationErrors": []
-        },        
+          "settingsValidationErrors": [],
+          "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
+          "version": 0
+        },
         {
           "id": "6befdd49-41aa-41d6-a29e-76fa00590b75",
           "type": "sectionSeparator",
-          "name": "sectionStyle",
-          "parentId": "root",
-          "label": "Style"
+          "propertyName": "sectionStyle",
+          "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
+          "label": "Style",
+          "version": 0
         },
         {
           "id": "06ab0599-914d-4d2d-875c-765a495472f8",
           "type": "codeEditor",
-          "name": "style",
+          "propertyName": "style",
           "label": "Style",
-          "parentId": "root",
+          "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
           "validate": {},
           "settingsValidationErrors": [],
           "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
-          "exposedVariables": [{ "name": "data", "description": "Form values", "type": "object" }]
+          "exposedVariables": [
+            {
+              "propertyName": "data",
+              "description": "Form values",
+              "type": "object"
+            }
+          ],
+          "version": 0
         },
         {
-          "id": "0495b899-bb48-44ea-a212-c4920bf3a8a4",
-          "type": "sectionSeparator",
-          "name": "sectionVisibility",
-          "parentId": "root",
-          "label": "Visibility"
+          "id": "26c68b22-3211-475d-91e1-0745a4447329",
+          "type": "editableTagGroup",
+          "propertyName": "permissions",
+          "label": "Permissions",
+          "labelAlign": "right",
+          "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
+          "hidden": false,
+          "validate": {},
+          "version": 0
         }
-      ]
+      ],
+      "version": 1,
+      "flexWrap": "wrap",
+      "componentName": "cntButton",
+      "settingsValidationErrors": []
     },
     {
-      "id": "341beffe-2d62-4c4c-8c97-5f2b433716bf",
-      "type": "codeEditor",
-      "name": "customVisibility",
-      "label": "Custom Visibility",
+      "id": "P4lhbrJsly_2yCjgicaql",
+      "type": "container",
+      "propertyName": "container2",
+      "componentName": "container2",
+      "label": "Container2",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": false,
-      "customVisibility": null,
-      "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-      "validate": {},
-      "settingsValidationErrors": [],
-      "exposedVariables": [
-        { "name": "data", "description": "The form data", "type": "object" },
-        { "name": "moment", "description": "The moment.js object", "type": "object" },
-        { "name": "form", "description": "Form instance", "type": "FormInstance" },
-        { "name": "formMode", "description": "The form mode", "type": "'readonly' | 'edit' | 'designer'" },
-        { "name": "globalState", "description": "The global state of the application", "type": "object" }
-      ]
-    },
-    {
-      "id": "4b5e5951-4998-4635-b1c8-0b6d3940c300",
-      "type": "codeEditor",
-      "name": "customEnabled",
-      "label": "Custom Enabled",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "customEnabled": null,
-      "description": "Enter custom enabled code.  You must return true to enable the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-      "validate": {},
-      "settingsValidationErrors": [],
-      "exposedVariables": [
-        { "name": "data", "description": "The form data", "type": "object" },
-        { "name": "moment", "description": "The moment.js object", "type": "object" },
-        { "name": "form", "description": "Form instance", "type": "FormInstance" },
-        { "name": "formMode", "description": "The form mode", "type": "'readonly' | 'edit' | 'designer'" },
-        { "name": "globalState", "description": "The global state of the application", "type": "object" }
-      ]
-    },
-    {
-      "id": "26c68b22-3211-475d-91e1-0745a4447329",
-      "type": "editableTagGroup",
-      "name": "permissions",
-      "label": "Permissions",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "customVisibility": null,
-      "validate": {}
+      "hidden": {
+        "_value": false,
+        "_code": "return getSettingValue(data?.itemSubType) !== 'dynamic';",
+        "_mode": "code"
+      },
+      "visibility": "Yes",
+      "isDynamic": false,
+      "version": 1,
+      "direction": "vertical",
+      "justifyContent": "left",
+      "flexWrap": "wrap",
+      "components": [
+        {
+          "id": "BobKODSk3NmsjzWl2E8ED",
+          "type": "dynamicItemsConfigurator",
+          "propertyName": "dynamicItemsConfiguration",
+          "componentName": "configurableActionConfigurator1",
+          "label": "Configurable Action Configurator1",
+          "labelAlign": "right",
+          "parentId": "P4lhbrJsly_2yCjgicaql",
+          "hidden": false,
+          "visibility": "Yes",
+          "isDynamic": false,
+          "settingsValidationErrors": [],
+          "_formFields": [
+            "propertyName",
+            "description",
+            "customVisibility"
+          ]
+        }
+      ],
+      "settingsValidationErrors": []
     }
   ],
   "formSettings": {
+    "isSettingsForm": true,
     "layout": "horizontal",
     "colon": true,
     "labelCol": {

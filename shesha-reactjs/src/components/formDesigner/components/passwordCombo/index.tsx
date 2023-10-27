@@ -1,4 +1,5 @@
 import { LockOutlined } from '@ant-design/icons';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 import React, { Fragment } from 'react';
 import { useForm } from '../../../..';
 import { IToolboxComponent } from '../../../../interfaces';
@@ -20,9 +21,9 @@ const PasswordComboComponent: IToolboxComponent<IPasswordComponentProps> = {
   factory: (model: IPasswordComponentProps) => {
     const defaultModel = getDefaultModel(model);
     const { placeholder, confirmPlaceholder, message, minLength } = defaultModel || {};
-    const { formData, isComponentHidden } = useForm();
+    const { formData } = useForm();
 
-    const options = { isComponentHidden, formData };
+    const options = { hidden: model.hidden, formData };
 
     return (
       <Fragment>
@@ -40,6 +41,9 @@ const PasswordComboComponent: IToolboxComponent<IPasswordComponentProps> = {
   },
   settingsFormMarkup: settingsForm,
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  migrator: (m) => m
+    .add<IPasswordComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
 };
 
 export default PasswordComboComponent;

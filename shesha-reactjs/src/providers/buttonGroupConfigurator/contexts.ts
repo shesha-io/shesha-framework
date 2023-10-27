@@ -1,3 +1,4 @@
+import { ConfigurableFormInstance } from 'interfaces';
 import { createContext } from 'react';
 import { ButtonGroupItemProps } from './models';
 
@@ -14,6 +15,7 @@ export interface IUpdateItemSettingsPayload {
 
 export interface IButtonGroupConfiguratorStateContext {
   items: ButtonGroupItemProps[];
+  form?: ConfigurableFormInstance | null | undefined;
   selectedItemId?: string;
   readOnly: boolean;
 }

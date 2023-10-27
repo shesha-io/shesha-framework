@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import HierarchicalCheckList, { IHierarchicalCheckListProps } from '../../../hierarchicalCheckList';
 
 export interface IHierarchicalChecklistWrapperProps extends IHierarchicalCheckListProps {
+  value?: any;
   onChange?: (value: any) => void;
 }
 

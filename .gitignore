@@ -309,3 +309,4 @@ storybook-static
 
 
 **/.next/**
+**/.rollup.cache/**

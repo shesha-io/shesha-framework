@@ -109,6 +109,9 @@ namespace Shesha.ReferenceLists
             await _refListManager.UpdateAsync(entity, input);
 
             await CurrentUnitOfWork.SaveChangesAsync();
+            
+            var module = _moduleRepository.Get(input.ModuleId ?? Guid.Empty)?.Name;
+            await _clientSideCache.SetCachedMd5Async(ReferenceList.ItemTypeName, null, module, input.Name, _cfRuntime.ViewMode, null);
 
             return MapToEntityDto(entity);
         }

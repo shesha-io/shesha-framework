@@ -8,6 +8,7 @@ import {
   updateChildItemsAction,
   updateItemAction,
 } from './actions';
+import { ButtonGroupItemProps, IButtonGroup, IButtonGroupItem, IButtonItem } from './models';
 import {
   BUTTON_GROUP_CONTEXT_INITIAL_STATE,
   ButtonGroupConfiguratorActionsContext,
@@ -15,7 +16,6 @@ import {
   IUpdateChildItemsPayload,
   IUpdateItemSettingsPayload,
 } from './contexts';
-import { ButtonGroupItemProps } from './models';
 import buttonGroupReducer from './reducer';
 import { getItemById } from './utils';
 
@@ -36,7 +36,7 @@ const ButtonGroupConfiguratorProvider: FC<PropsWithChildren<IButtonGroupConfigur
   const [state, dispatch] = useReducer(buttonGroupReducer, {
     ...BUTTON_GROUP_CONTEXT_INITIAL_STATE,
     items: props.items,
-    readOnly: readOnly,
+    readOnly: readOnly
   });
 
   const addButton = () => {
@@ -119,4 +119,11 @@ function useButtonGroupConfigurator() {
   return { ...useButtonGroupConfiguratorState(), ...useButtonGroupConfiguratorActions() };
 }
 
-export { ButtonGroupConfiguratorProvider, useButtonGroupConfigurator };
+export { 
+  ButtonGroupConfiguratorProvider, 
+  useButtonGroupConfigurator, 
+  IButtonGroup, 
+  IButtonItem, 
+  IButtonGroupItem,
+  ButtonGroupItemProps,
+};

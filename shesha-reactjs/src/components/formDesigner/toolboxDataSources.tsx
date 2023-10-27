@@ -5,7 +5,7 @@ import { useMetadata } from '../../providers';
 import { IDataSource } from '../../providers/formDesigner/models';
 import SearchBox from './toolboxSearchBox';
 import DataSourceTree from './dataSourceTree';
-import { IPropertyMetadata } from '../../interfaces/metadata';
+import { IPropertyMetadata, isEntityMetadata } from '../../interfaces/metadata';
 import { getClassNameFromFullName } from '../../providers/metadataDispatcher/utils';
 import { useFormDesigner } from '../../providers/formDesigner';
 
@@ -45,12 +45,12 @@ export const ToolboxDataSources: FC<IToolboxDataSourcesProps> = () => {
   const [searchText, setSearchText] = useLocalStorage('shaDesigner.toolbox.datasources.search', '');
 
   const currentMeta = useMetadata(false);
-  const currentDataSource: IDataSource = Boolean(currentMeta?.metadata?.properties)
+  const currentDataSource: IDataSource = isEntityMetadata(currentMeta?.metadata)
     ? {
         id: currentMeta.id,
-        name: currentMeta.metadata?.name,
-        containerType: currentMeta.metadata?.type,
-        items: currentMeta.metadata?.properties,
+        name: currentMeta.metadata.name,
+        containerType: currentMeta.metadata.entityType,
+        items: currentMeta.metadata.properties,
       }
     : null;
 

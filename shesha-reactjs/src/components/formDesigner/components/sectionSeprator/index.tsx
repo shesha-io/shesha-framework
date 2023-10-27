@@ -2,20 +2,20 @@ import { IToolboxComponent } from '../../../../interfaces';
 import { LineOutlined } from '@ant-design/icons';
 import React from 'react';
 import { getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import { useForm, useFormData } from '../../../../providers';
+import { useFormData } from '../../../../providers';
 import SectionSeparator from '../../../sectionSeparator';
 import { ISectionSeparatorComponentProps } from './interfaces';
 import { getSettings } from './settings';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 
 const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentProps> = {
   type: 'sectionSeparator',
   name: 'Section Separator',
   icon: <LineOutlined />,
   factory: (model: ISectionSeparatorComponentProps) => {
-    const { isComponentHidden } = useForm();
     const { data: formData } = useFormData();
 
-    if (isComponentHidden(model)) return null;
+    if (model.hidden) return null;
 
     return (
       <SectionSeparator
@@ -34,6 +34,10 @@ const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentPro
       label: 'Section',
     };
   },
+  migrator: (m) => m
+    .add<ISectionSeparatorComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
+
 };
 
 export default SectionSeparatorComponent;

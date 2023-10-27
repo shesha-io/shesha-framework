@@ -19,6 +19,14 @@ export type LabelAlign = 'left' | 'right';
 
 export type VisibilityType = 'Yes' | 'No' | 'Removed';
 
+export type PropertySettingMode = 'value' | 'code';
+
+export interface IPropertySetting {
+  _mode?: PropertySettingMode;
+  _value?: any;
+  _code?: string;
+}
+
 /**
  * Component container
  */
@@ -59,7 +67,7 @@ export type ConfigurableFormComponentTypes =
 
 export interface IComponentLabelProps {
   /** The label for this field that will appear next to it. */
-  label?: string;
+  label?: string | React.ReactNode;
   /** Hide label of the field */
   hideLabel?: boolean;
 
@@ -87,7 +95,13 @@ export interface IComponentRuntimeProps {
 
 export interface IComponentBindingProps {
   /** component name */
-  name: string;
+  componentName?: string;
+
+  /** property name */
+  propertyName?: string;
+
+  /** data context ID, empty for from data */
+  context?: string;
 }
 
 export interface IComponentVisibilityProps {
@@ -98,6 +112,7 @@ export interface IComponentVisibilityProps {
   visibility?: VisibilityType;
 
   /** Custom visibility code */
+  /** @deprecated Use hidden in js mode instead */
   customVisibility?: string;
 }
 
@@ -133,6 +148,7 @@ export interface IConfigurableFormComponent
   readOnly?: boolean;
 
   /** Custom visibility code */
+  /** @deprecated Use disabled in js mode instead */
   customEnabled?: string;
 
   /** Default value of the field */
@@ -143,6 +159,9 @@ export interface IConfigurableFormComponent
 
   /** If true, indicates that component is rendered dynamically and some of rules (e.g. visibility) shouldn't be applied to this component */
   isDynamic?: boolean;
+
+  /** If true, indicates that component should be wrapped by SettingComponent and use JS customization  */
+  jsSetting?: boolean;
 
   subscribedEventNames?: string[];
   style?: string;
@@ -336,6 +355,9 @@ export interface IFormSettings {
   onInitialized?: string;
   onUpdate?: string;
   initialValues?: IKeyValue[];
+
+  /** if true then need to update components structure for using Setting component */
+  isSettingsForm?: boolean;
 }
 
 /** Default form settings */

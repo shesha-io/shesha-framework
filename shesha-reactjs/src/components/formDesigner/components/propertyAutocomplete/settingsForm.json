@@ -3,16 +3,16 @@
      {
         "id":"b8954bf6-f76d-4139-a850-c99bf06c8b69",
         "type":"sectionSeparator",
-        "name":"separator1",
+        "propertyName":"separator1",
         "parentId":"root",
         "label":"Display"
      },
      {
         "id":"5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
-        "type":"propertyAutocomplete",
-        "name":"name",
+        "type":"contextPropertyAutocomplete",
+        "propertyName":"propertyName",
         "parentId":"root",
-        "label":"Name",
+        "label":"Property name",
         "validate":{
            "required":true
         }
@@ -20,7 +20,7 @@
      {
         "id":"46d07439-4c18-468c-89e1-60c002ce96c5",
         "type":"textField",
-        "name":"label",
+        "propertyName":"label",
         "parentId":"root",
         "label":"Label",
         "version":0,
@@ -29,7 +29,7 @@
      {
         "id":"57a40a33-7e08-4ce4-9f08-a34d24a83338",
         "type":"dropdown",
-        "name":"labelAlign",
+        "propertyName":"labelAlign",
         "parentId":"root",
         "label":"Label align",
         "values":[
@@ -49,7 +49,7 @@
      {
         "id":"fbdb6bb1-5994-4205-86b4-236ca61ae54e",
         "type":"textField",
-        "name":"placeholder",
+        "propertyName":"placeholder",
         "parentId":"root",
         "label":"Placeholder",
         "version":0,
@@ -58,39 +58,38 @@
      {
         "id":"2d32fe70-99a0-4825-ae6c-8b933004e119",
         "type":"textArea",
-        "name":"description",
+        "propertyName":"description",
         "parentId":"root",
         "label":"Description"
      },
      {
         "id":"cfd7d45e-c7e3-4a27-987b-dc525c412448",
         "type":"checkbox",
-        "name":"hidden",
+        "propertyName":"hidden",
         "parentId":"root",
         "label":"Hidden"
      },
      {
         "id":"c6885251-96a6-40ce-99b2-4b5209a9e01c",
         "type":"checkbox",
-        "name":"hideLabel",
+        "propertyName":"hideLabel",
         "parentId":"root",
         "label":"Hide Label"
      },
      {
         "id":"24a8be15-98eb-40f7-99ea-ebb602693e9c",
         "type":"checkbox",
-        "name":"disabled",
+        "propertyName":"disabled",
         "parentId":"root",
         "label":"Disabled"
      },
      {
         "id":"7e4876d8-1ed4-4576-9f5b-46cfd77d8643",
         "type":"checkbox",
-        "name":"hideBorder",
+        "propertyName":"hideBorder",
         "label":"Hide border",
         "parentId":"root",
         "hidden":false,
-        "customVisibility":null,
         "validate":{
            
         }
@@ -98,7 +97,7 @@
      {
         "id":"6b9bb7f7-eadb-450e-bea4-4c1d691a4091",
         "type":"sectionSeparator",
-        "name":"separator3",
+        "propertyName":"separator3",
         "parentId":"root",
         "label":"Data"
      },
@@ -106,13 +105,12 @@
         "textType":"text",
         "id":"IcJf6tgl3N6HbQ2Wmnuzd",
         "type":"textField",
-        "name":"modelType",
-        "label":"Entity",
+        "propertyName":"modelType",
+        "label":"Entity type",
         "labelAlign":"right",
         "parentId":"root",
         "hidden":false,
         "visibility":"Yes",
-        "customVisibility":null,
         "isDynamic":false,
         "version":0,
         "placeholder":"",
@@ -127,53 +125,49 @@
         },
         "quickviewWidth":"",
         "settingsValidationErrors":[
-           
         ]
      },
      {
         "id":"hGFqD-MutR75EN0GEInYu",
         "type":"checkbox",
-        "name":"showFillPropsButton",
+        "propertyName":"showFillPropsButton",
         "label":"Show `Fill Props` button",
         "labelAlign":"right",
         "parentId":"root",
         "hidden":false,
         "visibility":"Yes",
-        "customVisibility":null,
         "isDynamic":false,
         "description":"",
         "validate":{
-           
         },
         "settingsValidationErrors":[
-           
         ]
      },
      {
         "id":"d675bfe4-ee69-431e-931b-b0e0b9ceee6f",
         "type":"sectionSeparator",
-        "name":"separator2",
+        "propertyName":"separator2",
         "parentId":"root",
         "label":"Validation"
      },
      {
         "id":"3be9da3f-f47e-48ae-b4c3-f5cc36e534d9",
         "type":"checkbox",
-        "name":"validate.required",
+        "propertyName":"validate.required",
         "parentId":"root",
         "label":"Required"
      },
      {
         "id":"6befdd49-41aa-41d6-a29e-76fa00590b75",
         "type":"sectionSeparator",
-        "name":"sectionStyle",
+        "propertyName":"sectionStyle",
         "parentId":"root",
         "label":"Style"
      },
      {
         "id":"06ab0599-914d-4d2d-875c-765a495472f8",
         "type":"codeEditor",
-        "name":"style",
+        "propertyName":"style",
         "label":"Style",
         "parentId":"root",
         "validate":{
@@ -185,7 +179,7 @@
         "description":"A script that returns the style of the element as an object. This should conform to CSSProperties",
         "exposedVariables":[
            {
-              "name":"data",
+              "propertyName":"data",
               "description":"Form values",
               "type":"object"
            }
@@ -194,7 +188,7 @@
      {
         "id":"8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
         "type":"dropdown",
-        "name":"size",
+        "propertyName":"size",
         "parentId":"root",
         "label":"Size",
         "allowClear":true,
@@ -216,42 +210,6 @@
            }
         ],
         "dataSourceType":"values"
-     },
-     {
-        "id":"6befdd49-41aa-41d6-a29e-76fa00590b74",
-        "type":"sectionSeparator",
-        "name":"sectionVisibility",
-        "parentId":"root",
-        "label":"Visibility"
-     },
-     {
-        "id":"76f350de-47c4-4f38-8487-d546d084013c",
-        "type":"codeEditor",
-        "name":"customVisibility",
-        "label":"Custom Visibility",
-        "labelAlign":"right",
-        "parentId":"root",
-        "hidden":false,
-        "customVisibility":null,
-        "description":"Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-        "validate":{
-           
-        },
-        "settingsValidationErrors":[
-           
-        ],
-        "exposedVariables":[
-           {
-              "name":"value",
-              "description":"Component current value",
-              "type":"string | any"
-           },
-           {
-              "name":"data",
-              "description":"Selected form values",
-              "type":"object"
-           }
-        ]
      }
   ],
   "formSettings":{

@@ -1,4 +1,5 @@
 import { HomeOutlined } from '@ant-design/icons';
+import { migratePropertyName, migrateCustomFunctions } from '../../../../designer-components/_common-migrations/migrateSettings';
 import React from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
 import { useForm } from '../../../../providers';
@@ -7,7 +8,7 @@ import ConfigurableFormItem from '../formItem';
 import AutoCompletePlacesControl from './control';
 import AddressEffect from './effect';
 import { IAddressCompomentProps } from './models';
-import AddressSettings from './settings';
+import { AddressSettingsForm } from './settings';
 
 const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
   type: 'address',
@@ -21,24 +22,21 @@ const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
     return (
       <AddressEffect externalApiKey={model?.googleMapsApiKey}>
         <ConfigurableFormItem model={model}>
-          <ReadOnlyDisplayFormItemWrapper readOnly={readOnly} disabled={model?.disabled}>
-            <AutoCompletePlacesControl {...model} />
-          </ReadOnlyDisplayFormItemWrapper>
+          {(value, onChange) => { 
+            return (
+              <ReadOnlyDisplayFormItemWrapper value={value} readOnly={readOnly} disabled={model?.disabled}>
+                <AutoCompletePlacesControl {...model} readOnly={readOnly} disabled={model?.disabled} value={value} onChange={onChange}/>
+              </ReadOnlyDisplayFormItemWrapper>
+            );
+          }}
         </ConfigurableFormItem>
       </AddressEffect>
     );
   },
-  settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
-    return (
-      <AddressSettings
-        readOnly={readOnly}
-        model={model}
-        onSave={onSave as any}
-        onCancel={onCancel}
-        onValuesChange={onValuesChange as any}
-      />
-    );
-  },
+  settingsFormFactory: (props) => (<AddressSettingsForm {...props} />),
+  migrator: (m) => m
+    .add<IAddressCompomentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,  
 };
 
 export default AddressCompoment;

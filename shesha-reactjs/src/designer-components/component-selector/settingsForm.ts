@@ -5,30 +5,28 @@ export const getSettings = (data: any) =>
   new DesignerToolbarSettings(data)
     .addPropertyAutocomplete({
       id: nanoid(),
-      name: 'name',
-      label: 'Name',
+      propertyName: 'propertyName',
+      label: 'Property name',
       labelAlign: 'right',
       parentId: 'root',
       hidden: false,
-      customVisibility: null,
       validate: {
         required: true,
       },
     })
     .addTextField({
       id: nanoid(),
-      name: 'label',
+      propertyName: 'label',
       parentId: 'root',
       label: 'Label',
     })
     .addTextArea({
       id: nanoid(),
-      name: 'description',
+      propertyName: 'description',
       label: 'Description',
       labelAlign: 'right',
       parentId: 'root',
       hidden: false,
-      customVisibility: '',
       autoSize: false,
       showCount: false,
       allowClear: false,
@@ -36,19 +34,19 @@ export const getSettings = (data: any) =>
     })
     .addTextField({
       id: nanoid(),
-      name: 'noSelectionItemText',
+      propertyName: 'noSelectionItemText',
       parentId: 'root',
       label: 'No selection item text',
     })
     .addTextField({
       id: nanoid(),
-      name: 'noSelectionItemValue',
+      propertyName: 'noSelectionItemValue',
       parentId: 'root',
       label: 'No selection item value',
     })
     .addDropdown({
       id: nanoid(),
-      name: 'componentType',
+      propertyName: 'componentType',
       label: 'Component type',
       useRawValues: true,
       dataSourceType: 'values',
@@ -59,13 +57,13 @@ export const getSettings = (data: any) =>
     })
     .addSectionSeparator({
       id: nanoid(),
-      name: 'sectionVisibility',
+      propertyName: 'sectionVisibility',
       parentId: 'root',
       label: 'Visibility',
     })
     .addCodeEditor({
       id: nanoid(),
-      name: 'customVisibility',
+      propertyName: 'customVisibility',
       label: 'Custom Visibility',
       labelAlign: 'right',
       parentId: 'root',
@@ -85,7 +83,7 @@ export const getSettings = (data: any) =>
     })
     .addCodeEditor({
       id: nanoid(),
-      name: 'customEnabled',
+      propertyName: 'customEnabled',
       label: 'Custom Enabled',
       labelAlign: 'right',
       parentId: 'root',

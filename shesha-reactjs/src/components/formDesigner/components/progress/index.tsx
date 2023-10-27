@@ -4,10 +4,10 @@ import { IConfigurableFormComponent } from '../../../../providers/form/models';
 import { LineOutlined } from '@ant-design/icons';
 import { Progress, ProgressProps } from 'antd';
 import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import { useForm } from '../../../../providers';
 import { alertSettingsForm } from './settings';
 import { ProgressType } from 'antd/lib/progress/progress';
 import ConfigurableFormItem from '../formItem';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 
 interface IProgressProps
   extends Omit<ProgressProps, 'style' | 'type' | 'size' | 'format' | 'success' | 'strokeColor'>,
@@ -25,7 +25,6 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
   name: 'Progress',
   icon: <LineOutlined />,
   factory: (model: IProgressProps) => {
-    const { isComponentHidden } = useForm();
     const {
       progressType,
       lineStrokeColor,
@@ -44,9 +43,7 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
       width,
     } = model;
 
-    const isHidden = isComponentHidden(model);
-
-    if (isHidden) return null;
+    if (model.hidden) return null;
 
     const getEvaluatedSuccessColor = () => {
       // tslint:disable-next-line:function-constructor
@@ -82,26 +79,35 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
 
     return (
       <ConfigurableFormItem model={model}>
-        <ProgressWrapper
-          type={progressType}
-          strokeColor={getEvaluatedStrokeValue()}
-          format={getEvaluatedFormat}
-          percent={percent}
-          width={width}
-          strokeWidth={strokeWidth}
-          gapPosition={gapPosition}
-          steps={steps}
-          trailColor={trailColor}
-          status={status}
-          showInfo={showInfo}
-          strokeLinecap={strokeLinecap}
-          success={getEvaluatedSuccessColor()}
-        />
+        {(value) => {
+
+          const perc = percent || value;
+
+          return (
+            <ProgressWrapper
+              type={progressType}
+              strokeColor={getEvaluatedStrokeValue()}
+              format={getEvaluatedFormat}
+              percent={perc}
+              width={width}
+              strokeWidth={strokeWidth}
+              gapPosition={gapPosition}
+              steps={steps}
+              trailColor={trailColor}
+              status={status}
+              showInfo={showInfo}
+              strokeLinecap={strokeLinecap}
+              success={getEvaluatedSuccessColor()}
+            />);
+        }}
       </ConfigurableFormItem>
     );
   },
   settingsFormMarkup: alertSettingsForm,
   validateSettings: model => validateConfigurableComponentSettings(alertSettingsForm, model),
+  migrator: (m) => m
+    .add<IProgressProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
 };
 
 const ProgressWrapper: FC<IValuable & ProgressProps> = ({ percent, value, ...props }) => {

@@ -2,9 +2,9 @@ import React, { MutableRefObject, useEffect } from 'react';
 import { Form } from 'antd';
 import { ConfigurableForm } from '../../components';
 import { IConfigurableFormComponent, FormMarkup } from '../../providers/form/models';
-import { DEFAULT_FORM_LAYOUT_SETTINGS, IFormLayoutSettings, ISettingsFormInstance, IToolboxComponent } from '../../interfaces';
+import { ConfigurableFormInstance, DEFAULT_FORM_LAYOUT_SETTINGS, IFormLayoutSettings, ISettingsFormInstance, IToolboxComponent } from '../../interfaces';
 import { IPropertyMetadata } from '../../interfaces/metadata';
-import { listComponentToModelMetadata } from '../../providers/form/utils';
+import { convertToMarkupWithSettings, listComponentToModelMetadata } from '../../providers/form/utils';
 
 export interface IProps<TModel extends IConfigurableFormComponent> {
   readonly: boolean;
@@ -34,9 +34,9 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
 
   useEffect(() => {
     form.resetFields();
-  });
+  }, []);
 
-  const linkToModelMetadata = (metadata: IPropertyMetadata) => {
+  const linkToModelMetadata = (metadata: IPropertyMetadata, settingsForm: ConfigurableFormInstance) => {
     const currentModel = form.getFieldsValue() as TModel;
 
     const wrapper = toolboxComponent.linkToModelMetadata
@@ -49,8 +49,12 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
       description: metadata.description,
     });
 
-    form.setFieldsValue(newModel);
-    if (onValuesChange) onValuesChange(newModel, newModel);
+    if (settingsForm) 
+      settingsForm.setFormDataAndInstance({values: newModel, mergeValues: true});
+    else
+      form.setFieldsValue(newModel);
+
+    //if (onValuesChange) onValuesChange(newModel, newModel);
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -63,6 +67,8 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
       reset: () => form.resetFields(),
     };
 
+  const markupWithSettings = convertToMarkupWithSettings(markup, true);
+
   return (
     <ConfigurableForm
       labelCol={layoutSettings?.labelCol}
@@ -72,7 +78,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
       mode={readonly ? "readonly" : "edit"}
       form={form}
       onFinish={onSave}
-      markup={markup}
+      markup={markupWithSettings}
       initialValues={model}
       onValuesChange={onValuesChange}
       actions={{

@@ -24,6 +24,8 @@ import { evaluateDynamicFilters } from '../../utils';
 import { axiosHttp } from '../../utils/fetchers';
 import { IAutocompleteComponentProps } from './interfaces';
 import settingsFormJson from './settingsForm.json';
+import { migratePropertyName, migrateCustomFunctions } from '../../designer-components/_common-migrations/migrateSettings';
+import { isEntityReferencePropertyMetadata } from 'interfaces/metadata';
 
 interface IQueryParams {
   // tslint:disable-next-line:typedef-whitespace
@@ -36,12 +38,13 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   type: 'autocomplete',
   isInput: true,
   isOutput: true,
+  canBeJsSetting: true,
   name: 'Autocomplete',
   icon: <FileSearchOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
   factory: (model: IAutocompleteComponentProps, _c, form) => {
     const { queryParams, filter } = model;
-    const { formMode, isComponentDisabled, setFormDataAndInstance } = useForm();
+    const { formMode, setFormDataAndInstance } = useForm();
     const { data } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
@@ -51,7 +54,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
 
     const dataSourceUrl = model.dataSourceUrl ? replaceTags(model.dataSourceUrl, { data: data }) : model.dataSourceUrl;
 
-    const disabled = isComponentDisabled(model);
+    const disabled = model.readOnly;
 
     const evaluatedFilters = useAsyncMemo(async () => {
       if (!filter) return '';
@@ -198,41 +201,45 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     // todo: implement other types of datasources!
     return (
       <ConfigurableFormItem {...formProps}>
-        {model.useRawValues ? (
-          <Autocomplete.Raw {...autocompleteProps} {...customDropDownEventHandler(eventProps)} />
-        ) : (
-          <Autocomplete.EntityDto {...autocompleteProps} {...customDropDownEventHandler(eventProps)} />
-        )}
+        {(value, onChange) => {
+          return (
+          model.useRawValues ? (
+            <Autocomplete.Raw {...autocompleteProps} {...customDropDownEventHandler(eventProps)} value={value} onChange={onChange}/>
+          ) : (
+            <Autocomplete.EntityDto {...autocompleteProps} {...customDropDownEventHandler(eventProps)} value={value} onChange={onChange}/>
+          ));
+        }}
       </ConfigurableFormItem>
     );
   },
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
-  migrator: (m) =>
-    m
-      .add<IAutocompleteComponentProps>(0, (prev) => ({
-        ...prev,
-        dataSourceType: prev['dataSourceType'] ?? 'entitiesList',
-        useRawValues: prev['useRawValues'] ?? false,
-      }))
-      .add<IAutocompleteComponentProps>(1, (prev) => {
-        const result = { ...prev };
-        const useExpression = Boolean(result['useExpression']);
-        delete result['useExpression'];
+  migrator: (m) => m
+    .add<IAutocompleteComponentProps>(0, (prev) => ({
+      ...prev,
+      dataSourceType: prev['dataSourceType'] ?? 'entitiesList',
+      useRawValues: prev['useRawValues'] ?? false,
+    }))
+    .add<IAutocompleteComponentProps>(1, (prev) => {
+      const result = { ...prev };
+      const useExpression = Boolean(result['useExpression']);
+      delete result['useExpression'];
 
-        if (useExpression) {
-          const migratedExpression = migrateDynamicExpression(prev.filter);
-          result.filter = migratedExpression;
-        }
+      if (useExpression) {
+        const migratedExpression = migrateDynamicExpression(prev.filter);
+        result.filter = migratedExpression;
+      }
 
-        return result;
-      }),
-  linkToModelMetadata: (model, metadata): IAutocompleteComponentProps => {
+      return result;
+    })
+    .add<IAutocompleteComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
+  linkToModelMetadata: (model, propMetadata): IAutocompleteComponentProps => {
     return {
       ...model,
       //useRawValues: true,
       dataSourceType: 'entitiesList',
-      entityTypeShortAlias: metadata.entityType,
+      entityTypeShortAlias: isEntityReferencePropertyMetadata(propMetadata) ? propMetadata.entityType : undefined,
       mode: undefined,
     };
   },

@@ -130,7 +130,6 @@ module.exports = {
     'jsdoc/check-alignment': 'error',
     'jsdoc/check-indentation': 'off',
     /*error*/
-    'jsdoc/newline-after-description': 'error',
     'max-len': [
       'error',
       {

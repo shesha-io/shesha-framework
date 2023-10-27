@@ -8,33 +8,35 @@ export interface IWithNullRepositoryArgs {
     value?: object;
 }
 
+const HAS_NO_IMPLEMENTATION_MESSAGE = 'NullRepository has no implementation';
+
 const createRepository = (_args: IWithNullRepositoryArgs): IRepository => {
     const fetch = (_payload: IGetListDataPayload): Promise<ITableDataInternalResponse> => {
-        return Promise.reject('NullRepository has no implementation');
+        return Promise.reject(HAS_NO_IMPLEMENTATION_MESSAGE);
     };
 
     const prepareColumns = (_configurableColumns: IConfigurableColumnsProps[]): Promise<DataTableColumnDto[]> => {
-        return Promise.reject('NullRepository has no implementation');
+        return Promise.reject(HAS_NO_IMPLEMENTATION_MESSAGE);
     };
 
     const performUpdate = (_rowIndex: number, _data: any): Promise<any> => {
-        return Promise.reject('NullRepository has no implementation');
+        return Promise.reject(HAS_NO_IMPLEMENTATION_MESSAGE);
     };
 
     const performDelete = (_rowIndex: number, _data: any): Promise<any> => {
-        return Promise.reject('NullRepository has no implementation');
+        return Promise.reject(HAS_NO_IMPLEMENTATION_MESSAGE);
     };
 
     const performCreate = (_rowIndex: number, _data: any): Promise<any> => {
-        return Promise.reject('NullRepository has no implementation');
+        return Promise.reject(HAS_NO_IMPLEMENTATION_MESSAGE);
     };
 
     const exportToExcel = (_payload: IGetListDataPayload): Promise<void> => {
-        return Promise.reject('NullRepository has no implementation');
+        return Promise.reject(HAS_NO_IMPLEMENTATION_MESSAGE);
     };
 
     const reorder = (_payload: RowsReorderPayload) => {
-        return Promise.reject('NullRepository has no implementation');
+        return Promise.reject(HAS_NO_IMPLEMENTATION_MESSAGE);
     };
 
     const repository: IRepository = {

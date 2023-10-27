@@ -1,62 +1,54 @@
-import React, { useMemo, useState } from 'react';
-import { Divider, Form, Input, InputNumber, Select } from 'antd';
-import { IDataSourceComponentProps, IDataSourceSettingsProps } from './models';
+import React, { FC, useMemo } from 'react';
+import { Divider, Input, InputNumber, Select } from 'antd';
+import { IDataSourceComponentProps } from './models';
 import { MetadataProvider } from '../../../../providers/metadata';
-import { SectionSeparator } from '../../../../';
+import { ISettingsFormFactoryArgs, SectionSeparator } from '../../../../';
 import EndpointsAutocomplete from '../../../endpointsAutocomplete/endpointsAutocomplete';
 import { RawAutocomplete } from '../../../autocomplete';
 import TableViewSelectorSettingsModal from '../../../../designer-components/dataTable/tableViewSelector/tableViewSelectorSettingsModal';
+import SettingsForm, { useSettingsForm } from '../../../../designer-components/_settings/settingsForm';
+import SettingsFormItem from '../../../../designer-components/_settings/settingsFormItem';
 
-function DataSourceSettings(props: IDataSourceSettingsProps) {
-  const [form] = Form.useForm();
-  const [ state, setState ] = useState<IDataSourceComponentProps>(props.model);
+export const DataSourceSettingsForm: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>> = (props) => {
+  return (
+    SettingsForm<IDataSourceComponentProps>({...props, children: <DataSourceSettings {...props} />})
+  );
+};
 
-  const handleValuesChange = (changedValues: any, values: IDataSourceComponentProps) => {
-    if (props.onValuesChange) {
-      props.onValuesChange(changedValues, values);
-    }
-  };
+const DataSourceSettings: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>> = ({readOnly}) => {
+  const { model: state } = useSettingsForm<IDataSourceComponentProps>();
 
   const settings = (
-    <Form form={form} onFinish={props.onSave} onValuesChange={handleValuesChange} initialValues={props.model}
-      wrapperCol={{ span: 24 }}
-      labelCol={{ span: 24 }}
-    >
-      <Form.Item name="name"  label='Name'>
+    <>
+      <SettingsFormItem name="componentName" label='Component name' required>
         <Input />
-      </Form.Item>
-      <Form.Item name="sourceType" label='Source Type'>
-        <Select onChange={(item) => { 
-          setState({...state, sourceType: item}); 
-        }}>
+      </SettingsFormItem>
+      <SettingsFormItem name="sourceType" label='Source Type'>
+        <Select>
           <Select.Option key='Form' value='Form'>Form</Select.Option>
           <Select.Option key='Entity' value='Entity'>Entity</Select.Option>
           <Select.Option key='Url' value='Url'>Url</Select.Option>
         </Select>
-      </Form.Item>
+      </SettingsFormItem>
       {(state.sourceType === 'Entity') &&
-      <Form.Item key='entityType' name="entityType" label='Entity Type'>
-        <RawAutocomplete dataSourceType='url' dataSourceUrl="/api/services/app/Metadata/EntityTypeAutocomplete" 
-          onChange={(item) => { 
-            setState({...state, entityType: item}); 
-          }}
-        />
-      </Form.Item>
+      <SettingsFormItem key='entityType' name="entityType" label='Entity Type' jsSetting>
+        <RawAutocomplete dataSourceType='url' dataSourceUrl="/api/services/app/Metadata/EntityTypeAutocomplete" />
+      </SettingsFormItem>
       }
       {(state.sourceType === 'Entity' || state.sourceType === 'Url') &&
-      <Form.Item key='endpoint' name="endpoint"  label='Endpoint'>
+      <SettingsFormItem key='endpoint' name="endpoint"  label='Endpoint' jsSetting>
         <EndpointsAutocomplete />
-      </Form.Item>
+      </SettingsFormItem>
       }
       <SectionSeparator title="Filters" />
-      <Form.Item name="maxResultCount"  label='Max result count' tooltip='Leave empty to get all records'>
+      <SettingsFormItem name="maxResultCount"  label='Max result count' tooltip='Leave empty to get all records' jsSetting>
         <InputNumber min={0}/>
-      </Form.Item>
+      </SettingsFormItem>
       <Divider />
-      <Form.Item name="filters">
-        <TableViewSelectorSettingsModal readOnly={props.readOnly} />
-      </Form.Item>
-    </Form>
+      <SettingsFormItem name="filters">
+        <TableViewSelectorSettingsModal readOnly={readOnly} />
+      </SettingsFormItem>
+    </>
   );
 
   const meta = useMemo(() => {
@@ -64,6 +56,4 @@ function DataSourceSettings(props: IDataSourceSettingsProps) {
   }, [state.entityType, state.sourceType]);
 
   return state.sourceType === 'Entity' && state.entityType ? meta : settings;
-}
-
-export default DataSourceSettings;
+};

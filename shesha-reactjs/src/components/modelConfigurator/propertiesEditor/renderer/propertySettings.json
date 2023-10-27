@@ -3,7 +3,7 @@
     {
       "id": "-X1emhZPx1rM7w22GOc11",
       "type": "checkbox",
-      "name": "suppress",
+      "propertyName": "suppress",
       "label": "Suppress",
       "labelAlign": "right",
       "parentId": "root",
@@ -14,7 +14,7 @@
     {
       "id": "UIUv_8sUeAdK_JQqdFm1e",
       "type": "sectionSeparator",
-      "name": "sectionSeparator1",
+      "propertyName": "sectionSeparator1",
       "label": "Display",
       "labelAlign": "right",
       "parentId": "root",
@@ -23,7 +23,7 @@
     {
       "id": "aYeIfcjqrSZpmuKd6Fijn",
       "type": "textField",
-      "name": "name",
+      "propertyName": "name",
       "label": "Name",
       "labelAlign": "right",
       "parentId": "root",
@@ -36,7 +36,7 @@
     {
       "id": "0XFvEV-W_E2LzxEHjLiGm",
       "type": "textField",
-      "name": "label",
+      "propertyName": "label",
       "label": "Label",
       "labelAlign": "right",
       "parentId": "root",
@@ -48,7 +48,7 @@
     {
       "id": "4SvCStsfdAUCwndFWVxi_",
       "type": "textArea",
-      "name": "description",
+      "propertyName": "description",
       "label": "Description",
       "labelAlign": "right",
       "parentId": "root"
@@ -56,7 +56,7 @@
     {
       "id": "UIUv_8sUeAdK_JQqdFm11",
       "type": "sectionSeparator",
-      "name": "sectionSeparator1",
+      "propertyName": "sectionSeparator1",
       "label": "Data type and format",
       "labelAlign": "right",
       "parentId": "root",
@@ -65,7 +65,7 @@
     {
       "id": "F7W3qRl8P_Jdv_R2Q-f3u",
       "type": "dropdown",
-      "name": "dataType",
+      "propertyName": "dataType",
       "label": "Data Type",
       "labelAlign": "right",
       "parentId": "root",
@@ -137,19 +137,19 @@
     {
       "id": "7cYicDJe6G4QZySqcHoIN",
       "type": "textField",
-      "name": "dataFormat",
+      "propertyName": "dataFormat",
       "label": "Date format",
-      "customVisibility": "return data.dataType == 'date' || data.dataType == 'date-time'",
+      "hidden": {"_code": "return !(getSettingValue(data?.dataType) === 'date' || getSettingValue(data?.dataType) === 'date-time');", "_mode": "code", "_value": false},
       "description": "Enter the format for this property. Also, note that you can use moment display options. See https://momentjscom.readthedocs.io/en/latest/moment/04-displaying/01-format/"
     },
     {
       "id": "7cYicDJe6G4QZySqcHoIM",
       "type": "container",
-      "name": "string-config",
+      "propertyName": "string-config",
       "label": "Container1",
       "labelAlign": "right",
       "parentId": "root",
-      "customVisibility": "return data.dataType == 'string'",
+      "hidden": {"_code": "return !(getSettingValue(data?.dataType) === 'string');", "_mode": "code", "_value": false},
       "direction": "vertical",
       "justifyContent": "left",
       "settingsValidationErrors": [],
@@ -157,7 +157,7 @@
         {
           "id": "2ZMc7dhCaBX00rMMK1H3n",
           "type": "dropdown",
-          "name": "dataFormat",
+          "propertyName": "dataFormat",
           "label": "String format",
           "labelAlign": "right",
           "parentId": "7cYicDJe6G4QZySqcHoIM",
@@ -211,7 +211,7 @@
         {
           "id": "XEyIWE4U614Ip_x0FqViL",
           "type": "numberField",
-          "name": "minLength",
+          "propertyName": "minLength",
           "label": "Min Length",
           "labelAlign": "right",
           "parentId": "7cYicDJe6G4QZySqcHoIM",
@@ -229,7 +229,7 @@
         {
           "id": "XEyIWE4U614Ip_x0FqVi1",
           "type": "numberField",
-          "name": "maxLength",
+          "propertyName": "maxLength",
           "label": "Max Length",
           "labelAlign": "right",
           "parentId": "7cYicDJe6G4QZySqcHoIM",
@@ -249,7 +249,7 @@
         {
           "id": "aYeIfcjqrSZpmuKd6Fij1",
           "type": "textField",
-          "name": "regExp",
+          "propertyName": "regExp",
           "label": "Regular Expression",
           "labelAlign": "right",
           "customEnabled": "return !data.regExpHardcoded;",
@@ -265,11 +265,11 @@
     {
       "id": "ipxZABhhFbnZBrO1iijxF",
       "type": "container",
-      "name": "container2",
+      "propertyName": "container2",
       "label": "Container2",
       "labelAlign": "right",
       "parentId": "root",
-      "customVisibility": "return data.dataType === 'number'",
+      "hidden": {"_code": "return !(getSettingValue(data?.dataType) === 'number');", "_mode": "code", "_value": false},
       "direction": "vertical",
       "justifyContent": "left",
       "settingsValidationErrors": [],
@@ -277,7 +277,7 @@
         {
           "id": "V6PekH9pFf_Qu-vmaKxfz",
           "type": "dropdown",
-          "name": "dataFormat",
+          "propertyName": "dataFormat",
           "label": "Number format",
           "labelAlign": "right",
           "parentId": "ipxZABhhFbnZBrO1iijxF",
@@ -311,7 +311,7 @@
         {
           "id": "XEyIWE4U614Ip_x0FqV11",
           "type": "numberField",
-          "name": "min",
+          "propertyName": "min",
           "label": "Min",
           "labelAlign": "right",
           "parentId": "ipxZABhhFbnZBrO1iijxF",
@@ -331,7 +331,7 @@
         {
           "id": "XEyIWE4U614Ip_x0FqV12",
           "type": "numberField",
-          "name": "max",
+          "propertyName": "max",
           "label": "Max",
           "labelAlign": "right",
           "parentId": "ipxZABhhFbnZBrO1iijxF",
@@ -351,12 +351,12 @@
     {
       "id": "gTpIAiV940w7puAHNwu5H",
       "type": "container",
-      "name": "container3",
+      "propertyName": "container3",
       "label": "Data Type",
       "labelAlign": "right",
       "parentId": "root",
       "customEnabled": "return data.source != 1;",
-      "customVisibility": "return data.dataType === 'reference-list-item'",
+      "hidden": {"_code": "return !(getSettingValue(data?.dataType) === 'reference-list-item');", "_mode": "code", "_value": false},
       "direction": "vertical",
       "justifyContent": "left",
       "settingsValidationErrors": [],
@@ -421,7 +421,7 @@
         {
           "id": "4bT3OMjJ9ssaBvfBkvNIl",
           "type": "textField",
-          "name": "referenceListName",
+          "propertyName": "referenceListName",
           "label": "Reference List name",
           "labelAlign": "right",
           "customEnabled": "return data.source != 1;",
@@ -432,7 +432,7 @@
         {
           "id": "dsiSpDTinQZxtfTlJW4AE",
           "type": "textField",
-          "name": "referenceListNamespace",
+          "propertyName": "referenceListNamespace",
           "label": "Reference List namespace",
           "labelAlign": "right",
           "customEnabled": "return data.source != 1;",
@@ -445,11 +445,11 @@
     {
       "id": "MwjxidwaPufFS-PixP6_j",
       "type": "container",
-      "name": "container4",
+      "propertyName": "container4",
       "label": "Container4",
       "labelAlign": "right",
       "parentId": "root",
-      "customVisibility": "return data.dataType === 'entity'",
+      "hidden": {"_code": "return !(getSettingValue(data?.dataType) === 'entity');", "_mode": "code", "_value": false},
       "direction": "vertical",
       "justifyContent": "left",
       "settingsValidationErrors": [],
@@ -457,7 +457,7 @@
         {
           "id": "6b0bd9c6-6a53-4a05-9de0-ad1b17eb0018",
           "type": "autocomplete",
-          "name": "entityType",
+          "propertyName": "entityType",
           "label": "Entity Type",
           "labelAlign": "right",
           "hidden": false,
@@ -475,7 +475,7 @@
     {
       "id": "aYeIfcjqrSZpmuKd6Fij2",
       "type": "textField",
-      "name": "validationMessage",
+      "propertyName": "validationMessage",
       "label": "Validation Message",
       "labelAlign": "right",
       "parentId": "root",
@@ -488,7 +488,7 @@
     {
       "id": "UIUv_8sUeAdK_JQqdFm12",
       "type": "sectionSeparator",
-      "name": "sectionSeparator1",
+      "propertyName": "sectionSeparator1",
       "label": "Attributes",
       "labelAlign": "right",
       "parentId": "root",
@@ -497,7 +497,7 @@
     {
       "id": "-X1emhZPx1rM7w22GOc12",
       "type": "checkbox",
-      "name": "audited",
+      "propertyName": "audited",
       "label": "Audited",
       "labelAlign": "right",
       "parentId": "root",
@@ -508,7 +508,7 @@
     {
       "id": "-X1emhZPx1rM7w22GOc13",
       "type": "checkbox",
-      "name": "required",
+      "propertyName": "required",
       "label": "Required",
       "labelAlign": "right",
       "parentId": "root",
@@ -519,7 +519,7 @@
     {
       "id": "-X1emhZPx1rM7w22GOc14",
       "type": "checkbox",
-      "name": "readOnly",
+      "propertyName": "readOnly",
       "label": "ReadOnly",
       "labelAlign": "right",
       "parentId": "root",
@@ -530,11 +530,11 @@
     {
       "id": "MwjxidwaPufFS-PixP6_1",
       "type": "container",
-      "name": "container5",
+      "propertyName": "container5",
       "label": "Container5",
       "labelAlign": "right",
       "parentId": "root",
-      "customVisibility": "return data.dataType === 'entity'",
+      "hidden": {"_code": "return !(getSettingValue(data?.dataType) === 'entity');", "_mode": "code", "_value": false},
       "direction": "vertical",
       "justifyContent": "left",
       "settingsValidationErrors": [],
@@ -542,7 +542,7 @@
         {
           "id": "UIUv_8sUeAdK_JQqdF123",
           "type": "sectionSeparator",
-          "name": "sectionSeparatorCascade",
+          "propertyName": "sectionSeparatorCascade",
           "label": "Cascade update rules",
           "labelAlign": "right",
           "parentId": "root",
@@ -551,7 +551,7 @@
         {
           "id": "-X1emhZPx1rM7w22GO124",
           "type": "checkbox",
-          "name": "cascadeCreate",
+          "propertyName": "cascadeCreate",
           "label": "Cascade create",
           "description": "Allows to create child/nested entity",
           "labelAlign": "right",
@@ -563,7 +563,7 @@
         {
           "id": "-X1emhZPx1rM7w22GO125",
           "type": "checkbox",
-          "name": "cascadeUpdate",
+          "propertyName": "cascadeUpdate",
           "label": "Cascade update",
           "description": "Allows to update child/nested entity",
           "labelAlign": "right",
@@ -575,7 +575,7 @@
         {
           "id": "-X1emhZPx1rM7w22GO126",
           "type": "checkbox",
-          "name": "cascadeDeleteUnreferenced",
+          "propertyName": "cascadeDeleteUnreferenced",
           "label": "Cascade delete unreferenced",
           "description": "Delete child/nested entity if reference was removed and the child/nested entity doesn't have nother references",
           "labelAlign": "right",

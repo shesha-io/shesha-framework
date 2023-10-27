@@ -12,12 +12,4 @@ export interface IDataSourceComponentProps extends IConfigurableFormComponent {
 
     maxResultCount?: number;
 }
-
-export interface IDataSourceSettingsProps {
-    readOnly: boolean;
-    model: IDataSourceComponentProps;
-    onSave: (model: IDataSourceComponentProps) => void;
-    onCancel: () => void;
-    onValuesChange?: (changedValues: any, values: IDataSourceComponentProps) => void;
-  }
   

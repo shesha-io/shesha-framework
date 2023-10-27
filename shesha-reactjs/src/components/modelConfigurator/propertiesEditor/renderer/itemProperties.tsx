@@ -27,20 +27,16 @@ export const ToolbarItemProperties: FC<IProps> = () => {
   );
 
   useEffect(() => {
-    form.resetFields();
-
-    if (formRef.current) {
-      const values = form.getFieldsValue();
-
-      formRef.current.setFormData({ values, mergeValues: false });
-    }
-  }, [selectedItemId]);
+    const values = getItem(selectedItemId);
+    form.setFieldsValue(values);
+  }, [editor]);
 
   const getEditor = () => {
     const emptyEditor = null;
     if (!selectedItemId) return emptyEditor;
 
     const componentModel = getItem(selectedItemId);
+    //form.setFieldsValue(componentModel);
 
     const markup = propertySettingsJson as FormMarkup;
 

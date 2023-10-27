@@ -25,7 +25,7 @@ export interface IChildTableProps extends IChildTableComponentProps {
 }
 
 export const ChildTable: FC<IChildTableProps> = (props) => {
-  const { formData, formMode, isComponentHidden } = useForm();
+  const { formData, formMode } = useForm();
   const { columns, setHiddenFilter, modelType, changePageSize, totalRows } = useDataTable();
 
   const { globalState } = useGlobalState();
@@ -91,7 +91,7 @@ export const ChildTable: FC<IChildTableProps> = (props) => {
 
   const granted = anyOfPermissionsGranted(permissions || []);
 
-  const isVisible = !isComponentHidden(props) && (granted || formMode === 'designer');
+  const isVisible = !props.hidden && (granted || formMode === 'designer');
 
   return (
     <Fragment>
@@ -130,11 +130,9 @@ export const ChildTable: FC<IChildTableProps> = (props) => {
 
                 <ButtonGroup
                   items={props?.toolbarItems || []}
-                  name={''}
-                  type={''}
                   id={props.id}
                   isInline={props?.isInline}
-                />
+                  type={''}                />
               </Space>
             </div>
           }

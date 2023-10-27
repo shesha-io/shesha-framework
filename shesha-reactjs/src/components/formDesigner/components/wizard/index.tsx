@@ -6,23 +6,24 @@ import React from 'react';
 import { useFormExpression } from '../../../../';
 import { IToolboxComponent } from '../../../../interfaces';
 import { useForm } from '../../../../providers';
-import { IFormComponentContainer } from '../../../../providers/form/models';
+import { IConfigurableFormComponent, IFormComponentContainer } from '../../../../providers/form/models';
 import ConditionalWrap from '../../../conditionalWrapper';
 import ShaIcon from '../../../shaIcon';
 import ComponentsContainer from '../../containers/componentsContainer';
 import { useWizard } from './hooks';
 import { IWizardComponentPropsV0, migrateV0toV1 } from './migrations/migrate-v1';
 import { IStepProps, IWizardComponentProps } from './models';
-import WizardSettings from './settings';
+import WizardSettingsForm from './settings';
 import { getWizardButtonStyle } from './utils';
 import './styles.less';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 
 const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   type: 'wizard',
   name: 'Wizard',
   icon: <DoubleRightOutlined />,
   factory: (model) => {
-    const { isComponentHidden, formMode } = useForm();
+    const { formMode } = useForm();
     const { executeBooleanExpression } = useFormExpression();
 
     const { back, components, cancel, content, current, currentStep, done, next, visibleSteps } = useWizard(model);
@@ -59,9 +60,8 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
 
     const splitButtons = buttonsLayout === 'spaceBetween';
 
+    if (model?.hidden) return null;
     const btnStyle = getWizardButtonStyle(buttonsLayout);
-
-    if (isComponentHidden(model)) return null;
 
     return (
       <div className="sha-wizard">
@@ -155,7 +155,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
       .add<IWizardComponentPropsV0>(0, (prev) => {
         const model: IWizardComponentPropsV0 = {
           ...prev,
-          name: prev.name ?? 'custom Name',
+          name: prev['name'] ?? 'custom Name',
           tabs: prev['filteredTabs'] ?? [
             {
               id: nanoid(),
@@ -192,19 +192,11 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
             };
           })
         };
-      }),
+      })
+    .add<IWizardComponentProps>(3, (prev) => migratePropertyName(migrateCustomFunctions(prev as IConfigurableFormComponent)) as IWizardComponentProps)
+  ,
 
-  settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
-    return (
-      <WizardSettings
-        readOnly={readOnly}
-        model={model}
-        onSave={onSave}
-        onCancel={onCancel}
-        onValuesChange={onValuesChange}
-      />
-    );
-  },
+  settingsFormFactory: (props) => <WizardSettingsForm {...props} />,
   // validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
   customContainerNames: ['steps'],
   getContainers: (model) => {

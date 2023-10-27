@@ -1,24 +1,15 @@
-import { JsonLogicResult } from '@react-awesome-query-builder/antd';
 import React, { FC } from 'react';
-import { QueryBuilder } from '../../components';
-import { IProperty } from '../../providers/queryBuilder/models';
+import { JsonLogicResult } from '@react-awesome-query-builder/antd';
+import { QueryBuilder } from 'components';
 import './styles/queryBuilderPlain.less';
 
 export interface IQueryBuilderPlainProps {
-  fields: IProperty[];
-  fetchFields: (fieldNames: string[]) => void;
   value?: object;
   onChange?: (value: Object) => void;
   readOnly?: boolean;
 }
 
-export const QueryBuilderPlain: FC<IQueryBuilderPlainProps> = ({
-  value,
-  fields,
-  fetchFields,
-  onChange,
-  readOnly = false,
-}) => {
+export const QueryBuilderPlain: FC<IQueryBuilderPlainProps> = ({ value, onChange, readOnly = false }) => {
   const handleChange = (jsonLogicResult: JsonLogicResult) => {
     if (readOnly) return;
     if (jsonLogicResult) {
@@ -39,8 +30,6 @@ export const QueryBuilderPlain: FC<IQueryBuilderPlainProps> = ({
       <QueryBuilder
         value={value}
         onChange={handleChange}
-        fields={fields}
-        fetchFields={fetchFields}
         readOnly={readOnly}
       />
     </div>

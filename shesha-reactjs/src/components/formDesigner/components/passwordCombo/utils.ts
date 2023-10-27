@@ -6,7 +6,7 @@ import { IFormSettings, SILENT_KEY } from '../../../../providers/form/models';
 import { getStyle } from '../../../../providers/form/utils';
 
 export interface IFormPropOptions {
-  isComponentHidden: (model: Pick<IConfigurableFormComponent, 'id' | 'isDynamic' | 'hidden'>) => boolean;
+  hidden: boolean;
   formData: any;
 }
 
@@ -26,14 +26,14 @@ export const confirmModel = (m: IPasswordComponentProps): IPasswordComponentProp
   model.description = m.confirmDescription;
   model.placeholder = m.confirmPlaceholder;
   model.label = m.confirmLabel;
-  model.name = `${SILENT_KEY}${model.name}`;
+  model.propertyName = `${SILENT_KEY}${model.propertyName}`;
 
   return model;
 };
 
-export const getConfigModel = ({ id, name, type }: IPasswordComponentProps): IPasswordComponentProps => ({
+export const getConfigModel = ({ id, propertyName: name, type }: IPasswordComponentProps): IPasswordComponentProps => ({
   id,
-  name,
+  propertyName: name,
   type,
   hideLabel: true,
 });
@@ -43,7 +43,7 @@ export const getDefaultModel = (m: IPasswordComponentProps) => {
     const model = { ...m };
 
     if (!model.confirmLabel && model.label) {
-      model.confirmLabel = incrementLastChar(m.label);
+      model.confirmLabel = incrementLastChar(m.label as string);
     }
 
     return model;
@@ -61,15 +61,15 @@ export const getFormProps = (formSettings: IFormSettings): FormProps => ({
 
 export const getFormItemProps = (
   model: IPasswordComponentProps,
-  { formData, isComponentHidden }: IFormPropOptions
+  { formData, hidden }: IFormPropOptions
 ): FormItemProps => ({
   className: classNames({ 'form-item-hidden': model?.hideLabel }),
-  name: getFieldNameFromExpression(model?.name),
+  name: getFieldNameFromExpression(model?.propertyName),
   label: model?.hideLabel ? null : model?.label,
   labelAlign: model?.labelAlign,
-  hidden: isComponentHidden(model),
+  hidden: hidden,
   tooltip: model?.description,
-  rules: isComponentHidden(model) ? [] : getValidationRules(model, { formData }),
+  rules: hidden ? [] : getValidationRules(model, { formData }),
   style: model?.hidden ? { display: 'none' } : {},
 });
 

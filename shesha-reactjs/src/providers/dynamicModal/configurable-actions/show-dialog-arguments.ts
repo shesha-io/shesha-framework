@@ -26,14 +26,14 @@ export interface IShowModalActionArguments {
 export const dialogArgumentsForm = new DesignerToolbarSettings()
   .addTextField({
     id: '12C40CB0-4C60-4171-9380-01D51FDF6212',
-    name: 'modalTitle',
+    propertyName: 'modalTitle',
     //parentId: 'root',
     label: 'Title',
     validate: { required: true },
   })
   .addFormAutocomplete({
     id: 'adbc3b29-9a53-4305-869a-f37ba6e8bb94',
-    name: 'formId',
+    propertyName: 'formId',
     label: 'Modal form',
     validate: {
       required: true,
@@ -43,17 +43,17 @@ export const dialogArgumentsForm = new DesignerToolbarSettings()
   .addDropdown({
     id: nanoid(),
     label: 'Form mode',
-    name: 'formMode',
+    propertyName: 'formMode',
     dataSourceType: 'values',
     values: [
       { id: nanoid(), label: 'Edit', value: 'edit' },
       { id: nanoid(), label: 'Readonly', value: 'readonly' },
     ],
   })
-  .addSectionSeparator({ id: nanoid(), name: 'separatorModalFooterStart', label: 'Modal footer' })
+  .addSectionSeparator({ id: nanoid(), propertyName: 'separatorModalFooterStart', label: 'Modal footer' })
   .addDropdown({
     id: nanoid(),
-    name: 'footerButtons',
+    propertyName: 'footerButtons',
     label: 'Buttons type',
     dataSourceType: 'values',
     values: [
@@ -65,13 +65,13 @@ export const dialogArgumentsForm = new DesignerToolbarSettings()
   })
   .addCheckbox({
     id: 'c815c322-ba5d-4062-9736-e5d03c724134',
-    name: 'showModalFooter',
+    propertyName: 'showModalFooter',
     label: 'Show Modal Buttons',
     hidden: true,
   })
   .addDropdown({
     id: 'f15848e8-87fa-4d76-b5a4-8548b8c2dd8b',
-    name: 'submitHttpVerb',
+    propertyName: 'submitHttpVerb',
     label: 'Submit Http Verb',
     values: [
       {
@@ -86,20 +86,20 @@ export const dialogArgumentsForm = new DesignerToolbarSettings()
       },
     ],
     dataSourceType: 'values',
-    customVisibility: 'return data.showModalFooter === true || data.footerButtons === "default" || !data.footerButtons',
+    hidden: {_code: 'return !(getSettingValue(data?.showModalFooter) === true || getSettingValue(data?.footerButtons) === "default" || !getSettingValue(data?.footerButtons));', _mode: 'code', _value: false},
     defaultValue: 'POST',
     useRawValues: true,
   })
   .addButtons({
     id: nanoid(),
-    name: 'buttons',
-    customVisibility: 'return data.footerButtons === "custom"',
+    propertyName: 'buttons',
+    hidden: {_code: 'return !(getSettingValue(data?.footerButtons) === "custom");', _mode: 'code', _value: false},
     label: 'Configure Modal Buttons',
   })
-  .addSectionSeparator({ id: nanoid(), name: 'separatorModalFooterEnd' })
+  .addSectionSeparator({ id: nanoid(), propertyName: 'separatorModalFooterEnd' })
   .addLabelValueEditor({
     id: 'b395c0e9-dbc1-44f1-8fef-c18a49442871',
-    name: 'additionalProperties',
+    propertyName: 'additionalProperties',
     label: 'Additional properties',
     labelTitle: 'Key',
     labelName: 'key',
@@ -111,7 +111,7 @@ export const dialogArgumentsForm = new DesignerToolbarSettings()
   })
   .addDropdown({
     id: '264903ff-b525-4a6e-893f-d560b219df9d',
-    name: 'modalWidth',
+    propertyName: 'modalWidth',
     label: 'Dialog Width (%)',
     allowClear: true,
     values: [
@@ -140,7 +140,7 @@ export const dialogArgumentsForm = new DesignerToolbarSettings()
   })
   .addDropdown({
     id: nanoid(),
-    name: 'widthUnits',
+    propertyName: 'widthUnits',
     label: 'Units',
     allowClear: true,
     values: [
@@ -156,13 +156,13 @@ export const dialogArgumentsForm = new DesignerToolbarSettings()
       },
     ],
     dataSourceType: 'values',
-    customVisibility: 'return data.modalWidth === "custom"',
+    hidden: {_code: 'return !(getSettingValue(data?.modalWidth) === "custom");', _mode: 'code', _value: false},
   })
   .addNumberField({
     id: nanoid(),
-    name: 'customWidth',
+    propertyName: 'customWidth',
     label: 'Enter Custom Width',
-    customVisibility: 'return data.modalWidth === "custom" && data.widthUnits',
+    hidden: {_code: 'return !(getSettingValue(data?.modalWidth) === "custom" && getSettingValue(data?.widthUnits));', _mode: 'code', _value: false},
     min: 0,
   })
   .toJson();

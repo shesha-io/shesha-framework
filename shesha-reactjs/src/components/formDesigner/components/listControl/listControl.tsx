@@ -518,7 +518,7 @@ const ListControl: FC<IListControlProps> = (props) => {
     }
     return (
       <SubFormProvider
-        name={`${localName}`}
+        propertyName={`${localName}`}
         markup={{ components: formConfiguration?.markup, formSettings: formConfiguration?.settings }}
         properties={[]}
         labelCol={localLabelCol}
@@ -577,9 +577,8 @@ const ListControl: FC<IListControlProps> = (props) => {
             </Show>
 
             <ButtonGroup
-              items={buttons || []}
-              name={''}
               type={''}
+              items={buttons || []}
               id={containerId}
               size="small"
               isInline={isButtonInline}

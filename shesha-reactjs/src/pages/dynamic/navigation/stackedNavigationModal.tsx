@@ -50,7 +50,7 @@ const StackedNavigationModal: FC<IStackedNavigationModalProps> = ({
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span>
               <Link href={`${removeURLParameter(router?.asPath, 'navMode')}`}>
-                <a>{title}</a>
+                {title}
               </Link>
             </span>
 

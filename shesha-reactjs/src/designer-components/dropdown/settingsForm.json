@@ -3,13 +3,12 @@
     {
       "id": "xjb9Aq4cAijce1v8OhZ0a",
       "type": "collapsiblePanel",
-      "name": "pnlDisplay",
+      "propertyName": "pnlDisplay",
       "label": "Display",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
       "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 1,
       "expandIconPosition": "left",
@@ -22,10 +21,10 @@
         "components": [
           {
             "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
-            "type": "propertyAutocomplete",
-            "name": "name",
+            "type": "contextPropertyAutocomplete",
+            "propertyName": "propertyName",
             "parentId": "WngUqinrTrAiWGINTk0z6",
-            "label": "Name",
+            "label": "Property name",
             "required": true,
             "validate": {
               "required": true
@@ -34,7 +33,7 @@
           {
             "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
             "type": "textField",
-            "name": "label",
+            "propertyName": "label",
             "parentId": "WngUqinrTrAiWGINTk0z6",
             "label": "Label",
             "version": 0,
@@ -43,7 +42,7 @@
           {
             "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
             "type": "dropdown",
-            "name": "labelAlign",
+            "propertyName": "labelAlign",
             "parentId": "WngUqinrTrAiWGINTk0z6",
             "label": "Label align",
             "values": [
@@ -67,12 +66,11 @@
             "textType": "text",
             "id": "VSSp87LcgvY8-B6nQN93T",
             "type": "textField",
-            "name": "placeholder",
+            "propertyName": "placeholder",
             "label": "Placeholder",
             "labelAlign": "right",
             "parentId": "WngUqinrTrAiWGINTk0z6",
             "hidden": false,
-            "customVisibility": null,
             "validate": {},
             "settingsValidationErrors": [],
             "version": 0
@@ -80,12 +78,11 @@
           {
             "id": "vdHXORT_t16LbITksJNtm",
             "type": "textArea",
-            "name": "description",
+            "propertyName": "description",
             "label": "Description",
             "labelAlign": "right",
             "parentId": "WngUqinrTrAiWGINTk0z6",
             "hidden": false,
-            "customVisibility": null,
             "autoSize": false,
             "showCount": false,
             "allowClear": false,
@@ -95,7 +92,7 @@
           {
             "id": "df8a8f35-a50b-42f9-9642-73d390ceddbf",
             "type": "dropdown",
-            "name": "visibility",
+            "propertyName": "visibility",
             "parentId": "WngUqinrTrAiWGINTk0z6",
             "label": "Visibility",
             "description": "This property will eventually replace the 'hidden' property and other properties that toggle visibility on the UI and payload",
@@ -125,39 +122,38 @@
           {
             "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
             "type": "checkbox",
-            "name": "hidden",
+            "propertyName": "hidden",
             "parentId": "WngUqinrTrAiWGINTk0z6",
             "label": "Hidden"
           },
           {
             "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
             "type": "checkbox",
-            "name": "hideLabel",
+            "propertyName": "hideLabel",
             "parentId": "WngUqinrTrAiWGINTk0z6",
             "label": "Hide Label"
           },
           {
             "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
             "type": "checkbox",
-            "name": "disabled",
+            "propertyName": "disabled",
             "parentId": "WngUqinrTrAiWGINTk0z6",
             "label": "Disabled"
           },
           {
             "id": "1ceb3851-f15e-437b-98b6-84d6a1fbf801",
             "type": "checkbox",
-            "name": "readOnly",
+            "propertyName": "readOnly",
             "parentId": "WngUqinrTrAiWGINTk0z6",
             "label": "Read Only"
           },
           {
             "id": "c67b7404-d980-437a-a544-74e4e816f6cd",
             "type": "checkbox",
-            "name": "hideBorder",
+            "propertyName": "hideBorder",
             "label": "Hide border",
             "parentId": "WngUqinrTrAiWGINTk0z6",
             "hidden": false,
-            "customVisibility": null,
             "validate": {}
           }
         ]
@@ -165,169 +161,17 @@
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
-      "components": [
-        {
-          "id": "L3eN-eBeygd1JF9CcFTSb",
-          "components": []
-        },
-        {
-          "id": "WngUqinrTrAiWGINTk0z6",
-          "components": [
-            {
-              "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
-              "type": "propertyAutocomplete",
-              "name": "name",
-              "parentId": "WngUqinrTrAiWGINTk0z6",
-              "label": "Name",
-              "required": true,
-              "validate": {
-                "required": true
-              }
-            },
-            {
-              "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
-              "type": "textField",
-              "name": "label",
-              "parentId": "WngUqinrTrAiWGINTk0z6",
-              "label": "Label",
-              "version": 0,
-              "textType": "text"
-            },
-            {
-              "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
-              "type": "dropdown",
-              "name": "labelAlign",
-              "parentId": "WngUqinrTrAiWGINTk0z6",
-              "label": "Label align",
-              "values": [
-                {
-                  "label": "left",
-                  "value": "left",
-                  "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
-                },
-                {
-                  "label": "right",
-                  "value": "right",
-                  "id": "b920ef96-ae27-4a01-bfad-b5b7d07218da"
-                }
-              ],
-              "dataSourceType": "values",
-              "version": 1,
-              "useRawValues": false,
-              "referenceListId": null
-            },
-            {
-              "textType": "text",
-              "id": "VSSp87LcgvY8-B6nQN93T",
-              "type": "textField",
-              "name": "placeholder",
-              "label": "Placeholder",
-              "labelAlign": "right",
-              "parentId": "WngUqinrTrAiWGINTk0z6",
-              "hidden": false,
-              "customVisibility": null,
-              "validate": {},
-              "settingsValidationErrors": [],
-              "version": 0
-            },
-            {
-              "id": "vdHXORT_t16LbITksJNtm",
-              "type": "textArea",
-              "name": "description",
-              "label": "Description",
-              "labelAlign": "right",
-              "parentId": "WngUqinrTrAiWGINTk0z6",
-              "hidden": false,
-              "customVisibility": null,
-              "autoSize": false,
-              "showCount": false,
-              "allowClear": false,
-              "validate": {},
-              "settingsValidationErrors": []
-            },
-            {
-              "id": "df8a8f35-a50b-42f9-9642-73d390ceddbf",
-              "type": "dropdown",
-              "name": "visibility",
-              "parentId": "WngUqinrTrAiWGINTk0z6",
-              "label": "Visibility",
-              "description": "This property will eventually replace the 'hidden' property and other properties that toggle visibility on the UI and payload",
-              "allowClear": true,
-              "values": [
-                {
-                  "label": "Yes (Display in UI and include in payload)",
-                  "value": "Yes",
-                  "id": "53cd10ce-26af-474b-af75-8e7b1f19e51d"
-                },
-                {
-                  "label": "No (Only include in payload)",
-                  "value": "No",
-                  "id": "f07a228c-cb9c-4da7-a8bc-bc2be518a058"
-                },
-                {
-                  "label": "Removed (Remove from UI and exlude from payload)",
-                  "value": "Removed",
-                  "id": "3b6282ee-2eee-47ec-bab9-4cba52b970a0"
-                }
-              ],
-              "dataSourceType": "values",
-              "version": 1,
-              "useRawValues": false,
-              "referenceListId": null
-            },
-            {
-              "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
-              "type": "checkbox",
-              "name": "hidden",
-              "parentId": "WngUqinrTrAiWGINTk0z6",
-              "label": "Hidden"
-            },
-            {
-              "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
-              "type": "checkbox",
-              "name": "hideLabel",
-              "parentId": "WngUqinrTrAiWGINTk0z6",
-              "label": "Hide Label"
-            },
-            {
-              "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
-              "type": "checkbox",
-              "name": "disabled",
-              "parentId": "WngUqinrTrAiWGINTk0z6",
-              "label": "Disabled"
-            },
-            {
-              "id": "1ceb3851-f15e-437b-98b6-84d6a1fbf801",
-              "type": "checkbox",
-              "name": "readOnly",
-              "parentId": "WngUqinrTrAiWGINTk0z6",
-              "label": "Read Only"
-            },
-            {
-              "id": "c67b7404-d980-437a-a544-74e4e816f6cd",
-              "type": "checkbox",
-              "name": "hideBorder",
-              "label": "Hide border",
-              "parentId": "WngUqinrTrAiWGINTk0z6",
-              "hidden": false,
-              "customVisibility": null,
-              "validate": {}
-            }
-          ]
-        }
-      ]
+      "settingsValidationErrors": []
     },
     {
       "id": "vo4MNuVku-MPmfaD-6JZN",
       "type": "collapsiblePanel",
-      "name": "pnlData",
+      "propertyName": "pnlData",
       "label": "Data",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
       "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 1,
       "expandIconPosition": "left",
@@ -341,7 +185,7 @@
           {
             "id": "fbdb6bb1-5994-4205-86b4-236ca61ae53e",
             "type": "numberField",
-            "name": "defaultValue",
+            "propertyName": "defaultValue",
             "parentId": "PSXX7u5GWT0W8RXnVW3Ao",
             "label": "Default Value",
             "validate": {},
@@ -351,7 +195,7 @@
           {
             "id": "d2648d0e-4664-4fee-ab4a-b14e556d957b",
             "type": "dropdown",
-            "name": "mode",
+            "propertyName": "mode",
             "parentId": "PSXX7u5GWT0W8RXnVW3Ao",
             "label": "Mode",
             "values": [
@@ -372,7 +216,9 @@
               }
             ],
             "dataSourceType": "values",
-            "defaultValue": ["single"],
+            "defaultValue": [
+              "single"
+            ],
             "version": 1,
             "useRawValues": false,
             "referenceListId": null
@@ -380,7 +226,7 @@
           {
             "id": "bf5660d5-cae0-4df9-99f2-cbaf941ae7c7",
             "type": "dropdown",
-            "name": "dataSourceType",
+            "propertyName": "dataSourceType",
             "parentId": "PSXX7u5GWT0W8RXnVW3Ao",
             "label": "DataSource type",
             "values": [
@@ -403,12 +249,11 @@
           {
             "id": "ELxx5jarWvInJXJF5xHN2",
             "type": "container",
-            "name": "container1",
+            "propertyName": "container1",
             "label": "Container1",
             "labelAlign": "right",
             "parentId": "PSXX7u5GWT0W8RXnVW3Ao",
-            "hidden": false,
-            "customVisibility": "return data.dataSourceType === 'referenceList'",
+            "hidden": {"_code": "return  getSettingValue(data.dataSourceType) !== 'referenceList';", "_mode": "code", "_value": false},
             "direction": "vertical",
             "justifyContent": "left",
             "settingsValidationErrors": [],
@@ -416,13 +261,12 @@
               {
                 "id": "JS9cXXL4J7k7Ncms20CmX",
                 "type": "referenceListAutocomplete",
-                "name": "referenceListId",
+                "propertyName": "referenceListId",
                 "label": "Reference List",
                 "labelAlign": "right",
                 "parentId": "ELxx5jarWvInJXJF5xHN2",
                 "hidden": false,
                 "visibility": "Yes",
-                "customVisibility": null,
                 "isDynamic": false,
                 "version": 0,
                 "convertToFullId": true,
@@ -436,12 +280,11 @@
               {
                 "id": "e1xQrrBshDPQOwaaASyqe",
                 "type": "queryBuilder",
-                "name": "filter",
+                "propertyName": "filter",
                 "label": "Items Filter",
                 "labelAlign": "right",
                 "parentId": "ELxx5jarWvInJXJF5xHN2",
                 "hidden": false,
-                "customVisibility": null,
                 "isDynamic": false,
                 "validate": {},
                 "settingsValidationErrors": [],
@@ -450,19 +293,18 @@
               {
                 "id": "9JXKnC0XHz9xIvoxfQ-AK",
                 "type": "checkbox",
-                "name": "useRawValues",
+                "propertyName": "useRawValues",
                 "label": "Use raw values",
                 "labelAlign": "right",
                 "parentId": "ELxx5jarWvInJXJF5xHN2",
                 "hidden": false,
-                "customVisibility": null,
                 "validate": {},
                 "settingsValidationErrors": []
               },
               {
                 "id": "03959ffd-cadb-496c-bf6d-b742f7f6edc5",
                 "type": "textArea",
-                "name": "ignoredValues",
+                "propertyName": "ignoredValues",
                 "parentId": "ELxx5jarWvInJXJF5xHN2",
                 "label": "Ignored Values",
                 "autoSize": false,
@@ -477,207 +319,41 @@
           {
             "id": "99629618-d725-4690-b744-97a4b0ae3b19",
             "type": "textField",
-            "name": "dataSourceUrl",
+            "propertyName": "dataSourceUrl",
             "parentId": "PSXX7u5GWT0W8RXnVW3Ao",
             "label": "Data Source Url",
-            "customVisibility": "return data.dataSourceType === 'url'",
+            "hidden": {"_code": "return  getSettingValue(data.dataSourceType) !== 'url';", "_mode": "code", "_value": false},
             "version": 0,
             "textType": "text"
           },
           {
             "id": "757ea243-a811-4110-a492-16fa3fbe702d",
             "type": "labelValueEditor",
-            "name": "values",
+            "propertyName": "values",
             "parentId": "PSXX7u5GWT0W8RXnVW3Ao",
             "label": "Values",
             "labelTitle": "Label",
             "labelName": "label",
             "valueTitle": "Value",
             "valueName": "value",
-            "customVisibility": "return data.dataSourceType === 'values'"
+            "hidden": {"_code": "return  getSettingValue(data.dataSourceType) !== 'values';", "_mode": "code", "_value": false}
           }
         ]
       },
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
-      "components": [
-        {
-          "id": "PSXX7u5GWT0W8RXnVW3Ao",
-          "components": [
-            {
-              "id": "fbdb6bb1-5994-4205-86b4-236ca61ae53e",
-              "type": "numberField",
-              "name": "defaultValue",
-              "parentId": "PSXX7u5GWT0W8RXnVW3Ao",
-              "label": "Default Value",
-              "validate": {},
-              "settingsValidationErrors": [],
-              "description": "Enter default value of component. (formData, formMode, globalState) are exposed"
-            },
-            {
-              "id": "d2648d0e-4664-4fee-ab4a-b14e556d957b",
-              "type": "dropdown",
-              "name": "mode",
-              "parentId": "PSXX7u5GWT0W8RXnVW3Ao",
-              "label": "Mode",
-              "values": [
-                {
-                  "label": "single",
-                  "value": "single",
-                  "id": "b920ef96-ae27-4a01-bfad-b5b7d07238da"
-                },
-                {
-                  "label": "tags",
-                  "value": "tags",
-                  "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
-                },
-                {
-                  "label": "multiple",
-                  "value": "multiple",
-                  "id": "b920ef96-ae27-4a01-bfad-b5b7d07218da"
-                }
-              ],
-              "dataSourceType": "values",
-              "defaultValue": ["single"],
-              "version": 1,
-              "useRawValues": false,
-              "referenceListId": null
-            },
-            {
-              "id": "bf5660d5-cae0-4df9-99f2-cbaf941ae7c7",
-              "type": "dropdown",
-              "name": "dataSourceType",
-              "parentId": "PSXX7u5GWT0W8RXnVW3Ao",
-              "label": "DataSource type",
-              "values": [
-                {
-                  "id": "ce8f93c6-e43e-42fe-969e-53a50c05cb49",
-                  "label": "Values",
-                  "value": "values"
-                },
-                {
-                  "id": "55400fd2-99eb-4bf8-ae0b-a969b326a4e3",
-                  "label": "Reference List",
-                  "value": "referenceList"
-                }
-              ],
-              "dataSourceType": "values",
-              "version": 1,
-              "useRawValues": false,
-              "referenceListId": null
-            },
-            {
-              "id": "ELxx5jarWvInJXJF5xHN2",
-              "type": "container",
-              "name": "container1",
-              "label": "Container1",
-              "labelAlign": "right",
-              "parentId": "PSXX7u5GWT0W8RXnVW3Ao",
-              "hidden": false,
-              "customVisibility": "return data.dataSourceType === 'referenceList'",
-              "direction": "vertical",
-              "justifyContent": "left",
-              "settingsValidationErrors": [],
-              "components": [
-                {
-                  "id": "JS9cXXL4J7k7Ncms20CmX",
-                  "type": "referenceListAutocomplete",
-                  "name": "referenceListId",
-                  "label": "Reference List",
-                  "labelAlign": "right",
-                  "parentId": "ELxx5jarWvInJXJF5xHN2",
-                  "hidden": false,
-                  "visibility": "Yes",
-                  "customVisibility": null,
-                  "isDynamic": false,
-                  "version": 0,
-                  "convertToFullId": true,
-                  "placeholder": "",
-                  "description": "",
-                  "validate": {
-                    "message": ""
-                  },
-                  "settingsValidationErrors": []
-                },
-                {
-                  "id": "e1xQrrBshDPQOwaaASyqe",
-                  "type": "queryBuilder",
-                  "name": "filter",
-                  "label": "Items Filter",
-                  "labelAlign": "right",
-                  "parentId": "ELxx5jarWvInJXJF5xHN2",
-                  "hidden": false,
-                  "customVisibility": null,
-                  "isDynamic": false,
-                  "validate": {},
-                  "settingsValidationErrors": [],
-                  "modelType": "Shesha.Framework.ReferenceListItem"
-                },
-                {
-                  "id": "9JXKnC0XHz9xIvoxfQ-AK",
-                  "type": "checkbox",
-                  "name": "useRawValues",
-                  "label": "Use raw values",
-                  "labelAlign": "right",
-                  "parentId": "ELxx5jarWvInJXJF5xHN2",
-                  "hidden": false,
-                  "customVisibility": null,
-                  "validate": {},
-                  "settingsValidationErrors": []
-                },
-                {
-                  "id": "03959ffd-cadb-496c-bf6d-b742f7f6edc5",
-                  "type": "textArea",
-                  "name": "ignoredValues",
-                  "parentId": "ELxx5jarWvInJXJF5xHN2",
-                  "label": "Ignored Values",
-                  "autoSize": false,
-                  "showCount": false,
-                  "allowClear": true,
-                  "description": "Pass an integer array of values you want to ignore like so: [1, 2, 3]. Each represents ReferenceList.ItemValue"
-                }
-              ],
-              "version": 0,
-              "flexWrap": "wrap"
-            },
-            {
-              "id": "99629618-d725-4690-b744-97a4b0ae3b19",
-              "type": "textField",
-              "name": "dataSourceUrl",
-              "parentId": "PSXX7u5GWT0W8RXnVW3Ao",
-              "label": "Data Source Url",
-              "customVisibility": "return data.dataSourceType === 'url'",
-              "version": 0,
-              "textType": "text"
-            },
-            {
-              "id": "757ea243-a811-4110-a492-16fa3fbe702d",
-              "type": "labelValueEditor",
-              "name": "values",
-              "parentId": "PSXX7u5GWT0W8RXnVW3Ao",
-              "label": "Values",
-              "labelTitle": "Label",
-              "labelName": "label",
-              "valueTitle": "Value",
-              "valueName": "value",
-              "customVisibility": "return data.dataSourceType === 'values'"
-            }
-          ]
-        }
-      ]
+      "settingsValidationErrors": []
     },
     {
       "id": "75yJPi5tyshcrOt3me9mS",
       "type": "collapsiblePanel",
-      "name": "pnlEvents",
+      "propertyName": "pnlEvents",
       "label": "Events",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
       "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 1,
       "expandIconPosition": "left",
@@ -691,13 +367,12 @@
           {
             "id": "b9269416-3b78-42c4-934e-3e0dac8c7f01",
             "type": "codeEditor",
-            "name": "onChangeCustom",
+            "propertyName": "onChangeCustom",
             "label": "On Change",
             "labelAlign": "right",
             "parentId": "Vd8kaikjalJkbFuqN5U3I",
             "hidden": false,
-            "customVisibility": null,
-            "description": "Enter custom event handler on changing of event. (form, value, option) are exposed",
+            "description": "Enter custom eventhandler on changing of event. (form, value, option) are exposed",
             "validate": {},
             "settingsValidationErrors": [],
             "exposedVariables": [
@@ -763,95 +438,17 @@
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
-      "components": [
-        {
-          "id": "Vd8kaikjalJkbFuqN5U3I",
-          "components": [
-            {
-              "id": "b9269416-3b78-42c4-934e-3e0dac8c7f01",
-              "type": "codeEditor",
-              "name": "onChangeCustom",
-              "label": "On Change",
-              "labelAlign": "right",
-              "parentId": "Vd8kaikjalJkbFuqN5U3I",
-              "hidden": false,
-              "customVisibility": null,
-              "description": "Enter custom event handler on changing of event. (form, value, option) are exposed",
-              "validate": {},
-              "settingsValidationErrors": [],
-              "exposedVariables": [
-                {
-                  "name": "data",
-                  "description": "Selected form values",
-                  "type": "object"
-                },
-                {
-                  "name": "form",
-                  "description": "Form instance",
-                  "type": "FormInstance"
-                },
-                {
-                  "name": "formMode",
-                  "description": "The form mode",
-                  "type": "'readonly' | 'edit' | 'designer'"
-                },
-                {
-                  "name": "globalState",
-                  "description": "The global state of the application",
-                  "type": "object"
-                },
-                {
-                  "name": "http",
-                  "description": "axios instance used to make http requests",
-                  "type": "object"
-                },
-                {
-                  "name": "message",
-                  "description": "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
-                  "type": "object"
-                },
-                {
-                  "name": "moment",
-                  "description": "The moment.js object",
-                  "type": "object"
-                },
-                {
-                  "name": "option",
-                  "description": "Meta data of component current value",
-                  "type": "object"
-                },
-                {
-                  "name": "value",
-                  "description": "Component current value",
-                  "type": "string | any"
-                },
-                {
-                  "name": "setFormData",
-                  "description": "A function used to update the form data",
-                  "type": "({ values: object, mergeValues: boolean}) => void"
-                },
-                {
-                  "name": "setGlobalState",
-                  "description": "Setting the global state of the application",
-                  "type": "(payload: { key: string, data: any } ) => void"
-                }
-              ]
-            }
-          ]
-        }
-      ]
+      "settingsValidationErrors": []
     },
     {
       "id": "AASvPn3ioEAnbsJqvV5_c",
       "type": "collapsiblePanel",
-      "name": "pnlValidation",
+      "propertyName": "pnlValidation",
       "label": "Validation",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
       "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 1,
       "expandIconPosition": "left",
@@ -865,7 +462,7 @@
           {
             "id": "3be9da3f-f47e-48ae-b4c3-f5cc36e534d9",
             "type": "checkbox",
-            "name": "validate.required",
+            "propertyName": "validate.required",
             "parentId": "tGXA95wmOf54IsiPT-WgW",
             "label": "Required"
           }
@@ -874,32 +471,17 @@
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
-      "components": [
-        {
-          "id": "tGXA95wmOf54IsiPT-WgW",
-          "components": [
-            {
-              "id": "3be9da3f-f47e-48ae-b4c3-f5cc36e534d9",
-              "type": "checkbox",
-              "name": "validate.required",
-              "parentId": "tGXA95wmOf54IsiPT-WgW",
-              "label": "Required"
-            }
-          ]
-        }
-      ]
+      "settingsValidationErrors": []
     },
     {
       "id": "Mozdwwy7lEfcuptdyLjTw",
       "type": "collapsiblePanel",
-      "name": "pnlStyle",
+      "propertyName": "pnlStyle",
       "label": "Style",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
       "visibility": "Yes",
-      "customVisibility": null,
       "isDynamic": false,
       "version": 1,
       "expandIconPosition": "left",
@@ -913,7 +495,7 @@
           {
             "id": "06ab0599-914d-4d2d-875c-765a495472f8",
             "type": "codeEditor",
-            "name": "style",
+            "propertyName": "style",
             "label": "Style",
             "parentId": "eAyxVPfzY3iiPI_FDfs83",
             "validate": {},
@@ -921,7 +503,7 @@
             "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
             "exposedVariables": [
               {
-                "name": "data",
+                "propertyName": "data",
                 "description": "Form values",
                 "type": "object"
               }
@@ -930,7 +512,7 @@
           {
             "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
             "type": "dropdown",
-            "name": "size",
+            "propertyName": "size",
             "parentId": "eAyxVPfzY3iiPI_FDfs83",
             "label": "Size",
             "allowClear": true,
@@ -961,194 +543,7 @@
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
-      "components": [
-        {
-          "id": "eAyxVPfzY3iiPI_FDfs83",
-          "components": [
-            {
-              "id": "06ab0599-914d-4d2d-875c-765a495472f8",
-              "type": "codeEditor",
-              "name": "style",
-              "label": "Style",
-              "parentId": "eAyxVPfzY3iiPI_FDfs83",
-              "validate": {},
-              "settingsValidationErrors": [],
-              "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
-              "exposedVariables": [
-                {
-                  "name": "data",
-                  "description": "Form values",
-                  "type": "object"
-                }
-              ]
-            },
-            {
-              "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
-              "type": "dropdown",
-              "name": "size",
-              "parentId": "eAyxVPfzY3iiPI_FDfs83",
-              "label": "Size",
-              "allowClear": true,
-              "values": [
-                {
-                  "label": "Small",
-                  "value": "small",
-                  "id": "4f11403c-95fd-4e49-bb60-cb8c25f0f3c3"
-                },
-                {
-                  "label": "Middle",
-                  "value": "middle",
-                  "id": "8f85c476-e632-4fa7-89ad-2be6cfb7f1f1"
-                },
-                {
-                  "label": "Large",
-                  "value": "large",
-                  "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
-                }
-              ],
-              "dataSourceType": "values",
-              "version": 1,
-              "useRawValues": false,
-              "referenceListId": null
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "z45Ou_QOseE-wDSSZdP4q",
-      "type": "collapsiblePanel",
-      "name": "pnlVisibility",
-      "label": "Visibility",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "visibility": "Yes",
-      "customVisibility": null,
-      "isDynamic": false,
-      "version": 1,
-      "expandIconPosition": "left",
-      "header": {
-        "id": "4blGbeWkg3LeTLRte1HpP",
-        "components": []
-      },
-      "content": {
-        "id": "rkUJUseE_8rbErfhs5LnB",
-        "components": [
-          {
-            "id": "82adc640-2855-4587-adb6-416c8b32fb2f",
-            "type": "codeEditor",
-            "name": "customVisibility",
-            "label": "Custom Visibility",
-            "labelAlign": "right",
-            "parentId": "rkUJUseE_8rbErfhs5LnB",
-            "hidden": false,
-            "customVisibility": null,
-            "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-            "validate": {},
-            "settingsValidationErrors": [],
-            "exposedVariables": [
-              {
-                "name": "value",
-                "description": "Component current value",
-                "type": "string | any"
-              },
-              {
-                "name": "data",
-                "description": "Selected form values",
-                "type": "object"
-              }
-            ]
-          },
-          {
-            "id": "4b5e5951-4998-4635-b1c8-0b6d3940c300",
-            "type": "codeEditor",
-            "name": "customEnabled",
-            "label": "Custom Enabled",
-            "labelAlign": "right",
-            "parentId": "rkUJUseE_8rbErfhs5LnB",
-            "hidden": false,
-            "customEnabled": null,
-            "description": "Enter custom enabled code.  You must return true to enable the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-            "validate": {},
-            "settingsValidationErrors": [],
-            "exposedVariables": [
-              {
-                "name": "value",
-                "description": "Component current value",
-                "type": "string | any"
-              },
-              {
-                "name": "data",
-                "description": "Selected form values",
-                "type": "object"
-              }
-            ]
-          }
-        ]
-      },
-      "collapsible": "header",
-      "ghost": true,
-      "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
-      "components": [
-        {
-          "id": "rkUJUseE_8rbErfhs5LnB",
-          "components": [
-            {
-              "id": "82adc640-2855-4587-adb6-416c8b32fb2f",
-              "type": "codeEditor",
-              "name": "customVisibility",
-              "label": "Custom Visibility",
-              "labelAlign": "right",
-              "parentId": "rkUJUseE_8rbErfhs5LnB",
-              "hidden": false,
-              "customVisibility": null,
-              "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-              "validate": {},
-              "settingsValidationErrors": [],
-              "exposedVariables": [
-                {
-                  "name": "value",
-                  "description": "Component current value",
-                  "type": "string | any"
-                },
-                {
-                  "name": "data",
-                  "description": "Selected form values",
-                  "type": "object"
-                }
-              ]
-            },
-            {
-              "id": "4b5e5951-4998-4635-b1c8-0b6d3940c300",
-              "type": "codeEditor",
-              "name": "customEnabled",
-              "label": "Custom Enabled",
-              "labelAlign": "right",
-              "parentId": "rkUJUseE_8rbErfhs5LnB",
-              "hidden": false,
-              "customEnabled": null,
-              "description": "Enter custom enabled code.  You must return true to enable the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-              "validate": {},
-              "settingsValidationErrors": [],
-              "exposedVariables": [
-                {
-                  "name": "value",
-                  "description": "Component current value",
-                  "type": "string | any"
-                },
-                {
-                  "name": "data",
-                  "description": "Selected form values",
-                  "type": "object"
-                }
-              ]
-            }
-          ]
-        }
-      ]
+      "settingsValidationErrors": []
     }
   ],
   "formSettings": {

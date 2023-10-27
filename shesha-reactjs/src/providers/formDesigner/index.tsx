@@ -53,6 +53,8 @@ import {
   UndoableFormDesignerStateContext,
 } from './contexts';
 import formReducer from './reducer';
+import { useDataContextManager } from 'providers/dataContextManager';
+import { IDataContextFullInstance } from 'providers/dataContextProvider';
 
 export interface IFormDesignerProviderProps {
   flatComponents: IFlatComponentsStructure;
@@ -80,6 +82,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   };
 
   const { activateProvider } = useMetadataDispatcher(false) ?? {};
+  const { setActiveContext } = useDataContextManager(false) ?? {};
 
   const [state, dispatch] = useThunkReducer(formReducer, {
     past: [],
@@ -175,8 +178,20 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
     return components;
   };
 
+  const getParentComponent = (componentId: string, type: string) => {
+    let component = statePresent.allComponents[componentId];
+    
+    while (!!component) {
+      component = statePresent.allComponents[component.parentId];
+      if (component?.type === type)
+        return component;
+    }
+
+    return null;
+  };
+
+
   const setFlatComponents = (flatComponents: IFlatComponentsStructure) => {
-    console.log('LOG: setFlatComponents');
     dispatch((dispatchThunk, _getState) => {
       dispatchThunk(setFlatComponentsAction(flatComponents));
       dispatchThunk(UndoableActionCreators.clearHistory());
@@ -219,8 +234,9 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
     dispatch(UndoableActionCreators.redo());
   };
 
-  const setSelectedComponent = (componentId: string, dataSourceId: string, componentRef?: MutableRefObject<any>) => {
+  const setSelectedComponent = (componentId: string, dataSourceId: string, dataContext: IDataContextFullInstance, componentRef?: MutableRefObject<any>) => {
     if (activateProvider) activateProvider(dataSourceId);
+    if (setActiveContext) setActiveContext(dataContext.id);
     dispatch(setSelectedComponentAction({ id: componentId, dataSourceId, componentRef }));
   };
 
@@ -275,6 +291,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
     setActiveDataSource,
     getActiveDataSource,
     setReadOnly,
+    getParentComponent
     /* NEW_ACTION_GOES_HERE */
   };
 

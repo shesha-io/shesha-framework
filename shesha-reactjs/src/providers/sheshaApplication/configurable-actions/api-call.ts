@@ -31,7 +31,7 @@ const HttpVerbs: Method[] = ['get',
 export const apiCallArgumentsForm = new DesignerToolbarSettings()
   .addDropdown({
     id: nanoid(),
-    name: 'verb',
+    propertyName: 'verb',
     label: 'Http Verb',
     useRawValues: true,
     dataSourceType: 'values',
@@ -40,14 +40,14 @@ export const apiCallArgumentsForm = new DesignerToolbarSettings()
   })
   .addEndpointsAutocomplete({
     id: nanoid(),
-    name: 'url',
+    propertyName: 'url',
     label: 'URL',
     description: 'Relative or absolute URL of the API endpoint. Relative ones will be send to the current back-end. Absolute URLs can be used for external applications.',
     httpVerb: "{data.verb}",    
   })
   .addLabelValueEditor({
     id: nanoid(),
-    name: 'parameters',
+    propertyName: 'parameters',
     label: 'Parameters',
     description: 'Request parameters. They will be included into the request as query string or body depending on the selected verb.',
     labelName: 'key',
@@ -57,14 +57,14 @@ export const apiCallArgumentsForm = new DesignerToolbarSettings()
   })
   .addCheckbox({
     id: nanoid(),
-    name: 'sendStandardHeaders',
+    propertyName: 'sendStandardHeaders',
     label: 'Send standard headers',
     description: 'Allow to send standard application headers including authentication. Note: it may be unsafe to send these headers to external applications.',
     defaultValue: true,
   })
   .addLabelValueEditor({
     id: nanoid(),
-    name: 'headers',
+    propertyName: 'headers',
     label: 'Headers',
     labelName: 'key',
     labelTitle: 'Key',

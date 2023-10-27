@@ -1,4 +1,5 @@
 import { createContext } from 'react';
+import { Row } from 'react-table';
 import { IDictionary, IFlagsSetters, IFlagsState } from '../../interfaces';
 import { IConfigurableColumnsProps } from '../datatableColumnsConfigurator/models';
 import {
@@ -10,8 +11,22 @@ import {
   ITableColumn,
   ITableFilter,
   IndexColumnFilterOption,
+  GroupingItem,
+  SortMode,
+  ColumnSorting,
+  ITableDataColumn,
 } from './interfaces';
 import { IHasModelType, IRepository } from './repository/interfaces';
+
+/** Table Selection */
+
+export interface ISelectionProps {
+  index?: number;
+  id?: string;
+  row: any;
+}
+
+/** Table context */
 
 export type IFlagProgressFlags =
   | 'isFiltering'
@@ -68,9 +83,14 @@ export interface IDataTableStateContext
 
   /** table columns */
   columns?: ITableColumn[];
+  groupingColumns: ITableDataColumn[];
 
   /** Datatable data (fetched from the back-end) */
   tableData?: object[];
+  /** Default sort by */
+  defaultSortBy?: string;
+  /** Default sort order */
+  defaultSortOrder?: string;
   /** Selected page size */
   selectedPageSize?: number;
   /** Data fetching mode (paging or fetch all) */
@@ -87,7 +107,17 @@ export interface IDataTableStateContext
   /** Quick search string */
   quickSearch?: string;
   /** Columns sorting */
-  tableSorting?: IColumnSorting[];
+  standardSorting?: IColumnSorting[];
+  userSorting?: IColumnSorting[];
+
+  /** Rows grouping */
+  grouping?: GroupingItem[];
+  /** Sort mode (standard or strict) */
+  sortMode?: SortMode;
+  /** Sort sorting: order by */
+  strictSortBy?: string;
+  /** Sort sorting: sorting order */
+  strictSortOrder?: ColumnSorting;
 
   /** Available page sizes */
   pageSizeOptions?: number[];
@@ -101,7 +131,7 @@ export interface IDataTableStateContext
   selectedStoredFilterIds?: string[];
 
   /** index of selected row */
-  selectedRow?: any;
+  //selectedRow?: any;
 
   actionedRow?: any;
 
@@ -116,7 +146,6 @@ export interface IDataTableStateContext
   //#region todo: review!
   isFetchingTableData?: boolean;
   hasFetchTableDataError?: boolean;
-  tableConfigLoaded?: boolean;
 
   properties?: string[];
 
@@ -126,11 +155,20 @@ export interface IDataTableStateContext
 
   userConfigId?: string;
   //#endregion
+
+  selectedRow?: ISelectionProps;
+  selectedRows?: { [key in string]: string }[];
+
+  allowReordering: boolean;
+  hoverRowId?: string;
+  dragState?: DragState;
 }
+
+export type DragState = 'started' | 'finished' | null;
 
 export interface IDataTableActionsContext
   extends IFlagsSetters<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags>,
-    IPublicDataTableActions {
+  IPublicDataTableActions {
   toggleColumnVisibility?: (val: string) => void;
   setCurrentPage?: (page: number) => void;
   changePageSize?: (size: number) => void;
@@ -145,7 +183,6 @@ export interface IDataTableActionsContext
   /** change quick search and refresh table data */
   performQuickSearch?: (val: string) => void;
   toggleSaveFilterModal?: (visible: boolean) => void;
-  changeSelectedRow?: (index: any) => void;
   changeActionedRow?: (data: any) => void;
   changeSelectedStoredFilterIds?: (selectedStoredFilterIds: string[]) => void;
 
@@ -161,10 +198,14 @@ export interface IDataTableActionsContext
    * Register columns in the table context. Is used for configurable tables
    */
   registerConfigurableColumns: (ownerId: string, columns: IConfigurableColumnsProps[]) => void;
+  /**
+   * Call this function to indicate that your component (table/list) require columns
+   */
+  requireColumns: () => void;
 
   changeDisplayColumn: (displayColumnName: string) => void;
   changePersistedFiltersToggle: (persistSelectedFilters: boolean) => void;
-
+  
   /**
    * Get current repository of the datatable
    */
@@ -173,6 +214,11 @@ export interface IDataTableActionsContext
    * Set row data after inline editing
    */
   setRowData: (rowIndex: number, data: any) => void;
+
+  setSelectedRow: (index: number, row: any) => void;
+  setHoverRowId: (id: string) => void;
+  setDragState: (dragState: DragState) => void;
+  setMultiSelectedRow: (rows: Row[] | Row) => void;
 }
 
 export const DATA_TABLE_CONTEXT_INITIAL_STATE: IDataTableStateContext = {
@@ -181,6 +227,7 @@ export const DATA_TABLE_CONTEXT_INITIAL_STATE: IDataTableStateContext = {
   error: {},
   actioned: {},
   columns: [],
+  groupingColumns: [],
   tableData: [],
   isFetchingTableData: false,
   hasFetchTableDataError: null,
@@ -191,8 +238,7 @@ export const DATA_TABLE_CONTEXT_INITIAL_STATE: IDataTableStateContext = {
   totalRows: null,
   totalRowsBeforeFilter: null,
   quickSearch: null,
-  tableConfigLoaded: false,
-  tableSorting: [],
+  standardSorting: [],
   tableFilter: [],
   saveFilterModalVisible: false,
   selectedIds: [],
@@ -202,10 +248,13 @@ export const DATA_TABLE_CONTEXT_INITIAL_STATE: IDataTableStateContext = {
   userConfigId: null,
   modelType: null,
   dataFetchingMode: 'paging',
+  selectedRow: null,
+  selectedRows: [],
   hiddenFilters: {},
+  allowReordering: false,
 };
 
-export interface DataTableFullInstance extends IDataTableStateContext, IDataTableActionsContext {}
+export interface DataTableFullInstance extends IDataTableStateContext, IDataTableActionsContext { }
 
 export const DataTableStateContext = createContext<IDataTableStateContext>(DATA_TABLE_CONTEXT_INITIAL_STATE);
 

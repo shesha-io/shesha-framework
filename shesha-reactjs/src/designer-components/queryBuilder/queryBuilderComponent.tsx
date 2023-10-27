@@ -10,6 +10,7 @@ import { IQueryBuilderComponentProps } from './interfaces';
 import QueryBuilderField from './queryBuilderField';
 import { QueryBuilderWithModelType } from './queryBuilderWithModelType';
 import settingsFormJson from './settingsForm.json';
+import { migrateCustomFunctions, migratePropertyName } from '../../designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -23,7 +24,10 @@ const QueryBuilderComponent: IToolboxComponent<IQueryBuilderComponentProps> = {
     return <QueryBuilder {...model} readOnly={formMode === 'readonly'}></QueryBuilder>;
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  migrator: (m) => m
+    .add<IQueryBuilderComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
+  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
 };
 
 const QueryBuilder: FC<IQueryBuilderComponentProps> = (props) => {
@@ -43,7 +47,6 @@ export const QueryBuilderComponentRenderer: FC<IQueryBuilderComponentProps> = (p
   const { fieldsUnavailableHint } = props;
 
   const queryBuilder = useQueryBuilder(false);
-
   const fieldsAvailable = Boolean(queryBuilder);
 
   if (!fieldsAvailable && formMode === 'designer' && !fieldsUnavailableHint)
@@ -55,21 +58,20 @@ export const QueryBuilderComponentRenderer: FC<IQueryBuilderComponentProps> = (p
       />
     );
 
-  const fields = queryBuilder?.fields || [];
-  const fetchFields = queryBuilder?.fetchFields;
-
   return !fieldsAvailable && fieldsUnavailableHint ? (
     <ConfigurableFormItem model={props}>
       <Typography.Text type="secondary">{fieldsUnavailableHint}</Typography.Text>
     </ConfigurableFormItem>
   ) : (
     <ConfigurableFormItem model={props}>
-      <QueryBuilderField
-        fields={fields}
-        fetchFields={fetchFields}
-        jsonExpanded={props.jsonExpanded}
-        readOnly={props.readOnly}
-      />
+      {(value, onChange) => {
+        return <QueryBuilderField
+          value={value}
+          onChange={onChange}
+          jsonExpanded={props.jsonExpanded}
+          readOnly={props.readOnly}
+        />;
+      }}
     </ConfigurableFormItem>
   );
 };

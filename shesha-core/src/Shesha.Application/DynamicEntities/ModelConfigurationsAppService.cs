@@ -86,22 +86,16 @@ namespace Shesha.DynamicEntities
             return await _modelConfigurationManager.GetModelConfigurationAsync(modelConfig);
         }
 
+        [HttpPost, Route("")]
+        public async Task<ModelConfigurationDto> CreateAsync(ModelConfigurationDto input)
+        {
+            return await _modelConfigurationManager.CreateAsync(input);
+        }
+
         [HttpPut, Route("")]
         public async Task<ModelConfigurationDto> UpdateAsync(ModelConfigurationDto input)
         {
-            var modelConfig = await _entityConfigRepository.GetAll().Where(m => m.Id == input.Id).FirstOrDefaultAsync();
-            if (modelConfig == null)
-                new EntityNotFoundException("Model configuration not found");
-
-            if (modelConfig.Source == MetadataSourceType.UserDefined)
-            {
-                input.Namespace = "Dynamic";
-                input.ClassName = input.Name;
-            }
-
-            // todo: add validation
-
-            return await CreateOrUpdateAsync(modelConfig, input, false);
+            return await _modelConfigurationManager.UpdateAsync(input);
         }
 
         [HttpPost, Route("merge")]
@@ -137,195 +131,6 @@ namespace Shesha.DynamicEntities
             }
 
             return await _modelConfigurationManager.GetModelConfigurationAsync(destination);
-        }
-
-        [HttpPost, Route("")]
-        public async Task<ModelConfigurationDto> CreateAsync(ModelConfigurationDto input)
-        {
-            var modelConfig = new EntityConfig();
-
-            input.Namespace = "Dynamic";
-            input.ClassName = input.Name;
-
-            // todo: add validation
-
-            return await CreateOrUpdateAsync(modelConfig, input, true);
-        }
-
-        private async Task<ModelConfigurationDto> CreateOrUpdateAsync(EntityConfig modelConfig, ModelConfigurationDto input, bool create)
-        {
-            var mapper = GetModelConfigMapper(modelConfig.Source ?? Domain.Enums.MetadataSourceType.UserDefined);
-            mapper.Map(input, modelConfig);
-
-            var module = input.ModuleId.HasValue
-                ? await _moduleRepository.GetAsync(input.ModuleId.Value)
-                : null;
-
-            modelConfig.Module = module;
-
-            // ToDo: Temporary
-            modelConfig.VersionNo = 1;
-            modelConfig.VersionStatus = ConfigurationItemVersionStatus.Live;
-
-            modelConfig.Normalize();
-
-            if (create)
-            {
-                await _entityConfigRepository.InsertAsync(modelConfig);
-            }
-            else
-            {
-                await _entityConfigRepository.UpdateAsync(modelConfig);
-            }
-
-            var properties = await _entityPropertyRepository.GetAll().Where(p => p.EntityConfig == modelConfig).OrderBy(p => p.SortOrder).ToListAsync();
-
-            var mappers = new Dictionary<MetadataSourceType, IMapper> {
-                { MetadataSourceType.ApplicationCode, GetPropertyMapper(MetadataSourceType.ApplicationCode) },
-                { MetadataSourceType.UserDefined, GetPropertyMapper(MetadataSourceType.UserDefined) }
-            };
-
-            await BindProperties(mappers, properties, input.Properties, modelConfig, null);
-
-            // delete missing properties
-            var allPropertiesId = new List<Guid>();
-            ActionPropertiesRecursive(input.Properties, prop =>
-            {
-                var id = prop.Id.ToGuidOrNull();
-                if (id != null)
-                    allPropertiesId.Add(id.Value);
-            });
-            var toDelete = properties.Where(p => !allPropertiesId.Contains(p.Id)).ToList();
-            foreach (var prop in toDelete)
-            {
-                await _entityPropertyRepository.DeleteAsync(prop);
-            }
-
-            if (input.Permission != null)
-            {
-                input.Permission.Type = PermissionedObjectsSheshaTypes.Entity;
-                await _permissionedObjectManager.SetAsync(input.Permission);
-            }
-            if (input.PermissionGet != null)
-            {
-                input.PermissionGet.Type = PermissionedObjectsSheshaTypes.EntityAction;
-                await _permissionedObjectManager.SetAsync(input.PermissionGet);
-            }
-            if (input.PermissionCreate != null)
-            {
-                input.PermissionCreate.Type = PermissionedObjectsSheshaTypes.EntityAction;
-                await _permissionedObjectManager.SetAsync(input.PermissionCreate);
-            }
-            if (input.PermissionUpdate != null)
-            {
-                input.PermissionUpdate.Type = PermissionedObjectsSheshaTypes.EntityAction;
-                await _permissionedObjectManager.SetAsync(input.PermissionUpdate);
-            }
-            if (input.PermissionDelete != null)
-            {
-                input.PermissionDelete.Type = PermissionedObjectsSheshaTypes.EntityAction;
-                await _permissionedObjectManager.SetAsync(input.PermissionDelete);
-            }
-
-            // Notify change
-            // ASP.Net Core register Controller at runtime
-            // https://stackoverflow.com/questions/46156649/asp-net-core-register-controller-at-runtime
-            if (SheshaActionDescriptorChangeProvider.Instance != null)
-            {
-                SheshaActionDescriptorChangeProvider.Instance.HasChanged = true;
-                SheshaActionDescriptorChangeProvider.Instance.TokenSource?.Cancel();
-                (_swaggerProvider as CachingSwaggerProvider)?.ClearCache();
-            }
-
-            return await _modelConfigurationManager.GetModelConfigurationAsync(modelConfig);
-        }
-
-        private void ActionPropertiesRecursive(List<ModelPropertyDto> properties, Action<ModelPropertyDto> action)
-        {
-            if (properties == null) return;
-            foreach (var property in properties)
-            {
-                action.Invoke(property);
-                if (property.Properties != null)
-                    ActionPropertiesRecursive(property.Properties, action);
-            }
-        }
-
-        private async Task BindProperties(Dictionary<MetadataSourceType, IMapper> mappers, List<EntityProperty> allProperties, List<ModelPropertyDto> inputProperties, EntityConfig modelConfig, EntityProperty parentProperty)
-        {
-            if (inputProperties == null) return;
-            var sortOrder = 0;
-            foreach (var inputProp in inputProperties)
-            {
-                var propId = inputProp.Id.ToGuid();
-                var dbProp = propId != Guid.Empty
-                    ? allProperties.FirstOrDefault(p => p.Id == propId)
-                    : null;
-                var isNew = dbProp == null;
-                if (dbProp == null)
-                    dbProp = new EntityProperty
-                    {
-                        EntityConfig = modelConfig,
-                    };
-                dbProp.ParentProperty = parentProperty;
-
-                var propertyMapper = mappers[dbProp.Source ?? MetadataSourceType.UserDefined];
-                propertyMapper.Map(inputProp, dbProp);
-
-                // bind child properties
-                if (inputProp.Properties != null && inputProp.Properties.Any())
-                    await BindProperties(mappers, allProperties, inputProp.Properties, modelConfig, dbProp);
-
-                dbProp.SortOrder = sortOrder++;
-
-                await _entityPropertyRepository.InsertOrUpdateAsync(dbProp);
-            }
-        }
-
-        private IMapper GetModelConfigMapper(MetadataSourceType sourceType)
-        {
-            var modelConfigMapperConfig = new MapperConfiguration(cfg =>
-            {
-                // Fix bug of Automapper < 11.0.0 under .net 7 https://stackoverflow.com/questions/74730425/system-datetime-on-t-maxintegertsystem-collections-generic-ienumerable1t
-                cfg.ShouldMapMethod = (m) => { return false; };
-
-                var mapExpression = cfg.CreateMap<ModelConfigurationDto, EntityConfig>()
-                    .ForMember(d => d.Id, o => o.Ignore());
-
-                if (sourceType == MetadataSourceType.ApplicationCode)
-                {
-                    mapExpression.ForMember(d => d.ClassName, o => o.Ignore());
-                    mapExpression.ForMember(d => d.Namespace, o => o.Ignore());
-                    mapExpression.ForMember(e => e.Module, c => c.Ignore());
-                }
-            });
-
-            return modelConfigMapperConfig.CreateMapper();
-        }
-
-        private IMapper GetPropertyMapper(MetadataSourceType sourceType)
-        {
-            var propertyMapperConfig = new MapperConfiguration(cfg =>
-            {
-                // Fix bug of Automapper < 11.0.0 under .net 7 https://stackoverflow.com/questions/74730425/system-datetime-on-t-maxintegertsystem-collections-generic-ienumerable1t
-                cfg.ShouldMapMethod = (m) => { return false; };
-
-                var mapExpression = cfg.CreateMap<ModelPropertyDto, EntityProperty>()
-                    .ForMember(d => d.Id, o => o.Ignore())
-                    .ForMember(d => d.EntityConfig, o => o.Ignore())
-                    .ForMember(d => d.SortOrder, o => o.Ignore())
-                    .ForMember(d => d.Properties, o => o.Ignore())
-                    .ForMember(d => d.Source, o => o.Ignore());
-
-                if (sourceType == MetadataSourceType.ApplicationCode)
-                {
-                    mapExpression.ForMember(d => d.Name, o => o.Ignore());
-                    mapExpression.ForMember(d => d.DataType, o => o.Ignore());
-                    mapExpression.ForMember(d => d.EntityType, o => o.Ignore());
-                }
-            });
-
-            return propertyMapperConfig.CreateMapper();
         }
 
         private async Task<ModelConfigurationDto> GetAsync(EntityConfig modelConfig)

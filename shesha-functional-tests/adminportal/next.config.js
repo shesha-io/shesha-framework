@@ -1,51 +1,64 @@
-const withPlugins = require('next-compose-plugins');
-const withAntdLess = require('next-plugin-antd-less');
+const path = require('path');
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+});
+const withLess = require('next-with-less');
+const dayjs = require('dayjs');
+const isProd = process.env.NODE_ENV === 'production';
 
-require('dotenv').config();
-
-module.exports = withPlugins(
-  [
-    [
-      withAntdLess,
-      {
-        lessVarsFilePathAppendToEndOfContent: false,
-        cssLoaderOptions: {},
-        lessLoaderOptions: { lessOptions: { javascriptEnabled: true } },
+const nextConfig = (phase) => {
+  const env = {
+    NEXT_APP_ENV: process.env.NEXT_APP_ENV,
+    NEXT_APP_API_HOST: process.env.NEXT_APP_API_HOST,
+  };
+  /** @type {import('next').NextConfig} */
+  const config = {
+    output: 'standalone',
+    reactStrictMode: false,
+    transpilePackages: ['antd'],
+    poweredByHeader: false,
+    productionBrowserSourceMaps: true,
+    env,
+    publicRuntimeConfig: env,
+    compiler: {
+      // Remove `console.*` output except `console.error`
+      removeConsole: isProd
+        ? {
+            exclude: ['error'],
+          }
+        : false,
+      // Uncomment this to suppress all logs.
+      // removeConsole: true,
+    },
+    lessLoaderOptions: {
+      // cssModules: true,
+      lessOptions: {
+        javascriptEnabled: true,
+        modifyVars: {},
       },
-    ],
-  ],
-  {
-    webpack: (config, { _ }) => {
-      config.module.rules.push({
-        test: /\.ttf$/,
-        exclude: /(node_modules|bower_components)/,
-        use: {
-          loader: 'ttf-loader',
-          options: {
-            name: './font/[hash].[ext]',
-          },
-        },
+    },
+    // Disable css--modules component styling
+    webpack(config) {
+      //  Source: https://cwtuan.blogspot.com/2022/10/disable-css-module-in-nextjs-v1231-sept.html
+      config.module.rules.forEach((rule) => {
+        const { oneOf } = rule;
+        if (oneOf) {
+          oneOf.forEach((one) => {
+            if (!`${one.issuer?.and}`.includes('_app')) return;
+            one.issuer.and = [path.resolve(__dirname)];
+          });
+        }
       });
-
-      config.module.rules.push({
-        test: /\.(png|jpg|gif|svg|eot|ttf|woff|woff2)$/,
-        use: {
-          loader: 'url-loader',
-          options: {
-            limit: 100000,
-          },
-        },
-      });
-
       return config;
     },
-    publicRuntimeConfig: {
-      // Will be available on both server and client
-      staticFolder: '/public/static',
-      shaEnv: process.env,
-    },
-    // trailingSlash: true, this option causes wrong export behaviour
-    trailingSlash: true,
-    pageExtensions: ['tsx'], // Let's make sure that only tsx files are seen as pages
-  }
-);
+  };
+  return withBundleAnalyzer(
+    withLess(config), {
+      debug: !isProd,
+      environment: process.env.NODE_ENV,
+      release: `${process.env.NODE_ENV}@${dayjs().format('YYYY-MM-DD HH:mm')}`,
+    }
+  );
+};
+
+module.exports = nextConfig;

@@ -12,6 +12,7 @@ import {
 } from '../providers/form/models';
 import { Migrator, MigratorFluent } from '../utils/fluentMigrator/migrator';
 import { IPropertyMetadata } from './metadata';
+import { IApplicationContext } from 'utils/publicUtils';
 
 export interface ISettingsFormInstance {
   submit: () => void;
@@ -58,6 +59,12 @@ export interface IToolboxComponent<T extends IConfigurableFormComponent = any> {
    * If true, indicates that the component has data bindings and can be used as an output.
    */
   isOutput?: boolean;
+
+  /**
+   * If true, indicates that the component can be used as a setting component with JS customization
+   */
+  canBeJsSetting?: boolean;
+
   /**
    * Component name. This name is displayed on the components toolbox
    */
@@ -79,7 +86,8 @@ export interface IToolboxComponent<T extends IConfigurableFormComponent = any> {
     model: T,
     componentRef: MutableRefObject<any>,
     form: FormInstance<any>,
-    children?: JSX.Element
+    children?: JSX.Element,
+    context?: IApplicationContext
   ) => ReactNode;
   /**
    * @deprecated - use `migrator` instead
@@ -117,7 +125,7 @@ export interface IToolboxComponent<T extends IConfigurableFormComponent = any> {
   dataTypeSupported?: (dataTypeInfo: { dataType: string; dataFormat?: string }) => boolean;
 
   isTemplate?: boolean;
-  build?: () => IConfigurableFormComponent[];
+  build?: (allComponents: IToolboxComponents) => IConfigurableFormComponent[];
 
   /**
    * Settings migrations. Returns last version of settings
@@ -148,7 +156,7 @@ export interface IToolboxComponents {
   [key: string]: IToolboxComponent;
 }
 
-export { type IConfigurableFormComponent, type IFormComponentContainer };
+export { type IConfigurableFormComponent as IConfigurableFormComponent, type IFormComponentContainer };
 
 export interface IFieldValidationErrors {
   name: InternalNamePath;
@@ -170,3 +178,5 @@ export interface IComponentsContainerBaseProps {
   containerId: string;
   readOnly?: boolean;
 }
+
+export type YesNoInherit = 'yes' | 'no' | 'inherit';

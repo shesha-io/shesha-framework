@@ -18,6 +18,7 @@ import {
   ROOT_COMPONENT_KEY,
 } from '../form/models';
 import { IDataSource } from '../formDesigner/models';
+import { IDataContextFullInstance } from 'providers/dataContextProvider';
 
 export type IFlagProgressFlags = 'addComponent' | 'updateComponent' | 'deleteComponent' | 'moveComponent';
 export type IFlagSucceededFlags = 'addComponent' | 'updateComponent' | 'deleteComponent' | 'moveComponent';
@@ -99,6 +100,7 @@ export interface ISetSelectedComponentPayload {
 export interface IFormDesignerActionsContext
   extends IFlagsSetters<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
   getChildComponents: (id: string) => IConfigurableFormComponent[];
+  getParentComponent: (componentId: string, type: string) => IConfigurableFormComponent;
   deleteComponent: (payload: IComponentDeletePayload) => void;
   duplicateComponent: (payload: IComponentDuplicatePayload) => void;
   updateComponent: (payload: IComponentUpdatePayload) => void;
@@ -115,7 +117,7 @@ export interface IFormDesignerActionsContext
   endDraggingNewItem: () => void;
   startDragging: () => void;
   endDragging: () => void;
-  setSelectedComponent: (id: string, dataSourceId: string, componentRef?: MutableRefObject<any>) => void;
+  setSelectedComponent: (id: string, dataSourceId: string, dataContext: IDataContextFullInstance, componentRef?: MutableRefObject<any>) => void;
   updateFormSettings: (settings: IFormSettings) => void;
 
   getToolboxComponent: (type: string) => IToolboxComponent;

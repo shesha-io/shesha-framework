@@ -1,23 +1,23 @@
 import { Alert, Menu, Space } from 'antd';
 import moment from 'moment';
 import React, { FC, Fragment } from 'react';
-import { useDataTableSelection, useGlobalState, useSheshaApplication } from '../../../../../providers';
-import { ButtonGroupItemProps, IButtonGroupButton } from '../../../../../providers/buttonGroupConfigurator/models';
+import { useDataTable, useGlobalState, useSheshaApplication } from '../../../../../providers';
+import { ButtonGroupItemProps/*, IButtonGroupButton*/ } from '../../../../../providers/buttonGroupConfigurator/models';
 import { useForm } from '../../../../../providers/form';
 import { executeExpression, getStyle } from '../../../../../providers/form/utils';
 import { ConfigurableButton } from '../configurableButton';
-import { IButtonGroupProps } from './models';
+import { IButtonGroupComponentProps } from './models';
 import { getButtonGroupMenuItem } from './utils';
 
 type MenuButton = ButtonGroupItemProps & {
   childItems?: MenuButton[];
 };
 
-export const ButtonGroup: FC<IButtonGroupProps> = ({ items, id, size, spaceSize = 'middle', isInline, noStyles }) => {
+export const ButtonGroup: FC<IButtonGroupComponentProps> = ({ items, id, size, spaceSize = 'middle', isInline, noStyles }) => {
   const { formMode, formData, form } = useForm();
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const { globalState } = useGlobalState();
-  const { selectedRow } = useDataTableSelection(false) ?? {}; // todo: move to a generic context provider
+  const { selectedRow } = useDataTable(false) ?? {}; // todo: move to a generic context provider
 
   const isDesignMode = formMode === 'designer';
 
@@ -57,7 +57,7 @@ export const ButtonGroup: FC<IButtonGroupProps> = ({ items, id, size, spaceSize 
 
     const disabled = !localexecuteExpression(props.customEnabled);
 
-    const buttonProps = props.itemType === 'item' ? (props as IButtonGroupButton) : null;
+    const buttonProps = props.itemType === 'item' ? (props as any/*IButtonGroupButton*/) : null;
     const isDivider = buttonProps && (buttonProps.itemSubType === 'line' || buttonProps.itemSubType === 'separator');
 
     return isDivider
@@ -71,7 +71,7 @@ export const ButtonGroup: FC<IButtonGroupProps> = ({ items, id, size, spaceSize 
   };
 
   const renderButtonItem = (item: ButtonGroupItemProps, uuid: string, disabled = false, isChild = false) => {
-    const itemProps = item as IButtonGroupButton;
+    const itemProps = item as any;//IButtonGroupButton;
 
     return (
       <ConfigurableButton

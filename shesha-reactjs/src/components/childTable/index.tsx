@@ -1,7 +1,7 @@
 import React, { FC, MutableRefObject, Fragment } from 'react';
 import { useDataTableStore } from '../../providers';
 import { IDataTableInstance } from '../../providers/dataTable/interfaces';
-import DataTable from '../dataTable';
+import { DataTable } from '../dataTable';
 import { ITableCustomTypeEditor } from '../dataTable/interfaces';
 import CollapsiblePanel from '../panel';
 import { ChildTableControls } from '../childTableControls';

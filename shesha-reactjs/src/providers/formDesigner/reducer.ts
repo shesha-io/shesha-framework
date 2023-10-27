@@ -1,5 +1,6 @@
 import { nanoid } from 'nanoid/non-secure';
 import { handleActions } from 'redux-actions';
+import { toolbarGroupsToComponents } from 'src/formDesignerUtils';
 import { IFormValidationErrors, IToolboxComponentGroup } from '../../interfaces';
 import { camelcaseDotNotation } from '../../utils/string';
 import undoable from '../../utils/undoable';
@@ -15,8 +16,6 @@ import {
   cloneComponents,
   createComponentModelForDataProperty,
   findToolboxComponent,
-  getCustomEnabledFunc,
-  getCustomVisibilityFunc,
   processRecursive,
   upgradeComponent,
 } from '../form/utils';
@@ -143,7 +142,8 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 
       let newComponents: IConfigurableFormComponent[] = [];
       if (toolboxComponent.isTemplate) {
-        newComponents = cloneComponents(state.toolboxComponentGroups, toolboxComponent.build());
+        const allComponents = toolbarGroupsToComponents(state.toolboxComponentGroups);
+        newComponents = cloneComponents(state.toolboxComponentGroups, toolboxComponent.build(allComponents));
       } else {
         // create new component
         let count = 0;
@@ -155,13 +155,13 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
         let formComponent: IConfigurableFormComponent = {
           id: nanoid(),
           type: toolboxComponent.type,
-          name: camelcaseDotNotation(componentName),
+          propertyName: camelcaseDotNotation(componentName),
+          componentName: camelcaseDotNotation(componentName),
           label: componentName,
           labelAlign: 'right',
           parentId: containerId,
           hidden: false,
           visibility: 'Yes',
-          customVisibility: null,
           visibilityFunc: (_data) => true,
           enabledFunc: (_data) => true,
           isDynamic: false,
@@ -323,8 +323,6 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 
       const component = state.allComponents[payload.componentId];
       const newComponent = { ...component, ...payload.settings } as IConfigurableFormComponent;
-      newComponent.visibilityFunc = getCustomVisibilityFunc(newComponent);
-      newComponent.enabledFunc = getCustomEnabledFunc(newComponent);
 
       const toolboxComponent = findToolboxComponent(state.toolboxComponentGroups, (c) => c.type === component.type);
 
@@ -348,7 +346,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 
         // create or update new containers
         newContainers.forEach((c) => {
-          const existingContainer = newComponents[c.id] || { name: '', type: '', isDynamic: false };
+          const existingContainer = newComponents[c.id] || { propertyName: '', type: '', isDynamic: false };
           newComponents[c.id] = { ...existingContainer, ...c };
         });
 

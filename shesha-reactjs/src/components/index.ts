@@ -23,7 +23,7 @@ export {
 } from './multiReadCheckBoxrefList';
 export { default as SimpleLayoutHeading, type ISimpleLayoutHeadingProps } from './simpleLayoutHeading';
 export { default as PageBtnContainer, type IPageBtnContainerProps } from './pageBtnContainer';
-export { default as ReactTable } from './reactTable';
+export { ReactTable } from './reactTable';
 export { type IReactTableProps } from './reactTable/interfaces';
 export {
   default as ConfigurableFormComponent,
@@ -65,7 +65,7 @@ export { default as GooglePlacesAutocomplete, type IGooglePlacesAutocompleteProp
 export { default as HtmlHead, type IHtmlHeadProps } from './htmlHead';
 export { default as IdleTimerRenderer, type IIdleTimerRendererProps } from './idleTimerRenderer';
 export { default as ChildTable, type IChildTableProps } from './childTable';
-export { default as DataTable, type IIndexTableProps, type IExtendedModalProps } from './dataTable';
+export { DataTable, type IIndexTableProps, type IExtendedModalProps } from './dataTable';
 export {
   default as DatatableAdvancedFilter,
   type IDatatableAdvancedFilterProps as IIndexTableColumnFiltersProps,
@@ -116,6 +116,8 @@ export {
 export { default as ConfigurableComponent } from './appConfigurator/configurableComponent'; // todo: convert to subtype
 export { default as FormDesigner, type IFormDesignerProps } from './formDesigner/formDesigner';
 export { default as QueryBuilder, type IQueryBuilderProps } from './queryBuilder';
+export { type JsonLogicResult } from '@react-awesome-query-builder/antd';
+
 export { default as ConfigurableForm } from './configurableForm';
 export { type IConfigurableFormRendererProps, type IConfigurableFormProps } from './configurableForm/models';
 export { default as Show, type IShowProps } from './show';
@@ -168,3 +170,8 @@ export { default as PropertyAutocomplete } from '../../src/components/propertyAu
 export { default as ColorPicker } from '../../src/components/colorPicker';
 export { default as ComponentsContainer } from './formDesigner/containers/componentsContainer';
 export { default as Properties } from '../../src/components/properties';
+export { HelpTextPopover } from './helpTextPopover';
+export { StatusTag } from './statusTag';
+export { RefListStatus, type IRefListStatusProps } from './refListStatus';
+
+export { ListEditor } from './listEditor';

@@ -2,10 +2,10 @@ import { ControlOutlined } from '@ant-design/icons';
 import { ITablePagerProps, TablePager } from 'components';
 import React from 'react';
 import { IToolboxComponent } from '../../../interfaces';
-import { useForm } from '../../../providers';
 import { IConfigurableFormComponent } from '../../../providers/form/models';
 import { validateConfigurableComponentSettings } from '../../../providers/form/utils';
 import { getSettings } from './settingsForm';
+import { migrateCustomFunctions, migratePropertyName } from '../../../designer-components/_common-migrations/migrateSettings';
 
 export interface IPagerComponentProps extends ITablePagerProps, IConfigurableFormComponent {}
 
@@ -14,23 +14,24 @@ const PagerComponent: IToolboxComponent<IPagerComponentProps> = {
   name: 'Table Pager',
   icon: <ControlOutlined />,
   factory: (model: IPagerComponentProps) => {
-    const { isComponentHidden } = useForm();
-
-    if (isComponentHidden(model)) return null;
+    if (model.hidden) return null;
 
     return <TablePager {...model} />;
   },
-  migrator: (m) =>
-    m.add<IPagerComponentProps>(0, (prev) => {
-      return {
-        ...prev,
-        showSizeChanger: true,
-        showTotalItems: true,
-        items: [],
-      };
-    }),
-  settingsFormMarkup: (context) => getSettings(context),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  initModel: (model: IPagerComponentProps) => {
+    return {
+      ...model,
+      showSizeChanger: true,
+      showTotalItems: true,
+      items: [],
+    };
+  },  
+  migrator:  m => m
+    .add<IPagerComponentProps>(0, prev => ({...prev} as IPagerComponentProps))
+    .add(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
+  settingsFormMarkup: context => getSettings(context),
+  validateSettings: model => validateConfigurableComponentSettings(getSettings(model), model),
 };
 
 export default PagerComponent;

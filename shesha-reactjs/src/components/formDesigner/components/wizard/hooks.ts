@@ -26,7 +26,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     useFormExpression();
 
   const {
-    name: actionOwnerName,
+    propertyName: actionOwnerName,
     id: actionsOwnerId,
     steps: tabs,
     defaultActiveValue,

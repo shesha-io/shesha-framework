@@ -3,16 +3,16 @@
     {
       "id": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
       "type": "sectionSeparator",
-      "name": "separator1",
+      "propertyName": "separator1",
       "parentId": "root",
       "label": "Display"
     },
     {
       "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
-      "type": "propertyAutocomplete",
-      "name": "name",
+      "type": "contextPropertyAutocomplete",
+      "propertyName": "propertyName",
       "parentId": "root",
-      "label": "Name",
+      "label": "Property name",
       "validate": {
         "required": true
       }
@@ -20,14 +20,14 @@
     {
       "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
       "type": "textField",
-      "name": "label",
+      "propertyName": "label",
       "parentId": "root",
       "label": "Label"
     },
     {
       "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
       "type": "dropdown",
-      "name": "textType",
+      "propertyName": "textType",
       "parentId": "root",
       "label": "Type",
       "values": [
@@ -47,7 +47,7 @@
     {
       "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
       "type": "dropdown",
-      "name": "labelAlign",
+      "propertyName": "labelAlign",
       "parentId": "root",
       "label": "Label align",
       "values": [
@@ -67,35 +67,35 @@
     {
       "id": "fbdb6bb1-5994-4205-86b4-236ca61ae54e",
       "type": "textField",
-      "name": "placeholder",
+      "propertyName": "placeholder",
       "parentId": "root",
       "label": "Placeholder"
     },
     {
       "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
       "type": "textArea",
-      "name": "description",
+      "propertyName": "description",
       "parentId": "root",
       "label": "Description"
     },
     {
       "id": "12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6",
       "type": "textField",
-      "name": "prefix",
+      "propertyName": "prefix",
       "parentId": "root",
       "label": "Prefix"
     },
     {
       "id": "d68b1754-682c-4f2c-b49a-a1f250467474",
       "type": "textField",
-      "name": "suffix",
+      "propertyName": "suffix",
       "parentId": "root",
       "label": "Suffix"
     },
     {
       "id": "fbdb6bb1-5994-4205-86b4-236ca62ae54e",
       "type": "textField",
-      "name": "initialValue",
+      "propertyName": "initialValue",
       "parentId": "root",
       "label": "Default Value",
       "description": "Enter default value of component. (formData, formMode, globalState) are exposed"
@@ -103,7 +103,7 @@
     {
       "id": "0225b82d-19aa-47c7-b665-90508112bd23",
       "type": "checkbox",
-      "name": "passEmptyStringByDefault",
+      "propertyName": "passEmptyStringByDefault",
       "parentId": "root",
       "label": "Empty as default",
       "description": "Whether the component should be initialized with an empty string"
@@ -111,7 +111,7 @@
     {
       "id": "df8a8f35-a50b-42f9-9642-73d390ceddbf",
       "type": "dropdown",
-      "name": "visibility",
+      "propertyName": "visibility",
       "parentId": "root",
       "label": "Visibility",
       "description": "This property will eventually replace the 'hidden' property and other properties that toggle visibility on the UI and payload",
@@ -138,57 +138,55 @@
     {
       "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
       "type": "checkbox",
-      "name": "hidden",
+      "propertyName": "hidden",
       "parentId": "root",
       "label": "Hidden"
     },
     {
       "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
       "type": "checkbox",
-      "name": "hideLabel",
+      "propertyName": "hideLabel",
       "parentId": "root",
       "label": "Hide Label"
     },
     {
       "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
       "type": "checkbox",
-      "name": "disabled",
+      "propertyName": "disabled",
       "parentId": "root",
       "label": "Disabled"
     },
     {
       "id": "1ceb3851-f15e-437b-98b6-84d6a1fbf801",
       "type": "checkbox",
-      "name": "readOnly",
+      "propertyName": "readOnly",
       "parentId": "root",
       "label": "Read Only"
     },
     {
       "id": "c67b7404-d980-437a-a544-74e4e816f6cd",
       "type": "checkbox",
-      "name": "hideBorder",
+      "propertyName": "hideBorder",
       "label": "Hide border",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "validate": {}
     },
     {
       "id": "990f54ee-b754-479d-8e45-559efbd70c10",
       "type": "sectionSeparator",
-      "name": "sectionEvent",
+      "propertyName": "sectionEvent",
       "parentId": "root",
       "label": "Events"
     },
     {
       "id": "3cef348b-6bba-4176-93f6-f3a8b21e33c9",
       "type": "codeEditor",
-      "name": "onChangeCustom",
+      "propertyName": "onChangeCustom",
       "label": "On Change",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "description": "Enter custom event handler on changing of event. (form, event) are exposed",
       "validate": {},
       "settingsValidationErrors": [],
@@ -215,12 +213,11 @@
     {
       "id": "88c2d96c-b808-4316-8a36-701b09e5f6c7",
       "type": "codeEditor",
-      "name": "onFocusCustom",
+      "propertyName": "onFocusCustom",
       "label": "On Focus",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "description": "Enter custom event handler on focus of event. (form, event) are exposed",
       "validate": {},
       "settingsValidationErrors": [],
@@ -247,12 +244,11 @@
     {
       "id": "4a2b7329-1a89-45d1-a5b0-f66db21744b0",
       "type": "codeEditor",
-      "name": "onBlurCustom",
+      "propertyName": "onBlurCustom",
       "label": "On Blur",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "description": "Enter custom event handler on blur of event. (form, event) are exposed",
       "validate": {},
       "settingsValidationErrors": [],
@@ -279,21 +275,21 @@
     {
       "id": "d675bfe4-ee69-431e-931b-b0e0b9ceee6f",
       "type": "sectionSeparator",
-      "name": "separator2",
+      "propertyName": "separator2",
       "parentId": "root",
       "label": "Validation"
     },
     {
       "id": "3be9da3f-f47e-48ae-b4c3-f5cc36e534d9",
       "type": "checkbox",
-      "name": "validate.required",
+      "propertyName": "validate.required",
       "parentId": "root",
       "label": "Required"
     },
     {
       "id": "b61a1580-0ff9-460e-8f13-43b9d80ceb6c",
       "type": "numberField",
-      "name": "validate.minLength",
+      "propertyName": "validate.minLength",
       "parentId": "root",
       "label": "Min Length",
       "validate": {}
@@ -301,7 +297,7 @@
     {
       "id": "cc0d5dc1-19e6-42c3-bd5e-e63946a7f53c",
       "type": "numberField",
-      "name": "validate.maxLength",
+      "propertyName": "validate.maxLength",
       "parentId": "root",
       "label": "Max Length",
       "validate": {}
@@ -309,7 +305,7 @@
     {
       "id": "9ee3a529-1f0c-4def-bd41-ee166a5dfcd7",
       "type": "textField",
-      "name": "validate.message",
+      "propertyName": "validate.message",
       "parentId": "root",
       "label": "Message",
       "validate": {}
@@ -317,18 +313,17 @@
     {
       "id": "22725416-3a3c-412c-8461-4c8d55e5c073",
       "type": "codeEditor",
-      "name": "validate.validator",
+      "propertyName": "validate.validator",
       "parentId": "root",
       "label": "Validator",
       "validate": {},
       "labelAlign": "right",
       "hidden": false,
-      "customVisibility": null,
       "description": "Enter custom validator logic for form.item rules. Returns a Promise",
       "settingsValidationErrors": [],
       "exposedVariables": [
         {
-          "name": "rules",
+          "propertyName": "rules",
           "description": "Validate rules, only support customize validator",
           "type": "object"
         },
@@ -338,24 +333,16 @@
       ]
     },
     {
-      "id": "d690a0b7-a9d3-4ab2-8843-9dcfbac08adc",
-      "type": "textField",
-      "name": "quickviewWidth",
-      "parentId": "root",
-      "label": "Width",
-      "customVisibility": "return data.quickviewEnabled === true"
-    },
-    {
       "id": "6befdd49-41aa-41d6-a29e-76fa00590b75",
       "type": "sectionSeparator",
-      "name": "sectionStyle",
+      "propertyName": "sectionStyle",
       "parentId": "root",
       "label": "Style"
     },
     {
       "id": "06ab0599-914d-4d2d-875c-765a495472f8",
       "type": "codeEditor",
-      "name": "style",
+      "propertyName": "style",
       "label": "Style",
       "parentId": "root",
       "validate": {},
@@ -366,7 +353,7 @@
     {
       "id": "494e8079-98f6-4a25-b9fd-40a77554ec89",
       "type": "dropdown",
-      "name": "size",
+      "propertyName": "size",
       "parentId": "root",
       "label": "Size",
       "allowClear": true,
@@ -388,47 +375,6 @@
         }
       ],
       "dataSourceType": "values"
-    },
-    {
-      "id": "41721f44-adbc-42fe-8c70-69b30e36f4ca",
-      "type": "sectionSeparator",
-      "name": "sectionVisibility",
-      "parentId": "root",
-      "label": "Visibility"
-    },
-    {
-      "id": "aec2d8de-6e86-4e4e-a9da-62c11e538363",
-      "type": "codeEditor",
-      "name": "customVisibility",
-      "label": "Custom Visibility",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "customVisibility": null,
-      "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-      "validate": {},
-      "settingsValidationErrors": [],
-      "exposedVariables": [
-        { "name": "value", "description": "Component current value", "type": "string | any" },
-        { "name": "data", "description": "Selected form values", "type": "object" }
-      ]
-    },
-    {
-      "id": "4b5e5951-4998-4635-b1c8-0b6d3940c300",
-      "type": "codeEditor",
-      "name": "customEnabled",
-      "label": "Custom Enabled",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "customEnabled": null,
-      "description": "Enter custom enabled code.  You must return true to enable the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-      "validate": {},
-      "settingsValidationErrors": [],
-      "exposedVariables": [
-        { "name": "value", "description": "Component current value", "type": "string | any" },
-        { "name": "data", "description": "Selected form values", "type": "object" }
-      ]
     }
   ],
   "formSettings": {

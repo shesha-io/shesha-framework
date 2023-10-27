@@ -36,7 +36,7 @@ import PermissionTagGroup from 'components/formDesigner/components/permissions/p
 import PermissionedObjectsTree from 'components/formDesigner/components/permissions/permissionedObjectsTree/permissionedObjectsTree';
 import PermissionsTree from 'components/formDesigner/components/permissions/permissionsTree/permissionsTree';
 import Progress from 'components/formDesigner/components/progress';
-import PropertyAutocomplete from 'components/formDesigner/components/propertyAutocomplete';
+import { PropertyAutocompleteComponent } from 'components/formDesigner/components/propertyAutocomplete';
 import Radio from 'components/formDesigner/components/radio/radio';
 import Rate from 'components/formDesigner/components/rate';
 import ReferenceListAutocompleteComponent from 'components/formDesigner/components/referenceListAutocomplete';
@@ -51,7 +51,6 @@ import SubForm from 'components/formDesigner/components/subForm';
 import Switch from 'components/formDesigner/components/switch/switch';
 import Tabs from 'components/formDesigner/components/tabs';
 import Text from 'components/formDesigner/components/text';
-import TextArea from 'components/formDesigner/components/textArea/textArea';
 import ValidationErrors from 'components/formDesigner/components/validationErrors';
 import Wizard from 'components/formDesigner/components/wizard';
 import { ComponentSelectorComponent } from '../../../designer-components';
@@ -85,6 +84,13 @@ import TextFieldComponent from '../../../designer-components/textField/textField
 import TimeField from '../../../designer-components/timeField';
 import { IToolboxComponentGroup } from '../../../interfaces/formDesigner';
 import SizableColumnsComponent from 'components/formDesigner/components/sizableColumns/sizableColumns';
+import SettingsComponent from '../../../designer-components/_settings/settingsComponent';
+import DataContextSelector from '../../../designer-components/dataContextSelector';
+import DataContextComponent from '../../../designer-components/dataContextComponent';
+import ContextPropertyAutocompleteComponent from '../../../designer-components/contextPropertyAutocomplete';
+import TextAreaComponent from '../../../designer-components/textArea/textArea';
+import { DynamicActionsConfiguratorComponent } from '../../../designer-components/dynamicActionsConfigurator/index';
+import { SortingEditorComponent } from 'designer-components/sortingEditor/index';
 
 export const ToolboxComponents: IToolboxComponentGroup[] = [
   {
@@ -98,6 +104,7 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
       ColorPickerComponent,
       ComponentSelectorComponent,
       ConfigurableActionConfigurator,
+      DynamicActionsConfiguratorComponent,
       DynamicView,
       EditableTagGroup,
       EndpointsAutocompleteComponent,
@@ -121,7 +128,6 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
       PermissionsTree,
       PermissionTagGroup,
       Progress,
-      PropertyAutocomplete,
       QueryBuilderComponent,
       ReferenceListAutocompleteComponent,
       RefListStatusComponent,
@@ -151,7 +157,7 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
       Radio,
       Section,
       Switch,
-      TextArea,
+      TextAreaComponent,
       TextFieldComponent,
       Statistic,
       Text,
@@ -203,6 +209,16 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
     name: 'Legacy',
     components: [Paragraph, Title],
   },
+  {
+    visible: true,
+    name: 'Settings',
+    components: [SettingsComponent, DataContextSelector, DataContextComponent, ContextPropertyAutocompleteComponent]
+  },
+  {
+    visible: true,
+    name: 'Internal',
+    components: [PropertyAutocompleteComponent, SortingEditorComponent]
+  }
 ];
 
 export default ToolboxComponents;

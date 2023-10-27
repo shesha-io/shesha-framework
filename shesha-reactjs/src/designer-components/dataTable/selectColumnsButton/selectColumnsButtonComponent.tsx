@@ -6,6 +6,7 @@ import { useDataTableStore } from '../../../providers';
 import { FormMarkup, IConfigurableFormComponent } from '../../../providers/form/models';
 import { validateConfigurableComponentSettings } from '../../../providers/form/utils';
 import settingsFormJson from './settingsForm.json';
+import { migrateCustomFunctions, migratePropertyName } from '../../../designer-components/_common-migrations/migrateSettings';
 
 export interface IPagerComponentProps extends IConfigurableFormComponent {}
 
@@ -24,6 +25,9 @@ const SelectColumnsButtonComponent: IToolboxComponent<IPagerComponentProps> = {
       items: [],
     };
   },
+  migrator: m => m
+    .add(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+,
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   isHidden: true, // note: to be removed, now is used only for backward compatibility

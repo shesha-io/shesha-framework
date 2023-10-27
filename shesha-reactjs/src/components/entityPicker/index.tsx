@@ -13,7 +13,7 @@ import { IModalProps } from 'providers/dynamicModal/models';
 import { useEntitySelectionData } from 'utils/entity';
 import GlobalTableFilter from '../globalTableFilter';
 import camelCaseKeys from 'camelcase-keys';
-import DataTable from '../dataTable';
+import { DataTable } from '../dataTable';
 import ReadOnlyDisplayFormItem from '../readOnlyDisplayFormItem';
 import TablePager from '../tablePager';
 import { IEntityPickerProps, IEntityPickerState } from './models';
@@ -353,16 +353,19 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
 };
 
 export const EntityPickerEditable = (props: IEntityPickerProps) => {
-  const { entityType, displayEntityKey } = props;
-
+  const { entityType, displayEntityKey, disabled } = props;
   return (
-    <DataTableProvider
-      sourceType='Entity'
-      entityType={entityType}
-      dataFetchingMode='paging'
-    >
-      <EntityPickerEditableInner {...props} displayEntityKey={displayEntityKey} />
-    </DataTableProvider>
+    <>
+      <DataTableProvider
+        userConfigId={'table_' + props.name}
+        actionOwnerName={'table_' + props.name}
+        sourceType='Entity'
+        entityType={entityType}
+        dataFetchingMode='paging'
+      >
+        <EntityPickerEditableInner {...props} disabled={disabled} displayEntityKey={displayEntityKey} />
+      </DataTableProvider>
+    </>
   );
 };
 

@@ -2,25 +2,25 @@ import { IToolboxComponent } from 'interfaces';
 import { ISizableColumnComponentProps } from './interfaces';
 import { BorderHorizontalOutlined } from '@ant-design/icons';
 import React, { Fragment } from 'react';
-import { useForm, useFormData, useGlobalState } from 'providers';
+import { useFormData, useGlobalState } from 'providers';
 import Split from 'react-split';
 import ComponentsContainer from 'components/formDesigner/containers/componentsContainer';
 import { getStyle } from 'utils/publicUtils';
 import { nanoid } from 'nanoid';
-import SizableColumnsSettings from './sizableColumnsSettings';
+import { SizableColumnsSettingsForm } from './sizableColumnsSettings';
+import { migrateCustomFunctions, migratePropertyName } from 'src/designer-components/_common-migrations/migrateSettings';
 
 const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> = {
   type: 'sizableColumns',
   name: 'SizableColumns',
   icon: <BorderHorizontalOutlined />,
   factory: (model) => {
-    const { isComponentHidden } = useForm();
     const { data } = useFormData();
     const { globalState } = useGlobalState();
     const { columns } = model as ISizableColumnComponentProps;
     const style = { ...getStyle(model?.style, data, globalState), display: 'flex' };
 
-    if (isComponentHidden(model)) return null;
+    if (model.hidden) return null;
 
     return (
       <Split cursor="col-resize" style={style}>
@@ -41,7 +41,6 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
   initModel: (model) => {
     const tabsModel: ISizableColumnComponentProps = {
       ...model,
-      name: 'custom Name',
       columns: [
         { id: nanoid(), size: 50, components: [] },
         { id: nanoid(), size: 50, components: [] },
@@ -50,17 +49,10 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
 
     return tabsModel;
   },
-  settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
-    return (
-      <SizableColumnsSettings
-        readonly={readOnly}
-        model={model as ISizableColumnComponentProps}
-        onSave={onSave}
-        onValuesChange={onValuesChange}
-        onCancel={onCancel}
-      />
-    );
-  },
+  settingsFormFactory: (props) => <SizableColumnsSettingsForm {...props} />,
+  migrator: m => m
+    .add<ISizableColumnComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)) as ISizableColumnComponentProps)
+  ,
   customContainerNames: ['columns'],
 };
 

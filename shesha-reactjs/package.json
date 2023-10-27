@@ -123,6 +123,7 @@
     "react-dom": "^18.2.0",
     "react-sortablejs": "^6.1.4",
     "react-use": "^17.3.2",
+    "react-use-debug-hooks": "^1.0.3",
     "redux-actions": "2.6.5",
     "rollup": "^3.26.0",
     "rollup-plugin-local-resolve": "^1.0.7",

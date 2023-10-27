@@ -1,9 +1,8 @@
-import { FormInstance } from "antd";
 import { IConfigurableColumnsProps, IDataColumnsProps } from "providers/datatableColumnsConfigurator/models";
 import React, { ComponentType, useCallback, useMemo } from "react";
 import { FC } from "react";
 import { DataTableColumnDto, IGetListDataPayload, ITableDataInternalResponse } from "../interfaces";
-import { IHasModelType, IHasRepository, IRepository, RowsReorderPayload } from "./interfaces";
+import { IHasModelType, IHasRepository, IRepository, RowsReorderPayload, SupportsReorderingArgs } from "./interfaces";
 
 export interface IWithInMemoryRepositoryArgs {
     valueAccessor: () => object[];
@@ -49,7 +48,7 @@ const createRepository = (args: IWithInMemoryRepositoryArgs): IRepository => {
             const dataCol = col.columnType === 'data'
                 ? col as IDataColumnsProps
                 : null;
-            if (dataCol){
+            if (dataCol) {
                 converted.push({
                     propertyName: dataCol.propertyName,
                     name: dataCol.propertyName,
@@ -74,7 +73,7 @@ const createRepository = (args: IWithInMemoryRepositoryArgs): IRepository => {
         const newRows = [...args.valueAccessor() ?? []];
         newRows[rowIndex] = data;
         args.onChange(newRows);
-        
+
         return Promise.resolve(data);
     };
 
@@ -82,14 +81,14 @@ const createRepository = (args: IWithInMemoryRepositoryArgs): IRepository => {
         const newRows = [...args.valueAccessor() ?? []];
         newRows.splice(rowIndex, 1);
         args.onChange(newRows);
-        
+
         return Promise.resolve(data);
     };
 
     const performCreate = (_rowIndex: number, data: any): Promise<any> => {
         const newRows = [...args.valueAccessor() ?? []];
         newRows.push(data);
-        
+
         args.onChange(newRows);
 
         return Promise.resolve(data);
@@ -100,9 +99,15 @@ const createRepository = (args: IWithInMemoryRepositoryArgs): IRepository => {
     };
 
     const reorder = (payload: RowsReorderPayload) => {
-        args.onChange(payload.reorderedRows);
-        
+        const newRows = payload.getNew();
+        args.onChange(newRows);
+
+        payload.applyOrder(newRows);
         return Promise.resolve();
+    };
+
+    const supportsReordering = (_args: SupportsReorderingArgs) => {
+        return true;
     };
 
     const repository: IRepository = {
@@ -114,6 +119,7 @@ const createRepository = (args: IWithInMemoryRepositoryArgs): IRepository => {
         performCreate,
         performUpdate,
         performDelete,
+        supportsReordering,
     };
     return repository;
 };
@@ -133,19 +139,20 @@ export function withInMemoryRepository<WrappedProps>(WrappedComponent: Component
 
 export interface IWithFormFieldRepositoryArgs {
     propertyName: string;
-    formInstance: FormInstance<any>;
+    getFieldValue?: (propertyName: string) => object[];
+    onChange?: (...args: any[]) => void;
 }
 export function withFormFieldRepository<WrappedProps>(WrappedComponent: ComponentType<WrappedProps & IHasRepository & IHasModelType>, args: IWithFormFieldRepositoryArgs): FC<WrappedProps> {
-    const { propertyName, formInstance } = args;
+    const { propertyName, getFieldValue, onChange } = args;
 
     return props => {
-        const valueAccessor = useCallback(() => formInstance?.getFieldValue(propertyName), [formInstance, propertyName]);
-        const onChange = useCallback((newValue: object[]) => {
-            if (formInstance)
-              formInstance.setFieldValue(propertyName, newValue);
-          }, [formInstance, propertyName]);
-               
-        const repository = useInMemoryRepository({ valueAccessor, onChange: onChange });
+        const valueAccessor = useCallback(() => getFieldValue(propertyName), [propertyName]);
+        const onChangeAccessor = useCallback((newValue: object[]) => {
+            if (onChange)
+                onChange(newValue);
+        }, [propertyName]);
+
+        const repository = useInMemoryRepository({ valueAccessor, onChange: onChangeAccessor });
 
         return (<WrappedComponent {...props} repository={repository} modelType={null} />);
     };

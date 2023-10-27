@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { MoreOutlined } from '@ant-design/icons';
-import { useButtonGroupConfigurator } from '../../../../../providers/buttonGroupConfigurator';
+import { useButtonGroupConfigurator } from 'providers/buttonGroupConfigurator';
 
 export interface IDragHandleProps {
   id: string;

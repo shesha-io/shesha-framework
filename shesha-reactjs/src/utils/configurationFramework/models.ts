@@ -43,13 +43,15 @@ export const ConfigurationItemVersionStatusMap: VersionStatusMap = {
   [ConfigurationItemVersionStatus.Retired]: { text: 'Retired', color: '#FF7518' },
 };
 
-export const FORM_STATUS_MAPPING: IStatusMappings = {
-  mapping: Object.values(ConfigurationItemVersionStatus)
-    .map<IStatusMap>((v) => {
-      const code = Number(v);
-      const item = ConfigurationItemVersionStatusMap[v as ConfigurationItemVersionStatus];
-      return code && item ? { code: code, text: item?.text, color: item?.color } : null;
-    })
-    .filter((v) => Boolean(v)),
-  default: { override: 'NOT RECOGNISED', text: 'NOT RECOGNISED', color: '#f50' },
+export const CONFIGURATION_ITEM_STATUS_MAPPING: IStatusMappings = { 
+    mapping: Object.values(ConfigurationItemVersionStatus)
+        .map<IStatusMap>(v => {
+            const code = Number(v);
+            const item = ConfigurationItemVersionStatusMap[v as ConfigurationItemVersionStatus];
+            return code && item
+                ? { code: code, text: item?.text, color: item?.color }
+                : null;
+        })
+        .filter(v => Boolean(v)), 
+    default: { override: 'NOT RECOGNISED', text: 'NOT RECOGNISED', color: '#f50' } 
 };

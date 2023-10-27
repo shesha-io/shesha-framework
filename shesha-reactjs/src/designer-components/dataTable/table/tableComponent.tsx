@@ -8,10 +8,8 @@ import {
   DatatableAdvancedFilter,
   DatatableColumnsSelector,
 } from '../../../components';
-import { OnRowsReorderedArgs } from '../../../components/reactTable/interfaces';
 import { IToolboxComponent } from '../../../interfaces';
 import {
-  useDataTableSelection,
   useDataTableStore,
   useForm,
   useFormData,
@@ -19,13 +17,14 @@ import {
   useSheshaApplication,
 } from '../../../providers';
 import { SheshaActionOwners } from '../../../providers/configurableActionsDispatcher/models';
-import { RowsReorderPayload } from '../../../providers/dataTable/repository/interfaces';
 import { getStyle } from '../../../providers/form/utils';
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
 import { ITableComponentProps } from './models';
 import TableSettings from './tableComponent-settings';
 import { filterVisibility } from './utils';
+import { migrateCustomFunctions, migratePropertyName } from '../../../designer-components/_common-migrations/migrateSettings';
+import { IDataColumnsProps } from 'providers/datatableColumnsConfigurator/models';
 
 const TableComponent: IToolboxComponent<ITableComponentProps> = {
   type: 'datatable',
@@ -76,30 +75,25 @@ const TableComponent: IToolboxComponent<ITableComponentProps> = {
       }))
       .add<ITableComponentProps>(4, (prev) => ({
         ...prev,
-        onRowSaveSuccessAction:
-          prev['onRowSaveSuccess'] && typeof prev['onRowSaveSuccess'] === 'string'
-            ? {
-                actionOwner: SheshaActionOwners.Common,
-                actionName: 'Execute Script',
-                actionArguments: {
-                  expression: prev['onRowSaveSuccess'],
-                },
-                handleFail: false,
-                handleSuccess: false,
-              }
-            : null,
-      })),
-  settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
-    return (
-      <TableSettings
-        readOnly={readOnly}
-        model={model}
-        onSave={onSave}
-        onCancel={onCancel}
-        onValuesChange={onValuesChange}
-      />
-    );
-  },
+        onRowSaveSuccessAction: prev['onRowSaveSuccess'] && typeof (prev['onRowSaveSuccess']) === 'string'
+          ? {
+            actionOwner: SheshaActionOwners.Common,
+            actionName: 'Execute Script',
+            actionArguments: {
+              expression: prev['onRowSaveSuccess'],
+            },
+            handleFail: false,
+            handleSuccess: false,
+          }
+          : null
+      }))
+      .add<ITableComponentProps>(5, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+      .add<ITableComponentProps>(6, (prev) => {
+        const columns = (prev.items ?? []).map(c => (c.columnType === 'data' ? { ...c, allowSorting: true } as IDataColumnsProps : c));
+        return { ...prev, items: columns };
+      })
+  ,
+  settingsFormFactory: (props) => <TableSettings {...props}/>,
 };
 
 const NotConfiguredWarning: FC = () => {
@@ -107,7 +101,7 @@ const NotConfiguredWarning: FC = () => {
 };
 
 export const TableWrapper: FC<ITableComponentProps> = (props) => {
-  const { id, items, useMultiselect, allowRowDragAndDrop, tableStyle, containerStyle } = props as ITableComponentProps;
+  const { id, items, useMultiselect, tableStyle, containerStyle } = props;
 
   const { formMode } = useForm();
   const { data: formData } = useFormData();
@@ -122,7 +116,14 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     setIsInProgressFlag,
     registerConfigurableColumns,
     tableData,
+    selectedRow,
+    setMultiSelectedRow,
+    requireColumns,
+    allowReordering,
   } = useDataTableStore();
+
+  requireColumns(); // our component requires columns loading. it's safe to call on each render
+
   const repository = getRepository();
 
   useEffect(() => {
@@ -135,8 +136,6 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
 
     registerConfigurableColumns(id, permissibleColumns);
   }, [items, isDesignMode]);
-
-  const { selectedRow, setSelectedRow, setMultiSelectedRow } = useDataTableSelection();
 
   const renderSidebarContent = () => {
     if (isFiltering) {
@@ -158,53 +157,11 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
 
   if (isDesignMode && !repository) return <NotConfiguredWarning />;
 
-  /*
-  const handleOnRowDropped = (row: any, oldIndex: number, newIndex: number) => {
-    changeActionedRow(row);
-
-    const evaluationContext = {
-      items: tableDataItems?.current,
-      selectedRow: row,
-      newIndex,
-      oldIndex,
-      data: formData,
-      moment: moment,
-      form,
-      formMode,
-      http: axiosHttp(backendUrl),
-      message,
-      globalState,
-      setFormData: setFormDataAndInstance,
-      setGlobalState,
-    };
-
-    if (rowDroppedActionConfiguration) {
-      executeAction({
-        actionConfiguration: rowDroppedActionConfiguration,
-        argumentsEvaluationContext: evaluationContext,
-      });
-    } else {
-      executeAction(getOnRowDroppedAction(props, evaluationContext));
-    }
-  };
-  */
-  const handleRowsReordered = (payload: OnRowsReorderedArgs): Promise<void> => {
-    const reorderPayload: RowsReorderPayload = {
-      reorderedRows: payload.reorderedRows,
-    };
-    return repository.reorder(reorderPayload);
-  };
-
   const toggleFieldPropertiesSidebar = () => {
     if (!isSelectingColumns && !isFiltering) setIsInProgressFlag({ isFiltering: true });
     else setIsInProgressFlag({ isFiltering: false, isSelectingColumns: false });
   };
 
-  const onSelectRow = (index: number, row: any) => {
-    if (row) {
-      setSelectedRow(index, row);
-    }
-  };
 
   return (
     <CollapsibleSidebarContainer
@@ -218,12 +175,10 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
       allowFullCollapse
     >
       <DataTable
-        onSelectRow={onSelectRow}
         onMultiRowSelect={setMultiSelectedRow}
         selectedRowIndex={selectedRow?.index}
         useMultiselect={useMultiselect}
-        allowRowDragAndDrop={allowRowDragAndDrop}
-        onRowsReordered={handleRowsReordered}
+        allowReordering={allowReordering}
         tableStyle={getStyle(tableStyle, formData, globalState)}
         containerStyle={getStyle(containerStyle, formData, globalState)}
         canAddInline={props.canAddInline}

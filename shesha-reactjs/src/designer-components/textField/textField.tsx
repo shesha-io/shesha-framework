@@ -14,6 +14,7 @@ import { evaluateString, getStyle, validateConfigurableComponentSettings } from 
 import { axiosHttp } from '../../utils/fetchers';
 import { ITextFieldComponentProps, TextType } from './interfaces';
 import settingsFormJson from './settingsForm.json';
+import { migrateCustomFunctions, migratePropertyName } from '../../designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -30,6 +31,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
   type: 'textField',
   isInput: true,
   isOutput: true,
+  canBeJsSetting: true,
   name: 'Text field',
   icon: <CodeOutlined />,
   dataTypeSupported: ({ dataType, dataFormat }) =>
@@ -39,14 +41,14 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       dataFormat === StringFormats.phoneNumber ||
       dataFormat === StringFormats.password),
   factory: (model: ITextFieldComponentProps, _c, form) => {
-    const { formMode, isComponentDisabled, setFormDataAndInstance } = useForm();
+    const { formMode, setFormDataAndInstance } = useForm();
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
 
-    const disabled = isComponentDisabled(model);
-
     const readOnly = model?.readOnly || (formMode === 'readonly' && model.textType !== 'password');
+
+    const InputComponentType = renderInput(model.textType);
 
     const inputProps: InputProps = {
       className: 'sha-input',
@@ -56,12 +58,10 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       bordered: !model.hideBorder,
       maxLength: model.validate?.maxLength,
       size: model?.size,
-      disabled,
+      disabled: model.disabled,
       readOnly,
       style: getStyle(model?.style, formData),
     };
-
-    const InputComponentType = renderInput(model.textType);
 
     const eventProps = {
       model,
@@ -84,11 +84,11 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
           evaluateString(model?.initialValue, { formData, formMode, globalState })
         }
       >
-        {readOnly ? (
-          <ReadOnlyDisplayFormItem disabled={disabled} />
-        ) : (
-          <InputComponentType {...inputProps} disabled={disabled} {...customEventHandler(eventProps)} />
-        )}
+          {(value, onChange) => 
+            readOnly 
+              ? <ReadOnlyDisplayFormItem value={value} disabled={model.disabled} />
+              : <InputComponentType {...inputProps} {...customEventHandler(eventProps)} disabled={model.disabled} value={value} onChange={onChange} />
+          }
       </ConfigurableFormItem>
     );
   },
@@ -98,7 +98,10 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     textType: 'text',
     ...model,
   }),
-  migrator: (m) => m.add<ITextFieldComponentProps>(0, (prev) => ({ ...prev, textType: 'text' })),
+  migrator: (m) => m
+    .add<ITextFieldComponentProps>(0, (prev) => ({ ...prev, textType: 'text' }))
+    .add<ITextFieldComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
   linkToModelMetadata: (model, metadata): ITextFieldComponentProps => {
     return {
       ...model,

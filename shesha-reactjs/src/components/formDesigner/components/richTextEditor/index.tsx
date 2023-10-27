@@ -6,10 +6,11 @@ import { IToolboxComponent } from '../../../../interfaces/formDesigner';
 import { FormMarkup } from '../../../../providers/form/models';
 import settingsFormJson from './settingsForm.json';
 import RichTextEditor from '../../../richTextEditor';
-import { useDeepCompareMemoKeepReference, useForm, useFormData } from '../../../..';
+import { useDeepCompareMemoKeepReference, useFormData } from '../../../..';
 import { IRichTextEditorProps } from './interfaces';
 import { getStyle } from '../../../../providers/form/utils';
 import { IJoditEditorProps } from '../../../richTextEditor/joditEditor';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -20,12 +21,11 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
   name: 'Rich Text Editor',
   icon: <EditOutlined />,
   factory: ({ ...model }: IRichTextEditorProps) => {
-    const { formMode, isComponentDisabled } = useForm();
     const { data: formData } = useFormData();
 
-    const disabled = isComponentDisabled(model);
+    const disabled =model.disabled;
 
-    const readOnly = formMode === 'readonly' || model.readOnly;
+    const readOnly = model.readOnly;
 
     const config = useDeepCompareMemoKeepReference<PartialRichTextEditorConfig>(() => {
       const typedConfig: PartialRichTextEditorConfig = {
@@ -52,7 +52,7 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
     }, [model, readOnly]);
     return (
       <ConfigurableFormItem model={model}>
-        <RichTextEditor config={config} />
+        {(value, onChange) => <RichTextEditor config={config} value={value} onChange={onChange}/>}
       </ConfigurableFormItem>
     );
   },
@@ -75,6 +75,9 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
     askBeforePasteFromWord: true,
     disablePlugins: null,
   }),
+  migrator: (m) => m
+    .add<IRichTextEditorProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
 };
 
 export default RichTextEditorComponent;

@@ -20,8 +20,7 @@ const DataSourcesProvider: FC<PropsWithChildren<IDataSourcesProviderProps>> = ({
       [`${payload.id}_${payload.name}`]: {
         id: payload.id,
         name: payload.name,
-        dataSource: payload.dataSource,
-        dataSelection: payload.dataSelection,
+        dataSource: payload.dataSource
       },
     };
   };
@@ -34,23 +33,17 @@ const DataSourcesProvider: FC<PropsWithChildren<IDataSourcesProviderProps>> = ({
     return dataSources.current;
   };
 
-  const getDataSource = (payload: IGetDataSourcePayload | string) => {
-    if (typeof payload === 'string') return dataSources.current[payload];
-    else return dataSources.current[`${payload.id}_${payload.name}`];
-  };
+    const getDataSource = (payload: IGetDataSourcePayload | string) => {
+        return (typeof(payload) === 'string') 
+            ? dataSources.current[payload]
+            : dataSources.current[`${payload.id}_${payload.name}`];
+    };
 
-  const dataSourcesProviderActions: IDataSourcesProviderActionsContext = {
-    registerDataSource,
-    unregisterDataSource,
-    getDataSources,
-    getDataSource,
-    /*registerAction,
-        unregisterAction,
-        getConfigurableAction,
-        getConfigurableActionOrNull,
-        getActions,
-        prepareArguments,
-        executeAction,*/
+    const dataSourcesProviderActions: IDataSourcesProviderActionsContext = {
+        registerDataSource,
+        unregisterDataSource,
+        getDataSources,
+        getDataSource
   };
 
   return (
@@ -77,18 +70,18 @@ function useDataSources(require: boolean = true) {
     : undefined;
 }
 
-function useDataSource(payload: IRegisterDataSourcePayload, deps?: ReadonlyArray<any>): void {
-  const { registerDataSource, unregisterDataSource } = useDataSources();
-
-  useEffect(() => {
-    //if (!payload.owner || !payload.ownerUid)
-    //return null;
-
-    registerDataSource(payload);
-    return () => {
-      unregisterDataSource(payload);
-    };
-  }, deps);
+function useDataSource(
+    payload: IRegisterDataSourcePayload,
+    deps?: ReadonlyArray<any>
+): void {
+    const { registerDataSource, unregisterDataSource } = useDataSources();
+  
+    useEffect(() => {
+        registerDataSource(payload);
+        return () => {
+            unregisterDataSource(payload);
+        };
+    }, deps);
 }
-
+  
 export { DataSourcesProvider, useDataSources, useDataSource };

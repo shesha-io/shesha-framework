@@ -72,6 +72,18 @@ const executeScriptArgumentsForm: FormMarkupFactory = (props) => {
       description: 'A function used to update the form data',
       type: '({ values: object, mergeValues: boolean}) => void',
     },
+    {
+      id: '1d4a41db-2591-4568-b925-d2537cea7f0f',
+      name: 'setFormData',
+      description: 'A function used to update the form data',
+      type: '({ values: object, mergeValues: boolean}) => void',
+    },
+    {
+      id: 'a9df21db-2591-4568-b925-b730acea7f0f',
+      name: 'contexts',
+      description: 'Data contexts',
+      type: 'object',
+    },
   ];
 
   const variables = [...standardVariables, ...customVariables];
@@ -79,7 +91,7 @@ const executeScriptArgumentsForm: FormMarkupFactory = (props) => {
   return new DesignerToolbarSettings()
     .addCodeEditor({
       id: nanoid(),
-      name: 'expression',
+      propertyName: 'expression',
       label: 'Expression',
       mode: 'dialog',
       exposedVariables: variables,
@@ -99,8 +111,6 @@ export const useExecuteScriptAction = () => {
       executer: (actionArgs, context) => {
         if (!actionArgs.expression)
           return Promise.reject('Expected expression to be defined but it was found to be empty.');
-
-        console.log('context is: ', context);
 
         return executeScript(actionArgs.expression, context);
       },

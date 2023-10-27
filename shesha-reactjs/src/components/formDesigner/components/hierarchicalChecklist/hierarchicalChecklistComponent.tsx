@@ -1,8 +1,9 @@
 import { ApartmentOutlined } from '@ant-design/icons';
 import { Skeleton } from 'antd';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 import React, { MutableRefObject } from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
-import { useForm, useFormData } from '../../../../providers';
+import { useFormData } from '../../../../providers';
 import { FormMarkup, IConfigurableFormComponent } from '../../../../providers/form/models';
 import { evaluateString, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import { IHierarchicalCheckListProps } from '../../../hierarchicalCheckList';
@@ -31,8 +32,6 @@ const HierarchicalChecklistComponent: IToolboxComponent<IHierarchicalChecklistPr
   name: 'Hierarchical Checklist',
   icon: <ApartmentOutlined />,
   factory: (model: IHierarchicalChecklistProps, _componentRef: MutableRefObject<any>) => {
-    const { isComponentHidden } = useForm();
-
     const { data: formData } = useFormData();
 
     // TODO:: Review - formData?.ownerType, formData?.ownerId and formData?.checklistId need to be removed
@@ -40,7 +39,7 @@ const HierarchicalChecklistComponent: IToolboxComponent<IHierarchicalChecklistPr
     const ownerId = evaluateString(formData?.ownerId || model?.ownerId, { data: formData });
     const checklistId = evaluateString(formData?.checklistId || model?.checklistId, { data: formData });
 
-    const renderChecklist = () => {
+    const renderChecklist = (value, onChange) => {
       if (!isUuid(checklistId)) {
         return model?.dropdown ? <Skeleton.Input style={{ width: 250 }} active={false} size="default" /> : <Skeleton />;
       }
@@ -54,11 +53,13 @@ const HierarchicalChecklistComponent: IToolboxComponent<IHierarchicalChecklistPr
           dropdown={model?.dropdown}
           saveLocally={model?.saveLocally}
           hint={model?.customHint}
+          value={value}
+          onChange={onChange}
         />
       );
     };
 
-    if (isComponentHidden(model)) return null;
+    if (model.hidden) return null;
 
     const wrapperColProps: Omit<IConfigurableFormItemProps, 'model'> = model?.dropdown
       ? {}
@@ -66,7 +67,7 @@ const HierarchicalChecklistComponent: IToolboxComponent<IHierarchicalChecklistPr
 
     return (
       <ConfigurableFormItem {...wrapperColProps} model={model?.dropdown ? model : { ...model, hideLabel: true }}>
-        {renderChecklist()}
+        {renderChecklist}
       </ConfigurableFormItem>
     );
   },
@@ -83,6 +84,10 @@ const HierarchicalChecklistComponent: IToolboxComponent<IHierarchicalChecklistPr
     };
     return customModel;
   },
+  migrator: (m) => m
+    .add<IHierarchicalChecklistProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev) as IHierarchicalChecklistProps))
+  ,
+
 };
 
 export default HierarchicalChecklistComponent;

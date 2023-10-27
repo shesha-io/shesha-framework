@@ -1,8 +1,8 @@
-import { useGet } from 'hooks';
-import { useMemo, useRef } from 'react';
-import { camelcaseDotNotation } from 'utils/string';
-import { EntityData, IAbpWrappedGetEntityListResponse, IGetAllPayload } from '../interfaces/gql';
-import { GENERIC_ENTITIES_ENDPOINT } from '../shesha-constants';
+import { useMemo, useRef, useEffect } from "react";
+import { useGet } from "hooks";
+import { EntityData, IAbpWrappedGetEntityListResponse, IGetAllPayload } from "interfaces/gql";
+import { camelcaseDotNotation } from "utils/string";
+import { GENERIC_ENTITIES_ENDPOINT } from "src/index";
 
 export interface IUseEntityDisplayTextProps {
   entityType?: string;
@@ -64,12 +64,17 @@ export const useEntitySelectionData = (props: IUseEntityDisplayTextProps): IEnti
   const mustFetch = canFetch && !itemsAlreadyLoaded;
 
   const valueFetcher = useGet<IAbpWrappedGetEntityListResponse, any, IGetEntityPayload>(
-    `${GENERIC_ENTITIES_ENDPOINT}/GetAll`,
-    {
-      lazy: !mustFetch,
-      queryParams: getValuePayload,
-    }
+      `${GENERIC_ENTITIES_ENDPOINT}/GetAll`,
+      {
+          //lazy: !mustFetch,
+          queryParams: getValuePayload,
+      }
   );
+  
+  useEffect(() => {
+      if (mustFetch)
+          valueFetcher.refetch({queryParams: getValuePayload});
+  }, [getValuePayload.filter]);
 
   const valueItems = valueFetcher.data?.result?.items;
   const result = useMemo<EntityData[]>(() => {

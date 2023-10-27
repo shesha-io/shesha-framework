@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useRef } from 'react';
+import React, { FC, useRef } from 'react';
 import { CustomErrorBoundary } from '../../../components';
 import { useForm } from '../../../providers';
 import { useCrud } from '../../../providers/crudContext';
@@ -16,11 +16,13 @@ import StringCell from './default/stringCell';
 import TimeCell from './default/timeCell';
 import { IComponentWrapperProps, IConfigurableCellProps, IDataCellProps } from './interfaces';
 import { getInjectables } from './utils';
+import { getActualModel, useApplicationContext } from 'utils/publicUtils';
+import { useDeepCompareMemo } from 'hooks';
 
 export const DataCell = <D extends object = {}, V = number>(props: IDataCellProps<D, V>) => {
-  const { mode } = useCrud();
+    const { mode } = useCrud();
 
-  switch (mode) {
+    switch (mode) {
     case 'create':
       return <CreateDataCell {...props} />;
     case 'read':
@@ -29,14 +31,14 @@ export const DataCell = <D extends object = {}, V = number>(props: IDataCellProp
       return <UpdateDataCell {...props} />;
     default:
       return null;
-  }
+    }
 };
 
 const ReadDataCell = <D extends object = {}, V = number>(props: IDataCellProps<D, V>) => {
-  const { columnConfig, propertyMeta } = props;
-  const customComponent = columnConfig?.displayComponent;
+    const { columnConfig, propertyMeta } = props;
+    const customComponent = columnConfig?.displayComponent;
 
-  const componentType = customComponent?.type ?? standardCellComponentTypes.defaultDisplay;
+    const componentType = customComponent?.type ?? standardCellComponentTypes.defaultDisplay;
   const row = props?.row?.original;
 
   return componentType === standardCellComponentTypes.defaultDisplay ? (
@@ -52,9 +54,9 @@ const ReadDataCell = <D extends object = {}, V = number>(props: IDataCellProps<D
 };
 
 export const CreateDataCell = (props: IConfigurableCellProps<ITableDataColumn>) => {
-  const { columnConfig, propertyMeta } = props;
-  const customComponent = columnConfig?.createComponent;
-  const componentType = customComponent?.type ?? standardCellComponentTypes.notEditable;
+    const { columnConfig, propertyMeta } = props;
+    const customComponent = columnConfig?.createComponent;
+    const componentType = customComponent?.type ?? standardCellComponentTypes.notEditable;
 
   return componentType === standardCellComponentTypes.notEditable ? null : (
     <ComponentWrapper propertyMeta={propertyMeta} columnConfig={columnConfig} customComponent={customComponent} />
@@ -78,13 +80,13 @@ const UpdateDataCell = <D extends object = {}, V = number>(props: IDataCellProps
   );
 };
 
-const DefaultDataDisplayCell = <D extends object = {}, V = number>(props: IDataCellProps<D, V>) => {
-  const { columnConfig } = props;
-  const { form } = useForm();
-  const value = form.getFieldValue(columnConfig.propertyName?.split('.'));
-  const cellProps = { ...props, value };
+export const DefaultDataDisplayCell = <D extends object = {}, V = number>(props: IDataCellProps<D, V>) => {
+    const { columnConfig } = props;
+    const { form } = useForm();
+    const value = form.getFieldValue(columnConfig.propertyName?.split('.'));
+    const cellProps = { ...props, value };
 
-  switch (columnConfig.dataType) {
+    switch (columnConfig.dataType) {
     case 'number':
       return <NumberCell<D, V> {...cellProps} />;
     case 'date':
@@ -99,54 +101,60 @@ const DefaultDataDisplayCell = <D extends object = {}, V = number>(props: IDataC
       return <BooleanCell<D, V> {...cellProps} />;
     case 'entity':
       return <EntityCell<D, V> {...cellProps} />;
-    case 'array': {
+        case 'array': {
       return columnConfig.dataFormat === 'reference-list-item' ? (
         <MultivalueReferenceListCell<D, V> {...cellProps} />
       ) : (
         <StringCell<D, V> {...props} />
       );
-    }
+        }
     case 'string':
       return <StringCell<D, V> {...cellProps} />;
     default:
       return <StringCell<D, V> {...cellProps} />;
   }
-};
+    };
 
 const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
   const { columnConfig, propertyMeta, customComponent } = props;
 
-  const toolboxComponents = useFormDesignerComponents();
-  const { form } = useForm();
+    const toolboxComponents = useFormDesignerComponents();
+    const allData = useApplicationContext();
 
-  const component = toolboxComponents[customComponent.type];
-  const injectables = getInjectables(props);
+    const component = toolboxComponents[customComponent.type];
+    const injectables = getInjectables(props);
 
-  const componentModel = useMemo(() => {
-    let model: IColumnEditorProps = {
-      ...customComponent.settings,
-      ...injectables,
-      id: props.columnConfig.columnId,
-      type: customComponent.type,
-      name: columnConfig.propertyName,
-      label: null,
-      hideLabel: true,
-    };
+    const componentModel = useDeepCompareMemo(() => {
+        const actualModel = getActualModel(customComponent.settings, {...allData, tableRow: injectables.injectedTableRow});
+          
+        let editorModel: IColumnEditorProps = {
+            ...actualModel,
+            ...injectables,
+            id: props.columnConfig.columnId,
+            type: customComponent.type,
+            propertyName: columnConfig.propertyName,
+            label: null,
+            hideLabel: true,
+        };
 
-    if (component.linkToModelMetadata && propertyMeta) {
-      model = component.linkToModelMetadata(model, propertyMeta);
+        if (component.linkToModelMetadata && propertyMeta) {
+          editorModel = component.linkToModelMetadata(editorModel, propertyMeta);
+        }
+
+        return editorModel;
+    }, [customComponent.settings, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow, propertyMeta, injectables]);
+
+    const componentRef = useRef();
+
+    if (!component) {
+        return <div>Component not found</div>;
     }
 
-    return model;
-  }, []);
-
-  const componentRef = useRef();
-
-  if (!component) {
-    return <div>Component not found</div>;
-  }
-
-  return <CustomErrorBoundary>{component.factory(componentModel, componentRef, form)}</CustomErrorBoundary>;
+    return (
+        <CustomErrorBoundary>
+            {component.factory(componentModel, componentRef, allData.form)}
+        </CustomErrorBoundary>
+    );
 };
 
 export default DataCell;

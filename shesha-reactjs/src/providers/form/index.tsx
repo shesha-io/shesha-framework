@@ -40,8 +40,10 @@ import { useFormDesignerComponents } from './hooks';
 import { FormMode, FormRawMarkup, IFormActions, IFormSections, IFormSettings } from './models';
 import formReducer from './reducer';
 import { convertActions, convertSectionsToList, getEnabledComponentIds, getVisibleComponentIds } from './utils';
+import { useDataContextManager } from 'providers/dataContextManager';
 
 export interface IFormProviderProps {
+  needDebug?: boolean;
   name: string;
   allComponents: IComponentsDictionary;
   componentRelations: IComponentRelations;
@@ -83,10 +85,13 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   refetchData,
   isActionsOwner,
   propertyFilter,
+  needDebug,
+  ...props
 }) => {
   const toolboxComponents = useFormDesignerComponents();
 
   const { globalState } = useGlobalState();
+  const contextManager = useDataContextManager();
 
   const getToolboxComponent = (type: string) => toolboxComponents[type];
 
@@ -216,7 +221,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     const hiddenByCondition =
       model.isDynamic !== true && state.visibleComponentIds && !state.visibleComponentIds.includes(model.id);
 
-    return state.formMode !== 'designer' && hiddenByCondition;
+    return state.formMode !== 'designer' && (model.hidden || hiddenByCondition);
   };
 
   const getChildComponents = (componentId: string) => {
@@ -247,6 +252,11 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   };
 
   const updateVisibleComponents = (formContext: IFormStateInternalContext) => {
+    /*const comps = updateSettingsComponentsDict(
+      toolboxComponents,
+      allComponents
+    );*/
+
     const visibleComponents = getVisibleComponentIds(
       allComponents,
       formContext.formData,
@@ -277,7 +287,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
       allComponents,
       formContext.formData,
       globalState,
-      formContext?.formMode
+      formContext?.formMode,
     );
 
     setEnabledComponents({ componentIds: enabledComponents });
@@ -320,6 +330,9 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     dispatch((dispatchThunk, getState) => {
       dispatchThunk(setFormDataAction(payload));
       const newState = getState();
+
+      if (typeof props.onValuesChange === 'function')
+        props.onValuesChange(payload.values, newState.formData);
 
       // Update visible components. Note: debounced version is used to improve performance and prevent unneeded re-rendering
 
@@ -417,6 +430,13 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     hasVisibleChilds,
   };
   if (formRef) formRef.current = { ...configurableFormActions, ...state, allComponents, componentRelations };
+
+
+  useEffect(() => {
+    // set main form if empty
+    if (needDebug)
+      contextManager.updateFormInstance({...state, ...configurableFormActions} as ConfigurableFormInstance);
+  }, [state]);
 
   return (
     <FormStateContext.Provider value={{ ...state, allComponents, componentRelations }}>

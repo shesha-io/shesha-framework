@@ -87,7 +87,7 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
     }));
   }, [height, width]);
 
-  const url: string = getString(model?.url, formData, globalState) || formData?.[model.name];
+  const url: string = getString(model?.url, formData, globalState) || formData?.[model.propertyName];
 
   const onResize = () => {
     setPageSize({

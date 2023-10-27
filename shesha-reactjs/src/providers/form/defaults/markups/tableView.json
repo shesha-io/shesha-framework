@@ -3,12 +3,11 @@
     {
       "id": "_rtDi4m6WGK-mGmWiT-VM",
       "type": "tableView",
-      "name": "tableViewDefault",
+      "propertyName": "tableViewDefault",
       "label": "Table View Default",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "components": []
     }
   ]

@@ -1,8 +1,8 @@
-import camelcase from 'camelcase';
-import { useMemo } from 'react';
-import { IPropertyMetadata } from '../../interfaces/metadata';
-import { useMetadata } from '../metadata';
-import { IProperty } from './models';
+import camelcase from "camelcase";
+import { useMemo } from "react";
+import { IPropertyMetadata, isEntityReferencePropertyMetadata } from "../../interfaces/metadata";
+import { useMetadata } from "../metadata";
+import { IProperty, hasCustomQBSettings, IPropertyWithCustomQBSettings } from "./models";
 
 /**
  * Convert property metadata to QueryBuilder property
@@ -11,18 +11,25 @@ import { IProperty } from './models';
  * @returns
  */
 export const propertyMetadata2QbProperty = (property: IPropertyMetadata): IProperty => {
-  return {
-    label: property.label,
-    propertyName: property.path,
-    visible: property.isVisible,
-    dataType: property.dataType,
-    fieldSettings: {
-      typeShortAlias: property.entityType,
-      referenceListName: property.referenceListName,
-      referenceListModule: property.referenceListModule,
-      allowInherited: true,
-    },
-  };
+    const base: IProperty = {
+        label: property.label,
+        propertyName: property.path,
+        visible: property.isVisible,
+        dataType: property.dataType,
+        fieldSettings: {
+            typeShortAlias: isEntityReferencePropertyMetadata(property) ? property.entityType : undefined,
+            referenceListName: property.referenceListName,
+            referenceListModule: property.referenceListModule,
+            allowInherited: true,
+        },
+    };
+
+    return !hasCustomQBSettings(property)
+        ? base
+        : {
+            ...base, 
+            toQueryBuilderField: hasCustomQBSettings(property) ? property.toQueryBuilderField : undefined
+        } as IPropertyWithCustomQBSettings;
 };
 
 export const getPropertyFullPath = (path: string, prefix: string) => {

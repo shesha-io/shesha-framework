@@ -169,6 +169,7 @@ export interface IWizardTabPropsV0 extends IConfigurableItemBase {
 }
 
 export interface IWizardComponentPropsV0 extends IConfigurableFormComponent {
+  name: string;
   tabs: IWizardTabPropsV0[];
   wizardType?: 'default' | 'navigation';
   visibility?: 'Yes' | 'No' | 'Removed';
