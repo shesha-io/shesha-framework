@@ -29,7 +29,7 @@
     "changelog:major": "changelog -M && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version major && git push origin",
     "changelog:minor": "changelog -m && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version minor && git push origin",
     "changelog:patch": "changelog -p && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version patch && git push origin",
-    "storybook": "storybook dev -p 6007",
+    "storybook": "storybook dev -p 6006",
     "storybook:hack": "storybook dev -p 3000",
     "predeploy": "npm run build-storybook",
     "deploy-storybook": "gh-pages -d storybook-static",
