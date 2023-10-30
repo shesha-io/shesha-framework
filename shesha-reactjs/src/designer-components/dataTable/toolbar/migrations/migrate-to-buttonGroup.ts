@@ -44,6 +44,7 @@ type ToolbarItemSubType = 'button' | 'separator' | 'line' | 'dynamic';
 export const migrateToButtonGroup = (model: IToolbarProps): ToolbarButtonGroupProps => {
     const result: ToolbarButtonGroupProps = {
         id: model.id,
+        parentId: model.parentId,
         componentName: model.componentName,
         propertyName: model.propertyName,
         type: 'buttonGroup',
