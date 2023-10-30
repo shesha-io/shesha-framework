@@ -49,8 +49,8 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
         labelCol={{ span: model?.hideLabel ? 0 : model?.labelCol }}
         wrapperCol={{ span: model?.hideLabel ? 24 : model?.wrapperCol }}
       >
-        {(value) => {
-          return <SubFormWrapper {...model} value={value} propertyName={name} style={getStyle(model?.style, formData)} />;
+        {(value, onChange) => {
+          return <SubFormWrapper {...model} value={value} propertyName={name} style={getStyle(model?.style, formData)} onChange={onChange} />;
         }}
       </ConfigurableFormItem>
     );

@@ -284,8 +284,8 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = ({
           if (dataResponse.success) {
             if (typeof onChange === 'function') {
               onChange(dataResponse?.result);
-              dispatch(fetchDataSuccessAction());
             }
+            dispatch(fetchDataSuccessAction());
           } else {
             dispatch(fetchDataErrorAction({ error: dataResponse.error as GetDataError<unknown> }));
           }
