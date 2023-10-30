@@ -13,22 +13,20 @@ import { IButtonGroup, IToolbarButton, ToolbarItemProps } from '../../../provide
 import { IToolbarPropsV0, migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
 import { IToolbarProps } from './models';
-import ToolbarSettings from './toolbarSettingsPanel';
 import { migratePropertyName } from 'src/designer-components/_common-migrations/migrateSettings';
+import { migrateToButtonGroup, ToolbarButtonGroupProps } from './migrations/migrate-to-buttonGroup';
 
-const ToolbarComponent: IToolboxComponent<IToolbarProps> = {
+/**
+ * NOTE: toolbar component is obsolete and was replaced with the `buttonGroup` component
+ */
+const ToolbarComponent: IToolboxComponent<ToolbarButtonGroupProps> = {
   type: 'toolbar',
   isInput: false,
   name: 'Toolbar',
   icon: <DashOutlined />,
-  factory: (model: IToolbarProps) => {
-    return <Toolbar {...model} />;
-  },
-  initModel: (model: IToolbarProps) => {
-    return {
-      ...model,
-      items: [],
-    };
+  isHidden: true,
+  factory: () => {
+    throw new Error('Toolbar component was removed');
   },
   migrator: (m) =>
     m
@@ -39,32 +37,12 @@ const ToolbarComponent: IToolboxComponent<IToolbarProps> = {
       .add<IToolbarProps>(1, migrateV0toV1)
       .add<IToolbarProps>(2, migrateV1toV2)
       .add<IToolbarProps>(3, (prev) => migratePropertyName(prev))
+      .add<ToolbarButtonGroupProps>(4, (prev) => migrateToButtonGroup(prev))
   ,
-  settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
-    return (
-      <ToolbarSettings
-        readOnly={readOnly}
-        model={model}
-        onSave={onSave}
-        onCancel={onCancel}
-        onValuesChange={onValuesChange}
-      />
-    );
+  settingsFormFactory: () => {
+    throw new Error('Toolbar component was removed');
   },
 };
-
-/* for Alex: uncomment this part to check the difference
-export const Toolbar: FC<IToolbarProps> = ({ items, id }) => {
-  console.log('LOG: toolbar', items);
-  return (
-    <ButtonGroup 
-      items={items}
-      id={id}
-      isInline
-    />
-  );
-};
-*/
 
 export const Toolbar: FC<IToolbarProps> = ({ items, id }) => {
   const allData = useApplicationContext();
