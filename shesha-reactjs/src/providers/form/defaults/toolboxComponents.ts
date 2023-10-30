@@ -180,7 +180,6 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
       TableContext,
       TableTemplate,
       TableViewSelector,
-      Toolbar,
     ],
   },
   {
@@ -207,7 +206,7 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
   {
     visible: false,
     name: 'Legacy',
-    components: [Paragraph, Title],
+    components: [Paragraph, Title, Toolbar],
   },
   {
     visible: true,
