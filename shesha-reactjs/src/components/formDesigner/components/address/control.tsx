@@ -13,7 +13,7 @@ import { getAddressValue, getSearchOptions } from './utils';
 
 interface IAutoCompletePlacesFieldProps extends IAddressCompomentProps {
   value?: any;
-  onChange?: Function;
+  onChange?: (...args) => void;
 }
 
 const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => {
@@ -25,7 +25,7 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => 
     lazy: true,
   });
 
-  const { form, formMode, formData, setFormDataAndInstance } = useForm();
+  const { form, formMode, formData } = useForm();
   const { globalState, setState: setGlobalState } = useGlobalState();
   const { backendUrl } = useSheshaApplication();
 
@@ -56,7 +56,7 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => 
     http: axiosHttp(backendUrl),
     message,
     moment,
-    setFormData: setFormDataAndInstance,
+    setFormData: onChange,
     setGlobalState,
     onChange,
     onSelect,

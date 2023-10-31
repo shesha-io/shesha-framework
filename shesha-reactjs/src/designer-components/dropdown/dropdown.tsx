@@ -16,6 +16,7 @@ import { axiosHttp } from '../../utils/fetchers';
 import { getLegacyReferenceListIdentifier } from '../../utils/referenceList';
 import { IDropdownComponentProps, ILabelValue } from './interfaces';
 import settingsFormJson from './settingsForm.json';
+import { migratePropertyName, migrateCustomFunctions } from '../../designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -23,6 +24,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
   type: 'dropdown',
   isInput: true,
   isOutput: true,
+  canBeJsSetting: true,
   name: 'Dropdown',
   icon: <DownSquareOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.referenceListItem,
@@ -48,25 +50,28 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
 
     return (
       <ConfigurableFormItem model={model} {...initialValue}>
-        <Dropdown {...model} {...customDropDownEventHandler(eventProps)} />
+        {(value, onChange) => {
+          return <Dropdown {...model} {...customDropDownEventHandler(eventProps)} value={value} onChange={onChange} />;
+        }}
       </ConfigurableFormItem>
     );
   },
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
-  migrator: (m) =>
-    m
-      .add<IDropdownComponentProps>(0, (prev) => ({
+  migrator: (m) => m
+    .add<IDropdownComponentProps>(0, (prev) => ({
+      ...prev,
+      dataSourceType: prev['dataSourceType'] ?? 'values',
+      useRawValues: prev['useRawValues'] ?? false,
+    }))
+    .add<IDropdownComponentProps>(1, (prev) => {
+      return {
         ...prev,
-        dataSourceType: prev['dataSourceType'] ?? 'values',
-        useRawValues: prev['useRawValues'] ?? false,
-      }))
-      .add<IDropdownComponentProps>(1, (prev) => {
-        return {
-          ...prev,
-          referenceListId: getLegacyReferenceListIdentifier(prev.referenceListNamespace, prev.referenceListName),
-        };
-      }),
+        referenceListId: getLegacyReferenceListIdentifier(prev.referenceListNamespace, prev.referenceListName),
+      };
+    })
+    .add<IDropdownComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
   linkToModelMetadata: (model, metadata): IDropdownComponentProps => {
     return {
       ...model,
@@ -82,7 +87,6 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
 };
 
 export const Dropdown: FC<IDropdownComponentProps> = ({
-  id,
   dataSourceType,
   values,
   onChange,
@@ -96,12 +100,11 @@ export const Dropdown: FC<IDropdownComponentProps> = ({
   placeholder,
   useRawValues,
   readOnly,
-  isDynamic,
   style,
   size,
   allowClear = true,
 }) => {
-  const { formMode, isComponentDisabled } = useForm();
+  const { formMode } = useForm();
   const { data: formData } = useFormData();
   const { globalState } = useGlobalState();
 
@@ -110,10 +113,6 @@ export const Dropdown: FC<IDropdownComponentProps> = ({
   };
 
   const selectedMode = mode === 'single' ? undefined : mode;
-
-  const isReadOnly = formMode === 'readonly' || readOnly;
-
-  const isDisabled = isComponentDisabled({ id, isDynamic, disabled });
 
   const localStyle = getStyle(style, formData);
 
@@ -127,7 +126,7 @@ export const Dropdown: FC<IDropdownComponentProps> = ({
       <RefListDropDown.Raw
         onChange={onChange}
         referenceListId={referenceListId}
-        disabled={isDisabled}
+        disabled={disabled}
         value={value}
         bordered={!hideBorder}
         defaultValue={defaultValue}
@@ -135,7 +134,7 @@ export const Dropdown: FC<IDropdownComponentProps> = ({
         filters={ignoredValues}
         includeFilters={false}
         placeholder={placeholder}
-        readOnly={isReadOnly}
+        readOnly={readOnly}
         size={size}
         style={localStyle}
         allowClear={allowClear}
@@ -144,7 +143,7 @@ export const Dropdown: FC<IDropdownComponentProps> = ({
       <RefListDropDown.Dto
         onChange={onChange}
         referenceListId={referenceListId}
-        disabled={isDisabled}
+        disabled={disabled}
         value={value}
         bordered={!hideBorder}
         defaultValue={defaultValue}
@@ -152,7 +151,7 @@ export const Dropdown: FC<IDropdownComponentProps> = ({
         filters={ignoredValues}
         includeFilters={false}
         placeholder={placeholder}
-        readOnly={isReadOnly}
+        readOnly={readOnly}
         size={size}
         style={localStyle}
         allowClear={allowClear}
@@ -168,8 +167,8 @@ export const Dropdown: FC<IDropdownComponentProps> = ({
     return options?.find(({ value: currentValue }) => currentValue === selectedValue)?.label;
   };
 
-  if (isReadOnly) {
-    return <ReadOnlyDisplayFormItem disabled={isDisabled} type="string" value={getSelectValue()} />;
+  if (readOnly) {
+    return <ReadOnlyDisplayFormItem disabled={disabled} type="string" value={getSelectValue()} />;
   }
 
   return (
@@ -179,7 +178,7 @@ export const Dropdown: FC<IDropdownComponentProps> = ({
       value={options.length > 0 ? value || defaultValue : undefined}
       defaultValue={defaultValue}
       bordered={!hideBorder}
-      disabled={isDisabled}
+      disabled={disabled}
       mode={selectedMode}
       placeholder={placeholder}
       showSearch

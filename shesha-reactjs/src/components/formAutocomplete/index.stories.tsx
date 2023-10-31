@@ -87,6 +87,16 @@ const BaseTemplate: FC<ITemplateProps> = props => {
             </Button>
           )}
 
+          <Button
+            onClick={() =>
+              form?.setFieldsValue({
+                [name]: null,
+              })
+            }
+          >
+            Set null
+          </Button>
+
           <Button onClick={() => form?.resetFields()} style={{ margin: '0 12px' }}>
             Reset
           </Button>

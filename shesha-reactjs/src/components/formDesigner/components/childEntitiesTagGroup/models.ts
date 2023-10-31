@@ -1,8 +1,8 @@
-import { IConfigurableFormComponent } from '../../../../providers';
+import { FormFullName, IConfigurableFormComponent } from '../../../../providers';
 
 export interface IChildEntitiesTagGroupProps extends IConfigurableFormComponent {
   capturedProperties?: string[];
-  formId?: string;
+  formId?: FormFullName;
   labelFormat?: string;
   modalTitle?: string;
   modalWidth?: '100%' | '80%' | '60%' | '40%';
@@ -13,5 +13,5 @@ export interface IChildEntitiesTagGroupProps extends IConfigurableFormComponent 
 export interface IChildEntitiesTagGroupSelectOptions {
   label?: string;
   value?: string;
-  metadata?: any;
+  data?: any;
 }

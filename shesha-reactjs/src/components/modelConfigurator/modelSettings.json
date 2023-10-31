@@ -3,13 +3,12 @@
     {
       "id": "s1GhkdPW0u1GUZOZs6MOG",
       "type": "alert",
-      "name": "alert1",
+      "propertyName": "alert1",
       "label": "Alert1",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": false,
+      "hidden": {"_code": "return !getSettingValue(data?.notImplemented);", "_mode": "code", "_value": false},
       "visibility": "Yes",
-      "customVisibility": "return data?.notImplemented;",
       "isDynamic": false,
       "alertType": "error",
       "text": "Entity configuration has 'Application Code' source type but is not implemented. Please note that you will not be able to use it.",
@@ -20,13 +19,12 @@
     {
       "id": "11GhkdPW0u1GUZOZs6MOG",
       "type": "alert",
-      "name": "alert2",
+      "propertyName": "alert2",
       "label": "Alert2",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": false,
+      "hidden": {"_code": "return  !getSettingValue(data?.suppress) !== 'url';", "_mode": "code", "_value": false},
       "visibility": "Yes",
-      "customVisibility": "return data?.suppress;",
       "isDynamic": false,
       "alertType": "warning",
       "text": "Entity configuration is suppressed and can not be used for other purposes.",
@@ -37,13 +35,12 @@
     {
       "id": "21GhkdPW0u1GUZOZs6MOG",
       "type": "alert",
-      "name": "alert3",
+      "propertyName": "alert3",
       "label": "Alert3",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": false,
+      "hidden": {"_code": "return  getSettingValue(data?.entityConfigType) !== 2;", "_mode": "code", "_value": false},
       "visibility": "Yes",
-      "customVisibility": "return data?.entityConfigType === 2;",
       "isDynamic": false,
       "alertType": "warning",
       "text": "Entity configuration is a Json Entity and can be used only as a type of Json properties. Application services is not available for this entity type",
@@ -54,7 +51,7 @@
     {
       "id": "B33BFC-6613TjXmCG6jdG",
       "type": "tabs",
-      "name": "mainTab",
+      "propertyName": "mainTab",
       "label": "Tabs1",
       "labelAlign": "right",
       "parentId": "root",
@@ -71,13 +68,12 @@
             {
               "id": "DDq9J9lhmoaWWl8WFQ8c4",
               "type": "entityPicker",
-              "name": "moduleId",
+              "propertyName": "moduleId",
               "label": "Module",
               "labelAlign": "right",
               "parentId": "X932kk2zE7XZCt3PB8aeq",
               "hidden": false,
               "visibility": "Yes",
-              "customVisibility": null,
               "isDynamic": false,
               "description": "",
               "validate": {},
@@ -101,12 +97,11 @@
               "textType": "text",
               "id": "-X1emhZPx1rM7w22GOc22",
               "type": "textField",
-              "name": "name",
+              "propertyName": "name",
               "label": "Name",
               "labelAlign": "right",
               "parentId": "X932kk2zE7XZCt3PB8aeq",
               "hidden": false,
-              "customVisibility": null,
               "description": null,
               "validate": {},
               "settingsValidationErrors": [],
@@ -116,12 +111,11 @@
               "textType": "text",
               "id": "-ZC0vVnQrD0YEgFsOFc8m",
               "type": "textField",
-              "name": "label",
+              "propertyName": "label",
               "label": "Label",
               "labelAlign": "right",
               "hidden": false,
               "visibility": "Yes",
-              "customVisibility": null,
               "isDynamic": false,
               "maxLength": null,
               "parentId": "X932kk2zE7XZCt3PB8aeq"
@@ -130,12 +124,11 @@
               "textType": "text",
               "id": "H-lASg-AAd-BAD34Lraku",
               "type": "textField",
-              "name": "description",
+              "propertyName": "description",
               "label": "Description",
               "labelAlign": "right",
               "hidden": false,
               "visibility": "Yes",
-              "customVisibility": null,
               "isDynamic": false,
               "maxLength": null,
               "parentId": "X932kk2zE7XZCt3PB8aeq"
@@ -144,12 +137,11 @@
               "textType": "text",
               "id": "-X1emhZPx1rM7w22GOc11",
               "type": "checkbox",
-              "name": "suppress",
+              "propertyName": "suppress",
               "label": "Suppress",
               "labelAlign": "right",
               "parentId": "X932kk2zE7XZCt3PB8aeq",
               "hidden": false,
-              "customVisibility": null,
               "description": null,
               "validate": {},
               "settingsValidationErrors": [],
@@ -164,19 +156,18 @@
           "id": "1vUF3pPcFNkvvKn6q3O59",
           "itemType": "item",
           "sortOrder": 6,
-          "name": "",
+          "propertyName": "",
           "key": "properties",
           "title": "Properties",
           "components": [
             {
               "id": "dIECbRhuwwxW23ZZEC5Kr",
               "type": "section",
-              "name": "properties",
+              "propertyName": "properties",
               "label": "Section1",
               "labelAlign": "right",
               "parentId": "1vUF3pPcFNkvvKn6q3O59",
               "hidden": false,
-              "customVisibility": null,
               "settingsValidationErrors": []
             }
           ],
@@ -187,21 +178,20 @@
           "id": "1p3PpY7RbUyx1NMV3e5PA",
           "itemType": "item",
           "sortOrder": 5,
-          "name": "",
+          "propertyName": "",
           "key": "appService",
-          "customVisibility": "return data?.entityConfigType === 1;",
+          "hidden": {"_code": "return  getSettingValue(data?.entityConfigType) !== 1;", "_mode": "code", "_value": false},
           "title": "Application Service",
           "components": [
             {
               "id": "dNzhkcchpcbIupEVK4vjq",
               "type": "checkbox",
-              "name": "generateAppService",
+              "propertyName": "generateAppService",
               "label": "Generate Application Service",
               "labelAlign": "right",
               "parentId": "1p3PpY7RbUyx1NMV3e5PA",
               "hidden": false,
               "visibility": "Yes",
-              "customVisibility": null,
               "isDynamic": false,
               "description": "",
               "validate": {},
@@ -210,11 +200,10 @@
             {
               "id": "Ak0H5UUnfskW9Dtj7GKjM",
               "type": "tabs",
-              "name": "appService",
+              "propertyName": "appService",
               "label": "Tabs2",
               "labelAlign": "right",
               "parentId": "1p3PpY7RbUyx1NMV3e5PA",
-              "hidden": false,
               "visibility": "Yes",
               "isDynamic": false,
               "tabs": [
@@ -222,20 +211,19 @@
                   "id": "hcBv9ySji5XEWPJNLjNOz",
                   "itemType": "item",
                   "sortOrder": 4,
-                  "name": "",
+                  "propertyName": "",
                   "key": "permission",
                   "title": "Permission",
                   "components": [
                     {
                       "id": "xqWeADxctxJJKvGQYeQd4",
                       "type": "section",
-                      "name": "permission",
+                      "propertyName": "permission",
                       "label": "Section2",
                       "labelAlign": "right",
                       "parentId": "hcBv9ySji5XEWPJNLjNOz",
                       "hidden": false,
                       "visibility": "Yes",
-                      "customVisibility": null,
                       "isDynamic": false,
                       "settingsValidationErrors": []
                     }
@@ -246,20 +234,19 @@
                   "id": "479TB2pkRysWCIxabiw-j",
                   "itemType": "item",
                   "sortOrder": 3,
-                  "name": "",
+                  "propertyName": "",
                   "key": "getPermission",
                   "title": "Get",
                   "components": [
                     {
                       "id": "yOEiaVpn3jN5W4DeOXs9r",
                       "type": "section",
-                      "name": "permissionGet",
+                      "propertyName": "permissionGet",
                       "label": "Section3",
                       "labelAlign": "right",
                       "parentId": "479TB2pkRysWCIxabiw-j",
                       "hidden": false,
                       "visibility": "Yes",
-                      "customVisibility": null,
                       "isDynamic": false,
                       "settingsValidationErrors": []
                     }
@@ -271,20 +258,19 @@
                   "id": "puDwy9ITCklFSVGyvrsEW",
                   "itemType": "item",
                   "sortOrder": 2,
-                  "name": "",
+                  "propertyName": "",
                   "key": "createPermission",
                   "title": "Create",
                   "components": [
                     {
                       "id": "Xz1oMGB2DniV2Q-_bBbEF",
                       "type": "section",
-                      "name": "permissionCreate",
+                      "propertyName": "permissionCreate",
                       "label": "Section4",
                       "labelAlign": "right",
                       "parentId": "puDwy9ITCklFSVGyvrsEW",
                       "hidden": false,
                       "visibility": "Yes",
-                      "customVisibility": null,
                       "isDynamic": false,
                       "settingsValidationErrors": []
                     }
@@ -296,20 +282,19 @@
                   "id": "fjUPjNWgHmBwuFVaSMF6z",
                   "itemType": "item",
                   "sortOrder": 1,
-                  "name": "",
+                  "propertyName": "",
                   "key": "updatePermission",
                   "title": "Update",
                   "components": [
                     {
                       "id": "aKMfCJHhnTI9a06-IDyTN",
                       "type": "section",
-                      "name": "permissionUpdate",
+                      "propertyName": "permissionUpdate",
                       "label": "Section5",
                       "labelAlign": "right",
                       "parentId": "fjUPjNWgHmBwuFVaSMF6z",
                       "hidden": false,
                       "visibility": "Yes",
-                      "customVisibility": null,
                       "isDynamic": false,
                       "settingsValidationErrors": []
                     }
@@ -326,13 +311,12 @@
                     {
                       "id": "bhsj5d9zq8N4p6sglCvE1",
                       "type": "section",
-                      "name": "permissionDelete",
+                      "propertyName": "permissionDelete",
                       "label": "Section6",
                       "labelAlign": "right",
                       "parentId": "FrhlkvrUWn9FRyk6LQ-OH",
                       "hidden": false,
                       "visibility": "Yes",
-                      "customVisibility": null,
                       "isDynamic": false,
                       "settingsValidationErrors": []
                     }
@@ -347,7 +331,7 @@
               "settingsValidationErrors": [],
               "components": [
                 {
-                  "name": "",
+                  "propertyName": "",
                   "type": "",
                   "isDynamic": false,
                   "id": "hcBv9ySji5XEWPJNLjNOz",
@@ -355,13 +339,12 @@
                     {
                       "id": "xqWeADxctxJJKvGQYeQd4",
                       "type": "section",
-                      "name": "permission",
+                      "propertyName": "permission",
                       "label": "Section2",
                       "labelAlign": "right",
                       "parentId": "hcBv9ySji5XEWPJNLjNOz",
                       "hidden": false,
                       "visibility": "Yes",
-                      "customVisibility": null,
                       "isDynamic": false,
                       "settingsValidationErrors": []
                     }
@@ -369,7 +352,7 @@
                   "parentId": "Ak0H5UUnfskW9Dtj7GKjM"
                 },
                 {
-                  "name": "",
+                  "propertyName": "",
                   "type": "",
                   "isDynamic": false,
                   "id": "479TB2pkRysWCIxabiw-j",
@@ -377,13 +360,12 @@
                     {
                       "id": "yOEiaVpn3jN5W4DeOXs9r",
                       "type": "section",
-                      "name": "permissionGet",
+                      "propertyName": "permissionGet",
                       "label": "Section3",
                       "labelAlign": "right",
                       "parentId": "479TB2pkRysWCIxabiw-j",
                       "hidden": false,
                       "visibility": "Yes",
-                      "customVisibility": null,
                       "isDynamic": false,
                       "settingsValidationErrors": []
                     }
@@ -391,7 +373,7 @@
                   "parentId": "Ak0H5UUnfskW9Dtj7GKjM"
                 },
                 {
-                  "name": "",
+                  "propertyName": "",
                   "type": "",
                   "isDynamic": false,
                   "id": "puDwy9ITCklFSVGyvrsEW",
@@ -400,20 +382,19 @@
                     {
                       "id": "Xz1oMGB2DniV2Q-_bBbEF",
                       "type": "section",
-                      "name": "permissionCreate",
+                      "propertyName": "permissionCreate",
                       "label": "Section4",
                       "labelAlign": "right",
                       "parentId": "puDwy9ITCklFSVGyvrsEW",
                       "hidden": false,
                       "visibility": "Yes",
-                      "customVisibility": null,
                       "isDynamic": false,
                       "settingsValidationErrors": []
                     }
                   ]
                 },
                 {
-                  "name": "",
+                  "propertyName": "",
                   "type": "",
                   "isDynamic": false,
                   "id": "fjUPjNWgHmBwuFVaSMF6z",
@@ -422,13 +403,12 @@
                     {
                       "id": "aKMfCJHhnTI9a06-IDyTN",
                       "type": "section",
-                      "name": "permissionUpdate",
+                      "propertyName": "permissionUpdate",
                       "label": "Section5",
                       "labelAlign": "right",
                       "parentId": "fjUPjNWgHmBwuFVaSMF6z",
                       "hidden": false,
                       "visibility": "Yes",
-                      "customVisibility": null,
                       "isDynamic": false,
                       "settingsValidationErrors": []
                     }
@@ -443,13 +423,12 @@
                     {
                       "id": "bhsj5d9zq8N4p6sglCvE1",
                       "type": "section",
-                      "name": "permissionDelete",
+                      "propertyName": "permissionDelete",
                       "label": "Section6",
                       "labelAlign": "right",
                       "parentId": "FrhlkvrUWn9FRyk6LQ-OH",
                       "hidden": false,
                       "visibility": "Yes",
-                      "customVisibility": null,
                       "isDynamic": false,
                       "settingsValidationErrors": []
                     }
@@ -458,7 +437,7 @@
                   "parentId": "Ak0H5UUnfskW9Dtj7GKjM"
                 }
               ],
-              "customVisibility": "return data.generateAppService;"
+              "hidden": {"_code": "return  !getSettingValue(data.generateAppService);", "_mode": "code", "_value": false}
             }
           ],
           "label": "Application Service",
@@ -473,13 +452,12 @@
             {
               "id": "111j5d9zq8N4p6sglCvE1",
               "type": "section",
-              "name": "viewConfigurations",
+              "propertyName": "viewConfigurations",
               "label": "ViewsEditor",
               "labelAlign": "right",
               "parentId": "1132kk2zE7XZCt3PB8ae1",
               "hidden": false,
               "visibility": "Yes",
-              "customVisibility": null,
               "isDynamic": false,
               "settingsValidationErrors": []
             }

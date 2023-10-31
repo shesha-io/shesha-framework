@@ -1,10 +1,9 @@
 import { CalendarOutlined } from '@ant-design/icons';
 import { DatePicker, message } from 'antd';
-import moment, { Moment, isMoment } from 'moment';
+import moment, { isMoment } from 'moment';
 import React, { FC, Fragment } from 'react';
 import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
 import { customDateEventHandler } from '../../components/formDesigner/components/utils';
-import { HiddenFormItem } from '../../components/hiddenFormItem';
 import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
 import { IToolboxComponent } from '../../interfaces';
 import { DataTypes } from '../../interfaces/dataTypes';
@@ -12,11 +11,20 @@ import { ProperyDataType } from '../../interfaces/metadata';
 import { useForm, useFormData, useGlobalState, useMetaProperties, useSheshaApplication } from '../../providers';
 import { FormMarkup } from '../../providers/form/models';
 import { getStyle, validateConfigurableComponentSettings } from '../../providers/form/utils';
-import { getMoment, getPropertyMetadata } from '../../utils/date';
+import { getMoment } from 'utils/date';
+import { getDataFormat } from 'utils/metadata';
 import { axiosHttp } from '../../utils/fetchers';
-import { IDateFieldProps, IRangeInfo, RangePickerChangeEvent, TimePickerChangeEvent } from './interfaces';
+import { IDateFieldProps, RangePickerChangeEvent, TimePickerChangeEvent } from './interfaces';
 import settingsFormJson from './settingsForm.json';
-import { DATE_TIME_FORMATS, disabledDate, getDefaultFormat, getFormat, getRangePickerValues } from './utils';
+import {
+  DATE_TIME_FORMATS,
+  disabledDate,
+  getDatePickerValue,
+  getDefaultFormat,
+  getFormat,
+  getRangePickerValues,
+} from './utils';
+import { migratePropertyName, migrateCustomFunctions } from '../../designer-components/_common-migrations/migrateSettings';
 
 const META_DATA_FILTERS: ProperyDataType[] = ['date', 'date-time', 'time'];
 
@@ -31,6 +39,7 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
   name: 'Date field',
   isInput: true,
   isOutput: true,
+  canBeJsSetting: true,
   icon: <CalendarOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.date || dataType === DataTypes.dateTime,
   factory: (model: IDateFieldProps, _c, form) => {
@@ -55,15 +64,10 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
     return (
       <Fragment>
         <ConfigurableFormItem model={model}>
-          <DatePickerWrapper {...model} {...customDateEventHandler(eventProps)} />
+          {(value, onChange) => {
+            return <DatePickerWrapper {...model} {...customDateEventHandler(eventProps)} value={value} onChange={onChange} />;
+          }}
         </ConfigurableFormItem>
-
-        {model?.range && (
-          <Fragment>
-            <HiddenFormItem name={`${model?.name}Start`} />
-            <HiddenFormItem name={`${model?.name}End`} />
-          </Fragment>
-        )}
       </Fragment>
     );
   },
@@ -80,6 +84,9 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
     };
     return customModel;
   },
+  migrator: (m) => m
+    .add<IDateFieldProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
   linkToModelMetadata: (model, metadata): IDateFieldProps => {
     return {
       ...model,
@@ -93,7 +100,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
   const { globalState } = useGlobalState();
 
   const {
-    name,
+    propertyName: name,
     disabled,
     hideBorder,
     range,
@@ -114,24 +121,15 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     ...rest
   } = props;
 
-  const dateFormat = props?.dateFormat || getPropertyMetadata(properties, name) || DATE_TIME_FORMATS.date;
+  const dateFormat = props?.dateFormat || getDataFormat(properties, name) || DATE_TIME_FORMATS.date;
   const timeFormat = props?.timeFormat || DATE_TIME_FORMATS.time;
 
   const defaultFormat = getDefaultFormat(props);
 
-  const { form, formMode, isComponentDisabled, formData } = useForm();
-
-  const isDisabled = isComponentDisabled(props);
-
-  const isReadOnly = readOnly || formMode === 'readonly';
+  const { formData } = useForm();
 
   const pickerFormat = getFormat(props, properties);
-
   const formattedValue = getMoment(value, pickerFormat);
-
-  const showDatePickerTime = showTime ? (defaultToMidnight ? { defaultValue: MIDNIGHT_MOMENT } : true) : false;
-
-  const datePickerValue = showDatePickerTime ? { defaultValue: formattedValue } : { value: formattedValue };
 
   const handleDatePickerChange = (localValue: any | null, dateString: string) => {
     if (!dateString?.trim()) {
@@ -159,25 +157,13 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     (onChange as RangePickerChangeEvent)(dates, formatString);
   };
 
-  const onCalendarChange = (values: Moment[], _formatString: [string, string], info: IRangeInfo) => {
-    const startDate = Array.isArray(values) && values[0];
-    const endDate = Array.isArray(values) && values[1];
-
-    if (info?.range === 'end' && form) {
-      form.setFieldsValue({
-        [`${name}Start`]: isMoment(startDate) ? startDate?.format() : null,
-        [`${name}End`]: isMoment(endDate) ? endDate?.format() : null,
-      });
-    }
-  };
-
-  if (isReadOnly) {
+  if (readOnly) {
     const format = `${dateFormat}${showTime ? timeFormat : ''}`;
 
     return (
       <ReadOnlyDisplayFormItem
         value={formattedValue?.toISOString()}
-        disabled={isDisabled}
+        disabled={disabled}
         type="datetime"
         dateFormat={format}
         timeFormat={timeFormat}
@@ -192,7 +178,6 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
       <RangePicker
         className="sha-range-picker"
         disabledDate={(e) => disabledDate(props, e, formData, globalState)}
-        onCalendarChange={onCalendarChange}
         onChange={handleRangePicker}
         format={pickerFormat}
         value={getRangePickerValues(value, pickerFormat)}
@@ -201,7 +186,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         picker={picker}
         showTime={showTime ? (defaultToMidnight ? { defaultValue: [MIDNIGHT_MOMENT, MIDNIGHT_MOMENT] } : true) : false}
         showSecond
-        disabled={isDisabled}
+        disabled={disabled}
         style={evaluatedStyle}
         allowClear
       />
@@ -212,18 +197,18 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     <DatePicker
       className="sha-date-picker"
       disabledDate={(e) => disabledDate(props, e, formData, globalState)}
-      disabled={isDisabled}
+      disabled={disabled}
       onChange={handleDatePickerChange}
       bordered={!hideBorder}
-      showTime={showDatePickerTime}
+      showTime={showTime ? (defaultToMidnight ? { defaultValue: MIDNIGHT_MOMENT } : true) : false}
       showNow={showNow}
       showToday={showToday}
       showSecond={true}
       picker={picker}
       format={pickerFormat}
       style={evaluatedStyle}
-      {...datePickerValue}
       {...rest}
+      {...getDatePickerValue(props, pickerFormat)}
       allowClear
     />
   );

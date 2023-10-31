@@ -5,12 +5,13 @@ import { IToolboxComponent } from '../../../../interfaces';
 import { DataTypes } from '../../../../interfaces/dataTypes';
 import { FormMarkup } from '../../../../providers/form/models';
 import { getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import { IReferenceListIdentifier } from '../../../../providers/referenceListDispatcher/models';
+import { IReferenceListIdentifier } from 'interfaces/referenceList';
 import { getLegacyReferenceListIdentifier } from '../../../../utils/referenceList';
 import ConfigurableFormItem from '../formItem';
 import RefListCheckboxGroup from './refListCheckboxGroup';
 import settingsFormJson from './settingsForm.json';
 import { ICheckboxGroupProps } from './utils';
+import { migratePropertyName, migrateCustomFunctions } from '../../../../designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -22,6 +23,7 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGoupProps> = {
   type: 'checkboxGroup',
   isInput: true,
   isOutput: true,
+  canBeJsSetting: true,
   name: 'Checkbox group',
   icon: <ProfileOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.referenceListItem,
@@ -30,7 +32,9 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGoupProps> = {
 
     return (
       <ConfigurableFormItem model={model}>
-        <RefListCheckboxGroup {...model} style={getStyle(model?.style, data)} />
+        {(value, onChanege) => 
+          <RefListCheckboxGroup {...model} style={getStyle(model?.style, data)} value={value} onChange={onChanege}/>
+        }
       </ConfigurableFormItem>
     );
   },
@@ -45,20 +49,21 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGoupProps> = {
     };
     return customProps;
   },
-  migrator: m =>
-    m
-      .add<IEnhancedICheckboxGoupProps>(0, prev => ({
+  migrator: m => m
+    .add<IEnhancedICheckboxGoupProps>(0, prev => ({
+      ...prev,
+      dataSourceType: prev['dataSourceType'] ?? 'values',
+      direction: prev['direction'] ?? 'horizontal',
+      mode: prev['mode'] ?? 'single',
+    }))
+    .add<IEnhancedICheckboxGoupProps>(1, prev => {
+      return {
         ...prev,
-        dataSourceType: prev['dataSourceType'] ?? 'values',
-        direction: prev['direction'] ?? 'horizontal',
-        mode: prev['mode'] ?? 'single',
-      }))
-      .add<IEnhancedICheckboxGoupProps>(1, prev => {
-        return {
-          ...prev,
-          referenceListId: getLegacyReferenceListIdentifier(prev.referenceListNamespace, prev.referenceListName),
-        };
-      }),
+        referenceListId: getLegacyReferenceListIdentifier(prev.referenceListNamespace, prev.referenceListName),
+      };
+    })
+    .add<IEnhancedICheckboxGoupProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
   linkToModelMetadata: (model, metadata): IEnhancedICheckboxGoupProps => {
     const refListId: IReferenceListIdentifier = metadata.referenceListName
       ? { module: metadata.referenceListModule, name: metadata.referenceListName }

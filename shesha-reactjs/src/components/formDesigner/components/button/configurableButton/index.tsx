@@ -1,53 +1,26 @@
 import React, { FC } from 'react';
-import { Button, message } from 'antd';
-import {
-  useDataTableSelection,
-  useForm,
-  useFormData,
-  useGlobalState,
-  useSheshaApplication,
-} from '../../../../../providers';
-import ShaIcon, { IconType } from '../../../../shaIcon';
+import { Button } from 'antd';
+import { ShaIcon, IconType } from 'components';
 import classNames from 'classnames';
-import moment from 'moment';
-import { axiosHttp } from '../../../../../utils/fetchers';
-import { IButtonGroupButton } from '../../../../../providers/buttonGroupConfigurator/models';
+import { IButtonItem } from 'providers/buttonGroupConfigurator/models';
 import { CSSProperties } from 'react';
-import { useConfigurableActionDispatcher } from '../../../../../providers/configurableActionsDispatcher';
+import { useConfigurableActionDispatcher } from 'providers/configurableActionsDispatcher';
+import { useApplicationContext } from 'utils/publicUtils';
 
-export interface IConfigurableButtonProps extends Omit<IButtonGroupButton, 'style'> {
-  formComponentId: string;
+export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'itemSubType'> {
   disabled?: boolean;
   hidden?: boolean;
   style?: CSSProperties;
 }
 
 export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
-  const { backendUrl } = useSheshaApplication();
-  const { form, formMode, setFormDataAndInstance } = useForm();
-  const { data } = useFormData();
-  const { globalState, setState: setGlobalState } = useGlobalState();
-  const { selectedRow } = useDataTableSelection(false) ?? {}; // todo: move to a generic context provider
-
+  const evaluationContext = useApplicationContext();
   const { executeAction } = useConfigurableActionDispatcher();
 
   const onButtonClick = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     event.stopPropagation(); // Don't collapse the CollapsiblePanel when clicked
 
     if (props.actionConfiguration) {
-      // todo: implement generic context collector
-      const evaluationContext = {
-        selectedRow,
-        data,
-        moment,
-        form,
-        formMode,
-        http: axiosHttp(backendUrl),
-        message,
-        globalState,
-        setFormData: setFormDataAndInstance,
-        setGlobalState,
-      };
       executeAction({
         actionConfiguration: props.actionConfiguration,
         argumentsEvaluationContext: evaluationContext,

@@ -9,14 +9,17 @@ export interface IMetadataDispatcherStateContext {
 
 export interface IGetMetadataPayload {
   modelType: string;
+  dataType: string;
 }
 
 export interface IGetPropertyMetadataPayload {
+  dataType: string;
   modelType: string;
   propertyPath: string;
 }
 
 export interface IGetPropertiesMetadataPayload {
+  dataType: string;
   modelType: string;
   properties: string[];
 }
@@ -43,7 +46,11 @@ export interface IMetadataDispatcherActionsContext {
   // todo: add `unregisterProvider`
   activateProvider: (providerId: string) => void;
   getActiveProvider: () => IMetadataContext;
+  registerModel: (modeltype: string, model: Promise<IModelMetadata>) => void;
+  updateModel: (modeltype: string, model: Promise<IModelMetadata>) => void;
 }
+
+export interface IMetadataDispatcherFullinstance extends IMetadataDispatcherStateContext, IMetadataDispatcherActionsContext {}
 
 export interface IMetadataProviderRegistration {
   id: string;
@@ -54,9 +61,7 @@ export interface IMetadataProviderRegistration {
 /** initial state */
 export const METADATA_DISPATCHER_CONTEXT_INITIAL_STATE: IMetadataDispatcherStateContext = {};
 
-export const MetadataDispatcherStateContext = createContext<IMetadataDispatcherStateContext>(
-  METADATA_DISPATCHER_CONTEXT_INITIAL_STATE
-);
+export const MetadataDispatcherStateContext = createContext<IMetadataDispatcherStateContext>({...METADATA_DISPATCHER_CONTEXT_INITIAL_STATE});
 
 export const MetadataDispatcherActionsContext = createContext<IMetadataDispatcherActionsContext>(undefined);
 

@@ -1,12 +1,6 @@
 import React, { FC, PropsWithChildren, useContext, useEffect, useRef } from 'react';
 import useThunkReducer from '../../hooks/thunkReducer';
 import {
-  IConfigurableActionArguments,
-  IConfigurableActionDescriptor,
-  IConfigurableActionIdentifier,
-} from '../../interfaces/configurableAction';
-import { genericActionArgumentsEvaluator } from '../form/utils';
-import {
   CONFIGURABLE_ACTION_DISPATCHER_CONTEXT_INITIAL_STATE,
   ConfigurableActionDispatcherActionsContext,
   ConfigurableActionDispatcherStateContext,
@@ -18,6 +12,13 @@ import {
 } from './contexts';
 import { IConfigurableActionGroupDictionary } from './models';
 import metadataReducer from './reducer';
+import {
+  IConfigurableActionArguments,
+  IConfigurableActionConfiguration,
+  IConfigurableActionDescriptor,
+  IConfigurableActionIdentifier,
+} from '../../interfaces/configurableAction';
+import { genericActionArgumentsEvaluator } from '../form/utils';
 
 export interface IConfigurableActionDispatcherProviderProps {}
 
@@ -224,4 +225,5 @@ export {
   ConfigurableActionDispatcherProvider,
   useConfigurableAction,
   useConfigurableActionDispatcher,
+  IConfigurableActionConfiguration
 };

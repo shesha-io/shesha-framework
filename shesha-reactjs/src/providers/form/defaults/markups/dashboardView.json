@@ -3,12 +3,11 @@
     {
       "id": "R_sFHp15lxiP3ktSqSzQt",
       "type": "dashboardView",
-      "name": "dashboardViewDefault",
+      "propertyName": "dashboardViewDefault",
       "label": "Dashboard View Default",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "components": []
     }
   ]

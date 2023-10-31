@@ -3,12 +3,11 @@
     {
       "id": "840aee56-42d2-40ed-a2c6-57abb255fb95",
       "type": "dropdown",
-      "name": "itemType",
+      "propertyName": "itemType",
       "label": "Item Type",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": true,
-      "customVisibility": null,
       "dataSourceType": "values",
       "values": [
         { "id": "8400a8ec-577d-4468-9347-5601f952b44c", "label": "Button", "value": "button" },
@@ -20,12 +19,11 @@
     {
       "id": "5d4d56fb-d7f8-4835-a529-c4fa93f3596d",
       "type": "textField",
-      "name": "title",
+      "propertyName": "title",
       "label": "Title",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "autoSize": false,
       "showCount": false,
       "allowClear": false,
@@ -34,12 +32,11 @@
     {
       "id": "9b671866-072e-4688-8b48-ddf5e12d70d4",
       "type": "textArea",
-      "name": "tooltip",
+      "propertyName": "tooltip",
       "label": "Tooltip",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": "",
       "autoSize": false,
       "showCount": false,
       "allowClear": false,
@@ -48,41 +45,38 @@
     {
       "id": "91b404a6-4021-4b0a-b9ef-007167a93075",
       "type": "iconPicker",
-      "name": "icon",
+      "propertyName": "icon",
       "label": "Icon",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": "",
       "settingsValidationErrors": []
     },
     {
       "id": "fcfccb85-8fc3-436b-9f87-17e189bc3cdc",
       "type": "codeEditor",
-      "name": "visibility",
+      "propertyName": "visibility",
       "label": "Visibility",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": "",
       "autoSize": false,
       "showCount": false,
       "allowClear": false,
       "validate": {},
       "exposedVariables": [
-        { "name": "value", "description": "Component current value", "type": "string | any" },
-        { "name": "data", "description": "Selected form values", "type": "object" }
+        { "propertyName": "value", "description": "Component current value", "type": "string | any" },
+        { "propertyName": "data", "description": "Selected form values", "type": "object" }
       ]
     },
     {
       "id": "26c68b22-3211-475d-91e1-0745a4447329",
       "type": "editableTagGroup",
-      "name": "requiredPermissions",
+      "propertyName": "requiredPermissions",
       "label": "Permissions",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "validate": {}
     }
   ],

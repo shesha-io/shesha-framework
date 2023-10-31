@@ -6,6 +6,7 @@ import { nanoid } from 'nanoid';
 import nestedProperty from 'nested-property';
 import { CSSProperties } from 'react';
 import {
+  IPropertySetting,
   IToolboxComponent,
   IToolboxComponentGroup,
   IToolboxComponents,
@@ -48,6 +49,214 @@ import {
   SILENT_KEY,
   ViewType,
 } from './models';
+import { isPropertySettings } from '../../designer-components/_settings/utils';
+import { IDataContextsData, useDataContextManager } from 'providers/dataContextManager';
+import moment from 'moment';
+import { message } from 'antd';
+import { ISelectionProps } from 'providers/dataTable/contexts';
+import { useDataContext } from 'providers/dataContextProvider';
+import { useDataTableStore, useForm, useFormData, useGlobalState, useSheshaApplication } from 'providers';
+import { axiosHttp } from 'utils/fetchers';
+import { AxiosInstance } from 'axios';
+import { MessageApi } from 'antd/lib/message/index';
+
+/** Interface to geat all avalilable data */
+export interface IApplicationContext {
+  /** Form data */
+  data: any;
+  /** Form mode */
+  formMode: FormMode;
+  /** Contexts datas */
+  contexts: IDataContextsData;
+  /** Global state */
+  globalState: any;
+  /** Table selection */
+  selectedRow: ISelectionProps;
+  /** Moment function */
+  moment: Function;
+  /** Axios Http */
+  http: AxiosInstance;
+  /** Message API */
+  message: MessageApi;
+  /** Other data */
+  [key: string]: any;
+}
+
+export function useApplicationContext(topContextId?: string): IApplicationContext {
+  let tcId = useDataContext(false)?.id;
+  tcId = topContextId || tcId;
+  const { backendUrl } = useSheshaApplication();
+  const dcm = useDataContextManager(false);
+  const { formMode, form, setFormDataAndInstance: setFormData } = useForm(false) ?? dcm.getFormInstance();
+  const { globalState, setState: setGlobalState } = useGlobalState();
+  return {
+    data: useFormData()?.data,
+    contexts: {...dcm?.getDataContextsData(tcId)},
+    setFormData,
+    formMode,
+    globalState,
+    setGlobalState,
+    form,
+    selectedRow: useDataTableStore(false)?.selectedRow,
+    moment: moment,
+    http: axiosHttp(backendUrl),
+    message
+   };
+};
+
+
+/*export const getActualModel = (model: any, allData: any) => {
+
+  const calcValue = (setting) => {
+    try {
+      let vars = 'staticValue';
+      const datas = [setting?._value];
+      if (allData)
+        for (let key in allData) {
+          if (Object.hasOwn(allData, key)) {
+            vars+= `, ${key}`;
+            datas.push(allData[key]);
+          }
+        }
+      const res = new Function(vars, setting?._code)(...datas);
+      return res;
+    } catch {
+      return undefined;
+    }
+  };
+
+  const getSettingValue = (value: any) => {
+    if (!value) 
+      return value;
+  
+    if (typeof value === 'object') {
+      // If array - update all items
+      if (Array.isArray(value)) {
+        return value;
+        // ToDo: infinity loop
+        if (value.length === 0)
+          return value;
+        const v = value.map(x => {
+          return getActualModelx(x, allData);
+        });
+        return v;
+      }
+
+      // update setting value to actual
+      if (!!value && isPropertySettings(value)) {
+        if (value['_mode'] === 'code' && !!value['_code']) {
+          const val = calcValue(value);
+          return val;
+        } else {
+          return value['_value'];
+        }
+      }
+
+      // update nested objects
+      return getActualModelx(value, allData);
+    }
+    return value;
+  };
+
+
+  const props = Object.getOwnPropertyNames(model);
+
+  const proxy = {
+    origin_proxy: model
+  };
+
+  props.map((prop) => {
+    Object.defineProperty(proxy, prop, {
+      get() { 
+        return getSettingValue(this.origin_proxy[prop]); 
+      },
+      set(v) {
+        this.origin_proxy[prop] = v;
+      },
+    });
+  });
+
+  const res = {};
+
+  props.map((prop) => res[prop] = proxy[prop] );
+
+  return res;
+};*/
+
+/**
+ * Convert model to values calculated from JS code if provided (for each fields)
+ *
+ * @param model - model
+ * @param allData - all form, contexts data and other data/objects/functions needed to calculate Actual Model
+ * @returns - converted model
+ */
+export const getActualModel = (model: any, allData: any) => {
+
+  const getSettingValue = (value: any, calcFunction: (setting: IPropertySetting) => any) => {
+    if (!value) 
+      return value;
+  
+    if (typeof value === 'object') {
+      // If array - update all items
+      if (Array.isArray(value)) {
+        return value;
+        // ToDo: infinity loop
+        if (value.length === 0)
+          return value;
+        const v = value.map(x => {
+          return getActualModel(x, allData);
+        });
+        return v;
+      }
+
+      // update setting value to actual
+      if (isPropertySettings(value)) {
+        const v = value as IPropertySetting;
+        if (v?._mode === 'code' && Boolean(v?._code)) {
+          const val = calcFunction(v);
+          return val;
+        } else {
+          return v?._value;
+        }
+      }
+
+      // update nested objects
+      return getActualModel(value, allData);
+    }
+    return value;
+  };
+  
+  const getValue = (val: any) => {
+    return getSettingValue(val, calcValue);
+  };
+
+  const calcValue = (setting) => {
+    try {
+      let vars = 'staticValue, getSettingValue';
+      const datas = [setting?._value, getValue];
+      if (allData)
+        for (let key in allData) {
+          if (Object.hasOwn(allData, key)) {
+            vars+= `, ${key}`;
+            datas.push(allData[key]);
+          }
+        }
+      const res = new Function(vars, setting?._code)(...datas);
+      return res;
+    } catch {
+      return undefined;
+    }
+  };
+
+  const m = {...model};
+
+  for (var propName in m) {
+    if (!m.hasOwnProperty(propName)) continue;
+    
+    m[propName] = getSettingValue(m[propName], calcValue);
+  }
+  return m;
+};
 
 /**
  * Convert components tree to flat structure.
@@ -69,8 +278,8 @@ export const componentsTreeToFlatStructure = (
     result.allComponents[component.id] = {
       ...component,
       parentId,
-      visibilityFunc: getCustomVisibilityFunc(component),
-      enabledFunc: getCustomEnabledFunc(component),
+      //visibilityFunc: getCustomVisibilityFunc(component),
+      //enabledFunc: getCustomEnabledFunc(component),
     };
 
     const level = result.componentRelations[parentId] || [];
@@ -172,7 +381,7 @@ export const getClosestComponent = (componentId: string, context: SettingsMigrat
 
 export const getClosestTableId = (context: SettingsMigrationContext) => {
   const table = getClosestComponent(context.componentId, context, 'datatableContext');
-  return table ? table['uniqueStateId'] ?? table.name : null;
+  return table ? table['uniqueStateId'] ?? table.propertyName : null;
 };
 
 //#endregion
@@ -230,53 +439,55 @@ export const componentsFlatStructureToTree = (
   return tree;
 };
 
-export const getCustomVisibilityFunc = ({ customVisibility, name }: IConfigurableFormComponent) => {
-  if (customVisibility) {
-    try {
-      /* tslint:disable:function-constructor */
+// export const getCustomVisibilityFunc = ({ customVisibility, propertyName: name }: IConfigurableFormComponent) => {
+//   if (Boolean(customVisibility)) {
+//     try {
+//       /* tslint:disable:function-constructor */
 
-      const customVisibilityExecutor = new Function('value, data, globalState, formMode', customVisibility);
+//       const customVisibilityExecutor = new Function('value, data, globalState, formMode', customVisibility);
 
-      const getIsVisible = (data = {}, globalState = {}, formMode) => {
-        try {
-          return customVisibilityExecutor(data?.[name], data, globalState, formMode);
-        } catch (e) {
-          console.warn(`Custom Visibility of field ${name} throws exception: ${e}`);
-          return true;
-        }
-      };
+//       const getIsVisible = (data = {}, globalState = {}, formMode) => {
+//         try {
+//           const result = customVisibilityExecutor(data?.[name], data, globalState, formMode);
+//           return result;
+//         } catch (e) {
+//           console.warn(`Custom Visibility of field ${name} throws exception: ${e}`);
+//           return true;
+//         }
+//       };
 
-      return getIsVisible;
-    } catch (e) {
-      return () => {
-        console.warn(`Incorrect syntax of the 'Custom Visibility', field name: ${name}, error: ${e}`);
-      };
-    }
-  } else return () => true;
-};
+//       return getIsVisible;
+//     } catch (e) {
+//       return () => {
+//         console.warn(`Incorrect syntax of the 'Custom Visibility', field name: ${name}, error: ${e}`);
+//       };
+//     }
+//   } else return () => true;
+// };
 
-export const getCustomEnabledFunc = ({ customEnabled, name }: IConfigurableFormComponent) => {
-  if (customEnabled) {
-    try {
-      const customEnabledExecutor = new Function('value, data, globalState, formMode', customEnabled);
+// export const getCustomEnabledFunc = ({ customEnabled, propertyName: name }: IConfigurableFormComponent) => {
+//   if (Boolean(customEnabled)) {
+//     try {
+//       const customEnabledExecutor = new Function('value, data, globalState, formMode', customEnabled);
 
-      const getIsEnabled = (data = {}, globalState = {}, formMode) => {
-        try {
-          return customEnabledExecutor(data?.[name], data, globalState, formMode);
-        } catch (e) {
-          console.error(`Custom Enabled of field ${name} throws exception: ${e}`);
-          return true;
-        }
-      };
+//       const getIsEnabled = (data = {}, globalState = {}, formMode) => {
+//         try {
+//           const result = customEnabledExecutor(data?.[name], data, globalState, formMode);
+//           return result;
+//         } catch (e) {
+//           console.error(`Custom Enabled of field ${name} throws exception: ${e}`);
+//           return true;
+//         }
+//       };
 
-      return getIsEnabled;
-    } catch (e) {
-      return () => {
-        console.warn(`Incorrect syntax of the 'Custom Enabled', field name: ${name}, error: ${e}`);
-      };
-    }
-  } else return () => true;
-};
+//       return getIsEnabled;
+//     } catch (e) {
+//       return () => {
+//         console.warn(`Incorrect syntax of the 'Custom Enabled', field name: ${name}, error: ${e}`);
+//       };
+//     }
+//   } else return () => true;
+// };
 
 /**
  * Evaluates the string using Mustache template.
@@ -445,14 +656,15 @@ export const evaluateComplexStringWithResult = (
         // This is useful for backward compatibility
         // Initially expression would simply be {{expression}} and they wou be evaluated against formData
         // But dynamic expression now can use formData and globalState, so as a result the expressions need to use dot notation
+
         const evaluatedValue = evaluateString(template, match ? { [match]: data } : data);
 
         if (requireNonEmptyResult && !evaluatedValue?.trim()) {
           success = false;
           unevaluatedExpressions?.push(template);
-        } else {
-          result = result.replaceAll(template, evaluatedValue);
         }
+
+        result = result.replaceAll(template, evaluatedValue);
       }
     });
   });
@@ -540,6 +752,19 @@ export function executeScript<TResult = any>(
   });
 }
 
+export const getExecutorScriptSync = (context: any) => {
+  /*let argsDefinition = '';
+  const argList: any[] = [];
+  for (const argumentName in context) {
+    if (context.hasOwnProperty(argumentName)) {
+      argsDefinition += (argsDefinition ? ', ' : '') + argumentName;
+      argList.push(context[argumentName]);
+    }
+  }*/
+
+  return <T,>(jscode: string) =>  executeScriptSync<T>(jscode, context);
+};
+
 export function executeScriptSync<TResult = any>(expression: string, context: IExpressionExecuterArguments): TResult {
   if (!expression) throw new Error('Expression must be defined');
 
@@ -572,12 +797,12 @@ export const getVisibleComponentIds = (
     if (components.hasOwnProperty(key)) {
       const component = components[key] as IConfigurableFormComponent;
 
-      if (propertyFilter && component.name) {
-        const filteredOut = propertyFilter(component.name);
+      if (propertyFilter && component.propertyName) {
+        const filteredOut = propertyFilter(component.propertyName);
         if (filteredOut === false) continue;
       }
 
-      if (!component || component.hidden || component.visibility === 'No' || component.visibility === 'Removed')
+      if (!component || component.visibility === 'No' || component.visibility === 'Removed')
         continue;
 
       const isVisible = component.visibilityFunc == null || component.visibilityFunc(values, globalState, formMode);
@@ -594,14 +819,12 @@ export const getEnabledComponentIds = (
   components: IComponentsDictionary,
   values: any,
   globalState: any,
-  formMode: FormMode
+  formMode: FormMode,
 ): string[] => {
   const enabledComponents: string[] = [];
   for (const key in components) {
     if (components.hasOwnProperty(key)) {
       const component = components[key] as IConfigurableFormComponent;
-      if (!component || component.disabled) continue;
-
       const isEnabled =
         !Boolean(component?.enabledFunc) ||
         (typeof component?.enabledFunc === 'function' && component?.enabledFunc(values, globalState, formMode));
@@ -622,6 +845,7 @@ export const getFieldNameFromExpression = (expression: string) => {
 
   return expression.includes('.') ? expression.split('.') : expression;
 };
+
 export const getBoolean = (value: any) => {
   if (typeof value == 'boolean') {
     return value;
@@ -881,7 +1105,7 @@ export const getFormValidationRules = (markup: FormMarkup): Rules => {
 
   const rules: Rules = {};
   components.forEach((component) => {
-    rules[component.name] = getValidationRules(component) as [];
+    rules[component.propertyName] = getValidationRules(component) as [];
   });
 
   return rules;
@@ -1035,13 +1259,12 @@ export const createComponentModelForDataProperty = (
   let componentModel: IConfigurableFormComponent = {
     id: nanoid(),
     type: toolboxComponent.type,
-    name: fullName,
+    propertyName: fullName,
     label: propertyMetadata.label,
     labelAlign: 'right',
     //parentId: containerId,
     hidden: false,
     visibility: 'Yes',
-    customVisibility: null,
     visibilityFunc: (_data) => true,
     isDynamic: false,
     validate: {},
@@ -1239,13 +1462,20 @@ export const asFormFullName = (formId: FormIdentifier): FormFullName | undefined
 
 export const hasFormIdGotValue = (formId: FormIdentifier) => (typeof formId === 'string' ? !!formId : !!formId?.name);
 
-export const convertToMarkupWithSettings = (markup: FormMarkup): FormMarkupWithSettings => {
+export const convertToMarkupWithSettings = (markup: FormMarkup, isSettingsForm?: boolean): FormMarkupWithSettings => {
   if (!markup) return null;
   const result = markup as FormMarkupWithSettings;
-  if (result?.components && result.formSettings) return result;
-  if (Array.isArray(markup)) return { components: markup, formSettings: DEFAULT_FORM_SETTINGS };
+  if (result?.components && result.formSettings)
+    if (typeof isSettingsForm === 'undefined')
+      return result;
+    else
+      if (typeof isSettingsForm !== 'undefined' && isSettingsForm !== null) {
+        result.formSettings.isSettingsForm = isSettingsForm;
+        return result;
+      }
+  if (Array.isArray(markup)) return { components: markup, formSettings: {...DEFAULT_FORM_SETTINGS, isSettingsForm} };
 
-  return { components: [], formSettings: DEFAULT_FORM_SETTINGS };
+  return { components: [], formSettings: {...DEFAULT_FORM_SETTINGS, isSettingsForm} };
 };
 
 const evaluateRecursive = (data: any, evaluationContext: GenericDictionary): any => {
@@ -1370,7 +1600,7 @@ export const getComponentNames = (components: IComponentsDictionary, predicate: 
     let component = components[key];
 
     if (predicate(component)) {
-      componentNames.push(component.name);
+      componentNames.push(component.propertyName);
     }
   });
 

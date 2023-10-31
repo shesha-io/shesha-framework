@@ -7,6 +7,7 @@ import settingsFormJson from './settingsForm.json';
 import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';
 import AutocompleteTagGroup from '../../../autocompleteTagGroup';
 import { useForm } from '../../../..';
+import { migratePropertyName, migrateCustomFunctions } from '../../../../designer-components/_common-migrations/migrateSettings';
 
 export interface IAutocompleteTagsOutlinedComponentProps extends IConfigurableFormComponent {
   value?: string[];
@@ -27,26 +28,32 @@ const settingsForm = settingsFormJson as FormMarkup;
 
 const AutocompleteTagGroupComponent: IToolboxComponent<IAutocompleteTagsOutlinedComponentProps> = {
   type: 'autocompleteTagGroup',
-  name: 'AutocompleteTagsOutlined',
+  name: 'Autocomplete Tags Outlined',
   icon: <TagOutlined />,
+  canBeJsSetting: true,
   factory: (model: IAutocompleteTagsOutlinedComponentProps) => {
     const { formMode } = useForm();
 
     return (
       <ConfigurableFormItem model={model}>
-        <AutocompleteTagGroup
-          value={model?.value}
-          defaultValue={model?.defaultValue}
-          onChange={model?.onChange}
-          autocompleteUrl={model?.autocompleteUrl}
-          readOnly={model?.readOnly || formMode === 'readonly'}
-          disabled={model?.disabled}
-        />
+        {(value, onChange) => 
+          <AutocompleteTagGroup
+            value={value}
+            defaultValue={model?.defaultValue}
+            onChange={onChange}
+            autocompleteUrl={model?.autocompleteUrl}
+            readOnly={model?.readOnly || formMode === 'readonly'}
+            disabled={model?.disabled}
+          />
+        }
       </ConfigurableFormItem>
     );
   },
   settingsFormMarkup: settingsForm,
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  migrator: (m) => m
+    .add<IAutocompleteTagsOutlinedComponentProps>(0, (prev: IAutocompleteTagsOutlinedComponentProps) => migratePropertyName(migrateCustomFunctions(prev)))
+,
 };
 
 export default AutocompleteTagGroupComponent;

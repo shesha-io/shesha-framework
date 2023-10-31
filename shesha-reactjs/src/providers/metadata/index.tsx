@@ -9,19 +9,23 @@ import {
   IMetadataStateContext,
   METADATA_CONTEXT_INITIAL_STATE,
   MetadataContext,
+  MetadataType,
 } from './contexts';
 import metadataReducer from './reducer';
+import camelcase from 'camelcase';
 
 export interface IMetadataProviderProps {
   id?: string;
   modelType: string;
+  dataType?: MetadataType;
 }
 
-const MetadataProvider: FC<PropsWithChildren<IMetadataProviderProps>> = ({ id, modelType, children }) => {
+const MetadataProvider: FC<PropsWithChildren<IMetadataProviderProps>> = ({ id, modelType, dataType = 'entity', children }) => {
   const initial: IMetadataStateContext = {
     ...METADATA_CONTEXT_INITIAL_STATE,
     id,
     modelType,
+    dataType
   };
 
   const [state, dispatch] = useThunkReducer(metadataReducer, initial);
@@ -31,20 +35,25 @@ const MetadataProvider: FC<PropsWithChildren<IMetadataProviderProps>> = ({ id, m
 
   useEffect(() => {
     if (modelType)
-      fetchMeta({ modelType }).then((meta) => {
-        dispatch(setMetadataAction({ metadata: meta }));
+      fetchMeta({ modelType, dataType }).then(meta => {
+        dispatch(setMetadataAction({ metadata: meta, dataType, modelType }));
       });
-  }, [modelType]);
+  }, [modelType, dataType]);
 
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
   const getMetadata = () => {
-    return fetchMeta({ modelType });
+    return fetchMeta({ dataType, modelType });
+  };
+
+  const getPropertyMeta = (name: string): IPropertyMetadata => {
+    return (state.metadata?.properties ?? []).find(p => camelcase(p.path) === name);
   };
 
   const metadataActions: IMetadataActionsContext = {
     /* NEW_ACTION_GOES_HERE */
     getMetadata,
+    getPropertyMeta,
   };
 
   const contextValue: IMetadataContext = { ...state, ...metadataActions };

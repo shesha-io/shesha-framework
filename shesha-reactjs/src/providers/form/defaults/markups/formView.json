@@ -3,12 +3,11 @@
     {
       "id": "4AiIkMTLqvGJ6IJbwtliw",
       "type": "formView",
-      "name": "Form View",
+      "propertyName": "Form View",
       "label": "Form View",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "components": []
     }
   ]

@@ -6,13 +6,12 @@ import { FormConfigurationDto, formConfigurationGet, formConfigurationGetByName 
 import { referenceListGetByName } from '../../apis/referenceList';
 import useThunkReducer from '../../hooks/thunkReducer';
 import { IDictionary } from '../../interfaces';
-import { IReferenceList } from '../../interfaces/referenceList';
+import { IReferenceList, IReferenceListIdentifier } from '../../interfaces/referenceList';
 import { FormIdentifier, useSheshaApplication } from '../../providers';
 import { MakePromiseWithState, PromisedValue } from '../../utils/promises';
 import { ConfigurationItemsViewMode, IComponentSettings } from '../appConfigurator/models';
 import { FormFullName, FormMarkupWithSettings, IFormDto } from '../form/models';
 import { asFormFullName, asFormRawId } from '../form/utils';
-import { IReferenceListIdentifier } from '../referenceListDispatcher/models';
 import { isValidRefListId } from '../referenceListDispatcher/utils';
 import {
   CONFIGURATION_ITEMS_LOADER_CONTEXT_INITIAL_STATE,

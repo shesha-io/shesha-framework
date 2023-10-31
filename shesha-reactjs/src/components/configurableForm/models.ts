@@ -88,6 +88,7 @@ export interface IConfigurableFormProps<Values = any, FieldData = any>
   switchToReadOnlyOnSuccess?: boolean;
   className?: string;
   isActionsOwner?: boolean;
+  needDebug?: boolean;
   propertyFilter?: (name: string) => boolean;
 }
 

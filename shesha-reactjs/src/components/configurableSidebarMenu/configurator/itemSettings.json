@@ -3,12 +3,11 @@
     {
       "id": "840aee56-42d2-40ed-a2c6-57abb255fb95",
       "type": "dropdown",
-      "name": "itemType",
+      "propertyName": "itemType",
       "label": "Item Type",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "dataSourceType": "values",
       "values": [
         {
@@ -34,12 +33,11 @@
     {
       "id": "5d4d56fb-d7f8-4835-a529-c4fa93f3596d",
       "type": "textField",
-      "name": "title",
+      "propertyName": "title",
       "label": "Title",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "autoSize": false,
       "showCount": false,
       "allowClear": false,
@@ -50,24 +48,22 @@
     {
       "id": "345c2181-fb9f-48ed-9631-864ac357807b",
       "type": "container",
-      "name": "cntButton",
+      "propertyName": "cntButton",
       "label": "Container2",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": false,
-      "customVisibility": "return data.itemType === 'button'",
+      "hidden": {"_code": "return getSettingValue(data?.itemType) !== 'button';", "_mode": "code", "_value": false},
       "direction": "vertical",
       "justifyContent": "left",
       "components": [
         {
           "id": "9b671866-072e-4688-8b48-ddf5e12d70d4",
           "type": "textArea",
-          "name": "tooltip",
+          "propertyName": "tooltip",
           "label": "Tooltip",
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
           "hidden": false,
-          "customVisibility": "",
           "autoSize": false,
           "showCount": false,
           "allowClear": false,
@@ -76,23 +72,21 @@
         {
           "id": "91b404a6-4021-4b0a-b9ef-007167a93075",
           "type": "iconPicker",
-          "name": "icon",
+          "propertyName": "icon",
           "label": "Icon",
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
           "hidden": false,
-          "customVisibility": "return data.itemType === 'button'",
           "settingsValidationErrors": []
         },
         {
           "id": "21d90871-5ca7-44c6-a4a8-cc646be05101",
           "type": "dropdown",
-          "name": "buttonAction",
+          "propertyName": "buttonAction",
           "label": "Button Action",
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
           "hidden": false,
-          "customVisibility": "",
           "dataSourceType": "values",
           "values": [
             {
@@ -119,93 +113,25 @@
           "validate": {}
         },
         {
-          "id": "75407830-901f-41a0-bfa0-da18f043b299",
-          "type": "container",
-          "name": "cntNavigate",
-          "label": "Container (horizontal or vertical)1",
+          "id": "62ef6e50-8762-476a-8f52-1376d7b8006a",
+          "type": "textField",
+          "propertyName": "target",
+          "label": "Target Url",
           "labelAlign": "right",
-          "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
-          "hidden": false,
-          "customVisibility": "return data.buttonAction === 'navigate'",
-          "direction": "vertical",
-          "justifyContent": "left",
-          "components": [
-            {
-              "id": "62ef6e50-8762-476a-8f52-1376d7b8006a",
-              "type": "textField",
-              "name": "target",
-              "label": "Target Url",
-              "labelAlign": "right",
-              "parentId": "75407830-901f-41a0-bfa0-da18f043b299",
-              "hidden": false,
-              "customVisibility": "",
-              "validate": {
-                "required": false
-              },
-              "dataSourceType": "values",
-              "values": [
-                {
-                  "id": "5c717647-2ecd-434d-8d74-6c6805303007",
-                  "label": "Navigate",
-                  "value": "navigate"
-                },
-                {
-                  "id": "c025760d-b99b-4c44-89cf-1edb2a6cd014",
-                  "label": "Dialogue",
-                  "value": "dialogue"
-                },
-                {
-                  "id": "3f71a488-7cd8-4b9b-b0f6-8b37b8a04aae",
-                  "label": "Execute Script",
-                  "value": "executeScript"
-                },
-                {
-                  "id": "18fa8cc0-a327-466d-9513-52c53218d39d",
-                  "label": "Execute form action",
-                  "value": "executeFormAction"
-                }
-              ],
-              "direction": "horizontal",
-              "justifyContent": "left",
-              "components": []
-            }
-          ],
+          "parentId": "75407830-901f-41a0-bfa0-da18f043b299",
+          "hidden": {"_code": "return getSettingValue(data?.buttonAction) !== 'navigate';", "_mode": "code", "_value": false},
           "validate": {
             "required": false
-          },
-          "dataSourceType": "values",
-          "values": [
-            {
-              "id": "5c717647-2ecd-434d-8d74-6c6805303007",
-              "label": "Navigate",
-              "value": "navigate"
-            },
-            {
-              "id": "c025760d-b99b-4c44-89cf-1edb2a6cd014",
-              "label": "Dialogue",
-              "value": "dialogue"
-            },
-            {
-              "id": "3f71a488-7cd8-4b9b-b0f6-8b37b8a04aae",
-              "label": "Execute Script",
-              "value": "executeScript"
-            },
-            {
-              "id": "18fa8cc0-a327-466d-9513-52c53218d39d",
-              "label": "Execute form action",
-              "value": "executeFormAction"
-            }
-          ]
+          }
         },
         {
           "id": "fe4b3c03-3e0b-410f-8a9d-93db02ca51ed",
           "type": "collapsiblePanel",
-          "name": "pnlModalSettings",
+          "propertyName": "pnlModalSettings",
           "label": "Dialogue settings",
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
-          "hidden": false,
-          "customVisibility": "return data.buttonAction === 'dialogue'",
+          "hidden": {"_code": "return getSettingValue(data?.buttonAction) !== 'dialogue';", "_mode": "code", "_value": false},
           "validate": {
             "required": false
           },
@@ -215,12 +141,11 @@
             {
               "id": "a8b80cb4-b214-40e9-8289-0792376672ee",
               "type": "textField",
-              "name": "modalTitle",
+              "propertyName": "modalTitle",
               "label": "Title",
               "labelAlign": "right",
               "parentId": "fe4b3c03-3e0b-410f-8a9d-93db02ca51ed",
               "hidden": false,
-              "customVisibility": null,
               "validate": {
                 "required": true
               }
@@ -228,12 +153,11 @@
             {
               "id": "adbc3b29-9a53-4305-869a-f37ba6e8bb94",
               "type": "formAutocomplete",
-              "name": "modalFormId",
+              "propertyName": "modalFormId",
               "label": "Modal form",
               "labelAlign": "right",
               "parentId": "fe4b3c03-3e0b-410f-8a9d-93db02ca51ed",
               "hidden": false,
-              "customVisibility": null,
               "validate": {
                 "required": true
               }              
@@ -241,48 +165,23 @@
             {
               "id": "2ab34541-6fa0-4be2-bb1e-eb65ec63b353",
               "type": "textField",
-              "name": "modalActionOnSuccess",
+              "propertyName": "modalActionOnSuccess",
               "label": "Action on success",
               "labelAlign": "right",
               "parentId": "fe4b3c03-3e0b-410f-8a9d-93db02ca51ed",
               "hidden": true,
-              "customVisibility": null,
               "validate": {}
-            }
-          ],
-          "dataSourceType": "values",
-          "values": [
-            {
-              "id": "5c717647-2ecd-434d-8d74-6c6805303007",
-              "label": "Navigate",
-              "value": "navigate"
-            },
-            {
-              "id": "c025760d-b99b-4c44-89cf-1edb2a6cd014",
-              "label": "Dialogue",
-              "value": "dialogue"
-            },
-            {
-              "id": "3f71a488-7cd8-4b9b-b0f6-8b37b8a04aae",
-              "label": "Execute Script",
-              "value": "executeScript"
-            },
-            {
-              "id": "18fa8cc0-a327-466d-9513-52c53218d39d",
-              "label": "Execute form action",
-              "value": "executeFormAction"
             }
           ]
         },
         {
           "id": "8786d976-3822-4f8b-a532-ccac0b0130e3",
           "type": "textField",
-          "name": "formAction",
+          "propertyName": "formAction",
           "label": "Form Action",
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
-          "hidden": false,
-          "customVisibility": "return data.buttonAction === 'executeFormAction'",
+          "hidden": {"_code": "return getSettingValue(data?.buttonAction) !== 'executeFormAction';", "_mode": "code", "_value": false},
           "validate": {}
         }
       ]
@@ -290,30 +189,28 @@
     {
       "id": "fcfccb85-8fc3-436b-9f87-17e189bc3cdc",
       "type": "codeEditor",
-      "name": "visibility",
+      "propertyName": "visibility",
       "label": "Visibility",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": "",
       "autoSize": false,
       "showCount": false,
       "allowClear": false,
       "validate": {},
       "exposedVariables": [
-        { "name": "value", "description": "Component current value", "type": "string | any" },
-        { "name": "data", "description": "Selected form values", "type": "object" }
+        { "propertyName": "value", "description": "Component current value", "type": "string | any" },
+        { "propertyName": "data", "description": "Selected form values", "type": "object" }
       ]
     },
     {
       "id": "26c68b22-3211-475d-91e1-0745a4447329",
       "type": "editableTagGroup",
-      "name": "requiredPermissions",
+      "propertyName": "requiredPermissions",
       "label": "Permissions",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "validate": {}
     }
   ],

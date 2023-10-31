@@ -13,6 +13,8 @@ import { ITableViewProps } from '../../../../providers/tableViewSelectorConfigur
 import ConfigurableFormItem from '../formItem';
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { entityPickerSettings } from './settingsForm';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
+import { isEntityReferencePropertyMetadata } from 'interfaces/metadata';
 
 export interface IEntityPickerComponentProps extends IConfigurableFormComponent {
   placeholder?: string;
@@ -45,22 +47,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
   factory: (model: IEntityPickerComponentProps) => {
     const { filters, modalWidth, customWidth, widthUnits } = model;
-    const { formMode, isComponentDisabled } = useForm();
-
-    const isReadOnly = model.readOnly || formMode === 'readonly';
-
-    const disabled = isComponentDisabled(model);
-
-    if (formMode === 'designer' && !model.entityType) {
-      return (
-        <Alert
-          showIcon
-          message="EntityPicker not configured properly"
-          description="Please make sure that you've specified 'entityType' property."
-          type="warning"
-        />
-      );
-    }
+    const { formMode } = useForm();
 
     const entityPickerFilter = useMemo<ITableViewProps[]>(() => {
       return [
@@ -75,22 +62,34 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       ];
     }, [filters]);
 
+    if (formMode === 'designer' && !model.entityType) {
+      return (
+        <Alert
+          showIcon
+          message="EntityPicker not configured properly"
+          description="Please make sure that you've specified 'entityType' property."
+          type="warning"
+        />
+      );
+    }
+
     const width = modalWidth === 'custom' && customWidth ? `${customWidth}${widthUnits}` : modalWidth;
 
     return (
       <ConfigurableFormItem model={model} initialValue={model.defaultValue}>
-        <EntityPicker
-          formId={model.id}
-          disabled={disabled}
-          readOnly={isReadOnly}
-          displayEntityKey={model.displayEntityKey}
-          entityType={model.entityType}
-          filters={entityPickerFilter}
-          useRawValues={model.useRawValues}
-          mode={model.mode}
-          addNewRecordsProps={
-            model.allowNewRecord
-              ? {
+        {(value, onChange) => (
+          <EntityPicker
+            formId={model.id}
+            disabled={model.disabled}
+            readOnly={model.readOnly}
+            displayEntityKey={model.displayEntityKey}
+            entityType={model.entityType}
+            filters={entityPickerFilter}
+            useRawValues={model.useRawValues}
+            mode={model.mode}
+            addNewRecordsProps={
+              model.allowNewRecord
+                ? {
                   modalFormId: model.modalFormId,
                   modalTitle: model.modalTitle,
                   showModalFooter: model.showModalFooter,
@@ -98,47 +97,51 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
                   onSuccessRedirectUrl: model.onSuccessRedirectUrl,
                   modalWidth: customWidth ? `${customWidth}${widthUnits}` : modalWidth,
                 }
-              : undefined
-          }
-          name={model?.name}
-          width={width}
-          configurableColumns={model.items ?? []}
-        />
+                : undefined
+            }
+            name={model?.componentName}
+            width={width}
+            configurableColumns={model.items ?? []}
+            value={value}
+            onChange={onChange}
+          />
+        )}
       </ConfigurableFormItem>
     );
   },
-  migrator: (m) =>
-    m
-      .add<IEntityPickerComponentProps>(0, (prev) => {
-        return {
-          ...prev,
-          items: prev['items'] ?? [],
-          mode: prev['mode'] ?? 'single',
-          entityType: prev['entityType'],
-        };
-      })
-      .add<IEntityPickerComponentProps>(1, migrateV0toV1)
-      .add<IEntityPickerComponentProps>(2, (prev) => {
-        return { ...prev, useRawValues: true };
-      })
-      .add<IEntityPickerComponentProps>(3, (prev) => {
-        const result = { ...prev };
-        const useExpression = Boolean(result['useExpression']);
-        delete result['useExpression'];
+  migrator: m => m
+    .add<IEntityPickerComponentProps>(0, prev => {
+      return {
+        ...prev,
+        items: prev['items'] ?? [],
+        mode: prev['mode'] ?? 'single',
+        entityType: prev['entityType'],
+      };
+    })
+    .add<IEntityPickerComponentProps>(1, migrateV0toV1)
+    .add<IEntityPickerComponentProps>(2, prev => {
+      return { ...prev, useRawValues: true };
+    })
+    .add<IEntityPickerComponentProps>(3, prev => {
+      const result = { ...prev };
+      const useExpression = Boolean(result['useExpression']);
+      delete result['useExpression'];
 
-        if (useExpression) {
-          const migratedExpression = migrateDynamicExpression(prev.filters);
-          result.filters = migratedExpression;
-        }
+      if (useExpression) {
+        const migratedExpression = migrateDynamicExpression(prev.filters);
+        result.filters = migratedExpression;
+      }
 
-        return result;
-      }),
+      return result;
+    })
+    .add<IEntityPickerComponentProps>(4, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
   settingsFormMarkup: entityPickerSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(entityPickerSettings, model),
-  linkToModelMetadata: (model, metadata): IEntityPickerComponentProps => {
+  linkToModelMetadata: (model, propMetadata): IEntityPickerComponentProps => {
     return {
       ...model,
-      entityType: metadata.entityType,
+      entityType: isEntityReferencePropertyMetadata(propMetadata) ? propMetadata.entityType : undefined,
       useRawValues: true,
     };
   },

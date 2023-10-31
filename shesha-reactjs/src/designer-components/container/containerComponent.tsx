@@ -1,22 +1,20 @@
 import { GroupOutlined } from '@ant-design/icons';
 import React from 'react';
-import ComponentsContainer from '../../components/formDesigner/containers/componentsContainer';
-import { IToolboxComponent } from '../../interfaces';
-import { useFormData } from '../../providers';
-import { useForm } from '../../providers/form';
-import { getStyle, validateConfigurableComponentSettings } from '../../providers/form/utils';
-import { ICommonContainerProps, IContainerComponentProps } from './interfaces';
+import { ICommonContainerProps, IContainerComponentProps, IToolboxComponent } from 'interfaces';
+import { getStyle, validateConfigurableComponentSettings } from 'providers/form/utils';
 import { getSettings } from './settingsForm';
+import { migrateCustomFunctions, migratePropertyName } from '../../designer-components/_common-migrations/migrateSettings';
+import { useFormData } from 'providers';
+import { ComponentsContainer } from 'components';
 
 const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   type: 'container',
   name: 'Container',
   icon: <GroupOutlined />,
   factory: (model: IContainerComponentProps) => {
-    const { isComponentHidden } = useForm();
     const { data: formData } = useFormData();
 
-    if (isComponentHidden(model)) return null;
+    if (model.hidden) return null;
 
     const flexAndGridStyles: ICommonContainerProps = {
       display: model?.display,
@@ -60,7 +58,9 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       display: prev['display'] /* ?? 'block'*/,
       flexWrap: prev['flexWrap'] ?? 'wrap',
       components: prev['components'] ?? [],
-    })),
+    }))
+    .add<IContainerComponentProps>(1, prev => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
 };
 
 export default ContainerComponent;

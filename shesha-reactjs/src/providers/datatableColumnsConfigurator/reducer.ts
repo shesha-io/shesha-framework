@@ -26,6 +26,7 @@ const toolbarReducer = handleActions<IColumnsConfiguratorStateContext, any>(
         displayComponent: { type: standardCellComponentTypes.defaultDisplay },
         editComponent: { type: standardCellComponentTypes.notEditable },
         createComponent: { type: standardCellComponentTypes.notEditable },
+        allowSorting: true,
       };
 
       const newItems = [...state.items];

@@ -1,77 +1,54 @@
-import React from 'react';
-import { Form, Input, InputNumber } from 'antd';
+import React, { FC } from 'react';
+import { Checkbox, Input, InputNumber } from 'antd';
 import { IColumnsComponentProps } from './interfaces';
 import ColumnsList from './columnsList';
 import { EXPOSED_VARIABLES } from './exposedVariables';
 import CodeEditor from '../codeEditor/codeEditor';
 import SectionSeparator from 'components/sectionSeparator';
+import SettingsForm from '../../../../designer-components/_settings/settingsForm';
+import { ISettingsFormFactoryArgs } from 'interfaces';
+import SettingsFormItem from '../../../../designer-components/_settings/settingsFormItem';
 
-export interface IProps {
-  readOnly: boolean;
-  model: IColumnsComponentProps;
-  onSave: (model: IColumnsComponentProps) => void;
-  onCancel: () => void;
-  onValuesChange?: (changedValues: any, values: IColumnsComponentProps) => void;
-}
+export const ColumnsSettingsForm: FC<ISettingsFormFactoryArgs<IColumnsComponentProps>> = (props) => (
+    SettingsForm<IColumnsComponentProps>({...props, children: <ColumnsSettings {...props}/>})
+);
 
-function ColumnsSettings({ readOnly, onSave, model, onValuesChange }: IProps) {
-  const [form] = Form.useForm();
-
+const ColumnsSettings: FC<ISettingsFormFactoryArgs<IColumnsComponentProps>> = ({readOnly}) => {
   return (
-    <Form form={form} onFinish={onSave} layout="vertical" onValuesChange={onValuesChange}>
-      <Form.Item name="name" label="Name" rules={[{ required: true }]} initialValue={model?.name}>
+    <>
+      <SettingsFormItem name="componentName" label="Component Name" required>
         <Input readOnly={readOnly} />
-      </Form.Item>
+      </SettingsFormItem>
 
-      <Form.Item name="gutterX" label="Gutter X" initialValue={model?.gutterX}>
-        <InputNumber min={1} max={48} step={4} readOnly={readOnly} />
-      </Form.Item>
+      <SettingsFormItem name="gutterX" label="Gutter X" jsSetting>
+        <InputNumber min={1} max={48} step={4} readOnly={readOnly}/>
+      </SettingsFormItem>
 
-      <Form.Item name="gutterY" label="Gutter Y" initialValue={model?.gutterX}>
-        <InputNumber min={1} max={48} step={4} readOnly={readOnly} />
-      </Form.Item>
+      <SettingsFormItem name="gutterY" label="Gutter Y" jsSetting>
+        <InputNumber min={1} max={48} step={4} readOnly={readOnly}/>
+      </SettingsFormItem>
 
-      <Form.Item name="label" label="Label" initialValue={model?.label}>
-        <Input readOnly={readOnly} />
-      </Form.Item>
+      <SettingsFormItem name="hidden" label="Hidden" valuePropName="checked" jsSetting>
+        <Checkbox disabled={readOnly} />
+      </SettingsFormItem>
 
-      <Form.Item name="columns" label="Columns" initialValue={model?.columns || []}>
+      <SettingsFormItem name="columns" label="Columns">
         <ColumnsList readOnly={readOnly} />
-      </Form.Item>
+      </SettingsFormItem>
 
       <SectionSeparator title="Style" />
 
-      <Form.Item name="style" label="Style" initialValue={model?.style}>
+      <SettingsFormItem name="style" label="Style">
         <CodeEditor
-          id={''}
-          name="style"
+          propertyName="style"
           readOnly={readOnly}
           mode="dialog"
           label="Style"
           setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          type={''}
           description="A script that returns the style of the element as an object. This should conform to CSSProperties"
           exposedVariables={EXPOSED_VARIABLES}
         />
-      </Form.Item>
-
-      <SectionSeparator title="Visibility" />
-
-      <Form.Item name="customVisibility" label="Custom Visibility" initialValue={model?.customVisibility}>
-        <CodeEditor
-          id={''}
-          name="customVisibility"
-          readOnly={readOnly}
-          mode="dialog"
-          label="Custom Visibility"
-          setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-          type={''}
-          description="Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
-          exposedVariables={EXPOSED_VARIABLES}
-        />
-      </Form.Item>
-    </Form>
+      </SettingsFormItem>
+    </>
   );
-}
-
-export default ColumnsSettings;
+};

@@ -210,7 +210,7 @@ namespace Shesha.Tests.JsonLogic
         public void StringField_IsNotEmpty_Test()
         {
             var expression = ConvertToExpression<Person>(_stringField_IsNotEmpty_expression);
-            Assert.Equal(@"ent => (ent.FirstName != null)", expression.ToString());
+            Assert.Equal(@"ent => ((ent.FirstName != null) AndAlso (ent.FirstName.Trim() != """"))", expression.ToString());
         }
 
         [Fact]

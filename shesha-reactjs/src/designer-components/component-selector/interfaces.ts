@@ -5,4 +5,5 @@ export interface IComponentSelectorComponentProps extends IConfigurableFormCompo
   componentType: ComponentType;
   noSelectionItemText?: string;
   noSelectionItemValue?: string;
+  propertyAccessor?: string;
 }

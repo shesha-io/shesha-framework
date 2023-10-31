@@ -1,6 +1,6 @@
 import { SettingsMigrationContext } from "../../../../..";
 import { IConfigurableActionConfiguration } from "../../../../../interfaces/configurableAction";
-import { IButtonGroupButton } from "../../../../../providers/buttonGroupConfigurator/models";
+import { IButtonItem } from "../../../../../providers/buttonGroupConfigurator/models";
 import { getClosestTableId } from "../../../../../providers/form/utils";
 import { getDispatchEventReplacement } from "../../_common-migrations/migrate-events";
 import { IListComponentProps } from "../models";
@@ -15,7 +15,7 @@ export const migrateV0toV1 = (props: IListComponentProps, context: SettingsMigra
             return item;
             
         const button = item as IButtonGroupButtonV0;
-        const newItem: IButtonGroupButton = { ...button };
+        const newItem: IButtonItem = { ...button };
         newItem.actionConfiguration = getActionConfiguration(button, context);
 
         return newItem;

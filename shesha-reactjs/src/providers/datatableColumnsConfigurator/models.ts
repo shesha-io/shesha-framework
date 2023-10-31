@@ -48,6 +48,7 @@ export interface IConfigurableColumnsProps extends IConfigurableColumnsBase {
  */
 export interface IDataColumnsProps extends IConfigurableColumnsProps, IEditableColumnProps {
   propertyName: string;
+  allowSorting: boolean;
 }
 
 /**
@@ -65,4 +66,12 @@ export interface IConfigurableColumnGroup extends IConfigurableColumnsBase {
 export const standardCellComponentTypes = {
   defaultDisplay: '[default]',
   notEditable: '[not-editable]',
+};
+
+export const isDataColumnProps = (column: IConfigurableColumnsProps): column is IDataColumnsProps => {
+  return column && column.columnType === 'data';
+};
+
+export const isActionColumnProps = (column: IConfigurableColumnsProps): column is IConfigurableActionColumnsProps => {
+  return column && column.columnType === 'action';
 };

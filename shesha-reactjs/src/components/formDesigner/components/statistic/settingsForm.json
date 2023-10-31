@@ -3,16 +3,16 @@
     {
       "id": "38f7aff0-756e-4282-a5c4-39748219a225",
       "type": "sectionSeparator",
-      "name": "separator1",
+      "propertyName": "separator1",
       "parentId": "root",
       "label": "Display"
     },
     {
       "id": "de0f8d68-de60-4ec6-9290-d9cfffa5bcbc",
-      "type": "textField",
-      "name": "name",
+      "type": "contextPropertyAutocomplete",
+      "propertyName": "propertyName",
       "parentId": "root",
-      "label": "Name",
+      "label": "Property name",
       "required": true,
       "validate": {
         "required": true
@@ -21,88 +21,65 @@
     {
       "id": "5e97d29b-9a47-4ca3-9990-7020de1de392",
       "type": "textField",
-      "name": "title",
+      "propertyName": "title",
       "parentId": "root",
-      "label": "Title",
-      "required": true,
-      "validate": {
-        "required": true
-      }
+      "label": "Title"
+    },
+    {
+      "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
+      "type": "checkbox",
+      "propertyName": "hidden",
+      "parentId": "root",
+      "label": "Hidden"
     },
     {
       "id": "c8a2b2ce-3aef-46f9-a1f6-1c04417e7d20",
       "type": "iconPicker",
-      "name": "prefix",
+      "propertyName": "prefix",
       "label": "Prefix Icon",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": "",
       "settingsValidationErrors": []
     },
     {
       "id": "03e87c35-dc6a-4095-9492-2eede94f8dbe",
       "type": "iconPicker",
-      "name": "suffix",
+      "propertyName": "suffix",
       "label": "Suffix Icon",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": "",
       "settingsValidationErrors": []
     },
     {
       "id": "6befdd49-41aa-41d6-a29e-76fa00590b75",
       "type": "sectionSeparator",
-      "name": "sectionStyle",
+      "propertyName": "sectionStyle",
       "parentId": "root",
       "label": "Style"
     },
     {
       "id": "06ab0599-914d-4d2d-875c-765a495472f8",
       "type": "codeEditor",
-      "name": "style",
+      "propertyName": "style",
       "label": "Title Style",
       "parentId": "root",
       "validate": {},
       "settingsValidationErrors": [],
       "description": "A script that returns the style of the title as an object. This should conform to CSSProperties",
-      "exposedVariables": [{ "name": "data", "description": "Form values", "type": "object" }]
+      "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }]
     },
     {
       "id": "941e00c5-0172-4c5a-ab1d-d0a29e06531e",
       "type": "codeEditor",
-      "name": "valueStyle",
+      "propertyName": "valueStyle",
       "label": "Value Style",
       "parentId": "root",
       "validate": {},
       "settingsValidationErrors": [],
       "description": "A script that returns the style of the value as an object. This should conform to CSSProperties",
-      "exposedVariables": [{ "name": "data", "description": "Form values", "type": "object" }]
-    },
-    {
-      "id": "ba5a5ebd-55ed-4c4c-adc7-35c591c8fd4e",
-      "type": "sectionSeparator",
-      "name": "separatorVisibility",
-      "parentId": "root",
-      "label": "Visibility"
-    },
-    {
-      "id": "c6f46a6a-4a14-4aa3-af3d-938e2a24dee3",
-      "type": "codeEditor",
-      "name": "customVisibility",
-      "label": "Custom Visibility",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "customVisibility": null,
-      "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-      "validate": {},
-      "settingsValidationErrors": [],
-      "exposedVariables": [
-        { "name": "value", "description": "Component current value", "type": "string | any" },
-        { "name": "data", "description": "Selected form values", "type": "object" }
-      ]
+      "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }]
     }
   ],
   "formSettings": {

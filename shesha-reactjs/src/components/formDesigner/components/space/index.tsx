@@ -1,5 +1,6 @@
 import { ArrowsAltOutlined } from '@ant-design/icons';
 import { Space, SpaceProps } from 'antd';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 import React from 'react';
 import { validateConfigurableComponentSettings } from '../../../../formDesignerUtils';
 import { IConfigurableFormComponent, IToolboxComponent } from '../../../../interfaces/formDesigner';
@@ -52,6 +53,9 @@ const SpaceComponent: IToolboxComponent<ISpaceProps> = {
     wrap: false,
     ...model,
   }),
+  migrator: (m) => m
+    .add<ISpaceProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
 };
 
 export default SpaceComponent;

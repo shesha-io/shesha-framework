@@ -3,12 +3,11 @@
     {
       "id": "840aee56-42d2-40ed-a2c6-57abb255fb95",
       "type": "dropdown",
-      "name": "columnType",
+      "propertyName": "columnType",
       "label": "Type",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "dataSourceType": "values",
       "values": [
         {
@@ -31,25 +30,26 @@
         "required": true
       },
       "settingsValidationErrors": [],
-      "version": 1,
+      "version": 2,
       "useRawValues": false,
       "referenceListId": null,
       "placeholder": "",
       "description": "",
       "defaultValue": "",
-      "mode": ["single"],
+      "mode": [
+        "single"
+      ],
       "entityTypeShortAlias": "",
       "dataSourceUrl": ""
     },
     {
       "id": "d2ba51c1-13cc-4952-a25c-5b03442097a0",
       "type": "container",
-      "name": "dataContainer",
+      "propertyName": "dataContainer",
       "label": "Container3",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": false,
-      "customVisibility": "return data.columnType === 'data'",
+      "hidden": {"_code": "return  getSettingValue(data?.columnType) !== 'data';", "_mode": "code", "_value": false},
       "direction": "vertical",
       "justifyContent": "left",
       "settingsValidationErrors": [],
@@ -57,137 +57,134 @@
         {
           "id": "52f4460d-2e64-4d79-a900-7cd28b0bebd3",
           "type": "propertyAutocomplete",
-          "name": "propertyName",
+          "propertyName": "propertyName",
           "label": "Property Name",
           "labelAlign": "right",
           "parentId": "d2ba51c1-13cc-4952-a25c-5b03442097a0",
           "hidden": false,
-          "customVisibility": null,
           "validate": {},
-          "settingsValidationErrors": []
+          "settingsValidationErrors": [],
+          "version": 0
         }
       ],
-      "version": 0,
+      "version": 1,
       "flexWrap": "wrap"
     },
     {
       "id": "5d4d56fb-d7f8-4835-a529-c4fa93f3596d",
       "type": "textField",
-      "name": "caption",
+      "propertyName": "caption",
       "label": "Caption",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "autoSize": false,
       "showCount": false,
       "allowClear": false,
       "settingsValidationErrors": [],
-      "version": 0,
+      "version": 1,
       "textType": "text"
     },
     {
       "id": "9e5cad3f-b9af-4b19-aebb-d630265f6619",
       "type": "textArea",
-      "name": "description",
+      "propertyName": "description",
       "label": "Tooltip Description",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "autoSize": false,
       "showCount": false,
       "allowClear": false,
       "validate": {},
-      "settingsValidationErrors": []
+      "settingsValidationErrors": [],
+      "version": 0
     },
     {
       "id": "345c2181-fb9f-48ed-9631-864ac357807b",
       "type": "container",
-      "name": "cntButton",
+      "propertyName": "cntButton",
       "label": "Container2",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": false,
-      "customVisibility": "return data.columnType === 'action'",
+      "hidden": {"_code": "return  getSettingValue(data?.columnType) !== 'action';", "_mode": "code", "_value": false},
       "direction": "vertical",
       "justifyContent": "left",
       "components": [
         {
           "id": "91b404a6-4021-4b0a-b9ef-007167a93075",
           "type": "iconPicker",
-          "name": "icon",
+          "propertyName": "icon",
           "label": "Icon",
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
           "hidden": false,
-          "customVisibility": "",
-          "settingsValidationErrors": []
+          "settingsValidationErrors": [],
+          "version": 0
         },
         {
           "id": "F3B46A95-703F-4465-96CA-A58496A5F78C",
           "type": "configurableActionConfigurator",
-          "name": "actionConfiguration",
+          "propertyName": "actionConfiguration",
           "label": "Action configuration",
           "hidden": false,
-          "customVisibility": "",
           "validate": {},
           "settingsValidationErrors": [],
-          "parentId": "345c2181-fb9f-48ed-9631-864ac357807b"
+          "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
+          "version": 0
         }
       ],
       "settingsValidationErrors": [],
-      "version": 0,
+      "version": 1,
       "flexWrap": "wrap"
     },
     {
       "id": "b1803af1-37fb-4f03-b2b6-727b7f17730c",
       "type": "numberField",
-      "name": "minWidth",
+      "propertyName": "minWidth",
       "label": "Min Width",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "validate": {},
-      "settingsValidationErrors": []
+      "settingsValidationErrors": [],
+      "version": 0
     },
     {
       "id": "65bb484c-ab85-472c-bde7-e447c481ed47",
       "type": "numberField",
-      "name": "maxWidth",
+      "propertyName": "maxWidth",
       "label": "Max Width",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "validate": {},
-      "settingsValidationErrors": []
+      "settingsValidationErrors": [],
+      "version": 0
     },
     {
       "id": "77ceb915-f4f9-4957-b62f-7a4e4ba00846",
       "type": "checkbox",
-      "name": "isVisible",
+      "propertyName": "isVisible",
       "label": "Is Visible",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "validate": {},
-      "settingsValidationErrors": []
+      "settingsValidationErrors": [],
+      "version": 0
     },
     {
       "id": "EhERYkBRv066KGKNaRA7j",
       "type": "container",
-      "name": "container3",
+      "propertyName": "container3",
       "label": "Container3",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": false,
+      "hidden": {"_code": "return  getSettingValue(data?.columnType) !== 'data';", "_mode": "code", "_value": false},
       "visibility": "Yes",
-      "customVisibility": "return data.columnType === 'data'",
       "isDynamic": false,
-      "version": 0,
+      "version": 1,
       "direction": "vertical",
       "justifyContent": "left",
       "display": "block",
@@ -202,15 +199,17 @@
           "parentId": "EhERYkBRv066KGKNaRA7j",
           "hidden": false,
           "visibility": "Yes",
-          "customVisibility": null,
           "isDynamic": false,
-          "version": 0,
+          "version": 1,
           "componentType": "input",
           "tooltip": "",
           "settingsValidationErrors": [],
           "description": "",
           "noSelectionItemText": "Default",
-          "noSelectionItemValue": "[default]"
+          "noSelectionItemValue": "[default]",
+          "propertyAccessor": "{{data.propertyName}}",
+          "componentName": "displayComponent",
+          "propertyName": "displayComponent"
         },
         {
           "id": "rYYm0wT-TDnBfqmOMVmIX",
@@ -221,15 +220,17 @@
           "parentId": "EhERYkBRv066KGKNaRA7j",
           "hidden": false,
           "visibility": "Yes",
-          "customVisibility": null,
           "isDynamic": false,
-          "version": 0,
+          "version": 1,
           "componentType": "output",
           "tooltip": "",
           "settingsValidationErrors": [],
           "description": "",
           "noSelectionItemText": "Not editable",
-          "noSelectionItemValue": "[not-editable]"
+          "noSelectionItemValue": "[not-editable]",
+          "propertyAccessor": "{{data.propertyName}}",
+          "componentName": "editComponent",
+          "propertyName": "editComponent"
         },
         {
           "id": "L2bRSuStgiAmWfd5Z09CR",
@@ -240,15 +241,17 @@
           "parentId": "EhERYkBRv066KGKNaRA7j",
           "hidden": false,
           "visibility": "Yes",
-          "customVisibility": null,
           "isDynamic": false,
-          "version": 0,
+          "version": 1,
           "componentType": "output",
           "tooltip": "",
           "settingsValidationErrors": [],
           "description": "",
           "noSelectionItemText": "Not editable",
-          "noSelectionItemValue": "[not-editable]"
+          "noSelectionItemValue": "[not-editable]",
+          "propertyAccessor": "{{data.propertyName}}",
+          "componentName": "createComponent",
+          "propertyName": "createComponent"
         }
       ],
       "gap": "",
@@ -257,67 +260,45 @@
       "settingsValidationErrors": []
     },
     {
+      "id": "33IOXJRmPdfU9KLeDUF64",
+      "type": "checkbox",
+      "propertyName": "allowSorting",
+      "componentName": "allowSorting",
+      "label": "Allow sorting",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "isDynamic": false,
+      "version": 0,
+      "validate": {},
+      "settingsValidationErrors": []
+    },
+    {
       "id": "26c68b22-3211-475d-91e1-0745a4447329",
       "type": "editableTagGroup",
-      "name": "permissions",
+      "propertyName": "permissions",
       "label": "Permissions",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "validate": {}
-    },
-    {
-      "id": "eJiLlB4PoftEbhcEeg_0W",
-      "type": "dropdown",
-      "name": "defaultSorting",
-      "label": "Default Sorting",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "customVisibility": "return data.columnType === 'data'",
-      "isDynamic": false,
-      "dataSourceType": "values",
-      "useRawValues": false,
-      "placeholder": "",
-      "description": "",
-      "defaultValue": "",
-      "entityTypeShortAlias": "",
-      "dataSourceUrl": "",
-      "validate": {},
-      "values": [
-        {
-          "id": "kdYDKSB73uJuMSHvA3KCu",
-          "label": "Ascending",
-          "value": "asc"
-        },
-        {
-          "id": "5lV0k_ZT_9OylUs2x5rQ2",
-          "label": "Descending",
-          "value": "desc"
-        }
-      ],
-      "settingsValidationErrors": [],
-      "version": 1,
-      "referenceListId": null,
-      "mode": ["single"]
     },
     {
       "id": "52c604d6-0183-4331-a960-0b9551e88b09",
       "type": "sectionSeparator",
-      "name": "sectionVisibility",
+      "propertyName": "sectionVisibility",
       "parentId": "root",
-      "label": "Visibility"
+      "label": "Visibility",
+      "version": 0
     },
     {
       "id": "eda790c5-3cea-4755-9c75-039eca9318f3",
       "type": "codeEditor",
-      "name": "customVisibility",
+      "propertyName": "customVisibility",
       "label": "Custom Visibility",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
       "validate": {},
       "settingsValidationErrors": [],
@@ -332,7 +313,8 @@
           "description": "Selected form values",
           "type": "object"
         }
-      ]
+      ],
+      "version": 0
     }
   ],
   "formSettings": {

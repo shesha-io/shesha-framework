@@ -12,7 +12,7 @@ import { executeScriptSync } from '../../../../providers/form/utils';
 import ComponentsContainer from '../../containers/componentsContainer';
 import { IDrawerProps } from './models';
 
-export interface IShaDrawerProps extends Omit<IDrawerProps, 'style' | 'size'>, DrawerProps {}
+export interface IShaDrawerProps extends Omit<IDrawerProps, 'style' | 'size'>, Omit<DrawerProps, 'id'> {}
 
 interface IShaDrawerState {
   open?: boolean;
@@ -23,7 +23,7 @@ const ShaDrawer: FC<IShaDrawerProps> = props => {
     id,
     placement,
     width,
-    name,
+    propertyName: name,
     readOnly,
     label,
     onOkAction,
@@ -111,8 +111,8 @@ const ShaDrawer: FC<IShaDrawerProps> = props => {
     globalState,
   };
 
-  const okButtonDisabled = !executeScriptSync<boolean>(okButtonCustomEnabled, context);
-  const cancelButtonDisabled = !executeScriptSync<boolean>(cancelButtonCustomEnabled, context);
+  const okButtonDisabled = !!okButtonCustomEnabled ? !executeScriptSync<boolean>(okButtonCustomEnabled, context) : false;
+  const cancelButtonDisabled = !!cancelButtonCustomEnabled ? !executeScriptSync<boolean>(cancelButtonCustomEnabled, context) : false;
 
   if (formMode === 'designer') {
     return (

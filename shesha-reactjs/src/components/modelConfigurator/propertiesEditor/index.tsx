@@ -6,6 +6,7 @@ import { Form } from 'antd';
 
 export interface IPropertiesEditorComponentProps {
 }
+
 export const PropertiesEditorComponent: FC<IPropertiesEditorComponentProps> = () => {
  return (
     <Form.Item
@@ -19,6 +20,7 @@ export const PropertiesEditorComponent: FC<IPropertiesEditorComponentProps> = ()
 };
 
 export interface IPropertiesEditorProps extends IPropertiesEditorComponentProps {
+    allowAdd?: Boolean;
     value?: IModelItem[];
     onChange?: (value: IModelItem[]) => void;    
 }
@@ -26,7 +28,7 @@ export interface IPropertiesEditorProps extends IPropertiesEditorComponentProps 
 export const PropertiesEditor: FC<IPropertiesEditorProps> = (props) => {
     return (
         <PropertiesEditorProvider items={props.value} onChange={props.onChange}>
-            <PropertiesEditorRenderer />
+            <PropertiesEditorRenderer allowAdd={props.allowAdd} />
         </PropertiesEditorProvider>
     );
 };

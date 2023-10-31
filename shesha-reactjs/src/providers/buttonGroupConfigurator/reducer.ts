@@ -7,14 +7,14 @@ import {
   IUpdateChildItemsPayload,
   IUpdateItemSettingsPayload,
 } from './contexts';
-import { IButtonGroup, IButtonGroupButton } from './models';
+import { IButtonGroupItem, IButtonGroup } from './models';
 import { getItemById, getItemPositionById } from './utils';
 
 const buttonGroupReducer = handleActions<IButtonGroupConfiguratorStateContext, any>(
   {
     [ButtonGroupActionEnums.AddButton]: (state: IButtonGroupConfiguratorStateContext) => {
       const buttonsCount = state.items.filter((i) => i.itemType === 'item').length;
-      const buttonProps: IButtonGroupButton = {
+      const buttonProps: IButtonGroupItem = {
         id: nanoid(),
         itemType: 'item',
         sortOrder: state.items.length,
@@ -60,6 +60,8 @@ const buttonGroupReducer = handleActions<IButtonGroupConfiguratorStateContext, a
         sortOrder: state.items.length,
         name: `group${groupsCount + 1}`,
         label: `Group ${groupsCount + 1}`,
+        buttonType: 'link',
+        hideWhenEmpty: true,
         childItems: [],
       };
       return {
@@ -124,25 +126,31 @@ const buttonGroupReducer = handleActions<IButtonGroupConfiguratorStateContext, a
       action: ReduxActions.Action<IUpdateChildItemsPayload>
     ) => {
       const {
-        payload: { id, children: childIds },
+        payload: { index, children },
       } = action;
-
-      if (id) {
-        const newItems = [...state.items];
-        const position = getItemPositionById(newItems, id);
-        const group = position.ownerArray[position.index];
-        position.ownerArray[position.index] = { ...group, childItems: childIds };
-
+      if (!Boolean(index) || index.length === 0) {
         return {
           ...state,
-          items: newItems,
-        };
-      } else {
-        return {
-          ...state,
-          items: [...childIds],
+          items: children,
         };
       }
+      // copy all items
+      const newItems = [...state.items];
+      // blockIndex - full index of the current container
+      const blockIndex = [...index];
+      // lastIndex - index of the current element in its' parent
+      const lastIndex = blockIndex.pop();
+
+      // search for a parent item
+      const lastArr = blockIndex.reduce((arr, i) => arr[i]['childItems'], newItems);
+
+      // and set a list of childs
+      lastArr[lastIndex]['childItems'] = children;
+
+      return {
+        ...state,
+        items: newItems,
+      };
     },
   },
 

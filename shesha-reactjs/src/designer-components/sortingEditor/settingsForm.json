@@ -1,0 +1,284 @@
+{
+  "components": [
+    {
+      "id": "W_m7doMyCpCYwAYDfRh6I",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlDisplay",
+      "label": "Display",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "visibility": "Yes",
+      "isDynamic": false,
+      "version": 2,
+      "expandIconPosition": "left",
+      "header": {
+        "id": "xUukOtoy4VF55EFvhr3t1",
+        "components": []
+      },
+      "content": {
+        "id": "s4gmBg31azZC0UjZjpfTm",
+        "components": [
+          {
+            "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
+            "type": "contextPropertyAutocomplete",
+            "propertyName": "propertyName",
+            "parentId": "s4gmBg31azZC0UjZjpfTm",
+            "label": "Property name",
+            "validate": {
+              "required": true
+            }
+          },
+          {
+            "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
+            "type": "textField",
+            "propertyName": "label",
+            "parentId": "s4gmBg31azZC0UjZjpfTm",
+            "label": "Label",
+            "version": 1,
+            "textType": "text"
+          },
+          {
+            "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
+            "type": "dropdown",
+            "propertyName": "labelAlign",
+            "parentId": "s4gmBg31azZC0UjZjpfTm",
+            "label": "Label align",
+            "values": [
+              {
+                "label": "left",
+                "value": "left",
+                "id": "2d6411ae-0b56-4b4c-ad7c-fb15aa7fa1f5"
+              },
+              {
+                "label": "right",
+                "value": "right",
+                "id": "9e89461b-f916-4689-8789-1854ccedc666"
+              }
+            ],
+            "dataSourceType": "values",
+            "version": 2,
+            "useRawValues": false,
+            "referenceListId": null
+          },
+          {
+            "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
+            "type": "textArea",
+            "propertyName": "description",
+            "parentId": "s4gmBg31azZC0UjZjpfTm",
+            "label": "Description",
+            "version": 0
+          },
+          {
+            "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
+            "type": "checkbox",
+            "propertyName": "hideLabel",
+            "parentId": "s4gmBg31azZC0UjZjpfTm",
+            "label": "Hide Label",
+            "version": 0
+          },
+          {
+            "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
+            "type": "checkbox",
+            "propertyName": "disabled",
+            "parentId": "s4gmBg31azZC0UjZjpfTm",
+            "label": "Disabled",
+            "version": 0
+          },
+          {
+            "id": "1ceb3851-f15e-437b-98b6-84d6a1fbf801",
+            "type": "checkbox",
+            "propertyName": "readOnly",
+            "parentId": "s4gmBg31azZC0UjZjpfTm",
+            "label": "Read Only",
+            "version": 0
+          },
+          {
+            "id": "-FKJrwSFWwlOxRt-N7a11",
+            "type": "checkbox",
+            "propertyName": "hidden",
+            "componentName": "hidden",
+            "label": "Hidden",
+            "labelAlign": "right",
+            "parentId": "s4gmBg31azZC0UjZjpfTm",
+            "hidden": false,
+            "visibility": "Yes",
+            "isDynamic": false,
+            "version": 0,
+            "validate": {},
+            "settingsValidationErrors": []
+          }
+        ]
+      },
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": []
+    },
+    {
+      "id": "6eBJvoll3xtLJxdvOAlnB",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlValidation",
+      "label": "Data",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "visibility": "Yes",
+      "isDynamic": false,
+      "version": 2,
+      "expandIconPosition": "left",
+      "header": {
+        "id": "OHLCgLtLKni6NOhoSDcrD",
+        "components": []
+      },
+      "content": {
+        "id": "qOkkwAnHvKJ0vYXeXMLsd",
+        "components": [
+          {
+            "textType": "text",
+            "id": "Rm-dCd4q9cH97jmhoZkCU",
+            "type": "textField",
+            "propertyName": "modelType",
+            "componentName": "modelType",
+            "label": "Entity type",
+            "labelAlign": "right",
+            "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
+            "hidden": false,
+            "visibility": "Yes",
+            "isDynamic": false,
+            "version": 1,
+            "validate": {
+              "required": true
+            },
+            "settingsValidationErrors": []
+          }
+        ]
+      },
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": [],
+      "componentName": "pnlData"
+    },
+    {
+      "id": "Mpe4Sli-5JNDMZYHqeVnY",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlValidation",
+      "label": "Validation",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "visibility": "Yes",
+      "isDynamic": false,
+      "version": 2,
+      "expandIconPosition": "left",
+      "header": {
+        "id": "KcSx-OGtVqioIIngWe5UR",
+        "components": []
+      },
+      "content": {
+        "id": "r2HAIJKgas4nV1wE1g4uG",
+        "components": [
+          {
+            "id": "o3sQvPFkIu5jGuLshdwD4",
+            "type": "codeEditor",
+            "propertyName": "validate.validator",
+            "parentId": "r2HAIJKgas4nV1wE1g4uG",
+            "label": "Validator",
+            "validate": {},
+            "labelAlign": "right",
+            "hidden": false,
+            "description": "Enter custom validator logic for form.item rules. Returns a Promise",
+            "settingsValidationErrors": [],
+            "exposedVariables": [
+              {
+                "propertyName": "rules",
+                "description": "Validate rules, only support customize validator",
+                "type": "object"
+              },
+              {
+                "propertyName": "value",
+                "description": "Component current value",
+                "type": "object"
+              },
+              {
+                "propertyName": "callback",
+                "description": "Callback called by component",
+                "type": "function"
+              },
+              {
+                "propertyName": "data",
+                "description": "Form values",
+                "type": "object"
+              }
+            ],
+            "version": 0
+          }
+        ]
+      },
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": [],
+      "components": [
+        {
+          "id": "r2HAIJKgas4nV1wE1g4uG",
+          "components": [
+            {
+              "id": "o3sQvPFkIu5jGuLshdwD4",
+              "type": "codeEditor",
+              "propertyName": "validate.validator",
+              "parentId": "r2HAIJKgas4nV1wE1g4uG",
+              "label": "Validator",
+              "validate": {},
+              "labelAlign": "right",
+              "hidden": false,
+              "description": "Enter custom validator logic for form.item rules. Returns a Promise",
+              "settingsValidationErrors": [],
+              "exposedVariables": [
+                {
+                  "propertyName": "rules",
+                  "description": "Validate rules, only support customize validator",
+                  "type": "object"
+                },
+                {
+                  "propertyName": "value",
+                  "description": "Component current value",
+                  "type": "object"
+                },
+                {
+                  "propertyName": "callback",
+                  "description": "Callback called by component",
+                  "type": "function"
+                },
+                {
+                  "propertyName": "data",
+                  "description": "Form values",
+                  "type": "object"
+                }
+              ],
+              "version": 0
+            }
+          ],
+          "parentId": "Mpe4Sli-5JNDMZYHqeVnY"
+        }
+      ]
+    }
+  ],
+  "formSettings": {
+    "layout": "horizontal",
+    "colon": true,
+    "labelCol": {
+      "span": 5
+    },
+    "wrapperCol": {
+      "span": 13
+    },
+    "displayName": "DEFAULT_FORM_SETTINGS",
+    "__docgenInfo": {
+      "description": "Default form settings",
+      "displayName": "DEFAULT_FORM_SETTINGS",
+      "props": {}
+    }
+  }
+}

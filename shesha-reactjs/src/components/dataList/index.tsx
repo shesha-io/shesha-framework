@@ -1,19 +1,17 @@
-import { Checkbox, Divider, message } from 'antd';
+import { Checkbox, Divider } from 'antd';
 import classNames from 'classnames';
 import React, { FC, useEffect, useState } from 'react';
 import { useMeasure, usePrevious } from 'react-use';
-import { axiosHttp } from 'utils/fetchers';
-import { FormFullName, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher, useForm, useFormData, useGlobalState, useSheshaApplication } from '../../providers';
+import { FormFullName, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher, useSheshaApplication } from '../../providers';
 import { useConfigurationItemsLoader } from '../../providers/configurationItemsLoader';
 import { getFormConfiguration, getMarkupFromResponse } from '../../providers/form/api';
-import { asFormFullName, asFormRawId } from '../../providers/form/utils';
 import ConditionalWrap from '../conditionalWrapper';
 import ConfigurableForm from '../configurableForm';
 import FormInfo from '../configurableForm/formInfo';
 import ShaSpin from '../shaSpin';
 import Show from '../show';
 import { IDataListProps } from './models';
-import moment from 'moment';
+import { asFormRawId, asFormFullName, useApplicationContext, executeScriptSync } from '../../providers/form/utils';
 import './styles/index.less';
 
 interface EntityForm {
@@ -46,12 +44,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   ...props
 }) => {
   const { backendUrl, httpHeaders } = useSheshaApplication();
-  const { form, formMode, setFormDataAndInstance } = useForm();
-  const { data } = useFormData();
-  const { globalState, setState: setGlobalState } = useGlobalState();
-
+  const allData = useApplicationContext();
   const { executeAction } = useConfigurableActionDispatcher();
-
   const [formConfigs, setFormConfigs] = useState<IFormDto[]>([]);
   const [entityForms, setEntityForms] = useState<EntityForm[]>([]);
   const [entityTypes, setEntityTypes] = useState<string[]>([]);
@@ -70,9 +64,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         })
       );
     } else {
-      if (typeof onSelectRow !== 'function') return;
-
-      if (onSelectRow) onSelectRow(index, row);
+      if (onSelectRow ?? typeof onSelectRow === 'function') onSelectRow(index, row);
     }
   };
 
@@ -116,19 +108,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   const getFormIdFromExpression = (item): FormFullName => {
     if (!formIdExpression) return null;
 
-    // tslint:disable-next-line:function-constructor
-    return new Function(
-      'item',
-      //globalState, http, message, data, refreshTable',
-      formIdExpression
-    )(
-      item /*,
-            globalState,
-            axiosHttp(backendUrl),
-            message,
-            formData,
-            refreshTable*/
-    );
+    return executeScriptSync(formIdExpression, {...allData, item});
   };
 
   const { formInfoBlockVisible } = useAppConfigurator();
@@ -321,7 +301,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   const renderSubForm = (item?: any) => {
     let values: { [key: string]: any; id: string } = { ...item };
 
-    let formConfig = null; //formConfiguration;
+    let formConfig: IFormDto = null; //formConfiguration;
 
     if (!Boolean(formConfig)) {
       if (formSelectionMode === 'name') {
@@ -375,16 +355,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       if (props.actionConfiguration) {
         // todo: implement generic context collector
         const evaluationContext = {
+          ...allData,
           selectedRow: item,
-          data,
-          moment,
-          form,
-          formMode,
-          http: axiosHttp(backendUrl),
-          message,
-          globalState,
-          setFormData: setFormDataAndInstance,
-          setGlobalState,
         };
         executeAction({
           actionConfiguration: props.actionConfiguration,
@@ -393,6 +365,9 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       } else console.error('Action is not configured');
       return false;
     };
+
+    if (!formConfig) 
+      return null;
 
     return (
       <div onDoubleClick={handleClick}>

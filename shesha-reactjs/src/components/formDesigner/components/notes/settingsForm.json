@@ -1,167 +1,184 @@
 {
   "components": [
     {
-      "id": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
-      "type": "sectionSeparator",
-      "name": "separator1",
+      "id": "aIMnm2re1exM1M7pEEur9",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlDisplay",
+      "label": "Display",
+      "labelAlign": "right",
       "parentId": "root",
-      "label": "Display"
-    },
-    {
-      "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
-      "type": "textField",
-      "name": "name",
-      "parentId": "root",
-      "label": "Name",
-      "validate": {
-        "required": true
+      "hidden": false,
+      "visibility": "Yes",
+      "isDynamic": false,
+      "version": 2,
+      "expandIconPosition": "left",
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": [],
+      "header": {
+        "id": "FizvoIoyeq1cZMqAgbDLL",
+        "components": []
+      },
+      "content": {
+        "id": "y9SNudmMM0Wd1Sc_YI1ng",
+        "components": [
+          {
+            "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
+            "type": "textField",
+            "propertyName": "componentName",
+            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Component name",
+            "jsSetting": false,
+            "validate": {
+              "required": true
+            }
+          },
+          {
+            "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
+            "type": "textField",
+            "propertyName": "label",
+            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Label"
+          },
+          {
+            "id": "df8a8f35-a50b-42f9-9642-73d390ceddbf",
+            "type": "dropdown",
+            "propertyName": "visibility",
+            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Visibility",
+            "description": "This property will eventually replace the 'hidden' property and other properties that toggle visibility on the UI and payload",
+            "allowClear": true,
+            "values": [
+              {
+                "label": "Yes (Display in UI and include in payload)",
+                "value": "Yes",
+                "id": "53cd10ce-26af-474b-af75-8e7b1f19e51d"
+              },
+              {
+                "label": "No (Only include in payload)",
+                "value": "No",
+                "id": "f07a228c-cb9c-4da7-a8bc-bc2be518a058"
+              },
+              {
+                "label": "Removed (Remove from UI and exlude from payload)",
+                "value": "Removed",
+                "id": "3b6282ee-2eee-47ec-bab9-4cba52b970a0"
+              }
+            ],
+            "dataSourceType": "values"
+          },
+          {
+            "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
+            "type": "checkbox",
+            "propertyName": "hidden",
+            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Hidden"
+          },
+          {
+            "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
+            "type": "checkbox",
+            "propertyName": "disabled",
+            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Disabled"
+          }
+        ]
       }
     },
     {
-      "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
-      "type": "textField",
-      "name": "label",
-      "parentId": "root",
-      "label": "Label"
-    },
-    {
-      "id": "df8a8f35-a50b-42f9-9642-73d390ceddbf",
-      "type": "dropdown",
-      "name": "visibility",
-      "parentId": "root",
-      "label": "Visibility",
-      "description": "This property will eventually replace the 'hidden' property and other properties that toggle visibility on the UI and payload",
-      "allowClear": true,
-      "values": [
-        {
-          "label": "Yes (Display in UI and include in payload)",
-          "value": "Yes",
-          "id": "53cd10ce-26af-474b-af75-8e7b1f19e51d"
-        },
-        {
-          "label": "No (Only include in payload)",
-          "value": "No",
-          "id": "f07a228c-cb9c-4da7-a8bc-bc2be518a058"
-        },
-        {
-          "label": "Removed (Remove from UI and exlude from payload)",
-          "value": "Removed",
-          "id": "3b6282ee-2eee-47ec-bab9-4cba52b970a0"
-        }
-      ],
-      "dataSourceType": "values"
-    },
-    {
-      "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
-      "type": "checkbox",
-      "name": "hidden",
-      "parentId": "root",
-      "label": "Hidden"
-    },
-    {
-      "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
-      "type": "checkbox",
-      "name": "disabled",
-      "parentId": "root",
-      "label": "Disabled"
-    },
-    {
-      "id": "6ceecdd6-5231-4f98-83dd-b489195f7e3a",
-      "type": "sectionSeparator",
-      "name": "styleSeparator",
-      "parentId": "root",
-      "label": "Styling"
-    },
-    {
-      "id": "a4076447-d2a2-44a9-bf9f-aa799a827cc7",
-      "type": "dropdown",
-      "name": "savePlacement",
-      "parentId": "root",
-      "label": "Save Placement",
-      "description": "This used to place the save button (Left, Right).",
-      "values": [
-        {
-          "label": "Left",
-          "value": "left",
-          "id": "18a25d15-5a3b-43f6-815c-ab50c60c67e2"
-        },
-        {
-          "label": "Right",
-          "value": "right",
-          "id": "ba03eef2-2fc6-4ac9-9f3d-d77952416c84"
-        }
-      ],
-      "defaultValue": "left",
-      "dataSourceType": "values"
-    },
-    {
-      "id": "2fb35552-0dcb-42ec-aee5-0e8ca67127d4",
-      "type": "checkbox",
-      "name": "autoSize",
-      "parentId": "root",
-      "label": "Auto Size"
-    },
-    {
-      "id": "5478b8f9-ec00-4d0a-9d2a-44a630cb2dcb",
-      "type": "sectionSeparator",
-      "name": "filesSeparator",
-      "parentId": "root",
-      "label": "Notes"
-    },
-    {
-      "id": "417ee22e-a49d-44f2-a1c7-fef32ec87503",
-      "type": "textField",
-      "name": "ownerId",
-      "parentId": "root",
-      "label": "Owner Id"
-    },
-    {
-      "id": "c6ecd70c-7419-4ea7-a715-d42699d26e6e",
-      "type": "textField",
-      "name": "ownerType",
-      "parentId": "root",
-      "label": "Owner Type"
-    },
-    {
-      "id": "a59d3daa-e34f-4410-9ae1-fc1669eab5e5",
-      "type": "sectionSeparator",
-      "name": "separatorVisibility",
-      "parentId": "root",
-      "label": "Visibility"
-    },
-    {
-      "id": "56f7769f-4e7d-417f-9698-11847a250661",
-      "type": "codeEditor",
-      "name": "customVisibility",
-      "label": "Custom Visibility",
+      "id": "1aIMnm2re1exM1M7pEEur9",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlStyling",
+      "label": "Styling",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
-      "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-      "validate": {},
+      "visibility": "Yes",
+      "isDynamic": false,
+      "version": 2,
+      "expandIconPosition": "left",
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
       "settingsValidationErrors": [],
-      "exposedVariables": [
-        { "name": "value", "description": "Component current value", "type": "string | any" },
-        { "name": "data", "description": "Selected form values", "type": "object" }
-      ]
+      "header": {
+        "id": "1FizvoIoyeq1cZMqAgbDLL",
+        "components": []
+      },
+      "content": {
+        "id": "1y9SNudmMM0Wd1Sc_YI1ng",
+        "components": [
+          {
+            "id": "a4076447-d2a2-44a9-bf9f-aa799a827cc7",
+            "type": "dropdown",
+            "propertyName": "savePlacement",
+            "parentId": "1y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Save Placement",
+            "description": "This used to place the save button (Left, Right).",
+            "values": [
+              {
+                "label": "Left",
+                "value": "left",
+                "id": "18a25d15-5a3b-43f6-815c-ab50c60c67e2"
+              },
+              {
+                "label": "Right",
+                "value": "right",
+                "id": "ba03eef2-2fc6-4ac9-9f3d-d77952416c84"
+              }
+            ],
+            "defaultValue": "left",
+            "dataSourceType": "values"
+          },
+          {
+            "id": "2fb35552-0dcb-42ec-aee5-0e8ca67127d4",
+            "type": "checkbox",
+            "propertyName": "autoSize",
+            "parentId": "1y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Auto Size"
+          }
+        ]
+      }
     },
     {
-      "id": "4b5e5951-4998-4635-b1c8-0b6d3940c300",
-      "type": "codeEditor",
-      "name": "customEnabled",
-      "label": "Custom Enabled",
+      "id": "2aIMnm2re1exM1M7pEEur9",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlNotes",
+      "label": "Notes",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customEnabled": null,
-      "description": "Enter custom enabled code.  You must return true to enable the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-      "validate": {},
+      "visibility": "Yes",
+      "isDynamic": false,
+      "version": 2,
+      "expandIconPosition": "left",
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
       "settingsValidationErrors": [],
-      "exposedVariables": [
-        { "name": "value", "description": "Component current value", "type": "string | any" },
-        { "name": "data", "description": "Selected form values", "type": "object" }
-      ]
+      "header": {
+        "id": "2FizvoIoyeq1cZMqAgbDLL",
+        "components": []
+      },
+      "content": {
+        "id": "2y9SNudmMM0Wd1Sc_YI1ng",
+        "components": [
+          {
+            "id": "417ee22e-a49d-44f2-a1c7-fef32ec87503",
+            "type": "textField",
+            "propertyName": "ownerId",
+            "parentId": "2y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Owner Id"
+          },
+          {
+            "id": "c6ecd70c-7419-4ea7-a715-d42699d26e6e",
+            "type": "textField",
+            "propertyName": "ownerType",
+            "parentId": "2y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Owner Type"
+          }
+        ]
+      }
     }
   ],
   "formSettings": {

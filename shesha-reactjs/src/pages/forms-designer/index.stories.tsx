@@ -28,7 +28,11 @@ export const EpmDesignerUserManagement = addStory(Template, {
 });
 
 export const EpmPlayGround = addStory(Template, {
-  formId: '623a1462-768a-4e74-85a9-d8b1ff70b91e',
+  formId: 'e8c7aec8-e90e-4729-a2b8-49f6d7ac01e3',
+});
+
+export const EpmPlayGroundTwo = addStory(Template, {
+  formId: 'daa6108f-86c2-49b0-88f9-f18badd673f2',
 });
 
 export const FncDesignerTSchoolDetails = addStory(Template, {

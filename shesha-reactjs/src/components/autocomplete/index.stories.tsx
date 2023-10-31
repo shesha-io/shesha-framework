@@ -211,23 +211,6 @@ export const MultipleEntityDtoWithInitialValueReadOnly = addStory(EntityDtoTempl
 });
 //#endregion
 
-//#region Tags Entity DTO
-export const TagsEntityDto = addStory(EntityDtoTemplate, {
-  ...urlDataSourceProps,
-  mode: 'tags',
-  testValue: [
-    {
-      id: '7f3076a1-e766-41a4-a05b-90e70a01d8ae',
-      displayText: 'Cinisile Mathonsi',
-    },
-    {
-      id: '291b86be-27f1-41a0-8bfd-f867a3b38e32',
-      displayText: 'Friday Green',
-    },
-  ],
-});
-//#endregion
-
 //#region Single Raw
 export const SingleRaw = addStory(RawTemplate, {
   ...urlDataSourceProps,

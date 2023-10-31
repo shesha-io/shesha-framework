@@ -122,7 +122,13 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     }
   }, [fetched, entityId, props.entityReferenceType, props.getEntityUrl, entityType]);
 
-  /* Dialog */
+    useEffect(() => {
+        setFetched(false);
+        if (!!props?.value?._displayName)
+            setDisplayText(props?.value?._displayName);
+    }, [entityId, entityType]);
+
+    /* Dialog */
 
   const dialogExecute = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     event.stopPropagation(); // Don't collapse the CollapsiblePanel when clicked
@@ -168,37 +174,32 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   };
 
   const content = useMemo(() => {
-    return !(props.entityReferenceType === 'Quickview') && !(formIdentifier && displayText && entityId) ? (
-      <Button className="entity-reference-btn" type="link">
-        <span>
-          <Spin size="small" /> Loading...
-        </span>
-      </Button>
-    ) : props.disabled ? (
-      <Button className="entity-reference-btn" disabled type="link">
-        {displayText}
-      </Button>
-    ) : props.entityReferenceType === 'NavigateLink' ? (
-      <ShaLink linkToForm={formIdentifier} params={{ id: entityId }} className="entity-reference-btn">
-        {displayText}
-      </ShaLink>
-    ) : props.entityReferenceType === 'Quickview' ? (
-      <GenericQuickView
-        displayProperty={props.displayProperty}
-        displayName={displayText}
-        entityId={props.value?.id ?? props.value}
-        className={entityType}
-        getEntityUrl={props.getEntityUrl}
-        width={props.quickviewWidth}
-        formIdentifier={formIdentifier}
-        formType={formType}
-      />
-    ) : (
-      <Button className="entity-reference-btn" type="link" onClick={dialogExecute}>
-        {displayText}
-      </Button>
-    );
-  }, [formIdentifier, displayText, entityId]);
+
+    if (!(formIdentifier && displayText && entityId || props.entityReferenceType === 'Quickview'))
+    return <Button className="entity-reference-btn" type="link"><span><Spin size="small" /> Loading...</span></Button>;
+
+    if (props.disabled)
+        return <Button className="entity-reference-btn" disabled type="link">{displayText}</Button>;
+                
+    if (props.entityReferenceType === 'NavigateLink')
+        return <ShaLink className="entity-reference-btn" linkToForm={formIdentifier} params={{id: entityId}}>{displayText}</ShaLink>;
+
+    if (props.entityReferenceType === 'Quickview')
+        return (
+            <GenericQuickView
+                displayProperty={props.displayProperty}
+                displayName={displayText}
+                entityId={props.value?.id ?? props.value}
+                className={entityType}
+                getEntityUrl={props.getEntityUrl}
+                width={props.quickviewWidth}
+                formIdentifier={formIdentifier}
+                formType={formType}
+            />
+        );
+
+    return <Button className="entity-reference-btn" type="link" onClick={dialogExecute}>{displayText}</Button>;
+  }, [formIdentifier, displayText, entityId, props.disabled]);
 
   if (props.formSelectionMode === 'name' && !Boolean(formIdentifier))
     return (

@@ -1,15 +1,13 @@
 import { ButtonType } from 'antd/lib/button';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { VisibilityType } from '..';
 import { IConfigurableActionConfiguration } from '../../interfaces/configurableAction';
+import { IDynamicActionsConfiguration } from '../../designer-components/dynamicActionsConfigurator/models';
 
 type ButtonGroupItemType = 'item' | 'group';
 
-type ButtonGroupType = 'inline' | 'dropdown';
+export type ButtonGroupItemProps = IButtonGroupItem | IButtonGroup;
 
-export type ButtonGroupItemProps = IButtonGroupButton | IButtonGroup;
-
-export type ToolbarItemSubType = 'button' | 'separator' | 'line';
+export type ToolbarItemSubType = 'button' | 'separator' | 'line' | 'dynamic';
 
 export type ButtonActionType =
   | 'navigate'
@@ -27,7 +25,7 @@ export interface IButtonGroupItemBase {
   id: string;
   name: string;
   block?: boolean;
-  label?: string;
+  label?: string | React.ReactNode;
   tooltip?: string;
   sortOrder: number;
   danger?: boolean;
@@ -35,7 +33,6 @@ export interface IButtonGroupItemBase {
   disabled?: boolean;
   isDynamic?: boolean;
   itemType: ButtonGroupItemType;
-  groupType?: ButtonGroupType;
   icon?: string;
   buttonType?: ButtonType;
   customVisibility?: string;
@@ -43,14 +40,43 @@ export interface IButtonGroupItemBase {
   permissions?: string[];
   style?: string;
   size?: SizeType;
-  visibility?: VisibilityType;
 }
 
-export interface IButtonGroupButton extends IButtonGroupItemBase {
+export interface IButtonGroupItem extends IButtonGroupItemBase {
   itemSubType: ToolbarItemSubType;
+}
+
+export interface IButtonItem extends IButtonGroupItem {
   actionConfiguration?: IConfigurableActionConfiguration;
 }
 
+export const isItem = (item: IButtonGroupItemBase): item is IButtonGroupItem => {
+  return item && item.itemType === 'item';
+};
+
 export interface IButtonGroup extends IButtonGroupItemBase {
+  /**
+   * If true, indicates that the group should be hidden when it has no visible items
+   */
+  hideWhenEmpty?: boolean;
+  /**
+   * Chid items (buttons or nested groups)
+   */
   childItems?: ButtonGroupItemProps[];
 }
+
+export const isGroup = (item: IButtonGroupItemBase): item is IButtonGroup => {
+  return item && item.itemType === 'group';
+};
+
+export interface IDynamicItem extends IButtonGroupItem {
+  dynamicItemsConfiguration: IDynamicActionsConfiguration;
+}
+
+export const isDynamicItem = (item: IButtonGroupItemBase): item is IDynamicItem => {
+  return isItem(item) && item.itemSubType === 'dynamic';
+};
+
+export const isButtonItem = (item: IButtonGroupItemBase): item is IButtonItem => {
+  return isItem(item) && item.itemSubType === 'button';
+};

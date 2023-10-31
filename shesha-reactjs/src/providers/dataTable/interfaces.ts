@@ -1,7 +1,7 @@
-import { Moment } from 'moment';
-import { IConfigurableActionConfiguration } from '../../interfaces/configurableAction';
-import { ProperyDataType } from '../../interfaces/metadata';
+import { IConfigurableActionConfiguration } from 'interfaces/configurableAction';
 import { IDataColumnsProps, IEditableColumnProps } from '../datatableColumnsConfigurator/models';
+import { IPropertyMetadata, ProperyDataType } from 'interfaces/metadata';
+import { Moment } from 'moment';
 
 export type ColumnFilter = string[] | number[] | Moment[] | Date[] | string | number | Moment | Date | boolean;
 
@@ -31,7 +31,7 @@ export interface ITableColumn {
   accessor: string;
   header: string;
   caption?: string;
-
+  
   isVisible: boolean; // is visible in the table (including columns selector, filter etc.)
   show?: boolean; // is visible on client
   isFilterable: boolean;
@@ -42,24 +42,30 @@ export interface ITableColumn {
 
   filterOption?: IndexColumnFilterOption;
   filter?: any;
-
-  defaultSorting?: SortDirection;
+  
   name?: string;
   allowShowHide?: boolean;
+  metadata?: IPropertyMetadata;
 }
 
 export interface ITableDataColumn extends ITableColumn, IEditableColumnProps {
   propertyName?: string;
   dataType?: ProperyDataType;
   dataFormat?: string;
-
+  
   referenceListName?: string;
   referenceListModule?: string;
   entityReferenceTypeShortAlias?: string;
   allowInherited?: boolean;
 }
 
-export interface ITableActionColumn extends ITableColumn, IActionColumnProps {}
+export const isDataColumn = (column: ITableColumn): column is ITableDataColumn => {
+  return column && column.columnType === 'data';
+};
+
+export interface ITableActionColumn extends ITableColumn, IActionColumnProps {
+  
+}
 
 export interface ITableCrudOperationsColumn extends ITableColumn {}
 
@@ -181,7 +187,7 @@ export interface IPublicDataTableActions {
   exportToExcel?: () => void;
 }
 
-export interface IDataTableInstance extends IPublicDataTableActions {}
+export interface IDataTableInstance extends IPublicDataTableActions { }
 
 export type ListSortDirection = 0 | 1;
 
@@ -198,6 +204,7 @@ export interface DataTableColumnDto {
   allowInherited?: boolean;
   isFilterable?: boolean;
   isSortable?: boolean;
+  metadata?: IPropertyMetadata;
 }
 
 //#region todo: remove
@@ -239,10 +246,19 @@ export interface IActionColumnProps {
   /**
    * Icon, is used for action columns
    */
-  icon?: string;
+   icon?: string;
 
-  /**
-   * Configurable action configuration
-   */
-  actionConfiguration?: IConfigurableActionConfiguration;
+   /**
+    * Configurable action configuration
+    */
+   actionConfiguration?: IConfigurableActionConfiguration;  
 }
+
+export interface SortingItem {
+  propertyName: string;
+  sorting: ColumnSorting;
+}
+
+export type GroupingItem = SortingItem;
+
+export type SortMode = 'standard' | 'strict';

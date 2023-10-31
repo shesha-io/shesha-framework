@@ -9,6 +9,7 @@ import { IButtonGroupItemBaseV0, migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
 import { getSettings } from './settingsForm';
 import { IButtonComponentProps } from './interfaces';
+import { migratePropertyName, migrateCustomFunctions } from '../../../../designer-components/_common-migrations/migrateSettings';
 
 export type IActionParameters = [{ key: string; value: string }];
 
@@ -17,22 +18,16 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
   name: 'Button',
   icon: <BorderOutlined />,
   factory: ({ style, ...model }: IButtonComponentProps) => {
-    const { isComponentDisabled, isComponentHidden, formMode } = useForm();
+    const { formMode } = useForm();
     const { data } = useFormData();
 
     const { anyOfPermissionsGranted } = useSheshaApplication();
-
-    const { id, isDynamic, hidden, disabled } = model;
 
     const fieldModel = {
       ...model,
       label: null,
       tooltip: null,
     };
-
-    const isHidden = isComponentHidden({ id, isDynamic, hidden });
-
-    const isDisabled = isComponentDisabled({ id, isDynamic, disabled });
 
     const grantedPermission = anyOfPermissionsGranted(model?.permissions || []);
 
@@ -43,11 +38,8 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
     return (
       <ConfigurableFormItem model={fieldModel}>
         <ConfigurableButton
-          block={model?.block}
-          formComponentId={model?.id}
           {...model}
-          disabled={isDisabled}
-          hidden={isHidden}
+          block={model?.block}
           style={getStyle(style, data)}
         />
       </ConfigurableFormItem>
@@ -74,14 +66,18 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       .add<IButtonGroupItemBaseV0>(0, prev => {
         const buttonModel: IButtonGroupItemBaseV0 = {
           ...prev,
+          hidden: prev.hidden as boolean,
           label: prev.label ?? 'Submit',
           sortOrder: 0,
           itemType: 'item',
+          name: prev['name']
         };
         return buttonModel;
       })
       .add<IButtonComponentProps>(1, migrateV0toV1)
-      .add<IButtonComponentProps>(2, migrateV1toV2),
+      .add<IButtonComponentProps>(2, migrateV1toV2)
+      .add<IButtonComponentProps>(3, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
 };
 
 export default ButtonComponent;

@@ -7,6 +7,8 @@ import { validateConfigurableComponentSettings } from '../../../../formDesignerU
 
 import { IMarkdownProps } from './interfaces';
 import Markdown from './markdown';
+import ConfigurableFormItem from '../formItem';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -15,13 +17,23 @@ const MarkdownComponent: IToolboxComponent<IMarkdownProps> = {
   name: 'Markdown',
   icon: <EditOutlined />,
   factory: (model: IMarkdownProps) => {
-    return <Markdown {...model} />;
+    return (
+      <ConfigurableFormItem model={{...model, label: undefined, hideLabel: true}}   >
+        {(value) => {
+          const content = model.content || value;
+          return <Markdown {...model} content={content}/>;
+        }}
+      </ConfigurableFormItem>
+    );
   },
   settingsFormMarkup: settingsForm,
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
   initModel: model => ({
     ...model,
   }),
+  migrator: (m) => m
+   .add<IMarkdownProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IMarkdownProps)
+  ,
 };
 
 export default MarkdownComponent;

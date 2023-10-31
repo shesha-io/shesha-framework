@@ -1,6 +1,6 @@
 import { IConfigurableActionConfiguration } from 'interfaces/configurableAction';
+import { ISelectionProps } from 'providers/dataTable/contexts';
 import { FormIdentifier, IConfigurableFormComponent } from '../..';
-import { ISelectionProps } from '../../providers/dataTableSelection/models';
 
 export type FormSelectionMode = 'name' | 'view' | 'expression';
 export type Orientation = 'vertical' | 'horizontal';
@@ -37,9 +37,6 @@ export interface IDataListProps {
   orientation?: Orientation;
   listItemWidth?: ListItemWidth;
   customListItemWidth?: number;
-
-  defaultSortBy?: string;
-  defaultSortOrder?: string;
 
   actionConfiguration?: IConfigurableActionConfiguration;
 }

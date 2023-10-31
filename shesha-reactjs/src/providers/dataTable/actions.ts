@@ -1,6 +1,7 @@
+import { Row } from 'react-table';
 import { createAction } from 'redux-actions';
 import { IConfigurableColumnsProps } from '../datatableColumnsConfigurator/models';
-import { IDataTableUserConfig } from './contexts';
+import { DragState, IDataTableUserConfig, ISelectionProps } from './contexts';
 import {
   DataFetchingMode,
   DataTableColumnDto,
@@ -10,6 +11,9 @@ import {
   ITableDataInternalResponse,
   ITableFilter,
   IndexColumnFilterOption,
+  GroupingItem,
+  SortMode,
+  ColumnSorting,
 } from './interfaces';
 
 export enum DataTableActionEnums {
@@ -41,6 +45,7 @@ export enum DataTableActionEnums {
   ChangeActionedRow = 'CHANGE_ACTIONED_ROW',
   ChangeSelectedStoredFilterIds = 'CHANGE_SELECTED_STORED_FILTER_IDS',
   SetPredefinedFilters = 'REGISTER_STORED_FILTER',
+  SetHiddenFilter = 'SET_HIDDEN_FILTER',
   ChangeSelectedIds = 'CHANGE_SELECTED_IDS',
   RegisterConfigurableColumns = 'REGISTER_CONFIGURABLE_COLUMNS',
   OnSelectRow = 'ON_SELECT_ROW',
@@ -50,10 +55,43 @@ export enum DataTableActionEnums {
 
   ChangeDisplayColumn = 'CHANGE_DISPLAY_COLUMN',
   ChangePersistedFiltersToggle = 'CHANGE_PERSISTED_FILTERS_TOGGLE',
-  /* NEW_ACTION_TYPE_GOES_HERE */
+
+  // selections
+  SetSelectedRow = 'SET_SELECTED_ROW',
+  SetHoverRow = 'SET_HOVER_ROW',
+  SetDraggingState = 'SET_DRAGGING_STATE',
+  SetMultiSelectedRow = 'SET_MULTI_SELECTED_ROW',
+
+  FetchGroupingColumns = 'FETCH_GROUPING_COLUMNS',
+  FetchGroupingColumnsSuccess = 'FETCH_GROUPING_COLUMNS_SUCCESS',
+  SetSortingSettings = 'SET_SORTING_SETTINGS',
+  SetStandardSorting = 'SET_STANDARD_SORTING',
 }
 
-export const setModelTypeAction = createAction<string, string>(DataTableActionEnums.SetModelType, (p) => p);
+export const setSelectedRowAction = createAction<ISelectionProps, ISelectionProps>(
+  DataTableActionEnums.SetSelectedRow,
+  p => p
+);
+
+export const setHoverRowAction = createAction<string, string>(
+  DataTableActionEnums.SetHoverRow,
+  p => p
+);
+
+export const setDraggingRowAction = createAction<DragState, DragState>(
+  DataTableActionEnums.SetDraggingState,
+  p => p
+);
+
+export const setMultiSelectedRowAction = createAction<Array<Row> | Row, Array<Row> | Row>(
+  DataTableActionEnums.SetMultiSelectedRow,
+  p => p
+);
+
+export const setModelTypeAction = createAction<string, string>(
+  DataTableActionEnums.SetModelType,
+  p => p
+);
 
 export const fetchTableDataAction = createAction<IGetListDataPayload, IGetListDataPayload>(
   DataTableActionEnums.FetchTableData,
@@ -153,6 +191,15 @@ export const setPredefinedFiltersAction = createAction<ISetPredefinedFiltersPayl
   (p) => p
 );
 
+export interface ISetHiddenFilterActionPayload {
+  filter: IStoredFilter;
+  owner: string;
+}
+export const setHiddenFilterAction = createAction<ISetHiddenFilterActionPayload, ISetHiddenFilterActionPayload>(
+  DataTableActionEnums.SetHiddenFilter,
+  (p) => p
+);
+
 export const changeSelectedIdsAction = createAction<string[], string[]>(
   DataTableActionEnums.ChangeSelectedIds,
   (p) => p
@@ -192,5 +239,30 @@ export const changePersistedFiltersToggleAction = createAction<boolean, boolean>
 
 export const setDataFetchingModeAction = createAction<DataFetchingMode, DataFetchingMode>(
   DataTableActionEnums.SetDataFetchingMode,
-  (p) => p
+  p => p
 );
+
+export interface IFetchGroupingColumnsSuccessPayload {
+  grouping: GroupingItem[];
+  columns: DataTableColumnDto[];
+}
+export const fetchGroupingColumnsSuccessAction = createAction<
+  IFetchGroupingColumnsSuccessPayload,
+  IFetchGroupingColumnsSuccessPayload
+>(DataTableActionEnums.FetchGroupingColumnsSuccess, p => p);
+
+export interface ISortingSettingsActionPayload {
+  sortMode?: SortMode;
+  strictSortBy?: string;
+  strictSortOrder?: ColumnSorting;
+  allowReordering: boolean;
+}
+export const setSortingSettingsAction = createAction<
+  ISortingSettingsActionPayload,
+  ISortingSettingsActionPayload
+>(DataTableActionEnums.SetSortingSettings, p => p);
+
+export const setStandardSortingAction = createAction<
+  IColumnSorting[],
+  IColumnSorting[]
+>(DataTableActionEnums.SetStandardSorting, p => p);

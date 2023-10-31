@@ -4,24 +4,27 @@ import { useDeepCompareEffect } from 'react-use';
 import {
   FormIdentifier,
   IAuthProviderRefProps,
-  IToolboxComponentGroup,
   ThemeProvider,
   ThemeProviderProps,
-} from '../..';
+  DynamicActionsDispatcherProvider,
+  MetadataDispatcherProvider,
+  AuthProvider,
+  ShaRoutingProvider,
+  AppConfiguratorProvider,
+  DynamicModalProvider,
+  UiProvider,
+} from 'providers';
+import { DataContextManager } from 'providers/dataContextManager';
+import { DataContextProvider } from 'providers/dataContextProvider';
+import { IToolboxComponentGroup } from 'interfaces';
 import ConditionalWrap from '../../components/conditionalWrapper';
 import IRequestHeaders from '../../interfaces/requestHeaders';
 import { StackedNavigationProvider } from '../../pages/dynamic/navigation/stakedNavigation';
-import { AppConfiguratorProvider } from '../appConfigurator';
-import AuthProvider from '../auth';
 import { ConfigurableActionDispatcherProvider } from '../configurableActionsDispatcher';
 import { ConfigurationItemsLoaderProvider } from '../configurationItemsLoader';
 import { DataSourcesProvider } from '../dataSourcesProvider';
-import { DynamicModalProvider } from '../dynamicModal';
-import { MetadataDispatcherProvider } from '../metadataDispatcher';
 import { ReferenceListDispatcherProvider } from '../referenceListDispatcher';
 import { SettingsProvider } from '../settings';
-import ShaRoutingProvider from '../shaRouting';
-import { UiProvider } from '../ui';
 import {
   setBackendUrlAction,
   setGlobalVariablesAction,
@@ -39,6 +42,8 @@ import {
 } from './contexts';
 import { FRONT_END_APP_HEADER_NAME } from './models';
 import appConfiguratorReducer from './reducer';
+import { IModelMetadata } from 'interfaces/metadata';
+import DebugPanel from 'components/debugPanel';
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;
@@ -115,6 +120,15 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
     dispatch(setGlobalVariablesAction(values));
   };
 
+  const testMetadata: IModelMetadata = {
+    name: 'testProp',
+    entityType: '',
+    dataType: 'string',
+    apiEndpoints: {},
+    specifications: [],
+    properties: []
+  };
+
   return (
     <SheshaApplicationStateContext.Provider value={state}>
       <SheshaApplicationActionsContext.Provider
@@ -130,38 +144,46 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
           <ConfigurableActionDispatcherProvider>
             <UiProvider>
               <ShaRoutingProvider getFormUrlFunc={getFormUrlFunc} router={router}>
-                <ConditionalWrap
-                  condition={!props?.noAuth}
-                  wrap={(authChildren) => (
-                    <AuthProvider
-                      tokenName={accessTokenName || DEFAULT_ACCESS_TOKEN_NAME}
-                      onSetRequestHeaders={setRequestHeaders}
-                      unauthorizedRedirectUrl={unauthorizedRedirectUrl}
-                      authRef={authRef}
-                      homePageUrl={homePageUrl}
-                    >
-                      {authChildren}
-                    </AuthProvider>
-                  )}
-                >
-                  <ConfigurationItemsLoaderProvider>
-                    <ThemeProvider {...(themeProps || {})}>
-                      <AppConfiguratorProvider>
-                        <ReferenceListDispatcherProvider>
-                          <MetadataDispatcherProvider>
-                            <StackedNavigationProvider>
-                              <DataSourcesProvider>
-                                <DynamicModalProvider>
-                                  <ApplicationActionsProcessor>{children}</ApplicationActionsProcessor>
-                                </DynamicModalProvider>
-                              </DataSourcesProvider>
-                            </StackedNavigationProvider>
-                          </MetadataDispatcherProvider>
-                        </ReferenceListDispatcherProvider>
-                      </AppConfiguratorProvider>
-                    </ThemeProvider>
-                  </ConfigurationItemsLoaderProvider>
-                </ConditionalWrap>
+                <DynamicActionsDispatcherProvider>
+                  <ConditionalWrap
+                    condition={true /*!props?.noAuth*/}
+                    wrap={(authChildren) => (
+                      <AuthProvider
+                        tokenName={accessTokenName || DEFAULT_ACCESS_TOKEN_NAME}
+                        onSetRequestHeaders={setRequestHeaders}
+                        unauthorizedRedirectUrl={unauthorizedRedirectUrl}
+                        authRef={authRef}
+                        homePageUrl={homePageUrl}
+                      >
+                        {authChildren}
+                      </AuthProvider>
+                    )}
+                  >
+                    <ConfigurationItemsLoaderProvider>
+                      <ThemeProvider {...(themeProps || {})}>
+                        <AppConfiguratorProvider>
+                          <ReferenceListDispatcherProvider>
+                            <MetadataDispatcherProvider>
+                              <DataContextManager>
+                                <DataContextProvider id={'appContext'} name={'appContext'} description={'Application context'} type={'root'} metadata={new Promise(resolve => resolve(testMetadata))} >
+                                  <StackedNavigationProvider>
+                                    <DataSourcesProvider>
+                                      <DynamicModalProvider>
+                                        <DebugPanel>
+                                          <ApplicationActionsProcessor>{children}</ApplicationActionsProcessor>
+                                        </DebugPanel>
+                                      </DynamicModalProvider>
+                                    </DataSourcesProvider>
+                                  </StackedNavigationProvider>
+                                </DataContextProvider>
+                              </DataContextManager>
+                            </MetadataDispatcherProvider>
+                          </ReferenceListDispatcherProvider>
+                        </AppConfiguratorProvider>
+                      </ThemeProvider>
+                    </ConfigurationItemsLoaderProvider>
+                  </ConditionalWrap>
+                </DynamicActionsDispatcherProvider>
               </ShaRoutingProvider>
             </UiProvider>
           </ConfigurableActionDispatcherProvider>

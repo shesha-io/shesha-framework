@@ -9,6 +9,7 @@ import { TableViewSelectorConfiguratorProvider, useTableViewSelectorConfigurator
 import { ITableViewProps } from '../../../providers/tableViewSelectorConfigurator/models';
 import FilterConfigurator from './filterConfigurator';
 import { FilterTarget, ICustomFilterComponentProps } from './interfaces';
+import { migrateCustomFunctions, migratePropertyName } from '../../../designer-components/_common-migrations/migrateSettings';
 
 const CustomFilterComponent: IToolboxComponent<ICustomFilterComponentProps> = {
   type: 'filter',
@@ -28,6 +29,9 @@ const CustomFilterComponent: IToolboxComponent<ICustomFilterComponentProps> = {
       filters: [],
     };
   },
+  migrator:  m => m
+    .add<ICustomFilterComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev) as ICustomFilterComponentProps))
+  ,
 };
 
 //#region CustomFilter

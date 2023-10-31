@@ -7,10 +7,10 @@ import { IToolboxComponent } from 'interfaces';
 import { MetadataProvider, useDataTableStore, useForm, useGlobalState, useNestedPropertyMetadatAccessor } from 'providers';
 import { useDataSource } from 'providers/dataSourcesProvider';
 import DataTableProvider from 'providers/dataTable';
-import { DataTableSelectionProvider, useDataTableSelection } from 'providers/dataTableSelection';
-import DataSourceSettings from './dataSourceSettings';
 import { IDataSourceComponentProps } from './models';
 import { evaluateDynamicFilters } from 'utils';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
+import { DataSourceSettingsForm } from './dataSourceSettings';
 
 const getPageSize = (value?: number) => { 
   return Boolean(value) ? value : 1147489646 /* get all data */; 
@@ -23,24 +23,17 @@ const DataSourceComponent: IToolboxComponent<IDataSourceComponentProps> = {
   factory: (model: IDataSourceComponentProps) => {
     return <DataSource {...model} />;
   },
-  migrator: m => m.add<IDataSourceComponentProps>(0, prev => {
-    return {
-      ...prev,
-      name: prev['uniqueStateId'] ?? prev.name,
-      sourceType: 'Entity'
-    };
-  }),
-  settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
-    return (
-      <DataSourceSettings
-        readOnly={readOnly}
-        model={model as IDataSourceComponentProps}
-        onSave={onSave}
-        onCancel={onCancel}
-        onValuesChange={onValuesChange}
-      />
-    );
-  }
+  migrator: m => 
+    m.add<IDataSourceComponentProps>(0, prev => {
+      return {
+        ...prev,
+        name: prev['uniqueStateId'] ?? prev['name'],
+        sourceType: 'Entity'
+      };
+    })
+    .add<IDataSourceComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
+  settingsFormFactory: (props) => (<DataSourceSettingsForm {...props}/>),
 };
 
 export const DataSource: FC<IDataSourceComponentProps> = props => {
@@ -52,7 +45,7 @@ export const DataSource: FC<IDataSourceComponentProps> = props => {
     setProvider(<DataSourceInner key={uniqueKey} {...props} />);
   }, [props]);*/
 
-  const uniqueKey = `${props.sourceType}_${props.name}_${props.entityType ?? props.endpoint}`; // is used just for re-rendering
+  const uniqueKey = `${props.sourceType}_${props.propertyName}_${props.entityType ?? props.endpoint}`; // is used just for re-rendering
   const provider = <DataSourceInner key={uniqueKey} {...props} />;
 
   return props.entityType ? (
@@ -65,7 +58,7 @@ export const DataSource: FC<IDataSourceComponentProps> = props => {
 };
 
 export const DataSourceInner: FC<IDataSourceComponentProps> = props => {
-  const { sourceType, entityType, endpoint, id, name } = props;
+  const { sourceType, entityType, endpoint, id, propertyName: name } = props;
   const { formMode } = useForm();
   const isDesignMode = formMode === 'designer';
 
@@ -87,7 +80,7 @@ export const DataSourceInner: FC<IDataSourceComponentProps> = props => {
 
   const providerWrapper = useMemo(() => {
     return sourceType === 'Form'
-      ? <FormItem name={props.name}>
+      ? <FormItem name={props.propertyName}>
           {provider}
         </FormItem>
       : provider;
@@ -104,25 +97,19 @@ export const DataSourceInner: FC<IDataSourceComponentProps> = props => {
       />
     );
 
-  return (
-    <DataTableSelectionProvider>
-      {providerWrapper}
-    </DataTableSelectionProvider>
-  );
+  return providerWrapper;
 };
 
-const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, name, filters, maxResultCount }) => {
+const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, propertyName: name, filters, maxResultCount }) => {
   const { registerActions, formData, formMode } = useForm();
   const dataSource = useDataTableStore();
   const { 
     refreshTable, 
-    tableConfigLoaded, 
     setPredefinedFilters,
     changePageSize,
     modelType,
   } = dataSource;
 
-  const dataSelection = useDataTableSelection();
   //const { selectedRow } = dataSelection;
   const { globalState } = useGlobalState();
 
@@ -132,10 +119,10 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, name, filters, 
     changePageSize(getPageSize(maxResultCount));
   }, [maxResultCount]);
 
-  useDataSource({ id, name, dataSource, dataSelection }, [id, name, dataSource, dataSelection]);
+  useDataSource({ id, name, dataSource }, [id, name, dataSource]);
 
   /*const deleteRow = () => {
-    console.log(`deleteRow ${selectedRow.id}`);
+    console.log(`deleteRow ${selectedRow?.id}`);
   };*/
 
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(modelType);
@@ -166,7 +153,7 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, name, filters, 
         refresh: refreshTable,
         //deleteRow,
       }),
-    [tableConfigLoaded, id]
+    [id]
   );
 
   if (!isDesignMode)

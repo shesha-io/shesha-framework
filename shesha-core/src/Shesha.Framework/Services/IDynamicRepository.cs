@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Shesha.Configuration.Runtime;
 
@@ -53,5 +54,18 @@ namespace Shesha.Services
         /// Returns queryable source (<see cref="IQueryable"/>) with entities of the specified type
         /// </summary>
         IQueryable<T> Query<T>();
+
+        /// <summary>
+        /// Returns queryable source (<see cref="IQueryable"/>) with entities of the specified type
+        /// </summary>
+        IQueryable Query<T>(string entityType);
+
+        /// <summary>
+        /// Returns queryable source (<see cref="IQueryable"/>) with entities of the specified type and filtere by lambda expression
+        /// </summary>
+        /// <param name="entityType"></param>
+        /// <param name="lambda"></param>
+        /// <returns></returns>
+        IQueryable Where(Type entityType, LambdaExpression lambda);
     }
 }

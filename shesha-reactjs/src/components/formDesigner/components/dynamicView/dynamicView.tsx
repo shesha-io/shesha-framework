@@ -29,7 +29,7 @@ export const DynamicView: FC<DynamicViewProps> = (model) => {
     }, [allComponents]);
 
     const staticComponentBindings = useMemo(() => {
-        const names = staticComponents.filter(c => Boolean(c.name)).map(component => camelcaseDotNotation(component.name));
+        const names = staticComponents.filter(c => Boolean(c.propertyName)).map(component => camelcaseDotNotation(component.propertyName));
         return names;
     }, [staticComponents]);
 

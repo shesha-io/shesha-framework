@@ -3,27 +3,26 @@ import { IToolboxComponent } from '../../../../interfaces';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
 import { evaluateString, getStyle, validateConfigurableComponentSettings } from 'providers/form/utils';
-import { useForm, useFormData, useGlobalState } from 'providers';
+import { useFormData, useGlobalState } from 'providers';
 import { getSettings } from './settings';
 import ShaIcon from '../../../shaIcon';
 import { IAlertComponentProps } from './interfaces';
+import { migratePropertyName, migrateCustomFunctions } from '../../../../designer-components/_common-migrations/migrateSettings';
 
 const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
   type: 'alert',
   name: 'Alert',
   icon: <ExclamationCircleOutlined />,
   factory: (model: IAlertComponentProps) => {
-    const { isComponentHidden } = useForm();
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
 
     const { text, alertType, description, showIcon, closable, icon, style } = model;
 
     const evaluatedMessage = evaluateString(text, { data: formData, globalState });
-
     const evaluatedDescription = evaluateString(description, formData);
 
-    if (isComponentHidden(model)) return null;
+    if (model.hidden) return null;
 
     return (
       <Alert
@@ -42,6 +41,9 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
     alertType: 'info',
     ...model,
   }),
+  migrator: (m) => m
+    .add<IAlertComponentProps>(0, (prev: IAlertComponentProps) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 };

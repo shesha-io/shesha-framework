@@ -2,6 +2,7 @@
 using Abp.Authorization.Roles;
 using Abp.Authorization.Users;
 using Abp.Domain.Entities;
+using Abp.Domain.Uow;
 using Abp.Reflection;
 using Abp.Web.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +26,13 @@ namespace Shesha.Services
     /// </summary>
     public class NHibernateAppService: IApplicationService
     {
+        private readonly IUnitOfWorkManager _unitOfWorkManager;
+
+        public NHibernateAppService(IUnitOfWorkManager unitOfWorkManager)
+        {
+            _unitOfWorkManager = unitOfWorkManager;
+        }
+
         /// <summary>
         /// Get last compiled mapping conventions
         /// </summary>
@@ -56,7 +64,6 @@ namespace Shesha.Services
             try
             {
                 var typeFinder = StaticContext.IocManager.Resolve<ITypeFinder>();
-                var sessionFactory = StaticContext.IocManager.Resolve<ISessionFactory>();
                 var migrationGenerator = StaticContext.IocManager.Resolve<IMigrationGenerator>();
 
                 var types = typeFinder.FindAll().Where(t => t.IsEntityType()
@@ -67,19 +74,9 @@ namespace Shesha.Services
 
                 var errors = new Dictionary<Type, Exception>();
 
-                var session = sessionFactory.GetCurrentSession();
-
                 foreach (var type in types)
                 {
-                    try
-                    {
-                        var hql = $"from {type.FullName}";
-                        var list = session.CreateQuery(hql).SetMaxResults(1).List();
-                    }
-                    catch (Exception e)
-                    {
-                        errors.Add(type, e);
-                    }
+                    TryFetch(type, e => errors.Add(type, e));                    
                 }
 
                 var typesToMap = errors.Select(e => e.Key).Where(t => !t.Namespace.StartsWith("Abp") && !t.HasAttribute<ImMutableAttribute>()).ToList();
@@ -90,11 +87,47 @@ namespace Shesha.Services
                 var grouppedMigrations = grupped.Select(g => new { Prefix = g.Key, Migration = migrationGenerator.GenerateMigrations(g.Value) })
                     .ToList();
 
+                
                 return migration;
             }
             catch (Exception)
             {
                 throw;
+            }
+        }
+
+        /// <summary>
+        /// NOTE: to be removed
+        /// </summary>
+        [HttpGet]
+        [DontWrapResult]
+        public void TestEntity(string entityType) 
+        {
+            var typeFinder = StaticContext.IocManager.Resolve<ITypeFinder>();
+            var type = typeFinder.Find(t => t.FullName == entityType).Single();
+            TryFetch(type, e => 
+            {
+                throw e;
+            });
+        }
+
+        private void TryFetch(Type type, Action<Exception> onException) 
+        {
+            var sessionFactory = StaticContext.IocManager.Resolve<ISessionFactory>();
+
+            using (var uow = _unitOfWorkManager.Begin(System.Transactions.TransactionScopeOption.RequiresNew))
+            {
+                try
+                {
+                    var hql = $"from {type.FullName}";
+                    var session = sessionFactory.GetCurrentSession();
+                    var list = session.CreateQuery(hql).SetMaxResults(1).List();
+                }
+                catch (Exception e)
+                {
+                    onException.Invoke(e);                    
+                }
+                uow.Complete();
             }
         }
     }

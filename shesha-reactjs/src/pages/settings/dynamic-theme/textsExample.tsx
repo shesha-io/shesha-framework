@@ -5,9 +5,9 @@ import { GenericText } from '../../../components/formDesigner/components/text/ty
 const TextsExample: FC = () => {
   return (
     <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-      <GenericText textType={'span'}>Default text</GenericText>
+      <GenericText textType={'span'} propertyName="">Default text</GenericText>
 
-      <GenericText textType={'span'} contentType="secondary">
+      <GenericText textType={'span'} contentType="secondary" propertyName="">
         Secondary text
       </GenericText>
 

@@ -26,7 +26,7 @@ export const FormDesigner: FC<IFormDesignerProps> = ({ formId }) => {
 
           if (formStore.loaded && formStore.markup)
             return (
-              <FormMarkupConverter markup={formStore.markup} formSettings={formStore.formSettings}>
+              <FormMarkupConverter markup={formStore.markup} formSettings={{...formStore.formSettings, isSettingsForm: false}}>
                 {flatComponents => (
                   <FormDesignerProvider
                     flatComponents={flatComponents}
@@ -60,6 +60,7 @@ const FormProviderWrapper: FC<{ form: FormInstance }> = ({ form }) => {
 
   return (
     <FormProvider
+      needDebug
       name="Designer Form"
       mode="designer"
       allComponents={allComponents}

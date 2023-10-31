@@ -1,5 +1,8 @@
+import React, { FC, useReducer, useContext, useEffect, useMemo, useRef, useState, PropsWithChildren } from 'react';
+import { SubFormActionsContext, SubFormContext, SUB_FORM_CONTEXT_INITIAL_STATE } from './contexts';
+import { subFormReducer } from './reducer';
+import { ISubFormProviderProps } from './interfaces';
 import { ColProps, message, notification } from 'antd';
-import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useDeepCompareEffect } from 'react-use';
 import { useDebouncedCallback } from 'use-debounce';
 import {
@@ -24,7 +27,7 @@ import { useConfigurableAction } from '../configurableActionsDispatcher';
 import { useConfigurationItemsLoader } from '../configurationItemsLoader';
 import { useForm } from '../form';
 import { UseFormConfigurationArgs } from '../form/api';
-import { DEFAULT_FORM_SETTINGS, FormMarkupWithSettings } from '../form/models';
+import { DEFAULT_FORM_SETTINGS } from '../form/models';
 import { useGlobalState } from '../globalState';
 import {
   IPersistedFormPropsWithComponents,
@@ -33,17 +36,6 @@ import {
   fetchDataSuccessAction,
   setMarkupWithSettingsAction,
 } from './actions';
-import { SUB_FORM_CONTEXT_INITIAL_STATE, SubFormActionsContext, SubFormContext } from './contexts';
-import { ISubFormProps } from './interfaces';
-import { subFormReducer } from './reducer';
-
-export interface SubFormProviderProps extends Omit<ISubFormProps, 'name' | 'value'> {
-  actionsOwnerId?: string;
-  actionOwnerName?: string;
-  name?: string;
-  markup?: FormMarkupWithSettings;
-  value?: string | { id: string; [key: string]: any };
-}
 
 interface IFormLoadingState {
   isLoading: boolean;
@@ -57,7 +49,7 @@ interface QueryParamsEvaluatorArguments {
 }
 type QueryParamsEvaluator = (args: QueryParamsEvaluatorArguments) => object;
 
-const SubFormProvider: FC<PropsWithChildren<SubFormProviderProps>> = ({
+const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = ({
   formSelectionMode,
   formType,
   children,
@@ -73,13 +65,14 @@ const SubFormProvider: FC<PropsWithChildren<SubFormProviderProps>> = ({
   dataSource,
   markup,
   properties,
-  name,
+  propertyName,
   labelCol,
   wrapperCol,
   queryParams,
   onChange,
   defaultValue,
   entityType,
+  context,
 }) => {
   const [state, dispatch] = useReducer(subFormReducer, SUB_FORM_CONTEXT_INITIAL_STATE);
   const { publish } = usePubSub();
@@ -114,17 +107,17 @@ const SubFormProvider: FC<PropsWithChildren<SubFormProviderProps>> = ({
 
   // update global state on value change
   useDeepCompareEffect(() => {
-    if (name) {
+    if (propertyName) {
       // Note: don't write undefined if subform value is missing in the globalState. It doesn't make any sense but initiates a re-rendering
-      const existsInGlobalState = Boolean(globalState) && globalState.hasOwnProperty(name);
+      const existsInGlobalState = Boolean(globalState) && globalState.hasOwnProperty(propertyName);
       if (value === undefined && !existsInGlobalState) return;
 
       setGlobalState({
-        key: name,
+        key: propertyName,
         data: value,
       });
     }
-  }, [value, name]);
+  }, [value, propertyName]);
 
   const [internalEntityType, setInternalEntityType] = useState(entityType);
 
@@ -260,7 +253,8 @@ const SubFormProvider: FC<PropsWithChildren<SubFormProviderProps>> = ({
 
     // Skip loading if we work with entity and the `id` is not specified
     if (internalEntityType && !finalQueryParams?.id) {
-      onChange({});
+      if (typeof onChange === 'function')
+        onChange({});
       return;
     }
 
@@ -290,8 +284,8 @@ const SubFormProvider: FC<PropsWithChildren<SubFormProviderProps>> = ({
           if (dataResponse.success) {
             if (typeof onChange === 'function') {
               onChange(dataResponse?.result);
-              dispatch(fetchDataSuccessAction());
             }
+            dispatch(fetchDataSuccessAction());
           } else {
             dispatch(fetchDataErrorAction({ error: dataResponse.error as GetDataError<unknown> }));
           }
@@ -397,6 +391,7 @@ const SubFormProvider: FC<PropsWithChildren<SubFormProviderProps>> = ({
             hasFetchedConfig: true,
             id: response?.id,
             module: response?.module,
+            name: response?.name,
             components: response.markup,
             formSettings: response.settings,
             versionNo: response?.versionNo,
@@ -504,8 +499,9 @@ const SubFormProvider: FC<PropsWithChildren<SubFormProviderProps>> = ({
           labelCol: getColSpan(labelCol) || getColSpan(state?.formSettings?.labelCol),
           wrapperCol: getColSpan(wrapperCol) || getColSpan(state?.formSettings?.wrapperCol), // Override with the incoming one
         },
-        name,
+        propertyName,
         value: value || defaultValue,
+        context
       }}
     >
       <SubFormActionsContext.Provider

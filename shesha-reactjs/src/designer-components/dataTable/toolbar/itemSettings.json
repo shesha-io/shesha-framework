@@ -3,12 +3,12 @@
     {
       "id": "840aee56-42d2-40ed-a2c6-57abb255fb95",
       "type": "dropdown",
-      "name": "itemSubType",
+      "propertyName": "itemSubType",
       "label": "Item Type",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
+      "jsSetting": false,
       "dataSourceType": "values",
       "values": [
         {
@@ -34,12 +34,11 @@
     {
       "id": "5d4d56fb-d7f8-4835-a529-c4fa93f3596d",
       "type": "textField",
-      "name": "name",
+      "propertyName": "name",
       "label": "Title",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "validate": {
         "required": true
       }
@@ -47,24 +46,22 @@
     {
       "id": "345c2181-fb9f-48ed-9631-864ac357807b",
       "type": "container",
-      "name": "cntButton",
+      "propertyName": "cntButton",
       "label": "Container2",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": false,
-      "customVisibility": "return data.itemSubType === 'button'",
+      "hidden": {"_code": "return  getSettingValue(data?.itemSubType) !== 'button';", "_mode": "code", "_value": false},
       "direction": "vertical",
       "justifyContent": "left",
       "components": [
         {
           "id": "9b671866-072e-4688-8b48-ddf5e12d70d4",
           "type": "textArea",
-          "name": "tooltip",
+          "propertyName": "tooltip",
           "label": "Tooltip",
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
           "hidden": false,
-          "customVisibility": "",
           "autoSize": false,
           "showCount": false,
           "allowClear": false,
@@ -91,23 +88,21 @@
         {
           "id": "91b404a6-4021-4b0a-b9ef-007167a93075",
           "type": "iconPicker",
-          "name": "icon",
+          "propertyName": "icon",
           "label": "Icon",
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
-          "hidden": false,
-          "customVisibility": "return data.itemSubType === 'button'",
+          "hidden": {"_code": "return  getSettingValue(data?.itemSubType) !== 'button';", "_mode": "code", "_value": false},
           "settingsValidationErrors": []
         },
         {
           "id": "be15598e-5c23-40bc-8245-6b5385bb7963",
           "type": "dropdown",
-          "name": "buttonType",
+          "propertyName": "buttonType",
           "label": "Button Type",
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
           "hidden": false,
-          "customVisibility": null,
           "validate": {
             "required": true
           },
@@ -148,21 +143,19 @@
         {
           "id": "4e9b886a-6186-4467-a688-639b30a0e06f",
           "type": "checkbox",
-          "name": "danger",
+          "propertyName": "danger",
           "label": "Danger",
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
           "hidden": false,
-          "customVisibility": null,
           "validate": {}
         },
         {
           "id": "F3B46A95-703F-4465-96CA-A58496A5F78C",
           "type": "configurableActionConfigurator",
-          "name": "actionConfiguration",
+          "propertyName": "actionConfiguration",
           "label": "Action configuration",
           "hidden": false,
-          "customVisibility": "",
           "validate": {},
           "settingsValidationErrors": []
         }
@@ -171,24 +164,23 @@
     {
       "id": "341beffe-2d62-4c4c-8c97-5f2b433716bf",
       "type": "codeEditor",
-      "name": "customVisibility",
+      "propertyName": "customVisibility",
       "label": "Custom Visibility",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
       "validate": {},
       "settingsValidationErrors": [],
       "exposedVariables": [
-        { "name": "value", "description": "Component current value", "type": "string | any" },
-        { "name": "data", "description": "Selected form values", "type": "object" }
+        { "Name": "value", "description": "Component current value", "type": "string | any" },
+        { "Name": "data", "description": "Selected form values", "type": "object" }
       ]
     },
     {
       "id": "4b5e5951-4998-4635-b1c8-0b6d3940c300",
       "type": "codeEditor",
-      "name": "customEnabled",
+      "propertyName": "customEnabled",
       "label": "Custom Enabled",
       "labelAlign": "right",
       "parentId": "root",
@@ -198,24 +190,24 @@
       "validate": {},
       "settingsValidationErrors": [],
       "exposedVariables": [
-        { "name": "value", "description": "Component current value", "type": "string | any" },
-        { "name": "data", "description": "Selected form values", "type": "object" }
+        { "Name": "value", "description": "Component current value", "type": "string | any" },
+        { "Name": "data", "description": "Selected form values", "type": "object" }
       ]
     },
     {
       "id": "26c68b22-3211-475d-91e1-0745a4447329",
       "type": "editableTagGroup",
-      "name": "permissions",
+      "propertyName": "permissions",
       "label": "Permissions",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
       "validate": {}
     }
   ],
   "formSettings": {
     "layout": "horizontal",
+    "isSettingsForm": true,
     "colon": true,
     "labelCol": {
       "span": 5

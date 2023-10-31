@@ -35,18 +35,18 @@ export interface IColumnEditFieldProps {
   onChange: (key: string, value: any) => void;
 }
 
-export type YesNoInherit = 'yes' | 'no' | 'inherit' | 'js';
+export type YesNoInheritJs = 'yes' | 'no' | 'inherit' | 'js';
 
 export interface IShaDataTableInlineEditableProps {
-  canDeleteInline?: YesNoInherit;
+  canDeleteInline?: YesNoInheritJs;
   canDeleteInlineExpression?: string; // todo: replace with new dynamic JS properties
   customDeleteUrl?: string;
-  canEditInline?: YesNoInherit;
+  canEditInline?: YesNoInheritJs;
   canEditInlineExpression?: string; // todo: replace with new dynamic JS properties
   inlineEditMode?: InlineEditMode;
   inlineSaveMode?: InlineSaveMode;
   customUpdateUrl?: string;
-  canAddInline?: YesNoInherit;
+  canAddInline?: YesNoInheritJs;
   canAddInlineExpression?: string; // todo: replace with new dynamic JS properties
   newRowCapturePosition?: NewRowCapturePosition;
   newRowInsertPosition?: NewRowCapturePosition;
@@ -100,4 +100,10 @@ export interface ITableCustomTypesRender<D extends object, V = any> {
 }
 
 export type OnSaveHandler = (data: object, formData: object, globalState: object) => Promise<object>;
-export type OnSaveSuccessHandler = (data: object, formData: object, globalState: object) => void;
+export type OnSaveSuccessHandler = (
+  data: object,
+  formData: object,
+  globalState: object,
+  setGlobalState: Function,
+  setFormData: Function
+) => void;

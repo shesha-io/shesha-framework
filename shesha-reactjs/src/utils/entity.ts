@@ -1,8 +1,8 @@
-import { useGet } from 'hooks';
-import { useMemo, useRef } from 'react';
-import { camelcaseDotNotation } from 'utils/string';
-import { EntityData, IAbpWrappedGetEntityListResponse, IGetAllPayload } from '../interfaces/gql';
-import { GENERIC_ENTITIES_ENDPOINT } from '../shesha-constants';
+import { useMemo, useRef, useEffect } from "react";
+import { useGet } from "hooks";
+import { EntityData, IAbpWrappedGetEntityListResponse, IGetAllPayload } from "interfaces/gql";
+import { camelcaseDotNotation } from "utils/string";
+import { GENERIC_ENTITIES_ENDPOINT } from "src/index";
 
 export interface IUseEntityDisplayTextProps {
   entityType?: string;
@@ -51,24 +51,30 @@ export const useEntitySelectionData = (props: IUseEntityDisplayTextProps): IEnti
 
   const displayProperty = normalizePropertyName(propertyName) ?? '_displayName';
 
-  const getValuePayload: IGetEntityPayload = {
+  const getValuePayload = useMemo<IGetEntityPayload>(() => ({
     skipCount: 0,
     maxResultCount: 1000,
     entityType: entityType,
     properties: `id ${displayProperty}`,
-    filter: buildFilterById(selection),
-  };
+    filter: buildFilterById(selection),    
+  }), [entityType, displayProperty, selection]);
+
   const isEmptySelection = !selection || (Array.isArray(selection) && selection.length === 0);
   const canFetch = !isEmptySelection && entityType;
   const mustFetch = canFetch && !itemsAlreadyLoaded;
 
   const valueFetcher = useGet<IAbpWrappedGetEntityListResponse, any, IGetEntityPayload>(
-    `${GENERIC_ENTITIES_ENDPOINT}/GetAll`,
-    {
-      lazy: !mustFetch,
-      queryParams: getValuePayload,
-    }
+      `${GENERIC_ENTITIES_ENDPOINT}/GetAll`,
+      {
+          //lazy: !mustFetch,
+          queryParams: getValuePayload,
+      }
   );
+  
+  useEffect(() => {
+      if (mustFetch)
+          valueFetcher.refetch({queryParams: getValuePayload});
+  }, [getValuePayload.filter]);
 
   const valueItems = valueFetcher.data?.result?.items;
   const result = useMemo<EntityData[]>(() => {
@@ -85,10 +91,10 @@ export const useEntitySelectionData = (props: IUseEntityDisplayTextProps): IEnti
     lastSelection.current =
       valueFetcher?.loading === false && selection && Array.isArray(selection)
         ? {
-            keys: result.map((e) => e.id.toString()),
-            entityType: entityType,
-            propertyName: propertyName,
-          }
+          keys: result.map((e) => e.id.toString()),
+          entityType: entityType,
+          propertyName: propertyName,
+        }
         : null;
 
     return result;

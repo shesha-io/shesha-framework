@@ -1,34 +1,32 @@
-import { DashOutlined } from '@ant-design/icons';
-import { Alert, Dropdown, Menu } from 'antd';
 import { nanoid } from 'nanoid/non-secure';
 import React, { FC } from 'react';
+import { DashOutlined, DownOutlined } from '@ant-design/icons';
+import { Alert, Menu, Dropdown, Button, Divider } from 'antd';
+import { getActualModel, getVisibilityFunc2, useApplicationContext } from '../../../providers/form/utils';
+import { ToolbarButton } from './toolbarButton';
 import { ShaIcon } from '../../../components';
 import { IconType } from '../../../components/shaIcon';
 import { IToolboxComponent } from '../../../interfaces';
-import { useSheshaApplication } from '../../../providers';
-import { useDataTableSelection } from '../../../providers/dataTableSelection';
-import { isInDesignerMode, useForm } from '../../../providers/form';
-import { getVisibilityFunc2 } from '../../../providers/form/utils';
+import { useDataTableState, useSheshaApplication } from '../../../providers';
+import { isInDesignerMode } from '../../../providers/form';
 import { IButtonGroup, IToolbarButton, ToolbarItemProps } from '../../../providers/toolbarConfigurator/models';
 import { IToolbarPropsV0, migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
 import { IToolbarProps } from './models';
-import { ToolbarButton } from './toolbarButton';
-import ToolbarSettings from './toolbarSettingsPanel';
+import { migratePropertyName } from 'src/designer-components/_common-migrations/migrateSettings';
+import { migrateToButtonGroup, ToolbarButtonGroupProps } from './migrations/migrate-to-buttonGroup';
 
-const ToolbarComponent: IToolboxComponent<IToolbarProps> = {
+/**
+ * NOTE: toolbar component is obsolete and was replaced with the `buttonGroup` component
+ */
+const ToolbarComponent: IToolboxComponent<ToolbarButtonGroupProps> = {
   type: 'toolbar',
   isInput: false,
   name: 'Toolbar',
   icon: <DashOutlined />,
-  factory: (model: IToolbarProps) => {
-    return <Toolbar {...model} />;
-  },
-  initModel: (model: IToolbarProps) => {
-    return {
-      ...model,
-      items: [],
-    };
+  isHidden: true,
+  factory: () => {
+    throw new Error('Toolbar component was removed');
   },
   migrator: (m) =>
     m
@@ -37,31 +35,32 @@ const ToolbarComponent: IToolboxComponent<IToolbarProps> = {
         return { ...prev, items: items };
       })
       .add<IToolbarProps>(1, migrateV0toV1)
-      .add<IToolbarProps>(2, migrateV1toV2),
-  settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
-    return (
-      <ToolbarSettings
-        readOnly={readOnly}
-        model={model}
-        onSave={onSave}
-        onCancel={onCancel}
-        onValuesChange={onValuesChange}
-      />
-    );
+      .add<IToolbarProps>(2, migrateV1toV2)
+      .add<IToolbarProps>(3, (prev) => migratePropertyName(prev))
+      .add<ToolbarButtonGroupProps>(4, (prev) => migrateToButtonGroup(prev))
+  ,
+  settingsFormFactory: () => {
+    throw new Error('Toolbar component was removed');
   },
 };
 
 export const Toolbar: FC<IToolbarProps> = ({ items, id }) => {
-  const { formMode } = useForm();
+  const allData = useApplicationContext();
   const { anyOfPermissionsGranted } = useSheshaApplication();
-  const { selectedRow } = useDataTableSelection(false) ?? {};
-  const isDesignMode = formMode === 'designer';
+  const { selectedRow } = useDataTableState(false) ?? {};
+  const isDesignMode = allData.formMode === 'designer';
+
+  const actualItems = items?.map((item) => getActualModel(item, allData));
 
   const renderItem = (item: ToolbarItemProps, uuid: string) => {
     if (!isInDesignerMode()) {
       const visibilityFunc = getVisibilityFunc2(item.customVisibility, item.name);
 
-      const isVisible = visibilityFunc({}, { selectedRow }, formMode);
+      const isVisible = visibilityFunc(
+        allData.data,
+        { selectedRow: selectedRow?.row }, // ToDo: Need to review for contexts use
+        allData.formMode
+      );
 
       if (!isVisible) return null;
     }
@@ -75,16 +74,17 @@ export const Toolbar: FC<IToolbarProps> = ({ items, id }) => {
             return <ToolbarButton formComponentId={id} key={uuid} selectedRow={selectedRow} {...itemProps} />;
 
           case 'separator':
-            return <div key={uuid} className="sha-toolbar-separator" />;
-
+            return <Divider type='vertical' key={uuid}/>;
+            
           default:
             return null;
         }
       case 'group':
         const group = item as IButtonGroup;
+        const actualGroupItems = group.childItems?.map((item) => getActualModel(item, allData));
         const menu = (
           <Menu>
-            {group.childItems.map((childItem) => (
+            {actualGroupItems.map(childItem => (
               <Menu.Item
                 key={childItem?.id}
                 title={childItem.tooltip}
@@ -97,19 +97,24 @@ export const Toolbar: FC<IToolbarProps> = ({ items, id }) => {
           </Menu>
         );
         return (
-          <Dropdown.Button
+          <Dropdown
             key={uuid}
             overlay={menu}
-            icon={item.icon ? <ShaIcon iconName={item.icon as IconType} /> : undefined}
           >
-            {item.name}
-          </Dropdown.Button>
+            <Button
+              icon={item.icon ? <ShaIcon iconName={item.icon as IconType} /> : undefined}
+              type={group.buttonType}
+            >
+              {item.name}
+              <DownOutlined />
+            </Button>
+          </Dropdown>
         );
     }
     return null;
   };
 
-  if (items.length === 0 && isDesignMode)
+  if (actualItems.length === 0 && isDesignMode)
     return (
       <Alert
         className="sha-designer-warning"
@@ -119,10 +124,8 @@ export const Toolbar: FC<IToolbarProps> = ({ items, id }) => {
     );
 
   return (
-    <div style={{ minHeight: '30px' }}>
-      {items
-        ?.filter(({ permissions }) => anyOfPermissionsGranted(permissions || []))
-        .map((item) => renderItem(item, nanoid()))}
+    <div style={{ minHeight: '30px' }} className="sha-responsive-button-group-inline-container">
+      {actualItems?.filter(({ permissions }) => anyOfPermissionsGranted(permissions || [])).map(item => renderItem(item, nanoid()))}
     </div>
   );
 };

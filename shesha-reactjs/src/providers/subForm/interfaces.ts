@@ -1,11 +1,17 @@
 import { ColProps } from 'antd';
-import { IChangeable, IValuable } from '../../interfaces';
+import { FormMarkupWithSettings, IChangeable, IValuable } from '../../interfaces';
 import { FormIdentifier } from '../form/models';
 
-export interface ISubFormProps extends IValuable, IChangeable {
+export interface ISubFormProviderProps extends IValuable, IChangeable {
+  context?: string;
+
+  propertyName?: string;
+  markup?: FormMarkupWithSettings;
+  value?: string | { id: string; [key: string]: any };
+
   dataSourceUrl?: string;
-  name: string;
   actionsOwnerId?: string;
+  actionOwnerName?: string;
 
   formSelectionMode?: 'name' | 'dynamic';
   formType?: string;

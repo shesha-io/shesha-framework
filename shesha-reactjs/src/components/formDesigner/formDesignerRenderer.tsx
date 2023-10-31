@@ -1,6 +1,6 @@
 import React, { FC, useState } from 'react';
-import { SidebarContainer, ConfigurableFormRenderer } from '../../components';
-import { Row, Col, Divider, Typography, Space } from 'antd';
+import { SidebarContainer, ConfigurableFormRenderer, CollapsiblePanel } from '../../components';
+import { Col, Divider, Typography, Space } from 'antd';
 import Toolbox from './toolbox';
 import FormDesignerToolbar from './formDesignerToolbar';
 import ComponentPropertiesPanel from './componentPropertiesPanel';
@@ -11,9 +11,10 @@ import ConditionalWrap from '../conditionalWrapper';
 import { useFormPersister } from '../../providers/formPersisterProvider';
 import { useFormDesigner } from '../../providers/formDesigner';
 import StatusTag from '../statusTag';
-import { FORM_STATUS_MAPPING } from '../../utils/configurationFramework/models';
+import { CONFIGURATION_ITEM_STATUS_MAPPING } from '../../utils/configurationFramework/models';
 import { getFormFullName } from '../../utils/form';
 import HelpTextPopover from '../helpTextPopover';
+import { useDataContextManager } from 'providers/dataContextManager';
 
 const { Title } = Typography;
 
@@ -26,8 +27,12 @@ export const FormDesignerRenderer: FC = ({}) => {
 
   const toggleFieldPropertiesSidebar = () => setFieldPropertiesOpen((prop) => !prop);
 
-  const { formSettings, form } = useForm();
   const { isDebug, readOnly } = useFormDesigner();
+  const formInstance =  useForm();
+  const { formSettings, form } = formInstance;
+  //const contextManager = useDataContextManager(false);
+  //if (contextManager)
+    //contextManager.updateFormInstance(formInstance);
 
   const fullName = formProps ? getFormFullName(formProps.module, formProps.name) : null;
   const title = formProps?.label ? `${formProps.label} (${fullName})` : fullName;
@@ -43,7 +48,7 @@ export const FormDesignerRenderer: FC = ({}) => {
               </Title>
             )}
             <HelpTextPopover content={formProps.description}></HelpTextPopover>
-            <StatusTag value={formProps.versionStatus} mappings={FORM_STATUS_MAPPING} color={null}></StatusTag>
+            <StatusTag value={formProps.versionStatus} mappings={CONFIGURATION_ITEM_STATUS_MAPPING} color={null}></StatusTag>
           </Space>
         </div>
       </div>
@@ -79,21 +84,43 @@ export const FormDesignerRenderer: FC = ({}) => {
               placeholder: 'Properties',
             }}
           >
-            <ConfigurableFormRenderer form={form}>
+            <ConfigurableFormRenderer form={form} skipFetchData={true}>
               {isDebug && (
-                <>
-                  <Row>
-                    <Divider />
-                    <Col span={24}>
-                      <pre>{JSON.stringify(form.getFieldsValue(), null, 2)}</pre>
-                    </Col>
-                  </Row>
-                </>
+                <DebugPanel formData={form.getFieldsValue()} />
               )}
             </ConfigurableFormRenderer>
           </SidebarContainer>
         </ConditionalWrap>
       </div>
     </div>
+  );
+};
+
+interface DebugPanelProps {
+  formData?: any;
+}
+
+const DebugPanel: FC<DebugPanelProps> = (props) => {
+
+  const ctxManager = useDataContextManager(false);
+
+  const contexts = ctxManager.getDataContexts('all');
+
+  return (
+    <>
+      <Divider />
+      <CollapsiblePanel header='Form data' expandIconPosition='start' ghost>
+        <Col span={24}>
+          <pre>{JSON.stringify(props.formData, null, 2)}</pre>
+        </Col>
+      </CollapsiblePanel>
+      {contexts.map((ctx) => 
+        <CollapsiblePanel header={<>{ctx.name}: {ctx.description} <span style={{color: 'gray'}}>({ctx.id})</span></>} expandIconPosition='start' ghost>
+          <Col span={24}>
+            <pre>{JSON.stringify(ctx.getData(), null, 2)}</pre>
+          </Col>
+        </CollapsiblePanel>
+      )}
+    </>
   );
 };

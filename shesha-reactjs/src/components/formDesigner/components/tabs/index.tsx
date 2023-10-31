@@ -1,21 +1,19 @@
 import { IToolboxComponent } from '../../../../interfaces';
-import { FormMarkup, IFormComponentContainer } from '../../../../providers/form/models';
+import { IFormComponentContainer } from '../../../../providers/form/models';
 import { FolderOutlined } from '@ant-design/icons';
 import { Tabs } from 'antd';
 import ComponentsContainer from '../../containers/componentsContainer';
-import settingsFormJson from './settingsForm.json';
 import React, { Fragment } from 'react';
-import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../../../../providers';
+import { getActualModel, useApplicationContext } from '../../../../providers/form/utils';
+import { useSheshaApplication } from '../../../../providers';
 import { nanoid } from 'nanoid/non-secure';
-import TabSettings from './settings';
+import { TabSettingsForm } from './settings';
 import { ITabsComponentProps } from './models';
 import ShaIcon from '../../../shaIcon';
-import moment from 'moment';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
+import { useDeepCompareMemo } from 'hooks';
 
 const { TabPane } = Tabs;
-
-const settingsForm = settingsFormJson as FormMarkup;
 
 const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
   type: 'tabs',
@@ -23,65 +21,41 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
   icon: <FolderOutlined />,
   factory: model => {
     const { anyOfPermissionsGranted } = useSheshaApplication();
-    const { isComponentHidden, formMode } = useForm();
-    const { globalState } = useGlobalState();
-    const { data: formData } = useFormData();
+    const allData = useApplicationContext();
 
     const { tabs, defaultActiveKey, tabType = 'card', size, position = 'top' } = model as ITabsComponentProps;
 
-    if (isComponentHidden(model)) return null;
+    if (model.hidden) return null;
 
     const actionKey = defaultActiveKey || (tabs?.length && tabs[0]?.key);
 
-    const executeExpression = (expression: string, returnBoolean = true) => {
-      if (!expression) {
-        if (returnBoolean) {
-          return true;
-        } else {
-          console.error('Expected expression to be defined but it was found to be empty.');
-
-          return false;
-        }
-      }
-
-      /* tslint:disable:function-constructor */
-      const evaluated = new Function('data, formMode, globalState, moment', expression)(
-        formData,
-        formMode,
-        globalState,
-        moment
-      );
-
-      // tslint:disable-next-line:function-constructor
-      return typeof evaluated === 'boolean' ? evaluated : true;
-    };
+    const items = useDeepCompareMemo(() => tabs?.map((item) =>  getActualModel(item, allData)),
+      [tabs, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
 
     return (
       <Tabs defaultActiveKey={actionKey} size={size} type={tabType} tabPosition={position}>
-        {tabs?.map(
-          ({
-            id,
-            key,
-            title,
-            icon,
-            closable,
-            className,
-            forceRender,
-            animated,
-            destroyInactiveTabPane,
-            closeIcon,
-            permissions,
-            customVisibility,
-            customEnabled,
-            components,
-          }) => {
+        {items?.map(
+          (item) => {
+            const {
+              id,
+              key,
+              title,
+              icon,
+              closable,
+              className,
+              forceRender,
+              animated,
+              destroyInactiveTabPane,
+              closeIcon,
+              permissions,
+              hidden,
+              disabled,
+              components,
+            } = item;
+
             const granted = anyOfPermissionsGranted(permissions || []);
 
-            const isVisibleByCondition = executeExpression(customVisibility, true);
-
-            const isDisabledByCondition = !executeExpression(customEnabled, true) && formMode !== 'designer';
-
-            if ((!granted || !isVisibleByCondition) && formMode !== 'designer') return null;
+            if ((!granted || hidden) && allData.formMode !== 'designer') return null;
 
             return (
               <TabPane
@@ -92,7 +66,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
                 animated={animated}
                 destroyInactiveTabPane={destroyInactiveTabPane}
                 closeIcon={closeIcon ? <ShaIcon iconName={closeIcon as any} /> : null}
-                disabled={isDisabledByCondition}
+                disabled={disabled}
                 tab={
                   icon ? (
                     <Fragment>
@@ -121,24 +95,19 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
   initModel: model => {
     const tabsModel: ITabsComponentProps = {
       ...model,
-      name: 'custom Name',
+      propertyName: 'custom Name',
       tabs: [{ id: nanoid(), label: 'Tab 1', title: 'Tab 1', key: 'tab1', components: [], itemType: 'item' }],
     };
     return tabsModel;
   },
-  // settingsFormMarkup: settingsForm,
-  settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
-    return (
-      <TabSettings
-        readOnly={readOnly}
-        model={model}
-        onSave={onSave}
-        onCancel={onCancel}
-        onValuesChange={onValuesChange}
-      />
-    );
-  },
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  migrator: (m) => m
+    .add<ITabsComponentProps>(0, (prev) => {
+      const newModel = {...prev};
+      newModel['tabs'] = prev['tabs']?.map((item) => migrateCustomFunctions(item as any));
+      return migratePropertyName(migrateCustomFunctions(newModel)) as ITabsComponentProps;
+    })
+  ,
+  settingsFormFactory: (props) => <TabSettingsForm {...props}/>,
   customContainerNames: ['tabs'],
   getContainers: model => {
     const { tabs } = model as ITabsComponentProps;

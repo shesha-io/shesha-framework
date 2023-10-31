@@ -1,13 +1,13 @@
 import React, { FC } from 'react';
 import { message, Button } from 'antd';
 import { useForm, useSheshaApplication, useGlobalState } from '../../../../providers';
-import { ISelectionProps } from '../../../../providers/dataTableSelection/models';
 import { IToolbarButton } from '../../../../providers/toolbarConfigurator/models';
 import ShaIcon, { IconType } from '../../../../components/shaIcon';
 import classNames from 'classnames';
 import moment from 'moment';
 import { useConfigurableActionDispatcher } from '../../../../providers/configurableActionsDispatcher';
 import { axiosHttp } from '../../../../utils/fetchers';
+import { ISelectionProps } from 'providers/dataTable/contexts';
 
 export interface IToolbarButtonProps extends IToolbarButton {
   formComponentId: string;

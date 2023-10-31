@@ -73,6 +73,11 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
         const { modalWidth, customWidth, widthUnits } = actionArgs;
 
         return new Promise((resolve, _reject) => {
+          // fix wrong migration
+          const verb = !restArguments.submitHttpVerb || !Array.isArray(restArguments.submitHttpVerb)
+            ? restArguments.submitHttpVerb
+            : restArguments.submitHttpVerb[0];
+
           const modalProps: IModalProps = {
             ...restArguments,
             mode: formMode,
@@ -82,6 +87,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
             initialValues: initialValues,
             parentFormValues: parentFormValues,
             isVisible: true,
+            submitHttpVerb: verb,
             onSubmitted: (values) => {
               removeModal(modalId);
 

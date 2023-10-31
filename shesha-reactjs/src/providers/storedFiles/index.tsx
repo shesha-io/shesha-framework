@@ -1,5 +1,6 @@
 import axios from 'axios';
 import FileSaver from 'file-saver';
+import { IAjaxResponse } from 'interfaces';
 import qs from 'qs';
 import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
 import { useDeleteFileById } from '../../apis/storedFile';
@@ -49,7 +50,7 @@ const fileReducer = (data: IStoredFile): IStoredFile => {
   return { ...data, uid: data.id };
 };
 
-const filesReducer = (data: IStoredFile[]): IStoredFile[] => data.map((file) => fileReducer(file));
+const filesReducer = (data: IStoredFile[]): IStoredFile[] => data?.map(file => fileReducer(file));
 
 const uploadFileEndpoint: IApiEndpoint = { url: '/api/StoredFile/Upload', httpVerb: 'POST' };
 const filesListEndpoint: IApiEndpoint = { url: '/api/StoredFile/FilesList', httpVerb: 'GET' };
@@ -79,22 +80,19 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   const { config } = useApplicationConfiguration();
   const { addItem: addDelayedUpdate, removeItem: removeDelayedUpdate } = useDelayedUpdate(false) ?? {};
 
-  const {
-    loading: isFetchingFileList,
-    refetch: fetchFileListHttp,
-    data: fileListResponse,
-  } = useGet({
-    path: filesListEndpoint.url,
-    queryParams: {
-      ownerId,
-      ownerType,
-      ownerName,
-      filesCategory,
-      propertyName,
-      allCategories,
-    },
-    lazy: true,
-  });
+  const { loading: isFetchingFileList, refetch: fetchFileListHttp, data: fileListResponse } = useGet<IAjaxResponse<IStoredFile[]>>(
+    {
+      path: filesListEndpoint.url,
+      queryParams: {
+        ownerId,
+        ownerType,
+        ownerName,
+        filesCategory,
+        propertyName,
+        allCategories,
+      },
+      lazy: true,
+    });
 
   const { mutate: uploadFileHttp } = useMutate();
 
@@ -107,7 +105,6 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   useEffect(() => {
     if (!isFetchingFileList) {
       if (fileListResponse) {
-        // @ts-ignore
         const { result } = fileListResponse;
         const fileList = filesReducer(result as IStoredFile[]);
 

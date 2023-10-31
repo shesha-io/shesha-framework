@@ -1,37 +1,26 @@
 import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Input, message, Modal, Select, Tag } from 'antd';
-import React, { FC, useEffect, useState } from 'react';
-import { useDeepCompareEffect } from 'react-use';
-import {
-  executeExpressionPayload as exe,
-  FormMode,
-  getStaticExecuteExpressionParams as exp,
-  useForm,
-  useGlobalState,
-} from '../../../..';
-import { useMetadataGet } from 'apis/metadata';
+import React, { FC, useMemo, useState, useEffect } from 'react';
+import { executeScriptSync, SubFormProvider, useApplicationContext } from '../../../..';
 import { useFormConfiguration } from 'providers/form/api';
 import ChildEntitiesTagGroupModal from './modal';
 import { IChildEntitiesTagGroupProps, IChildEntitiesTagGroupSelectOptions } from './models';
 import './styles/index.less';
-import {
-  addChildEntitiesTagGroupOption as addTagGroupOption,
-  getInitChildEntitiesTagGroupOptions as getTagOptions,
-  getLabelKeys,
-  morphChildEntitiesTagGroup as morphTagGroup,
-} from './utils';
+import { addChildEntitiesTagGroupOption } from './utils';
+import { DataContextProvider } from 'providers/dataContextProvider/index';
+import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
+import { nanoid } from 'nanoid';
 
 const { confirm } = Modal;
 
 interface IProps {
-  formMode?: FormMode;
   model: IChildEntitiesTagGroupProps;
   onChange?: Function;
   value?: any;
 }
 
 interface IState {
-  activeValue?: string;
+  activeValue?: IChildEntitiesTagGroupSelectOptions;
   open: boolean;
   options: IChildEntitiesTagGroupSelectOptions[];
   origin: object[] | object | null;
@@ -41,14 +30,12 @@ const INIT_STATE: IState = { open: false, options: [], origin: null };
 const CONFIRM_DELETE_TITLE = 'Are you sure you want to delete this item?';
 const WARNING_BIND_FORM = 'Please bind an appropriate form to this component.';
 
-const ChildEntitiesTagGroupControl: FC<IProps> = ({ formMode: fMode, model, onChange, value }) => {
+const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) => {
   const [state, setState] = useState<IState>(INIT_STATE);
-  const { activeValue, open, options, origin } = state;
-  const { capturedProperties, deleteConfirmationBody, deleteConfirmationTitle, formId, labelFormat, name } = model;
+  const { activeValue, open, options } = state;
+  const { deleteConfirmationBody, deleteConfirmationTitle, formId, labelFormat, propertyName } = model;
 
-  const { globalState } = useGlobalState();
-
-  const { form, formData } = useForm();
+  const allData = useApplicationContext();
 
   const {
     formConfiguration,
@@ -60,54 +47,52 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ formMode: fMode, model, onCh
     lazy: true,
   });
 
-  const {
-    data: metadata,
-    loading: isFetchingMetada,
-    refetch: refetchMetada,
-    error: metadatError,
-  } = useMetadataGet({
-    lazy: true,
-  });
-
-  useDeepCompareEffect(() => {
-    const data = form?.[name] || value;
-
-    if (data && metadata) {
-      setState((s) => ({
-        ...s,
-        options: getTagOptions(data, labelFromatExecutor, getLabelKeys(metadata)),
-        origin: data,
-      }));
-      onChange(
-        morphTagGroup(getTagOptions(data, labelFromatExecutor, getLabelKeys(metadata)), data, capturedProperties)
-      );
-    }
-  }, [metadata]);
+  const calculateLabel = (value: any, func: string) => {
+    return executeScriptSync(func, {...allData, item: value});
+  };
 
   useEffect(() => {
+    if (Array.isArray(value)) {
+      const opts: IChildEntitiesTagGroupSelectOptions[] = [];
+      value.forEach(item => {
+        opts.push({
+          label: calculateLabel(item, labelFormat),
+          value: nanoid(),
+          data: item
+        });
+      });
+      setState((s) => ({ ...s, options: opts }));
+    }
+  }, [value]);
+
+  useDeepCompareEffect(() => {
     if (formId) {
       refetchFormConfig();
     }
   }, [formId]);
 
-  const container = formConfiguration?.settings?.modelType;
-
-  useEffect(() => {
-    if (container) {
-      refetchMetada({ queryParams: { container } });
-    }
-  }, [container]);
-
   const setOpen = (open: boolean) => setState((s) => ({ ...s, open, activeValue: null }));
 
-  const setOption = (option: IChildEntitiesTagGroupSelectOptions) => {
-    setState((s) => ({ ...s, options: addTagGroupOption(s.options, option) }));
-
-    onChange(morphTagGroup(addTagGroupOption(options, option), origin, capturedProperties));
+  const onModalChange = (value: any) => {
+    setOption(
+      {
+        label: calculateLabel(value[propertyName], labelFormat),
+        value: activeValue?.value ?? nanoid(),
+        data: value[propertyName]
+      }
+    );
+    setState((s) => ({ ...s, activeValue: null }));
   };
 
-  const onClickTag = (value: string) => () => {
-    setState((s) => ({ ...s, activeValue: value, open: true }));
+  const setOption = (option: IChildEntitiesTagGroupSelectOptions) => {
+    const opts = addChildEntitiesTagGroupOption(state.options, option);
+    setState((s) => ({ ...s, options:  opts}));
+
+    onChange(opts.map(item => item.data));
+  };
+
+  const onClickTag = (val: IChildEntitiesTagGroupSelectOptions) => () => {
+    setState((s) => ({ ...s, activeValue: val, open: true }));
   };
 
   const onCloseTag = (item: string) => (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -120,16 +105,12 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ formMode: fMode, model, onCh
       okText: 'Yes',
       okType: 'danger',
       cancelText: 'No',
-      onOk: () => setState((s) => ({ ...s, options: s.options.filter(({ value }) => value !== item) })),
+      onOk: () => {
+        const opts = options.filter(({ value }) => value !== item);
+        setState((s) => ({ ...s, options: opts}));
+        onChange(opts.map(item => item.data));
+      },
     });
-
-    onChange(
-      morphTagGroup(
-        options.filter(({ value }) => value !== item),
-        origin,
-        capturedProperties
-      )
-    );
   };
 
   const onOpenModal = () => {
@@ -140,57 +121,39 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ formMode: fMode, model, onCh
     }
   };
 
-  const labelFromatExecutor = (dynamicParam?: object) => {
-    try {
-      if (!labelFormat) {
-        return null;
-      }
-
-      if (dynamicParam) {
-        return exe(
-          new Function(exp('data, globalState, formMode', dynamicParam), labelFormat),
-          dynamicParam || {},
-          formData,
-          globalState,
-          formMode
-        );
-      }
-
-      return new Function('data, globalState, formMode', labelFormat)(formData, globalState);
-    } catch (_e) {
-      return null;
-    }
+  const tagRender = ({ label, value }) => {
+    const val = options.find(x => x.value === value);
+    return <Tag closable={isEditable} onClick={onClickTag(val)} onClose={onCloseTag(value)}>
+      {label}
+    </Tag>;
   };
 
-  const tagRender = ({ label, value }) => (
-    <Tag closable={isEditable} onClick={onClickTag(value)} onClose={onCloseTag(value)}>
-      {label}
-    </Tag>
-  );
-
-  const isEditable = fMode !== 'readonly' && !model?.readOnly;
-  const formMode = model?.readOnly ? 'readonly' : fMode;
+  const isEditable = !model?.readOnly;
   const inputGroupProps = isEditable ? {} : { className: 'child-entity-tag-full-width' };
 
-  const error = formConfigurationError || metadatError;
-  const loading = isFetchingFormConfiguration || isFetchingMetada;
+  const error = formConfigurationError;
+  const loading = isFetchingFormConfiguration;
+
+  const markup = useMemo(() => {
+    return { components: formConfiguration?.markup, formSettings: formConfiguration?.settings};
+  }, [formConfiguration]);
 
   return (
     <div className="child-entity-tag-container">
       {open && (
-        <ChildEntitiesTagGroupModal
-          {...model}
-          data={formConfiguration}
-          error={error}
-          formMode={formMode}
-          open={open}
-          onToggle={setOpen}
-          onSetData={setOption}
-          labelKeys={getLabelKeys(metadata)}
-          labelExecutor={labelFromatExecutor}
-          loading={loading}
-          initialValues={options?.find(({ value }) => value === activeValue)}
-        />
+        <DataContextProvider id={propertyName} name={propertyName} description={propertyName} type={'childEntitiesTagGroup'} dynamicData={{[propertyName]: activeValue?.data}}>
+          <SubFormProvider context={propertyName} propertyName={propertyName} markup={markup} >
+            <ChildEntitiesTagGroupModal
+              {...model}
+              formInfo={formConfiguration}
+              error={error}
+              open={open}
+              onToggle={setOpen}
+              loading={loading}
+              onChange={onModalChange}
+            />
+          </SubFormProvider>
+        </DataContextProvider>
       )}
 
       <Input.Group {...inputGroupProps}>

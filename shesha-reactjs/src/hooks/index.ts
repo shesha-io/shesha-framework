@@ -15,3 +15,4 @@ export { usePubSub, usePublish, useSubscribe, useSubscribedValue } from './usePu
 export { useSessionStorage } from './useSessionStorage';
 export { useToggle } from './useToggle';
 export { useWebStorage } from './useWebStorage';
+export { useFormExpression } from './useFormExpression';

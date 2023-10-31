@@ -1,26 +1,26 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { FC, useCallback, useMemo } from 'react';
 import { UnorderedListOutlined } from "@ant-design/icons";
 import { IToolboxComponent } from "../../../../interfaces";
 import { Alert } from 'antd';
-import { useDataTableSelection, useDataTableStore, useForm } from '../../../../providers';
+import { useDataTableStore, useForm } from '../../../../providers';
 import { DataList } from '../../../dataList';
 import { IDataListComponentProps } from '../../../dataList/models';
-import DataListSettings from './dataListSettings';
 import { useDataSources } from '../../../../providers/dataSourcesProvider';
 import ConfigurableFormItem from '../formItem';
 import classNames from 'classnames';
+import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
+import { DataListSettingsForm } from './dataListSettings';
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
     type: 'datalist',
     name: 'DataList',
     icon: <UnorderedListOutlined />,
     factory: (model: IDataListComponentProps) => {
-
-      //console.log(`DataListComponent render`);
-
+      if (model.hidden) return null;
+      
       return <DataListWrapper {...model} />;
     },
-    migrator:  m => m
+    migrator: m => m
       .add<IDataListComponentProps>(0, prev => {
         return {
           ...prev,
@@ -35,18 +35,10 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
           orientation: 'vertical',
           listItemWidth: 1
         };
-        }),
-      settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
-      return (
-        <DataListSettings
-          readOnly={readOnly}
-          model={model}
-          onSave={onSave}
-          onCancel={onCancel}
-          onValuesChange={onValuesChange}
-        />
-      );
-    },
+        })
+      .add<IDataListComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+      ,
+      settingsFormFactory: (props) => (<DataListSettingsForm {...props}/>),
 };
 
 const NotConfiguredWarning: FC = () => {
@@ -58,63 +50,33 @@ export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
   const isDesignMode = formMode === 'designer';
 
   const ds = useDataSources();
-
   const dts = useDataTableStore(false);
 
   const dataSource = props.dataSource
     ? ds.getDataSource(props.dataSource)?.dataSource
     : dts;
 
-  const dSel = useDataTableSelection(false);
-
-  const dataSelection = props.dataSource
-    ? ds.getDataSource(props.dataSource)?.dataSelection
-    : dSel;
-
-  if (!dataSource || !dataSelection)
+  if (!dataSource)
     return <NotConfiguredWarning />;
   
   const {
     tableData,
     isFetchingTableData,
     selectedIds,
-    tableSorting,
-    changeSelectedRow,
     changeSelectedIds,
     getRepository,
-    onSort,
     modelType
   } = dataSource;
 
-  /* ToDo: AS - Need to review and move this feature to DataTableContext/DataSource */
-  const sort = {id: props.defaultSortBy, desc: props.defaultSortOrder === 'desc' };
-  const [sortBy, setSortBy] = useState(sort);
-  useEffect(() => {
-    if (!(tableSorting?.length > 0) || sort.id !== sortBy.id || sort.desc !== sortBy.desc)
-      setTimeout(() => onSort([sort]), 100);
-    setSortBy(sort);
-  }, [props.defaultSortBy, props.defaultSortOrder]);
-  /* ---------------------------------------------------*/
-
-  const { selectedRow, selectedRows, setSelectedRow, setMultiSelectedRow } = dataSelection;
+  const { selectedRow, selectedRows, setSelectedRow, setMultiSelectedRow } = dataSource;
 
   const repository = getRepository();
-
-  if (isDesignMode 
-    && (
-      !repository 
-      || !props.formId && props.formSelectionMode === "name"
-      || !props.formType && props.formSelectionMode === "view"
-      || !props.formIdExpression && props.formSelectionMode === "expression"
-      )) return <NotConfiguredWarning />;
 
   const onSelectRow = useCallback((index: number, row: any) => {
     if (row) {
       setSelectedRow(index, row);
-      if (changeSelectedRow) 
-        changeSelectedRow(row);
     }
-  }, [changeSelectedRow]);
+  }, [setSelectedRow]);
 
   const data = useMemo(() => {
     return isDesignMode 
@@ -123,6 +85,14 @@ export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
         : [{}, {}, {}, {}]
       : tableData; 
   }, [isDesignMode, tableData, props.orientation]);
+
+  if (isDesignMode 
+    && (
+      !repository 
+      || !props.formId && props.formSelectionMode === "name"
+      || !props.formType && props.formSelectionMode === "view"
+      || !props.formIdExpression && props.formSelectionMode === "expression"
+      )) return <NotConfiguredWarning />;
 
   //console.log(`DataListWrapper render, ${data?.length} records`);
 
@@ -136,6 +106,7 @@ export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
       labelCol={{ span: 0 }}
       wrapperCol={{ span: 24 }}
     >
+      <></>
       <DataList
         {...props}
         entityType={modelType}

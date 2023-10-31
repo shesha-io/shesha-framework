@@ -3,16 +3,16 @@
     {
       "id": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
       "type": "sectionSeparator",
-      "name": "separator1",
+      "propertyName": "separator1",
       "parentId": "root",
       "label": "Display"
     },
     {
       "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
-      "type": "propertyAutocomplete",
-      "name": "name",
+      "type": "contextPropertyAutocomplete",
+      "propertyName": "propertyName",
       "parentId": "root",
-      "label": "Name",
+      "label": "Property name",
       "validate": {
         "required": true
       }
@@ -20,12 +20,11 @@
     {
       "id": "fcfccb85-8fc3-436b-9f87-17e189bc3cdc",
       "type": "codeEditor",
-      "name": "content",
+      "propertyName": "content",
       "label": "Content",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": "",
       "autoSize": false,
       "showCount": false,
       "allowClear": false,
@@ -33,46 +32,22 @@
       "exposedVariables": []
     },
     {
-      "id": "6befdd49-41aa-41d6-a29e-76fa00590b75",
-      "type": "sectionSeparator",
-      "name": "sectionStyle",
+      "id": "1ceb3851-f15e-437b-98b6-84d6a1fbf801",
+      "type": "checkbox",
+      "propertyName": "hidden",
       "parentId": "root",
-      "label": "Style"
+      "label": "Hidden"
     },
     {
       "id": "06ab0599-914d-4d2d-875c-765a495472f8",
       "type": "codeEditor",
-      "name": "style",
+      "propertyName": "style",
       "label": "Style",
       "parentId": "root",
       "validate": {},
       "settingsValidationErrors": [],
       "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
-      "exposedVariables": [{ "name": "data", "description": "Form values", "type": "object" }]
-    },
-    {
-      "id": "6befdd49-41aa-41d6-a29e-76fa00590b45",
-      "type": "sectionSeparator",
-      "name": "visibility",
-      "parentId": "root",
-      "label": "Style"
-    },
-    {
-      "id": "4b9a0517-a5df-4517-8459-94d9c860703d",
-      "type": "codeEditor",
-      "name": "customVisibility",
-      "label": "Custom Visibility",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "customVisibility": null,
-      "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-      "validate": {},
-      "settingsValidationErrors": [],
-      "exposedVariables": [
-        { "name": "globalState", "description": "The global state", "type": "object" },
-        { "name": "data", "description": "Form data", "type": "object" }
-      ]
+      "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }]
     }
   ],
   "formSettings": {

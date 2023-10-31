@@ -115,7 +115,8 @@ const columns: IDataColumnsProps[] = [
     minWidth: 100,
     isVisible: true,
     columnType: 'data',
-    propertyName: 'firstName'
+    propertyName: 'firstName',
+    allowSorting: true,
   },
   {
     id: 'column2',
@@ -126,7 +127,8 @@ const columns: IDataColumnsProps[] = [
     minWidth: 100,
     isVisible: true,
     columnType: 'data',
-    propertyName: 'lastName'
+    propertyName: 'lastName',
+    allowSorting: true,
   },
 ];
 export const SingleMode = addStory(Template, {

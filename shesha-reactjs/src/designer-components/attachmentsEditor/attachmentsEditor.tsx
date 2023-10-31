@@ -16,6 +16,7 @@ import StoredFilesProvider from '../../providers/storedFiles';
 import { IStoredFile } from '../../providers/storedFiles/contexts';
 import { axiosHttp } from '../../utils/fetchers';
 import { getSettings } from './settings';
+import { migrateCustomFunctions, migratePropertyName } from '../../designer-components/_common-migrations/migrateSettings';
 
 export interface IAttachmentsEditorProps extends IConfigurableFormComponent {
   ownerId: string;
@@ -98,8 +99,8 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
   },
   settingsFormMarkup: getSettings(),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
-  migrator: (m) =>
-    m.add<IAttachmentsEditorProps>(0, (prev) => {
+  migrator: (m) => m
+    .add<IAttachmentsEditorProps>(0, (prev) => {
       return {
         ...prev,
         allowAdd: true,
@@ -111,7 +112,9 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         ownerType: '',
         ownerName: '',
       };
-    }),
+    })
+    .add<IAttachmentsEditorProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
 };
 
 export default AttachmentsEditor;

@@ -1,4 +1,6 @@
 import { FormInstance } from 'antd';
+import { YesNoInherit } from 'interfaces/formDesigner';
+import { FormMode } from 'providers/form/models';
 
 interface IDataWithFields {
   _formFields: string[];
@@ -83,14 +85,14 @@ export const jsonToFormData = (data: any): FormData => {
 };
 
 export const hasFiles = (data: any): boolean => {
-  if (!data) return false;
-  if (typeof data !== 'object') return false;
+  if (!data || typeof data !== 'object') return false;
 
   const hasFile = Object.keys(data).find((key) => {
-    return Boolean(data[key] instanceof File) || (Boolean(data[key]) && hasFiles(data[key]));
+    const propValue = data[key];
+    return propValue instanceof File || hasFiles(propValue);
   });
 
-  return Boolean(hasFile);
+  return hasFile !== null && hasFile !== undefined; // note: can't check for Boolean(*) because the key may be an empty string
 };
 
 export const removeGhostKeys = (form: any): any => {
@@ -107,4 +109,19 @@ export const removeGhostKeys = (form: any): any => {
   const payload = entries.reduce((acc, [key, value]) => ({ ...acc, ...{ [key as string]: value } }), {});
 
   return payload;
+};
+
+export const evaluateYesNo = (
+  value: YesNoInherit,
+  formMode: FormMode
+): boolean => {
+  switch (value) {
+    case 'yes':
+      return true;
+    case 'no':
+      return false;
+    case 'inherit':
+      return formMode === 'edit';
+  }
+  return false;
 };

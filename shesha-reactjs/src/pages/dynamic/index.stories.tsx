@@ -40,6 +40,7 @@ export const FncTextComponentDetails = addStory(Template, {
 export const FncAddMember = addStory(Template, {
   formId: { name: 'Add-Member', module: 'Shesha' },
   mode: 'edit',
+  id: '5BC9A277-63ED-4A71-919F-0B4064363BBC'
 });
 
 export const FncTableForteenTest = addStory(Template, {
@@ -102,4 +103,92 @@ export const DepCaseDetailsDuplicate = addStory(Template, {
 
 export const DepStarterTemplate = addStory(Template, {
   formId: { name: 'service-requests-mapule', module: 'StarterTemplate' },
+});
+
+export const OrganisationEdit = addStory(Template, {
+  formId: {
+    name: 'organisation-edit',
+    module: 'Test Module',
+    version: 1,
+  },
+  id: '5BAB9D40-4177-42C4-8049-0120A2B7F3C9'
+});
+
+export const PersonEdit = addStory(Template, {
+  formId: {
+    name: 'person-edit',
+    module: 'Test Module',
+    version: 7,
+  },
+});
+
+export const PersonDetails = addStory(Template, {
+  formId: {
+    name: 'person-details',
+    module: 'Test Module',
+    version: 1,
+  },
+});
+
+export const FormDetails = addStory(Template, {
+  formId: {
+    name: 'form-details',
+    module: 'shesha',
+    version: 1,
+  },
+});
+
+export const PermissionEdit = addStory(Template, {
+  formId: {
+    name: 'permission-edit',
+    module: 'Test Module',
+    version: 2,
+  },
+});
+
+export const Fetchers = addStory(Template, {
+  formId: {
+    name: 'fetchers',
+    module: 'TestModule'
+  },
+  mode: 'edit'
+});
+
+export const WorkflowDefinitions = addStory(Template, {
+  formId: {
+    name: 'workflow-definitions',
+    module: 'Shesha.Enterprise.Workflow'
+  }
+});
+
+export const BugFix = addStory(Template, {
+  formId: {
+    name: 'form-details',
+    module: 'shesha'
+  },
+  mode: 'readonly',
+  id: '94b73a6f-6387-4167-89f6-6649846d7665'
+  // shesha/form-details?id=
+  //shesha/form-details?id=
+});
+
+export const DataList = addStory(Template, {
+  formId: {
+    name: 'alex-test',
+    module: 'TestModule'
+  },
+});
+
+export const DataTable = addStory(Template, {
+  formId: {
+    name: 'forms',
+    module: 'shesha'
+  },
+});
+
+export const MyItems = addStory(Template, {
+  formId: {
+    name: 'workflows-my-items',
+    module: 'Shesha.Enterprise.Workflow'
+  },
 });

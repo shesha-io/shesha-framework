@@ -1,19 +1,9 @@
 import moment, { Duration, Moment, isDuration, isMoment } from 'moment';
 import { ProperyDataType } from '../../interfaces/metadata';
-import { IConfigurableColumnsProps, IDataColumnsProps } from '../../providers/datatableColumnsConfigurator/models';
+import { IConfigurableColumnsProps, isActionColumnProps, isDataColumnProps } from '../../providers/datatableColumnsConfigurator/models';
 import { camelcaseDotNotation } from '../../utils/string';
-import { IDataTableUserConfig, MIN_COLUMN_WIDTH } from './contexts';
-import {
-  ColumnSorting,
-  DataTableColumnDto,
-  IActionColumnProps,
-  IStoredFilter,
-  ITableActionColumn,
-  ITableColumn,
-  ITableDataColumn,
-  ITableFilter,
-  SortDirection,
-} from './interfaces';
+import { IDataTableStateContext, IDataTableUserConfig, MIN_COLUMN_WIDTH } from './contexts';
+import { ColumnSorting, DataTableColumnDto, IColumnSorting, isDataColumn, IStoredFilter, ITableActionColumn, ITableColumn, ITableDataColumn, ITableFilter, SortDirection } from './interfaces';
 
 // Filters should read properties as camelCase ?:(
 export const hasDynamicFilter = (filters: IStoredFilter[]) => {
@@ -192,59 +182,58 @@ export const prepareColumn = (
     allowShowHide: false,
   };
 
-  switch (column.columnType) {
-    case 'data': {
-      const dataProps = column as IDataColumnsProps;
+  if (isDataColumnProps(column)) {
+    const userColumn = userConfig?.columns?.find((c) => c.id === column.propertyName);
+    const colVisibility =
+      userColumn?.show === null || userColumn?.show === undefined ? column.isVisible : userColumn?.show;
 
-      const userColumn = userConfig?.columns?.find((c) => c.id === dataProps.propertyName);
-      const colVisibility =
-        userColumn?.show === null || userColumn?.show === undefined ? column.isVisible : userColumn?.show;
+    const srvColumn = column.propertyName
+      ? columns.find((c) => camelcaseDotNotation(c.propertyName) === camelcaseDotNotation(column.propertyName))
+      : {};
 
-      const srvColumn = dataProps.propertyName
-        ? columns.find((c) => camelcaseDotNotation(c.propertyName) === camelcaseDotNotation(dataProps.propertyName))
-        : {};
+    const dataCol: ITableDataColumn = {
+      ...baseProps,
+      id: column.propertyName,
+      accessor: camelcaseDotNotation(column?.propertyName),
+      propertyName: column.propertyName,
 
-      const dataCol: ITableDataColumn = {
-        ...baseProps,
-        id: dataProps?.propertyName,
-        accessor: camelcaseDotNotation(dataProps?.propertyName),
-        propertyName: dataProps?.propertyName,
+      createComponent: column.createComponent,
+      editComponent: column.editComponent,
+      displayComponent: column.displayComponent,
 
-        createComponent: dataProps.createComponent,
-        editComponent: dataProps.editComponent,
-        displayComponent: dataProps.displayComponent,
+      dataType: srvColumn?.dataType as ProperyDataType,
+      dataFormat: srvColumn?.dataFormat,
+      isSortable: column.allowSorting && Boolean(srvColumn?.isSortable),
+      isFilterable: srvColumn?.isFilterable,
+      entityReferenceTypeShortAlias: srvColumn?.entityReferenceTypeShortAlias,
+      referenceListName: srvColumn?.referenceListName,
+      referenceListModule: srvColumn?.referenceListModule,
+      allowInherited: srvColumn?.allowInherited,
 
-        dataType: srvColumn?.dataType as ProperyDataType,
-        dataFormat: srvColumn?.dataFormat,
-        isSortable: srvColumn?.isSortable,
-        isFilterable: srvColumn?.isFilterable,
-        entityReferenceTypeShortAlias: srvColumn?.entityReferenceTypeShortAlias,
-        referenceListName: srvColumn?.referenceListName,
-        referenceListModule: srvColumn?.referenceListModule,
-        allowInherited: srvColumn?.allowInherited,
-
-        allowShowHide: true,
-        show: colVisibility,
-      };
-      return dataCol;
-    }
-    case 'action': {
-      const { icon, actionConfiguration } = column as IActionColumnProps;
-
-      const actionColumn: ITableActionColumn = {
-        ...baseProps,
-        icon,
-        actionConfiguration,
-      };
-
-      return actionColumn;
-    }
-    case 'crud-operations': {
-      return {
-        ...baseProps,
-      };
-    }
+      allowShowHide: true,
+      show: colVisibility,
+      metadata: srvColumn.metadata,
+    };
+    return dataCol;
   }
+
+  if (isActionColumnProps(column)) {
+    const { icon, actionConfiguration } = column;
+
+    const actionColumn: ITableActionColumn = {
+      ...baseProps,
+      icon,
+      actionConfiguration,
+    };
+
+    return actionColumn;
+  }
+
+  if (column.columnType === 'crud-operations')
+    return {
+      ...baseProps,
+    };
+  
   return null;
 };
 
@@ -253,13 +242,61 @@ export const prepareColumn = (
  */
 export const getTableDataColumns = (columns: ITableColumn[]): ITableDataColumn[] => {
   const result: ITableDataColumn[] = [];
-  columns.forEach((col) => {
-    if (col.columnType === 'data') result.push(col as ITableDataColumn);
+  columns.forEach(col => {
+    if (isDataColumn(col))
+      result.push(col);
   });
   return result;
 };
 
 export const getTableDataColumn = (columns: ITableColumn[], id: string): ITableDataColumn => {
-  const column = columns.find((c) => c.id === id);
-  return column?.columnType === 'data' ? (column as ITableDataColumn) : null;
+  const column = columns.find(c => c.id === id);
+  return isDataColumn(column)
+    ? column
+    : null;
+};
+
+export const isStandardSortingUsed = (state: IDataTableStateContext): Boolean => {
+  return state.sortMode === 'standard' && (!state.grouping || state.grouping.length === 0);
+};
+
+export const getCurrentSorting = (state: IDataTableStateContext, groupingSupported: boolean): IColumnSorting[] => {
+  switch (state.sortMode) {
+    case 'standard': {
+      if (groupingSupported && state.grouping && state.grouping.length > 0) {
+        const groupSorting = state.grouping.map<IColumnSorting>(item => ({ id: item.propertyName, desc: item.sorting === 'desc' }));
+        if (state.sortMode === 'standard' && state.standardSorting.length > 0) {
+          state.standardSorting.forEach(item => {
+            if (!groupSorting.find(c => c.id === item.id))
+              groupSorting.push(item);
+          });
+        }
+        return groupSorting;
+      }
+
+      const userSorting = getEffectiveUserSorting(state);
+      return userSorting && userSorting.length > 0 ? userSorting : state.standardSorting;
+    }
+    case 'strict': {
+      return [{ id: state.strictSortBy, desc: state.strictSortOrder === 'desc' }];
+    }
+  }
+  return [];
+};
+
+/**
+ * Get effective user sorting. Note: saved user sorting may be restricted by the datasource configuration
+ * @param state Data table state
+ * @returns Array of sorting column or null
+ */
+const getEffectiveUserSorting = (state: IDataTableStateContext): IColumnSorting[] => {
+  if (!state.userSorting)
+    return null;
+
+    return state.userSorting.filter(s => {
+      if (!s.id)
+        return false;
+      const column = state.columns.find(c => c.id === s.id);
+      return column && column.isSortable;      
+    });
 };

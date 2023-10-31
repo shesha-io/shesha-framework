@@ -26,6 +26,7 @@ import { removeNullUndefined } from '../utils';
 import { useFormDesignerComponents } from './hooks';
 import { FormIdentifier, FormMarkupWithSettings, FormRawMarkup, IFormDto, IFormSettings } from './models';
 import { asFormFullName, asFormRawId, getComponentsFromMarkup } from './utils';
+import { DataTypes } from 'interfaces/dataTypes';
 
 /**
  * Form configuration DTO
@@ -445,19 +446,18 @@ interface GetFormFieldsPayload {
   formSettings: IFormSettings;
   toolboxComponents: IToolboxComponents;
 }
+
 const getFormFields = (payload: GetFormFieldsPayload): string[] => {
   const { formMarkup, formSettings, toolboxComponents } = payload;
   if (!formMarkup) return null;
 
-  const components = componentsTreeToFlatStructure(
-    toolboxComponents,
-    getComponentsFromMarkup(formMarkup)
-  ).allComponents;
+  const components = componentsTreeToFlatStructure(toolboxComponents, getComponentsFromMarkup(formMarkup))
+      .allComponents;
   let fieldNames = [];
   for (const key in components) {
-    if (components.hasOwnProperty(key)) {
-      fieldNames.push(components[key].name);
-    }
+      if (components.hasOwnProperty(key)){
+          fieldNames.push(components[key].propertyName);
+      }
   }
 
   fieldNames = fieldNames.concat(formSettings?.fieldsToFetch ?? []);
@@ -486,7 +486,7 @@ export const getGqlFields = (payload: GetGqlFieldsPayload): Promise<IFieldData[]
 
   if (!formMarkup || !formSettings.modelType) return Promise.resolve([]);
 
-  return getMetadata({ modelType: formSettings.modelType }).then((metadata) => {
+  return getMetadata({ dataType: DataTypes.entityReference, modelType: formSettings.modelType }).then((metadata) => {
     let fields: IFieldData[] = [];
 
     const fieldNames = getFormFields(payload);

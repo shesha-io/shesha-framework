@@ -3,7 +3,7 @@
     {
       "id": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
       "type": "sectionSeparator",
-      "name": "separator1",
+      "propertyName": "separator1",
       "parentId": "root",
       "label": "Display"
     },
@@ -11,12 +11,12 @@
       "textType": "text",
       "id": "8UYTrC2TxF7XMv2TeM0wO",
       "type": "textField",
-      "name": "name",
-      "label": "Name",
+      "propertyName": "componentName",
+      "label": "Component name",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "customVisibility": null,
+      "jsSetting": false,
       "validate": {
         "required": true
       },
@@ -25,7 +25,7 @@
     {
       "id": "df8a8f35-a50b-42f9-9642-73d390ceddbf",
       "type": "dropdown",
-      "name": "visibility",
+      "propertyName": "visibility",
       "parentId": "root",
       "label": "Visibility",
       "description": "This property will eventually replace the 'hidden' property and other properties that toggle visibility on the UI and payload",
@@ -52,33 +52,9 @@
     {
       "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
       "type": "checkbox",
-      "name": "hidden",
+      "propertyName": "hidden",
       "parentId": "root",
       "label": "Hidden"
-    },
-    {
-      "id": "41721f44-adbc-42fe-8c70-69b30e36f4ca",
-      "type": "sectionSeparator",
-      "name": "sectionVisibility",
-      "parentId": "root",
-      "label": "Visibility"
-    },
-    {
-      "id": "84558f32-b056-4ced-9803-accef8cab0ec",
-      "type": "codeEditor",
-      "name": "customVisibility",
-      "label": "Custom Visibility",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "customVisibility": null,
-      "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-      "validate": {},
-      "settingsValidationErrors": [],
-      "exposedVariables": [
-        { "name": "value", "description": "Component current value", "type": "string | any" },
-        { "name": "data", "description": "Selected form values", "type": "object" }
-      ]
     }
   ],
   "formSettings": {

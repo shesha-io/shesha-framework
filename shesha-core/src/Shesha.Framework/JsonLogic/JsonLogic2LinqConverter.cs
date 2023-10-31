@@ -417,8 +417,15 @@ namespace Shesha.JsonLogic
 
                             var arg = ParseTree<T>(@operator.Arguments[0], param);
 
-                            if (arg is MemberExpression memberExpr)
-                                return Expression.NotEqual(memberExpr, Expression.Constant(null));
+                            if (arg is MemberExpression memberExpr) 
+                            {
+                                return memberExpr.Type == typeof(string)
+                                    ? Expression.AndAlso(
+                                        Expression.NotEqual(memberExpr, Expression.Constant(null)),
+                                        Expression.NotEqual(TrimStringMember(memberExpr), Expression.Constant(string.Empty))
+                                    )
+                                    : Expression.NotEqual(memberExpr, Expression.Constant(null));
+                            }
 
                             return Expression.Not(Expression.Not(arg));
                         }
@@ -859,6 +866,15 @@ namespace Shesha.JsonLogic
                 else if (constExpr.Type == typeof(string) && Int64.TryParse((string)constExpr.Value, out var int64Value))
                     numericConstToConvert = Expression.Constant(int64Value);
             }
+            if (memberExpr.Type.GetUnderlyingTypeIfNullable() == typeof(Double))
+            {
+                if (constExpr.Type == typeof(string)) 
+                {
+                    if (double.TryParse((string)constExpr.Value, out var doubleValue))
+                        numericConstToConvert = Expression.Constant(doubleValue);
+                } else
+                    numericConstToConvert = Expression.Constant(Convert.ToDouble(constExpr.Value));
+            }
         }
 
         private void ConvertTicksTimeSpan(Expression a, ref Expression b)
@@ -1077,6 +1093,13 @@ namespace Shesha.JsonLogic
 
             var query = ParseExpressionOf<T>(rule);
             return query.Compile();
+        }
+
+        private Expression TrimStringMember(MemberExpression member) 
+        {
+            var trimMethod = typeof(string).GetMethod(nameof(string.Trim), new Type[] { });
+
+            return Expression.Call(member, trimMethod);
         }
     }
 

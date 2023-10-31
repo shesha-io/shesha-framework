@@ -2,16 +2,15 @@ import { Radio, Space } from 'antd';
 import React, { FC, useEffect, useMemo } from 'react';
 import { useGet } from 'hooks';
 import { useFormData, useGlobalState } from '../../../../providers';
-import { useForm } from '../../../../providers/form';
 import { useReferenceList } from '../../../../providers/referenceListDispatcher';
 import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
 import { getDataSourceList, IRadioProps } from './utils';
+import { evaluateValue } from 'utils/publicUtils';
 
 const RadioGroup: FC<IRadioProps> = (model) => {
-  const { formMode, isComponentDisabled } = useForm();
   const { data: formData } = useFormData();
   const { globalState } = useGlobalState();
-  const { referenceListId, items = [], value, onChange } = model;
+  const { referenceListId, items = [], value, onChange, defaultValue } = model;
   const { data: refListItems } = useReferenceList(referenceListId);
 
   //#region Data source is url
@@ -31,6 +30,12 @@ const RadioGroup: FC<IRadioProps> = (model) => {
     }
   }, [model?.dataSourceType, model?.dataSourceUrl]);
 
+  useEffect(() => {
+    if (defaultValue) {
+      onChange(evaluateValue(defaultValue, { data: formData, globalState }));
+    }
+  }, [defaultValue]);
+
   const reducedData = useMemo(() => {
     const list = Array.isArray(data?.result) ? data?.result : data?.result?.items;
 
@@ -47,21 +52,21 @@ const RadioGroup: FC<IRadioProps> = (model) => {
     [model?.dataSourceType, items, refListItems?.items, reducedData]
   );
 
-  const isReadOnly = model?.readOnly || formMode === 'readonly';
-
-  const disabled = isComponentDisabled(model);
+  const defaultVal = evaluateValue(defaultValue, { data: formData, globalState });
+  const val = !!value ? `${value}` : defaultVal;
 
   const renderCheckGroup = () => (
     <Radio.Group
       className="sha-radio-group"
-      disabled={isReadOnly}
-      value={value}
+      disabled={model.readOnly}
+      defaultValue={defaultVal}
+      value={val}
       onChange={onChange}
       style={model?.style}
     >
       <Space direction={model?.direction}>
         {options?.map((checkItem, index) => (
-          <Radio key={index} value={checkItem.value} disabled={disabled}>
+          <Radio key={index} value={`${checkItem.value}`} disabled={model.disabled}>
             {checkItem.label}
           </Radio>
         ))}
@@ -69,8 +74,8 @@ const RadioGroup: FC<IRadioProps> = (model) => {
     </Radio.Group>
   );
 
-  if (isReadOnly) {
-    return <ReadOnlyDisplayFormItem type="radiogroup" disabled={disabled} render={renderCheckGroup} />;
+  if (model.readOnly) {
+    return <ReadOnlyDisplayFormItem type="radiogroup" disabled={model.disabled} render={renderCheckGroup} />;
   }
 
   return renderCheckGroup();

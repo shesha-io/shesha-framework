@@ -12,7 +12,8 @@ import {
   ReferenceListDispatcherActionsContext,
   ReferenceListDispatcherStateContext,
 } from './contexts';
-import { ILoadingState, IReferenceListIdentifier } from './models';
+import { ILoadingState } from './models';
+import { IReferenceListIdentifier } from 'interfaces/referenceList';
 import metadataReducer from './reducer';
 
 export interface IReferenceListDispatcherProviderProps {}

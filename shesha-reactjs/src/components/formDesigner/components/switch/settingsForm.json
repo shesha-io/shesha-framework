@@ -3,16 +3,16 @@
     {
       "id": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
       "type": "sectionSeparator",
-      "name": "separator1",
+      "propertyName": "separator1",
       "parentId": "root",
       "label": "Display"
     },
     {
       "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
-      "type": "propertyAutocomplete",
-      "name": "name",
+      "type": "contextPropertyAutocomplete",
+      "propertyName": "propertyName",
       "parentId": "root",
-      "label": "Name",
+      "label": "Property name",
       "validate": {
         "required": true
       }
@@ -20,14 +20,14 @@
     {
       "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
       "type": "textField",
-      "name": "label",
+      "propertyName": "label",
       "parentId": "root",
       "label": "Label"
     },
     {
       "id": "df8a8f35-a50b-42f9-9642-73d390ceddbf",
       "type": "dropdown",
-      "name": "visibility",
+      "propertyName": "visibility",
       "parentId": "root",
       "label": "Visibility",
       "description": "This property will eventually replace the 'hidden' property and other properties that toggle visibility on the UI and payload",
@@ -54,46 +54,39 @@
     {
       "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
       "type": "checkbox",
-      "name": "hidden",
+      "propertyName": "hidden",
       "parentId": "root",
       "label": "Hidden"
     },
     {
       "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
       "type": "checkbox",
-      "name": "hideLabel",
+      "propertyName": "hideLabel",
       "parentId": "root",
       "label": "Hide Label"
     },
     {
       "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
       "type": "checkbox",
-      "name": "disabled",
+      "propertyName": "disabled",
       "parentId": "root",
       "label": "Disabled"
     },
     {
-      "id": "6befdd49-41aa-41d6-a29e-76fa00590b75",
-      "type": "sectionSeparator",
-      "name": "sectionStyle",
-      "parentId": "root",
-      "label": "Style"
-    },
-    {
       "id": "06ab0599-914d-4d2d-875c-765a495472f8",
       "type": "codeEditor",
-      "name": "style",
+      "propertyName": "style",
       "label": "Style",
       "parentId": "root",
       "validate": {},
       "settingsValidationErrors": [],
       "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
-      "exposedVariables": [{ "name": "data", "description": "Form values", "type": "object" }]
+      "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }]
     },
     {
       "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
       "type": "dropdown",
-      "name": "size",
+      "propertyName": "size",
       "parentId": "root",
       "label": "Size",
       "allowClear": true,
@@ -110,47 +103,6 @@
         }
       ],
       "dataSourceType": "values"
-    },
-    {
-      "id": "41721f44-adbc-42fe-8c70-69b30e36f4ca",
-      "type": "sectionSeparator",
-      "name": "sectionVisibility",
-      "parentId": "root",
-      "label": "Visibility"
-    },
-    {
-      "id": "1cb91b39-3382-4ef6-93c9-e71bf0e5f05c",
-      "type": "codeEditor",
-      "name": "customVisibility",
-      "label": "Custom Visibility",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "customVisibility": null,
-      "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-      "validate": {},
-      "settingsValidationErrors": [],
-      "exposedVariables": [
-        { "name": "value", "description": "Component current value", "type": "string | any" },
-        { "name": "data", "description": "Selected form values", "type": "object" }
-      ]
-    },
-    {
-      "id": "4b5e5951-4998-4635-b1c8-0b6d3940c300",
-      "type": "codeEditor",
-      "name": "customEnabled",
-      "label": "Custom Enabled",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "customEnabled": null,
-      "description": "Enter custom enabled code.  You must return true to enable the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-      "validate": {},
-      "settingsValidationErrors": [],
-      "exposedVariables": [
-        { "name": "value", "description": "Component current value", "type": "string | any" },
-        { "name": "data", "description": "Selected form values", "type": "object" }
-      ]
     }
   ],
   "formSettings": {
