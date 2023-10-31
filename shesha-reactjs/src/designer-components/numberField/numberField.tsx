@@ -4,7 +4,7 @@ import ConfigurableFormItem from '../../components/formDesigner/components/formI
 import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
 import { IToolboxComponent } from '../../interfaces';
 import { DataTypes } from '../../interfaces/dataTypes';
-import { useForm, useGlobalState, useMetaProperties } from '../../providers';
+import { useForm, useGlobalState, useMetadata } from '../../providers';
 import { FormMarkup } from '../../providers/form/models';
 import { evaluateString, validateConfigurableComponentSettings } from '../../providers/form/utils';
 import NumberFieldControl from './control';
@@ -25,7 +25,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
   icon: <NumberOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.number,
   factory: (model: INumberFieldComponentProps, _c, form) => {
-    const properties = useMetaProperties(['number']);
+    const { properties = [] } = useMetadata(false)?.metadata ?? {};
     const { formMode, formData } = useForm();
     const { globalState } = useGlobalState();
 

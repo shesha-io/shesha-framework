@@ -13,11 +13,11 @@ const FormComponent: FC<IFormComponentProps> = ({ id, componentRef }) => {
   const allData = useApplicationContext();
 
   const model = getComponentModel(id);
-  const toolboxComponent = getToolboxComponent(model.type);
-  if (!toolboxComponent) return <div>Component not found</div>;
-
   const actualModel = useDeepCompareMemo(() => getActualModel(model, allData),
     [model, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
+
+  const toolboxComponent = getToolboxComponent(model.type);
+  if (!toolboxComponent) return <div>Component not found</div>;
 
   actualModel.hidden = isComponentHidden(actualModel);
   actualModel.disabled = isComponentDisabled(actualModel);

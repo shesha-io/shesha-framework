@@ -7,8 +7,7 @@ import { customDateEventHandler } from '../../components/formDesigner/components
 import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
 import { IToolboxComponent } from '../../interfaces';
 import { DataTypes } from '../../interfaces/dataTypes';
-import { ProperyDataType } from '../../interfaces/metadata';
-import { useForm, useFormData, useGlobalState, useMetaProperties, useSheshaApplication } from '../../providers';
+import { useForm, useFormData, useGlobalState, useMetadata, useSheshaApplication } from '../../providers';
 import { FormMarkup } from '../../providers/form/models';
 import { getStyle, validateConfigurableComponentSettings } from '../../providers/form/utils';
 import { getMoment } from 'utils/date';
@@ -25,8 +24,6 @@ import {
   getRangePickerValues,
 } from './utils';
 import { migratePropertyName, migrateCustomFunctions } from '../../designer-components/_common-migrations/migrateSettings';
-
-const META_DATA_FILTERS: ProperyDataType[] = ['date', 'date-time', 'time'];
 
 const MIDNIGHT_MOMENT = moment('00:00:00', 'HH:mm:ss');
 
@@ -96,7 +93,8 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
 };
 
 export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
-  const properties = useMetaProperties(META_DATA_FILTERS);
+  const { properties = [] } = useMetadata(false)?.metadata ?? {};
+
   const { globalState } = useGlobalState();
 
   const {
