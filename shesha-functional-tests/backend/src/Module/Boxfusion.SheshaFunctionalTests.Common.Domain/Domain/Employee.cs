@@ -9,6 +9,10 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
     public class Employee : Entity<Guid>
     {
         /// <summary>
+        /// Order Index property for sorting
+        /// </summary>
+        public virtual int OrderIndex { get; set; }
+        /// <summary>
         /// 
         /// </summary>
         public virtual Organisation Company { get; set; }
