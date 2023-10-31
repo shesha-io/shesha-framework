@@ -11,7 +11,6 @@ import { getSettings } from './settings';
 import { getValueByPropertyName, setValueByPropertyName } from 'utils/object';
 import './styles/index.less';
 import { useRef } from 'react';
-import { isEqual } from 'lodash';
 
 export interface ISettingsComponentProps extends IConfigurableFormComponent {
     components?: IConfigurableFormComponent[];
@@ -71,7 +70,7 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
                                     : null
                             }
                             onChangeData={(v) => {
-                                if (v && ctxRef.current?.onChange && !isEqual(v[internalProps?.propertyName], localValue))
+                                if (v && ctxRef.current?.onChange)
                                     ctxRef.current?.onChange(getValueByPropertyName(v, internalProps?.propertyName));
                             }}
                         >

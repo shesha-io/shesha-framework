@@ -1,6 +1,5 @@
 import { IContainerComponentProps } from "../../designer-components/container/interfaces";
 import { IComponentsDictionary, IConfigurableFormComponent, IPropertySetting, IToolboxComponents } from "interfaces";
-import { nanoid } from "nanoid";
 
 export const isPropertySettings = (data: any) => {
     if (!data || typeof data !== 'object')
@@ -91,7 +90,7 @@ export const updateSettingsComponents = (
 
                 // If should be wrapped as Setting
                 newComponent.type = 'setting';
-                newComponent.id = nanoid();
+                newComponent.id = oldComponent.id + '_setting';
             
                 // Add source component as a child of Setting component
                 if (Array.isArray(oldComponent['components']) && oldComponent['components'].length > 0) {

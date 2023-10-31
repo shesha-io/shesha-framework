@@ -9,29 +9,30 @@ export const getFormDataMetadata = (dispatcher: IMetadataDispatcherFullinstance,
 
     const propsToLevel = (properties: IPropertyMetadata[]): ICodeTreeLevel => {
       const result: ICodeTreeLevel = {};
-      properties?.forEach((p) => {
-        const path = toCamelCase(p.path);
-        result[path] = {
-            value: path,
-            caption: p.label,
-            loaded: true,
-        };
-        if (isEntityReferencePropertyMetadata(p) && !!p.entityType && dispatcher) {
-          result[path].loaded = false;
-          result[path].childRefresh = (resolve: (data: ICodeTreeLevel) => void) => {
-            dispatcher.getMetadata({ dataType: null, modelType: p.entityType })
-              .then(res => {
-                const m = propsToLevel(res.properties);
-                result[path].loaded = true;
-                result[path].childs = m;
-                resolve(m);
-              });
+      if (properties && Array.isArray(properties))
+        properties.forEach((p) => {
+          const path = toCamelCase(p.path);
+          result[path] = {
+              value: path,
+              caption: p.label,
+              loaded: true,
           };
-        }
+          if (isEntityReferencePropertyMetadata(p) && !!p.entityType && dispatcher) {
+            result[path].loaded = false;
+            result[path].childRefresh = (resolve: (data: ICodeTreeLevel) => void) => {
+              dispatcher.getMetadata({ dataType: null, modelType: p.entityType })
+                .then(res => {
+                  const m = propsToLevel(res.properties);
+                  result[path].loaded = true;
+                  result[path].childs = m;
+                  resolve(m);
+                });
+            };
+          }
 
-        if (p.properties?.length > 0)
-            result[path].childs = propsToLevel(p.properties);
-      });
+          if (p.properties?.length > 0)
+              result[path].childs = propsToLevel(p.properties);
+        });
       return result;
     };
 
@@ -44,10 +45,12 @@ export const getFormDataMetadata = (dispatcher: IMetadataDispatcherFullinstance,
     };
 
     metadata.then(res => {
-      const m = propsToLevel(res.properties);
-      metaTree.data.loaded = true;
-      metaTree.data.childs = m;
-      metaTree.data.caption = res.name;
+      if (!!res) {
+        const m = propsToLevel(res.properties);
+        metaTree.data.loaded = true;
+        metaTree.data.childs = m;
+        metaTree.data.caption = res.name;
+      }
     });
 
     return metaTree;
