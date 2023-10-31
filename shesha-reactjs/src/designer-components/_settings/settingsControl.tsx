@@ -31,13 +31,15 @@ export const SettingsControl: FC<ISettingsControlProps> = ({ id, propertyName, r
     const settings = getPropertySettingsFromValue(value);
 
     const internalOnSwitchMode = useMemo(() => (mode) => {
+        const newValue = !!settings._code || mode === 'code' ? { _value: settings._value, _code: settings._code, _mode: mode } : settings._value;
         if (onChange)
-            onChange(!!settings._code || mode === 'code' ? { _value: settings._value, _code: settings._code, _mode: mode } : settings._value);
+            onChange(newValue);
     }, [settings._code, settings._value, mode]);
 
-    const internalOnChange = useMemo(() => (value) => {
+    const internalOnChange = useMemo(() => (val) => {
+        const newValue = !!settings._code ? { _value: val, _code: settings._code, _mode: mode } : val;
         if (onChange)
-            onChange(!!settings._code ? { _value: value, _code: settings._code, _mode: mode } : value);
+            onChange(newValue);
     }, [settings._code, mode]);
 
     if (contextRef && contextRef.current?.onChange !== internalOnChange)
@@ -50,9 +52,10 @@ export const SettingsControl: FC<ISettingsControlProps> = ({ id, propertyName, r
         return <CodeEditor
             readOnly={readonly}
             value={settings._code}
-            onChange={(value) => {
+            onChange={(val) => {
+                const newValue = !!val || mode === 'code' ? { _value: settings._value, _code: val, _mode: mode } : settings._value;
                 if (onChange)
-                    onChange(!!value || mode === 'code' ? { _value: settings._value, _code: value, _mode: mode } : settings._value);
+                onChange(newValue);
             }}
             mode='dialog'
             language='typescript'

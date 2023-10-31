@@ -51,9 +51,10 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
   const formInstance = useForm(false) ?? dataContextManager?.getFormInstance();
   const modelType = formInstance?.formSettings?.modelType ?? designer?.formSettings?.modelType;
   
+  const metadata = useMetadata(false)?.metadata;
   const meta = modelType
     ? metaDispatcher.getMetadata({modelType, dataType: 'entity'})
-    : new Promise<IModelMetadata>((resolve) => resolve(useMetadata(false)?.metadata));
+    : new Promise<IModelMetadata>((resolve) => resolve(metadata));
 
   const metaItems = useMemo<ICodeTreeLevel>(() => getFormDataMetadata(metaDispatcher, meta), [meta]);
   const ctxItems = useMemo<ICodeTreeLevel>(() => getContextMetadata(dataContextManager?.getDataContexts(dataContextManager?.getActiveContext()?.id)), [dataContextManager.lastUpdate]);
