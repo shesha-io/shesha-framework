@@ -17,6 +17,10 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
     public class Member : Person
     {
         /// <summary>
+        /// Order Index property for sorting
+        /// </summary>
+        public virtual int OrderIndex { get; set; }
+        /// <summary>
         /// The membership number for the Member
         /// </summary>
         public virtual string MembershipNumber { get; set; }
