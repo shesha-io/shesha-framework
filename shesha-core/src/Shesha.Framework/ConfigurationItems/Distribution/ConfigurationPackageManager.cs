@@ -1,14 +1,19 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Timing;
+using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Distribution.Exceptions;
 using Shesha.ConfigurationItems.Distribution.Models;
+using Shesha.ConfigurationItems.Specifications;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Exceptions;
+using Shesha.Extensions;
+using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Utilities;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -23,11 +28,14 @@ namespace Shesha.ConfigurationItems.Distribution
     {
         public const string NoModuleFolder = "[no-module]";
 
+        private readonly IRepository<ConfigurationItemBase, Guid> _itemsRepository;
         private readonly IStoredFileService _storedFileService;
         private readonly IRepository<ConfigurationPackageImportResult, Guid> _importResultRepository;
+        public IIocManager IocManager { get; set; }
 
-        public ConfigurationPackageManager(IStoredFileService storedFileService, IRepository<ConfigurationPackageImportResult, Guid> importResultRepository)
+        public ConfigurationPackageManager(IRepository<ConfigurationItemBase, Guid> itemsRepository, IStoredFileService storedFileService, IRepository<ConfigurationPackageImportResult, Guid> importResultRepository)
         {
+            _itemsRepository = itemsRepository;
             _storedFileService = storedFileService;
             _importResultRepository = importResultRepository;
         }
@@ -120,12 +128,55 @@ namespace Shesha.ConfigurationItems.Distribution
             // recursively export dependencies if requested
             if (context.ExportDependencies)
             {
-                var dependencies = await item.GetDependenciesAsync();
-                foreach (var dependency in dependencies)
+                var depsProviders = GetDependenciesProviders(item);
+                foreach (var depsProvider in depsProviders) 
                 {
-                    await ProcessItemExportAsync(dependency, exportResult, context);
+                    var dependencies = await depsProvider.GetReferencedItemsAsync(item);
+                    foreach (var dependency in dependencies)
+                    {
+                        var dependencyItem = await _itemsRepository.GetItemByFullNameAsync(dependency.Module, dependency.Name, context.VersionSelectionMode);
+                            
+                        // todo: write log and include all missing items
+                        if (dependencyItem != null)
+                            await ProcessItemExportAsync(dependencyItem, exportResult, context);
+                    }
                 }
             }
+        }
+
+        private Dictionary<Type, List<IDependenciesProvider>> _dependencyProviders = new Dictionary<Type, List<IDependenciesProvider>>();
+
+        /// <summary>
+        /// Get closest registered dependencies provider
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        private List<IDependenciesProvider> GetDependenciesProviders(ConfigurationItemBase item) 
+        {
+            var requestedType = item.GetType().StripCastleProxyType();
+
+            if (_dependencyProviders.TryGetValue(requestedType, out var providers))
+                return providers;
+
+            return _dependencyProviders[requestedType] = SearchClosestDependenciesProviders(requestedType) ?? new List<IDependenciesProvider>();
+        }
+
+        private List<IDependenciesProvider> SearchClosestDependenciesProviders(Type itemType) 
+        {
+            var type = itemType;
+            while (type != null)
+            {
+                if (type.IsAssignableTo(typeof(IConfigurationItem)))
+                {
+                    var serviceType = typeof(IDependenciesProvider<>).MakeGenericType(type);
+                    var services = IocManager.ResolveAll(serviceType).OfType<IDependenciesProvider>().ToList();
+                    if (services.Any())
+                        return services;
+                }
+
+                type = type.BaseType;
+            }
+            return null;
         }
 
         private string GetItemRelativePath(ConfigurationItemBase item)

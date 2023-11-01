@@ -52,7 +52,10 @@ namespace Shesha.ConfigurationItems
 
             var items = await _itemsRepository.GetAllFiltered(input.Filter).ToListAsync();
 
-            var exportСontext = new PreparePackageContext(items);
+            var exportСontext = new PreparePackageContext(items) { 
+                ExportDependencies = input.ExportDependencies,
+                VersionSelectionMode = input.VersionSelectionMode,
+            };
 
             var pack = await _packageManager.PreparePackageAsync(exportСontext);
 
