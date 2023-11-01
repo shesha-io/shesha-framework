@@ -1,4 +1,5 @@
 ﻿using Abp.Dependency;
+using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
 using Shesha.Services;
 using System.Collections.Generic;
@@ -19,6 +20,11 @@ namespace Shesha.ConfigurationItems.Distribution.Models
         /// Enable/disable export of dependencies
         /// </summary>
         public bool ExportDependencies { get; set; }
+
+        /// <summary>
+        /// Mode of the version selection (live/ready/latest)
+        /// </summary>
+        public ConfigurationItemViewMode VersionSelectionMode { get; set; }
 
         /// <summary>
         /// Exporters

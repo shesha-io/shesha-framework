@@ -2,7 +2,7 @@ import React, { useState, useEffect, MutableRefObject } from 'react';
 import { FC } from 'react';
 import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '../../../interfaces/gql';
 import { GENERIC_ENTITIES_ENDPOINT, LEGACY_ITEMS_MODULE_NAME } from '../../../shesha-constants';
-import { Form, Select, Skeleton, Spin } from 'antd';
+import { Form, Select, Skeleton, Spin, Switch } from 'antd';
 import axios from 'axios';
 import { useSheshaApplication } from '../../..';
 import FileSaver from 'file-saver';
@@ -40,6 +40,7 @@ type VerionSelectionMode = 'live' | 'ready' | 'latest';
 export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (props) => {
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const [versionsMode, setVersionsMode] = useState<VerionSelectionMode>('live');
+  const [exportDependencies, setExportDependencies] = useState<boolean>(true);  
 
   const [checkedIds, setCheckedIds] = useState<string[]>([]);
   const [exportInProgress, setExportInProgress] = useState(false);
@@ -229,6 +230,8 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
       method: 'POST',
       data: {
         filter: JSON.stringify(filter),
+        exportDependencies: exportDependencies,
+        versionSelectionMode: versionsMode,
       },
       responseType: 'blob', // important
       headers: httpHeaders,
@@ -278,6 +281,9 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
               },
             ]}
           />
+        </Form.Item>
+        <Form.Item label="Include all depepndecies">
+          <Switch checked={exportDependencies} onChange={setExportDependencies}></Switch>
         </Form.Item>
         <Skeleton loading={isLoading}>
           {treeState && (

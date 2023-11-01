@@ -45,9 +45,8 @@ namespace Shesha.ConfigurationItems
         ConfigurationItem Origin { get; set; }
 
         /// <summary>
-        /// Get dependencies of current configuration item
+        /// If true, indicates that this is a last version of the configuration item
         /// </summary>
-        /// <returns></returns>
-        Task<IList<ConfigurationItemBase>> GetDependenciesAsync();
+        bool IsLast { get; }
     }
 }
