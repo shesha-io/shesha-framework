@@ -11,6 +11,7 @@ namespace Shesha.Domain
     /// Registered mobile device. Is used to restrict access and identify 
     /// </summary>
     [Entity(GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
+    [Discriminator]
     public class MobileDevice: FullAuditedEntity<Guid>
     {
         /// <summary>
