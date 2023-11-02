@@ -2,6 +2,8 @@
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
+using Abp.Events.Bus;
+using DocumentFormat.OpenXml.Vml.Office;
 using NHibernate.Linq;
 using Shesha.Configuration.Runtime;
 using Shesha.DynamicEntities.Dtos;
@@ -33,6 +35,7 @@ namespace Shesha.DynamicEntities
         private readonly IRepository<T, TId> _repository;
         private readonly IEntityConfigurationStore _entityConfigStore;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
+        public IEventBus EventBus { get; set; }
 
         public EntityReorderer(IUnitOfWorkManager unitOfWorkManager, IRepository<T, TId> repository, IEntityConfigurationStore entityConfigStore)
         {
@@ -80,6 +83,8 @@ namespace Shesha.DynamicEntities
                     result.ReorderedItems[passedItem.Id] = orderIndex;
                 }
             }
+
+            _unitOfWorkManager.Current.Completed += (sender, args) => EventBus.Trigger<EntityReorderedEventData<T, TId>>(this, new EntityReorderedEventData<T, TId>(ids));
 
             return result;
         }
