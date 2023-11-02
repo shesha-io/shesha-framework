@@ -543,7 +543,9 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   };
 
   const setHiddenFilter = (owner: string, filter: IStoredFilter) => {
-    dispatch(setHiddenFilterAction({ owner, filter }));
+    const currentFilter = state.hiddenFilters ? state.hiddenFilters[owner] : null;
+    if (!isEqual(currentFilter, filter))
+      dispatch(setHiddenFilterAction({ owner, filter }));
   };
 
   const changeSelectedIds = (selectedIds: string[]) => {

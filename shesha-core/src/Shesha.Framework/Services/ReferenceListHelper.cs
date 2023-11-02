@@ -5,14 +5,17 @@ using Abp.Events.Bus.Entities;
 using Abp.Events.Bus.Handlers;
 using Abp.ObjectMapping;
 using Abp.Runtime.Caching;
+using NetTopologySuite.Index.HPRtree;
 using Shesha.AutoMapper.Dto;
 using Shesha.ConfigurationItems;
+using Shesha.ConfigurationItems.Cache;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
 using Shesha.Services.ReferenceLists.Dto;
 using Shesha.Services.ReferenceLists.Exceptions;
+using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +33,7 @@ namespace Shesha.Services
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly ICacheManager _cacheManager;
         private readonly IConfigurationFrameworkRuntime _cfRuntime;
-
+        private readonly IConfigurationItemClientSideCache _clientSideCache;
         /// <summary>
         /// Reference to the object to object mapper.
         /// </summary>
@@ -52,7 +55,8 @@ namespace Shesha.Services
             IRepository<ReferenceListItem, Guid> itemsRepository, 
             IUnitOfWorkManager unitOfWorkManager, 
             ICacheManager cacheManager,
-            IConfigurationFrameworkRuntime cfRuntime
+            IConfigurationFrameworkRuntime cfRuntime,
+            IConfigurationItemClientSideCache clientSideCache
         )
         {
             _listRepository = listRepository;
@@ -60,6 +64,7 @@ namespace Shesha.Services
             _unitOfWorkManager = unitOfWorkManager;
             _cacheManager = cacheManager;
             _cfRuntime = cfRuntime;
+            _clientSideCache = clientSideCache;
         }
 
         private void ValidateRefListId(ReferenceListIdentifier refListId)
@@ -263,6 +268,13 @@ namespace Shesha.Services
             var refListId = refList.GetReferenceListIdentifier();
             var keys = modes.Select(mode => GetListIdCacheKey(refListId, mode)).ToArray();
             ListIdsCache.Remove(keys);
+
+            // clear client-side cache
+            AsyncHelper.RunSync(async () => 
+                {
+                    await _clientSideCache.SetCachedMd5Async(ReferenceList.ItemTypeName, null, refList.Module?.Name, refList.Name, _cfRuntime.ViewMode, null);
+                }
+            );
         }
 
         /// <summary>

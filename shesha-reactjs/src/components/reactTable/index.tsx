@@ -445,6 +445,7 @@ export const ReactTable: FC<IReactTableProps> = ({
                   handle=".row-handle"
                   scroll={true}
                   bubbleScroll={true}
+                  className="sha-sortable"
                 >
                   {children}
                 </ReactSortable>
