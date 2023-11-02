@@ -1,3 +1,9 @@
+.hoverable-row() {
+  &:not(.sha-tr-selected) {
+    background: var(--ant-primary-3) !important;
+  }
+}
+
 .sha-react-table {
   margin: 0 12px;
   background: white;
@@ -20,6 +26,15 @@
 
     .tbody {
       overflow-x: hidden;
+
+      >.sha-sortable:not(.sha-dragging) {
+        .tr.tr-body.sha-hover {
+          .hoverable-row();
+        }
+      }
+      >.tr.tr-body.sha-hover {
+        .hoverable-row();
+      }
 
       .sha-table-empty {
         display: flex;
