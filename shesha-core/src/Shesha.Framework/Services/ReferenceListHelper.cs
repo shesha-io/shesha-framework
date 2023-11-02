@@ -12,6 +12,7 @@ using Shesha.ConfigurationItems.Cache;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
+using Shesha.DynamicEntities;
 using Shesha.Extensions;
 using Shesha.Services.ReferenceLists.Dto;
 using Shesha.Services.ReferenceLists.Exceptions;
@@ -23,7 +24,9 @@ using System.Threading.Tasks;
 
 namespace Shesha.Services
 {
-    public class ReferenceListHelper: IEventHandler<EntityChangedEventData<ReferenceListItem>>, IReferenceListHelper, ITransientDependency
+    public class ReferenceListHelper: IEventHandler<EntityChangedEventData<ReferenceListItem>>,
+        IEventHandler<EntityReorderedEventData<ReferenceListItem, Guid>>,
+        IReferenceListHelper, ITransientDependency
     {
         private const string ListItemsItemsCacheName = "ReferenceListItemsCache";
         private const string ListItemsIdsCacheName = "ReferenceListIdsCache";
@@ -257,9 +260,12 @@ namespace Shesha.Services
         {
             var refList = eventData.Entity?.ReferenceList;
 
-            if (refList == null)
-                return;
+            if (refList != null)
+                ClearCacheForRefList(refList);
+        }
 
+        private void ClearCacheForRefList(ReferenceList refList) 
+        {
             // clear items cache by Id
             ListItemsCache.Remove(refList.Id);
 
@@ -270,10 +276,10 @@ namespace Shesha.Services
             ListIdsCache.Remove(keys);
 
             // clear client-side cache
-            AsyncHelper.RunSync(async () => 
-                {
-                    await _clientSideCache.SetCachedMd5Async(ReferenceList.ItemTypeName, null, refList.Module?.Name, refList.Name, _cfRuntime.ViewMode, null);
-                }
+            AsyncHelper.RunSync(async () =>
+            {
+                await _clientSideCache.SetCachedMd5Async(ReferenceList.ItemTypeName, null, refListId.Module, refListId.Name, _cfRuntime.ViewMode, null);
+            }
             );
         }
 
@@ -284,14 +290,6 @@ namespace Shesha.Services
         {
             await ListItemsCache.ClearAsync();
         }
-
-        ///// <summary>
-        ///// Clear reference list cache
-        ///// </summary>
-        //public async Task ClearCacheAsync(string module, string @namespace, string name)
-        //{
-        //    await ListItemsCache.RemoveAsync(GetCacheKey(module, @namespace, name));
-        //}
 
         /// <summary>
         /// Decompose raw value into a multivalue reference list DTOs
@@ -322,6 +320,22 @@ namespace Shesha.Services
                 }
             }
             return result;
+        }
+
+        public void HandleEvent(EntityReorderedEventData<ReferenceListItem, Guid> eventData)
+        {
+            // Take first item id assuming that reordering is possible only within a list
+            var itemId = eventData.Ids.FirstOrDefault();
+
+            using (var uow = _unitOfWorkManager.Begin()) 
+            {
+                var item = _itemsRepository.FirstOrDefault(itemId);
+
+                if (item?.ReferenceList != null)
+                    ClearCacheForRefList(item.ReferenceList);
+                
+                uow.Complete();
+            }
         }
     }
 }
