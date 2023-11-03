@@ -149,10 +149,14 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
     if (!component) {
         return <div>Component not found</div>;
     }
-
+    
     return (
         <CustomErrorBoundary>
-            {component.factory(componentModel, componentRef, allData.form)}
+            <component.Factory
+              model={componentModel}
+              componentRef={componentRef}
+              form={allData.form}
+            />
         </CustomErrorBoundary>
     );
 };

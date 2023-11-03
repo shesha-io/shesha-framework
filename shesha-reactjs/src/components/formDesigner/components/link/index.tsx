@@ -38,7 +38,7 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
   type: 'link',
   name: 'link',
   icon: <LinkOutlined />,
-  factory: (model: ILinkProps) => {
+  Factory: ({ model }) => {
     const { formMode } = useForm();
 
     const { data } = useFormData();

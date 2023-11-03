@@ -2,15 +2,15 @@ import React from 'react';
 import { EditOutlined } from '@ant-design/icons';
 import { ConfigurableFormItem } from '../../..';
 import { validateConfigurableComponentSettings } from '../../../../formDesignerUtils';
-import { IToolboxComponent } from '../../../../interfaces/formDesigner';
-import { FormMarkup } from '../../../../providers/form/models';
+import { IToolboxComponent } from 'interfaces/formDesigner';
+import { FormMarkup } from 'providers/form/models';
 import settingsFormJson from './settingsForm.json';
 import RichTextEditor from '../../../richTextEditor';
 import { useDeepCompareMemoKeepReference, useFormData } from '../../../..';
 import { IRichTextEditorProps } from './interfaces';
-import { getStyle } from '../../../../providers/form/utils';
+import { getStyle } from 'providers/form/utils';
 import { IJoditEditorProps } from '../../../richTextEditor/joditEditor';
-import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -20,7 +20,7 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
   type: 'richTextEditor',
   name: 'Rich Text Editor',
   icon: <EditOutlined />,
-  factory: ({ ...model }: IRichTextEditorProps) => {
+  Factory: ({ model }) => {
     const { data: formData } = useFormData();
 
     const disabled =model.disabled;

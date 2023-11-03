@@ -16,7 +16,7 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   type: 'datalist',
   name: 'DataList',
   icon: <UnorderedListOutlined />,
-  factory: (model: IDataListComponentProps) => {
+  Factory: ({ model }) => {
     if (model.hidden) return null;
 
     return <DataListControl {...model} />;

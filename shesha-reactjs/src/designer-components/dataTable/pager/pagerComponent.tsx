@@ -13,7 +13,7 @@ const PagerComponent: IToolboxComponent<IPagerComponentProps> = {
   type: 'datatable.pager',
   name: 'Table Pager',
   icon: <ControlOutlined />,
-  factory: (model: IPagerComponentProps) => {
+  Factory: ({ model }) => {
     if (model.hidden) return null;
 
     return <TablePager {...model} />;

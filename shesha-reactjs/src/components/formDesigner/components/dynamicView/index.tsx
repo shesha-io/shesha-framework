@@ -15,7 +15,7 @@ const DynamicViewComponent: IToolboxComponent<DynamicViewComponentProps> = {
     type: 'dynamicView',
     name: 'Dynamic View',
     icon: <AppstoreOutlined />,
-    factory: (model: DynamicViewComponentProps) => {
+    Factory: ({ model }) => {
       return (
         <DynamicView {...model} />
       );

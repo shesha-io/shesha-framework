@@ -42,7 +42,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   name: 'Autocomplete',
   icon: <FileSearchOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
-  factory: (model: IAutocompleteComponentProps, _c, form) => {
+  Factory: ({ model, form }) => {
     const { queryParams, filter } = model;
     const { formMode, setFormDataAndInstance } = useForm();
     const { data } = useFormData();

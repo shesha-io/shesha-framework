@@ -20,7 +20,7 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
   name: 'Status Tag',
   isInput: true,
   icon: <ArrowsAltOutlined />,
-  factory: (model: IStatusTagProps) => {
+  Factory: ({ model }) => {
     const { globalState } = useGlobalState();
     const { data } = useFormData();
 

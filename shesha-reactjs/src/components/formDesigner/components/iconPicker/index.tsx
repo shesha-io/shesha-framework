@@ -15,7 +15,7 @@ const IconPickerComponent: IToolboxComponent<IIconPickerComponentProps> = {
   name: 'Icon Picker',
   icon: <HeartOutlined />,
   canBeJsSetting: true,
-  factory: (model: IIconPickerComponentProps, _cr, _f, _c, applicationContext) => {
+  Factory: ({ model, context: applicationContext }) => {
 
     return (
       <ConfigurableFormItem model={model}>

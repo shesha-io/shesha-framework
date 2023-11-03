@@ -14,7 +14,7 @@ const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
   type: 'address',
   name: 'Address',
   icon: <HomeOutlined />,
-  factory: (model: IAddressCompomentProps) => {
+  Factory: ({ model }) => {
     const { formMode } = useForm();
 
     const readOnly = model?.readOnly || formMode === 'readonly';

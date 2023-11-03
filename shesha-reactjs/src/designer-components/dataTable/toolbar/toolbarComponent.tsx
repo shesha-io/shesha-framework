@@ -24,7 +24,7 @@ const ToolbarComponent: IToolboxComponent<ToolbarButtonGroupProps> = {
   name: 'Toolbar',
   icon: <DashOutlined />,
   isHidden: true,
-  factory: () => {
+  Factory: () => {
     throw new Error('Toolbar component was removed');
   },
   migrator: (m) =>

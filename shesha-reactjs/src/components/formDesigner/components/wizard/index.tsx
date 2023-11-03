@@ -22,7 +22,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   type: 'wizard',
   name: 'Wizard',
   icon: <DoubleRightOutlined />,
-  factory: (model) => {
+  Factory: ({ model }) => {
     const { formMode } = useForm();
     const { executeBooleanExpression } = useFormExpression();
 

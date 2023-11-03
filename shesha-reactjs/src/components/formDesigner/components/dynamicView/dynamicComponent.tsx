@@ -2,8 +2,8 @@ import { useDeepCompareMemo } from 'hooks';
 import React, { FC, useRef } from 'react';
 import { getActualModel, useApplicationContext } from 'utils/publicUtils';
 import { CustomErrorBoundary } from '../../..';
-import { IConfigurableFormComponent } from '../../../../interfaces';
-import { useForm } from '../../../../providers';
+import { IConfigurableFormComponent } from 'interfaces';
+import { useForm } from 'providers';
 
 export interface IConfigurableFormComponentProps {
   model: IConfigurableFormComponent;
@@ -26,7 +26,11 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model }) => {
   actualModel.readOnly = actualModel.readOnly || allData.formMode === 'readonly';
 
   const renderComponent = () => {
-    return <CustomErrorBoundary>{toolboxComponent.factory(actualModel, componentRef, form)}</CustomErrorBoundary>;
+    return (
+      <CustomErrorBoundary>
+        <toolboxComponent.Factory model={actualModel} componentRef={componentRef} form={form}/>
+      </CustomErrorBoundary>
+    );
   };
 
   return renderComponent();

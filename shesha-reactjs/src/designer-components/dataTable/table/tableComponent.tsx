@@ -30,7 +30,7 @@ const TableComponent: IToolboxComponent<ITableComponentProps> = {
   type: 'datatable',
   name: 'Data Table',
   icon: <TableOutlined />,
-  factory: (model: ITableComponentProps) => {
+  Factory: ({ model }) => {
     const store = useDataTableStore(false);
 
     return store ? (

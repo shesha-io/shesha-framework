@@ -1,10 +1,10 @@
 import { TableOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
-import React, { MutableRefObject } from 'react';
+import React from 'react';
 import { validateConfigurableComponentSettings } from '../../../formDesignerUtils';
-import { IConfigurableFormComponent, IToolboxComponent } from '../../../interfaces';
-import { useDataTableStore } from '../../../providers';
-import { FormMarkup } from '../../../providers/form/models';
+import { IConfigurableFormComponent, IToolboxComponent } from 'interfaces';
+import { useDataTableStore } from 'providers';
+import { FormMarkup } from 'providers/form/models';
 import { ChildTable } from './childTable';
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
@@ -25,7 +25,7 @@ const ChildTableComponent: IToolboxComponent<IChildTableComponentProps> = {
   type: 'childTable',
   name: 'Child Table',
   icon: <TableOutlined />,
-  factory: (model: IChildTableComponentProps, componentRef: MutableRefObject<any>) => {
+  Factory: ({ model, componentRef }) => {
     const store = useDataTableStore(false);
 
     return store ? (

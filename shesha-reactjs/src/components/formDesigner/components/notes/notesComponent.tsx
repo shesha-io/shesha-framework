@@ -23,7 +23,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
   type: 'notes',
   name: 'Notes',
   icon: <FormOutlined />,
-  factory: (model: INotesProps) => {
+  Factory: ({ model }) => {
     const { data } = useFormData();
 
     // TODO:: Change to use Mustache

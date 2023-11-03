@@ -27,13 +27,13 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGoupProps> = {
   name: 'Checkbox group',
   icon: <ProfileOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.referenceListItem,
-  factory: (model: IEnhancedICheckboxGoupProps) => {
+  Factory: ({ model }) => {
     const { data } = useFormData();
 
     return (
       <ConfigurableFormItem model={model}>
-        {(value, onChanege) => 
-          <RefListCheckboxGroup {...model} style={getStyle(model?.style, data)} value={value} onChange={onChanege}/>
+        {(value, onChange) => 
+          <RefListCheckboxGroup {...model} style={getStyle(model?.style, data)} value={value} onChange={onChange}/>
         }
       </ConfigurableFormItem>
     );

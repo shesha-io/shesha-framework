@@ -16,7 +16,7 @@ const LabelValueEditorComponent: IToolboxComponent<ILabelValueEditorComponentPro
   name: 'Label Value editor',
   icon: <OneToOneOutlined />,
   canBeJsSetting: true,
-  factory: model => {
+  Factory: ({ model }) => {
     const customProps = model as ILabelValueEditorComponentProps;
 
     if (model.hidden) return null;

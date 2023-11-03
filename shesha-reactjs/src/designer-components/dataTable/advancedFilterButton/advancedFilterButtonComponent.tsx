@@ -15,7 +15,7 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IPagerComponentProps> = {
   type: 'datatable.advancedFilterButton',
   name: 'Table Advanced Filter Button',
   icon: <FilterOutlined />,
-  factory: (model: IPagerComponentProps) => {
+  Factory: ({ model }) => {
     if (model.hidden) return null;
 
     return <AdvancedFilterButton {...model} />;

@@ -20,7 +20,7 @@ const DataSourceComponent: IToolboxComponent<IDataSourceComponentProps> = {
   type: 'dataSource',
   name: 'DataSource',
   icon: <LayoutOutlined />,
-  factory: (model: IDataSourceComponentProps) => {
+  Factory: ({ model }) => {
     return <DataSource {...model} />;
   },
   migrator: m => 

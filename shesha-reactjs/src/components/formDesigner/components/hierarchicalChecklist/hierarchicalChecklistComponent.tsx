@@ -1,7 +1,7 @@
 import { ApartmentOutlined } from '@ant-design/icons';
 import { Skeleton } from 'antd';
 import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
-import React, { MutableRefObject } from 'react';
+import React from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
 import { useFormData } from '../../../../providers';
 import { FormMarkup, IConfigurableFormComponent } from '../../../../providers/form/models';
@@ -31,7 +31,7 @@ const HierarchicalChecklistComponent: IToolboxComponent<IHierarchicalChecklistPr
   type: 'checklist',
   name: 'Hierarchical Checklist',
   icon: <ApartmentOutlined />,
-  factory: (model: IHierarchicalChecklistProps, _componentRef: MutableRefObject<any>) => {
+  Factory: ({ model }) => {
     const { data: formData } = useFormData();
 
     // TODO:: Review - formData?.ownerType, formData?.ownerId and formData?.checklistId need to be removed

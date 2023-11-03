@@ -45,7 +45,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
   name: 'Entity Picker',
   icon: <EllipsisOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
-  factory: (model: IEntityPickerComponentProps) => {
+  Factory: ({ model }) => {
     const { filters, modalWidth, customWidth, widthUnits } = model;
     const { formMode } = useForm();
 

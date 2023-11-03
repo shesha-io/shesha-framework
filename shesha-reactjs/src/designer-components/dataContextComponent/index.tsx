@@ -20,7 +20,7 @@ const DataContextComponent: IToolboxComponent<IDataContextComponentProps> = {
     name: 'DataContext ',
     icon: <CodeOutlined />,
     dataTypeSupported: () => false,
-    factory: (model: IDataContextComponentProps, _c) => {
+    Factory: ({ model }) => {
 
       const metadata: Promise<IModelMetadata> = useMemo(() => {
         return Promise.resolve({

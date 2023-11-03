@@ -18,7 +18,7 @@ const PasswordComboComponent: IToolboxComponent<IPasswordComponentProps> = {
   icon: <LockOutlined />,
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string && dataFormat === StringFormats.password,
-  factory: (model: IPasswordComponentProps) => {
+  Factory: ({ model }) => {
     const defaultModel = getDefaultModel(model);
     const { placeholder, confirmPlaceholder, message, minLength } = defaultModel || {};
     const { formData } = useForm();

@@ -19,11 +19,11 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
   type: 'tabs',
   name: 'Tabs',
   icon: <FolderOutlined />,
-  factory: model => {
+  Factory: ({ model }) => {
     const { anyOfPermissionsGranted } = useSheshaApplication();
     const allData = useApplicationContext();
 
-    const { tabs, defaultActiveKey, tabType = 'card', size, position = 'top' } = model as ITabsComponentProps;
+    const { tabs, defaultActiveKey, tabType = 'card', size, position = 'top' } = model;
 
     const actionKey = defaultActiveKey || (tabs?.length && tabs[0]?.key);
 

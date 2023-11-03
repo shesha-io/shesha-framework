@@ -22,7 +22,7 @@ export const SortingEditorComponent: IToolboxComponent<ISortingEditorComponentPr
     canBeJsSetting: true,
     icon: <GroupOutlined />,
     isHidden: true,
-    factory: (model: ISortingEditorComponentProps, _c, _form) => {
+    Factory: ({ model }) => {
         const { formMode } = useForm();
         const { data: formData } = useFormData();
         const { modelType: modelTypeExpression } = model;

@@ -24,7 +24,7 @@ const DividerComponent: IToolboxComponent<IDividerProps> = {
   type: 'divider',
   name: 'Divider',
   icon: <LineOutlined />,
-  factory: (model: IDividerProps) => {
+  Factory: ({ model }) => {
     const props: DividerProps = {
       type: model?.dividerType,
       orientation: model?.orientation,

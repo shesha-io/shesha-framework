@@ -18,7 +18,7 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
   name: 'Reference list status',
   icon: <FileSearchOutlined />,
 
-  factory: (model: IRefListStatusProps) => {
+  Factory: ({ model }) => {
     const { formMode, formData: data } = useForm();
     const { solidBackground = true, referenceListId, showReflistName = true } = model;
 

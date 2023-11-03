@@ -28,7 +28,7 @@ const TitleComponent: IToolboxComponent<ITextTypographyProps> = {
   name: 'Title',
   icon: <LineHeightOutlined />,
   tooltip: "Deprecated! Please use 'Text (Full)'",
-  factory: () => {
+  Factory: () => {
     throw new Error('`title` component is deprecated');
   },
   migrator: (m) => m.add<ITextTypographyProps>(0, (prev) => {

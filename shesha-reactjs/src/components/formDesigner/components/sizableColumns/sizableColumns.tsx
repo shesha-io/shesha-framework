@@ -14,7 +14,7 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
   type: 'sizableColumns',
   name: 'SizableColumns',
   icon: <BorderHorizontalOutlined />,
-  factory: (model) => {
+  Factory: ({ model }) => {
     const { data } = useFormData();
     const { globalState } = useGlobalState();
     const { columns } = model as ISizableColumnComponentProps;

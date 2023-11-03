@@ -18,7 +18,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
   type: 'collapsiblePanel',
   name: 'Panel',
   icon: <GroupOutlined />,
-  factory: (model: ICollapsiblePanelComponentProps) => {
+  Factory: ({ model }) => {
     const { formMode, hasVisibleChilds } = useForm();
     const { label, expandIconPosition, collapsedByDefault, collapsible, ghost } = model;
 

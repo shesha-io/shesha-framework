@@ -21,7 +21,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
   name: 'Image',
   icon: <FileImageOutlined />,
 
-  factory: (model: IImageProps) => {
+  Factory: ({ model }) => {
     const { data: formData } = useFormData();
 
     return (
