@@ -57,6 +57,7 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
                 Markup = form.Markup,
                 ModelType = form.ModelType,
                 TemplateId = form.Template?.Id,
+                IsTemplate = form.IsTemplate,
             };
 
             return Task.FromResult<DistributedConfigurableItemBase>(result);
