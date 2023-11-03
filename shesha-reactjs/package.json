@@ -36,6 +36,7 @@
     "build-storybook": "storybook build",
     "commit": "cz",
     "lint": "eslint src/**/*.ts{,x}",
+    "lint-errors": "eslint src/**/*.ts{,x} --quiet",
     "lint-fix": "eslint src/**/*.ts{,x} --fix"
   },
   "resolutions": {
@@ -133,7 +134,7 @@
     "storybook": "^7.0.1",
     "ts-jest": "^29.1.0",
     "tsconfig-paths-webpack-plugin": "^4.0.1",
-    "typescript": "^5.1.6"
+    "typescript": "^5.2.2"
   },
   "files": [
     "dist",

@@ -342,12 +342,13 @@ function useUndoableState(require: boolean = true) {
 function useFormDesigner(require: boolean = true) {
   const actionsContext = useFormDesignerActions(require);
   const stateContext = useFormDesignerState(require);
+  const undoableContext = useUndoableState(require);
 
   // useContext() returns initial state when provider is missing
   // initial context state is useless especially when require == true
   // so we must return value only when both context are available
   return actionsContext !== undefined && stateContext !== undefined
-    ? { ...actionsContext, ...stateContext, ...useUndoableState(require) }
+    ? { ...actionsContext, ...stateContext, ...undoableContext }
     : undefined;
 }
 

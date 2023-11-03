@@ -122,10 +122,13 @@ const DraggableBodyRowInner = ({ columns, className, style, ...restProps }) => {
   );
 };
 
+const DragHandle = () => {
+  const dragHandleProps = useContext(DragHandleContext);
+  return (<MenuOutlined style={{ color: '#999' }} {...dragHandleProps} />);
+};
+
 export const SizableColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
   const columns = value as ISizableColumnProps[];
-
-  const DragHandle = (props) => <MenuOutlined style={{ color: '#999' }} {...props} />;
 
   const handleDeleteTab = (key: string) => {
     const newColumns = columns.filter((column) => column.id !== key);
@@ -158,8 +161,7 @@ export const SizableColumnsList: FC<IProps> = ({ value, onChange, readOnly }) =>
           dataIndex: 'sort',
           width: 30,
           render: (_text, _record, _index) => {
-            const dragHandleProps = useContext(DragHandleContext);
-            return <DragHandle {...dragHandleProps} />;
+            return <DragHandle />;
           },
         }
       : null,

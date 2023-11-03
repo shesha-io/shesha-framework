@@ -1,5 +1,5 @@
 import { useGet, UseGetProps } from '../hooks/useGet';
-import { getUseMutateForEndpoint } from '../hooks/useMutate';
+import { useMutateForEndpoint } from '../hooks/useMutate';
 import { IAjaxResponse, IAjaxResponseBase } from '../interfaces/ajaxResponse';
 import { GuidEntityReferenceDto } from './common';
 
@@ -96,4 +96,4 @@ export const useNoteGetList = (props: UseNoteGetListProps) =>
     props
   );
 
-export const useNoteCreate = () => getUseMutateForEndpoint({ url: `/api/services/app/Note/Create`, httpVerb: 'POST' });
+export const useNoteCreate = () => useMutateForEndpoint({ url: `/api/services/app/Note/Create`, httpVerb: 'POST' });

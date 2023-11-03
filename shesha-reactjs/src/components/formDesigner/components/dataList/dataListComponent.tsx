@@ -1,54 +1,52 @@
 import React, { FC, useCallback, useMemo } from 'react';
 import { UnorderedListOutlined } from "@ant-design/icons";
-import { IToolboxComponent } from "../../../../interfaces";
+import { IToolboxComponent } from "interfaces";
 import { Alert } from 'antd';
-import { useDataTableStore, useForm } from '../../../../providers';
+import { useDataTableStore, useForm } from 'providers';
 import { DataList } from '../../../dataList';
 import { IDataListComponentProps } from '../../../dataList/models';
-import { useDataSources } from '../../../../providers/dataSourcesProvider';
+import { useDataSources } from 'providers/dataSourcesProvider';
 import ConfigurableFormItem from '../formItem';
 import classNames from 'classnames';
-import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 import { DataListSettingsForm } from './dataListSettings';
+import { DataTableFullInstance } from 'providers/dataTable/contexts';
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
-    type: 'datalist',
-    name: 'DataList',
-    icon: <UnorderedListOutlined />,
-    factory: (model: IDataListComponentProps) => {
-      if (model.hidden) return null;
-      
-      return <DataListWrapper {...model} />;
-    },
-    migrator: m => m
-      .add<IDataListComponentProps>(0, prev => {
-        return {
-          ...prev,
-          formSelectionMode: 'name',
-          selectionMode: 'none',
-          items: [],
-        };
-        })
-      .add<IDataListComponentProps>(1, prev => {
-        return {
-          ...prev,
-          orientation: 'vertical',
-          listItemWidth: 1
-        };
-        })
-      .add<IDataListComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-      ,
-      settingsFormFactory: (props) => (<DataListSettingsForm {...props}/>),
+  type: 'datalist',
+  name: 'DataList',
+  icon: <UnorderedListOutlined />,
+  factory: (model: IDataListComponentProps) => {
+    if (model.hidden) return null;
+
+    return <DataListControl {...model} />;
+  },
+  migrator: m => m
+    .add<IDataListComponentProps>(0, prev => {
+      return {
+        ...prev,
+        formSelectionMode: 'name',
+        selectionMode: 'none',
+        items: [],
+      };
+    })
+    .add<IDataListComponentProps>(1, prev => {
+      return {
+        ...prev,
+        orientation: 'vertical',
+        listItemWidth: 1
+      };
+    })
+    .add<IDataListComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+  ,
+  settingsFormFactory: (props) => (<DataListSettingsForm {...props} />),
 };
 
 const NotConfiguredWarning: FC = () => {
-    return <Alert className="sha-designer-warning" message="Data list is not configured properly" type="warning" />;
+  return <Alert className="sha-designer-warning" message="Data list is not configured properly" type="warning" />;
 };
-  
-export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
-  const { formMode } = useForm();
-  const isDesignMode = formMode === 'designer';
 
+export const DataListControl: FC<IDataListComponentProps> = (props) => {
   const ds = useDataSources();
   const dts = useDataTableStore(false);
 
@@ -56,9 +54,16 @@ export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
     ? ds.getDataSource(props.dataSource)?.dataSource
     : dts;
 
-  if (!dataSource)
-    return <NotConfiguredWarning />;
-  
+  return dataSource
+    ? <DataListWithDataSource {...props} dataSourceInstance={dataSource}/>
+    : <NotConfiguredWarning />;
+};
+
+interface DataListWithDataSourceProps extends IDataListComponentProps {
+  dataSourceInstance: DataTableFullInstance;
+}
+export const DataListWithDataSource: FC<DataListWithDataSourceProps> = (props) => {
+  const { dataSourceInstance: dataSource } = props;
   const {
     tableData,
     isFetchingTableData,
@@ -67,6 +72,8 @@ export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
     getRepository,
     modelType
   } = dataSource;
+  const { formMode } = useForm();
+  const isDesignMode = formMode === 'designer';
 
   const { selectedRow, selectedRows, setSelectedRow, setMultiSelectedRow } = dataSource;
 
@@ -79,22 +86,20 @@ export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
   }, [setSelectedRow]);
 
   const data = useMemo(() => {
-    return isDesignMode 
+    return isDesignMode
       ? props.orientation === 'vertical'
-        ? [{}] 
+        ? [{}]
         : [{}, {}, {}, {}]
-      : tableData; 
+      : tableData;
   }, [isDesignMode, tableData, props.orientation]);
 
-  if (isDesignMode 
+  if (isDesignMode
     && (
-      !repository 
+      !repository
       || !props.formId && props.formSelectionMode === "name"
       || !props.formType && props.formSelectionMode === "view"
       || !props.formIdExpression && props.formSelectionMode === "expression"
-      )) return <NotConfiguredWarning />;
-
-  //console.log(`DataListWrapper render, ${data?.length} records`);
+    )) return <NotConfiguredWarning />;
 
   return (
     <ConfigurableFormItem
@@ -106,7 +111,6 @@ export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
       labelCol={{ span: 0 }}
       wrapperCol={{ span: 24 }}
     >
-      <></>
       <DataList
         {...props}
         entityType={modelType}
@@ -124,4 +128,3 @@ export const DataListWrapper: FC<IDataListComponentProps> = (props) => {
 };
 
 export default DataListComponent;
-  

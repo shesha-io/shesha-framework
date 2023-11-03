@@ -38,8 +38,7 @@ interface IMigrationRegistrationsOwner<TDst = IHasVersion, TContext = any> {
 }
 
 export class Migrator<TSrc = IHasVersion, TDst = IHasVersion, TContext = any>
-  implements IMigrationRegistrationsOwner<TDst>
-{
+  implements IMigrationRegistrationsOwner<TDst> {
   migrations: MigrationRegistration[];
 
   constructor() {
