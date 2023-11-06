@@ -10,7 +10,6 @@ import { nanoid } from 'nanoid/non-secure';
 import { ISettingsFormFactoryArgs } from 'interfaces';
 import SettingsForm, { useSettingsForm } from '../../../../designer-components/_settings/settingsForm';
 import SettingsFormItem from '../../../../designer-components/_settings/settingsFormItem';
-import SettingsCollapsiblePanel from 'designer-components/_settings/settingsCollapsiblePanel';
 import { CodeEditor } from 'components';
 
 const { Option } = Select;
