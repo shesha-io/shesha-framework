@@ -34,7 +34,7 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
   type: 'datatableContext',
   name: 'DataTable Context',
   icon: <LayoutOutlined />,
-  factory: (model: ITableContextComponentProps) => {
+  Factory: ({ model }) => {
     return <TableContext {...model} />;
   },
   migrator: (m) =>

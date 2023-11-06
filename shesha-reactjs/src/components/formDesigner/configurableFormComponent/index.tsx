@@ -20,10 +20,10 @@ export interface IConfigurableFormComponentProps {
 const ConfigurableFormComponent: FC<IConfigurableFormComponentProps> = ({ id }) => {
   const { formMode } = useForm();
   const designer = useFormDesigner(false);
+  const componentRef = useRef(null);
 
   const componentModel = useComponentModel(id);
   
-  const componentRef = useRef(null);
   const isDesignMode = formMode === 'designer';
 
   if (!designer || !isDesignMode || componentModel?.isDynamic) return (

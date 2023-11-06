@@ -31,7 +31,7 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionsTreeCompon
   type: 'permissionsTree',
   name: 'Permissions tree',
   icon: <ApartmentOutlined />,
-  factory: (model: IPermissionsTreeComponentProps) => {
+  Factory: ({ model }) => {
     const { formMode } = useForm();
 
     if (model.mode === 'Edit') {

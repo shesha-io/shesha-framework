@@ -13,7 +13,7 @@ const ColorPickerComponent: IToolboxComponent<IColorPickerComponentProps> = {
   type: 'colorPicker',
   name: 'Color Picker',
   icon: <FormatPainterOutlined />,
-  factory: (model: IColorPickerComponentProps) => {
+  Factory: ({ model }) => {
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) => (<ColorPickerWrapper {...model} value={value} onChange={onChange}/>)}

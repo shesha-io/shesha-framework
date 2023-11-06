@@ -15,10 +15,9 @@ const DrawerComponent: IToolboxComponent<IDrawerProps> = {
   type: 'drawer',
   name: 'Drawer',
   icon: <SwapOutlined />,
-  factory: (model: IDrawerProps) => {
+  Factory: ({ model }) => {
     const { data } = useFormData();
     const { globalState } = useGlobalState();
-
     const { size, style, ...props } = model;
 
     return <ShaDrawer style={getStyle(model?.style, data, globalState)} {...props} />;

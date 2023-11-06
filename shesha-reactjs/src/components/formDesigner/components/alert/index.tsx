@@ -13,7 +13,7 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
   type: 'alert',
   name: 'Alert',
   icon: <ExclamationCircleOutlined />,
-  factory: (model: IAlertComponentProps) => {
+  Factory: ({ model }) => {
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
 

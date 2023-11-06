@@ -3,20 +3,20 @@ import { message, Select } from 'antd';
 import moment from 'moment';
 import React, { FC } from 'react';
 import { evaluateString } from '../..';
-import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
-import { customDropDownEventHandler } from '../../components/formDesigner/components/utils';
-import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
-import RefListDropDown from '../../components/refListDropDown';
-import { IToolboxComponent } from '../../interfaces';
-import { DataTypes } from '../../interfaces/dataTypes';
-import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../../providers';
-import { FormMarkup } from '../../providers/form/models';
-import { getStyle, validateConfigurableComponentSettings } from '../../providers/form/utils';
-import { axiosHttp } from '../../utils/fetchers';
-import { getLegacyReferenceListIdentifier } from '../../utils/referenceList';
+import ConfigurableFormItem from 'components/formDesigner/components/formItem';
+import { customDropDownEventHandler } from 'components/formDesigner/components/utils';
+import ReadOnlyDisplayFormItem from 'components/readOnlyDisplayFormItem';
+import RefListDropDown from 'components/refListDropDown';
+import { IToolboxComponent } from 'interfaces';
+import { DataTypes } from 'interfaces/dataTypes';
+import { useForm, useFormData, useGlobalState, useSheshaApplication } from 'providers';
+import { FormMarkup } from 'providers/form/models';
+import { getStyle, validateConfigurableComponentSettings } from 'providers/form/utils';
+import { axiosHttp } from 'utils/fetchers';
+import { getLegacyReferenceListIdentifier } from 'utils/referenceList';
 import { IDropdownComponentProps, ILabelValue } from './interfaces';
 import settingsFormJson from './settingsForm.json';
-import { migratePropertyName, migrateCustomFunctions } from '../../designer-components/_common-migrations/migrateSettings';
+import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -28,7 +28,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
   name: 'Dropdown',
   icon: <DownSquareOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.referenceListItem,
-  factory: (model: IDropdownComponentProps, _c, form) => {
+  Factory: ({ model, form }) => {
     const { formMode, setFormDataAndInstance } = useForm();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();

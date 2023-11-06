@@ -13,7 +13,7 @@ const ChildEntitiesTagGroup: IToolboxComponent<IChildEntitiesTagGroupProps> = {
   name: 'Child Entities Tag Group',
   icon: <UnorderedListOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.array,
-  factory: (model: IChildEntitiesTagGroupProps) => {
+  Factory: ({ model }) => {
     if (model.hidden) return null;
 
     return (

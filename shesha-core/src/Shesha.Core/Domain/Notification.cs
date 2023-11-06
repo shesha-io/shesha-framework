@@ -1,27 +1,26 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Threading.Tasks;
-using System.Threading;
-using Abp.Domain.Entities.Auditing;
+﻿using Abp.Domain.Entities.Auditing;
 using Abp.Domain.Repositories;
-using Abp.Linq;
 using FluentValidation;
 using Shesha.Domain.Attributes;
-using Shesha.Services;
-using System.Linq;
 using Shesha.Extensions;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Shesha.Domain
 {
     [Entity(FriendlyName = "Notification")]
     public class Notification : FullAuditedEntity<Guid>
     {
-        [NotMapped, EntityDisplayName]
+        [NotMapped]
         public virtual string FullName => !string.IsNullOrEmpty(Namespace) ? Namespace + ": " + Name : !string.IsNullOrEmpty(Name) ? Name : Id.ToString();
 
         [Required]
         [StringLength(255)]
+        [EntityDisplayName]
         public virtual string Name { get; set; }
 
         [StringLength(255)]

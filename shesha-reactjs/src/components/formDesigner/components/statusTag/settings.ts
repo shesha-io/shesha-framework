@@ -31,7 +31,7 @@ export const getSettings = () =>
             label: 'Label',
           })
           .addCheckbox({
-            id: 'd936689d-8ea3-4f8a-bcc3-d494d27c46fd',
+            id: 'EA1BE8D3-69A0-4ABA-AD2A-3ED32B979189',
             propertyName: 'hideLabel',
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
             label: 'Hide Label',

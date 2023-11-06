@@ -1,4 +1,4 @@
-import { IAjaxResponse, getUseMutateForEndpoint, IUseMutateResponseFixedEndpoint } from "@shesha/reactjs";
+import { IAjaxResponse, useMutateForEndpoint, IUseMutateResponseFixedEndpoint } from "@shesha/reactjs";
 
 export interface ResetPasswordSendOtpResponse {
     operationId?: string;
@@ -25,10 +25,10 @@ export interface ResetPasswordVerifyOtpResponse {
 export type ResetPasswordVerifyOtpResponseAjaxResponse = IAjaxResponse<ResetPasswordVerifyOtpResponse>;
 
 export const useResetPasswordSendOtp = (): IUseMutateResponseFixedEndpoint<UserResetPasswordSendOtpQueryParams, ResetPasswordSendOtpResponseAjaxResponse> => 
-    getUseMutateForEndpoint<UserResetPasswordSendOtpQueryParams, ResetPasswordSendOtpResponseAjaxResponse>({ url: data => `/api/services/app/User/ResetPasswordSendOtp?mobileNo=${data.mobileNo}`, httpVerb: 'POST' });
+    useMutateForEndpoint<UserResetPasswordSendOtpQueryParams, ResetPasswordSendOtpResponseAjaxResponse>({ url: data => `/api/services/app/User/ResetPasswordSendOtp?mobileNo=${data.mobileNo}`, httpVerb: 'POST' });
 
 export const useResetPasswordVerifyOtp = (): IUseMutateResponseFixedEndpoint<ResetPasswordVerifyOtpInput, ResetPasswordVerifyOtpResponseAjaxResponse> => 
-    getUseMutateForEndpoint<ResetPasswordVerifyOtpInput, ResetPasswordVerifyOtpResponseAjaxResponse>({ url: '/api/services/app/User/ResetPasswordVerifyOtp', httpVerb: 'POST' });
+    useMutateForEndpoint<ResetPasswordVerifyOtpInput, ResetPasswordVerifyOtpResponseAjaxResponse>({ url: '/api/services/app/User/ResetPasswordVerifyOtp', httpVerb: 'POST' });
 
     export interface ResetPasswordUsingTokenInput {
         username: string;
@@ -39,4 +39,4 @@ export const useResetPasswordVerifyOtp = (): IUseMutateResponseFixedEndpoint<Res
 export type BooleanAjaxResponse = IAjaxResponse<boolean>;
       
 export const useUserResetPasswordUsingToken = (): IUseMutateResponseFixedEndpoint<ResetPasswordUsingTokenInput, BooleanAjaxResponse> => 
-    getUseMutateForEndpoint<ResetPasswordUsingTokenInput, BooleanAjaxResponse>({ url: '/api/services/app/User/ResetPasswordUsingToken', httpVerb: 'POST' });
+    useMutateForEndpoint<ResetPasswordUsingTokenInput, BooleanAjaxResponse>({ url: '/api/services/app/User/ResetPasswordUsingToken', httpVerb: 'POST' });

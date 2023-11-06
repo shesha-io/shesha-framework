@@ -154,6 +154,11 @@ const DraggableBodyRowInner = ({ items, className, style, ...restProps }) => {
   );
 };
 
+const DragHandle = () => {
+  const dragHandleProps = useContext(DragHandleContext);
+  return (<MenuOutlined style={{ color: '#999' }} {...dragHandleProps} />);
+};
+
 export const LabelValueEditor: FC<ILabelValueEditorProps> = ({
   value,
   onChange,
@@ -170,8 +175,6 @@ export const LabelValueEditor: FC<ILabelValueEditorProps> = ({
   const [showModal, setShowModal] = useState(false);
 
   const items = (value as IItemProps[]) || [];
-
-  const DragHandle = props => <MenuOutlined style={{ color: '#999' }} {...props} />;
 
   const handleDeleteRow = (id: string) => {
     const newRows = items.filter(row => row.id !== id);
@@ -206,8 +209,7 @@ export const LabelValueEditor: FC<ILabelValueEditorProps> = ({
         dataIndex: 'sort',
         width: '30',
         render: (_text, _record, _index) => {
-          const dragHandleProps = useContext(DragHandleContext);
-          return <DragHandle {...dragHandleProps} />;
+          return <DragHandle />;
         },
       },
     {

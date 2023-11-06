@@ -1,11 +1,11 @@
 import { SearchOutlined } from '@ant-design/icons';
 import React from 'react';
 import { GlobalTableFilter } from '../../..';
-import { IToolboxComponent } from '../../../interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '../../../providers/form/models';
-import { validateConfigurableComponentSettings } from '../../../providers/form/utils';
+import { IToolboxComponent } from 'interfaces';
+import { FormMarkup, IConfigurableFormComponent } from 'providers/form/models';
+import { validateConfigurableComponentSettings } from 'providers/form/utils';
 import settingsFormJson from './settingsForm.json';
-import { migrateCustomFunctions, migratePropertyName } from '../../../designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 
 export interface IQuickSearchComponentProps extends IConfigurableFormComponent {}
 
@@ -15,7 +15,7 @@ const QuickSearchComponent: IToolboxComponent<IQuickSearchComponentProps> = {
   type: 'datatable.quickSearch',
   name: 'Quick Search',
   icon: <SearchOutlined />,
-  factory: (_model: IQuickSearchComponentProps) => {
+  Factory: () => {
     return <GlobalTableFilter />;
   },
   initModel: (model: IQuickSearchComponentProps) => {

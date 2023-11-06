@@ -1,5 +1,5 @@
 import { useGet, UseGetProps } from '../hooks/useGet';
-import { getUseMutateForEndpoint } from '../hooks/useMutate';
+import { useMutateForEndpoint } from '../hooks/useMutate';
 import { IAjaxResponse, IAjaxResponseBase } from '../interfaces/ajaxResponse';
 
 /**
@@ -161,4 +161,4 @@ export const useCheckListGetCheckListTree = ({ id, ...props }: UseCheckListGetCh
   );
 
 export const useCheckListSaveSelection = () =>
-  getUseMutateForEndpoint<SaveSelectionInput>({ url: (data) => `/checkList/${data.id}/selection`, httpVerb: 'POST' });
+  useMutateForEndpoint<SaveSelectionInput>({ url: (data) => `/checkList/${data.id}/selection`, httpVerb: 'POST' });

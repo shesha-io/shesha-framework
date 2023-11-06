@@ -1,12 +1,12 @@
 import { BorderOutlined } from '@ant-design/icons';
 import { evaluateString, validateConfigurableComponentSettings } from 'providers/form/utils';
 import React from 'react';
-import { ConfigurableFormItem, FormComponentSelector } from '../../components';
-import { IToolboxComponent } from '../../interfaces';
-import { useForm, useFormData, useMetadata } from '../../providers';
+import { ConfigurableFormItem, FormComponentSelector } from 'components';
+import { IToolboxComponent } from 'interfaces';
+import { useForm, useFormData, useMetadata } from 'providers';
 import { IComponentSelectorComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
-import { migratePropertyName, migrateCustomFunctions } from '../../designer-components/_common-migrations/migrateSettings';
+import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
 
 export type IActionParameters = [{ key: string; value: string }];
 
@@ -15,7 +15,8 @@ export const ComponentSelectorComponent: IToolboxComponent<IComponentSelectorCom
   name: 'Component selector',
   icon: <BorderOutlined />,
   isHidden: true,
-  factory: ({ style, ...model }: IComponentSelectorComponentProps) => {
+  Factory: ({ model: passedModel }) => {
+    const { style, ...model } = passedModel;
     const { formMode } = useForm();
     const { data: formData } = useFormData();
 

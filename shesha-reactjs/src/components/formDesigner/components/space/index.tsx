@@ -1,10 +1,10 @@
 import { ArrowsAltOutlined } from '@ant-design/icons';
 import { Space, SpaceProps } from 'antd';
-import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 import React from 'react';
 import { validateConfigurableComponentSettings } from '../../../../formDesignerUtils';
-import { IConfigurableFormComponent, IToolboxComponent } from '../../../../interfaces/formDesigner';
-import { FormMarkup } from '../../../../providers/form/models';
+import { IConfigurableFormComponent, IToolboxComponent } from 'interfaces/formDesigner';
+import { FormMarkup } from 'providers/form/models';
 import ComponentsContainer from '../../containers/componentsContainer';
 import settingsFormJson from './settingsForm.json';
 
@@ -25,7 +25,8 @@ const SpaceComponent: IToolboxComponent<ISpaceProps> = {
   name: 'Space',
   icon: <ArrowsAltOutlined />,
   isHidden: true,
-  factory: ({ marginLeft, marginRight, ...model }: ISpaceProps) => {
+  Factory: ({ model: passedModel }) => {
+    const { marginLeft, marginRight, ...model } = passedModel;
     const props: SpaceProps = {
       align: model?.align,
       direction: model?.direction,

@@ -40,7 +40,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       dataFormat === StringFormats.emailAddress ||
       dataFormat === StringFormats.phoneNumber ||
       dataFormat === StringFormats.password),
-  factory: (model: ITextFieldComponentProps, _c, form) => {
+  Factory: ({ model, form }) => {
     const { formMode, setFormDataAndInstance } = useForm();
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
@@ -84,11 +84,11 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
           evaluateString(model?.initialValue, { formData, formMode, globalState })
         }
       >
-          {(value, onChange) => 
-            readOnly 
-              ? <ReadOnlyDisplayFormItem value={value} disabled={model.disabled} />
-              : <InputComponentType {...inputProps} {...customEventHandler(eventProps)} disabled={model.disabled} value={value} onChange={onChange} />
-          }
+        {(value, onChange) =>
+          readOnly
+            ? <ReadOnlyDisplayFormItem value={value} disabled={model.disabled} />
+            : <InputComponentType {...inputProps} {...customEventHandler(eventProps)} disabled={model.disabled} value={value} onChange={onChange} />
+        }
       </ConfigurableFormItem>
     );
   },

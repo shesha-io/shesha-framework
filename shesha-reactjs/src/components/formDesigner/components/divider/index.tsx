@@ -29,7 +29,7 @@ const DividerComponent: IToolboxComponent<IDividerProps> = {
   type: 'divider',
   name: 'Divider',
   icon: <LineOutlined />,
-  factory: (model: IDividerProps) => {
+  Factory: ({ model }) => {
     const { data } = useFormData();
     const { globalState } = useGlobalState();
 

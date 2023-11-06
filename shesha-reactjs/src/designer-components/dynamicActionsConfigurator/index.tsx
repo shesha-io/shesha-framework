@@ -13,7 +13,7 @@ export const DynamicActionsConfiguratorComponent: IToolboxComponent<IDynamicActi
   name: 'Dynamic Items Configurator',
   icon: <ThunderboltOutlined />,
   isHidden: false,
-  factory: (model: IDynamicActionsConfiguratorComponentProps) => {
+  Factory: ({ model }) => {
     const { isComponentHidden, formMode } = useForm();
 
     const isHidden = isComponentHidden(model);

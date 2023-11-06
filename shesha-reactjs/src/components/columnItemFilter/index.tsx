@@ -83,7 +83,7 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
     if (!filter) {
       onChangeFilterOption(id, options[0]);
     }
-  }, []);
+  });
 
   const handleStringFilter = (changeValue: ChangeEvent<HTMLInputElement>) => {
     const value = (changeValue as ChangeEvent<HTMLInputElement>).target.value;
@@ -102,64 +102,6 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
     onRemoveFilter(id);
   };
 
-  const renderDateTimePicker = (format: string, showTime: boolean) => {
-    const onChange = (_dateEvent: any, dateString: string | string[]) => {
-      onChangeFilter(id, dateString);
-    };
-
-    // memoize moment to prevent re-rendeing of the DatePicker. On re-rendering it reset current view to current month
-    const memoizedMoment = useMemo(() => {
-      return filter instanceof Array ? null : getMoment(filter, format);
-    }, [filter]);
-
-    const memoizedRange = useMemo(() => {
-      if (filter instanceof Array) {
-        const range: [Moment, Moment] = [undefined, undefined];
-        range[0] = getMoment(filter[0], format);
-        range[1] = getMoment(filter[1], format);
-        return range;
-      } else return null;
-    }, [filter]);
-
-    return filterOption === 'between' ? (
-      <DateRangePicker size="small" onChange={onChange} value={memoizedRange} format={format} showTime={showTime} />
-    ) : (
-      <DatePicker
-        size="small"
-        onChange={onChange}
-        value={memoizedMoment as Moment}
-        format={format}
-        showTime={showTime}
-      />
-    );
-  };
-
-  const renderTimeInput = (format: string) => {
-    const onChange = (_dateEvent: any, dateString: string | string[]) => {
-      onChangeFilter(id, dateString);
-    };
-
-    // memoize moment to prevent re-rendeing of the DatePicker. On re-rendering it reset current view to current month
-    const memoizedMoment = useMemo(() => {
-      return filter instanceof Array ? null : getMoment(filter, format);
-    }, [filter]);
-
-    const memoizedRange = useMemo(() => {
-      if (filter instanceof Array) {
-        const range: [Moment, Moment] = [undefined, undefined];
-        range[0] = getMoment(filter[0], format);
-        range[1] = getMoment(filter[1], format);
-        return range;
-      } else return null;
-    }, [filter]);
-
-    return filterOption === 'between' ? (
-      <TimeRangePicker size="small" onChange={onChange} value={memoizedRange} format={ADVANCEDFILTER_TIME_FORMAT} />
-    ) : (
-      <TimePicker size="small" onChange={onChange} value={memoizedMoment} format={ADVANCEDFILTER_TIME_FORMAT} />
-    );
-  };
-
   const renderBooleanInput = () => {
     const onChange = (e: CheckboxChangeEvent) => {
       onChangeFilter(id, e.target.checked);
@@ -172,6 +114,13 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
   };
 
   const hideFilterOptions = () => ['boolean', 'reference-list-item', 'multiValueRefList', 'entity'].includes(dataType);
+
+  const baseProps: BaseFilterProps = {
+    id,
+    filter,
+    filterOption,
+    onChangeFilter
+  };
 
   return (
     <div
@@ -233,11 +182,11 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
           />
         )}
 
-        {dataType === 'date' && renderDateTimePicker(ADVANCEDFILTER_DATE_FORMAT, false)}
+        {dataType === 'date' && (<DateTimeFilter {...baseProps} format={ADVANCEDFILTER_DATE_FORMAT} showTime={false} />)}
 
-        {dataType === 'date-time' && renderDateTimePicker(ADVANCEDFILTER_DATETIME_FORMAT, true)}
+        {dataType === 'date-time' && (<DateTimeFilter {...baseProps} format={ADVANCEDFILTER_DATETIME_FORMAT} showTime={true} />)}
 
-        {dataType === 'time' && renderTimeInput(ADVANCEDFILTER_TIME_FORMAT)}
+        {dataType === 'time' && (<TimeFilter {...baseProps} format={ADVANCEDFILTER_TIME_FORMAT} />)}       
 
         {dataType === 'boolean' && renderBooleanInput()}
 
@@ -423,6 +372,77 @@ const EntityFilter: FC<IEntityFilterProps> = (props) => {
           </Select.Option>
         ))}
     </Select>
+  );
+};
+
+interface BaseFilterProps {
+  id: string;
+  filter: ColumnFilter;
+  filterOption: IndexColumnFilterOption;
+  onChangeFilter?: (filterId: string, filter: ColumnFilter) => void;
+}
+interface DateTimeFilterProps extends BaseFilterProps{
+  format: string;
+  showTime: boolean;
+}
+const DateTimeFilter: FC<DateTimeFilterProps> = ({ id, filter, filterOption, onChangeFilter, format, showTime }) => {
+  const onChange = (_dateEvent: any, dateString: string | string[]) => {
+    onChangeFilter(id, dateString);
+  };
+
+  // memoize moment to prevent re-rendeing of the DatePicker. On re-rendering it reset current view to current month
+  const memoizedMoment = useMemo(() => {
+    return filter instanceof Array ? null : getMoment(filter, format);
+  }, [filter, format]);
+
+  const memoizedRange = useMemo(() => {
+    if (filter instanceof Array) {
+      const range: [Moment, Moment] = [undefined, undefined];
+      range[0] = getMoment(filter[0], format);
+      range[1] = getMoment(filter[1], format);
+      return range;
+    } else return null;
+  }, [filter, format]);
+
+  return filterOption === 'between' ? (
+    <DateRangePicker size="small" onChange={onChange} value={memoizedRange} format={format} showTime={showTime} />
+  ) : (
+    <DatePicker
+      size="small"
+      onChange={onChange}
+      value={memoizedMoment as Moment}
+      format={format}
+      showTime={showTime}
+    />
+  );
+};
+
+interface TimeFilterProps extends BaseFilterProps{
+  format: string;
+}
+const TimeFilter: FC<TimeFilterProps> = ({ id, filter, filterOption, onChangeFilter, format }) => {
+  const onChange = (_dateEvent: any, dateString: string | string[]) => {
+    onChangeFilter(id, dateString);
+  };
+
+  // memoize moment to prevent re-rendeing of the DatePicker. On re-rendering it reset current view to current month
+  const memoizedMoment = useMemo(() => {
+    return filter instanceof Array ? null : getMoment(filter, format);
+  }, [filter, format]);
+
+  const memoizedRange = useMemo(() => {
+    if (filter instanceof Array) {
+      const range: [Moment, Moment] = [undefined, undefined];
+      range[0] = getMoment(filter[0], format);
+      range[1] = getMoment(filter[1], format);
+      return range;
+    } else return null;
+  }, [filter, format]);
+
+  return filterOption === 'between' ? (
+    <TimeRangePicker size="small" onChange={onChange} value={memoizedRange} format={ADVANCEDFILTER_TIME_FORMAT} />
+  ) : (
+    <TimePicker size="small" onChange={onChange} value={memoizedMoment} format={ADVANCEDFILTER_TIME_FORMAT} />
   );
 };
 

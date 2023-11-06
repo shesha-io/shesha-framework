@@ -32,11 +32,13 @@
     <None Remove="Excel\template.xlsx" />
     <None Remove="forms\package20230324_1835.shaconfig" />
     <None Remove="forms\package20230411_1238.shaconfig" />
+    <None Remove="forms\package20231105_1942.shaconfig" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Excel\template.xlsx" />
     <EmbeddedResource Include="forms\package20230324_1835.shaconfig" />
     <EmbeddedResource Include="forms\package20230411_1238.shaconfig" />
+    <EmbeddedResource Include="forms\package20231105_1942.shaconfig" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.10.1" />

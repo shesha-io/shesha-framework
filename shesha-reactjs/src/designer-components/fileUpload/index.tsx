@@ -30,7 +30,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
   name: 'File',
   icon: <FileAddOutlined />,
 
-  factory: (model: IFileUploadProps) => {
+  Factory: ({ model }) => {
     const { backendUrl } = useSheshaApplication();
 
     // todo: refactor and implement a generic way for values evaluation

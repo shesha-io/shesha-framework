@@ -16,7 +16,7 @@ const SelectColumnsButtonComponent: IToolboxComponent<IPagerComponentProps> = {
   type: 'datatable.selectColumnsButton',
   name: 'Table Select Columns Button',
   icon: <SlidersOutlined />,
-  factory: (model: IPagerComponentProps) => {
+  Factory: ({ model }) => {
     return <SelectColumnsButton {...model} />;
   },
   initModel: (model: IPagerComponentProps) => {

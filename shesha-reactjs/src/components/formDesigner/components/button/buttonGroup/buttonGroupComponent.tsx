@@ -25,7 +25,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   type: 'buttonGroup',
   name: 'Button Group',
   icon: <GroupOutlined />,
-  factory: (model: IButtonGroupComponentProps) => {
+  Factory: ({ model }) => {
     const { formMode } = useForm();
     const { anyOfPermissionsGranted } = useSheshaApplication();
     const granted = anyOfPermissionsGranted(model?.permissions || []);

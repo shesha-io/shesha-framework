@@ -37,7 +37,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
   type: 'attachmentsEditor',
   name: 'File list',
   icon: <FolderAddOutlined />,
-  factory: (model: IAttachmentsEditorProps, _c, form) => {
+  Factory: ({ model, form }) => {
     const { backendUrl } = useSheshaApplication();
     const { formMode, formSettings, setFormDataAndInstance } = useForm();
     const { data } = useFormData();

@@ -479,21 +479,14 @@ function useForm(require: boolean = true): ConfigurableFormInstance {
     : undefined;
 }
 
-const isInDesignerMode = () => {
-  const context = useContext(FormStateContext);
-  return context ? context.formMode === 'designer' : false;
-};
-
 /** Returns component model by component id  */
 export const useComponentModel = (id: string): IConfigurableFormComponent => {
   const form = useForm();
 
   return useMemo(() => {
-    //console.log('LOG: component calculation', id);
-
     const componentModel = form.getComponentModel(id);
     return componentModel;
-  }, [id]);
+  }, [id, form]);
 };
 
-export { FormProvider, isInDesignerMode, useForm, useFormActions, useFormState };
+export { FormProvider, useForm, useFormActions, useFormState };

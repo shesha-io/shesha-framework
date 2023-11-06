@@ -19,7 +19,7 @@ const EndpointsAutocompleteComponent: IToolboxComponent<IEndpointsAutocompleteCo
   icon: <ApiOutlined />,
   isHidden: true,
   canBeJsSetting: true,
-  factory: (model: IEndpointsAutocompleteComponentProps, _c, _form) => {
+  Factory: ({ model }) => {
     const { data: formData } = useFormData();
     const readOnly = model.disabled || model?.readOnly;
     const verb = model.httpVerb ? evaluateValue(model.httpVerb, { data: formData }) : model.httpVerb;

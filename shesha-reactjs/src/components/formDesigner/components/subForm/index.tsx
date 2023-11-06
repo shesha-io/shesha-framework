@@ -30,7 +30,7 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
   type: 'subForm',
   name: 'Sub Form',
   icon: <FormOutlined />,
-  factory: (model: ISubFormComponentProps) => {
+  Factory: ({ model }) => {
     const { formMode } = useForm();
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();

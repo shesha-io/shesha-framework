@@ -31,7 +31,7 @@ const AutocompleteTagGroupComponent: IToolboxComponent<IAutocompleteTagsOutlined
   name: 'Autocomplete Tags Outlined',
   icon: <TagOutlined />,
   canBeJsSetting: true,
-  factory: (model: IAutocompleteTagsOutlinedComponentProps) => {
+  Factory: ({ model }) => {
     const { formMode } = useForm();
 
     return (

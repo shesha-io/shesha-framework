@@ -44,7 +44,7 @@ const DataContextSelectorComponent: IToolboxComponent<IDataContextSelectorCompon
     name: 'DataContext selector',
     icon: <CodeOutlined />,
     dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.string && dataFormat === StringFormats.singleline,
-    factory: (model: IDataContextSelectorComponentProps, _c, _f, _ch) => {
+    Factory: ({ model }) => {
       const readOnly = model?.readOnly || model.disabled;
 
       return (

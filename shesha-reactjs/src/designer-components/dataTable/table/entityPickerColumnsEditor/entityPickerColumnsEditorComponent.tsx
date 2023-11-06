@@ -22,7 +22,7 @@ const EntityPickerColumnsEditorComponent: IToolboxComponent<IColumnsEditorCompon
   name: 'EntityPicker Columns Editor Component',
   icon: <ColumnWidthOutlined />,
   isHidden: true, // We do not want to show this on the component toolbox
-  factory: (model: IColumnsEditorComponentProps) => {
+  Factory: ({ model }) => {
     const { formMode } = useForm();
     return (
       <ConfigurableFormItem model={model}>

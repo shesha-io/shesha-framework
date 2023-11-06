@@ -18,7 +18,7 @@ export const ValueRenderer: FC<ValueRendererProps> = (props) => {
 
     switch (meta?.dataType) {
         case 'number': return (<>{value}</>);
-        case 'date': return (<>{ moment(value).format(meta.dataFormat || 'DD/MM/YYYY') }</>);
+        case 'date': return (<>{moment(value).format(meta.dataFormat || 'DD/MM/YYYY')}</>);
         case 'date-time': return (<>{moment(value).format(meta.dataFormat || 'DD/MM/YYYY HH:mm')}</>);
         case 'time': {
             const numberValue = asNumber(value);
@@ -26,9 +26,9 @@ export const ValueRenderer: FC<ValueRendererProps> = (props) => {
                 ? <>{moment.utc(numberValue * 1000).format(meta.dataFormat || 'HH:mm')}</>
                 : null;
         };
-        case 'reference-list-item': return (<ReferenceListDisplay {...props}/>);
+        case 'reference-list-item': return (<ReferenceListDisplay {...props} />);
         case 'boolean': return <>{props.value ? 'Yes' : 'No'}</>;
-        case 'entity': return (<EntityDisplay {...props}/>);
+        case 'entity': return (<EntityDisplay {...props} />);
         case 'array': {
             return meta.dataFormat === 'reference-list-item'
                 ? <MultivalueReferenceListDisplay {...props} />
@@ -41,7 +41,7 @@ export const ValueRenderer: FC<ValueRendererProps> = (props) => {
 
 const ReferenceListDisplay: FC<ValueRendererProps> = ({ value, meta }) => {
     const { referenceListName, referenceListModule } = meta;
-        
+
     const item = useReferenceListItem(referenceListModule, referenceListName, value);
     return <>{item?.data?.item}</>;
 };
@@ -59,8 +59,14 @@ const EntityDisplay: FC<ValueRendererProps> = ({ value }) => {
 
 const MultivalueReferenceListDisplay: FC<ValueRendererProps> = (props) => {
     const { value } = props;
-    if (!value || !props.meta)
-        return null;
+
+    return !value || !props.meta
+        ? null
+        : (<MultivalueReferenceListDisplayInternal {...props} />);
+};
+
+const MultivalueReferenceListDisplayInternal: FC<ValueRendererProps> = (props) => {
+    const { value } = props;
 
     const { referenceListName, referenceListModule } = props.meta;
 

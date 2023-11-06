@@ -19,7 +19,7 @@ const QueryBuilderComponent: IToolboxComponent<IQueryBuilderComponentProps> = {
   name: 'Query Builder',
   icon: <FilterOutlined />,
   //dataTypes: [DataTypes.string],
-  factory: (model: IQueryBuilderComponentProps) => {
+  Factory: ({ model }) => {
     const { formMode } = useForm();
     return <QueryBuilder {...model} readOnly={formMode === 'readonly'}></QueryBuilder>;
   },

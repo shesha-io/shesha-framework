@@ -22,15 +22,13 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
   type: 'tabs',
   name: 'Tabs',
   icon: <FolderOutlined />,
-  factory: (model) => {
+  Factory: ({ model }) => {
     const { anyOfPermissionsGranted } = useSheshaApplication();
     const allData = useApplicationContext();
     const { data } = useFormData();
     const { globalState } = useGlobalState();
 
-    const { tabs, defaultActiveKey, tabType = 'card', size, position = 'top' } = model as ITabsComponentProps;
-
-    if (model.hidden) return null;
+    const { tabs, defaultActiveKey, tabType = 'card', size, position = 'top' } = model;
 
     const actionKey = defaultActiveKey || (tabs?.length && tabs[0]?.key);
 
@@ -39,7 +37,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       [tabs, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]
     );
 
-    return (
+    return model.hidden ? null : (
       <Tabs defaultActiveKey={actionKey} size={size} type={tabType} tabPosition={position}>
         {items?.map((item) => {
           const {

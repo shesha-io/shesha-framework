@@ -11,7 +11,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   type: 'container',
   name: 'Container',
   icon: <GroupOutlined />,
-  factory: (model: IContainerComponentProps) => {
+  Factory: ({ model }) => {
     const { data: formData } = useFormData();
 
     if (model.hidden) return null;

@@ -22,7 +22,7 @@ const ListComponent: IToolboxComponent<IListComponentProps> = {
   name: 'List',
   icon: <OrderedListOutlined />,
   isHidden: true /* Use DataList instead */,
-  factory: ({ ...model }: IListComponentProps) => {
+  Factory: ({ model }) => {
     const { formMode } = useForm();
     const { namePrefix } = useFormItem();
 

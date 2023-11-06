@@ -8,7 +8,7 @@ export { GetDataError, UseGetProps, useGet } from './useGet';
 export { useIdQueryParam } from './useIdQueryParam';
 export { useIsSsr } from './useIsSsr';
 export { useLocalStorage } from './useLocalStorage';
-export { IUseMutateResponse, IUseMutateResponseFixedEndpoint, getUseMutateForEndpoint, useMutate } from './useMutate';
+export { IUseMutateResponse, IUseMutateResponseFixedEndpoint, useMutateForEndpoint, useMutate } from './useMutate';
 export { useOnlineStatus } from './useOnlineStatus';
 export { usePrevious } from './usePrevious';
 export { usePubSub, usePublish, useSubscribe, useSubscribedValue } from './usePubSub';

@@ -1,10 +1,10 @@
 import React from 'react';
-import { IToolboxComponent } from '../../../../interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '../../../../providers/form/models';
+import { IToolboxComponent } from 'interfaces';
+import { FormMarkup, IConfigurableFormComponent } from 'providers/form/models';
 import { WarningOutlined } from '@ant-design/icons';
 import settingsFormJson from './settingsForm.json';
-import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import { useForm } from '../../../../providers';
+import { validateConfigurableComponentSettings } from 'providers/form/utils';
+import { useForm } from 'providers';
 import ValidationErrors from '../../../validationErrors';
 
 export interface IValidationErrorsComponentProps extends IConfigurableFormComponent {
@@ -16,7 +16,7 @@ const ValidationErrorsComponent: IToolboxComponent<IValidationErrorsComponentPro
   type: 'validationErrors',
   name: 'Validation Errors',
   icon: <WarningOutlined />,
-  factory: (_model: IConfigurableFormComponent) => {
+  Factory: () => {
     const { validationErrors, formMode } = useForm();
     if (formMode === 'designer')
       return (

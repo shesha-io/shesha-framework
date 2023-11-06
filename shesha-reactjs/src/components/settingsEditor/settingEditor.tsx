@@ -39,7 +39,7 @@ export const SettingEditor: FC<ISettingEditorProps> = () => {
     return settingSelection
         ? (
             settingSelection.setting.editorForm
-                ? <CostomFormSettingEditor selection={settingSelection} value={state.value} />
+                ? <CustomFormSettingEditor selection={settingSelection} value={state.value} />
                 : <GenericSettingEditor selection={settingSelection} value={state.value} />
         )
         : (
@@ -135,7 +135,7 @@ export const GenericSettingEditor: FC<ISettingEditorWithValueProps> = (props) =>
     );
 };
 
-export const CostomFormSettingEditor: FC<ISettingEditorWithValueProps> = (props) => {
+export const CustomFormSettingEditor: FC<ISettingEditorWithValueProps> = (props) => {
     const { selection, value } = props;
     const { setting: configuration } = selection;
     const { editorForm } = configuration;

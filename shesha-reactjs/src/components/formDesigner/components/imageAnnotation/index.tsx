@@ -15,7 +15,7 @@ const ImageAnnotationComponent: IToolboxComponent<IImageProps> = {
   name: 'ImageAnnotation',
   icon: <FileImageOutlined />,
 
-  factory: (model: IImageProps) => {
+  Factory: ({ model }) => {
     const { formMode } = useForm();
 
     if (formMode === 'designer' && !model?.url) {
