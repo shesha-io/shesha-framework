@@ -1,8 +1,8 @@
 import {
   IAjaxResponse,
-  getUseMutateForEndpoint,
+  useMutateForEndpoint,
   IUseMutateResponseFixedEndpoint,
-} from "@shesha-io/reactjs";
+} from "@shesha/reactjs";
 
 export interface ResetPasswordSendOtpResponse {
   operationId?: string;
@@ -34,7 +34,7 @@ export const useResetPasswordSendOtp = (): IUseMutateResponseFixedEndpoint<
   UserResetPasswordSendOtpQueryParams,
   ResetPasswordSendOtpResponseAjaxResponse
 > =>
-  getUseMutateForEndpoint<
+  useMutateForEndpoint<
     UserResetPasswordSendOtpQueryParams,
     ResetPasswordSendOtpResponseAjaxResponse
   >({
@@ -47,7 +47,7 @@ export const useResetPasswordVerifyOtp = (): IUseMutateResponseFixedEndpoint<
   ResetPasswordVerifyOtpInput,
   ResetPasswordVerifyOtpResponseAjaxResponse
 > =>
-  getUseMutateForEndpoint<
+  useMutateForEndpoint<
     ResetPasswordVerifyOtpInput,
     ResetPasswordVerifyOtpResponseAjaxResponse
   >({ url: "/api/services/app/User/ResetPasswordVerifyOtp", httpVerb: "POST" });
@@ -65,7 +65,7 @@ export const useUserResetPasswordUsingToken =
     ResetPasswordUsingTokenInput,
     BooleanAjaxResponse
   > =>
-    getUseMutateForEndpoint<ResetPasswordUsingTokenInput, BooleanAjaxResponse>({
+    useMutateForEndpoint<ResetPasswordUsingTokenInput, BooleanAjaxResponse>({
       url: "/api/services/app/User/ResetPasswordUsingToken",
       httpVerb: "POST",
     });

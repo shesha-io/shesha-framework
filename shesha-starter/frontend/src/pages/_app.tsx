@@ -3,14 +3,14 @@ import {
   PageWithLayout,
   ShaApplicationProvider,
   StoredFilesProvider,
-} from "@shesha-io/reactjs";
+} from "@shesha/reactjs";
 import { CustomErrorBoundary, CustomNProgress } from "components";
 import App from "next/app";
 import { withRouter } from "next/router";
 import React from "react";
 import { BASE_URL } from "src/api/utils/constants";
 import { StyledThemeProvider } from "src/definitions/styled-components";
-require("@shesha-io/reactjs/dist/styles.less");
+require("@shesha/reactjs/dist/styles.less");
 require("src/styles/compiled.antd.variable.css");
 require("src/styles/custom-n-progress.less");
 

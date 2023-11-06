@@ -27,6 +27,7 @@ using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Swagger;
 using Shesha.Exceptions;
 using Shesha.Extensions;
+using Shesha.FluentMigrator;
 using Shesha.GraphQL;
 using Shesha.GraphQL.Middleware;
 using Shesha.Identity;

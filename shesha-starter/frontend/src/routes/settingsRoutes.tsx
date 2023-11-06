@@ -1,4 +1,4 @@
-import { ISidebarMenuItem } from "@shesha-io/reactjs";
+import { ISidebarMenuItem } from "@shesha/reactjs";
 
 export const PERM_APP_CONFIGURATOR = "app:Configurator";
 
