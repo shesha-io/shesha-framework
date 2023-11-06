@@ -31,8 +31,8 @@ const PermissionEditor: FC<IPermissionEditorProps> = (props) => {
     return (
         <ConfigurableForm
         layout="horizontal"
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 13 }}
+        labelCol={{ span: 8 }}
+        wrapperCol={{ span: 16 }}
         mode="edit"
         markup={permissionSettingsMarkup as FormMarkup}
         initialValues={props?.value}

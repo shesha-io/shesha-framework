@@ -22,8 +22,8 @@ function ComponentSettingsModal<T extends IConfigurableFormComponent>({
   const isSmall = useMedia('(max-width: 480px)');
   const [form] = Form.useForm();
   const formLayout = {
-    labelCol: { span: 5 },
-    wrapperCol: { span: 13 },
+    labelCol: { span: 8 },
+    wrapperCol: { span: 16 },
   };
 
   const saving = false;

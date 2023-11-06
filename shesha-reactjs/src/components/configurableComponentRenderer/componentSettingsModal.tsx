@@ -13,8 +13,8 @@ export interface IProps<TModel = any> {
 
 export const ComponentSettingsModal = <TSettings extends any>({ title, markup, model, onCancel, onSave }: IProps<TSettings>) => {
   const formLayout = {
-    labelCol: { span: 5 },
-    wrapperCol: { span: 13 },
+    labelCol: { span: 8 },
+    wrapperCol: { span: 16 },
   };
   const [form] = Form.useForm();
 

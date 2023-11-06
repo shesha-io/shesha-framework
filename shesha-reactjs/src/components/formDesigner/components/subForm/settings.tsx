@@ -479,11 +479,11 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
       <SectionSeparator title="Layout" />
 
       <SettingsFormItem name="labelCol" label="Label Col" jsSetting>
-        <InputNumber min={0} max={24} defaultValue={5} step={1} readOnly={readOnly} />
+        <InputNumber min={0} max={24} defaultValue={8} step={1} readOnly={readOnly} />
       </SettingsFormItem>
 
       <SettingsFormItem name="wrapperCol" label="Wrapper Col" jsSetting>
-        <InputNumber min={0} max={24} defaultValue={13} step={1} readOnly={readOnly} />
+        <InputNumber min={0} max={24} defaultValue={16} step={1} readOnly={readOnly} />
       </SettingsFormItem>
 
       <SettingsFormItem name="style" label="Style">

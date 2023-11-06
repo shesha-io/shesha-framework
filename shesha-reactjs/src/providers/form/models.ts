@@ -364,8 +364,8 @@ export interface IFormSettings {
 export const DEFAULT_FORM_SETTINGS: IFormSettings = {
   layout: 'horizontal',
   colon: true,
-  labelCol: { span: 5 },
-  wrapperCol: { span: 13 },
+  labelCol: { span: 6 },
+  wrapperCol: { span: 18 },
 };
 
 export type ActionParametersJs = string;

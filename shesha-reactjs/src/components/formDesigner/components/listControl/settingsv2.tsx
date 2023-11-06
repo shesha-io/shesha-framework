@@ -446,11 +446,11 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
       <SectionSeparator title="Layout" />
 
       <FormItem name="labelCol" label="Label Col">
-        <InputNumber min={0} max={24} defaultValue={5} step={1} readOnly={readOnly} />
+        <InputNumber min={0} max={24} defaultValue={8} step={1} readOnly={readOnly} />
       </FormItem>
 
       <FormItem name="wrapperCol" label="Wrapper Col">
-        <InputNumber min={0} max={24} defaultValue={13} step={1} readOnly={readOnly} />
+        <InputNumber min={0} max={24} defaultValue={16} step={1} readOnly={readOnly} />
       </FormItem>
 
       <SectionSeparator title="Search" />

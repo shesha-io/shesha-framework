@@ -19,8 +19,8 @@ export const ComponentSettingsModal = <TSettings extends any>({
   onSave,
 }: IProps<TSettings>) => {
   const formLayout = {
-    labelCol: { span: 5 },
-    wrapperCol: { span: 13 },
+    labelCol: { span: 8 },
+    wrapperCol: { span: 16 },
   };
   const [form] = Form.useForm();
 

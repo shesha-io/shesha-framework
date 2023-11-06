@@ -66,8 +66,8 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
       ...model,
       dataSource: 'form',
       apiMode: 'entityName',
-      labelCol: 5,
-      wrapperCol: 13,
+      labelCol: 8,
+      wrapperCol: 16,
     };
     return customProps;
   },

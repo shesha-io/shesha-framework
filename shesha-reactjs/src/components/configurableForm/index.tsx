@@ -16,11 +16,11 @@ import FormInfo from './formInfo';
 import { Result } from 'antd';
 import { getFormNotFoundMessage } from '../../providers/configurationItemsLoader/utils';
 
-export const ConfigurableForm: FC<IConfigurableFormProps> = props => {
+export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
   const {
     needDebug,
-    formId, 
-    markup, 
+    formId,
+    markup,
     mode,
     actions,
     sections,
@@ -54,11 +54,15 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = props => {
 
   const markupWithSettings = convertToMarkupWithSettings(markup);
 
+  console.log('LOG:::markupWithSettings', markupWithSettings);
+
   const renderWithMarkup = (
     providedMarkup: FormRawMarkup,
     formSettings: IFormSettings,
     persistedFormProps?: IPersistedFormProps
   ) => {
+    console.log('LOG:::persistedFormProps', persistedFormProps);
+
     if (!providedMarkup) return null;
 
     const formStatusInfo = persistedFormProps?.versionStatus

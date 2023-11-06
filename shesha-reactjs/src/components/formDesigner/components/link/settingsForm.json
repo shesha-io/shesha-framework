@@ -428,10 +428,10 @@
     "layout": "horizontal",
     "colon": true,
     "labelCol": {
-      "span": 5
+      "span": 8
     },
     "wrapperCol": {
-      "span": 13
+      "span": 16
     },
     "displayName": "DEFAULT_FORM_SETTINGS",
     "__docgenInfo": {
