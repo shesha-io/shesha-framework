@@ -181,7 +181,7 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
         </Show>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel header='CEvents'>
+      <SettingsCollapsiblePanel header='Events'>
         <SettingsFormItem
           label="On Change"
           name="onChangeCustom"
