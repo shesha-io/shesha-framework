@@ -45,6 +45,9 @@ namespace Shesha
 
         public override void PreInitialize()
         {
+            // disable API audit by default
+            Configuration.Auditing.IsEnabled = false;
+
             IocManager.Register<IShaApplicationModuleConfiguration, ShaApplicationModuleConfiguration>();
 
             Configuration.Notifications.Providers.Add<ShaNotificationProvider>();

@@ -62,7 +62,7 @@ const ScheduledJobExecutionProvider: FC<PropsWithChildren<IScheduledJobExecution
 
   useEffect(() => {
     if (!isFetchingExecutionLog) {
-      if (executionLogResponse) {
+      if (executionLogResponse && executionLogResponse.success) {
         // @ts-ignore
         const { result } = executionLogResponse;
         const events = result.map(
