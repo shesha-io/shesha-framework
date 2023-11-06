@@ -12,15 +12,15 @@ import {
   useSheshaApplication,
   validateConfigurableComponentSettings,
 } from '../../../..';
-import { axiosHttp } from '../../../../utils/fetchers';
-import { getStyle } from '../../../../providers/form/utils';
+import { axiosHttp } from 'utils/fetchers';
+import { getStyle } from 'providers/form/utils';
 import { IconType } from '../../../shaIcon';
 import { getSettings } from './settings';
 import moment from 'moment';
 import { customRateEventHandler } from '../utils';
 import _ from 'lodash';
 import classNames from 'classnames';
-import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 
 export interface IRateProps extends IConfigurableFormComponent {
   value?: number;
@@ -39,7 +39,7 @@ const RateComponent: IToolboxComponent<IRateProps> = {
   type: 'rate',
   name: 'Rate',
   icon: <LikeOutlined />,
-  factory: (model: IRateProps, _c, form) => {
+  Factory: ({ model, form }) => {
     const { formMode, setFormDataAndInstance } = useForm();
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();

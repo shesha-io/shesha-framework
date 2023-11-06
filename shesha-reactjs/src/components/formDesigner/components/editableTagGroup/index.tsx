@@ -17,7 +17,7 @@ const EditableTagGroupComponent: IToolboxComponent<IEditableTagGroupComponentPro
   name: 'Tags Outlined',
   icon: <HomeOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.array,
-  factory: (model: IEditableTagGroupComponentProps) => {
+  Factory: ({ model }) => {
     const disabled = model.disabled || model.readOnly;
 
     return (

@@ -14,7 +14,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
   type: 'columns',
   name: 'Columns',
   icon: <SplitCellsOutlined />,
-  factory: (model) => {
+  Factory: ({ model }) => {
     const { data } = useFormData();
     const { globalState } = useGlobalState();
     const { columns, gutterX = 0, gutterY = 0 } = model as IColumnsComponentProps;

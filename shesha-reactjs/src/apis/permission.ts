@@ -1,5 +1,5 @@
 import { useGet, UseGetProps } from '../hooks/useGet';
-import { getUseMutateForEndpoint } from '../hooks/useMutate';
+import { useMutateForEndpoint } from '../hooks/useMutate';
 import { IAjaxResponse } from '../interfaces/ajaxResponse';
 
 export interface PermissionDto {
@@ -31,14 +31,14 @@ export const usePermissionGetAllTree = (props: UsePermissionGetAllTreeProps) =>
   );
 
 export const usePermissionUpdateParent = () =>
-  getUseMutateForEndpoint<PermissionDto>({ url: `/api/services/app/Permission/UpdateParent`, httpVerb: 'PUT' });
+  useMutateForEndpoint<PermissionDto>({ url: `/api/services/app/Permission/UpdateParent`, httpVerb: 'PUT' });
 
 export interface PermissionDeleteQueryParams {
   name?: string;
   'api-version'?: string;
 }
 export const usePermissionDelete = () =>
-  getUseMutateForEndpoint<PermissionDeleteQueryParams>({
+  useMutateForEndpoint<PermissionDeleteQueryParams>({
     url: (data) => {
       const params = `name=${data.name}` + (Boolean(data['api-version']) ? `&api-version=${data['api-version']}` : '');
       return `/api/services/app/Permission/Delete?${params}`;

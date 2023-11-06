@@ -19,5 +19,7 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
         public string ModelType { get; set; }
 
         public Guid? TemplateId { get; set; }
+
+        public bool IsTemplate { get; set; }
     }
 }

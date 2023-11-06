@@ -1,4 +1,4 @@
-import { getUseMutateForEndpoint } from '../hooks';
+import { useMutateForEndpoint } from '../hooks';
 import { useGet, UseGetProps } from '../hooks/useGet';
 import { IAjaxResponse, IAjaxResponseBase } from '../interfaces/ajaxResponse';
 
@@ -164,4 +164,4 @@ export interface DeleteFileByIdInput {
   id: string;
 }
 export const useDeleteFileById = () =>
-  getUseMutateForEndpoint<DeleteFileByIdInput>({ url: (data) => `/api/StoredFile?id=${data.id}`, httpVerb: 'DELETE' });
+  useMutateForEndpoint<DeleteFileByIdInput>({ url: (data) => `/api/StoredFile?id=${data.id}`, httpVerb: 'DELETE' });

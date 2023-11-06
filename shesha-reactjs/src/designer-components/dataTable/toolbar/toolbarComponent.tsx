@@ -8,7 +8,6 @@ import { ShaIcon } from '../../../components';
 import { IconType } from '../../../components/shaIcon';
 import { IToolboxComponent } from '../../../interfaces';
 import { useDataTableState, useSheshaApplication } from '../../../providers';
-import { isInDesignerMode } from '../../../providers/form';
 import { IButtonGroup, IToolbarButton, ToolbarItemProps } from '../../../providers/toolbarConfigurator/models';
 import { IToolbarPropsV0, migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
@@ -25,7 +24,7 @@ const ToolbarComponent: IToolboxComponent<ToolbarButtonGroupProps> = {
   name: 'Toolbar',
   icon: <DashOutlined />,
   isHidden: true,
-  factory: () => {
+  Factory: () => {
     throw new Error('Toolbar component was removed');
   },
   migrator: (m) =>
@@ -53,7 +52,7 @@ export const Toolbar: FC<IToolbarProps> = ({ items, id }) => {
   const actualItems = items?.map((item) => getActualModel(item, allData));
 
   const renderItem = (item: ToolbarItemProps, uuid: string) => {
-    if (!isInDesignerMode()) {
+    if (!isDesignMode) {
       const visibilityFunc = getVisibilityFunc2(item.customVisibility, item.name);
 
       const isVisible = visibilityFunc(

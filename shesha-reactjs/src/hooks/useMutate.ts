@@ -74,7 +74,7 @@ export interface IApiEndpointWithPathParams<TData> {
   url: string | ((data: TData) => string);
 }
 
-export const getUseMutateForEndpoint = <TData = any, TResponse = any>(
+export const useMutateForEndpoint = <TData = any, TResponse = any>(
   endpoint: IApiEndpointWithPathParams<TData>
 ): IUseMutateResponseFixedEndpoint<TData, TResponse> => {
   const response = useMutate<TData, TResponse>();

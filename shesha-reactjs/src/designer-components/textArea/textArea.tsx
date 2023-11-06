@@ -39,7 +39,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
   icon: <FontColorsOutlined />,
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string && dataFormat === StringFormats.multiline,
-  factory: (model: ITextAreaComponentProps, _c, form) => {
+  Factory: ({ model, form }) => {
     const { formMode, setFormDataAndInstance } = useForm();
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();

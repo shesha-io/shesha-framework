@@ -10,6 +10,13 @@ export const MultivalueReferenceListCell = <D extends object = {}, V = any>(
   const { value } = props;
   if (!value || !props.columnConfig) return null;
 
+  return (<MultivalueReferenceListCellInternal {...props}/>);
+};
+
+const MultivalueReferenceListCellInternal = <D extends object = {}, V = any>(
+  props: IMultivalueReferenceListCellProps<D, V>
+) => {
+  const { value } = props;
   const { referenceListName, referenceListModule } = props.columnConfig;
 
   const list = useReferenceList({ module: referenceListModule, name: referenceListName });
@@ -24,5 +31,3 @@ export const MultivalueReferenceListCell = <D extends object = {}, V = any>(
 
   return <>{mapped}</>;
 };
-
-export default MultivalueReferenceListCell;

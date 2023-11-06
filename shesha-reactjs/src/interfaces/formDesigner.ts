@@ -1,7 +1,7 @@
 import { ColProps, FormInstance } from 'antd';
 import { FormLayout } from 'antd/lib/form/Form';
 import { InternalNamePath } from 'rc-field-form/lib/interface';
-import { MutableRefObject, ReactNode } from 'react';
+import { FC, MutableRefObject, ReactNode } from 'react';
 import { ConfigurableFormInstance } from '../providers/form/contexts';
 import {
   FormMarkup,
@@ -46,6 +46,16 @@ export type ISettingsFormFactory<TModel = IConfigurableFormComponent> = (
   props: ISettingsFormFactoryArgs<TModel>
 ) => ReactNode;
 
+export interface ComponentFactoryArguements<T extends IConfigurableFormComponent = any> {
+  model: T;
+  componentRef: MutableRefObject<any>;
+  form: FormInstance<any>;
+  children?: JSX.Element;
+  context?: IApplicationContext;
+}
+
+export type FormFactory<T extends IConfigurableFormComponent = any> = FC<ComponentFactoryArguements<T>>;
+
 export interface IToolboxComponent<T extends IConfigurableFormComponent = any> {
   /**
    * Type of the component. Must be unique in the project.
@@ -82,13 +92,7 @@ export interface IToolboxComponent<T extends IConfigurableFormComponent = any> {
   /**
    * Component factory. Renders the component according to the passed model (props)
    */
-  factory?: (
-    model: T,
-    componentRef: MutableRefObject<any>,
-    form: FormInstance<any>,
-    children?: JSX.Element,
-    context?: IApplicationContext
-  ) => ReactNode;
+  Factory?: FormFactory<T>;
   /**
    * @deprecated - use `migrator` instead
    * Fills the component properties with some default values. Fired when the user drops a component to the form

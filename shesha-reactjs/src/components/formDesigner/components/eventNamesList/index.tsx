@@ -17,7 +17,7 @@ const EventNamesComponent: IToolboxComponent<IEventNamesComponentProps> = {
   icon: <ThunderboltOutlined />,
   isHidden: true,
   canBeJsSetting: true,
-  factory: (model: IEventNamesComponentProps) => {
+  Factory: ({ model }) => {
     if (model.hidden) return null;
 
     return (

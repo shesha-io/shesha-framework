@@ -18,7 +18,7 @@ const BasicDisplayFormItemComponent: IToolboxComponent<IBasicDisplayFormItemProp
   name: 'Display Form Item',
   icon: <FileOutlined />,
   isHidden: true,
-  factory: (model: IBasicDisplayFormItemProps) => {
+  Factory: ({ model }) => {
     const { data } = useFormData();
 
     const getDisplayValue = () => {

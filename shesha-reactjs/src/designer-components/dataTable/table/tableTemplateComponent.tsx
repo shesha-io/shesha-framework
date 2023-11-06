@@ -10,7 +10,7 @@ const TableTemplateComponent: IToolboxComponent = {
   name: 'DataTable (Full)',
   isTemplate: true,
   icon: <TableOutlined />,
-  factory: () => {
+  Factory: () => {
     return <>test</>;
   },
   build: (designerComponents) => {

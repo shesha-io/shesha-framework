@@ -266,5 +266,5 @@ module.exports = {
     'import/core-modules': [],
     'import/ignore': ['node_modules', '\\.(coffee|scss|css|less|hbs|svg|json)$'],
   },
-  extends: ['plugin:storybook/recommended'],
+  extends: ['plugin:storybook/recommended', 'plugin:react-hooks/recommended'],
 };

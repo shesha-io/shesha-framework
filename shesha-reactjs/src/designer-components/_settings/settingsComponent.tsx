@@ -23,7 +23,7 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
     name: 'Setting',
     isHidden: true,
     icon: <SettingOutlined />,
-    factory: (model: ISettingsComponentProps) => {
+    Factory: ({ model }) => {
 
         const { formData } = useForm();
 

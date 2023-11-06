@@ -1,12 +1,12 @@
 import { CheckCircleOutlined } from '@ant-design/icons';
-import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 import React from 'react';
 import { useFormData } from '../../../..';
-import { IToolboxComponent } from '../../../../interfaces';
-import { DataTypes } from '../../../../interfaces/dataTypes';
-import { FormMarkup } from '../../../../providers/form/models';
-import { getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import { getLegacyReferenceListIdentifier } from '../../../../utils/referenceList';
+import { IToolboxComponent } from 'interfaces';
+import { DataTypes } from 'interfaces/dataTypes';
+import { FormMarkup } from 'providers/form/models';
+import { getStyle, validateConfigurableComponentSettings } from 'providers/form/utils';
+import { getLegacyReferenceListIdentifier } from 'utils/referenceList';
 import ConfigurableFormItem from '../formItem';
 import RadioGroup from './radioGroup';
 import settingsFormJson from './settingsForm.json';
@@ -24,12 +24,14 @@ const Radio: IToolboxComponent<IEnhancedRadioProps> = {
   icon: <CheckCircleOutlined />,
   canBeJsSetting: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.array,
-  factory: ({ style, ...model }: IEnhancedRadioProps) => {
+  Factory: ({ model }) => {
+    const { style, ...restProps } = model;
+
     const { data: formData } = useFormData();
 
     return (
-      <ConfigurableFormItem model={model}>
-        {(value, onChange) => <RadioGroup {...model} style={getStyle(style, formData)} value={value} onChange={onChange} />}
+      <ConfigurableFormItem model={restProps}>
+        {(value, onChange) => <RadioGroup {...restProps} style={getStyle(style, formData)} value={value} onChange={onChange} />}
       </ConfigurableFormItem>
     );
   },

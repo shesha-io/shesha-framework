@@ -2,16 +2,16 @@ import React, { FC } from 'react';
 import { ClockCircleOutlined } from '@ant-design/icons';
 import { TimePicker, message } from 'antd';
 import moment, { Moment, isMoment } from 'moment';
-import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
-import { customTimeEventHandler } from '../../components/formDesigner/components/utils';
-import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
-import { IToolboxComponent } from '../../interfaces';
-import { DataTypes } from '../../interfaces/dataTypes';
-import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../../providers';
-import { FormMarkup, IConfigurableFormComponent } from '../../providers/form/models';
-import { getStyle, validateConfigurableComponentSettings } from '../../providers/form/utils';
-import { axiosHttp } from '../../utils/fetchers';
-import { getNumericValue } from '../../utils/string';
+import ConfigurableFormItem from 'components/formDesigner/components/formItem';
+import { customTimeEventHandler } from 'components/formDesigner/components/utils';
+import ReadOnlyDisplayFormItem from 'components/readOnlyDisplayFormItem';
+import { IToolboxComponent } from 'interfaces';
+import { DataTypes } from 'interfaces/dataTypes';
+import { useForm, useFormData, useGlobalState, useSheshaApplication } from 'providers';
+import { FormMarkup, IConfigurableFormComponent } from 'providers/form/models';
+import { getStyle, validateConfigurableComponentSettings } from 'providers/form/utils';
+import { axiosHttp } from 'utils/fetchers';
+import { getNumericValue } from 'utils/string';
 import settingsFormJson from './settingsForm.json';
 import './styles/index.less';
 import { migratePropertyName, migrateCustomFunctions } from '../../designer-components/_common-migrations/migrateSettings';
@@ -64,7 +64,7 @@ const TimeField: IToolboxComponent<ITimePickerProps> = {
   canBeJsSetting: true,
   icon: <ClockCircleOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.time,
-  factory: (model: ITimePickerProps, _c, form) => {
+  Factory: ({ model, form }) => {
     const { formMode, setFormDataAndInstance } = useForm();
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();

@@ -16,7 +16,7 @@ const MarkdownComponent: IToolboxComponent<IMarkdownProps> = {
   type: 'markdown',
   name: 'Markdown',
   icon: <EditOutlined />,
-  factory: (model: IMarkdownProps) => {
+  Factory: ({ model }) => {
     return (
       <ConfigurableFormItem model={{...model, label: undefined, hideLabel: true}}   >
         {(value) => {

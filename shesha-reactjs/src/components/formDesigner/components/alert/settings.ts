@@ -62,7 +62,7 @@ export const getSettings = (data: any) =>
       label: 'Show Icon',
     })
     .addCheckbox({
-      id: '148e12c0-41a0-4fa2-8c64-8f6dd5213a3e',
+      id: '2950EE07-A72F-41E2-B7B1-5E6456D3DAB8',
       propertyName: 'closable',
       label: 'Closable',
       parentId: 'root',

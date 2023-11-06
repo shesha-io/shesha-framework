@@ -11,7 +11,7 @@ const DrawerComponent: IToolboxComponent<IDrawerProps> = {
   type: 'drawer',
   name: 'Drawer',
   icon: <SwapOutlined />,
-  factory: (model: IDrawerProps) => {
+  Factory: ({ model }) => {
     const { size, style, ...props } = model;
 
     return <ShaDrawer {...props} />;

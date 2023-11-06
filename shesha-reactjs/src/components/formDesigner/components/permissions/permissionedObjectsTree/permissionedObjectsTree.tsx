@@ -21,7 +21,7 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionedObjectsTr
   type: 'permissionedObjectsTree',
   name: 'Permissioned objects tree',
   icon: <ApartmentOutlined />,
-  factory: (model: IPermissionedObjectsTreeComponentProps) => {
+  Factory: ({ model }) => {
     return (
       <PermissionedObjectsTree {...model}/>
     );

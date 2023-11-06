@@ -12,7 +12,7 @@ const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentPro
   type: 'sectionSeparator',
   name: 'Section Separator',
   icon: <LineOutlined />,
-  factory: (model: ISectionSeparatorComponentProps) => {
+  Factory: ({ model }) => {
     const { data: formData } = useFormData();
 
     if (model.hidden) return null;

@@ -19,7 +19,7 @@ const TableViewSelectorComponent: IToolboxComponent<ITableViewSelectorComponentP
   type: 'tableViewSelector',
   name: 'Table view selector',
   icon: <SelectOutlined />,
-  factory: (model: ITableViewSelectorComponentProps, componentRef: MutableRefObject<any>) => {
+  Factory: ({ model, componentRef }) => {
     return <TableViewSelector {...model} componentRef={componentRef} />;
   },
   migrator: m => m.add<ITableViewSelectorComponentProps>(0, prev => {

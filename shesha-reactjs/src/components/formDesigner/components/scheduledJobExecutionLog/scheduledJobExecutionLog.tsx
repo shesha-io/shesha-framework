@@ -18,7 +18,7 @@ const ScheduledJobExecutionLog: IToolboxComponent<IScheduledJobExecutionLogProps
   type: 'scheduledJobExecutionLog',
   name: 'ScheduledJobExecutionLog',
   icon: <SmallDashOutlined />,
-  factory: (model: IConfigurableFormComponent) => {
+  Factory: ({ model }) => {
     const { router } = useShaRouting();
 
     const id = router?.query?.id?.toString();

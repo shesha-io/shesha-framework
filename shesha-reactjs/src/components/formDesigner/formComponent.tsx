@@ -1,7 +1,7 @@
 import { useDeepCompareMemo } from 'hooks';
 import React, { FC, MutableRefObject } from 'react';
 import { getActualModel, useApplicationContext } from 'utils/publicUtils';
-import { useForm } from '../../providers/form';
+import { useForm } from 'providers/form';
 
 export interface IFormComponentProps {
   id: string;
@@ -23,7 +23,13 @@ const FormComponent: FC<IFormComponentProps> = ({ id, componentRef }) => {
   actualModel.disabled = isComponentDisabled(actualModel);
   actualModel.readOnly = actualModel.readOnly || allData.formMode === 'readonly';
 
-  return <>{toolboxComponent.factory(actualModel, componentRef, form, null, allData)}</>;
+  return (
+    <toolboxComponent.Factory 
+      model={actualModel} 
+      componentRef={componentRef} 
+      form={form} context={allData}
+    />
+  );
 };
 
 export default FormComponent;

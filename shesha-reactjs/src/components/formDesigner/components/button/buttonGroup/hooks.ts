@@ -8,9 +8,7 @@ export interface UseButtonItemsArgs {
     items: ButtonGroupItemProps[];
 }
 export const useButtonItems = ({ items }: UseButtonItemsArgs): ButtonGroupItemProps[] => {
-    const dispatcher = useDynamicActionsDispatcher(false);
-    if (!dispatcher)
-        return items;
+    const dispatcher = useDynamicActionsDispatcher();
 
     const [numResolved, setNumResolved] = useState(0);
 
@@ -19,7 +17,6 @@ export const useButtonItems = ({ items }: UseButtonItemsArgs): ButtonGroupItemPr
 
     // build internal tree with promises
     const internalData = useMemo(() => {
-        console.log('LOG: calculate internalData', items);
         // todo: use signals to cancell resolving
         promisesRef.current = [];
 

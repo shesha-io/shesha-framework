@@ -19,7 +19,7 @@ const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
   icon: <CodeSandboxOutlined />,
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string && (dataFormat === StringFormats.javascript || dataFormat === StringFormats.json),
-  factory: ({ ...model }: ICodeEditorComponentProps) => {
+  Factory: ({ model }) => {
     const editorProps: ICodeEditorProps = {
       ...model,
     };

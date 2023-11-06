@@ -22,7 +22,7 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps> = {
   name: 'Checkbox',
   icon: <CheckSquareOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
-  factory: (model: ICheckboxComponentProps) => {
+  Factory: ({ model }) => {
     const { data } = useFormData();
     const isReadOnly = model?.readOnly;
 

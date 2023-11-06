@@ -18,7 +18,7 @@ const FormAutocompleteComponent: IToolboxComponent<IFormAutocompleteComponentPro
   icon: <FileSearchOutlined />,
   isHidden: true,
   canBeJsSetting: true,
-  factory: (model: IFormAutocompleteComponentProps) => {
+  Factory: ({ model }) => {
     const { formMode } = useForm();
 
     return (
