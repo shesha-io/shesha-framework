@@ -7,10 +7,14 @@ import { CollapsiblePanel } from '../../components/panel';
 import { IToolboxComponent } from '../../interfaces';
 import { useForm } from '../../providers/form';
 import { FormMarkup } from '../../providers/form/models';
-import { validateConfigurableComponentSettings } from '../../providers/form/utils';
+import { getStyle, validateConfigurableComponentSettings } from '../../providers/form/utils';
 import { ICollapsiblePanelComponentProps, ICollapsiblePanelComponentPropsV0 } from './interfaces';
 import settingsFormJson from './settingsForm.json';
-import { migratePropertyName, migrateCustomFunctions } from '../../designer-components/_common-migrations/migrateSettings';
+import {
+  migratePropertyName,
+  migrateCustomFunctions,
+} from '../../designer-components/_common-migrations/migrateSettings';
+import { useFormData, useGlobalState } from 'providers';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -20,6 +24,8 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
   icon: <GroupOutlined />,
   factory: (model: ICollapsiblePanelComponentProps) => {
     const { formMode, hasVisibleChilds } = useForm();
+    const { data } = useFormData();
+    const { globalState } = useGlobalState();
     const { label, expandIconPosition, collapsedByDefault, collapsible, ghost } = model;
 
     if (model.hidden) return null;
@@ -29,10 +35,15 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       if (!childsVisible) return null;
     }
 
-    const headerComponents = model?.header?.components?.map(c => ({ ...c, readOnly: model?.readOnly })) ?? [];
-    const extra = headerComponents?.length > 0 || formMode === 'designer'
-      ? <ComponentsContainer containerId={model.header?.id} direction='horizontal' dynamicComponents={model?.isDynamic ? headerComponents : []} />
-      : null;
+    const headerComponents = model?.header?.components?.map((c) => ({ ...c, readOnly: model?.readOnly })) ?? [];
+    const extra =
+      headerComponents?.length > 0 || formMode === 'designer' ? (
+        <ComponentsContainer
+          containerId={model.header?.id}
+          direction="horizontal"
+          dynamicComponents={model?.isDynamic ? headerComponents : []}
+        />
+      ) : null;
 
     return (
       <CollapsiblePanel
@@ -43,6 +54,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
         collapsible={collapsible === 'header' ? 'header' : 'icon'}
         showArrow={collapsible !== 'disabled' && expandIconPosition !== 'hide'}
         ghost={ghost}
+        style={getStyle(model?.style, data, globalState)}
       >
         <ComponentsContainer
           containerId={model.content.id}
@@ -54,36 +66,37 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
     );
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
-  migrator: m => m
-    .add<ICollapsiblePanelComponentPropsV0>(0, prev => {
-      return {
-        ...prev,
-        expandIconPosition: 'right',
-      };
-    })
-    .add<ICollapsiblePanelComponentProps>(1, (prev, struct) => {
-      const header = { id: nanoid(), components: [] };
-      const content = { id: nanoid(), components: [] };
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  migrator: (m) =>
+    m
+      .add<ICollapsiblePanelComponentPropsV0>(0, (prev) => {
+        return {
+          ...prev,
+          expandIconPosition: 'right',
+        };
+      })
+      .add<ICollapsiblePanelComponentProps>(1, (prev, struct) => {
+        const header = { id: nanoid(), components: [] };
+        const content = { id: nanoid(), components: [] };
 
-      delete (struct.flatStructure.componentRelations[struct.componentId]);
-      struct.flatStructure.componentRelations[content.id] = [];
-      content.components = prev.components?.map(x => {
-        struct.flatStructure.allComponents[x.id].parentId = content.id;
-        struct.flatStructure.componentRelations[content.id].push(x.id);
-        return { ...x, parentId: content.id };
-      }) ?? [];
+        delete struct.flatStructure.componentRelations[struct.componentId];
+        struct.flatStructure.componentRelations[content.id] = [];
+        content.components =
+          prev.components?.map((x) => {
+            struct.flatStructure.allComponents[x.id].parentId = content.id;
+            struct.flatStructure.componentRelations[content.id].push(x.id);
+            return { ...x, parentId: content.id };
+          }) ?? [];
 
-      return {
-        ...prev,
-        components: undefined,
-        header,
-        content,
-        collapsible: 'icon'
-      };
-    })
-    .add<ICollapsiblePanelComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-  ,
+        return {
+          ...prev,
+          components: undefined,
+          header,
+          content,
+          collapsible: 'icon',
+        };
+      })
+      .add<ICollapsiblePanelComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev))),
   customContainerNames: ['header', 'content'],
 };
 

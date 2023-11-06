@@ -139,6 +139,57 @@
       }
     },
     {
+      "id": "038adb3d-6fae-450b-afb5-0855e6a30d06",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlStyle",
+      "label": "Style",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "visibility": "Yes",
+      "isDynamic": false,
+      "version": 2,
+      "expandIconPosition": "left",
+      "collapsible": "header",
+      "ghost": true,
+      "header": {
+        "id": "FizvoIoyeq1cZMqAgbDLL",
+        "components": []
+      },
+      "content": {
+        "id": "f47668c1-e424-4d18-850e-6d712e48211d",
+        "components": [
+          {
+            "id": "e029c4ed-6415-412f-be9e-73dddff4037c",
+            "type": "codeEditor",
+            "propertyName": "style",
+            "label": "Style",
+            "labelAlign": "right",
+            "parentId": "f47668c1-e424-4d18-850e-6d712e48211d",
+            "hidden": false,
+            "autoSize": false,
+            "showCount": false,
+            "allowClear": false,
+            "validate": {},
+            "exposedVariables": [
+              {
+                "id": "6034ec34-2b5d-4320-90cd-6ed6a61a0481",
+                "name": "data",
+                "description": "Selected form values",
+                "type": "object"
+              },
+              {
+                "id": "4008f09b-c4dc-41cd-981c-4b0101d005c3",
+                "name": "globalState",
+                "description": "The global state of the application",
+                "type": "object"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
       "id": "bbbb960e-77e3-40f2-89cc-f18f94678cce",
       "type": "collapsiblePanel",
       "propertyName": "pnlVisibility",
@@ -181,10 +232,10 @@
     "layout": "horizontal",
     "colon": true,
     "labelCol": {
-      "span": 8
+      "span": 5
     },
     "wrapperCol": {
-      "span": 16
+      "span": 13
     },
     "displayName": "DEFAULT_FORM_SETTINGS",
     "__docgenInfo": {

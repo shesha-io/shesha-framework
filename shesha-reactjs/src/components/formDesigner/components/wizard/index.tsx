@@ -3,9 +3,9 @@ import { Button, Space, Steps } from 'antd';
 import classNames from 'classnames';
 import { nanoid } from 'nanoid/non-secure';
 import React from 'react';
-import { useFormExpression } from '../../../../';
+import { getStyle, useFormExpression } from '../../../../';
 import { IToolboxComponent } from '../../../../interfaces';
-import { useForm } from '../../../../providers';
+import { useForm, useFormData, useGlobalState } from '../../../../providers';
 import { IConfigurableFormComponent, IFormComponentContainer } from '../../../../providers/form/models';
 import ConditionalWrap from '../../../conditionalWrapper';
 import ShaIcon from '../../../shaIcon';
@@ -16,7 +16,10 @@ import { IStepProps, IWizardComponentProps } from './models';
 import WizardSettingsForm from './settings';
 import { getWizardButtonStyle } from './utils';
 import './styles.less';
-import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
+import {
+  migrateCustomFunctions,
+  migratePropertyName,
+} from '../../../../designer-components/_common-migrations/migrateSettings';
 
 const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   type: 'wizard',
@@ -25,6 +28,8 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   factory: (model) => {
     const { formMode } = useForm();
     const { executeBooleanExpression } = useFormExpression();
+    const { data } = useFormData();
+    const { globalState } = useGlobalState();
 
     const { back, components, cancel, content, current, currentStep, done, next, visibleSteps } = useWizard(model);
 
@@ -64,7 +69,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
     const btnStyle = getWizardButtonStyle(buttonsLayout);
 
     return (
-      <div className="sha-wizard">
+      <div className="sha-wizard" style={getStyle(model?.style, data, globalState)}>
         <div className={classNames('sha-wizard-container', { vertical: direction === 'vertical' })}>
           <Steps
             type={wizardType}
@@ -188,14 +193,16 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
               beforeBackActionConfiguration: step.backButtonActionConfiguration,
               beforeNextActionConfiguration: step.nextButtonActionConfiguration,
               beforeCancelActionConfiguration: step.cancelButtonActionConfiguration,
-              beforeDoneActionConfiguration: step.doneButtonActionConfiguration
+              beforeDoneActionConfiguration: step.doneButtonActionConfiguration,
             };
-          })
+          }),
         };
       })
-    .add<IWizardComponentProps>(3, (prev) => migratePropertyName(migrateCustomFunctions(prev as IConfigurableFormComponent)) as IWizardComponentProps)
-  ,
-
+      .add<IWizardComponentProps>(
+        3,
+        (prev) =>
+          migratePropertyName(migrateCustomFunctions(prev as IConfigurableFormComponent)) as IWizardComponentProps
+      ),
   settingsFormFactory: (props) => <WizardSettingsForm {...props} />,
   // validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
   customContainerNames: ['steps'],

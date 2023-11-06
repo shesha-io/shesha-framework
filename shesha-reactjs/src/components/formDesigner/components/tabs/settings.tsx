@@ -10,16 +10,16 @@ import { nanoid } from 'nanoid/non-secure';
 import { ISettingsFormFactoryArgs } from 'interfaces';
 import SettingsForm, { useSettingsForm } from '../../../../designer-components/_settings/settingsForm';
 import SettingsFormItem from '../../../../designer-components/_settings/settingsFormItem';
+import SettingsCollapsiblePanel from 'designer-components/_settings/settingsCollapsiblePanel';
+import { CodeEditor } from 'components';
 
 const { Option } = Select;
 
 export const TabSettingsForm: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = (props) => {
-  return (
-    SettingsForm<ITabsComponentProps>({...props, children: <TabSettings {...props}/>})
-  );
+  return SettingsForm<ITabsComponentProps>({ ...props, children: <TabSettings {...props} /> });
 };
 
-const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = ({readOnly}) => {
+const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = ({ readOnly }) => {
   const { model } = useSettingsForm<ITabsComponentProps>();
 
   const onAddNewItem = (_, count: number) => {
@@ -57,7 +57,7 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = ({readOnl
         </Select>
       </SettingsFormItem>
 
-      <SettingsFormItem name="size" label="Size" tooltip="This will set the size for all buttons" jsSetting >
+      <SettingsFormItem name="size" label="Size" tooltip="This will set the size for all buttons" jsSetting>
         <Select>
           <Option value="small">Small</Option>
           <Option value="middle">Middle</Option>
@@ -78,7 +78,9 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = ({readOnl
         <Checkbox disabled={readOnly} />
       </SettingsFormItem>
 
-      <SettingsFormItem name="visibility" label="Visibility"
+      <SettingsFormItem
+        name="visibility"
+        label="Visibility"
         tooltip="This property will eventually replace the 'hidden' property and other properties that toggle visibility on the UI and payload"
         jsSetting
       >
@@ -113,6 +115,36 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = ({readOnl
         jsSetting
       >
         <EditableTagGroup />
+      </SettingsFormItem>
+
+      <SectionSeparator title="Style" />
+      <SettingsFormItem
+        label="Style"
+        name="style"
+        tooltip="A script that returns the style of the element as an object. This should conform to CSSProperties"
+      >
+        <CodeEditor
+          propertyName="style"
+          readOnly={readOnly}
+          mode="dialog"
+          label="Style"
+          setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
+          description="A script that returns the style of the element as an object. This should conform to CSSProperties"
+          exposedVariables={[
+            {
+              id: 'f9f25102-bdc7-41bc-b4bc-87eea6a86fc5',
+              name: 'data',
+              description: 'Selected form values',
+              type: 'object',
+            },
+            {
+              id: '6374545e-4848-4e92-9846-27f2a7884c41',
+              name: 'globalState',
+              description: 'The global state of the application',
+              type: 'object',
+            },
+          ]}
+        />
       </SettingsFormItem>
     </>
   );

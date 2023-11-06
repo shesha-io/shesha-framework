@@ -91,6 +91,41 @@
       "propertyName": "plain",
       "parentId": "root",
       "label": "Plain"
+    },
+    {
+      "id": "2046da88-f37d-430f-9bda-120a6325a794",
+      "type": "sectionSeparator",
+      "propertyName": "separator2",
+      "parentId": "root",
+      "label": "Style"
+    },
+    {
+      "id": "dd8a6939-3071-4dd7-a630-17fba0f3451b",
+      "type": "codeEditor",
+      "propertyName": "style",
+      "label": "Style",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "autoSize": false,
+      "showCount": false,
+      "allowClear": false,
+      "validate": {},
+      "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
+      "exposedVariables": [
+        {
+          "id": "6034ec34-2b5d-4320-90cd-6ed6a61a0481",
+          "name": "data",
+          "description": "Selected form values",
+          "type": "object"
+        },
+        {
+          "id": "4008f09b-c4dc-41cd-981c-4b0101d005c3",
+          "name": "globalState",
+          "description": "The global state of the application",
+          "type": "object"
+        }
+      ]
     }
   ],
   "formSettings": {
