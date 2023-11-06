@@ -9,14 +9,14 @@
   <ItemGroup>
     <PackageReference Include="Abp" Version="6.6.2" />
     <PackageReference Include="Intent.RoslynWeaver.Attributes" Version="2.0.1" />
-    <PackageReference Include="NHibernate" Version="5.4.2" />
+    <PackageReference Include="NHibernate" Version="5.4.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Shesha.Application" Version="4.37.16" />
-    <PackageReference Include="Shesha.Core" Version="4.37.16" />
-    <PackageReference Include="Shesha.Framework" Version="4.37.16" />
-    <PackageReference Include="Shesha.Web.FormsDesigner" Version="4.37.16" />
+    <PackageReference Include="Shesha.Application" Version="0.0.59069-build" />
+    <PackageReference Include="Shesha.Core" Version="0.0.59069-build" />
+    <PackageReference Include="Shesha.Framework" Version="0.0.59069-build" />
+    <PackageReference Include="Shesha.Web.FormsDesigner" Version="0.0.59069-build" />
     <ProjectReference Include="..\ShaCompanyName.ShaProjectName.Domain\ShaCompanyName.ShaProjectName.Domain.csproj" />
   </ItemGroup>
 

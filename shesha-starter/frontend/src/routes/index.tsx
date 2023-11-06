@@ -1,4 +1,4 @@
-import { ISidebarMenuItem } from "@shesha-io/reactjs";
+import { ISidebarMenuItem } from "@shesha/reactjs";
 import { SETTINGS_MENU_ITEMS } from "./settingsRoutes";
 
 export const URL_GENERAL_DASHBOARD_PAGE = "/";

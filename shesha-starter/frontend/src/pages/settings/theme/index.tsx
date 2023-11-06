@@ -5,7 +5,7 @@ import { NextPageWithLayout } from "models";
 
 const LazyLoadedPage = dynamic(
   async () => {
-    const modules = await import("@shesha-io/reactjs");
+    const modules = await import("@shesha/reactjs");
     return modules.ConfigurableThemePage;
   },
   { ssr: false }

@@ -1,7 +1,7 @@
 import { Alert, Card, Col, Row } from "antd";
 import data from "public/meta.json";
 import React from "react";
-import { CollapsiblePanel, MainLayout } from "@shesha-io/reactjs";
+import { CollapsiblePanel, MainLayout } from "@shesha/reactjs";
 import styled from "styled-components";
 
 const StyledAlert = styled(Alert)`
