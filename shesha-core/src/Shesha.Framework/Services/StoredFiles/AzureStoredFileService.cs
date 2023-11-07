@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Shesha.Configuration;
 using Shesha.Domain;
+using Shesha.Services.StoredFiles.Options;
 
 namespace Shesha.Services.StoredFiles
 {
@@ -18,23 +19,47 @@ namespace Shesha.Services.StoredFiles
         private const string ConnectionStringName = "BlobStorage";
         private const string ContainerName = "files";
         private readonly IocManager _iocManager;
+        private readonly IConfigurationRoot _configuration;
+        private readonly CloudStorageOptions _cloudStorageOptions;
 
         public AzureStoredFileService(IRepository<StoredFile, Guid> fileService, IRepository<StoredFileVersion, Guid> versionService, IocManager iocManager) : base(fileService, versionService)
         {
             _iocManager = iocManager;
+            _configuration = GetConfiguration();
+            _cloudStorageOptions = GetCloudStorageConfiguration();
+        }
+
+        /// <summary>
+        /// Re
+        /// </summary>
+        /// <returns></returns>
+        private IConfigurationRoot GetConfiguration()
+        {
+            var env = _iocManager.Resolve<IWebHostEnvironment>();
+            return AppConfigurations.Get(env.ContentRootPath, env.EnvironmentName, env.IsDevelopment());
         }
 
         /// <summary>
         /// Returns connection string. Note: for the Azure environment - uses standard environment variable
         /// </summary>
-        public string GetConnectionString()
+        private string GetConnectionString()
         {
-            var env = _iocManager.Resolve<IWebHostEnvironment>();
-            var configuration = AppConfigurations.Get(env.ContentRootPath, env.EnvironmentName, env.IsDevelopment());
-            return configuration.GetConnectionString(ConnectionStringName);
+            return _configuration.GetConnectionString(ConnectionStringName);
+        }
+
+        /// <summary>
+        ///  Returns cloud storage configurations
+        /// </summary>
+        /// <returns></returns>
+        private CloudStorageOptions GetCloudStorageConfiguration()
+        {
+            var options = new CloudStorageOptions();
+            _configuration.GetSection(CloudStorageOptions.CloudStorageConfigurations).Bind(options);
+            return options;
         }
 
         private BlobContainerClient _blobContainerClient;
+
         protected BlobContainerClient BlobContainerClient
         {
             get
@@ -44,7 +69,7 @@ namespace Shesha.Services.StoredFiles
 
                 var containerClient = new BlobContainerClient(
                     GetConnectionString(),
-                    ContainerName);
+                    _cloudStorageOptions?.ContainerName ?? ContainerName);
                 containerClient.CreateIfNotExists();
 
                 // Setup the permissions on the container to be public
@@ -57,7 +82,7 @@ namespace Shesha.Services.StoredFiles
 
         private BlobClient GetBlobClient(string blobName)
         {
-            return BlobContainerClient.GetBlobClient(blobName);
+            return BlobContainerClient.GetBlobClient(Path.Combine(_cloudStorageOptions?.DirectoryName, blobName));
         }
 
         private string GetAzureFileName(StoredFileVersion version)
@@ -80,7 +105,6 @@ namespace Shesha.Services.StoredFiles
 
             return stream;
         }
-
 
         public async Task<Stream> GetStreamAsync(string filePath)
         {
