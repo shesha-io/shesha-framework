@@ -165,7 +165,7 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
 
   //#endregion
 
-  const onFinish = (values: any, _response?: any, options?: any) => {
+  const onFinish = (values: any, options?: any) => {
     if (!submitEndpoint) throw new Error('Submit endpoint is not specified');
 
     postData(submitEndpoint, values)
