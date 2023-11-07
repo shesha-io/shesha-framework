@@ -26,4 +26,5 @@ export interface IComponentWrapperProps {
   propertyMeta?: IPropertyMetadata;
   defaultRow?: { [key in string]?: any };
   defaultValue?: any;
+  readOnly?: boolean;
 }

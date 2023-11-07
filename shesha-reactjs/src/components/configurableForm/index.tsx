@@ -54,15 +54,11 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
 
   const markupWithSettings = convertToMarkupWithSettings(markup);
 
-  console.log('LOG:::markupWithSettings', markupWithSettings);
-
   const renderWithMarkup = (
     providedMarkup: FormRawMarkup,
     formSettings: IFormSettings,
     persistedFormProps?: IPersistedFormProps
   ) => {
-    console.log('LOG:::persistedFormProps', persistedFormProps);
-
     if (!providedMarkup) return null;
 
     const formStatusInfo = persistedFormProps?.versionStatus

@@ -1,7 +1,7 @@
 import { ArrowsAltOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
 import React from 'react';
-import { useGlobalState, useFormData } from '../../../../providers';
+import { useGlobalState, useFormData, useForm } from '../../../../providers';
 import { evaluateString, validateConfigurableComponentSettings } from '../../../../formDesignerUtils';
 import { IConfigurableFormComponent, IToolboxComponent } from '../../../../interfaces/formDesigner';
 import { getStyle } from '../../../../providers/form/utils';
@@ -23,6 +23,7 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
   Factory: ({ model }) => {
     const { globalState } = useGlobalState();
     const { data } = useFormData();
+    const { formMode } = useForm();
 
     const { override, value, color, valueSource } = model;
 
@@ -39,7 +40,9 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
     };
 
     if (allEmpty && valueSource === 'manual') {
-      return <Alert type="warning" message="Status tag not configured properly" />;
+      return formMode === 'designer'
+        ? <Alert type="warning" message="Status tag not configured properly" />
+        : null;
     }
 
     const evaluatedOverrideByExpression = getValueByExpression(override);

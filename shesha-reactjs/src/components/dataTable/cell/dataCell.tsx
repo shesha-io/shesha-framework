@@ -49,6 +49,7 @@ const ReadDataCell = <D extends object = {}, V = number>(props: IDataCellProps<D
       columnConfig={columnConfig}
       customComponent={customComponent}
       defaultRow={row}
+      readOnly={true}
     />
   );
 };
@@ -135,6 +136,7 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
             propertyName: columnConfig.propertyName,
             label: null,
             hideLabel: true,
+            readOnly: props.readOnly,
         };
 
         if (component.linkToModelMetadata && propertyMeta) {
