@@ -7,7 +7,7 @@ import { MainLayout } from '@shesha/reactjs';
  * @returns the component wrapped up in a layout
  */
 export const getLayout = (page: ReactElement): JSX.Element => {
-  return <MainLayout noPadding>{page}</MainLayout>;
+  return <MainLayout noPadding><>{page}</></MainLayout>;
 };
 
 export default getLayout;

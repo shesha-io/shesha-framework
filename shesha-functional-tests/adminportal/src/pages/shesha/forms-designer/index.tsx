@@ -11,8 +11,8 @@ interface IFormsDesignerPageProps {
     name?: string;
 
     /**
-       * Module name.
-       */
+     * Module name.
+     */
     module?: string;
 
     /**
