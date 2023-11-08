@@ -52,8 +52,7 @@ export const ForgotPassword: FC<IProps> = () => {
         pin,
         operationId,
       }).then((response) => {
-        console.log('LOG: verify response', response);
-        verifyOtpSuccess(response?.result)
+        verifyOtpSuccess(response?.result);
       });
   };
 

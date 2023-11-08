@@ -50,8 +50,6 @@ const DynamicPageInternal: NextPageWithLayout<IDynamicPageProps> = (props) => {
     name: formName
   };
   
-  console.log('formId', formId, props)
-
   return <LazyLoadedPage {...props} formId={ formId }/>;
 };
 
