@@ -103,7 +103,8 @@
   "exclude": [
     "node_modules",
     "test/*",
-    "src/api/**"
+    "src/api/**",
+    "*"
   ],
   "include": [
     "next-env.d.ts",
