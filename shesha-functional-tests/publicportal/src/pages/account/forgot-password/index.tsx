@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import React, { FC, useState } from 'react';
 import { URL_LOGIN_PAGE } from 'routes';
 import { useAuth, ValidationErrors } from '@shesha/reactjs';
-import { ForgotPasswordPage, VerifyOtpModal } from './styles';
+import { ForgotPasswordPage, VerifyOtpModal } from '../../../components/pages/account/forgot-password/styles';
 import { ResetPasswordVerifyOtpInput, useResetPasswordSendOtp, useResetPasswordVerifyOtp, UserResetPasswordSendOtpQueryParams } from 'api/user';
 
 interface IProps { }
@@ -35,12 +35,10 @@ export const ForgotPassword: FC<IProps> = () => {
     if (mobileNo) {
       sendOtpHttp({ mobileNo })
         .then((response) => {
-          console.log('LOG: resolved', response);
           setOperationId(response?.result?.operationId);
           toggleVerifyOtpModalVisibility();
         })
         .catch((e) => {
-          console.log('LOG: rejected', e);
           toggleVerifyOtpModalVisibility();
         });
     }
@@ -53,7 +51,6 @@ export const ForgotPassword: FC<IProps> = () => {
         pin,
         operationId,
       }).then((response) => {
-        console.log('LOG: verify response', response);
         verifyOtpSuccess(response?.result)
       });
   };

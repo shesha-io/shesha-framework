@@ -11,8 +11,8 @@ interface IFormsDesignerPageProps {
     name?: string;
 
     /**
-       * Module name.
-       */
+     * Module name.
+     */
     module?: string;
 
     /**
@@ -36,8 +36,6 @@ const FormsDesignerPage: NextPageWithLayout<IFormsDesignerPageProps> = (props) =
             name: props.name,
             module: props.module
         };
-
-    console.log('formId', formId, props)
 
     return <LazyLoadedPage {...props} formId={formId} />;
 };

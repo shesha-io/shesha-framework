@@ -21,8 +21,8 @@ const ShaMenuItem: FC<IProps> = ({ items = [] }) => {
     <Fragment>
       {items.length <= 3 && (
         <ShaMenuItemStyledWrapper>
-          {items.map(({ icon, target, title }) => (
-            <Link href={target}>
+          {items.map(({ icon, target, title }, index) => (
+            <Link href={target} key={index}>
               <li className="list-item">
                 <ShaIcon iconName={icon as IconType} />
                 {title}

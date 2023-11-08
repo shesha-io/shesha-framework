@@ -8,7 +8,7 @@ import React, { FC, useState } from 'react';
 import { URL_LOGIN_PAGE } from 'routes';
 import { useAuth, ValidationErrors } from '@shesha/reactjs';
 import { IPasswordConfirmPassword } from 'src/components/global/passwordConfirmPasswordInputs';
-import { ResetPasswordContainer } from './styles';
+import { ResetPasswordContainer } from '../../../components/pages/account/reset-password/styles';
 
 export const ResetPassword: FC = () => {
   const { verifyOtpResPayload, resetPasswordSuccess } = useAuth();
