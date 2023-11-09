@@ -7,7 +7,7 @@ import { ILoginForm } from "models";
 import Link from "next/link";
 import { FC } from "react";
 import { URL_FORGOT_PASSWORD } from "routes";
-import { LoginPageWrapper } from "./styles";
+import { LoginPageWrapper } from "../../components/pages/login/styles";
 import { LOGO } from "src/app-constants/application";
 
 export const Login: FC = () => {

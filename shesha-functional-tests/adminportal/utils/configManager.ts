@@ -20,7 +20,7 @@ const defaultConfig: IAppConfigManager = {
   appInsightsInstrumentationKey: null,
 };
 
-export default class ConfigManager {
+export class ConfigManager {
   private devConfig = { ...camelCase(shaEnv) };
 
   getConfig(): IAppConfigManager {

@@ -1,7 +1,7 @@
 import { ApplicationInsights } from '@microsoft/applicationinsights-web';
 import { ReactPlugin } from '@microsoft/applicationinsights-react-js';
 
-import ConfigManager from 'utils/configManager';
+import { ConfigManager } from 'utils/configManager';
 
 export const initAppInsights = (): void => {
   const { appInsightsInstrumentationKey } = new ConfigManager().getConfig();
