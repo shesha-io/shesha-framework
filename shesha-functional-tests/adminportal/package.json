@@ -10,7 +10,7 @@
     "dev": "next dev",
     "build": "npm run build --workspaces && next build",
     "export": "next export",
-    "start": "NODE_ENV=production node --max-old-space-size=8192 server.js",
+    "start": "NODE_ENV=development node --max-old-space-size=8192 server.js",
     "build:analyze": "ANALYZE=true npm run build",
     "lint": "eslint **/*.{js,jsx,ts,tsx}",
     "prettier": "prettier --write **/*.{js,jsx,ts,tsx}",
