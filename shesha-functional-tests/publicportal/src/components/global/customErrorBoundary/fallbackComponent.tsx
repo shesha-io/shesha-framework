@@ -3,7 +3,7 @@ import { FallbackProps } from 'react-error-boundary';
 import { FrownTwoTone } from '@ant-design/icons';
 import { Button } from 'antd';
 import Router from 'next/router';
-import './styles.ts';
+import './styles';
 import { CustomErrorBoundaryContainer } from './styles';
 
 const errorBoundaryErrorHandler = ({ error }: FallbackProps) => {
