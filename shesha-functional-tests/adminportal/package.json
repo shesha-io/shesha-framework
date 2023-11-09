@@ -1,5 +1,5 @@
 {
-  "name": "@shesha/reactjs",
+  "name": "@shesha/adminportal",
   "version": "0.0.1",
   "private": false,
   "postinstall": "next",
@@ -10,7 +10,7 @@
     "dev": "next dev",
     "build": "npm run build --workspaces && next build",
     "export": "next export",
-    "start": "NODE_ENV=development node --max-old-space-size=8192 server.js",
+    "start": "NODE_ENV=production node --max-old-space-size=8192 server.js",
     "build:analyze": "ANALYZE=true npm run build",
     "lint": "eslint **/*.{js,jsx,ts,tsx}",
     "prettier": "prettier --write **/*.{js,jsx,ts,tsx}",
@@ -25,7 +25,6 @@
     "@types/react-dom": "^18.2.4",
     "antd": "^4.24.0",
     "axios": "^0.21.1",
-    "babel-plugin-module-resolver": "^5.0.0",
     "camelcase": "^6.2.0",
     "config": "^3.3.6",
     "dayjs": "^1.11.9",

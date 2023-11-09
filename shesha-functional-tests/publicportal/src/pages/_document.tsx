@@ -10,7 +10,7 @@ import Document, {
 } from "next/document";
 import React from "react";
 import { ServerStyleSheet } from "styled-components";
-import ConfigManager from "utils/configManager";
+import { ConfigManager } from "utils/configManager";
 
 const { googleMapsApiKey } = new ConfigManager().getConfig();
 

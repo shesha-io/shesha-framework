@@ -3,7 +3,7 @@ import htmlescape from 'htmlescape';
 import Document, { DocumentContext, DocumentInitialProps, Head, Html, Main, NextScript } from 'next/document';
 import React from 'react';
 import { ServerStyleSheet } from 'styled-components';
-import ConfigManager from 'utils/configManager';
+import { ConfigManager } from 'utils/configManager';
 
 const { googleMapsApiKey } = new ConfigManager().getConfig();
 
