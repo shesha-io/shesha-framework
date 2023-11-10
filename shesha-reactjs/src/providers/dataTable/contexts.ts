@@ -42,8 +42,8 @@ export const DEFAULT_PAGE_SIZE_OPTIONS = [5, 10, 20, 30, 40, 50, 100];
 export const MIN_COLUMN_WIDTH = 150;
 
 export interface IDataTableUserConfig {
-  pageSize: number;
-  currentPage: number;
+  pageSize?: number;
+  currentPage?: number;
   quickSearch: string;
 
   columns?: ITableColumn[];

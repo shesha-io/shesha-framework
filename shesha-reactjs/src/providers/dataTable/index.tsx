@@ -285,6 +285,13 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     standardSorting: sortingItems2ColumnSorting(sortingItems),
   });
 
+  useEffect(() => {
+    // sync page size on settings change
+    if (state.selectedPageSize !== initialPageSize){
+      changePageSize(initialPageSize);      
+    }
+  }, [initialPageSize]);
+
   const { setState: setGlobalState } = useGlobalState();
   const tableIsReady = useRef(false);
 
@@ -420,8 +427,11 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   };
 
   const saveUserSettings = (state: IDataTableStateContext) => {
+    // don't save value if it's set to default, it helps to apply defaults
+    const pageSize = state.selectedPageSize === initialPageSize ? null : state.selectedPageSize;
+
     setUserConfig({
-      pageSize: state.selectedPageSize,
+      pageSize: pageSize,
       currentPage: state.currentPage,
       quickSearch: state.quickSearch,
       columns: state.columns,
