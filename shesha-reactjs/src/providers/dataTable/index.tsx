@@ -566,7 +566,8 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   const setPredefinedFilters = (predefinedFilters: IStoredFilter[]) => {
     const filtersChanged = !isEqual(sortBy(state?.predefinedFilters), sortBy(predefinedFilters));
 
-    if (filtersChanged) {
+    // note: we should update the state is the table is not yet ready to trigger dependencies check
+    if (filtersChanged || !tableIsReady.current) {
       dispatch(setPredefinedFiltersAction({ predefinedFilters, userConfig }));
     }
   };
