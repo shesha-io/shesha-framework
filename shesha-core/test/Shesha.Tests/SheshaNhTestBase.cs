@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Abp;
+﻿using Abp;
 using Abp.Authorization.Users;
 using Abp.Modules;
 using Abp.MultiTenancy;
@@ -13,6 +10,9 @@ using Shesha.Authorization.Users;
 using Shesha.Domain;
 using Shesha.MultiTenancy;
 using Shesha.Services;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Shesha.Tests
 {
@@ -20,26 +20,7 @@ namespace Shesha.Tests
     {
         protected SheshaNhTestBase(): base()
         {
-            // Seed initial data for host
-            AbpSession.TenantId = null;
-            
-            UsingDbSession(session =>
-            {
-                //new InitialHostDbBuilder(session).Create();
-                //new DefaultTenantBuilder(session).Create();
-            });
-            
-
-            // Seed initial data for default tenant
-            AbpSession.TenantId = 1;
-            UsingDbSession(session =>
-            {
-                //new TenantRoleAndUserBuilder(session, 1).Create();
-            });
-            
-            //LoginAsDefaultTenantAdmin();
             LoginAsHostAdmin();
-            //AbpSession.TenantId = null; // workaround
 
             StaticContext.SetIocManager(LocalIocManager);
             EntityHelper.RefreshStore(LocalIocManager);
