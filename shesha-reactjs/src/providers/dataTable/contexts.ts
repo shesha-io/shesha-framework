@@ -15,6 +15,7 @@ import {
   SortMode,
   ColumnSorting,
   ITableDataColumn,
+  DataFetchDependency,
 } from './interfaces';
 import { IHasModelType, IRepository } from './repository/interfaces';
 
@@ -202,6 +203,8 @@ export interface IDataTableActionsContext
    * Call this function to indicate that your component (table/list) require columns
    */
   requireColumns: () => void;
+  registerDataFetchDependency: (ownerId: string, dependency: DataFetchDependency) => void;
+  unregisterDataFetchDependency: (ownerId: string) => void;
 
   changeDisplayColumn: (displayColumnName: string) => void;
   changePersistedFiltersToggle: (persistSelectedFilters: boolean) => void;

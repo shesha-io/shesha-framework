@@ -2,6 +2,7 @@ import { IConfigurableActionConfiguration } from 'interfaces/configurableAction'
 import { IDataColumnsProps, IEditableColumnProps } from '../datatableColumnsConfigurator/models';
 import { IPropertyMetadata, ProperyDataType } from 'interfaces/metadata';
 import { Moment } from 'moment';
+import { IDictionary } from 'src/index';
 
 export type ColumnFilter = string[] | number[] | Moment[] | Date[] | string | number | Moment | Date | boolean;
 
@@ -262,3 +263,19 @@ export interface SortingItem {
 export type GroupingItem = SortingItem;
 
 export type SortMode = 'standard' | 'strict';
+
+export type DataFetchDependencyState = 'waiting' | 'ready';
+export interface DataFetchDependency {
+  state: DataFetchDependencyState;
+}
+/**
+ * Dictionary of the data fetching dependencies
+ */
+export type DataFetchDependencies = IDictionary<DataFetchDependency>;
+
+export interface DataFetchDependencyStateSwitcher {
+  /** Switch the dependency to the `ready` state. Note: it doesn't trigger the data fetching */
+  ready: () => void;
+  /** Switch the dependency to the `waiting` state. Note: it doesn't stop current data fetching process but prevents further ones until the dependency is ready */
+  waiting: () => void;
+}

@@ -6,7 +6,7 @@ import React, { FC, MutableRefObject, useEffect } from 'react';
 import TableViewSelectorRenderer from '../../../components/tableViewSelectorRenderer';
 import { migrateFilterMustacheExpressions } from '../../../designer-components/_common-migrations/migrateUseExpression';
 import { IToolboxComponent } from '../../../interfaces';
-import { useDataTableStore, useForm, useGlobalState, useNestedPropertyMetadatAccessor } from '../../../providers';
+import { useDataFetchDependency, useDataTableStore, useForm, useGlobalState, useNestedPropertyMetadatAccessor } from '../../../providers';
 import { evaluateDynamicFilters } from '../../../utils';
 import { ITableViewSelectorComponentProps } from './models';
 import TableViewSelectorSettings from './tableViewSelectorSettings';
@@ -53,6 +53,7 @@ interface ITableViewSelectorProps extends ITableViewSelectorComponentProps {
 }
 
 export const TableViewSelector: FC<ITableViewSelectorProps> = ({
+  id,
   filters,
   hidden,
   componentRef,
@@ -80,6 +81,8 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
   const selectedFilterId =
     selectedStoredFilterIds && selectedStoredFilterIds.length > 0 ? selectedStoredFilterIds[0] : null;
 
+  const dataFetchDep = useDataFetchDependency(id);
+
   //#region Filters
   const debounceEvaluateDynamicFiltersHelper = () => {
     const data = !_.isEmpty(formData) ? camelCaseKeys(formData, { deep: true, pascalCase: true }) : formData;
@@ -92,11 +95,13 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
     if (dataContextManager)
       match.push({ match: 'contexts', data: dataContextManager.getDataContextsData(dataContext?.id)});
 
+    dataFetchDep.waiting();
     evaluateDynamicFilters(
       filters,
       match,
       propertyMetadataAccessor
     ).then((evaluatedFilters) => {
+      dataFetchDep.ready();
       setPredefinedFilters(evaluatedFilters);
     });
   };

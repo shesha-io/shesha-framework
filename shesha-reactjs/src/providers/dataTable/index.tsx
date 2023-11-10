@@ -81,6 +81,9 @@ import {
   ColumnSorting,
   GroupingItem,
   SortingItem,
+  DataFetchDependencies,
+  DataFetchDependency,
+  DataFetchDependencyStateSwitcher,
 } from './interfaces';
 import {
   IConfigurableColumnsProps, IDataColumnsProps,
@@ -368,15 +371,31 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   const requireColumns = () => {
     requireColumnRef.current = true;
   };
+  const dataFetchDependencies = useRef<DataFetchDependencies>({});  
+  const registerDataFetchDependency = (ownerId: string, dependency: DataFetchDependency) => {
+    dataFetchDependencies.current[ownerId] = dependency;
+  };
+  const unregisterDataFetchDependency = (ownerId: string) => {
+    delete dataFetchDependencies.current[ownerId];
+  };
+
+  const isDataDependenciesReady = (): boolean => {
+    const deps = dataFetchDependencies.current;
+    for (const depName in deps){
+      if (deps.hasOwnProperty(depName) && deps[depName].state !== 'ready')
+        return false;
+    }    
+    return true;
+  };
 
   // fetch table data when config is ready or something changed (selected filter, changed current page etc.)
   const fetchDataIfReady = () => {
     const groupingSupported = repository.supportsGrouping && repository.supportsGrouping({ sortMode: state.sortMode });
     const groupingIsReady = !groupingSupported || (grouping ?? []).length === (state.groupingColumns ?? []).length;
-
     const columnsAreReady = !(requireColumnRef.current) || Boolean(state.configurableColumns) && state.columns.length === state.configurableColumns.length;
+    const depsReady = isDataDependenciesReady();
 
-    const readyToFetch = repository && groupingIsReady && columnsAreReady;
+    const readyToFetch = repository && groupingIsReady && columnsAreReady && depsReady;
 
     if (readyToFetch) {
       // fecth using entity type
@@ -749,6 +768,8 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     setDragState: setDraggingState,
     setMultiSelectedRow,
     requireColumns,
+    registerDataFetchDependency,
+    unregisterDataFetchDependency,
   };
 
   const contextOnChangeData = <T,>(_data: T, changedData: IDataTableStateContext) => {
@@ -837,5 +858,35 @@ function useDataTableStore(require: boolean = true) {
 
 const useDataTable = useDataTableStore;
 
+
+/**
+ * Define a dependency of the data fetching. Is used by the components which require some preparation logic before the data can be fetched by the DataTable context
+ */
+const useDataFetchDependency = (ownerId: string): DataFetchDependencyStateSwitcher => {
+  const depState = useRef<DataFetchDependency>({ state: 'waiting' });
+  const { registerDataFetchDependency, unregisterDataFetchDependency } = useDataTableStore();
+
+  // dependency should be affected immediately
+  registerDataFetchDependency(ownerId, depState.current);
+  useEffect(() => {
+    registerDataFetchDependency(ownerId, depState.current);
+
+    return () => {
+      unregisterDataFetchDependency(ownerId);
+    };
+  }, [ownerId]);
+
+  // switcher is just a syntactical sugar
+  const switcher: DataFetchDependencyStateSwitcher = {
+    ready: () => {
+      depState.current.state = 'ready';
+    },
+    waiting: () => {
+      depState.current.state = 'waiting';
+    },
+  };
+  return switcher;
+};
+
 export default DataTableProvider;
-export { DataTableProvider, useDataTable, useDataTableActions, useDataTableState, useDataTableStore };
+export { DataTableProvider, useDataTable, useDataTableActions, useDataTableState, useDataTableStore, useDataFetchDependency };
