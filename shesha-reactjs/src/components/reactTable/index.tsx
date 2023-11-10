@@ -209,7 +209,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     usePagination,
     useRowSelect,
     // useBlockLayout,
-    ({ useInstanceBeforeDimensions, allColumns }) => {
+    ({ useInstanceBeforeDimensions }) => {
       if (useMultiSelect) {
         useInstanceBeforeDimensions?.push(({ headerGroups: localHeaderGroups }) => {
           if (Array.isArray(localHeaderGroups)) {
