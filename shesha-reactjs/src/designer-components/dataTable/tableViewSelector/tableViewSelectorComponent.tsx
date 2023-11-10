@@ -95,7 +95,6 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
     if (dataContextManager)
       match.push({ match: 'contexts', data: dataContextManager.getDataContextsData(dataContext?.id)});
 
-    dataFetchDep.waiting();
     evaluateDynamicFilters(
       filters,
       match,
