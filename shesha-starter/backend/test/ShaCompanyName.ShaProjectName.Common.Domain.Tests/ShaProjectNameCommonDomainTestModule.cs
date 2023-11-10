@@ -47,7 +47,7 @@ namespace ShaCompanyName.ShaProjectName.Common.Tests
             ConnectionString = config.GetConnectionString("TestDB");
 
             nhModule.ConnectionString = ConnectionString;
-            nhModule.SkipDbSeed = false;    // Set to false to apply DB Migration files on start up
+            nhModule.SkipDbSeed = false; // Set to false to apply DB Migration files on start up
         }
 
         public override void PreInitialize()
