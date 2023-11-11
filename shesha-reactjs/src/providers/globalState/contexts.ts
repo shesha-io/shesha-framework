@@ -7,6 +7,7 @@ export type PubSubType = PubSubJS.Base<IPubSubPayload, PubSubJS.Message>;
 export interface ISetStatePayload {
   data?: any;
   key?: string;
+  spread?: boolean;
 }
 
 export interface ISetPubSubPayload {
