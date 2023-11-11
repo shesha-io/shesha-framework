@@ -16,11 +16,15 @@ const reducer = handleActions<IGlobalStateStateContext, any>(
       const { payload } = action;
       const { globalState } = state;
 
-      const { data, key } = payload;
+      const { data, key, spread } = payload;
 
       const incomingGlobalState = { ...(globalState || {}) };
 
-      incomingGlobalState[key] = data;
+      if (spread) {
+        incomingGlobalState[key] = { ...(incomingGlobalState[key] || {}), ...data };
+      } else {
+        incomingGlobalState[key] = data;
+      }
 
       return {
         ...state,
