@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
+using System.Net.Mime;
 using System.Threading.Tasks;
 using ReflectionHelper = Shesha.Reflection.ReflectionHelper;
 
@@ -74,6 +75,36 @@ namespace Shesha.StoredFiles
 
             // note: fileContents will be disposed automatically in the FileStreamResult 
             return File(fileContents, fileVersion.FileType.GetContentType(), fileVersion.FileName);
+        }
+
+        [HttpGet, Route("View")]
+        public async Task<FileStreamResult> View(Guid id, int? versionNo)
+        {
+            var file = await _fileRepository.GetAsync(id);
+            if (file == null)
+                throw new UserFriendlyException("File not found");
+
+            var fileVersion = !versionNo.HasValue
+                ? file.LastVersion()
+                : _fileVersionRepository.GetAll()
+                    .FirstOrDefault(v => v.File == file && v.VersionNo == versionNo.Value);
+
+            if (fileVersion == null)
+                throw new Exception("File version not found");
+
+            var fileContents = await _fileService.GetStreamAsync(fileVersion);
+
+            var contentType = fileVersion.FileType.GetContentType();
+
+            var contentDisposition = new ContentDisposition
+            {
+                FileName = fileVersion.FileName,
+                Inline = true  // Set to true to display the file inline, set to false to force download
+            };
+
+            Response.Headers.Add("Content-Disposition", contentDisposition.ToString());
+
+            return File(fileContents, contentType);
         }
 
         [HttpPost, Route("Upload")]
@@ -586,7 +617,7 @@ namespace Shesha.StoredFiles
                     {
                         property.SetValue(owner, storedFile, null);
                         await _dynamicRepository.SaveOrUpdateAsync(owner);
-                    } 
+                    }
                     else if (owner == null && !input.PropertyName.IsNullOrEmpty())
                     {
                         storedFile.Temporary = true;
@@ -689,5 +720,17 @@ namespace Shesha.StoredFiles
         }
 
         #endregion
+
+        private byte[] UseBinaryReader(Stream stream)
+        {
+            byte[] bytes;
+
+            using (var binaryReader = new BinaryReader(stream))
+            {
+                bytes = binaryReader.ReadBytes((int)stream.Length);
+            }
+
+            return bytes;
+        }
     }
 }
