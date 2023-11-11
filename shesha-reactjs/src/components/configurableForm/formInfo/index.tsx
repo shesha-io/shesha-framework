@@ -1,16 +1,18 @@
-import React, { FC } from 'react';
-import { useAppConfigurator, useSheshaApplication } from '../../providers';
-import { FormIdentifier, IPersistedFormProps } from '../../providers/form/models';
-import { Card } from 'antd';
-import { CONFIGURATION_ITEM_STATUS_MAPPING } from '../../utils/configurationFramework/models';
-import { getFormFullName } from '../../utils/form';
-import StatusTag from '../statusTag';
-import HelpTextPopover from '../helpTextPopover';
 import { BlockOutlined, CloseOutlined } from '@ant-design/icons';
+import { Button, Card } from 'antd';
+import React, { FC, useState } from 'react';
+import { useAppConfigurator, useSheshaApplication } from '../../../providers';
+import { FormIdentifier, IPersistedFormProps } from '../../../providers/form/models';
+import { CONFIGURATION_ITEM_STATUS_MAPPING } from '../../../utils/configurationFramework/models';
+import { getFormFullName } from '../../../utils/form';
+import HelpTextPopover from '../../helpTextPopover';
+import StatusTag from '../../statusTag';
+import Content from './content';
 
 export const FormInfo: FC<IPersistedFormProps> = ({ id, versionNo, description, versionStatus, name, module }) => {
   const { toggleShowInfoBlock } = useAppConfigurator();
   const app = useSheshaApplication();
+  const [open, setOpen] = useState(false);
 
   const getDesignerUrl = (fId: FormIdentifier) => {
     return typeof fId === 'string'
@@ -20,6 +22,8 @@ export const FormInfo: FC<IPersistedFormProps> = ({ id, versionNo, description, 
       : null;
   };
 
+  const onModalOpen = () => setOpen(true);
+
   return (
     <Card
       className="sha-form-info-card"
@@ -27,9 +31,9 @@ export const FormInfo: FC<IPersistedFormProps> = ({ id, versionNo, description, 
       title={
         <>
           {id && (
-            <a target="_blank" href={getDesignerUrl(id)}>
+            <Button style={{ padding: 0 }} type="link" onClick={onModalOpen}>
               <BlockOutlined title="Click to open this form in the designer" />
-            </a>
+            </Button>
           )}
           <span className="sha-form-info-card-title">
             Form: {getFormFullName(module, name)} v{versionNo}
@@ -40,7 +44,9 @@ export const FormInfo: FC<IPersistedFormProps> = ({ id, versionNo, description, 
       }
       extra={<CloseOutlined onClick={() => toggleShowInfoBlock(false)} title="Click to hide form info" />}
       size="small"
-    ></Card>
+    >
+      {id && <Content id={id} forwardLink={getDesignerUrl(id)} open={open} onClose={() => setOpen(false)} />}
+    </Card>
   );
 };
 
