@@ -721,16 +721,5 @@ namespace Shesha.StoredFiles
 
         #endregion
 
-        private byte[] UseBinaryReader(Stream stream)
-        {
-            byte[] bytes;
-
-            using (var binaryReader = new BinaryReader(stream))
-            {
-                bytes = binaryReader.ReadBytes((int)stream.Length);
-            }
-
-            return bytes;
-        }
     }
 }
