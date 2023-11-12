@@ -23,16 +23,8 @@ const Template: Story<IDesignerPageProps> = (args) => (
 // Reuse that template for creating different stories
 export const Basic = Template.bind({});
 
-export const EpmDesignerUserManagement = addStory(Template, {
-  formId: 'd1d69771-07ec-46e0-9710-0c840295ecd2',
-});
-
-export const EpmPlayGround = addStory(Template, {
-  formId: 'e8c7aec8-e90e-4729-a2b8-49f6d7ac01e3',
-});
-
-export const EpmPlayGroundTwo = addStory(Template, {
-  formId: 'daa6108f-86c2-49b0-88f9-f18badd673f2',
+export const FncDesignerPlayground = addStory(Template, {
+  formId: '6392bcf3-2625-48e3-b521-4d46a3b54954',
 });
 
 export const FncDesignerTSchoolDetails = addStory(Template, {
@@ -65,15 +57,4 @@ export const FncDesignerMemberCreateView = addStory(Template, {
 
 export const FncDesignerDeployCreate = addStory(Template, {
   formId: '3c2dd65f-5b03-4db5-9a3a-64dc850c7e14',
-});
-
-export const DepDesignerCaseDetails = addStory(Template, {
-  formId: 'c6eb30fa-030e-4504-8247-64255377176b',
-});
-
-export const EntprDesignerTimeField = addStory(Template, {
-  formId: 'adbfb402-07d1-4ff3-8cac-44acbe10ed50',
-});
-export const RefListStatus = addStory(Template, {
-  formId: 'ecebf97c-cf1e-4e43-831e-91f0ceccaf06',
 });
