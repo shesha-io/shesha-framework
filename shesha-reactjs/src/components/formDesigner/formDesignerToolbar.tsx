@@ -26,7 +26,8 @@ import {
   showErrorDetails,
   updateItemStatus,
 } from '../../utils/configurationFramework/actions';
-import { useShaRouting, useSheshaApplication } from '../..';
+import { useGlobalState, useShaRouting, useSheshaApplication } from '../..';
+import { ActionFlag, IFormDesignerActionFlag } from '../../providers/globalState/models';
 
 export interface IProps {}
 
@@ -36,10 +37,13 @@ export const FormDesignerToolbar: FC<IProps> = () => {
   const { router } = useShaRouting(false) ?? {};
   const { setFormMode, formMode } = useForm();
   const { setDebugMode, isDebug, undo, redo, canUndo, canRedo, readOnly } = useFormDesigner();
+  const { globalState, setState } = useGlobalState();
   const [settingsVisible, setSettingsVisible] = useState(false);
 
   const { allComponents, componentRelations, formSettings } = useFormDesigner();
   const toolboxComponents = useFormDesignerComponents();
+
+  const renderToolbarRightButtons = Object.values(globalState?.[ActionFlag.render] || {});
 
   const saveFormInternal = (): Promise<void> => {
     const payload: FormMarkupWithSettings = {
@@ -47,6 +51,10 @@ export const FormDesignerToolbar: FC<IProps> = () => {
       formSettings: formSettings,
     };
     return saveForm(payload);
+  };
+
+  const setActionFlag = (key: IFormDesignerActionFlag) => {
+    setState({ data: { [key]: true }, key: ActionFlag.name, spread: true });
   };
 
   const onSaveClick = () => {
@@ -59,7 +67,8 @@ export const FormDesignerToolbar: FC<IProps> = () => {
       .catch(() => {
         message.destroy();
         message.error('Failed to save form');
-      });
+      })
+      .finally(() => setActionFlag('done'));
   };
 
   const onSaveAndSetReadyClick = () => {
@@ -85,8 +94,10 @@ export const FormDesignerToolbar: FC<IProps> = () => {
         .catch(() => {
           message.destroy();
           message.error('Failed to save form');
-        });
+        })
+        .finally(() => setActionFlag('done'));
     };
+
     Modal.confirm({
       title: 'Save and Set Ready',
       icon: <ExclamationCircleOutlined />,
@@ -99,14 +110,17 @@ export const FormDesignerToolbar: FC<IProps> = () => {
 
   const onUndoClick = () => {
     undo();
+    setActionFlag('undo');
   };
 
   const onRedoClick = () => {
     redo();
+    setActionFlag('redo');
   };
 
   const onSettingsClick = () => {
     setSettingsVisible(true);
+    setActionFlag('settings');
   };
 
   const onCreateNewVersionClick = () => {
@@ -130,8 +144,10 @@ export const FormDesignerToolbar: FC<IProps> = () => {
         .catch((e) => {
           message.destroy();
           showErrorDetails(e);
-        });
+        })
+        .finally(() => setActionFlag('version'));
     };
+
     Modal.confirm({
       title: 'Create New Version',
       icon: <ExclamationCircleOutlined />,
@@ -154,8 +170,9 @@ export const FormDesignerToolbar: FC<IProps> = () => {
           message.success('Form published successfully');
           loadForm({ skipCache: true });
         },
-      });
+      }).finally(() => setActionFlag('publish'));
     };
+
     Modal.confirm({
       title: 'Publish Item',
       icon: <ExclamationCircleOutlined />,
@@ -226,6 +243,7 @@ export const FormDesignerToolbar: FC<IProps> = () => {
             setSettingsVisible(false);
           }}
         />
+        {renderToolbarRightButtons.map((i) => i)}
         <Button
           onClick={() => {
             setFormMode(formMode === 'designer' ? 'edit' : 'designer');
