@@ -84,14 +84,14 @@ export const useEntityAutocomplete = (props: IAutocompleteProps): AutocompleteRe
   const allItems = useMemo(() => {
     const result = listItems ?? [];
 
-    if (valueItems) {
+    if (valueItems && props.value) {
       valueItems.forEach((i) => {
         if (result.findIndex((fi) => fi.id === i.id) === -1) result.push(i);
       });
     }
 
     return result;
-  }, [listItems, valueItems]);
+  }, [listItems, valueItems, props.value]);
 
   return {
     data: allItems,

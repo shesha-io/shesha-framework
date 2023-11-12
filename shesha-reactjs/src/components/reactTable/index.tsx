@@ -95,6 +95,35 @@ export const ReactTable: FC<IReactTableProps> = ({
   const preparedColumns = useMemo(() => {
     const localColumns = [...allColumns];
 
+    if (useMultiSelect) {
+      localColumns.unshift({
+        id: 'selection',
+        //isVisible: true,
+        disableResizing: true,
+        minWidth: 35,
+        width: 35,
+        maxWidth: 35,
+        disableSortBy: true,
+        // The header can use the table's getToggleAllRowsSelectedProps method
+        // to render a checkbox
+        Header: ({ getToggleAllRowsSelectedProps: toggleProps, rows }) => (
+          <span>
+            <IndeterminateCheckbox {...toggleProps()} onChange={onChangeHeader(toggleProps().onChange, rows)} />
+          </span>
+        ),
+        // The cell can use the individual row's getToggleRowSelectedProps method
+        // to the render a checkbox
+        Cell: ({ row }) => (
+          <span>
+            <IndeterminateCheckbox
+              {...row.getToggleRowSelectedProps()}
+              onChange={onChangeHeader(row.getToggleRowSelectedProps().onChange, row)}
+            />
+          </span>
+        ),
+      });
+    }
+
     if (allowReordering) {
       localColumns.unshift({
         accessor: nanoid(),
@@ -110,7 +139,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     }
 
     return localColumns;
-  }, [allColumns, allowReordering]);
+  }, [allColumns, allowReordering, useMultiSelect]);
 
   const getColumnAccessor = cid => {
     const column = columns.find(c => c.id === cid);
@@ -180,37 +209,8 @@ export const ReactTable: FC<IReactTableProps> = ({
     usePagination,
     useRowSelect,
     // useBlockLayout,
-    ({ useInstanceBeforeDimensions, allColumns }) => {
+    ({ useInstanceBeforeDimensions }) => {
       if (useMultiSelect) {
-        allColumns.push(localColumns => [
-          // Let's make a column for selection
-          {
-            id: 'selection',
-            disableResizing: true,
-            minWidth: 35,
-            width: 35,
-            maxWidth: 35,
-            disableSortBy: true,
-            // The header can use the table's getToggleAllRowsSelectedProps method
-            // to render a checkbox
-            Header: ({ getToggleAllRowsSelectedProps: toggleProps, rows }) => (
-              <span>
-                <IndeterminateCheckbox {...toggleProps()} onChange={onChangeHeader(toggleProps().onChange, rows)} />
-              </span>
-            ),
-            // The cell can use the individual row's getToggleRowSelectedProps method
-            // to the render a checkbox
-            Cell: ({ row }) => (
-              <span>
-                <IndeterminateCheckbox
-                  {...row.getToggleRowSelectedProps()}
-                  onChange={onChangeHeader(row.getToggleRowSelectedProps().onChange, row)}
-                />
-              </span>
-            ),
-          },
-          ...localColumns,
-        ]);
         useInstanceBeforeDimensions?.push(({ headerGroups: localHeaderGroups }) => {
           if (Array.isArray(localHeaderGroups)) {
             // fix the parent group of the selection button to not be resizable

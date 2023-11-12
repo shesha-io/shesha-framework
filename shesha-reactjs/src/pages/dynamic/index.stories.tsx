@@ -163,13 +163,11 @@ export const WorkflowDefinitions = addStory(Template, {
 
 export const BugFix = addStory(Template, {
   formId: {
-    name: 'form-details',
-    module: 'shesha'
+    name: 'School-Details',
+    module: 'Boxfusion.SheshaFunctionalTests.Common'
   },
   mode: 'readonly',
-  id: '94b73a6f-6387-4167-89f6-6649846d7665'
-  // shesha/form-details?id=
-  //shesha/form-details?id=
+  id: 'bff4b223-2c29-43b3-9a96-4157d63f0420'
 });
 
 export const DataList = addStory(Template, {
