@@ -29,7 +29,7 @@ const ChildEntitiesTagGroupModal: FC<IProps> = ({
   modalWidth: width = '60%',
   open,
   onToggle,
-  onChange
+  onChange,
 }) => {
   const { formInfoBlockVisible } = useAppConfigurator();
   const context = useDataContext();
@@ -43,27 +43,28 @@ const ChildEntitiesTagGroupModal: FC<IProps> = ({
     onToggle(false);
   };
 
-  const showFormInfo = !!formInfo && formInfoBlockVisible && !!ConfigurationItemVersionStatusMap?.[formInfo?.versionStatus];
+  const showFormInfo =
+    !!formInfo && formInfoBlockVisible && !!ConfigurationItemVersionStatusMap?.[formInfo?.versionStatus];
 
   return (
-        <Modal
-          open={open}
-          onOk={onOk}
-          onCancel={onCancel}
-          title={title}
-          width={width}
-          okButtonProps={{ disabled: readOnly }}
-        >
-          <Skeleton loading={loading}>
-            <Show when={showFormInfo}>
-              <FormInfo {...formInfo} />
-            </Show>
+    <Modal
+      open={open}
+      onOk={onOk}
+      onCancel={onCancel}
+      title={title}
+      width={width}
+      okButtonProps={{ disabled: readOnly }}
+    >
+      <Skeleton loading={loading}>
+        <Show when={showFormInfo}>
+          <FormInfo {...formInfo} />
+        </Show>
 
-            <ValidationErrors error={error} />
+        <ValidationErrors error={error} />
 
-              <SubForm readOnly={readOnly} />
-          </Skeleton>
-        </Modal>
+        <SubForm readOnly={readOnly} />
+      </Skeleton>
+    </Modal>
   );
 };
 

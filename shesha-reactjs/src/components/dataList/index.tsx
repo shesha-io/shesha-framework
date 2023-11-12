@@ -2,7 +2,14 @@ import { Checkbox, Divider } from 'antd';
 import classNames from 'classnames';
 import React, { FC, useEffect, useState } from 'react';
 import { useMeasure, usePrevious } from 'react-use';
-import { FormFullName, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher, useSheshaApplication } from '../../providers';
+import {
+  FormFullName,
+  IFormDto,
+  IPersistedFormProps,
+  useAppConfigurator,
+  useConfigurableActionDispatcher,
+  useSheshaApplication,
+} from '../../providers';
 import { useConfigurationItemsLoader } from '../../providers/configurationItemsLoader';
 import { getFormConfiguration, getMarkupFromResponse } from '../../providers/form/api';
 import ConditionalWrap from '../conditionalWrapper';
@@ -108,7 +115,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   const getFormIdFromExpression = (item): FormFullName => {
     if (!formIdExpression) return null;
 
-    return executeScriptSync(formIdExpression, {...allData, item});
+    return executeScriptSync(formIdExpression, { ...allData, item });
   };
 
   const { formInfoBlockVisible } = useAppConfigurator();
@@ -349,7 +356,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           return null;
         }
       }
-    };
+    }
 
     const handleClick = () => {
       if (props.actionConfiguration) {
@@ -366,8 +373,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       return false;
     };
 
-    if (!formConfig) 
-      return null;
+    if (!formConfig) return null;
 
     return (
       <div onDoubleClick={handleClick}>

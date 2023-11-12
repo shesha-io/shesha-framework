@@ -37,7 +37,7 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
   const showFormInfo = hasFetchedConfig && formInfoBlockVisible && Boolean(formStatusInfo && id && name);
 
   const isLoading = useMemo(() => {
-    return Object.values(loading).find(l => Boolean(l));
+    return Object.values(loading).find((l) => Boolean(l));
   }, [loading]);
 
   const persistedFormProps: IPersistedFormProps = { id, module, versionNo, description, versionStatus, name };
@@ -53,11 +53,13 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
         ))}
 
         <div>
-          <ComponentsContainerProvider
-            ContainerComponent={ComponentsContainerSubForm}
-          >
-            <FormItemProvider namePrefix={propertyName} labelCol={formSettings?.labelCol} wrapperCol={formSettings?.wrapperCol}>
-              <ComponentsContainer containerId={ROOT_COMPONENT_KEY} readOnly={readOnly}/>
+          <ComponentsContainerProvider ContainerComponent={ComponentsContainerSubForm}>
+            <FormItemProvider
+              namePrefix={propertyName}
+              labelCol={formSettings?.labelCol}
+              wrapperCol={formSettings?.wrapperCol}
+            >
+              <ComponentsContainer containerId={ROOT_COMPONENT_KEY} readOnly={readOnly} />
             </FormItemProvider>
           </ComponentsContainerProvider>
         </div>
