@@ -77,19 +77,6 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = ({ readOn
         <Checkbox disabled={readOnly} />
       </SettingsFormItem>
 
-      <SettingsFormItem
-        name="visibility"
-        label="Visibility"
-        tooltip="This property will eventually replace the 'hidden' property and other properties that toggle visibility on the UI and payload"
-        jsSetting
-      >
-        <Select>
-          <Option value="Yes">Yes (Display in UI and include in payload)</Option>
-          <Option value="No">No (Only include in payload)</Option>
-          <Option value="Removed">Removed (Remove from UI and exlude from payload)</Option>
-        </Select>
-      </SettingsFormItem>
-
       <SectionSeparator title="Configure Tab Panes" />
 
       <SettingsFormItem name="tabs">

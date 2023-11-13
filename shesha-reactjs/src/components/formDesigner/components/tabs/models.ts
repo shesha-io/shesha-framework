@@ -22,7 +22,6 @@ export interface ITabsComponentProps extends IConfigurableFormComponent {
   size?: SizeType;
   defaultActiveKey?: string;
   tabType?: 'line' | 'card';
-  visibility?: 'Yes' | 'No' | 'Removed';
   permissions?: string[];
   hidden?: boolean;
   customVisibility?: string;
