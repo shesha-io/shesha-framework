@@ -29,7 +29,6 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
     const { formMode, formData } = useForm();
     const { globalState } = useGlobalState();
 
-
     return (
       <ConfigurableFormItem
         model={model}
@@ -37,7 +36,11 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
       >
         {(value, onChange) => {
           return model.readOnly ? (
-            <ReadOnlyDisplayFormItem disabled={model.disabled} value={getNumberFormat(value, getDataFormat(properties, model.propertyName))}/>
+            <ReadOnlyDisplayFormItem
+              disabled={model.disabled}
+              type="number"
+              value={getNumberFormat(value, getDataFormat(properties, model.propertyName))}
+            />
           ) : (
             <NumberFieldControl form={form} disabled={model.disabled} model={model} value={value} onChange={onChange} />
           );
@@ -49,10 +52,8 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
   initModel: (model) => ({
     ...model,
   }),
-  migrator: (m) => m
-    .add<INumberFieldComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-  ,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  migrator: (m) => m.add<INumberFieldComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev))),
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   linkToModelMetadata: (model, metadata): INumberFieldComponentProps => {
     return {
       ...model,

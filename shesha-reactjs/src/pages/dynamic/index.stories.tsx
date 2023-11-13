@@ -170,6 +170,14 @@ export const BugFix = addStory(Template, {
   id: 'bff4b223-2c29-43b3-9a96-4157d63f0420'
 });
 
+export const NumberFix = addStory(Template, {
+  formId: {
+    name: 'book-details',
+    module: 'Boxfusion.SheshaFunctionalTests.Common'
+  },
+  mode: 'readonly',
+  id: '57fa8d39-819c-4b1c-9b6b-17c7ce809e2c'
+});
 export const DataList = addStory(Template, {
   formId: {
     name: 'alex-test',
