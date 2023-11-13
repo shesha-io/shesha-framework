@@ -26,8 +26,7 @@ import {
   showErrorDetails,
   updateItemStatus,
 } from '../../utils/configurationFramework/actions';
-import { useGlobalState, useShaRouting, useSheshaApplication } from '../..';
-import { ActionFlag, IFormDesignerActionFlag } from '../../providers/globalState/models';
+import { useFormInfoContent, useShaRouting, useSheshaApplication } from '../..';
 
 export interface IProps {}
 
@@ -37,13 +36,11 @@ export const FormDesignerToolbar: FC<IProps> = () => {
   const { router } = useShaRouting(false) ?? {};
   const { setFormMode, formMode } = useForm();
   const { setDebugMode, isDebug, undo, redo, canUndo, canRedo, readOnly } = useFormDesigner();
-  const { globalState, setState } = useGlobalState();
+  const { setActionFlag, renderToolbarRightButtons } = useFormInfoContent();
   const [settingsVisible, setSettingsVisible] = useState(false);
 
   const { allComponents, componentRelations, formSettings } = useFormDesigner();
   const toolboxComponents = useFormDesignerComponents();
-
-  const renderToolbarRightButtons = Object.values(globalState?.[ActionFlag.render] || {});
 
   const saveFormInternal = (): Promise<void> => {
     const payload: FormMarkupWithSettings = {
@@ -51,10 +48,6 @@ export const FormDesignerToolbar: FC<IProps> = () => {
       formSettings: formSettings,
     };
     return saveForm(payload);
-  };
-
-  const setActionFlag = (key: IFormDesignerActionFlag) => {
-    setState({ data: { [key]: true }, key: ActionFlag.name, spread: true });
   };
 
   const onSaveClick = () => {

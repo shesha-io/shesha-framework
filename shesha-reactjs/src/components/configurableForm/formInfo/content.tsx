@@ -1,11 +1,9 @@
 import { ArrowsAltOutlined } from '@ant-design/icons';
 import { Button, Modal } from 'antd';
 import { FormDesigner } from 'components';
-import { nanoid } from 'nanoid';
-import React, { FC, ReactNode, useEffect } from 'react';
-import { useGlobalState } from '../../../providers';
+import React, { FC, useEffect } from 'react';
+import { useFormInfoContent } from '../../../providers';
 import { useFormPersister } from '../../../providers/formPersisterProvider';
-import { ActionFlag, IFormDesignerActionFlag } from '../../../providers/globalState/models';
 
 interface IFormInforContent {
   id: string;
@@ -15,9 +13,8 @@ interface IFormInforContent {
 }
 
 const Content: FC<IFormInforContent> = ({ id, forwardLink, onClose, open }) => {
-  const { globalState, setState } = useGlobalState();
+  const { actionFlag, setActionFlag, setToolbarRightButton } = useFormInfoContent();
   const { loadForm } = useFormPersister();
-  const actionFlag = globalState?.[ActionFlag.name] as { [key in IFormDesignerActionFlag]: boolean };
 
   useEffect(() => {
     if (open)
@@ -32,12 +29,9 @@ const Content: FC<IFormInforContent> = ({ id, forwardLink, onClose, open }) => {
 
   const reset = () => {
     onClose();
-    setState({ key: ActionFlag.name, data: null });
+    setActionFlag(null);
     loadForm({ skipCache: true });
   };
-
-  const setToolbarRightButton = (data: ReactNode) =>
-    setState({ key: ActionFlag.render, data: data ? { [nanoid()]: data } : null, spread: !!data });
 
   useEffect(() => {
     if (actionFlag?.done) reset();

@@ -13,6 +13,7 @@ import {
   AppConfiguratorProvider,
   DynamicModalProvider,
   UiProvider,
+  FormInfoContentProvider,
 } from 'providers';
 import { DataContextManager } from 'providers/dataContextManager';
 import { DataContextProvider } from 'providers/dataContextProvider';
@@ -126,7 +127,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
     dataType: 'string',
     apiEndpoints: {},
     specifications: [],
-    properties: []
+    properties: [],
   };
 
   return (
@@ -165,13 +166,21 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                           <ReferenceListDispatcherProvider>
                             <MetadataDispatcherProvider>
                               <DataContextManager>
-                                <DataContextProvider id={'appContext'} name={'appContext'} description={'Application context'} type={'root'} metadata={new Promise(resolve => resolve(testMetadata))} >
+                                <DataContextProvider
+                                  id={'appContext'}
+                                  name={'appContext'}
+                                  description={'Application context'}
+                                  type={'root'}
+                                  metadata={new Promise((resolve) => resolve(testMetadata))}
+                                >
                                   <StackedNavigationProvider>
                                     <DataSourcesProvider>
                                       <DynamicModalProvider>
-                                        <DebugPanel>
-                                          <ApplicationActionsProcessor>{children}</ApplicationActionsProcessor>
-                                        </DebugPanel>
+                                        <FormInfoContentProvider>
+                                          <DebugPanel>
+                                            <ApplicationActionsProcessor>{children}</ApplicationActionsProcessor>
+                                          </DebugPanel>
+                                        </FormInfoContentProvider>
                                       </DynamicModalProvider>
                                     </DataSourcesProvider>
                                   </StackedNavigationProvider>
