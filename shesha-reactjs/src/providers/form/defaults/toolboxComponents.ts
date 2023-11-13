@@ -20,7 +20,6 @@ import EndpointsAutocompleteComponent from 'components/formDesigner/components/e
 import EntityPickerComponent from 'components/formDesigner/components/entityPicker';
 import EventNames from 'components/formDesigner/components/eventNamesList';
 import FormAutocompleteComponent from 'components/formDesigner/components/formAutocomplete';
-import HierarchicalChecklistComponent from 'components/formDesigner/components/hierarchicalChecklist/hierarchicalChecklistComponent';
 import IconPicker from 'components/formDesigner/components/iconPicker';
 import Image from 'components/formDesigner/components/image';
 import ImageAnnotationComponent from 'components/formDesigner/components/imageAnnotation';
@@ -118,7 +117,6 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
       IconPicker,
       Image,
       ImageAnnotationComponent,
-      HierarchicalChecklistComponent,
       KeyValueEditor,
       List,
       Markdown,

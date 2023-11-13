@@ -1,5 +1,5 @@
 import React, { FC, ReactNode } from 'react';
-import './styles.ts';
+import './styles';
 import { Row, Col } from 'antd';
 import { useUi } from '@shesha/reactjs';
 import { UnAuthedLayoutContainer } from './styles';

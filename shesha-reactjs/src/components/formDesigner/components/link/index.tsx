@@ -72,9 +72,9 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
 
     return (
       <ConfigurableFormItem model={model}  >
-        {(value) => {
+        {() => {
 
-          const href = evaluateString(initialHref || value, data);
+          const href = evaluateString(initialHref || model?.href, data);
 
           if (!hasChildren) {
             return (
@@ -100,7 +100,7 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
             return containerHolder();
           }
           return (
-            <a href={href} target="_self" style={getStyle(style, data)}>
+            <a href={href} target={target}className="sha-link"  style={getStyle(style, data)}>
               {containerHolder()}
             </a>
           );

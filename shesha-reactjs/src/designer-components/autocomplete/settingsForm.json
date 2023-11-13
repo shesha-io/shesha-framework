@@ -11,7 +11,7 @@
       "visibility": "Yes",
       "isDynamic": false,
       "version": 2,
-      "expandIconPosition": "left",
+      "expandIconPosition": "start",
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
@@ -193,7 +193,7 @@
       "visibility": "Yes",
       "isDynamic": false,
       "version": 2,
-      "expandIconPosition": "left",
+      "expandIconPosition": "start",
       "header": {
         "id": "R9BipBqjVuZ5HY4vdteSp",
         "components": []
@@ -454,7 +454,7 @@
       "visibility": "Yes",
       "isDynamic": false,
       "version": 1,
-      "expandIconPosition": "left",
+      "expandIconPosition": "start",
       "header": {
         "id": "i8zh7YVnUIfw0zchhavrQ",
         "components": []
@@ -560,7 +560,7 @@
       "visibility": "Yes",
       "isDynamic": false,
       "version": 1,
-      "expandIconPosition": "left",
+      "expandIconPosition": "start",
       "header": {
         "id": "Z0dJRRvj0tMji4g-EUn9w",
         "components": []
@@ -592,7 +592,7 @@
       "visibility": "Yes",
       "isDynamic": false,
       "version": 1,
-      "expandIconPosition": "left",
+      "expandIconPosition": "start",
       "header": {
         "id": "mbzE03mJnv_89oUvkmjPs",
         "components": []
@@ -666,7 +666,7 @@
       "visibility": "Yes",
       "isDynamic": false,
       "version": 1,
-      "expandIconPosition": "left",
+      "expandIconPosition": "start",
       "header": {
         "id": "_FeSUC4a-2dcJrU2A7fc9",
         "components": []

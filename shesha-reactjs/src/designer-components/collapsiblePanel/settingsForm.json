@@ -11,7 +11,7 @@
       "visibility": "Yes",
       "isDynamic": false,
       "version": 2,
-      "expandIconPosition": "left",
+      "expandIconPosition": "start",
       "collapsible": "header",
       "ghost": true,
       "header": {
@@ -55,13 +55,13 @@
                 "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
               },
               {
-                "label": "Left",
-                "value": "left",
+                "label": "Start",
+                "value": "start",
                 "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
               },
               {
-                "label": "Right",
-                "value": "right",
+                "label": "End",
+                "value": "end",
                 "id": "b920ef96-ae27-4a01-bfad-b5b7d07218da"
               }
             ],
@@ -149,7 +149,7 @@
       "visibility": "Yes",
       "isDynamic": false,
       "version": 2,
-      "expandIconPosition": "left",
+      "expandIconPosition": "start",
       "collapsible": "header",
       "ghost": true,
       "header": {
@@ -200,7 +200,7 @@
       "visibility": "Yes",
       "isDynamic": false,
       "version": 2,
-      "expandIconPosition": "left",
+      "expandIconPosition": "start",
       "collapsible": "header",
       "ghost": true,
       "header": {

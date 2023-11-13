@@ -3,14 +3,13 @@
   "version": "0.0.1",
   "private": false,
   "postinstall": "next",
-  "workspaces": [
-    "../../shesha-reactjs"
-  ],
   "scripts": {
     "dev": "next dev",
-    "build": "npm run build --workspaces && next build",
+    "build": "next build",
+    "build-shesha": "echo \"Build Shesha\" && cd ../../shesha-reactjs && npm install && npm run build && npm pack && shx mv shesha-reactjs-*.tgz ../shesha-functional-tests/adminportal/shesha-local.tgz",
+    "preinstall": "npm run build-shesha && npm install shesha-local.tgz",
     "export": "next export",
-    "start": "NODE_ENV=development node --max-old-space-size=8192 server.js",
+    "start": "NODE_ENV=production node --max-old-space-size=8192 server.js",
     "build:analyze": "ANALYZE=true npm run build",
     "lint": "eslint **/*.{js,jsx,ts,tsx}",
     "prettier": "prettier --write **/*.{js,jsx,ts,tsx}",
@@ -22,6 +21,7 @@
     "@microsoft/applicationinsights-web": "^2.6.2",
     "@microsoft/signalr": "^5.0.6",
     "@next/bundle-analyzer": "12.2.2",
+    "@shesha/reactjs": "file:shesha-local.tgz",
     "@types/react-dom": "^18.2.4",
     "antd": "^4.24.0",
     "axios": "^0.21.1",
@@ -52,6 +52,7 @@
     "@types/styled-components": "^5.1.9",
     "@typescript-eslint/eslint-plugin": "^5.57.0",
     "@typescript-eslint/parser": "^5.57.0",
+    "copyfiles": "^2.4.1",
     "dotenv": "^8.2.0",
     "eslint": "^7.15.0",
     "eslint-config-prettier": "^7.0.0",
@@ -61,6 +62,7 @@
     "lint-staged": "^10.5.3",
     "nock": "^13.0.6",
     "redux-actions": "^2.6.5",
+    "shx": "^0.3.4",
     "ts-jest": "^29.1.0",
     "typescript": "^5.0.3"
   },

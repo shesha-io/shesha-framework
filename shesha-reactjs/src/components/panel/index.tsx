@@ -21,7 +21,7 @@ export interface ICollapsiblePanelProps extends CollapseProps {
 }
 
 export const CollapsiblePanel: FC<ICollapsiblePanelProps> = ({
-  expandIconPosition = 'right',
+  expandIconPosition = 'end',
   onChange,
   header,
   extra,
