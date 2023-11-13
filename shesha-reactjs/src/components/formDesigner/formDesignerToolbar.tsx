@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { Button, Dropdown, Menu, message, Modal } from 'antd';
+import { Button, Dropdown, MenuProps, message, Modal } from 'antd';
 import {
   SaveOutlined,
   UndoOutlined,
@@ -13,21 +13,22 @@ import {
   CheckCircleOutlined,
   ExclamationCircleOutlined,
 } from '@ant-design/icons';
-import { useForm } from '../../providers/form';
-import { useFormPersister } from '../../providers/formPersisterProvider';
-import { useFormDesigner } from '../../providers/formDesigner';
-import { componentsFlatStructureToTree } from '../../providers/form/utils';
-import { useFormDesignerComponents } from '../../providers/form/hooks';
-import { FormMarkupWithSettings } from '../../providers/form/models';
+import { useForm } from 'providers/form';
+import { useFormPersister } from 'providers/formPersisterProvider';
+import { useFormDesigner } from 'providers/formDesigner';
+import { componentsFlatStructureToTree } from 'providers/form/utils';
+import { useFormDesignerComponents } from 'providers/form/hooks';
+import { FormMarkupWithSettings } from 'providers/form/models';
 import FormSettingsEditor from './formSettingsEditor';
-import { ConfigurationItemVersionStatus } from '../../utils/configurationFramework/models';
+import { ConfigurationItemVersionStatus } from 'utils/configurationFramework/models';
 import {
   createNewVersionRequest,
   showErrorDetails,
   updateItemStatus,
-} from '../../utils/configurationFramework/actions';
+} from 'utils/configurationFramework/actions';
 import { useShaRouting, useSheshaApplication } from '../..';
 
+type MenuItem = MenuProps['items'][number];
 export interface IProps {}
 
 export const FormDesignerToolbar: FC<IProps> = () => {
@@ -166,36 +167,32 @@ export const FormDesignerToolbar: FC<IProps> = () => {
     });
   };
 
-  const saveMenu = (
-    <Menu
-      items={[
-        {
-          label: (
-            <>
-              <SaveOutlined /> Save
-            </>
-          ),
-          key: 'save',
-          onClick: onSaveClick,
-        },
-        {
-          label: (
-            <>
-              <CheckCircleOutlined /> Save and Set Ready
-            </>
-          ),
-          key: 'save-set-ready',
-          onClick: onSaveAndSetReadyClick,
-        },
-      ]}
-    />
-  );
+  const saveMenuItems: MenuItem[]  = [
+    {
+      label: (
+        <>
+          <SaveOutlined /> Save
+        </>
+      ),
+      key: 'save',
+      onClick: onSaveClick,
+    },
+    {
+      label: (
+        <>
+          <CheckCircleOutlined /> Save and Set Ready
+        </>
+      ),
+      key: 'save-set-ready',
+      onClick: onSaveAndSetReadyClick,
+    },
+  ];
 
   return (
     <div className="sha-designer-toolbar">
       <div className="sha-designer-toolbar-left">
         {!readOnly && (
-          <Dropdown.Button icon={<DownOutlined />} overlay={saveMenu} onClick={onSaveClick} type="primary">
+          <Dropdown.Button icon={<DownOutlined />} menu={{ items: saveMenuItems }} onClick={onSaveClick} type="primary">
             <SaveOutlined /> Save
           </Dropdown.Button>
         )}

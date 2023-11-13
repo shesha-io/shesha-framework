@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { Dropdown, Menu, Spin } from 'antd';
+import { Dropdown, MenuProps, Spin } from 'antd';
 import { useLocalStorage } from '../../hooks';
 import SearchBox from '../formDesigner/toolboxSearchBox';
 import GrouppedObjectsTree from '../grouppedObjectsTree';
@@ -7,13 +7,15 @@ import { PermissionedObjectDto, usePermissionedObjectGetAllTree } from 'apis/per
 import { DatabaseFilled, LoadingOutlined } from '@ant-design/icons';
 import { useForm } from '../..';
 
+type MenuItem = MenuProps['items'][number];
+
 export interface IPermissionedObjectsTreeProps {
   objectsType?: string;
 
   /**
    * A callback for when the value of this component changes
    */
-   onChange?: any;
+  onChange?: any;
 }
 
 export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props) => {
@@ -25,17 +27,17 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
 
   const [allItems, setAllItems] = useState<PermissionedObjectDto[]>();
 
-  const fetcher = usePermissionedObjectGetAllTree({queryParams: {type: objectsType ?? props.objectsType}, lazy: true });
+  const fetcher = usePermissionedObjectGetAllTree({ queryParams: { type: objectsType ?? props.objectsType }, lazy: true });
   const { loading: isFetchingData, error: fetchingDataError, data: fetchingDataResponse } = fetcher;
 
   const [objectId, setObjectId] = useState("");
-  
-  const { getAction} = useForm(false);
+
+  const { getAction } = useForm(false) ?? {};
 
   useEffect(() => {
-    if (Boolean(getAction)){
-      const action = getAction(null,'onChangeId');
-      if (Boolean(action)){
+    if (Boolean(getAction)) {
+      const action = getAction(null, 'onChangeId');
+      if (Boolean(action)) {
         action(objectId);
       }
     }
@@ -62,34 +64,42 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
       props.onChange(item.id);
   };
 
-  const menu = (
-    <Menu>
-      <Menu.Item key={"1"} onClick={() => {
-setGroupBy("-");
-}}>Without grouping</Menu.Item>
-      <Menu.Item key={"2"} onClick={() => {
-setGroupBy("module");
-}}>Group by Module</Menu.Item>
-      <Menu.Item key={"3"} onClick={() => {
-setGroupBy("category");
-}}>Group by Category</Menu.Item>
-    </Menu>
-  );
+  const menuItems: MenuItem[] = [
+    {
+      key: '1', label: 'Without grouping', onClick: () => {
+        setGroupBy("-");
+      }
+    },
+    {
+      key: '2', label: 'Group by Module', onClick: () => {
+        setGroupBy("module");
+      }
+    },
+    {
+      key: '3', label: 'Group by Category', onClick: () => {
+        setGroupBy("category");
+      }
+    },
+  ];
 
-  const typeMenu = (
-    <Menu>
-      <Menu.Item key={"1"} onClick={() => {
-setObjectsType("Shesha.WebApi");
-}}>API</Menu.Item>
-      <Menu.Item key={"2"} onClick={() => {
-setObjectsType("Shesha.WebCrudApi");
-}}>CRUD API</Menu.Item>
-      <Menu.Item key={"3"} onClick={() => {
-setObjectsType("Shesha.Entity");
-}}>Entities</Menu.Item>
-    </Menu>
-  );
-
+  const typeMenuItems: MenuItem[] = [
+    {
+      key: '1', label: 'API', onClick: () => {
+        setObjectsType("Shesha.WebApi");
+      }
+    },
+    {
+      key: '2', label: 'CRUD API', onClick: () => {
+        setObjectsType("Shesha.WebCrudApi");
+      }
+    },
+    {
+      key: '3', label: 'Entities', onClick: () => {
+        setObjectsType("Shesha.Entity");
+      }
+    },
+  ];
+  
   return (
     <Spin spinning={isFetchingData} tip={'Fetching data...'} indicator={<LoadingOutlined style={{ fontSize: 40 }} spin />}>
       <div className="sha-page-heading">
@@ -97,11 +107,11 @@ setObjectsType("Shesha.Entity");
           <SearchBox value={searchText} onChange={setSearchText} placeholder='Search objects' />
         </div>
         <div className="sha-page-heading-right">
-          <Dropdown.Button icon={<DatabaseFilled />} overlay={typeMenu} title='Objects type'/>
-          <Dropdown.Button icon={<DatabaseFilled />} overlay={menu} title='Group by'/>
+          <Dropdown.Button icon={<DatabaseFilled />} menu={{ items: typeMenuItems }} title='Objects type' />
+          <Dropdown.Button icon={<DatabaseFilled />} menu={{ items: menuItems }} title='Group by' />
         </div>
       </div>
-      
+
       <GrouppedObjectsTree<PermissionedObjectDto>
         items={allItems}
         openedKeys={openedKeys}
@@ -109,9 +119,9 @@ setObjectsType("Shesha.Entity");
         groupBy={groupBy}
         defaultSelected={objectId}
         isMatch={(item, searchText) => {
-          return item.object.toLowerCase().includes(searchText.toLowerCase()) 
-          || item.name?.toLowerCase().includes(searchText.toLowerCase());
-}}
+          return item.object.toLowerCase().includes(searchText.toLowerCase())
+            || item.name?.toLowerCase().includes(searchText.toLowerCase());
+        }}
         setOpenedKeys={setOpenedKeys}
         onChange={onChangeHandler}
       />
