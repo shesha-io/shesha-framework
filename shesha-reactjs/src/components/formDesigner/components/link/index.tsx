@@ -100,7 +100,7 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
             return containerHolder();
           }
           return (
-            <a href={href} target={target} style={getStyle(style, data)}>
+            <a href={href} target={target}className="sha-link"  style={getStyle(style, data)}>
               {containerHolder()}
             </a>
           );
