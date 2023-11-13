@@ -226,6 +226,7 @@ export interface FormWithDataResponse {
   loaderHint?: string;
   error?: IErrorInfo;
   dataFetcher?: () => Promise<EntityAjaxResponse | void>;
+  refetcher?: () => void;
 }
 export interface FormWithDataState {
   loaderHint?: string;
@@ -292,7 +293,7 @@ export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse
     dataFetcher();
   };
 
-  useEffect(() => {
+  const fetchAll = (skipCache: boolean) => {
     const requestId = nanoid();
     formRequestRef.current = requestId;
 
@@ -322,7 +323,7 @@ export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse
         fetchedData: null,
       }));
 
-      getForm({ formId, configurationItemMode: args.configurationItemMode, skipCache: false })
+      getForm({ formId, configurationItemMode: args.configurationItemMode, skipCache: skipCache })
         .then((form) => {
           if (formRequestRef.current !== requestId) return;
 
@@ -391,10 +392,13 @@ export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse
         fetchedData: null,
       }));
     }
+  };
+
+  useEffect(() => {
+    fetchAll(false);
+
     // return cleanup: clean up form and data
   }, [formId, dataId, configurationItemMode]);
-
-  // todo: return errors
 
   const result: FormWithDataResponse = {
     loaderHint: state.loaderHint,
@@ -403,6 +407,9 @@ export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse
     fetchedData: state.fetchedData,
     error: state.error,
     dataFetcher: state.dataFetcher,
+    refetcher: () => {
+      fetchAll(true);
+    },
   };
 
   return result;

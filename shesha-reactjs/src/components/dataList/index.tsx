@@ -395,7 +395,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   return (
     <>
       <Show when={showFormInfo}>
-        <FormInfo {...persistedFormProps} />
+        <FormInfo formProps={persistedFormProps} />
       </Show>
       <Show when={selectionMode === 'multiple'}>
         <Checkbox

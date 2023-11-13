@@ -15,6 +15,14 @@ import Show from '../show';
 import FormInfo from './formInfo';
 import { Result } from 'antd';
 import { getFormNotFoundMessage } from '../../providers/configurationItemsLoader/utils';
+import { FormPersisterActionsContext } from 'providers/formPersisterProvider/contexts';
+
+interface RenderWithMarkupArgs {
+  providedMarkup: FormRawMarkup;
+  formSettings: IFormSettings;
+  persistedFormProps?: IPersistedFormProps;
+  onMarkupUpdated?: () => void;
+}
 
 export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
   const {
@@ -27,6 +35,7 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
     context,
     formRef,
     refetchData,
+    refetcher: refetchMarkup,
     formProps,
     isActionsOwner,
     propertyFilter,
@@ -42,8 +51,8 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
     return typeof fId === 'string'
       ? `${app.routes.formsDesigner}?id=${fId}`
       : Boolean(fId?.name)
-      ? `${app.routes.formsDesigner}?module=${fId.module}&name=${fId.name}`
-      : null;
+        ? `${app.routes.formsDesigner}?module=${fId.module}&name=${fId.name}`
+        : null;
   };
   const formDesignerUrl = getDesignerUrl(formId);
   const openInDesigner = () => {
@@ -54,11 +63,9 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
 
   const markupWithSettings = convertToMarkupWithSettings(markup);
 
-  const renderWithMarkup = (
-    providedMarkup: FormRawMarkup,
-    formSettings: IFormSettings,
-    persistedFormProps?: IPersistedFormProps
-  ) => {
+  const renderWithMarkup = (args: RenderWithMarkupArgs) => {
+    const { providedMarkup, formSettings, persistedFormProps, onMarkupUpdated } = args;
+
     if (!providedMarkup) return null;
 
     const formStatusInfo = persistedFormProps?.versionStatus
@@ -88,7 +95,7 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
             propertyFilter={propertyFilter}
           >
             <Show when={Boolean(showFormInfo)}>
-              <FormInfo {...persistedFormProps} />
+              <FormInfo formProps={persistedFormProps} onMarkupUpdated={onMarkupUpdated} />
             </Show>
             <ConfigurableFormRenderer {...restProps} />
           </FormProvider>
@@ -105,25 +112,47 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
             <EditViewMsg />
           </BlockOverlay>
           {markup ? (
-            renderWithMarkup(markupWithSettings.components, markupWithSettings.formSettings, formProps)
+            renderWithMarkup({
+              providedMarkup: markupWithSettings.components,
+              formSettings: markupWithSettings.formSettings,
+              persistedFormProps: formProps,
+              onMarkupUpdated: refetchMarkup
+                ? () => {
+                  console.log('!!!');
+                  refetchMarkup();
+                }
+                : undefined
+            })
           ) : (
             <FormPersisterProvider formId={formId}>
-              <FormPersisterConsumer>
-                {(persister) => (
-                  <>
-                    {persister.loadError?.code === 404 && (
-                      <Result
-                        status="404"
-                        //style={{ height: '100vh - 55px' }}
-                        title="404"
-                        subTitle={getFormNotFoundMessage(formId)}
-                      />
+              <FormPersisterActionsContext.Consumer>
+                {(persisterActions) => (
+                  <FormPersisterConsumer>
+                    {(persister) => (
+                      <>
+                        {persister.loadError?.code === 404 && (
+                          <Result
+                            status="404"
+                            //style={{ height: '100vh - 55px' }}
+                            title="404"
+                            subTitle={getFormNotFoundMessage(formId)}
+                          />
+                        )}
+                        {persister.loaded &&
+                          renderWithMarkup({
+                            providedMarkup: persister.markup,
+                            formSettings: persister.formSettings,
+                            persistedFormProps: persister.formProps,
+                            onMarkupUpdated: () => {
+                              console.log('LOG: updated!');
+                              persisterActions.loadForm({ skipCache: true });
+                            }
+                          })}
+                      </>
                     )}
-                    {persister.loaded &&
-                      renderWithMarkup(persister.markup, persister.formSettings, persister.formProps)}
-                  </>
+                  </FormPersisterConsumer>
                 )}
-              </FormPersisterConsumer>
+              </FormPersisterActionsContext.Consumer>
             </FormPersisterProvider>
           )}
         </div>

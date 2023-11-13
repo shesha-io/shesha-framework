@@ -18,7 +18,7 @@ import { useDataContextManager } from 'providers/dataContextManager';
 
 const { Title } = Typography;
 
-export const FormDesignerRenderer: FC = ({}) => {
+export const FormDesignerRenderer: FC = ({ }) => {
   const [widgetsOpen, setWidgetOpen] = useState(true);
   const [fieldPropertiesOpen, setFieldPropertiesOpen] = useState(true);
   const { formProps } = useFormPersister();
@@ -28,11 +28,11 @@ export const FormDesignerRenderer: FC = ({}) => {
   const toggleFieldPropertiesSidebar = () => setFieldPropertiesOpen((prop) => !prop);
 
   const { isDebug, readOnly } = useFormDesigner();
-  const formInstance =  useForm();
+  const formInstance = useForm();
   const { formSettings, form } = formInstance;
   //const contextManager = useDataContextManager(false);
   //if (contextManager)
-    //contextManager.updateFormInstance(formInstance);
+  //contextManager.updateFormInstance(formInstance);
 
   const fullName = formProps ? getFormFullName(formProps.module, formProps.name) : null;
   const title = formProps?.label ? `${formProps.label} (${fullName})` : fullName;
@@ -67,13 +67,13 @@ export const FormDesignerRenderer: FC = ({}) => {
               readOnly
                 ? null
                 : {
-                    open: widgetsOpen,
-                    onOpen: toggleWidgetSidebar,
-                    onClose: toggleWidgetSidebar,
-                    title: 'Builder Widgets',
-                    content: () => <Toolbox />,
-                    placeholder: 'Builder Widgets',
-                  }
+                  open: widgetsOpen,
+                  onOpen: toggleWidgetSidebar,
+                  onClose: toggleWidgetSidebar,
+                  title: 'Builder Widgets',
+                  content: () => <Toolbox />,
+                  placeholder: 'Builder Widgets',
+                }
             }
             rightSidebarProps={{
               open: fieldPropertiesOpen,
@@ -114,8 +114,8 @@ const DebugPanel: FC<DebugPanelProps> = (props) => {
           <pre>{JSON.stringify(props.formData, null, 2)}</pre>
         </Col>
       </CollapsiblePanel>
-      {contexts.map((ctx) => 
-        <CollapsiblePanel header={<>{ctx.name}: {ctx.description} <span style={{color: 'gray'}}>({ctx.id})</span></>} expandIconPosition='start' ghost>
+      {contexts.map((ctx) =>
+        <CollapsiblePanel header={<>{ctx.name}: {ctx.description} <span style={{ color: 'gray' }}>({ctx.id})</span></>} expandIconPosition='start' ghost>
           <Col span={24}>
             <pre>{JSON.stringify(ctx.getData(), null, 2)}</pre>
           </Col>

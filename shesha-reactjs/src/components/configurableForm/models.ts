@@ -77,7 +77,10 @@ export interface IConfigurableFormRendererProps<Values = any, _FieldData = any> 
    */
   refetchData?: () => Promise<any>;
 
-  //onFinishFailed?: (errorInfo: ValidateErrorEntity<Values>) => void;
+  /**
+   * External form and data fetcher, is used to refresh form (both markup and data) from the back-end
+   */
+  refetcher?: () => void;
 }
 
 export interface IConfigurableFormProps<Values = any, FieldData = any>

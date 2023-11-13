@@ -9,9 +9,13 @@ interface IFormInforContent {
   forwardLink: string;
   onClose: () => void;
   open: boolean;
+  /**
+   * Is used for update of the form markup. If value of this handler is not defined - the form is read-only
+   */
+   onMarkupUpdated?: () => void;
 }
 
-const Content: FC<IFormInforContent> = ({ id, forwardLink, onClose, open }) => {
+const Content: FC<IFormInforContent> = ({ id, forwardLink, onClose, open, onMarkupUpdated }) => {
   const { actionFlag, setActionFlag, setToolbarRightButton } = useFormInfoContent();
 
   useEffect(() => {
@@ -27,8 +31,8 @@ const Content: FC<IFormInforContent> = ({ id, forwardLink, onClose, open }) => {
 
   const reset = () => {
     setActionFlag(null);
-
-    onClose();
+    onClose();    
+    onMarkupUpdated();
   };
 
   useEffect(() => {

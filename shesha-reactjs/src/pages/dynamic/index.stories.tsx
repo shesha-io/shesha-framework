@@ -24,8 +24,8 @@ const Template: Story<IDynamicPageProps> = (args) => (
 // Reuse that template for creating different stories
 export const Basic = Template.bind({});
 
-export const FncPlayground = addStory(Template, {
-  formId: { name: 'playground', module: 'Shesha' },
+export const EpmUserManagemenet = addStory(Template, {
+  formId: { name: 'user-management-new', module: '' },
 });
 
 export const FncTSchoolDetails = addStory(Template, {
@@ -40,7 +40,7 @@ export const FncTextComponentDetails = addStory(Template, {
 export const FncAddMember = addStory(Template, {
   formId: { name: 'Add-Member', module: 'Shesha' },
   mode: 'edit',
-  id: '5BC9A277-63ED-4A71-919F-0B4064363BBC',
+  id: '5BC9A277-63ED-4A71-919F-0B4064363BBC'
 });
 
 export const FncTableForteenTest = addStory(Template, {
@@ -91,13 +91,27 @@ export const FncAddressComponentTable = addStory(Template, {
   formId: { name: 'address-component-table', module: 'Shesha' },
 });
 
+export const DepCustomerDetails = addStory(Template, {
+  formId: { name: 'customer-details', module: 'Boxfusion.Dep' },
+  id: '7cd698ce-9e41-4604-8ef6-08f0e1a8144d',
+});
+
+export const DepCaseDetailsDuplicate = addStory(Template, {
+  formId: { name: 'case-details-duplicate', module: 'CaseManagement' },
+  id: '21345e5a-7862-4f83-b5b3-0b404967915c',
+});
+
+export const DepStarterTemplate = addStory(Template, {
+  formId: { name: 'service-requests-mapule', module: 'StarterTemplate' },
+});
+
 export const OrganisationEdit = addStory(Template, {
   formId: {
     name: 'organisation-edit',
     module: 'Test Module',
     version: 1,
   },
-  id: '5BAB9D40-4177-42C4-8049-0120A2B7F3C9',
+  id: '5BAB9D40-4177-42C4-8049-0120A2B7F3C9'
 });
 
 export const PersonEdit = addStory(Template, {
@@ -135,44 +149,44 @@ export const PermissionEdit = addStory(Template, {
 export const Fetchers = addStory(Template, {
   formId: {
     name: 'fetchers',
-    module: 'TestModule',
+    module: 'TestModule'
   },
-  mode: 'edit',
+  mode: 'edit'
 });
 
 export const WorkflowDefinitions = addStory(Template, {
   formId: {
     name: 'workflow-definitions',
-    module: 'Shesha.Enterprise.Workflow',
-  },
+    module: 'Shesha.Enterprise.Workflow'
+  }
 });
 
 export const BugFix = addStory(Template, {
   formId: {
     name: 'School-Details',
-    module: 'Boxfusion.SheshaFunctionalTests.Common',
+    module: 'Boxfusion.SheshaFunctionalTests.Common'
   },
   mode: 'readonly',
-  id: 'bff4b223-2c29-43b3-9a96-4157d63f0420',
+  id: 'bff4b223-2c29-43b3-9a96-4157d63f0420'
 });
 
 export const DataList = addStory(Template, {
   formId: {
     name: 'alex-test',
-    module: 'TestModule',
+    module: 'TestModule'
   },
 });
 
 export const DataTable = addStory(Template, {
   formId: {
-    name: 'forms',
-    module: 'shesha',
+    name: 'action-name-table',
+    module: 'Boxfusion.SheshaFunctionalTests.Common'
   },
 });
 
 export const MyItems = addStory(Template, {
   formId: {
     name: 'workflows-my-items',
-    module: 'Shesha.Enterprise.Workflow',
+    module: 'Shesha.Enterprise.Workflow'
   },
 });

@@ -45,7 +45,7 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
   return (
     <ShaSpin spinning={isLoading}>
       <Show when={showFormInfo}>
-        <FormInfo {...persistedFormProps} />
+        <FormInfo formProps={persistedFormProps} />
       </Show>
       <div style={{ flex: 1 }} data-name={propertyName}>
         {Object.keys(errors).map((error, index) => (

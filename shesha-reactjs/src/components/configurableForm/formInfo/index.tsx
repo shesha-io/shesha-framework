@@ -8,9 +8,19 @@ import { getFormFullName } from '../../../utils/form';
 import HelpTextPopover from '../../helpTextPopover';
 import StatusTag from '../../statusTag';
 import Content from './content';
-import { FormPersisterProvider } from 'providers/formPersisterProvider';
 
-export const FormInfo: FC<IPersistedFormProps> = ({ id, versionNo, description, versionStatus, name, module }) => {
+export interface FormInfoProps {
+  /**
+   * Persisted form props
+   */
+  formProps: IPersistedFormProps;
+  /**
+   * Is used for update of the form markup. If value of this handler is not defined - the form is read-only
+   */
+  onMarkupUpdated?: () => void;
+}
+export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated }) => {
+  const { id, versionNo, description, versionStatus, name, module } = formProps;
   const { toggleShowInfoBlock } = useAppConfigurator();
   const app = useSheshaApplication();
   const [open, setOpen] = useState(false);
@@ -46,7 +56,7 @@ export const FormInfo: FC<IPersistedFormProps> = ({ id, versionNo, description, 
       extra={<CloseOutlined onClick={() => toggleShowInfoBlock(false)} title="Click to hide form info" />}
       size="small"
     >
-      {id && <Content id={id} forwardLink={getDesignerUrl(id)} open={open} onClose={() => setOpen(false)} />}
+      {id && <Content id={id} forwardLink={getDesignerUrl(id)} open={open} onClose={() => setOpen(false)} onMarkupUpdated={onMarkupUpdated}/>}
     </Card>
   );
 };

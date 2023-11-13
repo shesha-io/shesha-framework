@@ -57,7 +57,7 @@ const ChildEntitiesTagGroupModal: FC<IProps> = ({
     >
       <Skeleton loading={loading}>
         <Show when={showFormInfo}>
-          <FormInfo {...formInfo} />
+          <FormInfo formProps={formInfo} />
         </Show>
 
         <ValidationErrors error={error} />
