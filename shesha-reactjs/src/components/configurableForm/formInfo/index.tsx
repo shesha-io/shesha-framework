@@ -8,6 +8,7 @@ import { getFormFullName } from '../../../utils/form';
 import HelpTextPopover from '../../helpTextPopover';
 import StatusTag from '../../statusTag';
 import Content from './content';
+import { FormPersisterProvider } from 'providers/formPersisterProvider';
 
 export const FormInfo: FC<IPersistedFormProps> = ({ id, versionNo, description, versionStatus, name, module }) => {
   const { toggleShowInfoBlock } = useAppConfigurator();
@@ -45,7 +46,11 @@ export const FormInfo: FC<IPersistedFormProps> = ({ id, versionNo, description, 
       extra={<CloseOutlined onClick={() => toggleShowInfoBlock(false)} title="Click to hide form info" />}
       size="small"
     >
-      {id && <Content id={id} forwardLink={getDesignerUrl(id)} open={open} onClose={() => setOpen(false)} />}
+      {id && (
+        <FormPersisterProvider formId={id} skipCache={true}>
+          <Content id={id} forwardLink={getDesignerUrl(id)} open={open} onClose={() => setOpen(false)} />
+        </FormPersisterProvider>
+      )}
     </Card>
   );
 };
