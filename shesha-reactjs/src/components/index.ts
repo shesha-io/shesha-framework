@@ -30,7 +30,6 @@ export {
   type IConfigurableFormComponentProps,
 } from './formDesigner/configurableFormComponent';
 export { default as ConfigurableFormItem, type IConfigurableFormItemProps } from './formDesigner/components/formItem';
-export { CheckListSelectionType, type ICheckListItemSelection } from './hierarchicalCheckList/interface';
 export { default as BasicToolbar } from './basicToolbar';
 export { default as BooleanDropDown } from './booleanDropDown';
 export { default as SidebarContainer } from './sidebarContainer';
@@ -101,7 +100,6 @@ export { default as TablePager, type ITablePagerProps } from './tablePager';
 export { default as TablePaging, type ITablePagerBaseProps } from './tablePager/tablePaging';
 export { default as StatusLabel, type IStatusLabelProps } from './statusLabel';
 export { default as ValidationErrors, type IValidationErrorsProps } from './validationErrors';
-export { default as HierarchicalCheckList, type IHierarchicalCheckListProps } from './hierarchicalCheckList';
 export { default as ShaIcon, type IShaIconProps, type IconType } from './shaIcon';
 export { default as IconPicker, type IIconPickerProps } from './iconPicker';
 export {

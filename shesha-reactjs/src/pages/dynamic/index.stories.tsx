@@ -177,7 +177,7 @@ export const DataList = addStory(Template, {
   },
 });
 
-export const DataTable = addStory(Template, {
+export const Forms = addStory(Template, {
   formId: {
     name: 'forms',
     module: 'shesha',
