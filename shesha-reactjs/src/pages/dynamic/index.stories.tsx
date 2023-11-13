@@ -40,7 +40,7 @@ export const FncTextComponentDetails = addStory(Template, {
 export const FncAddMember = addStory(Template, {
   formId: { name: 'Add-Member', module: 'Shesha' },
   mode: 'edit',
-  id: '5BC9A277-63ED-4A71-919F-0B4064363BBC'
+  id: '5BC9A277-63ED-4A71-919F-0B4064363BBC',
 });
 
 export const FncTableForteenTest = addStory(Template, {
@@ -111,7 +111,7 @@ export const OrganisationEdit = addStory(Template, {
     module: 'Test Module',
     version: 1,
   },
-  id: '5BAB9D40-4177-42C4-8049-0120A2B7F3C9'
+  id: '5BAB9D40-4177-42C4-8049-0120A2B7F3C9',
 });
 
 export const PersonEdit = addStory(Template, {
@@ -149,44 +149,44 @@ export const PermissionEdit = addStory(Template, {
 export const Fetchers = addStory(Template, {
   formId: {
     name: 'fetchers',
-    module: 'TestModule'
+    module: 'TestModule',
   },
-  mode: 'edit'
+  mode: 'edit',
 });
 
 export const WorkflowDefinitions = addStory(Template, {
   formId: {
     name: 'workflow-definitions',
-    module: 'Shesha.Enterprise.Workflow'
-  }
+    module: 'Shesha.Enterprise.Workflow',
+  },
 });
 
 export const BugFix = addStory(Template, {
   formId: {
     name: 'School-Details',
-    module: 'Boxfusion.SheshaFunctionalTests.Common'
+    module: 'Boxfusion.SheshaFunctionalTests.Common',
   },
   mode: 'readonly',
-  id: 'bff4b223-2c29-43b3-9a96-4157d63f0420'
+  id: 'bff4b223-2c29-43b3-9a96-4157d63f0420',
 });
 
 export const DataList = addStory(Template, {
   formId: {
     name: 'alex-test',
-    module: 'TestModule'
+    module: 'TestModule',
   },
 });
 
 export const DataTable = addStory(Template, {
   formId: {
     name: 'forms',
-    module: 'shesha'
+    module: 'shesha',
   },
 });
 
 export const MyItems = addStory(Template, {
   formId: {
     name: 'workflows-my-items',
-    module: 'Shesha.Enterprise.Workflow'
+    module: 'Shesha.Enterprise.Workflow',
   },
 });
