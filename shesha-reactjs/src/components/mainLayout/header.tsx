@@ -1,7 +1,6 @@
-import React, { FC, Fragment, ReactNode } from 'react';
+import React, { FC, Fragment, ReactNode, useMemo } from 'react';
 import classNames from 'classnames';
-import { Avatar, Dropdown, Input, Menu, Space } from 'antd';
-import { nanoid } from 'nanoid/non-secure';
+import { Avatar, Dropdown, Input, MenuProps, Space } from 'antd';
 import { DownOutlined, LoginOutlined, UserOutlined } from '@ant-design/icons';
 import { useAuth } from '../../providers/auth';
 import ShaLink from '../shaLink';
@@ -11,6 +10,7 @@ import { useSidebarMenu } from '../../providers';
 import ConfigurationItemViewModeToggler from '../appConfigurator/configurationItemViewModeToggler';
 
 const { Search } = Input;
+type MenuItem = MenuProps['items'][number];
 
 interface ILayoutHeaderProps {
   onSearch?: (query: string) => void;
@@ -25,27 +25,33 @@ const LayoutHeader: FC<ILayoutHeaderProps> = ({ collapsed, onSearch, customCompo
   const sidebar = useSidebarMenu(false);
   const { accountDropdownListItems, actions } = sidebar || {};
 
-  const menu = (
-    <Menu>
-      {accountDropdownListItems?.map(({ icon, text, url: link, onClick }) => (
-        <Menu.Item key={nanoid()} onClick={onClick}>
-          {link ? (
-            <ShaLink icon={icon} linkTo={link}>
-              {text}
-            </ShaLink>
-          ) : (
-            <Fragment>
-              {icon} {text}
-            </Fragment>
-          )}
-        </Menu.Item>
-      ))}
+  const accountMenuItems = useMemo<MenuItem[]>(() => {
+    const result = (accountDropdownListItems ?? []).map<MenuItem>(({ icon, text, url: link, onClick }, index) => (
+      {
+        key: index,
+        onClick: onClick,
+        label: link ? (
+          <ShaLink icon={icon} linkTo={link}>
+            {text}
+          </ShaLink>
+        ) : (
+          <Fragment>
+            {icon} {text}
+          </Fragment>
+        )
+      }
+    ));
+    if (result.length > 0)
+      result.push({ key: 'divider', type: 'divider' });
 
-      {accountDropdownListItems?.length && <Menu.Divider />}
+    result.push({ 
+      key: 'logout', 
+      onClick: logoutUser,
+      label: (<>{<LoginOutlined />} Logout</>)
+    });
 
-      <Menu.Item onClick={logoutUser}>{<LoginOutlined />} Logout</Menu.Item>
-    </Menu>
-  );
+    return result;
+  }, [accountDropdownListItems]);
 
   return (
     <div className={classNames('layout-header', { collapsed })}>
@@ -78,7 +84,10 @@ const LayoutHeader: FC<ILayoutHeaderProps> = ({ collapsed, onSearch, customCompo
         </div>
         <div className="account">
           <span className="separator" />
-          <Dropdown overlay={menu} trigger={['click']}>
+          <Dropdown
+            menu={{ items: accountMenuItems }}
+            trigger={['click']}
+          >
             <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
               {loginInfo?.fullName} <DownOutlined />
             </a>
