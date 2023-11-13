@@ -1,9 +1,11 @@
 import React, { FC, useCallback, useMemo } from 'react';
 import { BulbTwoTone, DownOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { Dropdown, Menu, Popover, Space, Tooltip, Typography } from 'antd';
+import { Dropdown, MenuProps, Popover, Space, Tooltip, Typography } from 'antd';
 import { IStoredFilter } from '../../providers/dataTable/interfaces';
 import Show from '../show';
 import { nanoid } from 'nanoid/non-secure';
+
+type MenuItem = MenuProps['items'][number];
 
 interface ITooltipIconProps {
   tooltip: string;
@@ -83,23 +85,20 @@ export const TableViewSelectorRenderer: FC<ITableViewSelectorRendererProps> = ({
     [filters, onSelectFilter]
   );
 
-  const menu = useMemo(() => {
-    return (
-      <Menu onClick={onMenuClickMemoized} items={
-        filters?.map(filter => {
-          return {
-            key: filter?.id,
-            label: (
-              <Space>
-                {filter?.name}
-                <Show when={Boolean(filter?.tooltip)}>
-                  <TooltipIcon tooltip={filter?.tooltip}></TooltipIcon>
-                </Show>
-              </Space>
-            )
-          };
-        })
-      }/>);
+  const menuItems = useMemo<MenuItem[]>(() => {
+    return filters?.map(filter => {
+      return {
+        key: filter?.id,
+        label: (
+          <Space>
+            {filter?.name}
+            <Show when={Boolean(filter?.tooltip)}>
+              <TooltipIcon tooltip={filter?.tooltip}></TooltipIcon>
+            </Show>
+          </Space>
+        )
+      };
+    });
   }, [filters]);
 
   const renderTitle = () => (
@@ -114,7 +113,7 @@ export const TableViewSelectorRenderer: FC<ITableViewSelectorRendererProps> = ({
         <Show when={!hidden}>
           <Show when={filters?.length === 1}>{renderTitle()}</Show>
           <Show when={filters?.length > 1}>
-            <Dropdown overlay={menu} trigger={['click']}>
+            <Dropdown menu={{ items: menuItems, onClick: onMenuClickMemoized }} trigger={['click']}>
               <Space>
                 {renderTitle()}
                 <DownOutlined />
