@@ -11,7 +11,7 @@
       "visibility": "Yes",
       "isDynamic": false,
       "version": 1,
-      "expandIconPosition": "left",
+      "expandIconPosition": "start",
       "header": {
         "id": "xUukOtoy4VF55EFvhr3t1",
         "components": []
@@ -221,7 +221,7 @@
       "visibility": "Yes",
       "isDynamic": false,
       "version": 1,
-      "expandIconPosition": "left",
+      "expandIconPosition": "start",
       "header": {
         "id": "pInxcBtp1lmax-jJORJLM",
         "components": []
@@ -429,7 +429,7 @@
       "visibility": "Yes",
       "isDynamic": false,
       "version": 1,
-      "expandIconPosition": "left",
+      "expandIconPosition": "start",
       "header": {
         "id": "OHLCgLtLKni6NOhoSDcrD",
         "components": []
@@ -522,7 +522,7 @@
       "visibility": "Yes",
       "isDynamic": false,
       "version": 1,
-      "expandIconPosition": "left",
+      "expandIconPosition": "start",
       "header": {
         "id": "q02MZmfdTZWgGC_eQfGaS",
         "components": []

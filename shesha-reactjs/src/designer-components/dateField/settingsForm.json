@@ -11,7 +11,7 @@
       "visibility": "Yes",
       "isDynamic": false,
       "version": 1,
-      "expandIconPosition": "left",
+      "expandIconPosition": "start",
       "header": {
         "id": "IIBBWlI-XuHjKQs6d00tO",
         "components": []
@@ -232,7 +232,7 @@
       "visibility": "Yes",
       "isDynamic": false,
       "version": 1,
-      "expandIconPosition": "left",
+      "expandIconPosition": "start",
       "header": {
         "id": "G3I8ozdzmOKbUhuYbs68k",
         "components": []
@@ -318,7 +318,7 @@
       "visibility": "Yes",
       "isDynamic": false,
       "version": 1,
-      "expandIconPosition": "left",
+      "expandIconPosition": "start",
       "header": {
         "id": "d8nBKM4Ft50LTL1Supx8N",
         "components": []
@@ -395,7 +395,7 @@
       "visibility": "Yes",
       "isDynamic": false,
       "version": 1,
-      "expandIconPosition": "left",
+      "expandIconPosition": "start",
       "header": {
         "id": "_DiUNfu1EtZNRRpjO7eHB",
         "components": []
@@ -539,7 +539,7 @@
       "visibility": "Yes",
       "isDynamic": false,
       "version": 1,
-      "expandIconPosition": "left",
+      "expandIconPosition": "start",
       "header": {
         "id": "i8dLAW_jVLivqO6nDxhaD",
         "components": []
@@ -634,7 +634,7 @@
       "visibility": "Yes",
       "isDynamic": false,
       "version": 1,
-      "expandIconPosition": "left",
+      "expandIconPosition": "start",
       "header": {
         "id": "2S9VA8QkefAxCRQG-Ua3A",
         "components": []

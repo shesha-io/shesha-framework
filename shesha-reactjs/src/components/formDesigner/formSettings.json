@@ -430,7 +430,7 @@
       "hidden": false,
       "visibility": "Yes",
       "isDynamic": false,
-      "expandIconPosition": "right",
+      "expandIconPosition": "end",
       "settingsValidationErrors": [],
       "components": [
         {

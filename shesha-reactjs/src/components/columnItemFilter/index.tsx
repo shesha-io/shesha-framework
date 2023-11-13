@@ -1,25 +1,28 @@
 import React, { FC, ChangeEvent, useState, Fragment, useEffect, useMemo } from 'react';
 import { DeleteOutlined, DownOutlined } from '@ant-design/icons';
-import { Input, DatePicker, TimePicker, InputNumber, Checkbox, Menu, Dropdown, Select, Spin } from 'antd';
+import { Input, DatePicker, TimePicker, InputNumber, Checkbox, Dropdown, Select, Spin, MenuProps } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { Moment } from 'moment';
-import { ColumnFilter, IndexColumnFilterOption } from '../../providers/dataTable/interfaces';
-import { humanizeString } from '../../utils/string';
+import { ColumnFilter, IndexColumnFilterOption } from 'providers/dataTable/interfaces';
+import { humanizeString } from 'utils/string';
 import {
   ADVANCEDFILTER_DATE_FORMAT,
   ADVANCEDFILTER_DATETIME_FORMAT,
   getMoment,
   ADVANCEDFILTER_TIME_FORMAT,
-} from '../../providers/dataTable/utils';
-import { useReferenceList } from '../../providers/referenceListDispatcher';
-import { useEntityAutocomplete } from '../../utils/autocomplete';
-import { EntityData } from '../../interfaces/gql';
-import { ProperyDataType } from '../../interfaces/metadata';
+} from 'providers/dataTable/utils';
+import { useReferenceList } from 'providers/referenceListDispatcher';
+import { useEntityAutocomplete } from 'utils/autocomplete';
+import { EntityData } from 'interfaces/gql';
+import { ProperyDataType } from 'interfaces/metadata';
+import { IDictionary } from 'interfaces';
+
+type MenuItem = MenuProps['items'][number];
 
 const { RangePicker: DateRangePicker } = DatePicker;
 const { RangePicker: TimeRangePicker } = TimePicker;
 
-const allOptions = {
+const allOptions: IDictionary<IndexColumnFilterOption[]> = {
   date: ['equals', 'between', 'before', 'after'],
   datetime: ['equals', 'between', 'before', 'after'],
   time: ['equals', 'between', 'before', 'after'],
@@ -63,7 +66,15 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
   entityReferenceTypeShortAlias,
   autocompleteUrl,
 }) => {
-  const options = allOptions[dataType] || [];
+  const options = useMemo(() => {
+    return allOptions[dataType] || [];
+  }, [dataType]);
+
+  const filterOptions = useMemo<MenuItem[]>(() => {
+    return options
+      .filter((opt) => opt !== filterOption)
+      .map<MenuItem>((opt) => ({ label: humanizeString(opt), key: opt }));
+  }, [options, filterOption]);
 
   const [showDeleteIcon, setShowIconVisibility] = useState<boolean>(true);
 
@@ -72,9 +83,7 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
     setShowIconVisibility(!showDeleteIcon);
   };
 
-  // This key is supposed to be of type MenuClickEventHandler but I'm not getting it
-  const handleFilterOptionChange = ({ key }: { key: React.Key }) => {
-    // setFilterOption(option);
+  const handleFilterOptionChange: MenuProps['onClick'] = ({ key }) => {
     onChangeFilterOption(id, key as IndexColumnFilterOption);
   };
 
@@ -83,7 +92,7 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
     if (!filter) {
       onChangeFilterOption(id, options[0]);
     }
-  });
+  }, []);
 
   const handleStringFilter = (changeValue: ChangeEvent<HTMLInputElement>) => {
     const value = (changeValue as ChangeEvent<HTMLInputElement>).target.value;
@@ -134,15 +143,7 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
           {!hideFilterOptions() && (
             <Dropdown
               trigger={['click']}
-              overlay={
-                <Menu onClick={handleFilterOptionChange}>
-                  {options
-                    .filter((o: any) => o !== filterOption)
-                    .map((opt: any) => (
-                      <Menu.Item key={opt}>{humanizeString(opt)}</Menu.Item>
-                    ))}
-                </Menu>
-              }
+              menu={{ items: filterOptions, onClick: handleFilterOptionChange }}
             >
               <a className="ant-dropdown-link" href="#">
                 {humanizeString(filterOption || '')} <DownOutlined />
@@ -186,7 +187,7 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
 
         {dataType === 'date-time' && (<DateTimeFilter {...baseProps} format={ADVANCEDFILTER_DATETIME_FORMAT} showTime={true} />)}
 
-        {dataType === 'time' && (<TimeFilter {...baseProps} format={ADVANCEDFILTER_TIME_FORMAT} />)}       
+        {dataType === 'time' && (<TimeFilter {...baseProps} format={ADVANCEDFILTER_TIME_FORMAT} />)}
 
         {dataType === 'boolean' && renderBooleanInput()}
 
@@ -220,7 +221,7 @@ interface IFilterBaseProps {
   onPressEnter: () => void;
 }
 
-interface ISingleValueFilterProps extends IFilterBaseProps {}
+interface ISingleValueFilterProps extends IFilterBaseProps { }
 
 interface IStringFilterProps extends ISingleValueFilterProps {
   value: string;
@@ -381,7 +382,7 @@ interface BaseFilterProps {
   filterOption: IndexColumnFilterOption;
   onChangeFilter?: (filterId: string, filter: ColumnFilter) => void;
 }
-interface DateTimeFilterProps extends BaseFilterProps{
+interface DateTimeFilterProps extends BaseFilterProps {
   format: string;
   showTime: boolean;
 }
@@ -417,7 +418,7 @@ const DateTimeFilter: FC<DateTimeFilterProps> = ({ id, filter, filterOption, onC
   );
 };
 
-interface TimeFilterProps extends BaseFilterProps{
+interface TimeFilterProps extends BaseFilterProps {
   format: string;
 }
 const TimeFilter: FC<TimeFilterProps> = ({ id, filter, filterOption, onChangeFilter, format }) => {
