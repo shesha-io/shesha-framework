@@ -160,10 +160,6 @@ export const ObjectsTree = <TItem,>(props: IProps<TItem>) => {
         setManuallyExpanded(expandedKeys);
     };
 
-    useEffect(() => {
-        console.log("Mount ");
-    }, []);
-    
     return (
         <Tree<DataNodeWithObject<TItem>>
             className='sha-datasource-tree'

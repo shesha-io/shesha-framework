@@ -96,7 +96,15 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
           collapsible: 'icon',
         };
       })
-      .add<ICollapsiblePanelComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev))),
+      .add<ICollapsiblePanelComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+      .add<ICollapsiblePanelComponentProps>(3, (prev) => ({
+        ...prev,
+        expandIconPosition: prev.expandIconPosition === 'left'
+          ? 'start'
+          : prev.expandIconPosition === 'right'
+            ? 'end'
+            : prev.expandIconPosition
+      })),
   customContainerNames: ['header', 'content'],
 };
 

@@ -372,8 +372,6 @@ const ListControl: FC<IListControlProps> = (props) => {
         } else {
           const item = value[index];
 
-          console.log('LOGS:: deleteItem item', item);
-
           const idProp = item?.id || item.Id;
 
           if (!idProp) {

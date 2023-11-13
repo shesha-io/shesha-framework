@@ -11,7 +11,7 @@
       "visibility": "Yes",
       "isDynamic": false,
       "version": 2,
-      "expandIconPosition": "left",
+      "expandIconPosition": "start",
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
@@ -34,7 +34,7 @@
             }
           },
           {
-            "id": "277b7ffe-d023-4543-a4b4-ff7f76052860",
+            "id": "277b7ffe-d023-4543-a4b4-ff7f76052861",
             "type": "textField",
             "propertyName": "label",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
@@ -42,7 +42,7 @@
             "allowClear": true
           },
           {
-            "id": "277b7ffe-d023-4543-a4b4-ff7f76052860",
+            "id": "277b7ffe-d023-4543-a4b4-ff7f76052864",
             "type": "textField",
             "propertyName": "content",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
@@ -50,7 +50,7 @@
             "allowClear": true
           },
           {
-            "id": "277b7ffe-d023-4543-a4b4-ff7f76052860",
+            "id": "277b7ffe-d023-4543-a4b4-ff7f76052863",
             "type": "textField",
             "propertyName": "href",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
@@ -131,7 +131,7 @@
       "visibility": "Yes",
       "isDynamic": false,
       "version": 2,
-      "expandIconPosition": "left",
+      "expandIconPosition": "start",
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,

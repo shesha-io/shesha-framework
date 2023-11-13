@@ -35,7 +35,6 @@ export const useButtonItems = ({ items }: UseButtonItemsArgs): ButtonGroupItemPr
 
     // build a resulting tree that includes all resolved items but excludes non resolved ones
     const result = useMemo(() => {
-        console.log('LOG: calculate result', { items, internalData, numResolved });
         return getItemsWithResolved(internalData);
     }, [internalData, numResolved]);
 
