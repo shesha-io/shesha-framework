@@ -3,7 +3,6 @@ import { Button, Modal } from 'antd';
 import { FormDesigner } from 'components';
 import React, { FC, useEffect } from 'react';
 import { useFormInfoContent } from '../../../providers';
-import { useFormPersister } from '../../../providers/formPersisterProvider';
 
 interface IFormInforContent {
   id: string;
@@ -14,7 +13,6 @@ interface IFormInforContent {
 
 const Content: FC<IFormInforContent> = ({ id, forwardLink, onClose, open }) => {
   const { actionFlag, setActionFlag, setToolbarRightButton } = useFormInfoContent();
-  const { loadForm } = useFormPersister();
 
   useEffect(() => {
     if (open)
@@ -28,9 +26,9 @@ const Content: FC<IFormInforContent> = ({ id, forwardLink, onClose, open }) => {
   }, [open]);
 
   const reset = () => {
-    onClose();
     setActionFlag(null);
-    loadForm({ skipCache: true });
+
+    onClose();
   };
 
   useEffect(() => {

@@ -46,11 +46,7 @@ export const FormInfo: FC<IPersistedFormProps> = ({ id, versionNo, description, 
       extra={<CloseOutlined onClick={() => toggleShowInfoBlock(false)} title="Click to hide form info" />}
       size="small"
     >
-      {id && (
-        <FormPersisterProvider formId={id} skipCache={true}>
-          <Content id={id} forwardLink={getDesignerUrl(id)} open={open} onClose={() => setOpen(false)} />
-        </FormPersisterProvider>
-      )}
+      {id && <Content id={id} forwardLink={getDesignerUrl(id)} open={open} onClose={() => setOpen(false)} />}
     </Card>
   );
 };
