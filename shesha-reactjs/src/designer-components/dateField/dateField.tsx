@@ -187,6 +187,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         disabled={disabled}
         style={evaluatedStyle}
         allowClear
+        bordered={!hideBorder}
       />
     );
   }

@@ -211,15 +211,18 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   };
 
   const isComponentDisabled = (model: Pick<IConfigurableFormComponent, 'id' | 'isDynamic' | 'disabled'>): boolean => {
-    const disabledByCondition =
-      model.isDynamic !== true && state.enabledComponentIds && !state.enabledComponentIds.includes(model.id);
+    const disabledByCondition = false;
+    //ToDo AS: need to change the way to update visible end enabled comopnents
+      //model.isDynamic !== true && state.enabledComponentIds && !state.enabledComponentIds.includes(model.id);
 
     return state.formMode !== 'designer' && (model.disabled || disabledByCondition);
   };
 
   const isComponentHidden = (model: Pick<IConfigurableFormComponent, 'id' | 'isDynamic' | 'hidden'>): boolean => {
-    const hiddenByCondition =
-      model.isDynamic !== true && state.visibleComponentIds && !state.visibleComponentIds.includes(model.id);
+    const hiddenByCondition = false;
+
+    //ToDo AS: need to change the way to update visible end enabled comopnents
+      //model.isDynamic !== true && state.visibleComponentIds && !state.visibleComponentIds.includes(model.id);
 
     return state.formMode !== 'designer' && (model.hidden || hiddenByCondition);
   };

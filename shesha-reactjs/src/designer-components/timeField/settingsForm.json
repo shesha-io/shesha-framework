@@ -191,18 +191,12 @@
           {
             "id": "c67b7404-d980-437a-a544-74e4e816f6cd",
             "type": "checkbox",
-            "propertyName": "",
+            "propertyName": "hideBorder",
             "label": "Hide border",
             "parentId": "aUt4GeRhocL5W_aGaaR10",
             "hidden": false,
             "validate": {},
-            "description": "",
-            "settingsValidationErrors": [
-              {
-                "message": "This field is required",
-                "field": "name"
-              }
-            ]
+            "description": ""
           },
           {
             "id": "30b5031e-24f5-4ef7-bede-db90e5914964",

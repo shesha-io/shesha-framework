@@ -41,6 +41,7 @@ export interface ITimePickerProps extends IConfigurableFormComponent {
   showNow?: boolean;
   hideDisabledOptions?: boolean;
   use12Hours?: boolean;
+  hideBorder?: boolean;
   onChange?: TimePickerChangeEvent | RangePickerChangeEvent;
 }
 
@@ -116,6 +117,7 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
   minuteStep,
   secondStep,
   disabled,
+  hideBorder,
   ...rest
 }) => {
   const { data: formData } = useFormData();
@@ -154,6 +156,7 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
   if (range) {
     return (
       <TimePicker.RangePicker
+        bordered={!hideBorder}
         onChange={handleRangePicker}
         format={format}
         defaultValue={getDefaultRangePickerValues() as RangeValue}
@@ -168,6 +171,7 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
 
   return (
     <TimePicker
+      bordered={!hideBorder}
       onChange={handleTimePickerChange}
       format={format}
       defaultValue={evaluatedValue || (defaultValue && moment(defaultValue))}

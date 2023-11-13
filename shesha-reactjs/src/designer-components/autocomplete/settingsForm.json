@@ -204,7 +204,7 @@
           {
             "id": "4c5d3cce-73d4-4895-bcf8-abbbe86c48dc",
             "type": "codeEditor",
-            "name": "defaultValue",
+            "propertyName": "defaultValue",
             "label": "Default Value",
             "labelAlign": "right",
             "parentId": "PSXX7u5GWT0W8RXnVW3Ao",
@@ -589,7 +589,6 @@
       "label": "Quickview",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": {"_code": "return getSettingValue(data?.quickviewEnabled) !== true;", "_mode": "code", "_value": false},
       "visibility": "Yes",
       "isDynamic": false,
       "version": 1,
@@ -606,7 +605,8 @@
             "type": "checkbox",
             "propertyName": "quickviewEnabled",
             "parentId": "SsWPpiJfTbgl4iHlFA_or",
-            "label": "Use Quickview"
+            "label": "Use Quickview",
+            "jsSetting": false
           },
           {
             "id": "49c6712b-7e91-4dab-9f11-4e7c5e6b6c74",
@@ -615,6 +615,7 @@
             "parentId": "SsWPpiJfTbgl4iHlFA_or",
             "label": "Form Path",
             "version": 0,
+            "hidden": {"_code": "return getSettingValue(data?.quickviewEnabled) !== true;", "_mode": "code", "_value": false},
             "textType": "text"
           },
           {
@@ -624,6 +625,7 @@
             "parentId": "SsWPpiJfTbgl4iHlFA_or",
             "label": "Get Entity Url",
             "version": 0,
+            "hidden": {"_code": "return getSettingValue(data?.quickviewEnabled) !== true;", "_mode": "code", "_value": false},
             "textType": "text"
           },
           {
@@ -633,6 +635,7 @@
             "parentId": "SsWPpiJfTbgl4iHlFA_or",
             "label": "Display Property Name",
             "version": 0,
+            "hidden": {"_code": "return getSettingValue(data?.quickviewEnabled) !== true;", "_mode": "code", "_value": false},
             "textType": "text"
           },
           {
@@ -642,6 +645,7 @@
             "parentId": "SsWPpiJfTbgl4iHlFA_or",
             "label": "Width",
             "version": 0,
+            "hidden": {"_code": "return getSettingValue(data?.quickviewEnabled) !== true;", "_mode": "code", "_value": false},
             "textType": "text"
           }
         ]

@@ -42,7 +42,7 @@
             "allowClear": true
           },
           {
-            "id": "277b7ffe-d023-4543-a4b4-ff7f76052860",
+            "id": "277b7ffe-d023-4543-a4b4-ff7f76052861",
             "type": "textField",
             "propertyName": "content",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
@@ -50,7 +50,7 @@
             "allowClear": true
           },
           {
-            "id": "277b7ffe-d023-4543-a4b4-ff7f76052860",
+            "id": "277b7ffe-d023-4543-a4b4-ff7f76052862",
             "type": "textField",
             "propertyName": "href",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
