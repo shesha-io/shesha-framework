@@ -4,6 +4,7 @@ import { FormDesigner } from 'components';
 import { nanoid } from 'nanoid';
 import React, { FC, ReactNode, useEffect } from 'react';
 import { useGlobalState } from '../../../providers';
+import { useFormPersister } from '../../../providers/formPersisterProvider';
 import { ActionFlag, IFormDesignerActionFlag } from '../../../providers/globalState/models';
 
 interface IFormInforContent {
@@ -15,6 +16,7 @@ interface IFormInforContent {
 
 const Content: FC<IFormInforContent> = ({ id, forwardLink, onClose, open }) => {
   const { globalState, setState } = useGlobalState();
+  const { loadForm } = useFormPersister();
   const actionFlag = globalState?.[ActionFlag.name] as { [key in IFormDesignerActionFlag]: boolean };
 
   useEffect(() => {
@@ -31,7 +33,7 @@ const Content: FC<IFormInforContent> = ({ id, forwardLink, onClose, open }) => {
   const reset = () => {
     onClose();
     setState({ key: ActionFlag.name, data: null });
-    //window.location.reload();
+    loadForm({ skipCache: true });
   };
 
   const setToolbarRightButton = (data: ReactNode) =>
