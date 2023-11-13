@@ -145,7 +145,6 @@ export { default as GenericIndexPageDefault } from './crudViews/plainIndexPage';
 export { default as SimpleIndexPageDefault } from './crudViews/plainSimpleIndexPage';
 
 export { default as Page } from './page';
-export { default as DefaultLayout, getDefaultLayout } from './defaultLayout';
 export { default as EditableTagGroup, type IEditableTagGroupProps } from './editableTagGroup';
 
 export { default as QuickView, type IQuickViewProps } from './quickView';
