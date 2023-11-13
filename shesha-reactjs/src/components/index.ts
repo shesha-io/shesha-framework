@@ -77,11 +77,6 @@ export {
 export { default as IndexTableControls, type IIndexTableControlsProps } from './indexTableControls';
 export { default as IndexTableFull, type IIndexTableFullProps } from './indexTableFull';
 export { default as IndexToolbar, type IIndexToolbarProps } from './indexToolbar';
-export { default as IndexViewSelector, type IIndexViewSelectorProps } from './indexViewSelector';
-export {
-  default as IndexViewSelectorRenderer,
-  type IIndexViewSelectorRendererProps,
-} from './indexViewSelectorRenderer';
 export { default as LayoutHeading, type ILayoutHeadingProps } from './layoutHeading';
 export { default as MainLayout, type IMainLayoutProps } from './mainLayout';
 export { default as NodeOrFuncRenderer, ReactNodeOrFunc } from './nodeOrFuncRenderer';
