@@ -1,0 +1,3 @@
+{
+  "ignorePatterns": ["**/*.stories.tsx", "**/__tests__/**"]
+}

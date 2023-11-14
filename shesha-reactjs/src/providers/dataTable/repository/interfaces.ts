@@ -1,5 +1,5 @@
 import { IConfigurableColumnsProps } from "providers/datatableColumnsConfigurator/models";
-import { IDictionary } from "src/index";
+import { IDictionary } from "interfaces";
 import { DataTableColumnDto, IGetListDataPayload, ITableDataInternalResponse, SortMode } from "../interfaces";
 
 export interface RowsReorderPayload {

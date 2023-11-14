@@ -156,7 +156,6 @@
     "invert-color": "^2.0.0",
     "jodit-react": "^1.3.39",
     "js-encoding-utils": "^0.6.2",
-    "js-to-json-logic": "^0.1.3",
     "less-compiler": "^0.2.4",
     "less-loader": "^11.1.0",
     "localforage": "^1.10.0",

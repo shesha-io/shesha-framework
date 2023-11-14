@@ -42,7 +42,8 @@
       "providers": ["src/providers"],
       "providers/*": ["src/providers/*"],
       "utils": ["src/utils"],
-      "utils/*": ["src/utils/*"]
+      "utils/*": ["src/utils/*"],
+      "shesha-constants": ["src/shesha-constants/index.ts"],
     }
   },
   "exclude": [
