@@ -2,10 +2,7 @@
 
 <p align="center">
 <a href="https://www.shesha.io?utm_source=github&utm_medium=organic&utm_campaign=readme">
-  <img src="https://github.com/shesha-io/shesha-framework/blob/main/static/Shesha_Horizontal.png" alt="Shesha Logo" width="350">
-  <img src="/shesha-io/shesha-framework/blob/main/static/Shesha_Horizontal.png" alt="Shesha Logo" width="350">
-  <img src="/blob/main/static/Shesha_Horizontal.png" alt="Shesha Logo" width="350">
-  <img src="blob/main/static/Shesha_Horizontal.png" alt="Shesha Logo" width="350">
+  <img src="https://github.com/shesha-io/shesha-framework/blob/main/static/Shesha_Horizontal.png" alt="Shesha Logo" width="500">
 </a>
 </p>
 <br />
@@ -58,7 +55,7 @@ Shesha takes a Domain Driven approach to application development, the starting p
 [Insert animated gif of Visual Studio editing a new entity class e.g. Employee]
 <p align="center">
 <a href="https://REPLACE WITH LINK TO APPROPRIATE PAGE">
-<img alt="Create your domain" src="static/domain-entity.mp4" />
+<img alt="Create your domain" src="https://github.com/shesha-io/shesha-framework/blob/main/static/domain-entity.mp4" />
 </a>
 </p>
 
