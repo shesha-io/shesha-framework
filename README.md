@@ -2,7 +2,10 @@
 
 <p align="center">
 <a href="https://www.shesha.io?utm_source=github&utm_medium=organic&utm_campaign=readme">
-  <img src="static/shesha_horizontal.png" alt="Shesha Logo" width="350">
+  <img src="https://github.com/shesha-io/shesha-framework/blob/main/static/Shesha_Horizontal.png" alt="Shesha Logo" width="350">
+  <img src="/shesha-io/shesha-framework/blob/main/static/Shesha_Horizontal.png" alt="Shesha Logo" width="350">
+  <img src="/blob/main/static/Shesha_Horizontal.png" alt="Shesha Logo" width="350">
+  <img src="blob/main/static/Shesha_Horizontal.png" alt="Shesha Logo" width="350">
 </a>
 </p>
 <br />
