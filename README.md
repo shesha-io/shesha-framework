@@ -5,18 +5,18 @@
 </p>
 
 # What is Shesha?
-<p>Shesha is an open-source Low-Code development platform specifically for .NET developers. You can build anything from simple CRUD apps, admin panels to complex business applications way more quickly.</p>
+<p>Shesha is an open-source Low-Code development framework specifically for .NET developers. You can build anything from simple CRUD apps, admin panels to complex business applications super quickly.</p>
 
 Shesha builds on top of other excellent frameworks and libraries (most notably ASP\.NET Core, Abp\.io, React, NextJs), layers on Low-Code capabilities (think drag & drop form builder and app themer), and incorporates standard admin functionality (e.g. User and security management) to drastically reduce the time and effort required to build applications.
 
 In fact, in our experience, you will likely need **>80% less code** for most typical business applications.
 
-More info from the [Shesha Web-site](https://shesha.io/)
+More info from the [Shesha website](https://shesha.io/).
 
-# What does Shesha actually provide?
+# Features
 
-Shesha comes with a range of capabilities that massively reduces the effort required to create business applications:
-* **Form Builder** allows users to create application pages and by simply 'dragging and dropping' components onto a page designer. With over 40 components that come as standard, you will be able to create powerful and professional looking applications without writing a line of front-end code. If the standard components aren't sufficient, simply create your own in React or create entirely custom pages.
+Shesha comes with a range of features that massively reduce the effort required to create business applications:
+* **Form Builder** allows users to create application pages and by simply 'dragging and dropping' components onto a page designer. With over 40 components that come as standard, you will be able to create powerful and professional-looking applications without writing a line of front-end code. If the standard components aren't sufficient, simply create your own in React or create entirely custom pages.
 * **Dynamic CRUD APIs** get 'auto-magically' generated from your domain entities without the need for repetitive boilerplate code. APIs can be secured simply through configuration.
 * **App Themer** allows you to match your branding needs with zero effort.
 * **Administration Panel** provides the most common admin functionalities required by almost any business application 'out-of-the-box', including:
@@ -41,17 +41,17 @@ Shesha comes with a range of capabilities that massively reduces the effort requ
 
 ## Build Apps in 4 Steps
 
-### 1. Update your Domain
+### 1. Implement your Domain
 
-Shesha takes a Domain Driven approach to application development, the starting point is therefore to implement your domain. This is done by the by implementing `Entity` classes as you would do for any business application. You can extend standard entities that come as part of the base Shesha model (e.g. `Person`, `Organisation`, `Site`, etc...) or by creating your own.
+Shesha takes a Domain-driven approach to application development, the starting point is therefore to implement your domain. This is done by implementing `Entity` classes as you would do for any business application. You can extend standard entities that come as part of the base Shesha model (e.g. `Person`, `Organisation`, `Site`, etc...) or by creating your own.
 <p align="center">
 <img alt="Create your domain" src="https://github.com/shesha-io/shesha-framework/blob/main/static/domain-entity.gif" />
 </p>
 
 ### 2. Expose your APIs
-All it takes to expose your domain and data through dynamically generated CRUD APIs is the checking of a box and specifying the authorisation rules.
+All it takes to expose your domain and data through dynamically generated CRUD APIs is the checking of a box and specifying the authorization rules.
 
-You will immediately get full CRUD support as well as a GraphQL end-points for flexible and efficient data retrieval.
+You will immediately get full CRUD support as well as GraphQL endpoints for flexible and efficient data retrieval.
 
 <p align="center">
 <img alt="Expose your APIs" src="https://github.com/shesha-io/shesha-framework/blob/main/static/generate-api.gif" />
@@ -61,26 +61,26 @@ Where the dynamically generated APIs are insufficient, you still have the full p
 
 ### 3. Configure your UI
 
-Once you have exposed your domain and APIs, you can build your UI through our drag-and-drop form builder. There are over 40 different components including tables, lists, forms, sub-forms, modals and many more allowing you to build sophisticated and scalable enterprise applications without a line of front-end code.
+Once you have exposed your domain and APIs, you can build your UI through our drag-and-drop form builder. There are over 40 different components including tables, lists, forms, sub-forms, modals, and many more allowing you to build sophisticated and scalable enterprise applications without a line of front-end code.
 
 <p align="center">
 <img alt="Expose your APIs" src="https://github.com/shesha-io/shesha-framework/blob/main/static/form-configuration.gif" />
 </p>
 
-Where the configuration only approach is too limiting, you can add Javascript snippets to implement more advanced behaviour or build custom components or entire pages using React.
+Where the configuration-only approach is too limiting, you can add Javascript snippets to implement more advanced behavior or build custom components or entire pages using React.
 
 ### 4. Deploy your app
 
-Simply deploy your application as you would any other ASP.NET Core web-site with Sql Server. Deploy on your favourite cloud or on-premise.
+Simply deploy your application as you would any other ASP.NET Core website with Sql Server. Deploy on your favorite cloud or on-premise.
 
 
 ## Getting Started
 
-The easiest way to get started is downloading a starter template and by following our [tutorial videos](https://www.youtube.com/watch?v=-QqzmP30kBs&list=PLEFomNQeAmo2Azy7aWqjX5oiIAeKiFCzt) that will take you through the full process of building your first Shesha application.
+The easiest way to get started is by downloading a starter template and by following our [tutorial videos](https://www.youtube.com/watch?v=-QqzmP30kBs&list=PLEFomNQeAmo2Azy7aWqjX5oiIAeKiFCzt) that will take you through the full process of building your first Shesha application.
 
 ## Support and Community
 
-Issues are inevitable. When you have one, our entire team and our active developer community is around to help.<br>
+Issues are inevitable. When you have one, our entire team and our active developer community are around to help.<br>
 
 💬 Talk to us on [Discord](https://discord.gg/pdDh7JRNGp)<br>
 📄 Find a solution in our [Documentation](https://shesha-documentation.readthedocs.io/)<br>
