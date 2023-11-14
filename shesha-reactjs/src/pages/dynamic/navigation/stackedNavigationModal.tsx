@@ -73,8 +73,6 @@ const StackedNavigationModal: FC<IStackedNavigationModalProps> = ({
   );
 };
 
-StackedNavigationModal.displayName = 'StackedModal';
-
 export { StackedNavigationModal };
 
 export default StackedNavigationModal;
