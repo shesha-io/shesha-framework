@@ -6,9 +6,9 @@ import { IDataListComponentProps } from '../../../dataList/models';
 import FormAutocomplete from '../../../formAutocomplete';
 import Show from 'components/show';
 import { ISettingsFormFactoryArgs } from 'interfaces';
-import SettingsForm, { useSettingsForm } from '../../../../designer-components/_settings/settingsForm';
-import SettingsFormItem from '../../../../designer-components/_settings/settingsFormItem';
-import { ConfigurableActionConfigurator } from 'src/designer-components/configurableActionsConfigurator/configurator';
+import SettingsForm, { useSettingsForm } from 'designer-components/_settings/settingsForm';
+import SettingsFormItem from 'designer-components/_settings/settingsFormItem';
+import { ConfigurableActionConfigurator } from 'designer-components/configurableActionsConfigurator/configurator';
 
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 
