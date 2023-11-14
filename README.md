@@ -99,5 +99,5 @@ Let's build great software together!
 
 ## License
 
-Shesha is available under the [Apache License 2.0](https://github.com/shesha-io/shesha-framework/LICENSE). Use it wisely.
+Shesha is available under the [Apache License 2.0](https://github.com/shesha-io/shesha-framework/blob/main/LICENSE.md). Use it wisely!
 
