@@ -55,10 +55,11 @@ Shesha takes a Domain Driven approach to application development, the starting p
 [Insert animated gif of Visual Studio editing a new entity class e.g. Employee]
 <p align="center">
 <a href="https://REPLACE WITH LINK TO APPROPRIATE PAGE">
-<img alt="Create your domain" src="https://github.com/shesha-io/shesha-framework/blob/main/static/domain-entity.mp4" />
+<img alt="Create your domain" src="https://github.com/shesha-io/shesha-framework/blob/main/static/custom-component.gif" />
 <code> <video width=“320” height=“240” controls poster=“poster.jpg”> <source src=“https://github.com/shesha-io/shesha-framework/blob/main/static/domain-entity.mp4” type=“video/mp4”> Your browser does not support the video element. </video> </code>
 </a>
 </p>
+
 
 ### 2. Expose your APIs
 All it takes to expose your domain and data through dynamically generated CRUD APIs is the checking of a box and specifying the authorisation rules.
