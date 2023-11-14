@@ -56,6 +56,7 @@ Shesha takes a Domain Driven approach to application development, the starting p
 <p align="center">
 <a href="https://REPLACE WITH LINK TO APPROPRIATE PAGE">
 <img alt="Create your domain" src="https://github.com/shesha-io/shesha-framework/blob/main/static/domain-entity.mp4" />
+<code> <video width=“320” height=“240” controls poster=“poster.jpg”> <source src=“https://github.com/shesha-io/shesha-framework/blob/main/static/domain-entity.mp4” type=“video/mp4”> Your browser does not support the video element. </video> </code>
 </a>
 </p>
 
