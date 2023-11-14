@@ -1,17 +1,15 @@
-<br /><br />
-
+<!-- <br /><br /> -->
 <p align="center">
 <a href="https://www.shesha.io?utm_source=github&utm_medium=organic&utm_campaign=readme">
   <img src="https://github.com/shesha-io/shesha-framework/blob/main/static/Shesha_Horizontal.png" alt="Shesha Logo" width="500">
 </a>
 </p>
-<br />
-
+<!-- <br /> -->
 
 # What is Shesha?
 <p>Shesha is an open-source Low-Code development platform specifically for .NET developers. You can build anything from simple CRUD apps, admin panels to complex business applications way more quickly.</p>
 
-Shesha builds on top of other excellent frameworks and libraries (most notably ASP\.NET Core, Abp\.io, React, NextJs), layers on Low-Code capabilities (think drag & drop form builder and app themer), and incorporates standard admin functionality (e.g. User and security management) to drastically reduce the time and effort required to build applications. 
+Shesha builds on top of other excellent frameworks and libraries (most notably ASP\.NET Core, Abp\.io, React, NextJs), layers on Low-Code capabilities (think drag & drop form builder and app themer), and incorporates standard admin functionality (e.g. User and security management) to drastically reduce the time and effort required to build applications.
 
 In fact, in our experience, you will likely need **>80% less code** for most typical business applications.
 
@@ -19,7 +17,7 @@ More info from the [Shesha Web-site](https://shesha.io/)
 
 # What does Shesha actually provide?
 
-Shesha comes with a range of capabilities that massively reduces the effort required to create business applications: 
+Shesha comes with a range of capabilities that massively reduces the effort required to create business applications:
 * **Form Builder** allows users to create application pages and by simply 'dragging and dropping' components onto a page designer. With over 40 components that come as standard, you will be able to create powerful and professional looking applications without writing a line of front-end code. If the standard components aren't sufficient, simply create your own in React or create entirely custom pages.
 * **Dynamic CRUD APIs** get 'auto-magically' generated from your domain entities without the need for repetitive boilerplate code. APIs can be secured simply through configuration.
 * **App Themer** allows you to match your branding needs with zero effort.
@@ -54,12 +52,8 @@ Shesha takes a Domain Driven approach to application development, the starting p
 
 [Insert animated gif of Visual Studio editing a new entity class e.g. Employee]
 <p align="center">
-<a href="https://REPLACE WITH LINK TO APPROPRIATE PAGE">
-<img alt="Create your domain" src="https://github.com/shesha-io/shesha-framework/blob/main/static/custom-component.gif" />
 <code> <video width=“320” height=“240” controls poster=“poster.jpg”> <source src=“https://github.com/shesha-io/shesha-framework/blob/main/static/domain-entity.mp4” type=“video/mp4”> Your browser does not support the video element. </video> </code>
-</a>
 </p>
-
 
 ### 2. Expose your APIs
 All it takes to expose your domain and data through dynamically generated CRUD APIs is the checking of a box and specifying the authorisation rules.
@@ -68,7 +62,7 @@ You will immediately get full CRUD support as well as a GraphQL end-points for f
 
 <p align="center">
 <a href="https://REPLACE WITH LINK TO APPROPRIATE PAGE">
-<img alt="Expose your APIs" src="static/gifs/[ANIMATED GIF OF entity configurator MOVING TO SWAGER].gif" />
+<img alt="Create your domain" src="https://github.com/shesha-io/shesha-framework/blob/main/static/custom-component.gif" />
 </a>
 </p>
 
