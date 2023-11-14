@@ -36,4 +36,3 @@ export * from './toolbarConfigurator';
 export * from './ui';
 export * from './dynamicActions';
 export * from './dynamicActionsDispatcher';
-export * from './formInfoContent';

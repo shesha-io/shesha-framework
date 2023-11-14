@@ -1,5 +1,5 @@
 import { FormInstance } from 'antd';
-import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useMemo } from 'react';
+import React, { FC, MutableRefObject, PropsWithChildren, ReactNode, useContext, useEffect, useMemo } from 'react';
 import { useDeepCompareEffect } from 'react-use';
 import { useDebouncedCallback } from 'use-debounce';
 import useThunkReducer from '../../hooks/thunkReducer';
@@ -16,11 +16,13 @@ import { useGlobalState } from '../globalState';
 import { getFlagSetters } from '../utils/flagsSetters';
 import {
   registerComponentActionsAction,
+  setActionFlagAction,
   setEnabledComponentsAction,
   setFormControlsDataAction,
   setFormDataAction,
   setFormModeAction,
   setSettingsAction,
+  setToolbarRightButtonAction,
   setValidationErrorsAction,
   setVisibleComponentsAction,
 } from './actions';
@@ -37,7 +39,7 @@ import {
   ISetVisibleComponentsPayload,
 } from './contexts';
 import { useFormDesignerComponents } from './hooks';
-import { FormMode, FormRawMarkup, IFormActions, IFormSections, IFormSettings } from './models';
+import { FormMode, FormRawMarkup, IFormActions, IFormDesignerActionFlag, IFormSections, IFormSettings } from './models';
 import formReducer from './reducer';
 import { convertActions, convertSectionsToList, getEnabledComponentIds, getVisibleComponentIds } from './utils';
 import { useDataContextManager } from 'providers/dataContextManager';
@@ -287,7 +289,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
       allComponents,
       formContext.formData,
       globalState,
-      formContext?.formMode,
+      formContext?.formMode
     );
 
     setEnabledComponents({ componentIds: enabledComponents });
@@ -331,8 +333,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
       dispatchThunk(setFormDataAction(payload));
       const newState = getState();
 
-      if (typeof props.onValuesChange === 'function')
-        props.onValuesChange(payload.values, newState.formData);
+      if (typeof props.onValuesChange === 'function') props.onValuesChange(payload.values, newState.formData);
 
       // Update visible components. Note: debounced version is used to improve performance and prevent unneeded re-rendering
 
@@ -410,6 +411,14 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     return visibleChildIndex !== -1;
   };
 
+  const setActionFlag = (payload: IFormDesignerActionFlag) => {
+    dispatch(setActionFlagAction(payload));
+  };
+
+  const setToolbarRightButton = (payload: ReactNode) => {
+    dispatch(setToolbarRightButtonAction(payload));
+  };
+
   const configurableFormActions: IFormActionsContext = {
     ...getFlagSetters(dispatch),
     getComponentModel,
@@ -428,14 +437,15 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     getToolboxComponent,
     setFormDataAndInstance,
     hasVisibleChilds,
+    setActionFlag,
+    setToolbarRightButton,
   };
   if (formRef) formRef.current = { ...configurableFormActions, ...state, allComponents, componentRelations };
-
 
   useEffect(() => {
     // set main form if empty
     if (needDebug)
-      contextManager.updateFormInstance({...state, ...configurableFormActions} as ConfigurableFormInstance);
+      contextManager.updateFormInstance({ ...state, ...configurableFormActions } as ConfigurableFormInstance);
   }, [state]);
 
   return (

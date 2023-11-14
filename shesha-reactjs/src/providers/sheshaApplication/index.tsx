@@ -13,7 +13,6 @@ import {
   AppConfiguratorProvider,
   DynamicModalProvider,
   UiProvider,
-  FormInfoContentProvider,
 } from 'providers';
 import { DataContextManager } from 'providers/dataContextManager';
 import { DataContextProvider } from 'providers/dataContextProvider';
@@ -176,11 +175,9 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                                   <StackedNavigationProvider>
                                     <DataSourcesProvider>
                                       <DynamicModalProvider>
-                                        <FormInfoContentProvider>
-                                          <DebugPanel>
-                                            <ApplicationActionsProcessor>{children}</ApplicationActionsProcessor>
-                                          </DebugPanel>
-                                        </FormInfoContentProvider>
+                                        <DebugPanel>
+                                          <ApplicationActionsProcessor>{children}</ApplicationActionsProcessor>
+                                        </DebugPanel>
                                       </DynamicModalProvider>
                                     </DataSourcesProvider>
                                   </StackedNavigationProvider>

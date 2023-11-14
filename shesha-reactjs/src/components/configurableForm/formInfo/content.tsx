@@ -1,8 +1,8 @@
 import { ArrowsAltOutlined } from '@ant-design/icons';
 import { Button, Modal } from 'antd';
-import { FormDesigner } from 'components';
-import React, { FC, useEffect } from 'react';
-import { useFormInfoContent } from '../../../providers';
+import React, { FC, useEffect, useState } from 'react';
+import { FormMode, useForm } from '../../../providers';
+import FormDesigner from './designer';
 
 interface IFormInforContent {
   id: string;
@@ -12,26 +12,36 @@ interface IFormInforContent {
   /**
    * Is used for update of the form markup. If value of this handler is not defined - the form is read-only
    */
-   onMarkupUpdated?: () => void;
+  onMarkupUpdated?: () => void;
 }
 
 const Content: FC<IFormInforContent> = ({ id, forwardLink, onClose, open, onMarkupUpdated }) => {
-  const { actionFlag, setActionFlag, setToolbarRightButton } = useFormInfoContent();
+  const { actionFlag, setActionFlag, setToolbarRightButton, formMode, setFormMode } = useForm();
+
+  const [mode, setMode] = useState<FormMode>();
+
+  useEffect(() => setMode(formMode), []);
 
   useEffect(() => {
-    if (open)
+    if (open) {
+      setFormMode('designer');
+
       setToolbarRightButton(
         <Button onClick={() => window?.open(forwardLink, '_blank')} type={'default'} shape="circle" title="Expand">
           <ArrowsAltOutlined />
         </Button>
       );
+    }
 
-    return () => setToolbarRightButton(null);
+    return () => {
+      setFormMode(mode);
+      setToolbarRightButton(null);
+    };
   }, [open]);
 
   const reset = () => {
     setActionFlag(null);
-    onClose();    
+    onClose();
     onMarkupUpdated();
   };
 

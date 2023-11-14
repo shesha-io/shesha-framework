@@ -10,7 +10,7 @@ import {
   ISetFormDataPayload,
   ISetVisibleComponentsPayload,
 } from './contexts';
-import { FormMode, IFormSettings } from './models';
+import { FormMode, IFormDesignerActionFlag, IFormSettings } from './models';
 import { convertActions, filterFormData } from './utils';
 
 const reducer = handleActions<IFormStateInternalContext, any>(
@@ -111,6 +111,34 @@ const reducer = handleActions<IFormStateInternalContext, any>(
       return {
         ...state,
         actions: [...otherActions, ...componentActions],
+      };
+    },
+
+    [FormActionEnums.SetActionFlag]: (
+      state: IFormStateInternalContext,
+      action: ReduxActions.Action<IFormDesignerActionFlag>
+    ) => {
+      const { payload } = action;
+
+      if (!payload) return { ...state, actionFlag: {} };
+
+      return {
+        ...state,
+        actionFlag: { ...state.actionFlag, ...{ [payload]: true } },
+      };
+    },
+
+    [FormActionEnums.SetToolbarRightButton]: (
+      state: IFormStateInternalContext,
+      action: ReduxActions.Action<IFormDesignerActionFlag>
+    ) => {
+      const { payload } = action;
+
+      if (!payload) return { ...state, renderToolbarRightButtons: [] };
+
+      return {
+        ...state,
+        renderToolbarRightButtons: [...(state.renderToolbarRightButtons || []), payload],
       };
     },
   },

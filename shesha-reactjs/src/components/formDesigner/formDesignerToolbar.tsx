@@ -26,7 +26,7 @@ import {
   showErrorDetails,
   updateItemStatus,
 } from '../../utils/configurationFramework/actions';
-import { useFormInfoContent, useShaRouting, useSheshaApplication } from '../..';
+import { useShaRouting, useSheshaApplication } from '../..';
 
 type MenuItem = MenuProps['items'][number];
 export interface IProps {}
@@ -35,9 +35,8 @@ export const FormDesignerToolbar: FC<IProps> = () => {
   const { loadForm, saveForm, formProps } = useFormPersister();
   const { backendUrl, httpHeaders, routes } = useSheshaApplication();
   const { router } = useShaRouting(false) ?? {};
-  const { setFormMode, formMode } = useForm();
+  const { setActionFlag, renderToolbarRightButtons, setFormMode, formMode } = useForm();
   const { setDebugMode, isDebug, undo, redo, canUndo, canRedo, readOnly } = useFormDesigner();
-  const { setActionFlag, renderToolbarRightButtons } = useFormInfoContent();
   const [settingsVisible, setSettingsVisible] = useState(false);
 
   const { allComponents, componentRelations, formSettings } = useFormDesigner();

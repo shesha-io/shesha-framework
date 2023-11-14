@@ -7,7 +7,8 @@ import {
   ISetFormDataPayload,
   ISetVisibleComponentsPayload,
 } from './contexts';
-import { FormMode, IFlatComponentsStructure, IFormSettings } from './models';
+import { FormMode, IFlatComponentsStructure, IFormDesignerActionFlag, IFormSettings } from './models';
+import { ReactNode } from 'react';
 
 export enum FormActionEnums {
   SetFlatComponentsAction = 'SET_FLAT_COMPONENTS',
@@ -19,6 +20,8 @@ export enum FormActionEnums {
   SetFormData = 'SET_FORM_DATA',
   SetValidationErrors = 'SET_VALIDATION_ERRORS',
   RegisterActions = 'REGISTER_ACTIONS',
+  SetActionFlag = 'SET_ACTION_FLAG',
+  SetToolbarRightButton = 'SET_TOOLBAR_RIGHT_BUTTON',
 }
 
 export const setFlatComponentsAction = createAction<IFlatComponentsStructure, IFlatComponentsStructure>(
@@ -60,5 +63,15 @@ export const setValidationErrorsAction = createAction<IFormValidationErrors, IFo
 
 export const registerComponentActionsAction = createAction<IRegisterActionsPayload, IRegisterActionsPayload>(
   FormActionEnums.RegisterActions,
+  (p) => p
+);
+
+export const setActionFlagAction = createAction<IFormDesignerActionFlag, IFormDesignerActionFlag>(
+  FormActionEnums.SetActionFlag,
+  (p) => p
+);
+
+export const setToolbarRightButtonAction = createAction<ReactNode, ReactNode>(
+  FormActionEnums.SetToolbarRightButton,
   (p) => p
 );
