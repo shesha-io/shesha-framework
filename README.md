@@ -49,11 +49,14 @@ Shesha comes with a range of capabilities that massively reduces the effort requ
 ### 1. Update your Domain
 
 Shesha takes a Domain Driven approach to application development, the starting point is therefore to implement your domain. This is done by the by implementing `Entity` classes as you would do for any business application. You can extend standard entities that come as part of the base Shesha model (e.g. `Person`, `Organisation`, `Site`, etc...) or by creating your own.
-
-[Insert animated gif of Visual Studio editing a new entity class e.g. Employee]
 <p align="center">
 <code> <video width=“320” height=“240” controls poster=“poster.jpg”> <source src=“https://github.com/shesha-io/shesha-framework/blob/main/static/domain-entity.mp4” type=“video/mp4”> Your browser does not support the video element. </video> </code>
 </p>
+
+
+
+https://github.com/shesha-io/shesha-framework/assets/21078025/0cdfd4a4-4be8-48ac-a76a-ad497f7e9464
+
 
 ### 2. Expose your APIs
 All it takes to expose your domain and data through dynamically generated CRUD APIs is the checking of a box and specifying the authorisation rules.
