@@ -3,7 +3,7 @@ import React, { FC, useState } from 'react';
 import SectionSeparator from '../../../sectionSeparator';
 import CodeEditor from '../codeEditor/codeEditor';
 import Show from '../../../show';
-import { AutocompleteRaw } from '../../../autocomplete';
+import { Autocomplete } from '../../../autocomplete';
 import FormAutocomplete from '../../../formAutocomplete';
 import { ISettingsFormFactoryArgs } from 'interfaces';
 import SettingsForm, { useSettingsForm } from '../../../../designer-components/_settings/settingsForm';
@@ -144,7 +144,7 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
             <Show when={formData?.apiMode === 'entityName'}>
               <SettingsFormItem name="entityType" label="Entity type" jsSetting>
                 {(value) => {
-                  return <AutocompleteRaw
+                  return <Autocomplete.Raw
                     dataSourceType="url"
                     dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete"
                     readOnly={readOnly}

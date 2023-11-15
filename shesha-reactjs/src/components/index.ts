@@ -39,7 +39,6 @@ export { default as columnsFilterSelectBase, type IColumnsFilterSelectBaseProps 
 export { default as DateDisplay, type IDateDisplayProps } from './dateDisplay';
 export { default as EditableDisplayFormItem, type IEditableDisplayLabelProps } from './editableDisplayFormItem';
 export { default as DisplayFormItem, type IDisplayFormItemProps } from './displayFormItem';
-export { default as EntityDropdown, type IEntityDropdownProps } from './entityDropdown';
 export { default as EntityPicker } from './entityPicker';
 export { default as FormComponent, type IFormComponentProps } from './formComponent';
 export { default as GlobalTableFilter, type IGlobalTableFilterProps } from './globalTableFilter';
@@ -112,7 +111,6 @@ export {
 } from './refListDropDown';
 
 export {
-  //default as GenericAutocomplete,
   EntityDtoAutocomplete as Autocomplete,
   EntityDtoAutocomplete,
   RawAutocomplete,

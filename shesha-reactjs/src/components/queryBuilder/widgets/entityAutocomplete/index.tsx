@@ -1,6 +1,6 @@
 import React from 'react';
 import { BaseWidget, BasicConfig, SelectFieldSettings } from '@react-awesome-query-builder/antd';
-import Autocomplete from 'components/autocomplete';
+import { Autocomplete } from 'components/autocomplete';
 import { CustomFieldSettings } from 'providers/queryBuilder/models';
 
 export type EntityAutocompleteWidgetType = BaseWidget & SelectFieldSettings;
