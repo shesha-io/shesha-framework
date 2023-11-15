@@ -1,7 +1,7 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { InputProps, Tag } from 'antd';
 import React, { FC, useEffect, useState } from 'react'; 
-import Autocomplete from '../autocomplete';
+import { Autocomplete } from '../autocomplete';
 import Show from '../show';
 
 export interface IAutocompleteTagGroupProps extends Omit<InputProps, 'value' | 'onChange'> {

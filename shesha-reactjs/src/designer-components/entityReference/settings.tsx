@@ -3,7 +3,7 @@ import React, { FC, useState } from 'react';
 import PropertyAutocomplete from 'components/propertyAutocomplete/propertyAutocomplete';
 import CodeEditor from 'components/formDesigner/components/codeEditor/codeEditor';
 import Show from 'components/show';
-import { AutocompleteRaw } from 'components/autocomplete';
+import { Autocomplete } from 'components/autocomplete';
 import FormAutocomplete from 'components/formAutocomplete';
 import EndpointsAutocomplete from 'components/endpointsAutocomplete/endpointsAutocomplete';
 import { MetadataProvider, useForm } from 'providers';
@@ -76,7 +76,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
       </SettingsFormItem>
 
       <SettingsFormItem name="entityType" label="Entity type" style={{width: '100%'}} jsSetting>
-        <AutocompleteRaw
+        <Autocomplete.Raw
           dataSourceType="url"
           dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete"
           readOnly={readOnly}
