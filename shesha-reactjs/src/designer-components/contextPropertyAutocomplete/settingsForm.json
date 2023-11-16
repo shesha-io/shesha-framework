@@ -110,7 +110,7 @@
         "labelAlign":"right",
         "parentId":"root",
         "hidden":false,
-        "visibility":"Yes",
+
         "isDynamic":false,
         "version":0,
         "placeholder":"",
@@ -136,7 +136,7 @@
         "labelAlign":"right",
         "parentId":"root",
         "hidden":false,
-        "visibility":"Yes",
+
         "isDynamic":false,
         "description":"",
         "validate":{

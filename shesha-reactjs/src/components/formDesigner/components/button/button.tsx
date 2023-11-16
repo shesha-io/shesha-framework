@@ -10,6 +10,7 @@ import { migrateV1toV2 } from './migrations/migrate-v2';
 import { getSettings } from './settingsForm';
 import { IButtonComponentProps } from './interfaces';
 import { migratePropertyName, migrateCustomFunctions } from '../../../../designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 export type IActionParameters = [{ key: string; value: string }];
 
@@ -78,6 +79,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       .add<IButtonComponentProps>(1, migrateV0toV1)
       .add<IButtonComponentProps>(2, migrateV1toV2)
       .add<IButtonComponentProps>(3, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+      .add<IButtonComponentProps>(4, (prev) => migrateVisibility(prev))
   ,
 };
 

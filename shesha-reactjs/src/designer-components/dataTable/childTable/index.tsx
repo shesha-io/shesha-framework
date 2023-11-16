@@ -13,7 +13,8 @@ import { IChildTableSettingsProps } from './models';
 import ChildDataTableSettings from './settings';
 import settingsFormJson from './settingsForm.json';
 import './styles/index.less';
-import { migrateCustomFunctions, migratePropertyName } from '../../../designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 export interface IChildTableComponentProps extends IChildTableSettingsProps, IConfigurableFormComponent {
   components?: IConfigurableFormComponent[];
@@ -64,6 +65,7 @@ const ChildTableComponent: IToolboxComponent<IChildTableComponentProps> = {
       .add<IChildTableComponentProps>(2, migrateV1toV2)
       .add<IChildTableComponentProps>(3, migrateV2toV3)
       .add(4, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+      .add<IChildTableComponentProps>(5, (prev) => migrateVisibility(prev))
   ,
 };
 

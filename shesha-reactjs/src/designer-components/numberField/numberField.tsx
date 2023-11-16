@@ -13,6 +13,7 @@ import settingsFormJson from './settingsForm.json';
 import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
 import { getNumberFormat } from 'utils/string';
 import { getDataFormat } from 'utils/metadata';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -52,7 +53,9 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
   initModel: (model) => ({
     ...model,
   }),
-  migrator: (m) => m.add<INumberFieldComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev))),
+  migrator: (m) => m
+    .add<INumberFieldComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<INumberFieldComponentProps>(1, (prev) => migrateVisibility(prev)),
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   linkToModelMetadata: (model, metadata): INumberFieldComponentProps => {
     return {

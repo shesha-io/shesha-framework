@@ -46,33 +46,6 @@ export const getSettings = (data: any) =>
             description: 'If checked, the default styles and classes of the container will not be applied.',
           })
           .addDropdown({
-            id: 'b83a044d-ea9f-4af1-8f71-696755e6323e',
-            propertyName: 'visibility',
-            parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
-            label: 'Visibility',
-            description:
-              "This property will eventually replace the 'hidden' property and other properties that toggle visibility on the UI and payload",
-            allowClear: true,
-            dataSourceType: 'values',
-            value: [
-              {
-                label: 'Yes (Display in UI and include in payload)',
-                value: 'Yes',
-                id: '53cd10ce-26af-474b-af75-8e7b1f19e51d',
-              },
-              {
-                label: 'No (Only include in payload)',
-                value: 'No',
-                id: 'f07a228c-cb9c-4da7-a8bc-bc2be518a058',
-              },
-              {
-                label: 'Removed (Remove from UI and exclude from payload)',
-                value: 'Removed',
-                id: '3b6282ee-2eee-47ec-bab9-4cba52b970a0',
-              },
-            ],
-          })
-          .addDropdown({
             id: 'dbad943d-d498-454b-b13e-6845b69c8df1',
             propertyName: 'display',
             label: 'Display',

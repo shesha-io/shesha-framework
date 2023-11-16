@@ -8,7 +8,7 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "visibility": "Yes",
+
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "left",
@@ -128,7 +128,7 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": {"_code": "return  !getSettingValue(data?.hasChildren);", "_mode": "code", "_value": false},
-      "visibility": "Yes",
+
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "left",

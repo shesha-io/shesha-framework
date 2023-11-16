@@ -8,6 +8,7 @@ import { validateConfigurableComponentSettings } from '../../../../providers/for
 import AutocompleteTagGroup from '../../../autocompleteTagGroup';
 import { useForm } from '../../../..';
 import { migratePropertyName, migrateCustomFunctions } from '../../../../designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 export interface IAutocompleteTagsOutlinedComponentProps extends IConfigurableFormComponent {
   value?: string[];
@@ -53,6 +54,7 @@ const AutocompleteTagGroupComponent: IToolboxComponent<IAutocompleteTagsOutlined
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
   migrator: (m) => m
     .add<IAutocompleteTagsOutlinedComponentProps>(0, (prev: IAutocompleteTagsOutlinedComponentProps) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IAutocompleteTagsOutlinedComponentProps>(1, (prev) => migrateVisibility(prev))
 ,
 };
 

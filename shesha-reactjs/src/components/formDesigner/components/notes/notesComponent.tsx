@@ -1,12 +1,13 @@
-import { IToolboxComponent } from '../../../../interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '../../../../providers/form/models';
+import { IToolboxComponent } from 'interfaces';
+import { FormMarkup, IConfigurableFormComponent } from 'providers/form/models';
 import { FormOutlined } from '@ant-design/icons';
 import settingsFormJson from './settingsForm.json';
 import { NotesRenderer, useFormData } from '../../../../';
-import { evaluateValue, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
+import { evaluateValue, validateConfigurableComponentSettings } from 'providers/form/utils';
 import React from 'react';
-import NotesProvider from '../../../../providers/notes';
-import { migrateCustomFunctions, migrateFunctionToProp, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
+import NotesProvider from 'providers/notes';
+import { migrateCustomFunctions, migrateFunctionToProp, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 export interface INotesProps extends IConfigurableFormComponent {
   ownerId: string;
@@ -53,12 +54,13 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
   settingsFormMarkup: settingsForm,
   migrator: (m) => m
     .add<INotesProps>(0, (prev) =>
-    migratePropertyName(
-      migrateCustomFunctions(
-        migrateFunctionToProp(
-          migrateFunctionToProp(prev, 'ownerId', 'ownerIdExpression')
-        , 'ownerType', 'ownerTypeExpression')
-      )) as INotesProps),
+      migratePropertyName(
+        migrateCustomFunctions(
+          migrateFunctionToProp(
+            migrateFunctionToProp(prev, 'ownerId', 'ownerIdExpression')
+            , 'ownerType', 'ownerTypeExpression')
+        )) as INotesProps)
+    .add<INotesProps>(1, (prev) => migrateVisibility(prev)),
 };
 
 export default NotesComponent;
