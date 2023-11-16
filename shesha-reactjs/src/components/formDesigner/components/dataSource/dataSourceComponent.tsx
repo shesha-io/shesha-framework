@@ -9,8 +9,9 @@ import { useDataSource } from 'providers/dataSourcesProvider';
 import DataTableProvider from 'providers/dataTable';
 import { IDataSourceComponentProps } from './models';
 import { evaluateDynamicFilters } from 'utils';
-import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 import { DataSourceSettingsForm } from './dataSourceSettings';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 const getPageSize = (value?: number) => { 
   return Boolean(value) ? value : 1147489646 /* get all data */; 
@@ -32,6 +33,7 @@ const DataSourceComponent: IToolboxComponent<IDataSourceComponentProps> = {
       };
     })
     .add<IDataSourceComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IDataSourceComponentProps>(2, (prev) => migrateVisibility(prev))
   ,
   settingsFormFactory: (props) => (<DataSourceSettingsForm {...props}/>),
 };

@@ -12,6 +12,7 @@ import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
 import { SwitchSize } from 'antd/lib/switch';
 import { ISwitchComponentProps } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -53,6 +54,7 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps> = {
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   migrator: (m) => m
     .add<ISwitchComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<ISwitchComponentProps>(1, (prev) => migrateVisibility(prev))
   ,
 };
 

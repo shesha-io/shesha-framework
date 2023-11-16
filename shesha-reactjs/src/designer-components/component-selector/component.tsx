@@ -7,6 +7,7 @@ import { useForm, useFormData, useMetadata } from 'providers';
 import { IComponentSelectorComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
 import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 export type IActionParameters = [{ key: string; value: string }];
 
@@ -48,5 +49,6 @@ export const ComponentSelectorComponent: IToolboxComponent<IComponentSelectorCom
   migrator: m => m
     .add<IComponentSelectorComponentProps>(0, prev => ({ ...prev, componentType: 'input' }))
     .add<IComponentSelectorComponentProps>(1, prev => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IComponentSelectorComponentProps>(2, (prev) => migrateVisibility(prev))
   ,
 };
