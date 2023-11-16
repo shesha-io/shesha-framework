@@ -17,8 +17,6 @@ export type ViewType = 'details' | 'table' | 'form' | 'blank' | 'masterDetails' 
 
 export type LabelAlign = 'left' | 'right';
 
-export type VisibilityType = 'Yes' | 'No' | 'Removed';
-
 export type PropertySettingMode = 'value' | 'code';
 
 export interface IPropertySetting {
@@ -107,9 +105,6 @@ export interface IComponentBindingProps {
 export interface IComponentVisibilityProps {
   /** Hidden field is still a part of the form but not visible on it */
   hidden?: boolean;
-
-  /** Add an enhanced Visibility property to cater for the 3 options Yes (To display both to user and payload) No (To only display on the payload)  Removed (To remove from both user and payload) */
-  visibility?: VisibilityType;
 
   /** Custom visibility code */
   /** @deprecated Use hidden in js mode instead */

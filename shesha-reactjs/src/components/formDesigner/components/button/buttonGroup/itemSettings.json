@@ -230,7 +230,7 @@
         "_code": "return getSettingValue(data?.itemSubType) !== 'dynamic';",
         "_mode": "code"
       },
-      "visibility": "Yes",
+
       "isDynamic": false,
       "version": 1,
       "direction": "vertical",
@@ -246,7 +246,7 @@
           "labelAlign": "right",
           "parentId": "P4lhbrJsly_2yCjgicaql",
           "hidden": false,
-          "visibility": "Yes",
+
           "isDynamic": false,
           "settingsValidationErrors": [],
           "_formFields": [

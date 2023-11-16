@@ -182,7 +182,7 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": {"_code": "return  getSettingValue(data?.columnType) !== 'data';", "_mode": "code", "_value": false},
-      "visibility": "Yes",
+
       "isDynamic": false,
       "version": 1,
       "direction": "vertical",
@@ -198,7 +198,7 @@
           "labelAlign": "right",
           "parentId": "EhERYkBRv066KGKNaRA7j",
           "hidden": false,
-          "visibility": "Yes",
+
           "isDynamic": false,
           "version": 1,
           "componentType": "input",
@@ -219,7 +219,7 @@
           "labelAlign": "right",
           "parentId": "EhERYkBRv066KGKNaRA7j",
           "hidden": false,
-          "visibility": "Yes",
+
           "isDynamic": false,
           "version": 1,
           "componentType": "output",
@@ -240,7 +240,7 @@
           "labelAlign": "right",
           "parentId": "EhERYkBRv066KGKNaRA7j",
           "hidden": false,
-          "visibility": "Yes",
+
           "isDynamic": false,
           "version": 1,
           "componentType": "output",
