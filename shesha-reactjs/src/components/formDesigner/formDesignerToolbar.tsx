@@ -35,11 +35,25 @@ export const FormDesignerToolbar: FC<IProps> = () => {
   const { loadForm, saveForm, formProps } = useFormPersister();
   const { backendUrl, httpHeaders, routes } = useSheshaApplication();
   const { router } = useShaRouting(false) ?? {};
-  const { setActionFlag, renderToolbarRightButtons, setFormMode, formMode } = useForm();
-  const { setDebugMode, isDebug, undo, redo, canUndo, canRedo, readOnly } = useFormDesigner();
+  const { setFormMode, formMode } = useForm();
+
+  const {
+    allComponents,
+    componentRelations,
+    formSettings,
+    setDebugMode,
+    isDebug,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+    readOnly,
+    setActionFlag,
+    renderToolbarRightButtons,
+  } = useFormDesigner();
+
   const [settingsVisible, setSettingsVisible] = useState(false);
 
-  const { allComponents, componentRelations, formSettings } = useFormDesigner();
   const toolboxComponents = useFormDesignerComponents();
 
   const saveFormInternal = (): Promise<void> => {

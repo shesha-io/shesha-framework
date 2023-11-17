@@ -1,8 +1,9 @@
 import { ArrowsAltOutlined } from '@ant-design/icons';
-import { Button, Modal } from 'antd';
-import React, { FC, useEffect, useState } from 'react';
-import { FormMode, useForm } from '../../../providers';
-import FormDesigner from './designer';
+import { Button, Form, Modal } from 'antd';
+import { FormDesignerRenderer } from 'components/formDesigner/formDesignerRenderer';
+import React, { FC, useEffect } from 'react';
+import { FormProvider, useFormDesigner } from '../../../providers';
+import FormInfoContentConainter from './container';
 
 interface IFormInforContent {
   id: string;
@@ -15,28 +16,21 @@ interface IFormInforContent {
   onMarkupUpdated?: () => void;
 }
 
-const Content: FC<IFormInforContent> = ({ id, forwardLink, onClose, open, onMarkupUpdated }) => {
-  const { actionFlag, setActionFlag, setToolbarRightButton, formMode, setFormMode } = useForm();
+const Component: FC<Omit<IFormInforContent, 'id'>> = ({ forwardLink, onClose, open, onMarkupUpdated }) => {
+  const [form] = Form.useForm();
 
-  const [mode, setMode] = useState<FormMode>();
-
-  useEffect(() => setMode(formMode), []);
+  const { actionFlag, setActionFlag, setToolbarRightButton, allComponents, componentRelations, formSettings } =
+    useFormDesigner();
 
   useEffect(() => {
-    if (open) {
-      setFormMode('designer');
-
+    if (open)
       setToolbarRightButton(
         <Button onClick={() => window?.open(forwardLink, '_blank')} type={'default'} shape="circle" title="Expand">
           <ArrowsAltOutlined />
         </Button>
       );
-    }
 
-    return () => {
-      setFormMode(mode);
-      setToolbarRightButton(null);
-    };
+    return () => setToolbarRightButton(null);
   }, [open]);
 
   const reset = () => {
@@ -51,9 +45,26 @@ const Content: FC<IFormInforContent> = ({ id, forwardLink, onClose, open, onMark
 
   return (
     <Modal open={open} onCancel={onClose} width={'80%'} footer={null}>
-      <FormDesigner formId={id} />
+      <FormProvider
+        needDebug
+        name="Designer Form"
+        mode="designer"
+        allComponents={allComponents}
+        componentRelations={componentRelations}
+        formSettings={formSettings}
+        isActionsOwner={true}
+        form={form}
+      >
+        <FormDesignerRenderer />
+      </FormProvider>
     </Modal>
   );
 };
+
+export const Content: FC<IFormInforContent> = ({ id, ...props }) => (
+  <FormInfoContentConainter formId={id}>
+    <Component {...props} />
+  </FormInfoContentConainter>
+);
 
 export default Content;
