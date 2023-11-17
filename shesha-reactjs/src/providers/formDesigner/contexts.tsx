@@ -1,4 +1,4 @@
-import { createContext, MutableRefObject } from 'react';
+import { createContext, MutableRefObject, ReactNode } from 'react';
 import {
   IAsyncValidationError,
   IFlagsSetters,
@@ -17,7 +17,7 @@ import {
   IFormSettings,
   ROOT_COMPONENT_KEY,
 } from '../form/models';
-import { IDataSource } from '../formDesigner/models';
+import { IDataSource, IFormDesignerActionFlag } from '../formDesigner/models';
 import { IDataContextFullInstance } from 'providers/dataContextProvider';
 
 export type IFlagProgressFlags = 'addComponent' | 'updateComponent' | 'deleteComponent' | 'moveComponent';
@@ -48,6 +48,15 @@ export interface IFormDesignerStateContext
 
   // todo: move to persister
   formSettings: IFormSettings;
+  /**
+   * Action flag to determine event which was triggered
+   */
+  actionFlag?: { [key in IFormDesignerActionFlag]?: boolean };
+
+  /**
+   * External components rendered on the designer mode
+   */
+  renderToolbarRightButtons?: ReactNode[];
 }
 
 export interface AddComponentPayloadBase {
@@ -117,7 +126,12 @@ export interface IFormDesignerActionsContext
   endDraggingNewItem: () => void;
   startDragging: () => void;
   endDragging: () => void;
-  setSelectedComponent: (id: string, dataSourceId: string, dataContext: IDataContextFullInstance, componentRef?: MutableRefObject<any>) => void;
+  setSelectedComponent: (
+    id: string,
+    dataSourceId: string,
+    dataContext: IDataContextFullInstance,
+    componentRef?: MutableRefObject<any>
+  ) => void;
   updateFormSettings: (settings: IFormSettings) => void;
 
   getToolboxComponent: (type: string) => IToolboxComponent;
@@ -128,6 +142,11 @@ export interface IFormDesignerActionsContext
   getActiveDataSource: () => IDataSource | null;
 
   setReadOnly: (value: boolean) => void;
+  /** Flag set to determine action triggered from external source */
+  setActionFlag: (flag: IFormDesignerActionFlag) => void;
+
+  /** Set form designer toolbar button */
+  setToolbarRightButton: (button: ReactNode) => void;
 
   undo: () => void;
   redo: () => void;
@@ -149,6 +168,8 @@ export const FORM_DESIGNER_CONTEXT_INITIAL_STATE: IFormDesignerStateContext = {
   dataSources: [],
   activeDataSourceId: null,
   readOnly: true,
+  actionFlag: {},
+  renderToolbarRightButtons: [],
 };
 
 export const UndoableFormDesignerStateContext = createContext<IUndoableFormDesignerStateContext>({

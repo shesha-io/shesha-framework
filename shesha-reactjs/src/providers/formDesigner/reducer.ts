@@ -19,7 +19,7 @@ import {
   processRecursive,
   upgradeComponent,
 } from '../form/utils';
-import { IDataSource } from '../formDesigner/models';
+import { IDataSource, IFormDesignerActionFlag } from './models';
 import { FormActionEnums } from './actions';
 import {
   FORM_DESIGNER_CONTEXT_INITIAL_STATE,
@@ -531,6 +531,34 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
       return {
         ...state,
         toolboxComponentGroups: payload,
+      };
+    },
+
+    [FormActionEnums.SetActionFlag]: (
+      state: IFormDesignerStateContext,
+      action: ReduxActions.Action<IFormDesignerActionFlag>
+    ) => {
+      const { payload } = action;
+
+      if (!payload) return { ...state, actionFlag: {} };
+
+      return {
+        ...state,
+        actionFlag: { ...state.actionFlag, ...{ [payload]: true } },
+      };
+    },
+
+    [FormActionEnums.SetToolbarRightButton]: (
+      state: IFormDesignerStateContext,
+      action: ReduxActions.Action<IFormDesignerActionFlag>
+    ) => {
+      const { payload } = action;
+
+      if (!payload) return { ...state, renderToolbarRightButtons: [] };
+
+      return {
+        ...state,
+        renderToolbarRightButtons: [...(state.renderToolbarRightButtons || []), payload],
       };
     },
   },

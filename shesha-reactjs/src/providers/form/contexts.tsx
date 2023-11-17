@@ -1,5 +1,5 @@
 import { FormInstance } from 'antd';
-import { ReactNode, createContext } from 'react';
+import { createContext } from 'react';
 import { IFormValidationErrors, IToolboxComponent, IToolboxComponentGroup } from '../../interfaces';
 import {
   DEFAULT_FORM_SETTINGS,
@@ -11,7 +11,6 @@ import {
   IFlatComponentsStructure,
   IFormAction,
   IFormActions,
-  IFormDesignerActionFlag,
   IFormSection,
   IFormSettings,
   ROOT_COMPONENT_KEY,
@@ -43,15 +42,6 @@ export interface IFormStateInternalContext {
    * If true, indicates that list of visible components are calculated
    */
   visibleComponentIdsIsSet: boolean;
-  /**
-   * Action flag to determine event which was triggered
-   */
-  actionFlag?: { [key in IFormDesignerActionFlag]?: boolean };
-
-  /**
-   * External components rendered on the designer mode
-   */
-  renderToolbarRightButtons?: ReactNode[];
 }
 
 export interface IFormStateContext extends IFormStateInternalContext, IFlatComponentsStructure {}
@@ -109,12 +99,6 @@ export interface IFormActionsContext {
   getSection: (id: string, name: string) => FormSection;
 
   getToolboxComponent: (type: string) => IToolboxComponent;
-
-  /** Flag set to determine action triggered from external source */
-  setActionFlag: (flag: IFormDesignerActionFlag) => void;
-
-  /** Set form designer toolbar button */
-  setToolbarRightButton: (button: ReactNode) => void;
 }
 
 /** Form initial state */
@@ -130,8 +114,6 @@ export const FORM_CONTEXT_INITIAL_STATE: IFormStateContext = {
   sections: [],
   context: null,
   formSettings: DEFAULT_FORM_SETTINGS,
-  actionFlag: {},
-  renderToolbarRightButtons: [],
 };
 
 export interface ConfigurableFormInstance extends IFormActionsContext, IFormStateContext {}

@@ -1,4 +1,4 @@
-import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect } from 'react';
+import React, { FC, MutableRefObject, PropsWithChildren, ReactNode, useContext, useEffect } from 'react';
 import { useDeepCompareEffect } from 'react-use';
 import useThunkReducer from '../../hooks/thunkReducer';
 import {
@@ -11,7 +11,7 @@ import { useMetadataDispatcher } from '../../providers';
 import { UndoableActionCreators } from '../../utils/undoable';
 import { useFormDesignerComponentGroups, useFormDesignerComponents } from '../form/hooks';
 import { IFlatComponentsStructure, IFormSettings } from '../form/models';
-import { IDataSource } from '../formDesigner/models';
+import { IDataSource, IFormDesignerActionFlag } from '../formDesigner/models';
 import { getFlagSetters } from '../utils/flagsSetters';
 import {
   addDataSourceAction,
@@ -25,11 +25,13 @@ import {
   endDraggingAction,
   endDraggingNewItemAction,
   removeDataSourceAction,
+  setActionFlagAction,
   setActiveDataSourceAction,
   setDebugModeAction,
   setFlatComponentsAction,
   setReadOnlyAction,
   setSelectedComponentAction,
+  setToolbarRightButtonAction,
   setValidationErrorsAction,
   startDraggingAction,
   startDraggingNewItemAction,
@@ -180,16 +182,14 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
 
   const getParentComponent = (componentId: string, type: string) => {
     let component = statePresent.allComponents[componentId];
-    
+
     while (!!component) {
       component = statePresent.allComponents[component.parentId];
-      if (component?.type === type)
-        return component;
+      if (component?.type === type) return component;
     }
 
     return null;
   };
-
 
   const setFlatComponents = (flatComponents: IFlatComponentsStructure) => {
     dispatch((dispatchThunk, _getState) => {
@@ -234,7 +234,12 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
     dispatch(UndoableActionCreators.redo());
   };
 
-  const setSelectedComponent = (componentId: string, dataSourceId: string, dataContext: IDataContextFullInstance, componentRef?: MutableRefObject<any>) => {
+  const setSelectedComponent = (
+    componentId: string,
+    dataSourceId: string,
+    dataContext: IDataContextFullInstance,
+    componentRef?: MutableRefObject<any>
+  ) => {
     if (activateProvider) activateProvider(dataSourceId);
     if (setActiveContext) setActiveContext(dataContext.id);
     dispatch(setSelectedComponentAction({ id: componentId, dataSourceId, componentRef }));
@@ -264,6 +269,14 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   };
   //#endregion
 
+  const setActionFlag = (payload: IFormDesignerActionFlag) => {
+    dispatch(setActionFlagAction(payload));
+  };
+
+  const setToolbarRightButton = (payload: ReactNode) => {
+    dispatch(setToolbarRightButtonAction(payload));
+  };
+
   const configurableFormActions: IFormDesignerActionsContext = {
     ...getFlagSetters(dispatch),
     addDataProperty,
@@ -291,7 +304,9 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
     setActiveDataSource,
     getActiveDataSource,
     setReadOnly,
-    getParentComponent
+    getParentComponent,
+    setActionFlag,
+    setToolbarRightButton,
     /* NEW_ACTION_GOES_HERE */
   };
 

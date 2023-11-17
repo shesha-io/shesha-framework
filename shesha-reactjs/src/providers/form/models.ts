@@ -19,8 +19,6 @@ export type LabelAlign = 'left' | 'right';
 
 export type PropertySettingMode = 'value' | 'code';
 
-export type IFormDesignerActionFlag = 'done' | 'redo' | 'publish' | 'settings' | 'undo' | 'version';
-
 export interface IPropertySetting {
   _mode?: PropertySettingMode;
   _value?: any;
