@@ -97,33 +97,6 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
       { id: nanoid(), name: 'globalState', description: 'The global state', type: 'object' },
     ],
   })
-  .addDropdown({
-    id: nanoid(),
-    propertyName: 'visibility',
-    parentId: 'root',
-    label: 'Visibility',
-    description:
-      "This property will eventually replace the 'hidden' property and other properties that toggle visibility on the UI and payload",
-    allowClear: true,
-    values: [
-      {
-        label: 'Yes (Display in UI and include in payload)',
-        value: 'Yes',
-        id: '53cd10ce-26af-474b-af75-8e7b1f19e51d',
-      },
-      {
-        label: 'No (Only include in payload)',
-        value: 'No',
-        id: 'f07a228c-cb9c-4da7-a8bc-bc2be518a058',
-      },
-      {
-        label: 'Removed (Remove from UI and exlude from payload)',
-        value: 'Removed',
-        id: '3b6282ee-2eee-47ec-bab9-4cba52b970a0',
-      },
-    ],
-    dataSourceType: 'values',
-  })
   .addCheckbox({
     id: nanoid(),
     propertyName: 'hidden',

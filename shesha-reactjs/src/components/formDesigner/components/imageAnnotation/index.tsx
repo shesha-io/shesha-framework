@@ -1,14 +1,15 @@
-import { IToolboxComponent } from '../../../../interfaces';
+import { IToolboxComponent } from 'interfaces';
 import { FileImageOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '../formItem';
-import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';
+import { validateConfigurableComponentSettings } from 'providers/form/utils';
 import React from 'react';
 import { AnnotationSettingsForm } from './settings';
-import { useForm } from '../../../../providers';
+import { useForm } from 'providers';
 import { IImageProps } from './model';
 import ImageAnnotationControl from './control';
 import { Alert } from 'antd';
-import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 const ImageAnnotationComponent: IToolboxComponent<IImageProps> = {
   type: 'imageAnnotation',
@@ -37,6 +38,7 @@ const ImageAnnotationComponent: IToolboxComponent<IImageProps> = {
   },
   migrator: (m) => m
     .add<IImageProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IImageProps)
+    .add<IImageProps>(1, (prev) => migrateVisibility(prev))
   ,
   initModel: model => {
     const customModel: IImageProps = {

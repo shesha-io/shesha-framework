@@ -329,7 +329,7 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
       <StackedNavigationModal
         onCancel={onStackedDialogClose}
         title="NAVIGATE"
-        visible={Boolean(navigationState)}
+        open={Boolean(navigationState)}
         parentId={state?.stackId}
       >
         <DynamicPage onCloseDialog={onStackedDialogClose} {...navigationState} />

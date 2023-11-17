@@ -129,7 +129,7 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "visibility": "Yes",
+
       "isDynamic": false,
       "version": 2,
       "dataSourceType": "values",
@@ -238,7 +238,7 @@
         "_code": "return !getSettingValue(data?.sourceType) || getSettingValue(data.sourceType) !== 'Entity';",
         "_mode": "code"
       },
-      "visibility": "Yes",
+
       "isDynamic": false,
       "version": 1,
       "direction": "vertical",
@@ -254,7 +254,7 @@
           "labelAlign": "right",
           "parentId": "Z8z0Kj-kyHyiQBflSy86w",
           "hidden": false,
-          "visibility": "Yes",
+
           "isDynamic": false,
           "version": 2,
           "dataSourceType": "values",
@@ -290,7 +290,7 @@
             "_code": "return !getSettingValue(data?.sortMode) || getSettingValue(data.sortMode) !== 'strict';",
             "_mode": "code"
           },
-          "visibility": "Yes",
+
           "isDynamic": false,
           "version": 1,
           "direction": "vertical",
@@ -306,7 +306,7 @@
               "labelAlign": "right",
               "parentId": "zDXvnoMcutlROxXTERzQj",
               "hidden": false,
-              "visibility": "Yes",
+
               "isDynamic": false,
               "version": 0,
               "validate": {
@@ -328,7 +328,7 @@
               "labelAlign": "right",
               "parentId": "zDXvnoMcutlROxXTERzQj",
               "hidden": false,
-              "visibility": "Yes",
+
               "isDynamic": false,
               "version": 2,
               "dataSourceType": "values",
@@ -370,7 +370,7 @@
             "_code": "return !getSettingValue(data?.sortMode) || getSettingValue(data.sortMode) !== 'standard';",
             "_mode": "code"
           },
-          "visibility": "Yes",
+
           "customVisibility": null,
           "isDynamic": false,
           "version": 0,
@@ -395,7 +395,7 @@
         "_code": "return !getSettingValue(data?.sourceType) || !(getSettingValue(data.sourceType) === 'Entity' && getSettingValue(data.sortMode) === 'strict' || getSettingValue(data.sourceType) === 'Form');",
         "_mode": "code"
       },
-      "visibility": "Yes",
+
       "isDynamic": false,
       "version": 2,
       "dataSourceType": "values",
@@ -434,7 +434,7 @@
         "_code": "return !(getSettingValue(data && data.sourceType) === 'Entity' && getSettingValue(data.sortMode) !== 'strict');\n",
         "_mode": "code"
       },
-      "visibility": "Yes",
+
       "isDynamic": false,
       "version": 0,
       "validate": {},

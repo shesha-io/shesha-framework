@@ -3,18 +3,18 @@ import { Input, message } from 'antd';
 import { InputProps } from 'antd/lib/input';
 import moment from 'moment';
 import React from 'react';
-import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
-import { customEventHandler } from '../../components/formDesigner/components/utils';
-import ReadOnlyDisplayFormItem from '../../components/readOnlyDisplayFormItem';
-import { IToolboxComponent } from '../../interfaces';
-import { DataTypes, StringFormats } from '../../interfaces/dataTypes';
-import { useForm, useFormData, useGlobalState, useSheshaApplication } from '../../providers';
-import { FormMarkup } from '../../providers/form/models';
-import { evaluateString, getStyle, validateConfigurableComponentSettings } from '../../providers/form/utils';
-import { axiosHttp } from '../../utils/fetchers';
+import ConfigurableFormItem from 'components/formDesigner/components/formItem';
+import { customEventHandler } from 'components/formDesigner/components/utils';
+import { IToolboxComponent } from 'interfaces';
+import { DataTypes, StringFormats } from 'interfaces/dataTypes';
+import { useForm, useFormData, useGlobalState, useSheshaApplication } from 'providers';
+import { FormMarkup } from 'providers/form/models';
+import { evaluateString, getStyle, validateConfigurableComponentSettings } from 'providers/form/utils';
+import { axiosHttp } from 'utils/fetchers';
 import { ITextFieldComponentProps, TextType } from './interfaces';
 import settingsFormJson from './settingsForm.json';
-import { migrateCustomFunctions, migratePropertyName } from '../../designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -46,8 +46,6 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
 
-    const readOnly = model?.readOnly || (formMode === 'readonly' && model.textType !== 'password');
-
     const InputComponentType = renderInput(model.textType);
 
     const inputProps: InputProps = {
@@ -57,9 +55,9 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       suffix: model.suffix,
       bordered: !model.hideBorder,
       maxLength: model.validate?.maxLength,
-      size: model?.size,
+      size: model.size,
       disabled: model.disabled,
-      readOnly,
+      readOnly: model.readOnly,
       style: getStyle(model?.style, formData),
     };
 
@@ -85,9 +83,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
         }
       >
         {(value, onChange) =>
-          readOnly
-            ? <ReadOnlyDisplayFormItem value={value} disabled={model.disabled} />
-            : <InputComponentType {...inputProps} {...customEventHandler(eventProps)} disabled={model.disabled} value={value} onChange={onChange} />
+            <InputComponentType {...inputProps} {...customEventHandler(eventProps)} value={value} onChange={onChange} />
         }
       </ConfigurableFormItem>
     );
@@ -101,6 +97,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
   migrator: (m) => m
     .add<ITextFieldComponentProps>(0, (prev) => ({ ...prev, textType: 'text' }))
     .add<ITextFieldComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<ITextFieldComponentProps>(2, (prev) => migrateVisibility(prev))
   ,
   linkToModelMetadata: (model, metadata): ITextFieldComponentProps => {
     return {

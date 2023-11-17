@@ -13,6 +13,7 @@ import settingsFormJson from './settingsForm.json';
 import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
 import { getNumberFormat } from 'utils/string';
 import { getDataFormat } from 'utils/metadata';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -29,7 +30,6 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
     const { formMode, formData } = useForm();
     const { globalState } = useGlobalState();
 
-
     return (
       <ConfigurableFormItem
         model={model}
@@ -37,7 +37,11 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
       >
         {(value, onChange) => {
           return model.readOnly ? (
-            <ReadOnlyDisplayFormItem disabled={model.disabled} value={getNumberFormat(value, getDataFormat(properties, model.propertyName))}/>
+            <ReadOnlyDisplayFormItem
+              disabled={model.disabled}
+              type="number"
+              value={getNumberFormat(value, getDataFormat(properties, model.propertyName))}
+            />
           ) : (
             <NumberFieldControl form={form} disabled={model.disabled} model={model} value={value} onChange={onChange} />
           );
@@ -51,8 +55,8 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
   }),
   migrator: (m) => m
     .add<INumberFieldComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-  ,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+    .add<INumberFieldComponentProps>(1, (prev) => migrateVisibility(prev)),
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   linkToModelMetadata: (model, metadata): INumberFieldComponentProps => {
     return {
       ...model,

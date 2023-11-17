@@ -185,10 +185,10 @@ export const DataList = addStory(Template, {
   },
 });
 
-export const DataTable = addStory(Template, {
+export const Forms = addStory(Template, {
   formId: {
-    name: 'action-name-table',
-    module: 'Boxfusion.SheshaFunctionalTests.Common',
+    name: 'forms',
+    module: 'shesha',
   },
 });
 

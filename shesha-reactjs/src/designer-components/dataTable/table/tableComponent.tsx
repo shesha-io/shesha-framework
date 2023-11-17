@@ -7,24 +7,25 @@ import {
   DataTable,
   DatatableAdvancedFilter,
   DatatableColumnsSelector,
-} from '../../../components';
-import { IToolboxComponent } from '../../../interfaces';
+} from 'components';
+import { IToolboxComponent } from 'interfaces';
 import {
   useDataTableStore,
   useForm,
   useFormData,
   useGlobalState,
   useSheshaApplication,
-} from '../../../providers';
-import { SheshaActionOwners } from '../../../providers/configurableActionsDispatcher/models';
-import { getStyle } from '../../../providers/form/utils';
+} from 'providers';
+import { SheshaActionOwners } from 'providers/configurableActionsDispatcher/models';
+import { getStyle } from 'providers/form/utils';
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
 import { ITableComponentProps } from './models';
 import TableSettings from './tableComponent-settings';
 import { filterVisibility } from './utils';
-import { migrateCustomFunctions, migratePropertyName } from '../../../designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 import { IDataColumnsProps } from 'providers/datatableColumnsConfigurator/models';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 const TableComponent: IToolboxComponent<ITableComponentProps> = {
   type: 'datatable',
@@ -92,6 +93,7 @@ const TableComponent: IToolboxComponent<ITableComponentProps> = {
         const columns = (prev.items ?? []).map(c => (c.columnType === 'data' ? { ...c, allowSorting: true } as IDataColumnsProps : c));
         return { ...prev, items: columns };
       })
+      .add<ITableComponentProps>(7, (prev) => migrateVisibility(prev))
   ,
   settingsFormFactory: (props) => <TableSettings {...props}/>,
 };

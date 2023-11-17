@@ -1,18 +1,5 @@
 export { default as BasicDisplayFormItem, type IBasicDisplayFormItemProps } from './basicDisplayFormItem';
 export { default as ConfigurableLogo } from './configurableLogo';
-export {
-  default as GenericCreateModal,
-  type IGenericCreateModalProps,
-  OnSuccessActionType,
-} from './crudViews/createModal';
-export { default as GenericEditModal, type IGenericEditModalProps } from './crudViews/editModal';
-export { default as GenericDetailsPage, type IGenericDetailsPageProps } from './crudViews/detailsPage';
-export {
-  default as GenericDualEditDetailsPage,
-  type IGenericDualEditDetailsPageProps,
-} from './crudViews/dualEditDetailsPage';
-export { default as GenericEditPage, type IGenericEditPageProps } from './crudViews/editPage';
-export { default as GenericCreatePage, type IGenericCreatePageProps } from './crudViews/createPage';
 export { default as FileUpload, type IFileUploadProps } from './fileUpload';
 export { default as ConfigurableFormRenderer } from './configurableForm/configurableFormRenderer';
 export { default as MultiCheckBoxRefList, type IMultiCheckBoxRefListProps } from './multiCheckBoxRefList';
@@ -21,7 +8,6 @@ export {
   type IMultiReadCheckBoxRefListProps,
   binaryToList,
 } from './multiReadCheckBoxrefList';
-export { default as SimpleLayoutHeading, type ISimpleLayoutHeadingProps } from './simpleLayoutHeading';
 export { default as PageBtnContainer, type IPageBtnContainerProps } from './pageBtnContainer';
 export { ReactTable } from './reactTable';
 export { type IReactTableProps } from './reactTable/interfaces';
@@ -30,15 +16,12 @@ export {
   type IConfigurableFormComponentProps,
 } from './formDesigner/configurableFormComponent';
 export { default as ConfigurableFormItem, type IConfigurableFormItemProps } from './formDesigner/components/formItem';
-export { CheckListSelectionType, type ICheckListItemSelection } from './hierarchicalCheckList/interface';
-export { default as BasicToolbar } from './basicToolbar';
 export { default as BooleanDropDown } from './booleanDropDown';
 export { default as SidebarContainer } from './sidebarContainer';
 export { default as AutoCompletePlaces } from './googlePlacesAutocomplete';
 export { default as EndpointsAutocomplete } from './endpointsAutocomplete/endpointsAutocomplete';
 export { default as FormAutocomplete } from './formAutocomplete';
 export { default as CustomFile } from './customFile';
-export { default as SimplePageToolbar } from './simplePageToolbar';
 export { default as ErrorBoundary } from './errorBoundary/errorBoundary';
 export { default as CustomErrorBoundary } from './customErrorBoundary';
 export { default as DetailsViewHeaderControls } from './detailsViewHeaderControls';
@@ -56,7 +39,6 @@ export { default as columnsFilterSelectBase, type IColumnsFilterSelectBaseProps 
 export { default as DateDisplay, type IDateDisplayProps } from './dateDisplay';
 export { default as EditableDisplayFormItem, type IEditableDisplayLabelProps } from './editableDisplayFormItem';
 export { default as DisplayFormItem, type IDisplayFormItemProps } from './displayFormItem';
-export { default as EntityDropdown, type IEntityDropdownProps } from './entityDropdown';
 export { default as EntityPicker } from './entityPicker';
 export { default as FormComponent, type IFormComponentProps } from './formComponent';
 export { default as GlobalTableFilter, type IGlobalTableFilterProps } from './globalTableFilter';
@@ -101,7 +83,6 @@ export { default as TablePager, type ITablePagerProps } from './tablePager';
 export { default as TablePaging, type ITablePagerBaseProps } from './tablePager/tablePaging';
 export { default as StatusLabel, type IStatusLabelProps } from './statusLabel';
 export { default as ValidationErrors, type IValidationErrorsProps } from './validationErrors';
-export { default as HierarchicalCheckList, type IHierarchicalCheckListProps } from './hierarchicalCheckList';
 export { default as ShaIcon, type IShaIconProps, type IconType } from './shaIcon';
 export { default as IconPicker, type IIconPickerProps } from './iconPicker';
 export {
@@ -130,19 +111,11 @@ export {
 } from './refListDropDown';
 
 export {
-  //default as GenericAutocomplete,
   EntityDtoAutocomplete as Autocomplete,
   EntityDtoAutocomplete,
   RawAutocomplete,
   type IAutocompleteProps,
 } from './autocomplete';
-
-export { default as GenericCreatePageDefault } from './crudViews/plainCreatePage';
-
-export { default as GenericDetailsPageDefault } from './crudViews/plainDetailsPage';
-export { default as GenericEditPageDefault } from './crudViews/plainEditPage';
-export { default as GenericIndexPageDefault } from './crudViews/plainIndexPage';
-export { default as SimpleIndexPageDefault } from './crudViews/plainSimpleIndexPage';
 
 export { default as Page } from './page';
 export { default as EditableTagGroup, type IEditableTagGroupProps } from './editableTagGroup';
@@ -160,10 +133,10 @@ export { default as LabelValueEditor } from './formDesigner/components/labelValu
 export { default as RichTextEditor, type IRichTextEditorProps } from './richTextEditor';
 export { default as SettingsEditor, type ISettingsEditorProps } from './settingsEditor';
 export { FormComponentSelector, type IFormComponentSelectorProps } from './formComponentSelector';
-export { default as PropertyAutocomplete } from '../../src/components/propertyAutocomplete/propertyAutocomplete';
-export { default as ColorPicker } from '../../src/components/colorPicker';
+export { default as PropertyAutocomplete } from 'components/propertyAutocomplete/propertyAutocomplete';
+export { default as ColorPicker } from 'components/colorPicker';
 export { default as ComponentsContainer } from './formDesigner/containers/componentsContainer';
-export { default as Properties } from '../../src/components/properties';
+export { default as Properties } from 'components/properties';
 export { HelpTextPopover } from './helpTextPopover';
 export { StatusTag } from './statusTag';
 export { RefListStatus, type IRefListStatusProps } from './refListStatus';

@@ -42,5 +42,10 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
         /// 
         /// </summary>
         public virtual Person HeadLeader { get; set; }
+
+        /// <summary> 
+        /// 
+        /// </summary>
+        public virtual TimeSpan? Time { get; set; }
     }
 }

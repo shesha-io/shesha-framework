@@ -26,5 +26,11 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
         /// 
         /// </summary>
         public virtual decimal? Price { get; set; }
+
+        /// <summary> 
+        /// 
+        /// </summary>
+        public virtual TimeSpan? Time { get; set; }
+
     }
 }

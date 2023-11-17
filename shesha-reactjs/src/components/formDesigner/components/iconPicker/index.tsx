@@ -9,6 +9,7 @@ import { iconPickerFormSettings } from './settings';
 import { IIconPickerComponentProps } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 import { ColorResult } from 'react-color';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 const IconPickerComponent: IToolboxComponent<IIconPickerComponentProps> = {
   type: 'iconPicker',
@@ -27,6 +28,7 @@ const IconPickerComponent: IToolboxComponent<IIconPickerComponentProps> = {
   validateSettings: model => validateConfigurableComponentSettings(iconPickerFormSettings, model),
   migrator: (m) => m
     .add<IIconPickerComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IIconPickerComponentProps>(1, (prev) => migrateVisibility(prev))
   ,
 };
 

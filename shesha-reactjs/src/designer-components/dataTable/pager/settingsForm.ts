@@ -37,7 +37,7 @@ export const getSettings = (data: any) =>
       defaultValue: true,
     })
     .addCheckbox({
-      id: 'ff14eada-10f7-4470-8db2-52b543d9d03f',
+      id: 'ff14eada-10f7-4470-8db2-52b543d9d111',
       propertyName: 'hidden',
       parentId: 'root',
       label: 'Hidden',
