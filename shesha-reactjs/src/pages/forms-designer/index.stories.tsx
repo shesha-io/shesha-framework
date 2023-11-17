@@ -27,6 +27,14 @@ export const FncDesignerPlayground = addStory(Template, {
   formId: '6392bcf3-2625-48e3-b521-4d46a3b54954',
 });
 
+export const FncDesignerAddressCreate = addStory(Template, {
+  formId: 'f09078e7-8d8c-439b-88ab-a4bbb6e885ff',
+});
+
+export const FncDesignerSheshaFunctionalTestAddressCreate = addStory(Template, {
+  formId: 'eaa749a8-86e7-40cc-bcc6-1ce0e320723a',
+});
+
 export const FncDesignerTSchoolDetails = addStory(Template, {
   formId: '9da17eae-3099-4835-b196-200bfb955ae7',
 });
