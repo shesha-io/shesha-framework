@@ -56,12 +56,10 @@ namespace Shesha.StoredFiles
         [HttpGet, Route("Download")]
         public async Task<FileStreamResult> Download(Guid id, int? versionNo)
         {
-            // todo: convert to async call
             var fileVersion = await GetStoredFileVersionAsync(id, versionNo);
             var fileContents = await _fileService.GetStreamAsync(fileVersion);
             await _fileService.MarkDownloadedAsync(fileVersion);
 
-            // note: fileContents will be disposed automatically in the FileStreamResult 
             return File(fileContents, fileVersion.FileType.GetContentType(), fileVersion.FileName);
         }
 
@@ -76,7 +74,6 @@ namespace Shesha.StoredFiles
                 await fileContents.CopyToAsync(memoryStream);
                 var base64String = Convert.ToBase64String(memoryStream.ToArray());
 
-                // You can return the base64 string as a JSON object or any other desired format
                 return Ok(new { Base64String = base64String });
             }
         }
