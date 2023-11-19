@@ -428,7 +428,7 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "visibility": "Yes",
+
       "isDynamic": false,
       "expandIconPosition": "end",
       "settingsValidationErrors": [],
@@ -441,7 +441,7 @@
           "labelAlign": "right",
           "parentId": "Q6s-GKx4El9BhcH9MQ8bj",
           "hidden": false,
-          "visibility": "Yes",
+
           "isDynamic": false,
           "placeholder": "",
           "description": "Check the 'URL variables' tab for the exposed variables. Live empty to use default endpoint.",
@@ -464,7 +464,7 @@
           "labelAlign": "right",
           "parentId": "Q6s-GKx4El9BhcH9MQ8bj",
           "hidden": false,
-          "visibility": "Yes",
+
           "isDynamic": false,
           "placeholder": "",
           "description": "Check the 'URL variables' tab for the exposed variables. Live empty to use default endpoint.",
@@ -487,7 +487,7 @@
           "labelAlign": "right",
           "parentId": "Q6s-GKx4El9BhcH9MQ8bj",
           "hidden": false,
-          "visibility": "Yes",
+
           "isDynamic": false,
           "placeholder": "",
           "description": "Check the 'URL variables' tab for the exposed variables. Live empty to use default endpoint.",
@@ -510,7 +510,7 @@
           "labelAlign": "right",
           "parentId": "Q6s-GKx4El9BhcH9MQ8bj",
           "hidden": false,
-          "visibility": "Yes",
+
           "isDynamic": false,
           "placeholder": "",
           "description": "Check the 'URL variables' tab for the exposed variables. Live empty to use default endpoint.",

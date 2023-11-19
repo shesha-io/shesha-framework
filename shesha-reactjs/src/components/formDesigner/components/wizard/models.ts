@@ -64,7 +64,6 @@ export interface IStepProps extends StepProps {
 export interface IWizardComponentProps extends Omit<IConfigurableFormComponent, 'size'>, Pick<StepProps, 'status'> {
   steps: IWizardStepProps[];
   wizardType?: 'default' | 'navigation';
-  visibility?: 'Yes' | 'No' | 'Removed';
   //uniqueStateId?: string;
   permissions?: string[];
   hidden?: boolean;

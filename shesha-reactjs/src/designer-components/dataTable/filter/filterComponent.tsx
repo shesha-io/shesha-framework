@@ -2,14 +2,15 @@ import { FilterOutlined } from '@ant-design/icons';
 import { Button, Modal } from 'antd';
 import React, { FC, Fragment, useState } from 'react';
 import { useMedia } from 'react-use';
-import { ConfigurableFormItem } from '../../../components';
-import { QueryBuilderWrapper } from '../../../designer-components/queryBuilder/queryBuilderWrapper';
-import { IToolboxComponent } from '../../../interfaces';
-import { TableViewSelectorConfiguratorProvider, useTableViewSelectorConfigurator } from '../../../providers';
-import { ITableViewProps } from '../../../providers/tableViewSelectorConfigurator/models';
+import { ConfigurableFormItem } from 'components';
+import { QueryBuilderWrapper } from 'designer-components/queryBuilder/queryBuilderWrapper';
+import { IToolboxComponent } from 'interfaces';
+import { TableViewSelectorConfiguratorProvider, useTableViewSelectorConfigurator } from 'providers';
+import { ITableViewProps } from 'providers/tableViewSelectorConfigurator/models';
 import FilterConfigurator from './filterConfigurator';
 import { FilterTarget, ICustomFilterComponentProps } from './interfaces';
-import { migrateCustomFunctions, migratePropertyName } from '../../../designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 const CustomFilterComponent: IToolboxComponent<ICustomFilterComponentProps> = {
   type: 'filter',
@@ -31,6 +32,7 @@ const CustomFilterComponent: IToolboxComponent<ICustomFilterComponentProps> = {
   },
   migrator:  m => m
     .add<ICustomFilterComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev) as ICustomFilterComponentProps))
+    .add<ICustomFilterComponentProps>(1, (prev) => migrateVisibility(prev))
   ,
 };
 

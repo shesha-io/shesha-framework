@@ -7,6 +7,7 @@ import { IConfigurableFormComponent } from 'providers/form/models';
 import { EntityReferenceSettingsForm } from './settings';
 import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
 import { isEntityReferencePropertyMetadata } from 'interfaces/metadata';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 export type IActionParameters = [{ key: string; value: string }];
 
@@ -51,6 +52,7 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
       };
     })
     .add<IEntityReferenceControlProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IEntityReferenceControlProps>(2, (prev) => migrateVisibility(prev))
   ,
   linkToModelMetadata: (model, propMetadata): IEntityReferenceControlProps => {
     return {

@@ -3,9 +3,10 @@ import React from 'react';
 import { ICommonContainerProps, IContainerComponentProps, IToolboxComponent } from 'interfaces';
 import { getStyle, validateConfigurableComponentSettings } from 'providers/form/utils';
 import { getSettings } from './settingsForm';
-import { migrateCustomFunctions, migratePropertyName } from '../../designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 import { useFormData } from 'providers';
 import { ComponentsContainer } from 'components';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   type: 'container',
@@ -60,6 +61,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       components: prev['components'] ?? [],
     }))
     .add<IContainerComponentProps>(1, prev => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IContainerComponentProps>(2, (prev) => migrateVisibility(prev))
   ,
 };
 

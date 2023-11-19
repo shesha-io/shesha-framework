@@ -17,8 +17,7 @@
       "propertyName": "sectionSeparator1",
       "label": "Display",
       "labelAlign": "right",
-      "parentId": "root",
-      "visibility": "Yes"
+      "parentId": "root"
     },
     {
       "id": "aYeIfcjqrSZpmuKd6Fijn",
@@ -59,8 +58,7 @@
       "propertyName": "sectionSeparator1",
       "label": "Data type and format",
       "labelAlign": "right",
-      "parentId": "root",
-      "visibility": "Yes"
+      "parentId": "root"
     },
     {
       "id": "F7W3qRl8P_Jdv_R2Q-f3u",
@@ -215,7 +213,6 @@
           "label": "Min Length",
           "labelAlign": "right",
           "parentId": "7cYicDJe6G4QZySqcHoIM",
-          "visibility": "Yes",
           "customEnabled": "return !data.sizeHardcoded;",
           "stepNumeric": 1,
           "stepString": "1",
@@ -233,7 +230,7 @@
           "label": "Max Length",
           "labelAlign": "right",
           "parentId": "7cYicDJe6G4QZySqcHoIM",
-          "visibility": "Yes",
+
           "customEnabled": "return !data.sizeHardcoded;",
           "placeholder": "",
           "description": "",
@@ -315,7 +312,7 @@
           "label": "Min",
           "labelAlign": "right",
           "parentId": "ipxZABhhFbnZBrO1iijxF",
-          "visibility": "Yes",
+
           "customEnabled": "return !data.sizeHardcoded;",
           "placeholder": "",
           "description": "",
@@ -335,7 +332,6 @@
           "label": "Max",
           "labelAlign": "right",
           "parentId": "ipxZABhhFbnZBrO1iijxF",
-          "visibility": "Yes",
           "customEnabled": "return !data.sizeHardcoded;",
           "stepNumeric": 1,
           "stepString": "0.1",
@@ -491,8 +487,7 @@
       "propertyName": "sectionSeparator1",
       "label": "Attributes",
       "labelAlign": "right",
-      "parentId": "root",
-      "visibility": "Yes"
+      "parentId": "root"
     },
     {
       "id": "-X1emhZPx1rM7w22GOc12",
@@ -545,8 +540,7 @@
           "propertyName": "sectionSeparatorCascade",
           "label": "Cascade update rules",
           "labelAlign": "right",
-          "parentId": "root",
-          "visibility": "Yes"
+          "parentId": "root"
         },
         {
           "id": "-X1emhZPx1rM7w22GO124",
