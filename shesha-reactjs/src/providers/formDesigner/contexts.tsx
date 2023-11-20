@@ -8,6 +8,7 @@ import {
   IToolboxComponentGroup,
 } from '../../interfaces';
 
+import { IDataContextFullInstance } from 'providers/dataContextProvider';
 import { IPropertyMetadata } from '../../interfaces/metadata';
 import { StateWithHistory } from '../../utils/undoable';
 import {
@@ -17,8 +18,7 @@ import {
   IFormSettings,
   ROOT_COMPONENT_KEY,
 } from '../form/models';
-import { IDataSource, IFormDesignerActionFlag } from '../formDesigner/models';
-import { IDataContextFullInstance } from 'providers/dataContextProvider';
+import { IDataSource } from '../formDesigner/models';
 
 export type IFlagProgressFlags = 'addComponent' | 'updateComponent' | 'deleteComponent' | 'moveComponent';
 export type IFlagSucceededFlags = 'addComponent' | 'updateComponent' | 'deleteComponent' | 'moveComponent';
@@ -48,15 +48,11 @@ export interface IFormDesignerStateContext
 
   // todo: move to persister
   formSettings: IFormSettings;
-  /**
-   * Action flag to determine event which was triggered
-   */
-  actionFlag?: { [key in IFormDesignerActionFlag]?: boolean };
 
   /**
    * External components rendered on the designer mode
    */
-  renderToolbarRightButtons?: ReactNode[];
+  renderToolbarRightButton?: ReactNode;
 }
 
 export interface AddComponentPayloadBase {
@@ -142,14 +138,21 @@ export interface IFormDesignerActionsContext
   getActiveDataSource: () => IDataSource | null;
 
   setReadOnly: (value: boolean) => void;
-  /** Flag set to determine action triggered from external source */
-  setActionFlag: (flag: IFormDesignerActionFlag) => void;
+
+  undo: () => void;
+  redo: () => void;
 
   /** Set form designer toolbar button */
   setToolbarRightButton: (button: ReactNode) => void;
 
-  undo: () => void;
-  redo: () => void;
+  //#region - Functions to determine action triggered from external source */
+  setAfterDone: () => void;
+  setAfterRedo: () => void;
+  setAfterPublish: () => void;
+  setAfterSettings: () => void;
+  setAfterUndo: () => void;
+  setAfterVersion: () => void;
+  //#endregion
 }
 
 /** Form initial state */
@@ -168,8 +171,7 @@ export const FORM_DESIGNER_CONTEXT_INITIAL_STATE: IFormDesignerStateContext = {
   dataSources: [],
   activeDataSourceId: null,
   readOnly: true,
-  actionFlag: {},
-  renderToolbarRightButtons: [],
+  renderToolbarRightButton: null,
 };
 
 export const UndoableFormDesignerStateContext = createContext<IUndoableFormDesignerStateContext>({

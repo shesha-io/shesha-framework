@@ -1,3 +1,5 @@
+import { useDataContextManager } from 'providers/dataContextManager';
+import { IDataContextFullInstance } from 'providers/dataContextProvider';
 import React, { FC, MutableRefObject, PropsWithChildren, ReactNode, useContext, useEffect } from 'react';
 import { useDeepCompareEffect } from 'react-use';
 import useThunkReducer from '../../hooks/thunkReducer';
@@ -11,7 +13,7 @@ import { useMetadataDispatcher } from '../../providers';
 import { UndoableActionCreators } from '../../utils/undoable';
 import { useFormDesignerComponentGroups, useFormDesignerComponents } from '../form/hooks';
 import { IFlatComponentsStructure, IFormSettings } from '../form/models';
-import { IDataSource, IFormDesignerActionFlag } from '../formDesigner/models';
+import { IDataSource } from '../formDesigner/models';
 import { getFlagSetters } from '../utils/flagsSetters';
 import {
   addDataSourceAction,
@@ -25,7 +27,6 @@ import {
   endDraggingAction,
   endDraggingNewItemAction,
   removeDataSourceAction,
-  setActionFlagAction,
   setActiveDataSourceAction,
   setDebugModeAction,
   setFlatComponentsAction,
@@ -55,12 +56,20 @@ import {
   UndoableFormDesignerStateContext,
 } from './contexts';
 import formReducer from './reducer';
-import { useDataContextManager } from 'providers/dataContextManager';
-import { IDataContextFullInstance } from 'providers/dataContextProvider';
 
-export interface IFormDesignerProviderProps {
+export interface IFormDesignerFinishEvents {
+  onAfterDone?: () => void;
+  onAfterRedo?: () => void;
+  onAfterPublish?: () => void;
+  onAfterSettings?: () => void;
+  onAfterUndo?: () => void;
+  onAfterVersion?: () => void;
+}
+
+export interface IFormDesignerProviderProps extends IFormDesignerFinishEvents {
   flatComponents: IFlatComponentsStructure;
   formSettings: IFormSettings;
+  toolbarRightButton?: ReactNode;
   readOnly: boolean;
 }
 
@@ -68,7 +77,14 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   children,
   flatComponents,
   formSettings,
+  toolbarRightButton,
   readOnly,
+  onAfterDone,
+  onAfterRedo,
+  onAfterPublish,
+  onAfterSettings,
+  onAfterUndo,
+  onAfterVersion,
 }) => {
   const toolboxComponentGroups = useFormDesignerComponentGroups();
   const toolboxComponents = useFormDesignerComponents();
@@ -93,6 +109,12 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   });
 
   const statePresent = state.present;
+
+  useEffect(() => {
+    if (toolbarRightButton) {
+      setToolbarRightButton(toolbarRightButton);
+    }
+  }, []);
 
   useEffect(() => {
     if (
@@ -267,14 +289,35 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
       ? statePresent.dataSources.find((ds) => ds.id === statePresent.activeDataSourceId)
       : null;
   };
-  //#endregion
 
-  const setActionFlag = (payload: IFormDesignerActionFlag) => {
-    dispatch(setActionFlagAction(payload));
-  };
+  //#endregion
 
   const setToolbarRightButton = (payload: ReactNode) => {
     dispatch(setToolbarRightButtonAction(payload));
+  };
+
+  const setAfterDone = () => {
+    if (onAfterDone) onAfterDone();
+  };
+
+  const setAfterRedo = () => {
+    if (onAfterRedo) onAfterRedo();
+  };
+
+  const setAfterPublish = () => {
+    if (onAfterPublish) onAfterPublish();
+  };
+
+  const setAfterSettings = () => {
+    if (onAfterSettings) onAfterSettings();
+  };
+
+  const setAfterUndo = () => {
+    if (onAfterUndo) onAfterUndo();
+  };
+
+  const setAfterVersion = () => {
+    if (onAfterVersion) onAfterVersion();
   };
 
   const configurableFormActions: IFormDesignerActionsContext = {
@@ -305,8 +348,13 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
     getActiveDataSource,
     setReadOnly,
     getParentComponent,
-    setActionFlag,
     setToolbarRightButton,
+    setAfterDone,
+    setAfterRedo,
+    setAfterPublish,
+    setAfterSettings,
+    setAfterUndo,
+    setAfterVersion,
     /* NEW_ACTION_GOES_HERE */
   };
 

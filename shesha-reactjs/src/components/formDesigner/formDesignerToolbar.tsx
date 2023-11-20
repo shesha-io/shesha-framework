@@ -48,8 +48,13 @@ export const FormDesignerToolbar: FC<IProps> = () => {
     canUndo,
     canRedo,
     readOnly,
-    setActionFlag,
-    renderToolbarRightButtons,
+    renderToolbarRightButton,
+    setAfterDone,
+    setAfterRedo,
+    setAfterPublish,
+    setAfterSettings,
+    setAfterUndo,
+    setAfterVersion,
   } = useFormDesigner();
 
   const [settingsVisible, setSettingsVisible] = useState(false);
@@ -75,7 +80,7 @@ export const FormDesignerToolbar: FC<IProps> = () => {
         message.destroy();
         message.error('Failed to save form');
       })
-      .finally(() => setActionFlag('done'));
+      .finally(setAfterDone);
   };
 
   const onSaveAndSetReadyClick = () => {
@@ -102,7 +107,7 @@ export const FormDesignerToolbar: FC<IProps> = () => {
           message.destroy();
           message.error('Failed to save form');
         })
-        .finally(() => setActionFlag('done'));
+        .finally(setAfterDone);
     };
 
     Modal.confirm({
@@ -117,17 +122,17 @@ export const FormDesignerToolbar: FC<IProps> = () => {
 
   const onUndoClick = () => {
     undo();
-    setActionFlag('undo');
+    setAfterUndo();
   };
 
   const onRedoClick = () => {
     redo();
-    setActionFlag('redo');
+    setAfterRedo();
   };
 
   const onSettingsClick = () => {
     setSettingsVisible(true);
-    setActionFlag('settings');
+    setAfterSettings();
   };
 
   const onCreateNewVersionClick = () => {
@@ -152,7 +157,7 @@ export const FormDesignerToolbar: FC<IProps> = () => {
           message.destroy();
           showErrorDetails(e);
         })
-        .finally(() => setActionFlag('version'));
+        .finally(setAfterVersion);
     };
 
     Modal.confirm({
@@ -177,7 +182,7 @@ export const FormDesignerToolbar: FC<IProps> = () => {
           message.success('Form published successfully');
           loadForm({ skipCache: true });
         },
-      }).finally(() => setActionFlag('publish'));
+      }).finally(setAfterPublish);
     };
 
     Modal.confirm({
@@ -246,7 +251,7 @@ export const FormDesignerToolbar: FC<IProps> = () => {
             setSettingsVisible(false);
           }}
         />
-        {renderToolbarRightButtons.map((i) => i)}
+        {renderToolbarRightButton}
         <Button
           onClick={() => {
             setFormMode(formMode === 'designer' ? 'edit' : 'designer');

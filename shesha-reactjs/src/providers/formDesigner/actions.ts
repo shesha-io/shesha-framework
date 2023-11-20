@@ -1,7 +1,7 @@
 import { createAction } from 'redux-actions';
 import { IFormValidationErrors, IToolboxComponentGroup } from '../../interfaces';
 import { IFlatComponentsStructure, IFormSettings } from '../form/models';
-import { IDataSource, IFormDesignerActionFlag } from '../formDesigner/models';
+import { IDataSource } from '../formDesigner/models';
 import {
   IAddDataPropertyPayload,
   IComponentAddFromTemplatePayload,
@@ -48,7 +48,6 @@ export enum FormActionEnums {
 
   UpdateToolboxComponentGroups = 'UPDATE_TOOLBOX_COMPONENT_GROUPS',
 
-  SetActionFlag = 'SET_ACTION_FLAG',
   SetToolbarRightButton = 'SET_TOOLBAR_RIGHT_BUTTON',
   /* NEW_ACTION_TYPE_GOES_HERE */
 }
@@ -137,11 +136,6 @@ export const setActiveDataSourceAction = createAction<string, string>(FormAction
 
 export const updateToolboxComponentGroupsAction = createAction<IToolboxComponentGroup[], IToolboxComponentGroup[]>(
   FormActionEnums.UpdateToolboxComponentGroups,
-  (p) => p
-);
-
-export const setActionFlagAction = createAction<IFormDesignerActionFlag, IFormDesignerActionFlag>(
-  FormActionEnums.SetActionFlag,
   (p) => p
 );
 

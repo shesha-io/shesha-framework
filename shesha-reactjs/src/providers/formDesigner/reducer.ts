@@ -19,7 +19,7 @@ import {
   processRecursive,
   upgradeComponent,
 } from '../form/utils';
-import { IDataSource, IFormDesignerActionFlag } from './models';
+import { IDataSource } from './models';
 import { FormActionEnums } from './actions';
 import {
   FORM_DESIGNER_CONTEXT_INITIAL_STATE,
@@ -34,6 +34,7 @@ import {
   ISetSelectedComponentPayload,
   IUpdateChildComponentsPayload,
 } from './contexts';
+import { ReactNode } from 'react';
 
 const addComponentToFlatStructure = (
   structure: IFlatComponentsStructure & IHasComponentGroups,
@@ -534,31 +535,15 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
       };
     },
 
-    [FormActionEnums.SetActionFlag]: (
-      state: IFormDesignerStateContext,
-      action: ReduxActions.Action<IFormDesignerActionFlag>
-    ) => {
-      const { payload } = action;
-
-      if (!payload) return { ...state, actionFlag: {} };
-
-      return {
-        ...state,
-        actionFlag: { ...state.actionFlag, ...{ [payload]: true } },
-      };
-    },
-
     [FormActionEnums.SetToolbarRightButton]: (
       state: IFormDesignerStateContext,
-      action: ReduxActions.Action<IFormDesignerActionFlag>
+      action: ReduxActions.Action<ReactNode>
     ) => {
       const { payload } = action;
 
-      if (!payload) return { ...state, renderToolbarRightButtons: [] };
-
       return {
         ...state,
-        renderToolbarRightButtons: [...(state.renderToolbarRightButtons || []), payload],
+        renderToolbarRightButton: payload,
       };
     },
   },

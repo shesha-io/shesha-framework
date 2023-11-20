@@ -1,18 +1,19 @@
 import { Result, Skeleton } from 'antd';
 import { ResultStatusType } from 'antd/lib/result';
-import React, { FC, PropsWithChildren } from 'react';
+import React, { FC, PropsWithChildren, ReactNode } from 'react';
 import { FormIdentifier } from '../../../providers/form/models';
-import { FormDesignerProvider } from '../../../providers/formDesigner';
+import { FormDesignerProvider, IFormDesignerFinishEvents } from '../../../providers/formDesigner';
 import { FormMarkupConverter } from '../../../providers/formMarkupConverter';
 import { FormPersisterProvider } from '../../../providers/formPersisterProvider';
 import { FormPersisterStateConsumer } from '../../../providers/formPersisterProvider/contexts';
 import { ConfigurationItemVersionStatus } from '../../../utils/configurationFramework/models';
 
-export interface IFormDesignerProps {
+export interface IFormDesignerProps extends IFormDesignerFinishEvents {
   formId: FormIdentifier;
+  toolbarRightButton: ReactNode;
 }
 
-export const FormInfoContentConainter: FC<PropsWithChildren<IFormDesignerProps>> = ({ children, formId }) => (
+export const FormInfoContentConainter: FC<PropsWithChildren<IFormDesignerProps>> = ({ children, formId, ...rest }) => (
   <FormPersisterProvider formId={formId} skipCache={true}>
     <FormPersisterStateConsumer>
       {(formStore) => {
@@ -28,6 +29,7 @@ export const FormInfoContentConainter: FC<PropsWithChildren<IFormDesignerProps>>
                   flatComponents={flatComponents}
                   formSettings={formSettings}
                   readOnly={formProps?.versionStatus !== ConfigurationItemVersionStatus.Draft}
+                  {...rest}
                 >
                   {children}
                 </FormDesignerProvider>
