@@ -9,6 +9,7 @@ import AutoCompletePlacesControl from './control';
 import AddressEffect from './effect';
 import { IAddressCompomentProps } from './models';
 import { AddressSettingsForm } from './settings';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
   type: 'address',
@@ -36,6 +37,7 @@ const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
   settingsFormFactory: (props) => (<AddressSettingsForm {...props} />),
   migrator: (m) => m
     .add<IAddressCompomentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IAddressCompomentProps>(1, (prev) => migrateVisibility(prev))
   ,  
 };
 

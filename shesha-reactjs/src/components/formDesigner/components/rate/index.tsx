@@ -21,6 +21,7 @@ import { customRateEventHandler } from '../utils';
 import _ from 'lodash';
 import classNames from 'classnames';
 import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 export interface IRateProps extends IConfigurableFormComponent {
   value?: number;
@@ -95,6 +96,7 @@ const RateComponent: IToolboxComponent<IRateProps> = {
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   migrator: (m) => m
     .add<IRateProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IRateProps>(1, (prev) => migrateVisibility(prev))
   ,
 };
 

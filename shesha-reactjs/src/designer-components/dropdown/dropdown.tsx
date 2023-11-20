@@ -17,6 +17,7 @@ import { getLegacyReferenceListIdentifier } from 'utils/referenceList';
 import { IDropdownComponentProps, ILabelValue } from './interfaces';
 import settingsFormJson from './settingsForm.json';
 import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -79,6 +80,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
       };
     })
     .add<IDropdownComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IDropdownComponentProps>(3, (prev) => migrateVisibility(prev))
   ,
   linkToModelMetadata: (model, metadata): IDropdownComponentProps => {
     return {

@@ -11,6 +11,7 @@ import classNames from 'classnames';
 import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 import { DataListSettingsForm } from './dataListSettings';
 import { DataTableFullInstance } from 'providers/dataTable/contexts';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   type: 'datalist',
@@ -38,7 +39,8 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
       };
     })
     .add<IDataListComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-    .add<IDataListComponentProps>(3, prev => {
+    .add<IDataListComponentProps>(3, (prev) => migrateVisibility(prev))
+    .add<IDataListComponentProps>(4, prev => {
       return {
         ...prev,
         collapsible: true

@@ -12,6 +12,7 @@ import { ColumnSorting, DataFetchingMode, GroupingItem, ISortingItem, SortMode }
 import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 import { ConfigurableFormItem } from 'components';
 import { evaluateYesNo } from 'utils/form';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 export interface ITableContextComponentProps extends IConfigurableFormComponent {
   sourceType?: 'Form' | 'Entity' | 'Url';
@@ -65,6 +66,7 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
       })
       .add<ITableContextComponentProps>(4, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<ITableContextComponentProps>(5, (prev) => ({ ...prev, sortMode: 'standard', strictSortOrder: 'asc', allowReordering: 'no' }))
+      .add<ITableContextComponentProps>(6, (prev) => migrateVisibility(prev))
   ,
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),

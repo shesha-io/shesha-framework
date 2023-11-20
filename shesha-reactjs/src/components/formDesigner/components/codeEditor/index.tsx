@@ -10,6 +10,7 @@ import { DataTypes, StringFormats } from '../../../../interfaces/dataTypes';
 import { ICodeEditorComponentProps, ICodeEditorProps } from './interfaces';
 import { useForm } from '../../../..';
 import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -46,6 +47,7 @@ const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
   },
   migrator: (m) => m
     .add<ICodeEditorComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<ICodeEditorComponentProps>(1, (prev) => migrateVisibility(prev))
   ,
   initModel: model => {
     const textAreaModel: ICodeEditorComponentProps = {

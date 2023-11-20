@@ -1,18 +1,19 @@
 import { FileAddOutlined } from '@ant-design/icons';
 import React from 'react';
-import { FileUpload } from '../../components';
-import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
-import { IFormItem, IToolboxComponent } from '../../interfaces';
-import { StoredFileProvider, useFormData, useGlobalState, useSheshaApplication } from '../../providers';
-import { useForm } from '../../providers/form';
-import { IConfigurableFormComponent } from '../../providers/form/models';
+import { FileUpload } from 'components';
+import ConfigurableFormItem from 'components/formDesigner/components/formItem';
+import { IFormItem, IToolboxComponent } from 'interfaces';
+import { StoredFileProvider, useFormData, useGlobalState, useSheshaApplication } from 'providers';
+import { useForm } from 'providers/form';
+import { IConfigurableFormComponent } from 'providers/form/models';
 import {
   evaluateValue,
   executeCustomExpression,
   validateConfigurableComponentSettings,
-} from '../../providers/form/utils';
+} from 'providers/form/utils';
 import { getSettings } from './settings';
-import { migrateCustomFunctions, migratePropertyName } from '../../designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 export interface IFileUploadProps extends IConfigurableFormComponent, Omit<IFormItem, 'name'> {
   ownerId: string;
@@ -105,6 +106,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
       model.propertyName = pn;
       return model;
     })
+    .add<IFileUploadProps>(3, (prev) => migrateVisibility(prev))
   ,
   settingsFormMarkup: getSettings(),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),

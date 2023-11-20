@@ -439,56 +439,6 @@ export const componentsFlatStructureToTree = (
   return tree;
 };
 
-// export const getCustomVisibilityFunc = ({ customVisibility, propertyName: name }: IConfigurableFormComponent) => {
-//   if (Boolean(customVisibility)) {
-//     try {
-//       /* tslint:disable:function-constructor */
-
-//       const customVisibilityExecutor = new Function('value, data, globalState, formMode', customVisibility);
-
-//       const getIsVisible = (data = {}, globalState = {}, formMode) => {
-//         try {
-//           const result = customVisibilityExecutor(data?.[name], data, globalState, formMode);
-//           return result;
-//         } catch (e) {
-//           console.warn(`Custom Visibility of field ${name} throws exception: ${e}`);
-//           return true;
-//         }
-//       };
-
-//       return getIsVisible;
-//     } catch (e) {
-//       return () => {
-//         console.warn(`Incorrect syntax of the 'Custom Visibility', field name: ${name}, error: ${e}`);
-//       };
-//     }
-//   } else return () => true;
-// };
-
-// export const getCustomEnabledFunc = ({ customEnabled, propertyName: name }: IConfigurableFormComponent) => {
-//   if (Boolean(customEnabled)) {
-//     try {
-//       const customEnabledExecutor = new Function('value, data, globalState, formMode', customEnabled);
-
-//       const getIsEnabled = (data = {}, globalState = {}, formMode) => {
-//         try {
-//           const result = customEnabledExecutor(data?.[name], data, globalState, formMode);
-//           return result;
-//         } catch (e) {
-//           console.error(`Custom Enabled of field ${name} throws exception: ${e}`);
-//           return true;
-//         }
-//       };
-
-//       return getIsEnabled;
-//     } catch (e) {
-//       return () => {
-//         console.warn(`Incorrect syntax of the 'Custom Enabled', field name: ${name}, error: ${e}`);
-//       };
-//     }
-//   } else return () => true;
-// };
-
 /**
  * Evaluates the string using Mustache template.
  *
@@ -801,9 +751,6 @@ export const getVisibleComponentIds = (
         const filteredOut = propertyFilter(component.propertyName);
         if (filteredOut === false) continue;
       }
-
-      if (!component || component.visibility === 'No' || component.visibility === 'Removed')
-        continue;
 
       const isVisible = component.visibilityFunc == null || component.visibilityFunc(values, globalState, formMode);
       if (isVisible) visibleComponents.push(key);
@@ -1264,7 +1211,6 @@ export const createComponentModelForDataProperty = (
     labelAlign: 'right',
     //parentId: containerId,
     hidden: false,
-    visibility: 'Yes',
     visibilityFunc: (_data) => true,
     isDynamic: false,
     validate: {},

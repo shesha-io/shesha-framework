@@ -73,7 +73,6 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
       type: toolboxComponent.type,
       propertyName: 'editor',
       hidden: false,
-      visibility: 'Yes',
       visibilityFunc: (_data) => true,
       enabledFunc: (_data) => true,
       isDynamic: false,

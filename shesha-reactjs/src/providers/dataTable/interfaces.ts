@@ -2,7 +2,7 @@ import { IConfigurableActionConfiguration } from 'interfaces/configurableAction'
 import { IDataColumnsProps, IEditableColumnProps } from '../datatableColumnsConfigurator/models';
 import { IPropertyMetadata, ProperyDataType } from 'interfaces/metadata';
 import { Moment } from 'moment';
-import { IDictionary } from 'src/index';
+import { IDictionary } from 'interfaces';
 
 export type ColumnFilter = string[] | number[] | Moment[] | Date[] | string | number | Moment | Date | boolean;
 

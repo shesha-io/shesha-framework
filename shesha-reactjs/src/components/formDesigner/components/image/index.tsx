@@ -1,12 +1,13 @@
-import { IFormItem, IToolboxComponent } from '../../../../interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '../../../../providers/form/models';
+import { IFormItem, IToolboxComponent } from 'interfaces';
+import { FormMarkup, IConfigurableFormComponent } from 'providers/form/models';
 import { FileImageOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '../formItem';
 import settingsFormJson from './settingsForm.json';
-import { getString, getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
+import { getString, getStyle, validateConfigurableComponentSettings } from 'providers/form/utils';
 import React from 'react';
-import { useFormData } from '../../../../providers';
-import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
+import { useFormData } from 'providers';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 export interface IImageProps extends IConfigurableFormComponent, IFormItem {
   height: number | string;
@@ -54,6 +55,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
   },
   migrator: (m) => m
     .add<IImageProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev) as IImageProps))
+    .add<IImageProps>(1, (prev) => migrateVisibility(prev))
   ,
   settingsFormMarkup: settingsForm,
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),

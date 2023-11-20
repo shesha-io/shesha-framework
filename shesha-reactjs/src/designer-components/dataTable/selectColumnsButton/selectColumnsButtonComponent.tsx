@@ -1,12 +1,13 @@
 import { SlidersOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import React, { FC } from 'react';
-import { IToolboxComponent } from '../../../interfaces';
-import { useDataTableStore } from '../../../providers';
-import { FormMarkup, IConfigurableFormComponent } from '../../../providers/form/models';
-import { validateConfigurableComponentSettings } from '../../../providers/form/utils';
+import { IToolboxComponent } from 'interfaces';
+import { useDataTableStore } from 'providers';
+import { FormMarkup, IConfigurableFormComponent } from 'providers/form/models';
+import { validateConfigurableComponentSettings } from 'providers/form/utils';
 import settingsFormJson from './settingsForm.json';
-import { migrateCustomFunctions, migratePropertyName } from '../../../designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 export interface IPagerComponentProps extends IConfigurableFormComponent {}
 
@@ -27,6 +28,7 @@ const SelectColumnsButtonComponent: IToolboxComponent<IPagerComponentProps> = {
   },
   migrator: m => m
     .add(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IPagerComponentProps>(1, (prev) => migrateVisibility(prev))    
 ,
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),

@@ -161,7 +161,6 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
           labelAlign: 'right',
           parentId: containerId,
           hidden: false,
-          visibility: 'Yes',
           visibilityFunc: (_data) => true,
           enabledFunc: (_data) => true,
           isDynamic: false,

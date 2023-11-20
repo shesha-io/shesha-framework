@@ -1,6 +1,6 @@
 import React, { FC, useState } from 'react';
-import { Story, Meta } from '@storybook/react';
-import Autocomplete from './';
+import { StoryFn } from '@storybook/react';
+import { Autocomplete } from './';
 import { Button, Form } from 'antd';
 import { addStory } from '../../stories/utils';
 import StoryApp from '../storyBookApp';
@@ -8,8 +8,8 @@ import { AutocompleteDataSourceType, IAutocompleteProps } from './models';
 
 export default {
   title: 'Components/Autocomplete',
-  component: Autocomplete
-} as Meta;
+  component: Autocomplete.Raw
+};
 
 interface IStoryArgs extends IAutocompleteProps {
   /**
@@ -94,7 +94,7 @@ const BaseTemplate: FC<ITemplateProps> = props => {
 };
 
 // Create a master template for mapping args to render the Button component
-const RawTemplate: Story<IStoryArgs> = args => {
+const RawTemplate: StoryFn<IStoryArgs> = args => {
   const { testValue, initialValue, ...autocompleteProps } = args;
   return (
     <BaseTemplate {...args}>
@@ -103,7 +103,7 @@ const RawTemplate: Story<IStoryArgs> = args => {
   );
 };
 
-const EntityDtoTemplate: Story<IStoryArgs> = args => {
+const EntityDtoTemplate: StoryFn<IStoryArgs> = args => {
   const { testValue, initialValue, ...autocompleteProps } = args;
   return (
     <BaseTemplate {...args}>
@@ -115,19 +115,29 @@ const EntityDtoTemplate: Story<IStoryArgs> = args => {
 interface IHasDataSourceType {
   dataSourceType: AutocompleteDataSourceType;
 }
-interface IUrlDataSourceProps extends IHasDataSourceType {
-  dataSourceUrl: string;
+interface IEntityAutocompleteProps extends IHasDataSourceType {
+  typeShortAlias: string;
+  filter?: string;
 }
-const urlDataSourceProps: IUrlDataSourceProps = {
-  dataSourceType: 'url',
-  dataSourceUrl: '/api/v1/BursMan/ScheduleVisits/MembersAutocomplete',
+const urlDataSourceProps: IEntityAutocompleteProps = {
+  dataSourceType: 'entitiesList',
+  typeShortAlias: 'Shesha.Core.Person',
+  filter: `{
+    "and": [
+      {
+        "!!": {
+          "var": "fullName"
+        }
+      }
+    ]
+  }`
 };
 
 const singleEntityDtoBaseProps: IStoryArgs = {
   ...urlDataSourceProps,
   testValue: {
-    id: '291b86be-27f1-41a0-8bfd-f867a3b38e32',
-    displayText: 'Friday Green',
+    id: '3873cd5b-78ce-4a19-a69d-44f378f6be4f',
+    displayText: 'Maria!',
   },
 };
 //#region Single Entity DTO
@@ -140,8 +150,8 @@ export const SingleEntityDto = addStory(EntityDtoTemplate, {
 export const SingleEntityDtoWithInitialValue = addStory(EntityDtoTemplate, {
   ...singleEntityDtoBaseProps,
   initialValue: {
-    id: '6fb28e47-591e-46ed-90b5-13a88c69c759',
-    displayText: 'Dimakatso Masetlane',
+    id: '1a7d1b0f-3982-4af5-9fe1-819fd217f0cf',
+    displayText: 'System Administrator!',
   },
 });
 //#endregion

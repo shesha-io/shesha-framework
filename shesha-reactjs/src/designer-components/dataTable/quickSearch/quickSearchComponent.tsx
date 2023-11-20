@@ -6,6 +6,7 @@ import { FormMarkup, IConfigurableFormComponent } from 'providers/form/models';
 import { validateConfigurableComponentSettings } from 'providers/form/utils';
 import settingsFormJson from './settingsForm.json';
 import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 export interface IQuickSearchComponentProps extends IConfigurableFormComponent {}
 
@@ -26,6 +27,7 @@ const QuickSearchComponent: IToolboxComponent<IQuickSearchComponentProps> = {
   },
   migrator: m => m
     .add(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IQuickSearchComponentProps>(1, (prev) => migrateVisibility(prev))
   ,
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),

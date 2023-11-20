@@ -2,12 +2,12 @@ import { GroupOutlined } from '@ant-design/icons';
 import { ExpandIconPosition } from 'antd/lib/collapse/Collapse';
 import { nanoid } from 'nanoid';
 import React from 'react';
-import ComponentsContainer from '../../components/formDesigner/containers/componentsContainer';
-import { CollapsiblePanel } from '../../components/panel';
-import { IToolboxComponent } from '../../interfaces';
-import { useForm } from '../../providers/form';
-import { FormMarkup } from '../../providers/form/models';
-import { getStyle, validateConfigurableComponentSettings } from '../../providers/form/utils';
+import ComponentsContainer from 'components/formDesigner/containers/componentsContainer';
+import { CollapsiblePanel } from 'components/panel';
+import { IToolboxComponent } from 'interfaces';
+import { useForm } from 'providers/form';
+import { FormMarkup } from 'providers/form/models';
+import { getStyle, validateConfigurableComponentSettings } from 'providers/form/utils';
 import { ICollapsiblePanelComponentProps, ICollapsiblePanelComponentPropsV0 } from './interfaces';
 import settingsFormJson from './settingsForm.json';
 import {
@@ -15,6 +15,7 @@ import {
   migrateCustomFunctions,
 } from '../../designer-components/_common-migrations/migrateSettings';
 import { useFormData, useGlobalState } from 'providers';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -104,7 +105,8 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
           : prev.expandIconPosition === 'right'
             ? 'end'
             : prev.expandIconPosition
-      })),
+      }))
+      .add<ICollapsiblePanelComponentProps>(4, (prev) => migrateVisibility(prev)),
   customContainerNames: ['header', 'content'],
 };
 

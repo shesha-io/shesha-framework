@@ -56,8 +56,32 @@ namespace Shesha.StoredFiles
         [HttpGet, Route("Download")]
         public async Task<FileStreamResult> Download(Guid id, int? versionNo)
         {
-            // todo: convert to async call
-            var file = _fileRepository.Get(id);
+            var fileVersion = await GetStoredFileVersionAsync(id, versionNo);
+            var fileContents = await _fileService.GetStreamAsync(fileVersion);
+            await _fileService.MarkDownloadedAsync(fileVersion);
+
+            return File(fileContents, fileVersion.FileType.GetContentType(), fileVersion.FileName);
+        }
+
+        [HttpGet, Route("Base64String")]
+        public async Task<IActionResult> GetBase64StringAsync(Guid id, int? versionNo)
+        {
+            var fileVersion = await GetStoredFileVersionAsync(id, versionNo);
+
+            using (var fileContents = await _fileService.GetStreamAsync(fileVersion))
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    await fileContents.CopyToAsync(memoryStream);
+                    var base64String = Convert.ToBase64String(memoryStream.ToArray());
+                    return Ok(new { Base64String = base64String });
+                }
+            }
+        }
+
+        private async Task<StoredFileVersion> GetStoredFileVersionAsync(Guid id, int? versionNo)
+        {
+            var file = await _fileRepository.GetAsync(id);
             if (file == null)
                 throw new UserFriendlyException("File not found");
 
@@ -69,11 +93,7 @@ namespace Shesha.StoredFiles
             if (fileVersion == null)
                 throw new Exception("File version not found");
 
-            var fileContents = await _fileService.GetStreamAsync(fileVersion);
-            await _fileService.MarkDownloadedAsync(fileVersion);
-
-            // note: fileContents will be disposed automatically in the FileStreamResult 
-            return File(fileContents, fileVersion.FileType.GetContentType(), fileVersion.FileName);
+            return fileVersion;
         }
 
         [HttpPost, Route("Upload")]
@@ -586,7 +606,7 @@ namespace Shesha.StoredFiles
                     {
                         property.SetValue(owner, storedFile, null);
                         await _dynamicRepository.SaveOrUpdateAsync(owner);
-                    } 
+                    }
                     else if (owner == null && !input.PropertyName.IsNullOrEmpty())
                     {
                         storedFile.Temporary = true;

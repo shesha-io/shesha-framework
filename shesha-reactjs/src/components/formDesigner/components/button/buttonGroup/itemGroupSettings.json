@@ -110,7 +110,7 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "visibility": "Yes",
+
       "isDynamic": false,
       "version": 0,
       "description": "Enable this setting to hide a group automatically when it has no any visible items",

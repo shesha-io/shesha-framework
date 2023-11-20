@@ -1,16 +1,17 @@
 import { FileSearchOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
 import React from 'react';
-import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
+import ConfigurableFormItem from 'components/formDesigner/components/formItem';
 import { validateConfigurableComponentSettings } from '../../formDesignerUtils';
-import { IToolboxComponent } from '../../interfaces';
-import { useForm, useFormData, useGlobalState } from '../../providers';
+import { IToolboxComponent } from 'interfaces';
+import { useForm, useFormData, useGlobalState } from 'providers';
 import { IRefListStatusPropsV0 } from './migrations/models';
 import { IRefListStatusProps } from './models';
 import { RefListStatusSettingsForm } from './settings';
-import { executeCustomExpression, getStyle } from '../../utils/publicUtils';
-import { migrateCustomFunctions, migratePropertyName } from '../../designer-components/_common-migrations/migrateSettings';
+import { executeCustomExpression, getStyle } from 'utils/publicUtils';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 import { RefListStatus } from 'components/refListStatus/index';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
   type: 'refListStatus',
@@ -87,6 +88,7 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
       return result;
     })
     .add<IRefListStatusProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IRefListStatusProps>(3, (prev) => migrateVisibility(prev))
   ,
   settingsFormMarkup: RefListStatusSettingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(RefListStatusSettingsForm, model),
