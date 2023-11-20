@@ -8,7 +8,7 @@ import DataTableProvider from 'providers/dataTable';
 import { FormMarkup, IConfigurableFormComponent } from 'providers/form/models';
 import { evaluateString, validateConfigurableComponentSettings } from 'providers/form/utils';
 import settingsFormJson from './settingsForm.json';
-import { ColumnSorting, DataFetchingMode, GroupingItem, SortingItem, SortMode } from 'providers/dataTable/interfaces';
+import { ColumnSorting, DataFetchingMode, GroupingItem, ISortingItem, SortMode } from 'providers/dataTable/interfaces';
 import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 import { ConfigurableFormItem } from 'components';
 import { evaluateYesNo } from 'utils/form';
@@ -24,7 +24,7 @@ export interface ITableContextComponentProps extends IConfigurableFormComponent 
   sortMode?: SortMode;
   strictSortBy?: string;
   strictSortOrder?: ColumnSorting;
-  standardSorting?: SortingItem[];
+  standardSorting?: ISortingItem[];
   allowReordering?: YesNoInherit;
 }
 

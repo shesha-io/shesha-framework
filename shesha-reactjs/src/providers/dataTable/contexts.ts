@@ -16,6 +16,7 @@ import {
   ColumnSorting,
   ITableDataColumn,
   DataFetchDependency,
+  ISortingItem,
 } from './interfaces';
 import { IHasModelType, IRepository } from './repository/interfaces';
 
@@ -113,6 +114,7 @@ export interface IDataTableStateContext
 
   /** Rows grouping */
   grouping?: GroupingItem[];
+  
   /** Sort mode (standard or strict) */
   sortMode?: SortMode;
   /** Sort sorting: order by */
@@ -191,6 +193,7 @@ export interface IDataTableActionsContext
   setHiddenFilter: (owner: string, filter: IStoredFilter) => void;
 
   onSort?: (sorting: IColumnSorting[]) => void;
+  onGroup?: (grouping: ISortingItem[]) => void;
 
   changeSelectedIds?: (selectedIds: string[]) => void;
   getCurrentFilter: () => ITableFilter[];

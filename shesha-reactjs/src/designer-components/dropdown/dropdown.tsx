@@ -48,10 +48,18 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
 
     const initialValue = model?.defaultValue ? { initialValue: model.defaultValue } : {};
 
+
     return (
       <ConfigurableFormItem model={model} {...initialValue}>
         {(value, onChange) => {
-          return <Dropdown {...model} {...customDropDownEventHandler(eventProps)} value={value} onChange={onChange} />;
+          const customEvent =  customDropDownEventHandler(eventProps);
+          const onChangeInternal = (...args: any[]) => {
+            customEvent.onChange(args[0], args[1]);
+            if (typeof onChange === 'function') 
+              onChange(...args);
+          };
+          
+          return <Dropdown {...model} {...customEvent} value={value} onChange={onChangeInternal} />;
         }}
       </ConfigurableFormItem>
     );

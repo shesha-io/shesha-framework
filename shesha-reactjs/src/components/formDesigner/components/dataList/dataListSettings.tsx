@@ -171,6 +171,30 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
       <SettingsFormItem name="hidden" label="Hidden" valuePropName='checked' jsSetting>
           <Checkbox disabled={readOnly} />
       </SettingsFormItem>
+
+      <SectionSeparator title="Grouping" />
+
+      <SettingsFormItem name="collapsible" label="Collapsible" valuePropName='checked' jsSetting>
+          <Checkbox disabled={readOnly} />
+      </SettingsFormItem>
+
+      <SettingsFormItem name="collapseByDefault" label="Collapse by default" valuePropName='checked' jsSetting>
+          <Checkbox disabled={readOnly} />
+      </SettingsFormItem>
+
+      <SettingsFormItem name="groupStyle" label="Style of group headers">
+          <CodeEditor
+            readOnly={readOnly}
+            mode="dialog"
+            setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
+            propertyName="groupStyle"
+            label="Style of group headers"
+            //description="Enter code to get form identifier. You must return { name: string; module?: string; version?: number; } object. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
+            exposedVariables={[
+              { name: "data", description: "Selected form values", type: "object" },
+            ]}
+          />
+        </SettingsFormItem>
     </>
   );
 };

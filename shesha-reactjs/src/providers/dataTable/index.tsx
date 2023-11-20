@@ -58,6 +58,7 @@ import {
   setHoverRowAction,
   setDraggingRowAction,
   setStandardSortingAction,
+  onGroupAction,
 } from './actions';
 import {
   DATA_TABLE_CONTEXT_INITIAL_STATE,
@@ -80,7 +81,7 @@ import {
   SortMode,
   ColumnSorting,
   GroupingItem,
-  SortingItem,
+  ISortingItem,
   DataFetchDependencies,
   DataFetchDependency,
   DataFetchDependencyStateSwitcher,
@@ -106,7 +107,7 @@ interface IDataTableProviderBaseProps {
 
   dataFetchingMode: DataFetchingMode;
 
-  standardSorting?: SortingItem[];
+  standardSorting?: ISortingItem[];
 
   /** Id of the user config, is used for saving of the user settings (sorting, paging etc) to the local storage. */
   userConfigId?: string;
@@ -200,7 +201,7 @@ const getFetchListDataPayload = (state: IDataTableStateContext, repository: IRep
 
   const groupingSupported = repository.supportsGrouping && repository.supportsGrouping({ sortMode: state.sortMode });
 
-  if (groupingSupported && state.groupingColumns && state.groupingColumns.length > 0) {
+  if (dataColumns?.length > 0 && groupingSupported && state.groupingColumns && state.groupingColumns.length > 0) {
     state.groupingColumns.forEach(groupColumn => {
       if (!dataColumns.find(column => column.propertyName === groupColumn.propertyName)) {
         dataColumns.push(groupColumn);
@@ -247,7 +248,7 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = (props
   );
 };
 
-const sortingItems2ColumnSorting = (items: SortingItem[]): IColumnSorting[] => {
+const sortingItems2ColumnSorting = (items: ISortingItem[]): IColumnSorting[] => {
   return items
     ? items.map<IColumnSorting>(item => ({ id: item.propertyName, desc: item.sorting === 'desc' }))
     : [];
@@ -322,10 +323,10 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
       }));
 
       repository.prepareColumns(groupColumns).then(preparedColumns => {
-        dispatch(fetchGroupingColumnsSuccessAction({ grouping: grouping, columns: preparedColumns }));
+        dispatch(fetchGroupingColumnsSuccessAction({ grouping: state.grouping, columns: preparedColumns }));
       });
     }
-  }, [grouping, sortMode]);
+  }, [state.grouping, sortMode]);
 
   const ctx = useDataContext(false);
 
@@ -357,6 +358,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     state.dataFetchingMode,
     state.columns?.length,
     state.standardSorting,
+    state.grouping,
     state.userSorting,
     state.hiddenFilters,
     state.predefinedFilters,
@@ -602,6 +604,12 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     }      
   };
 
+  const onGroup = (grouping: ISortingItem[]) => {
+    if (tableIsReady.current === true){
+      dispatch(onGroupAction(grouping));
+    }      
+  };
+
   const flagSetters = getFlagSetters(dispatch);
 
   //#region public
@@ -740,6 +748,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   const actions: IDataTableActionsContext = {
     onSort,
+    onGroup,
     ...flagSetters,
     changeDisplayColumn,
     setCurrentPage,
@@ -773,6 +782,8 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     unregisterDataFetchDependency,
   };
 
+  /* Data Context section */
+
   const contextOnChangeData = <T,>(_data: T, changedData: IDataTableStateContext) => {
     if (!changedData)
       return;
@@ -786,20 +797,12 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
       setCurrentPage(changedData.currentPage);
       return;
     }
-  };
 
-  // update context data
-  /*useEffect(() => {
-    ctx.setData({
-      selectedRow: state.selectedRow,
-      selectedIds: state.selectedIds,
-      currentPage: state.currentPage,
-      tableData: state.tableData,
-      quickSearch: state.quickSearch
-    });
-    ctx.updateApi(actions);
-    ctx.updateOnChangeData(contextOnChangeData);
-  }, []);*/
+    if (changedData.grouping !== undefined && !isEqual(changedData.grouping, state.grouping)) {
+      onGroup(changedData.grouping);
+      return;
+    }
+  };
 
   useEffect(() => {
     ctx.setData({
@@ -807,11 +810,17 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
       selectedIds: state.selectedIds,
       currentPage: state.currentPage,
       tableData: state.tableData,
-      quickSearch: state.quickSearch
+      quickSearch: state.quickSearch,
+      userSorting: state.userSorting,
+      grouping: state.grouping
     });
-    ctx.updateApi(actions);
-    ctx.updateOnChangeData(contextOnChangeData); // update context.onChangeData function to use new State
-  }, [state.selectedRow, state.selectedIds, state.currentPage, state.tableData, state.quickSearch]);
+  }, [state.selectedRow, state.selectedIds, state.currentPage, state.tableData, state.quickSearch, state.userSorting, state.grouping]);
+
+  ctx.updateApi(actions); // update context api to use relevant State
+  ctx.updateOnChangeData(contextOnChangeData); // update context.onChangeData function to use relevant State
+
+  /* Data Context section */
+
 
   return (
     <DataTableStateContext.Provider value={state}>

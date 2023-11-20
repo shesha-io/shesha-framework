@@ -1,7 +1,7 @@
 import { IToolboxComponent } from '../../interfaces';
 import { CodeOutlined } from '@ant-design/icons';
 import React, { useMemo } from 'react';
-import { IConfigurableFormComponent } from '../../providers';
+import { IConfigurableActionConfiguration, IConfigurableFormComponent } from '../../providers';
 import { DataContextProvider } from 'providers/dataContextProvider';
 import { IModelMetadata, IPropertyMetadata } from 'interfaces/metadata';
 import { DataTypes } from 'interfaces/dataTypes';
@@ -11,6 +11,7 @@ import { ComponentsContainer } from 'components';
 export interface IDataContextComponentProps extends IConfigurableFormComponent {
   items: IPropertyMetadata[];
   initialDataCode: string;
+  onChangeAction?: IConfigurableActionConfiguration;
 }
 
 const DataContextComponent: IToolboxComponent<IDataContextComponentProps> = {

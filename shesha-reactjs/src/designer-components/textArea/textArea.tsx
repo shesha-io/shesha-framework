@@ -79,10 +79,19 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
           evaluateString(model?.initialValue, { formData, formMode, globalState })
         }
       >
-        {(value, onChange) => {
+        {(val, onChange) => {
+          const value = val?.target?.value;
           const showAsJson = Boolean(value) && typeof value === 'object';
+
+          const customEvent =  customEventHandler(eventProps);
+          const onChangeInternal = (...args: any[]) => {
+            customEvent.onChange(args[0]);
+            if (typeof onChange === 'function') 
+              onChange(...args);
+          };
+
           return showAsJson ? (
-              <JsonTextArea value={value} textAreaProps={textAreaProps} customEventHandler={customEventHandler(eventProps)} />
+              <JsonTextArea value={value} textAreaProps={textAreaProps} customEventHandler={customEvent} />
             ) : model.readOnly ? (
               <ReadOnlyDisplayFormItem value={value} disabled={model.disabled} />
             ) : (
@@ -90,9 +99,9 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
                 rows={2}
                 {...textAreaProps}
                 disabled={model.disabled ? model.disabled : undefined}
-                {...customEventHandler(eventProps)}
+                {...customEvent}
                 value={value}
-                onChange={onChange}
+                onChange={onChangeInternal}
               />
             );
           }}

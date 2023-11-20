@@ -87,13 +87,13 @@ export function useApplicationContext(topContextId?: string): IApplicationContex
   tcId = topContextId || tcId;
   const { backendUrl } = useSheshaApplication();
   const dcm = useDataContextManager(false);
-  const { formMode, form, setFormDataAndInstance: setFormData } = useForm(false) ?? dcm.getFormInstance();
+  const form = useForm(false) ?? dcm.getFormInstance();
   const { globalState, setState: setGlobalState } = useGlobalState();
   return {
     data: useFormData()?.data,
     contexts: {...dcm?.getDataContextsData(tcId)},
-    setFormData,
-    formMode,
+    setFormData: form?.setFormData,
+    formMode: form?.formMode,
     globalState,
     setGlobalState,
     form,

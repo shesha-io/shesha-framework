@@ -86,7 +86,16 @@ const TimeField: IToolboxComponent<ITimePickerProps> = {
 
     return (
       <ConfigurableFormItem model={model}>
-        {(value, onChange) => <TimePickerWrapper {...model} {...customTimeEventHandler(eventProps)} value={value} onChange={onChange} />}
+        {(value, onChange) =>  {
+          const customEvent =  customTimeEventHandler(eventProps);
+          const onChangeInternal = (...args: any[]) => {
+            customEvent.onChange(args[0], args[1]);
+            if (typeof onChange === 'function') 
+              onChange(...args);
+          };
+          
+          return <TimePickerWrapper {...model} {...customEvent} value={value} onChange={onChangeInternal} />;
+        }}
       </ConfigurableFormItem>
     );
   },

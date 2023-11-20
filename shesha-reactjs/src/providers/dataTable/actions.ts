@@ -11,9 +11,10 @@ import {
   ITableDataInternalResponse,
   ITableFilter,
   IndexColumnFilterOption,
-  GroupingItem,
   SortMode,
   ColumnSorting,
+  ISortingItem,
+  GroupingItem,
 } from './interfaces';
 
 export enum DataTableActionEnums {
@@ -50,6 +51,7 @@ export enum DataTableActionEnums {
   RegisterConfigurableColumns = 'REGISTER_CONFIGURABLE_COLUMNS',
   OnSelectRow = 'ON_SELECT_ROW',
   OnSort = 'ON_SORT',
+  OnGroup = 'ON_GROUP',
   SetModelType = 'SET_MODEL_TYPE',
   SetDataFetchingMode = 'SET_DATA_FETCHING_MODE',
 
@@ -224,6 +226,8 @@ export const registerConfigurableColumnsAction = createAction<
 >(DataTableActionEnums.RegisterConfigurableColumns, (p) => p);
 
 export const onSortAction = createAction<IColumnSorting[], IColumnSorting[]>(DataTableActionEnums.OnSort, (p) => p);
+
+export const onGroupAction = createAction<ISortingItem[], ISortingItem[]>(DataTableActionEnums.OnGroup, (p) => p);
 
 /* NEW_ACTION_GOES_HERE */
 
