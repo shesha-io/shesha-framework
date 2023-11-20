@@ -3,9 +3,7 @@ using Abp.AspNetCore.Configuration;
 using Abp.AutoMapper;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
-using Castle.MicroKernel.Registration;
 using Shesha.ConfigurationItems;
-using Shesha.ConfigurationItems.Distribution;
 using Shesha.Modules;
 using Shesha.Web.FormsDesigner.Domain;
 using Shesha.Web.FormsDesigner.Services;
@@ -27,15 +25,15 @@ namespace Shesha.Web.FormsDesigner
         {
             var thisAssembly = Assembly.GetExecutingAssembly();
 
-            IocManager.IocContainer.Register(
-                Component.For<IConfigurableItemImport>().Forward<IFormConfigurationImport>().ImplementedBy<FormConfigurationImport>().LifestyleTransient(),
-                Component.For<IConfigurableItemExport>().Forward<IFormConfigurationExport>().ImplementedBy<FormConfigurationExport>().LifestyleTransient(),
-                Component.For<IConfigurationItemManager<FormConfiguration>>().Forward<IFormManager>().ImplementedBy<FormManager>().LifestyleTransient(),
-                
-                Component.For<IConfigurableItemImport>().Forward<IConfigurableComponentImport>().ImplementedBy<ConfigurableComponentImport>().LifestyleTransient(),
-                Component.For<IConfigurableItemExport>().Forward<IConfigurableComponentExport>().ImplementedBy<ConfigurableComponentExport>().LifestyleTransient(),
-                Component.For<IConfigurationItemManager<ConfigurableComponent>>().Forward<IConfigurableComponentManager>().ImplementedBy<ConfigurableComponentManager>().LifestyleTransient()
-            );
+            IocManager
+                .RegisterConfigurableItemManager<FormConfiguration, IFormManager, FormManager>()
+                .RegisterConfigurableItemExport<FormConfiguration, IFormConfigurationExport, FormConfigurationExport>()
+                .RegisterConfigurableItemImport<FormConfiguration, IFormConfigurationImport, FormConfigurationImport>();
+
+            IocManager
+                .RegisterConfigurableItemManager<ConfigurableComponent, IConfigurableComponentManager, ConfigurableComponentManager>()
+                .RegisterConfigurableItemExport<ConfigurableComponent, IConfigurableComponentExport, ConfigurableComponentExport>()
+                .RegisterConfigurableItemImport<ConfigurableComponent, IConfigurableComponentImport, ConfigurableComponentImport>();
 
             IocManager.RegisterAssemblyByConvention(thisAssembly);
 
