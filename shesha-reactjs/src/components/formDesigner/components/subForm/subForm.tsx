@@ -2,7 +2,7 @@ import React, { CSSProperties, FC, useMemo } from 'react';
 import ShaSpin from '../../../shaSpin';
 import ValidationErrors from '../../../validationErrors';
 import { useSubForm } from 'providers/subForm';
-import { FormItemProvider, ROOT_COMPONENT_KEY, useAppConfigurator } from 'providers';
+import { FormItemProvider, ROOT_COMPONENT_KEY, useAppConfigurator, useFormWithData } from 'providers';
 import Show from '../../../show';
 import FormInfo from '../../../configurableForm/formInfo';
 import { ConfigurationItemVersionStatusMap } from 'utils/configurationFramework/models';
@@ -17,7 +17,7 @@ interface ISubFormProps {
 }
 
 const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
-  const { formInfoBlockVisible } = useAppConfigurator();
+  const { formInfoBlockVisible, configurationItemMode } = useAppConfigurator();
   const {
     id,
     module,
@@ -32,6 +32,8 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
     description,
   } = useSubForm();
 
+  const formWithData = useFormWithData({ formId: { module, name }, configurationItemMode: configurationItemMode });
+
   const formStatusInfo = versionStatus ? ConfigurationItemVersionStatusMap[versionStatus] : null;
 
   const showFormInfo = hasFetchedConfig && formInfoBlockVisible && Boolean(formStatusInfo && id && name);
@@ -45,7 +47,7 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
   return (
     <ShaSpin spinning={isLoading}>
       <Show when={showFormInfo}>
-        <FormInfo formProps={persistedFormProps} />
+        <FormInfo formProps={persistedFormProps} onMarkupUpdated={formWithData?.refetcher} />
       </Show>
       <div style={{ flex: 1 }} data-name={propertyName}>
         {Object.keys(errors).map((error, index) => (
