@@ -35,7 +35,7 @@ const FormInfoContentWrapper: FC<Omit<IFormInforContent, 'id'>> = ({ forwardLink
 
   const reset = () => {
     setActionFlag(null);
-    onMarkupUpdated();
+    if (onMarkupUpdated) onMarkupUpdated();
 
     onClose();
   };
