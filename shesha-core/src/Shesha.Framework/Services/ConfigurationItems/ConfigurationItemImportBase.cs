@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System;
 using Abp.Domain.Repositories;
 using Shesha.Domain.ConfigurationItems;
+using Abp.Domain.Uow;
 
 namespace Shesha.Services.ConfigurationItems
 {
@@ -14,6 +15,7 @@ namespace Shesha.Services.ConfigurationItems
     {
         protected IRepository<Module, Guid> ModuleRepo { get; private set; }
         protected IRepository<FrontEndApp, Guid> FrontendAppRepo { get; private set; }
+        public IUnitOfWorkManager UnitOfWorkManager { get; set; }
 
         public ConfigurationItemImportBase(IRepository<Module, Guid> _moduleRepo, IRepository<FrontEndApp, Guid> _frontendAppRepo)
         {
@@ -40,6 +42,7 @@ namespace Shesha.Services.ConfigurationItems
                 {
                     module = new Module { Name = name, IsEnabled = true };
                     await ModuleRepo.InsertAsync(module);
+                    await UnitOfWorkManager.Current.SaveChangesAsync();
                 }
                 else
                     throw new NotSupportedException($"Module `{name}` is missing");

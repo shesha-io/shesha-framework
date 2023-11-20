@@ -1,7 +1,5 @@
 ﻿using Abp.Dependency;
 using Castle.MicroKernel.Registration;
-using Castle.MicroKernel.Resolvers;
-using Shesha.Configuration;
 using System;
 
 namespace Shesha.Settings.Ioc
