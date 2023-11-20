@@ -27,6 +27,7 @@ import { useFormDesignerComponents } from './hooks';
 import { FormIdentifier, FormMarkupWithSettings, FormRawMarkup, IFormDto, IFormSettings } from './models';
 import { asFormFullName, asFormRawId, getComponentsFromMarkup } from './utils';
 import { DataTypes } from 'interfaces/dataTypes';
+import { useDeepCompareEffect } from 'react-use';
 
 /**
  * Form configuration DTO
@@ -394,7 +395,7 @@ export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse
     }
   };
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     fetchAll(false);
 
     // return cleanup: clean up form and data
@@ -458,13 +459,15 @@ const getFormFields = (payload: GetFormFieldsPayload): string[] => {
   const { formMarkup, formSettings, toolboxComponents } = payload;
   if (!formMarkup) return null;
 
-  const components = componentsTreeToFlatStructure(toolboxComponents, getComponentsFromMarkup(formMarkup))
-      .allComponents;
+  const components = componentsTreeToFlatStructure(
+    toolboxComponents,
+    getComponentsFromMarkup(formMarkup)
+  ).allComponents;
   let fieldNames = [];
   for (const key in components) {
-      if (components.hasOwnProperty(key)){
-          fieldNames.push(components[key].propertyName);
-      }
+    if (components.hasOwnProperty(key)) {
+      fieldNames.push(components[key].propertyName);
+    }
   }
 
   fieldNames = fieldNames.concat(formSettings?.fieldsToFetch ?? []);
