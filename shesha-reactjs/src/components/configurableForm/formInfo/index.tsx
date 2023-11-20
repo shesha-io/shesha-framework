@@ -7,7 +7,7 @@ import { CONFIGURATION_ITEM_STATUS_MAPPING } from '../../../utils/configurationF
 import { getFormFullName } from '../../../utils/form';
 import HelpTextPopover from '../../helpTextPopover';
 import StatusTag from '../../statusTag';
-import Content from './content';
+import FormInfoContent from './formInfoContent';
 
 export interface FormInfoProps {
   /**
@@ -56,7 +56,15 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated }) => {
       extra={<CloseOutlined onClick={() => toggleShowInfoBlock(false)} title="Click to hide form info" />}
       size="small"
     >
-      {id && <Content id={id} forwardLink={getDesignerUrl(id)} open={open} onClose={() => setOpen(false)} onMarkupUpdated={onMarkupUpdated}/>}
+      {id && open && (
+        <FormInfoContent
+          id={id}
+          forwardLink={getDesignerUrl(id)}
+          open={open}
+          onClose={() => setOpen(false)}
+          onMarkupUpdated={onMarkupUpdated}
+        />
+      )}
     </Card>
   );
 };

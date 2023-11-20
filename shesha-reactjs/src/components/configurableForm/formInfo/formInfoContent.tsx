@@ -3,7 +3,7 @@ import { Button, Form, Modal } from 'antd';
 import { FormDesignerRenderer } from 'components/formDesigner/formDesignerRenderer';
 import React, { FC, useEffect } from 'react';
 import { FormProvider, useFormDesigner } from '../../../providers';
-import FormInfoContentConainter from './container';
+import FormInfoContentConainter from './formInfoContainer';
 
 interface IFormInforContent {
   id: string;
@@ -16,7 +16,7 @@ interface IFormInforContent {
   onMarkupUpdated?: () => void;
 }
 
-const Component: FC<Omit<IFormInforContent, 'id'>> = ({ forwardLink, onClose, open, onMarkupUpdated }) => {
+const FormInfoContentWrapper: FC<Omit<IFormInforContent, 'id'>> = ({ forwardLink, onClose, open, onMarkupUpdated }) => {
   const [form] = Form.useForm();
 
   const { actionFlag, setActionFlag, setToolbarRightButton, allComponents, componentRelations, formSettings } =
@@ -35,13 +35,16 @@ const Component: FC<Omit<IFormInforContent, 'id'>> = ({ forwardLink, onClose, op
 
   const reset = () => {
     setActionFlag(null);
-    onClose();
     onMarkupUpdated();
+
+    onClose();
   };
 
   useEffect(() => {
-    if (actionFlag?.done) reset();
-  }, [actionFlag?.done]);
+    const { done, publish, version } = actionFlag || {};
+
+    if (done || publish || version) reset();
+  }, [actionFlag]);
 
   return (
     <Modal open={open} onCancel={onClose} width={'80%'} footer={null}>
@@ -61,10 +64,10 @@ const Component: FC<Omit<IFormInforContent, 'id'>> = ({ forwardLink, onClose, op
   );
 };
 
-export const Content: FC<IFormInforContent> = ({ id, ...props }) => (
+export const FormInfoContent: FC<IFormInforContent> = ({ id, ...props }) => (
   <FormInfoContentConainter formId={id}>
-    <Component {...props} />
+    <FormInfoContentWrapper {...props} />
   </FormInfoContentConainter>
 );
 
-export default Content;
+export default FormInfoContent;
