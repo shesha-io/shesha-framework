@@ -67,14 +67,15 @@ namespace Shesha.StoredFiles
         public async Task<IActionResult> GetBase64StringAsync(Guid id, int? versionNo)
         {
             var fileVersion = await GetStoredFileVersionAsync(id, versionNo);
-            var fileContents = await _fileService.GetStreamAsync(fileVersion);
 
-            using (var memoryStream = new MemoryStream())
+            using (var fileContents = await _fileService.GetStreamAsync(fileVersion))
             {
-                await fileContents.CopyToAsync(memoryStream);
-                var base64String = Convert.ToBase64String(memoryStream.ToArray());
-
-                return Ok(new { Base64String = base64String });
+                using (var memoryStream = new MemoryStream())
+                {
+                    await fileContents.CopyToAsync(memoryStream);
+                    var base64String = Convert.ToBase64String(memoryStream.ToArray());
+                    return Ok(new { Base64String = base64String });
+                }
             }
         }
 
