@@ -74,9 +74,14 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
     };
     return customModel;
   },
-  migrator: (m) => m.add<IImageProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev) as IImageProps)),
+  migrator: (m) => m
+  .add<IImageProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev) as IImageProps))
+  .add<IImageProps>(1, (prev) => migrateVisibility(prev)),
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  
 };
 
 export default ImageComponent;
+
+
