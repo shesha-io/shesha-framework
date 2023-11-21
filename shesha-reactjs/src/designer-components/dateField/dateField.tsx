@@ -63,7 +63,14 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
       <Fragment>
         <ConfigurableFormItem model={model}>
           {(value, onChange) => {
-            return <DatePickerWrapper {...model} {...customDateEventHandler(eventProps)} value={value} onChange={onChange} />;
+            const customEvent =  customDateEventHandler(eventProps);
+            const onChangeInternal = (...args: any[]) => {
+              customEvent.onChange(args[0], args[1]);
+              if (typeof onChange === 'function') 
+                onChange(...args);
+            };
+            
+            return <DatePickerWrapper {...model} {...customEvent} value={value} onChange={onChangeInternal} />;
           }}
         </ConfigurableFormItem>
       </Fragment>

@@ -66,3 +66,17 @@ export const FncDesignerMemberCreateView = addStory(Template, {
 export const FncDesignerDeployCreate = addStory(Template, {
   formId: '3c2dd65f-5b03-4db5-9a3a-64dc850c7e14',
 });
+
+export const DepDesignerCaseDetails = addStory(Template, {
+  formId: 'c6eb30fa-030e-4504-8247-64255377176b',
+});
+
+export const EntprDesignerTimeField = addStory(Template, {
+  formId: 'adbfb402-07d1-4ff3-8cac-44acbe10ed50',
+});
+export const RefListStatus = addStory(Template, {
+  formId: 'ecebf97c-cf1e-4e43-831e-91f0ceccaf06',
+});
+export const ImageEnhancement = addStory(Template, {
+  formId: '587c4eb6-4ed5-413a-ab42-e98e48fde28a',
+});

@@ -255,12 +255,12 @@ export interface IActionColumnProps {
    actionConfiguration?: IConfigurableActionConfiguration;  
 }
 
-export interface SortingItem {
+export interface ISortingItem {
   propertyName: string;
   sorting: ColumnSorting;
 }
 
-export type GroupingItem = SortingItem;
+export type GroupingItem = ISortingItem;
 
 export type SortMode = 'standard' | 'strict';
 

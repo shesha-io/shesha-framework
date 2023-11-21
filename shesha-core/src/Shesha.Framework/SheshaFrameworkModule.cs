@@ -91,18 +91,22 @@ namespace Shesha
                 })
             );
 
+            IocManager
+                .RegisterConfigurableItemManager<ReferenceList, IReferenceListManager, ReferenceListManager>()
+                .RegisterConfigurableItemExport<ReferenceList, IReferenceListExport, ReferenceListExport>()
+                .RegisterConfigurableItemImport<ReferenceList, IReferenceListImport, ReferenceListImport>();
+
+            IocManager
+                .RegisterConfigurableItemExport<EntityConfig, IEntityConfigExport, EntityConfigExport>()
+                .RegisterConfigurableItemImport<EntityConfig, IEntityConfigImport, EntityConfigImport>();
+
+            IocManager
+                .RegisterConfigurableItemManager<SettingConfiguration, ISettingStore, SettingStore>()
+                .RegisterConfigurableItemExport<SettingConfiguration, ISettingExport, SettingExport>()
+                .RegisterConfigurableItemImport<SettingConfiguration, ISettingImport, SettingImport>();
+
+
             IocManager.IocContainer.Register(
-                Component.For<IConfigurableItemImport>().Forward<IEntityConfigImport>().ImplementedBy<EntityConfigImport>().LifestyleTransient(),
-                Component.For<IConfigurableItemExport>().Forward<IEntityConfigExport>().ImplementedBy<EntityConfigExport>().LifestyleTransient(),
-                
-                Component.For<IConfigurableItemImport>().Forward<IReferenceListImport>().ImplementedBy<ReferenceListImport>().LifestyleTransient(),
-                Component.For<IConfigurableItemExport>().Forward<IReferenceListExport>().ImplementedBy<ReferenceListExport>().LifestyleTransient(),
-                Component.For<IConfigurationItemManager<ReferenceList>>().Forward<IConfigurationItemManager>().Forward<IReferenceListManager>().ImplementedBy<ReferenceListManager>().LifestyleTransient(),
-
-                Component.For<IConfigurableItemImport>().Forward<ISettingImport>().ImplementedBy<SettingImport>().LifestyleTransient(),
-                Component.For<IConfigurableItemExport>().Forward<ISettingExport>().ImplementedBy<SettingExport>().LifestyleTransient(),
-                Component.For<IConfigurationItemManager<SettingConfiguration>>().Forward<IConfigurationItemManager>().Forward<ISettingStore>().ImplementedBy<SettingStore>().LifestyleTransient(),
-
                 Component.For(typeof(ISettingAccessor<>)).ImplementedBy(typeof(SettingAccessor<>)).LifestyleTransient()
             );
 

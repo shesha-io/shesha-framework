@@ -1,14 +1,11 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Timing;
-using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Distribution.Exceptions;
 using Shesha.ConfigurationItems.Distribution.Models;
-using Shesha.ConfigurationItems.Specifications;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Exceptions;
-using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Utilities;
@@ -93,7 +90,8 @@ namespace Shesha.ConfigurationItems.Distribution
                     item.FileName = containsAppKey ? parts[3] : parts[2];
                     item.ApplicationKey = containsAppKey ? parts[2] : null;
 
-                    if (!context.Importers.TryGetValue(item.ItemType, out var importer))
+                    var importer = context.GetImporter(item.ItemType);
+                    if (importer == null)
                         if (!context.SkipUnsupportedItems)
                             throw new ImporterNotFoundException(item.ItemType);
 
@@ -112,7 +110,8 @@ namespace Shesha.ConfigurationItems.Distribution
             if (exportResult.Items.Any(i => i.RelativePath == path))
                 return;
 
-            if (!context.Exporters.TryGetValue(item.ItemType, out var exporter))
+            var exporter = context.GetExporter(item);
+            if (exporter == null)
                 throw new ExporterNotFoundException(item.ItemType);
 
             var dto = await exporter.ExportItemAsync(item);

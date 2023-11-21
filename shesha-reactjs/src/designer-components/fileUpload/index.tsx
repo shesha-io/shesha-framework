@@ -83,7 +83,6 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
       allowUpload: true,
       ownerId: '{data.id}',
       ownerType: '',
-      propertyName: '',
       isDragger: false,
     };
     return customModel;

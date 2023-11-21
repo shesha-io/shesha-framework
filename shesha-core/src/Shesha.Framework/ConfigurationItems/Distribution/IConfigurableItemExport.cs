@@ -31,4 +31,9 @@ namespace Shesha.ConfigurationItems.Distribution
         /// <returns></returns>
         Task WriteToJsonAsync(DistributedConfigurableItemBase item, Stream jsonStream);
     }
+
+    public interface IConfigurableItemExport<TItem>: IConfigurableItemExport where TItem: ConfigurationItemBase
+    { 
+
+    }
 }

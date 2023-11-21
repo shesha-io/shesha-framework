@@ -15,6 +15,7 @@ import { ITextFieldComponentProps, TextType } from './interfaces';
 import settingsFormJson from './settingsForm.json';
 import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import ReadOnlyDisplayFormItem from 'components/readOnlyDisplayFormItem/index';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -82,9 +83,17 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
           evaluateString(model?.initialValue, { formData, formMode, globalState })
         }
       >
-        {(value, onChange) =>
-            <InputComponentType {...inputProps} {...customEventHandler(eventProps)} value={value} onChange={onChange} />
-        }
+        {(value, onChange) => {
+          const customEvent =  customEventHandler(eventProps);
+          const onChangeInternal = (...args: any[]) => {
+            customEvent.onChange(args[0]);
+            if (typeof onChange === 'function') 
+              onChange(...args);
+          };
+          return inputProps.readOnly
+            ? <ReadOnlyDisplayFormItem value={model.textType === 'password' ? ''.padStart(value.length, '•••••') : value} disabled={model.disabled} />
+            : <InputComponentType {...inputProps} {...customEvent} disabled={model.disabled} value={value} onChange={onChangeInternal} />;
+        }}
       </ConfigurableFormItem>
     );
   },

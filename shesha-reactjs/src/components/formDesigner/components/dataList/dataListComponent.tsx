@@ -40,6 +40,12 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
     })
     .add<IDataListComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IDataListComponentProps>(3, (prev) => migrateVisibility(prev))
+    .add<IDataListComponentProps>(4, prev => {
+      return {
+        ...prev,
+        collapsible: true
+      };
+    })
   ,
   settingsFormFactory: (props) => (<DataListSettingsForm {...props} />),
 };
@@ -72,7 +78,9 @@ export const DataListWithDataSource: FC<DataListWithDataSourceProps> = (props) =
     selectedIds,
     changeSelectedIds,
     getRepository,
-    modelType
+    modelType,
+    grouping,
+    groupingColumns
   } = dataSource;
   const { formMode } = useForm();
   const isDesignMode = formMode === 'designer';
@@ -121,6 +129,8 @@ export const DataListWithDataSource: FC<DataListWithDataSourceProps> = (props) =
         selectedRow={selectedRow}
         selectedRows={selectedRows}
         records={data}
+        grouping={grouping}
+        groupingMetadata={groupingColumns?.map(item => item.metadata) ?? []}
         isFetchingTableData={isFetchingTableData}
         selectedIds={selectedIds}
         changeSelectedIds={changeSelectedIds}

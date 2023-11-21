@@ -1,5 +1,7 @@
 import { IConfigurableActionConfiguration } from 'interfaces/configurableAction';
+import { IPropertyMetadata } from 'interfaces/metadata';
 import { ISelectionProps } from 'providers/dataTable/contexts';
+import { ISortingItem } from 'providers/dataTable/interfaces';
 import { FormIdentifier, IConfigurableFormComponent } from '../..';
 
 export type FormSelectionMode = 'name' | 'view' | 'expression';
@@ -15,7 +17,10 @@ export interface IDataListProps {
   selectionMode?: 'none' | 'single' | 'multiple';
   formIdExpression?: string;
 
-  records?: object[];
+  records?: any[];
+
+  grouping?: ISortingItem[];
+  groupingMetadata?: IPropertyMetadata[];
 
   selectedRow?: ISelectionProps;
   selectedRows?: { [key in string]: string }[];
@@ -39,6 +44,10 @@ export interface IDataListProps {
   customListItemWidth?: number;
 
   actionConfiguration?: IConfigurableActionConfiguration;
+
+  collapsible?: boolean;
+  collapseByDefault?: boolean;
+  groupStyle?: string;
 }
 
 export interface IDataListComponentProps extends IDataListProps, IConfigurableFormComponent {}

@@ -1,6 +1,12 @@
 ﻿using Abp.Dependency;
+using Abp.Reflection;
+using Shesha.Configuration.Runtime;
+using Shesha.Domain;
+using Shesha.Extensions;
 using Shesha.Services;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Shesha.ConfigurationItems.Distribution.Models
 {
@@ -10,23 +16,40 @@ namespace Shesha.ConfigurationItems.Distribution.Models
     public class ReadPackageContext
     {
         /// <summary>
-        /// Importers
-        /// </summary>
-        public Dictionary<string, IConfigurableItemImport> Importers { get; private set; }
-
-        /// <summary>
         /// If true, indicates that unsupported items (the ones which have no corresponding importer) should be skipped, otherwise an exception should be thrown.
         /// </summary>
         public bool SkipUnsupportedItems { get; set; }
 
-        public ReadPackageContext(Dictionary<string, IConfigurableItemImport> importers)
+        private readonly IIocManager _iocManager;
+
+        private readonly Dictionary<string, IConfigurableItemImport> _importers = new Dictionary<string, IConfigurableItemImport>();
+        private readonly Dictionary<string, Type> _itemTypes = new Dictionary<string, Type>();
+
+        public IConfigurableItemImport GetImporter(string itemType) 
         {
-            Importers = importers;
+            if (_importers.TryGetValue(itemType, out var importer))
+                return importer;
+
+            
+            importer = _itemTypes.TryGetValue(itemType, out var entityType)
+                ? _iocManager.GetItemImporter(entityType)
+                : null;
+            _importers[itemType] = importer;
+
+            return importer;
         }
+
         public ReadPackageContext(IIocManager iocManager)
         {
-            Importers = DistributionHelper.GetRegisteredImportersDictionary(iocManager);
+            _iocManager = iocManager;
+
+            var typeFinder = iocManager.Resolve<ITypeFinder>();
+            var entityConfigStore = iocManager.Resolve<IEntityConfigurationStore>();
+
+            var types = typeFinder.Find(t => t.IsAssignableTo(typeof(ConfigurationItemBase)) && !t.IsAbstract).ToList();
+            _itemTypes = types.ToDictionary(t => entityConfigStore.Get(t).DiscriminatorValue.Trim('"', '\''), t => t);
         }
+
         public ReadPackageContext() : this(StaticContext.IocManager)
         {
         }

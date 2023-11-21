@@ -60,34 +60,36 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
                         >
                             {mode === 'code' ? 'Value' : 'JS'}
                         </Button>
-                        <DataContextProvider id={model.id} name={props.componentName} description={props.label.toString()} type={'settings'}
-                            initialData={new Promise((resolve) => {
-                                resolve(setValueByPropertyName({}, internalProps?.propertyName, localValue));
-                            })}
-                            dynamicData={
-                                internalProps?.propertyName && localValue
-                                    ? setValueByPropertyName({}, internalProps?.propertyName, localValue)
-                                    : null
-                            }
-                            onChangeData={(v) => {
-                                if (v && ctxRef.current?.onChange)
-                                    ctxRef.current?.onChange(getValueByPropertyName(v, internalProps?.propertyName));
-                            }}
-                        >
-                            <SettingsControl 
-                                id={model.id}
-                                propertyName={internalProps?.propertyName}
-                                mode={mode}
-                                value={value}
-                                onChange={onChange}
-                                contextRef={ctxRef}
-                                modeRef={modeRef}
-                            >
-                                {() =>
-                                    <ComponentsContainer containerId={props.id} dynamicComponents={components} />
+                        <div className='sha-js-content'>
+                            <DataContextProvider id={model.id} name={props.propertyName} description={props.propertyName} type={'settings'}
+                                initialData={new Promise((resolve) => {
+                                    resolve(setValueByPropertyName({}, internalProps?.propertyName, localValue));
+                                })}
+                                dynamicData={
+                                    internalProps?.propertyName && localValue
+                                        ? setValueByPropertyName({}, internalProps?.propertyName, localValue)
+                                        : null
                                 }
-                            </SettingsControl>
-                        </DataContextProvider>
+                                onChangeData={(v) => {
+                                    if (v && ctxRef.current?.onChange)
+                                        ctxRef.current?.onChange(getValueByPropertyName(v, internalProps?.propertyName));
+                                }}
+                            >
+                                <SettingsControl 
+                                    id={model.id}
+                                    propertyName={internalProps?.propertyName}
+                                    mode={mode}
+                                    value={value}
+                                    onChange={onChange}
+                                    contextRef={ctxRef}
+                                    modeRef={modeRef}
+                                >
+                                    {() =>
+                                        <ComponentsContainer containerId={props.id} dynamicComponents={components} />
+                                    }
+                                </SettingsControl>
+                            </DataContextProvider>
+                        </div>
                     </div>
                     );
                 }}

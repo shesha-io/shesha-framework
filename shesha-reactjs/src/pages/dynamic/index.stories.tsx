@@ -128,6 +128,7 @@ export const PersonEdit = addStory(Template, {
     module: 'Test Module',
     version: 7,
   },
+  id: '32E2B3DD-4D99-4542-AF71-134EC7C0E2CE',
 });
 
 export const PersonDetails = addStory(Template, {
@@ -169,15 +170,14 @@ export const WorkflowDefinitions = addStory(Template, {
   },
 });
 
-export const BugFix = addStory(Template, {
+export const ImageAdvanced = addStory(Template, {
   formId: {
-    name: 'School-Details',
-    module: 'Boxfusion.SheshaFunctionalTests.Common',
+    name: 'test-cascade-behavior-details',
+    module: 'Shesha',
   },
   mode: 'readonly',
-  id: 'bff4b223-2c29-43b3-9a96-4157d63f0420',
+  id: '23ecf860-e525-4fff-90f2-0e755b3c8e09',
 });
-
 export const DataList = addStory(Template, {
   formId: {
     name: 'alex-test',

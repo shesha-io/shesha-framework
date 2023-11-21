@@ -67,8 +67,15 @@ const RateComponent: IToolboxComponent<IRateProps> = {
 
     return (
       <ConfigurableFormItem model={model}>
-        {(value, onChange) =>
-          <Rate
+        {(value,  onChange) => {
+          const customEvent =  customRateEventHandler(eventProps);
+          const onChangeInternal = (...args: any[]) => {
+            customEvent.onChange(args[0]);
+            if (typeof onChange === 'function') 
+              onChange(args);
+          };
+          
+          return <Rate
             allowClear={allowClear}
             //allowHalf={allowHalf}
             character={icon ? <ShaIcon iconName={icon as IconType} /> : <StarFilled />}
@@ -77,11 +84,11 @@ const RateComponent: IToolboxComponent<IRateProps> = {
             tooltips={tooltips}
             className={classNames(className, 'sha-rate')}
             style={getStyle(style, formData)} // Temporary. Make it configurable
-            {...customRateEventHandler(eventProps)}
+            {...customEvent}
             value={value}
-            onChange={onChange}
-          />
-        }
+            onChange={onChangeInternal}
+          />;
+        }}
       </ConfigurableFormItem>
     );
   },

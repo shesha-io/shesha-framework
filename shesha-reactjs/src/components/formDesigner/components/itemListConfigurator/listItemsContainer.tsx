@@ -55,7 +55,7 @@ export const ItemListContainer: FC<IItemListContainerProps> = ({ index, id, item
 
   return (
     <ReactSortable
-      list={actualItems}
+      list={items}
       setList={onSetList}
       fallbackOnBody={true}
       swapThreshold={0.5}
