@@ -6,9 +6,9 @@ import { FormProvider, useFormDesigner } from '../../../providers';
 import FormInfoContentConainter from './formInfoContainer';
 
 interface IState {
-  done: boolean;
-  publish: boolean;
-  version: boolean;
+  done?: boolean;
+  publish?: boolean;
+  version?: boolean;
 }
 
 interface IFormInforContent extends IState {
@@ -65,17 +65,11 @@ const FormInfoContentWrapper: FC<Omit<IFormInforContent, 'id'>> = ({
 export const FormInfoContent: FC<IFormInforContent> = ({ id, ...props }) => {
   const [state, setState] = useState<IState>(INIT_STATE);
 
-  const onAfterDone = () => {
-    setState((s) => ({ ...s, done: true }));
-  };
+  const onAfterDone = () => setState((s) => ({ ...s, done: true }));
 
-  const onAfterPublish = () => {
-    setState((s) => ({ ...s, publish: true }));
-  };
+  const onAfterPublish = () => setState((s) => ({ ...s, publish: true }));
 
-  const onAfterVersion = () => {
-    setState((s) => ({ ...s, version: true }));
-  };
+  const onAfterVersion = () => setState((s) => ({ ...s, version: true }));
 
   const onFinish = () => {
     if (props?.onClose) props.onClose();
