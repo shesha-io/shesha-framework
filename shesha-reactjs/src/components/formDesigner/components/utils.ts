@@ -292,3 +292,8 @@ export const customAddressEventHandler = ({
     onGeocodeChange,
   };
 };
+export const isValidGuid = (input: string): boolean => {
+  if(!input) return false;
+  const guidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+  return guidRegex.test(input);
+};

@@ -50,7 +50,7 @@ const fileReducer = (data: IStoredFile): IStoredFile => {
   return { ...data, uid: data.id };
 };
 
-const filesReducer = (data: IStoredFile[]): IStoredFile[] => data?.map(file => fileReducer(file));
+const filesReducer = (data: IStoredFile[]): IStoredFile[] => data?.map((file) => fileReducer(file));
 
 const uploadFileEndpoint: IApiEndpoint = { url: '/api/StoredFile/Upload', httpVerb: 'POST' };
 const filesListEndpoint: IApiEndpoint = { url: '/api/StoredFile/FilesList', httpVerb: 'GET' };
@@ -80,19 +80,22 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   const { config } = useApplicationConfiguration();
   const { addItem: addDelayedUpdate, removeItem: removeDelayedUpdate } = useDelayedUpdate(false) ?? {};
 
-  const { loading: isFetchingFileList, refetch: fetchFileListHttp, data: fileListResponse } = useGet<IAjaxResponse<IStoredFile[]>>(
-    {
-      path: filesListEndpoint.url,
-      queryParams: {
-        ownerId,
-        ownerType,
-        ownerName,
-        filesCategory,
-        propertyName,
-        allCategories,
-      },
-      lazy: true,
-    });
+  const {
+    loading: isFetchingFileList,
+    refetch: fetchFileListHttp,
+    data: fileListResponse,
+  } = useGet<IAjaxResponse<IStoredFile[]>>({
+    path: filesListEndpoint.url,
+    queryParams: {
+      ownerId,
+      ownerType,
+      ownerName,
+      filesCategory,
+      propertyName,
+      allCategories,
+    },
+    lazy: true,
+  });
 
   const { mutate: uploadFileHttp } = useMutate();
 
@@ -248,8 +251,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
           uploadFile,
           deleteFile,
           downloadZipFile,
-          downloadFile,
-          /* NEW_ACTION_GOES_HERE */
+          downloadFile,          /* NEW_ACTION_GOES_HERE */
         }}
       >
         {children}

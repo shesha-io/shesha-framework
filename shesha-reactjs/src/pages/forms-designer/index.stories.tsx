@@ -77,3 +77,6 @@ export const EntprDesignerTimeField = addStory(Template, {
 export const RefListStatus = addStory(Template, {
   formId: 'ecebf97c-cf1e-4e43-831e-91f0ceccaf06',
 });
+export const ImageEnhancement = addStory(Template, {
+  formId: '587c4eb6-4ed5-413a-ab42-e98e48fde28a',
+});
