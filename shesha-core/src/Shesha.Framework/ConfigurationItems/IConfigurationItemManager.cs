@@ -10,7 +10,7 @@ namespace Shesha.ConfigurationItems
     /// <summary>
     /// Interface of the Configuration Item Manager
     /// </summary>
-    public interface IConfigurationItemManager<TItem>: IConfigurationItemManager where TItem : IConfigurationItem
+    public interface IConfigurationItemManager<TItem>: IConfigurationItemManager where TItem : ConfigurationItemBase
     {
         /// <summary>
         /// Update version status

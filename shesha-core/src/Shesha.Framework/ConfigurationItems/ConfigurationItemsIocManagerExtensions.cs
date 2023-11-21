@@ -3,6 +3,8 @@ using Abp.Reflection;
 using Castle.MicroKernel.Registration;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
+using Shesha.Domain.ConfigurationItems;
+using Shesha.Reflection;
 using System;
 using System.Linq;
 
@@ -26,6 +28,32 @@ namespace Shesha.ConfigurationItems
             );
             return iocManager;
         }
+
+        /// <summary>
+        /// Get manager for the specified type of the <see cref="ConfigurationItem"/>
+        /// </summary>
+        public static IConfigurationItemManager GetItemManager(this IIocManager iocManager, Type itemType)
+        {
+            itemType = itemType.StripCastleProxyType();
+            var managerType = typeof(ConfigurationItemBase).IsAssignableFrom(itemType)
+                ? typeof(IConfigurationItemManager<>).MakeGenericType(itemType)
+                : null;
+
+            return managerType != null && iocManager.IsRegistered(managerType)
+                ? iocManager.Resolve(managerType) as IConfigurationItemManager
+                : itemType.BaseType != null
+                    ? iocManager.GetItemManager(itemType.BaseType)
+                    : null;
+        }
+
+        /// <summary>
+        /// Get manager for the specified <paramref name="item"/>
+        /// </summary>
+        public static IConfigurationItemManager GetItemManager(this IIocManager iocManager, ConfigurationItemBase item) 
+        {
+            return iocManager.GetItemManager(item.GetType());
+        }
+        
 
         /// <summary>
         /// Register items exporter
