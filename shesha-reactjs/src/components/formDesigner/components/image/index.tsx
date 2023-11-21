@@ -1,9 +1,9 @@
-import { IFormItem, IToolboxComponent } from '../../../../interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '../../../../providers/form/models';
+import { IFormItem, IToolboxComponent } from 'interfaces';
+import { FormMarkup, IConfigurableFormComponent } from 'providers/form/models';
 import { FileImageOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '../formItem';
 import settingsFormJson from './settingsForm.json';
-import { getString, getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
+import { getString, getStyle, validateConfigurableComponentSettings } from 'providers/form/utils';
 import React from 'react';
 import { StoredFileProvider, useForm, useFormData, useSheshaApplication } from '../../../../providers';
 import {

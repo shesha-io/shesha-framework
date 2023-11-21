@@ -8,10 +8,11 @@ import DataTableProvider from 'providers/dataTable';
 import { FormMarkup, IConfigurableFormComponent } from 'providers/form/models';
 import { evaluateString, validateConfigurableComponentSettings } from 'providers/form/utils';
 import settingsFormJson from './settingsForm.json';
-import { ColumnSorting, DataFetchingMode, GroupingItem, SortingItem, SortMode } from 'providers/dataTable/interfaces';
+import { ColumnSorting, DataFetchingMode, GroupingItem, ISortingItem, SortMode } from 'providers/dataTable/interfaces';
 import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 import { ConfigurableFormItem } from 'components';
 import { evaluateYesNo } from 'utils/form';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 export interface ITableContextComponentProps extends IConfigurableFormComponent {
   sourceType?: 'Form' | 'Entity' | 'Url';
@@ -24,7 +25,7 @@ export interface ITableContextComponentProps extends IConfigurableFormComponent 
   sortMode?: SortMode;
   strictSortBy?: string;
   strictSortOrder?: ColumnSorting;
-  standardSorting?: SortingItem[];
+  standardSorting?: ISortingItem[];
   allowReordering?: YesNoInherit;
 }
 
@@ -65,6 +66,7 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
       })
       .add<ITableContextComponentProps>(4, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<ITableContextComponentProps>(5, (prev) => ({ ...prev, sortMode: 'standard', strictSortOrder: 'asc', allowReordering: 'no' }))
+      .add<ITableContextComponentProps>(6, (prev) => migrateVisibility(prev))
   ,
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),

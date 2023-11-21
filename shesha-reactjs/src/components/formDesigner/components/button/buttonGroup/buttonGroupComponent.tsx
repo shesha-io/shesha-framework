@@ -18,6 +18,7 @@ import ShaIcon, { IconType } from 'components/shaIcon/index';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { DynamicActionsEvaluator } from 'providers/dynamicActions/evaluator/index';
 import { useDeepCompareMemo } from 'hooks';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 type MenuItem = MenuProps['items'][number];
 
@@ -71,6 +72,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
       newModel.items = prev.items?.map(updateItemDefaults);
       return newModel;
     })
+    .add<IButtonGroupComponentProps>(6, (prev) => migrateVisibility(prev))
   ,
   settingsFormFactory: (props) => (<ButtonGroupSettingsForm {...props} />),
 };

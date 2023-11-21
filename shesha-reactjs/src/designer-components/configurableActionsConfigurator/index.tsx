@@ -6,8 +6,9 @@ import { useForm } from 'providers';
 import { validateConfigurableComponentSettings } from '../..';
 import { configurableActionsConfiguratorSettingsForm } from './settings';
 import { IConfigurableActionConfiguratorComponentProps } from './interfaces';
-import { migratePropertyName, migrateCustomFunctions } from '../../designer-components/_common-migrations/migrateSettings';
+import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
 import { ConfigurableActionConfigurator } from './configurator';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 const ConfigurableActionConfiguratorComponent: IToolboxComponent<IConfigurableActionConfiguratorComponentProps> = {
   type: 'configurableActionConfigurator',
@@ -29,7 +30,8 @@ const ConfigurableActionConfiguratorComponent: IToolboxComponent<IConfigurableAc
   validateSettings: model => validateConfigurableComponentSettings(configurableActionsConfiguratorSettingsForm, model),
   migrator: m => m
   .add<IConfigurableActionConfiguratorComponentProps>(0, prev => migratePropertyName(migrateCustomFunctions(prev)))
-,
+  .add<IConfigurableActionConfiguratorComponentProps>(1, (prev) => migrateVisibility(prev))
+  ,
 };
 
 export default ConfigurableActionConfiguratorComponent;

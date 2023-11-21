@@ -15,6 +15,7 @@ import { migrateV0toV1 } from './migrations/migrate-v1';
 import { entityPickerSettings } from './settingsForm';
 import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
 import { isEntityReferencePropertyMetadata } from 'interfaces/metadata';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 export interface IEntityPickerComponentProps extends IConfigurableFormComponent {
   placeholder?: string;
@@ -135,6 +136,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       return result;
     })
     .add<IEntityPickerComponentProps>(4, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IEntityPickerComponentProps>(5, (prev) => migrateVisibility(prev))
   ,
   settingsFormMarkup: entityPickerSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(entityPickerSettings, model),

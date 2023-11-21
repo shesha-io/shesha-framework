@@ -1,11 +1,11 @@
-import { IToolboxComponent } from '../../../../interfaces';
-import { IFormComponentContainer } from '../../../../providers/form/models';
+import { IToolboxComponent } from 'interfaces';
+import { IFormComponentContainer } from 'providers/form/models';
 import { FolderOutlined } from '@ant-design/icons';
-import { Tabs } from 'antd';
+import { Tabs, TabsProps } from 'antd';
 import ComponentsContainer from '../../containers/componentsContainer';
 import React, { Fragment } from 'react';
-import { getActualModel, getStyle, useApplicationContext } from '../../../../providers/form/utils';
-import { useFormData, useGlobalState, useSheshaApplication } from '../../../../providers';
+import { getActualModel, getStyle, useApplicationContext } from 'providers/form/utils';
+import { useFormData, useGlobalState, useSheshaApplication } from 'providers';
 import { nanoid } from 'nanoid/non-secure';
 import { TabSettingsForm } from './settings';
 import { ITabsComponentProps } from './models';
@@ -13,10 +13,10 @@ import ShaIcon from '../../../shaIcon';
 import {
   migrateCustomFunctions,
   migratePropertyName,
-} from '../../../../designer-components/_common-migrations/migrateSettings';
+} from 'designer-components/_common-migrations/migrateSettings';
 import { useDeepCompareMemo } from 'hooks';
 
-const { TabPane } = Tabs;
+type TabItem = TabsProps['items'][number];
 
 const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
   type: 'tabs',
@@ -32,68 +32,74 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
 
     const actionKey = defaultActiveKey || (tabs?.length && tabs[0]?.key);
 
-    const items = useDeepCompareMemo(
-      () => tabs?.map((item) => getActualModel(item, allData)),
-      [tabs, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]
+    const items = useDeepCompareMemo(() => {
+      const tabItems: TabItem[] = [];
+
+      (tabs ?? [])?.forEach((item) => {
+        const tabModel = getActualModel(item, allData);
+        const {
+          id,
+          key,
+          title,
+          icon,
+          closable,
+          className,
+          forceRender,
+          animated,
+          destroyInactiveTabPane,
+          closeIcon,
+          permissions,
+          hidden,
+          disabled,
+          components,
+        } = tabModel;
+
+        const granted = anyOfPermissionsGranted(permissions || []);
+        if ((!granted || hidden) && allData.formMode !== 'designer') return;
+
+        const tab: TabItem = {
+          key: key,
+          label: icon ? (
+            <Fragment>
+              <ShaIcon iconName={icon as any} /> {title}
+            </Fragment>
+          ) : (
+            <Fragment>
+              {icon} {title}
+            </Fragment>
+          ),
+          closable: closable,
+          className: className,
+          forceRender: forceRender,
+          animated: animated,
+          destroyInactiveTabPane: destroyInactiveTabPane,
+          closeIcon: closeIcon ? <ShaIcon iconName={closeIcon as any} /> : null,
+          disabled: disabled,
+          style: getStyle(model?.style, data, globalState),
+          children: (
+            <ComponentsContainer
+              containerId={id}
+              dynamicComponents={
+                model?.isDynamic ? components?.map((c) => ({ ...c, readOnly: model?.readOnly })) : []
+              }
+            />
+          )
+        };
+        tabItems.push(tab);
+      });
+
+      return tabItems;
+    }, [tabs, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]
     );
 
     return model.hidden ? null : (
-      <Tabs defaultActiveKey={actionKey} size={size} type={tabType} tabPosition={position}>
-        {items?.map((item) => {
-          const {
-            id,
-            key,
-            title,
-            icon,
-            closable,
-            className,
-            forceRender,
-            animated,
-            destroyInactiveTabPane,
-            closeIcon,
-            permissions,
-            hidden,
-            disabled,
-            components,
-          } = item;
-
-          const granted = anyOfPermissionsGranted(permissions || []);
-
-          if ((!granted || hidden) && allData.formMode !== 'designer') return null;
-
-          return (
-            <TabPane
-              key={key}
-              closable={closable}
-              className={className}
-              forceRender={forceRender}
-              animated={animated}
-              destroyInactiveTabPane={destroyInactiveTabPane}
-              closeIcon={closeIcon ? <ShaIcon iconName={closeIcon as any} /> : null}
-              disabled={disabled}
-              style={getStyle(model?.style, data, globalState)}
-              tab={
-                icon ? (
-                  <Fragment>
-                    <ShaIcon iconName={icon as any} /> {title}
-                  </Fragment>
-                ) : (
-                  <Fragment>
-                    {icon} {title}
-                  </Fragment>
-                )
-              }
-            >
-              <ComponentsContainer
-                containerId={id}
-                dynamicComponents={
-                  model?.isDynamic ? components?.map((c) => ({ ...c, readOnly: model?.readOnly })) : []
-                }
-              />
-            </TabPane>
-          );
-        })}
-      </Tabs>
+      <Tabs
+        defaultActiveKey={actionKey}
+        size={size}
+        type={tabType}
+        tabPosition={position}
+        items={items}
+      />
     );
   },
   initModel: (model) => {

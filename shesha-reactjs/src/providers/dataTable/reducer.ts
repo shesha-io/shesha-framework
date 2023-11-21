@@ -24,6 +24,7 @@ import {
   DataFetchingMode,
   IColumnSorting,
   IGetListDataPayload,
+  ISortingItem,
   ITableColumn,
   ITableDataColumn,
   ITableDataInternalResponse,
@@ -465,6 +466,14 @@ const reducer = handleActions<IDataTableStateContext, any>(
       };
     },
 
+    [DataTableActionEnums.OnGroup]: (state: IDataTableStateContext, action: ReduxActions.Action<ISortingItem[]>) => {
+      const { payload } = action;
+      return {
+        ...state,
+        grouping: [...payload]
+      };
+    },
+
     [DataTableActionEnums.ExportToExcelError]: (state: IDataTableStateContext, action: ReduxActions.Action<string>) => {
       const { payload } = action;
 
@@ -473,6 +482,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
         exportToExcelError: payload,
       };
     },
+
     [DataTableActionEnums.ExportToExcelWarning]: (
       state: IDataTableStateContext,
       action: ReduxActions.Action<string>
@@ -538,7 +548,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
       return {
         ...state,
-        standard: [...payload],
+        standardSorting: [...payload],
       };
     },
 

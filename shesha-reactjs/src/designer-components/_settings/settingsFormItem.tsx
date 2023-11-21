@@ -1,12 +1,11 @@
-import React, { cloneElement, FC, ReactElement, useEffect, useState } from 'react';
+import React, { cloneElement, FC, ReactElement, useEffect, useRef } from 'react';
 import { Button, Form, FormItemProps } from "antd";
-import SettingsControl, { SettingsControlChildrenType } from './settingsControl';
+import SettingsControl, { ISwitchModeSettingsRef, SettingsControlChildrenType } from './settingsControl';
 import { useSettingsForm } from './settingsForm';
 import { useSettingsPanel } from './settingsCollapsiblePanel';
 import { getPropertySettingsFromData } from './utils';
 import './styles/index.less';
 import { ConfigurableFormItem, IConfigurableFormItemProps } from 'components';
-import { PropertySettingMode } from 'providers';
 
 interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps, 'model'> {
     name?: string;
@@ -38,10 +37,15 @@ const SettingsFormItem: FC<ISettingsFormItemProps> = (props) => {
 const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
     const { getFieldsValue } = useSettingsForm<any>();
     const formData = getFieldsValue();
-    const initSettings = getPropertySettingsFromData(formData, props.name?.toString());
+    const { _mode: mode } = getPropertySettingsFromData(formData, props.name?.toString());
 
-    const [mode, setMode] = useState<PropertySettingMode>(initSettings._mode ?? 'value');
-    const switchMode = () => setMode(mode === 'code' ? 'value' : 'code');
+    const modeRef = useRef<ISwitchModeSettingsRef>();
+    const switchMode = () => {
+        modeRef.current?.onChange(mode === 'code' ? 'value' : 'code');
+    };
+
+    //const [mode, setMode] = useState<PropertySettingMode>(initSettings._mode ?? 'value');
+    //const switchMode = () => setMode(mode === 'code' ? 'value' : 'code');
 
     if (!props.name)
         return null;
@@ -91,7 +95,14 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
                         {mode === 'code' ? 'Value' : 'JS'}
                     </Button>
 
-                    <SettingsControl id={props.name.toString()} propertyName={props.name.toString()} mode={mode} value={value} onChange={onChange}>
+                    <SettingsControl 
+                        id={props.name.toString()} 
+                        propertyName={props.name.toString()}
+                        mode={mode}
+                        value={value}
+                        onChange={onChange}
+                        modeRef={modeRef}
+                    >
                         {(value, onChange) => {
                             const mergedProps = {
                                 ...children?.props,
@@ -117,7 +128,9 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
                                 >
                                     {mode === 'code' ? 'Value' : 'JS'}
                                 </Button>
-                                {cloneElement(children, mergedProps)}
+                                <div className='sha-js-content'>
+                                    {cloneElement(children, mergedProps)}
+                                </div>
                             </div>;
                         }}
                     </SettingsControl>

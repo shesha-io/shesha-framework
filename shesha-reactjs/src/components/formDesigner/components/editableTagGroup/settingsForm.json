@@ -8,7 +8,7 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "visibility": "Yes",
+
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "start",
@@ -46,33 +46,6 @@
             "propertyName": "placeholder",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
             "label": "Placeholder"
-          },
-          {
-            "id": "df8a8f35-a50b-42f9-9642-73d390ceddbf",
-            "type": "dropdown",
-            "propertyName": "visibility",
-            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
-            "label": "Visibility",
-            "description": "This property will eventually replace the 'hidden' property and other properties that toggle visibility on the UI and payload",
-            "allowClear": true,
-            "values": [
-              {
-                "label": "Yes (Display in UI and include in payload)",
-                "value": "Yes",
-                "id": "53cd10ce-26af-474b-af75-8e7b1f19e51d"
-              },
-              {
-                "label": "No (Only include in payload)",
-                "value": "No",
-                "id": "f07a228c-cb9c-4da7-a8bc-bc2be518a058"
-              },
-              {
-                "label": "Removed (Remove from UI and exlude from payload)",
-                "value": "Removed",
-                "id": "3b6282ee-2eee-47ec-bab9-4cba52b970a0"
-              }
-            ],
-            "dataSourceType": "values"
           },
           {
             "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",

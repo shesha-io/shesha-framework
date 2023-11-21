@@ -11,6 +11,7 @@ import ConfigurableFormItem from '../formItem';
 import RadioGroup from './radioGroup';
 import settingsFormJson from './settingsForm.json';
 import { IRadioProps } from './utils';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -51,6 +52,7 @@ const Radio: IToolboxComponent<IEnhancedRadioProps> = {
       };
     })
     .add<IEnhancedRadioProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IEnhancedRadioProps>(3, (prev) => migrateVisibility(prev))
   ,
 };
 

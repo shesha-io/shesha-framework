@@ -8,7 +8,7 @@ import { UrlAutocomplete } from './urlAutocomplete';
  * A component for working with dynamic autocomplete
  */
 
-export const Autocomplete = <TValue,>(props: IAutocompleteProps<TValue>) => {
+const Autocomplete = <TValue,>(props: IAutocompleteProps<TValue>) => {
   return props.dataSourceType === 'entitiesList'
     ? <EntityAutocomplete {...props} />
     : <UrlAutocomplete {...props}  />;
@@ -94,12 +94,9 @@ AutocompleteInterface.Raw = RawAutocomplete;
 AutocompleteInterface.EntityDto = EntityDtoAutocomplete;
 
 export {
-  RawAutocomplete as AutocompleteRaw,
-  EntityDtoAutocomplete as AutocompleteDto,
+  AutocompleteInterface as Autocomplete,
   type IAutocompleteProps,
   type ISelectOption,
   type AutocompleteDataSourceType,
   type CustomLabeledValue
-}; 
-
-export default AutocompleteInterface;
+};

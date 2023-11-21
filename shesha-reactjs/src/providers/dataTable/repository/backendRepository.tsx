@@ -18,7 +18,7 @@ import { IErrorInfo } from "interfaces/errorInfo";
 import { IAjaxResponseBase } from "interfaces/ajaxResponse";
 import FileSaver from "file-saver";
 import { DataTypes } from "interfaces/dataTypes";
-import { GENERIC_ENTITIES_ENDPOINT } from "src/index";
+import { GENERIC_ENTITIES_ENDPOINT } from "shesha-constants";
 
 export interface IWithBackendRepositoryArgs {
     entityType: string;

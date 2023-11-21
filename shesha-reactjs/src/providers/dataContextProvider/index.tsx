@@ -1,11 +1,11 @@
 import { useDeepCompareEffect } from "hooks/useDeepCompareEffect";
 import { IModelMetadata } from "interfaces/metadata";
-import { MetadataProvider, useMetadataDispatcher } from "providers";
+import { IConfigurableActionConfiguration, MetadataProvider, useConfigurableActionDispatcher, useMetadataDispatcher } from "providers";
 import { useDataContextManager, useDataContextRegister } from "providers/dataContextManager";
 import React, { FC, PropsWithChildren, useContext, useEffect, useRef, useState } from "react";
 import { createContext } from 'react';
 import { setValueByPropertyName } from "utils/object";
-import { getFieldNameFromExpression } from "utils/publicUtils";
+import { getFieldNameFromExpression, IApplicationContext, useApplicationContext } from "utils/publicUtils";
 
 export interface IDataContextProviderStateContext {
     id: string;
@@ -15,7 +15,6 @@ export interface IDataContextProviderStateContext {
     //data?: object;
     parentDataContext?: IDataContextFullInstance | null;
     metadata?: Promise<IModelMetadata>;
-    api?: object;
 }
 
 export interface IDataContextProviderActionsContext {
@@ -46,14 +45,19 @@ export interface IDataContextProviderProps {
     dynamicData?: any;
     metadata?: Promise<IModelMetadata>;
     onChangeData?: IContextOnChangeData;
+    onChangeAction?: IConfigurableActionConfiguration;
 }
 
 const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = ({ children, ...props }) => {
     
     const { id, name, description, type = 'custom', initialData, metadata, dynamicData } = props;
 
-    const { onChangeContext, getDataContextData, onChangeContextData } = useDataContextManager();
+    const { onChangeContext, onUpdateContextApi, getDataContextData, onChangeContextData } = useDataContextManager();
     const metadataDispatcher = useMetadataDispatcher();
+    const allData = useRef<IApplicationContext>();
+    allData.current = useApplicationContext(id);
+
+    const { executeAction } = useConfigurableActionDispatcher();
 
     const onChangeData = useRef<IContextOnChangeData>(props.onChangeData);
 
@@ -93,31 +97,33 @@ const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = ({
         if (onChangeData.current)
             onChangeData.current(data, changedData);
         onChangeContextData(props.id, data);
+
+        onChangeAction(changedData);
     };
 
     const setData = (data: any) => {
         if (onChangeData.current)
             onChangeData.current({...data}, {...data});
         onChangeContextData(props.id, {...data});
+
+        onChangeAction(data);
+    };
+
+    const onChangeAction = (changedData: any) => {
+        if (props.onChangeAction) {
+          executeAction({
+            actionConfiguration: props.onChangeAction,
+            argumentsEvaluationContext: {...allData.current, changedData},
+          });
+        }
     };
 
     const getData = () => {
         return {...getDataContextData(props.id)} ?? {};
     };
 
-    const updateApi = (api: object) => {
-        if (!state.api) {
-            setState({...state, api});
-            onChangeContext({
-                id,
-                name,
-                description,
-                type,
-                parentId: parentContext?.id,
-                ...actionContext,
-                api
-            });
-        }
+    const updateApi = (api: any) => {
+        onUpdateContextApi(id, api);
     };
 
     const updateOnChangeData = (func: IContextOnChangeData) => {
@@ -141,7 +147,6 @@ const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = ({
         parentId: parentContext?.id,
         initialData: {},
         ...actionContext,
-        api: state.api
     }, []);
 
     useDeepCompareEffect(() => {
@@ -195,7 +200,6 @@ const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = ({
             type,
             parentId: parentContext?.id,
             ...actionContext,
-            api: state.api
         });
     }, [name, description]);
 

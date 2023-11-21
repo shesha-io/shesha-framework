@@ -8,7 +8,7 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "visibility": "Yes",
+
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "start",
@@ -108,7 +108,7 @@
             "labelAlign": "right",
             "parentId": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
             "hidden": false,
-            "visibility": "Yes",
+
             "isDynamic": false,
             "description": "",
             "validate": {},
@@ -129,7 +129,7 @@
             "labelAlign": "right",
             "parentId": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
             "hidden": false,
-            "visibility": "Yes",
+
             "isDynamic": false,
             "description": "Make the collapse borderless and its background transparent",
             "validate": {},
@@ -146,7 +146,7 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "visibility": "Yes",
+
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "start",
@@ -197,7 +197,7 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "visibility": "Yes",
+
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "start",
@@ -218,7 +218,7 @@
             "labelAlign": "right",
             "parentId": "bc67960e-77e3-40f2-89cc-f18f94678cce",
             "hidden": false,
-            "visibility": "Yes",
+
             "isDynamic": false,
             "description": "Allows to hide the panel when all components are hidden due to some conditions",
             "validate": {},

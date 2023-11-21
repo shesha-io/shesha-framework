@@ -1,13 +1,14 @@
 import React, { FC } from 'react';
-import { IToolboxComponent } from '../../../../interfaces';
+import { IToolboxComponent } from 'interfaces';
 import { FormatPainterOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '../formItem';
-import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';
+import { validateConfigurableComponentSettings } from 'providers/form/utils';
 import { iconPickerFormSettings } from './settings';
 import ColorPicker from '../../../colorPicker';
 import { ColorResult } from 'react-color';
 import { IColorPickerComponentProps } from './interfaces';
-import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 const ColorPickerComponent: IToolboxComponent<IColorPickerComponentProps> = {
   type: 'colorPicker',
@@ -23,6 +24,7 @@ const ColorPickerComponent: IToolboxComponent<IColorPickerComponentProps> = {
   settingsFormMarkup: iconPickerFormSettings,
   migrator: (m) => m
     .add<IColorPickerComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IColorPickerComponentProps>(1, (prev) => migrateVisibility(prev))
   ,
   validateSettings: model => validateConfigurableComponentSettings(iconPickerFormSettings, model),
 };

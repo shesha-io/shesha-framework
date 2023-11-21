@@ -24,6 +24,7 @@ import {
   getRangePickerValues,
 } from './utils';
 import { migratePropertyName, migrateCustomFunctions } from '../../designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 const MIDNIGHT_MOMENT = moment('00:00:00', 'HH:mm:ss');
 
@@ -62,7 +63,14 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
       <Fragment>
         <ConfigurableFormItem model={model}>
           {(value, onChange) => {
-            return <DatePickerWrapper {...model} {...customDateEventHandler(eventProps)} value={value} onChange={onChange} />;
+            const customEvent =  customDateEventHandler(eventProps);
+            const onChangeInternal = (...args: any[]) => {
+              customEvent.onChange(args[0], args[1]);
+              if (typeof onChange === 'function') 
+                onChange(...args);
+            };
+            
+            return <DatePickerWrapper {...model} {...customEvent} value={value} onChange={onChangeInternal} />;
           }}
         </ConfigurableFormItem>
       </Fragment>
@@ -83,6 +91,7 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
   },
   migrator: (m) => m
     .add<IDateFieldProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IDateFieldProps>(1, (prev) => migrateVisibility(prev))
   ,
   linkToModelMetadata: (model, metadata): IDateFieldProps => {
     return {

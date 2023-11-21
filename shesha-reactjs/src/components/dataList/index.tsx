@@ -1,4 +1,4 @@
-import { Checkbox, Divider } from 'antd';
+import { Checkbox, Collapse, Divider, Typography } from 'antd';
 import classNames from 'classnames';
 import React, { FC, useEffect, useState } from 'react';
 import { useMeasure, usePrevious } from 'react-use';
@@ -11,8 +11,12 @@ import FormInfo from '../configurableForm/formInfo';
 import ShaSpin from '../shaSpin';
 import Show from '../show';
 import { IDataListProps } from './models';
-import { asFormRawId, asFormFullName, useApplicationContext, executeScriptSync } from '../../providers/form/utils';
+import { asFormRawId, asFormFullName, useApplicationContext, executeScriptSync, getStyle } from '../../providers/form/utils';
 import './styles/index.less';
+import { isEqual } from 'lodash';
+import { useDeepCompareMemo } from 'hooks';
+import { ValueRenderer } from 'components/valueRenderer/index';
+import { toCamelCase } from 'utils/string';
 
 interface EntityForm {
   entityType: string;
@@ -41,11 +45,19 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   orientation,
   listItemWidth,
   customListItemWidth,
+  grouping,
+  groupingMetadata,
+  collapsible,
+  collapseByDefault,
+  groupStyle,
   ...props
 }) => {
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const allData = useApplicationContext();
   const { executeAction } = useConfigurableActionDispatcher();
+
+  const computedGroupStyle = getStyle(groupStyle, allData.data) ?? {};
+
   const [formConfigs, setFormConfigs] = useState<IFormDto[]>([]);
   const [entityForms, setEntityForms] = useState<EntityForm[]>([]);
   const [entityTypes, setEntityTypes] = useState<string[]>([]);
@@ -384,6 +396,128 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     );
   };
 
+  type Row = any;
+  type RowOrGroup = Row | RowsGroup;
+  interface RowsGroup {
+    value: any;
+    index: number;
+    $childs: RowOrGroup[];
+  }
+  interface GroupLevelInfo {
+    propertyName: string;
+    index: number;
+    currentGroup?: RowsGroup;
+    propertyPath: string[];
+  }
+  type GroupLevels = GroupLevelInfo[];
+  const isGroup = (item: RowOrGroup): item is RowsGroup => {
+    return item && Array.isArray(item.$childs);
+  };
+
+  const groups = useDeepCompareMemo(() => {
+    if (grouping?.length > 0) {
+      const groupLevels: GroupLevels = grouping.map<GroupLevelInfo>((g, index) => ({
+        currentGroup: null,
+        propertyName: g.propertyName,
+        index: index,
+        propertyPath: g.propertyName.split('.')
+      }));
+
+      const getValue = (container: object, path: string[]) => {
+        return path.reduce((prev, part) => prev ? prev[part] : undefined, container);
+      };
+
+      const result: RowsGroup[] = [];
+      records.forEach(row => {
+        let parent: RowOrGroup[] = result;
+        let differenceFound = false;
+        groupLevels.forEach((g, index) => {
+          const groupValue = getValue(row, g.propertyPath);
+
+          if (!g.currentGroup || !isEqual(g.currentGroup.value, groupValue) || differenceFound) {
+            g.currentGroup = {
+              index: index,
+              value: groupValue,
+              $childs: []
+            };
+            parent.push(g.currentGroup);
+            differenceFound = true;
+          }
+          parent = g.currentGroup.$childs;
+        });
+        parent.push(row);
+      });
+      return result;
+    }
+
+    return null;
+  }, [records, grouping, groupingMetadata]);
+
+  const renderGroupTitle = (value: any, propertyName: string) => {
+    if (!Boolean(value) && value !== false)
+      return <Typography.Text type='secondary'>(empty)</Typography.Text>;
+    const propertyMeta = groupingMetadata.find(p => toCamelCase(p.path) === propertyName);
+    return <ValueRenderer value={value} meta={propertyMeta} />;
+  };
+
+  const renderGroup = (group: RowsGroup, key: number): React.ReactElement => {
+    const title = renderGroupTitle(group.value, grouping[group.index].propertyName);
+    return (
+      <Collapse
+        key={key}
+        defaultActiveKey={collapseByDefault ? [] : ['1']}
+        expandIconPosition='start'
+        className={`sha-group-level-${group.index}`}
+        collapsible={collapsible ? undefined : 'disabled'}
+      >
+        <Collapse.Panel header={<>{title}</>} key="1" style={computedGroupStyle}>
+          {group.$childs.map((child, index) => {
+            return isGroup(child)
+              ? renderGroup(child, index)
+              : renderRow(child, index);
+          })}
+        </Collapse.Panel>
+      </Collapse>
+    );
+  };
+
+  const renderRow = (item: any, index: number) => {
+    const isLastItem = records?.length - 1 === index;
+    const selected =
+      selectedRow?.index === index ||
+      (selectedRows?.length > 0 && selectedRows?.some(({ id }) => id === item?.id));
+    return (
+      <div key={item['id'] ?? index}>
+        <ConditionalWrap
+          key={index}
+          condition={selectionMode !== 'none'}
+          wrap={(children) => (
+            <Checkbox
+              className={classNames('sha-list-component-item-checkbox', { selected })}
+              checked={selected}
+              onChange={() => {
+                onSelectRowLocal(index, item);
+              }}
+            >
+              {children}
+            </Checkbox>
+          )}
+        >
+          <div
+            className={classNames('sha-list-component-item', { selected })}
+            onClick={() => {
+              onSelectRowLocal(index, item);
+            }}
+            style={itemWidthCalc}
+          >
+            {renderSubForm(item)}
+          </div>
+        </ConditionalWrap>{' '}
+        {!isLastItem && <Divider className={classNames('sha-list-component-divider', { selected })} />}
+      </div>
+    );
+  };
+
   //console.log(`dataList render, ${records?.length} records`);
 
   return (
@@ -413,42 +547,10 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           })}
         >
           <Show when={Boolean(records) /*&& Boolean(formConfiguration?.markup)*/}>
-            {records?.map((item: any, index) => {
-              const isLastItem = records?.length - 1 === index;
-              const selected =
-                selectedRow?.index === index ||
-                (selectedRows?.length > 0 && selectedRows?.some(({ id }) => id === item?.id));
-              return (
-                <div key={item['id'] ?? index}>
-                  <ConditionalWrap
-                    key={index}
-                    condition={selectionMode !== 'none'}
-                    wrap={(children) => (
-                      <Checkbox
-                        className={classNames('sha-list-component-item-checkbox', { selected })}
-                        checked={selected}
-                        onChange={() => {
-                          onSelectRowLocal(index, item);
-                        }}
-                      >
-                        {children}
-                      </Checkbox>
-                    )}
-                  >
-                    <div
-                      className={classNames('sha-list-component-item', { selected })}
-                      onClick={() => {
-                        onSelectRowLocal(index, item);
-                      }}
-                      style={itemWidthCalc}
-                    >
-                      {renderSubForm(item)}
-                    </div>
-                  </ConditionalWrap>{' '}
-                  {!isLastItem && <Divider className={classNames('sha-list-component-divider', { selected })} />}
-                </div>
-              );
-            })}
+            { groups 
+              ? groups?.map((item: RowsGroup, index) =>  renderGroup(item, index))
+              : records?.map((item: any, index) =>  renderRow(item, index))
+            }
           </Show>
         </div>
       </ShaSpin>

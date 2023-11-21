@@ -14,7 +14,8 @@ import { ITextAreaComponentProps } from './interfaces';
 import { ConfigurableFormItem } from 'components';
 import ReadOnlyDisplayFormItem from 'components/readOnlyDisplayFormItem';
 import { customEventHandler } from 'components/formDesigner/components/utils';
-import { migratePropertyName, migrateCustomFunctions } from '../../designer-components/_common-migrations/migrateSettings';
+import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -79,10 +80,19 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
           evaluateString(model?.initialValue, { formData, formMode, globalState })
         }
       >
-        {(value, onChange) => {
+        {(val, onChange) => {
+          const value = val?.target?.value;
           const showAsJson = Boolean(value) && typeof value === 'object';
+
+          const customEvent =  customEventHandler(eventProps);
+          const onChangeInternal = (...args: any[]) => {
+            customEvent.onChange(args[0]);
+            if (typeof onChange === 'function') 
+              onChange(...args);
+          };
+
           return showAsJson ? (
-              <JsonTextArea value={value} textAreaProps={textAreaProps} customEventHandler={customEventHandler(eventProps)} />
+              <JsonTextArea value={value} textAreaProps={textAreaProps} customEventHandler={customEvent} />
             ) : model.readOnly ? (
               <ReadOnlyDisplayFormItem value={value} disabled={model.disabled} />
             ) : (
@@ -90,9 +100,9 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
                 rows={2}
                 {...textAreaProps}
                 disabled={model.disabled ? model.disabled : undefined}
-                {...customEventHandler(eventProps)}
+                {...customEvent}
                 value={value}
-                onChange={onChange}
+                onChange={onChangeInternal}
               />
             );
           }}
@@ -112,6 +122,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
   },
   migrator: (m) => m
     .add<ITextAreaComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<ITextAreaComponentProps>(1, (prev) => migrateVisibility(prev))
   ,
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),

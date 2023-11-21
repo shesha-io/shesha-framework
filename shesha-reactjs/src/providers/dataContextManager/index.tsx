@@ -26,6 +26,7 @@ export interface IDataContextManagerActionsContext {
     getActiveContext: () => IDataContextDescriptor;
     updateFormInstance: (form: ConfigurableFormInstance) => void;
     getFormInstance: () => ConfigurableFormInstance;
+    onUpdateContextApi: (id: string, api: any) => void;
 }
 
 /** initial state */
@@ -136,7 +137,14 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
             }
         }
     };
-    
+
+    const onUpdateContextApi = (id: string, api: any) => {
+        const existingContext = contexts.current[id];
+        if (!!existingContext) {
+            contexts.current[id].api = api;
+        }
+    };
+
     const onChangeContextData = (contextId: string, data: any) => {
         const changed = !isEqual(contextsData.current[contextId], data);
         if (changed) {
@@ -167,7 +175,8 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
         setActiveContext,
         getActiveContext,
         updateFormInstance,
-        getFormInstance
+        getFormInstance,
+        onUpdateContextApi
     };
 
     return (

@@ -4,7 +4,7 @@ import { IDataSourceComponentProps } from './models';
 import { MetadataProvider } from '../../../../providers/metadata';
 import { ISettingsFormFactoryArgs, SectionSeparator } from '../../../../';
 import EndpointsAutocomplete from '../../../endpointsAutocomplete/endpointsAutocomplete';
-import { RawAutocomplete } from '../../../autocomplete';
+import { Autocomplete } from '../../../autocomplete';
 import TableViewSelectorSettingsModal from '../../../../designer-components/dataTable/tableViewSelector/tableViewSelectorSettingsModal';
 import SettingsForm, { useSettingsForm } from '../../../../designer-components/_settings/settingsForm';
 import SettingsFormItem from '../../../../designer-components/_settings/settingsFormItem';
@@ -32,7 +32,7 @@ const DataSourceSettings: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>
       </SettingsFormItem>
       {(state.sourceType === 'Entity') &&
       <SettingsFormItem key='entityType' name="entityType" label='Entity Type' jsSetting>
-        <RawAutocomplete dataSourceType='url' dataSourceUrl="/api/services/app/Metadata/EntityTypeAutocomplete" />
+        <Autocomplete.Raw dataSourceType='url' dataSourceUrl="/api/services/app/Metadata/EntityTypeAutocomplete" />
       </SettingsFormItem>
       }
       {(state.sourceType === 'Entity' || state.sourceType === 'Url') &&

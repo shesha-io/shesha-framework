@@ -7,15 +7,15 @@ import { FormIdentifier } from '../../../providers/form/models';
 
 interface IViewsEditorProps {
     value?: EntityViewConfigurationDto[];
-    onChange?: (value: EntityViewConfigurationDto[]) => void;    
+    onChange?: (value: EntityViewConfigurationDto[]) => void;
 }
 
 export const ViewsEditorComponent: FC<IViewsEditorProps> = (props) => {
     return (
-      <Form.Item name={"viewConfigurations"} labelCol={{ span: 0 }} wrapperCol={{ span: 24 }}>
-           <ViewsEditor {...props} />
-       </Form.Item>
-    );   
+        <Form.Item name={"viewConfigurations"} labelCol={{ span: 0 }} wrapperCol={{ span: 24 }}>
+            <ViewsEditor {...props} />
+        </Form.Item>
+    );
 };
 
 const ViewsEditor: FC<IViewsEditorProps> = (props) => {
@@ -26,7 +26,7 @@ const ViewsEditor: FC<IViewsEditorProps> = (props) => {
     const onAddClick = () => {
         if (props.onChange) {
             const items = [...props.value];
-            items.push({isStandard: false, type: '', formId: null});
+            items.push({ isStandard: false, type: '', formId: null });
             props.onChange(items);
         }
     };
@@ -47,30 +47,30 @@ const ViewsEditor: FC<IViewsEditorProps> = (props) => {
 
     return (
         <div>
-            {props.value && props.value .map(item =>  
+            {props.value && props.value.map(item =>
                 <Row className={'ant-form-item-row'}>
-                    <Col span={8} style={{textAlign: 'right'}}>
+                    <Col span={8} style={{ textAlign: 'right' }}>
                         <div className='ant-form-item-label'>
-                        {item.isStandard 
-                            ? <label>{item.type}</label>
-                            : <Input value={item.type} style={{textAlign: 'right'}} onChange={(e) => {
-onChangeType(item, e.target.value);
-}}/>
-                        }
+                            {item.isStandard
+                                ? <label>{item.type}</label>
+                                : <Input value={item.type} style={{ textAlign: 'right' }} onChange={(e) => {
+                                    onChangeType(item, e.target.value);
+                                }} />
+                            }
                         </div>
                     </Col>
                     <Col span={16}>
                         <Row>
                             <Col span={22}>
-                                <FormAutocomplete convertToFullId={true} value={item.formId as FormIdentifier} onChange={(e) => onChangeForm(item, e)}/>
+                                <FormAutocomplete convertToFullId={true} value={item.formId as FormIdentifier} onChange={(e) => onChangeForm(item, e)} />
                             </Col>
-                            <Col span={2} style={{textAlign:'center'}}>
-                            {
-                                !item.isStandard &&
-                                <Button icon={<DeleteFilled color="red" />} onClick={() => {
-onDeleteClick(item.type);
-}} size="small" danger />
-                            }
+                            <Col span={2} style={{ textAlign: 'center' }}>
+                                {
+                                    !item.isStandard &&
+                                    <Button icon={<DeleteFilled color="red" />} onClick={() => {
+                                        onDeleteClick(item.type);
+                                    }} size="small" danger />
+                                }
                             </Col>
                         </Row>
                     </Col>

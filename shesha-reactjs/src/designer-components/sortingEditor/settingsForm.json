@@ -8,7 +8,7 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "visibility": "Yes",
+
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "start",
@@ -102,7 +102,7 @@
             "labelAlign": "right",
             "parentId": "s4gmBg31azZC0UjZjpfTm",
             "hidden": false,
-            "visibility": "Yes",
+
             "isDynamic": false,
             "version": 0,
             "validate": {},
@@ -123,7 +123,7 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "visibility": "Yes",
+
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "start",
@@ -144,7 +144,7 @@
             "labelAlign": "right",
             "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
             "hidden": false,
-            "visibility": "Yes",
+
             "isDynamic": false,
             "version": 1,
             "validate": {
@@ -168,7 +168,7 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "visibility": "Yes",
+
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "start",

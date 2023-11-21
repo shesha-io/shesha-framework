@@ -120,6 +120,7 @@ export const PersonEdit = addStory(Template, {
     module: 'Test Module',
     version: 7,
   },
+  id: '32E2B3DD-4D99-4542-AF71-134EC7C0E2CE',
 });
 
 export const PersonDetails = addStory(Template, {

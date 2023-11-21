@@ -8,7 +8,7 @@ import ComponentsContainer from 'components/formDesigner/containers/componentsCo
 import { getStyle } from 'utils/publicUtils';
 import { nanoid } from 'nanoid';
 import { SizableColumnsSettingsForm } from './sizableColumnsSettings';
-import { migrateCustomFunctions, migratePropertyName } from 'src/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
 
 const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> = {
   type: 'sizableColumns',

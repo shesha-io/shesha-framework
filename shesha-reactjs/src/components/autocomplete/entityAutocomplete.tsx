@@ -102,8 +102,8 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
     if (mode === 'multiple') {
       return Array.isArray(localValue)
         ? (localValue as TValue[]).map<CustomLabeledValue<TValue>>((o) => {
-            return getLabeledValue(o, options);
-          })
+          return getLabeledValue(o, options);
+        })
         : [getLabeledValue(localValue as TValue, options)];
     } else return getLabeledValue(localValue as TValue, options);
   };
@@ -125,8 +125,8 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
     // Note: we shouldn't process full list and make it unique because by this way we'll hide duplicates received from the back-end
     const selectedItems = selectedItem
       ? (Array.isArray(selectedItem) ? selectedItem : [selectedItem]).filter(
-          (i) => fetchedItems.findIndex((fi) => fi.value === i.value) === -1
-        )
+        (i) => fetchedItems.findIndex((fi) => fi.value === i.value) === -1
+      )
       : [];
 
     const result = [...fetchedItems, ...selectedItems];
@@ -141,6 +141,8 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
   };
 
   const handleChange = (_value: CustomLabeledValue<TValue>, option: any) => {
+    setAutocompleteText(null);
+    
     if (!Boolean(onChange)) return;
     const selectedValue = Boolean(option)
       ? Array.isArray(option)
@@ -152,24 +154,6 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
       onChange(Array.isArray(selectedValue) ? selectedValue : [selectedValue]);
     } else onChange(selectedValue);
   };
-
-  /*
-  if (readOnly) {
-    const wrappedValue = wrapValue(value);
-
-    let displayValue: any;
-
-    if (Array.isArray(wrappedValue)) {
-      displayValue = wrappedValue?.map(({ label, value: keyId }: any) =>
-        readOnlyMultipleMode === 'raw' && typeof label === 'string' ? label : <Tag key={keyId}>{label}</Tag>
-      );
-
-      if (readOnlyMultipleMode === 'raw') displayValue = (displayValue as any[])?.join(', ');
-    } else {
-      displayValue = (wrappedValue as any)?.label;
-    }
-  }
-  */
 
   const dataLoaded = fetchedData && fetchedData.length > 0;
   const autocompleteValue = value || dataLoaded || fetchError ? wrapValue(value) : undefined;
@@ -191,8 +175,11 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
   }
 
   const onFocus = () => {
-    // fetch default items on focus if value is empty
-    if (!autocompleteText) debouncedFetchItems(null);
+    debouncedFetchItems(autocompleteText);    
+  };
+
+  const onClear = () => {
+    setAutocompleteText(null);
   };
 
   return (
@@ -209,6 +196,7 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
       value={autocompleteValue}
       onChange={handleChange}
       allowClear={true}
+      onClear={onClear}
       onFocus={onFocus}
       loading={loading}
       placeholder={selectPlaceholder}

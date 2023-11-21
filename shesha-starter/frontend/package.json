@@ -3,12 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "postinstall": "next",
-  "workspaces": [
-    "packages/*"
-  ],
   "scripts": {
     "dev": "next dev",
-    "build": "next build && npm run build --workspace=*",
+    "build": "next build",
     "export": "next export",
     "start": "NODE_ENV=production node --max-old-space-size=8192 server.js",
     "build:analyze": "ANALYZE=true npm run build",

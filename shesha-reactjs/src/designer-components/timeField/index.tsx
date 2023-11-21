@@ -14,7 +14,8 @@ import { axiosHttp } from 'utils/fetchers';
 import { getNumericValue } from 'utils/string';
 import settingsFormJson from './settingsForm.json';
 import './styles/index.less';
-import { migratePropertyName, migrateCustomFunctions } from '../../designer-components/_common-migrations/migrateSettings';
+import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 type RangeValue = [moment.Moment, moment.Moment];
 
@@ -86,7 +87,16 @@ const TimeField: IToolboxComponent<ITimePickerProps> = {
 
     return (
       <ConfigurableFormItem model={model}>
-        {(value, onChange) => <TimePickerWrapper {...model} {...customTimeEventHandler(eventProps)} value={value} onChange={onChange} />}
+        {(value, onChange) =>  {
+          const customEvent =  customTimeEventHandler(eventProps);
+          const onChangeInternal = (...args: any[]) => {
+            customEvent.onChange(args[0], args[1]);
+            if (typeof onChange === 'function') 
+              onChange(...args);
+          };
+          
+          return <TimePickerWrapper {...model} {...customEvent} value={value} onChange={onChangeInternal} />;
+        }}
       </ConfigurableFormItem>
     );
   },
@@ -101,6 +111,7 @@ const TimeField: IToolboxComponent<ITimePickerProps> = {
   },
   migrator: (m) => m
     .add<ITimePickerProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<ITimePickerProps>(1, (prev) => migrateVisibility(prev))
   ,
 };
 

@@ -1,9 +1,10 @@
-import { useGet } from 'hooks';
+import { useGet, usePrevious } from 'hooks';
 import { convertDotNotationPropertiesToGraphQL } from 'providers/form/utils';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { EntityData, IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '../interfaces/gql';
 import { GENERIC_ENTITIES_ENDPOINT } from '../shesha-constants';
 import { getEntityFilterByIds } from './graphQl';
+import { isEqual } from 'lodash';
 
 interface AutocompleteReturn {
   data: EntityData[];
@@ -20,7 +21,6 @@ export interface IAutocompleteProps {
   maxResultCount?: number;
   displayProperty?: string;
   value?: AutocompleteValueType;
-  lazy?: boolean;
 }
 
 const buildFilterById = (value: AutocompleteValueType): string => {
@@ -30,11 +30,19 @@ const buildFilterById = (value: AutocompleteValueType): string => {
   return getEntityFilterByIds(ids);
 };
 
+export const autocompleteValueIsEmpty = (value: any): boolean => {
+  return Array.isArray(value) ? value.length === 0 : !Boolean(value);
+};
+
 /**
  * Generic entities autocomplete
  */
 export const useEntityAutocomplete = (props: IAutocompleteProps): AutocompleteReturn => {
+  const previousQueryParams = useRef<IGenericGetAllPayload>(null);
   const displayProperty = props.displayProperty || '_displayName';
+
+  const [searchIsValid, setSearchIsValid] = useState<boolean>(false);
+
   const properties = convertDotNotationPropertiesToGraphQL(['id', displayProperty]);
   const getListFetcherQueryParams = (term: string): IGenericGetAllPayload => {
     return {
@@ -61,25 +69,41 @@ export const useEntityAutocomplete = (props: IAutocompleteProps): AutocompleteRe
   const valueFetcher = useGet<IAbpWrappedGetEntityListResponse, any, IGenericGetAllPayload>(
     `${GENERIC_ENTITIES_ENDPOINT}/GetAll`,
     {
-      lazy: !props.value,
+      lazy: autocompleteValueIsEmpty(props.value),
       queryParams: getValuePayload,
     }
   );
 
+
   const listFetcher = useGet<IAbpWrappedGetEntityListResponse, any, IGenericGetAllPayload>(
     `${GENERIC_ENTITIES_ENDPOINT}/GetAll`,
     {
-      lazy: props.lazy ?? true,
-      queryParams: getListFetcherQueryParams(null),
+      lazy: true,
     }
   );
 
   const search = (term: string) => {
-    listFetcher.refetch({ queryParams: getListFetcherQueryParams(term) });
+    const queryParams = getListFetcherQueryParams(term);
+    if (isEqual(queryParams, previousQueryParams.current))
+      return;
+
+    setSearchIsValid(false);
+    previousQueryParams.current = queryParams;
+    listFetcher.refetch({ queryParams }).then(() => {
+      setSearchIsValid(true);
+    });
   };
 
   const listItems = listFetcher.data?.result?.items;
   const valueItems = valueFetcher.data?.result?.items;
+
+  const prevValue = usePrevious(props.value);
+  useEffect(() => {
+    // if value has cleared and we still have valid search results - invalidate them
+    if (autocompleteValueIsEmpty(props.value) && !autocompleteValueIsEmpty(prevValue) && searchIsValid) {
+      setSearchIsValid(false);
+    }
+  }, [props.value, prevValue, searchIsValid]);
 
   const allItems = useMemo(() => {
     const result = listItems ?? [];
@@ -91,7 +115,7 @@ export const useEntityAutocomplete = (props: IAutocompleteProps): AutocompleteRe
     }
 
     return result;
-  }, [listItems, valueItems, props.value]);
+  }, [listItems, valueItems, props.value, searchIsValid]);
 
   return {
     data: allItems,

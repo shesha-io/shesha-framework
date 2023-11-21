@@ -1,47 +1,103 @@
+<p align="center">
+<a href="https://www.shesha.io?utm_source=github&utm_medium=organic&utm_campaign=readme">
+  <img src="https://github.com/shesha-io/shesha-framework/blob/main/static/Shesha_Horizontal.png" alt="Shesha Logo" width="500">
+</a>
+</p>
+
 # What is Shesha?
-Shesha is a [Low Code](https://en.wikipedia.org/wiki/Low-code_development_platform) [Application Framework](https://en.wikipedia.org/wiki/Application_framework) intended to **reduce the effort required to implement typical business applications by over 80%.**
+<p>Shesha is an open-source Low-Code development framework specifically for .NET developers. You can build anything from simple CRUD apps, admin panels to complex business applications super quickly.</p>
 
-It combines and builds on top of other excellent frameworks and libraries (most notably ASP\.NET Core, Abp\.io, React, NextJs) and layers on additional Low-Code capabilities to further accelerate the development of business applications.
+Shesha builds on top of other excellent frameworks and libraries (most notably ASP\.NET Core, Abp\.io, React, NextJs), layers on Low-Code capabilities (think drag & drop form builder and app themer), and incorporates standard admin functionality (e.g. User and security management) to drastically reduce the time and effort required to build applications.
 
-If you are familiar with ASP.NET Core and React, and are in the business of developing business software, and really hate doing the boring and repetitive stuff, Shesha is for you!
+In fact, in our experience, you will likely need **>80% less code** for most typical business applications.
 
-## Other things you should know
-* Boxfusion intends to open source the core Shesha framework in the hope of building a global community around it and seeing it thrive
-* As such it will be the first open-source Low-Code platform that we know of
+More info from the [Shesha website](https://shesha.io/).
 
-# How does it differ from other Low-Code frameworks?
-* Firstly, it is open-sourced, which means you avoid vendor lock-in and the costs associated with commercial alternatives
-* Secondly, it is based on ASP.NET Core and React, two of the world's most popular back-end and web front-end frameworks respectively. If you are familiar with these technologies it should be a natural fit. 
-* Finally, as much as there is a huge value in the 'drag & drop' capabilities provided by Shesha to accelerate the implementation of the most common aspects of business applications, you always have the option to revert to traditional custom coding approaches to make sure you are never restricted.
+# Features
 
-# What does Shesha actually provide?
-
-Shesha is an [opinionated framework](https://stackoverflow.com/questions/802050/what-is-opinionated-software) and therefore defines a 'Best practice' architecture for implementing typical business applications. This includes:
-* Project templates to help Shesha application developers [get started quickly](/Getting-started-with-a-new-Shesha-project) and supporting documentation with 'Recipes' for quick implementation of the most common customisation/business requirements
-* A UI Configurator that allows application developers and 'Power users' to build application navigation and pages by simply 'dragging and dropping' components onto a page designer.
-* 'Out-of-the-box' support for 'plumbing' typically required for most business applications including:
+Shesha comes with a range of features that massively reduce the effort required to create business applications:
+* **Form Builder** allows users to create application pages and by simply 'dragging and dropping' components onto a page designer. With over 40 components that come as standard, you will be able to create powerful and professional-looking applications without writing a line of front-end code. If the standard components aren't sufficient, simply create your own in React or create entirely custom pages.
+* **Dynamic CRUD APIs** get 'auto-magically' generated from your domain entities without the need for repetitive boilerplate code. APIs can be secured simply through configuration.
+* **App Themer** allows you to match your branding needs with zero effort.
+* **Administration Panel** provides the most common admin functionalities required by almost any business application 'out-of-the-box', including:
   * Security:
     * User Management
-    * Support for various authentication methods (Stand-alone, Active directory, Azure AD, Google, etc...)
-    * Role and permissions management
-    * Data auditing
+    * Roles and permissions management
+    * API Configuration
+    * Data change audits
     * Logon Audits
-  * Administration of Scheduled and Background Jobs
-  * Administration of Notification templates and audits
-  * Administration of Reference(Lookup) Lists
+  * Settings management
+  * Notification templates and audits
+  * Scheduled and Background Jobs management
+  * Reference/Lookup lists management
 
-In addition to all the above which is part of the open-sourced community edition, we also provide Enterprise Features through our commercial packages:
-  * Workflow
-  * Document generator
-  * Reporting
-  * (TBD - Additional scalability)
-  * (TBD - Cloud management for ISVs)
+<h4 align="center">
+  <b><a href="https://www.shesha.io/get-started-with-shesha">Get Started</a></b>
+  •
+  <b><a href="https://www.youtube.com/@Shesha01">YouTube</a></b>
+</h4>
 
-# Getting Started
-Learn how to [create your first Shesha application](/Getting-started-with-a-new-Shesha-project)
-Learn how to [contribute to the framework here](/For-Framework-Developers)
+<br />
 
-## Other Useful Links: 
-* Public site: https://shesha.io/
+## Build Apps in 4 Steps
 
+### 1. Implement your Domain
+
+Shesha takes a Domain-driven approach to application development, the starting point is therefore to implement your domain. This is done by implementing `Entity` classes as you would do for any business application. You can extend standard entities that come as part of the base Shesha model (e.g. `Person`, `Organisation`, `Site`, etc...) or by creating your own.
+<p align="center">
+<img alt="Create your domain" src="https://github.com/shesha-io/shesha-framework/blob/main/static/domain-entity.gif" />
+</p>
+
+### 2. Expose your APIs
+All it takes to expose your domain and data through dynamically generated CRUD APIs is the checking of a box and specifying the authorization rules.
+
+You will immediately get full CRUD support as well as GraphQL endpoints for flexible and efficient data retrieval.
+
+<p align="center">
+<img alt="Expose your APIs" src="https://github.com/shesha-io/shesha-framework/blob/main/static/generate-api.gif" />
+</p>
+
+Where the dynamically generated APIs are insufficient, you still have the full power of Visual Studio and ASP.NET Core to create custom APIs the way you are used to.
+
+### 3. Configure your UI
+
+Once you have exposed your domain and APIs, you can build your UI through our drag-and-drop form builder. There are over 40 different components including tables, lists, forms, sub-forms, modals, and many more allowing you to build sophisticated and scalable enterprise applications without a line of front-end code.
+
+<p align="center">
+<img alt="Expose your APIs" src="https://github.com/shesha-io/shesha-framework/blob/main/static/form-configuration.gif" />
+</p>
+
+Where the configuration-only approach is too limiting, you can add Javascript snippets to implement more advanced behavior or build custom components or entire pages using React.
+
+### 4. Deploy your app
+
+Simply deploy your application as you would any other ASP.NET Core website with Sql Server. Deploy on your favorite cloud or on-premise.
+
+
+## Getting Started
+
+The easiest way to get started is by downloading a starter template and by following our [tutorial videos](https://www.youtube.com/watch?v=-QqzmP30kBs&list=PLEFomNQeAmo2Azy7aWqjX5oiIAeKiFCzt) that will take you through the full process of building your first Shesha application.
+
+## Support and Community
+
+Issues are inevitable. When you have one, our entire team and our active developer community are around to help.<br>
+
+💬 Talk to us on [Discord](https://discord.gg/pdDh7JRNGp)<br>
+📄 Find a solution in our [Documentation](https://shesha-documentation.readthedocs.io/)<br>
+⚠️ Open an issue right here on [GitHub](https://github.com/shesha-io/shesha-framework/issues)<br>
+💡Use our learning resources: [Videos](https://www.youtube.com/@Shesha01)<br>
+
+## How to Contribute
+
+We ❤️ our contributors. We're committed to fostering an open, welcoming, and safe environment in the community.
+
+📕 We expect everyone participating in the community to abide by our [Code of Conduct](https://github.com/shesha-io/shesha-framework/CODE_OF_CONDUCT.md). Please read and follow it. <br>
+🤝 If you'd like to contribute, start by reading our [Contribution Guide](https://github.com/shesha-io/shesha-framework/CONTRIBUTING.md).<br>
+👾 Explore some [good first issues](https://github.com/shesha-io/shesha-framework/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22).<br>
+
+Let's build great software together!
+
+## License
+
+Shesha is available under the [Apache License 2.0](https://github.com/shesha-io/shesha-framework/blob/main/LICENSE.md). Use it wisely!
 

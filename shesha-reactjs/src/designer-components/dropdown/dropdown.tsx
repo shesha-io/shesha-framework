@@ -17,6 +17,7 @@ import { getLegacyReferenceListIdentifier } from 'utils/referenceList';
 import { IDropdownComponentProps, ILabelValue } from './interfaces';
 import settingsFormJson from './settingsForm.json';
 import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -48,10 +49,18 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
 
     const initialValue = model?.defaultValue ? { initialValue: model.defaultValue } : {};
 
+
     return (
       <ConfigurableFormItem model={model} {...initialValue}>
         {(value, onChange) => {
-          return <Dropdown {...model} {...customDropDownEventHandler(eventProps)} value={value} onChange={onChange} />;
+          const customEvent =  customDropDownEventHandler(eventProps);
+          const onChangeInternal = (...args: any[]) => {
+            customEvent.onChange(args[0], args[1]);
+            if (typeof onChange === 'function') 
+              onChange(...args);
+          };
+          
+          return <Dropdown {...model} {...customEvent} value={value} onChange={onChangeInternal} />;
         }}
       </ConfigurableFormItem>
     );
@@ -71,6 +80,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
       };
     })
     .add<IDropdownComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IDropdownComponentProps>(3, (prev) => migrateVisibility(prev))
   ,
   linkToModelMetadata: (model, metadata): IDropdownComponentProps => {
     return {

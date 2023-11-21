@@ -8,7 +8,7 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": {"_code": "return !getSettingValue(data?.notImplemented);", "_mode": "code", "_value": false},
-      "visibility": "Yes",
+
       "isDynamic": false,
       "alertType": "error",
       "text": "Entity configuration has 'Application Code' source type but is not implemented. Please note that you will not be able to use it.",
@@ -24,7 +24,7 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": {"_code": "return  !getSettingValue(data?.suppress) !== 'url';", "_mode": "code", "_value": false},
-      "visibility": "Yes",
+
       "isDynamic": false,
       "alertType": "warning",
       "text": "Entity configuration is suppressed and can not be used for other purposes.",
@@ -40,7 +40,7 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": {"_code": "return  getSettingValue(data?.entityConfigType) !== 2;", "_mode": "code", "_value": false},
-      "visibility": "Yes",
+
       "isDynamic": false,
       "alertType": "warning",
       "text": "Entity configuration is a Json Entity and can be used only as a type of Json properties. Application services is not available for this entity type",
@@ -56,7 +56,7 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "visibility": "Yes",
+
       "isDynamic": false,
       "tabs": [
         {
@@ -73,7 +73,7 @@
               "labelAlign": "right",
               "parentId": "X932kk2zE7XZCt3PB8aeq",
               "hidden": false,
-              "visibility": "Yes",
+
               "isDynamic": false,
               "description": "",
               "validate": {},
@@ -115,7 +115,7 @@
               "label": "Label",
               "labelAlign": "right",
               "hidden": false,
-              "visibility": "Yes",
+
               "isDynamic": false,
               "maxLength": null,
               "parentId": "X932kk2zE7XZCt3PB8aeq"
@@ -128,7 +128,7 @@
               "label": "Description",
               "labelAlign": "right",
               "hidden": false,
-              "visibility": "Yes",
+
               "isDynamic": false,
               "maxLength": null,
               "parentId": "X932kk2zE7XZCt3PB8aeq"
@@ -191,7 +191,7 @@
               "labelAlign": "right",
               "parentId": "1p3PpY7RbUyx1NMV3e5PA",
               "hidden": false,
-              "visibility": "Yes",
+
               "isDynamic": false,
               "description": "",
               "validate": {},
@@ -204,7 +204,7 @@
               "label": "Tabs2",
               "labelAlign": "right",
               "parentId": "1p3PpY7RbUyx1NMV3e5PA",
-              "visibility": "Yes",
+
               "isDynamic": false,
               "tabs": [
                 {
@@ -223,7 +223,7 @@
                       "labelAlign": "right",
                       "parentId": "hcBv9ySji5XEWPJNLjNOz",
                       "hidden": false,
-                      "visibility": "Yes",
+
                       "isDynamic": false,
                       "settingsValidationErrors": []
                     }
@@ -246,7 +246,7 @@
                       "labelAlign": "right",
                       "parentId": "479TB2pkRysWCIxabiw-j",
                       "hidden": false,
-                      "visibility": "Yes",
+
                       "isDynamic": false,
                       "settingsValidationErrors": []
                     }
@@ -270,7 +270,7 @@
                       "labelAlign": "right",
                       "parentId": "puDwy9ITCklFSVGyvrsEW",
                       "hidden": false,
-                      "visibility": "Yes",
+
                       "isDynamic": false,
                       "settingsValidationErrors": []
                     }
@@ -294,7 +294,7 @@
                       "labelAlign": "right",
                       "parentId": "fjUPjNWgHmBwuFVaSMF6z",
                       "hidden": false,
-                      "visibility": "Yes",
+
                       "isDynamic": false,
                       "settingsValidationErrors": []
                     }
@@ -316,7 +316,7 @@
                       "labelAlign": "right",
                       "parentId": "FrhlkvrUWn9FRyk6LQ-OH",
                       "hidden": false,
-                      "visibility": "Yes",
+
                       "isDynamic": false,
                       "settingsValidationErrors": []
                     }
@@ -344,7 +344,7 @@
                       "labelAlign": "right",
                       "parentId": "hcBv9ySji5XEWPJNLjNOz",
                       "hidden": false,
-                      "visibility": "Yes",
+
                       "isDynamic": false,
                       "settingsValidationErrors": []
                     }
@@ -365,7 +365,7 @@
                       "labelAlign": "right",
                       "parentId": "479TB2pkRysWCIxabiw-j",
                       "hidden": false,
-                      "visibility": "Yes",
+
                       "isDynamic": false,
                       "settingsValidationErrors": []
                     }
@@ -387,7 +387,7 @@
                       "labelAlign": "right",
                       "parentId": "puDwy9ITCklFSVGyvrsEW",
                       "hidden": false,
-                      "visibility": "Yes",
+
                       "isDynamic": false,
                       "settingsValidationErrors": []
                     }
@@ -408,7 +408,7 @@
                       "labelAlign": "right",
                       "parentId": "fjUPjNWgHmBwuFVaSMF6z",
                       "hidden": false,
-                      "visibility": "Yes",
+
                       "isDynamic": false,
                       "settingsValidationErrors": []
                     }
@@ -428,7 +428,7 @@
                       "labelAlign": "right",
                       "parentId": "FrhlkvrUWn9FRyk6LQ-OH",
                       "hidden": false,
-                      "visibility": "Yes",
+
                       "isDynamic": false,
                       "settingsValidationErrors": []
                     }
@@ -457,7 +457,7 @@
               "labelAlign": "right",
               "parentId": "1132kk2zE7XZCt3PB8ae1",
               "hidden": false,
-              "visibility": "Yes",
+
               "isDynamic": false,
               "settingsValidationErrors": []
             }
