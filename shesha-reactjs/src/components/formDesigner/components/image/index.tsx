@@ -12,6 +12,7 @@ import {
 } from '../../../../designer-components/_common-migrations/migrateSettings';
 import FileView from 'components/fileView';
 import { Alert } from 'antd';
+import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
 
 export interface IImageProps extends IConfigurableFormComponent, IFormItem {
   height: number | string;
