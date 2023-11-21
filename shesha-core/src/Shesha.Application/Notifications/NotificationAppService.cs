@@ -5,6 +5,7 @@ using Abp.Domain.Repositories;
 using Abp.Notifications;
 using DocumentFormat.OpenXml.Vml.Office;
 using DocumentFormat.OpenXml.Wordprocessing;
+using Microsoft.AspNetCore.Mvc;
 using NHibernate.Linq;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
@@ -33,8 +34,9 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
     private readonly INotificationPublicationContext _notificationPublicationContext;
     private readonly IRepository<Notification, Guid> _repository;
     private readonly IRepository<NotificationTemplate, Guid> _templateRepository;
+    private readonly IRepository<Person, Guid> _personRepository;
 
-    public NotificationAppService(IRepository<Notification, Guid> repository, INotificationPublisher notificationPublisher, IBackgroundJobManager backgroundJobManager, IStoredFileService fileService, INotificationPublicationContext notificationPublicationContext, IRepository<NotificationTemplate, Guid> templateRepository) : base(repository)
+    public NotificationAppService(IRepository<Notification, Guid> repository, INotificationPublisher notificationPublisher, IBackgroundJobManager backgroundJobManager, IStoredFileService fileService, INotificationPublicationContext notificationPublicationContext, IRepository<NotificationTemplate, Guid> templateRepository, IRepository<Person, Guid> personRepository) : base(repository)
     {
         _notificationPublisher = notificationPublisher;
         _backgroundJobManager = backgroundJobManager;
@@ -42,6 +44,7 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
         _notificationPublicationContext = notificationPublicationContext;
         _repository = repository;
         _templateRepository = templateRepository;
+        _personRepository = personRepository;
 
     }
 
@@ -80,12 +83,14 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
     /// <param name="emailAddress">Recipient email address</param>
     /// <param name="attachments">Notification attachments</param>
     /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
+    /// <param name="recipient">Receiptient of the notification</param>
     /// <returns></returns>
     public async Task PublishEmailNotificationAsync<TData>(string notificationName,
         TData data,
         string emailAddress,
         List<NotificationAttachmentDto> attachments = null,
-        GenericEntityReference sourceEntity = null) where TData : NotificationData
+        GenericEntityReference sourceEntity = null,
+        Person recipient = null) where TData : NotificationData
     {
         if (string.IsNullOrWhiteSpace(emailAddress))
             throw new Exception($"{nameof(emailAddress)} must not be null");
@@ -95,6 +100,7 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
         var wrappedData = new ShaNotificationData(data)
         {
             SendType = RefListNotificationType.Email,
+            RecipientId = recipient?.Id ?? null,
             RecipientText = emailAddress,
             Attachments = attachments,
             SourceEntityId = sourceEntity.Id,
@@ -112,6 +118,7 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
     /// <param name="emailAddress">Recipient email address</param>
     /// <param name="attachments">Attachments</param>
     /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
+    /// <param name="recipient">Receiptient of the notification</param>
     /// <param name="cc"></param>
     /// <returns></returns>
     public async Task PublishEmailNotificationAsync<TData>(Guid templateId,
@@ -119,6 +126,7 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
         string emailAddress,
         List<NotificationAttachmentDto> attachments = null,
         GenericEntityReference sourceEntity = null,
+        Person recipient = null,
         string cc = "") where TData : NotificationData
     {
         if (string.IsNullOrWhiteSpace(emailAddress))
@@ -129,6 +137,7 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
         var wrappedData = new ShaNotificationData(data)
         {
             SendType = RefListNotificationType.Email,
+            RecipientId = recipient?.Id ?? null,
             RecipientText = emailAddress,
             TemplateId = templateId,
             Attachments = attachments,
@@ -152,11 +161,13 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
     /// <param name="data">Data that is used to fill template</param>
     /// <param name="mobileNo">Recipient mobile number</param>
     /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
+    /// <param name="recipient">Receiptient of the notification</param>
     /// <returns></returns>
     public async Task PublishSmsNotificationAsync<TData>(string notificationName,
         TData data,
         string mobileNo,
-        GenericEntityReference sourceEntity = null) where TData : NotificationData
+        GenericEntityReference sourceEntity = null,
+        Person recipient = null) where TData : NotificationData
     {
         if (string.IsNullOrWhiteSpace(mobileNo))
             throw new Exception($"{nameof(mobileNo)} must not be null");
@@ -166,6 +177,7 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
         var wrappedData = new ShaNotificationData(data)
         {
             SendType = RefListNotificationType.SMS,
+            RecipientId = recipient?.Id ?? null,
             RecipientText = mobileNo,
             SourceEntityId = sourceEntity.Id,
             SourceEntityClassName = sourceEntity._className,
@@ -181,11 +193,13 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
     /// <param name="data">Data that is used to fill template</param>
     /// <param name="mobileNo">Recipient mobile number</param>
     /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
+    /// <param name="recipient">Receiptient of the notification</param>
     /// <returns></returns>
     public async Task PublishSmsNotificationAsync<TData>(Guid templateId,
         TData data,
         string mobileNo,
-        GenericEntityReference sourceEntity = null
+        GenericEntityReference sourceEntity = null,
+        Person recipient = null
         ) where TData : NotificationData
     {
         if (string.IsNullOrWhiteSpace(mobileNo))
@@ -196,6 +210,7 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
         var wrappedData = new ShaNotificationData(data)
         {
             SendType = RefListNotificationType.SMS,
+            RecipientId = recipient?.Id ?? null,
             RecipientText = mobileNo,
             TemplateId = templateId,
             SourceEntityId = sourceEntity.Id,
@@ -246,12 +261,14 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
     /// <param name="personId">Recipient person id</param>
     /// <param name="attachments">Notification attachments</param>
     /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
+    /// <param name="recipient">Receiptient of the notification</param>
     /// <returns></returns>
     public async Task PublishPushNotificationAsync<TData>(string notificationName,
         TData data,
         string personId,
         List<NotificationAttachmentDto> attachments = null,
-        GenericEntityReference sourceEntity = null) where TData : NotificationData
+        GenericEntityReference sourceEntity = null,
+        Person recipient = null) where TData : NotificationData
     {
         if (string.IsNullOrWhiteSpace(personId))
             throw new Exception($"{nameof(personId)} must not be null");
@@ -261,6 +278,7 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
         var wrappedData = new ShaNotificationData(data)
         {
             SendType = RefListNotificationType.Push,
+            RecipientId = recipient?.Id ?? null,
             RecipientText = personId,
             Attachments = attachments,
             SourceEntityId = sourceEntity.Id,
@@ -278,12 +296,14 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
     /// <param name="personId">Recipient person id</param>
     /// <param name="attachments">Attachments</param>
     /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
+    /// <param name="recipient">Receiptient of the notification</param>
     /// <returns></returns>
     public async Task PublishPushNotificationAsync<TData>(Guid templateId,
         TData data,
         string personId,
         List<NotificationAttachmentDto> attachments = null,
-        GenericEntityReference sourceEntity = null) where TData : NotificationData
+        GenericEntityReference sourceEntity = null,
+        Person recipient = null) where TData : NotificationData
     {
         if (string.IsNullOrWhiteSpace(personId))
             throw new Exception($"{nameof(personId)} must not be null");
@@ -293,6 +313,7 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
         var wrappedData = new ShaNotificationData(data)
         {
             SendType = RefListNotificationType.Push,
+            RecipientId = recipient?.Id ?? null,
             RecipientText = personId,
             TemplateId = templateId,
             Attachments = attachments,
@@ -375,11 +396,11 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
             switch (notificationType)
             {
                 case (int)RefListNotificationType.Email:
-                    return string.IsNullOrWhiteSpace(email) || string.IsNullOrEmpty(email) ? null : await SendEmailAsync(template.Id, email, data, sourceEntity: sourceEntity, attachments: attachments, cc: cc);
+                    return string.IsNullOrWhiteSpace(email) || string.IsNullOrEmpty(email) ? null : await SendEmailAsync(template.Id, email, data, sourceEntity: sourceEntity, attachments: attachments, recipient: person, cc: cc);
                 case (int)RefListNotificationType.SMS:
-                    return string.IsNullOrWhiteSpace(mobileNo) || string.IsNullOrEmpty(mobileNo) ? null : await SendSmsAsync(template.Id, mobileNo, data, sourceEntity: sourceEntity);
+                    return string.IsNullOrWhiteSpace(mobileNo) || string.IsNullOrEmpty(mobileNo) ? null : await SendSmsAsync(template.Id, mobileNo, data, sourceEntity: sourceEntity, recipient: person);
                 case (int)RefListNotificationType.Push:
-                    return await SendPushAsync(template.Id, person.Id, data, sourceEntity: sourceEntity);
+                    return await SendPushAsync(template.Id, person.Id, data, sourceEntity: sourceEntity, recipient: person);
                 default:
                     break;
             }
@@ -388,7 +409,7 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
         return null;
     }
 
-    private async Task<Guid?> SendSmsAsync<TData>(Guid notificationTemplate, string mobileNumber, TData data, GenericEntityReference sourceEntity = null) where TData : NotificationData
+    private async Task<Guid?> SendSmsAsync<TData>(Guid notificationTemplate, string mobileNumber, TData data, GenericEntityReference sourceEntity = null, Person recipient = null) where TData : NotificationData
     {
         Guid? messageId = Guid.Empty;
 
@@ -398,7 +419,8 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
             templateId: notificationTemplate,
             data: data,
             mobileNo: mobileNumber,
-            sourceEntity: sourceEntity
+            sourceEntity: sourceEntity,
+            recipient: recipient
             );
 
             messageId = _notificationPublicationContext.Statistics.NotificationMessages.FirstOrDefault()?.Id;
@@ -407,7 +429,7 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
         return messageId;
     }
 
-    private async Task<Guid?> SendEmailAsync<TData>(Guid notificationTemplate, string emailAddress, TData data, GenericEntityReference sourceEntity = null, List<NotificationAttachmentDto> attachments = null, string cc = "" ) where TData : NotificationData
+    private async Task<Guid?> SendEmailAsync<TData>(Guid notificationTemplate, string emailAddress, TData data, GenericEntityReference sourceEntity = null, List<NotificationAttachmentDto> attachments = null, Person recipient = null, string cc = "" ) where TData : NotificationData
     {
         Guid? messageId = Guid.Empty;
 
@@ -419,6 +441,7 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
                 attachments: attachments,
                 emailAddress: emailAddress,
                 sourceEntity: sourceEntity,
+                recipient: recipient,
                 cc: cc);
 
             messageId = _notificationPublicationContext.Statistics.NotificationMessages.FirstOrDefault()?.Id;
@@ -427,7 +450,7 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
         return messageId;
     }
 
-    private async Task<Guid?> SendPushAsync<TData>(Guid notificationTemplate, Guid personId, TData data, GenericEntityReference sourceEntity = null, List<NotificationAttachmentDto> attachments = null) where TData : NotificationData
+    private async Task<Guid?> SendPushAsync<TData>(Guid notificationTemplate, Guid personId, TData data, GenericEntityReference sourceEntity = null, List<NotificationAttachmentDto> attachments = null, Person recipient = null) where TData : NotificationData
     {
         Guid? messageId = Guid.Empty;
 
@@ -438,7 +461,8 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
                 data: data,
                 attachments: attachments,
                 personId: personId.ToString(),
-                sourceEntity: sourceEntity
+                sourceEntity: sourceEntity,
+                recipient: recipient
                 );
 
             messageId = _notificationPublicationContext.Statistics.NotificationMessages.FirstOrDefault()?.Id;
