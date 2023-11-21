@@ -7,16 +7,33 @@ interface IToolTipProps {
   showReflistName: boolean;
 }
 
-export const DescriptionTooltip: FC<PropsWithChildren<IToolTipProps>> = ({ currentStatus, showReflistName, children }) => {
+export const DescriptionTooltip: FC<PropsWithChildren<IToolTipProps>> = ({
+  currentStatus,
+  showReflistName,
+  children,
+}) => {
+  const popReflistName = !!(!showReflistName && currentStatus?.item);
 
-  return !showReflistName || !currentStatus || !currentStatus.description
-    ? <>{children}</>
-    : (
-      <Tooltip
-        placement="rightTop"
-        title={currentStatus.description}
-      >
-        {children}
-      </Tooltip>
-    );
+  const showToolTip = !!currentStatus?.description || popReflistName;
+
+  return showToolTip ? (
+    <Tooltip
+      placement="rightTop"
+      title={
+        <>
+          {popReflistName && (
+            <>
+              <span>{currentStatus?.item}</span>
+              <br />
+            </>
+          )}
+          <span>{currentStatus.description}</span>
+        </>
+      }
+    >
+      {children}
+    </Tooltip>
+  ) : (
+    <>{children}</>
+  );
 };

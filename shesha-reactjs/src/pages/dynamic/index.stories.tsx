@@ -162,13 +162,13 @@ export const WorkflowDefinitions = addStory(Template, {
   },
 });
 
-export const ImageAdvanced = addStory(Template, {
+export const RefListStatusDetails = addStory(Template, {
   formId: {
-    name: 'test-cascade-behavior-details',
-    module: 'Shesha',
+    name: 'mergechanges-details',
+    module: 'Boxfusion.SheshaFunctionalTests.Common',
   },
   mode: 'readonly',
-  id: '23ecf860-e525-4fff-90f2-0e755b3c8e09',
+  id: 'd6829b83-14e3-474a-a28d-0e27cba796cb',
 });
 export const DataList = addStory(Template, {
   formId: {
