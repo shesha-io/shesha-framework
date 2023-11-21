@@ -3,7 +3,12 @@ import FileSaver from 'file-saver';
 import qs from 'qs';
 import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
 import { useSheshaApplication } from '../..';
-import { StoredFileDeleteQueryParams, useStoredFileGet, useStoredFileGetEntityProperty } from '../../apis/storedFile';
+import {
+  StoredFileDeleteQueryParams,
+  StoredFileGetQueryParams,
+  useStoredFileGet,
+  useStoredFileGetEntityProperty,
+} from '../../apis/storedFile';
 import { useMutate } from '../../hooks';
 import { useDelayedUpdate } from '../../providers/delayedUpdateProvider';
 import { STORED_FILES_DELAYED_UPDATE } from '../../providers/delayedUpdateProvider/models';
@@ -18,6 +23,9 @@ import {
   fetchFileInfoErrorAction,
   fetchFileInfoRequestAction,
   fetchFileInfoSuccessAction,
+  fileViewErrorAction,
+  fileViewRequestAction,
+  fileViewSuccessAction,
   uploadFileErrorAction,
   uploadFileRequestAction,
   uploadFileSuccessAction,
@@ -315,6 +323,28 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
     dispatch(fetchFileInfoErrorAction());
   };
 
+  const getStoredFile = (payload: StoredFileGetQueryParams) => {
+    return new Promise((resolve) => {
+      dispatch(fileViewRequestAction());
+      const url = `${baseUrl}/api/StoredFile/Base64String?${qs.stringify({
+        id: payload.id,
+      })}`;
+      axios({
+        url,
+        method: 'GET',
+        headers,
+      })
+        .then((response) => {
+          dispatch(fileViewSuccessAction());
+          return response?.data?.result?.base64String;
+        })
+        .then(resolve)
+        .catch((e) => {
+          dispatch(fileViewErrorAction());
+          console.error(e);
+        });
+    });
+  };
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
   return (
@@ -329,6 +359,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
           deleteFile,
           fetchFileInfo,
           fetchFileInfoError,
+          getStoredFile,
           /* NEW_ACTION_GOES_HERE */
         }}
       >

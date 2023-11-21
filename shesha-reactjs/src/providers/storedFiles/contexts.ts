@@ -61,6 +61,7 @@ export interface IStoredFilesStateContext
   fileList?: IStoredFile[];
   newFile?: IStoredFile;
   fileIdToDelete?: string;
+  url?: string;
 }
 
 export interface IStoredFilesActionsContext
@@ -77,7 +78,6 @@ export interface IStoredFilesActionsContext
   // fetchFileListError: () => void
   downloadZipFile: (payload?: IDownloadZipPayload) => void;
   downloadFile: (payload: IDownloadFilePayload) => void;
-
   /* NEW_ACTION_ACTION_DECLARATIO_GOES_HERE */
 }
 

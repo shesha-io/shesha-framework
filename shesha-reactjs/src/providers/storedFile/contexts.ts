@@ -1,25 +1,32 @@
 import { UploadFile } from 'antd/lib/upload/interface';
 import { createContext } from 'react';
 import { IFlagsSetters, IFlagsState } from '../../interfaces';
+import { StoredFileGetQueryParams } from 'apis/storedFile';
 
 export type IFlagProgressFlags =
   | 'downloadFile'
   | 'uploadFile'
   | 'deleteFile'
   | 'dowloadZip'
-  | 'fetchFileInfo' /* NEW_IN_PROGRESS_FLAG_GOES_HERE */;
+  | 'fetchFileInfo' 
+  | 'getStoredFile'
+  /* NEW_IN_PROGRESS_FLAG_GOES_HERE */;
 export type IFlagSucceededFlags =
   | 'downloadFile'
   | 'uploadFile'
   | 'deleteFile'
   | 'dowloadZip'
-  | 'fetchFileInfo' /* NEW_SUCCEEDED_FLAG_GOES_HERE */;
+  | 'fetchFileInfo' 
+  | 'getStoredFile'
+  /* NEW_SUCCEEDED_FLAG_GOES_HERE */;
 export type IFlagErrorFlags =
   | 'downloadFile'
   | 'uploadFile'
   | 'deleteFile'
   | 'dowloadZip'
-  | 'fetchFileInfo' /* NEW_ERROR_FLAG_GOES_HERE */;
+  | 'fetchFileInfo' 
+  | 'getStoredFile'
+  /* NEW_ERROR_FLAG_GOES_HERE */;
 export type IFlagActionedFlags = '__DEFAULT__' /* NEW_ACTIONED_FLAG_GOES_HERE */;
 
 // Pick<UploadFile, "uid" | "status" | "name" | "size" | "type">
@@ -62,9 +69,10 @@ export interface IStoredFileActionsContext
   downloadFileError: () => void;
   uploadFile: (payload: IUploadFilePayload, callback?: (...args: any) => any) => void;
   deleteFile: () => void;
-
   fetchFileInfo: () => void;
   fetchFileInfoError: () => void;
+  getStoredFile: (payload: StoredFileGetQueryParams) => Promise<string | unknown>;
+
   //fetchFileInfoError: () => void;
   /* NEW_ACTION_ACTION_DECLARATIO_GOES_HERE */
 }
