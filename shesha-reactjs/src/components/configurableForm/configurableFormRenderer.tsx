@@ -63,6 +63,9 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
     setFormDataAndInstance,
     visibleComponentIdsIsSet,
   } = formInstance;
+
+  const designerMode = formMode === 'designer';
+
   const { isDragging = false } = useFormDesigner(false) ?? {};
   const { excludeFormFieldsInPayload, onDataLoaded, onUpdate, onInitialized, formKeysToPersist, uniqueFormId } =
     formSettings;
@@ -177,15 +180,11 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
   }, [formData, onUpdate]);
 
   // reset form to initial data on any change of components or initialData
+  // only if data is not fetched or form is not in designer mode
   useEffect(() => {
-    setFormDataAndInstance({ values: initialValues, mergeValues: true });
-
-    if (fetchedFormEntity) return;
-
-    if (form) {
-      form.resetFields();
-    }
-  }, [/*allComponents, */ initialValues]); // todo: re-rendering on change of allComponents causes problems in the designer
+    if (fetchedFormEntity || designerMode) return;
+      setFormDataAndInstance({ values: initialValues, mergeValues: true });
+  }, [allComponents, initialValues]);
 
   useEffect(() => {
     let incomingInitialValues = null;
@@ -214,13 +213,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
     // }
 
     if (incomingInitialValues) {
-      // TODO: setFormData doesn't update the fields when the form that needs to be initialized it modal.
-      // TODO: Tried with mergeValues as both true | false. The state got updated properly but that doesn't reflect on the form
-      // TODO: Investigate this
-      if (form) {
-        form?.setFieldsValue(incomingInitialValues);
-      }
-      setFormData({ values: incomingInitialValues, mergeValues: true });
+      setFormDataAndInstance({ values: incomingInitialValues, mergeValues: true });
     }
   }, [fetchedFormEntity, lastTruthyPersistedValue, initialValuesFromSettings, uniqueFormId]);
 

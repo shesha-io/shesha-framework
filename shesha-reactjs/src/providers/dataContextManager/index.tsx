@@ -48,6 +48,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
 
     const updateFormInstance = (form: ConfigurableFormInstance) => {
         formInstance.current = form;
+        setState({...state, lastUpdate: new Date().toJSON() });
     };
 
     const getFormInstance = () => {

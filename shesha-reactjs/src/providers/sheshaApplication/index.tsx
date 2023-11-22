@@ -120,15 +120,6 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
     dispatch(setGlobalVariablesAction(values));
   };
 
-  const testMetadata: IModelMetadata = {
-    name: 'testProp',
-    entityType: '',
-    dataType: 'string',
-    apiEndpoints: {},
-    specifications: [],
-    properties: []
-  };
-
   return (
     <SheshaApplicationStateContext.Provider value={state}>
       <SheshaApplicationActionsContext.Provider
@@ -165,7 +156,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                           <ReferenceListDispatcherProvider>
                             <MetadataDispatcherProvider>
                               <DataContextManager>
-                                <DataContextProvider id={'appContext'} name={'appContext'} description={'Application context'} type={'root'} metadata={new Promise(resolve => resolve(testMetadata))} >
+                                <DataContextProvider id={'appContext'} name={'appContext'} description={'Application context'} type={'root'}>
                                   <StackedNavigationProvider>
                                     <DataSourcesProvider>
                                       <DynamicModalProvider>
