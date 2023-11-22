@@ -203,11 +203,18 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     return (
       <ConfigurableFormItem {...formProps}>
         {(value, onChange) => {
+          const customEvent =  customDropDownEventHandler(eventProps);
+          const onChangeInternal = (...args: any[]) => {
+            customEvent.onChange(args[0], args[1]);
+            if (typeof onChange === 'function') 
+              onChange(...args);
+          };
+          
           return (
           model.useRawValues ? (
-            <Autocomplete.Raw {...autocompleteProps} {...customDropDownEventHandler(eventProps)} value={value} onChange={onChange}/>
+            <Autocomplete.Raw {...autocompleteProps} {...customEvent} value={value} onChange={onChangeInternal}/>
           ) : (
-            <Autocomplete.EntityDto {...autocompleteProps} {...customDropDownEventHandler(eventProps)} value={value} onChange={onChange}/>
+            <Autocomplete.EntityDto {...autocompleteProps} {...customEvent} value={value} onChange={onChangeInternal}/>
           ));
         }}
       </ConfigurableFormItem>
