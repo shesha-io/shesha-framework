@@ -95,45 +95,32 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
                         {mode === 'code' ? 'Value' : 'JS'}
                     </Button>
 
-                    <SettingsControl 
-                        id={props.name.toString()} 
-                        propertyName={props.name.toString()}
-                        mode={mode}
-                        value={value}
-                        onChange={onChange}
-                        modeRef={modeRef}
-                    >
-                        {(value, onChange) => {
-                            const mergedProps = {
-                                ...children?.props,
-                                onChange: (...args: any[]) => {
-                                    const event = args[0];
-                                    const data = event && event.target && typeof event.target === 'object' && valuePropName in event.target
-                                        ? (event.target as HTMLInputElement)[valuePropName]
-                                        : event;
-                                    onChange(data);
-                                },
-                                [valuePropName]: value
-                            };
-                            
-                            return <div className={ mode === 'code' ? 'sha-js-content-code' : 'sha-js-content-js'}>
-                                <Button
-                                    disabled={props.disabled || props.readOnly}
-                                    shape="round"
-                                    className='sha-js-switch'
-                                    type='primary'
-                                    ghost
-                                    size='small'
-                                    onClick={switchMode}
-                                >
-                                    {mode === 'code' ? 'Value' : 'JS'}
-                                </Button>
-                                <div className='sha-js-content'>
-                                    {cloneElement(children, mergedProps)}
-                                </div>
-                            </div>;
-                        }}
-                    </SettingsControl>
+                    <div className='sha-js-content'>
+                        <SettingsControl 
+                            id={props.name.toString()} 
+                            propertyName={props.name.toString()}
+                            mode={mode}
+                            value={value}
+                            onChange={onChange}
+                            modeRef={modeRef}
+                        >
+                            {(value, onChange) => {
+                                return cloneElement(
+                                    children,
+                                    {
+                                        ...children?.props,
+                                        onChange: (...args: any[]) => {
+                                            const event = args[0];
+                                            const data = event && event.target && typeof event.target === 'object' && valuePropName in event.target
+                                                ? (event.target as HTMLInputElement)[valuePropName]
+                                                : event;
+                                            onChange(data);
+                                        },
+                                        [valuePropName]: value
+                                    });
+                            }}
+                        </SettingsControl>
+                    </div>
                 </div>);
             }}
         </ConfigurableFormItem>
