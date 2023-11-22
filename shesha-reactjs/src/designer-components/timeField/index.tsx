@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC } from 'react';
 import { ClockCircleOutlined } from '@ant-design/icons';
 import { TimePicker, message } from 'antd';
 import moment, { Moment, isMoment } from 'moment';
@@ -71,6 +71,7 @@ const TimeField: IToolboxComponent<ITimePickerProps> = {
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
+    
 
     const eventProps = {
       model,
@@ -94,7 +95,6 @@ const TimeField: IToolboxComponent<ITimePickerProps> = {
             if (typeof onChange === 'function') 
               onChange(...args);
           };
-          
           return <TimePickerWrapper {...model} {...customEvent} value={value} onChange={onChangeInternal} />;
         }}
       </ConfigurableFormItem>
@@ -133,7 +133,6 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
 }) => {
   const { data: formData } = useFormData();
 
-  
   const evaluatedValue = getMoment(value, format);
 
   const hourStepLocal = getNumericValue(hourStep);
@@ -173,30 +172,30 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
         bordered={!hideBorder}
         onChange={handleRangePicker}
         format={format}
-        defaultValue={getDefaultRangePickerValues() as RangeValue}
+        value={getDefaultRangePickerValues() as RangeValue}
         {...steps}
         style={getStyle(style, formData)}
         className="sha-timepicker"
+        
         {...rest}
         placeholder={[placeholder, placeholder]}
+     
       />
     );
   }
 
-
-const latestValue=evaluatedValue|| (defaultValue && moment(defaultValue));
 
   return (
     <TimePicker
       bordered={!hideBorder}
       onChange={handleTimePickerChange}
       format={format}
-      key={latestValue?.toISOString()}
-      defaultValue={latestValue}
+      value={evaluatedValue|| (defaultValue && moment(defaultValue))}
       {...steps}
       style={getStyle(style, formData)}
       className="sha-timepicker"
       placeholder={placeholder}
+    
       // show
       {...rest}
     />
