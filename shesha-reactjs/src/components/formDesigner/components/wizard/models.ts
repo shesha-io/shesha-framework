@@ -52,7 +52,7 @@ export interface IWizardStepProps extends IConfigurableItemBase {
 }
 
 export interface IWizardSequence {
-  finshed?: string;
+  finished?: string;
   active?: string;
   pending?: string;
 }

@@ -2,7 +2,7 @@ import { DoubleRightOutlined } from '@ant-design/icons';
 import { Button, Space, Steps } from 'antd';
 import classNames from 'classnames';
 import { nanoid } from 'nanoid/non-secure';
-import React from 'react';
+import React, { FC } from 'react';
 import { getStyle, useFormExpression } from '../../../../';
 import { IToolboxComponent } from '../../../../interfaces';
 import { useForm, useFormData, useGlobalState } from '../../../../providers';
@@ -20,139 +20,22 @@ import {
   migrateCustomFunctions,
   migratePropertyName,
 } from '../../../../designer-components/_common-migrations/migrateSettings';
+import { DataContextProvider } from 'providers/dataContextProvider/index';
 
 const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   type: 'wizard',
   name: 'Wizard',
   icon: <DoubleRightOutlined />,
   Factory: ({ model }) => {
-    const { formMode } = useForm();
-    const { executeBooleanExpression } = useFormExpression();
-    const { data } = useFormData();
-    const { globalState } = useGlobalState();
-
-    const { back, components, cancel, content, current, currentStep, done, next, visibleSteps } = useWizard(model);
-
-    const {
-      buttonsLayout = 'spaceBetween',
-      direction,
-      isDynamic,
-      labelPlacement,
-      readOnly,
-      wizardType = 'default',
-    } = model;
-
-    const steps = visibleSteps?.map<IStepProps>(({ id, title, subTitle, description, icon, customEnabled }, index) => {
-      const isDisabledByCondition = !executeBooleanExpression(customEnabled, true) && formMode !== 'designer';
-
-      const iconProps = icon ? { icon: <ShaIcon iconName={icon as any} /> } : {};
-
-      return {
-        id,
-        title,
-        subTitle,
-        description: content(description, index),
-        disabled: isDisabledByCondition,
-        ...iconProps,
-        content: (
-          <ComponentsContainer
-            containerId={id}
-            dynamicComponents={isDynamic ? components?.map((c) => ({ ...c, readOnly })) : []}
-          />
-        ),
-      };
-    });
-
-    const splitButtons = buttonsLayout === 'spaceBetween';
-
-    if (model?.hidden) return null;
-    const btnStyle = getWizardButtonStyle(buttonsLayout);
-
     return (
-      <div className="sha-wizard" style={getStyle(model?.style, data, globalState)}>
-        <div className={classNames('sha-wizard-container', { vertical: direction === 'vertical' })}>
-          <Steps
-            type={wizardType}
-            current={current}
-            items={steps}
-            size={model['size']}
-            direction={direction}
-            labelPlacement={labelPlacement}
-          />
-
-          <div className="sha-steps-content">{steps[current]?.content}</div>
-        </div>
-
-        <ConditionalWrap condition={buttonsLayout === 'left'} wrap={(children) => <Space>{children}</Space>}>
-          <div
-            className={classNames('sha-steps-buttons-container', {
-              split: splitButtons,
-              left: buttonsLayout === 'left',
-              right: buttonsLayout === 'right',
-            })}
-          >
-            <ConditionalWrap
-              condition={splitButtons}
-              wrap={(children) => (
-                <Space>
-                  <div className={classNames('sha-steps-buttons')}>{children}</div>
-                </Space>
-              )}
-            >
-              {current > 0 && (
-                <Button
-                  style={btnStyle('back')}
-                  onClick={back}
-                  disabled={!executeBooleanExpression(currentStep?.backButtonCustomEnabled, true)}
-                >
-                  {currentStep.backButtonText ? currentStep.backButtonText : 'Back'}
-                </Button>
-              )}
-
-              {currentStep.allowCancel === true && (
-                <Button
-                  style={btnStyle('cancel')}
-                  onClick={cancel}
-                  disabled={!executeBooleanExpression(currentStep?.cancelButtonCustomEnabled, true)}
-                >
-                  {currentStep.cancelButtonText ? currentStep.cancelButtonText : 'Cancel'}
-                </Button>
-              )}
-            </ConditionalWrap>
-
-            <ConditionalWrap
-              condition={splitButtons}
-              wrap={(children) => (
-                <Space>
-                  <div className={classNames('sha-steps-buttons')}>{children}</div>
-                </Space>
-              )}
-            >
-              {current < visibleSteps.length - 1 && (
-                <Button
-                  type="primary"
-                  style={btnStyle('next')}
-                  onClick={next}
-                  disabled={!executeBooleanExpression(currentStep?.nextButtonCustomEnabled, true)}
-                >
-                  {currentStep.nextButtonText ? currentStep.nextButtonText : 'Next'}
-                </Button>
-              )}
-
-              {current === visibleSteps.length - 1 && (
-                <Button
-                  type="primary"
-                  style={btnStyle('next')}
-                  onClick={done}
-                  disabled={!executeBooleanExpression(currentStep?.doneButtonCustomEnabled, true)}
-                >
-                  {currentStep.doneButtonText ? currentStep.doneButtonText : 'Done'}
-                </Button>
-              )}
-            </ConditionalWrap>
-          </div>
-        </ConditionalWrap>
-      </div>
+      <DataContextProvider
+        id={'ctx_' + model.id}
+        name={model.componentName}
+        description={`Wizard context for ${model.componentName}`}
+        type='wizard'
+      >
+        <Tabs {...model} />
+      </DataContextProvider>
     );
   },
   migrator: (m) =>
@@ -211,6 +94,137 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
 
     return steps.map<IFormComponentContainer>((t) => ({ id: t.id }));
   },
+};
+
+const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = (model) => {
+  const { formMode } = useForm();
+  const { executeBooleanExpression } = useFormExpression();
+  const { data } = useFormData();
+  const { globalState } = useGlobalState();
+
+  const { back, components, cancel, content, current, currentStep, done, next, visibleSteps } = useWizard(model);
+
+  const {
+    buttonsLayout = 'spaceBetween',
+    direction,
+    isDynamic,
+    labelPlacement,
+    readOnly,
+    wizardType = 'default',
+  } = model;
+
+  const steps = visibleSteps?.map<IStepProps>(({ id, title, subTitle, description, icon, customEnabled }, index) => {
+    const isDisabledByCondition = !executeBooleanExpression(customEnabled, true) && formMode !== 'designer';
+
+    const iconProps = icon ? { icon: <ShaIcon iconName={icon as any} /> } : {};
+
+    return {
+      id,
+      title,
+      subTitle,
+      description: content(description, index),
+      disabled: isDisabledByCondition,
+      ...iconProps,
+      content: (
+        <ComponentsContainer
+          containerId={id}
+          dynamicComponents={isDynamic ? components?.map((c) => ({ ...c, readOnly })) : []}
+        />
+      ),
+    };
+  });
+
+  const splitButtons = buttonsLayout === 'spaceBetween';
+
+  if (model?.hidden) return null;
+  const btnStyle = getWizardButtonStyle(buttonsLayout);
+
+  return (
+    <div className="sha-wizard" style={getStyle(model?.style, data, globalState)}>
+      <div className={classNames('sha-wizard-container', { vertical: direction === 'vertical' })}>
+        <Steps
+          type={wizardType}
+          current={current}
+          items={steps}
+          size={model['size']}
+          direction={direction}
+          labelPlacement={labelPlacement}
+        />
+
+        <div className="sha-steps-content">{steps[current]?.content}</div>
+      </div>
+
+      <ConditionalWrap condition={buttonsLayout === 'left'} wrap={(children) => <Space>{children}</Space>}>
+        <div
+          className={classNames('sha-steps-buttons-container', {
+            split: splitButtons,
+            left: buttonsLayout === 'left',
+            right: buttonsLayout === 'right',
+          })}
+        >
+          <ConditionalWrap
+            condition={splitButtons}
+            wrap={(children) => (
+              <Space>
+                <div className={classNames('sha-steps-buttons')}>{children}</div>
+              </Space>
+            )}
+          >
+            {current > 0 && (
+              <Button
+                style={btnStyle('back')}
+                onClick={back}
+                disabled={!executeBooleanExpression(currentStep?.backButtonCustomEnabled, true)}
+              >
+                {currentStep.backButtonText ? currentStep.backButtonText : 'Back'}
+              </Button>
+            )}
+
+            {currentStep.allowCancel === true && (
+              <Button
+                style={btnStyle('cancel')}
+                onClick={cancel}
+                disabled={!executeBooleanExpression(currentStep?.cancelButtonCustomEnabled, true)}
+              >
+                {currentStep.cancelButtonText ? currentStep.cancelButtonText : 'Cancel'}
+              </Button>
+            )}
+          </ConditionalWrap>
+
+          <ConditionalWrap
+            condition={splitButtons}
+            wrap={(children) => (
+              <Space>
+                <div className={classNames('sha-steps-buttons')}>{children}</div>
+              </Space>
+            )}
+          >
+            {current < visibleSteps.length - 1 && (
+              <Button
+                type="primary"
+                style={btnStyle('next')}
+                onClick={next}
+                disabled={!executeBooleanExpression(currentStep?.nextButtonCustomEnabled, true)}
+              >
+                {currentStep.nextButtonText ? currentStep.nextButtonText : 'Next'}
+              </Button>
+            )}
+
+            {current === visibleSteps.length - 1 && (
+              <Button
+                type="primary"
+                style={btnStyle('next')}
+                onClick={done}
+                disabled={!executeBooleanExpression(currentStep?.doneButtonCustomEnabled, true)}
+              >
+                {currentStep.doneButtonText ? currentStep.doneButtonText : 'Done'}
+              </Button>
+            )}
+          </ConditionalWrap>
+        </div>
+      </ConditionalWrap>
+    </div>
+  );
 };
 
 export default TabsComponent;

@@ -91,7 +91,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
               onChange(...args);
           };
           return inputProps.readOnly
-            ? <ReadOnlyDisplayFormItem value={model.textType === 'password' ? ''.padStart(value.length, '•••••') : value} disabled={model.disabled} />
+            ? <ReadOnlyDisplayFormItem value={model.textType === 'password' ? ''.padStart(value.length, 'â€¢') : value} disabled={model.disabled} />
             : <InputComponentType {...inputProps} {...customEvent} disabled={model.disabled} value={value} onChange={onChangeInternal} />;
         }}
       </ConfigurableFormItem>

@@ -1,34 +1,34 @@
-//@media (max-width: 575px) {
-//ToDo: AS need to fix position of JS|Value button
-    .ant-form-item .ant-btn.ant-btn-round.ant-btn-primary.ant-btn-sm.sha-js-switch {
-        position: absolute;
-        right: 0;
-        top: -28px;
-        font-size: 12px;
-        height: 20px;
-        width: 54px;
-        margin-left: 5px;
-        margin-right: 5px;
-    }
-
-    .ant-form-item .ant-btn.ant-btn-round.ant-btn-primary.ant-btn-sm.sha-js-content-js {
-        position: relative;
-        top: 0px;
-    }
-
-    .ant-form-item .ant-btn.ant-btn-round.ant-btn-primary.ant-btn-sm.sha-js-content-code {
-        position: relative;
-        top: -4px;
-    }
-
-    .ant-form-item .sha-js-content {
-        margin-right: 0;
-    }
-//}
-/*
-.ant-form-item .ant-btn.ant-btn-round.ant-btn-primary.ant-btn-sm.sha-js-switch {
+.sidebar-container .ant-form .ant-form-item .ant-btn.ant-btn-round.ant-btn-primary.ant-btn-sm.sha-js-switch {
     position: absolute;
     right: 0;
+    left: auto;
+    top: -28px;
+    font-size: 12px;
+    height: 20px;
+    width: 54px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.sidebar-container .ant-form .ant-form-item .ant-btn.ant-btn-round.ant-btn-primary.ant-btn-sm.sha-js-content-js {
+    position: relative;
+    top: 0px;
+}
+
+.sidebar-container .ant-form .ant-form-item .ant-btn.ant-btn-round.ant-btn-primary.ant-btn-sm.sha-js-content-code {
+    position: relative;
+    top: -4px;
+}
+
+.sidebar-container .ant-form .ant-form-item .sha-js-content {
+    margin-right: 0;
+    margin-left: 0;
+}
+
+.ant-form-item .ant-btn.ant-btn-round.ant-btn-primary.ant-btn-sm.sha-js-switch {
+    position: absolute;
+    left: 0;
+    right: auto;
     top: 4px;
     font-size: 12px;
     height: 20px;
@@ -48,5 +48,33 @@
 }
 
 .ant-form-item .sha-js-content {
-    margin-right: 64px;
-}*/
+    margin-left: 64px;
+}
+
+@media (max-width: 575px) {
+    .ant-form .ant-form-item .ant-btn.ant-btn-round.ant-btn-primary.ant-btn-sm.sha-js-switch {
+        position: absolute;
+        right: 0;
+        left: auto;
+        top: -28px;
+        font-size: 12px;
+        height: 20px;
+        width: 54px;
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+
+    .ant-form .ant-form-item .ant-btn.ant-btn-round.ant-btn-primary.ant-btn-sm.sha-js-content-js {
+        position: relative;
+        top: 0px;
+    }
+
+    .ant-form .ant-form-item .ant-btn.ant-btn-round.ant-btn-primary.ant-btn-sm.sha-js-content-code {
+        position: relative;
+        top: -4px;
+    }
+
+    .ant-form .ant-form-item .sha-js-content {
+        margin-left: 0;
+    }
+}
