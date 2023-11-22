@@ -329,7 +329,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     dispatch(setFormControlsDataAction(payload));
   };
 
-  const setFormData = (payload: ISetFormDataPayload) => {
+  const updateStateFormData = (payload: ISetFormDataPayload) => {
     dispatch((dispatchThunk, getState) => {
       dispatchThunk(setFormDataAction(payload));
       const newState = getState();
@@ -353,8 +353,8 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     });
   };
 
-  const setFormDataAndInstance = (payload: ISetFormDataPayload) => {
-    setFormData(payload);
+  const setFormData = (payload: ISetFormDataPayload) => {
+    updateStateFormData(payload);
 
     if (payload?.mergeValues) {
       form?.setFieldsValue(payload?.values);
@@ -422,14 +422,14 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     getChildComponentIds,
     setFormMode,
     setVisibleComponents,
-    setFormData,
+    updateStateFormData,
     setFormControlsData,
     setValidationErrors,
     registerActions,
     getAction,
     getSection,
     getToolboxComponent,
-    setFormDataAndInstance,
+    setFormData,
     hasVisibleChilds,
   };
   if (formRef) formRef.current = { ...configurableFormActions, ...state, allComponents, componentRelations };

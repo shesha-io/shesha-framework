@@ -40,7 +40,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
   icon: <FolderAddOutlined />,
   Factory: ({ model, form }) => {
     const { backendUrl } = useSheshaApplication();
-    const { formMode, formSettings, setFormDataAndInstance } = useForm();
+    const { formMode, formSettings, setFormData } = useForm();
     const { data } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
 
@@ -52,7 +52,6 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
 
     const onFileListChanged = (fileList: IStoredFile[]) => {
       const http = axiosHttp(backendUrl);
-      const setFormData = setFormDataAndInstance;
 
       const eventFunc = new Function(
         'fileList',

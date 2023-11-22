@@ -17,7 +17,7 @@ interface IProps {
 }
 
 const NumberFieldControl: FC<IProps> = ({ disabled, form, model, onChange, value }) => {
-  const { formMode, formData, setFormDataAndInstance } = useForm();
+  const { formMode, formData, setFormData } = useForm();
   const { globalState, setState: setGlobalState } = useGlobalState();
   const { backendUrl } = useSheshaApplication();
 
@@ -30,7 +30,7 @@ const NumberFieldControl: FC<IProps> = ({ disabled, form, model, onChange, value
     http: axiosHttp(backendUrl),
     message,
     moment,
-    setFormData: setFormDataAndInstance,
+    setFormData,
     setGlobalState,
   };
 

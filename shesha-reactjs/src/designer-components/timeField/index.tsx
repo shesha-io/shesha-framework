@@ -67,7 +67,7 @@ const TimeField: IToolboxComponent<ITimePickerProps> = {
   icon: <ClockCircleOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.time,
   Factory: ({ model, form }) => {
-    const { formMode, setFormDataAndInstance } = useForm();
+    const { formMode, setFormData } = useForm();
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
@@ -81,7 +81,7 @@ const TimeField: IToolboxComponent<ITimePickerProps> = {
       http: axiosHttp(backendUrl),
       message,
       moment,
-      setFormData: setFormDataAndInstance,
+      setFormData,
       setGlobalState,
     };
 

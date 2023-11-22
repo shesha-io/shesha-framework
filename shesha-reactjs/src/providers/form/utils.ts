@@ -92,7 +92,7 @@ export function useApplicationContext(topContextId?: string): IApplicationContex
   return {
     data: useFormData()?.data,
     contexts: {...dcm?.getDataContextsData(tcId)},
-    setFormData: form?.setFormDataAndInstance,
+    setFormData: form?.setFormData,
     formMode: form?.formMode,
     globalState,
     setGlobalState,

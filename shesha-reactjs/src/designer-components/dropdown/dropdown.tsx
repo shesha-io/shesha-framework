@@ -30,7 +30,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
   icon: <DownSquareOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.referenceListItem,
   Factory: ({ model, form }) => {
-    const { formMode, setFormDataAndInstance } = useForm();
+    const { formMode, setFormData } = useForm();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
     const { data: formData } = useFormData();
@@ -43,7 +43,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
       http: axiosHttp(backendUrl),
       message,
       moment,
-      setFormData: setFormDataAndInstance,
+      setFormData,
       setGlobalState,
     };
 

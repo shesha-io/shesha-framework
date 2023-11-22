@@ -84,9 +84,9 @@ export interface IFormActionsContext {
   isComponentHidden: (model: Pick<IConfigurableFormComponent, 'id' | 'isDynamic' | 'hidden'>) => boolean;
   hasVisibleChilds: (id: string) => boolean;
   setVisibleComponents: (payload: ISetVisibleComponentsPayload) => void;
-  setFormData: (payload: ISetFormDataPayload) => void;
+  updateStateFormData: (payload: ISetFormDataPayload) => void;
   setFormControlsData: (payload: ISetFormControlsDataPayload) => void;
-  setFormDataAndInstance: (payload: ISetFormDataPayload) => void;
+  setFormData: (payload: ISetFormDataPayload) => void;
   setValidationErrors: (payload: IFormValidationErrors) => void;
   registerActions: (id: string, actions: IFormActions) => void;
   /**

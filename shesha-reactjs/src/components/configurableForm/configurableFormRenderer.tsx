@@ -53,14 +53,14 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
   //  contextManager.updateFormInstance(formInstance);
 
   const {
-    setFormData,
+    updateStateFormData,
     formData,
     allComponents,
     formMode,
     formSettings,
     formMarkup,
     setValidationErrors,
-    setFormDataAndInstance,
+    setFormData,
     visibleComponentIdsIsSet,
   } = formInstance;
 
@@ -135,7 +135,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
     if (props.onValuesChange) props.onValuesChange(changedValues, values);
 
     // recalculate components visibility
-    setFormData({ values, mergeValues: true });
+    updateStateFormData({ values, mergeValues: true });
   };
 
   const initialValuesFromSettings = useMemo(() => {
@@ -183,7 +183,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
   // only if data is not fetched or form is not in designer mode
   useEffect(() => {
     if (fetchedFormEntity || designerMode) return;
-      setFormDataAndInstance({ values: initialValues, mergeValues: true });
+    setFormData({ values: initialValues, mergeValues: true });
   }, [allComponents, initialValues]);
 
   useEffect(() => {
@@ -213,7 +213,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
     // }
 
     if (incomingInitialValues) {
-      setFormDataAndInstance({ values: incomingInitialValues, mergeValues: true });
+      setFormData({ values: incomingInitialValues, mergeValues: true });
     }
   }, [fetchedFormEntity, lastTruthyPersistedValue, initialValuesFromSettings, uniqueFormId]);
 
@@ -269,7 +269,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
       includeMessage ? message : undefined,
       sheshaUtils,
       form,
-      setFormDataAndInstance,
+      setFormData,
       setGlobalState,
       {...dcm?.getDataContextsData(), lastUpdate: dcm?.lastUpdate},
     );

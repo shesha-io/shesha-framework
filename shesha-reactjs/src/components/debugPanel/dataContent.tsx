@@ -55,7 +55,7 @@ const DebugPanelDataContent: FC = () => {
         prop[pName[pName.length - 1]] = val;
       }
   
-      formInstance?.setFormDataAndInstance({ values: changedData, mergeValues: true });
+      formInstance?.setFormData({ values: changedData, mergeValues: true });
     };
   
     console.log('debug rerender');

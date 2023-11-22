@@ -15,7 +15,7 @@ interface IFormExpression {
 }
 
 export const useFormExpression = (): IFormExpression => {
-  const { form, formMode, setFormDataAndInstance } = useForm();
+  const { form, formMode, setFormData } = useForm();
   const { data: formData } = useFormData();
   const { globalState, setState: setGlobalState } = useGlobalState();
   const { backendUrl } = useSheshaApplication();
@@ -29,7 +29,7 @@ export const useFormExpression = (): IFormExpression => {
     http: axiosHttp(backendUrl),
     message,
     setGlobalState,
-    setFormData: setFormDataAndInstance,
+    setFormData,
     moment,
   };
 
@@ -62,7 +62,7 @@ export const useFormExpression = (): IFormExpression => {
       axiosHttp(backendUrl),
       message,
       setGlobalState,
-      setFormDataAndInstance,
+      setFormData,
       moment
     );
 
@@ -78,7 +78,7 @@ export const useFormExpression = (): IFormExpression => {
       axiosHttp(backendUrl),
       message,
       setGlobalState,
-      setFormDataAndInstance,
+      setFormData,
       moment
     );
 

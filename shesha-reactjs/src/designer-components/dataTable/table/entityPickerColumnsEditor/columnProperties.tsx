@@ -33,7 +33,7 @@ export const ColumnProperties: FC<IProps> = () => {
     if (formRef.current) {
       const values = form.getFieldsValue();
 
-      formRef.current.setFormData({ values, mergeValues: false });
+      formRef.current.updateStateFormData({ values, mergeValues: false });
     }
   }, [selectedItemId]);
 

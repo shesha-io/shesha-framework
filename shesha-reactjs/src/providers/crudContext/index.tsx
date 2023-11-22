@@ -5,7 +5,7 @@ import { RowDataInitializer } from '../../components/reactTable/interfaces';
 import useThunkReducer from '../../hooks/thunkReducer';
 import { IErrorInfo } from '../../interfaces/errorInfo';
 import { FormProvider, useForm } from '../../providers';
-import { IFlatComponentsStructure } from '../../providers/form/models';
+import { IFlatComponentsStructure, IFormSettings } from '../../providers/form/models';
 import {
   deleteFailedAction,
   deleteStartedAction,
@@ -41,6 +41,7 @@ export interface ICrudProviderProps {
   autoSave?: boolean;
   editorComponents?: IFlatComponentsStructure;
   displayComponents?: IFlatComponentsStructure;
+  formSettings?: IFormSettings;
 }
 
 const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
@@ -57,6 +58,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     onSave,
     allowChangeMode,
     autoSave = false,
+    formSettings
   } = props;
   const [state, dispatch] = useThunkReducer(reducer, {
     ...CRUD_CONTEXT_INITIAL_STATE,
@@ -270,7 +272,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
           mode={state.mode === 'read' ? 'readonly' : 'edit'}
           isActionsOwner={false}
         >
-          <FormWrapper form={form} initialValues={state.initialValues} onValuesChange={onValuesChange}>
+          <FormWrapper form={form} initialValues={state.initialValues} onValuesChange={onValuesChange} formSettings={formSettings}>
             {children}
           </FormWrapper>
         </FormProvider>
@@ -293,10 +295,11 @@ interface FormWrapperProps {
   initialValues: object;
   onValuesChange: FormProps['onValuesChange'];
   form: FormInstance;
+  formSettings?: IFormSettings;
 }
 
-const FormWrapper: FC<PropsWithChildren<FormWrapperProps>> = ({ initialValues, onValuesChange, form, children }) => {
-  const { setFormData } = useForm();
+const FormWrapper: FC<PropsWithChildren<FormWrapperProps>> = ({ initialValues, onValuesChange, form, formSettings, children }) => {
+  const { updateStateFormData: setFormData } = useForm();
 
   const onValuesChangeInternal = (changedValues: any, values: any) => {
     // recalculate components visibility
@@ -306,7 +309,7 @@ const FormWrapper: FC<PropsWithChildren<FormWrapperProps>> = ({ initialValues, o
   };
 
   return (
-    <Form component={false} form={form} initialValues={initialValues} onValuesChange={onValuesChangeInternal}>
+    <Form component={false} form={form} initialValues={initialValues} onValuesChange={onValuesChangeInternal} {...formSettings}>
       {children}
     </Form>
   );

@@ -50,7 +50,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
     });
 
     if (settingsForm) 
-      settingsForm.setFormDataAndInstance({values: newModel, mergeValues: true});
+      settingsForm.setFormData({values: newModel, mergeValues: true});
     else
       form.setFieldsValue(newModel);
 

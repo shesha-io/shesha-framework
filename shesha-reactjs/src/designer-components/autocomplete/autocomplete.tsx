@@ -45,7 +45,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
   Factory: ({ model, form }) => {
     const { queryParams, filter } = model;
-    const { formMode, setFormDataAndInstance } = useForm();
+    const { formMode, setFormData } = useForm();
     const { data } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
@@ -145,7 +145,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
             axiosHttp(backendUrl),
             message,
             moment,
-            setFormDataAndInstance,
+            setFormData,
             setGlobalState
           );
         }
@@ -163,7 +163,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       http: axiosHttp(backendUrl),
       message,
       moment,
-      setFormData: setFormDataAndInstance,
+      setFormData,
       setGlobalState,
     };
 
