@@ -47,8 +47,8 @@ export interface ITimePickerProps extends IConfigurableFormComponent {
 }
 
 const getMoment = (value: any, dateFormat: string): Moment => {
+  
   if (value === null || value === undefined) return undefined;
-
   const values = [isMoment(value) ? value : null, moment(value as string, dateFormat), moment(value as string)];
 
   const parsed = values.find((i) => isMoment(i) && i.isValid());
@@ -132,6 +132,8 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
   ...rest
 }) => {
   const { data: formData } = useFormData();
+
+  
   const evaluatedValue = getMoment(value, format);
 
   const hourStepLocal = getNumericValue(hourStep);
@@ -160,8 +162,9 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
     (onChange as RangePickerChangeEvent)(values, formatString);
   };
 
+
   if (readOnly) {
-    return <ReadOnlyDisplayFormItem value={evaluatedValue?.toISOString()} disabled={disabled} type="time" />;
+    return <ReadOnlyDisplayFormItem value={evaluatedValue?.toISOString()} disabled={disabled} type="time" timeFormat={format} />;
   }
 
   if (range) {
