@@ -63,8 +63,12 @@ export const FncEmployeeAccountDetail = addStory(Template, {
 });
 
 export const TimePickerDetails = addStory(Template, {
+  formId: { name: 'Books-Table', module: 'Boxfusion.SheshaFunctionalTests.Common' },
+});
+
+export const TimePickerDetailsEdit = addStory(Template, {
   formId: { name: 'book-details', module: 'Boxfusion.SheshaFunctionalTests.Common' },
-  id: '8df415e3-834e-40ce-b867-d7014d3332b6',
+  id:"8be87b61-a09b-4f1b-956e-95d4b5afba15"
 });
 
 

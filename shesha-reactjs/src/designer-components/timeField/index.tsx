@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import { ClockCircleOutlined } from '@ant-design/icons';
 import { TimePicker, message } from 'antd';
 import moment, { Moment, isMoment } from 'moment';
@@ -183,12 +183,16 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
     );
   }
 
+
+const latestValue=evaluatedValue|| (defaultValue && moment(defaultValue));
+
   return (
     <TimePicker
       bordered={!hideBorder}
       onChange={handleTimePickerChange}
       format={format}
-      defaultValue={evaluatedValue || (defaultValue && moment(defaultValue))}
+      key={latestValue?.toISOString()}
+      defaultValue={latestValue}
       {...steps}
       style={getStyle(style, formData)}
       className="sha-timepicker"
