@@ -178,7 +178,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
 
   // reset form to initial data on any change of components or initialData
   useEffect(() => {
-    setFormData({ values: initialValues, mergeValues: true });
+    setFormDataAndInstance({ values: initialValues, mergeValues: true });
 
     if (fetchedFormEntity) return;
 

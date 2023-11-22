@@ -159,8 +159,7 @@ const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
   };
 
   const onChangeFormData = (payload: ISetFormDataPayload) => {
-    form?.setFieldsValue(payload?.values);
-    formRef?.current?.setFormData({ values: payload?.values, mergeValues: payload?.mergeValues });
+    formRef?.current?.setFormDataAndInstance({ values: payload?.values, mergeValues: payload?.mergeValues });
   };
 
   //#endregion

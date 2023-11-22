@@ -110,7 +110,7 @@ const ContextPropertyAutocompleteComponent: IToolboxComponent<IContextPropertyAu
   icon: <FileSearchOutlined />,
   Factory: ({ model }) => {
     const designerModelType = useFormDesigner(false)?.formSettings?.modelType;
-    const { formData, formSettings, setFormData } = useForm();
+    const { formData, formSettings, setFormDataAndInstance } = useForm();
   
     const readOnly = model?.readOnly || model.disabled;
 
@@ -120,7 +120,7 @@ const ContextPropertyAutocompleteComponent: IToolboxComponent<IContextPropertyAu
         defaultModelType={designerModelType ?? formSettings.modelType}
         formData={formData}
         onValuesChange={(values) => {
-          setFormData({values: {...values}, mergeValues: true});
+          setFormDataAndInstance({values: {...values}, mergeValues: true});
         }}
       />
     );

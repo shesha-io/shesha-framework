@@ -76,7 +76,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   ...props
 }) => {
   const store = useDataTableStore();
-  const { formMode, formData, setFormData } = useForm(false) ?? { formMode: 'readonly', formData: {} };
+  const { formMode, formData, setFormDataAndInstance } = useForm(false) ?? { formMode: 'readonly', formData: {} };
   const { globalState, setState: setGlobalState } = useGlobalState();
 
   if (tableRef) tableRef.current = store;
@@ -339,7 +339,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
       return repository.performUpdate(rowIndex, preparedData, options).then((response) => {
         setRowData(rowIndex, preparedData/*, response*/);
-        performOnRowSaveSuccess(preparedData, formData ?? {}, globalState, setGlobalState, setFormData);
+        performOnRowSaveSuccess(preparedData, formData ?? {}, globalState, setGlobalState, setFormDataAndInstance);
         return response;
       });
     });
@@ -357,7 +357,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
       return repository.performCreate(0, preparedData, options).then(() => {
         store.refreshTable();
-        performOnRowSaveSuccess(preparedData, formData ?? {}, globalState, setGlobalState, setFormData);
+        performOnRowSaveSuccess(preparedData, formData ?? {}, globalState, setGlobalState, setFormDataAndInstance);
       });
     });
   };
