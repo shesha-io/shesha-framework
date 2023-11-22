@@ -190,18 +190,8 @@ namespace Shesha.ConfigurationItems
 
         private IConfigurationItemManager GetSingleManager(ConfigurationItemBase item) 
         {
-            var itemType = item.GetType().StripCastleProxyType();
-            var managerType = typeof(IConfigurationItemManager<>).MakeGenericType(itemType);
-            var manager = IocManager.Resolve(managerType) as IConfigurationItemManager;
-
-            var allManagers = IocManager.Resolve<IConfigurationItemManager>();
-
-            if (manager == null)
-                throw new ConfigurationItemManagerNotFoundException(item.GetType().Name);
-
-            return manager as IConfigurationItemManager;
+            return IocManager.GetItemManager(item) ?? throw new ConfigurationItemManagerNotFoundException(item.GetType().Name);
         }
-
 
         /// <summary>
         /// Copy configuration item

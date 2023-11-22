@@ -24,6 +24,9 @@ export function storedFilesReducer(
     case StoredFileActionEnums.UploadFileRequest:
     case StoredFileActionEnums.UploadFileSuccess:
     case StoredFileActionEnums.UploadFileError:
+    case StoredFileActionEnums.FileViewRequest:
+    case StoredFileActionEnums.FileViewSuccess:
+    case StoredFileActionEnums.FileViewError:
       /* NEW_ACTION_ENUM_GOES_HERE */
 
       return {

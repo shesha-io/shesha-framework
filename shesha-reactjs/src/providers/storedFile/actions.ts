@@ -15,6 +15,9 @@ export enum StoredFileActionEnums {
   FetchFileInfoRequest = 'FETCH_FILE_INFO_REQUEST',
   FetchFileInfoSuccess = 'FETCH_FILE_INFO_SUCCESS',
   FetchFileInfoError = 'FETCH_FILE_INFO_ERROR',
+  FileViewRequest = 'FILE_VIEW_REQUEST',
+  FileViewSuccess = 'FILE_VIEW_SUCCESS',
+  FileViewError = 'FILE_VIEW_ERROR',
   /* NEW_ACTION_TYPE_GOES_HERE */
 }
 
@@ -68,6 +71,19 @@ export const fetchFileInfoSuccessAction = createAction<IStoredFileStateContext, 
 );
 export const fetchFileInfoErrorAction = createAction<IStoredFileStateContext>(
   StoredFileActionEnums.FetchFileInfoError,
+  () => ({})
+);
+export const fileViewRequestAction = createAction<IStoredFileStateContext>(
+  StoredFileActionEnums.FileViewRequest,
+  () => ({})
+);
+export const fileViewSuccessAction = createAction<IStoredFileStateContext>(
+  StoredFileActionEnums.FileViewSuccess,
+  () => ({})
+);
+
+export const fileViewErrorAction = createAction<IStoredFileStateContext>(
+  StoredFileActionEnums.FileViewError,
   () => ({})
 );
 

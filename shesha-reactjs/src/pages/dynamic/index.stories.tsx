@@ -62,10 +62,11 @@ export const FncEmployeeAccountDetail = addStory(Template, {
   id: '3b918830-9f1e-48e7-8298-0adc4ce1192b',
 });
 
-export const FncSchoolDetails = addStory(Template, {
-  formId: { name: 'School-Details', module: 'Boxfusion.SheshaFunctionalTests.Common' },
-  id: '49d6b802-935e-4527-990a-68a3f1d35368',
+export const TimePickerDetails = addStory(Template, {
+  formId: { name: 'book-details', module: 'Boxfusion.SheshaFunctionalTests.Common' },
+  id: '8df415e3-834e-40ce-b867-d7014d3332b6',
 });
+
 
 export const FncTestCascadeBehavior = addStory(Template, {
   formId: { name: 'test-cascade-behavior-details', module: 'Shesha' },
@@ -162,15 +163,14 @@ export const WorkflowDefinitions = addStory(Template, {
   },
 });
 
-export const BugFix = addStory(Template, {
+export const ImageAdvanced = addStory(Template, {
   formId: {
-    name: 'School-Details',
-    module: 'Boxfusion.SheshaFunctionalTests.Common',
+    name: 'test-cascade-behavior-details',
+    module: 'Shesha',
   },
   mode: 'readonly',
-  id: 'bff4b223-2c29-43b3-9a96-4157d63f0420',
+  id: '23ecf860-e525-4fff-90f2-0e755b3c8e09',
 });
-
 export const DataList = addStory(Template, {
   formId: {
     name: 'alex-test',

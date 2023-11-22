@@ -77,3 +77,6 @@ export const EntprDesignerTimeField = addStory(Template, {
 export const RefListStatus = addStory(Template, {
   formId: 'ecebf97c-cf1e-4e43-831e-91f0ceccaf06',
 });
+export const TimePicker = addStory(Template, {
+  formId: '2799e06b-6595-4dd3-9f71-567d3555f80e',
+});
