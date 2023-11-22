@@ -42,7 +42,6 @@ import {
 } from './contexts';
 import { FRONT_END_APP_HEADER_NAME } from './models';
 import appConfiguratorReducer from './reducer';
-import { IModelMetadata } from 'interfaces/metadata';
 import DebugPanel from 'components/debugPanel';
 
 export interface IShaApplicationProviderProps {
