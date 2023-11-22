@@ -453,15 +453,19 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     return null;
   }, [records, grouping, groupingMetadata]);
 
-  const renderGroupTitle = (value: any, propertyName: string) => {
-    if (!Boolean(value) && value !== false)
-      return <Typography.Text type='secondary'>(empty)</Typography.Text>;
+  const renderGroupTitle = (value: any, propertyName: string, style: React.CSSProperties) => {
+    if (!Boolean(value) && value !== false) {
+      if (!!style)
+        return <Typography.Text style={style}>(empty)</Typography.Text>;
+      else
+        return <Typography.Text type='secondary'>(empty)</Typography.Text>;
+    }
     const propertyMeta = groupingMetadata.find(p => toCamelCase(p.path) === propertyName);
-    return <ValueRenderer value={value} meta={propertyMeta} />;
+    return <Typography.Text style={style}><ValueRenderer value={value} meta={propertyMeta} /></Typography.Text>;
   };
 
   const renderGroup = (group: RowsGroup, key: number): React.ReactElement => {
-    const title = renderGroupTitle(group.value, grouping[group.index].propertyName);
+    const title = renderGroupTitle(group.value, grouping[group.index].propertyName, computedGroupStyle);
     return (
       <Collapse
         key={key}
@@ -469,20 +473,20 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         expandIconPosition='start'
         className={`sha-group-level-${group.index}`}
         collapsible={collapsible ? undefined : 'disabled'}
+        style={computedGroupStyle}
       >
-        <Collapse.Panel header={<>{title}</>} key="1" style={computedGroupStyle}>
-          {group.$childs.map((child, index) => {
+        <Collapse.Panel header={<span style={computedGroupStyle}>{title}</span>} key="1" style={computedGroupStyle}>
+          {group.$childs.map((child, index, records) => {
             return isGroup(child)
               ? renderGroup(child, index)
-              : renderRow(child, index);
+              : renderRow(child, index, records?.length - 1 === index);
           })}
         </Collapse.Panel>
       </Collapse>
     );
   };
 
-  const renderRow = (item: any, index: number) => {
-    const isLastItem = records?.length - 1 === index;
+  const renderRow = (item: any, index: number, isLastItem: Boolean) => {
     const selected =
       selectedRow?.index === index ||
       (selectedRows?.length > 0 && selectedRows?.some(({ id }) => id === item?.id));
@@ -549,7 +553,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           <Show when={Boolean(records) /*&& Boolean(formConfiguration?.markup)*/}>
             { groups 
               ? groups?.map((item: RowsGroup, index) =>  renderGroup(item, index))
-              : records?.map((item: any, index) =>  renderRow(item, index))
+              : records?.map((item: any, index) =>  renderRow(item, index, records?.length - 1 === index))
             }
           </Show>
         </div>

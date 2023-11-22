@@ -1,3 +1,4 @@
+import { useDataContext } from 'providers/dataContextProvider/index';
 import { useEffect, useMemo, useState } from 'react';
 import { IConfigurableFormComponent, useFormExpression, useSheshaApplication } from '../../../../';
 import { IConfigurableActionConfiguration } from '../../../../interfaces/configurableAction';
@@ -21,6 +22,7 @@ interface IWizardComponent {
 export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardComponent => {
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const { formMode } = useForm();
+  const dataContext = useDataContext();
 
   const { argumentsEvaluationContext, executeBooleanExpression, executeExpression, executeAction } =
     useFormExpression();
@@ -221,6 +223,16 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
 
 
   const content = getStepDescritpion(showStepStatus, sequence, current);
+
+  /* Data Context section */
+
+  useEffect(() => {
+    dataContext.setData({ current, visibleSteps });
+  }, [current, visibleSteps]);
+
+  dataContext.updateApi({ back, cancel, done, content, next }); // update context api to use relevant State
+
+  /* Data Context section */
 
   return { back, components, current, currentStep, cancel, done, content, next, visibleSteps };
 };

@@ -62,10 +62,11 @@ export const FncEmployeeAccountDetail = addStory(Template, {
   id: '3b918830-9f1e-48e7-8298-0adc4ce1192b',
 });
 
-export const FncSchoolDetails = addStory(Template, {
-  formId: { name: 'School-Details', module: 'Boxfusion.SheshaFunctionalTests.Common' },
-  id: '49d6b802-935e-4527-990a-68a3f1d35368',
+export const TimePickerDetails = addStory(Template, {
+  formId: { name: 'book-details', module: 'Boxfusion.SheshaFunctionalTests.Common' },
+  id: '8df415e3-834e-40ce-b867-d7014d3332b6',
 });
+
 
 export const FncTestCascadeBehavior = addStory(Template, {
   formId: { name: 'test-cascade-behavior-details', module: 'Shesha' },

@@ -25,7 +25,7 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => 
     lazy: true,
   });
 
-  const { form, formMode, formData } = useForm();
+  const { form, formMode, formData, setFormDataAndInstance } = useForm();
   const { globalState, setState: setGlobalState } = useGlobalState();
   const { backendUrl } = useSheshaApplication();
 
@@ -56,7 +56,7 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => 
     http: axiosHttp(backendUrl),
     message,
     moment,
-    setFormData: onChange,
+    setFormData: setFormDataAndInstance,
     setGlobalState,
     onChange,
     onSelect,

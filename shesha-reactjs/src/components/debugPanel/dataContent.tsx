@@ -23,7 +23,7 @@ const DebugPanelDataContent: FC = () => {
           .then(r => {
             setFormMetadata(r);
           });
-    },[]);
+    }, []);
 
     const contexts = useMemo(() => contextManager.getDataContexts('all'), [contextManager.lastUpdate]);
   
@@ -78,9 +78,10 @@ const DebugPanelDataContent: FC = () => {
             name={'Form data'}
           />
         }
-        {contexts.map(item => {
+        {contexts.map((item) => {
           const ctxData = contextManager.getDataContextData(item.id);
-          return <DebugDataTree 
+          return <DebugDataTree
+            key={item.id}
             data={ctxData}
             onChange={(propName, val) => onChangeContext(item.id, propName, val)}
             name={item.name}

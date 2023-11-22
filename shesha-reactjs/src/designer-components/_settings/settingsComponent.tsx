@@ -43,8 +43,10 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
         const ctxRef = useRef<IContextSettingsRef>();
         const modeRef = useRef<ISwitchModeSettingsRef>();
 
+        const label = <span>{props.label}</span>;
+
         return (
-            <ConfigurableFormItem model={{ ...props, label: props.label, }} className='sha-js-label' >
+            <ConfigurableFormItem model={{ ...props, label }} className='sha-js-label' >
                 {(value, onChange) => {
                     const localValue = getValueFromPropertySettings(value);
                     return (

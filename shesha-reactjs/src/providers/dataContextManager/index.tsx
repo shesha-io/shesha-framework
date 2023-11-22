@@ -48,7 +48,6 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
 
     const updateFormInstance = (form: ConfigurableFormInstance) => {
         formInstance.current = form;
-        setState({...state, lastUpdate: new Date().toJSON() });
     };
 
     const getFormInstance = () => {
@@ -60,9 +59,9 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
             const ctx = {...payload};
             delete ctx.initialData;
             contexts.current[payload.id] = {...ctx};
+        }
+        if (!contextsData.current[payload.id]) {
             contextsData.current[payload.id] = {...payload.initialData};
-
-            //setData({...contextsData, [payload.id]: payload.initialData});
             setState({...state, lastUpdate: new Date().toJSON() });
         }
     };

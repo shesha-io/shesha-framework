@@ -48,10 +48,10 @@ export const getStepDescritpion =
           return sequence?.pending || '';
 
         case index > currentIndex:
-          return sequence?.finshed || '';
+          return sequence?.finished || '';
 
         default:
-          return sequence?.finshed || '';
+          return sequence?.finished || '';
       }
     }
 
