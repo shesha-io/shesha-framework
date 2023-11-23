@@ -3,7 +3,6 @@ import moment from "moment";
 import { useReferenceList, useReferenceListItem } from "providers/referenceListDispatcher/index";
 import React, { useMemo } from "react";
 import { FC } from "react";
-import { asNumber } from "../dataTable/cell/utils";
 
 export interface ValueRendererProps {
     value: any;
@@ -21,9 +20,13 @@ export const ValueRenderer: FC<ValueRendererProps> = (props) => {
         case 'date': return (<>{moment(value).format(meta.dataFormat || 'DD/MM/YYYY')}</>);
         case 'date-time': return (<>{moment(value).format(meta.dataFormat || 'DD/MM/YYYY HH:mm')}</>);
         case 'time': {
-            const numberValue = asNumber(value);
-            return numberValue
-                ? <>{moment.utc(numberValue * 1000).format(meta.dataFormat || 'HH:mm')}</>
+            const momentValue = moment(value)
+                ? value
+                : typeof value === 'number'
+                    ?  moment.utc(value * 1000)
+                    : null;
+            return momentValue
+                ? <>{momentValue.format(meta.dataFormat || 'HH:mm')}</>
                 : null;
         };
         case 'reference-list-item': return (<ReferenceListDisplay {...props} />);

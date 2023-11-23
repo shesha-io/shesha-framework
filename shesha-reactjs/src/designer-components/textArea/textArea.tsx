@@ -81,7 +81,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
         }
       >
         {(val, onChange) => {
-          const value = val?.target?.value;
+          const value = val;
           const showAsJson = Boolean(value) && typeof value === 'object';
 
           const customEvent =  customEventHandler(eventProps);
