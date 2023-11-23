@@ -47,9 +47,13 @@ export interface ITimePickerProps extends IConfigurableFormComponent {
 }
 
 const getMoment = (value: any, dateFormat: string): Moment => {
-  
   if (value === null || value === undefined) return undefined;
-  const values = [isMoment(value) ? value : null, moment(value as string, dateFormat), moment(value as string)];
+  const values = [
+    isMoment(value) ? value : null,
+    typeof(value) === 'number' ? moment.utc(value * 1000) : null, // time in millis
+    typeof(value) === 'string' ? moment(value as string, dateFormat) : null, 
+    typeof(value) === 'string' ? moment(value as string) : null
+  ];
 
   const parsed = values.find((i) => isMoment(i) && i.isValid());
 
@@ -72,7 +76,6 @@ const TimeField: IToolboxComponent<ITimePickerProps> = {
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
     
-
     const eventProps = {
       model,
       form,
@@ -161,9 +164,8 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
     (onChange as RangePickerChangeEvent)(values, formatString);
   };
 
-
   if (readOnly) {
-    return <ReadOnlyDisplayFormItem value={evaluatedValue?.toISOString()} disabled={disabled} type="time" timeFormat={format} />;
+    return <ReadOnlyDisplayFormItem value={evaluatedValue} disabled={disabled} type="time" timeFormat={format} />;
   }
 
   if (range) {
