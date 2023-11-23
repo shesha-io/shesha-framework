@@ -6,7 +6,6 @@ import { FormFullName, IFormDto, IPersistedFormProps, useAppConfigurator, useCon
 import { useConfigurationItemsLoader } from '../../providers/configurationItemsLoader';
 import { getFormConfiguration, getMarkupFromResponse } from '../../providers/form/api';
 import ConditionalWrap from '../conditionalWrapper';
-import ConfigurableForm from '../configurableForm';
 import FormInfo from '../configurableForm/formInfo';
 import ShaSpin from '../shaSpin';
 import Show from '../show';
@@ -17,6 +16,7 @@ import { isEqual } from 'lodash';
 import { useDeepCompareMemo } from 'hooks';
 import { ValueRenderer } from 'components/valueRenderer/index';
 import { toCamelCase } from 'utils/string';
+import { DataListItemRenderer } from './itemRenderer';
 
 interface EntityForm {
   entityType: string;
@@ -310,7 +310,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   }, [entityTypes]);
 
   /** Rendering subform if exists for each item */
-  const renderSubForm = (item?: any) => {
+  const renderSubForm = (item: any, index: number) => {
     let values: { [key: string]: any; id: string } = { ...item };
 
     let formConfig: IFormDto = null; //formConfiguration;
@@ -383,6 +383,21 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
     return (
       <div onDoubleClick={handleClick}>
+        <DataListItemRenderer
+          markup={formConfig?.markup}
+          formSettings={formConfig?.settings}
+          data={values}
+          listId='list'
+          listName='Data List'
+          itemIndex={index}
+          itemId={item['id']}
+          editMode='update'
+        />
+      </div>
+    );
+
+    /*return (
+      <div onDoubleClick={handleClick}>
         <ConfigurableForm
           mode="readonly"
           //labelCol={{span: 3}}
@@ -393,7 +408,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           //onValuesChange={(value, index) => { alert(JSON.stringify(value) + " : " + JSON.stringify(index))}}
         />
       </div>
-    );
+    );*/
   };
 
   type Row = any;
@@ -514,7 +529,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             }}
             style={itemWidthCalc}
           >
-            {renderSubForm(item)}
+            {renderSubForm(item, index)}
           </div>
         </ConditionalWrap>{' '}
         {!isLastItem && <Divider className={classNames('sha-list-component-divider', { selected })} />}
