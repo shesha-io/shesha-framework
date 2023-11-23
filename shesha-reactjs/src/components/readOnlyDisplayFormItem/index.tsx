@@ -118,7 +118,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = ({
       default:
         break;
     }
-    return typeof value === 'object' ? JSON.stringify(value, null, 2) : value;
+    return Boolean(value) && typeof value === 'object' ? JSON.stringify(value, null, 2) : value;
   };
 
   const iconClass = 'read-only-mode-toggler';
