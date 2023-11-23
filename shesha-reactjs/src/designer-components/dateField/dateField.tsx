@@ -94,9 +94,10 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
     .add<IDateFieldProps>(1, (prev) => migrateVisibility(prev))
   ,
   linkToModelMetadata: (model, metadata): IDateFieldProps => {
+
     return {
       ...model,
-      showTime: metadata.dataType === DataTypes.dateTime,
+      showTime: metadata.dataType === DataTypes.date ? false : model.showTime,
     };
   },
 };
@@ -111,7 +112,6 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     disabled,
     hideBorder,
     range,
-    dateOnly,
     value,
     showTime,
     showNow,
@@ -165,7 +165,9 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
   };
 
   if (readOnly) {
-    const format = `${dateFormat}${showTime ? timeFormat : ''}`;
+    const format = showTime
+      ? `${dateFormat} ${timeFormat}`
+      : dateFormat;
 
     return (
       <ReadOnlyDisplayFormItem
