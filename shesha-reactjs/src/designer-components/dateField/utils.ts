@@ -38,8 +38,8 @@ export function disabledDate(props: IDateFieldProps, current: Moment, data: obje
   return disabledFunc(current, moment, data, globalState);
 }
 
-export const getDefaultFormat = ({ dateOnly, resolveToUTC }: IDateFieldProps) => {
-  if (dateOnly) {
+export const getDefaultFormat = ({ showTime, resolveToUTC }: IDateFieldProps) => {
+  if (!showTime) {
     return 'YYYY-MM-DD';
   }
 
