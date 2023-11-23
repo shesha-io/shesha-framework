@@ -30,6 +30,7 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
     formProps,
     isActionsOwner,
     propertyFilter,
+    isSettings,
     ...restProps
   } = props;
   const { switchApplicationMode, formInfoBlockVisible } = useAppConfigurator();
@@ -52,7 +53,7 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
     }
   };
 
-  const markupWithSettings = convertToMarkupWithSettings(markup);
+  const markupWithSettings = convertToMarkupWithSettings(markup, isSettings);
 
   const renderWithMarkup = (
     providedMarkup: FormRawMarkup,

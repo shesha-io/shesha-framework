@@ -39,7 +39,6 @@ export const ItemConfigProperties: FC<IItemConfigPropertiesProps> = ({}) => {
       componentModel.itemType === 'item' ? itemTypeMarkup : componentModel.itemType === 'group' ? groupTypeMarkup : [];
     return (
       <ConfigurableForm
-        key={selectedItemId} // rerender for each item to initialize all controls
         formRef={formRef}
         labelCol={{ span: 24 }}
         wrapperCol={{ span: 24 }}
@@ -49,6 +48,7 @@ export const ItemConfigProperties: FC<IItemConfigPropertiesProps> = ({}) => {
         form={form}
         initialValues={componentModel}
         onValuesChange={debouncedSave}
+        isSettings={true}
       />
     );
   }, [selectedItemId]);
