@@ -89,6 +89,7 @@ export interface IConfigurableFormProps<Values = any, FieldData = any>
   className?: string;
   isActionsOwner?: boolean;
   needDebug?: boolean;
+  isSettings?: boolean;
   propertyFilter?: (name: string) => boolean;
 }
 
