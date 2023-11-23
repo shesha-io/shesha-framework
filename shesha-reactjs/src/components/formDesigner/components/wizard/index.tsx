@@ -19,6 +19,7 @@ import './styles.less';
 import {
   migrateCustomFunctions,
   migratePropertyName,
+  migrateFunctionToProp
 } from '../../../../designer-components/_common-migrations/migrateSettings';
 import { DataContextProvider } from 'providers/dataContextProvider/index';
 
@@ -84,7 +85,11 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
       .add<IWizardComponentProps>(
         3,
         (prev) =>
-          migratePropertyName(migrateCustomFunctions(prev as IConfigurableFormComponent)) as IWizardComponentProps
+          migrateFunctionToProp(
+            migratePropertyName(
+              migrateCustomFunctions(prev as IConfigurableFormComponent)
+            ), 'defaultActiveStep', 'defaultActiveValue'
+           ) as IWizardComponentProps
       ),
   settingsFormFactory: (props) => <WizardSettingsForm {...props} />,
   // validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
@@ -180,7 +185,7 @@ const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = (model) => {
               </Button>
             )}
 
-            {currentStep.allowCancel === true && (
+            {currentStep?.allowCancel === true && (
               <Button
                 style={btnStyle('cancel')}
                 onClick={cancel}
