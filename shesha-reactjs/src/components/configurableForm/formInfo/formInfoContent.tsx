@@ -1,17 +1,11 @@
 import { ArrowsAltOutlined } from '@ant-design/icons';
 import { Button, Form, Modal } from 'antd';
 import { FormDesignerRenderer } from 'components/formDesigner/formDesignerRenderer';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC } from 'react';
 import { FormProvider, useFormDesigner } from '../../../providers';
 import FormInfoContentConainter from './formInfoContainer';
 
-interface IState {
-  done?: boolean;
-  publish?: boolean;
-  version?: boolean;
-}
-
-interface IFormInforContent extends IState {
+interface IFormInforContent {
   id: string;
   forwardLink: string;
   onClose: () => void;
@@ -22,27 +16,10 @@ interface IFormInforContent extends IState {
   onMarkupUpdated?: () => void;
 }
 
-const INIT_STATE: IState = { done: false, publish: false, version: false };
-
-const FormInfoContentWrapper: FC<Omit<IFormInforContent, 'id'>> = ({
-  onClose,
-  open,
-  onMarkupUpdated,
-  done,
-  publish,
-  version,
-}) => {
+const FormInfoContentWrapper: FC<Omit<IFormInforContent, 'id'>> = ({ onClose, open }) => {
   const [form] = Form.useForm();
 
   const { allComponents, componentRelations, formSettings } = useFormDesigner();
-
-  useEffect(() => {
-    if (done || publish || version) {
-      if (onMarkupUpdated) onMarkupUpdated();
-
-      onClose();
-    }
-  }, [done, publish, version]);
 
   return (
     <Modal open={open} onCancel={onClose} width={'80%'} footer={null}>
@@ -63,19 +40,17 @@ const FormInfoContentWrapper: FC<Omit<IFormInforContent, 'id'>> = ({
 };
 
 export const FormInfoContent: FC<IFormInforContent> = ({ id, ...props }) => {
-  const [state, setState] = useState<IState>(INIT_STATE);
+  const onFinsih = () => {
+    if (props.onMarkupUpdated) props.onMarkupUpdated();
 
-  const onAfterDone = () => setState((s) => ({ ...s, done: true }));
-
-  const onAfterPublish = () => setState((s) => ({ ...s, publish: true }));
-
-  const onAfterVersion = () => setState((s) => ({ ...s, version: true }));
-
-  const onFinish = () => {
-    if (props?.onClose) props.onClose();
-
-    setState(INIT_STATE);
+    props?.onClose();
   };
+
+  const onAfterDone = onFinsih;
+
+  const onAfterPublish = onFinsih;
+
+  const onAfterVersion = onFinsih;
 
   const containerPorps = {
     onAfterDone,
@@ -90,7 +65,7 @@ export const FormInfoContent: FC<IFormInforContent> = ({ id, ...props }) => {
 
   return (
     <FormInfoContentConainter formId={id} {...containerPorps}>
-      <FormInfoContentWrapper {...props} {...state} onClose={onFinish} />
+      <FormInfoContentWrapper {...props} onClose={onFinsih} />
     </FormInfoContentConainter>
   );
 };
