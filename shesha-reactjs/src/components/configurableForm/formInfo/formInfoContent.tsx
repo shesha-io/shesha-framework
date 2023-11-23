@@ -46,16 +46,10 @@ export const FormInfoContent: FC<IFormInforContent> = ({ id, ...props }) => {
     props?.onClose();
   };
 
-  const onAfterDone = onFinsih;
-
-  const onAfterPublish = onFinsih;
-
-  const onAfterVersion = onFinsih;
-
   const containerPorps = {
-    onAfterDone,
-    onAfterPublish,
-    onAfterVersion,
+    onAfterDone: onFinsih,
+    onAfterPublish: onFinsih,
+    onAfterVersion: onFinsih,
     toolbarRightButton: (
       <Button onClick={() => window?.open(props.forwardLink, '_blank')} type={'default'} shape="circle" title="Expand">
         <ArrowsAltOutlined />
