@@ -7,7 +7,7 @@ export interface ITimeCellProps<D extends object = {}, V = any> extends IDataCel
 
 export const TimeCell = <D extends object = {}, V = number>(props: ITimeCellProps<D, V>) => {
   const numberValue = asNumber(props.value);
-  return numberValue ? <>{moment.utc(numberValue * 1000).format(props.propertyMeta?.dataFormat || 'HH:mm')}</> : null;
+  return numberValue || numberValue === 0 ? <>{moment.utc(numberValue * 1000).format(props.propertyMeta?.dataFormat || 'HH:mm')}</> : null;
 };
 
 export default TimeCell;
