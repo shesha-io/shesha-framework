@@ -5,7 +5,7 @@ import { IConfigurableActionConfiguration } from '../../../../interfaces/configu
 import { useForm } from '../../../../providers';
 import { useConfigurableAction } from '../../../../providers/configurableActionsDispatcher';
 import { IWizardComponentProps, IWizardStepProps } from './models';
-import { getDefaultStep, getStepDescritpion, getWizardStep, isEmptyArgument } from './utils';
+import { getStepDescritpion, getWizardStep, isEmptyArgument } from './utils';
 
 interface IWizardComponent {
   back: () => void;
@@ -24,23 +24,29 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
   const { formMode } = useForm();
   const dataContext = useDataContext();
 
-  const { argumentsEvaluationContext, executeBooleanExpression, executeExpression, executeAction } =
+  const { argumentsEvaluationContext, executeBooleanExpression, executeAction } =
     useFormExpression();
 
   const {
     propertyName: actionOwnerName,
     id: actionsOwnerId,
     steps: tabs,
-    defaultActiveValue,
-    defaultActiveStep,
+    defaultActiveStep = 0,
     showStepStatus,
     sequence,
   } = (model as IWizardComponentProps) || {};
 
-  const [current, setCurrent] = useState(() => {
-    const localCurrent = defaultActiveStep ? tabs?.findIndex(({ id }) => id === defaultActiveStep) : 0;
+  const getDefaultStepIndex = (i) => {
+    if (i) {
+      const t = tabs[i] 
+        ?? tabs?.find((item) => item?.id === i); // for backward compatibility
+      return !!t ? tabs.indexOf(t) : 0;
+    }
+    return 0;
+  };
 
-    return localCurrent < 0 ? 0 : localCurrent;
+  const [current, setCurrent] = useState(() => {
+    return getDefaultStepIndex(defaultActiveStep);
   });
 
   const [components, setComponents] = useState<IConfigurableFormComponent[]>();
@@ -60,10 +66,8 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
   const currentStep = visibleSteps[current];
 
   useEffect(() => {
-    if (defaultActiveStep || defaultActiveValue) {
-      setCurrent(getDefaultStep(tabs, defaultActiveValue, defaultActiveStep, executeExpression));
-    }
-  }, [defaultActiveValue, defaultActiveStep]);
+    setCurrent(getDefaultStepIndex(defaultActiveStep))
+  }, [defaultActiveStep]);
 
   useEffect(() => {
     const actionConfiguration = currentStep?.onBeforeRenderActionConfiguration;
