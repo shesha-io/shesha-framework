@@ -1,10 +1,10 @@
 import React from 'react';
 import { Story, Meta } from '@storybook/react';
-import StoryApp from '../../components/storyBookApp';
+import StoryApp from '@/components/storyBookApp';
 import DynamicPage from './';
-import { addStory } from '../../stories/utils';
+import { addStory } from '@/stories/utils';
 import { IDynamicPageProps } from './interfaces';
-import { MainLayout } from '../..';
+import { MainLayout } from '@/pages/..';
 
 export default {
   title: 'Pages/DynamicPage',

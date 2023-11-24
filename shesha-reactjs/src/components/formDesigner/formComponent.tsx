@@ -1,7 +1,7 @@
-import { useDeepCompareMemo } from 'hooks';
+import { useDeepCompareMemo } from '@/hooks';
 import React, { FC, MutableRefObject } from 'react';
-import { getActualModel, useApplicationContext } from 'utils/publicUtils';
-import { useForm } from 'providers/form';
+import { getActualModel, useApplicationContext } from '@/utils/publicUtils';
+import { useForm } from '@/providers/form';
 
 export interface IFormComponentProps {
   id: string;

@@ -1,4 +1,4 @@
-import { IConfigurableItemBase } from '../../../../providers/itemListConfigurator/contexts';
+import { IConfigurableItemBase } from '@/providers/itemListConfigurator/contexts';
 import { TabPaneProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { IConfigurableFormComponent } from '../../../../interfaces';

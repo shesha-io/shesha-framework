@@ -1,4 +1,4 @@
-import { DataTypes } from '../interfaces/dataTypes';
+import { DataTypes } from '@/interfaces/dataTypes';
 import { evaluateComplexStringWithResult, IEvaluateComplexStringResult, IMatchData } from './publicUtils';
 
 type NodeCallback = (operator: string, args: object[]) => void;

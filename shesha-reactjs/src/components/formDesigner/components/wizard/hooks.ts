@@ -1,8 +1,8 @@
-import { useDataContext } from 'providers/dataContextProvider/index';
+import { useDataContext } from '@/providers/dataContextProvider/index';
 import { useEffect, useMemo, useState } from 'react';
 import { getActualModel, IConfigurableFormComponent, useApplicationContext, useFormExpression, useSheshaApplication } from '../../../../';
-import { IConfigurableActionConfiguration } from '../../../../interfaces/configurableAction';
-import { useConfigurableAction } from '../../../../providers/configurableActionsDispatcher';
+import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
+import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { IWizardComponentProps, IWizardStepProps } from './models';
 import { getStepDescritpion, getWizardStep } from './utils';
 

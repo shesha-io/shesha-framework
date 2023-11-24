@@ -90,7 +90,10 @@ export default {
       // browser: false,
       modulesOnly: true,
     }),
-    typescript({ noEmitOnError: true }),
+    typescript({
+      noEmitOnError: true,
+      tsconfig: './tsconfig.json'
+    }),
     commonjs({
       include: 'node_modules/**',
       defaultIsModuleExports: true,

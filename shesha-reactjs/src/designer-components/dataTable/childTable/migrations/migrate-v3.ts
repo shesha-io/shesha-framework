@@ -1,6 +1,6 @@
 import { IChildTableComponentProps } from '..';
-import { migrateFilterMustacheExpressions } from '../../../../designer-components/_common-migrations/migrateUseExpression';
-import { SettingsMigrationContext } from '../../../../interfaces/formDesigner';
+import { migrateFilterMustacheExpressions } from '@/designer-components/_common-migrations/migrateUseExpression';
+import { SettingsMigrationContext } from '@/interfaces/formDesigner';
 
 export const migrateV2toV3 = (
   props: IChildTableComponentProps,

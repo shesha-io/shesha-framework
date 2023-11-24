@@ -1,5 +1,5 @@
 import { Ace } from 'ace-builds';
-import { toCamelCase } from 'utils/string';
+import { toCamelCase } from '@/utils/string';
 
 /**
  * Gets token at current cursor posistion. Returns null if none

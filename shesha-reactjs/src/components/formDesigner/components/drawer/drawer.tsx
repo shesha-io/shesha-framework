@@ -1,14 +1,14 @@
 import { Alert, Button, Drawer, DrawerProps, message, Space } from 'antd';
 import moment from 'moment';
 import React, { FC, Fragment, useState } from 'react';
-import { axiosHttp } from '../../../../utils/fetchers';
-import { IConfigurableActionConfiguration } from '../../../../interfaces/configurableAction';
+import { axiosHttp } from '@/utils/fetchers';
+import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { useForm, useGlobalState, useSheshaApplication } from '../../../../providers';
 import {
   useConfigurableAction,
   useConfigurableActionDispatcher,
-} from '../../../../providers/configurableActionsDispatcher';
-import { executeScriptSync } from '../../../../providers/form/utils';
+} from '@/providers/configurableActionsDispatcher';
+import { executeScriptSync } from '@/providers/form/utils';
 import ComponentsContainer from '../../containers/componentsContainer';
 import { IDrawerProps } from './models';
 

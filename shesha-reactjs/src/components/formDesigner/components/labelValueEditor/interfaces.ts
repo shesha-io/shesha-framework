@@ -1,5 +1,5 @@
-import { IConfigurableFormComponent } from '../../../../providers/form/models';
-import { ICodeExposedVariable } from '../../../codeVariablesTable';
+import { IConfigurableFormComponent } from '@/providers/form/models';
+import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 
 export interface IItemProps {
   id: string;

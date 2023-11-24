@@ -13,9 +13,9 @@ import { ILabelValueEditorPropsBase, IItemProps } from './interfaces';
 import { Table, Popconfirm, Button, Form, Input, Modal, Alert, Tabs } from 'antd';
 import { BorderlessTableOutlined, DeleteOutlined, MenuOutlined, PlusOutlined } from '@ant-design/icons';
 import { nanoid } from 'nanoid/non-secure';
-import ConditionalWrap from '../../../conditionalWrapper';
-import Show from '../../../show';
-import { CodeVariablesTables, ICodeExposedVariable } from '../../../codeVariablesTable';
+import ConditionalWrap from '@/components/conditionalWrapper';
+import Show from '@/components/show';
+import { CodeVariablesTables, ICodeExposedVariable } from '@/components/codeVariablesTable';
 
 export interface ILabelValueEditorProps extends ILabelValueEditorPropsBase {
   /**

@@ -1,7 +1,7 @@
 import { UploadFile } from 'antd/lib/upload/interface';
 import { createContext } from 'react';
 import { IFlagsSetters, IFlagsState } from '../../interfaces';
-import { StoredFileGetQueryParams } from 'apis/storedFile';
+import { StoredFileGetQueryParams } from '@/apis/storedFile';
 
 export type IFlagProgressFlags =
   | 'downloadFile'

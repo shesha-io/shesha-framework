@@ -1,9 +1,9 @@
-import { ICodeExposedVariable } from 'components/codeVariablesTable';
-import { FormMarkupFactory } from 'interfaces/configurableAction';
+import { ICodeExposedVariable } from '@/components/codeVariablesTable';
+import { FormMarkupFactory } from '@/interfaces/configurableAction';
 import { nanoid } from 'nanoid';
-import { useSheshaApplication } from '../../..';
-import { DesignerToolbarSettings } from '../../../interfaces/toolbarSettings';
-import { useConfigurableAction } from '../../configurableActionsDispatcher';
+import { useSheshaApplication } from '@/providers/..';
+import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
+import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { SheshaActionOwners } from '../../configurableActionsDispatcher/models';
 import { executeScript } from '../../form/utils';
 

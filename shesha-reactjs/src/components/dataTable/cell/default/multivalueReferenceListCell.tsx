@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useReferenceList } from '../../../../providers/referenceListDispatcher';
+import { useReferenceList } from '@/providers/referenceListDispatcher';
 import { IDataCellProps } from '../interfaces';
 
 export interface IMultivalueReferenceListCellProps<D extends object = {}, V = any> extends IDataCellProps<D, V> {}

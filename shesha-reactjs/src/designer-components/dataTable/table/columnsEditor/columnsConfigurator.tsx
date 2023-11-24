@@ -1,7 +1,7 @@
 import { Button } from 'antd';
 import React, { FC } from 'react';
 import { SidebarContainer } from '../../../../components';
-import { useColumnsConfigurator } from '../../../../providers/datatableColumnsConfigurator';
+import { useColumnsConfigurator } from '@/providers/datatableColumnsConfigurator';
 import { ColumnProperties } from './columnProperties';
 import ColumnsContainer from './columnsContainer';
 import './styles/index.less';

@@ -1,6 +1,6 @@
 import { IConfigurableFormComponent, IFormItem } from '../../../../interfaces';
-import { ButtonGroupItemProps } from '../../../../providers/buttonGroupConfigurator/models';
-import { FormIdentifier } from '../../../../providers/form/models';
+import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
+import { FormIdentifier } from '@/providers/form/models';
 
 export interface IListItemsProps {
   name: string;

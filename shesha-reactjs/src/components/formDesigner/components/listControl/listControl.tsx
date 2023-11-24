@@ -1,8 +1,8 @@
 import { isEmpty } from 'lodash';
 import React, { FC, useCallback, useMemo, useState } from 'react';
-import { useGet, useMutate } from 'hooks';
-import { useEntitiesGetAll } from 'apis/entities';
-import { EntitiesGetAllQueryParams } from 'apis/entities';
+import { useGet, useMutate } from '@/hooks';
+import { useEntitiesGetAll } from '@/apis/entities';
+import { EntitiesGetAllQueryParams } from '@/apis/entities';
 import {
   FormItemProvider,
   SubFormProvider,
@@ -10,12 +10,12 @@ import {
   useForm,
   useGlobalState,
   useNestedPropertyMetadatAccessor,
-} from 'providers';
-import { getQueryParams } from 'utils/url';
+} from '@/providers';
+import { getQueryParams } from '@/utils/url';
 import camelCaseKeys from 'camelcase-keys';
 import { IListControlProps, IListComponentRenderState, IEvaluatedFilters } from './models';
 import { useDebouncedCallback } from 'use-debounce';
-import { useDelete } from 'hooks';
+import { useDelete } from '@/hooks';
 import {
   Button,
   Checkbox,
@@ -30,26 +30,26 @@ import {
   Space,
 } from 'antd';
 import SubForm from '../subForm/subForm';
-import CollapsiblePanel from '../../../panel';
-import Show from '../../../show';
+import CollapsiblePanel from '@/components/panel';
+import Show from '@/components/show';
 import { ButtonGroup } from '../button/buttonGroup/buttonGroup';
 import ComponentsContainer from '../../containers/componentsContainer';
-import ValidationErrors from '../../../validationErrors';
-import ShaSpin from '../../../shaSpin';
+import ValidationErrors from '@/components/validationErrors';
+import ShaSpin from '@/components/shaSpin';
 import { DeleteFilled } from '@ant-design/icons';
 import classNames from 'classnames';
-import SectionSeparator from '../../../sectionSeparator';
+import SectionSeparator from '@/components/sectionSeparator';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
-import ConditionalWrap from '../../../conditionalWrapper';
+import ConditionalWrap from '@/components/conditionalWrapper';
 import moment from 'moment';
-import { useFormConfiguration } from '../../../../providers/form/api';
-import { useConfigurableAction } from '../../../../providers/configurableActionsDispatcher';
+import { useFormConfiguration } from '@/providers/form/api';
+import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { useDeepCompareEffect, useMeasure } from 'react-use';
 import { DEFAULT_CONFIRM_MESSAGE, DEFAULT_TOTAL_RECORD } from './constants';
-import { ConfigurationItemVersionStatusMap } from '../../../../utils/configurationFramework/models';
+import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
 import FormInfo from '../../../configurableForm/formInfo';
-import { useAsyncMemo } from 'hooks/useAsyncMemo';
-import { evaluateDynamicFilters } from 'utils';
+import { useAsyncMemo } from '@/hooks/useAsyncMemo';
+import { evaluateDynamicFilters } from '@/utils';
 
 /** @deprecated: Use DataList instead */
 const ListControl: FC<IListControlProps> = (props) => {

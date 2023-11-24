@@ -1,10 +1,10 @@
 import { ColumnWidthOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import React, { FC, Fragment, useState } from 'react';
-import { useForm } from '../../../..';
-import ConfigurableFormItem from '../../../../components/formDesigner/components/formItem';
+import { useForm } from '@/designer-components/..';
+import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { IConfigurableFormComponent, IToolboxComponent } from '../../../../interfaces';
-import { ColumnsItemProps } from '../../../../providers/datatableColumnsConfigurator/models';
+import { ColumnsItemProps } from '@/providers/datatableColumnsConfigurator/models';
 import { ITableComponentBaseProps } from '../models';
 import { ColumnsEditorModal } from './columnsEditorModal';
 

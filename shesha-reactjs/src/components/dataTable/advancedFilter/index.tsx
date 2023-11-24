@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
 import { Divider } from 'antd';
-import ColumnFilters from '../../columnFilters';
-import ColumnsFilterSelect from '../../columnsFilterSelect';
-import ColumnFiltersButtons from '../../columnFiltersButtons';
+import ColumnFilters from '@/components/columnFilters';
+import ColumnsFilterSelect from '@/components/columnsFilterSelect';
+import ColumnFiltersButtons from '@/components/columnFiltersButtons';
 import { useDataTableStore } from '../../../providers';
 
 export interface IDatatableAdvancedFilterProps {}

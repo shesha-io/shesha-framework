@@ -2,11 +2,11 @@ import { Empty, Form } from 'antd';
 import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { ConfigurableForm } from '../../../../components';
-import { IPropertyMetadata } from '../../../../interfaces/metadata';
-import { useColumnsConfigurator } from '../../../../providers/datatableColumnsConfigurator';
-import { IDataColumnsProps } from '../../../../providers/datatableColumnsConfigurator/models';
-import { ConfigurableFormInstance } from '../../../../providers/form/contexts';
-import { FormMarkup } from '../../../../providers/form/models';
+import { IPropertyMetadata } from '@/interfaces/metadata';
+import { useColumnsConfigurator } from '@/providers/datatableColumnsConfigurator';
+import { IDataColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
+import { ConfigurableFormInstance } from '@/providers/form/contexts';
+import { FormMarkup } from '@/providers/form/models';
 import columnSettingsJson from './columnSettings.json';
 
 export interface IProps {}

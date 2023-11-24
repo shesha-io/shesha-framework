@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { ConfigurableComponent } from '../appConfigurator/configurableComponent';
-import CustomErrorBoundary from '../customErrorBoundary';
+import CustomErrorBoundary from '@/components/customErrorBoundary';
 import { getImgSrc } from './utils';
 
 interface IProps {

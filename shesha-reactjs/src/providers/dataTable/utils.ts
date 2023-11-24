@@ -1,7 +1,7 @@
 import moment, { Duration, Moment, isDuration, isMoment } from 'moment';
-import { ProperyDataType } from '../../interfaces/metadata';
-import { IConfigurableColumnsProps, isActionColumnProps, isDataColumnProps } from '../../providers/datatableColumnsConfigurator/models';
-import { camelcaseDotNotation } from '../../utils/string';
+import { ProperyDataType } from '@/interfaces/metadata';
+import { IConfigurableColumnsProps, isActionColumnProps, isDataColumnProps } from '@/providers/datatableColumnsConfigurator/models';
+import { camelcaseDotNotation } from '@/utils/string';
 import { IDataTableStateContext, IDataTableUserConfig, MIN_COLUMN_WIDTH } from './contexts';
 import { ColumnSorting, DataTableColumnDto, IColumnSorting, isDataColumn, IStoredFilter, ITableActionColumn, ITableColumn, ITableDataColumn, ITableFilter, SortDirection } from './interfaces';
 

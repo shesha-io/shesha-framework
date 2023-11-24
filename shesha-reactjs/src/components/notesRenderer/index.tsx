@@ -1,6 +1,6 @@
 import React, { FC, CSSProperties } from 'react';
 import { useNotes } from '../../providers';
-import NotesRendererBase from '../notesRendererBase';
+import NotesRendererBase from '@/components/notesRendererBase';
 
 export interface INotesRendererProps {
   showCommentBox?: boolean;

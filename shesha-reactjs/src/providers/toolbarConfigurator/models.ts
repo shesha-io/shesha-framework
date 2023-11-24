@@ -1,5 +1,5 @@
 import { ButtonType } from 'antd/lib/button';
-import { IConfigurableActionConfiguration } from '../../interfaces/configurableAction';
+import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 
 type ToolbarItemType = 'item' | 'group';
 

@@ -1,5 +1,5 @@
-import { IAjaxResponse, IAjaxResponseBase } from '../interfaces/ajaxResponse';
-import * as RestfulShesha from '../utils/fetchers';
+import { IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
+import * as RestfulShesha from '@/utils/fetchers';
 
 export type RefListPermissionedAccess = 1 | 2 | 3 | 4 | 5;
 

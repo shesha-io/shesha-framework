@@ -2,8 +2,8 @@ import { Empty, Form } from 'antd';
 import React, { FC, ReactNode, useEffect, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { ConfigurableForm } from '../../../components';
-import { FormMarkup } from '../../../providers/form/models';
-import { useTableViewSelectorConfigurator } from '../../../providers/tableViewSelectorConfigurator';
+import { FormMarkup } from '@/providers/form/models';
+import { useTableViewSelectorConfigurator } from '@/providers/tableViewSelectorConfigurator';
 import tableViewSettingsJson from './settings.json';
 
 export interface IFilterProps {}

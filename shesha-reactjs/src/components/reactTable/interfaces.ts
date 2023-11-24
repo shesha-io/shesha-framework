@@ -1,4 +1,4 @@
-import { IFlatComponentsStructure } from 'providers/form/models';
+import { IFlatComponentsStructure } from '@/providers/form/models';
 import React, { ReactNode, CSSProperties } from 'react';
 import { Column, ColumnInstance, Row, SortingRule, TableState } from 'react-table';
 

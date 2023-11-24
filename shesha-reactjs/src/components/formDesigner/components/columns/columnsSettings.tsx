@@ -4,10 +4,10 @@ import { IColumnsComponentProps } from './interfaces';
 import ColumnsList from './columnsList';
 import { EXPOSED_VARIABLES } from './exposedVariables';
 import CodeEditor from '../codeEditor/codeEditor';
-import SectionSeparator from 'components/sectionSeparator';
-import SettingsForm from '../../../../designer-components/_settings/settingsForm';
-import { ISettingsFormFactoryArgs } from 'interfaces';
-import SettingsFormItem from '../../../../designer-components/_settings/settingsFormItem';
+import SectionSeparator from '@/components/sectionSeparator';
+import SettingsForm from '@/designer-components/_settings/settingsForm';
+import { ISettingsFormFactoryArgs } from '@/interfaces';
+import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 
 export const ColumnsSettingsForm: FC<ISettingsFormFactoryArgs<IColumnsComponentProps>> = (props) => (
     SettingsForm<IColumnsComponentProps>({...props, children: <ColumnsSettings {...props}/>})

@@ -1,8 +1,8 @@
 import { DeleteFilled } from '@ant-design/icons';
 import { Button } from 'antd';
 import React, { FC } from 'react';
-import { useColumnsConfigurator } from '../../../../providers/datatableColumnsConfigurator';
-import { ColumnsItemProps, IConfigurableColumnGroup } from '../../../../providers/datatableColumnsConfigurator/models';
+import { useColumnsConfigurator } from '@/providers/datatableColumnsConfigurator';
+import { ColumnsItemProps, IConfigurableColumnGroup } from '@/providers/datatableColumnsConfigurator/models';
 import DragHandle from './dragHandle';
 
 export interface IContainerRenderArgs {

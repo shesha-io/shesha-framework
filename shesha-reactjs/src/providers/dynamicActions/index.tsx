@@ -7,10 +7,10 @@ import {
   IDynamicActionsContext,
   DynamicActionsContext,
 } from './contexts';
-import useThunkReducer from '../../hooks/thunkReducer';
-import { useDynamicActionsDispatcher } from '../dynamicActionsDispatcher';
-import { ButtonGroupItemProps } from 'providers/buttonGroupConfigurator/models';
-import { DynamicItemsEvaluationHook, DynamicRenderingHoc } from 'providers/dynamicActionsDispatcher/models';
+import useThunkReducer from '@/hooks/thunkReducer';
+import { useDynamicActionsDispatcher } from '@/providers/dynamicActionsDispatcher';
+import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
+import { DynamicItemsEvaluationHook, DynamicRenderingHoc } from '@/providers/dynamicActionsDispatcher/models';
 
 export interface IDynamicActionsProps {
   id?: string;

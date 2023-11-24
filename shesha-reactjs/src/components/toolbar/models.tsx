@@ -1,6 +1,6 @@
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { ReactNode } from 'react';
-import { IToolbarButton } from '../../providers/toolbarConfigurator/models';
+import { IToolbarButton } from '@/providers/toolbarConfigurator/models';
 
 export interface IToolbarButtonItem extends Omit<IToolbarButton, 'id' | 'icon'> {
   id?: string;

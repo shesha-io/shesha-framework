@@ -1,7 +1,7 @@
 import React, { FC, useMemo } from 'react';
-import { useForm } from 'providers/form';
+import { useForm } from '@/providers/form';
 import { Empty } from 'antd';
-import { useFormDesigner } from 'providers/formDesigner';
+import { useFormDesigner } from '@/providers/formDesigner';
 import { ComponentPropertiesEditor } from './componentPropertiesPanel';
 
 export interface IProps {}

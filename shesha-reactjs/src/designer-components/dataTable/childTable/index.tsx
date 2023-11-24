@@ -2,9 +2,9 @@ import { TableOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
 import React from 'react';
 import { validateConfigurableComponentSettings } from '../../../formDesignerUtils';
-import { IConfigurableFormComponent, IToolboxComponent } from 'interfaces';
-import { useDataTableStore } from 'providers';
-import { FormMarkup } from 'providers/form/models';
+import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
+import { useDataTableStore } from '@/providers';
+import { FormMarkup } from '@/providers/form/models';
 import { ChildTable } from './childTable';
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
@@ -13,8 +13,8 @@ import { IChildTableSettingsProps } from './models';
 import ChildDataTableSettings from './settings';
 import settingsFormJson from './settingsForm.json';
 import './styles/index.less';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
-import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 export interface IChildTableComponentProps extends IChildTableSettingsProps, IConfigurableFormComponent {
   components?: IConfigurableFormComponent[];

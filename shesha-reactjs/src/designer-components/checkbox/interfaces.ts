@@ -1,3 +1,3 @@
-import { IConfigurableFormComponent } from '../../providers/form/models';
+import { IConfigurableFormComponent } from '@/providers/form/models';
 
 export interface ICheckboxComponentProps extends IConfigurableFormComponent {}

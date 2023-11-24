@@ -1,9 +1,9 @@
 import React from 'react';
 import { Story, Meta } from '@storybook/react';
-import { addStory } from '../../stories/utils';
+import { addStory } from '@/stories/utils';
 import { PermissionsTree, PermissionsTreeMode } from '.';
-import { FormProvider, GlobalStateProvider, ShaApplicationProvider } from '../..';
-import AuthContainer from '../authedContainer';
+import { FormProvider, GlobalStateProvider, ShaApplicationProvider } from '@/components/..';
+import AuthContainer from '@/components/authedContainer';
 
 export default {
   title: 'Components/PermissionsTree',

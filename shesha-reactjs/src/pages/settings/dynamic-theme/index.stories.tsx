@@ -1,9 +1,9 @@
 import React from 'react';
 import { Story } from '@storybook/react';
 import ConfigurableThemePage, { IConfigurableThemePageProps } from '.';
-import StoryApp from 'components/storyBookApp';
-import { SidebarMenuDefaultsProvider } from 'providers';
-import { MainLayout } from 'components';
+import StoryApp from '@/components/storyBookApp';
+import { SidebarMenuDefaultsProvider } from '@/providers';
+import { MainLayout } from '@/components';
 
 export default {
   title: 'Pages/ConfigurableThemePage',

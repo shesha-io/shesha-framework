@@ -1,13 +1,13 @@
 import { nanoid } from "nanoid";
-import { useSheshaApplication } from "../../..";
-import { DesignerToolbarSettings } from "../../../interfaces/toolbarSettings";
+import { useSheshaApplication } from "@/providers/..";
+import { DesignerToolbarSettings } from "@/interfaces/toolbarSettings";
 import { SheshaActionOwners } from "../../configurableActionsDispatcher/models";
 import axios, { Method } from 'axios';
-import { IKeyValue } from "../../../interfaces/keyValue";
-import { useConfigurableAction } from "../../configurableActionsDispatcher";
+import { IKeyValue } from "@/interfaces/keyValue";
+import { useConfigurableAction } from "@/providers/configurableActionsDispatcher";
 import qs from "qs";
-import { getQueryString } from "../../../components/autocomplete/utils";
-import { unwrapAbpResponse } from "../../../utils/fetchers";
+import { getQueryString } from "@/components/autocomplete/utils";
+import { unwrapAbpResponse } from "@/utils/fetchers";
 
 export interface IApiCallArguments {
   url: string;

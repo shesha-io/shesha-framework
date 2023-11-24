@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { AutoCompletePlaces } from '../';
+import { AutoCompletePlaces } from '@/components/';
 import { EditOutlined } from '@ant-design/icons';
 import { Input, Button } from 'antd';
 import FormItem, { FormItemProps } from 'antd/lib/form/FormItem';

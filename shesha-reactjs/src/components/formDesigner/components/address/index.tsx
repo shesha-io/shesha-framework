@@ -1,5 +1,5 @@
 import { HomeOutlined } from '@ant-design/icons';
-import { migratePropertyName, migrateCustomFunctions } from '../../../../designer-components/_common-migrations/migrateSettings';
+import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
 import React from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
 import ReadOnlyDisplayFormItemWrapper from '../../../readOnlyDisplayFormItem/wrapper';
@@ -8,7 +8,7 @@ import AutoCompletePlacesControl from './control';
 import AddressEffect from './effect';
 import { IAddressCompomentProps } from './models';
 import { AddressSettingsForm } from './settings';
-import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
   type: 'address',

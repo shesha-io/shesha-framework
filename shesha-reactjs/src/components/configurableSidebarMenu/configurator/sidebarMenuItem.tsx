@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
 import { Button, Tooltip } from 'antd';
 import { DeleteFilled, QuestionCircleOutlined } from '@ant-design/icons';
-import { useSidebarMenuConfigurator } from '../../../providers/sidebarMenuConfigurator';
+import { useSidebarMenuConfigurator } from '@/providers/sidebarMenuConfigurator';
 import DragHandle from './dragHandle';
-import ShaIcon, { IconType } from '../../shaIcon';
+import ShaIcon, { IconType } from '@/components/shaIcon';
 import classNames from 'classnames';
-import { ISidebarMenuItem } from '../../../interfaces/sidebar';
+import { ISidebarMenuItem } from '@/interfaces/sidebar';
 
 export interface IProps extends ISidebarMenuItem {
   index: number[];

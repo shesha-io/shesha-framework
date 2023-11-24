@@ -1,5 +1,5 @@
 import { createAction } from 'redux-actions';
-import { IErrorInfo } from '../../interfaces/errorInfo';
+import { IErrorInfo } from '@/interfaces/errorInfo';
 import { IFlatComponentsStructure, IFormSettings, IPersistedFormProps } from '../form/models';
 import { ILoadRequestPayload } from './contexts';
 

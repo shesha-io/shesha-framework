@@ -1,12 +1,12 @@
 import { AutoComplete, Empty, Spin, Typography } from 'antd';
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { FC } from 'react';
-import { useGet } from 'hooks';
+import { useGet } from '@/hooks';
 import { useDebouncedCallback } from 'use-debounce';
 import { GENERIC_ENTITIES_ENDPOINT, LEGACY_REFERENCE_LISTS_MODULE_NAME } from '../../shesha-constants';
-import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '../../interfaces/gql';
-import { IReferenceListIdentifier } from 'interfaces/referenceList';
-import HelpTextPopover from '../helpTextPopover';
+import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '@/interfaces/gql';
+import { IReferenceListIdentifier } from '@/interfaces/referenceList';
+import HelpTextPopover from '@/components/helpTextPopover';
 
 export interface IReferenceListAutocompleteRuntimeProps {
     value?: IReferenceListIdentifier;

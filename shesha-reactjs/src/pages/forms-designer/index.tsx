@@ -2,7 +2,7 @@ import React from 'react';
 import { resetServerContext } from 'react-beautiful-dnd';
 import { FormDesigner } from '../../components';
 import { PageWithLayout } from '../../interfaces';
-import { FormIdentifier } from '../../providers/form/models';
+import { FormIdentifier } from '@/providers/form/models';
 
 export interface IDesignerPageProps {
   formId: FormIdentifier;

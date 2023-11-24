@@ -1,9 +1,9 @@
 import React, { useState, useMemo, useRef } from 'react';
 import { Select } from 'antd';
 import { useDebouncedCallback } from 'use-debounce';
-import { useSubscribe } from '../..';
+import { useSubscribe } from '@/components/..';
 import { ReadOnlyDisplayFormItem } from './../readOnlyDisplayFormItem';
-import { useEntityAutocomplete } from '../../utils/autocomplete';
+import { useEntityAutocomplete } from '@/utils/autocomplete';
 import { AutocompleteItemDto, CustomLabeledValue, IEntityAutocompleteProps, ISelectOption } from './models';
 
 /**

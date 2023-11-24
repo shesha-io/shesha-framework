@@ -4,7 +4,7 @@ import {
   IConfigurableActionConfiguration,
   IConfigurableActionDescriptor,
   IConfigurableActionIdentifier,
-} from '../../interfaces/configurableAction';
+} from '@/interfaces/configurableAction';
 import { GenericDictionary } from '../form/models';
 import { IConfigurableActionGroupDictionary } from './models';
 

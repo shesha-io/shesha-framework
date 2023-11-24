@@ -3,10 +3,10 @@ import { Button, Tag, Tooltip } from 'antd';
 import { DeleteFilled, QuestionCircleOutlined, PlusOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import { usePropertiesEditor } from '../provider';
 import DragHandle from './dragHandle';
-import { IModelItem } from '../../../../interfaces/modelConfigurator';
-import { getIconByDataType } from '../../../../utils/metadata';
+import { IModelItem } from '@/interfaces/modelConfigurator';
+import { getIconByDataType } from '@/utils/metadata';
 import { ShaIcon } from '../../..';
-import { MetadataSourceType } from '../../../../interfaces/metadata';
+import { MetadataSourceType } from '@/interfaces/metadata';
 
 export interface IContainerRenderArgs {
   index?: number[];

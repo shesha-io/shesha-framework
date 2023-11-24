@@ -1,6 +1,6 @@
 import { IAceOptions } from 'react-ace';
 import { IConfigurableFormComponent } from '../../../../interfaces';
-import { ICodeExposedVariable } from '../../../codeVariablesTable';
+import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { EditorModes } from './types';
 
 export interface ICodeEditorProps extends Omit<IConfigurableFormComponent, 'type' | 'id'> {

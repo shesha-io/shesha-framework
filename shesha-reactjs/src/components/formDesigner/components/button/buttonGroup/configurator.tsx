@@ -3,7 +3,7 @@ import { Alert, Button } from 'antd';
 import { SidebarContainer } from '../../../..';
 import { ButtonGroupProperties } from './properties';
 import ButtonGroupItemsContainer from './buttonGroupItemsContainer';
-import { useButtonGroupConfigurator } from '../../../../../providers/buttonGroupConfigurator';
+import { useButtonGroupConfigurator } from '@/providers/buttonGroupConfigurator';
 import './styles/index.less';
 
 export interface IButtonGroupConfiguratorProps {

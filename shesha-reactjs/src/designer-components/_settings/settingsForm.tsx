@@ -1,6 +1,6 @@
 import React, { createContext, PropsWithChildren, useContext, useState } from 'react';
 import { Form } from "antd";
-import { DEFAULT_FORM_LAYOUT_SETTINGS, ISettingsFormFactoryArgs } from "interfaces";
+import { DEFAULT_FORM_LAYOUT_SETTINGS, ISettingsFormFactoryArgs } from "@/interfaces";
 
 interface SettingsFormState<TModel> {
     model?: TModel;

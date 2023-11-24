@@ -2,8 +2,8 @@ import { QuestionOutlined } from '@ant-design/icons';
 import { MenuProps } from 'antd';
 import classNames from 'classnames';
 import React, { ReactNode } from 'react';
-import { ISidebarMenuItem } from '../../providers/sidebarMenu';
-import ShaIcon, { IconType } from '../shaIcon';
+import { ISidebarMenuItem } from '@/providers/sidebarMenu';
+import ShaIcon, { IconType } from '@/components/shaIcon';
 
 type MenuItem = Required<MenuProps>['items'][number];
 

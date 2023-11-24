@@ -1,13 +1,13 @@
 import React, { FC } from 'react';
 import { IFormItem, IToolboxComponent } from '../../../../interfaces';
-import { IConfigurableFormComponent } from '../../../../providers/form/models';
+import { IConfigurableFormComponent } from '@/providers/form/models';
 import { ThunderboltOutlined } from '@ant-design/icons';
 import { Select } from 'antd';
-import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { alertSettingsForm } from './settings';
 import { EVENTS } from './eventNames';
 import ConfigurableFormItem from '../formItem';
-import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 
 export interface IEventNamesComponentProps extends IConfigurableFormComponent {}
 

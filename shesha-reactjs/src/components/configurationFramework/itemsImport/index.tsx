@@ -1,7 +1,7 @@
 import React, { MutableRefObject, useState } from 'react';
 import { FC } from 'react';
 import { Form, Spin, Upload } from 'antd';
-import { IDictionary, useSheshaApplication } from '../../..';
+import { IDictionary, useSheshaApplication } from '@/components/..';
 import { ConfigItemDataNode, ITreeState } from '../models';
 import { RcFile } from 'antd/lib/upload/interface';
 import { DeleteOutlined, FileZipTwoTone, InboxOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -11,7 +11,7 @@ import ItemsTree from '../itemsTree';
 import { UploadFile } from 'antd/lib/upload/interface';
 import { nanoid } from 'nanoid';
 import { getIndexesList } from '../treeUtils';
-import { appendFormData } from '../../../utils/form';
+import { appendFormData } from '@/utils/form';
 
 const { Dragger } = Upload;
 

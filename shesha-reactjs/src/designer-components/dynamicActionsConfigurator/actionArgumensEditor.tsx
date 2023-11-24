@@ -1,9 +1,9 @@
 import { Collapse } from 'antd';
-import { ICodeExposedVariable } from 'components/codeVariablesTable';
+import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import React, { useMemo } from 'react';
 import { FC } from 'react';
-import { FormMarkupFactory, IConfigurableActionArgumentsFormFactory, IConfigurableActionDescriptor } from '../../interfaces/configurableAction';
-import { FormMarkup } from '../../providers/form/models';
+import { FormMarkupFactory, IConfigurableActionArgumentsFormFactory, IConfigurableActionDescriptor } from '@/interfaces/configurableAction';
+import { FormMarkup } from '@/providers/form/models';
 import GenericArgumentsEditor from './genericArgumentsEditor';
 
 const { Panel } = Collapse;

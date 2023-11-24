@@ -1,14 +1,14 @@
 import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Input, message, Modal, Select, Tag } from 'antd';
 import React, { FC, useMemo, useState, useEffect } from 'react';
-import { executeScriptSync, SubFormProvider, useApplicationContext } from '../../../..';
-import { useFormConfiguration } from 'providers/form/api';
+import { executeScriptSync, SubFormProvider, useApplicationContext } from '@/components/..';
+import { useFormConfiguration } from '@/providers/form/api';
 import ChildEntitiesTagGroupModal from './modal';
 import { IChildEntitiesTagGroupProps, IChildEntitiesTagGroupSelectOptions } from './models';
 import './styles/index.less';
 import { addChildEntitiesTagGroupOption } from './utils';
-import { DataContextProvider } from 'providers/dataContextProvider/index';
-import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
+import { DataContextProvider } from '@/providers/dataContextProvider/index';
+import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { nanoid } from 'nanoid';
 
 const { confirm } = Modal;

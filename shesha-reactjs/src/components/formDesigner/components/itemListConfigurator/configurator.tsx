@@ -3,7 +3,7 @@ import { Alert, Button } from 'antd';
 import { SidebarContainer } from '../../..';
 import { ItemConfigProperties } from './properties';
 import ItemListContainer from './listItemsContainer';
-import { useItemListConfigurator } from '../../../..';
+import { useItemListConfigurator } from '@/components/..';
 import './styles/index.less';
 
 export interface IItemListConfiguratorProps {

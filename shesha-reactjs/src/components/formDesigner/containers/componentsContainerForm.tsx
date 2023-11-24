@@ -1,14 +1,14 @@
 import React, { CSSProperties, FC, PropsWithChildren, useCallback, useMemo } from 'react';
 import ConfigurableFormComponent from '../configurableFormComponent';
-import { useForm } from 'providers/form';
-import { TOOLBOX_COMPONENT_DROPPABLE_KEY, TOOLBOX_DATA_ITEM_DROPPABLE_KEY } from 'providers/form/models';
+import { useForm } from '@/providers/form';
+import { TOOLBOX_COMPONENT_DROPPABLE_KEY, TOOLBOX_DATA_ITEM_DROPPABLE_KEY } from '@/providers/form/models';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
-import { joinStringValues } from 'utils';
+import { joinStringValues } from '@/utils';
 import DynamicComponent from '../components/dynamicView/dynamicComponent';
-import { useFormDesigner } from 'providers/formDesigner';
-import ConditionalWrap from '../../conditionalWrapper';
-import { useFormData, useGlobalState } from 'providers';
-import { executeScriptSync } from 'utils/publicUtils';
+import { useFormDesigner } from '@/providers/formDesigner';
+import ConditionalWrap from '@/components/conditionalWrapper';
+import { useFormData, useGlobalState } from '@/providers';
+import { executeScriptSync } from '@/utils/publicUtils';
 import { IComponentsContainerProps } from './componentsContainer';
 
 export const ComponentsContainerForm: FC<IComponentsContainerProps> = (props) => {

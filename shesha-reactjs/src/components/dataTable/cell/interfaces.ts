@@ -1,8 +1,8 @@
 import { CellProps } from 'react-table';
 import { ITableColumn } from '../../../interfaces';
-import { IPropertyMetadata } from '../../../interfaces/metadata';
-import { ITableDataColumn } from '../../../providers/dataTable/interfaces';
-import { IFieldComponentProps } from '../../../providers/datatableColumnsConfigurator/models';
+import { IPropertyMetadata } from '@/interfaces/metadata';
+import { ITableDataColumn } from '@/providers/dataTable/interfaces';
+import { IFieldComponentProps } from '@/providers/datatableColumnsConfigurator/models';
 
 export interface IHasColumnConfig<TConfig extends ITableColumn> {
   columnConfig?: TConfig;

@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { FormIdentifier } from '../../providers/form/models';
+import { FormIdentifier } from '@/providers/form/models';
 
 export interface IReadOnlyDisplayFormItemProps {
   value?: any;

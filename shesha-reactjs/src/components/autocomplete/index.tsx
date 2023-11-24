@@ -1,5 +1,5 @@
 import React from 'react';
-import { IEntityReferenceDto } from '../..';
+import { IEntityReferenceDto } from '@/components/..';
 import { EntityAutocomplete } from './entityAutocomplete';
 import { IAutocompleteProps, ISelectOption, AutocompleteDataSourceType, CustomLabeledValue } from './models';
 import { UrlAutocomplete } from './urlAutocomplete';

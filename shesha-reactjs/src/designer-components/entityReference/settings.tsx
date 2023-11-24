@@ -1,22 +1,22 @@
 import { AutoComplete, Checkbox, Input, InputNumber, Select, Switch, } from 'antd';
 import React, { FC, useState } from 'react';
-import PropertyAutocomplete from 'components/propertyAutocomplete/propertyAutocomplete';
-import CodeEditor from 'components/formDesigner/components/codeEditor/codeEditor';
-import Show from 'components/show';
-import { Autocomplete } from 'components/autocomplete';
-import FormAutocomplete from 'components/formAutocomplete';
-import EndpointsAutocomplete from 'components/endpointsAutocomplete/endpointsAutocomplete';
-import { MetadataProvider, useForm } from 'providers';
-import LabelValueEditor from 'components/formDesigner/components/labelValueEditor/labelValueEditor';
-import CollapsiblePanel from 'components/panel';
+import PropertyAutocomplete from '@/components/propertyAutocomplete/propertyAutocomplete';
+import CodeEditor from '@/components/formDesigner/components/codeEditor/codeEditor';
+import Show from '@/components/show';
+import { Autocomplete } from '@/components/autocomplete';
+import FormAutocomplete from '@/components/formAutocomplete';
+import EndpointsAutocomplete from '@/components/endpointsAutocomplete/endpointsAutocomplete';
+import { MetadataProvider, useForm } from '@/providers';
+import LabelValueEditor from '@/components/formDesigner/components/labelValueEditor/labelValueEditor';
+import CollapsiblePanel from '@/components/panel';
 import { ConfigurableActionConfigurator } from '../configurableActionsConfigurator/configurator';
-import { ISettingsFormFactoryArgs } from 'interfaces';
+import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { IEntityReferenceControlProps } from './entityReference';
-import SettingsFormItem from '../../designer-components/_settings/settingsFormItem';
-import SettingsCollapsiblePanel from '../../designer-components/_settings/settingsCollapsiblePanel';
-import SettingsForm, { useSettingsForm } from '../../designer-components/_settings/settingsForm';
-import { ContextPropertyAutocomplete } from '../../designer-components/contextPropertyAutocomplete';
-import { useFormDesigner } from 'providers/formDesigner';
+import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
+import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
+import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
+import { ContextPropertyAutocomplete } from '@/designer-components/contextPropertyAutocomplete';
+import { useFormDesigner } from '@/providers/formDesigner';
 
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 

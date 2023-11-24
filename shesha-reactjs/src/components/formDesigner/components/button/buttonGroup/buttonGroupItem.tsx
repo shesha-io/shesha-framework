@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
-import { IButtonGroupItem, IDynamicItem, isDynamicItem } from '../../../../../providers/buttonGroupConfigurator/models';
+import { IButtonGroupItem, IDynamicItem, isDynamicItem } from '@/providers/buttonGroupConfigurator/models';
 import { Button, Tooltip, Typography } from 'antd';
 import { DeleteFilled, QuestionCircleOutlined } from '@ant-design/icons';
-import { useButtonGroupConfigurator } from '../../../../../providers/buttonGroupConfigurator';
+import { useButtonGroupConfigurator } from '@/providers/buttonGroupConfigurator';
 import DragHandle from './dragHandle';
-import ShaIcon, { IconType } from '../../../../shaIcon';
-import { useDynamicActionsDispatcher } from 'providers';
+import ShaIcon, { IconType } from '@/components/shaIcon';
+import { useDynamicActionsDispatcher } from '@/providers';
 
 
 const { Text } = Typography;

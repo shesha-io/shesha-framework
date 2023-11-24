@@ -1,6 +1,6 @@
-import { useGet, UseGetProps } from '../hooks/useGet';
-import { useMutateForEndpoint } from '../hooks/useMutate';
-import { IAjaxResponse } from '../interfaces/ajaxResponse';
+import { useGet, UseGetProps } from '@/hooks/useGet';
+import { useMutateForEndpoint } from '@/hooks/useMutate';
+import { IAjaxResponse } from '@/interfaces/ajaxResponse';
 
 export interface PermissionDto {
   id?: string | null;

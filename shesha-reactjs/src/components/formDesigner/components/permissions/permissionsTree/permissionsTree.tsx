@@ -1,13 +1,13 @@
 import { IToolboxComponent } from '../../../../../interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '../../../../../providers/form/models';
+import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
 import { ApartmentOutlined } from '@ant-design/icons';
 import settingsFormJson from './settingsForm.json';
 import React from 'react';
-import { validateConfigurableComponentSettings } from '../../../../../providers/form/utils';
-import { PermissionsTree, PermissionsTreeMode } from '../../../../permissionsTree';
-import { useForm } from '../../../../..';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { PermissionsTree, PermissionsTreeMode } from '@/components/permissionsTree';
+import { useForm } from '@/components/..';
 import ConfigurableFormItem from '../../formItem';
-import { migrateCustomFunctions, migratePropertyName } from '../../../../../designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 
 export interface IPermissionsTreeComponentProps extends IConfigurableFormComponent {
   value?: string[];

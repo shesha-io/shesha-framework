@@ -2,8 +2,8 @@ import { nanoid } from 'nanoid/non-secure';
 import { handleActions } from 'redux-actions';
 import { toolbarGroupsToComponents } from 'src/formDesignerUtils';
 import { IFormValidationErrors, IToolboxComponentGroup } from '../../interfaces';
-import { camelcaseDotNotation } from '../../utils/string';
-import undoable from '../../utils/undoable';
+import { camelcaseDotNotation } from '@/utils/string';
+import undoable from '@/utils/undoable';
 import {
   IComponentRelations,
   IComponentsDictionary,

@@ -1,4 +1,4 @@
-import { DesignerToolbarSettings } from 'interfaces/toolbarSettings';
+import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { nanoid } from 'nanoid';
 
 export const getSettings = () =>

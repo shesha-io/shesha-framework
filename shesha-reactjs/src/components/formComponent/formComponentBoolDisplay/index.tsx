@@ -2,7 +2,7 @@ import React, { FC, useState } from 'react';
 import { Checkbox } from 'antd';
 import { IFormComponent } from '../../../interfaces';
 import FormComponentDisplay from '../formComponentDisplay';
-import { BooleanValueChange } from '../../../interfaces/formComponent';
+import { BooleanValueChange } from '@/interfaces/formComponent';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 
 export const FormComponentBoolDisplay: FC<IFormComponent> = ({ name, isEditting, value, editable, onChange }) => {

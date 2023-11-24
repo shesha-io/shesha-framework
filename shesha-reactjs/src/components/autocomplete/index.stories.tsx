@@ -2,8 +2,8 @@ import React, { FC, useState } from 'react';
 import { StoryFn } from '@storybook/react';
 import { Autocomplete } from './';
 import { Button, Form } from 'antd';
-import { addStory } from '../../stories/utils';
-import StoryApp from '../storyBookApp';
+import { addStory } from '@/stories/utils';
+import StoryApp from '@/components/storyBookApp';
 import { AutocompleteDataSourceType, IAutocompleteProps } from './models';
 
 export default {

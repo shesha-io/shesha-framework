@@ -1,7 +1,7 @@
 import React, { ComponentType, FC, Fragment, useEffect } from 'react';
 import { /*IdleTimerRenderer,*/ OverlayLoader } from '../components';
 import { useAuth, useShaRouting } from '../providers';
-import { getLoginUrlWithReturn } from '../utils/url';
+import { getLoginUrlWithReturn } from '@/utils/url';
 
 export interface IComponentWithAuthProps {
   unauthorizedRedirectUrl: string;

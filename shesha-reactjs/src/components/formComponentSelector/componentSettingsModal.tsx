@@ -1,9 +1,9 @@
 import { Modal, Spin } from 'antd';
-import { ISettingsFormInstance, IToolboxComponent } from 'interfaces';
+import { ISettingsFormInstance, IToolboxComponent } from '@/interfaces';
 import React, { useRef } from 'react';
 import { useMedia } from 'react-use';
-import { IConfigurableFormComponent } from 'providers/form/models';
-import { ComponentPropertiesEditor } from 'components/formDesigner/componentPropertiesPanel/componentPropertiesPanel';
+import { IConfigurableFormComponent } from '@/providers/form/models';
+import { ComponentPropertiesEditor } from '@/components/formDesigner/componentPropertiesPanel/componentPropertiesPanel';
 
 export interface IProps<T extends IConfigurableFormComponent> {
   model: T;

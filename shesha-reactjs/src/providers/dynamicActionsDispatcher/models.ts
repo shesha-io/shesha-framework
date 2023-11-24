@@ -1,4 +1,4 @@
-import { ButtonGroupItemProps, IDynamicItem } from "providers/buttonGroupConfigurator/models";
+import { ButtonGroupItemProps, IDynamicItem } from "@/providers/buttonGroupConfigurator/models";
 import { ComponentType, FC } from "react";
 import { IDynamicActionsRegistration } from "./contexts";
 

@@ -1,16 +1,16 @@
 import React from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
-import { FormMarkup } from '../../../../providers/form/models';
+import { FormMarkup } from '@/providers/form/models';
 import { CodeSandboxOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '../formItem';
 import settingsFormJson from './settingsForm.json';
-import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { CodeEditor } from './codeEditor';
-import { DataTypes, StringFormats } from '../../../../interfaces/dataTypes';
+import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { ICodeEditorComponentProps, ICodeEditorProps } from './interfaces';
-import { useForm } from '../../../..';
-import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
-import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import { useForm } from '@/components/..';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

@@ -1,4 +1,4 @@
-import { IComponentMetadata } from 'providers';
+import { IComponentMetadata } from '@/providers';
 import { IComponentWrapperProps } from './interfaces';
 
 export const asNumber = (value: any): number => {

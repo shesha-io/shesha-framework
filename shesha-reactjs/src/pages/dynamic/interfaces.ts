@@ -1,4 +1,4 @@
-import { FormFullName } from '../../providers/form/models';
+import { FormFullName } from '@/providers/form/models';
 
 export type FormMode = 'designer' | 'edit' | 'readonly';
 

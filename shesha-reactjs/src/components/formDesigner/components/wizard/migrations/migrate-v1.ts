@@ -1,8 +1,8 @@
 import { StepProps } from 'antd';
-import { IConfigurableActionConfiguration } from '../../../../../interfaces/configurableAction';
-import { IConfigurableFormComponent, SettingsMigrationContext } from '../../../../../interfaces/formDesigner';
-import { SheshaActionOwners } from '../../../../../providers/configurableActionsDispatcher/models';
-import { IConfigurableItemBase } from '../../../../../providers/itemListConfigurator/contexts';
+import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
+import { IConfigurableFormComponent, SettingsMigrationContext } from '@/interfaces/formDesigner';
+import { SheshaActionOwners } from '@/providers/configurableActionsDispatcher/models';
+import { IConfigurableItemBase } from '@/providers/itemListConfigurator/contexts';
 import { getDispatchEventReplacement } from '../../_common-migrations/migrate-events';
 import { upgradeActionConfig } from '../../_common-migrations/upgrade-action-owners';
 import { IWizardSequence, IWizardStepProps } from '../models';

@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { IErrorInfo } from '../../interfaces/errorInfo';
+import { IErrorInfo } from '@/interfaces/errorInfo';
 import { CrudMode } from './models';
 
 export interface ICrudStateContext {

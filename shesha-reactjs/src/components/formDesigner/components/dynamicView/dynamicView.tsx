@@ -1,11 +1,11 @@
 import React, { FC, useMemo } from 'react';
-import { IConfigurableFormComponent } from '../../../../interfaces/formDesigner';
-import { IPropertyMetadata } from '../../../../interfaces/metadata';
-import { useForm } from '../../../../providers/form';
-import { createComponentModelForDataProperty } from '../../../../providers/form/utils';
-import { camelcaseDotNotation } from '../../../../utils/string';
-import { useFormDesignerComponentGroups } from '../../../../providers/form/hooks';
-import { useMetadata } from '../../../../providers/metadata';
+import { IConfigurableFormComponent } from '@/interfaces/formDesigner';
+import { IPropertyMetadata } from '@/interfaces/metadata';
+import { useForm } from '@/providers/form';
+import { createComponentModelForDataProperty } from '@/providers/form/utils';
+import { camelcaseDotNotation } from '@/utils/string';
+import { useFormDesignerComponentGroups } from '@/providers/form/hooks';
+import { useMetadata } from '@/providers/metadata';
 import DynamicContainer from './dynamicContainer';
 
 export interface DynamicViewProps extends IConfigurableFormComponent {

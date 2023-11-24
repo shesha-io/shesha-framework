@@ -1,9 +1,9 @@
 import React from 'react';
 import { Story, Meta } from '@storybook/react';
 import EntityConfigTree from '.';
-import { GlobalStateProvider, ShaApplicationProvider } from '../..';
-import AuthContainer from '../authedContainer';
-import { addStory } from '../../stories/utils';
+import { GlobalStateProvider, ShaApplicationProvider } from '@/components/..';
+import AuthContainer from '@/components/authedContainer';
+import { addStory } from '@/stories/utils';
 import './index.less';
 
 export default {

@@ -8,19 +8,19 @@ import React, {
   useRef
 } from 'react';
 import { advancedFilter2JsonLogic, getCurrentSorting, getTableDataColumns } from './utils';
-import { DataContextProvider, useDataContext } from 'providers/dataContextProvider';
+import { DataContextProvider, useDataContext } from '@/providers/dataContextProvider';
 import { dataTableReducer } from './reducer';
 import { getFlagSetters } from '../utils/flagsSetters';
 import { IHasModelType, IHasRepository, IRepository } from './repository/interfaces';
 import { isEqual, sortBy } from 'lodash';
-import { MetadataProvider } from 'providers/metadata';
+import { MetadataProvider } from '@/providers/metadata';
 import { Row } from 'react-table';
-import { useConfigurableAction } from '../configurableActionsDispatcher';
+import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { useDebouncedCallback } from 'use-debounce';
-import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
-import { useGlobalState } from '../globalState';
-import { useLocalStorage } from 'hooks';
-import { useThunkReducer } from '../../hooks/thunkReducer';
+import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
+import { useGlobalState } from '@/providers/globalState';
+import { useLocalStorage } from '@/hooks';
+import { useThunkReducer } from '@/hooks/thunkReducer';
 import { withBackendRepository } from './repository/backendRepository';
 import { withFormFieldRepository } from './repository/inMemoryRepository';
 import { withNullRepository } from './repository/nullRepository';

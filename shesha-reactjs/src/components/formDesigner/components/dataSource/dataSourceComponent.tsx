@@ -3,15 +3,15 @@ import { Alert } from 'antd';
 import FormItem from 'antd/lib/form/FormItem';
 import React, { FC, useEffect, useMemo } from 'react';
 import { useDeepCompareEffect } from 'react-use';
-import { IToolboxComponent } from 'interfaces';
-import { MetadataProvider, useDataTableStore, useForm, useGlobalState, useNestedPropertyMetadatAccessor } from 'providers';
-import { useDataSource } from 'providers/dataSourcesProvider';
-import DataTableProvider from 'providers/dataTable';
+import { IToolboxComponent } from '@/interfaces';
+import { MetadataProvider, useDataTableStore, useForm, useGlobalState, useNestedPropertyMetadatAccessor } from '@/providers';
+import { useDataSource } from '@/providers/dataSourcesProvider';
+import DataTableProvider from '@/providers/dataTable';
 import { IDataSourceComponentProps } from './models';
-import { evaluateDynamicFilters } from 'utils';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { evaluateDynamicFilters } from '@/utils';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { DataSourceSettingsForm } from './dataSourceSettings';
-import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 const getPageSize = (value?: number) => { 
   return Boolean(value) ? value : 1147489646 /* get all data */; 

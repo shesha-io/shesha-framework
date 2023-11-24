@@ -2,7 +2,7 @@ import React from 'react';
 import { StoryFn, Meta } from '@storybook/react';
 import FormComponentSelector, { IFormComponentSelectorProps } from './';
 import { Button, Form } from 'antd';
-import StoryApp from 'components/storyBookApp';
+import StoryApp from '@/components/storyBookApp';
 import { addStory } from 'src/stories/utils';
 
 export default {

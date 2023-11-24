@@ -1,6 +1,6 @@
 import { BaseWidget, BasicConfig, SelectFieldSettings } from '@react-awesome-query-builder/antd';
-import { CustomFieldSettings } from 'providers/queryBuilder/models';
-import RefListDropDown from '../../../refListDropDown';
+import { CustomFieldSettings } from '@/providers/queryBuilder/models';
+import RefListDropDown from '@/components/refListDropDown';
 import React from 'react';
 
 export type RefListDropdownWidgetType = BaseWidget & SelectFieldSettings;

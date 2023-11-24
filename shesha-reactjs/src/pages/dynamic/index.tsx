@@ -7,12 +7,12 @@ import { nanoid } from 'nanoid/non-secure';
 import Link from 'next/link';
 import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { ConfigurableForm, ValidationErrors } from '../../components';
-import { useModelApiEndpoint } from '../../components/configurableForm/useActionEndpoint';
-import { getInitialValues } from '../../components/configurableForm/useInitialValues';
+import { useModelApiEndpoint } from '@/components/configurableForm/useActionEndpoint';
+import { getInitialValues } from '@/components/configurableForm/useInitialValues';
 import { useMutate, usePrevious, usePubSub } from '../../hooks';
 import { PageWithLayout } from '../../interfaces';
-import { IErrorInfo } from '../../interfaces/errorInfo';
-import { StandardEntityActions } from '../../interfaces/metadata';
+import { IErrorInfo } from '@/interfaces/errorInfo';
+import { StandardEntityActions } from '@/interfaces/metadata';
 import {
   MetadataProvider,
   useAppConfigurator,
@@ -20,17 +20,17 @@ import {
   useShaRouting,
   useSheshaApplication,
 } from '../../providers';
-import { useFormWithData } from '../../providers/form/api';
-import { ConfigurableFormInstance, ISetFormDataPayload } from '../../providers/form/contexts';
-import { DEFAULT_FORM_SETTINGS } from '../../providers/form/models';
-import { axiosHttp } from '../../utils/fetchers';
-import { getQueryParams } from '../../utils/url';
+import { useFormWithData } from '@/providers/form/api';
+import { ConfigurableFormInstance, ISetFormDataPayload } from '@/providers/form/contexts';
+import { DEFAULT_FORM_SETTINGS } from '@/providers/form/models';
+import { axiosHttp } from '@/utils/fetchers';
+import { getQueryParams } from '@/utils/url';
 import { IDynamicPageProps, IDynamicPageState, INavigationState } from './interfaces';
 import StackedNavigationModal from './navigation/stackedNavigationModal';
 import { useStackedModal } from './navigation/stackedNavigationModalProvider';
 import { useStackedNavigation } from './navigation/stakedNavigation';
 import { DynamicFormPubSubConstants } from './pubSub';
-import { useDataContextManager } from 'providers/dataContextManager/index';
+import { useDataContextManager } from '@/providers/dataContextManager/index';
 
 const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
   const { backendUrl } = useSheshaApplication();
