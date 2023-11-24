@@ -4,7 +4,7 @@ import { getActualModel, IConfigurableFormComponent, useApplicationContext, useF
 import { IConfigurableActionConfiguration } from '../../../../interfaces/configurableAction';
 import { useConfigurableAction } from '../../../../providers/configurableActionsDispatcher';
 import { IWizardComponentProps, IWizardStepProps } from './models';
-import { getStepDescritpion, getWizardStep, isEmptyArgument } from './utils';
+import { getStepDescritpion, getWizardStep } from './utils';
 
 interface IWizardComponent {
   back: () => void;
@@ -60,7 +60,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
 
         return !((!granted || !isVisibleByCondition) && allData.formMode !== 'designer');
       })
-      .map(item => getActualModel(item, allData)),
+      .map(item => getActualModel(item, allData) as IWizardStepProps),
     [tabs]
   );
 
@@ -73,7 +73,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
   useEffect(() => {
     const actionConfiguration = currentStep?.onBeforeRenderActionConfiguration;
 
-    if (!isEmptyArgument(actionConfiguration)) {
+    if (!!actionConfiguration?.actionName) {
       executeAction({
         actionConfiguration: actionConfiguration,
         argumentsEvaluationContext
@@ -175,7 +175,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         },
         () => {
           const afterAction = afterAccessor(currentStep);
-          if (!isEmptyArgument(afterAction))
+          if (!!afterAction?.actionName)
             executeAction({
               actionConfiguration: afterAction,
               argumentsEvaluationContext
@@ -184,7 +184,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
       );
     };
 
-    if (isEmptyArgument(beforeAction)) {
+    if (!beforeAction?.actionName) {
       successFunc(null);
       return;
     }
