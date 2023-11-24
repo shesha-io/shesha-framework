@@ -80,8 +80,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
           evaluateString(model?.initialValue, { formData, formMode, globalState })
         }
       >
-        {(val, onChange) => {
-          const value = val;
+        {(value, onChange) => {
           const showAsJson = Boolean(value) && typeof value === 'object';
 
           const customEvent =  customEventHandler(eventProps);
