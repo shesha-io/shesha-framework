@@ -39,9 +39,9 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
         disablePlugins: model?.disablePlugins?.join(',') || '',
         height: model?.height,
         width: model?.width,
+        placeholder: model?.placeholder,
         readonly: readOnly || disabled,
         style: getStyle(model?.style, formData),
-  
         defaultActionOnPaste: 'insert_as_html',
         enter: 'br',
         editHTMLDocumentMode: false,
