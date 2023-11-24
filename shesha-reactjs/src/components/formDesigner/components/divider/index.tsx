@@ -3,15 +3,15 @@ import { Divider, DividerProps } from 'antd';
 import {
   migrateCustomFunctions,
   migratePropertyName,
-} from '../../../../designer-components/_common-migrations/migrateSettings';
+} from '@/designer-components/_common-migrations/migrateSettings';
 import React from 'react';
 import { validateConfigurableComponentSettings } from '../../../../formDesignerUtils';
-import { IConfigurableFormComponent, IToolboxComponent } from '../../../../interfaces/formDesigner';
-import { FormMarkup } from '../../../../providers/form/models';
+import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces/formDesigner';
+import { FormMarkup } from '@/providers/form/models';
 import ComponentsContainer from '../../containers/componentsContainer';
 import settingsFormJson from './settingsForm.json';
-import { useFormData, useGlobalState } from 'providers';
-import { getStyle } from 'utils/publicUtils';
+import { useFormData, useGlobalState } from '@/providers';
+import { getStyle } from '@/utils/publicUtils';
 
 export interface IDividerProps extends IConfigurableFormComponent {
   container?: boolean;

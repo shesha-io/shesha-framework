@@ -1,7 +1,7 @@
 import { createAction } from 'redux-actions';
-import { UserLoginInfoDto } from '../../apis/session';
-import { ResetPasswordVerifyOtpResponse } from '../../apis/user';
-import { IErrorInfo, IHasErrorInfo } from '../../interfaces/errorInfo';
+import { UserLoginInfoDto } from '@/apis/session';
+import { ResetPasswordVerifyOtpResponse } from '@/apis/user';
+import { IErrorInfo, IHasErrorInfo } from '@/interfaces/errorInfo';
 
 export enum AuthActionEnums {
   CheckAuthAction = 'CHECK_AUTH_ACTION',

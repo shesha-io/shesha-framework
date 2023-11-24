@@ -1,15 +1,15 @@
-import { useMutate } from 'hooks';
-import useThunkReducer from 'hooks/thunkReducer';
+import { useMutate } from '@/hooks';
+import useThunkReducer from '@/hooks/thunkReducer';
 import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useMemo } from 'react';
-import { sessionGetCurrentLoginInformations } from '../../apis/session';
-import { AuthenticateModel, AuthenticateResultModelAjaxResponse } from '../../apis/tokenAuth';
-import { ResetPasswordVerifyOtpResponse } from '../../apis/user';
-import { OverlayLoader } from '../../components/overlayLoader';
+import { sessionGetCurrentLoginInformations } from '@/apis/session';
+import { AuthenticateModel, AuthenticateResultModelAjaxResponse } from '@/apis/tokenAuth';
+import { ResetPasswordVerifyOtpResponse } from '@/apis/user';
+import { OverlayLoader } from '@/components/overlayLoader';
 import { IAccessToken } from '../../interfaces';
-import { IHttpHeaders } from '../../interfaces/accessToken';
-import { IErrorInfo } from '../../interfaces/errorInfo';
-import { IApiEndpoint } from '../../interfaces/metadata';
-import IRequestHeaders from '../../interfaces/requestHeaders';
+import { IHttpHeaders } from '@/interfaces/accessToken';
+import { IErrorInfo } from '@/interfaces/errorInfo';
+import { IApiEndpoint } from '@/interfaces/metadata';
+import IRequestHeaders from '@/interfaces/requestHeaders';
 import { HOME_CACHE_URL, URL_CHANGE_PASSWORD, URL_HOME_PAGE, URL_LOGIN_PAGE } from '../../shesha-constants';
 import {
   AUTHORIZATION_HEADER_NAME,
@@ -17,12 +17,12 @@ import {
   getHttpHeaders as getHttpHeadersFromToken,
   removeAccessToken as removeTokenFromStorage,
   saveUserToken as saveUserTokenToStorage,
-} from '../../utils/auth';
-import { getLocalizationOrDefault } from '../../utils/localization';
-import { getCustomHeaders, getTenantId } from '../../utils/multitenancy';
-import { getCurrentUrl, getLoginUrlWithReturn, getQueryParam, isSameUrls } from '../../utils/url';
-import { useShaRouting } from '../shaRouting';
-import { useSheshaApplication } from '../sheshaApplication';
+} from '@/utils/auth';
+import { getLocalizationOrDefault } from '@/utils/localization';
+import { getCustomHeaders, getTenantId } from '@/utils/multitenancy';
+import { getCurrentUrl, getLoginUrlWithReturn, getQueryParam, isSameUrls } from '@/utils/url';
+import { useShaRouting } from '@/providers/shaRouting';
+import { useSheshaApplication } from '@/providers/sheshaApplication';
 import { getFlagSetters } from '../utils/flagsSetters';
 import {
   checkAuthAction,

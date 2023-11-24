@@ -3,8 +3,8 @@ import { ParagraphProps } from 'antd/lib/typography/Paragraph';
 import { TextProps } from 'antd/lib/typography/Text';
 import { TitleProps } from 'antd/lib/typography/Title';
 import React, { CSSProperties, FC, PropsWithChildren, useMemo } from 'react';
-import { useForm, useFormData, useTheme } from 'providers';
-import { evaluateString, getStyle } from 'providers/form/utils';
+import { useForm, useFormData, useTheme } from '@/providers';
+import { evaluateString, getStyle } from '@/providers/form/utils';
 import { ITextTypographyProps, ITypographyProps } from './models';
 import {
   DEFAULT_PADDING_SIZE,

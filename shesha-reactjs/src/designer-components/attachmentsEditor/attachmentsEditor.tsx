@@ -2,22 +2,22 @@ import { FolderAddOutlined } from '@ant-design/icons';
 import { message } from 'antd';
 import moment from 'moment';
 import React from 'react';
-import { CustomFile } from 'components';
-import ConfigurableFormItem from 'components/formDesigner/components/formItem';
-import { IToolboxComponent } from 'interfaces';
-import { useForm, useFormData, useGlobalState, useSheshaApplication } from 'providers';
-import { IConfigurableFormComponent } from 'providers/form/models';
+import { CustomFile } from '@/components';
+import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { IToolboxComponent } from '@/interfaces';
+import { useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { IConfigurableFormComponent } from '@/providers/form/models';
 import {
   evaluateValue,
   executeCustomExpression,
   validateConfigurableComponentSettings,
-} from 'providers/form/utils';
-import StoredFilesProvider from 'providers/storedFiles';
-import { IStoredFile } from 'providers/storedFiles/contexts';
-import { axiosHttp } from 'utils/fetchers';
+} from '@/providers/form/utils';
+import StoredFilesProvider from '@/providers/storedFiles';
+import { IStoredFile } from '@/providers/storedFiles/contexts';
+import { axiosHttp } from '@/utils/fetchers';
 import { getSettings } from './settings';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
-import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 export interface IAttachmentsEditorProps extends IConfigurableFormComponent {
   ownerId: string;

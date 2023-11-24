@@ -1,7 +1,7 @@
 import { ButtonType } from 'antd/lib/button';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { IConfigurableActionConfiguration } from '../../interfaces/configurableAction';
-import { IDynamicActionsConfiguration } from '../../designer-components/dynamicActionsConfigurator/models';
+import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
+import { IDynamicActionsConfiguration } from '@/designer-components/dynamicActionsConfigurator/models';
 
 type ButtonGroupItemType = 'item' | 'group';
 

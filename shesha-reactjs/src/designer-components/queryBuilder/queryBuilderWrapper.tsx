@@ -1,5 +1,5 @@
 import React, { FC, PropsWithChildren } from 'react';
-import { QueryBuilderProvider, useMetadata } from 'providers';
+import { QueryBuilderProvider, useMetadata } from '@/providers';
 
 export const QueryBuilderWrapper: FC<PropsWithChildren<{}>> = ({ children }) => {
   const { metadata } = useMetadata(true);

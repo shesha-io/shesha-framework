@@ -1,9 +1,9 @@
 import { Input, Select } from 'antd';
-import { ListEditor, PropertyAutocomplete } from 'components/index';
-import { ColumnSorting, GroupingItem as SortingItem } from 'providers/dataTable/interfaces';
-import { MetadataProvider } from 'providers/index';
+import { ListEditor, PropertyAutocomplete } from '@/components/index';
+import { ColumnSorting, GroupingItem as SortingItem } from '@/providers/dataTable/interfaces';
+import { MetadataProvider } from '@/providers/index';
 import React, { FC } from 'react';
-import { getNanoId } from 'utils/uuid';
+import { getNanoId } from '@/utils/uuid';
 
 const { Option } = Select;
 

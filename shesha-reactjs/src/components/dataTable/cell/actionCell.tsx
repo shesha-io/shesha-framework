@@ -9,9 +9,9 @@ import {
   useGlobalState,
   useSheshaApplication,
 } from '../../../providers';
-import { ITableActionColumn } from '../../../providers/dataTable/interfaces';
+import { ITableActionColumn } from '@/providers/dataTable/interfaces';
 import { MODAL_DATA } from '../../../shesha-constants';
-import { axiosHttp } from '../../../utils/fetchers';
+import { axiosHttp } from '@/utils/fetchers';
 import { ICommonCellProps } from './interfaces';
 
 export interface IActionCellProps<D extends object = {}, V = any> extends ICommonCellProps<ITableActionColumn, D, V> {}

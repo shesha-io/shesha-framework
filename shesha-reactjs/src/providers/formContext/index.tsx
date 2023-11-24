@@ -1,5 +1,5 @@
-import { useForm } from '../form';
-import { useSubForm } from '../subForm';
+import { useForm } from '@/providers/form';
+import { useSubForm } from '@/providers/subForm';
 
 /**
  * Hook that returns the form data based on the context

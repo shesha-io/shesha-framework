@@ -3,7 +3,7 @@ import { BasicConfig } from '@react-awesome-query-builder/antd';
 import {  } from '@react-awesome-query-builder/ui';
 import { SELECT_WIDTH_OFFSET_RIGHT, calcTextWidth } from "../domUtils";
 import { IContainerInfo, PropertySelect } from "../../propertyAutocomplete/propertySelect";
-import { IPropertyMetadata } from "interfaces/metadata";
+import { IPropertyMetadata } from "@/interfaces/metadata";
 
 export interface IFieldSelectProps {
     config: BasicConfig;

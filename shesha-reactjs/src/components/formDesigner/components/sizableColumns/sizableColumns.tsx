@@ -1,14 +1,14 @@
-import { IToolboxComponent } from 'interfaces';
+import { IToolboxComponent } from '@/interfaces';
 import { ISizableColumnComponentProps } from './interfaces';
 import { BorderHorizontalOutlined } from '@ant-design/icons';
 import React, { Fragment } from 'react';
-import { useFormData, useGlobalState } from 'providers';
+import { useFormData, useGlobalState } from '@/providers';
 import Split from 'react-split';
-import ComponentsContainer from 'components/formDesigner/containers/componentsContainer';
-import { getStyle } from 'utils/publicUtils';
+import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
+import { getStyle } from '@/utils/publicUtils';
 import { nanoid } from 'nanoid';
 import { SizableColumnsSettingsForm } from './sizableColumnsSettings';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 
 const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> = {
   type: 'sizableColumns',

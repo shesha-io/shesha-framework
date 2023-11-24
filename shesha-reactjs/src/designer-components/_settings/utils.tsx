@@ -1,5 +1,5 @@
-import { IContainerComponentProps } from "../../designer-components/container/interfaces";
-import { IComponentsDictionary, IConfigurableFormComponent, IPropertySetting, IToolboxComponents } from "interfaces";
+import { IContainerComponentProps } from "@/designer-components/container/interfaces";
+import { IComponentsDictionary, IConfigurableFormComponent, IPropertySetting, IToolboxComponents } from "@/interfaces";
 
 export const isPropertySettings = (data: any) => {
     if (!data || typeof data !== 'object')

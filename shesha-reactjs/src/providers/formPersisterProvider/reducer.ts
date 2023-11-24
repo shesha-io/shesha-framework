@@ -1,5 +1,5 @@
 import { handleActions } from 'redux-actions';
-import { IErrorInfo } from '../../interfaces/errorInfo';
+import { IErrorInfo } from '@/interfaces/errorInfo';
 import { IFormSettings, IPersistedFormProps } from '../form/models';
 import { FormPersisterActionEnums } from './actions';
 import { FORM_PERSISTER_CONTEXT_INITIAL_STATE, IFormPersisterStateContext, ILoadRequestPayload } from './contexts';

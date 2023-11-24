@@ -1,10 +1,10 @@
 import React, { FC } from 'react';
 import { HistoryOutlined } from '@ant-design/icons';
 import { Popover, Skeleton, Button } from 'antd';
-import { DateDisplay } from '../';
-import { useStoredFileGetFileVersions, StoredFileVersionInfoDto } from 'apis/storedFile';
+import { DateDisplay } from '@/components/';
+import { useStoredFileGetFileVersions, StoredFileVersionInfoDto } from '@/apis/storedFile';
 import filesize from 'filesize';
-import { useStoredFile } from 'providers';
+import { useStoredFile } from '@/providers';
 
 interface IProps {
   readonly fileId: string;

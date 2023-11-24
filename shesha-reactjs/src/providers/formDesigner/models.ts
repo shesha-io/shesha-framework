@@ -1,4 +1,4 @@
-import { IPropertyMetadata } from "../../interfaces/metadata";
+import { IPropertyMetadata } from "@/interfaces/metadata";
 
 /** Named Data Source */
 export interface IDataSource {

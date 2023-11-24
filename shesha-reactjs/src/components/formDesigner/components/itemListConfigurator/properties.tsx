@@ -2,7 +2,7 @@ import React, { FC, useEffect, useMemo, useRef } from 'react';
 import { Empty, Form } from 'antd';
 import { ConfigurableForm } from '../../..';
 import { useDebouncedCallback } from 'use-debounce';
-import { ConfigurableFormInstance } from '../../../../providers/form/contexts';
+import { ConfigurableFormInstance } from '@/providers/form/contexts';
 import { useItemListConfigurator } from '../../../../providers';
 
 export interface IItemConfigPropertiesProps {}
@@ -39,7 +39,6 @@ export const ItemConfigProperties: FC<IItemConfigPropertiesProps> = ({}) => {
       componentModel.itemType === 'item' ? itemTypeMarkup : componentModel.itemType === 'group' ? groupTypeMarkup : [];
     return (
       <ConfigurableForm
-        key={selectedItemId} // rerender for each item to initialize all controls
         formRef={formRef}
         labelCol={{ span: 24 }}
         wrapperCol={{ span: 24 }}
@@ -49,6 +48,7 @@ export const ItemConfigProperties: FC<IItemConfigPropertiesProps> = ({}) => {
         form={form}
         initialValues={componentModel}
         onValuesChange={debouncedSave}
+        isSettings={true}
       />
     );
   }, [selectedItemId]);

@@ -2,7 +2,7 @@ import React, { FC, useState } from 'react';
 import { Input } from 'antd';
 import { IFormComponent } from '../../../interfaces';
 import FormComponentDisplay from '../formComponentDisplay';
-import { StringValueChange } from '../../../interfaces/formComponent';
+import { StringValueChange } from '@/interfaces/formComponent';
 
 export const FormComponentStringDisplay: FC<IFormComponent> = ({ name, isEditting, value, editable, onChange }) => {
   const [val, changeVal] = useState(value as string);

@@ -15,7 +15,7 @@ import filesize from 'filesize';
 import { FileVersionsPopup } from './fileVersionsPopup';
 import { DraggerStub } from './stubs';
 import './styles/styles.less';
-import Show from 'components/show';
+import Show from '@/components/show';
 
 const { Dragger } = Upload;
 

@@ -1,6 +1,6 @@
 import { FormItemProps, FormProps, InputProps } from 'antd';
 import React, { FC, useState } from 'react';
-import PasswordInputCombo from '../../../passwordInputCombo';
+import PasswordInputCombo from '@/components/passwordInputCombo';
 
 interface IProps {
   readonly confirmPlaceholder: string;

@@ -1,9 +1,9 @@
 import React, { FC, PropsWithChildren, useContext, useEffect, /*useRef,*/ useState } from 'react';
-import useThunkReducer from '../../hooks/thunkReducer';
-import { IReferenceList, IReferenceListItem } from '../../interfaces/referenceList';
-import { PromisedValue } from '../../utils/promises';
-import { useAppConfigurator } from '../appConfigurator';
-import { useConfigurationItemsLoader } from '../configurationItemsLoader';
+import useThunkReducer from '@/hooks/thunkReducer';
+import { IReferenceList, IReferenceListItem } from '@/interfaces/referenceList';
+import { PromisedValue } from '@/utils/promises';
+import { useAppConfigurator } from '@/providers/appConfigurator';
+import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import {
   IGetReferenceListPayload,
   IReferenceListDispatcherActionsContext,
@@ -13,7 +13,7 @@ import {
   ReferenceListDispatcherStateContext,
 } from './contexts';
 import { ILoadingState } from './models';
-import { IReferenceListIdentifier } from 'interfaces/referenceList';
+import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import metadataReducer from './reducer';
 
 export interface IReferenceListDispatcherProviderProps {}

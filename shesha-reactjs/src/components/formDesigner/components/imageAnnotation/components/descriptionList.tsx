@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import DisplayFormItem from '../../../../displayFormItem';
+import DisplayFormItem from '@/components/displayFormItem';
 import { IDataAnnotationListProps } from '../model';
 
 const DescriptionsList: FC<IDataAnnotationListProps> = ({ data }) => {

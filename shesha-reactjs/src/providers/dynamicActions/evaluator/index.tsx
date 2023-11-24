@@ -1,5 +1,5 @@
-import { ButtonGroupItemProps, IButtonGroupItemBase, IDynamicItem, isDynamicItem, isGroup } from 'providers/buttonGroupConfigurator/models';
-import { useDynamicActionsDispatcher } from 'providers/index';
+import { ButtonGroupItemProps, IButtonGroupItemBase, IDynamicItem, isDynamicItem, isGroup } from '@/providers/buttonGroupConfigurator/models';
+import { useDynamicActionsDispatcher } from '@/providers/index';
 import React, { FC, useEffect, useMemo, useState } from 'react';
 import { DYNAMIC_ACTIONS_CONTEXT_INITIAL_STATE, IDynamicActionsContext } from '../contexts';
 

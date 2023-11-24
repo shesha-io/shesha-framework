@@ -12,9 +12,9 @@ import {
   IToolboxComponents,
   SettingsMigrationContext,
 } from '../../interfaces';
-import { IPropertyMetadata } from '../../interfaces/metadata';
-import { Migrator } from '../../utils/fluentMigrator/migrator';
-import { getFullPath } from '../../utils/metadata';
+import { IPropertyMetadata } from '@/interfaces/metadata';
+import { Migrator } from '@/utils/fluentMigrator/migrator';
+import { getFullPath } from '@/utils/metadata';
 import { IAnyObject } from './../../interfaces/anyObject';
 import { FormMode } from './../../pages/dynamic/interfaces';
 import blankViewMarkup from './defaults/markups/blankView.json';
@@ -49,14 +49,14 @@ import {
   SILENT_KEY,
   ViewType,
 } from './models';
-import { isPropertySettings } from '../../designer-components/_settings/utils';
-import { IDataContextsData, useDataContextManager } from 'providers/dataContextManager';
+import { isPropertySettings } from '@/designer-components/_settings/utils';
+import { IDataContextsData, useDataContextManager } from '@/providers/dataContextManager';
 import moment from 'moment';
 import { message } from 'antd';
-import { ISelectionProps } from 'providers/dataTable/contexts';
-import { useDataContext } from 'providers/dataContextProvider';
-import { useDataTableStore, useForm, useFormData, useGlobalState, useSheshaApplication } from 'providers';
-import { axiosHttp } from 'utils/fetchers';
+import { ISelectionProps } from '@/providers/dataTable/contexts';
+import { useDataContext } from '@/providers/dataContextProvider';
+import { useDataTableStore, useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { axiosHttp } from '@/utils/fetchers';
 import { AxiosInstance } from 'axios';
 import { MessageApi } from 'antd/lib/message/index';
 

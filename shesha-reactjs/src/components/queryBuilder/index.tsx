@@ -14,14 +14,14 @@ import {
 } from '@react-awesome-query-builder/antd';
 import classNames from 'classnames';
 import { ITableColumn } from '../../interfaces';
-import { hasCustomQBSettings, IProperty, propertyHasQBConfig } from '../../providers/queryBuilder/models';
-import { DataTypes } from '../../interfaces/dataTypes';
+import { hasCustomQBSettings, IProperty, propertyHasQBConfig } from '@/providers/queryBuilder/models';
+import { DataTypes } from '@/interfaces/dataTypes';
 import { config as InitialConfig } from './config';
 import { FieldSelect } from './fieldSelect';
 import { FieldAutocomplete } from './fieldAutocomplete';
-import { extractVars } from '../../utils/jsonLogic';
+import { extractVars } from '@/utils/jsonLogic';
 import { Skeleton } from 'antd';
-import { useQueryBuilder } from 'providers';
+import { useQueryBuilder } from '@/providers';
 import { usePrevious } from 'react-use';
 
 export interface IQueryBuilderColumn extends ITableColumn {

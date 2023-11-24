@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
-import { useColumnsConfigurator } from '../../../../providers/datatableColumnsConfigurator';
+import { useColumnsConfigurator } from '@/providers/datatableColumnsConfigurator';
 import {
   IConfigurableColumnGroup,
   IConfigurableColumnsBase,
   IConfigurableColumnsProps,
-} from '../../../../providers/datatableColumnsConfigurator/models';
+} from '@/providers/datatableColumnsConfigurator/models';
 import { Column } from './column';
 import { ColumnsGroup } from './columnsGroup';
 

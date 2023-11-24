@@ -2,7 +2,7 @@ import { nanoid } from 'nanoid/non-secure';
 import React, { FC, PropsWithChildren, useContext, useMemo, useReducer } from 'react';
 import { usePrevious } from 'react-use';
 import { InsertMode } from '../../interfaces';
-import { treeToList } from '../../utils/tree';
+import { treeToList } from '@/utils/tree';
 import { FormMarkup } from '../form/models';
 import {
   addGroupAction,

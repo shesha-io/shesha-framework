@@ -1,13 +1,13 @@
 import React from 'react';
-import { EntityReference, IEntityReferenceProps } from 'components/entityReference';
-import ConfigurableFormItem from 'components/formDesigner/components/formItem';
-import { LinkExternalOutlined } from '../../icons/linkExternalOutlined';
-import { IToolboxComponent } from 'interfaces';
-import { IConfigurableFormComponent } from 'providers/form/models';
+import { EntityReference, IEntityReferenceProps } from '@/components/entityReference';
+import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { LinkExternalOutlined } from '@/icons/linkExternalOutlined';
+import { IToolboxComponent } from '@/interfaces';
+import { IConfigurableFormComponent } from '@/providers/form/models';
 import { EntityReferenceSettingsForm } from './settings';
-import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
-import { isEntityReferencePropertyMetadata } from 'interfaces/metadata';
-import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
+import { isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 export type IActionParameters = [{ key: string; value: string }];
 

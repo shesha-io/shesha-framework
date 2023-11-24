@@ -1,5 +1,5 @@
 import { createAction } from 'redux-actions';
-import { IFlagsSetters, IFlagsState } from '../..';
+import { IFlagsSetters, IFlagsState } from '@/providers/..';
 import { FlagsActionTypes } from '../../enums';
 
 export function getFlagSetters<A extends string, B extends string, C extends string, D extends string>(

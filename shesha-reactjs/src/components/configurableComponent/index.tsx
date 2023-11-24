@@ -1,6 +1,6 @@
 import React, { ReactNode, useMemo } from 'react';
 import { createConfigurableComponent } from '../../providers';
-import { ConfigurableComponentRenderer } from '../configurableComponentRenderer';
+import { ConfigurableComponentRenderer } from '@/components/configurableComponentRenderer';
 
 export interface IComponentStateProps<TSettings = any> {
   isSelected: boolean;

@@ -1,16 +1,16 @@
 import { createContext } from 'react';
-import { UserLoginInfoDto } from '../../apis/session';
+import { UserLoginInfoDto } from '@/apis/session';
 import {
   ResetPasswordUsingTokenInput,
   ResetPasswordVerifyOtpInput,
   ResetPasswordVerifyOtpResponse,
   UserResetPasswordSendOtpQueryParams,
-} from '../../apis/user';
+} from '@/apis/user';
 import { IFlagsSetters, IFlagsState } from '../../interfaces';
-import { IAjaxResponseBase } from '../../interfaces/ajaxResponse';
-import { IErrorInfo } from '../../interfaces/errorInfo';
-import { EMPTY_FLAGS_STATE } from '../../interfaces/flagsState';
-import IRequestHeaders from '../../interfaces/requestHeaders';
+import { IAjaxResponseBase } from '@/interfaces/ajaxResponse';
+import { IErrorInfo } from '@/interfaces/errorInfo';
+import { EMPTY_FLAGS_STATE } from '@/interfaces/flagsState';
+import IRequestHeaders from '@/interfaces/requestHeaders';
 
 export type IFlagProgressFlags =
   | 'isIdle'

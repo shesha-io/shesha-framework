@@ -1,13 +1,13 @@
 import { BorderOutlined } from '@ant-design/icons';
-import { evaluateString, validateConfigurableComponentSettings } from 'providers/form/utils';
+import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import React from 'react';
-import { ConfigurableFormItem, FormComponentSelector } from 'components';
-import { IToolboxComponent } from 'interfaces';
-import { useForm, useFormData, useMetadata } from 'providers';
+import { ConfigurableFormItem, FormComponentSelector } from '@/components';
+import { IToolboxComponent } from '@/interfaces';
+import { useForm, useFormData, useMetadata } from '@/providers';
 import { IComponentSelectorComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
-import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
-import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 export type IActionParameters = [{ key: string; value: string }];
 

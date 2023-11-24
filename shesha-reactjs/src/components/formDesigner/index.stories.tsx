@@ -1,9 +1,9 @@
 import React from 'react';
 import { Story } from '@storybook/react';
 import FormDesigner from './formDesigner';
-import { addStory } from '../../stories/utils';
-import { FormIdentifier, FormMode } from '../../providers/form/models';
-import StoryApp from '../storyBookApp';
+import { addStory } from '@/stories/utils';
+import { FormIdentifier, FormMode } from '@/providers/form/models';
+import StoryApp from '@/components/storyBookApp';
 
 export default {
   title: 'Components/Temp/FormDesigner',

@@ -3,10 +3,10 @@ import { Divider, Form, Radio, Space, Tooltip } from 'antd';
 import React, { FC, Fragment, useCallback } from 'react';
 import { ColorResult } from 'react-color';
 import { SectionSeparator, Show } from '../../../components';
-import ColorPicker from '../../../components/colorPicker';
+import ColorPicker from '@/components/colorPicker';
 import { useTheme } from '../../../providers';
-import { IConfigurableTheme } from '../../../providers/theme/contexts';
-import { humanizeString } from '../../../utils/string';
+import { IConfigurableTheme } from '@/providers/theme/contexts';
+import { humanizeString } from '@/utils/string';
 import { BACKGROUND_PRESET_COLORS, PRESET_COLORS, TEXT_PRESET_COLORS } from './presetColors';
 
 interface IThemeConfig {

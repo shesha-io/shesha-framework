@@ -2,15 +2,15 @@ import React, { FC, MutableRefObject, useEffect, useRef } from 'react';
 import { Button, Tooltip } from 'antd';
 import { DeleteFilled, StopOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import FormComponent from '../formComponent';
-import { useComponentModel, useForm } from '../../../providers/form';
+import { useComponentModel, useForm } from '@/providers/form';
 import DragHandle from './dragHandle';
 import ValidationIcon from './validationIcon';
-import { Show } from '../../show';
+import { Show } from '@/components/show';
 import classNames from 'classnames';
-import CustomErrorBoundary from '../../customErrorBoundary';
-import { useFormDesigner } from '../../../providers/formDesigner';
+import CustomErrorBoundary from '@/components/customErrorBoundary';
+import { useFormDesigner } from '@/providers/formDesigner';
 import { IConfigurableFormComponent } from '../../../interfaces';
-import { useMetadata } from 'providers';
+import { useMetadata } from '@/providers';
 
 export interface IConfigurableFormComponentProps {
   id: string;

@@ -3,7 +3,7 @@ import { Button, Modal, ModalProps } from 'antd';
 import Link from 'next/link';
 import React, { CSSProperties, FC, useEffect, useState } from 'react';
 import { useShaRouting } from '../../../providers';
-import { removeURLParameter } from '../../../utils/url';
+import { removeURLParameter } from '@/utils/url';
 import { StackedNavigationModalProvider, useStackedModal } from './stackedNavigationModalProvider';
 
 interface IStackedNavigationModalProps extends ModalProps {

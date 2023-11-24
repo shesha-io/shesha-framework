@@ -3,8 +3,8 @@ import Dragger, { DraggerProps } from 'antd/lib/upload/Dragger';
 import { InboxOutlined, FileZipOutlined, UploadOutlined } from '@ant-design/icons';
 import { message, Button, notification, Alert, Upload, ButtonProps } from 'antd';
 import { UploadChangeParam, RcFile } from 'antd/lib/upload/interface';
-import { IUploadFilePayload, IStoredFile, IDownloadFilePayload } from '../../providers/storedFiles/contexts';
-import { DraggerStub } from 'components/fileUpload/stubs';
+import { IUploadFilePayload, IStoredFile, IDownloadFilePayload } from '@/providers/storedFiles/contexts';
+import { DraggerStub } from '@/components/fileUpload/stubs';
 
 interface IUploaderFileTypes {
   name: string;

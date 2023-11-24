@@ -3,10 +3,10 @@ import classNames from 'classnames';
 import React, { FC, useEffect, useRef, useState } from 'react';
 import { Row } from 'react-table';
 import { RowCell } from './rowCell';
-import { CrudProvider } from 'providers/crudContext';
+import { CrudProvider } from '@/providers/crudContext';
 import { InlineSaveMode } from './interfaces';
-import { IFlatComponentsStructure } from 'providers/form/models';
-import { useDataTableStore } from 'providers/index';
+import { IFlatComponentsStructure } from '@/providers/form/models';
+import { useDataTableStore } from '@/providers/index';
 
 export type RowEditMode = 'read' | 'edit';
 

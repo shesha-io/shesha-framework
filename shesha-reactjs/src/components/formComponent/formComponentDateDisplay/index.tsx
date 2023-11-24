@@ -2,7 +2,7 @@ import React, { FC, useState } from 'react';
 import { DatePicker } from 'antd';
 import moment from 'moment';
 import { IFormComponent } from '../../../interfaces';
-import { StringValueChange } from '../../../interfaces/formComponent';
+import { StringValueChange } from '@/interfaces/formComponent';
 import FormComponentDisplay from '../formComponentDisplay';
 
 export const FormComponentDateDisplay: FC<IFormComponent> = ({ name, isEditting, value, editable, onChange }) => {

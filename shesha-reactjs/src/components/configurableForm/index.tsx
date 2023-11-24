@@ -1,20 +1,20 @@
 import React, { FC } from 'react';
 import ConfigurableFormRenderer from './configurableFormRenderer';
 import { IConfigurableFormProps } from './models';
-import { FormProvider } from '../../providers/form';
+import { FormProvider } from '@/providers/form';
 import ConfigurableComponent from '../appConfigurator/configurableComponent';
 import EditViewMsg from '../appConfigurator/editViewMsg';
 import { useAppConfigurator, useShaRouting, useSheshaApplication } from '../../providers';
 import classNames from 'classnames';
-import { FormPersisterConsumer, FormPersisterProvider } from '../../providers/formPersisterProvider';
-import { FormMarkupConverter } from '../../providers/formMarkupConverter';
-import { FormIdentifier, FormRawMarkup, IFormSettings, IPersistedFormProps } from '../../providers/form/models';
-import { convertToMarkupWithSettings } from '../../providers/form/utils';
-import { ConfigurationItemVersionStatusMap } from '../../utils/configurationFramework/models';
-import Show from '../show';
+import { FormPersisterConsumer, FormPersisterProvider } from '@/providers/formPersisterProvider';
+import { FormMarkupConverter } from '@/providers/formMarkupConverter';
+import { FormIdentifier, FormRawMarkup, IFormSettings, IPersistedFormProps } from '@/providers/form/models';
+import { convertToMarkupWithSettings } from '@/providers/form/utils';
+import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
+import Show from '@/components/show';
 import FormInfo from './formInfo';
 import { Result } from 'antd';
-import { getFormNotFoundMessage } from '../../providers/configurationItemsLoader/utils';
+import { getFormNotFoundMessage } from '@/providers/configurationItemsLoader/utils';
 
 export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
   const {
@@ -30,6 +30,7 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
     formProps,
     isActionsOwner,
     propertyFilter,
+    isSettings,
     ...restProps
   } = props;
   const { switchApplicationMode, formInfoBlockVisible } = useAppConfigurator();
@@ -52,7 +53,7 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
     }
   };
 
-  const markupWithSettings = convertToMarkupWithSettings(markup);
+  const markupWithSettings = convertToMarkupWithSettings(markup, isSettings);
 
   const renderWithMarkup = (
     providedMarkup: FormRawMarkup,

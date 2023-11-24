@@ -7,8 +7,8 @@ import {
 } from './actions';
 import { IHasQueryBuilderConfig, IProperty, IPropertyMetadataWithQBSettings, propertyHasQBConfig } from './models';
 import { getPropertyFullPath, propertyMetadata2QbProperty, useMetadataFields } from './utils';
-import { useMetadataDispatcher } from 'providers';
-import { IModelMetadata, isEntityMetadata } from '../../interfaces/metadata';
+import { useMetadataDispatcher } from '@/providers';
+import { IModelMetadata, isEntityMetadata } from '@/interfaces/metadata';
 import { Widgets } from '@react-awesome-query-builder/antd';
 
 export interface IQueryBuilderProviderProps {

@@ -2,17 +2,17 @@ import { ColProps, FormInstance } from 'antd';
 import { FormLayout } from 'antd/lib/form/Form';
 import { InternalNamePath } from 'rc-field-form/lib/interface';
 import { FC, MutableRefObject, ReactNode } from 'react';
-import { ConfigurableFormInstance } from '../providers/form/contexts';
+import { ConfigurableFormInstance } from '@/providers/form/contexts';
 import {
   FormMarkup,
   IConfigurableFormComponent,
   IFlatComponentsStructure,
   IFormComponentContainer,
   IFormSettings,
-} from '../providers/form/models';
-import { Migrator, MigratorFluent } from '../utils/fluentMigrator/migrator';
+} from '@/providers/form/models';
+import { Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 import { IPropertyMetadata } from './metadata';
-import { IApplicationContext } from 'utils/publicUtils';
+import { IApplicationContext } from '@/utils/publicUtils';
 
 export interface ISettingsFormInstance {
   submit: () => void;

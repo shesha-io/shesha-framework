@@ -2,9 +2,9 @@ import { Modal, Progress } from 'antd';
 import React, { FC, PropsWithChildren, useState } from 'react';
 import { IdleTimerComponent } from 'react-idle-timer';
 import { useInterval } from 'react-use';
-import { useAuth } from '../../providers/auth';
-import { useSettingValue } from '../../providers/settings';
-import { ISettingIdentifier } from '../../providers/settings/models';
+import { useAuth } from '@/providers/auth';
+import { useSettingValue } from '@/providers/settings';
+import { ISettingIdentifier } from '@/providers/settings/models';
 import { getPercentage, getStatus, getTimeFormat, MIN_TIME, ONE_SECOND, SIXTY } from './util';
 
 export interface IIdleTimerRendererProps {}

@@ -3,10 +3,10 @@ import ToolboxComponent from './toolboxComponent';
 import { Collapse, Empty } from 'antd';
 import { useLocalStorage } from '../../hooks';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
-import { TOOLBOX_COMPONENT_DROPPABLE_KEY } from '../../providers/form/models';
+import { TOOLBOX_COMPONENT_DROPPABLE_KEY } from '@/providers/form/models';
 import { IToolboxComponentGroup } from '../../interfaces';
 import { SearchBox } from './toolboxSearchBox';
-import { useFormDesigner } from '../../providers/formDesigner';
+import { useFormDesigner } from '@/providers/formDesigner';
 
 const { Panel } = Collapse;
 

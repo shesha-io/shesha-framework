@@ -1,7 +1,7 @@
 import { IToolbarProps } from "../models";
-import { SettingsMigrationContext } from "../../../../interfaces/formDesigner";
-import { upgradeActionConfig } from '../../../../components/formDesigner/components/_common-migrations/upgrade-action-owners';
-import { IToolbarButton } from "../../../../providers/toolbarConfigurator/models";
+import { SettingsMigrationContext } from "@/interfaces/formDesigner";
+import { upgradeActionConfig } from '@/components/formDesigner/components/_common-migrations/upgrade-action-owners';
+import { IToolbarButton } from "@/providers/toolbarConfigurator/models";
 
 export const migrateV1toV2 = (props: IToolbarProps, context: SettingsMigrationContext): IToolbarProps => {
     const { items } = props;

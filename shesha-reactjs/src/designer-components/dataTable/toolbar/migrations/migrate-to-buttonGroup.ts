@@ -1,9 +1,9 @@
 import { ButtonType } from 'antd/lib/button';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { migrateFunctionToProp } from 'designer-components/_common-migrations/migrateSettings';
-import { IConfigurableActionConfiguration } from 'providers/configurableActionsDispatcher/index';
-import { IConfigurableFormComponent } from 'providers/form/models';
-import { IToolbarButton } from 'providers/toolbarConfigurator/models';
+import { migrateFunctionToProp } from '@/designer-components/_common-migrations/migrateSettings';
+import { IConfigurableActionConfiguration } from '@/providers/configurableActionsDispatcher/index';
+import { IConfigurableFormComponent } from '@/providers/form/models';
+import { IToolbarButton } from '@/providers/toolbarConfigurator/models';
 import { IToolbarProps } from '../models';
 
 export interface ToolbarButtonGroupProps extends IConfigurableFormComponent {

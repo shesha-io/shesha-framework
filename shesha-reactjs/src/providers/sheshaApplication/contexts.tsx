@@ -1,6 +1,6 @@
 import { createContext } from 'react';
-import { IToolboxComponentGroup } from '../..';
-import IRequestHeaders from '../../interfaces/requestHeaders';
+import { IToolboxComponentGroup } from '@/providers/..';
+import IRequestHeaders from '@/interfaces/requestHeaders';
 
 export interface ISheshaRutes {
   formsDesigner: string;

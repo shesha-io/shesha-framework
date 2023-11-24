@@ -1,12 +1,12 @@
 import React, { FC, useEffect, useState } from "react";
 import { Tree } from "antd";
 import { DataNode } from "antd/lib/tree";
-import { IPropertyMetadata } from "interfaces/metadata";
-import { toCamelCase } from "utils/string";
+import { IPropertyMetadata } from "@/interfaces/metadata";
+import { toCamelCase } from "@/utils/string";
 import { IDebugDataTreeProps } from "./model";
 import { DebugDataTreeProp } from "./debugDataTreeProp";
 import { DebugDataTreeFunc } from "./debugDataTreeFunc";
-import { useLocalStorage } from "hooks";
+import { useLocalStorage } from "@/hooks";
 
 export const DebugDataTree: FC<IDebugDataTreeProps> = ({editAll, name, data, metadata, onChange}) => {
 

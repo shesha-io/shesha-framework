@@ -1,9 +1,9 @@
 import React from 'react';
 import { Story, Meta } from '@storybook/react';
-import StoryApp from '../../components/storyBookApp';
+import StoryApp from '@/components/storyBookApp';
 import DesignerPage, { IDesignerPageProps } from './';
-import { addStory } from '../../stories/utils';
-import { MainLayout } from '../..';
+import { addStory } from '@/stories/utils';
+import { MainLayout } from '@/pages/..';
 
 export default {
   title: 'Pages/Designer',

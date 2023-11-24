@@ -1,13 +1,13 @@
 import React, { FC, useMemo } from 'react';
 import { Divider, Input, InputNumber, Select } from 'antd';
 import { IDataSourceComponentProps } from './models';
-import { MetadataProvider } from '../../../../providers/metadata';
+import { MetadataProvider } from '@/providers/metadata';
 import { ISettingsFormFactoryArgs, SectionSeparator } from '../../../../';
 import EndpointsAutocomplete from '../../../endpointsAutocomplete/endpointsAutocomplete';
-import { Autocomplete } from '../../../autocomplete';
-import TableViewSelectorSettingsModal from '../../../../designer-components/dataTable/tableViewSelector/tableViewSelectorSettingsModal';
-import SettingsForm, { useSettingsForm } from '../../../../designer-components/_settings/settingsForm';
-import SettingsFormItem from '../../../../designer-components/_settings/settingsFormItem';
+import { Autocomplete } from '@/components/autocomplete';
+import TableViewSelectorSettingsModal from '@/designer-components/dataTable/tableViewSelector/tableViewSelectorSettingsModal';
+import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
+import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 
 export const DataSourceSettingsForm: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>> = (props) => {
   return (

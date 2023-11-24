@@ -1,5 +1,5 @@
 import { createAction } from 'redux-actions';
-import { IErrorInfo } from '../../interfaces/errorInfo';
+import { IErrorInfo } from '@/interfaces/errorInfo';
 import { CrudMode } from './models';
 
 export enum CrudActionEnums {

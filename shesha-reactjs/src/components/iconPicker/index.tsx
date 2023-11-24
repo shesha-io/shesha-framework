@@ -1,14 +1,14 @@
 import React, { FC, ReactNode, useEffect, useMemo, useState } from 'react';
 import { IconBaseProps } from '@ant-design/icons/lib/components/Icon';
 import { FilledIconTypes, FILLED_ICON_GROUPS } from './iconNamesFilled';
-import ShaIcon from '../shaIcon';
+import ShaIcon from '@/components/shaIcon';
 import { Button, Input, Radio, RadioChangeEvent, Modal } from 'antd';
 import { SelectOutlined } from '@ant-design/icons';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { OutlinedIconTypes, OUTLINED_ICON_GROUPS } from './iconNamesOutlined';
-import SectionSeparator from '../sectionSeparator';
+import SectionSeparator from '@/components/sectionSeparator';
 import { TwoToneIconTypes, TWO_FACED_ICON_GROUPS } from './iconNamesTwoTone';
-import { humanizeString } from '../../utils/string';
+import { humanizeString } from '@/utils/string';
 import classNames from 'classnames';
 
 export type ShaIconTypes = FilledIconTypes | OutlinedIconTypes | TwoToneIconTypes;

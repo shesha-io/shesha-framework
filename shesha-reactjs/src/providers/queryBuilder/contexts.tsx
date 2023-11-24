@@ -1,7 +1,7 @@
 import { Widgets } from '@react-awesome-query-builder/antd';
 import { createContext } from 'react';
-//import { IPropertyItem } from '../../components/propertyAutocomplete/propertySelect';
-import { IModelMetadata } from '../../interfaces/metadata';
+//import { IPropertyItem } from '@/components/propertyAutocomplete/propertySelect';
+import { IModelMetadata } from '@/interfaces/metadata';
 import { IProperty } from './models';
 
 export interface IQueryBuilderStateContext {

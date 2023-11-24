@@ -1,5 +1,5 @@
 import React from 'react';
-import { getNumberFormat } from 'utils/string';
+import { getNumberFormat } from '@/utils/string';
 import { IDataCellProps } from '../interfaces';
 
 export interface INumberCellProps<D extends object = {}, V = any> extends IDataCellProps<D, V> {}

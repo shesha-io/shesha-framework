@@ -5,16 +5,16 @@ import Toolbox from './toolbox';
 import FormDesignerToolbar from './formDesignerToolbar';
 import ComponentPropertiesPanel from './componentPropertiesPanel';
 import ComponentPropertiesTitle from './componentPropertiesTitle';
-import { useForm } from '../../providers/form';
+import { useForm } from '@/providers/form';
 import { MetadataProvider } from '../../providers';
-import ConditionalWrap from '../conditionalWrapper';
-import { useFormPersister } from '../../providers/formPersisterProvider';
-import { useFormDesigner } from '../../providers/formDesigner';
-import StatusTag from '../statusTag';
-import { CONFIGURATION_ITEM_STATUS_MAPPING } from '../../utils/configurationFramework/models';
-import { getFormFullName } from '../../utils/form';
-import HelpTextPopover from '../helpTextPopover';
-import { useDataContextManager } from 'providers/dataContextManager';
+import ConditionalWrap from '@/components/conditionalWrapper';
+import { useFormPersister } from '@/providers/formPersisterProvider';
+import { useFormDesigner } from '@/providers/formDesigner';
+import StatusTag from '@/components/statusTag';
+import { CONFIGURATION_ITEM_STATUS_MAPPING } from '@/utils/configurationFramework/models';
+import { getFormFullName } from '@/utils/form';
+import HelpTextPopover from '@/components/helpTextPopover';
+import { useDataContextManager } from '@/providers/dataContextManager';
 
 const { Title } = Typography;
 

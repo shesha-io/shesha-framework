@@ -3,10 +3,10 @@ import { Story, Meta } from '@storybook/react';
 import StoredFileUpload, { EntityPicker } from './';
 import { CollapsiblePanel } from '..';
 import { Button, Form, Input } from 'antd';
-import StoryApp from '../storyBookApp';
+import StoryApp from '@/components/storyBookApp';
 import { IEntityPickerProps } from './models';
-import { addStory } from '../../stories/utils';
-import { IDataColumnsProps } from '../../providers/datatableColumnsConfigurator/models';
+import { addStory } from '@/stories/utils';
+import { IDataColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 
 export default {
   title: 'Components/EntityPicker',

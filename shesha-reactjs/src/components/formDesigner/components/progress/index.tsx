@@ -1,13 +1,13 @@
 import React, { FC } from 'react';
 import { IToolboxComponent, IValuable } from '../../../../interfaces';
-import { IConfigurableFormComponent } from '../../../../providers/form/models';
+import { IConfigurableFormComponent } from '@/providers/form/models';
 import { LineOutlined } from '@ant-design/icons';
 import { Progress, ProgressProps } from 'antd';
-import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { alertSettingsForm } from './settings';
 import { ProgressType } from 'antd/lib/progress/progress';
 import ConfigurableFormItem from '../formItem';
-import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 
 interface IProgressProps
   extends Omit<ProgressProps, 'style' | 'type' | 'size' | 'format' | 'success' | 'strokeColor'>,

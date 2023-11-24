@@ -3,7 +3,7 @@ import { getQueryParams } from './../../utils/url';
 import { IFormSettings, useFormData, useGlobalState } from './../../providers';
 import _ from 'lodash';
 import { useMemo } from 'react';
-import { evaluateComplexString, evaluateValue, IMatchData } from '../../utils/publicUtils';
+import { evaluateComplexString, evaluateValue, IMatchData } from '@/utils/publicUtils';
 
 export const useInitialValues = (settings: IFormSettings, parentFormValues: any) => {
   const { data: formData } = useFormData();

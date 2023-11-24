@@ -1,9 +1,9 @@
 import { Empty, Select, Spin } from 'antd';
-import { ValidationErrors } from 'components';
-import { useReferenceList } from 'providers/referenceListDispatcher';
+import { ValidationErrors } from '@/components';
+import { useReferenceList } from '@/providers/referenceListDispatcher';
 import React, { useMemo } from 'react';
-import { ReferenceListItemDto } from '../../apis/referenceList';
-import ReadOnlyDisplayFormItem from '../readOnlyDisplayFormItem';
+import { ReferenceListItemDto } from '@/apis/referenceList';
+import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { CustomLabeledValue, IGenericRefListDropDownProps, ISelectOption } from './models';
 
 // tslint:disable-next-line:whitespace

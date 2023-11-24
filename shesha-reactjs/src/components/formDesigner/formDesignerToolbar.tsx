@@ -13,20 +13,20 @@ import {
   CheckCircleOutlined,
   ExclamationCircleOutlined,
 } from '@ant-design/icons';
-import { useForm } from 'providers/form';
-import { useFormPersister } from 'providers/formPersisterProvider';
-import { useFormDesigner } from 'providers/formDesigner';
-import { componentsFlatStructureToTree } from 'providers/form/utils';
-import { useFormDesignerComponents } from 'providers/form/hooks';
-import { FormMarkupWithSettings } from 'providers/form/models';
+import { useForm } from '@/providers/form';
+import { useFormPersister } from '@/providers/formPersisterProvider';
+import { useFormDesigner } from '@/providers/formDesigner';
+import { componentsFlatStructureToTree } from '@/providers/form/utils';
+import { useFormDesignerComponents } from '@/providers/form/hooks';
+import { FormMarkupWithSettings } from '@/providers/form/models';
 import FormSettingsEditor from './formSettingsEditor';
-import { ConfigurationItemVersionStatus } from 'utils/configurationFramework/models';
+import { ConfigurationItemVersionStatus } from '@/utils/configurationFramework/models';
 import {
   createNewVersionRequest,
   showErrorDetails,
   updateItemStatus,
-} from 'utils/configurationFramework/actions';
-import { useShaRouting, useSheshaApplication } from '../..';
+} from '@/utils/configurationFramework/actions';
+import { useShaRouting, useSheshaApplication } from '@/components/..';
 
 type MenuItem = MenuProps['items'][number];
 export interface IProps {}

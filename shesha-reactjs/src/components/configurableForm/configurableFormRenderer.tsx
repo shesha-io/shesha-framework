@@ -2,11 +2,11 @@ import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'reac
 import { Form, message, Spin } from 'antd';
 import ComponentsContainer from '../formDesigner/containers/componentsContainer';
 import { ComponentsContainerForm } from '../formDesigner/containers/componentsContainerForm';
-import { ROOT_COMPONENT_KEY } from '../../providers/form/models';
-import { useForm } from '../../providers/form';
+import { ROOT_COMPONENT_KEY } from '@/providers/form/models';
+import { useForm } from '@/providers/form';
 import { IConfigurableFormRendererProps, IDataSourceComponent } from './models';
 import { IAnyObject, ValidateErrorEntity } from '../../interfaces';
-import { addFormFieldsList, hasFiles, jsonToFormData, removeGhostKeys } from '../../utils/form';
+import { addFormFieldsList, hasFiles, jsonToFormData, removeGhostKeys } from '@/utils/form';
 import { useGlobalState, useSheshaApplication } from '../../providers';
 import moment from 'moment';
 import {
@@ -17,23 +17,23 @@ import {
   getComponentNames,
   getObjectWithOnlyIncludedKeys,
   IMatchData,
-} from '../../providers/form/utils';
+} from '@/providers/form/utils';
 import cleanDeep from 'clean-deep';
-import { getQueryParams } from '../../utils/url';
+import { getQueryParams } from '@/utils/url';
 import _ from 'lodash';
-import { axiosHttp } from '../../utils/fetchers';
+import { axiosHttp } from '@/utils/fetchers';
 import qs from 'qs';
 import axios, { AxiosResponse } from 'axios';
-import { FormConfigurationDto, useFormData } from '../../providers/form/api';
-import { IAbpWrappedGetEntityResponse } from '../../interfaces/gql';
+import { FormConfigurationDto, useFormData } from '@/providers/form/api';
+import { IAbpWrappedGetEntityResponse } from '@/interfaces/gql';
 import { nanoid } from 'nanoid/non-secure';
-import { useFormDesigner } from '../../providers/formDesigner';
+import { useFormDesigner } from '@/providers/formDesigner';
 import { useModelApiEndpoint } from './useActionEndpoint';
-import { StandardEntityActions } from '../../interfaces/metadata';
-import { useMutate } from '../../hooks/useMutate';
-import { useDelayedUpdate } from '../../providers/delayedUpdateProvider';
-import { ComponentsContainerProvider } from '../../providers/form/nesting/containerContext';
-import { useDataContextManager } from 'providers/dataContextManager/index';
+import { StandardEntityActions } from '@/interfaces/metadata';
+import { useMutate } from '@/hooks/useMutate';
+import { useDelayedUpdate } from '@/providers/delayedUpdateProvider';
+import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
+import { useDataContextManager } from '@/providers/dataContextManager/index';
 
 export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRendererProps>> = ({
   children,
@@ -182,8 +182,8 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
   // reset form to initial data on any change of components or initialData
   // only if data is not fetched or form is not in designer mode
   useEffect(() => {
-    if (fetchedFormEntity || designerMode) return;
-    setFormData({ values: initialValues, mergeValues: true });
+    if (!fetchedFormEntity && !designerMode)
+      setFormData({ values: initialValues, mergeValues: false });
   }, [allComponents, initialValues]);
 
   useEffect(() => {

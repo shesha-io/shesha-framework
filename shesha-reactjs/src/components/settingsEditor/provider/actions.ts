@@ -1,5 +1,5 @@
 import { createAction } from 'redux-actions';
-import { FormMode } from '../../..';
+import { FormMode } from '@/components/..';
 import { IEditorBridge, IFetchApplicationsErrorPayload, IFetchApplicationsSuccessPayload, IFetchConfigurationsErrorPayload, IFetchConfigurationsSuccessPayload, ISettingSelection } from './contexts';
 
 export enum SettingsEditorActionEnums {

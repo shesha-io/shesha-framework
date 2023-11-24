@@ -6,7 +6,7 @@ import moment from 'moment';
 import EntityReferenceType from './types/entityReference';
 import RefListType from './types/refList';
 import SpecificationType from './types/specification';
-import { IDictionary } from 'interfaces';
+import { IDictionary } from '@/interfaces';
 import { getEvaluateFunc } from './funcs/evaluate';
 import GuidType from './types/guid';
 

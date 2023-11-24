@@ -1,21 +1,21 @@
-import { IToolboxComponent } from 'interfaces';
-import { FormMarkup } from 'providers/form/models';
+import { IToolboxComponent } from '@/interfaces';
+import { FormMarkup } from '@/providers/form/models';
 import { FontColorsOutlined } from '@ant-design/icons';
 import { Input, message } from 'antd';
 import { TextAreaProps } from 'antd/lib/input';
 import settingsFormJson from './settingsForm.json';
 import React from 'react';
-import { evaluateString, getStyle, validateConfigurableComponentSettings } from 'providers/form/utils';
-import { useForm, useFormData, useGlobalState, useSheshaApplication } from 'providers';
-import { DataTypes, StringFormats } from 'interfaces/dataTypes';
-import { axiosHttp } from 'utils/fetchers';
+import { evaluateString, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
+import { axiosHttp } from '@/utils/fetchers';
 import moment from 'moment';
 import { ITextAreaComponentProps } from './interfaces';
-import { ConfigurableFormItem } from 'components';
-import ReadOnlyDisplayFormItem from 'components/readOnlyDisplayFormItem';
-import { customEventHandler } from 'components/formDesigner/components/utils';
-import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
-import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import { ConfigurableFormItem } from '@/components';
+import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
+import { customEventHandler } from '@/components/formDesigner/components/utils';
+import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -80,8 +80,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
           evaluateString(model?.initialValue, { formData, formMode, globalState })
         }
       >
-        {(val, onChange) => {
-          const value = val;
+        {(value, onChange) => {
           const showAsJson = Boolean(value) && typeof value === 'object';
 
           const customEvent =  customEventHandler(eventProps);

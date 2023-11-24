@@ -1,6 +1,6 @@
 import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect } from 'react';
 import { useDeepCompareEffect } from 'react-use';
-import useThunkReducer from '../../hooks/thunkReducer';
+import useThunkReducer from '@/hooks/thunkReducer';
 import {
   IAsyncValidationError,
   IFormValidationErrors,
@@ -8,7 +8,7 @@ import {
   IToolboxComponentGroup,
 } from '../../interfaces';
 import { useMetadataDispatcher } from '../../providers';
-import { UndoableActionCreators } from '../../utils/undoable';
+import { UndoableActionCreators } from '@/utils/undoable';
 import { useFormDesignerComponentGroups, useFormDesignerComponents } from '../form/hooks';
 import { IFlatComponentsStructure, IFormSettings } from '../form/models';
 import { IDataSource } from '../formDesigner/models';
@@ -53,8 +53,8 @@ import {
   UndoableFormDesignerStateContext,
 } from './contexts';
 import formReducer from './reducer';
-import { useDataContextManager } from 'providers/dataContextManager';
-import { IDataContextFullInstance } from 'providers/dataContextProvider';
+import { useDataContextManager } from '@/providers/dataContextManager';
+import { IDataContextFullInstance } from '@/providers/dataContextProvider';
 
 export interface IFormDesignerProviderProps {
   flatComponents: IFlatComponentsStructure;

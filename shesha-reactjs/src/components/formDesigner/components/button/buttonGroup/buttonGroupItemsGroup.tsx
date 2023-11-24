@@ -1,10 +1,10 @@
 import React, { FC } from 'react';
 import { Button } from 'antd';
 import { DeleteFilled } from '@ant-design/icons';
-import { ButtonGroupItemProps, IButtonGroup } from '../../../../../providers/buttonGroupConfigurator/models';
-import { useButtonGroupConfigurator } from '../../../../../providers/buttonGroupConfigurator';
+import { ButtonGroupItemProps, IButtonGroup } from '@/providers/buttonGroupConfigurator/models';
+import { useButtonGroupConfigurator } from '@/providers/buttonGroupConfigurator';
 import DragHandle from './dragHandle';
-import ShaIcon, { IconType } from '../../../../shaIcon';
+import ShaIcon, { IconType } from '@/components/shaIcon';
 
 export interface IContainerRenderArgs {
   index?: number[];

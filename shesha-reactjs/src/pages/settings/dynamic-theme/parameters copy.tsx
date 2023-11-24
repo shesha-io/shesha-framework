@@ -2,10 +2,10 @@ import { Divider, Form, Radio, Space } from 'antd';
 import React, { FC, Fragment, useCallback } from 'react';
 import { ColorResult } from 'react-color';
 import { SectionSeparator } from '../../../components';
-import ColorPicker from '../../../components/colorPicker';
+import ColorPicker from '@/components/colorPicker';
 import { useTheme } from '../../../providers';
-import { IConfigurableTheme } from '../../../providers/theme/contexts';
-import { humanizeString } from '../../../utils/string';
+import { IConfigurableTheme } from '@/providers/theme/contexts';
+import { humanizeString } from '@/utils/string';
 
 const ThemeParameters: FC = () => {
   const { theme, changeTheme } = useTheme();

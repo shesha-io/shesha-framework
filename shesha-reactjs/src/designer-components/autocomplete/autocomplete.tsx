@@ -4,29 +4,29 @@ import camelCaseKeys from 'camelcase-keys';
 import { isEmpty } from 'lodash';
 import moment from 'moment';
 import React, { Key } from 'react';
-import { Autocomplete, ISelectOption } from 'components/autocomplete';
-import ConfigurableFormItem from 'components/formDesigner/components/formItem';
-import { customDropDownEventHandler } from 'components/formDesigner/components/utils';
-import { migrateDynamicExpression } from 'designer-components/_common-migrations/migrateUseExpression';
-import { useAsyncMemo } from 'hooks/useAsyncMemo';
-import { IToolboxComponent } from 'interfaces';
-import { DataTypes } from 'interfaces/dataTypes';
-import { useFormData, useGlobalState, useNestedPropertyMetadatAccessor, useSheshaApplication } from 'providers';
-import { useForm } from 'providers/form';
-import { FormMarkup } from 'providers/form/models';
+import { Autocomplete, ISelectOption } from '@/components/autocomplete';
+import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { customDropDownEventHandler } from '@/components/formDesigner/components/utils';
+import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';
+import { useAsyncMemo } from '@/hooks/useAsyncMemo';
+import { IToolboxComponent } from '@/interfaces';
+import { DataTypes } from '@/interfaces/dataTypes';
+import { useFormData, useGlobalState, useNestedPropertyMetadatAccessor, useSheshaApplication } from '@/providers';
+import { useForm } from '@/providers/form';
+import { FormMarkup } from '@/providers/form/models';
 import {
   evaluateValue,
   getStyle,
   replaceTags,
   validateConfigurableComponentSettings,
-} from 'providers/form/utils';
-import { evaluateDynamicFilters } from 'utils';
-import { axiosHttp } from 'utils/fetchers';
+} from '@/providers/form/utils';
+import { evaluateDynamicFilters } from '@/utils';
+import { axiosHttp } from '@/utils/fetchers';
 import { IAutocompleteComponentProps } from './interfaces';
 import settingsFormJson from './settingsForm.json';
-import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
-import { isEntityReferencePropertyMetadata } from 'interfaces/metadata';
-import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
+import { isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 interface IQueryParams {
   // tslint:disable-next-line:typedef-whitespace

@@ -1,18 +1,18 @@
 import { AutoComplete, Checkbox, Input, InputNumber, Select } from 'antd';
 import React, { FC, useState } from 'react';
-import SectionSeparator from '../../../sectionSeparator';
+import SectionSeparator from '@/components/sectionSeparator';
 import CodeEditor from '../codeEditor/codeEditor';
-import Show from '../../../show';
-import { Autocomplete } from '../../../autocomplete';
-import FormAutocomplete from '../../../formAutocomplete';
-import { ISettingsFormFactoryArgs } from 'interfaces';
-import SettingsForm, { useSettingsForm } from '../../../../designer-components/_settings/settingsForm';
-import { useFormDesigner } from 'providers/formDesigner';
-import { useForm } from 'providers';
+import Show from '@/components/show';
+import { Autocomplete } from '@/components/autocomplete';
+import FormAutocomplete from '@/components/formAutocomplete';
+import { ISettingsFormFactoryArgs } from '@/interfaces';
+import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
+import { useFormDesigner } from '@/providers/formDesigner';
+import { useForm } from '@/providers';
 import { ISubFormComponentProps } from '.';
-import SettingsCollapsiblePanel from '../../../../designer-components/_settings/settingsCollapsiblePanel';
-import { ContextPropertyAutocomplete } from '../../../../designer-components/contextPropertyAutocomplete';
-import SettingsFormItem from '../../../../designer-components/_settings/settingsFormItem';
+import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
+import { ContextPropertyAutocomplete } from '@/designer-components/contextPropertyAutocomplete';
+import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 
 const Option = Select.Option;
 

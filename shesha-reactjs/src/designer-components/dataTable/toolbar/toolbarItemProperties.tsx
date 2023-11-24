@@ -2,8 +2,8 @@ import { Empty } from 'antd';
 import React, { FC, ReactNode, useEffect, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { ConfigurableForm } from '../../../components';
-import { FormMarkup } from '../../../providers/form/models';
-import { useToolbarConfigurator } from '../../../providers/toolbarConfigurator';
+import { FormMarkup } from '@/providers/form/models';
+import { useToolbarConfigurator } from '@/providers/toolbarConfigurator';
 import itemGroupSettingsJson from './itemGroupSettings.json';
 import itemSettingsJson from './itemSettings.json';
 

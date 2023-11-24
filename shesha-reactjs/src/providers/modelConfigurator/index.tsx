@@ -6,7 +6,7 @@ import {
   modelConfigurationsCreate,
   modelConfigurationsGetById,
   modelConfigurationsUpdate,
-} from '../../apis/modelConfigurations';
+} from '@/apis/modelConfigurations';
 import { useSheshaApplication } from '../../providers';
 import {
   changeModelIdAction,

@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
-import { useTableViewSelectorConfigurator } from '../../../providers/tableViewSelectorConfigurator';
-import { ITableViewProps } from '../../../providers/tableViewSelectorConfigurator/models';
+import { useTableViewSelectorConfigurator } from '@/providers/tableViewSelectorConfigurator';
+import { ITableViewProps } from '@/providers/tableViewSelectorConfigurator/models';
 import { TableView } from './tableView';
 
 export interface ITableViewContainerProps {

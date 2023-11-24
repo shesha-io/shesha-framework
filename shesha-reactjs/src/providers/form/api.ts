@@ -1,4 +1,4 @@
-import { GetDataError, useGet } from 'hooks';
+import { GetDataError, useGet } from '@/hooks';
 import { nanoid } from 'nanoid';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -10,23 +10,23 @@ import {
   useAppConfigurator,
   useMetadataDispatcher,
   useSheshaApplication,
-} from '../..';
-import { useModelApiEndpoint, useModelApiHelper } from '../../components/configurableForm/useActionEndpoint';
-import { IAjaxResponseBase } from '../../interfaces/ajaxResponse';
-import { IErrorInfo } from '../../interfaces/errorInfo';
-import { IAbpWrappedGetEntityResponse } from '../../interfaces/gql';
-import { IApiEndpoint, IPropertyMetadata, StandardEntityActions } from '../../interfaces/metadata';
-import { EntityAjaxResponse, IEntity } from '../../pages/dynamic/interfaces';
-import * as RestfulShesha from '../../utils/fetchers';
-import { getQueryParams, joinUrlAndPath } from '../../utils/url';
+} from '@/providers/..';
+import { useModelApiEndpoint, useModelApiHelper } from '@/components/configurableForm/useActionEndpoint';
+import { IAjaxResponseBase } from '@/interfaces/ajaxResponse';
+import { IErrorInfo } from '@/interfaces/errorInfo';
+import { IAbpWrappedGetEntityResponse } from '@/interfaces/gql';
+import { IApiEndpoint, IPropertyMetadata, StandardEntityActions } from '@/interfaces/metadata';
+import { EntityAjaxResponse, IEntity } from '@/pages/dynamic/interfaces';
+import * as RestfulShesha from '@/utils/fetchers';
+import { getQueryParams, joinUrlAndPath } from '@/utils/url';
 import { ConfigurationItemsViewMode } from '../appConfigurator/models';
-import { useConfigurationItemsLoader } from '../configurationItemsLoader';
+import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import { IMetadataDispatcherActionsContext } from '../metadataDispatcher/contexts';
-import { removeNullUndefined } from '../utils';
+import { removeNullUndefined } from '@/providers/utils';
 import { useFormDesignerComponents } from './hooks';
 import { FormIdentifier, FormMarkupWithSettings, FormRawMarkup, IFormDto, IFormSettings } from './models';
 import { asFormFullName, asFormRawId, getComponentsFromMarkup } from './utils';
-import { DataTypes } from 'interfaces/dataTypes';
+import { DataTypes } from '@/interfaces/dataTypes';
 
 /**
  * Form configuration DTO

@@ -1,5 +1,5 @@
-import { useGet, UseGetProps } from '../hooks/useGet';
-import * as RestfulShesha from '../utils/fetchers';
+import { useGet, UseGetProps } from '@/hooks/useGet';
+import * as RestfulShesha from '@/utils/fetchers';
 
 /**
  * Dynamic data result

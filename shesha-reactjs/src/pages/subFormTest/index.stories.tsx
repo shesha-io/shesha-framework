@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import SubFormTestPage from './';
-import StoryApp from '../../components/storyBookApp';
+import StoryApp from '@/components/storyBookApp';
 
 export default {
   title: 'Pages/SubFormTest',

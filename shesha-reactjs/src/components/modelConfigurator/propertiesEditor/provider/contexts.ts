@@ -1,5 +1,5 @@
 import { createContext, MutableRefObject } from 'react';
-import { IModelItem } from '../../../../interfaces/modelConfigurator';
+import { IModelItem } from '@/interfaces/modelConfigurator';
 
 export interface IUpdateChildItemsPayload {
   index: number[];

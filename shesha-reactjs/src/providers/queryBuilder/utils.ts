@@ -1,7 +1,7 @@
 import camelcase from "camelcase";
 import { useMemo } from "react";
-import { IPropertyMetadata, isEntityReferencePropertyMetadata } from "../../interfaces/metadata";
-import { useMetadata } from "../metadata";
+import { IPropertyMetadata, isEntityReferencePropertyMetadata } from "@/interfaces/metadata";
+import { useMetadata } from "@/providers/metadata";
 import { IProperty, hasCustomQBSettings, IPropertyWithCustomQBSettings } from "./models";
 
 /**

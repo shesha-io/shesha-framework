@@ -1,7 +1,7 @@
 import React, { CSSProperties, FC, useEffect, useMemo } from 'react';
 import { AutoComplete, Input } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { useApiEndpoints } from 'apis/api';
+import { useApiEndpoints } from '@/apis/api';
 import { useDebouncedCallback } from 'use-debounce';
 
 export interface IEndpointsAutocompleteProps {

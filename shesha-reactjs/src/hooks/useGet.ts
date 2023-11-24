@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useSheshaApplication } from '../providers';
-import { IHttpHeadersDictionary } from '../providers/sheshaApplication/contexts';
-import * as RestfulShesha from '../utils/fetchers';
+import { IHttpHeadersDictionary } from '@/providers/sheshaApplication/contexts';
+import * as RestfulShesha from '@/utils/fetchers';
 import { useDeepCompareCallback, useDeepCompareEffect } from './useDeepCompareEffect';
 
 export interface GetDataError<TError> {

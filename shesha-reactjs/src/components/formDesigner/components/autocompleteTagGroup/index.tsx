@@ -1,14 +1,14 @@
 import React from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '../../../../providers/form/models';
+import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
 import { TagOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '../formItem';
 import settingsFormJson from './settingsForm.json';
-import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import AutocompleteTagGroup from '../../../autocompleteTagGroup';
-import { useForm } from '../../../..';
-import { migratePropertyName, migrateCustomFunctions } from '../../../../designer-components/_common-migrations/migrateSettings';
-import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import AutocompleteTagGroup from '@/components/autocompleteTagGroup';
+import { useForm } from '@/components/..';
+import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 export interface IAutocompleteTagsOutlinedComponentProps extends IConfigurableFormComponent {
   value?: string[];

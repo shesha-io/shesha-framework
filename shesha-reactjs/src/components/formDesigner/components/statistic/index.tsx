@@ -1,15 +1,15 @@
-import { IToolboxComponent } from 'interfaces';
-import { FormMarkup, IConfigurableFormComponent } from 'providers/form/models';
+import { IToolboxComponent } from '@/interfaces';
+import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
 import { BarChartOutlined } from '@ant-design/icons';
 import settingsFormJson from './settingsForm.json';
 import React from 'react';
-import { getStyle, validateConfigurableComponentSettings } from 'providers/form/utils';
-import ShaStatistic, { IShaStatisticProps } from '../../../statistic';
-import ShaIcon from '../../../shaIcon';
-import { useFormData } from 'providers';
+import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import ShaStatistic, { IShaStatisticProps } from '@/components/statistic';
+import ShaIcon from '@/components/shaIcon';
+import { useFormData } from '@/providers';
 import _ from 'lodash';
 import ConfigurableFormItem from '../formItem';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

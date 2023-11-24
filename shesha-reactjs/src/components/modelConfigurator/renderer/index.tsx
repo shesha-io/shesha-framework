@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
 import modelSettingsMarkup from '../modelSettings.json';
 import { CustomErrorBoundary } from '../..';
-import ConfigurableForm from '../../configurableForm';
-import { FormMarkup } from '../../../providers/form/models';
+import ConfigurableForm from '@/components/configurableForm';
+import { FormMarkup } from '@/providers/form/models';
 import { PropertiesEditorComponent } from '../propertiesEditor';
 import { ModelConfiguratorToolbar } from '../toolbar';
-import { useModelConfigurator } from '../../..';
+import { useModelConfigurator } from '@/components/..';
 import { message } from 'antd';
 import { PermissionEditorComponent } from '../permissionEditor';
 import { ViewsEditorComponent } from '../viewsEditor';

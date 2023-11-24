@@ -1,7 +1,7 @@
 import { Button } from 'antd';
 import React, { FC, PropsWithChildren, ReactNode, useMemo } from 'react';
-import { FormIdentifier } from '../..';
-import { useShaRouting } from '../../providers/shaRouting';
+import { FormIdentifier } from '@/components/..';
+import { useShaRouting } from '@/providers/shaRouting';
 
 export interface IShaLinkProps {
   linkTo?: string;

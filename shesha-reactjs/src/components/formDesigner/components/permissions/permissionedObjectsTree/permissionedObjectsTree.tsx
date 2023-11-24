@@ -1,10 +1,10 @@
 import { IToolboxComponent } from '../../../../../interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '../../../../../providers/form/models';
+import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
 import { ApartmentOutlined } from '@ant-design/icons';
 import settingsFormJson from './settingsForm.json';
 import React from 'react';
-import { validateConfigurableComponentSettings } from '../../../../../providers/form/utils';
-import PermissionedObjectsTree from '../../../../permissionedObjectsTree';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import PermissionedObjectsTree from '@/components/permissionedObjectsTree';
 
 export interface IPermissionedObjectsTreeComponentProps extends IConfigurableFormComponent { 
   objectsType?: string;

@@ -1,5 +1,5 @@
-import { IStoredFilter } from '../providers/dataTable/interfaces';
-import { NestedPropertyMetadatAccessor } from '../providers/metadataDispatcher/contexts';
+import { IStoredFilter } from '@/providers/dataTable/interfaces';
+import { NestedPropertyMetadatAccessor } from '@/providers/metadataDispatcher/contexts';
 import { IArgumentEvaluationResult, convertJsonLogicNode } from './jsonLogic';
 import { IMatchData, executeExpression } from './publicUtils';
 

@@ -4,8 +4,8 @@ import { useMedia } from 'react-use';
 import {
   ColumnsConfiguratorProvider,
   useColumnsConfigurator,
-} from '../../../../providers/datatableColumnsConfigurator';
-import { IConfigurableColumnsBase } from '../../../../providers/datatableColumnsConfigurator/models';
+} from '@/providers/datatableColumnsConfigurator';
+import { IConfigurableColumnsBase } from '@/providers/datatableColumnsConfigurator/models';
 import { ColumnsConfigurator } from './columnsConfigurator';
 
 export interface IColumnsEditorModal {

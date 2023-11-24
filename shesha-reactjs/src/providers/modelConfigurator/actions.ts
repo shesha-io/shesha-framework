@@ -1,6 +1,6 @@
 import { createAction } from 'redux-actions';
-import { ModelConfigurationDto } from '../../apis/modelConfigurations';
-import { IErrorInfo } from '../../interfaces/errorInfo';
+import { ModelConfigurationDto } from '@/apis/modelConfigurations';
+import { IErrorInfo } from '@/interfaces/errorInfo';
 
 export enum ModelActionEnums {
   CreateNew = 'CREATE_NEW',
