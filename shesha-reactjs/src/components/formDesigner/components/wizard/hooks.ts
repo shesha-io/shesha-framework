@@ -1,8 +1,7 @@
 import { useDataContext } from 'providers/dataContextProvider/index';
 import { useEffect, useMemo, useState } from 'react';
-import { IConfigurableFormComponent, useFormExpression, useSheshaApplication } from '../../../../';
+import { getActualModel, IConfigurableFormComponent, useApplicationContext, useFormExpression, useSheshaApplication } from '../../../../';
 import { IConfigurableActionConfiguration } from '../../../../interfaces/configurableAction';
-import { useForm } from '../../../../providers';
 import { useConfigurableAction } from '../../../../providers/configurableActionsDispatcher';
 import { IWizardComponentProps, IWizardStepProps } from './models';
 import { getStepDescritpion, getWizardStep, isEmptyArgument } from './utils';
@@ -21,7 +20,7 @@ interface IWizardComponent {
 
 export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardComponent => {
   const { anyOfPermissionsGranted } = useSheshaApplication();
-  const { formMode } = useForm();
+  const allData = useApplicationContext();
   const dataContext = useDataContext();
 
   const { argumentsEvaluationContext, executeBooleanExpression, executeAction } =
@@ -54,19 +53,21 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
   //Remove every tab from the equation that isn't visible either by customVisibility or permissions
   const visibleSteps = useMemo(
     () =>
-      tabs.filter(({ customVisibility, permissions }) => {
+      tabs
+      .filter(({ customVisibility, permissions }) => {
         const granted = anyOfPermissionsGranted(permissions || []);
         const isVisibleByCondition = executeBooleanExpression(customVisibility, true);
 
-        return !((!granted || !isVisibleByCondition) && formMode !== 'designer');
-      }),
+        return !((!granted || !isVisibleByCondition) && allData.formMode !== 'designer');
+      })
+      .map(item => getActualModel(item, allData)),
     [tabs]
   );
 
   const currentStep = visibleSteps[current];
 
   useEffect(() => {
-    setCurrent(getDefaultStepIndex(defaultActiveStep))
+    setCurrent(getDefaultStepIndex(defaultActiveStep));
   }, [defaultActiveStep]);
 
   useEffect(() => {
