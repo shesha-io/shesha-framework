@@ -1,6 +1,6 @@
 import { IFlatComponentsStructure } from 'providers/form/models';
 import React, { ReactNode, CSSProperties } from 'react';
-import { Column, Row, SortingRule, TableState } from 'react-table';
+import { Column, ColumnInstance, Row, SortingRule, TableState } from 'react-table';
 
 export interface IColumnWidth {
   id: React.Key;
@@ -173,7 +173,7 @@ export interface IReactTableProps extends ITableRowDragProps {
   // onExpandedChange: ExpandedChangeFunction;
 
   /** Called when a user clicks on a resizing component (the right edge of a column header) */
-  onResizedChange?: (columnSizes: IColumnResizing) => void;
+  onResizedChange?: (columns: ColumnInstance[], columnSizes: IColumnResizing) => void;
 
   scrollBodyHorizontally?: boolean; // If true, specify the height, else it will default to 250px
 

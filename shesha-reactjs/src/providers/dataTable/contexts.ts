@@ -43,12 +43,17 @@ export const DEFAULT_PAGE_SIZE_OPTIONS = [5, 10, 20, 30, 40, 50, 100];
 
 export const MIN_COLUMN_WIDTH = 150;
 
+export interface ITableColumnUserSettings {
+  id: string;
+  show?: boolean;
+  width?: number;
+}
 export interface IDataTableUserConfig {
   pageSize?: number;
   currentPage?: number;
   quickSearch: string;
 
-  columns?: ITableColumn[];
+  columns?: ITableColumnUserSettings[];
   tableSorting: IColumnSorting[];
 
   selectedFilterIds?: string[];
@@ -225,6 +230,12 @@ export interface IDataTableActionsContext
   setHoverRowId: (id: string) => void;
   setDragState: (dragState: DragState) => void;
   setMultiSelectedRow: (rows: Row[] | Row) => void;
+  setColumnWidths: (widths: IColumnWidth[]) => void;
+}
+
+export interface IColumnWidth {
+  id: string;
+  width: number;
 }
 
 export const DATA_TABLE_CONTEXT_INITIAL_STATE: IDataTableStateContext = {

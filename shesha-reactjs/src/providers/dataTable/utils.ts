@@ -164,6 +164,9 @@ export const prepareColumn = (
   columns: DataTableColumnDto[],
   userConfig: IDataTableUserConfig
 ): ITableColumn => {
+  const userColumnId = isDataColumnProps(column) ? column.propertyName : column.id;
+  const userColumn = userConfig?.columns?.find((c) => c.id === userColumnId);
+
   const baseProps: ITableColumn = {
     id: column.id,
     accessor: column.id,
@@ -174,6 +177,7 @@ export const prepareColumn = (
     caption: column.caption,
     minWidth: column.minWidth || MIN_COLUMN_WIDTH,
     maxWidth: column.maxWidth,
+    width: userColumn?.width,
     isVisible: column.isVisible,
     show: column.isVisible,
 
@@ -183,9 +187,7 @@ export const prepareColumn = (
   };
 
   if (isDataColumnProps(column)) {
-    const userColumn = userConfig?.columns?.find((c) => c.id === column.propertyName);
-    const colVisibility =
-      userColumn?.show === null || userColumn?.show === undefined ? column.isVisible : userColumn?.show;
+    const colVisibility = userColumn?.show === null || userColumn?.show === undefined ? column.isVisible : userColumn?.show;
 
     const srvColumn = column.propertyName
       ? columns.find((c) => camelcaseDotNotation(c.propertyName) === camelcaseDotNotation(column.propertyName))
@@ -233,7 +235,7 @@ export const prepareColumn = (
     return {
       ...baseProps,
     };
-  
+
   return null;
 };
 
@@ -293,10 +295,10 @@ const getEffectiveUserSorting = (state: IDataTableStateContext): IColumnSorting[
   if (!state.userSorting)
     return null;
 
-    return state.userSorting.filter(s => {
-      if (!s.id)
-        return false;
-      const column = state.columns.find(c => c.id === s.id);
-      return column && column.isSortable;      
-    });
+  return state.userSorting.filter(s => {
+    if (!s.id)
+      return false;
+    const column = state.columns.find(c => c.id === s.id);
+    return column && column.isSortable;
+  });
 };
