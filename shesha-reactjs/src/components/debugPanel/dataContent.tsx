@@ -78,15 +78,6 @@ const DebugPanelDataContent: FC = () => {
             name={'Form data'}
           />
         }
-        {formInstance &&
-          <DebugDataTree 
-            data={formInstance?.form?.getFieldsValue()}
-            metadata={formMetadata}
-            editAll
-            onChange={(propName, val) => onChangeFormData(propName, val)} 
-            name={'Form data (antd)'}
-          />
-        }
         {contexts.map((item) => {
           const ctxData = contextManager.getDataContextData(item.id);
           return <DebugDataTree
