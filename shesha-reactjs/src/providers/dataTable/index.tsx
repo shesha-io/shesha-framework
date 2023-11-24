@@ -68,6 +68,8 @@ import {
   IDataTableUserConfig,
   IDataTableActionsContext,
   DragState,
+  ITableColumnUserSettings,
+  IColumnWidth,
 } from './contexts';
 import {
   ColumnFilter,
@@ -85,6 +87,7 @@ import {
   DataFetchDependencies,
   DataFetchDependency,
   DataFetchDependencyStateSwitcher,
+  ITableColumn,
 } from './interfaces';
 import {
   IConfigurableColumnsProps, IDataColumnsProps,
@@ -291,8 +294,8 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   useEffect(() => {
     // sync page size on settings change
-    if (state.selectedPageSize !== initialPageSize){
-      changePageSize(initialPageSize);      
+    if (state.selectedPageSize !== initialPageSize) {
+      changePageSize(initialPageSize);
     }
   }, [initialPageSize]);
 
@@ -373,7 +376,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   const requireColumns = () => {
     requireColumnRef.current = true;
   };
-  const dataFetchDependencies = useRef<DataFetchDependencies>({});  
+  const dataFetchDependencies = useRef<DataFetchDependencies>({});
   const registerDataFetchDependency = (ownerId: string, dependency: DataFetchDependency) => {
     dataFetchDependencies.current[ownerId] = dependency;
   };
@@ -383,10 +386,10 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   const isDataDependenciesReady = (): boolean => {
     const deps = dataFetchDependencies.current;
-    for (const depName in deps){
+    for (const depName in deps) {
       if (deps.hasOwnProperty(depName) && deps[depName].state !== 'ready')
         return false;
-    }    
+    }
     return true;
   };
 
@@ -447,19 +450,41 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     debouncedFetchInternal(payload);
   };
 
+  const getColumnsUserSettings = (column: ITableColumn): ITableColumnUserSettings => {
+    return {
+      id: column.id,
+      show: column.show,
+      width: column.width,
+    };
+  };
+
   const saveUserSettings = (state: IDataTableStateContext) => {
     // don't save value if it's set to default, it helps to apply defaults
     const pageSize = state.selectedPageSize === initialPageSize ? null : state.selectedPageSize;
 
-    setUserConfig({
+    const settings: IDataTableUserConfig = {
       pageSize: pageSize,
       currentPage: state.currentPage,
       quickSearch: state.quickSearch,
-      columns: state.columns,
+      columns: state.columns?.map(getColumnsUserSettings),
       tableSorting: state.userSorting,
       advancedFilter: state.tableFilter,
       selectedFilterIds: state.selectedStoredFilterIds,
+    };
+
+    setUserConfig(settings);
+  };
+
+  const setColumnWidths = (widths: IColumnWidth[]) => {
+    if (!userConfig)
+      return;
+
+    widths.forEach(wc => {
+      const userColumn = userConfig.columns.find(c => c.id === wc.id);
+      if (userColumn)
+        userColumn.width = wc.width;
     });
+    setUserConfig(userConfig);    
   };
 
   const fetchTableDataInternal = (payload: IGetListDataPayload) => {
@@ -540,23 +565,6 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     }
   };
 
-  /*const changeSelectedRow = (val: any) => {
-    const rowId = val?.id;
-    const currentId = state.selectedRow?.id;
-
-    // Initialize selectedRow to null
-    let selectedRow = null;
-
-    // If IDs are different and newRow exists, convert the newRow keys to camelCase
-    if (newRowId !== currentRowId && newRow) {
-      selectedRow = camelCaseKeys(newRow, { deep: true });
-    }
-
-    // todo: check current row mode and allow to toggle selection if row is in the read mode
-    // Dispatch the updated row
-    dispatch(changeSelectedRowAction(selectedRow));
-  };*/
-
   const changeActionedRow = (val: any) => {
     dispatch(changeActionedRowAction(val ? camelCaseKeys(val, { deep: true }) : null));
   };
@@ -599,15 +607,15 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   };
 
   const onSort = (sorting: IColumnSorting[]) => {
-    if (tableIsReady.current === true){
+    if (tableIsReady.current === true) {
       dispatch(onSortAction(sorting));
-    }      
+    }
   };
 
   const onGroup = (grouping: ISortingItem[]) => {
-    if (tableIsReady.current === true){
+    if (tableIsReady.current === true) {
       dispatch(onGroupAction(grouping));
-    }      
+    }
   };
 
   const flagSetters = getFlagSetters(dispatch);
@@ -780,6 +788,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     requireColumns,
     registerDataFetchDependency,
     unregisterDataFetchDependency,
+    setColumnWidths,
   };
 
   /* Data Context section */

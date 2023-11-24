@@ -1,7 +1,7 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { ModalProps } from 'antd/lib/modal';
 import React, { CSSProperties, FC, Fragment, MutableRefObject, useEffect, useMemo } from 'react';
-import { Column, SortingRule, TableProps } from 'react-table';
+import { Column, ColumnInstance, SortingRule, TableProps } from 'react-table';
 import { usePrevious } from 'react-use';
 import { ValidationErrors } from '..';
 import {
@@ -15,11 +15,11 @@ import {
   useMetadata,
   useSheshaApplication,
 } from '../../providers';
-import { DataTableFullInstance } from '../../providers/dataTable/contexts';
+import { DataTableFullInstance, IColumnWidth } from '../../providers/dataTable/contexts';
 import { removeUndefinedProperties } from '../../utils/array';
 import { camelcaseDotNotation, toCamelCase } from '../../utils/string';
 import { ReactTable } from '../reactTable';
-import { IReactTableProps, OnRowsRendering, OnRowsReorderedArgs, RowDataInitializer, RowRenderer } from '../reactTable/interfaces';
+import { IColumnResizing, IReactTableProps, OnRowsRendering, OnRowsReorderedArgs, RowDataInitializer, RowRenderer } from '../reactTable/interfaces';
 import { getCellRenderer } from './cell';
 import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions } from 'providers/dataTable/repository/backendRepository';
 import { isDataColumn, ITableDataColumn } from 'providers/dataTable/interfaces';
@@ -106,6 +106,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     grouping,
     sortMode,
     strictSortBy,
+    setColumnWidths,
   } = store;
 
   const onSelectRowLocal = (index: number, row: any) => {
@@ -265,6 +266,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
           columnItem.minWidth && columnItem.maxWidth && columnItem.minWidth === columnItem.maxWidth
             ? columnItem.minWidth
             : undefined;
+        const width = strictWidth ?? columnItem.width;
 
         const cellRenderer = getCellRenderer(columnItem, metadata);
         const column: DataTableColumn = {
@@ -273,7 +275,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
           Header: columnItem.header,
           minWidth: Boolean(columnItem.minWidth) ? columnItem.minWidth : undefined,
           maxWidth: Boolean(columnItem.maxWidth) ? columnItem.maxWidth : undefined,
-          width: strictWidth,
+          width: width,
           resizable: !strictWidth,
           disableSortBy: !columnItem.isSortable || sortMode === 'strict',
           disableResizing: Boolean(strictWidth),
@@ -563,6 +565,12 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       return Promise.reject(typeof(supported) === 'string' ? supported : 'Reordering is not supported');
   };
 
+  const onResizedChange = (columns: ColumnInstance[], _columnSizes: IColumnResizing) => {
+    const widths = columns.map<IColumnWidth>(c => ({ id: c.id, width: typeof(c.width) === 'number' ? c.width : undefined }));
+    
+    setColumnWidths(widths);
+  };
+
   const tableProps: IReactTableProps = {
     data: tableData,
     // Disable sorting if we're in create mode so that the new row is always the first
@@ -610,6 +618,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     onRowsReordered: handleRowsReordered,
 
     onRowsRendering: grouping && grouping.length > 0 && groupingAvailable ? onRowsRenderingWithGrouping : undefined,
+    onResizedChange: onResizedChange,
   };
 
   return (

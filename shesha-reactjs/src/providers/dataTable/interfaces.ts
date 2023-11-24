@@ -40,6 +40,7 @@ export interface ITableColumn {
 
   minWidth?: number;
   maxWidth?: number;
+  width?: number;
 
   filterOption?: IndexColumnFilterOption;
   filter?: any;

@@ -296,7 +296,7 @@ export const ReactTable: FC<IReactTableProps> = ({
 
   useEffect(() => {
     if (onResizedChange) {
-      onResizedChange(state?.columnResizing);
+      onResizedChange(tableColumns, state?.columnResizing);
     }
   }, [state?.columnResizing]);
 
