@@ -3,19 +3,19 @@ import { DeleteOutlined, DownOutlined } from '@ant-design/icons';
 import { Input, DatePicker, TimePicker, InputNumber, Checkbox, Dropdown, Select, Spin, MenuProps } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { Moment } from 'moment';
-import { ColumnFilter, IndexColumnFilterOption } from 'providers/dataTable/interfaces';
-import { humanizeString } from 'utils/string';
+import { ColumnFilter, IndexColumnFilterOption } from '@/providers/dataTable/interfaces';
+import { humanizeString } from '@/utils/string';
 import {
   ADVANCEDFILTER_DATE_FORMAT,
   ADVANCEDFILTER_DATETIME_FORMAT,
   getMoment,
   ADVANCEDFILTER_TIME_FORMAT,
-} from 'providers/dataTable/utils';
-import { useReferenceList } from 'providers/referenceListDispatcher';
-import { useEntityAutocomplete } from 'utils/autocomplete';
-import { EntityData } from 'interfaces/gql';
-import { ProperyDataType } from 'interfaces/metadata';
-import { IDictionary } from 'interfaces';
+} from '@/providers/dataTable/utils';
+import { useReferenceList } from '@/providers/referenceListDispatcher';
+import { useEntityAutocomplete } from '@/utils/autocomplete';
+import { EntityData } from '@/interfaces/gql';
+import { ProperyDataType } from '@/interfaces/metadata';
+import { IDictionary } from '@/interfaces';
 
 type MenuItem = MenuProps['items'][number];
 

@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
 import { Button } from 'antd';
-import { ShaIcon, IconType } from 'components';
+import { ShaIcon, IconType } from '@/components';
 import classNames from 'classnames';
-import { IButtonItem } from 'providers/buttonGroupConfigurator/models';
+import { IButtonItem } from '@/providers/buttonGroupConfigurator/models';
 import { CSSProperties } from 'react';
-import { useConfigurableActionDispatcher } from 'providers/configurableActionsDispatcher';
-import { useApplicationContext } from 'utils/publicUtils';
+import { useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
+import { useApplicationContext } from '@/utils/publicUtils';
 
 export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'itemSubType'> {
   disabled?: boolean;

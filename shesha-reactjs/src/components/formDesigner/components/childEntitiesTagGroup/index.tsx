@@ -1,13 +1,13 @@
 import { UnorderedListOutlined } from '@ant-design/icons';
-import { migratePropertyName, migrateCustomFunctions } from '../../../../designer-components/_common-migrations/migrateSettings';
+import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
 import React from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
-import { DataTypes } from '../../../../interfaces/dataTypes';
+import { DataTypes } from '@/interfaces/dataTypes';
 import ConfigurableFormItem from '../formItem';
 import ChildEntitiesTagGroupControl from './control';
 import { IChildEntitiesTagGroupProps } from './models';
 import { ChildEntitiesTagGroupSettingsForm } from './settings';
-import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 const ChildEntitiesTagGroup: IToolboxComponent<IChildEntitiesTagGroupProps> = {
   type: 'childEntitiesTagGroup',

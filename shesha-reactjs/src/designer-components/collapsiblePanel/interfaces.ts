@@ -1,4 +1,4 @@
-import { IConfigurableFormComponent } from '../../providers/form/models';
+import { IConfigurableFormComponent } from '@/providers/form/models';
 import { ExpandIconPosition } from 'antd/lib/collapse/Collapse';
 import { CollapsibleType } from 'antd/lib/collapse/CollapsePanel';
 

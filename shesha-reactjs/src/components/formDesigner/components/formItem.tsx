@@ -1,13 +1,13 @@
 import React, { FC, ReactNode, useMemo } from 'react';
-import { IConfigurableFormComponent } from '../../../providers/form/models';
+import { IConfigurableFormComponent } from '@/providers/form/models';
 import { ColProps, Form, FormItemProps } from 'antd';
-import { useForm } from '../../../providers/form';
-import { getFieldNameFromExpression, getValidationRules } from '../../../providers/form/utils';
+import { useForm } from '@/providers/form';
+import { getFieldNameFromExpression, getValidationRules } from '@/providers/form/utils';
 import classNames from 'classnames';
 import './styles.less';
 import { useFormItem } from '../../../providers';
-import { DataBinder } from '../../../hocs/dataBinder';
-import { useDataContextManager } from 'providers/dataContextManager';
+import { DataBinder } from '@/hocs/dataBinder';
+import { useDataContextManager } from '@/providers/dataContextManager';
 
 export type IConfigurableFormItemChildFunc = (value: any, onChange: (...args: any[]) => void, propertyName?: string, getFieldValue?: (propertyName: string) => object[]) => ReactNode;
 

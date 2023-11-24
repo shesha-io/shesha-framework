@@ -1,19 +1,19 @@
 import { NumberOutlined } from '@ant-design/icons';
 import React from 'react';
-import ConfigurableFormItem from 'components/formDesigner/components/formItem';
-import ReadOnlyDisplayFormItem from 'components/readOnlyDisplayFormItem';
-import { IToolboxComponent } from 'interfaces';
-import { DataTypes } from 'interfaces/dataTypes';
-import { useForm, useGlobalState, useMetadata } from 'providers';
-import { FormMarkup } from 'providers/form/models';
-import { evaluateString, validateConfigurableComponentSettings } from 'providers/form/utils';
+import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
+import { IToolboxComponent } from '@/interfaces';
+import { DataTypes } from '@/interfaces/dataTypes';
+import { useForm, useGlobalState, useMetadata } from '@/providers';
+import { FormMarkup } from '@/providers/form/models';
+import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import NumberFieldControl from './control';
 import { INumberFieldComponentProps } from './interfaces';
 import settingsFormJson from './settingsForm.json';
-import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
-import { getNumberFormat } from 'utils/string';
-import { getDataFormat } from 'utils/metadata';
-import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
+import { getNumberFormat } from '@/utils/string';
+import { getDataFormat } from '@/utils/metadata';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

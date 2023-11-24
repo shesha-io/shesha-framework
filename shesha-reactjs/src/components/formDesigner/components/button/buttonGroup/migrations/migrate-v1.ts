@@ -1,10 +1,10 @@
 import { IButtonGroupComponentProps } from "../models";
-import { IConfigurableActionConfiguration } from "../../../../../../interfaces/configurableAction";
-import { SettingsMigrationContext } from "../../../../../../interfaces/formDesigner";
-import { IKeyValue } from "../../../../../../interfaces/keyValue";
-import { IButtonItem } from "../../../../../../providers/buttonGroupConfigurator/models";
-import { IShowModalActionArguments as IShowModalActionArguments } from "../../../../../../providers/dynamicModal/configurable-actions/show-dialog-arguments";
-import { getClosestTableId } from "../../../../../../providers/form/utils";
+import { IConfigurableActionConfiguration } from "@/interfaces/configurableAction";
+import { SettingsMigrationContext } from "@/interfaces/formDesigner";
+import { IKeyValue } from "@/interfaces/keyValue";
+import { IButtonItem } from "@/providers/buttonGroupConfigurator/models";
+import { IShowModalActionArguments as IShowModalActionArguments } from "@/providers/dynamicModal/configurable-actions/show-dialog-arguments";
+import { getClosestTableId } from "@/providers/form/utils";
 import { getDispatchEventReplacement } from "../../../_common-migrations/migrate-events";
 
 export const migrateV0toV1 = (props: IButtonGroupComponentProps, context: SettingsMigrationContext): IButtonGroupComponentProps => {

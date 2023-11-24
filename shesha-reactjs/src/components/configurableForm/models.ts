@@ -2,10 +2,10 @@ import { MutableRefObject } from 'react';
 import { ColProps } from 'antd/lib/col';
 import { FormInstance, FormProps } from 'antd/lib/form';
 import { FormLayout } from 'antd/lib/form/Form';
-import { ConfigurableFormInstance } from '../../providers/form/contexts';
-import { FormMode, Store, IConfigurableFormBaseProps, IFormActions, IFormSections } from '../../providers/form/models';
+import { ConfigurableFormInstance } from '@/providers/form/contexts';
+import { FormMode, Store, IConfigurableFormBaseProps, IFormActions, IFormSections } from '@/providers/form/models';
 import { IConfigurableFormComponent, ValidateErrorEntity } from '../../interfaces';
-import { StandardEntityActions } from '../../interfaces/metadata';
+import { StandardEntityActions } from '@/interfaces/metadata';
 
 type BaseFormProps = Pick<FormProps, 'size'>;
 

@@ -1,13 +1,13 @@
 import React, { FC } from 'react';
 import { Form, FormInstance, Result, Skeleton } from 'antd';
-import { FormProvider } from '../../providers/form';
-import { FormIdentifier } from '../../providers/form/models';
-import { FormPersisterProvider } from '../../providers/formPersisterProvider';
-import { FormPersisterStateConsumer } from '../../providers/formPersisterProvider/contexts';
-import { FormDesignerProvider, useFormDesigner } from '../../providers/formDesigner';
-import { FormMarkupConverter } from '../../providers/formMarkupConverter';
+import { FormProvider } from '@/providers/form';
+import { FormIdentifier } from '@/providers/form/models';
+import { FormPersisterProvider } from '@/providers/formPersisterProvider';
+import { FormPersisterStateConsumer } from '@/providers/formPersisterProvider/contexts';
+import { FormDesignerProvider, useFormDesigner } from '@/providers/formDesigner';
+import { FormMarkupConverter } from '@/providers/formMarkupConverter';
 import { FormDesignerRenderer } from './formDesignerRenderer';
-import { ConfigurationItemVersionStatus } from '../../utils/configurationFramework/models';
+import { ConfigurationItemVersionStatus } from '@/utils/configurationFramework/models';
 import { ResultStatusType } from 'antd/lib/result';
 
 export interface IFormDesignerProps {

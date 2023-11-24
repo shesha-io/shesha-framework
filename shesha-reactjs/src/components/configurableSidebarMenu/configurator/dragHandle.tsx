@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { MoreOutlined } from '@ant-design/icons';
-import { useSidebarMenuConfigurator } from '../../../providers/sidebarMenuConfigurator';
+import { useSidebarMenuConfigurator } from '@/providers/sidebarMenuConfigurator';
 
 export interface IDragHandleProps {
   id: string;

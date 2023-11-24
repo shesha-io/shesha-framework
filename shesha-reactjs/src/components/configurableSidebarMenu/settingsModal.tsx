@@ -1,8 +1,8 @@
 import React, { FC, memo } from 'react';
 import { Modal } from 'antd';
-import { ISettingsEditorProps } from '../configurableComponent';
+import { ISettingsEditorProps } from '@/components/configurableComponent';
 import { ISideBarMenuProps } from '.';
-import { SidebarMenuConfiguratorProvider, useSidebarMenuConfigurator } from '../../providers/sidebarMenuConfigurator';
+import { SidebarMenuConfiguratorProvider, useSidebarMenuConfigurator } from '@/providers/sidebarMenuConfigurator';
 import SidebarConfigurator from './configurator';
 import { useMedia } from 'react-use';
 

@@ -6,9 +6,9 @@ import React, { FC } from 'react';
 import { getStyle, useFormExpression } from '../../../../';
 import { IToolboxComponent } from '../../../../interfaces';
 import { useForm, useFormData, useGlobalState } from '../../../../providers';
-import { IConfigurableFormComponent, IFormComponentContainer } from '../../../../providers/form/models';
-import ConditionalWrap from '../../../conditionalWrapper';
-import ShaIcon from '../../../shaIcon';
+import { IConfigurableFormComponent, IFormComponentContainer } from '@/providers/form/models';
+import ConditionalWrap from '@/components/conditionalWrapper';
+import ShaIcon from '@/components/shaIcon';
 import ComponentsContainer from '../../containers/componentsContainer';
 import { useWizard } from './hooks';
 import { IWizardComponentPropsV0, migrateV0toV1 } from './migrations/migrate-v1';
@@ -20,8 +20,8 @@ import {
   migrateCustomFunctions,
   migratePropertyName,
   migrateFunctionToProp
-} from '../../../../designer-components/_common-migrations/migrateSettings';
-import { DataContextProvider } from 'providers/dataContextProvider/index';
+} from '@/designer-components/_common-migrations/migrateSettings';
+import { DataContextProvider } from '@/providers/dataContextProvider/index';
 
 const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   type: 'wizard',

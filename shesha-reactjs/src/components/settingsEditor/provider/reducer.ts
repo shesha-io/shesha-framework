@@ -10,7 +10,7 @@ import {
 } from './contexts';
 import { handleActions } from 'redux-actions';
 import { SettingsEditorActionEnums } from './actions';
-import { FormMode } from '../../..';
+import { FormMode } from '@/components/..';
 
 export const settingsEditorReducer = handleActions<ISettingsEditorStateContext, any>(
     {

@@ -1,8 +1,8 @@
-import { useSheshaApplication } from 'providers';
+import { useSheshaApplication } from '@/providers';
 import React, { FC, PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
-import { settingsGetValue } from '../../apis/settings';
-import useThunkReducer from '../../hooks/thunkReducer';
-import { IErrorInfo } from '../../interfaces/errorInfo';
+import { settingsGetValue } from '@/apis/settings';
+import useThunkReducer from '@/hooks/thunkReducer';
+import { IErrorInfo } from '@/interfaces/errorInfo';
 import { ISettingsContext, SETTINGS_CONTEXT_INITIAL_STATE, SettingsContext } from './contexts';
 import { ISettingIdentifier, ISettingsDictionary } from './models';
 import reducer from './reducer';

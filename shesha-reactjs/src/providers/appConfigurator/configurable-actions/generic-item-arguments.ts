@@ -1,4 +1,4 @@
-import { DesignerToolbarSettings } from "../../../interfaces/toolbarSettings";
+import { DesignerToolbarSettings } from "@/interfaces/toolbarSettings";
 
 export const genericItemActionArgumentsForm = new DesignerToolbarSettings()
   .addTextField({

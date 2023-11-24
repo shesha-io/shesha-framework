@@ -1,8 +1,8 @@
-import { ICodeTreeLevel } from "components/codeEditor/utils";
-import { IModelMetadata, IPropertyMetadata, isEntityReferencePropertyMetadata } from "interfaces/metadata";
-import { IDataContextDescriptor } from "providers/dataContextManager/models";
-import { IMetadataDispatcherFullinstance } from "providers/metadataDispatcher/contexts";
-import { toCamelCase } from "utils/string";
+import { ICodeTreeLevel } from "@/components/codeEditor/utils";
+import { IModelMetadata, IPropertyMetadata, isEntityReferencePropertyMetadata } from "@/interfaces/metadata";
+import { IDataContextDescriptor } from "@/providers/dataContextManager/models";
+import { IMetadataDispatcherFullinstance } from "@/providers/metadataDispatcher/contexts";
+import { toCamelCase } from "@/utils/string";
 
 export const getFormDataMetadata = (dispatcher: IMetadataDispatcherFullinstance, metadata: Promise<IModelMetadata>) => {
     if (!Boolean(metadata)) return null;

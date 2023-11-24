@@ -2,8 +2,8 @@ import React, { FC, useState } from 'react';
 import { Menu } from 'antd';
 import { MenuTheme } from 'antd/lib/menu/MenuContext';
 import { useLocalStorage } from '../../hooks';
-import { ISidebarMenuItem, useSidebarMenu } from '../../providers/sidebarMenu';
-import { getCurrentUrl, normalizeUrl } from '../../utils/url';
+import { ISidebarMenuItem, useSidebarMenu } from '@/providers/sidebarMenu';
+import { getCurrentUrl, normalizeUrl } from '@/utils/url';
 import { renderSidebarMenuItem } from './utils';
 import { useShaRouting } from '../../providers';
 

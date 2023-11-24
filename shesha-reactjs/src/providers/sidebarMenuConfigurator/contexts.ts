@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { ISidebarMenuItem } from '../../interfaces/sidebar';
+import { ISidebarMenuItem } from '@/interfaces/sidebar';
 
 export interface IUpdateChildItemsPayload {
   index: number[];

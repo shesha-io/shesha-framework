@@ -1,4 +1,4 @@
-import { useShaRouting } from '../providers/shaRouting';
+import { useShaRouting } from '@/providers/shaRouting';
 
 export const useIdQueryParam = (): { id: string } => {
   const { router } = useShaRouting();

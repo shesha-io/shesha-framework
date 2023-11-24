@@ -1,9 +1,9 @@
 import React, { FC, useMemo } from 'react';
 import { Button, Col, Form, Input, Row } from 'antd';
-import { EntityViewConfigurationDto } from 'apis/modelConfigurations';
+import { EntityViewConfigurationDto } from '@/apis/modelConfigurations';
 import { DeleteFilled, PlusOutlined } from '@ant-design/icons';
-import FormAutocomplete from '../../formAutocomplete';
-import { FormIdentifier } from '../../../providers/form/models';
+import FormAutocomplete from '@/components/formAutocomplete';
+import { FormIdentifier } from '@/providers/form/models';
 
 interface IViewsEditorProps {
     value?: EntityViewConfigurationDto[];

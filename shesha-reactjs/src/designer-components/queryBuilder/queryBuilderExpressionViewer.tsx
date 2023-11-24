@@ -1,4 +1,4 @@
-import CodeEditor from '../../components/codeEditor';
+import CodeEditor from '@/components/codeEditor';
 import React, { FC } from 'react';
 
 export interface IQueryBuilderExpressionViewerProps {

@@ -3,8 +3,8 @@ import './styles/index.less';
 import convertCssColorNameToHex from 'convert-css-color-name-to-hex';
 import { Alert, Skeleton } from 'antd';
 import { DescriptionTooltip } from './tooltip';
-import { useReferenceListItem } from 'providers/referenceListDispatcher';
-import { IReferenceListIdentifier } from 'interfaces/referenceList';
+import { useReferenceListItem } from '@/providers/referenceListDispatcher';
+import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import RefTag from './tag';
 
 export interface IRefListStatusProps {

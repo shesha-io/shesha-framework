@@ -19,7 +19,7 @@
   "scripts": {
     "test": "cross-env CI=1 jest --runInBand",
     "test:watch": "jest --watch",
-    "build": "rimraf dist && npm run build:less && rollup -c",
+    "build": "rimraf dist && npm run build:less && rollup -c && tsc-alias",
     "start": "npm run build:less && npm run build:css && rollup -c -w",
     "build:stylesheets": "npm run build:less && npm run build:css",
     "build:less": "node less-bundle.js",
@@ -134,6 +134,7 @@
     "sortablejs": "^1.15.0",
     "storybook": "^7.0.1",
     "ts-jest": "^29.1.0",
+    "tsc-alias": "^1.8.8",
     "tsconfig-paths-webpack-plugin": "^4.0.1",
     "typescript": "^5.2.2"
   },

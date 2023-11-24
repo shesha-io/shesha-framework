@@ -2,13 +2,13 @@ import React, { FC, MutableRefObject, useEffect, useMemo, useState } from 'react
 import { Checkbox, Dropdown, MenuProps, Spin } from 'antd';
 import { useLocalStorage } from '../../hooks';
 import SearchBox from '../formDesigner/toolboxSearchBox';
-import GrouppedObjectsTree from '../grouppedObjectsTree';
+import GrouppedObjectsTree from '@/components/grouppedObjectsTree';
 import { DatabaseFilled, EyeInvisibleOutlined, LoadingOutlined, QuestionCircleOutlined, UserAddOutlined } from '@ant-design/icons';
-import { useForm } from '../..';
-import { EntityConfigDto, EntityConfigDtoPagedResultDto, useEntityConfigGetMainDataList } from 'apis/entityConfig';
-import { EntityConfigType, MetadataSourceType } from '../../interfaces/metadata';
-import { InterfaceOutlined } from '../../icons/interfaceOutlined';
-import { ClassOutlined } from '../../icons/classOutlined';
+import { useForm } from '@/components/..';
+import { EntityConfigDto, EntityConfigDtoPagedResultDto, useEntityConfigGetMainDataList } from '@/apis/entityConfig';
+import { EntityConfigType, MetadataSourceType } from '@/interfaces/metadata';
+import { InterfaceOutlined } from '@/icons/interfaceOutlined';
+import { ClassOutlined } from '@/icons/classOutlined';
 
 type MenuItem = MenuProps['items'][number];
 

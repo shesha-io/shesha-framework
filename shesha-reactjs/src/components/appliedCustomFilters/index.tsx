@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { Tag } from 'antd';
-import { ICustomFilterOptions } from '../../providers/dataTable/interfaces';
+import { ICustomFilterOptions } from '@/providers/dataTable/interfaces';
 
 export interface IAppliedCustomFiltersProps {
   appliedCustomFilterOptions?: ICustomFilterOptions[];

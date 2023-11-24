@@ -1,5 +1,5 @@
-import { useGet, UseGetProps } from '../hooks/useGet';
-import { IAjaxResponse, IAjaxResponseBase } from '../interfaces/ajaxResponse';
+import { useGet, UseGetProps } from '@/hooks/useGet';
+import { IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 
 /**
  * Generic DTO of the simple autocomplete item

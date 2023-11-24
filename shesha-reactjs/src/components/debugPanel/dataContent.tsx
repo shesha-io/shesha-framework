@@ -1,10 +1,10 @@
 import React, { FC,  useEffect,  useMemo, useState } from "react";
 import { DebugDataTree } from "./dataTree";
-import { useDataContextManager } from "providers/dataContextManager";
-import { useGlobalState, useMetadataDispatcher } from "providers";
-import { useFormDesigner } from "providers/formDesigner";
-import { IModelMetadata } from "interfaces/metadata";
-import { getFieldNameFromExpression } from "utils/publicUtils";
+import { useDataContextManager } from "@/providers/dataContextManager";
+import { useGlobalState, useMetadataDispatcher } from "@/providers";
+import { useFormDesigner } from "@/providers/formDesigner";
+import { IModelMetadata } from "@/interfaces/metadata";
+import { getFieldNameFromExpression } from "@/utils/publicUtils";
 
 const DebugPanelDataContent: FC = () => {
     const globalState = useGlobalState();

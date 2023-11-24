@@ -1,14 +1,14 @@
 import React, { FC, useState } from 'react';
 import { Select, AutoComplete, InputNumber, Input, Checkbox } from 'antd';
-import SectionSeparator from '../../../sectionSeparator';
+import SectionSeparator from '@/components/sectionSeparator';
 import CodeEditor from '../codeEditor/codeEditor';
 import { IDataListComponentProps } from '../../../dataList/models';
-import FormAutocomplete from '../../../formAutocomplete';
-import Show from 'components/show';
-import { ISettingsFormFactoryArgs } from 'interfaces';
-import SettingsForm, { useSettingsForm } from 'designer-components/_settings/settingsForm';
-import SettingsFormItem from 'designer-components/_settings/settingsFormItem';
-import { ConfigurableActionConfigurator } from 'designer-components/configurableActionsConfigurator/configurator';
+import FormAutocomplete from '@/components/formAutocomplete';
+import Show from '@/components/show';
+import { ISettingsFormFactoryArgs } from '@/interfaces';
+import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
+import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
+import { ConfigurableActionConfigurator } from '@/designer-components/configurableActionsConfigurator/configurator';
 
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 

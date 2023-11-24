@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { StoryFn } from '@storybook/react';
 import { ListEditor } from './index';
-import StoryApp from 'components/storyBookApp/index';
-import { MainLayout, PropertyAutocomplete } from 'components/index';
+import StoryApp from '@/components/storyBookApp/index';
+import { MainLayout, PropertyAutocomplete } from '@/components/index';
 import { addStory } from 'src/stories/utils';
 import { Checkbox, Col, Input, Row, Select } from 'antd';
-import { MetadataProvider } from 'providers/index';
-import { getNanoId } from 'utils/uuid';
-import { ColumnSorting } from 'providers/dataTable/interfaces';
+import { MetadataProvider } from '@/providers/index';
+import { getNanoId } from '@/utils/uuid';
+import { ColumnSorting } from '@/providers/dataTable/interfaces';
 
 export default {
   title: 'Components/ListEditor',

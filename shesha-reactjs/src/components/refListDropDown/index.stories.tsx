@@ -2,8 +2,8 @@ import React, { FC, useState } from 'react';
 import { Button, Form } from 'antd';
 import { Story, Meta } from '@storybook/react';
 import RefListDropDown, { IRefListDropDownProps } from './';
-import { addStory } from '../../stories/utils';
-import StoryApp from '../storyBookApp';
+import { addStory } from '@/stories/utils';
+import StoryApp from '@/components/storyBookApp';
 
 export default {
   title: 'Components/RefListDropDown',

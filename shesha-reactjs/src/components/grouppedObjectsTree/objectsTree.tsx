@@ -1,7 +1,7 @@
 import React, { useState, useEffect, ReactNode } from 'react';
 import { Tree } from 'antd';
 import { DataNode } from 'antd/lib/tree';
-import ShaIcon, { IconType } from '../shaIcon';
+import ShaIcon, { IconType } from '@/components/shaIcon';
 
 export interface IProps<TItem> {
     items: TItem[];

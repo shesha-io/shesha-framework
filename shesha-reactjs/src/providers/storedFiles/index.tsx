@@ -1,15 +1,15 @@
 import axios from 'axios';
 import FileSaver from 'file-saver';
-import { IAjaxResponse } from 'interfaces';
+import { IAjaxResponse } from '@/interfaces';
 import qs from 'qs';
 import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
-import { useDeleteFileById } from '../../apis/storedFile';
+import { useDeleteFileById } from '@/apis/storedFile';
 import { useApplicationConfiguration, useGet, useMutate } from '../../hooks';
-import { IApiEndpoint } from '../../interfaces/metadata';
-import { useDelayedUpdate } from '../../providers/delayedUpdateProvider';
-import { STORED_FILES_DELAYED_UPDATE } from '../../providers/delayedUpdateProvider/models';
-import { useSheshaApplication } from '../sheshaApplication';
-import { useSignalR } from '../signalR';
+import { IApiEndpoint } from '@/interfaces/metadata';
+import { useDelayedUpdate } from '@/providers/delayedUpdateProvider';
+import { STORED_FILES_DELAYED_UPDATE } from '@/providers/delayedUpdateProvider/models';
+import { useSheshaApplication } from '@/providers/sheshaApplication';
+import { useSignalR } from '@/providers/signalR';
 import { getFlagSetters } from '../utils/flagsSetters';
 import {
   deleteFileErrorAction,

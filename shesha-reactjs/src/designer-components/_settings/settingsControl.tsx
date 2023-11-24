@@ -1,6 +1,6 @@
 import React, { FC, ReactElement, useMemo } from 'react';
 import { PropertySettingMode } from '../../providers';
-import { CodeEditor } from 'components/formDesigner/components/codeEditor/codeEditor';
+import { CodeEditor } from '@/components/formDesigner/components/codeEditor/codeEditor';
 import { getPropertySettingsFromValue } from './utils';
 
 export type SettingsControlChildrenType = (value: any, onChange:  (...args: any[]) => void, propertyName: string) => ReactElement;

@@ -1,5 +1,5 @@
-import { IReferenceListIdentifier } from 'interfaces';
-import { getFormFullName } from '../../utils/form';
+import { IReferenceListIdentifier } from '@/interfaces';
+import { getFormFullName } from '@/utils/form';
 import { FormIdentifier } from '../form/models';
 import { asFormFullName, asFormRawId } from '../form/utils';
 import { getReferenceListFullName } from '../referenceListDispatcher/utils';

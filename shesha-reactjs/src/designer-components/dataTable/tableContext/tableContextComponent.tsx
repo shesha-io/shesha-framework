@@ -1,18 +1,18 @@
 import { LayoutOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
 import React, { FC, Fragment, useEffect, useMemo } from 'react';
-import ComponentsContainer from 'components/formDesigner/containers/componentsContainer';
-import { IToolboxComponent, YesNoInherit } from 'interfaces';
-import { useDataTableStore, useForm, useFormData } from 'providers';
-import DataTableProvider from 'providers/dataTable';
-import { FormMarkup, IConfigurableFormComponent } from 'providers/form/models';
-import { evaluateString, validateConfigurableComponentSettings } from 'providers/form/utils';
+import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
+import { IToolboxComponent, YesNoInherit } from '@/interfaces';
+import { useDataTableStore, useForm, useFormData } from '@/providers';
+import DataTableProvider from '@/providers/dataTable';
+import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
+import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import settingsFormJson from './settingsForm.json';
-import { ColumnSorting, DataFetchingMode, GroupingItem, ISortingItem, SortMode } from 'providers/dataTable/interfaces';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
-import { ConfigurableFormItem } from 'components';
-import { evaluateYesNo } from 'utils/form';
-import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import { ColumnSorting, DataFetchingMode, GroupingItem, ISortingItem, SortMode } from '@/providers/dataTable/interfaces';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { ConfigurableFormItem } from '@/components';
+import { evaluateYesNo } from '@/utils/form';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 export interface ITableContextComponentProps extends IConfigurableFormComponent {
   sourceType?: 'Form' | 'Entity' | 'Url';

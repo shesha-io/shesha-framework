@@ -1,5 +1,5 @@
-import { IConfigurableActionConfiguration } from '../../../../interfaces/configurableAction';
-import { IConfigurableFormComponent } from '../../../../interfaces/formDesigner';
+import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
+import { IConfigurableFormComponent } from '@/interfaces/formDesigner';
 
 export interface IDrawerProps extends IConfigurableFormComponent {
   showFooter?: boolean;

@@ -1,5 +1,5 @@
 import React, { createContext, FC, useContext, useState } from 'react';
-import { CollapsiblePanel, ICollapsiblePanelProps } from 'components';
+import { CollapsiblePanel, ICollapsiblePanelProps } from '@/components';
 import { useSettingsForm } from './settingsForm';
 
 interface ISettingsCollapsiblePanelProps extends ICollapsiblePanelProps { }

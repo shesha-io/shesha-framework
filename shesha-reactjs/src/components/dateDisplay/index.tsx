@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { Tooltip } from 'antd';
 import moment from 'moment';
-import { tolocalIsoDate } from '../../utils/date';
+import { tolocalIsoDate } from '@/utils/date';
 import { TooltipPlacement } from 'antd/lib/tooltip';
 
 export interface IDateDisplayProps {

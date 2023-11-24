@@ -1,4 +1,4 @@
-import { IModelItem } from '../../../../interfaces/modelConfigurator';
+import { IModelItem } from '@/interfaces/modelConfigurator';
 
 export const getItemById = (items: IModelItem[], id: string): IModelItem => {
   const position = getItemPositionById(items, id);

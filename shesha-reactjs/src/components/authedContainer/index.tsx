@@ -1,11 +1,11 @@
 import { Alert, Button, Form, Input, Modal } from 'antd';
 import React, { FC, Fragment, PropsWithChildren, useState } from 'react';
 import { ShaRoutingProvider, SidebarMenuProvider, useAuth } from '../../providers';
-import SectionSeparator from '../sectionSeparator';
+import SectionSeparator from '@/components/sectionSeparator';
 import classNames from 'classnames';
 import './index.less';
-import { ValidationErrors } from '../validationErrors';
-import { IErrorInfo } from '../../interfaces/errorInfo';
+import { ValidationErrors } from '@/components/validationErrors';
+import { IErrorInfo } from '@/interfaces/errorInfo';
 
 const { Item } = Form;
 

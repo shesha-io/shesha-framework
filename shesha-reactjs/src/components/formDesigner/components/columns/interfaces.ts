@@ -1,4 +1,4 @@
-import { IConfigurableFormComponent } from '../../../../providers/form/models';
+import { IConfigurableFormComponent } from '@/providers/form/models';
 
 export interface IColumnProps {
   id: string;

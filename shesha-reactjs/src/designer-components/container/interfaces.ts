@@ -1,5 +1,5 @@
-import { ContainerDirection } from '../../components/formDesigner/common/interfaces';
-import { IConfigurableFormComponent } from '../../providers/form/models';
+import { ContainerDirection } from '@/components/formDesigner/common/interfaces';
+import { IConfigurableFormComponent } from '@/providers/form/models';
 
 export type JustifyContent =
   | 'center'

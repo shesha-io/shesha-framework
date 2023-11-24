@@ -1,7 +1,7 @@
 import React, { FC, Fragment } from 'react';
 import { Alert, AlertProps } from 'antd';
-import { IErrorInfo } from '../../interfaces/errorInfo';
-import { IAjaxResponseBase } from '../../interfaces/ajaxResponse';
+import { IErrorInfo } from '@/interfaces/errorInfo';
+import { IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 
 export interface IValidationErrorsProps {
   error: string | IErrorInfo | IAjaxResponseBase;

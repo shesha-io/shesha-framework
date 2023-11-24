@@ -9,13 +9,13 @@ import {
   useGlobalState,
   useSheshaApplication,
   ValidationErrors,
-} from '../..';
-import { entitiesGet } from 'apis/entities';
-import { IConfigurableActionConfiguration } from '../../interfaces/configurableAction';
-import { IKeyValue } from '../../interfaces/keyValue';
-import { useConfigurationItemsLoader } from '../../providers/configurationItemsLoader';
-import { get, axiosHttp } from '../../utils/fetchers';
-import { GenericQuickView } from '../quickView';
+} from '@/components/..';
+import { entitiesGet } from '@/apis/entities';
+import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
+import { IKeyValue } from '@/interfaces/keyValue';
+import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
+import { get, axiosHttp } from '@/utils/fetchers';
+import { GenericQuickView } from '@/components/quickView';
 import './styles/index.less';
 
 export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';

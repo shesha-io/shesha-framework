@@ -9,14 +9,14 @@ import {
   useSheshaApplication,
 } from '../../../providers';
 import React, { FC, Fragment, MutableRefObject, useEffect } from 'react';
-import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
+import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { IChildTableComponentProps } from '.';
 import { CollapsiblePanel, GlobalTableFilter, Show, TablePager } from '../../../components';
-import { ButtonGroup } from '../../../components/formDesigner/components/button/buttonGroup/buttonGroup';
-import ComponentsContainer from '../../../components/formDesigner/containers/componentsContainer';
-import { DEFAULT_DT_USER_CONFIG } from '../../../providers/dataTable/contexts';
-import { hasDynamicFilter } from '../../../providers/dataTable/utils';
-import { evaluateString } from '../../../providers/form/utils';
+import { ButtonGroup } from '@/components/formDesigner/components/button/buttonGroup/buttonGroup';
+import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
+import { DEFAULT_DT_USER_CONFIG } from '@/providers/dataTable/contexts';
+import { hasDynamicFilter } from '@/providers/dataTable/utils';
+import { evaluateString } from '@/providers/form/utils';
 import { evaluateDynamicFilters, getValidDefaultBool } from '../../../utils';
 import './styles/index.less';
 

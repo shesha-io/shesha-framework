@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
 import { ToolbarItem } from './toolbarItem';
 import { ToolbarItemsGroup } from './toolbarItemsGroup';
-import { useToolbarConfigurator } from '../../../providers/toolbarConfigurator';
-import { IButtonGroup, IToolbarButton, ToolbarItemProps } from '../../../providers/toolbarConfigurator/models';
+import { useToolbarConfigurator } from '@/providers/toolbarConfigurator';
+import { IButtonGroup, IToolbarButton, ToolbarItemProps } from '@/providers/toolbarConfigurator/models';
 import { ReactSortable, ItemInterface } from 'react-sortablejs';
-import { getActualModel, useApplicationContext } from 'utils/publicUtils';
-import { useDeepCompareMemo } from 'hooks';
+import { getActualModel, useApplicationContext } from '@/utils/publicUtils';
+import { useDeepCompareMemo } from '@/hooks';
 
 export interface IToolbarItemsContainerProps {
   index?: number[];

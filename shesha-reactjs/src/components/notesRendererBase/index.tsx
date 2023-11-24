@@ -1,10 +1,10 @@
 import React, { FC, useState, useEffect, CSSProperties, useRef } from 'react';
-import DateDisplay from '../dateDisplay';
+import DateDisplay from '@/components/dateDisplay';
 import { Skeleton, Comment, Card, List, Empty, Input, notification, Button, Typography } from 'antd';
 import { CheckOutlined, DeleteOutlined } from '@ant-design/icons';
-import { INote, ICreateNotePayload } from '../../providers/notes/contexts';
+import { INote, ICreateNotePayload } from '@/providers/notes/contexts';
 import _ from 'lodash';
-import ShaDivider from '../shaDivider';
+import ShaDivider from '@/components/shaDivider';
 import classNames from 'classnames';
 import './styles/styles.less';
 

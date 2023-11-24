@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { getNumberFormat } from '../../../../utils/string';
+import { getNumberFormat } from '@/utils/string';
 import {
   ContentDisplay,
   FONT_SIZES,

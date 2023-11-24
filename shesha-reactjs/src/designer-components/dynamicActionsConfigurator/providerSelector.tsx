@@ -1,5 +1,5 @@
 import { TreeSelect } from 'antd';
-import { useDynamicActionsDispatcher } from 'providers/index';
+import { useDynamicActionsDispatcher } from '@/providers/index';
 import React, { FC, ReactNode, useMemo } from 'react';
 
 export interface IProviderSelectorProps {

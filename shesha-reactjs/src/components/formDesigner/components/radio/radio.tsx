@@ -1,17 +1,17 @@
 import { CheckCircleOutlined } from '@ant-design/icons';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import React from 'react';
-import { useFormData } from '../../../..';
-import { IToolboxComponent } from 'interfaces';
-import { DataTypes } from 'interfaces/dataTypes';
-import { FormMarkup } from 'providers/form/models';
-import { getStyle, validateConfigurableComponentSettings } from 'providers/form/utils';
-import { getLegacyReferenceListIdentifier } from 'utils/referenceList';
+import { useFormData } from '@/components/..';
+import { IToolboxComponent } from '@/interfaces';
+import { DataTypes } from '@/interfaces/dataTypes';
+import { FormMarkup } from '@/providers/form/models';
+import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
 import ConfigurableFormItem from '../formItem';
 import RadioGroup from './radioGroup';
 import settingsFormJson from './settingsForm.json';
 import { IRadioProps } from './utils';
-import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

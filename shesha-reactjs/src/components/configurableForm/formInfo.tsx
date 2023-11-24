@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
 import { useAppConfigurator, useSheshaApplication } from '../../providers';
-import { FormIdentifier, IPersistedFormProps } from '../../providers/form/models';
+import { FormIdentifier, IPersistedFormProps } from '@/providers/form/models';
 import { Card } from 'antd';
-import { CONFIGURATION_ITEM_STATUS_MAPPING } from '../../utils/configurationFramework/models';
-import { getFormFullName } from '../../utils/form';
-import StatusTag from '../statusTag';
-import HelpTextPopover from '../helpTextPopover';
+import { CONFIGURATION_ITEM_STATUS_MAPPING } from '@/utils/configurationFramework/models';
+import { getFormFullName } from '@/utils/form';
+import StatusTag from '@/components/statusTag';
+import HelpTextPopover from '@/components/helpTextPopover';
 import { BlockOutlined, CloseOutlined } from '@ant-design/icons';
 
 export const FormInfo: FC<IPersistedFormProps> = ({ id, versionNo, description, versionStatus, name, module }) => {

@@ -2,16 +2,16 @@ import { FilterOutlined } from '@ant-design/icons';
 import { Alert, Typography } from 'antd';
 import { useForm, useQueryBuilder } from '../../providers';
 import React, { FC } from 'react';
-import ConfigurableFormItem from 'components/formDesigner/components/formItem';
-import { IToolboxComponent } from 'interfaces';
-import { FormMarkup } from 'providers/form/models';
-import { validateConfigurableComponentSettings } from 'providers/form/utils';
+import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { IToolboxComponent } from '@/interfaces';
+import { FormMarkup } from '@/providers/form/models';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IQueryBuilderComponentProps } from './interfaces';
 import QueryBuilderField from './queryBuilderField';
 import { QueryBuilderWithModelType } from './queryBuilderWithModelType';
 import settingsFormJson from './settingsForm.json';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
-import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

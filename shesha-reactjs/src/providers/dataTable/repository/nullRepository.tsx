@@ -1,4 +1,4 @@
-import { IConfigurableColumnsProps } from "providers/datatableColumnsConfigurator/models";
+import { IConfigurableColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
 import React, { ComponentType, useMemo } from "react";
 import { FC } from "react";
 import { DataTableColumnDto, IGetListDataPayload, ITableDataInternalResponse } from "../interfaces";

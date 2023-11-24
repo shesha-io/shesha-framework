@@ -1,5 +1,5 @@
 import { FieldSettings, Func, JsonLogicFormatFunc, JsonLogicImportFunc, JsonLogicTree, JsonLogicValue, RuleValue, TypedMap } from '@react-awesome-query-builder/antd';
-import { IEvaluateNode, IEvaluateNodeArgs } from 'utils/jsonLogic';
+import { IEvaluateNode, IEvaluateNodeArgs } from '@/utils/jsonLogic';
 
 const args2JsonLogic: JsonLogicFormatFunc = (funcArgs: TypedMap<JsonLogicValue>): JsonLogicTree => {
     const node: IEvaluateNode = {

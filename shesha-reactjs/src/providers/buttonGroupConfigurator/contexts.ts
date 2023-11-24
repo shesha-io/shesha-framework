@@ -1,4 +1,4 @@
-import { ConfigurableFormInstance } from 'interfaces';
+import { ConfigurableFormInstance } from '@/interfaces';
 import { createContext } from 'react';
 import { ButtonGroupItemProps } from './models';
 

@@ -1,6 +1,6 @@
 import { FormInstance } from 'antd';
-import { YesNoInherit } from 'interfaces/formDesigner';
-import { FormMode } from 'providers/form/models';
+import { YesNoInherit } from '@/interfaces/formDesigner';
+import { FormMode } from '@/providers/form/models';
 
 interface IDataWithFields {
   _formFields: string[];

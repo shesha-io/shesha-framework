@@ -1,6 +1,6 @@
 import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
-import { useSheshaApplication } from '../..';
-import { ISidebarMenuItem } from '../../interfaces/sidebar';
+import { useSheshaApplication } from '@/providers/..';
+import { ISidebarMenuItem } from '@/interfaces/sidebar';
 import { getFlagSetters } from '../utils/flagsSetters';
 import { toggleSidebarAction } from './actions';
 import {

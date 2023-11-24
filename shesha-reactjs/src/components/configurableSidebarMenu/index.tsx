@@ -1,10 +1,10 @@
 import React, { FC, useMemo } from 'react';
-import { ConfigurableApplicationComponent, ISettingsEditorProps } from '../configurableComponent';
-import { SidebarMenu } from '../sidebarMenu';
-import { ISidebarMenuItem, SidebarMenuProvider } from '../../providers/sidebarMenu';
+import { ConfigurableApplicationComponent, ISettingsEditorProps } from '@/components/configurableComponent';
+import { SidebarMenu } from '@/components/sidebarMenu';
+import { ISidebarMenuItem, SidebarMenuProvider } from '@/providers/sidebarMenu';
 import ComponentSettingsModal from './settingsModal';
 import { MenuTheme } from 'antd/lib/menu/MenuContext';
-import CustomErrorBoundary from '../customErrorBoundary';
+import CustomErrorBoundary from '@/components/customErrorBoundary';
 
 export interface ISideBarMenuProps {
   items: ISidebarMenuItem[];

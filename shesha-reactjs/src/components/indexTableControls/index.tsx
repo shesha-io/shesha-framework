@@ -2,8 +2,8 @@ import React, { FC } from 'react';
 import { FilterOutlined, ReloadOutlined, SlidersOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import { useDataTable } from '../../providers';
-import TablePager from '../tablePager';
-import GlobalTableFilter from '../globalTableFilter';
+import TablePager from '@/components/tablePager';
+import GlobalTableFilter from '@/components/globalTableFilter';
 
 export interface IIndexTableControlsProps {
   /**

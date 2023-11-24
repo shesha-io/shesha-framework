@@ -1,17 +1,17 @@
 import React, { FC, useCallback, useMemo } from 'react';
 import { UnorderedListOutlined } from "@ant-design/icons";
-import { IToolboxComponent } from "interfaces";
+import { IToolboxComponent } from "@/interfaces";
 import { Alert } from 'antd';
-import { useDataTableStore, useForm } from 'providers';
-import { DataList } from '../../../dataList';
+import { useDataTableStore, useForm } from '@/providers';
+import { DataList } from '@/components/dataList';
 import { IDataListComponentProps } from '../../../dataList/models';
-import { useDataSources } from 'providers/dataSourcesProvider';
+import { useDataSources } from '@/providers/dataSourcesProvider';
 import ConfigurableFormItem from '../formItem';
 import classNames from 'classnames';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { DataListSettingsForm } from './dataListSettings';
-import { DataTableFullInstance } from 'providers/dataTable/contexts';
-import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import { DataTableFullInstance } from '@/providers/dataTable/contexts';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   type: 'datalist',

@@ -1,7 +1,7 @@
 import { createContext } from 'react';
-import { IFlagsSetters } from '../../interfaces/flagsSetters';
-import { IFlagsState } from '../../interfaces/flagsState';
-import { ISidebarMenuItem } from '../../interfaces/sidebar';
+import { IFlagsSetters } from '@/interfaces/flagsSetters';
+import { IFlagsState } from '@/interfaces/flagsState';
+import { ISidebarMenuItem } from '@/interfaces/sidebar';
 import { IHeaderAction } from './models';
 
 export type IFlagProgressFlags = 'fetchFileInfo' /* NEW_IN_PROGRESS_FLAG_GOES_HERE */;

@@ -1,4 +1,4 @@
-import { IFormItem } from "../../../..";
+import { IFormItem } from "@/components/..";
 import { IConfigurableFormComponent } from "../../../../providers";
 
 export interface IAnnotation {

@@ -14,21 +14,21 @@ import {
   upgradeComponents,
   useAppConfigurator,
   useSheshaApplication,
-} from '../..';
-import { EntitiesGetQueryParams } from '../../apis/entities';
-import { useModelApiHelper } from '../../components/configurableForm/useActionEndpoint';
+} from '@/providers/..';
+import { EntitiesGetQueryParams } from '@/apis/entities';
+import { useModelApiHelper } from '@/components/configurableForm/useActionEndpoint';
 import { GetDataError, useDeepCompareMemoKeepReference, useMutate, usePubSub } from '../../hooks';
-import { StandardEntityActions } from '../../interfaces/metadata';
-import { EntityAjaxResponse } from '../../pages/dynamic/interfaces';
-import { useFormDesignerComponents } from '../../providers/form/hooks';
-import * as RestfulShesha from '../../utils/fetchers';
-import { getQueryParams } from '../../utils/url';
-import { useConfigurableAction } from '../configurableActionsDispatcher';
-import { useConfigurationItemsLoader } from '../configurationItemsLoader';
-import { useForm } from '../form';
+import { StandardEntityActions } from '@/interfaces/metadata';
+import { EntityAjaxResponse } from '@/pages/dynamic/interfaces';
+import { useFormDesignerComponents } from '@/providers/form/hooks';
+import * as RestfulShesha from '@/utils/fetchers';
+import { getQueryParams } from '@/utils/url';
+import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
+import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
+import { useForm } from '@/providers/form';
 import { UseFormConfigurationArgs } from '../form/api';
 import { DEFAULT_FORM_SETTINGS } from '../form/models';
-import { useGlobalState } from '../globalState';
+import { useGlobalState } from '@/providers/globalState';
 import {
   IPersistedFormPropsWithComponents,
   fetchDataErrorAction,

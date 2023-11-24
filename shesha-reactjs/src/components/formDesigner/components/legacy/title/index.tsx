@@ -1,9 +1,9 @@
 import { LineHeightOutlined } from '@ant-design/icons';
 import React from 'react';
-import { IConfigurableFormComponent, IToolboxComponent } from '../../../../../interfaces/formDesigner';
+import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces/formDesigner';
 import { ColorResult } from 'react-color';
 import { ContentType, ITextTypographyProps, TypographyFontSize } from '../../text/models';
-import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
+import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
 
 declare const TITLE_ELE_LIST: [1, 2, 3, 4, 5];
 

@@ -1,8 +1,8 @@
 import { Modal } from 'antd';
 import { nanoid } from 'nanoid/non-secure';
 import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
-import { DynamicModal } from '../../components/dynamicModal';
-import { useConfigurableAction } from '../configurableActionsDispatcher';
+import { DynamicModal } from '@/components/dynamicModal';
+import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { evaluateKeyValuesToObject } from '../form/utils';
 import { createModalAction, openAction, removeModalAction } from './actions';

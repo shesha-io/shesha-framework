@@ -4,10 +4,10 @@ import { DeleteFilled, EyeInvisibleOutlined, QuestionCircleOutlined } from '@ant
 import { usePropertiesEditor } from '../provider';
 import DragHandle from './dragHandle';
 import classNames from 'classnames';
-import { IModelItem } from '../../../../interfaces/modelConfigurator';
-import { getIconByDataType } from '../../../../utils/metadata';
+import { IModelItem } from '@/interfaces/modelConfigurator';
+import { getIconByDataType } from '@/utils/metadata';
 import { ShaIcon } from '../../..';
-import { MetadataSourceType } from '../../../../interfaces/metadata';
+import { MetadataSourceType } from '@/interfaces/metadata';
 
 export interface IProps extends IModelItem {
   index: number[];

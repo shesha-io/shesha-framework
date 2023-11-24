@@ -1,8 +1,8 @@
-import { IConfigurableActionConfiguration } from 'interfaces/configurableAction';
+import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IDataColumnsProps, IEditableColumnProps } from '../datatableColumnsConfigurator/models';
-import { IPropertyMetadata, ProperyDataType } from 'interfaces/metadata';
+import { IPropertyMetadata, ProperyDataType } from '@/interfaces/metadata';
 import { Moment } from 'moment';
-import { IDictionary } from 'interfaces';
+import { IDictionary } from '@/interfaces';
 
 export type ColumnFilter = string[] | number[] | Moment[] | Date[] | string | number | Moment | Date | boolean;
 

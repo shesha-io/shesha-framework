@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { ValidateErrorEntity } from '../../interfaces';
-import { IKeyValue } from '../../interfaces/keyValue';
-import { ButtonGroupItemProps } from '../../providers/buttonGroupConfigurator/models';
+import { IKeyValue } from '@/interfaces/keyValue';
+import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
 import { FormIdentifier, FormMode } from './../form/models';
 
 export interface IModalBaseProps {

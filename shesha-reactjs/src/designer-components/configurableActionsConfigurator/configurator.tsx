@@ -1,12 +1,12 @@
 import React, { FC, ReactNode, useMemo } from 'react';
 import { Collapse, Form, Switch, TreeSelect } from 'antd';
-import { useForm, useConfigurableActionDispatcher } from 'providers';
-import { IConfigurableActionConfiguration } from 'interfaces/configurableAction';
-import { IConfigurableActionGroupDictionary } from 'providers/configurableActionsDispatcher/models';
+import { useForm, useConfigurableActionDispatcher } from '@/providers';
+import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
+import { IConfigurableActionGroupDictionary } from '@/providers/configurableActionsDispatcher/models';
 import ActionArgumentsEditor from './actionArgumensEditor';
-import HelpTextPopover from 'components/helpTextPopover';
+import HelpTextPopover from '@/components/helpTextPopover';
 import { IConfigurableActionConfiguratorComponentProps } from './interfaces';
-import { ICodeExposedVariable } from 'components/codeVariablesTable';
+import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 
 const { Panel } = Collapse;
 

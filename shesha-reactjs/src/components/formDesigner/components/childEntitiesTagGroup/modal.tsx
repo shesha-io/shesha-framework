@@ -1,12 +1,12 @@
 import { Modal, Skeleton } from 'antd';
-import { useDataContext } from 'providers/dataContextProvider/index';
+import { useDataContext } from '@/providers/dataContextProvider/index';
 import React, { FC } from 'react';
 import { useAppConfigurator } from '../../../../providers';
-import { IFormMarkupResponse } from '../../../../providers/form/api';
-import { ConfigurationItemVersionStatusMap } from '../../../../utils/configurationFramework/models';
+import { IFormMarkupResponse } from '@/providers/form/api';
+import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
 import FormInfo from '../../../configurableForm/formInfo';
-import Show from '../../../show';
-import ValidationErrors from '../../../validationErrors';
+import Show from '@/components/show';
+import ValidationErrors from '@/components/validationErrors';
 import SubForm from '../subForm/subForm';
 import { IChildEntitiesTagGroupProps } from './models';
 

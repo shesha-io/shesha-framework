@@ -9,7 +9,7 @@ export const ACTIONED_FLAG = '_ACTION';
 //#endregion
 
 import camelcase from 'camelcase';
-import { IFlagsState } from '../..';
+import { IFlagsState } from '@/providers/..';
 import { FlagsActionTypes } from '../../enums';
 
 export const FLAGS_INITIAL_STATE: IFlagsState<any, any, any, any> = {

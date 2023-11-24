@@ -1,12 +1,12 @@
 import { IToolboxComponent } from '../../../../interfaces';
 import { LineOutlined } from '@ant-design/icons';
 import React from 'react';
-import { getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
+import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { useFormData } from '../../../../providers';
-import SectionSeparator from '../../../sectionSeparator';
+import SectionSeparator from '@/components/sectionSeparator';
 import { ISectionSeparatorComponentProps } from './interfaces';
 import { getSettings } from './settings';
-import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 
 const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentProps> = {
   type: 'sectionSeparator',

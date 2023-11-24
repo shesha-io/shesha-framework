@@ -2,13 +2,13 @@ import React from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
-import { evaluateString, getStyle, validateConfigurableComponentSettings } from 'providers/form/utils';
-import { useFormData, useGlobalState } from 'providers';
+import { evaluateString, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { useFormData, useGlobalState } from '@/providers';
 import { getSettings } from './settings';
-import ShaIcon from '../../../shaIcon';
+import ShaIcon from '@/components/shaIcon';
 import { IAlertComponentProps } from './interfaces';
-import { migratePropertyName, migrateCustomFunctions } from '../../../../designer-components/_common-migrations/migrateSettings';
-import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
   type: 'alert',

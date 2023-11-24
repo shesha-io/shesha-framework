@@ -1,9 +1,9 @@
 import { DeleteFilled, QuestionCircleOutlined } from '@ant-design/icons';
 import { Button, Tooltip } from 'antd';
 import React, { FC } from 'react';
-import ShaIcon, { IconType } from '../../../components/shaIcon';
-import { useToolbarConfigurator } from '../../../providers/toolbarConfigurator';
-import { IToolbarButton } from '../../../providers/toolbarConfigurator/models';
+import ShaIcon, { IconType } from '@/components/shaIcon';
+import { useToolbarConfigurator } from '@/providers/toolbarConfigurator';
+import { IToolbarButton } from '@/providers/toolbarConfigurator/models';
 import DragHandle from './dragHandle';
 
 export interface IToolbarItemProps extends IToolbarButton {

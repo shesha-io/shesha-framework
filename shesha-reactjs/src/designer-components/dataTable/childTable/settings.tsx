@@ -1,9 +1,9 @@
 import { Checkbox, Form, Input, InputNumber, Select } from 'antd';
 import React, { FC, useState } from 'react';
 import { EditableTagGroup, SectionSeparator, Show } from '../../../components';
-import ButtonGroupSettingsModal from '../../../components/formDesigner/components/button/buttonGroup/buttonGroupSettingsModal';
-import CodeEditor from '../../../components/formDesigner/components/codeEditor/codeEditor';
-import { DEFAULT_PAGE_SIZE_OPTIONS } from '../../../providers/dataTable/contexts';
+import ButtonGroupSettingsModal from '@/components/formDesigner/components/button/buttonGroup/buttonGroupSettingsModal';
+import CodeEditor from '@/components/formDesigner/components/codeEditor/codeEditor';
+import { DEFAULT_PAGE_SIZE_OPTIONS } from '@/providers/dataTable/contexts';
 import { getValidDefaultBool } from '../../../utils';
 import { CustomFilter } from '../filter/filterComponent';
 import { IChildTableSettingsProps } from './models';

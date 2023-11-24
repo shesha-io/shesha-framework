@@ -2,12 +2,12 @@ import { Checkbox, Input } from 'antd';
 import { ISizableColumnComponentProps } from './interfaces';
 import React, { FC } from 'react';
 import SizableColumnsList from './sizableColumnList';
-import SectionSeparator from 'components/sectionSeparator';
+import SectionSeparator from '@/components/sectionSeparator';
 import CodeEditor from '../codeEditor/codeEditor';
 import { EXPOSED_VARIABLES } from './exposedVariables';
-import { ISettingsFormFactoryArgs } from 'interfaces';
-import SettingsForm from 'designer-components/_settings/settingsForm';
-import SettingsFormItem from 'designer-components/_settings/settingsFormItem';
+import { ISettingsFormFactoryArgs } from '@/interfaces';
+import SettingsForm from '@/designer-components/_settings/settingsForm';
+import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 
 export const SizableColumnsSettingsForm: FC<ISettingsFormFactoryArgs<ISizableColumnComponentProps>> = (props) => {
   return (

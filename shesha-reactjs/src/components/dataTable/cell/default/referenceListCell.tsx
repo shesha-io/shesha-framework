@@ -1,5 +1,5 @@
 import React from 'react';
-import { useReferenceListItem } from '../../../../providers/referenceListDispatcher';
+import { useReferenceListItem } from '@/providers/referenceListDispatcher';
 import { IDataCellProps } from '../interfaces';
 import { asNumber } from '../utils';
 

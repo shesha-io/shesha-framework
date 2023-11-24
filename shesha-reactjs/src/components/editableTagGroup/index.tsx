@@ -2,7 +2,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { Input, InputProps, Tag } from 'antd';
 // import { TweenOneGroup } from 'rc-tween-one';
 import React, { FC, useEffect, useState } from 'react';
-import Show from '../show';
+import Show from '@/components/show';
 
 export interface IEditableTagGroupProps extends Omit<InputProps, 'value' | 'onChange'> {
   value?: string[];

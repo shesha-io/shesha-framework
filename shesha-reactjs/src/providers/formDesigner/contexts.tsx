@@ -8,8 +8,8 @@ import {
   IToolboxComponentGroup,
 } from '../../interfaces';
 
-import { IPropertyMetadata } from '../../interfaces/metadata';
-import { StateWithHistory } from '../../utils/undoable';
+import { IPropertyMetadata } from '@/interfaces/metadata';
+import { StateWithHistory } from '@/utils/undoable';
 import {
   DEFAULT_FORM_SETTINGS,
   IConfigurableFormComponent,
@@ -18,7 +18,7 @@ import {
   ROOT_COMPONENT_KEY,
 } from '../form/models';
 import { IDataSource } from '../formDesigner/models';
-import { IDataContextFullInstance } from 'providers/dataContextProvider';
+import { IDataContextFullInstance } from '@/providers/dataContextProvider';
 
 export type IFlagProgressFlags = 'addComponent' | 'updateComponent' | 'deleteComponent' | 'moveComponent';
 export type IFlagSucceededFlags = 'addComponent' | 'updateComponent' | 'deleteComponent' | 'moveComponent';

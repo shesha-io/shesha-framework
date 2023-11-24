@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid/non-secure';
-import { IConfigurableColumnsProps } from 'providers/datatableColumnsConfigurator/models';
-import { IExpressionExecuterArguments, executeScriptSync } from 'utils/publicUtils';
+import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
+import { IExpressionExecuterArguments, executeScriptSync } from '@/utils/publicUtils';
 
 const NEW_KEY = ['{{NEW_KEY}}', '{{GEN_KEY}}'];
 

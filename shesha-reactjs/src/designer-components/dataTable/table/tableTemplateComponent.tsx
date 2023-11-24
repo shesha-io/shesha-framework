@@ -1,5 +1,5 @@
 import { TableOutlined } from '@ant-design/icons';
-import { componentsFlatStructureToTree, componentsTreeToFlatStructure, upgradeComponents } from 'providers/form/utils';
+import { componentsFlatStructureToTree, componentsTreeToFlatStructure, upgradeComponents } from '@/providers/form/utils';
 import React from 'react';
 import { DEFAULT_FORM_SETTINGS, IConfigurableFormComponent, IToolboxComponent } from '../../../interfaces';
 import templateJson from './tableTemplate.json';

@@ -1,6 +1,6 @@
-import { useGet, UseGetProps } from '../hooks/useGet';
-import { useMutateForEndpoint } from '../hooks/useMutate';
-import { IAjaxResponse, IAjaxResponseBase } from '../interfaces/ajaxResponse';
+import { useGet, UseGetProps } from '@/hooks/useGet';
+import { useMutateForEndpoint } from '@/hooks/useMutate';
+import { IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 import { GuidEntityReferenceDto } from './common';
 
 export interface NoteDto {

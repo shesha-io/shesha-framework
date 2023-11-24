@@ -2,10 +2,10 @@ import { Tree } from 'antd';
 import { DataNode } from 'antd/lib/tree';
 import React, { FC, useMemo, useState, useEffect } from 'react';
 import { ReactSortable } from 'react-sortablejs';
-import { IPropertyMetadata } from '../../../interfaces/metadata';
-import { TOOLBOX_DATA_ITEM_DROPPABLE_KEY } from '../../../providers/form/models';
-import { useFormDesigner } from '../../../providers/formDesigner';
-import { getIconByPropertyMetadata } from '../../../utils/metadata';
+import { IPropertyMetadata } from '@/interfaces/metadata';
+import { TOOLBOX_DATA_ITEM_DROPPABLE_KEY } from '@/providers/form/models';
+import { useFormDesigner } from '@/providers/formDesigner';
+import { getIconByPropertyMetadata } from '@/utils/metadata';
 
 export interface IProps {
   items: IPropertyMetadata[];

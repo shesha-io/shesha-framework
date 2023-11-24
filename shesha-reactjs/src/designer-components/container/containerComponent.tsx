@@ -1,12 +1,12 @@
 import { GroupOutlined } from '@ant-design/icons';
 import React from 'react';
-import { ICommonContainerProps, IContainerComponentProps, IToolboxComponent } from 'interfaces';
-import { getStyle, validateConfigurableComponentSettings } from 'providers/form/utils';
+import { ICommonContainerProps, IContainerComponentProps, IToolboxComponent } from '@/interfaces';
+import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { getSettings } from './settingsForm';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
-import { useFormData } from 'providers';
-import { ComponentsContainer } from 'components';
-import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { useFormData } from '@/providers';
+import { ComponentsContainer } from '@/components';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   type: 'container',

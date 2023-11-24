@@ -4,7 +4,7 @@ import { GroupOutlined } from '@ant-design/icons';
 import ButtonGroupSettingsModal from '../buttonGroupSettingsModal';
 import { buttonsSettingsForm } from './settings';
 import ConfigurableFormItem from '../../../formItem';
-import { useForm } from '../../../../../..';
+import { useForm } from '@/components/..';
 import { IButtonsProps as IButtonsComponentProps } from './interfaces';
 
 const ButtonsComponent: IToolboxComponent<IButtonsComponentProps> = {

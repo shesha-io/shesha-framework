@@ -4,12 +4,12 @@ import { SwapOutlined } from '@ant-design/icons';
 import ShaDrawer from './drawer';
 import { IDrawerProps } from './models';
 import { getSettings } from './settings';
-import { getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
+import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import {
   migrateCustomFunctions,
   migratePropertyName,
-} from '../../../../designer-components/_common-migrations/migrateSettings';
-import { useFormData, useGlobalState } from 'providers';
+} from '@/designer-components/_common-migrations/migrateSettings';
+import { useFormData, useGlobalState } from '@/providers';
 
 const DrawerComponent: IToolboxComponent<IDrawerProps> = {
   type: 'drawer',

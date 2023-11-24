@@ -1,5 +1,5 @@
-import { IReferenceList } from "../../interfaces/referenceList";
-import { PromisedValue } from "../../utils/promises";
+import { IReferenceList } from "@/interfaces/referenceList";
+import { PromisedValue } from "@/utils/promises";
 import { IComponentSettings } from "../appConfigurator/models";
 import { IFormDto } from "../form/models";
 

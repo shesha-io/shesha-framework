@@ -1,4 +1,4 @@
-import { IReferenceListIdentifier } from "interfaces/referenceList";
+import { IReferenceListIdentifier } from "@/interfaces/referenceList";
 
 export const getReferenceListFullName = (refListId: IReferenceListIdentifier): string => {
   if (!refListId) return null;

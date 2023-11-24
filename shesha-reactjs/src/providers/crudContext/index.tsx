@@ -1,11 +1,11 @@
 import { Form, FormInstance, FormProps } from 'antd';
 import React, { FC, PropsWithChildren, useContext, useEffect, useRef } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
-import { RowDataInitializer } from '../../components/reactTable/interfaces';
-import useThunkReducer from '../../hooks/thunkReducer';
-import { IErrorInfo } from '../../interfaces/errorInfo';
+import { RowDataInitializer } from '@/components/reactTable/interfaces';
+import useThunkReducer from '@/hooks/thunkReducer';
+import { IErrorInfo } from '@/interfaces/errorInfo';
 import { FormProvider, useForm } from '../../providers';
-import { IFlatComponentsStructure, IFormSettings } from '../../providers/form/models';
+import { IFlatComponentsStructure, IFormSettings } from '@/providers/form/models';
 import {
   deleteFailedAction,
   deleteStartedAction,

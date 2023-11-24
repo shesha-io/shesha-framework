@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
 import { IStylable, IToolboxComponent } from '../../../../interfaces';
-import { IConfigurableFormComponent } from '../../../../providers/form/models';
+import { IConfigurableFormComponent } from '@/providers/form/models';
 import { FormOutlined } from '@ant-design/icons';
 import {
   executeCustomExpression,
   getStyle
-} from '../../../../providers/form/utils';
+} from '@/providers/form/utils';
 import {
   useForm,
   SubFormProvider,
@@ -16,8 +16,8 @@ import {
 import SubForm from './subForm';
 import ConfigurableFormItem from '../formItem';
 import { SubFormSettingsForm } from './settings';
-import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
-import { ISubFormProviderProps } from 'providers/subForm/interfaces';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { ISubFormProviderProps } from '@/providers/subForm/interfaces';
 
 export interface ISubFormComponentProps
   extends Omit<ISubFormProviderProps, 'labelCol' | 'wrapperCol'>,

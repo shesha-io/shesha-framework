@@ -15,25 +15,25 @@ import {
   useMetadata,
   useSheshaApplication,
 } from '../../providers';
-import { DataTableFullInstance, IColumnWidth } from '../../providers/dataTable/contexts';
-import { removeUndefinedProperties } from '../../utils/array';
-import { camelcaseDotNotation, toCamelCase } from '../../utils/string';
-import { ReactTable } from '../reactTable';
+import { DataTableFullInstance, IColumnWidth } from '@/providers/dataTable/contexts';
+import { removeUndefinedProperties } from '@/utils/array';
+import { camelcaseDotNotation, toCamelCase } from '@/utils/string';
+import { ReactTable } from '@/components/reactTable';
 import { IColumnResizing, IReactTableProps, OnRowsRendering, OnRowsReorderedArgs, RowDataInitializer, RowRenderer } from '../reactTable/interfaces';
 import { getCellRenderer } from './cell';
-import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions } from 'providers/dataTable/repository/backendRepository';
-import { isDataColumn, ITableDataColumn } from 'providers/dataTable/interfaces';
-import { IColumnEditorProps, IFieldComponentProps, standardCellComponentTypes } from 'providers/datatableColumnsConfigurator/models';
-import { useFormDesignerComponents } from 'providers/form/hooks';
-import { executeScriptSync } from 'providers/form/utils';
+import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions } from '@/providers/dataTable/repository/backendRepository';
+import { isDataColumn, ITableDataColumn } from '@/providers/dataTable/interfaces';
+import { IColumnEditorProps, IFieldComponentProps, standardCellComponentTypes } from '@/providers/datatableColumnsConfigurator/models';
+import { useFormDesignerComponents } from '@/providers/form/hooks';
+import { executeScriptSync } from '@/providers/form/utils';
 import moment from 'moment';
-import { axiosHttp } from 'utils/fetchers';
-import { IAnyObject } from 'interfaces';
+import { axiosHttp } from '@/utils/fetchers';
+import { IAnyObject } from '@/interfaces';
 import { DataTableColumn, IShaDataTableProps, OnSaveHandler, OnSaveSuccessHandler, YesNoInheritJs } from './interfaces';
 import { ValueRenderer } from '../valueRenderer/index';
 import { isEqual } from "lodash";
 import { Collapse, Typography } from 'antd';
-import { RowsReorderPayload } from 'providers/dataTable/repository/interfaces';
+import { RowsReorderPayload } from '@/providers/dataTable/repository/interfaces';
 
 export interface IIndexTableOptions {
   omitClick?: boolean;

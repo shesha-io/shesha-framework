@@ -1,4 +1,4 @@
-import { IConfigurableFormComponent } from 'providers';
+import { IConfigurableFormComponent } from '@/providers';
 
 export interface ISizableColumnProps {
   id: string;

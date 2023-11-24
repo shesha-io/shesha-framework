@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { useDataTableStore } from '../../providers';
-import ColumnFiltersBase from '../columnFiltersBase';
+import ColumnFiltersBase from '@/components/columnFiltersBase';
 
 export interface IColumnFiltersProps {}
 

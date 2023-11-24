@@ -1,11 +1,11 @@
 import { Radio, Space } from 'antd';
 import React, { FC, useEffect, useMemo } from 'react';
-import { useGet } from 'hooks';
+import { useGet } from '@/hooks';
 import { useFormData, useGlobalState } from '../../../../providers';
-import { useReferenceList } from '../../../../providers/referenceListDispatcher';
-import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
+import { useReferenceList } from '@/providers/referenceListDispatcher';
+import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { getDataSourceList, IRadioProps } from './utils';
-import { evaluateValue } from 'utils/publicUtils';
+import { evaluateValue } from '@/utils/publicUtils';
 
 const RadioGroup: FC<IRadioProps> = (model) => {
   const { data: formData } = useFormData();

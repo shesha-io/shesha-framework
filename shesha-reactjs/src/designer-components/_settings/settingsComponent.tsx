@@ -2,13 +2,13 @@ import React, { useMemo } from 'react';
 import { IToolboxComponent } from '../../interfaces';
 import { SettingOutlined } from '@ant-design/icons';
 import { IConfigurableFormComponent, useForm } from '../../providers';
-import { ComponentsContainer, ConfigurableFormItem } from 'components';
-import { DataContextProvider } from 'providers/dataContextProvider';
+import { ComponentsContainer, ConfigurableFormItem } from '@/components';
+import { DataContextProvider } from '@/providers/dataContextProvider';
 import { Button } from 'antd';
 import { getPropertySettingsFromData, getValueFromPropertySettings } from './utils';
 import { IContextSettingsRef, ISwitchModeSettingsRef, SettingsControl } from './settingsControl';
 import { getSettings } from './settings';
-import { getValueByPropertyName, setValueByPropertyName } from 'utils/object';
+import { getValueByPropertyName, setValueByPropertyName } from '@/utils/object';
 import './styles/index.less';
 import { useRef } from 'react';
 

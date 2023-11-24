@@ -2,11 +2,11 @@ import React, { CSSProperties, FC, useEffect, useMemo, useRef, useState } from '
 import { Select, Tooltip } from 'antd';
 import { useQueryBuilder } from '../../providers';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { IModelMetadata, IPropertyMetadata, isEntityMetadata, ISpecification, metadataHasNestedProperties } from '../../interfaces/metadata';
+import { IModelMetadata, IPropertyMetadata, isEntityMetadata, ISpecification, metadataHasNestedProperties } from '@/interfaces/metadata';
 import camelcase from 'camelcase';
-import { getIconByPropertyMetadata } from '../../utils/metadata';
+import { getIconByPropertyMetadata } from '@/utils/metadata';
 import { BulbOutlined, BulbTwoTone } from '@ant-design/icons';
-import { DataTypes } from '../../interfaces/dataTypes';
+import { DataTypes } from '@/interfaces/dataTypes';
 
 export interface IPropertySelectProps {
   id?: string;
