@@ -71,15 +71,6 @@ export const getSettings = (_data?: IWizardStepProps) =>
       settingsValidationErrors: [],
     })
     .addCheckbox({
-      id: 'd1e06550-826c-4db9-9b9f-ce05e565f64f',
-      propertyName: 'disabled',
-      label: 'Disabled',
-      labelAlign: 'right',
-      parentId: 'root',
-      hidden: false,
-      validate: {},
-    })
-    .addCheckbox({
       id: 'ba280e2b-a604-4e3e-acab-cfde391d99e0',
       propertyName: 'allowCancel',
       label: 'Allow Cancel',
