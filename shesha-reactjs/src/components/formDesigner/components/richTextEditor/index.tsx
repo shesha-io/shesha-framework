@@ -47,6 +47,9 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
         editHTMLDocumentMode: false,
         enterBlock: 'div',
         colorPickerDefaultTab: 'color',
+        allowResizeX:model?.allowResizeX && !model?.autoWidth,
+        allowResizeY:model?.allowResizeY && !model?.autoHeight,
+        autofocus: model?.autofocus,
       };
       return typedConfig;
     }, [model, readOnly]);
