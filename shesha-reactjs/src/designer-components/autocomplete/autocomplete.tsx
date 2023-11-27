@@ -55,7 +55,9 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
 
     const dataSourceUrl = model.dataSourceUrl ? replaceTags(model.dataSourceUrl, { data: data }) : model.dataSourceUrl;
 
-    const disabled = model.readOnly;
+
+
+    const disabled = model.readOnly||model.disabled;
 
     const evaluatedFilters = useAsyncMemo(async () => {
       if (!filter) return '';
@@ -200,6 +202,8 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     const formProps = defaultValue ? { model, initialValue: getDefaultValue() } : { model };
 
     // todo: implement other types of datasources!
+
+
     return (
       <ConfigurableFormItem {...formProps}>
         {(value, onChange) => {
@@ -209,6 +213,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
             if (typeof onChange === 'function') 
               onChange(...args);
           };
+         
           
           return (
           model.useRawValues ? (
