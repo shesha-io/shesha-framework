@@ -235,10 +235,6 @@ namespace Shesha.NHibernate.Maps
             {
                 var splits = definedSplits.ToList();
 
-                if (type.Name.Contains("TestProcessConfiguration"))
-                {
-                }
-
                 var joinPropAttribute = type.GetAttribute<JoinedPropertyAttribute>();
                 if (joinPropAttribute != null && !splits.Contains(joinPropAttribute.TableName))
                     splits.Add(joinPropAttribute.TableName);
