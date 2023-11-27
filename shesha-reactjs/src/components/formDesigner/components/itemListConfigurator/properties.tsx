@@ -48,7 +48,7 @@ export const ItemConfigProperties: FC<IItemConfigPropertiesProps> = ({}) => {
         form={form}
         initialValues={componentModel}
         onValuesChange={debouncedSave}
-        isSettings={true}
+        //isSettings={true}
       />
     );
   }, [selectedItemId]);
