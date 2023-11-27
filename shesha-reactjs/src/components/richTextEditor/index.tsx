@@ -16,7 +16,7 @@ export const RichTextEditor: FC<IRichTextEditorProps> = ({ value, onChange, conf
     <div style={style} className={classNames('sha-rich-text-editor', className)}>
       <JoditEditorWrapper
         value={value}
-        config={config}
+        config={{...config,placeHolder: 'Type here'}}
         onChange={onChange}
       />
     </div>

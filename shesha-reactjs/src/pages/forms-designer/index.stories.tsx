@@ -74,6 +74,14 @@ export const DepDesignerCaseDetails = addStory(Template, {
 export const EntprDesignerTimeField = addStory(Template, {
   formId: 'adbfb402-07d1-4ff3-8cac-44acbe10ed50',
 });
+
 export const AutoCompleteDesigner = addStory(Template, {
   formId: '7344dfb6-2f2a-4b2b-87a6-bc2b5193c534',
+});
+
+export const RefListStatus = addStory(Template, {
+  formId: 'ecebf97c-cf1e-4e43-831e-91f0ceccaf06',
+});
+export const RichTextEditor = addStory(Template, {
+  formId: 'de18f1ff-89ab-4cdb-bdd2-2bfead1119b1',
 });

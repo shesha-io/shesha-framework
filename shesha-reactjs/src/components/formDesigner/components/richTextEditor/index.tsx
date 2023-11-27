@@ -39,14 +39,17 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
         disablePlugins: model?.disablePlugins?.join(',') || '',
         height: model?.height,
         width: model?.width,
+        placeholder: model?.placeholder,
         readonly: readOnly || disabled,
         style: getStyle(model?.style, formData),
-  
         defaultActionOnPaste: 'insert_as_html',
         enter: 'br',
         editHTMLDocumentMode: false,
         enterBlock: 'div',
         colorPickerDefaultTab: 'color',
+        allowResizeX:model?.allowResizeX && !model?.autoWidth,
+        allowResizeY:model?.allowResizeY && !model?.autoHeight,
+        autofocus: model?.autofocus,
       };
       return typedConfig;
     }, [model, readOnly]);
