@@ -33,7 +33,7 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps> = {
       <ConfigurableFormItem model={model} valuePropName="checked" initialValue={model?.defaultValue}>
         {(value, onChange) => (
           isReadOnly ? (
-            <ReadOnlyDisplayFormItem value={value} type="checkbox" disabled={disabled} />
+            <ReadOnlyDisplayFormItem checked={value} type="checkbox" disabled={disabled} />
           ) : (
             <Checkbox className="sha-checkbox" disabled={disabled} style={getStyle(model?.style, data)} 
               checked={value} 
