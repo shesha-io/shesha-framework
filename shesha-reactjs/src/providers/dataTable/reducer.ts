@@ -15,7 +15,7 @@ import {
   IFetchColumnsSuccessSuccessPayload,
   IFetchGroupingColumnsSuccessPayload,
   IRegisterConfigurableColumnsPayload,
-  ISetHiddenFilterActionPayload,
+  ISetPermanentFilterActionPayload,
   ISetPredefinedFiltersPayload,
   ISetRowDataPayload,
   ISortingSettingsActionPayload,
@@ -432,17 +432,15 @@ const reducer = handleActions<IDataTableStateContext, any>(
       };
     },
 
-    [DataTableActionEnums.SetHiddenFilter]: (
+    [DataTableActionEnums.SetPermanentFilter]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<ISetHiddenFilterActionPayload>
+      action: ReduxActions.Action<ISetPermanentFilterActionPayload>
     ) => {
-      const { filter, owner } = action.payload;
-
-      const hiddenFilters = { ...state.hiddenFilters, [owner]: filter };
+      const { filter } = action.payload;
 
       return {
         ...state,
-        hiddenFilters: hiddenFilters,
+        permanentFilter: filter,
       };
     },
 

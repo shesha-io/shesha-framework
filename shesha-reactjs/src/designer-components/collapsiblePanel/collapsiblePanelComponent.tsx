@@ -7,7 +7,7 @@ import { CollapsiblePanel } from '@/components/panel';
 import { IToolboxComponent } from '@/interfaces';
 import { useForm } from '@/providers/form';
 import { FormMarkup } from '@/providers/form/models';
-import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { evaluateString, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { ICollapsiblePanelComponentProps, ICollapsiblePanelComponentPropsV0 } from './interfaces';
 import settingsFormJson from './settingsForm.json';
 import {
@@ -29,6 +29,10 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
     const { globalState } = useGlobalState();
     const { label, expandIconPosition, collapsedByDefault, collapsible, ghost } = model;
 
+    const evaluatedLabel = typeof(label) === 'string'
+      ? evaluateString(label, data)
+      : label;
+
     if (model.hidden) return null;
 
     if (model.hideWhenEmpty && formMode !== 'designer') {
@@ -48,14 +52,15 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
 
     return (
       <CollapsiblePanel
-        header={label}
+        header={evaluatedLabel}
         expandIconPosition={expandIconPosition !== 'hide' ? (expandIconPosition as ExpandIconPosition) : 'start'}
         collapsedByDefault={collapsedByDefault}
         extra={extra}
         collapsible={collapsible === 'header' ? 'header' : 'icon'}
         showArrow={collapsible !== 'disabled' && expandIconPosition !== 'hide'}
         ghost={ghost}
-        style={getStyle(model?.style, data, globalState)}
+        style={getStyle(model.style, data, globalState)}
+        className={model.className}
       >
         <ComponentsContainer
           containerId={model.content.id}
@@ -76,16 +81,16 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
           expandIconPosition: 'right',
         };
       })
-      .add<ICollapsiblePanelComponentProps>(1, (prev, struct) => {
+      .add<ICollapsiblePanelComponentProps>(1, (prev, context) => {
         const header = { id: nanoid(), components: [] };
         const content = { id: nanoid(), components: [] };
 
-        delete struct.flatStructure.componentRelations[struct.componentId];
-        struct.flatStructure.componentRelations[content.id] = [];
+        delete context.flatStructure.componentRelations[context.componentId];
+        context.flatStructure.componentRelations[content.id] = [];
         content.components =
           prev.components?.map((x) => {
-            struct.flatStructure.allComponents[x.id].parentId = content.id;
-            struct.flatStructure.componentRelations[content.id].push(x.id);
+            context.flatStructure.allComponents[x.id].parentId = content.id;
+            context.flatStructure.componentRelations[content.id].push(x.id);
             return { ...x, parentId: content.id };
           }) ?? [];
 

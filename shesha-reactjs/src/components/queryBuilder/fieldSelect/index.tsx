@@ -89,7 +89,7 @@ export const FieldSelect: FC<IFieldSelectProps> = (props) => {
     console.log('items', items);
     const fieldSelectItems = renderSelectItems(items);
 
-    let res = (
+    return (
         <Select
             dropdownAlign={dropdownAlign}
             dropdownMatchSelectWidth={false}
@@ -103,10 +103,4 @@ export const FieldSelect: FC<IFieldSelectProps> = (props) => {
             {...customProps}
         >{fieldSelectItems}</Select>
     );
-
-    // if (tooltipText && !selectedOpts.tooltip) {
-    //     res = <Tooltip title={tooltipText}>{res}</Tooltip>;
-    // }
-
-    return res;
 };
