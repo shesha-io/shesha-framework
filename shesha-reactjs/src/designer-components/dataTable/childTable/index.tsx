@@ -17,6 +17,7 @@ const ChildTableComponent: IToolboxComponent<IPanelComponentProps> = {
   type: 'childTable',
   name: 'Child Table',
   icon: <TableOutlined />,
+  isHidden: true,
   Factory: () => {
     throw new Error('Child Table component was removed');
   },
