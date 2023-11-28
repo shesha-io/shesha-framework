@@ -17,7 +17,6 @@ import { ITableColumn } from '../../interfaces';
 import { hasCustomQBSettings, IProperty, propertyHasQBConfig } from '@/providers/queryBuilder/models';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { config as InitialConfig } from './config';
-import { FieldSelect } from './fieldSelect';
 import { FieldAutocomplete } from './fieldAutocomplete';
 import { extractVars } from '@/utils/jsonLogic';
 import { Skeleton } from 'antd';
@@ -66,7 +65,8 @@ export const QueryBuilder: FC<IQueryBuilderProps> = props => {
     removeIncompleteRulesOnLoad: false,
     removeEmptyGroupsOnLoad: false,
     removeInvalidMultiSelectValuesOnLoad: false,
-    renderField: props => (true ? <FieldAutocomplete {...props} fields={fields} /> : <FieldSelect {...props} />),
+    renderField: props => (<FieldAutocomplete {...props} fields={fields} />),
+    renderOperator: (props, {RCE, W: {FieldSelect}}) => RCE(FieldSelect, { ...props, customProps: { dropdownMatchSelectWidth: false } }), // todo: remove after migration to antd 5
   };
 
   const convertFields = (fields: IProperty[]): Fields => {

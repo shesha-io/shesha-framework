@@ -222,18 +222,6 @@ export const getSettings = (data: any) =>
             validate: {},
             description:
               'The CSS justify-items property defines the default justify-self for all items of the box, giving them all a default way of justifying each box along the appropriate axis.',
-          })
-          .addTextField({
-            textType: 'text',
-            id: '648fea09-e548-44b3-9c90-2187ad63fd07',
-            propertyName: 'className',
-            label: 'Custom CSS Class',
-            labelAlign: 'right',
-            parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
-            hidden: false,
-            description: 'Custom CSS Class to add to this component',
-            validate: {},
-            settingsValidationErrors: [],
           }).toJson()
         ]
       }
@@ -243,6 +231,18 @@ export const getSettings = (data: any) =>
       propertyName: 'separatorStyle',
       parentId: 'root',
       label: 'Style',
+    })
+    .addTextField({
+      textType: 'text',
+      id: '648fea09-e548-44b3-9c90-2187ad63fd07',
+      propertyName: 'className',
+      label: 'Custom CSS Class',
+      labelAlign: 'right',
+      parentId: 'root',
+      hidden: false,
+      description: 'Custom CSS Class to add to this component',
+      validate: {},
+      settingsValidationErrors: [],
     })
     .addCodeEditor({
       id: '4e319199-d27c-4ed0-9934-fa2cb62745d1',

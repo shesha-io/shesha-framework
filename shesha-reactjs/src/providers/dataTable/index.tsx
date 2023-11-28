@@ -46,7 +46,7 @@ import {
   setDataFetchingModeAction,
   setModelTypeAction,
   setPredefinedFiltersAction,
-  setHiddenFilterAction,
+  setPermanentFilterAction,
   setRowDataAction,
   toggleColumnFilterAction,
   toggleColumnVisibilityAction,
@@ -88,6 +88,7 @@ import {
   DataFetchDependency,
   DataFetchDependencyStateSwitcher,
   ITableColumn,
+  FilterExpression,
 } from './interfaces';
 import {
   IConfigurableColumnsProps, IDataColumnsProps,
@@ -120,6 +121,10 @@ interface IDataTableProviderBaseProps {
   strictSortBy?: string;
   strictSortOrder?: ColumnSorting;
   allowReordering?: boolean;
+  /**
+   * Permanent filter exepression. Always applied irrespectively of other filters
+   */
+  permanentFilter?: FilterExpression;
 }
 
 interface IDataTableProviderWithRepositoryProps extends IDataTableProviderBaseProps, IHasRepository, IHasModelType { }
@@ -169,23 +174,21 @@ const getFilter = (state: IDataTableStateContext): string => {
   const allFilters = state.predefinedFilters ?? [];
 
   const filters = allFilters.filter(f => (state.selectedStoredFilterIds && state.selectedStoredFilterIds.indexOf(f.id) > -1));
-  const { hiddenFilters } = state;
+  const { permanentFilter } = state;
 
-  if (hiddenFilters) {
-    for (const owner in hiddenFilters) {
-      if (hiddenFilters.hasOwnProperty(owner) && hiddenFilters[owner]) {
-        filters.push(hiddenFilters[owner]);
-      }
-    }
-  }
+  const filterExpression2Object = (filter: FilterExpression): object => {
+    return typeof filter === 'string' ? JSON.parse(filter) : filter;
+  };
 
   let expressions = [];
   filters.forEach((f) => {
     if (f.expression) {
-      const jsonLogic = typeof f.expression === 'string' ? JSON.parse(f.expression) : f.expression;
-      expressions.push(jsonLogic);
+      expressions.push(filterExpression2Object(f.expression));
     }
   });
+  // add permanent filter if specified
+  if (permanentFilter)
+    expressions.push(filterExpression2Object(permanentFilter));
 
   if (state.tableFilter) {
     const advancedFilter = advancedFilter2JsonLogic(state.tableFilter, state.columns);
@@ -276,6 +279,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     strictSortOrder,
     standardSorting: sortingItems,
     allowReordering = false,
+    permanentFilter,
   } = props;
 
   const [state, dispatch] = useThunkReducer(dataTableReducer, {
@@ -290,6 +294,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     strictSortOrder,
     allowReordering,
     standardSorting: sortingItems2ColumnSorting(sortingItems),
+    permanentFilter,
   });
 
   useEffect(() => {
@@ -298,6 +303,10 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
       changePageSize(initialPageSize);
     }
   }, [initialPageSize]);
+
+  useEffect(() => {
+    setPermanentFilter(permanentFilter);
+  }, [permanentFilter]);
 
   const { setState: setGlobalState } = useGlobalState();
   const tableIsReady = useRef(false);
@@ -363,7 +372,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     state.standardSorting,
     state.grouping,
     state.userSorting,
-    state.hiddenFilters,
+    state.permanentFilter,
     state.predefinedFilters,
     repository,
     state.groupingColumns,
@@ -582,10 +591,10 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     }
   };
 
-  const setHiddenFilter = (owner: string, filter: IStoredFilter) => {
-    const currentFilter = state.hiddenFilters ? state.hiddenFilters[owner] : null;
+  const setPermanentFilter = (filter: FilterExpression) => {
+    const currentFilter = state.permanentFilter;
     if (!isEqual(currentFilter, filter))
-      dispatch(setHiddenFilterAction({ owner, filter }));
+      dispatch(setPermanentFilterAction({ filter }));
   };
 
   const changeSelectedIds = (selectedIds: string[]) => {
@@ -773,7 +782,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     changeActionedRow,
     changeSelectedStoredFilterIds,
     setPredefinedFilters,
-    setHiddenFilter,
+    setPermanentFilter,
     changeSelectedIds,
     refreshTable,
     registerConfigurableColumns,
