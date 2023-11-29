@@ -9,6 +9,8 @@ import { UrlAutocomplete } from './urlAutocomplete';
  */
 
 const Autocomplete = <TValue,>(props: IAutocompleteProps<TValue>) => {
+
+  console.log('Autocomplete props', props)
   return props.dataSourceType === 'entitiesList'
     ? <EntityAutocomplete {...props} />
     : <UrlAutocomplete {...props}  />;
