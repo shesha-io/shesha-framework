@@ -18,6 +18,43 @@
             border-radius: 4px;
             margin-bottom: 4px;
 
+            .sha-list-insert-placeholder {
+                width: 100%;
+                height: 1px;
+                border: 2px solid var(--ant-primary-color);                
+                position: absolute;
+                left: 0px;
+                z-index: 10;
+
+                &.before{
+                    top: -5px;
+                }
+                &.after{
+                    bottom: -5px;
+                }
+            }
+
+            .sha-list-insert-area {
+                position: absolute;
+                height: 18px;
+                width: 30px;            
+                //border: 1px solid lightblue;
+                left: -5px;
+                z-index: 20;
+
+                &:first-child {
+                    top: -12px;
+                }
+                &:last-child {
+                    bottom: -12px;
+                }
+            }
+            &:not(:last-child) {
+                .sha-list-insert-row:last-child {
+                    display: none;
+                }
+            }
+
             .sha-drag-handle {
                 transition: opacity 0.2s;
                 cursor: grab;
