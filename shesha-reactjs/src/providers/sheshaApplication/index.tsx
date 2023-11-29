@@ -136,7 +136,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
               <ShaRoutingProvider getFormUrlFunc={getFormUrlFunc} router={router}>
                 <DynamicActionsDispatcherProvider>
                   <ConditionalWrap
-                    condition={true /*!props?.noAuth*/}
+                    condition={!props.noAuth}
                     wrap={(authChildren) => (
                       <AuthProvider
                         tokenName={accessTokenName || DEFAULT_ACCESS_TOKEN_NAME}
