@@ -148,6 +148,8 @@ export interface IQuickFilter {
   readonly selected?: boolean;
 }
 
+export type FilterExpression = string | object;
+
 export type FilterType = 'predefined' | 'user-defined' | 'quick';
 export interface IStoredFilter {
   id: string;
@@ -157,7 +159,7 @@ export interface IStoredFilter {
   tooltip?: string;
   // Exclusive filters cannot be applied on top of other filters. Only one can be selected
 
-  expression?: string | object;
+  expression?: FilterExpression;
 
   selected?: boolean;
 
