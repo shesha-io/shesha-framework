@@ -37,7 +37,7 @@ const Template: StoryFn<IUserDecisionsEditorStoryProps> = ({ }) => {
     <StoryApp>
       <MainLayout>
         <Row>
-          <Col md={12}>
+          <Col md={12} offset={2}>
             Read Only: <Checkbox checked={readOnly} 
             onChange={e => { 
               setReadOnly(e.target.checked); 
@@ -45,7 +45,7 @@ const Template: StoryFn<IUserDecisionsEditorStoryProps> = ({ }) => {
           </Col>
         </Row>
         <Row>
-          <Col md={12}>
+          <Col md={12} offset={2}>
             <MetadataProvider modelType='Shesha.Core.Person'>
               <ListEditor<CustomListItem>
                 value={value}
