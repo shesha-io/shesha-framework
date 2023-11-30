@@ -59,6 +59,7 @@ import { useDataTableStore, useForm, useFormData, useGlobalState, useSheshaAppli
 import { axiosHttp } from '@/utils/fetchers';
 import { AxiosInstance } from 'axios';
 import { MessageApi } from 'antd/lib/message/index';
+import { executeFunction } from '@/utils';
 
 /** Interface to geat all avalilable data */
 export interface IApplicationContext {
@@ -91,7 +92,7 @@ export function useApplicationContext(topContextId?: string): IApplicationContex
   const { globalState, setState: setGlobalState } = useGlobalState();
   return {
     data: useFormData()?.data,
-    contexts: {...dcm?.getDataContextsData(tcId)},
+    contexts: { ...dcm?.getDataContextsData(tcId) },
     setFormData: form?.setFormData,
     formMode: form?.formMode,
     globalState,
@@ -100,10 +101,9 @@ export function useApplicationContext(topContextId?: string): IApplicationContex
     selectedRow: useDataTableStore(false)?.selectedRow,
     moment: moment,
     http: axiosHttp(backendUrl),
-    message
-   };
-};
-
+    message,
+  };
+}
 
 /*export const getActualModel = (model: any, allData: any) => {
 
@@ -191,19 +191,16 @@ export function useApplicationContext(topContextId?: string): IApplicationContex
  * @returns - converted model
  */
 export const getActualModel = (model: any, allData: any) => {
-
   const getSettingValue = (value: any, calcFunction: (setting: IPropertySetting) => any) => {
-    if (!value) 
-      return value;
-  
+    if (!value) return value;
+
     if (typeof value === 'object') {
       // If array - update all items
       if (Array.isArray(value)) {
         return value;
         // ToDo: infinity loop
-        if (value.length === 0)
-          return value;
-        const v = value.map(x => {
+        if (value.length === 0) return value;
+        const v = value.map((x) => {
           return getActualModel(x, allData);
         });
         return v;
@@ -225,7 +222,7 @@ export const getActualModel = (model: any, allData: any) => {
     }
     return value;
   };
-  
+
   const getValue = (val: any) => {
     return getSettingValue(val, calcValue);
   };
@@ -237,7 +234,7 @@ export const getActualModel = (model: any, allData: any) => {
       if (allData)
         for (let key in allData) {
           if (Object.hasOwn(allData, key)) {
-            vars+= `, ${key}`;
+            vars += `, ${key}`;
             datas.push(allData[key]);
           }
         }
@@ -248,11 +245,11 @@ export const getActualModel = (model: any, allData: any) => {
     }
   };
 
-  const m = {...model};
+  const m = { ...model };
 
   for (var propName in m) {
     if (!m.hasOwnProperty(propName)) continue;
-    
+
     m[propName] = getSettingValue(m[propName], calcValue);
   }
   return m;
@@ -712,7 +709,7 @@ export const getExecutorScriptSync = (context: any) => {
     }
   }*/
 
-  return <T,>(jscode: string) =>  executeScriptSync<T>(jscode, context);
+  return <T>(jscode: string) => executeScriptSync<T>(jscode, context);
 };
 
 export function executeScriptSync<TResult = any>(expression: string, context: IExpressionExecuterArguments): TResult {
@@ -766,7 +763,7 @@ export const getEnabledComponentIds = (
   components: IComponentsDictionary,
   values: any,
   globalState: any,
-  formMode: FormMode,
+  formMode: FormMode
 ): string[] => {
   const enabledComponents: string[] = [];
   for (const key in components) {
@@ -1312,6 +1309,18 @@ export const getObjectWithOnlyIncludedKeys = (obj: IAnyObject, includedProps: st
   return response;
 };
 
+export const pickStyleFromModel = (model: IConfigurableFormComponent, ...args: any[]): { [key: string]: any } => {
+  let style = {};
+
+  if (model) {
+    args.forEach((arg) => {
+      if (model[arg]) style = { ...style, [arg]: `${model[arg]}px` };
+    });
+  }
+
+  return style;
+};
+
 export const getStyle = (
   style: string,
   formData: any = {},
@@ -1321,6 +1330,16 @@ export const getStyle = (
   if (!style) return defaultStyle;
   // tslint:disable-next-line:function-constructor
   return new Function('data, globalState', style)(formData, globalState);
+};
+
+export const getLayoutStyle = (model: IConfigurableFormComponent, args: { [key: string]: any }) => {
+  let style = pickStyleFromModel(model, 'padding', 'margin');
+
+  try {
+    return { ...style, ...(executeFunction(model?.style, args) || {}) };
+  } catch (_e) {
+    return style;
+  }
 };
 
 export const getString = (expression: string, formData: any = {}, globalState: any = {}): string => {
@@ -1412,16 +1431,14 @@ export const convertToMarkupWithSettings = (markup: FormMarkup, isSettingsForm?:
   if (!markup) return null;
   const result = markup as FormMarkupWithSettings;
   if (result?.components && result.formSettings)
-    if (typeof isSettingsForm === 'undefined')
+    if (typeof isSettingsForm === 'undefined') return result;
+    else if (typeof isSettingsForm !== 'undefined' && isSettingsForm !== null) {
+      result.formSettings.isSettingsForm = isSettingsForm;
       return result;
-    else
-      if (typeof isSettingsForm !== 'undefined' && isSettingsForm !== null) {
-        result.formSettings.isSettingsForm = isSettingsForm;
-        return result;
-      }
-  if (Array.isArray(markup)) return { components: markup, formSettings: {...DEFAULT_FORM_SETTINGS, isSettingsForm} };
+    }
+  if (Array.isArray(markup)) return { components: markup, formSettings: { ...DEFAULT_FORM_SETTINGS, isSettingsForm } };
 
-  return { components: [], formSettings: {...DEFAULT_FORM_SETTINGS, isSettingsForm} };
+  return { components: [], formSettings: { ...DEFAULT_FORM_SETTINGS, isSettingsForm } };
 };
 
 const evaluateRecursive = (data: any, evaluationContext: GenericDictionary): any => {
