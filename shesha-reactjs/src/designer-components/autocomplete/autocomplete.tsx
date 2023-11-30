@@ -57,7 +57,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
 
 
 
-    const disabled = model.readOnly||model.disabled;
+    const disabled = model.disabled;
 
     const evaluatedFilters = useAsyncMemo(async () => {
       if (!filter) return '';

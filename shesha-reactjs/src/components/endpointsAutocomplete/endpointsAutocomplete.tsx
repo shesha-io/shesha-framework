@@ -21,6 +21,7 @@ interface IOption {
 }
 
 export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnly = false, ...props }) => {
+
   const endpointsFetcher = useApiEndpoints({ lazy: true });
 
   const doFetchItems = (term: string) => {
