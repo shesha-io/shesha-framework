@@ -1,10 +1,11 @@
-import { DeleteFilled, MenuOutlined, PlusCircleOutlined } from '@ant-design/icons';
-import { Button } from 'antd';
-import React, { FC, PropsWithChildren, useMemo } from 'react';
+import { DeleteFilled, MenuOutlined, PlusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Tooltip } from 'antd';
+import React, { FC, PropsWithChildren, useMemo, useState } from 'react';
 import { ReactSortable } from 'react-sortablejs';
 import { ListEditorChildrenFn } from '.';
 import { IListEditorContext } from './contexts';
 import { ListItem, SortableItem } from './models';
+import classNames from 'classnames';
 
 export interface IListEditorRendererProps<TItem = any> {
     contextAccessor: () => IListEditorContext<TItem>;
@@ -13,8 +14,8 @@ export interface IListEditorRendererProps<TItem = any> {
 
 export const ListEditorRenderer = <TItem extends ListItem,>(props: IListEditorRendererProps<TItem>) => {
     const { contextAccessor, children } = props;
-    const { value, deleteItem, addItem, updateItem, updateList, readOnly } = contextAccessor();
-    
+    const { value, deleteItem, addItem, insertItem, updateItem, updateList, readOnly } = contextAccessor();
+
     const onAddClick = () => {
         addItem();
     };
@@ -81,13 +82,18 @@ export const ListEditorRenderer = <TItem extends ListItem,>(props: IListEditorRe
                                     onDelete={() => {
                                         deleteItem(index);
                                     }}
+                                    onInsert={(insertPosition) => {
+                                        const newIndex = index + (insertPosition === 'before' ? 0 : 1);
+                                        insertItem(newIndex);
+                                    }}
                                     readOnly={readOnly}
+                                    isLast={index === value.length - 1}
                                 >
-                                    {children({ 
-                                        item, 
-                                        itemOnChange: localItemChange, 
-                                        index, 
-                                        readOnly: readOnly === true 
+                                    {children({
+                                        item,
+                                        itemOnChange: localItemChange,
+                                        index,
+                                        readOnly: readOnly === true
                                     })}
                                 </ListItemWrapper>);
                         })}
@@ -98,11 +104,17 @@ export const ListEditorRenderer = <TItem extends ListItem,>(props: IListEditorRe
     );
 };
 
+export type ItemInsertPosition = 'before' | 'after';
+
 export interface IListItemWrapperProps extends PropsWithChildren {
     onDelete: () => void;
+    onInsert: (insertPosition: ItemInsertPosition) => void;
     readOnly?: boolean;
+    isLast: boolean;
 }
-export const ListItemWrapper: FC<IListItemWrapperProps> = ({ children, onDelete, readOnly }) => {
+export const ListItemWrapper: FC<IListItemWrapperProps> = ({ children, onDelete, onInsert, readOnly, isLast }) => {
+    const [placeholderPosition, setPlaceholderPosition] = useState<ItemInsertPosition>(null);
+
     const onDeleteClick = () => {
         onDelete();
     };
@@ -110,28 +122,79 @@ export const ListItemWrapper: FC<IListItemWrapperProps> = ({ children, onDelete,
     return (
         <div className='sha-list-item'>
             {!readOnly && (
-                <span className="sha-drag-handle">
-                    <MenuOutlined />
-                </span>
+                <>
+                    <InsertItemMarker
+                        onClick={() => onInsert('before')}
+                        onOpenChange={(visible) => (setPlaceholderPosition(visible ? 'before' : null))}
+                    />
+                    {placeholderPosition === 'before' && <NewItemPlaceHolder className={placeholderPosition}/>}
+                    <span className="sha-drag-handle">
+                        <MenuOutlined />
+                    </span>
+                </>
             )}
             <div className='sha-list-item-content'>
                 {children}
             </div>
             {!readOnly && (
-                <div className='sha-list-item-controls'>
-                    <Button
-                        icon={<DeleteFilled color="red" />}
-                        onClick={onDeleteClick}
-                        size="small"
-                        shape="circle"
-                        danger
-                        type="link"
-                    />
-                </div>
+                <>
+                    <div className='sha-list-item-controls'>
+                        <Button
+                            icon={<DeleteFilled color="red" />}
+                            onClick={onDeleteClick}
+                            size="small"
+                            shape="circle"
+                            danger
+                            type="link"
+                        />
+                    </div>
+                    {isLast && (
+                        <>
+                            {placeholderPosition === 'after' && <NewItemPlaceHolder className={placeholderPosition}/>}
+                            <InsertItemMarker
+                                onClick={() => onInsert('after')}
+                                onOpenChange={(visible) => (setPlaceholderPosition(visible ? 'after' : null))}
+                            />
+                        </>
+                    )}
+                </>
             )}
         </div>
     );
 };
 
 
-export default ListEditorRenderer;
+interface NewItemPlaceHolderProps {
+    className?: string;
+}
+const NewItemPlaceHolder: FC<NewItemPlaceHolderProps> = ({ className }) => {
+    return (<div className={classNames("sha-list-insert-placeholder", className)}></div>);
+};
+
+interface InsertItemMarkerProps {
+    onClick: () => void;
+    onOpenChange?: (open: boolean) => void;
+}
+const InsertItemMarker: FC<InsertItemMarkerProps> = ({ onClick, onOpenChange }) => {
+    return (
+        <Tooltip
+            placement="left"
+            color="#fff"
+            arrowPointAtCenter={true}
+            align={{ offset: [10, 0] }}
+            overlayInnerStyle={{ borderRadius: '5px', padding: 0, minHeight: '5px' }}
+            onOpenChange={onOpenChange}
+            mouseEnterDelay={0}
+            title={(<Button
+                onClick={onClick}
+                icon={<PlusOutlined />}
+                size="small"
+                type="link"
+            >
+                Add
+            </Button>)}
+        >
+            <div className="sha-list-insert-area"></div>
+        </Tooltip>
+    );
+};

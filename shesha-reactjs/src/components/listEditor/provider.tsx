@@ -38,6 +38,13 @@ const GenericListEditorProvider = <TItem extends object>({
         onChange(newValue);
     };
 
+    const insertItem = (index: number) => {
+        const newItem = initNewItem(state.value);
+        const newValue = state.value ? [...state.value] : [];
+        newValue.splice(index, 0, newItem);
+        onChange(newValue);
+    };
+
     const deleteItem = (index: number) => {
         if (!state.value)
             return;
@@ -55,6 +62,7 @@ const GenericListEditorProvider = <TItem extends object>({
         /* NEW_ACTION_GOES_HERE */
         deleteItem,
         addItem,
+        insertItem,
         updateItem,
         updateList,
     };
