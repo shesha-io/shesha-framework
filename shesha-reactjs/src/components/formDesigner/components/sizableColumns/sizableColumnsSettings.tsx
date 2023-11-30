@@ -1,4 +1,4 @@
-import { Checkbox, Input } from 'antd';
+import { Checkbox, Input, InputNumber } from 'antd';
 import { ISizableColumnComponentProps } from './interfaces';
 import React, { FC } from 'react';
 import SizableColumnsList from './sizableColumnList';
@@ -10,21 +10,17 @@ import SettingsForm from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 
 export const SizableColumnsSettingsForm: FC<ISettingsFormFactoryArgs<ISizableColumnComponentProps>> = (props) => {
-  return (
-    SettingsForm<ISizableColumnComponentProps>({...props, children: <SizableColumnsSettings {...props}/>})
-  );
+  return SettingsForm<ISizableColumnComponentProps>({ ...props, children: <SizableColumnsSettings {...props} /> });
 };
 
-
 const SizableColumnsSettings = ({ readOnly }: ISettingsFormFactoryArgs<ISizableColumnComponentProps>) => {
-
   return (
     <>
       <SettingsFormItem label="Component name" name="componentName" required={true}>
         <Input readOnly={readOnly} />
       </SettingsFormItem>
 
-      <SettingsFormItem label="Hidden" name="hidden" valuePropName='checked' jsSetting>
+      <SettingsFormItem label="Hidden" name="hidden" valuePropName="checked" jsSetting>
         <Checkbox disabled={readOnly} />
       </SettingsFormItem>
 
@@ -44,6 +40,14 @@ const SizableColumnsSettings = ({ readOnly }: ISettingsFormFactoryArgs<ISizableC
           description="A script that returns the style of the element as an object. This should conform to CSSProperties"
           exposedVariables={EXPOSED_VARIABLES}
         />
+      </SettingsFormItem>
+
+      <SettingsFormItem name="padding" label="Padding" jsSetting>
+        <InputNumber min={1} readOnly={readOnly} style={{ width: '100%' }} />
+      </SettingsFormItem>
+
+      <SettingsFormItem name="margin" label="Margin" jsSetting>
+        <InputNumber min={1} readOnly={readOnly} style={{ width: '100%' }} />
       </SettingsFormItem>
     </>
   );

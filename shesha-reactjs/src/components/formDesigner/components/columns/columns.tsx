@@ -6,7 +6,7 @@ import ComponentsContainer from '../../containers/componentsContainer';
 import { useFormData, useGlobalState } from '@/providers';
 import { nanoid } from 'nanoid/non-secure';
 import { IColumnsComponentProps } from './interfaces';
-import { getStyle } from '@/utils/publicUtils';
+import { getLayoutStyle } from '@/utils/publicUtils';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { ColumnsSettingsForm } from './columnsSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
@@ -23,7 +23,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
     if (model.hidden) return null;
 
     return (
-      <Row gutter={[gutterX, gutterY]} style={getStyle(model?.style, data, globalState)}>
+      <Row gutter={[gutterX, gutterY]} style={getLayoutStyle(model, { data, globalState })}>
         {columns &&
           columns.map((col, index) => (
             <Col
@@ -45,10 +45,13 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
       </Row>
     );
   },
-  migrator: (m) => m
-    .add<IColumnsComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IColumnsComponentProps)
-    .add<IColumnsComponentProps>(1, (prev) => migrateVisibility(prev))
-  ,
+  migrator: (m) =>
+    m
+      .add<IColumnsComponentProps>(
+        0,
+        (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IColumnsComponentProps
+      )
+      .add<IColumnsComponentProps>(1, (prev) => migrateVisibility(prev)),
   initModel: (model) => {
     const tabsModel: IColumnsComponentProps = {
       ...model,
@@ -63,7 +66,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
 
     return tabsModel;
   },
-  settingsFormFactory: (props) => (<ColumnsSettingsForm {...props}/>),
+  settingsFormFactory: (props) => <ColumnsSettingsForm {...props} />,
   customContainerNames: ['columns'],
 };
 

@@ -3,7 +3,7 @@ import { Button, Space, Steps } from 'antd';
 import classNames from 'classnames';
 import { nanoid } from 'nanoid/non-secure';
 import React, { FC } from 'react';
-import { getStyle, useFormExpression } from '../../../../';
+import { getLayoutStyle, useFormExpression } from '../../../../';
 import { IToolboxComponent } from '../../../../interfaces';
 import { useForm, useFormData, useGlobalState } from '../../../../providers';
 import { IConfigurableFormComponent, IFormComponentContainer } from '@/providers/form/models';
@@ -19,7 +19,7 @@ import './styles.less';
 import {
   migrateCustomFunctions,
   migratePropertyName,
-  migrateFunctionToProp
+  migrateFunctionToProp,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { DataContextProvider } from '@/providers/dataContextProvider/index';
 
@@ -33,7 +33,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
         id={'ctx_' + model.id}
         name={model.componentName}
         description={`Wizard context for ${model.componentName}`}
-        type='wizard'
+        type="wizard"
       >
         <Tabs {...model} />
       </DataContextProvider>
@@ -86,10 +86,10 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
         3,
         (prev) =>
           migrateFunctionToProp(
-            migratePropertyName(
-              migrateCustomFunctions(prev as IConfigurableFormComponent)
-            ), 'defaultActiveStep', 'defaultActiveValue'
-           ) as IWizardComponentProps
+            migratePropertyName(migrateCustomFunctions(prev as IConfigurableFormComponent)),
+            'defaultActiveStep',
+            'defaultActiveValue'
+          ) as IWizardComponentProps
       ),
   settingsFormFactory: (props) => <WizardSettingsForm {...props} />,
   // validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
@@ -145,7 +145,7 @@ const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = (model) => {
   const btnStyle = getWizardButtonStyle(buttonsLayout);
 
   return (
-    <div className="sha-wizard" style={getStyle(model?.style, data, globalState)}>
+    <div className="sha-wizard" style={getLayoutStyle(model, { data, globalState })}>
       <div className={classNames('sha-wizard-container', { vertical: direction === 'vertical' })}>
         <Steps
           type={wizardType}

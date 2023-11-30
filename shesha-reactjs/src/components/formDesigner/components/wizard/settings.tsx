@@ -1,5 +1,5 @@
 import React, { FC, useRef } from 'react';
-import { Select, Input, RefSelectProps, Checkbox } from 'antd';
+import { Select, Input, RefSelectProps, Checkbox, InputNumber } from 'antd';
 import EditableTagGroup from '@/components/editableTagGroup';
 import { IWizardStepProps, IWizardComponentProps } from './models';
 import ItemListSettingsModal from '../itemListConfigurator/itemListSettingsModal';
@@ -190,6 +190,14 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
               },
             ]}
           />
+        </SettingsFormItem>
+
+        <SettingsFormItem name="padding" label="Padding" jsSetting>
+          <InputNumber min={1} readOnly={readOnly} style={{ width: '100%' }} />
+        </SettingsFormItem>
+
+        <SettingsFormItem name="margin" label="Margin" jsSetting>
+          <InputNumber min={1} readOnly={readOnly} style={{ width: '100%' }} />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
     </>

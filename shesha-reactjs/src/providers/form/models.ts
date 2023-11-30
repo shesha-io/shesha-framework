@@ -159,7 +159,15 @@ export interface IConfigurableFormComponent
   jsSetting?: boolean;
 
   subscribedEventNames?: string[];
+
+  /** Default style CSS applied as expression */
   style?: string;
+
+  /** Default margin style applied as string */
+  margin?: string;
+
+  /** Default padding style applied as string */
+  padding?: string;
 }
 
 export interface IComponentsContainer {

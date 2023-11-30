@@ -4,7 +4,7 @@ import { SwapOutlined } from '@ant-design/icons';
 import ShaDrawer from './drawer';
 import { IDrawerProps } from './models';
 import { getSettings } from './settings';
-import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { getLayoutStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import {
   migrateCustomFunctions,
   migratePropertyName,
@@ -20,7 +20,7 @@ const DrawerComponent: IToolboxComponent<IDrawerProps> = {
     const { globalState } = useGlobalState();
     const { size, style, ...props } = model;
 
-    return <ShaDrawer style={getStyle(model?.style, data, globalState)} {...props} />;
+    return <ShaDrawer style={getLayoutStyle(model, { data, globalState })} {...props} />;
   },
   settingsFormMarkup: (data) => getSettings(data),
   migrator: (m) => m.add<IDrawerProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev))),

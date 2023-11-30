@@ -126,6 +126,26 @@
           "type": "object"
         }
       ]
+    },
+    {
+      "id": "3c971dff-36ae-4c06-8255-1b25a80ac4d5",
+      "type": "numberField",
+      "propertyName": "padding",
+      "parentId": "root",
+      "label": "Padding",
+      "validate": {},
+      "settingsValidationErrors": [],
+      "description": "Enter a number to set the padding of the component"
+    },
+    {
+      "id": "4e69f619-1197-4e50-befe-8bbf1254ca38",
+      "type": "numberField",
+      "propertyName": "margin",
+      "parentId": "root",
+      "label": "Margin",
+      "validate": {},
+      "settingsValidationErrors": [],
+      "description": "Enter a number to set the margin of the component"
     }
   ],
   "formSettings": {

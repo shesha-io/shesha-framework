@@ -1,9 +1,6 @@
 import { LineOutlined } from '@ant-design/icons';
 import { Divider, DividerProps } from 'antd';
-import {
-  migrateCustomFunctions,
-  migratePropertyName,
-} from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import React from 'react';
 import { validateConfigurableComponentSettings } from '../../../../formDesignerUtils';
 import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces/formDesigner';
@@ -11,7 +8,7 @@ import { FormMarkup } from '@/providers/form/models';
 import ComponentsContainer from '../../containers/componentsContainer';
 import settingsFormJson from './settingsForm.json';
 import { useFormData, useGlobalState } from '@/providers';
-import { getStyle } from '@/utils/publicUtils';
+import { getLayoutStyle } from '@/utils/publicUtils';
 
 export interface IDividerProps extends IConfigurableFormComponent {
   container?: boolean;
@@ -44,7 +41,7 @@ const DividerComponent: IToolboxComponent<IDividerProps> = {
     return model?.container ? (
       <ComponentsContainer containerId={model.id} render={(components) => <Divider {...props}>{components}</Divider>} />
     ) : (
-      <Divider style={getStyle(model?.style, data, globalState)} {...props} />
+      <Divider style={getLayoutStyle(model, { data, globalState })} {...props} />
     );
   },
   settingsFormMarkup: settingsForm,

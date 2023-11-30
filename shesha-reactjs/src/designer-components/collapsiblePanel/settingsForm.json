@@ -201,6 +201,26 @@
               }
             ],
             "version": 1
+          },
+          {
+            "id": "a5e5f68d-5c9e-44df-a213-31b1ea169d57",
+            "type": "numberField",
+            "propertyName": "padding",
+            "parentId": "f47668c1-e424-4d18-850e-6d712e48211d",
+            "label": "Padding",
+            "validate": {},
+            "settingsValidationErrors": [],
+            "description": "Enter a number to set the padding of the component"
+          },
+          {
+            "id": "3ccc25e6-49eb-4669-a73b-8d1e7681cb05",
+            "type": "numberField",
+            "propertyName": "margin",
+            "parentId": "f47668c1-e424-4d18-850e-6d712e48211d",
+            "label": "Margin",
+            "validate": {},
+            "settingsValidationErrors": [],
+            "description": "Enter a number to set the margin of the component"
           }
         ]
       }
