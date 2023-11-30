@@ -83,14 +83,17 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
     .add<IDropdownComponentProps>(3, (prev) => migrateVisibility(prev))
   ,
   linkToModelMetadata: (model, metadata): IDropdownComponentProps => {
+    const isSingleRefList = metadata.dataType === DataTypes.referenceListItem;
+    const isMultipleRefList = metadata.dataType === 'array' && metadata.dataFormat === 'reference-list-item';
+    
     return {
       ...model,
-      dataSourceType: metadata.dataType === DataTypes.referenceListItem ? 'referenceList' : 'values',
+      dataSourceType: isSingleRefList || isMultipleRefList ? 'referenceList' : 'values',
       referenceListId: {
         module: metadata.referenceListModule,
         name: metadata.referenceListName,
       },
-      mode: 'single',
+      mode: isMultipleRefList ? 'multiple' : 'single',
       useRawValues: true,
     };
   },

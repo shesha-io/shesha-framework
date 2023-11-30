@@ -34,6 +34,7 @@ export const migrateToTable = (
 
     const headerComponents: CustomConfigurableFormComponent[] = [];
     const headerId = nanoid();
+    
     if (props.allowQuickSearch) {
         headerComponents.push({
             id: nanoid(),
@@ -65,6 +66,26 @@ export const migrateToTable = (
         items: props.toolbarItems,
     });
 
+    // update flat structure
+    const headerComponentIds = [];
+    headerComponents.forEach(component => {
+        headerComponentIds.push(component.id);
+        flatStructure.allComponents[component.id] = component;
+    });
+    flatStructure.componentRelations[headerId] = headerComponentIds;
+
+    const panelContent: IPanelContent = {
+        id: nanoid(),
+        components: [],
+    };
+    delete context.flatStructure.componentRelations[context.componentId];
+    context.flatStructure.componentRelations[panelContent.id] = [];
+    panelContent.components = props.components?.map((x) => {
+        context.flatStructure.allComponents[x.id].parentId = panelContent.id;
+        context.flatStructure.componentRelations[panelContent.id].push(x.id);
+        return { ...x, parentId: panelContent.id };
+      }) ?? [];
+
     const panel: IPanelComponentProps = {
         type: 'collapsiblePanel',
         version: 4,
@@ -76,23 +97,12 @@ export const migrateToTable = (
             id: headerId,
             components: headerComponents,
         },
-        content: {
-            id: props.id,
-            components: props.components,
-        },
+        content: panelContent,
         customVisibility: props.customVisibility,
         className: 'no-content-padding',
     };
 
     const result = migrateFunctionToProp(panel, 'hidden', 'customVisibility', null, true);
-
-    // update flat structure
-    const headerComponentIds = [];
-    headerComponents.forEach(component => {
-        headerComponentIds.push(component.id);
-        flatStructure.allComponents[component.id] = component;
-    });
-    flatStructure.componentRelations[headerId] = headerComponentIds;
 
     // migrate filter
     const selectedFilter = props.defaultSelectedFilterId
