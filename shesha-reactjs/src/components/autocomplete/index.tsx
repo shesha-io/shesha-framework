@@ -10,7 +10,6 @@ import { UrlAutocomplete } from './urlAutocomplete';
 
 const Autocomplete = <TValue,>(props: IAutocompleteProps<TValue>) => {
 
-  console.log('Autocomplete props', props)
   return props.dataSourceType === 'entitiesList'
     ? <EntityAutocomplete {...props} />
     : <UrlAutocomplete {...props}  />;
@@ -42,7 +41,7 @@ export const EntityDtoAutocomplete = (props: IAutocompleteProps<IDtoType>) => {
       data: itemValue,
     };
   };
-
+  
   return (
     <Autocomplete getOptionFromFetchedItem={getDtoFromFetchedItem} getLabeledValue={labeledValueGetter} {...props} />
   );
