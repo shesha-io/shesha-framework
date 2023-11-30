@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Select, Input, Checkbox } from 'antd';
+import { Select, Input, Checkbox, InputNumber } from 'antd';
 import SectionSeparator from '@/components/sectionSeparator';
 import EditableTagGroup from '@/components/editableTagGroup';
 import { ITabPaneProps, ITabsComponentProps } from './models';
@@ -131,6 +131,14 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = ({ readOn
             },
           ]}
         />
+      </SettingsFormItem>
+
+      <SettingsFormItem name="padding" label="Padding" jsSetting>
+        <InputNumber min={1} readOnly={readOnly} style={{ width: '100%' }} />
+      </SettingsFormItem>
+
+      <SettingsFormItem name="margin" label="Margin" jsSetting>
+        <InputNumber min={1} readOnly={readOnly} style={{ width: '100%' }} />
       </SettingsFormItem>
     </>
   );

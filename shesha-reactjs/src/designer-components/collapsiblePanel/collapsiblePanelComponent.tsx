@@ -7,13 +7,15 @@ import { CollapsiblePanel } from '@/components/panel';
 import { IToolboxComponent } from '@/interfaces';
 import { useForm } from '@/providers/form';
 import { FormMarkup } from '@/providers/form/models';
-import { evaluateString, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import {
+  evaluateString,
+  getLayoutStyle,
+  getStyle,
+  validateConfigurableComponentSettings,
+} from '@/providers/form/utils';
 import { ICollapsiblePanelComponentProps, ICollapsiblePanelComponentPropsV0 } from './interfaces';
 import settingsFormJson from './settingsForm.json';
-import {
-  migratePropertyName,
-  migrateCustomFunctions,
-} from '@/designer-components/_common-migrations/migrateSettings';
+import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
 import { useFormData, useGlobalState } from '@/providers';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
@@ -29,9 +31,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
     const { globalState } = useGlobalState();
     const { label, expandIconPosition, collapsedByDefault, collapsible, ghost } = model;
 
-    const evaluatedLabel = typeof(label) === 'string'
-      ? evaluateString(label, data)
-      : label;
+    const evaluatedLabel = typeof label === 'string' ? evaluateString(label, data) : label;
 
     if (model.hidden) return null;
 
@@ -59,7 +59,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
         collapsible={collapsible === 'header' ? 'header' : 'icon'}
         showArrow={collapsible !== 'disabled' && expandIconPosition !== 'hide'}
         ghost={ghost}
-        style={getStyle(model.style, data, globalState)}
+        style={getLayoutStyle(model, { data, globalState })}
         className={model.className}
       >
         <ComponentsContainer
@@ -105,11 +105,12 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       .add<ICollapsiblePanelComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<ICollapsiblePanelComponentProps>(3, (prev) => ({
         ...prev,
-        expandIconPosition: prev.expandIconPosition === 'left'
-          ? 'start'
-          : prev.expandIconPosition === 'right'
-            ? 'end'
-            : prev.expandIconPosition
+        expandIconPosition:
+          prev.expandIconPosition === 'left'
+            ? 'start'
+            : prev.expandIconPosition === 'right'
+              ? 'end'
+              : prev.expandIconPosition,
       }))
       .add<ICollapsiblePanelComponentProps>(4, (prev) => migrateVisibility(prev)),
   customContainerNames: ['header', 'content'],
