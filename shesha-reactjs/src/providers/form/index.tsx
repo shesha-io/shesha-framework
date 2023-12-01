@@ -359,7 +359,6 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     if (payload?.mergeValues) {
       form?.setFieldsValue(payload?.values);
     } else {
-      console.log('reset detected!');
       form?.resetFields();
       form?.setFieldsValue(payload?.values);
     }
