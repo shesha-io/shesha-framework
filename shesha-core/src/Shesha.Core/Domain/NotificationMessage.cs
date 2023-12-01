@@ -101,5 +101,13 @@ namespace Shesha.Domain
 
         public virtual int? TenantId { get; set; }
         public virtual TenantNotificationInfo TenantNotification { get; set; }
+        /// <summary>
+        /// Indicates whether or not a user has viewed the notificationMessage,
+        /// </summary>
+        public virtual bool? Opened { get; set; }
+        /// <summary>
+        /// The Date and time the user last viewed the notificationMessage
+        /// </summary>
+        public virtual DateTime? LastOpened { get; set; }
     }
 }

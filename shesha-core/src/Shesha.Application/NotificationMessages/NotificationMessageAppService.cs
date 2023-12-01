@@ -1,5 +1,6 @@
 ﻿using Abp.Domain.Repositories;
 using Shesha.Domain;
+using Shesha.DynamicEntities.Dtos;
 using Shesha.NotificationMessages.Dto;
 using Shesha.Notifications;
 using System;
@@ -32,5 +33,19 @@ public class NotificationMessageAppService : SheshaCrudServiceBase<NotificationM
         await _distributer.ResendMessageAsync(dto);
 
         return true;
+    }
+
+    public async Task<DynamicDto<NotificationMessage, Guid>> MarkAsReadAsync(Guid id)
+    {
+        if (id == Guid.Empty)
+            throw new ArgumentNullException(nameof(id));
+
+        var entity = await SaveOrUpdateEntityAsync<NotificationMessage>(id, item =>
+        {
+            item.Opened = true;
+            item.LastOpened = DateTime.UtcNow;
+        });
+
+        return await MapToDynamicDtoAsync<NotificationMessage, Guid>(entity);
     }
 }
