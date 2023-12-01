@@ -1,23 +1,18 @@
+import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
+import { CollapsiblePanel } from '@/components/panel';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { IToolboxComponent } from '@/interfaces';
+import { useFormData, useGlobalState } from '@/providers';
+import { useForm } from '@/providers/form';
+import { FormMarkup } from '@/providers/form/models';
+import { evaluateString, getLayoutStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { GroupOutlined } from '@ant-design/icons';
 import { ExpandIconPosition } from 'antd/lib/collapse/Collapse';
 import { nanoid } from 'nanoid';
 import React from 'react';
-import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
-import { CollapsiblePanel } from '@/components/panel';
-import { IToolboxComponent } from '@/interfaces';
-import { useForm } from '@/providers/form';
-import { FormMarkup } from '@/providers/form/models';
-import {
-  evaluateString,
-  getLayoutStyle,
-  getStyle,
-  validateConfigurableComponentSettings,
-} from '@/providers/form/utils';
 import { ICollapsiblePanelComponentProps, ICollapsiblePanelComponentPropsV0 } from './interfaces';
 import settingsFormJson from './settingsForm.json';
-import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
-import { useFormData, useGlobalState } from '@/providers';
-import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
