@@ -19,6 +19,7 @@ using Shesha.GraphQL.Provider.GraphTypes;
 using Shesha.JsonLogic;
 using Shesha.QuickSearch;
 using Shesha.Reflection;
+using Shesha.Services;
 using Shesha.Specifications;
 using Shesha.Utilities;
 using System;
