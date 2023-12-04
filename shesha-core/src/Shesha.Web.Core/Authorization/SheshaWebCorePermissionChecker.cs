@@ -1,11 +1,11 @@
+using Abp.Domain.Repositories;
+using Shesha.Authorization;
+using Shesha.Domain;
+using Shesha.Extensions;
+using Shesha.Utilities;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Abp.Domain.Repositories;
-using NHibernate.Linq;
-using Shesha.Authorization;
-using Shesha.Domain;
-using Shesha.Utilities;
 
 namespace Boxfusion.Authorization
 {
@@ -31,7 +31,7 @@ namespace Boxfusion.Authorization
         /// inheritedDoc
         public async Task<bool> IsGrantedAsync(long userId, string permissionName)
         {
-            var person = await _personRepository.GetAll().Where(p => p.User.Id == userId).FirstOrDefaultAsync();
+            var person = await _personRepository.FirstOrDefaultAsync(p => p.User.Id == userId);
             if (person == null)
                 return false;
 
@@ -48,7 +48,8 @@ namespace Boxfusion.Authorization
         public async Task<bool> IsInAnyOfRoles(Person person, params string[] roles)
         {
             return await _rolePersonRepository.GetAll()
-                .Where(e => roles.Contains(e.Role.Name) && e.Person == person).AnyAsync();
+                .Where(e => roles.Contains(e.Role.Name) && e.Person == person)
+                .AnyAsync();
         }
 
         /// <summary>

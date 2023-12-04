@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Transactions;
-using Abp.Domain.Repositories;
+﻿using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Notifications;
 using Hangfire;
-using NHibernate.Linq;
-using NHibernate.Linq.Functions;
 using Shesha.Authorization.Users;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.EntityReferences;
 using Shesha.Exceptions;
+using Shesha.Extensions;
 using Shesha.NHibernate;
 using Shesha.NotificationMessages.Dto;
 using Shesha.Notifications.Dto;
@@ -22,6 +16,11 @@ using Shesha.Utilities;
 using Stubble.Core;
 using Stubble.Core.Builders;
 using Stubble.Core.Settings;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Transactions;
 
 namespace Shesha.Notifications
 {

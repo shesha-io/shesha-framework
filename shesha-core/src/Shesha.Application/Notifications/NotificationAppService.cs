@@ -3,22 +3,16 @@ using Abp.BackgroundJobs;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Notifications;
-using DocumentFormat.OpenXml.Vml.Office;
-using DocumentFormat.OpenXml.Wordprocessing;
-using Microsoft.AspNetCore.Mvc;
-using NHibernate.Linq;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.EntityReferences;
 using Shesha.Notifications.Dto;
 using Shesha.Services;
-using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Mail;
 using System.Threading.Tasks;
 
 namespace Shesha.Notifications;
@@ -516,7 +510,7 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
 
     private async Task<Guid?> SendNotificationByType<TData>(string notificationName, int notificationType, Person person, TData data, GenericEntityReference sourceEntity = null, List<NotificationAttachmentDto> attachments = null, string cc = "") where TData : NotificationData
     {
-        var notification = await _repository.GetAll().FirstOrDefaultAsync(e => e.Name == notificationName);
+        var notification = await _repository.FirstOrDefaultAsync(e => e.Name == notificationName);
         var templates = await _templateRepository.GetAllListAsync(e => e.Notification == notification);
 
         var template = templates.FirstOrDefault(e => (int)e.SendType == notificationType);

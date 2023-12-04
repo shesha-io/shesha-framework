@@ -1,12 +1,12 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Domain.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using NHibernate.Linq;
 using Shesha.Application.Services.Dto;
 using Shesha.Areas.Dto;
 using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
+using Shesha.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

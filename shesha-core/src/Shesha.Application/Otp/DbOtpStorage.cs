@@ -1,12 +1,11 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Transactions;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
-using NHibernate.Linq;
 using Shesha.Domain;
 using Shesha.Otp.Dto;
+using System;
+using System.Threading.Tasks;
+using System.Transactions;
 
 namespace Shesha.Otp
 {
@@ -79,7 +78,7 @@ namespace Shesha.Otp
         {
             using (var uow = _uowManager.Begin(TransactionScopeOption.Suppress))
             {
-                var item = await _otpAuditRepository.GetAll().FirstOrDefaultAsync(i => i.Id == operationId);
+                var item = await _otpAuditRepository.FirstOrDefaultAsync(i => i.Id == operationId);
                 if (item == null)
                     return null;
                 return new OtpDto

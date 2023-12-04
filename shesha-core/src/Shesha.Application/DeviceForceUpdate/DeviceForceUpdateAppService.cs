@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Abp.Domain.Repositories;
+using Shesha.DeviceForceUpdate.Dto;
+using Shesha.Extensions;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Abp.Domain.Repositories;
-using NHibernate.Linq;
-using Shesha.DeviceForceUpdate.Dto;
 
 namespace Shesha.DeviceForceUpdate
 {
