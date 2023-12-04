@@ -1,21 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Domain.Entities;
-using Abp.Domain.Repositories;
 using Abp.EntityHistory;
 using Abp.Events.Bus.Entities;
-using Abp.Reflection;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using NHibernate.Util;
 using Shesha.Domain.Attributes;
-using Shesha.EntityHistory;
-using Shesha.Reflection;
+using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shesha.Domain
 {
