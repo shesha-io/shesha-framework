@@ -1,7 +1,6 @@
 using Abp.Authorization.Users;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
-using Abp.Linq;
 using Abp.Organizations;
 using Shesha.Authorization.Roles;
 
@@ -18,7 +17,8 @@ namespace Shesha.Authorization.Users
             IRepository<UserClaim, long> userClaimRepository,
             IRepository<UserPermissionSetting, long> userPermissionSettingRepository,
             IRepository<UserOrganizationUnit, long> userOrganizationUnitRepository,
-            IRepository<OrganizationUnitRole, long> organizationUnitRoleRepository)
+            IRepository<OrganizationUnitRole, long> organizationUnitRoleRepository,
+            IRepository<UserToken, long> userTokenRepository)
             : base(
                 unitOfWorkManager,
                 userRepository,
@@ -28,7 +28,8 @@ namespace Shesha.Authorization.Users
                 userClaimRepository,
                 userPermissionSettingRepository,
                 userOrganizationUnitRepository,
-                organizationUnitRoleRepository)
+                organizationUnitRoleRepository,
+                userTokenRepository)
         {
         }
     }

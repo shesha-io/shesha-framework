@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\common.props" />
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
     <RootNamespace>Shesha</RootNamespace>
@@ -34,7 +34,7 @@
     <PackageReference Include="NHibernate.Extensions.NpgSql" Version="7.0.3" />
     <PackageReference Include="NHibernate.Spatial" Version="7.0.0" />
     <PackageReference Include="PluralizeService.Core" Version="1.2.19339.3" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.8.1" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
   </ItemGroup>
 
   <ItemGroup>

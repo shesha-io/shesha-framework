@@ -8,7 +8,6 @@ using Abp.Domain.Uow;
 using Abp.Extensions;
 using Abp.Notifications;
 using Abp.Runtime.Session;
-using Newtonsoft.Json;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.EntityReferences;
@@ -145,7 +144,8 @@ namespace Shesha.Notifications
                     subscriptions = await _notificationStore.GetSubscriptionsAsync(
                         notificationInfo.NotificationName,
                         notificationInfo.EntityTypeName,
-                        notificationInfo.EntityId
+                        notificationInfo.EntityId,
+                        notificationInfo.TargetNotifiers
                         );
                 }
                 else
@@ -155,7 +155,8 @@ namespace Shesha.Notifications
                         tenantIds,
                         notificationInfo.NotificationName,
                         notificationInfo.EntityTypeName,
-                        notificationInfo.EntityId
+                        notificationInfo.EntityId,
+                        notificationInfo.TargetNotifiers
                         );
                 }
 

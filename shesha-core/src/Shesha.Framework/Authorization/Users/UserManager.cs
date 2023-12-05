@@ -52,7 +52,8 @@ namespace Shesha.Authorization.Users
             ISettingManager settingManager,
             IShaSettingManager settingProvider,
             IPasswordComplexitySettings passwordComplexitySettings,
-            IAuthenticationSettings authenticationSettings)
+            IAuthenticationSettings authenticationSettings,
+            IRepository<UserLogin, Int64> loginRepository)
             : base(
                 roleManager, 
                 store, 
@@ -70,7 +71,8 @@ namespace Shesha.Authorization.Users
                 organizationUnitRepository, 
                 userOrganizationUnitRepository, 
                 organizationUnitSettings, 
-                settingManager)
+                settingManager,
+                loginRepository)
         {
             _optionsAccessor = optionsAccessor;
             _passwordComplexitySettings = passwordComplexitySettings;

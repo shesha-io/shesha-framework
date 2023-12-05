@@ -38,6 +38,8 @@ namespace Shesha.Notifications
         /// inheritedDoc
         public override RefListNotificationType NotificationType => RefListNotificationType.Email;
 
+        public bool UseOnlyIfRequestedAsTarget => true;
+
         /// inheritedDoc
         public async Task SendNotificationsAsync(UserNotification[] userNotifications)
         {

@@ -7,7 +7,7 @@ namespace Shesha.Application.Services.Dto
     /// Input that is used to fetch entity data dynamically
     /// </summary>
     /// <typeparam name="TId"></typeparam>
-    [AutoMap(typeof(GetDynamicEntityInput<>))]
+    [AutoMapFrom(typeof(GetDynamicEntityInput<>))]
     public class GetDynamicEntityInput<TId> : EntityDto<TId>
     {
         /// <summary>
