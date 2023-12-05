@@ -1,29 +1,65 @@
+import { FormIdentifier } from '@/index';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { ISelectionProps } from '@/providers/dataTable/contexts';
 import { ISortingItem } from '@/providers/dataTable/interfaces';
-import { FormIdentifier, IConfigurableFormComponent } from '@/components/..';
 
+export type DataListSelectionMode = 'none' | 'single' | 'multiple';
 export type FormSelectionMode = 'name' | 'view' | 'expression';
 export type Orientation = 'vertical' | 'horizontal';
 export type ListItemWidth = number | 'custom';
+export type InlineEditMode = 'one-by-one' | 'all-at-once';
+export type InlineSaveMode = 'auto' | 'manual';
 
-export interface IDataListProps {
+export interface IDataListProps extends IDataListBaseProps, IDataListActions {
+  records?: any[];
+  groupingMetadata?: IPropertyMetadata[];
+  selectedRow?: ISelectionProps;
+  selectedRows?: { [key in string]: string }[];
+
+  isFetchingTableData?: boolean;
+
+  selectedIds?: string[];
+
+  canDeleteInline?: boolean;
+  canEditInline?: boolean;
+  canAddInline?: boolean;
+
+  allowChangeEditMode?: boolean;
+}
+
+export interface IDataListBaseProps {
   dataSource?: string;
 
   formSelectionMode?: FormSelectionMode;
   formId?: FormIdentifier;
   formType?: string;
-  selectionMode?: 'none' | 'single' | 'multiple';
   formIdExpression?: string;
 
-  records?: any[];
+  createFormId?: FormIdentifier;
+  createFormType?: string;
+
+  selectionMode?: DataListSelectionMode;
 
   grouping?: ISortingItem[];
-  groupingMetadata?: IPropertyMetadata[];
 
-  selectedRow?: ISelectionProps;
-  selectedRows?: { [key in string]: string }[];
+  entityType?: string;
+
+  orientation?: Orientation;
+  listItemWidth?: ListItemWidth;
+  customListItemWidth?: number;
+
+  dblClickActionConfiguration?: IConfigurableActionConfiguration;
+
+  collapsible?: boolean;
+  collapseByDefault?: boolean;
+  groupStyle?: string;
+
+  inlineEditMode?: InlineEditMode;
+  inlineSaveMode?: InlineSaveMode;
+}
+
+interface IDataListActions {
   onSelectRow?: (index: number, row: any) => void;
   onMultiSelectRows?: (rows: any[]) => void;
   onSelectedIdsChanged?: (selectedRowIds: string[]) => void;
@@ -33,21 +69,9 @@ export interface IDataListProps {
   onFetchDataSuccess?: () => void;
   onRowsChanged?: (rows: object[]) => void;
 
-  isFetchingTableData?: boolean;
-
-  entityType?: string;
-  selectedIds?: string[];
   changeSelectedIds?: (selectedIds: string[]) => void;
 
-  orientation?: Orientation;
-  listItemWidth?: ListItemWidth;
-  customListItemWidth?: number;
-
-  actionConfiguration?: IConfigurableActionConfiguration;
-
-  collapsible?: boolean;
-  collapseByDefault?: boolean;
-  groupStyle?: string;
+  deleteAction?: (rowIndex: number, data: any) => Promise<any>;
+  updateAction?: (rowIndex: number, data: any) => Promise<any>;
+  createAction?: (data: any) => Promise<any>;
 }
-
-export interface IDataListComponentProps extends IDataListProps, IConfigurableFormComponent {}

@@ -29,8 +29,12 @@ export interface IDataContextManagerActionsContext {
     onUpdateContextApi: (id: string, api: any) => void;
 }
 
+export interface IDataContextManagerFullInstance extends IDataContextManagerStateContext, IDataContextManagerActionsContext{
+
+}
+
 /** initial state */
-export const DATA_CONTEXT_MANAGER_CONTEXT_INITIAL_STATE: IDataContextManagerStateContext = {lastUpdate: new Date().toISOString()};
+export const DATA_CONTEXT_MANAGER_CONTEXT_INITIAL_STATE: IDataContextManagerStateContext = {lastUpdate: ''};
 
 export const DataContextManagerStateContext = createContext<IDataContextManagerStateContext>(DATA_CONTEXT_MANAGER_CONTEXT_INITIAL_STATE);
 export const DataContextManagerActionsContext = createContext<IDataContextManagerActionsContext>(undefined);
@@ -188,7 +192,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
     );
 };
 
-function useDataContextManager(require: boolean = true) {
+function useDataContextManager(require: boolean = true): IDataContextManagerFullInstance {
     const actionsContext = useContext(DataContextManagerActionsContext);
     const stateContext = useContext(DataContextManagerStateContext);
   
