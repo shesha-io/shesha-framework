@@ -3,9 +3,9 @@ import axios from 'axios';
 import FileSaver from 'file-saver';
 import moment from 'moment';
 import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
-import { useScheduledJobExecutionGetEventLogItems } from '../../apis/scheduledJobExecution';
-import { getFileNameFromResponse } from '../../utils/fetchers';
-import { useSheshaApplication } from '../sheshaApplication';
+import { useScheduledJobExecutionGetEventLogItems } from '@/apis/scheduledJobExecution';
+import { getFileNameFromResponse } from '@/utils/fetchers';
+import { useSheshaApplication } from '@/providers/sheshaApplication';
 import { getFlagSetters } from '../utils/flagsSetters';
 import {
   addExecutionLogEventAction,

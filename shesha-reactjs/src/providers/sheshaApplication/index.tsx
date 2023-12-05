@@ -13,18 +13,18 @@ import {
   AppConfiguratorProvider,
   DynamicModalProvider,
   UiProvider,
-} from 'providers';
-import { DataContextManager } from 'providers/dataContextManager';
-import { DataContextProvider } from 'providers/dataContextProvider';
-import { IToolboxComponentGroup } from 'interfaces';
-import ConditionalWrap from '../../components/conditionalWrapper';
-import IRequestHeaders from '../../interfaces/requestHeaders';
-import { StackedNavigationProvider } from '../../pages/dynamic/navigation/stakedNavigation';
-import { ConfigurableActionDispatcherProvider } from '../configurableActionsDispatcher';
-import { ConfigurationItemsLoaderProvider } from '../configurationItemsLoader';
-import { DataSourcesProvider } from '../dataSourcesProvider';
-import { ReferenceListDispatcherProvider } from '../referenceListDispatcher';
-import { SettingsProvider } from '../settings';
+} from '@/providers';
+import { DataContextManager } from '@/providers/dataContextManager';
+import { DataContextProvider } from '@/providers/dataContextProvider';
+import { IToolboxComponentGroup } from '@/interfaces';
+import ConditionalWrap from '@/components/conditionalWrapper';
+import IRequestHeaders from '@/interfaces/requestHeaders';
+import { StackedNavigationProvider } from '@/pages/dynamic/navigation/stakedNavigation';
+import { ConfigurableActionDispatcherProvider } from '@/providers/configurableActionsDispatcher';
+import { ConfigurationItemsLoaderProvider } from '@/providers/configurationItemsLoader';
+import { DataSourcesProvider } from '@/providers/dataSourcesProvider';
+import { ReferenceListDispatcherProvider } from '@/providers/referenceListDispatcher';
+import { SettingsProvider } from '@/providers/settings';
 import {
   setBackendUrlAction,
   setGlobalVariablesAction,
@@ -42,7 +42,7 @@ import {
 } from './contexts';
 import { FRONT_END_APP_HEADER_NAME } from './models';
 import appConfiguratorReducer from './reducer';
-import DebugPanel from 'components/debugPanel';
+import DebugPanel from '@/components/debugPanel';
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;
@@ -136,7 +136,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
               <ShaRoutingProvider getFormUrlFunc={getFormUrlFunc} router={router}>
                 <DynamicActionsDispatcherProvider>
                   <ConditionalWrap
-                    condition={true /*!props?.noAuth*/}
+                    condition={!props.noAuth}
                     wrap={(authChildren) => (
                       <AuthProvider
                         tokenName={accessTokenName || DEFAULT_ACCESS_TOKEN_NAME}

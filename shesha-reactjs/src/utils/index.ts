@@ -1,5 +1,5 @@
-import { IStoredFilter } from '../providers/dataTable/interfaces';
-import { NestedPropertyMetadatAccessor } from '../providers/metadataDispatcher/contexts';
+import { IStoredFilter } from '@/providers/dataTable/interfaces';
+import { NestedPropertyMetadatAccessor } from '@/providers/metadataDispatcher/contexts';
 import { IArgumentEvaluationResult, convertJsonLogicNode } from './jsonLogic';
 import { IMatchData, executeExpression } from './publicUtils';
 
@@ -124,14 +124,15 @@ export const getStaticExecuteExpressionParams = (params: string, dynamicParam?: 
   let parameters = params;
 
   Object.keys(dynamicParam || {}).map((key) => {
-    parameters = `${parameters}, ${key}`;
+    parameters = parameters ? `${parameters}, ${key}` : key;
   });
 
   return parameters;
 };
 
 export const executeExpressionPayload = (fn: Function, dynamicParam: { [key: string]: any }, ...args: any[]) => {
-  Object.values(dynamicParam || {}).map((key) => args.push(key));
+  const argList = [...args] || [];
+  Object.values(dynamicParam || {}).map((key) => argList.push(key));
 
   return fn.apply(null, args);
 };
@@ -210,5 +211,12 @@ export const getUrlKeyParam = (url: string = ''): '?' | '&' => (url?.includes('?
 export const removeEmptyArrayValues = (list: any[]) =>
   Array.isArray(list) && list.length ? list.filter((item) => !!item) : [];
 
+export const executeFunction = (expression: string, args: { [key: string]: any }) => {
+  try {
+    return executeExpressionPayload(new Function(getStaticExecuteExpressionParams(null, args), expression), args);
+  } catch (_e) {
+    return null;
+  }
+};
 
 export { unwrapAbpResponse } from './fetchers';

@@ -1,24 +1,24 @@
 import React, { FC } from 'react';
-import { IToolboxComponent } from 'interfaces';
+import { IToolboxComponent } from '@/interfaces';
 import { DownOutlined, GroupOutlined } from '@ant-design/icons';
 import { IButtonGroupComponentProps } from './models';
 import { Alert, Button, Divider, Dropdown, Menu, Space } from 'antd';
-import { IButtonGroupItem, ButtonGroupItemProps, IButtonGroup, isItem, isGroup } from 'providers/buttonGroupConfigurator/models';
-import { useForm } from 'providers/form';
+import { IButtonGroupItem, ButtonGroupItemProps, IButtonGroup, isItem, isGroup } from '@/providers/buttonGroupConfigurator/models';
+import { useForm } from '@/providers/form';
 import { ConfigurableButton } from '../configurableButton';
-import { useSheshaApplication } from 'providers';
-import { getActualModel, getStyle, IApplicationContext, useApplicationContext } from 'providers/form/utils';
+import { useSheshaApplication } from '@/providers';
+import { getActualModel, getStyle, IApplicationContext, useApplicationContext } from '@/providers/form/utils';
 import { getButtonGroupMenuItem } from './utils';
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
 import { ButtonGroupSettingsForm } from './settings';
-import { migrateCustomFunctions, migratePropertyName } from '../../../../../designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import type { MenuProps } from 'antd';
-import ShaIcon, { IconType } from 'components/shaIcon/index';
+import ShaIcon, { IconType } from '@/components/shaIcon/index';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { DynamicActionsEvaluator } from 'providers/dynamicActions/evaluator/index';
-import { useDeepCompareMemo } from 'hooks';
-import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import { DynamicActionsEvaluator } from '@/providers/dynamicActions/evaluator/index';
+import { useDeepCompareMemo } from '@/hooks';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 type MenuItem = MenuProps['items'][number];
 

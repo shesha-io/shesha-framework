@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Story, Meta } from '@storybook/react';
 import RefListRadioButtons, { IRefListRadioButtonsProps } from './';
 import { Form } from 'antd';
-import StoryApp from '../storyBookApp';
+import StoryApp from '@/components/storyBookApp';
 
 export default {
   title: 'Components/RefListRadioButtons',

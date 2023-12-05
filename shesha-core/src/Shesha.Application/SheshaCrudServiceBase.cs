@@ -357,8 +357,13 @@ namespace Shesha
             {
                 
                 case DataTypes.Array:
-                    // todo: implement and uncomment
-                    return;
+                    if (property.DataFormat == ArrayFormats.ReferenceListItem)
+                    {
+                        sb.AppendLine(propertyName);
+                        break;
+                    }
+                    else
+                        return; // todo: implement other types
                 case DataTypes.EntityReference:
                     if (fullReference || property.EntityType.IsNullOrWhiteSpace())
                     {

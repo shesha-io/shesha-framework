@@ -1,4 +1,4 @@
-import { ITableViewProps } from '../../providers/tableViewSelectorConfigurator/models';
+import { ITableViewProps } from '@/providers/tableViewSelectorConfigurator/models';
 
 interface IArgumentEvaluationResult {
   handled: boolean;

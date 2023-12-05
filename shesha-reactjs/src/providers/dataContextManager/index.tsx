@@ -1,4 +1,4 @@
-import { ConfigurableFormInstance } from "interfaces";
+import { ConfigurableFormInstance } from "@/interfaces";
 import { isEqual } from "lodash";
 import React, { FC, PropsWithChildren, useContext, useEffect, useRef, useState } from "react";
 import { createContext } from 'react';

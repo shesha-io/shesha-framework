@@ -1,18 +1,19 @@
 import { LayoutOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
 import React, { FC, Fragment, useEffect, useMemo } from 'react';
-import ComponentsContainer from 'components/formDesigner/containers/componentsContainer';
-import { IToolboxComponent, YesNoInherit } from 'interfaces';
-import { useDataTableStore, useForm, useFormData } from 'providers';
-import DataTableProvider from 'providers/dataTable';
-import { FormMarkup, IConfigurableFormComponent } from 'providers/form/models';
-import { evaluateString, validateConfigurableComponentSettings } from 'providers/form/utils';
+import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
+import { IToolboxComponent, YesNoInherit } from '@/interfaces';
+import { useDataTableStore, useForm, useFormData, useNestedPropertyMetadatAccessor } from '@/providers';
+import DataTableProvider from '@/providers/dataTable';
+import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
+import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import settingsFormJson from './settingsForm.json';
-import { ColumnSorting, DataFetchingMode, GroupingItem, ISortingItem, SortMode } from 'providers/dataTable/interfaces';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
-import { ConfigurableFormItem } from 'components';
-import { evaluateYesNo } from 'utils/form';
-import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import { ColumnSorting, DataFetchingMode, FilterExpression, GroupingItem, ISortingItem, SortMode } from '@/providers/dataTable/interfaces';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { ConfigurableFormItem } from '@/components';
+import { evaluateYesNo } from '@/utils/form';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
 
 export interface ITableContextComponentProps extends IConfigurableFormComponent {
   sourceType?: 'Form' | 'Entity' | 'Url';
@@ -27,6 +28,7 @@ export interface ITableContextComponentProps extends IConfigurableFormComponent 
   strictSortOrder?: ColumnSorting;
   standardSorting?: ISortingItem[];
   allowReordering?: YesNoInherit;
+  permanentFilter?: FilterExpression;
 }
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -89,6 +91,9 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
   const { formMode } = useForm();
   const { data } = useFormData();
 
+  const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(props.entityType);
+  const permanentFilter = useFormEvaluatedFilter({ filter: props.permanentFilter, metadataAccessor: propertyMetadataAccessor });
+
   const isDesignMode = formMode === 'designer';
 
   const getDataPath = evaluateString(endpoint, { data });
@@ -133,6 +138,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
       strictSortOrder={props.strictSortOrder}
       standardSorting={props.standardSorting}
       allowReordering={evaluateYesNo(allowReordering, formMode)}
+      permanentFilter={permanentFilter}
     >
       <TableContextAccessor {...props} />
     </DataTableProvider>

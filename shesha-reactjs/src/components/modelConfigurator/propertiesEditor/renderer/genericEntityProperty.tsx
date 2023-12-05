@@ -3,8 +3,8 @@ import { Tag, Tooltip } from 'antd';
 import { QuestionCircleOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import { usePropertiesEditor } from '../provider';
 import DragHandle from './dragHandle';
-import { IModelItem } from '../../../../interfaces/modelConfigurator';
-import GenericOutlined from '../../../../icons/genericOutlined';
+import { IModelItem } from '@/interfaces/modelConfigurator';
+import GenericOutlined from '@/icons/genericOutlined';
 
 
 export interface IProps extends IModelItem {

@@ -8,7 +8,6 @@ using Abp.Runtime.Validation;
 using Abp.UI;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using NHibernate.Linq;
 using Shesha.Domain;
 using Shesha.EntityReferences;
 using Shesha.Extensions;

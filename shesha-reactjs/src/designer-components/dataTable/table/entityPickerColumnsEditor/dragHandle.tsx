@@ -1,6 +1,6 @@
 import { MoreOutlined } from '@ant-design/icons';
 import React, { FC } from 'react';
-import { useColumnsConfigurator } from '../../../../providers/datatableColumnsConfigurator';
+import { useColumnsConfigurator } from '@/providers/datatableColumnsConfigurator';
 
 export interface IDragHandleProps {
   id: string;

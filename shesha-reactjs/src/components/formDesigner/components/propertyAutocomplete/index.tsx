@@ -1,15 +1,15 @@
 import React from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
-import { FormMarkup } from '../../../../providers/form/models';
+import { FormMarkup } from '@/providers/form/models';
 import { FileSearchOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '../formItem';
 import settingsFormJson from './settingsForm.json';
-import { getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
+import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { PropertyAutocomplete } from '../../../propertyAutocomplete/propertyAutocomplete';
-import { evaluateString, MetadataProvider, useForm, useFormData } from '../../../..';
-import ConditionalWrap from '../../../conditionalWrapper';
+import { evaluateString, MetadataProvider, useForm, useFormData } from '@/components/..';
+import ConditionalWrap from '@/components/conditionalWrapper';
 import { IPropertyAutocompleteComponentProps } from './interfaces';
-import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

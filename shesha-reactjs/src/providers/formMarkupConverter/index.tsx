@@ -3,7 +3,7 @@ import { useFormDesignerComponents } from '../form/hooks';
 import { FormRawMarkup, IFlatComponentsStructure, IFormSettings } from '../form/models';
 import { componentsTreeToFlatStructure, getComponentsFromMarkup, upgradeComponents } from '../form/utils';
 import { nanoid } from 'nanoid/non-secure';
-import { updateSettingsComponents } from '../../designer-components/_settings/utils';
+import { updateSettingsComponents } from '@/designer-components/_settings/utils';
 
 export interface IFormMarkupConverterProps {
   markup: FormRawMarkup;

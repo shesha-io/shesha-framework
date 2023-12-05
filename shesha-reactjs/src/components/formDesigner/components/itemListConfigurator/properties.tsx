@@ -2,7 +2,7 @@ import React, { FC, useEffect, useMemo, useRef } from 'react';
 import { Empty, Form } from 'antd';
 import { ConfigurableForm } from '../../..';
 import { useDebouncedCallback } from 'use-debounce';
-import { ConfigurableFormInstance } from '../../../../providers/form/contexts';
+import { ConfigurableFormInstance } from '@/providers/form/contexts';
 import { useItemListConfigurator } from '../../../../providers';
 
 export interface IItemConfigPropertiesProps {}

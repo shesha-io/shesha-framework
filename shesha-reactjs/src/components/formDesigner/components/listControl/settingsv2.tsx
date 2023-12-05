@@ -1,12 +1,12 @@
 import { Checkbox, Form, Input, InputNumber, Select } from 'antd';
 import React, { FC, useState } from 'react';
-import { QueryBuilderComponentRenderer } from '../../../../designer-components/queryBuilder/queryBuilderComponent';
-import { QueryBuilderWithModelType } from '../../../../designer-components/queryBuilder/queryBuilderWithModelType';
-import { Autocomplete } from '../../../autocomplete';
-import FormAutocomplete from '../../../formAutocomplete';
+import { QueryBuilderComponentRenderer } from '@/designer-components/queryBuilder/queryBuilderComponent';
+import { QueryBuilderWithModelType } from '@/designer-components/queryBuilder/queryBuilderWithModelType';
+import { Autocomplete } from '@/components/autocomplete';
+import FormAutocomplete from '@/components/formAutocomplete';
 import PropertyAutocomplete from '../../../propertyAutocomplete/propertyAutocomplete';
-import SectionSeparator from '../../../sectionSeparator';
-import Show from '../../../show';
+import SectionSeparator from '@/components/sectionSeparator';
+import Show from '@/components/show';
 import ButtonGroupSettingsModal from '../button/buttonGroup/buttonGroupSettingsModal';
 import CodeEditor from '../codeEditor/codeEditor';
 import { IListItemsProps } from './models';

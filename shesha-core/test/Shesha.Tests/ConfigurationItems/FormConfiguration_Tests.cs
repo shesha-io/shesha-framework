@@ -6,11 +6,9 @@ using Abp.MemoryDb;
 using Abp.MemoryDb.Repositories;
 using NSubstitute;
 using Shesha.ConfigurationItems.Distribution;
-using Shesha.ConfigurationItems.Distribution.Exceptions;
 using Shesha.ConfigurationItems.Distribution.Models;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
-using Shesha.JsonLogic;
 using Shesha.Services;
 using Shesha.Utilities;
 using Shesha.Web.FormsDesigner.Domain;
@@ -85,7 +83,7 @@ namespace Shesha.Tests.ConfigurationItems
             var asyncExecuter = Resolve<IAsyncQueryableExecuter>();
             var uowManager = Resolve<IUnitOfWorkManager>();
             var formManager = new FormManager(dst.FormRepo, dst.ModuleRepo, uowManager);
-            var importer = new FormConfigurationImport(formManager, dst.FormRepo, dst.ModuleRepo, uowManager);
+            var importer = new FormConfigurationImport(dst.ModuleRepo, dst.FrontEndAppRepo, formManager, dst.FormRepo, uowManager);
             var importContext = new PackageImportContext()
             {
                 CreateModules = true
@@ -155,7 +153,7 @@ namespace Shesha.Tests.ConfigurationItems
             var asyncExecuter = Resolve<IAsyncQueryableExecuter>();
             var uowManager = Resolve<IUnitOfWorkManager>();
             var formManager = new FormManager(dst.FormRepo, dst.ModuleRepo, uowManager);
-            var importer = new FormConfigurationImport(formManager, dst.FormRepo, dst.ModuleRepo, uowManager);
+            var importer = new FormConfigurationImport(dst.ModuleRepo, dst.FrontEndAppRepo, formManager, dst.FormRepo, uowManager);
             var importContext = new PackageImportContext()
             {
                 CreateModules = true
@@ -229,7 +227,7 @@ namespace Shesha.Tests.ConfigurationItems
             var asyncExecuter = Resolve<IAsyncQueryableExecuter>();
             var uowManager = Resolve<IUnitOfWorkManager>();
             var formManager = new FormManager(dst.FormRepo, dst.ModuleRepo, uowManager);
-            var importer = new FormConfigurationImport(formManager, dst.FormRepo, dst.ModuleRepo, uowManager);
+            var importer = new FormConfigurationImport(dst.ModuleRepo, dst.FrontEndAppRepo, formManager, dst.FormRepo, uowManager);
             var importContext = new PackageImportContext()
             {
                 CreateModules = true,
@@ -270,7 +268,7 @@ namespace Shesha.Tests.ConfigurationItems
         [Fact]
         public async Task When_Import_The_Same_Form_Twice()
         {
-            var src = PrepareImportContext();
+             var src = PrepareImportContext();
             var srcForm = await src.AddForm(async c => {
                 c.ModelType = "test-modelType";
                 c.Markup = "src-markup";
@@ -305,23 +303,29 @@ namespace Shesha.Tests.ConfigurationItems
 
             var asyncExecuter = Resolve<IAsyncQueryableExecuter>();
             var uowManager = Resolve<IUnitOfWorkManager>();
-            var formManager = new FormManager(dst.FormRepo, dst.ModuleRepo, uowManager);
-            var importer = new FormConfigurationImport(formManager, dst.FormRepo, dst.ModuleRepo, uowManager);
-            var importContext = new PackageImportContext()
+
+            using (var uow = uowManager.Begin()) 
             {
-                CreateModules = true
-            };
-            var imported1 = await importer.ImportItemAsync(exported, importContext) as FormConfiguration;
-            imported1.ShouldNotBeNull();
+                var formManager = new FormManager(dst.FormRepo, dst.ModuleRepo, uowManager);
+                var importer = new FormConfigurationImport(dst.ModuleRepo, dst.FrontEndAppRepo, formManager, dst.FormRepo, uowManager);
+                var importContext = new PackageImportContext()
+                {
+                    CreateModules = true
+                };
+                var imported1 = await importer.ImportItemAsync(exported, importContext) as FormConfiguration;
+                imported1.ShouldNotBeNull();
 
-            var formsCountAfterFirstImport = await dst.FormRepo.CountAsync();
-            formsCountAfterFirstImport.ShouldBe(formsCountBeforeImport + 1, "First import should create one form");
+                var formsCountAfterFirstImport = await dst.FormRepo.CountAsync();
+                formsCountAfterFirstImport.ShouldBe(formsCountBeforeImport + 1, "First import should create one form");
 
-            var imported2 = await importer.ImportItemAsync(exported, importContext) as FormConfiguration;
-            imported2.ShouldNotBeNull();
+                var imported2 = await importer.ImportItemAsync(exported, importContext) as FormConfiguration;
+                imported2.ShouldNotBeNull();
 
-            var formsCountAfterSecondImport = await dst.FormRepo.CountAsync();
-            formsCountAfterSecondImport.ShouldBe(formsCountBeforeImport + 1, "Second import shouldn't create new form");
+                var formsCountAfterSecondImport = await dst.FormRepo.CountAsync();
+                formsCountAfterSecondImport.ShouldBe(formsCountBeforeImport + 1, "Second import shouldn't create new form");
+
+                await uow.CompleteAsync();
+            }
 
             /*
             1. Store Id of the source item during the import
@@ -396,7 +400,7 @@ namespace Shesha.Tests.ConfigurationItems
                     //.Where(query)
                 );
 
-                var exportContext = new PreparePackageContext(items, DistributionHelper.ToExportersDictionary(new List<IConfigurableItemExport> { exporter }));
+                var exportContext = new PreparePackageContext(items, LocalIocManager);
                 var exportResult = await packageManager.PreparePackageAsync(exportContext);
 
                 using (var zipStream = new FileStream(zipFileName, FileMode.CreateNew))
@@ -434,7 +438,7 @@ namespace Shesha.Tests.ConfigurationItems
             var asyncExecuter = Resolve<IAsyncQueryableExecuter>();
             var uowManager = Resolve<IUnitOfWorkManager>();
             var formManager = new FormManager(dst.FormRepo, dst.ModuleRepo, uowManager);
-            var importer = new FormConfigurationImport(formManager, dst.FormRepo, dst.ModuleRepo, uowManager);
+            var importer = new FormConfigurationImport(dst.ModuleRepo, dst.FrontEndAppRepo, formManager, dst.FormRepo, uowManager);
             
             var packageManager = Resolve<IConfigurationPackageManager>();
 
@@ -447,7 +451,7 @@ namespace Shesha.Tests.ConfigurationItems
             };
             using (var stream = new FileStream(zipFileName, FileMode.Open)) 
             {
-                using (var pack = await packageManager.ReadPackageAsync(stream, new ReadPackageContext(importers))) 
+                using (var pack = await packageManager.ReadPackageAsync(stream, new ReadPackageContext(LocalIocManager))) 
                 {
                     var unsupportedItemTypes = pack.Items.Where(i => i.Importer == null).Select(i => i.ItemType).Distinct().ToList();
                     if (unsupportedItemTypes.Any())
@@ -501,6 +505,7 @@ namespace Shesha.Tests.ConfigurationItems
             public IRepository<FormConfiguration, Guid> FormRepo { get; set; }
             public IRepository<ConfigurationItem, Guid> ConfigurationItemRepo { get; set; }
             public IRepository<Module, Guid> ModuleRepo { get; set; }
+            public IRepository<FrontEndApp, Guid> FrontEndAppRepo { get; set; }
             public async Task<FormConfiguration> AddForm(Action<FormConfiguration> initAction) 
             {
                 var form = MockFormConfiguration(initAction);
@@ -531,6 +536,7 @@ namespace Shesha.Tests.ConfigurationItems
                 FormRepo = GetRepository<FormConfiguration, Guid>();
                 ConfigurationItemRepo = GetRepository<ConfigurationItem, Guid>();
                 ModuleRepo = GetRepository<Module, Guid>();
+                FrontEndAppRepo = GetRepository<FrontEndApp, Guid>();
             }
         }
 

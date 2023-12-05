@@ -1,8 +1,8 @@
-import { IConfigurableActionConfiguration } from 'interfaces/configurableAction';
+import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IDataColumnsProps, IEditableColumnProps } from '../datatableColumnsConfigurator/models';
-import { IPropertyMetadata, ProperyDataType } from 'interfaces/metadata';
+import { IPropertyMetadata, ProperyDataType } from '@/interfaces/metadata';
 import { Moment } from 'moment';
-import { IDictionary } from 'interfaces';
+import { IDictionary } from '@/interfaces';
 
 export type ColumnFilter = string[] | number[] | Moment[] | Date[] | string | number | Moment | Date | boolean;
 
@@ -40,6 +40,7 @@ export interface ITableColumn {
 
   minWidth?: number;
   maxWidth?: number;
+  width?: number;
 
   filterOption?: IndexColumnFilterOption;
   filter?: any;
@@ -147,6 +148,8 @@ export interface IQuickFilter {
   readonly selected?: boolean;
 }
 
+export type FilterExpression = string | object;
+
 export type FilterType = 'predefined' | 'user-defined' | 'quick';
 export interface IStoredFilter {
   id: string;
@@ -156,7 +159,7 @@ export interface IStoredFilter {
   tooltip?: string;
   // Exclusive filters cannot be applied on top of other filters. Only one can be selected
 
-  expression?: string | object;
+  expression?: FilterExpression;
 
   selected?: boolean;
 

@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { PropertiesEditorRenderer } from './renderer';
 import { PropertiesEditorProvider } from './provider';
-import { IModelItem } from '../../../interfaces/modelConfigurator';
+import { IModelItem } from '@/interfaces/modelConfigurator';
 import { Form } from 'antd';
 
 export interface IPropertiesEditorComponentProps {

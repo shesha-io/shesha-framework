@@ -1,8 +1,8 @@
 import { useMemo, useRef, useEffect } from "react";
-import { useGet } from "hooks";
-import { EntityData, IAbpWrappedGetEntityListResponse, IGetAllPayload } from "interfaces/gql";
-import { camelcaseDotNotation } from "utils/string";
-import { GENERIC_ENTITIES_ENDPOINT } from "shesha-constants";
+import { useGet } from "@/hooks";
+import { EntityData, IAbpWrappedGetEntityListResponse, IGetAllPayload } from "@/interfaces/gql";
+import { camelcaseDotNotation } from "@/utils/string";
+import { GENERIC_ENTITIES_ENDPOINT } from "@/shesha-constants";
 
 export interface IUseEntityDisplayTextProps {
   entityType?: string;

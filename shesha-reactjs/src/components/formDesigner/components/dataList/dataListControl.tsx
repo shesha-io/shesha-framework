@@ -1,14 +1,12 @@
 import React, { FC, useCallback, useMemo } from 'react';
-import { YesNoInherit } from "interfaces";
 import { Alert } from 'antd';
-import { useConfigurableActionDispatcher } from 'providers';
 import { DataList } from '../../../dataList';
 import ConfigurableFormItem from '../formItem';
 import classNames from 'classnames';
-import { BackendRepositoryType, ICreateOptions, IUpdateOptions, IDeleteOptions } from 'providers/dataTable/repository/backendRepository';
 import moment from 'moment';
-import { useApplicationContext } from 'utils/publicUtils';
 import { IDataListWithDataSourceProps } from './model';
+import { useApplicationContext, useConfigurableActionDispatcher, YesNoInherit } from '@/index';
+import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions } from '@/providers/dataTable/repository/backendRepository';
 
 export const NotConfiguredWarning: FC = () => {
   return <Alert className="sha-designer-warning" message="Data list is not configured properly" type="warning" />;

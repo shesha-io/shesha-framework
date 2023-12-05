@@ -1,13 +1,13 @@
+import { ComponentsContainer, FormRawMarkup, IFormSettings, Show, useAppConfigurator, ValidationErrors } from '@/index';
+import { CrudProvider, useCrud } from '@/providers/crudContext/index';
+import { IFormMarkupResponse } from '@/providers/form/api';
+import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
+import { FormMarkupConverter } from '@/providers/formMarkupConverter/index';
+import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
 import { Modal, Skeleton } from 'antd';
-import { ComponentsContainer, Show, ValidationErrors } from 'components';
-import FormInfo from 'components/configurableForm/formInfo';
-import { FormRawMarkup, IFormSettings, useAppConfigurator } from 'providers';
-import { CrudProvider, useCrud } from 'providers/crudContext/index';
-import { IFormMarkupResponse } from 'providers/form/api';
-import { ComponentsContainerProvider } from 'providers/form/nesting/containerContext';
-import { FormMarkupConverter } from 'providers/formMarkupConverter/index';
 import React, { FC } from 'react';
-import { ConfigurationItemVersionStatusMap } from 'utils/configurationFramework/models';
+import FormInfo from '../configurableForm/formInfo';
+
 import { ItemContainerForm } from './itemContainerForm';
 import { IDataListProps } from './models';
 

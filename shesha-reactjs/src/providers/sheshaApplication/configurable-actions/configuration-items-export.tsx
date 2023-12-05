@@ -2,10 +2,10 @@ import { ExportOutlined } from "@ant-design/icons";
 import { Button, notification } from "antd";
 import { nanoid } from "nanoid";
 import React, { FC, MutableRefObject, useRef, useState } from "react";
-import { useAppConfiguratorState, useDynamicModals, ValidationErrors } from "../../..";
-import ConfigurationItemsExport, { IExportInterface } from "../../../components/configurationFramework/itemsExport";
-import { IErrorInfo } from "../../../interfaces/errorInfo";
-import { useConfigurableAction } from "../../configurableActionsDispatcher";
+import { useAppConfiguratorState, useDynamicModals, ValidationErrors } from "@/providers/..";
+import ConfigurationItemsExport, { IExportInterface } from "@/components/configurationFramework/itemsExport";
+import { IErrorInfo } from "@/interfaces/errorInfo";
+import { useConfigurableAction } from "@/providers/configurableActionsDispatcher";
 import { SheshaActionOwners } from "../../configurableActionsDispatcher/models";
 import { ICommonModalProps } from "../../dynamicModal/models";
 

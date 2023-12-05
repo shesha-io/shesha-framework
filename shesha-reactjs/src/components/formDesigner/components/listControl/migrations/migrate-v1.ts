@@ -1,11 +1,11 @@
-import { SettingsMigrationContext } from "../../../../..";
-import { IConfigurableActionConfiguration } from "../../../../../interfaces/configurableAction";
-import { IButtonItem } from "../../../../../providers/buttonGroupConfigurator/models";
-import { getClosestTableId } from "../../../../../providers/form/utils";
+import { SettingsMigrationContext } from "@/components/..";
+import { IConfigurableActionConfiguration } from "@/interfaces/configurableAction";
+import { IButtonItem } from "@/providers/buttonGroupConfigurator/models";
+import { getClosestTableId } from "@/providers/form/utils";
 import { getDispatchEventReplacement } from "../../_common-migrations/migrate-events";
 import { IListComponentProps } from "../models";
-import { IShowModalActionArguments } from "../../../../../providers/dynamicModal/configurable-actions/show-dialog-arguments";
-import { IKeyValue } from "../../../../../interfaces/keyValue";
+import { IShowModalActionArguments } from "@/providers/dynamicModal/configurable-actions/show-dialog-arguments";
+import { IKeyValue } from "@/interfaces/keyValue";
 
 export const migrateV0toV1 = (props: IListComponentProps, context: SettingsMigrationContext): IListComponentProps => {
     const { buttons } = props;

@@ -4,16 +4,15 @@ import { IColumnsComponentProps } from './interfaces';
 import ColumnsList from './columnsList';
 import { EXPOSED_VARIABLES } from './exposedVariables';
 import CodeEditor from '../codeEditor/codeEditor';
-import SectionSeparator from 'components/sectionSeparator';
-import SettingsForm from '../../../../designer-components/_settings/settingsForm';
-import { ISettingsFormFactoryArgs } from 'interfaces';
-import SettingsFormItem from '../../../../designer-components/_settings/settingsFormItem';
+import SectionSeparator from '@/components/sectionSeparator';
+import SettingsForm from '@/designer-components/_settings/settingsForm';
+import { ISettingsFormFactoryArgs } from '@/interfaces';
+import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 
-export const ColumnsSettingsForm: FC<ISettingsFormFactoryArgs<IColumnsComponentProps>> = (props) => (
-    SettingsForm<IColumnsComponentProps>({...props, children: <ColumnsSettings {...props}/>})
-);
+export const ColumnsSettingsForm: FC<ISettingsFormFactoryArgs<IColumnsComponentProps>> = (props) =>
+  SettingsForm<IColumnsComponentProps>({ ...props, children: <ColumnsSettings {...props} /> });
 
-const ColumnsSettings: FC<ISettingsFormFactoryArgs<IColumnsComponentProps>> = ({readOnly}) => {
+const ColumnsSettings: FC<ISettingsFormFactoryArgs<IColumnsComponentProps>> = ({ readOnly }) => {
   return (
     <>
       <SettingsFormItem name="componentName" label="Component Name" required>
@@ -21,11 +20,11 @@ const ColumnsSettings: FC<ISettingsFormFactoryArgs<IColumnsComponentProps>> = ({
       </SettingsFormItem>
 
       <SettingsFormItem name="gutterX" label="Gutter X" jsSetting>
-        <InputNumber min={1} max={48} step={4} readOnly={readOnly}/>
+        <InputNumber min={1} max={48} step={4} readOnly={readOnly} />
       </SettingsFormItem>
 
       <SettingsFormItem name="gutterY" label="Gutter Y" jsSetting>
-        <InputNumber min={1} max={48} step={4} readOnly={readOnly}/>
+        <InputNumber min={1} max={48} step={4} readOnly={readOnly} />
       </SettingsFormItem>
 
       <SettingsFormItem name="hidden" label="Hidden" valuePropName="checked" jsSetting>
@@ -48,6 +47,14 @@ const ColumnsSettings: FC<ISettingsFormFactoryArgs<IColumnsComponentProps>> = ({
           description="A script that returns the style of the element as an object. This should conform to CSSProperties"
           exposedVariables={EXPOSED_VARIABLES}
         />
+      </SettingsFormItem>
+
+      <SettingsFormItem name="padding" label="Padding" jsSetting>
+        <InputNumber min={1} readOnly={readOnly} style={{ width: '100%' }} />
+      </SettingsFormItem>
+
+      <SettingsFormItem name="margin" label="Margin" jsSetting>
+        <InputNumber min={1} readOnly={readOnly} style={{ width: '100%' }} />
       </SettingsFormItem>
     </>
   );

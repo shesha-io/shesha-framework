@@ -1,16 +1,15 @@
 import { FormInstance } from 'antd';
-import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useMemo } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
-import useThunkReducer from '../../hooks/thunkReducer';
+import useThunkReducer from '@/hooks/thunkReducer';
 import {
   IComponentRelations,
   IComponentsDictionary,
   IConfigurableFormComponent,
   IFormValidationErrors,
 } from '../../interfaces';
-import { DelayedUpdateProvider } from '../../providers/delayedUpdateProvider';
-import { useConfigurableAction } from '../configurableActionsDispatcher';
+import { DelayedUpdateProvider } from '@/providers/delayedUpdateProvider';
+import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { getFlagSetters } from '../utils/flagsSetters';
 import {
@@ -38,7 +37,8 @@ import {
 import { useFormDesignerComponents } from './hooks';
 import { FormMode, FormRawMarkup, IFormActions, IFormSections, IFormSettings } from './models';
 import formReducer from './reducer';
-import { convertActions, convertSectionsToList, getActualModel, getEnabledComponentIds, getVisibleComponentIds, useFormProviderContext } from './utils';
+import { convertActions, convertSectionsToList, getEnabledComponentIds, getVisibleComponentIds, useFormProviderContext } from './utils';
+import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 
 export interface IFormProviderProps {
   needDebug?: boolean;

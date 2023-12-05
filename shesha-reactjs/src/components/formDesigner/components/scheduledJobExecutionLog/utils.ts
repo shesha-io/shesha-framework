@@ -1,4 +1,4 @@
-import { IExecutionLogEvent } from '../../../../providers/scheduledJobExecution/contexts';
+import { IExecutionLogEvent } from '@/providers/scheduledJobExecution/contexts';
 
 export interface IScheduledJobExecutionLog {
   id: string;

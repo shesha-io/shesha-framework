@@ -1,14 +1,14 @@
 import React, { useState, useEffect, MutableRefObject } from 'react';
 import { FC } from 'react';
-import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '../../../interfaces/gql';
+import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '@/interfaces/gql';
 import { GENERIC_ENTITIES_ENDPOINT, LEGACY_ITEMS_MODULE_NAME } from '../../../shesha-constants';
 import { Form, Select, Skeleton, Spin, Switch } from 'antd';
 import axios from 'axios';
-import { useSheshaApplication } from '../../..';
+import { useSheshaApplication } from '@/components/..';
 import FileSaver from 'file-saver';
-import { getFileNameFromResponse } from '../../../utils/fetchers';
-import { ConfigurationItemVersionStatus } from '../../../utils/configurationFramework/models';
-import * as RestfulShesha from '../../../utils/fetchers';
+import { getFileNameFromResponse } from '@/utils/fetchers';
+import { ConfigurationItemVersionStatus } from '@/utils/configurationFramework/models';
+import * as RestfulShesha from '@/utils/fetchers';
 import {
   ConfigurationItemDto,
   IModule,

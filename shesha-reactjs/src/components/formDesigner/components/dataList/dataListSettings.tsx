@@ -1,16 +1,16 @@
 import React, { FC, useState } from 'react';
 import { Select, AutoComplete, InputNumber, Input, Checkbox } from 'antd';
 import CodeEditor from '../codeEditor/codeEditor';
-import FormAutocomplete from '../../../formAutocomplete';
-import Show from 'components/show';
-import { ISettingsFormFactoryArgs, YesNoInherit } from 'interfaces';
-import SettingsForm, { useSettingsForm } from 'designer-components/_settings/settingsForm';
-import SettingsFormItem from 'designer-components/_settings/settingsFormItem';
-import { ConfigurableActionConfigurator } from 'designer-components/configurableActionsConfigurator/configurator';
+import FormAutocomplete from '@/components/formAutocomplete';
+import Show from '@/components/show';
+import { ISettingsFormFactoryArgs, YesNoInherit } from '@/interfaces';
+import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
+import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
+import { ConfigurableActionConfigurator } from '@/designer-components/configurableActionsConfigurator/configurator';
 import { IDataListComponentProps } from './model';
+import { InlineEditMode, InlineSaveMode } from '@/components/dataList/models';
 import { nanoid } from 'nanoid';
-import SettingsCollapsiblePanel from 'designer-components/_settings/settingsCollapsiblePanel';
-import { InlineEditMode, InlineSaveMode } from 'components/dataList/models';
+import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
 
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 

@@ -1,7 +1,7 @@
 import camelcase from 'camelcase';
 import React, { FC, PropsWithChildren, useContext, useRef } from 'react';
-import { PropertyMetadataDto, metadataGet } from '../../apis/metadata';
-import useThunkReducer from '../../hooks/thunkReducer';
+import { PropertyMetadataDto, metadataGet } from '@/apis/metadata';
+import useThunkReducer from '@/hooks/thunkReducer';
 import { activateProviderAction } from './actions';
 import {
   IGetMetadataPayload,
@@ -20,8 +20,8 @@ import {
 import { IModelsDictionary, IProvidersDictionary } from './models';
 import metadataReducer from './reducer';
 import { useSheshaApplication } from '../../providers';
-import { IModelMetadata, IPropertyMetadata, isEntityReferencePropertyMetadata, isObjectReferencePropertyMetadata, ISpecification } from '../../interfaces/metadata';
-import { DataTypes } from '../../interfaces/dataTypes';
+import { IModelMetadata, IPropertyMetadata, isEntityReferencePropertyMetadata, isObjectReferencePropertyMetadata, ISpecification } from '@/interfaces/metadata';
+import { DataTypes } from '@/interfaces/dataTypes';
 import { IDictionary } from '../../interfaces';
 
 export interface IMetadataDispatcherProviderProps {}

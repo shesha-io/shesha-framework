@@ -1,8 +1,8 @@
 import { Checkbox, Col, Row } from 'antd';
 import React, { FC, useEffect, useMemo } from 'react';
-import { useGet } from 'hooks';
+import { useGet } from '@/hooks';
 import { useFormData, useGlobalState } from '../../../../providers';
-import { useReferenceList } from '../../../../providers/referenceListDispatcher';
+import { useReferenceList } from '@/providers/referenceListDispatcher';
 import { getDataSourceList } from '../radio/utils';
 import { getSpan, ICheckboxGroupProps } from './utils';
 

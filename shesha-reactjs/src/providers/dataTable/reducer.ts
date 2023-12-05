@@ -1,5 +1,5 @@
 import { handleActions } from 'redux-actions';
-import { getFilterOptions } from '../../components/columnItemFilter';
+import { getFilterOptions } from '@/components/columnItemFilter';
 import flagsReducer from '../utils/flagsReducer';
 import {
   DATA_TABLE_CONTEXT_INITIAL_STATE,
@@ -15,7 +15,7 @@ import {
   IFetchColumnsSuccessSuccessPayload,
   IFetchGroupingColumnsSuccessPayload,
   IRegisterConfigurableColumnsPayload,
-  ISetHiddenFilterActionPayload,
+  ISetPermanentFilterActionPayload,
   ISetPredefinedFiltersPayload,
   ISetRowDataPayload,
   ISortingSettingsActionPayload,
@@ -32,7 +32,7 @@ import {
 } from './interfaces';
 import { getTableDataColumn, prepareColumn } from './utils';
 import { Row } from 'react-table';
-import { ProperyDataType } from 'interfaces/metadata';
+import { ProperyDataType } from '@/interfaces/metadata';
 
 /** get dirty filter if exists and fallback to current filter state */
 const getDirtyFilter = (state: IDataTableStateContext): ITableFilter[] => {
@@ -432,17 +432,15 @@ const reducer = handleActions<IDataTableStateContext, any>(
       };
     },
 
-    [DataTableActionEnums.SetHiddenFilter]: (
+    [DataTableActionEnums.SetPermanentFilter]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<ISetHiddenFilterActionPayload>
+      action: ReduxActions.Action<ISetPermanentFilterActionPayload>
     ) => {
-      const { filter, owner } = action.payload;
-
-      const hiddenFilters = { ...state.hiddenFilters, [owner]: filter };
+      const { filter } = action.payload;
 
       return {
         ...state,
-        hiddenFilters: hiddenFilters,
+        permanentFilter: filter,
       };
     },
 

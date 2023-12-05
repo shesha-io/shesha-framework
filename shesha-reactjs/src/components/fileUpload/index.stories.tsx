@@ -1,9 +1,9 @@
 import React from 'react';
 import { Story, Meta } from '@storybook/react';
 import { StoredFileProvider } from '../../providers';
-import { ICustomFileProps } from '../customFile';
+import { ICustomFileProps } from '@/components/customFile';
 import { FileUpload } from './';
-import StoryApp from '../storyBookApp';
+import StoryApp from '@/components/storyBookApp';
 
 export default {
   title: 'Components/Temp/StoredFileUpload',

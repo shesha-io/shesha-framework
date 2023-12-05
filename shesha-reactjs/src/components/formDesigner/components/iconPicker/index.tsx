@@ -1,15 +1,15 @@
 import React, { CSSProperties, FC, ReactNode, useMemo } from 'react';
-import { IToolboxComponent } from 'interfaces';
+import { IToolboxComponent } from '@/interfaces';
 import { HeartOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '../formItem';
-import { validateConfigurableComponentSettings } from 'providers/form/utils';
-import IconPicker, { ShaIconTypes } from '../../../iconPicker';
-import { executeScriptSync, IApplicationContext } from '../../../..';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import IconPicker, { ShaIconTypes } from '@/components/iconPicker';
+import { executeScriptSync, IApplicationContext } from '@/components/..';
 import { iconPickerFormSettings } from './settings';
 import { IIconPickerComponentProps } from './interfaces';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { ColorResult } from 'react-color';
-import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 const IconPickerComponent: IToolboxComponent<IIconPickerComponentProps> = {
   type: 'iconPicker',

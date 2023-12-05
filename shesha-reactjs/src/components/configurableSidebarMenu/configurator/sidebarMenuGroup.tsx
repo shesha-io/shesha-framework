@@ -1,10 +1,10 @@
 import React, { FC } from 'react';
 import { Button, Tooltip } from 'antd';
 import { DeleteFilled, QuestionCircleOutlined } from '@ant-design/icons';
-import { useSidebarMenuConfigurator } from '../../../providers/sidebarMenuConfigurator';
+import { useSidebarMenuConfigurator } from '@/providers/sidebarMenuConfigurator';
 import DragHandle from './dragHandle';
-import ShaIcon, { IconType } from '../../shaIcon';
-import { ISidebarMenuItem } from '../../../interfaces/sidebar';
+import ShaIcon, { IconType } from '@/components/shaIcon';
+import { ISidebarMenuItem } from '@/interfaces/sidebar';
 import classNames from 'classnames';
 
 export interface IContainerRenderArgs {

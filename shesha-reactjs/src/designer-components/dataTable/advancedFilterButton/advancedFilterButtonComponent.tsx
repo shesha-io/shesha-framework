@@ -1,10 +1,10 @@
 import { FilterOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import React, { FC } from 'react';
-import { validateConfigurableComponentSettings } from 'utils/publicUtils';
+import { validateConfigurableComponentSettings } from '@/utils/publicUtils';
 import { IToolboxComponent } from '../../../interfaces';
 import { useDataTableStore } from '../../../providers';
-import { FormMarkup, IConfigurableFormComponent } from '../../../providers/form/models';
+import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
 import settingsFormJson from './settingsForm.json';
 
 export interface IPagerComponentProps extends IConfigurableFormComponent {}

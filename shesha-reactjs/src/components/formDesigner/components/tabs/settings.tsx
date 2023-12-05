@@ -1,16 +1,16 @@
 import React, { FC } from 'react';
-import { Select, Input, Checkbox } from 'antd';
-import SectionSeparator from '../../../sectionSeparator';
-import EditableTagGroup from '../../../editableTagGroup';
+import { Select, Input, Checkbox, InputNumber } from 'antd';
+import SectionSeparator from '@/components/sectionSeparator';
+import EditableTagGroup from '@/components/editableTagGroup';
 import { ITabPaneProps, ITabsComponentProps } from './models';
 import ItemListSettingsModal from '../itemListConfigurator/itemListSettingsModal';
 import itemSettings from './itemSettings.json';
-import { FormMarkup } from '../../../../providers/form/models';
+import { FormMarkup } from '@/providers/form/models';
 import { nanoid } from 'nanoid/non-secure';
-import { ISettingsFormFactoryArgs } from 'interfaces';
-import SettingsForm, { useSettingsForm } from '../../../../designer-components/_settings/settingsForm';
-import SettingsFormItem from '../../../../designer-components/_settings/settingsFormItem';
-import { CodeEditor } from 'components';
+import { ISettingsFormFactoryArgs } from '@/interfaces';
+import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
+import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
+import { CodeEditor } from '@/components';
 
 const { Option } = Select;
 
@@ -131,6 +131,14 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = ({ readOn
             },
           ]}
         />
+      </SettingsFormItem>
+
+      <SettingsFormItem name="padding" label="Padding" jsSetting>
+        <InputNumber min={1} readOnly={readOnly} style={{ width: '100%' }} />
+      </SettingsFormItem>
+
+      <SettingsFormItem name="margin" label="Margin" jsSetting>
+        <InputNumber min={1} readOnly={readOnly} style={{ width: '100%' }} />
       </SettingsFormItem>
     </>
   );

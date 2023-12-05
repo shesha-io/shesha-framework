@@ -3,9 +3,9 @@ import { Tag, Tooltip } from 'antd';
 import { QuestionCircleOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import { usePropertiesEditor } from '../provider';
 import DragHandle from './dragHandle';
-import { IModelItem } from '../../../../interfaces/modelConfigurator';
-import { getIconByDataType } from '../../../../utils/metadata';
-import ShaIcon from '../../../shaIcon';
+import { IModelItem } from '@/interfaces/modelConfigurator';
+import { getIconByDataType } from '@/utils/metadata';
+import ShaIcon from '@/components/shaIcon';
 
 export interface IProps extends IModelItem {
   index: number[];

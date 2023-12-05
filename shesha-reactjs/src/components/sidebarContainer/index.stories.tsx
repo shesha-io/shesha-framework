@@ -4,7 +4,7 @@ import SidebarContainer, { ISidebarContainerProps } from './';
 import { CollapsiblePanel } from '..';
 import { Button } from 'antd';
 import './styles/story.less';
-import StoryApp from '../storyBookApp';
+import StoryApp from '@/components/storyBookApp';
 
 export default {
   title: 'Components/SidebarContainer',

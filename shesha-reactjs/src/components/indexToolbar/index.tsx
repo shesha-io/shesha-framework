@@ -1,9 +1,9 @@
 import React, { FC } from 'react';
 import { nanoid } from 'nanoid/non-secure';
-import NodeOrFuncRenderer, { ReactNodeOrFunc } from '../nodeOrFuncRenderer';
+import NodeOrFuncRenderer, { ReactNodeOrFunc } from '@/components/nodeOrFuncRenderer';
 import { IToolbarItem } from '../../interfaces';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import ActionButtonGroup from '../actionButtonGroup';
+import ActionButtonGroup from '@/components/actionButtonGroup';
 import classNames from 'classnames';
 
 export interface IIndexToolbarProps {

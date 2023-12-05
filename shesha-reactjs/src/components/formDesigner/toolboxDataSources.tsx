@@ -2,12 +2,12 @@ import React, { FC, useMemo } from 'react';
 import { Collapse, Empty, Tooltip } from 'antd';
 import { useLocalStorage } from '../../hooks';
 import { useMetadata } from '../../providers';
-import { IDataSource } from '../../providers/formDesigner/models';
+import { IDataSource } from '@/providers/formDesigner/models';
 import SearchBox from './toolboxSearchBox';
 import DataSourceTree from './dataSourceTree';
-import { IPropertyMetadata, isEntityMetadata } from '../../interfaces/metadata';
-import { getClassNameFromFullName } from '../../providers/metadataDispatcher/utils';
-import { useFormDesigner } from '../../providers/formDesigner';
+import { IPropertyMetadata, isEntityMetadata } from '@/interfaces/metadata';
+import { getClassNameFromFullName } from '@/providers/metadataDispatcher/utils';
+import { useFormDesigner } from '@/providers/formDesigner';
 
 const { Panel } = Collapse;
 

@@ -1,4 +1,4 @@
-import { DynamicItemsEvaluationHook } from 'providers/dynamicActionsDispatcher/models';
+import { DynamicItemsEvaluationHook } from '@/providers/dynamicActionsDispatcher/models';
 import { createContext } from 'react';
 
 export interface IDynamicActionsStateContext {

@@ -1,9 +1,9 @@
 import React, { useState, useMemo, useRef } from 'react';
 import { Select } from 'antd';
 import { useDebouncedCallback } from 'use-debounce';
-import { useSubscribe } from '../..';
+import { useSubscribe } from '@/components/..';
 import { ReadOnlyDisplayFormItem } from './../readOnlyDisplayFormItem';
-import { useEntityAutocomplete } from '../../utils/autocomplete';
+import { useEntityAutocomplete } from '@/utils/autocomplete';
 import { AutocompleteItemDto, CustomLabeledValue, IEntityAutocompleteProps, ISelectOption } from './models';
 
 /**
@@ -38,6 +38,7 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
     subscribedEventNames,
     filter,
   } = props;
+
 
   const rawValue = typeof value === 'string' || Array.isArray(value) ? value : (value as any)?.id ?? undefined;
   /* todo: uncomment and test with arrays and numbers
@@ -159,7 +160,7 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
   const autocompleteValue = value || dataLoaded || fetchError ? wrapValue(value) : undefined;
   const selectPlaceholder = value && !dataLoaded && loading ? 'Loading...' : placeholder ?? '';
 
-  if (readOnly || disabled) {
+  if (readOnly) {
     return (
       <ReadOnlyDisplayFormItem
         value={autocompleteValue}

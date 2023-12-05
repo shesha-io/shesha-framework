@@ -1,9 +1,9 @@
 import { CloseCircleOutlined, DeleteOutlined, EditOutlined, PlusCircleOutlined, SaveOutlined } from '@ant-design/icons';
-import ActionButton, { IActionButtonProps } from 'components/actionButton/index';
 import React, { useMemo } from 'react';
-import { useCrud } from '../../../providers/crudContext';
-import { ITableCrudOperationsColumn } from '../../../providers/dataTable/interfaces';
+import { useCrud } from '@/providers/crudContext';
+import { ITableCrudOperationsColumn } from '@/providers/dataTable/interfaces';
 import { IHasColumnConfig } from './interfaces';
+import ActionButton, { IActionButtonProps } from '@/components/actionButton/index';
 
 export interface ICrudOperationsCellProps extends IHasColumnConfig<ITableCrudOperationsColumn> {}
 

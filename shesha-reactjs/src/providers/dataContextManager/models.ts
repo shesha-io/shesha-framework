@@ -1,5 +1,5 @@
-import { IModelMetadata } from "interfaces/metadata";
-import { IDataContextProviderActionsContext } from "providers/dataContextProvider";
+import { IModelMetadata } from "@/interfaces/metadata";
+import { IDataContextProviderActionsContext } from "@/providers/dataContextProvider";
 
 export interface IDataContextDescriptor extends IDataContextProviderActionsContext {
   id: string;

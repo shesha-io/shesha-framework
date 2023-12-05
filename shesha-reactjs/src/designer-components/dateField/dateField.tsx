@@ -2,17 +2,17 @@ import { CalendarOutlined } from '@ant-design/icons';
 import { DatePicker, message } from 'antd';
 import moment, { isMoment } from 'moment';
 import React, { FC, Fragment } from 'react';
-import ConfigurableFormItem from 'components/formDesigner/components/formItem';
-import { customDateEventHandler } from 'components/formDesigner/components/utils';
-import ReadOnlyDisplayFormItem from 'components/readOnlyDisplayFormItem';
-import { IToolboxComponent } from 'interfaces';
-import { DataTypes } from 'interfaces/dataTypes';
+import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { customDateEventHandler } from '@/components/formDesigner/components/utils';
+import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
+import { IToolboxComponent } from '@/interfaces';
+import { DataTypes } from '@/interfaces/dataTypes';
 import { useForm, useFormData, useGlobalState, useMetadata, useSheshaApplication } from '../../providers';
-import { FormMarkup } from 'providers/form/models';
-import { getStyle, validateConfigurableComponentSettings } from 'providers/form/utils';
-import { getMoment } from 'utils/date';
-import { getDataFormat } from 'utils/metadata';
-import { axiosHttp } from 'utils/fetchers';
+import { FormMarkup } from '@/providers/form/models';
+import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { getMoment } from '@/utils/date';
+import { getDataFormat } from '@/utils/metadata';
+import { axiosHttp } from '@/utils/fetchers';
 import { IDateFieldProps, RangePickerChangeEvent, TimePickerChangeEvent } from './interfaces';
 import settingsFormJson from './settingsForm.json';
 import {
@@ -23,8 +23,8 @@ import {
   getFormat,
   getRangePickerValues,
 } from './utils';
-import { migratePropertyName, migrateCustomFunctions } from '../../designer-components/_common-migrations/migrateSettings';
-import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 const MIDNIGHT_MOMENT = moment('00:00:00', 'HH:mm:ss');
 

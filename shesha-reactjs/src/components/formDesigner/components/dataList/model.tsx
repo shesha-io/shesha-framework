@@ -1,7 +1,7 @@
-import { IDataListBaseProps, InlineEditMode } from "components/dataList/models";
-import { YesNoInherit } from "interfaces";
-import { IConfigurableActionConfiguration, IConfigurableFormComponent } from "providers";
-import { DataTableFullInstance } from "providers/dataTable/contexts";
+import { IDataListBaseProps, InlineEditMode } from "@/components/dataList/models";
+import { IConfigurableActionConfiguration, IConfigurableFormComponent, YesNoInherit } from "@/index";
+import { DataTableFullInstance } from "@/providers/dataTable/contexts";
+
 
 export interface IDataListComponentProps extends IDataListBaseProps, IDataListInlineEditableProps, IConfigurableFormComponent {
 }

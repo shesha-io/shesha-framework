@@ -3,8 +3,8 @@ import { Empty, Form } from 'antd';
 import { useDebouncedCallback } from 'use-debounce';
 import { ConfigurableForm } from '../../..';
 import { usePropertiesEditor } from '../provider';
-import { FormMarkup } from '../../../../providers/form/models';
-import { ConfigurableFormInstance } from '../../../../providers/form/contexts';
+import { FormMarkup } from '@/providers/form/models';
+import { ConfigurableFormInstance } from '@/providers/form/contexts';
 import propertySettingsJson from './propertySettings.json';
 import { nanoid } from 'nanoid';
 

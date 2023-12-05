@@ -2,7 +2,7 @@ import React, { FC, useState } from 'react';
 import { InputNumber } from 'antd';
 import { IFormComponent } from '../../../interfaces';
 import FormComponentDisplay from '../formComponentDisplay';
-import { NumberValueChange } from '../../../interfaces/formComponent';
+import { NumberValueChange } from '@/interfaces/formComponent';
 
 export const FormComponentNumberDisplay: FC<IFormComponent> = ({ name, isEditting, value, editable, onChange }) => {
   const [val, changeVal] = useState(value as number);

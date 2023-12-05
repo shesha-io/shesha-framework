@@ -1,10 +1,10 @@
-import { IconType } from "../components/shaIcon";
-import { DataTypes } from "../interfaces/dataTypes";
-import { IPropertyMetadata, isEntityReferencePropertyMetadata } from "../interfaces/metadata";
-import { camelcaseDotNotation } from "../utils/string";
-import ShaIcon from '../components/shaIcon';
-import GenericOutlined from "../icons/genericOutlined";
-import { JsonOutlined } from "../icons/jsonOutlined";
+import { IconType } from "@/components/shaIcon";
+import { DataTypes } from "@/interfaces/dataTypes";
+import { IPropertyMetadata, isEntityReferencePropertyMetadata } from "@/interfaces/metadata";
+import { camelcaseDotNotation } from "@/utils/string";
+import ShaIcon from '@/components/shaIcon';
+import GenericOutlined from "@/icons/genericOutlined";
+import { JsonOutlined } from "@/icons/jsonOutlined";
 import { toCamelCase } from './string';
 
 export const getIconByDataType = (dataType: string): IconType => {

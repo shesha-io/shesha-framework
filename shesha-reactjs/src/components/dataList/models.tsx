@@ -1,8 +1,8 @@
-import { IConfigurableActionConfiguration } from 'interfaces/configurableAction';
-import { IPropertyMetadata } from 'interfaces/metadata';
-import { ISelectionProps } from 'providers/dataTable/contexts';
-import { ISortingItem } from 'providers/dataTable/interfaces';
-import { FormIdentifier } from '../..';
+import { FormIdentifier } from '@/index';
+import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
+import { IPropertyMetadata } from '@/interfaces/metadata';
+import { ISelectionProps } from '@/providers/dataTable/contexts';
+import { ISortingItem } from '@/providers/dataTable/interfaces';
 
 export type DataListSelectionMode = 'none' | 'single' | 'multiple';
 export type FormSelectionMode = 'name' | 'view' | 'expression';

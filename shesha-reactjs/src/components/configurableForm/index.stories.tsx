@@ -4,10 +4,10 @@ import ConfigurableForm from '.';
 import { Button, Col, Form, Row } from 'antd';
 import { IConfigurableFormProps } from './models';
 import { StoredFilesProvider } from '../../providers';
-import StoredFilesRenderer from '../storedFilesRenderer';
-import { addStory } from '../../stories/utils';
-import { ConfigurableFormInstance } from '../../providers/form/contexts';
-import StoryApp from '../storyBookApp';
+import StoredFilesRenderer from '@/components/storedFilesRenderer';
+import { addStory } from '@/stories/utils';
+import { ConfigurableFormInstance } from '@/providers/form/contexts';
+import StoryApp from '@/components/storyBookApp';
 
 export default {
   title: 'Components/ConfigurableForm',

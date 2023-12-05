@@ -2,8 +2,8 @@ import { DeleteFilled, QuestionCircleOutlined, SettingOutlined } from '@ant-desi
 import { Button, Space, Tooltip } from 'antd';
 import classNames from 'classnames';
 import React, { FC, useState } from 'react';
-import { useTableViewSelectorConfigurator } from '../../../providers/tableViewSelectorConfigurator';
-import { ITableViewProps } from '../../../providers/tableViewSelectorConfigurator/models';
+import { useTableViewSelectorConfigurator } from '@/providers/tableViewSelectorConfigurator';
+import { ITableViewProps } from '@/providers/tableViewSelectorConfigurator/models';
 import DragHandle from './dragHandle';
 
 export interface IProps extends ITableViewProps {

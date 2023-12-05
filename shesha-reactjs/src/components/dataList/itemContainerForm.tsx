@@ -1,8 +1,6 @@
+import { ConfigurableFormComponent, joinStringValues, useForm } from '@/index';
 import React, { CSSProperties, FC, PropsWithChildren } from 'react';
-import { useForm } from 'providers/form';
-import { joinStringValues } from 'utils';
-import { IComponentsContainerProps } from 'components/formDesigner/containers/componentsContainer';
-import { ConfigurableFormComponent } from 'components';
+import { IComponentsContainerProps } from '../formDesigner/containers/componentsContainer';
 
 export const ItemContainerForm: FC<PropsWithChildren <IComponentsContainerProps>> = (props) => {
   const form = useForm();

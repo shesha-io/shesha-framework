@@ -1,11 +1,11 @@
 import React, { FC, MutableRefObject, useMemo } from 'react';
-import { IFormLayoutSettings, ISettingsFormFactory, ISettingsFormInstance, IToolboxComponent } from 'interfaces';
+import { IFormLayoutSettings, ISettingsFormFactory, ISettingsFormInstance, IToolboxComponent } from '@/interfaces';
 import { Empty } from 'antd';
 import { useDebouncedCallback } from 'use-debounce';
-import { FormMarkup } from 'providers/form/models';
+import { FormMarkup } from '@/providers/form/models';
 import GenericSettingsForm from '../genericSettingsForm';
-import { IConfigurableFormComponent, useMetadataDispatcher } from 'providers';
-import { MetadataContext } from 'providers/metadata/contexts';
+import { IConfigurableFormComponent, useMetadataDispatcher } from '@/providers';
+import { MetadataContext } from '@/providers/metadata/contexts';
 
 export interface IComponentPropertiesEditorProps {
   toolboxComponent: IToolboxComponent;

@@ -2,8 +2,8 @@ import { Checkbox, Col, Row } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { ShaSpin } from '../../';
 import React, { FC } from 'react';
-import { useReferenceList } from '../../providers/referenceListDispatcher';
-import { getLegacyReferenceListIdentifier } from '../../utils/referenceList';
+import { useReferenceList } from '@/providers/referenceListDispatcher';
+import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
 
 export interface IMultiCheckBoxRefListProps {
   readonly listName: string;

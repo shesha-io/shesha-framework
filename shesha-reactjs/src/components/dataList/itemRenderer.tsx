@@ -1,9 +1,8 @@
-import { ComponentsContainer } from "components";
-import { FormRawMarkup, IFormSettings } from "providers";
-import { CrudProvider } from "providers/crudContext/index";
-import { CrudMode } from "providers/crudContext/models";
-import { ComponentsContainerProvider } from "providers/form/nesting/containerContext";
-import { FormMarkupConverter } from "providers/formMarkupConverter/index";
+import { ComponentsContainer, FormRawMarkup, IFormSettings } from "@/index";
+import { CrudProvider } from "@/providers/crudContext/index";
+import { CrudMode } from "@/providers/crudContext/models";
+import { ComponentsContainerProvider } from "@/providers/form/nesting/containerContext";
+import { FormMarkupConverter } from "@/providers/formMarkupConverter/index";
 import React, { FC } from "react";
 import CrudActionButtons from "./crudActionButtons";
 import { ItemContainerForm } from "./itemContainerForm";

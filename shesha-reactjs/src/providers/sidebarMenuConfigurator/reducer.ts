@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid/non-secure';
 import { handleActions } from 'redux-actions';
-import { ISidebarMenuItem } from '../../interfaces/sidebar';
+import { ISidebarMenuItem } from '@/interfaces/sidebar';
 import { SidebarMenuActionEnums } from './actions';
 import {
   ISidebarMenuConfiguratorStateContext,

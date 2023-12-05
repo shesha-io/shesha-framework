@@ -11,17 +11,17 @@ import {
   useGlobalState,
   useSheshaApplication,
   validateConfigurableComponentSettings,
-} from '../../../..';
-import { axiosHttp } from 'utils/fetchers';
-import { getStyle } from 'providers/form/utils';
-import { IconType } from '../../../shaIcon';
+} from '@/components/..';
+import { axiosHttp } from '@/utils/fetchers';
+import { getStyle } from '@/providers/form/utils';
+import { IconType } from '@/components/shaIcon';
 import { getSettings } from './settings';
 import moment from 'moment';
 import { customRateEventHandler } from '../utils';
 import _ from 'lodash';
 import classNames from 'classnames';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
-import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 export interface IRateProps extends IConfigurableFormComponent {
   value?: number;

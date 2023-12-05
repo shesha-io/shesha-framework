@@ -1,4 +1,4 @@
-import { IModelMetadata, IPropertyMetadata } from "interfaces/metadata";
+import { IModelMetadata, IPropertyMetadata } from "@/interfaces/metadata";
 
 export interface IDebugDataTreeProps {
     name: string;

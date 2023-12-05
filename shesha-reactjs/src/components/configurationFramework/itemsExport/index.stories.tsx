@@ -1,8 +1,8 @@
 import React, { useRef } from 'react';
 import { Story, Meta } from '@storybook/react';
 import ConfigurationItemsExport from './';
-import StoryApp from '../../storyBookApp';
-import { addStory } from '../../../stories/utils';
+import StoryApp from '@/components/storyBookApp';
+import { addStory } from '@/stories/utils';
 import { Modal } from 'antd';
 
 export default {

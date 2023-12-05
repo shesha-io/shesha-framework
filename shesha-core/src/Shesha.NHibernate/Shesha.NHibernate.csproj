@@ -40,5 +40,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Shesha.Core\Shesha.Core.csproj" />
     <ProjectReference Include="..\Shesha.FluentMigrator\Shesha.FluentMigrator.csproj" />
+    <ProjectReference Include="..\Shesha.Framework\Shesha.Framework.csproj" />
   </ItemGroup>
 </Project>

@@ -1,14 +1,14 @@
-import { IToolboxComponent } from 'interfaces';
+import { IToolboxComponent } from '@/interfaces';
 import { ISizableColumnComponentProps } from './interfaces';
 import { BorderHorizontalOutlined } from '@ant-design/icons';
 import React, { Fragment } from 'react';
-import { useFormData, useGlobalState } from 'providers';
+import { useFormData, useGlobalState } from '@/providers';
 import Split from 'react-split';
-import ComponentsContainer from 'components/formDesigner/containers/componentsContainer';
-import { getStyle } from 'utils/publicUtils';
+import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
+import { getLayoutStyle } from '@/utils/publicUtils';
 import { nanoid } from 'nanoid';
 import { SizableColumnsSettingsForm } from './sizableColumnsSettings';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 
 const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> = {
   type: 'sizableColumns',
@@ -18,7 +18,7 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
     const { data } = useFormData();
     const { globalState } = useGlobalState();
     const { columns } = model as ISizableColumnComponentProps;
-    const style = { ...getStyle(model?.style, data, globalState), display: 'flex' };
+    const style = { ...getLayoutStyle(model, { data, globalState }), display: 'flex' };
 
     if (model.hidden) return null;
 
@@ -50,9 +50,11 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
     return tabsModel;
   },
   settingsFormFactory: (props) => <SizableColumnsSettingsForm {...props} />,
-  migrator: m => m
-    .add<ISizableColumnComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)) as ISizableColumnComponentProps)
-  ,
+  migrator: (m) =>
+    m.add<ISizableColumnComponentProps>(
+      0,
+      (prev) => migratePropertyName(migrateCustomFunctions(prev)) as ISizableColumnComponentProps
+    ),
   customContainerNames: ['columns'],
 };
 

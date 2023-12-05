@@ -1,8 +1,8 @@
-import { EntityCrudActions } from 'providers/dynamicActions/implementations/entityCrudActions';
-import { ReportingActions } from 'providers/dynamicActions/implementations/reportingActions';
+import { EntityCrudActions } from '@/providers/dynamicActions/implementations/entityCrudActions';
+import { ReportingActions } from '@/providers/dynamicActions/implementations/reportingActions';
 import React, { FC, PropsWithChildren } from 'react';
 import { GlobalStateProvider, ShaApplicationProvider, SidebarMenuDefaultsProvider } from '../../providers';
-import AuthContainer from '../authedContainer';
+import AuthContainer from '@/components/authedContainer';
 // require('antd/dist/antd.less');
 
 const DEFAULT_ROUTER = {

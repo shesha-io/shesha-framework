@@ -17,12 +17,12 @@ import { IReactTableProps, OnRowsReorderedArgs } from './interfaces';
 import { nanoid } from 'nanoid/non-secure';
 import { useDeepCompareEffect, usePrevious } from 'react-use';
 import { RowDragHandle, SortableRow, TableRow } from './tableRow';
-import ConditionalWrap from '../conditionalWrapper';
+import ConditionalWrap from '@/components/conditionalWrapper';
 import { IndeterminateCheckbox } from './indeterminateCheckbox';
 import { getPlainValue } from '../../utils';
 import NewTableRowEditor from './newTableRowEditor';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
-import { useDataTableStore } from 'providers/index';
+import { useDataTableStore } from '@/providers/index';
 
 interface IReactTableState {
   allRows: any[];
@@ -296,7 +296,7 @@ export const ReactTable: FC<IReactTableProps> = ({
 
   useEffect(() => {
     if (onResizedChange) {
-      onResizedChange(state?.columnResizing);
+      onResizedChange(tableColumns, state?.columnResizing);
     }
   }, [state?.columnResizing]);
 

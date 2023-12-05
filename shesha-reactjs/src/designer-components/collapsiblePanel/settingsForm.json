@@ -8,9 +8,8 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
-      "version": 2,
+      "version": 4,
       "expandIconPosition": "start",
       "collapsible": "header",
       "ghost": true,
@@ -30,7 +29,7 @@
             "validate": {
               "required": true
             },
-            "version": 0,
+            "version": 2,
             "textType": "text"
           },
           {
@@ -39,7 +38,7 @@
             "propertyName": "label",
             "parentId": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
             "label": "Label",
-            "version": 0,
+            "version": 2,
             "textType": "text"
           },
           {
@@ -67,7 +66,7 @@
             ],
             "dataSourceType": "values",
             "validate": {},
-            "version": 1,
+            "version": 3,
             "useRawValues": false,
             "referenceListId": null
           },
@@ -96,7 +95,7 @@
             ],
             "dataSourceType": "values",
             "validate": {},
-            "version": 1,
+            "version": 3,
             "useRawValues": false,
             "referenceListId": null
           },
@@ -108,18 +107,19 @@
             "labelAlign": "right",
             "parentId": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
             "hidden": false,
-
             "isDynamic": false,
             "description": "",
             "validate": {},
-            "settingsValidationErrors": []
+            "settingsValidationErrors": [],
+            "version": 1
           },
           {
             "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
             "type": "checkbox",
             "propertyName": "hidden",
             "parentId": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
-            "label": "Hidden"
+            "label": "Hidden",
+            "version": 1
           },
           {
             "id": "41924074-296C-4E4D-820A-DC29EC2C7B92",
@@ -129,11 +129,11 @@
             "labelAlign": "right",
             "parentId": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
             "hidden": false,
-
             "isDynamic": false,
             "description": "Make the collapse borderless and its background transparent",
             "validate": {},
-            "settingsValidationErrors": []
+            "settingsValidationErrors": [],
+            "version": 1
           }
         ]
       }
@@ -146,9 +146,8 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
-      "version": 2,
+      "version": 4,
       "expandIconPosition": "start",
       "collapsible": "header",
       "ghost": true,
@@ -159,6 +158,22 @@
       "content": {
         "id": "f47668c1-e424-4d18-850e-6d712e48211d",
         "components": [
+          {
+            "textType": "text",
+            "id": "b1M4TO4K1t3pl8pyM2mOK",
+            "type": "textField",
+            "propertyName": "className",
+            "componentName": "className",
+            "label": "Custom CSS Class",
+            "labelAlign": "right",
+            "parentId": "f47668c1-e424-4d18-850e-6d712e48211d",
+            "hidden": false,
+            "isDynamic": false,
+            "version": 2,
+            "description": "Custom CSS Class to add to this component",
+            "validate": {},
+            "settingsValidationErrors": []
+          },
           {
             "id": "e029c4ed-6415-412f-be9e-73dddff4037c",
             "type": "codeEditor",
@@ -184,7 +199,28 @@
                 "description": "The global state of the application",
                 "type": "object"
               }
-            ]
+            ],
+            "version": 1
+          },
+          {
+            "id": "a5e5f68d-5c9e-44df-a213-31b1ea169d57",
+            "type": "numberField",
+            "propertyName": "padding",
+            "parentId": "f47668c1-e424-4d18-850e-6d712e48211d",
+            "label": "Padding",
+            "validate": {},
+            "settingsValidationErrors": [],
+            "description": "Enter a number to set the padding of the component"
+          },
+          {
+            "id": "3ccc25e6-49eb-4669-a73b-8d1e7681cb05",
+            "type": "numberField",
+            "propertyName": "margin",
+            "parentId": "f47668c1-e424-4d18-850e-6d712e48211d",
+            "label": "Margin",
+            "validate": {},
+            "settingsValidationErrors": [],
+            "description": "Enter a number to set the margin of the component"
           }
         ]
       }
@@ -197,9 +233,8 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
-      "version": 2,
+      "version": 4,
       "expandIconPosition": "start",
       "collapsible": "header",
       "ghost": true,
@@ -218,11 +253,11 @@
             "labelAlign": "right",
             "parentId": "bc67960e-77e3-40f2-89cc-f18f94678cce",
             "hidden": false,
-
             "isDynamic": false,
             "description": "Allows to hide the panel when all components are hidden due to some conditions",
             "validate": {},
-            "settingsValidationErrors": []
+            "settingsValidationErrors": [],
+            "version": 1
           }
         ]
       }

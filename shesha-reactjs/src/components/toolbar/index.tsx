@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { nanoid } from 'nanoid/non-secure';
-import NodeOrFuncRenderer, { ReactNodeOrFunc } from '../nodeOrFuncRenderer';
+import NodeOrFuncRenderer, { ReactNodeOrFunc } from '@/components/nodeOrFuncRenderer';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import classNames from 'classnames';
 import ToolbarButtonGroup from './toolbarButtons';

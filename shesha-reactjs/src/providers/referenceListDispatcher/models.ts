@@ -1,5 +1,5 @@
-import { IReferenceList } from '../../interfaces/referenceList';
-import { PromisedValue } from '../../utils/promises';
+import { IReferenceList } from '@/interfaces/referenceList';
+import { PromisedValue } from '@/utils/promises';
 
 export interface IReferenceListDictionary {
   [key: string]: PromisedValue<IReferenceList>;

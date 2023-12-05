@@ -8,19 +8,19 @@ import React, {
   useRef
 } from 'react';
 import { advancedFilter2JsonLogic, getCurrentSorting, getTableDataColumns } from './utils';
-import { DataContextProvider, useDataContext } from 'providers/dataContextProvider';
+import { DataContextProvider, useDataContext } from '@/providers/dataContextProvider';
 import { dataTableReducer } from './reducer';
 import { getFlagSetters } from '../utils/flagsSetters';
 import { IHasModelType, IHasRepository, IRepository } from './repository/interfaces';
 import { isEqual, sortBy } from 'lodash';
-import { MetadataProvider } from 'providers/metadata';
+import { MetadataProvider } from '@/providers/metadata';
 import { Row } from 'react-table';
-import { useConfigurableAction } from '../configurableActionsDispatcher';
+import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { useDebouncedCallback } from 'use-debounce';
-import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
-import { useGlobalState } from '../globalState';
-import { useLocalStorage } from 'hooks';
-import { useThunkReducer } from '../../hooks/thunkReducer';
+import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
+import { useGlobalState } from '@/providers/globalState';
+import { useLocalStorage } from '@/hooks';
+import { useThunkReducer } from '@/hooks/thunkReducer';
 import { withBackendRepository } from './repository/backendRepository';
 import { withFormFieldRepository } from './repository/inMemoryRepository';
 import { withNullRepository } from './repository/nullRepository';
@@ -46,7 +46,7 @@ import {
   setDataFetchingModeAction,
   setModelTypeAction,
   setPredefinedFiltersAction,
-  setHiddenFilterAction,
+  setPermanentFilterAction,
   setRowDataAction,
   toggleColumnFilterAction,
   toggleColumnVisibilityAction,
@@ -68,6 +68,8 @@ import {
   IDataTableUserConfig,
   IDataTableActionsContext,
   DragState,
+  ITableColumnUserSettings,
+  IColumnWidth,
 } from './contexts';
 import {
   ColumnFilter,
@@ -85,6 +87,8 @@ import {
   DataFetchDependencies,
   DataFetchDependency,
   DataFetchDependencyStateSwitcher,
+  ITableColumn,
+  FilterExpression,
 } from './interfaces';
 import {
   IConfigurableColumnsProps, IDataColumnsProps,
@@ -117,6 +121,10 @@ interface IDataTableProviderBaseProps {
   strictSortBy?: string;
   strictSortOrder?: ColumnSorting;
   allowReordering?: boolean;
+  /**
+   * Permanent filter exepression. Always applied irrespectively of other filters
+   */
+  permanentFilter?: FilterExpression;
 }
 
 interface IDataTableProviderWithRepositoryProps extends IDataTableProviderBaseProps, IHasRepository, IHasModelType { }
@@ -166,23 +174,21 @@ const getFilter = (state: IDataTableStateContext): string => {
   const allFilters = state.predefinedFilters ?? [];
 
   const filters = allFilters.filter(f => (state.selectedStoredFilterIds && state.selectedStoredFilterIds.indexOf(f.id) > -1));
-  const { hiddenFilters } = state;
+  const { permanentFilter } = state;
 
-  if (hiddenFilters) {
-    for (const owner in hiddenFilters) {
-      if (hiddenFilters.hasOwnProperty(owner) && hiddenFilters[owner]) {
-        filters.push(hiddenFilters[owner]);
-      }
-    }
-  }
+  const filterExpression2Object = (filter: FilterExpression): object => {
+    return typeof filter === 'string' ? JSON.parse(filter) : filter;
+  };
 
   let expressions = [];
   filters.forEach((f) => {
     if (f.expression) {
-      const jsonLogic = typeof f.expression === 'string' ? JSON.parse(f.expression) : f.expression;
-      expressions.push(jsonLogic);
+      expressions.push(filterExpression2Object(f.expression));
     }
   });
+  // add permanent filter if specified
+  if (permanentFilter)
+    expressions.push(filterExpression2Object(permanentFilter));
 
   if (state.tableFilter) {
     const advancedFilter = advancedFilter2JsonLogic(state.tableFilter, state.columns);
@@ -273,6 +279,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     strictSortOrder,
     standardSorting: sortingItems,
     allowReordering = false,
+    permanentFilter,
   } = props;
 
   const [state, dispatch] = useThunkReducer(dataTableReducer, {
@@ -287,14 +294,19 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     strictSortOrder,
     allowReordering,
     standardSorting: sortingItems2ColumnSorting(sortingItems),
+    permanentFilter,
   });
 
   useEffect(() => {
     // sync page size on settings change
-    if (state.selectedPageSize !== initialPageSize){
-      changePageSize(initialPageSize);      
+    if (state.selectedPageSize !== initialPageSize) {
+      changePageSize(initialPageSize);
     }
   }, [initialPageSize]);
+
+  useEffect(() => {
+    setPermanentFilter(permanentFilter);
+  }, [permanentFilter]);
 
   const { setState: setGlobalState } = useGlobalState();
   const tableIsReady = useRef(false);
@@ -360,7 +372,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     state.standardSorting,
     state.grouping,
     state.userSorting,
-    state.hiddenFilters,
+    state.permanentFilter,
     state.predefinedFilters,
     repository,
     state.groupingColumns,
@@ -373,7 +385,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   const requireColumns = () => {
     requireColumnRef.current = true;
   };
-  const dataFetchDependencies = useRef<DataFetchDependencies>({});  
+  const dataFetchDependencies = useRef<DataFetchDependencies>({});
   const registerDataFetchDependency = (ownerId: string, dependency: DataFetchDependency) => {
     dataFetchDependencies.current[ownerId] = dependency;
   };
@@ -383,10 +395,10 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   const isDataDependenciesReady = (): boolean => {
     const deps = dataFetchDependencies.current;
-    for (const depName in deps){
+    for (const depName in deps) {
       if (deps.hasOwnProperty(depName) && deps[depName].state !== 'ready')
         return false;
-    }    
+    }
     return true;
   };
 
@@ -447,19 +459,41 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     debouncedFetchInternal(payload);
   };
 
+  const getColumnsUserSettings = (column: ITableColumn): ITableColumnUserSettings => {
+    return {
+      id: column.id,
+      show: column.show,
+      width: column.width,
+    };
+  };
+
   const saveUserSettings = (state: IDataTableStateContext) => {
     // don't save value if it's set to default, it helps to apply defaults
     const pageSize = state.selectedPageSize === initialPageSize ? null : state.selectedPageSize;
 
-    setUserConfig({
+    const settings: IDataTableUserConfig = {
       pageSize: pageSize,
       currentPage: state.currentPage,
       quickSearch: state.quickSearch,
-      columns: state.columns,
+      columns: state.columns?.map(getColumnsUserSettings),
       tableSorting: state.userSorting,
       advancedFilter: state.tableFilter,
       selectedFilterIds: state.selectedStoredFilterIds,
+    };
+
+    setUserConfig(settings);
+  };
+
+  const setColumnWidths = (widths: IColumnWidth[]) => {
+    if (!userConfig)
+      return;
+
+    widths.forEach(wc => {
+      const userColumn = userConfig.columns.find(c => c.id === wc.id);
+      if (userColumn)
+        userColumn.width = wc.width;
     });
+    setUserConfig(userConfig);    
   };
 
   const fetchTableDataInternal = (payload: IGetListDataPayload) => {
@@ -540,23 +574,6 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     }
   };
 
-  /*const changeSelectedRow = (val: any) => {
-    const rowId = val?.id;
-    const currentId = state.selectedRow?.id;
-
-    // Initialize selectedRow to null
-    let selectedRow = null;
-
-    // If IDs are different and newRow exists, convert the newRow keys to camelCase
-    if (newRowId !== currentRowId && newRow) {
-      selectedRow = camelCaseKeys(newRow, { deep: true });
-    }
-
-    // todo: check current row mode and allow to toggle selection if row is in the read mode
-    // Dispatch the updated row
-    dispatch(changeSelectedRowAction(selectedRow));
-  };*/
-
   const changeActionedRow = (val: any) => {
     dispatch(changeActionedRowAction(val ? camelCaseKeys(val, { deep: true }) : null));
   };
@@ -574,10 +591,10 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     }
   };
 
-  const setHiddenFilter = (owner: string, filter: IStoredFilter) => {
-    const currentFilter = state.hiddenFilters ? state.hiddenFilters[owner] : null;
+  const setPermanentFilter = (filter: FilterExpression) => {
+    const currentFilter = state.permanentFilter;
     if (!isEqual(currentFilter, filter))
-      dispatch(setHiddenFilterAction({ owner, filter }));
+      dispatch(setPermanentFilterAction({ filter }));
   };
 
   const changeSelectedIds = (selectedIds: string[]) => {
@@ -599,15 +616,15 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   };
 
   const onSort = (sorting: IColumnSorting[]) => {
-    if (tableIsReady.current === true){
+    if (tableIsReady.current === true) {
       dispatch(onSortAction(sorting));
-    }      
+    }
   };
 
   const onGroup = (grouping: ISortingItem[]) => {
-    if (tableIsReady.current === true){
+    if (tableIsReady.current === true) {
       dispatch(onGroupAction(grouping));
-    }      
+    }
   };
 
   const flagSetters = getFlagSetters(dispatch);
@@ -765,7 +782,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     changeActionedRow,
     changeSelectedStoredFilterIds,
     setPredefinedFilters,
-    setHiddenFilter,
+    setPermanentFilter,
     changeSelectedIds,
     refreshTable,
     registerConfigurableColumns,
@@ -780,11 +797,12 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     requireColumns,
     registerDataFetchDependency,
     unregisterDataFetchDependency,
+    setColumnWidths,
   };
 
   /* Data Context section */
 
-  /*const contextOnChangeData = <T,>(_data: T, changedData: IDataTableStateContext) => {
+  const contextOnChangeData = <T,>(_data: T, changedData: IDataTableStateContext) => {
     if (!changedData)
       return;
 
@@ -818,7 +836,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   ctx.updateApi(actions); // update context api to use relevant State
   ctx.updateOnChangeData(contextOnChangeData); // update context.onChangeData function to use relevant State
-*/
+
   /* Data Context section */
 
 

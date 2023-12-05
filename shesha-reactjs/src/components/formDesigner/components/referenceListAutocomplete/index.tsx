@@ -1,13 +1,13 @@
-import { IToolboxComponent } from 'interfaces';
-import { FormMarkup, IConfigurableFormComponent } from 'providers/form/models';
+import { IToolboxComponent } from '@/interfaces';
+import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
 import { FileSearchOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '../formItem';
 import settingsFormJson from './settingsForm.json';
 import React from 'react';
-import { validateConfigurableComponentSettings } from 'providers/form/utils';
-import { useForm } from 'providers';
-import ReferenceListAutocomplete from '../../../referenceListAutocomplete';
-import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { useForm } from '@/providers';
+import ReferenceListAutocomplete from '@/components/referenceListAutocomplete';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 
 export interface IReferenceListAutocompleteProps extends IConfigurableFormComponent {
 }

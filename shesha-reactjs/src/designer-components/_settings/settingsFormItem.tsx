@@ -5,7 +5,7 @@ import { useSettingsForm } from './settingsForm';
 import { useSettingsPanel } from './settingsCollapsiblePanel';
 import { getPropertySettingsFromData } from './utils';
 import './styles/index.less';
-import { ConfigurableFormItem, IConfigurableFormItemProps } from 'components';
+import { ConfigurableFormItem, IConfigurableFormItemProps } from '@/components';
 
 interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps, 'model'> {
     name?: string;

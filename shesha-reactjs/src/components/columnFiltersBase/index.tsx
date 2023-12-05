@@ -1,12 +1,12 @@
 import React, { FC } from 'react';
-import { ColumnItemFilter } from '../columnItemFilter';
+import { ColumnItemFilter } from '@/components/columnItemFilter';
 import {
   IndexColumnFilterOption,
   ITableColumn,
   ColumnFilter,
   ITableFilter,
-} from '../../providers/dataTable/interfaces';
-import { getTableDataColumns } from '../../providers/dataTable/utils';
+} from '@/providers/dataTable/interfaces';
+import { getTableDataColumns } from '@/providers/dataTable/utils';
 
 export interface IColumnFiltersBaseProps {
   columns: ITableColumn[];

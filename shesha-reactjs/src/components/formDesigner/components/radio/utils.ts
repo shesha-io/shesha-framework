@@ -1,10 +1,10 @@
 import { RadioChangeEvent, SpaceProps } from 'antd';
-import { IConfigurableFormComponent } from 'interfaces';
+import { IConfigurableFormComponent } from '@/interfaces';
 import { nanoid } from 'nanoid/non-secure';
-import { IReferenceListIdentifier } from 'interfaces/referenceList';
+import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { CSSProperties } from 'react';
-import { ReferenceListItemDto } from '../../../../apis/referenceList';
-import { DataSourceType, ILabelValue } from '../../../../designer-components/dropdown/interfaces';
+import { ReferenceListItemDto } from '@/apis/referenceList';
+import { DataSourceType, ILabelValue } from '@/designer-components/dropdown/interfaces';
 
 export interface IRadioProps extends Omit<IConfigurableFormComponent, 'style'> {
   items?: ILabelValue[];

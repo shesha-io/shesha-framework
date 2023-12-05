@@ -1,7 +1,7 @@
 import { nanoid } from 'nanoid';
 import { useMemo } from 'react';
-import { ITableColumnsBuilder, TableColumnsFluentSyntax } from '../providers/dataTable/interfaces';
-import { IConfigurableColumnsProps } from '../providers/datatableColumnsConfigurator/models';
+import { ITableColumnsBuilder, TableColumnsFluentSyntax } from '@/providers/dataTable/interfaces';
+import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 
 const getColumnsBuilder = (): ITableColumnsBuilder => {
   const builder: ITableColumnsBuilder = {

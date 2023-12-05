@@ -1,24 +1,24 @@
 import axios, { AxiosResponse } from "axios";
-import { useMetadataDispatcher, useSheshaApplication } from "providers";
-import { IResult } from "interfaces/result";
-import { IHttpHeadersDictionary } from "providers/sheshaApplication/contexts";
+import { useMetadataDispatcher, useSheshaApplication } from "@/providers";
+import { IResult } from "@/interfaces/result";
+import { IHttpHeadersDictionary } from "@/providers/sheshaApplication/contexts";
 import qs from "qs";
 import React, { ComponentType, useMemo } from "react";
 import { FC } from "react";
-import { camelcaseDotNotation } from "utils/string";
+import { camelcaseDotNotation } from "@/utils/string";
 import { DataTableColumnDto, IExcelColumn, IExportExcelPayload, IGetDataFromBackendPayload, IGetListDataPayload, ITableDataColumn, ITableDataInternalResponse, ITableDataResponse } from "../interfaces";
 import { IRepository, IHasRepository, IHasModelType, RowsReorderPayload, EntityReorderPayload, EntityReorderItem, EntityReorderResponse, SupportsReorderingArgs, SupportsGroupingArgs } from "./interfaces";
-import { convertDotNotationPropertiesToGraphQL } from "providers/form/utils";
-import { IConfigurableColumnsProps, IDataColumnsProps } from "providers/datatableColumnsConfigurator/models";
-import { IMetadataDispatcherActionsContext } from "providers/metadataDispatcher/contexts";
-import { IEntityEndpointsEvaluator, useModelApiHelper } from "components/configurableForm/useActionEndpoint";
-import { IApiEndpoint, isEntityReferencePropertyMetadata, StandardEntityActions } from "interfaces/metadata";
-import { IUseMutateResponse, useMutate } from "hooks/useMutate";
-import { IErrorInfo } from "interfaces/errorInfo";
-import { IAjaxResponseBase } from "interfaces/ajaxResponse";
+import { convertDotNotationPropertiesToGraphQL } from "@/providers/form/utils";
+import { IConfigurableColumnsProps, IDataColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
+import { IMetadataDispatcherActionsContext } from "@/providers/metadataDispatcher/contexts";
+import { IEntityEndpointsEvaluator, useModelApiHelper } from "@/components/configurableForm/useActionEndpoint";
+import { IApiEndpoint, isEntityReferencePropertyMetadata, StandardEntityActions } from "@/interfaces/metadata";
+import { IUseMutateResponse, useMutate } from "@/hooks/useMutate";
+import { IErrorInfo } from "@/interfaces/errorInfo";
+import { IAjaxResponseBase } from "@/interfaces/ajaxResponse";
 import FileSaver from "file-saver";
-import { DataTypes } from "interfaces/dataTypes";
-import { GENERIC_ENTITIES_ENDPOINT } from "shesha-constants";
+import { DataTypes } from "@/interfaces/dataTypes";
+import { GENERIC_ENTITIES_ENDPOINT } from "@/shesha-constants";
 
 export interface IWithBackendRepositoryArgs {
     entityType: string;

@@ -2,10 +2,10 @@ import React from 'react';
 import { Story, Meta } from '@storybook/react';
 import { SidebarMenuDefaultsProvider } from '../../providers';
 import Page, { IBreadcrumbItem, IPageProps } from './';
-import { IToolbarItem } from '../..';
+import { IToolbarItem } from '@/components/..';
 import { CloseOutlined, DownloadOutlined, SaveOutlined } from '@ant-design/icons';
 import { ITagProps } from './pageHeaderTag';
-import StoryApp from '../storyBookApp';
+import StoryApp from '@/components/storyBookApp';
 
 export default {
   title: 'Components/Page',

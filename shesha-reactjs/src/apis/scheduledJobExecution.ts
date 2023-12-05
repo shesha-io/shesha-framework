@@ -1,5 +1,5 @@
-import { useGet, UseGetProps } from '../hooks/useGet';
-import { IAjaxResponse, IAjaxResponseBase } from '../interfaces/ajaxResponse';
+import { useGet, UseGetProps } from '@/hooks/useGet';
+import { IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 
 /**
  * Represents event log item logged by Shesha.Scheduler.SignalR.SignalrAppender

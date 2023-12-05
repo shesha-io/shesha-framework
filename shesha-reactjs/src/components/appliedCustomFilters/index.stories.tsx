@@ -1,7 +1,7 @@
 import React from 'react';
 import { Story, Meta } from '@storybook/react';
 import { AppliedCustomFilters, IAppliedCustomFiltersProps } from './';
-import { ICustomFilterOptions } from '../../providers/dataTable/interfaces';
+import { ICustomFilterOptions } from '@/providers/dataTable/interfaces';
 
 const appliedCustomFilters: ICustomFilterOptions[] = [
   {

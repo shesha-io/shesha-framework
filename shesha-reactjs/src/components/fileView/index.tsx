@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from 'react';
-import { useStoredFile } from 'providers';
-import { isValidGuid } from 'components/formDesigner/components/utils';
-import { ValidationErrors } from 'components';
+import { useStoredFile } from '@/providers';
+import { isValidGuid } from '@/components/formDesigner/components/utils';
+import { ValidationErrors } from '@/components';
 
 export type datasourceType = 'url' | 'storedFileId';
 

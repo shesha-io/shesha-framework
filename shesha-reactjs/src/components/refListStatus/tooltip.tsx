@@ -1,5 +1,5 @@
 import React, { FC, PropsWithChildren } from 'react';
-import { ReferenceListItemDto } from 'apis/referenceList';
+import { ReferenceListItemDto } from '@/apis/referenceList';
 import { Tooltip } from 'antd';
 
 interface IToolTipProps {

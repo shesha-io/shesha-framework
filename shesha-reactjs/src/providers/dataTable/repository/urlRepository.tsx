@@ -1,11 +1,11 @@
 import axios from 'axios';
-import { useMetadataDispatcher, useSheshaApplication } from 'providers';
-import { IResult } from 'interfaces/result';
-import { IHttpHeadersDictionary } from 'providers/sheshaApplication/contexts';
+import { useMetadataDispatcher, useSheshaApplication } from '@/providers';
+import { IResult } from '@/interfaces/result';
+import { IHttpHeadersDictionary } from '@/providers/sheshaApplication/contexts';
 import qs from 'qs';
 import React, { ComponentType, useMemo } from 'react';
 import { FC } from 'react';
-import { camelcaseDotNotation } from 'utils/string';
+import { camelcaseDotNotation } from '@/utils/string';
 import {
   DataTableColumnDto,
   IGetDataFromUrlPayload,
@@ -15,12 +15,12 @@ import {
   ITableDataResponse,
 } from '../interfaces';
 import { IRepository, IHasRepository, RowsReorderPayload } from './interfaces';
-import { convertDotNotationPropertiesToGraphQL } from 'providers/form/utils';
-import { IConfigurableColumnsProps } from 'providers/datatableColumnsConfigurator/models';
-import { IMetadataDispatcherActionsContext } from 'providers/metadataDispatcher/contexts';
-import { IEntityEndpointsEvaluator, useModelApiHelper } from 'components/configurableForm/useActionEndpoint';
-import { IUseMutateResponse, useMutate } from 'hooks/useMutate';
-import { getUrlKeyParam } from 'utils';
+import { convertDotNotationPropertiesToGraphQL } from '@/providers/form/utils';
+import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
+import { IMetadataDispatcherActionsContext } from '@/providers/metadataDispatcher/contexts';
+import { IEntityEndpointsEvaluator, useModelApiHelper } from '@/components/configurableForm/useActionEndpoint';
+import { IUseMutateResponse, useMutate } from '@/hooks/useMutate';
+import { getUrlKeyParam } from '@/utils';
 
 export interface IWithUrlRepositoryArgs {
   getListUrl: string;

@@ -1,6 +1,6 @@
 import React, { FC, ReactNode } from 'react';
-import { StoredFilesRendererBase } from '../storedFilesRendererBase';
-import { useStoredFilesStore } from '../../providers/storedFiles';
+import { StoredFilesRendererBase } from '@/components/storedFilesRendererBase';
+import { useStoredFilesStore } from '@/providers/storedFiles';
 import { ButtonProps } from 'antd';
 
 export interface IStoredFilesRendererProps {

@@ -1,5 +1,5 @@
 import React, { createContext, FC, PropsWithChildren, useContext } from 'react';
-import { IComponentsContainerBaseProps } from 'interfaces';
+import { IComponentsContainerBaseProps } from '@/interfaces';
 
 export type ContainerType = FC<IComponentsContainerBaseProps>;
 

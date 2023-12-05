@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid/non-secure';
-import { IKeyValue } from '../../../interfaces/keyValue';
-import { DesignerToolbarSettings } from '../../../interfaces/toolbarSettings';
+import { IKeyValue } from '@/interfaces/keyValue';
+import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormIdentifier } from '../../form/models';
 
 export interface IShowModalActionArguments {

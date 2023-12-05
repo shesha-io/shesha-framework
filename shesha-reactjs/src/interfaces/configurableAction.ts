@@ -1,6 +1,6 @@
-import { ICodeExposedVariable } from '../components/codeVariablesTable';
+import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { ReactNode } from 'react';
-import { FormMarkup, GenericDictionary } from '../providers/form/models';
+import { FormMarkup, GenericDictionary } from '@/providers/form/models';
 
 /**
  * Configuration action executer

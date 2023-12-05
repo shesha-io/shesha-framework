@@ -1,14 +1,14 @@
 import React, { FC } from 'react';
-import { IToolboxComponent } from 'interfaces';
+import { IToolboxComponent } from '@/interfaces';
 import { FormatPainterOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '../formItem';
-import { validateConfigurableComponentSettings } from 'providers/form/utils';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { iconPickerFormSettings } from './settings';
-import ColorPicker from '../../../colorPicker';
+import ColorPicker from '@/components/colorPicker';
 import { ColorResult } from 'react-color';
 import { IColorPickerComponentProps } from './interfaces';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
-import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 const ColorPickerComponent: IToolboxComponent<IColorPickerComponentProps> = {
   type: 'colorPicker',

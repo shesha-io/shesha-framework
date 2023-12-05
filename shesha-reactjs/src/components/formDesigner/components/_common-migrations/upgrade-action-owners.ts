@@ -1,5 +1,5 @@
-import { SettingsMigrationContext } from "../../../..";
-import { IConfigurableActionConfiguration } from "../../../../interfaces/configurableAction";
+import { SettingsMigrationContext } from "@/components/..";
+import { IConfigurableActionConfiguration } from "@/interfaces/configurableAction";
 
 export const upgradeActionConfig = (config: IConfigurableActionConfiguration, context: SettingsMigrationContext): IConfigurableActionConfiguration => {
     if (!config)

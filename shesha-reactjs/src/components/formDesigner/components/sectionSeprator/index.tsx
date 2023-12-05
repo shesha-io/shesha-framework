@@ -1,12 +1,12 @@
 import { IToolboxComponent } from '../../../../interfaces';
 import { LineOutlined } from '@ant-design/icons';
 import React from 'react';
-import { getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import { useFormData } from '../../../../providers';
-import SectionSeparator from '../../../sectionSeparator';
+import { getStyle, getLayoutStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { useFormData, useGlobalState } from '../../../../providers';
+import SectionSeparator from '@/components/sectionSeparator';
 import { ISectionSeparatorComponentProps } from './interfaces';
 import { getSettings } from './settings';
-import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 
 const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentProps> = {
   type: 'sectionSeparator',
@@ -14,13 +14,14 @@ const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentPro
   icon: <LineOutlined />,
   Factory: ({ model }) => {
     const { data: formData } = useFormData();
+    const { globalState } = useGlobalState();
 
     if (model.hidden) return null;
 
     return (
       <SectionSeparator
         title={model.label}
-        containerStyle={getStyle(model?.containerStyle, formData)}
+        containerStyle={getLayoutStyle({ ...model, style: model?.containerStyle }, { data: formData, globalState })}
         titleStyle={getStyle(model?.titleStyle, formData)}
         tooltip={model?.description}
       />
@@ -34,10 +35,8 @@ const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentPro
       label: 'Section',
     };
   },
-  migrator: (m) => m
-    .add<ISectionSeparatorComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-  ,
-
+  migrator: (m) =>
+    m.add<ISectionSeparatorComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev))),
 };
 
 export default SectionSeparatorComponent;

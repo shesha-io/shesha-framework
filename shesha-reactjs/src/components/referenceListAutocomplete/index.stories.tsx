@@ -1,10 +1,10 @@
 import React, { FC, useState } from 'react';
 import { Story, Meta } from '@storybook/react';
 import { ReferenceListAutocomplete, IReferenceListAutocompleteRuntimeProps } from './';
-import StoryApp from '../storyBookApp';
+import StoryApp from '@/components/storyBookApp';
 import { Button, Form } from 'antd';
-import { addStory } from '../../stories/utils';
-import { FormFullName, FormIdentifier, FormUid } from '../../providers/form/models';
+import { addStory } from '@/stories/utils';
+import { FormFullName, FormIdentifier, FormUid } from '@/providers/form/models';
 
 export default {
   title: 'Components/Temp/ReferenceListAutocomplete',

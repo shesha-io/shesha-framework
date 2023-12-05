@@ -1,7 +1,7 @@
 import { CloseCircleOutlined, DeleteOutlined, EditOutlined, PlusCircleOutlined, SaveOutlined } from '@ant-design/icons';
-import ActionButton, { IActionButtonProps } from 'components/actionButton/index';
 import React, { useMemo } from 'react';
 import { useCrud } from '../../providers/crudContext';
+import ActionButton, { IActionButtonProps } from '../actionButton/index';
 
 export const CrudActionButtons = () => {
   const {

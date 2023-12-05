@@ -188,7 +188,7 @@ namespace Shesha.Domain
 
         private static INamingConventions GetNamingConventions(Type type) 
         {
-            var conventionsType = type.GetAttribute<NamingConventionsAttribute>(true)?.ConventionsType ?? typeof(DefaultNamingConventions);
+            var conventionsType = type.GetAttribute<NamingConventionsAttribute>(false)?.ConventionsType ?? typeof(DefaultNamingConventions);
             return Activator.CreateInstance(conventionsType) as INamingConventions;
         }
 

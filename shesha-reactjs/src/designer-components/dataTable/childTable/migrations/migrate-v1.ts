@@ -1,10 +1,10 @@
 import { IChildTableComponentProps } from "..";
-import { IConfigurableActionConfiguration } from "../../../../interfaces/configurableAction";
-import { SettingsMigrationContext } from "../../../../interfaces/formDesigner";
-import { IKeyValue } from "../../../../interfaces/keyValue";
-import { IButtonItem } from "../../../../providers/buttonGroupConfigurator/models";
-import { IShowModalActionArguments as IShowModalActionArguments } from "../../../../providers/dynamicModal/configurable-actions/show-dialog-arguments";
-import { getClosestTableId } from "../../../../providers/form/utils";
+import { IConfigurableActionConfiguration } from "@/interfaces/configurableAction";
+import { SettingsMigrationContext } from "@/interfaces/formDesigner";
+import { IKeyValue } from "@/interfaces/keyValue";
+import { IButtonItem } from "@/providers/buttonGroupConfigurator/models";
+import { IShowModalActionArguments as IShowModalActionArguments } from "@/providers/dynamicModal/configurable-actions/show-dialog-arguments";
+import { getClosestTableId } from "@/providers/form/utils";
 
 export const migrateV0toV1 = (props: IChildTableComponentProps, context: SettingsMigrationContext): IChildTableComponentProps => {
     const { toolbarItems } = props;

@@ -1,4 +1,4 @@
-import { ISidebarMenuItem } from '../../interfaces/sidebar';
+import { ISidebarMenuItem } from '@/interfaces/sidebar';
 
 export const getItemById = (items: ISidebarMenuItem[], id: string): ISidebarMenuItem => {
   const position = getItemPositionById(items, id);

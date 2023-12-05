@@ -3,9 +3,9 @@ import { Button, Divider, Modal } from 'antd';
 import {
   TableViewSelectorConfiguratorProvider,
   useTableViewSelectorConfigurator,
-} from '../../../providers/tableViewSelectorConfigurator';
+} from '@/providers/tableViewSelectorConfigurator';
 import { ITableViewSelectorConfiguratorHandles, TableViewSelectorConfigurator } from './tableViewSelectorConfigurator';
-import { ITableViewProps } from '../../../providers/tableViewSelectorConfigurator/models';
+import { ITableViewProps } from '@/providers/tableViewSelectorConfigurator/models';
 import TableViewContainer from './tableViewContainer';
 import { useDeepCompareEffect } from 'react-use';
 

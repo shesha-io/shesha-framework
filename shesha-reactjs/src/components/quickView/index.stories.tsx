@@ -1,8 +1,8 @@
 import React from 'react';
-import { QuickView, IQuickViewProps } from '../..';
+import { QuickView, IQuickViewProps } from '@/components/..';
 import { Story, Meta } from '@storybook/react';
 import { Button } from 'antd';
-import StoryApp from '../storyBookApp';
+import StoryApp from '@/components/storyBookApp';
 import { GenericQuickView } from '.';
 
 // #region Storybook Metadata & Configuration

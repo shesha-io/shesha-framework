@@ -4,7 +4,7 @@ import { IToolboxComponent } from '../../../interfaces';
 import { IToolbarPropsV0, migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
 import { IToolbarProps } from './models';
-import { migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateToButtonGroup, ToolbarButtonGroupProps } from './migrations/migrate-to-buttonGroup';
 
 /**

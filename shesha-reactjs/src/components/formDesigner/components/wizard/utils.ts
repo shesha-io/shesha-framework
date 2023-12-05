@@ -1,6 +1,6 @@
 import { findLastIndex } from 'lodash';
 import { nanoid } from 'nanoid';
-import { IConfigurableActionConfiguration } from '../../../../interfaces/configurableAction';
+import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IWizardSequence, IWizardStepProps } from './models';
 
 export const EXPOSED_VARIABLES = [

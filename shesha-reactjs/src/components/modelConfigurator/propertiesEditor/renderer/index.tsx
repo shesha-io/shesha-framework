@@ -1,10 +1,10 @@
 import React, { FC, useMemo } from 'react';
 import { Button, Tabs } from 'antd';
-import { SidebarContainer } from '../../../';
+import { SidebarContainer } from '@/components/';
 import { ToolbarItemProperties } from './itemProperties';
 import ItemsContainer from './itemsContainer';
 import { usePropertiesEditor } from '../provider';
-import CodeEditor from 'components/codeEditor';
+import CodeEditor from '@/components/codeEditor';
 import { IPropertiesEditorProps } from '..';
 
 export const PropertiesEditorRenderer: FC<IPropertiesEditorProps> = ({

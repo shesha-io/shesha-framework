@@ -1,4 +1,4 @@
-import { IConfigurableFormComponent } from '../../providers/form/models';
+import { IConfigurableFormComponent } from '@/providers/form/models';
 import { ExpandIconPosition } from 'antd/lib/collapse/Collapse';
 import { CollapsibleType } from 'antd/lib/collapse/CollapsePanel';
 
@@ -15,6 +15,7 @@ export interface ICollapsiblePanelComponentProps extends IConfigurableFormCompon
   collapsible?: CollapsibleType;
   ghost?: boolean;
   hideWhenEmpty?: boolean;
+  className?: string;
 }
 
 export interface ICollapsiblePanelComponentPropsV0 extends IConfigurableFormComponent {

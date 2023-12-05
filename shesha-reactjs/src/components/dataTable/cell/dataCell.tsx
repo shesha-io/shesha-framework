@@ -1,10 +1,10 @@
 import React, { FC, useRef } from 'react';
 import { CustomErrorBoundary } from '../../../components';
 import { useForm } from '../../../providers';
-import { useCrud } from '../../../providers/crudContext';
-import { ITableDataColumn } from '../../../providers/dataTable/interfaces';
-import { IColumnEditorProps, standardCellComponentTypes } from '../../../providers/datatableColumnsConfigurator/models';
-import { useFormDesignerComponents } from '../../../providers/form/hooks';
+import { useCrud } from '@/providers/crudContext';
+import { ITableDataColumn } from '@/providers/dataTable/interfaces';
+import { IColumnEditorProps, standardCellComponentTypes } from '@/providers/datatableColumnsConfigurator/models';
+import { useFormDesignerComponents } from '@/providers/form/hooks';
 import BooleanCell from './default/booleanCell';
 import DateCell from './default/dateCell';
 import DateTimeCell from './default/dateTimeCell';
@@ -16,8 +16,8 @@ import StringCell from './default/stringCell';
 import TimeCell from './default/timeCell';
 import { IComponentWrapperProps, IConfigurableCellProps, IDataCellProps } from './interfaces';
 import { getInjectables } from './utils';
-import { getActualModel, useApplicationContext } from 'utils/publicUtils';
-import { useDeepCompareMemo } from 'hooks';
+import { getActualModel, useApplicationContext } from '@/utils/publicUtils';
+import { useDeepCompareMemo } from '@/hooks';
 
 export const DataCell = <D extends object = {}, V = number>(props: IDataCellProps<D, V>) => {
     const { mode } = useCrud();
@@ -157,7 +157,7 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
             <component.Factory
               model={componentModel}
               componentRef={componentRef}
-              form={allData.form}
+              form={allData.form?.form}
             />
         </CustomErrorBoundary>
     );

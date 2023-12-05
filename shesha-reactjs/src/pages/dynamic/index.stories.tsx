@@ -1,10 +1,10 @@
 import React from 'react';
 import { Story, Meta } from '@storybook/react';
-import StoryApp from '../../components/storyBookApp';
+import StoryApp from '@/components/storyBookApp';
 import DynamicPage from './';
-import { addStory } from '../../stories/utils';
+import { addStory } from '@/stories/utils';
 import { IDynamicPageProps } from './interfaces';
-import { MainLayout } from '../..';
+import { MainLayout } from '@/pages/..';
 
 export default {
   title: 'Pages/DynamicPage',
@@ -62,15 +62,11 @@ export const FncEmployeeAccountDetail = addStory(Template, {
   id: '3b918830-9f1e-48e7-8298-0adc4ce1192b',
 });
 
-export const TimePickerDetails = addStory(Template, {
-  formId: { name: 'Books-Table', module: 'Boxfusion.SheshaFunctionalTests.Common' },
+export const CheckBoxDetails = addStory(Template, {
+  formId: { name: 'nov-details', module: 'Shesha',
+ },
+ id:'b7f94729-913e-4148-bef5-21ccb8349fc1'
 });
-
-export const TimePickerDetailsEdit = addStory(Template, {
-  formId: { name: 'book-details', module: 'Boxfusion.SheshaFunctionalTests.Common' },
-  id:"8be87b61-a09b-4f1b-956e-95d4b5afba15"
-});
-
 
 export const FncTestCascadeBehavior = addStory(Template, {
   formId: { name: 'test-cascade-behavior-details', module: 'Shesha' },

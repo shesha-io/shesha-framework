@@ -1,9 +1,9 @@
 import React, { FC, PropsWithChildren, useEffect, useState } from "react";
 import { Drawer, Select, Space } from "antd";
-import { useConfigurableAction } from "providers";
+import { useConfigurableAction } from "@/providers";
 import { useKeyPress } from "react-use";
 import { Option } from "antd/lib/mentions";
-import { useLocalStorage } from "hooks";
+import { useLocalStorage } from "@/hooks";
 import { CloseOutlined } from "@ant-design/icons";
 import "./styles/index.less";
 import DebugPanelDataContent from "./dataContent";

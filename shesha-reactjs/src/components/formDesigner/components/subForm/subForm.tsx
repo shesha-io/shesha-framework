@@ -1,15 +1,15 @@
 import React, { CSSProperties, FC, useMemo } from 'react';
-import ShaSpin from '../../../shaSpin';
-import ValidationErrors from '../../../validationErrors';
-import { useSubForm } from 'providers/subForm';
-import { FormItemProvider, ROOT_COMPONENT_KEY, useAppConfigurator } from 'providers';
-import Show from '../../../show';
+import ShaSpin from '@/components/shaSpin';
+import ValidationErrors from '@/components/validationErrors';
+import { useSubForm } from '@/providers/subForm';
+import { FormItemProvider, ROOT_COMPONENT_KEY, useAppConfigurator } from '@/providers';
+import Show from '@/components/show';
 import FormInfo from '../../../configurableForm/formInfo';
-import { ConfigurationItemVersionStatusMap } from 'utils/configurationFramework/models';
-import { IPersistedFormProps } from '../../../../providers/form/models';
-import { ComponentsContainerProvider } from 'providers/form/nesting/containerContext';
+import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
+import { IPersistedFormProps } from '@/providers/form/models';
+import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
 import { ComponentsContainerSubForm } from './componentsContainerSubForm';
-import ComponentsContainer from 'components/formDesigner/containers/componentsContainer';
+import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 
 interface ISubFormProps {
   style?: CSSProperties;

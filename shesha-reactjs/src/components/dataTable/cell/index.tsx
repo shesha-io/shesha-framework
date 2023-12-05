@@ -1,13 +1,13 @@
 import React from 'react';
 import { CellProps, Renderer } from 'react-table';
 import { ITableColumn } from '../../../interfaces';
-import { IModelMetadata } from '../../../interfaces/metadata';
+import { IModelMetadata } from '@/interfaces/metadata';
 import {
   ITableActionColumn,
   ITableCrudOperationsColumn,
   ITableDataColumn,
-} from '../../../providers/dataTable/interfaces';
-import { toCamelCase } from '../../../utils/string';
+} from '@/providers/dataTable/interfaces';
+import { toCamelCase } from '@/utils/string';
 import ActionCell from './actionCell';
 import CrudOperationsCell from './crudOperationsCell';
 import DataCell from './dataCell';

@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
 import { SidebarMenuItem } from './sidebarMenuItem';
-import { useSidebarMenuConfigurator } from '../../../providers/sidebarMenuConfigurator';
+import { useSidebarMenuConfigurator } from '@/providers/sidebarMenuConfigurator';
 import { ReactSortable, ItemInterface } from 'react-sortablejs';
-import { ISidebarMenuItem } from '../../../interfaces/sidebar';
+import { ISidebarMenuItem } from '@/interfaces/sidebar';
 import SidebarMenuGroup from './sidebarMenuGroup';
 
 export interface ISidebarItemsContainerProps {

@@ -1,8 +1,8 @@
 import React, { FC, useCallback, useMemo } from 'react';
 import { BulbTwoTone, DownOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Dropdown, MenuProps, Popover, Space, Tooltip, Typography } from 'antd';
-import { IStoredFilter } from '../../providers/dataTable/interfaces';
-import Show from '../show';
+import { IStoredFilter } from '@/providers/dataTable/interfaces';
+import Show from '@/components/show';
 import { nanoid } from 'nanoid/non-secure';
 
 type MenuItem = MenuProps['items'][number];

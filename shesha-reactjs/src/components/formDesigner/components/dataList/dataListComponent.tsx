@@ -1,13 +1,13 @@
 import React from 'react';
 import { UnorderedListOutlined } from "@ant-design/icons";
-import { IToolboxComponent } from "interfaces";
-import { useDataTableStore } from 'providers';
-import { useDataSources } from 'providers/dataSourcesProvider';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { IToolboxComponent } from "@/interfaces";
+import { useDataSources } from '@/providers/dataSourcesProvider';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { DataListSettingsForm } from './dataListSettings';
-import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IDataListComponentProps } from './model';
 import DataListControl, { NotConfiguredWarning } from './dataListControl';
+import { useDataTableStore } from '@/index';
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   type: 'datalist',
