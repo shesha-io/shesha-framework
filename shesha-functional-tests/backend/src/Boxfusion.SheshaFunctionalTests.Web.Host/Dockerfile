@@ -2,11 +2,11 @@
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 
+ENV ASPNETCORE_URLS=http://+:8080;https://+:8081
 EXPOSE 8080
 EXPOSE 8081
 
 WORKDIR /app
-#COPY . .
 
 COPY . /app
 
