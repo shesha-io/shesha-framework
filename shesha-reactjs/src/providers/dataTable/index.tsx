@@ -784,7 +784,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   /* Data Context section */
 
-  const contextOnChangeData = <T,>(_data: T, changedData: IDataTableStateContext) => {
+  /*const contextOnChangeData = <T,>(_data: T, changedData: IDataTableStateContext) => {
     if (!changedData)
       return;
 
@@ -818,7 +818,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   ctx.updateApi(actions); // update context api to use relevant State
   ctx.updateOnChangeData(contextOnChangeData); // update context.onChangeData function to use relevant State
-
+*/
   /* Data Context section */
 
 

@@ -1,6 +1,6 @@
 import { FormInstance } from 'antd';
+import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useMemo } from 'react';
-import { useDeepCompareEffect } from 'react-use';
 import { useDebouncedCallback } from 'use-debounce';
 import useThunkReducer from '../../hooks/thunkReducer';
 import {
@@ -12,7 +12,6 @@ import {
 import { DelayedUpdateProvider } from '../../providers/delayedUpdateProvider';
 import { useConfigurableAction } from '../configurableActionsDispatcher';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
-import { useGlobalState } from '../globalState';
 import { getFlagSetters } from '../utils/flagsSetters';
 import {
   registerComponentActionsAction,
@@ -39,8 +38,7 @@ import {
 import { useFormDesignerComponents } from './hooks';
 import { FormMode, FormRawMarkup, IFormActions, IFormSections, IFormSettings } from './models';
 import formReducer from './reducer';
-import { convertActions, convertSectionsToList, getEnabledComponentIds, getVisibleComponentIds } from './utils';
-import { useDataContextManager } from 'providers/dataContextManager';
+import { convertActions, convertSectionsToList, getActualModel, getEnabledComponentIds, getVisibleComponentIds, useFormProviderContext } from './utils';
 
 export interface IFormProviderProps {
   needDebug?: boolean;
@@ -88,21 +86,6 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   needDebug,
   ...props
 }) => {
-  const toolboxComponents = useFormDesignerComponents();
-
-  const { globalState } = useGlobalState();
-  const contextManager = useDataContextManager();
-
-  const getToolboxComponent = (type: string) => toolboxComponents[type];
-
-  //#region data fetcher
-
-  const fetchData = (): Promise<any> => {
-    return refetchData ? refetchData() : Promise.reject('fetcher not specified');
-  };
-
-  //#endregion
-
   //#region configurable actions
 
   const actionsOwnerUid = isActionsOwner ? SheshaActionOwners.Form : null;
@@ -194,6 +177,20 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
 
   const [state, dispatch] = useThunkReducer(formReducer, initial);
 
+  const toolboxComponents = useFormDesignerComponents();
+
+  const formProviderContext = useFormProviderContext();
+
+  const getToolboxComponent = (type: string) => toolboxComponents[type];
+
+  //#region data fetcher
+
+  const fetchData = (): Promise<any> => {
+    return refetchData ? refetchData() : Promise.reject('fetcher not specified');
+  };
+
+  //#endregion
+
   useEffect(() => {
     if (formSettings !== state.formSettings) {
       setSettings(formSettings);
@@ -219,12 +216,9 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   };
 
   const isComponentHidden = (model: Pick<IConfigurableFormComponent, 'id' | 'isDynamic' | 'hidden'>): boolean => {
-    const hiddenByCondition = false;
+    const hiddenByCondition = model.isDynamic !== true && state.visibleComponentIds && !state.visibleComponentIds.includes(model.id);
 
-    //ToDo AS: need to change the way to update visible end enabled comopnents
-      //model.isDynamic !== true && state.visibleComponentIds && !state.visibleComponentIds.includes(model.id);
-
-    return state.formMode !== 'designer' && (model.hidden || hiddenByCondition);
+    return state.formMode !== 'designer' && hiddenByCondition;
   };
 
   const getChildComponents = (componentId: string) => {
@@ -262,9 +256,11 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
 
     const visibleComponents = getVisibleComponentIds(
       allComponents,
-      formContext.formData,
-      globalState,
-      formContext?.formMode,
+      {
+        ...formProviderContext,
+        data: formContext.formData,
+        formMode: formContext.formMode
+      },
       propertyFilter
     );
     setVisibleComponents({ componentIds: visibleComponents });
@@ -289,7 +285,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     const enabledComponents = getEnabledComponentIds(
       allComponents,
       formContext.formData,
-      globalState,
+      formProviderContext.globalState,
       formContext?.formMode,
     );
 
@@ -313,7 +309,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
       debouncedUpdateVisibleComponents(newState);
       debouncedUpdateEnabledComponents(newState);
     });
-  }, [globalState]);
+  }, [formProviderContext.globalState, formProviderContext.contexts.lastUpdate]);
 
   useDeepCompareEffect(() => {
     dispatch((_, getState) => {
@@ -435,10 +431,10 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   if (formRef) formRef.current = { ...configurableFormActions, ...state, allComponents, componentRelations };
 
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     // set main form if empty
     if (needDebug)
-      contextManager.updateFormInstance({...state, ...configurableFormActions} as ConfigurableFormInstance);
+      formProviderContext.contextManager?.updateFormInstance({...state, ...configurableFormActions} as ConfigurableFormInstance);
   }, [state]);
 
   return (
