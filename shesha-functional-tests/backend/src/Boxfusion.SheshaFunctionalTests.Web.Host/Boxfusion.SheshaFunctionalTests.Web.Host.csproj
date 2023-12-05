@@ -47,17 +47,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Abp" Version="6.6.2" />
-    <PackageReference Include="Abp.Castle.Log4Net" Version="6.6.2" />
-    <PackageReference Include="Abp.TestBase" Version="6.6.2" />
+    <PackageReference Include="Abp" Version="8.4.0" />
+    <PackageReference Include="Abp.Castle.Log4Net" Version="8.4.0" />
+    <PackageReference Include="Abp.TestBase" Version="8.4.0" />
     <PackageReference Include="ElmahCore" Version="2.1.2" />
     <PackageReference Include="GraphQL.Server.Ui.Playground" Version="6.1.0" />
-    <PackageReference Include="Hangfire.Core" Version="1.8.2" />
+    <PackageReference Include="Hangfire.Core" Version="1.8.6" />
     <PackageReference Include="Hangfire.PostgreSql" Version="1.19.12" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Hangfire.SqlServer" Version="1.8.2" />
+    <PackageReference Include="Hangfire.SqlServer" Version="1.8.6" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.2">
       <PrivateAssets>all</PrivateAssets>

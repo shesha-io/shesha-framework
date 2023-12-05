@@ -107,10 +107,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Abp" Version="6.6.2" />
-    <PackageReference Include="Abp.AspNetCore" Version="6.6.2" />
-    <PackageReference Include="Abp.AutoMapper" Version="6.6.2" />
-    <PackageReference Include="Abp.ZeroCore" Version="6.6.2" />
+    <PackageReference Include="Abp" Version="8.4.0" />
+    <PackageReference Include="Abp.AspNetCore" Version="8.4.0" />
+    <PackageReference Include="Abp.AutoMapper" Version="8.4.0" />
+    <PackageReference Include="Abp.ZeroCore" Version="8.4.0" />
     <PackageReference Include="Azure.Storage.Blobs" Version="12.19.1" />
     <PackageReference Include="ConcurrentHashSet" Version="1.1.0" />
     <PackageReference Include="Cronos" Version="0.7.0" />

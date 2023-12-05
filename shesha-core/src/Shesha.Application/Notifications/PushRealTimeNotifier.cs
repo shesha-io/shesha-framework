@@ -34,6 +34,8 @@ namespace Shesha.Notifications
         /// inheritedDoc
         public override RefListNotificationType NotificationType => RefListNotificationType.Push;
 
+        public bool UseOnlyIfRequestedAsTarget => true;
+
         /// inheritedDoc
         public async Task SendNotificationsAsync(UserNotification[] userNotifications)
         {

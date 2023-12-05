@@ -33,6 +33,8 @@ namespace Shesha.Notifications
         /// inheritedDoc
         public override RefListNotificationType NotificationType => RefListNotificationType.SMS;
 
+        public bool UseOnlyIfRequestedAsTarget => true;
+
         /// inheritedDoc
         public async Task SendNotificationsAsync(UserNotification[] userNotifications)
         {

@@ -30,8 +30,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Abp" Version="6.6.2" />
-    <PackageReference Include="AutoMapper" Version="10.1.1" />
+    <PackageReference Include="Abp" Version="8.4.0" />
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
   </ItemGroup>
 
   <ItemGroup>

@@ -77,7 +77,8 @@ namespace Shesha.Notifications
             NotificationSeverity severity = NotificationSeverity.Info,
             UserIdentifier[] userIds = null,
             UserIdentifier[] excludedUserIds = null,
-            int?[] tenantIds = null)
+            int?[] tenantIds = null,
+            Type[] targetNotifiers = null)
         {
             Guid? notificationId = null;
 

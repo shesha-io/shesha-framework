@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Abp" Version="6.6.2" />
+    <PackageReference Include="Abp" Version="8.4.0" />
   </ItemGroup>
 
   <ItemGroup>
