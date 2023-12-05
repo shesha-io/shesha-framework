@@ -22,7 +22,7 @@
     <PackageReference Include="Abp.AspNetCore" Version="6.6.2" />
     <PackageReference Include="Abp.Zero.Common" Version="6.6.2" />
     <PackageReference Include="System.DirectoryServices.AccountManagement" Version="4.7.0" />
-    <PackageReference Include="System.DirectoryServices.Protocols" Version="4.7.0" />
+    <PackageReference Include="System.DirectoryServices.Protocols" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>

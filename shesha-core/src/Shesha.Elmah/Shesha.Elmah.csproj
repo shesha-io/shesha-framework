@@ -12,7 +12,7 @@
   <ItemGroup>
     <PackageReference Include="Abp" Version="6.6.2" />
     <PackageReference Include="ElmahCore" Version="2.1.2" />
-    <PackageReference Include="log4net" Version="2.0.8" />
+    <PackageReference Include="log4net" Version="2.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.2" />
   </ItemGroup>
