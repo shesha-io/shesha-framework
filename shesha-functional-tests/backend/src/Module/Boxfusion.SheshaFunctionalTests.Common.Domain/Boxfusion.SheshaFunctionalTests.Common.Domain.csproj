@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
 	<GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
 	<GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Abp" Version="8.4.0" />
+    <PackageReference Include="Abp" Version="9.0.0" />
     <PackageReference Include="FluentMigrator" Version="3.3.2" />
     <PackageReference Include="IdentityModel" Version="6.0.0" />
     <PackageReference Include="Intent.RoslynWeaver.Attributes" Version="2.0.1" />

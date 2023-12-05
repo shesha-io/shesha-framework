@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\common.props" />
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>Shesha</RootNamespace>
     <PackageId>Shesha.AzureAD</PackageId>
     <Title>Shesha.AzureAD</Title>
@@ -18,8 +18,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Abp" Version="8.4.0" />
-    <PackageReference Include="Abp.Zero.Common" Version="8.4.0" />
+    <PackageReference Include="Abp" Version="9.0.0" />
+    <PackageReference Include="Abp.Zero.Common" Version="9.0.0" />
     <PackageReference Include="Microsoft.Identity.Client" Version="4.54.1" />
     <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.7" />
   </ItemGroup>

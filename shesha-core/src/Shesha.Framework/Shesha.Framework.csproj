@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\common.props" />
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>Shesha</RootNamespace>
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
@@ -107,10 +107,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Abp" Version="8.4.0" />
-    <PackageReference Include="Abp.AspNetCore" Version="8.4.0" />
-    <PackageReference Include="Abp.AutoMapper" Version="8.4.0" />
-    <PackageReference Include="Abp.ZeroCore" Version="8.4.0" />
+    <PackageReference Include="Abp" Version="9.0.0" />
+    <PackageReference Include="Abp.AspNetCore" Version="9.0.0" />
+    <PackageReference Include="Abp.AutoMapper" Version="9.0.0" />
+    <PackageReference Include="Abp.ZeroCore" Version="9.0.0" />
     <PackageReference Include="Azure.Storage.Blobs" Version="12.19.1" />
     <PackageReference Include="ConcurrentHashSet" Version="1.1.0" />
     <PackageReference Include="Cronos" Version="0.7.0" />

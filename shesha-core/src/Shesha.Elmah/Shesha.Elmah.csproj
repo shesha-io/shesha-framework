@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\common.props" />
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>Shesha</RootNamespace>
     <PackageId>Shesha.Elmah</PackageId>
     <Title>Shesha.Elmah</Title>
@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Abp" Version="8.4.0" />
+    <PackageReference Include="Abp" Version="9.0.0" />
     <PackageReference Include="ElmahCore" Version="2.1.2" />
     <PackageReference Include="log4net" Version="2.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
