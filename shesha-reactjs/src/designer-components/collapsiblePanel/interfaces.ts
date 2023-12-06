@@ -16,6 +16,8 @@ export interface ICollapsiblePanelComponentProps extends IConfigurableFormCompon
   ghost?: boolean;
   hideWhenEmpty?: boolean;
   className?: string;
+  marginBottom?: string;
+  marginTop?: string;
 }
 
 export interface ICollapsiblePanelComponentPropsV0 extends IConfigurableFormComponent {
