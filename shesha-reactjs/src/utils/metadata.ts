@@ -59,5 +59,5 @@ export const getFullPath = (property: IPropertyMetadata) => {
     : `${prefix}.${name}`;
 };
 
-export const getDataFormat = (properties: IPropertyMetadata[], name: string) =>
-  properties.find(({ path }) => toCamelCase(path) === name)?.dataFormat;
+export const getDataProperty = (properties: IPropertyMetadata[], name: string, propertyName: string = 'dataFormat') =>
+  properties.find(({ path }) => toCamelCase(path) === name)?.[propertyName];
