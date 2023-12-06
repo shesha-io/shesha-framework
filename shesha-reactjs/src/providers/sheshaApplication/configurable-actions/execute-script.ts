@@ -73,12 +73,6 @@ const executeScriptArgumentsForm: FormMarkupFactory = (props) => {
       type: '({ values: object, mergeValues: boolean}) => void',
     },
     {
-      id: '1d4a41db-2591-4568-b925-d2537cea7f0f',
-      name: 'setFormData',
-      description: 'A function used to update the form data',
-      type: '({ values: object, mergeValues: boolean}) => void',
-    },
-    {
       id: 'a9df21db-2591-4568-b925-b730acea7f0f',
       name: 'contexts',
       description: 'Data contexts',
