@@ -6,13 +6,14 @@ import { IToolboxComponent } from '@/interfaces';
 import { useFormData, useGlobalState } from '@/providers';
 import { useForm } from '@/providers/form';
 import { FormMarkup } from '@/providers/form/models';
-import { evaluateString, getLayoutStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { evaluateString, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { GroupOutlined } from '@ant-design/icons';
 import { ExpandIconPosition } from 'antd/lib/collapse/Collapse';
 import { nanoid } from 'nanoid';
 import React from 'react';
 import { ICollapsiblePanelComponentProps, ICollapsiblePanelComponentPropsV0 } from './interfaces';
 import settingsFormJson from './settingsForm.json';
+import { executeFunction } from '@/utils';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -35,6 +36,11 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       if (!childsVisible) return null;
     }
 
+    const getPanelStyle = {
+      ...pickStyleFromModel(model, 'padding', 'marginTop', 'marginBottom'),
+      ...(executeFunction(model?.style, { data, globalState }) || {}),
+    };
+
     const headerComponents = model?.header?.components?.map((c) => ({ ...c, readOnly: model?.readOnly })) ?? [];
     const extra =
       headerComponents?.length > 0 || formMode === 'designer' ? (
@@ -54,7 +60,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
         collapsible={collapsible === 'header' ? 'header' : 'icon'}
         showArrow={collapsible !== 'disabled' && expandIconPosition !== 'hide'}
         ghost={ghost}
-        style={getLayoutStyle(model, { data, globalState })}
+        style={getPanelStyle}
         className={model.className}
       >
         <ComponentsContainer
