@@ -9,11 +9,11 @@ import React, { FC } from 'react';
 import FormInfo from '../configurableForm/formInfo';
 
 import { ItemContainerForm } from './itemContainerForm';
-import { IDataListProps } from './models';
+import { IDataListProps, NewItemInitializer } from './models';
 
 export interface IDataListItemCreateModalProps {
   creater?: (data: any) => Promise<any>;
-  data?: any;
+  data?: object | NewItemInitializer;
   markup: FormRawMarkup;
   formSettings: IFormSettings;
   onToggle: (isOpen: boolean) => void;
