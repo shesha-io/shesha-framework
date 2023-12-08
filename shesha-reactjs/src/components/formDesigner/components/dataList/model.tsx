@@ -20,7 +20,6 @@ export interface IDataListInlineEditableProps {
   //newRowCapturePosition?: NewRowCapturePosition;
   //newRowInsertPosition?: NewRowCapturePosition;
   customCreateUrl?: string;
-  onNewListItemInitialize?: string;
   onListItemSave?: string;
   onListItemSaveSuccessAction?: IConfigurableActionConfiguration;
 }

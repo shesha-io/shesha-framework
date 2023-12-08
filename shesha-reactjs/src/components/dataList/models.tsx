@@ -11,6 +11,8 @@ export type ListItemWidth = number | 'custom';
 export type InlineEditMode = 'one-by-one' | 'all-at-once';
 export type InlineSaveMode = 'auto' | 'manual';
 
+export type NewItemInitializer = () => Promise<object>;
+
 export interface IDataListProps extends IDataListBaseProps, IDataListActions {
   records?: any[];
   groupingMetadata?: IPropertyMetadata[];
@@ -57,6 +59,8 @@ export interface IDataListBaseProps {
 
   inlineEditMode?: InlineEditMode;
   inlineSaveMode?: InlineSaveMode;
+
+  onNewListItemInitialize?: string;
 }
 
 interface IDataListActions {

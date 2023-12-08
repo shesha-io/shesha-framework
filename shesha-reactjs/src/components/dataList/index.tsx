@@ -9,7 +9,7 @@ import ConditionalWrap from '@/components/conditionalWrapper';
 import FormInfo from '../configurableForm/formInfo';
 import ShaSpin from '@/components/shaSpin';
 import Show from '@/components/show';
-import { IDataListProps } from './models';
+import { IDataListProps, NewItemInitializer } from './models';
 import { asFormRawId, asFormFullName, useApplicationContext, executeScriptSync, getStyle } from '@/providers/form/utils';
 import './styles/index.less';
 import { isEqual } from 'lodash';
@@ -19,6 +19,9 @@ import { toCamelCase } from '@/utils/string';
 import { DataListItemRenderer } from './itemRenderer';
 import { PlusCircleOutlined } from '@ant-design/icons';
 import DataListItemCreateModal from './createModal';
+import { useMemo } from 'react';
+import { axiosHttp } from '@/index';
+import moment from 'moment';
 
 interface EntityForm {
   entityType: string;
@@ -595,6 +598,27 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     setCreateModalOpen(true);
   };
 
+  const onNewListItemInitializeExecuter = useMemo<Function>(() => {
+    return props.onNewListItemInitialize
+      ? new Function('formData, globalState, contexts, http, moment', props.onNewListItemInitialize)
+      : null;
+  }, [props.onNewListItemInitialize]);
+
+  const onNewListItemInitialize = useMemo<NewItemInitializer>(() => {
+    const result: NewItemInitializer = props.onNewListItemInitialize
+      ? () => {
+        // todo: replace formData and globalState with accessors (e.g. refs) and remove hooks to prevent unneeded re-rendering
+        //return onNewRowInitializeExecuter(formData, globalState);
+        const result = onNewListItemInitializeExecuter(allData.formData ?? {}, allData.globalState, allData.contexts, axiosHttp(backendUrl), moment);
+        return Promise.resolve(result);
+      }
+      : () => {
+        return Promise.resolve({});
+      };
+
+    return result;
+  }, [onNewListItemInitializeExecuter, allData.formData, allData.globalState, allData.contexts.lastUpdate]);
+  
   //console.log(`dataList render, ${records?.length} records`);
 
   return (
@@ -605,7 +629,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           formSettings={createEntityForm.formConfiguration.settings}
           creater={createAction}
           onToggle={(isOpen) => setCreateModalOpen(isOpen)}
-          data={{}}
+          data={onNewListItemInitialize}
         />
       }
       <Show when={showFormInfo}>
