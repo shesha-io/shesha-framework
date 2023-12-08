@@ -61,7 +61,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         return !((!granted || !isVisibleByCondition) && allData.formMode !== 'designer');
       })
       .map(item => getActualModel(item, allData) as IWizardStepProps),
-    [tabs, allData.globalState, allData.contexts.lastUpdate]
+    [tabs, allData.data, allData.globalState, allData.contexts.lastUpdate]
   );
 
   const currentStep = visibleSteps[current];
