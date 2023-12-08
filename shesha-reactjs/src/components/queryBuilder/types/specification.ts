@@ -9,5 +9,3 @@ export const SpecificationType: Type = {
     },
   },
 };
-
-export default SpecificationType;

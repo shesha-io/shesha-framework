@@ -171,39 +171,84 @@ export const convertJsonLogicNode = async (
         convertedArgs = evaluationResult.handled ? evaluationResult.value : args;
       }
     }
-    
-    if (!hasInvalidArguments){
-      const argumentsAreValid = ['and', 'or'].indexOf(operatorName) > -1 
+
+    if (!hasInvalidArguments) {
+      const argumentsAreValid = ['and', 'or'].indexOf(operatorName) > -1
         ? Array.isArray(convertedArgs) && convertedArgs.length > 0
         : true;
-      if (argumentsAreValid){
+      if (argumentsAreValid) {
         if (!result)
           result = {};
         result[operatorName] = convertedArgs;
       }
     }
   }
-  
+
   return result;
 };
 
-export interface IEvaluateNodeArgs {
+export interface IMustacheEvaluateNodeArgs {
   expression: string;
   required: boolean;
 }
 
+export interface IMustacheEvaluateNode {
+  evaluate: IMustacheEvaluateNodeArgs[];
+}
+
+export const isLegacyMustacheEvaluationNode = (node: any): node is IMustacheEvaluateNode => {
+  const { evaluate } = node ?? {};
+  const expressionType = (evaluate as IEvaluateNodeArgs)?.type;
+
+  return evaluate && !expressionType;
+};
+
+export type EvaluationType = 'mustache' | 'javascript';
+export interface IEvaluateNodeArgs {
+  expression: string;
+  type: EvaluationType;
+  [key: string]: any;
+}
 export interface IEvaluateNode {
+  evaluate: IEvaluateNodeArgs;
+}
+
+export interface IEvaluateJsonLogicNode {
   evaluate: IEvaluateNodeArgs[];
 }
 
+export const isEvaluationNode = (node: any): node is IEvaluateNode => {
+  const { evaluate } = node ?? {};
+  const expressionType = (evaluate as IEvaluateNodeArgs)?.type;
+  return expressionType === 'mustache' || expressionType === 'javascript';
+};
+
+export const getEvaluationNodeFromJsonLogicNode = (node: any): IEvaluateNode => {
+  const { evaluate } = node ?? {};
+  const args = evaluate && Array.isArray(evaluate) && evaluate.length === 1
+    ? evaluate[0]
+    : undefined;
+
+  const typedArgs = args as IEvaluateNodeArgs;
+  const result: IEvaluateNode = typeof(typedArgs.expression) === 'string'
+    ? {
+      evaluate: {
+        ...typedArgs,
+        type: (args as IEvaluateNodeArgs).type ?? 'mustache' /* fallback to legacy */,
+      }
+    }
+    : undefined;
+  return result;
+};
+
 export interface IEvaluationNodeParsingResult {
   isEvaluationNode: boolean;
-  evaluationArguments?: IEvaluateNodeArgs;
+  evaluationArguments?: IMustacheEvaluateNodeArgs;
 }
 export const tryParseAsEvaluationOperation = (node: object): IEvaluationNodeParsingResult => {
   if (!node) return undefined;
 
-  const typedNode = node as IEvaluateNode;
+  const typedNode = node as IMustacheEvaluateNode;
   const evaluationArguments =
     typedNode?.evaluate && Array.isArray(typedNode.evaluate) && typedNode.evaluate.length === 1
       ? typedNode.evaluate[0]
