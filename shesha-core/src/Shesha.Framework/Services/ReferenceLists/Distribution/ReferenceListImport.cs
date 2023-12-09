@@ -73,7 +73,7 @@ namespace Shesha.Services.ReferenceLists.Distribution
                     case ConfigurationItemVersionStatus.Ready: 
                     {
                         // cancel existing version
-                        await _refListManger.CancelVersoinAsync(existingList);
+                        await _refListManger.CancelVersionAsync(existingList);
                         break;
                     }
                 }

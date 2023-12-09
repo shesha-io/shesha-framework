@@ -16,7 +16,7 @@ namespace Shesha.Sms.BulkSms
         public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo(ModuleName)
         {
             FriendlyName = "Shesha BulkSMS",
-            Publisher = "Boxfusion"
+            Publisher = "Shesha"
         };
 
         public override async Task<bool> InitializeConfigurationAsync()

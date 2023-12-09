@@ -31,8 +31,8 @@ namespace Shesha.Services.ReferenceLists.Distribution
         /// inheritedDoc
         public async Task<DistributedConfigurableItemBase> ExportItemAsync(Guid id) 
         {
-            var form = await _refListRepo.GetAsync(id);
-            return await ExportItemAsync(form);
+            var item = await _refListRepo.GetAsync(id);
+            return await ExportItemAsync(item);
         }
 
         /// inheritedDoc
@@ -85,7 +85,7 @@ namespace Shesha.Services.ReferenceLists.Distribution
 
                     container.Add(distributedItem);
 
-                    // process childs
+                    // process children
                     await ProcessRecursiveAsync(item, distributedItem.ChildItems);
                 }
             }
