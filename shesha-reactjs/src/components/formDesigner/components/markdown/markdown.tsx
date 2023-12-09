@@ -1,8 +1,8 @@
 import { Alert, Skeleton } from 'antd';
 import React, { FC, lazy } from 'react';
 import { useFormData, useGlobalState, useSubForm } from '../../../../providers';
-import { useForm } from '../../../../providers/form';
-import { evaluateString, getStyle } from '../../../../providers/form/utils';
+import { useForm } from '@/providers/form';
+import { evaluateString, getStyle } from '@/providers/form/utils';
 import { IMarkdownProps } from './interfaces';
 import './styles.less'; // This manually loads github-markdown-css, as per https://raw.githubusercontent.com/sindresorhus/github-markdown-css/gh-pages/github-markdown.css
 

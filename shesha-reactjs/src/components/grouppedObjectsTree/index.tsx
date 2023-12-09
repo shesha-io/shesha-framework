@@ -1,6 +1,6 @@
 import React, { useMemo, useEffect, ReactNode } from 'react';
 import { Collapse, Empty } from 'antd';
-import { getLastSection } from '../../utils/string';
+import { getLastSection } from '@/utils/string';
 import { ObjectsTree } from './objectsTree';
 
 const { Panel } = Collapse;

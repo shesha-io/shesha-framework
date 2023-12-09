@@ -1,10 +1,10 @@
 import React, { MutableRefObject, useEffect } from 'react';
 import { Form } from 'antd';
 import { ConfigurableForm } from '../../components';
-import { IConfigurableFormComponent, FormMarkup } from '../../providers/form/models';
+import { IConfigurableFormComponent, FormMarkup } from '@/providers/form/models';
 import { ConfigurableFormInstance, DEFAULT_FORM_LAYOUT_SETTINGS, IFormLayoutSettings, ISettingsFormInstance, IToolboxComponent } from '../../interfaces';
-import { IPropertyMetadata } from '../../interfaces/metadata';
-import { convertToMarkupWithSettings, listComponentToModelMetadata } from '../../providers/form/utils';
+import { IPropertyMetadata } from '@/interfaces/metadata';
+import { convertToMarkupWithSettings, listComponentToModelMetadata } from '@/providers/form/utils';
 
 export interface IProps<TModel extends IConfigurableFormComponent> {
   readonly: boolean;
@@ -50,7 +50,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
     });
 
     if (settingsForm) 
-      settingsForm.setFormDataAndInstance({values: newModel, mergeValues: true});
+      settingsForm.setFormData({values: newModel, mergeValues: true});
     else
       form.setFieldsValue(newModel);
 

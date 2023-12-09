@@ -3,7 +3,7 @@ import PlacesAutocomplete, { geocodeByAddress, getLatLng, PropTypes } from 'reac
 import { Input, notification } from 'antd';
 import { SearchOutlined, LoadingOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
-import { LatLngPolygon, PointPolygon, pointsInPolygon } from '../../utils/googleMaps';
+import { LatLngPolygon, PointPolygon, pointsInPolygon } from '@/utils/googleMaps';
 import { CSSProperties } from 'react';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 

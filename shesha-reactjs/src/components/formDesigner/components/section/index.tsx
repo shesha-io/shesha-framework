@@ -1,13 +1,13 @@
 import React, { Fragment } from 'react';
 import { IToolboxComponent } from '../../../../interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '../../../../providers/form/models';
+import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
 import { BorderLeftOutlined } from '@ant-design/icons';
 import settingsFormJson from './settingsForm.json';
-import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import _ from 'lodash';
 import { useForm, useFormData } from '../../../../providers';
 import { Alert } from 'antd';
-import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 
 export interface ISectionProps extends IConfigurableFormComponent {
   // name: string;

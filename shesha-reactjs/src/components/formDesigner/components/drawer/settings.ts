@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid/non-secure';
-import { DesignerToolbarSettings } from '../../../../interfaces/toolbarSettings';
+import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 
 export const getSettings = (data: { readOnly?: boolean }) =>
   new DesignerToolbarSettings(data)
@@ -217,6 +217,24 @@ export const getSettings = (data: { readOnly?: boolean }) =>
                   type: 'object',
                 },
               ],
+            })
+            .addNumberField({
+              id: '0e7d2669-6070-4058-bcb1-41ac64817513',
+              propertyName: 'padding',
+              parentId: '1452191c-1b5c-4039-b137-f6b472cc9e89',
+              label: 'Padding',
+              validate: {},
+              settingsValidationErrors: [],
+              description: 'Enter a number to set the padding of the component',
+            })
+            .addNumberField({
+              id: '308f8873-791b-4987-8a40-4477b6b40d0e',
+              propertyName: 'margin',
+              parentId: '1452191c-1b5c-4039-b137-f6b472cc9e89',
+              label: 'Margin',
+              validate: {},
+              settingsValidationErrors: [],
+              description: 'Enter a number to set the margin of the component',
             })
             .toJson(),
         ],

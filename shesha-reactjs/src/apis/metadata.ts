@@ -1,6 +1,6 @@
-import { useGet, UseGetProps } from '../hooks/useGet';
-import { IAjaxResponse, IAjaxResponseBase } from '../interfaces/ajaxResponse';
-import * as RestfulShesha from '../utils/fetchers';
+import { useGet, UseGetProps } from '@/hooks/useGet';
+import { IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
+import * as RestfulShesha from '@/utils/fetchers';
 
 /**
  * Indicate the source of the entity/property metadata

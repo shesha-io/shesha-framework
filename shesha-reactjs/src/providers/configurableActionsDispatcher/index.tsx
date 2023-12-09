@@ -1,5 +1,5 @@
 import React, { FC, PropsWithChildren, useContext, useEffect, useRef } from 'react';
-import useThunkReducer from '../../hooks/thunkReducer';
+import useThunkReducer from '@/hooks/thunkReducer';
 import {
   CONFIGURABLE_ACTION_DISPATCHER_CONTEXT_INITIAL_STATE,
   ConfigurableActionDispatcherActionsContext,
@@ -17,7 +17,7 @@ import {
   IConfigurableActionConfiguration,
   IConfigurableActionDescriptor,
   IConfigurableActionIdentifier,
-} from '../../interfaces/configurableAction';
+} from '@/interfaces/configurableAction';
 import { genericActionArgumentsEvaluator } from '../form/utils';
 
 export interface IConfigurableActionDispatcherProviderProps {}

@@ -1,4 +1,4 @@
-import { IConfigurableActionConfiguration } from "../../../../interfaces/configurableAction";
+import { IConfigurableActionConfiguration } from "@/interfaces/configurableAction";
 
 export interface IHasDispatchEvent {
     eventName?: string;

@@ -1,13 +1,14 @@
 import { Button, Form, Popover, PopoverProps, Spin, notification } from 'antd';
-import { entitiesGet } from 'apis/entities';
+import { entitiesGet } from '@/apis/entities';
 import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
-import { ConfigurableForm } from '../';
+import { ConfigurableForm } from '@/components/';
 import { FormItemProvider, FormMarkupWithSettings, useSheshaApplication, useUi } from '../../providers';
-import { useConfigurationItemsLoader } from '../../providers/configurationItemsLoader';
-import { useFormConfiguration } from '../../providers/form/api';
-import { FormIdentifier } from '../../providers/form/models';
-import { get } from '../../utils/fetchers';
-import ValidationErrors from '../validationErrors';
+import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
+import { useFormConfiguration } from '@/providers/form/api';
+import { FormIdentifier } from '@/providers/form/models';
+import { get } from '@/utils/fetchers';
+import ValidationErrors from '@/components/validationErrors';
+import { getQuickViewInitialValues } from './utils';
 
 export interface IQuickViewProps extends PropsWithChildren {
   /** The id or guid for the entity */
@@ -18,6 +19,8 @@ export interface IQuickViewProps extends PropsWithChildren {
   getEntityUrl?: string;
   /** The property froom the data to use as the label and title for the popover */
   displayProperty: string;
+  /** Metadata properties of value */
+  dataProperties?: { [key in string]: any }[];
   /** The width of the quickview */
   width?: number;
 
@@ -65,6 +68,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   initialFormData,
   width = 600,
   popoverProps,
+  dataProperties = [],
 }) => {
   const [formData, setFormData] = useState(initialFormData);
   const [formTitle, setFormTitle] = useState(displayName);
@@ -107,14 +111,14 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
           {...formItemLayout}
           markup={formSettings}
           form={form}
-          initialValues={formData}
+          initialValues={getQuickViewInitialValues(formData, dataProperties)}
           skipFetchData={true}
         />
       </FormItemProvider>
     ) : (
       <></>
     );
-  }, [formSettings, formData]);
+  }, [formSettings, formData, dataProperties]);
 
   const render = () => {
     if (children) {

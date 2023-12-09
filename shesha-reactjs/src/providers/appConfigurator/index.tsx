@@ -10,11 +10,11 @@ import {
   itemCancelVersion,
   publishItem,
   setItemReady,
-} from '../../utils/configurationFramework/actions';
-import { useAuth } from '../auth';
-import { useConfigurableAction } from '../configurableActionsDispatcher';
+} from '@/utils/configurationFramework/actions';
+import { useAuth } from '@/providers/auth';
+import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
-import { useSheshaApplication } from '../sheshaApplication';
+import { useSheshaApplication } from '@/providers/sheshaApplication';
 import {
   switchApplicationModeAction,
   switchConfigurationItemModeAction,

@@ -1,16 +1,16 @@
-import { IToolboxComponent } from 'interfaces';
-import { FormMarkup } from 'providers/form/models';
+import { IToolboxComponent } from '@/interfaces';
+import { FormMarkup } from '@/providers/form/models';
 import { ApiOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '../formItem';
 import settingsFormJson from './settingsForm.json';
 import React from 'react';
-import { evaluateValue, validateConfigurableComponentSettings } from 'providers/form/utils';
-import { useFormData } from 'providers';
-import ReadOnlyDisplayFormItem from '../../../readOnlyDisplayFormItem';
+import { evaluateValue, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { useFormData } from '@/providers';
+import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { EndpointsAutocomplete } from '../../../endpointsAutocomplete/endpointsAutocomplete';
 import { IEndpointsAutocompleteComponentProps } from './interfaces';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
-import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

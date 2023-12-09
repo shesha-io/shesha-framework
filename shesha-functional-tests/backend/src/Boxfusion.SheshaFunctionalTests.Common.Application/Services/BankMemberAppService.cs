@@ -48,5 +48,18 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             };
             return ObjectMapper.Map<BankMemberDto>(bankMembers);
         }
+
+        public async Task<List<BankMemberDto>> GetAllBankWithMembers()
+        {
+            var bankMembers = _bankRepo.GetAll().Select(x => new BankMemberDto
+            {
+                Address = x.Address.Id,
+                Description = x.Description,
+                Id = x.Id,
+                Name = x.Name,
+                Members = _memberRepo.GetAll().Where(x => x.Bank.Id == x.Id).Select(x => x.Id).ToList()
+            }).ToList();
+            return ObjectMapper.Map<List<BankMemberDto>>(bankMembers);
+        }
     }
 }

@@ -1,4 +1,4 @@
-import { SettingsMigrationContext } from "../../../../..";
+import { SettingsMigrationContext } from "@/components/..";
 import { IButtonComponentProps } from "../interfaces";
 import { upgradeActionConfig } from '../../_common-migrations/upgrade-action-owners';
 

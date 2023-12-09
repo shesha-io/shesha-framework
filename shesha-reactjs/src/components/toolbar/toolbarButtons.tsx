@@ -1,10 +1,10 @@
 import React, { FC, Fragment, ReactNode } from 'react';
 import { Tooltip, Button } from 'antd';
-import { joinStringValues, ShaIcon, useForm } from '../..';
+import { joinStringValues, ShaIcon, useForm } from '@/components/..';
 import { nanoid } from 'nanoid/non-secure';
 import classNames from 'classnames';
-import { IconType } from '../shaIcon';
-import ConditionalWrap from '../conditionalWrapper';
+import { IconType } from '@/components/shaIcon';
+import ConditionalWrap from '@/components/conditionalWrapper';
 import moment from 'moment';
 import { IToolbarButtonItem, IToolbarProps } from './models';
 

@@ -2,12 +2,12 @@ import { FormInstance } from 'antd';
 import { MessageApi } from 'antd/lib/message';
 import { AxiosInstance } from 'axios';
 import { DOMAttributes } from 'react';
-import { IAnyObject, IConfigurableFormComponent, IGooglePlacesAutocompleteProps } from '../../..';
-import { ISetFormDataPayload } from '../../../providers/form/contexts';
-import { FormMode } from '../../../providers/form/models';
-import { ISetStatePayload } from '../../../providers/globalState/contexts';
-import { CustomLabeledValue } from '../../autocomplete';
-import { IAddressAndCoords } from '../../googlePlacesAutocomplete';
+import { IAnyObject, IConfigurableFormComponent, IGooglePlacesAutocompleteProps } from '@/components/..';
+import { ISetFormDataPayload } from '@/providers/form/contexts';
+import { FormMode } from '@/providers/form/models';
+import { ISetStatePayload } from '@/providers/globalState/contexts';
+import { CustomLabeledValue } from '@/components/autocomplete';
+import { IAddressAndCoords } from '@/components/googlePlacesAutocomplete';
 import { IOpenCageResponse } from '../../googlePlacesAutocomplete/models';
 
 type SetFormDataFunc = (payload: ISetFormDataPayload) => void;
@@ -291,4 +291,9 @@ export const customAddressEventHandler = ({
     onChange,
     onGeocodeChange,
   };
+};
+export const isValidGuid = (input: string): boolean => {
+  if(!input) return false;
+  const guidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+  return guidRegex.test(input);
 };

@@ -1,7 +1,10 @@
 ﻿using Abp.Dependency;
+using NetTopologySuite.Index.HPRtree;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
+using Shesha.Reflection;
 using Shesha.Services;
+using System;
 using System.Collections.Generic;
 
 namespace Shesha.ConfigurationItems.Distribution.Models
@@ -26,19 +29,26 @@ namespace Shesha.ConfigurationItems.Distribution.Models
         /// </summary>
         public ConfigurationItemViewMode VersionSelectionMode { get; set; }
 
-        /// <summary>
-        /// Exporters
-        /// </summary>
-        public Dictionary<string, IConfigurableItemExport> Exporters { get; private set; }
+        private readonly IIocManager _iocManager;
+        
+        private readonly Dictionary<Type, IConfigurableItemExport> _exporters = new Dictionary<Type, IConfigurableItemExport>();
 
-        public PreparePackageContext(IList<ConfigurationItemBase> items, Dictionary<string, IConfigurableItemExport> exporters)
+        public IConfigurableItemExport GetExporter(ConfigurationItemBase item) 
         {
-            Exporters = exporters;
-            Items = items;
+            var itemType = item.GetType().StripCastleProxyType();
+
+            if (_exporters.TryGetValue(itemType, out var exporter))
+                return exporter;
+
+            exporter = _iocManager.GetItemExporter(itemType);
+            _exporters[itemType] = exporter;
+
+            return exporter;            
         }
+
         public PreparePackageContext(IList<ConfigurationItemBase> items, IIocManager iocManager)
         {
-            Exporters = DistributionHelper.GetRegisteredExportersDictionary(iocManager);
+            _iocManager = iocManager;
             Items = items;
         }
         public PreparePackageContext(IList<ConfigurationItemBase> items) : this(items, StaticContext.IocManager) 

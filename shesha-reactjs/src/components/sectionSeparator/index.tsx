@@ -1,6 +1,6 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Space, Tooltip } from 'antd';
-import Show from 'components/show';
+import Show from '@/components/show';
 import React, { CSSProperties, FC, ReactNode } from 'react';
 
 export interface ISectionSeparatorProps {

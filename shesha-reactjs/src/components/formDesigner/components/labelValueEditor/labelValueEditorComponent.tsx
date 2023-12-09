@@ -1,13 +1,13 @@
 import { IToolboxComponent } from '../../../../interfaces';
-import { FormMarkup } from '../../../../providers/form/models';
+import { FormMarkup } from '@/providers/form/models';
 import { OneToOneOutlined } from '@ant-design/icons';
 import { LabelValueEditor } from './labelValueEditor';
 import ConfigurableFormItem from '../formItem';
 import { ILabelValueEditorComponentProps } from './interfaces';
 import settingsFormJson from './settingsForm.json';
 import React from 'react';
-import { validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import { migrateCustomFunctions, migratePropertyName } from '../../../../designer-components/_common-migrations/migrateSettings';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

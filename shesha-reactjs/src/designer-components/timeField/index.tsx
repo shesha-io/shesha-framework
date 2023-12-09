@@ -2,20 +2,20 @@ import React, { FC } from 'react';
 import { ClockCircleOutlined } from '@ant-design/icons';
 import { TimePicker, message } from 'antd';
 import moment, { Moment, isMoment } from 'moment';
-import ConfigurableFormItem from 'components/formDesigner/components/formItem';
-import { customTimeEventHandler } from 'components/formDesigner/components/utils';
-import ReadOnlyDisplayFormItem from 'components/readOnlyDisplayFormItem';
-import { IToolboxComponent } from 'interfaces';
-import { DataTypes } from 'interfaces/dataTypes';
-import { useForm, useFormData, useGlobalState, useSheshaApplication } from 'providers';
-import { FormMarkup, IConfigurableFormComponent } from 'providers/form/models';
-import { getStyle, validateConfigurableComponentSettings } from 'providers/form/utils';
-import { axiosHttp } from 'utils/fetchers';
-import { getNumericValue } from 'utils/string';
+import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { customTimeEventHandler } from '@/components/formDesigner/components/utils';
+import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
+import { IToolboxComponent } from '@/interfaces';
+import { DataTypes } from '@/interfaces/dataTypes';
+import { useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
+import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { axiosHttp } from '@/utils/fetchers';
+import { getNumericValue } from '@/utils/string';
 import settingsFormJson from './settingsForm.json';
 import './styles/index.less';
-import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
-import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 type RangeValue = [moment.Moment, moment.Moment];
 
@@ -48,8 +48,12 @@ export interface ITimePickerProps extends IConfigurableFormComponent {
 
 const getMoment = (value: any, dateFormat: string): Moment => {
   if (value === null || value === undefined) return undefined;
-
-  const values = [isMoment(value) ? value : null, moment(value as string, dateFormat), moment(value as string)];
+  const values = [
+    isMoment(value) ? value : null,
+    typeof(value) === 'number' ? moment.utc(value * 1000) : null, // time in millis
+    typeof(value) === 'string' ? moment(value as string, dateFormat) : null, 
+    typeof(value) === 'string' ? moment(value as string) : null
+  ];
 
   const parsed = values.find((i) => isMoment(i) && i.isValid());
 
@@ -67,11 +71,11 @@ const TimeField: IToolboxComponent<ITimePickerProps> = {
   icon: <ClockCircleOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.time,
   Factory: ({ model, form }) => {
-    const { formMode, setFormDataAndInstance } = useForm();
+    const { formMode, setFormData } = useForm();
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
-
+    
     const eventProps = {
       model,
       form,
@@ -81,13 +85,21 @@ const TimeField: IToolboxComponent<ITimePickerProps> = {
       http: axiosHttp(backendUrl),
       message,
       moment,
-      setFormData: setFormDataAndInstance,
+      setFormData,
       setGlobalState,
     };
 
     return (
       <ConfigurableFormItem model={model}>
-        {(value, onChange) => <TimePickerWrapper {...model} {...customTimeEventHandler(eventProps)} value={value} onChange={onChange} />}
+        {(value, onChange) =>  {
+          const customEvent =  customTimeEventHandler(eventProps);
+          const onChangeInternal = (...args: any[]) => {
+            customEvent.onChange(args[0], args[1]);
+            if (typeof onChange === 'function') 
+              onChange(...args);
+          };
+          return <TimePickerWrapper {...model} {...customEvent} value={value} onChange={onChangeInternal} />;
+        }}
       </ConfigurableFormItem>
     );
   },
@@ -123,6 +135,7 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
   ...rest
 }) => {
   const { data: formData } = useFormData();
+
   const evaluatedValue = getMoment(value, format);
 
   const hourStepLocal = getNumericValue(hourStep);
@@ -152,7 +165,7 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
   };
 
   if (readOnly) {
-    return <ReadOnlyDisplayFormItem value={evaluatedValue?.toISOString()} disabled={disabled} type="time" />;
+    return <ReadOnlyDisplayFormItem value={evaluatedValue} disabled={disabled} type="time" timeFormat={format} />;
   }
 
   if (range) {
@@ -161,26 +174,30 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
         bordered={!hideBorder}
         onChange={handleRangePicker}
         format={format}
-        defaultValue={getDefaultRangePickerValues() as RangeValue}
+        value={getDefaultRangePickerValues() as RangeValue}
         {...steps}
         style={getStyle(style, formData)}
         className="sha-timepicker"
+        
         {...rest}
         placeholder={[placeholder, placeholder]}
+     
       />
     );
   }
+
 
   return (
     <TimePicker
       bordered={!hideBorder}
       onChange={handleTimePickerChange}
       format={format}
-      defaultValue={evaluatedValue || (defaultValue && moment(defaultValue))}
+      value={evaluatedValue|| (defaultValue && moment(defaultValue))}
       {...steps}
       style={getStyle(style, formData)}
       className="sha-timepicker"
       placeholder={placeholder}
+    
       // show
       {...rest}
     />

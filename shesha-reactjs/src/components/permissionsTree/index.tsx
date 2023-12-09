@@ -4,13 +4,13 @@ import { DataNode, EventDataNode } from 'antd/lib/tree';
 import React, { ReactNode, useEffect, useState } from 'react';
 import { FC } from 'react';
 import { useLocalStorage } from 'react-use';
-import { useConfigurableAction, useForm } from '../..';
+import { useConfigurableAction, useForm } from '@/components/..';
 import {
   PermissionDto,
   usePermissionGetAllTree,
   usePermissionUpdateParent,
   usePermissionDelete,
-} from '../../apis/permission';
+} from '@/apis/permission';
 import SearchBox from '../formDesigner/toolboxSearchBox';
 import { IUpdateItemArguments, updateItemArgumentsForm } from './update-item-arguments';
 import { Key } from 'rc-tree/lib/interface';

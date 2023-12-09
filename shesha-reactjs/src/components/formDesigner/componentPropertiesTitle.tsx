@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { Button } from 'antd';
 import { CopyOutlined, DeleteFilled } from '@ant-design/icons';
-import { useFormDesigner } from '../../providers/formDesigner';
+import { useFormDesigner } from '@/providers/formDesigner';
 
 export interface IProps {}
 

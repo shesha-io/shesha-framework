@@ -1,4 +1,4 @@
-import { ConfigurableFormInstance } from "interfaces";
+import { ConfigurableFormInstance } from "@/interfaces";
 import { isEqual } from "lodash";
 import React, { FC, PropsWithChildren, useContext, useEffect, useRef, useState } from "react";
 import { createContext } from 'react';
@@ -26,10 +26,15 @@ export interface IDataContextManagerActionsContext {
     getActiveContext: () => IDataContextDescriptor;
     updateFormInstance: (form: ConfigurableFormInstance) => void;
     getFormInstance: () => ConfigurableFormInstance;
+    onUpdateContextApi: (id: string, api: any) => void;
+}
+
+export interface IDataContextManagerFullInstance extends IDataContextManagerStateContext, IDataContextManagerActionsContext{
+
 }
 
 /** initial state */
-export const DATA_CONTEXT_MANAGER_CONTEXT_INITIAL_STATE: IDataContextManagerStateContext = {lastUpdate: new Date().toISOString()};
+export const DATA_CONTEXT_MANAGER_CONTEXT_INITIAL_STATE: IDataContextManagerStateContext = {lastUpdate: ''};
 
 export const DataContextManagerStateContext = createContext<IDataContextManagerStateContext>(DATA_CONTEXT_MANAGER_CONTEXT_INITIAL_STATE);
 export const DataContextManagerActionsContext = createContext<IDataContextManagerActionsContext>(undefined);
@@ -59,9 +64,9 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
             const ctx = {...payload};
             delete ctx.initialData;
             contexts.current[payload.id] = {...ctx};
+        }
+        if (!contextsData.current[payload.id]) {
             contextsData.current[payload.id] = {...payload.initialData};
-
-            //setData({...contextsData, [payload.id]: payload.initialData});
             setState({...state, lastUpdate: new Date().toJSON() });
         }
     };
@@ -136,7 +141,14 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
             }
         }
     };
-    
+
+    const onUpdateContextApi = (id: string, api: any) => {
+        const existingContext = contexts.current[id];
+        if (!!existingContext) {
+            contexts.current[id].api = api;
+        }
+    };
+
     const onChangeContextData = (contextId: string, data: any) => {
         const changed = !isEqual(contextsData.current[contextId], data);
         if (changed) {
@@ -167,7 +179,8 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
         setActiveContext,
         getActiveContext,
         updateFormInstance,
-        getFormInstance
+        getFormInstance,
+        onUpdateContextApi
     };
 
     return (
@@ -179,7 +192,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
     );
 };
 
-function useDataContextManager(require: boolean = true) {
+function useDataContextManager(require: boolean = true): IDataContextManagerFullInstance {
     const actionsContext = useContext(DataContextManagerActionsContext);
     const stateContext = useContext(DataContextManagerStateContext);
   

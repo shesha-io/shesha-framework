@@ -8,6 +8,7 @@ export interface IListEditorStateContext<TItem = any> {
 export interface IListEditorActionsContext<TItem = any> {
   deleteItem: (index: number) => void;
   addItem: () => void;
+  insertItem: (index: number) => void;
   updateItem: (index: number, item: TItem) => void;
   updateList: (newItems: TItem[]) => void;
 }

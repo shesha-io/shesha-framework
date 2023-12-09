@@ -46,14 +46,6 @@
             "label": "Range?"
           },
           {
-            "id": "dc6d8703-bba7-49da-8d7c-36e0cd9045a5",
-            "type": "checkbox",
-            "propertyName": "dateOnly",
-            "parentId": "VmAusRlLZo3cYRFk88xnf",
-            "label": "Date Only?",
-            "description": "Send only a date format as a request, otherwise sends a datetime format"
-          },
-          {
             "id": "e92bcf3c-a70a-4aeb-b6ac-5643eb5b4fe2",
             "type": "switch",
             "propertyName": "resolveToUTC",

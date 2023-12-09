@@ -11,7 +11,7 @@ namespace Shesha.NHibernate
     /// <summary>
     /// NHibernate proxy stripper
     /// </summary>
-    public class INhibernateProxyStripper : IProxyStripper, ITransientDependency
+    public class NhibernateProxyStripper : IProxyStripper, ITransientDependency
     {
         public Type StripProxy(Type type)
         {

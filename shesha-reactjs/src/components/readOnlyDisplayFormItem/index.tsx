@@ -2,13 +2,14 @@ import { EditOutlined, LockOutlined } from '@ant-design/icons';
 import { Switch, Tag } from 'antd';
 import Checkbox from 'antd/lib/checkbox/Checkbox';
 import classNames from 'classnames';
+import { ValueRenderer } from '@/components/valueRenderer/index';
 import moment from 'moment';
 import React, { FC } from 'react';
 import { useForm } from '../../providers';
-import { getMoment } from '../../utils/date';
-import { IDtoType, ISelectOption } from '../autocomplete';
-import QuickView, { GenericQuickView } from '../quickView';
-import { Show } from '../show';
+import { getMoment } from '@/utils/date';
+import { IDtoType, ISelectOption } from '@/components/autocomplete';
+import QuickView, { GenericQuickView } from '@/components/quickView';
+import { Show } from '@/components/show';
 import { IReadOnlyDisplayFormItemProps } from './models';
 
 type AutocompleteType = ISelectOption<IDtoType>;
@@ -98,15 +99,15 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = ({
           `Invalid data type passed. Expected IGuidNullableEntityReferenceDto[] but found ${typeof value}`
         );
       }
-      case 'time':
+      case 'time': {
+        return <ValueRenderer value={value} meta={{ dataType: 'time', dataFormat: timeFormat }}/>;
+      }
       case 'datetime': {
         if (typeof value === 'string') {
-          return moment(value).format(type === 'datetime' ? dateFormat : timeFormat);
+          return moment(value).format(dateFormat);
         }
 
-        return getMoment(value, type === 'datetime' ? dateFormat : timeFormat)?.toISOString() || '';
-
-        // throw new Error(`Invalid data type passed. Expected string but found: ${typeof value}`);
+        return getMoment(value, dateFormat)?.toISOString() || '';
       }
       case 'checkbox': {
         return <Checkbox checked={checked} defaultChecked={defaultChecked} disabled />;
@@ -118,7 +119,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = ({
       default:
         break;
     }
-    return typeof value === 'object' ? JSON.stringify(value, null, 2) : value;
+    return Boolean(value) && typeof value === 'object' ? JSON.stringify(value, null, 2) : value;
   };
 
   const iconClass = 'read-only-mode-toggler';

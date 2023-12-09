@@ -2,9 +2,9 @@ import React, { FC } from 'react';
 import { Button, Tooltip } from 'antd';
 import { DeleteFilled, QuestionCircleOutlined } from '@ant-design/icons';
 import DragHandle from './dragHandle';
-import ShaIcon, { IconType } from '../../../shaIcon';
+import ShaIcon, { IconType } from '@/components/shaIcon';
 import { useItemListConfigurator } from '../../../../providers';
-import { IConfigurableItemBase } from '../../../../providers/itemListConfigurator/contexts';
+import { IConfigurableItemBase } from '@/providers/itemListConfigurator/contexts';
 import classNames from 'classnames';
 
 export interface IListItemProps extends IConfigurableItemBase {

@@ -1,5 +1,5 @@
 import { handleActions } from 'redux-actions';
-import { IErrorInfo } from '../../interfaces/errorInfo';
+import { IErrorInfo } from '@/interfaces/errorInfo';
 import { CrudActionEnums, ISwitchModeActionPayload } from './actions';
 import { CRUD_CONTEXT_INITIAL_STATE, ICrudStateContext } from './contexts';
 

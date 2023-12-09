@@ -1,5 +1,5 @@
 import { handleActions } from 'redux-actions';
-import { getFilterOptions } from '../../components/columnItemFilter';
+import { getFilterOptions } from '@/components/columnItemFilter';
 import flagsReducer from '../utils/flagsReducer';
 import {
   DATA_TABLE_CONTEXT_INITIAL_STATE,
@@ -15,7 +15,7 @@ import {
   IFetchColumnsSuccessSuccessPayload,
   IFetchGroupingColumnsSuccessPayload,
   IRegisterConfigurableColumnsPayload,
-  ISetHiddenFilterActionPayload,
+  ISetPermanentFilterActionPayload,
   ISetPredefinedFiltersPayload,
   ISetRowDataPayload,
   ISortingSettingsActionPayload,
@@ -24,6 +24,7 @@ import {
   DataFetchingMode,
   IColumnSorting,
   IGetListDataPayload,
+  ISortingItem,
   ITableColumn,
   ITableDataColumn,
   ITableDataInternalResponse,
@@ -31,7 +32,7 @@ import {
 } from './interfaces';
 import { getTableDataColumn, prepareColumn } from './utils';
 import { Row } from 'react-table';
-import { ProperyDataType } from 'interfaces/metadata';
+import { ProperyDataType } from '@/interfaces/metadata';
 
 /** get dirty filter if exists and fallback to current filter state */
 const getDirtyFilter = (state: IDataTableStateContext): ITableFilter[] => {
@@ -431,17 +432,15 @@ const reducer = handleActions<IDataTableStateContext, any>(
       };
     },
 
-    [DataTableActionEnums.SetHiddenFilter]: (
+    [DataTableActionEnums.SetPermanentFilter]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<ISetHiddenFilterActionPayload>
+      action: ReduxActions.Action<ISetPermanentFilterActionPayload>
     ) => {
-      const { filter, owner } = action.payload;
-
-      const hiddenFilters = { ...state.hiddenFilters, [owner]: filter };
+      const { filter } = action.payload;
 
       return {
         ...state,
-        hiddenFilters: hiddenFilters,
+        permanentFilter: filter,
       };
     },
 
@@ -465,6 +464,14 @@ const reducer = handleActions<IDataTableStateContext, any>(
       };
     },
 
+    [DataTableActionEnums.OnGroup]: (state: IDataTableStateContext, action: ReduxActions.Action<ISortingItem[]>) => {
+      const { payload } = action;
+      return {
+        ...state,
+        grouping: [...payload]
+      };
+    },
+
     [DataTableActionEnums.ExportToExcelError]: (state: IDataTableStateContext, action: ReduxActions.Action<string>) => {
       const { payload } = action;
 
@@ -473,6 +480,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
         exportToExcelError: payload,
       };
     },
+
     [DataTableActionEnums.ExportToExcelWarning]: (
       state: IDataTableStateContext,
       action: ReduxActions.Action<string>
@@ -538,7 +546,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
       return {
         ...state,
-        standard: [...payload],
+        standardSorting: [...payload],
       };
     },
 

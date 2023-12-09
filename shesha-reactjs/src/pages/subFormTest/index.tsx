@@ -1,7 +1,7 @@
 import { Button, Form } from 'antd';
 import React, { useState } from 'react';
-import { FormProvider, Page, PageWithLayout, SubFormProvider } from '../..';
-import SubForm from '../../components/formDesigner/components/subForm/subForm';
+import { FormProvider, Page, PageWithLayout, SubFormProvider } from '@/pages/..';
+import SubForm from '@/components/formDesigner/components/subForm/subForm';
 
 export interface ISubFormTestPageProps {}
 

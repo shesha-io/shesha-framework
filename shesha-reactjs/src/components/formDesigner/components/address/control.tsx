@@ -1,12 +1,12 @@
 import { message } from 'antd';
 import moment from 'moment';
 import React, { FC, Fragment } from 'react';
-import { useGet } from 'hooks';
-import { useForm, useGlobalState, useSheshaApplication } from '../../../..';
-import { axiosHttp } from '../../../../utils/fetchers';
-import GooglePlacesAutocomplete, { IAddressAndCoords } from '../../../googlePlacesAutocomplete';
+import { useGet } from '@/hooks';
+import { useForm, useGlobalState, useSheshaApplication } from '@/components/..';
+import { axiosHttp } from '@/utils/fetchers';
+import GooglePlacesAutocomplete, { IAddressAndCoords } from '@/components/googlePlacesAutocomplete';
 import { IOpenCageResponse } from '../../../googlePlacesAutocomplete/models';
-import ValidationErrors from '../../../validationErrors';
+import ValidationErrors from '@/components/validationErrors';
 import { customAddressEventHandler } from '../utils';
 import { IAddressCompomentProps } from './models';
 import { getAddressValue, getSearchOptions } from './utils';
@@ -25,7 +25,7 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => 
     lazy: true,
   });
 
-  const { form, formMode, formData } = useForm();
+  const { form, formMode, formData, setFormData } = useForm();
   const { globalState, setState: setGlobalState } = useGlobalState();
   const { backendUrl } = useSheshaApplication();
 
@@ -56,7 +56,7 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => 
     http: axiosHttp(backendUrl),
     message,
     moment,
-    setFormData: onChange,
+    setFormData,
     setGlobalState,
     onChange,
     onSelect,

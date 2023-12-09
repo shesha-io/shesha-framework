@@ -3,7 +3,6 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Notifications;
 using Hangfire;
-using NHibernate.Linq;
 using Shesha.Authorization.Users;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
@@ -38,6 +37,8 @@ namespace Shesha.Notifications
 
         /// inheritedDoc
         public override RefListNotificationType NotificationType => RefListNotificationType.Email;
+
+        public bool UseOnlyIfRequestedAsTarget => true;
 
         /// inheritedDoc
         public async Task SendNotificationsAsync(UserNotification[] userNotifications)

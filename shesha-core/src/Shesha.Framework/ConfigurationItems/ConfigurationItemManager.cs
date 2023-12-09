@@ -18,7 +18,7 @@ namespace Shesha.ConfigurationItems
     /// <summary>
     /// Base class of the Configuration Item Manager
     /// </summary>
-    public abstract class ConfigurationItemManager<TItem> : IConfigurationItemManager<TItem> where TItem : class, IConfigurationItem
+    public abstract class ConfigurationItemManager<TItem> : IConfigurationItemManager<TItem> where TItem : ConfigurationItemBase
     {
         /// <summary>
         /// Configurable Item type supported by the current manager

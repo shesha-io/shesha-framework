@@ -3,8 +3,8 @@ import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { FormLayout } from 'antd/lib/form/Form';
 import { ReactNode } from 'react';
 import { IAsyncValidationError } from '../../interfaces';
-import { IKeyValue } from '../../interfaces/keyValue';
-import { IHasVersion } from '../../utils/fluentMigrator/migrator';
+import { IKeyValue } from '@/interfaces/keyValue';
+import { IHasVersion } from '@/utils/fluentMigrator/migrator';
 
 export const ROOT_COMPONENT_KEY: string = 'root'; // root key of the flat components structure
 export const TOOLBOX_COMPONENT_DROPPABLE_KEY: string = 'toolboxComponent';
@@ -159,7 +159,15 @@ export interface IConfigurableFormComponent
   jsSetting?: boolean;
 
   subscribedEventNames?: string[];
+
+  /** Default style CSS applied as expression */
   style?: string;
+
+  /** Default margin style applied as string */
+  margin?: string;
+
+  /** Default padding style applied as string */
+  padding?: string;
 }
 
 export interface IComponentsContainer {

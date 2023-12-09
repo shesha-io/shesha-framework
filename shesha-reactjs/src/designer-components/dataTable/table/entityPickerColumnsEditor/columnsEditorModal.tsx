@@ -1,13 +1,13 @@
 import { Modal } from 'antd';
 import React, { FC } from 'react';
 import { useMedia } from 'react-use';
-import { IEntityPickerComponentProps } from '../../../../components/formDesigner/components/entityPicker';
+import { IEntityPickerComponentProps } from '@/components/formDesigner/components/entityPicker';
 import { MetadataProvider, useForm } from '../../../../providers';
 import {
   ColumnsConfiguratorProvider,
   useColumnsConfigurator,
-} from '../../../../providers/datatableColumnsConfigurator';
-import { IConfigurableColumnsBase } from '../../../../providers/datatableColumnsConfigurator/models';
+} from '@/providers/datatableColumnsConfigurator';
+import { IConfigurableColumnsBase } from '@/providers/datatableColumnsConfigurator/models';
 import { ColumnsConfigurator } from './columnsConfigurator';
 
 export interface IColumnsEditorModal {

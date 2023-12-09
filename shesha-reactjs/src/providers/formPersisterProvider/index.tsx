@@ -1,8 +1,8 @@
 import React, { FC, PropsWithChildren, useContext, useEffect } from 'react';
-import { FormUpdateMarkupInput, formConfigurationUpdateMarkup } from '../../apis/formConfiguration';
-import useThunkReducer from '../../hooks/thunkReducer';
+import { FormUpdateMarkupInput, formConfigurationUpdateMarkup } from '@/apis/formConfiguration';
+import useThunkReducer from '@/hooks/thunkReducer';
 import { useAppConfigurator, useSheshaApplication } from '../../providers';
-import { useConfigurationItemsLoader } from '../configurationItemsLoader';
+import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import {
   DEFAULT_FORM_SETTINGS,
   FormIdentifier,

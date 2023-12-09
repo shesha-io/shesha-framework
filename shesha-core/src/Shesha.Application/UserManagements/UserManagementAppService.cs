@@ -1,10 +1,10 @@
 ﻿using Abp.Domain.Repositories;
 using Abp.Runtime.Validation;
-using NHibernate.Linq;
 using Shesha.Authorization.Users;
 using Shesha.Configuration;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
+using Shesha.Extensions;
 using Shesha.Persons;
 using System;
 using System.Collections.Generic;

@@ -1,10 +1,10 @@
 import React, { FC, MutableRefObject, Fragment } from 'react';
 import { useDataTableStore } from '../../providers';
-import { IDataTableInstance } from '../../providers/dataTable/interfaces';
-import { DataTable } from '../dataTable';
+import { IDataTableInstance } from '@/providers/dataTable/interfaces';
+import { DataTable } from '@/components/dataTable';
 import { ITableCustomTypeEditor } from '../dataTable/interfaces';
-import CollapsiblePanel from '../panel';
-import { ChildTableControls } from '../childTableControls';
+import CollapsiblePanel from '@/components/panel';
+import { ChildTableControls } from '@/components/childTableControls';
 import DatatableAdvancedFilter from '../dataTable/advancedFilter';
 import DatatableColumnsSelector from '../dataTable/columnsSelector';
 import { Alert, Drawer } from 'antd';

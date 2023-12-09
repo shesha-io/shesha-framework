@@ -1,15 +1,15 @@
-import { IToolboxComponent } from 'interfaces';
+import { IToolboxComponent } from '@/interfaces';
 import { FileImageOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '../formItem';
-import { validateConfigurableComponentSettings } from 'providers/form/utils';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import React from 'react';
 import { AnnotationSettingsForm } from './settings';
-import { useForm } from 'providers';
+import { useForm } from '@/providers';
 import { IImageProps } from './model';
 import ImageAnnotationControl from './control';
 import { Alert } from 'antd';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
-import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 const ImageAnnotationComponent: IToolboxComponent<IImageProps> = {
   type: 'imageAnnotation',

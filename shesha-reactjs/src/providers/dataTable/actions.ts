@@ -11,9 +11,11 @@ import {
   ITableDataInternalResponse,
   ITableFilter,
   IndexColumnFilterOption,
-  GroupingItem,
   SortMode,
   ColumnSorting,
+  ISortingItem,
+  GroupingItem,
+  FilterExpression,
 } from './interfaces';
 
 export enum DataTableActionEnums {
@@ -45,11 +47,12 @@ export enum DataTableActionEnums {
   ChangeActionedRow = 'CHANGE_ACTIONED_ROW',
   ChangeSelectedStoredFilterIds = 'CHANGE_SELECTED_STORED_FILTER_IDS',
   SetPredefinedFilters = 'REGISTER_STORED_FILTER',
-  SetHiddenFilter = 'SET_HIDDEN_FILTER',
+  SetPermanentFilter = 'SET_PERMANENT_FILTER',
   ChangeSelectedIds = 'CHANGE_SELECTED_IDS',
   RegisterConfigurableColumns = 'REGISTER_CONFIGURABLE_COLUMNS',
   OnSelectRow = 'ON_SELECT_ROW',
   OnSort = 'ON_SORT',
+  OnGroup = 'ON_GROUP',
   SetModelType = 'SET_MODEL_TYPE',
   SetDataFetchingMode = 'SET_DATA_FETCHING_MODE',
 
@@ -191,12 +194,11 @@ export const setPredefinedFiltersAction = createAction<ISetPredefinedFiltersPayl
   (p) => p
 );
 
-export interface ISetHiddenFilterActionPayload {
-  filter: IStoredFilter;
-  owner: string;
+export interface ISetPermanentFilterActionPayload {
+  filter: FilterExpression;
 }
-export const setHiddenFilterAction = createAction<ISetHiddenFilterActionPayload, ISetHiddenFilterActionPayload>(
-  DataTableActionEnums.SetHiddenFilter,
+export const setPermanentFilterAction = createAction<ISetPermanentFilterActionPayload, ISetPermanentFilterActionPayload>(
+  DataTableActionEnums.SetPermanentFilter,
   (p) => p
 );
 
@@ -224,6 +226,8 @@ export const registerConfigurableColumnsAction = createAction<
 >(DataTableActionEnums.RegisterConfigurableColumns, (p) => p);
 
 export const onSortAction = createAction<IColumnSorting[], IColumnSorting[]>(DataTableActionEnums.OnSort, (p) => p);
+
+export const onGroupAction = createAction<ISortingItem[], ISortingItem[]>(DataTableActionEnums.OnGroup, (p) => p);
 
 /* NEW_ACTION_GOES_HERE */
 

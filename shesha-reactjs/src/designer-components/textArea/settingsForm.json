@@ -146,7 +146,6 @@
       }
     },
 
-
     {
       "id": "990990f54ee-b754-479d-8e45-559efbd70c10",
       "type": "collapsiblePanel",
@@ -228,11 +227,6 @@
                 "name": "setFormData",
                 "description": "A function used to update the form data",
                 "type": "({ values: object, mergeValues: boolean}) => void"
-              },
-              {
-                "name": "setFormData",
-                "description": "A function used to update the form data",
-                "type": "({ values: object, mergeValues: boolean}) => void"
               }
             ]
           },
@@ -260,11 +254,6 @@
                 "type": "object"
               },
               { "name": "moment", "description": "The moment.js object", "type": "object" },
-              {
-                "name": "setFormData",
-                "description": "A function used to update the form data",
-                "type": "({ values: object, mergeValues: boolean}) => void"
-              },
               {
                 "name": "setFormData",
                 "description": "A function used to update the form data",

@@ -1,9 +1,9 @@
-import { SettingsMigrationContext } from "../../../..";
-import { IConfigurableActionConfiguration } from "../../../../interfaces/configurableAction";
-import { IKeyValue } from "../../../../interfaces/keyValue";
-import { FormIdentifier } from "../../../../providers/form/models";
-import { getClosestTableId } from "../../../../providers/form/utils";
-import { ToolbarItemProps } from "../../../../providers/toolbarConfigurator/models";
+import { SettingsMigrationContext } from "@/designer-components/..";
+import { IConfigurableActionConfiguration } from "@/interfaces/configurableAction";
+import { IKeyValue } from "@/interfaces/keyValue";
+import { FormIdentifier } from "@/providers/form/models";
+import { getClosestTableId } from "@/providers/form/utils";
+import { ToolbarItemProps } from "@/providers/toolbarConfigurator/models";
 import { IToolbarProps } from "../models";
 import { IConfigurableFormComponent } from "../../../../interfaces";
 import { ButtonType } from 'antd/lib/button';

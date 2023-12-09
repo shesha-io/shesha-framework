@@ -1,10 +1,9 @@
-﻿using System;
+﻿using Abp.Dependency;
+using Abp.Domain.Repositories;
+using Shesha.Domain;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Abp.Dependency;
-using Abp.Domain.Repositories;
-using NHibernate.Linq;
-using Shesha.Domain;
 
 namespace Shesha.Authorization
 {
@@ -24,7 +23,7 @@ namespace Shesha.Authorization
 
         public async Task<bool> IsGrantedAsync(long userId, string permissionName)
         {
-            var person = await _personRepository.GetAll().FirstOrDefaultAsync(x => x.User.Id == userId);
+            var person = await _personRepository.FirstOrDefaultAsync(x => x.User.Id == userId);
             var roles = _rolePersonRepository.GetAll().Where(x => x.Person == person);
             return roles.SelectMany(x => x.Role.Permissions).Any(x => x.Permission == permissionName && x.IsGranted);
         }

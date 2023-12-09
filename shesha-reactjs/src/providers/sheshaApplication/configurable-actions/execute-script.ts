@@ -1,9 +1,9 @@
-import { ICodeExposedVariable } from 'components/codeVariablesTable';
-import { FormMarkupFactory } from 'interfaces/configurableAction';
+import { ICodeExposedVariable } from '@/components/codeVariablesTable';
+import { FormMarkupFactory } from '@/interfaces/configurableAction';
 import { nanoid } from 'nanoid';
-import { useSheshaApplication } from '../../..';
-import { DesignerToolbarSettings } from '../../../interfaces/toolbarSettings';
-import { useConfigurableAction } from '../../configurableActionsDispatcher';
+import { useSheshaApplication } from '@/providers/..';
+import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
+import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { SheshaActionOwners } from '../../configurableActionsDispatcher/models';
 import { executeScript } from '../../form/utils';
 
@@ -68,12 +68,6 @@ const executeScriptArgumentsForm: FormMarkupFactory = (props) => {
     },
     {
       id: '8d1541db-2591-4568-b925-d7777cea7f0f',
-      name: 'setFormData',
-      description: 'A function used to update the form data',
-      type: '({ values: object, mergeValues: boolean}) => void',
-    },
-    {
-      id: '1d4a41db-2591-4568-b925-d2537cea7f0f',
       name: 'setFormData',
       description: 'A function used to update the form data',
       type: '({ values: object, mergeValues: boolean}) => void',

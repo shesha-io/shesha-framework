@@ -1,5 +1,5 @@
 import { handleActions } from 'redux-actions';
-import { ModelConfigurationDto } from '../../apis/modelConfigurations';
+import { ModelConfigurationDto } from '@/apis/modelConfigurations';
 import { ModelActionEnums } from './actions';
 import { IModelConfiguratorStateContext, MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE } from './contexts';
 

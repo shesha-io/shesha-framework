@@ -1,7 +1,7 @@
 import React, { Context, PropsWithChildren, useContext, useEffect, useMemo, useReducer } from 'react';
-import { PromisedValue } from '../../utils/promises';
+import { PromisedValue } from '@/utils/promises';
 import { IComponentSettings } from '../appConfigurator/models';
-import { useConfigurationItemsLoader } from '../configurationItemsLoader';
+import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import { getFlagSetters } from '../utils/flagsSetters';
 import {
   loadErrorAction,

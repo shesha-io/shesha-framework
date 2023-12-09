@@ -1,13 +1,13 @@
-import StatusTagComponent from '../../components/formDesigner/components/statusTag';
-import AutocompleteComponent from '../../designer-components/autocomplete/autocomplete';
-import CheckboxComponent from '../../designer-components/checkbox/checkbox';
-import DateFieldComponent from '../../designer-components/dateField/dateField';
-import DropdownComponent from '../../designer-components/dropdown/dropdown';
-import EntityReferenceComponent from '../../designer-components/entityReference/entityReference';
-import NumberComponent from '../../designer-components/numberField/numberField';
-import RefListStatusComponent from '../../designer-components/refListStatus/index';
-import TextFieldComponent from '../../designer-components/textField/textField';
-import TimeFieldComponent from '../../designer-components/timeField';
+import StatusTagComponent from '@/components/formDesigner/components/statusTag';
+import AutocompleteComponent from '@/designer-components/autocomplete/autocomplete';
+import CheckboxComponent from '@/designer-components/checkbox/checkbox';
+import DateFieldComponent from '@/designer-components/dateField/dateField';
+import DropdownComponent from '@/designer-components/dropdown/dropdown';
+import EntityReferenceComponent from '@/designer-components/entityReference/entityReference';
+import NumberComponent from '@/designer-components/numberField/numberField';
+import RefListStatusComponent from '@/designer-components/refListStatus/index';
+import TextFieldComponent from '@/designer-components/textField/textField';
+import TimeFieldComponent from '@/designer-components/timeField';
 import { IDictionary } from '../../interfaces';
 
 /*
@@ -30,7 +30,7 @@ const getAllExceptPredicate = (names: string[]): PropertyInclusionPredicate => {
 };
 
 const labelProperties = ['label', 'hideLabel', 'labelAlign', 'description'];
-const bindingProperties = ['name', 'defaultValue'];
+const bindingProperties = ['name', 'propertyName', 'defaultValue'];
 const visibilityProperties = ['hidden', 'disabled', 'readOnly', 'visibility', 'hideBorder'];
 const styleProperties = ['style', 'size'];
 const allBaseProperties = [...labelProperties, ...bindingProperties, ...visibilityProperties, ...styleProperties];

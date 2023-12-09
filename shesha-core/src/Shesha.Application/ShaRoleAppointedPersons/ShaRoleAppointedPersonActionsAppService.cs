@@ -2,11 +2,10 @@
 using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Runtime.Validation;
-using Microsoft.AspNetCore.Mvc;
-using NHibernate.Linq;
 using Shesha.Application.Services.Dto;
 using Shesha.Authorization;
 using Shesha.Domain;
+using Shesha.Extensions;
 using Shesha.ShaRoleAppointedPersons.Dto;
 using System;
 using System.Collections.Generic;

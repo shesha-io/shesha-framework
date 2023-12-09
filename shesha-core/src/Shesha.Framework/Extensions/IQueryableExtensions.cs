@@ -3,6 +3,7 @@ using Abp.Linq;
 using Newtonsoft.Json.Linq;
 using Shesha.JsonLogic;
 using Shesha.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -114,6 +115,18 @@ namespace Shesha.Extensions
         }
 
         /// <summary>
+        /// Call `FirstOrDefaultAsync` using current <see cref="IAsyncQueryableExecuter"/>
+        /// </summary>
+        /// <typeparam name="T">Type of entity</typeparam>
+        /// <param name="queryable">Query</param>
+        /// <param name="predicate">A function to test each element for a condition</param>
+        /// <returns></returns>
+        public static Task<T> FirstOrDefaultAsync<T>(this IQueryable<T> queryable, Expression<Func<T, bool>> predicate)
+        {
+            return queryable.Where(predicate).FirstOrDefaultAsync();
+        }
+
+        /// <summary>
         /// Call `CountAsync` using current <see cref="IAsyncQueryableExecuter"/>
         /// </summary>
         /// <typeparam name="T">Type of entity</typeparam>
@@ -135,6 +148,18 @@ namespace Shesha.Extensions
         {
             var asyncExecuter = StaticContext.IocManager.Resolve<IAsyncQueryableExecuter>();
             return asyncExecuter.AnyAsync(queryable);
+        }
+
+        /// <summary>
+        /// Call `AnyAsync` using current <see cref="IAsyncQueryableExecuter"/>
+        /// </summary>
+        /// <typeparam name="T">Type of entity</typeparam>
+        /// <param name="queryable">Query</param>
+        /// <param name="predicate">A function to test each element for a condition</param>
+        /// <returns></returns>
+        public static Task<bool> AnyAsync<T>(this IQueryable<T> queryable, Expression<Func<T, bool>> predicate)
+        {
+            return queryable.Where(predicate).AnyAsync();
         }
 
         #endregion

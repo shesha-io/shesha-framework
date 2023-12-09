@@ -1,7 +1,7 @@
 import React, { FC, PropsWithChildren, useState } from 'react';
 import { useAppConfigurator } from '../../providers';
-import { IConfigurableComponentContext } from '../../providers/configurableComponent/contexts';
-import { ISettingsEditor } from '../configurableComponent';
+import { IConfigurableComponentContext } from '@/providers/configurableComponent/contexts';
+import { ISettingsEditor } from '@/components/configurableComponent';
 import { ComponentSettingsModal } from './componentSettingsModal';
 
 export interface IComponentStateProps<TSettings = any> {

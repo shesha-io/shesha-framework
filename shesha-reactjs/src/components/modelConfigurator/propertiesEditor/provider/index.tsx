@@ -1,6 +1,6 @@
 import React, { FC, useContext, PropsWithChildren, useRef } from 'react';
 import modelReducer from './reducer';
-import useThunkReducer from '../../../../hooks/thunkReducer';
+import useThunkReducer from '@/hooks/thunkReducer';
 import {
   IUpdateChildItemsPayload,
   IUpdateItemSettingsPayload,
@@ -17,7 +17,7 @@ import {
   /* NEW_ACTION_IMPORT_GOES_HERE */
 } from './actions';
 import { getItemById } from './utils';
-import { IModelItem } from '../../../../interfaces/modelConfigurator';
+import { IModelItem } from '@/interfaces/modelConfigurator';
 import { Action } from 'redux-actions';
 import { nanoid } from 'nanoid/non-secure';
 

@@ -1,6 +1,6 @@
 import React, { FC, PropsWithChildren, useContext, useMemo, useReducer } from 'react';
 import { usePrevious } from 'react-use';
-import { ISidebarMenuItem } from '../sidebarMenu';
+import { ISidebarMenuItem } from '@/providers/sidebarMenu';
 import {
   addGroupAction,
   addItemAction,

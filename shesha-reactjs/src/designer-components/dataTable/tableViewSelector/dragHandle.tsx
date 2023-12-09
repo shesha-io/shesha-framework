@@ -1,6 +1,6 @@
 import { MoreOutlined } from '@ant-design/icons';
 import React, { FC } from 'react';
-import { useTableViewSelectorConfigurator } from '../../../providers/tableViewSelectorConfigurator';
+import { useTableViewSelectorConfigurator } from '@/providers/tableViewSelectorConfigurator';
 
 export interface IDragHandleProps {
   id: string;

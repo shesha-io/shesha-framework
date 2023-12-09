@@ -8,7 +8,6 @@ using Abp.Domain.Uow;
 using Abp.Extensions;
 using Abp.Notifications;
 using Abp.Runtime.Session;
-using Newtonsoft.Json;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.EntityReferences;
@@ -33,6 +32,7 @@ namespace Shesha.Notifications
         private readonly IRepository<StoredFile, Guid> _storedFileRepository;
         private readonly IRepository<NotificationMessageAttachment, Guid> _attachmentRepository;
         private readonly INotificationPublicationContext _publicationContext;
+        private readonly IRepository<Person, Guid> _personRepository;
 
         public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;
 
@@ -49,7 +49,8 @@ namespace Shesha.Notifications
             IRepository<NotificationMessage, Guid> messageRepository, 
             IRepository<StoredFile, Guid> storedFileRepository, 
             IRepository<NotificationMessageAttachment, Guid> attachmentRepository,
-            INotificationPublicationContext publicationContext)
+            INotificationPublicationContext publicationContext,
+            IRepository<Person, Guid> personRepository)
         {
             _notificationConfiguration = notificationConfiguration;
             _notificationDefinitionManager = notificationDefinitionManager;
@@ -61,6 +62,7 @@ namespace Shesha.Notifications
             _storedFileRepository = storedFileRepository;
             _attachmentRepository = attachmentRepository;
             _publicationContext = publicationContext;
+            _personRepository = personRepository;
         }
 
         public async Task DistributeAsync(Guid notificationId)
@@ -142,7 +144,8 @@ namespace Shesha.Notifications
                     subscriptions = await _notificationStore.GetSubscriptionsAsync(
                         notificationInfo.NotificationName,
                         notificationInfo.EntityTypeName,
-                        notificationInfo.EntityId
+                        notificationInfo.EntityId,
+                        notificationInfo.TargetNotifiers
                         );
                 }
                 else
@@ -152,7 +155,8 @@ namespace Shesha.Notifications
                         tenantIds,
                         notificationInfo.NotificationName,
                         notificationInfo.EntityTypeName,
-                        notificationInfo.EntityId
+                        notificationInfo.EntityId,
+                        notificationInfo.TargetNotifiers
                         );
                 }
 
@@ -265,16 +269,22 @@ namespace Shesha.Notifications
                     {
                         await _notificationStore.InsertTenantNotificationAsync(tenantNotificationInfo);
                         await _unitOfWorkManager.Current.SaveChangesAsync(); //To get tenantNotification.Id.
-
                         var notificationMessage = new NotificationMessage
                         {
                             TenantNotification = tenantNotificationInfo,
                             SendType = shaData.SendType,
                             RecipientText = shaData.RecipientText,
-                            Status = RefListNotificationStatus.Preparing,                            
+                            Status = RefListNotificationStatus.Preparing,  
                         };
                         if (!string.IsNullOrEmpty(notificationInfo.EntityId) && !string.IsNullOrEmpty(notificationInfo.EntityTypeName))
                             notificationMessage.SourceEntity = new GenericEntityReference(notificationInfo.EntityId.Replace('"', ' ').Trim(), notificationInfo.EntityTypeName, "");
+
+                       if (shaData.RecipientId.HasValue)
+                        {
+                            var recipient = await _personRepository.GetAsync(shaData.RecipientId.Value);
+                            if(recipient != null)
+                                notificationMessage.Recipient = recipient;
+                        }
 
                         await _messageRepository.InsertAsync(notificationMessage);
 

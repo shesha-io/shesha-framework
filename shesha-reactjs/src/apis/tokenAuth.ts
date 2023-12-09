@@ -1,4 +1,4 @@
-import { IAjaxResponse } from '../interfaces/ajaxResponse';
+import { IAjaxResponse } from '@/interfaces/ajaxResponse';
 
 export interface AuthenticateResultModel {
   accessToken?: string | null;

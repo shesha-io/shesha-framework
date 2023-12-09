@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>Shesha</RootNamespace>
     <PackageId>Shesha.GraphQL</PackageId>
     <Title>Shesha.GraphQL</Title>
@@ -20,7 +20,6 @@
     <PackageReference Include="GraphQL.MicrosoftDI" Version="5.3.0" />
     <PackageReference Include="GraphQL.NewtonsoftJson" Version="5.3.0" />
     <PackageReference Include="GraphQL.SystemTextJson" Version="5.3.0" />
-    <PackageReference Include="NHibernate" Version="5.4.3" />
   </ItemGroup>
 
   <ItemGroup>

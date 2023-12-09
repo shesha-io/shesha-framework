@@ -1,5 +1,5 @@
-import { IFlatComponentsStructure } from 'interfaces';
-import { CrudProvider } from 'providers/crudContext';
+import { IFlatComponentsStructure } from '@/interfaces';
+import { CrudProvider } from '@/providers/crudContext';
 import React from 'react';
 import { FC } from 'react';
 import { ColumnInstance, HeaderGroup } from 'react-table';

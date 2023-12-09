@@ -2,11 +2,11 @@ import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'reac
 import { Form, message, Spin } from 'antd';
 import ComponentsContainer from '../formDesigner/containers/componentsContainer';
 import { ComponentsContainerForm } from '../formDesigner/containers/componentsContainerForm';
-import { ROOT_COMPONENT_KEY } from '../../providers/form/models';
-import { useForm } from '../../providers/form';
+import { ROOT_COMPONENT_KEY } from '@/providers/form/models';
+import { useForm } from '@/providers/form';
 import { IConfigurableFormRendererProps, IDataSourceComponent } from './models';
 import { IAnyObject, ValidateErrorEntity } from '../../interfaces';
-import { addFormFieldsList, hasFiles, jsonToFormData, removeGhostKeys } from '../../utils/form';
+import { addFormFieldsList, hasFiles, jsonToFormData, removeGhostKeys } from '@/utils/form';
 import { useGlobalState, useSheshaApplication } from '../../providers';
 import moment from 'moment';
 import {
@@ -17,23 +17,23 @@ import {
   getComponentNames,
   getObjectWithOnlyIncludedKeys,
   IMatchData,
-} from '../../providers/form/utils';
+} from '@/providers/form/utils';
 import cleanDeep from 'clean-deep';
-import { getQueryParams } from '../../utils/url';
+import { getQueryParams } from '@/utils/url';
 import _ from 'lodash';
-import { axiosHttp } from '../../utils/fetchers';
+import { axiosHttp } from '@/utils/fetchers';
 import qs from 'qs';
 import axios, { AxiosResponse } from 'axios';
-import { FormConfigurationDto, useFormData } from '../../providers/form/api';
-import { IAbpWrappedGetEntityResponse } from '../../interfaces/gql';
+import { FormConfigurationDto, useFormData } from '@/providers/form/api';
+import { IAbpWrappedGetEntityResponse } from '@/interfaces/gql';
 import { nanoid } from 'nanoid/non-secure';
-import { useFormDesigner } from '../../providers/formDesigner';
+import { useFormDesigner } from '@/providers/formDesigner';
 import { useModelApiEndpoint } from './useActionEndpoint';
-import { StandardEntityActions } from '../../interfaces/metadata';
-import { useMutate } from '../../hooks/useMutate';
-import { useDelayedUpdate } from '../../providers/delayedUpdateProvider';
-import { ComponentsContainerProvider } from '../../providers/form/nesting/containerContext';
-import { useDataContextManager } from 'providers/dataContextManager/index';
+import { StandardEntityActions } from '@/interfaces/metadata';
+import { useMutate } from '@/hooks/useMutate';
+import { useDelayedUpdate } from '@/providers/delayedUpdateProvider';
+import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
+import { useDataContextManager } from '@/providers/dataContextManager/index';
 
 export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRendererProps>> = ({
   children,
@@ -53,16 +53,19 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
   //  contextManager.updateFormInstance(formInstance);
 
   const {
-    setFormData,
+    updateStateFormData,
     formData,
     allComponents,
     formMode,
     formSettings,
     formMarkup,
     setValidationErrors,
-    setFormDataAndInstance,
+    setFormData,
     visibleComponentIdsIsSet,
   } = formInstance;
+
+  const designerMode = formMode === 'designer';
+
   const { isDragging = false } = useFormDesigner(false) ?? {};
   const { excludeFormFieldsInPayload, onDataLoaded, onUpdate, onInitialized, formKeysToPersist, uniqueFormId } =
     formSettings;
@@ -132,7 +135,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
     if (props.onValuesChange) props.onValuesChange(changedValues, values);
 
     // recalculate components visibility
-    setFormData({ values, mergeValues: true });
+    updateStateFormData({ values, mergeValues: true });
   };
 
   const initialValuesFromSettings = useMemo(() => {
@@ -177,15 +180,11 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
   }, [formData, onUpdate]);
 
   // reset form to initial data on any change of components or initialData
+  // only if data is not fetched or form is not in designer mode
   useEffect(() => {
-    setFormData({ values: initialValues, mergeValues: true });
-
-    if (fetchedFormEntity) return;
-
-    if (form) {
-      form.resetFields();
-    }
-  }, [/*allComponents, */ initialValues]); // todo: re-rendering on change of allComponents causes problems in the designer
+    if (!fetchedFormEntity && !designerMode)
+      setFormData({ values: initialValues, mergeValues: false });
+  }, [allComponents, initialValues]);
 
   useEffect(() => {
     let incomingInitialValues = null;
@@ -214,12 +213,6 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
     // }
 
     if (incomingInitialValues) {
-      // TODO: setFormData doesn't update the fields when the form that needs to be initialized it modal.
-      // TODO: Tried with mergeValues as both true | false. The state got updated properly but that doesn't reflect on the form
-      // TODO: Investigate this
-      if (form) {
-        form?.setFieldsValue(incomingInitialValues);
-      }
       setFormData({ values: incomingInitialValues, mergeValues: true });
     }
   }, [fetchedFormEntity, lastTruthyPersistedValue, initialValuesFromSettings, uniqueFormId]);
@@ -276,7 +269,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
       includeMessage ? message : undefined,
       sheshaUtils,
       form,
-      setFormDataAndInstance,
+      setFormData,
       setGlobalState,
       {...dcm?.getDataContextsData(), lastUpdate: dcm?.lastUpdate},
     );

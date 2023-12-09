@@ -9,7 +9,7 @@ import {
   IRegisterProviderPayload,
   IDynamicActionsDispatcherFullInstance,
 } from './contexts';
-import useThunkReducer from '../../hooks/thunkReducer';
+import useThunkReducer from '@/hooks/thunkReducer';
 import { DynamicItemsEvaluationHook, IProvidersDictionary } from './models';
 
 export interface IDynamicActionsDispatcherProviderProps { }

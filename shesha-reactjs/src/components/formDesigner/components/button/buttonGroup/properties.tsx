@@ -1,12 +1,12 @@
 import React, { FC, useEffect, useMemo, useRef } from 'react';
-import { useButtonGroupConfigurator } from '../../../../../providers/buttonGroupConfigurator';
+import { useButtonGroupConfigurator } from '@/providers/buttonGroupConfigurator';
 import { Empty, Form } from 'antd';
 import { ConfigurableForm } from '../../../..';
 import itemSettingsJson from './itemSettings.json';
 import itemGroupSettingsJson from './itemGroupSettings.json';
-import { FormMarkup } from '../../../../../providers/form/models';
+import { FormMarkup } from '@/providers/form/models';
 import { useDebouncedCallback } from 'use-debounce';
-import { ConfigurableFormInstance } from '../../../../../providers/form/contexts';
+import { ConfigurableFormInstance } from '@/providers/form/contexts';
 
 export interface IButtonGroupPropertiesProps {}
 

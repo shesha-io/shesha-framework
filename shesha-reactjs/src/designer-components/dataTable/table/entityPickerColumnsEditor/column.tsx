@@ -1,12 +1,12 @@
 import { DeleteFilled, QuestionCircleOutlined } from '@ant-design/icons';
 import { Button, Tooltip } from 'antd';
 import React, { FC } from 'react';
-import ShaIcon, { IconType } from '../../../../components/shaIcon';
-import { useColumnsConfigurator } from '../../../../providers/datatableColumnsConfigurator';
+import ShaIcon, { IconType } from '@/components/shaIcon';
+import { useColumnsConfigurator } from '@/providers/datatableColumnsConfigurator';
 import {
   IConfigurableActionColumnsProps,
   IConfigurableColumnsProps,
-} from '../../../../providers/datatableColumnsConfigurator/models';
+} from '@/providers/datatableColumnsConfigurator/models';
 import DragHandle from './dragHandle';
 
 export interface IProps extends IConfigurableColumnsProps {

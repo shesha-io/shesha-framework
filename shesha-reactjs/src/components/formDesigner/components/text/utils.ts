@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { getNumberFormat } from '../../../../utils/string';
+import { getNumberFormat } from '@/utils/string';
 import {
   ContentDisplay,
   FONT_SIZES,
@@ -16,10 +16,11 @@ export const DEFAULT_CONTENT_TYPE = '';
 export const DEFAULT_CONTENT_DISPLAY: ContentDisplay = 'content';
 export const DEFAULT_PADDING_SIZE: TypographyPaddingSize = 'none';
 
-interface IContent {
+export interface IContent {
   dataType?: ITextTypographyProps['dataType'];
   dateFormat?: ITextTypographyProps['dateFormat'];
   numberFormat?: ITextTypographyProps['numberFormat'];
+  dataFormat?: string;
 }
 
 export const getContent = (content: string, { dataType = 'string', dateFormat, numberFormat }: IContent = {}) => {

@@ -1,8 +1,8 @@
 ﻿using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Localization;
-using NHibernate.Linq;
 using Shesha.Bootstrappers;
+using Shesha.Extensions;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

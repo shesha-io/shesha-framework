@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { DesignerToolbarSettings } from '../../interfaces/toolbarSettings';
+import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 
 export const configurableActionsConfiguratorSettingsForm = new DesignerToolbarSettings()
   .addTextField({

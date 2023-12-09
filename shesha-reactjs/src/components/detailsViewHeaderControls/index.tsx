@@ -1,5 +1,5 @@
 import React, { FC, ReactNode } from 'react';
-import CancelButton from '../cancelButton';
+import CancelButton from '@/components/cancelButton';
 import { useSheshaApplication, useShaRouting } from '../../providers';
 
 export interface IControlItemData {

@@ -1,11 +1,11 @@
 import React from 'react';
-import { IToolboxComponent } from 'interfaces';
-import { FormMarkup, IConfigurableFormComponent } from 'providers/form/models';
+import { IToolboxComponent } from '@/interfaces';
+import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
 import { WarningOutlined } from '@ant-design/icons';
 import settingsFormJson from './settingsForm.json';
-import { validateConfigurableComponentSettings } from 'providers/form/utils';
-import { useForm } from 'providers';
-import ValidationErrors from '../../../validationErrors';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { useForm } from '@/providers';
+import ValidationErrors from '@/components/validationErrors';
 
 export interface IValidationErrorsComponentProps extends IConfigurableFormComponent {
 }

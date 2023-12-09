@@ -30,8 +30,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using static AutoMapper.Internal.ExpressionFactory;
-using static AutoMapper.QueryableExtensions.LetPropertyMaps;
 using NHcfg = NHibernate.Cfg;
 using NHGens = NHibernate.Mapping.ByCode.Generators;
 using NMIMPL = NHibernate.Mapping.ByCode.Impl;
@@ -234,10 +232,6 @@ namespace Shesha.NHibernate.Maps
             mapper.SplitsFor((type, definedSplits) =>
             {
                 var splits = definedSplits.ToList();
-
-                if (type.Name.Contains("TestProcessConfiguration"))
-                {
-                }
 
                 var joinPropAttribute = type.GetAttribute<JoinedPropertyAttribute>();
                 if (joinPropAttribute != null && !splits.Contains(joinPropAttribute.TableName))

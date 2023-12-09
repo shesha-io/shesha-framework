@@ -1,15 +1,15 @@
 import axios from 'axios';
 import FileSaver from 'file-saver';
-import { IAjaxResponse } from 'interfaces';
+import { IAjaxResponse } from '@/interfaces';
 import qs from 'qs';
 import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
-import { useDeleteFileById } from '../../apis/storedFile';
+import { useDeleteFileById } from '@/apis/storedFile';
 import { useApplicationConfiguration, useGet, useMutate } from '../../hooks';
-import { IApiEndpoint } from '../../interfaces/metadata';
-import { useDelayedUpdate } from '../../providers/delayedUpdateProvider';
-import { STORED_FILES_DELAYED_UPDATE } from '../../providers/delayedUpdateProvider/models';
-import { useSheshaApplication } from '../sheshaApplication';
-import { useSignalR } from '../signalR';
+import { IApiEndpoint } from '@/interfaces/metadata';
+import { useDelayedUpdate } from '@/providers/delayedUpdateProvider';
+import { STORED_FILES_DELAYED_UPDATE } from '@/providers/delayedUpdateProvider/models';
+import { useSheshaApplication } from '@/providers/sheshaApplication';
+import { useSignalR } from '@/providers/signalR';
 import { getFlagSetters } from '../utils/flagsSetters';
 import {
   deleteFileErrorAction,
@@ -50,7 +50,7 @@ const fileReducer = (data: IStoredFile): IStoredFile => {
   return { ...data, uid: data.id };
 };
 
-const filesReducer = (data: IStoredFile[]): IStoredFile[] => data?.map(file => fileReducer(file));
+const filesReducer = (data: IStoredFile[]): IStoredFile[] => data?.map((file) => fileReducer(file));
 
 const uploadFileEndpoint: IApiEndpoint = { url: '/api/StoredFile/Upload', httpVerb: 'POST' };
 const filesListEndpoint: IApiEndpoint = { url: '/api/StoredFile/FilesList', httpVerb: 'GET' };
@@ -80,19 +80,22 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   const { config } = useApplicationConfiguration();
   const { addItem: addDelayedUpdate, removeItem: removeDelayedUpdate } = useDelayedUpdate(false) ?? {};
 
-  const { loading: isFetchingFileList, refetch: fetchFileListHttp, data: fileListResponse } = useGet<IAjaxResponse<IStoredFile[]>>(
-    {
-      path: filesListEndpoint.url,
-      queryParams: {
-        ownerId,
-        ownerType,
-        ownerName,
-        filesCategory,
-        propertyName,
-        allCategories,
-      },
-      lazy: true,
-    });
+  const {
+    loading: isFetchingFileList,
+    refetch: fetchFileListHttp,
+    data: fileListResponse,
+  } = useGet<IAjaxResponse<IStoredFile[]>>({
+    path: filesListEndpoint.url,
+    queryParams: {
+      ownerId,
+      ownerType,
+      ownerName,
+      filesCategory,
+      propertyName,
+      allCategories,
+    },
+    lazy: true,
+  });
 
   const { mutate: uploadFileHttp } = useMutate();
 
@@ -248,8 +251,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
           uploadFile,
           deleteFile,
           downloadZipFile,
-          downloadFile,
-          /* NEW_ACTION_GOES_HERE */
+          downloadFile,          /* NEW_ACTION_GOES_HERE */
         }}
       >
         {children}

@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import qs from 'qs';
-import { IAjaxResponse } from '../interfaces/ajaxResponse';
-import { DEFAULT_ACCESS_TOKEN_NAME } from '../providers/sheshaApplication/contexts';
+import { IAjaxResponse } from '@/interfaces/ajaxResponse';
+import { DEFAULT_ACCESS_TOKEN_NAME } from '@/providers/sheshaApplication/contexts';
 import { requestHeaders } from './requestHeaders';
 
 export function constructUrl<TQueryParams>(base: string, path: string, queryParams?: TQueryParams) {

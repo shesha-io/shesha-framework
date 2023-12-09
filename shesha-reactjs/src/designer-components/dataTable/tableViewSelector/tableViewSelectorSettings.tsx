@@ -1,6 +1,6 @@
 import { Checkbox, Form } from 'antd';
 import React from 'react';
-import { SectionSeparator } from '../../..';
+import { SectionSeparator } from '@/designer-components/..';
 import { ITableViewSelectorComponentProps } from './models';
 import TableViewSelectorSettingsModal from './tableViewSelectorSettingsModal';
 

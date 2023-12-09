@@ -1,12 +1,12 @@
-import { FormMarkup, IConfigurableFormComponent } from 'providers/form/models';
-import { IToolboxComponent } from 'interfaces';
+import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
+import { IToolboxComponent } from '@/interfaces';
 import React from 'react';
 import { GroupOutlined } from '@ant-design/icons';
-import { ConfigurableFormItem } from 'components/index';
+import { ConfigurableFormItem } from '@/components/index';
 import settingsFormJson from './settingsForm.json';
-import { evaluateString, validateConfigurableComponentSettings } from 'utils/publicUtils';
-import { SortingEditor } from 'components/dataTable/sortingConfigurator/index';
-import { useForm, useFormData } from 'providers/index';
+import { evaluateString, validateConfigurableComponentSettings } from '@/utils/publicUtils';
+import { SortingEditor } from '@/components/dataTable/sortingConfigurator/index';
+import { useForm, useFormData } from '@/providers/index';
 
 export interface ISortingEditorComponentProps extends IConfigurableFormComponent {
     modelType: string;

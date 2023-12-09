@@ -2,8 +2,8 @@ import { DeleteFilled, QuestionCircleOutlined } from '@ant-design/icons';
 import { Button, Tooltip } from 'antd';
 import classNames from 'classnames';
 import React, { FC } from 'react';
-import { useTableViewSelectorConfigurator } from '../../../providers/tableViewSelectorConfigurator';
-import { ITableViewProps } from '../../../providers/tableViewSelectorConfigurator/models';
+import { useTableViewSelectorConfigurator } from '@/providers/tableViewSelectorConfigurator';
+import { ITableViewProps } from '@/providers/tableViewSelectorConfigurator/models';
 import DragHandle from './dragHandle';
 
 export interface IFilterItemProps extends ITableViewProps {

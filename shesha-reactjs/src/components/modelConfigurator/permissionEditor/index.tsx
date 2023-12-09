@@ -1,9 +1,9 @@
 import React, { FC } from 'react';
 import permissionSettingsMarkup from '../permissionSettings.json';
-import ConfigurableForm from '../../configurableForm';
-import { FormMarkup } from '../../../providers/form/models';
+import ConfigurableForm from '@/components/configurableForm';
+import { FormMarkup } from '@/providers/form/models';
 import { Form } from 'antd';
-import { PermissionDto } from 'apis/permission';
+import { PermissionDto } from '@/apis/permission';
 import { isEqual } from 'lodash';
 
 interface IPermissionEditorComponentProps {

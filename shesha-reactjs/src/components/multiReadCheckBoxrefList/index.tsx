@@ -1,8 +1,8 @@
 import { CheckCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { DisplayFormItem, ShaSpin } from '../../';
 import React, { FC } from 'react';
-import { useReferenceList } from '../../providers/referenceListDispatcher';
-import { getLegacyReferenceListIdentifier } from '../../utils/referenceList';
+import { useReferenceList } from '@/providers/referenceListDispatcher';
+import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
 
 export interface IMultiReadCheckBoxRefListProps {
   readonly listName: string;

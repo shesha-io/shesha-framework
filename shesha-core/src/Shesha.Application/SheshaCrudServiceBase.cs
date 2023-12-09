@@ -226,7 +226,7 @@ namespace Shesha
             var httpContext = AppContextHelper.Current;
 
             var properties = string.IsNullOrWhiteSpace(input.Properties)
-                ? await GetGqlTopLevelPropertiesAsync()
+                ? await GetGqlTopLevelPropertiesAsync(true)
                 : await CleanupPropertiesAsync(input.Properties);
 
             var query = $@"query getAll($filter: String, $quickSearch: String, $quickSearchProperties: [String], $sorting: String, $skipCount: Int, $maxResultCount: Int, $specifications: [String]){{
@@ -348,7 +348,7 @@ namespace Shesha
             }
         }
 
-        private void AppendProperty(StringBuilder sb, EntityPropertyDto property)
+        private void AppendProperty(StringBuilder sb, EntityPropertyDto property, bool fullReference = false)
         {
             // todo: use FieldNameConverter to get correct case of the field names
             var propertyName = StringHelper.ToCamelCase(property.Name);
@@ -357,10 +357,15 @@ namespace Shesha
             {
                 
                 case DataTypes.Array:
-                    // todo: implement and uncomment
-                    return;
+                    if (property.DataFormat == ArrayFormats.ReferenceListItem)
+                    {
+                        sb.AppendLine(propertyName);
+                        break;
+                    }
+                    else
+                        return; // todo: implement other types
                 case DataTypes.EntityReference:
-                    if (property.EntityType.IsNullOrWhiteSpace())
+                    if (fullReference || property.EntityType.IsNullOrWhiteSpace())
                     {
                         // GenericEntityReference
                         //sb.AppendLine($"{propertyName}: {propertyName}");
@@ -389,13 +394,13 @@ namespace Shesha
             }
         }
 
-        private async Task<string> GetGqlTopLevelPropertiesAsync()
+        private async Task<string> GetGqlTopLevelPropertiesAsync(bool fullReference = false)
         {
             var sb = new StringBuilder();
             var properties = await EntityConfigCache.GetEntityPropertiesAsync(typeof(TEntity));
             foreach (var property in properties)
             {
-                AppendProperty(sb, property);
+                AppendProperty(sb, property, fullReference);
             }
 
             sb.AppendLine("id");

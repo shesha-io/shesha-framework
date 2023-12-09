@@ -77,5 +77,13 @@ namespace Shesha.NotificationMessages.Dto
         /// Error message
         /// </summary>
         public string ErrorMessage { get; set; }
+        /// <summary>
+        /// Indicates whether or not a user has viewed the notificationMessage,
+        /// </summary>
+        public bool? Opened { get; set; }
+        /// <summary>
+        /// The Date and time the user last viewed the notificationMessage
+        /// </summary>
+        public DateTime? LastOpened { get; set; }
     }
 }

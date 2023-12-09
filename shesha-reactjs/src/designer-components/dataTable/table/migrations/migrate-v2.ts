@@ -1,7 +1,7 @@
 import { ITableComponentProps } from "../models";
-import { SettingsMigrationContext } from "../../../../interfaces/formDesigner";
-import { upgradeActionConfig } from '../../../../components/formDesigner/components/_common-migrations/upgrade-action-owners';
-import { IConfigurableActionColumnsProps } from "../../../../providers/datatableColumnsConfigurator/models";
+import { SettingsMigrationContext } from "@/interfaces/formDesigner";
+import { upgradeActionConfig } from '@/components/formDesigner/components/_common-migrations/upgrade-action-owners';
+import { IConfigurableActionColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
 
 export const migrateV1toV2 = (props: ITableComponentProps, context: SettingsMigrationContext): ITableComponentProps => {
     const { items } = props;

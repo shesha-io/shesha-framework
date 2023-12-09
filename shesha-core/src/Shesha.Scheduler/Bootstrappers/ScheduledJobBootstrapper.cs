@@ -2,8 +2,8 @@
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Reflection;
-using NHibernate.Linq;
 using Shesha.Bootstrappers;
+using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Scheduler.Attributes;
 using Shesha.Scheduler.Domain;
@@ -72,7 +72,7 @@ namespace Shesha.Scheduler.Bootstrappers
                 {
                     using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
                     {
-                        var existingJob = await _jobRepo.GetAll().FirstOrDefaultAsync(j => j.Id == jobInfo.Attribute.Uid);
+                        var existingJob = await _jobRepo.FirstOrDefaultAsync(j => j.Id == jobInfo.Attribute.Uid);
 
                         // job already exists - activate  if inactive it and continue processing
                         // note: the user can't create/delete jobs manually, so we assume that the job was inactivated by this bootstrapper

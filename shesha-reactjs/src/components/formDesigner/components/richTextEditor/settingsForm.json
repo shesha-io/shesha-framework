@@ -380,7 +380,7 @@
             "parentId": "4y9SNudmMM0Wd1Sc_YI1ng",
             "label": "Allow Height resize",
             "defaultChecked": true,
-            "hidden": {"_code": "return !getSettingValue(data?.autoHeight);", "_mode": "code", "_value": false}
+            "hidden": {"_code": "return getSettingValue(data?.autoHeight);", "_mode": "code", "_value": false}
           },
           {
             "id": "279803c8-d481-4ecc-92b7-bf6d347618a8",
@@ -422,7 +422,7 @@
             "parentId": "4y9SNudmMM0Wd1Sc_YI1ng",
             "label": "Allow Width resize",
             "defaultChecked": true,
-            "hidden": {"_code": "return !getSettingValue(data?.autoWidth);", "_mode": "code", "_value": false}
+            "hidden": {"_code": "return getSettingValue(data?.autoWidth);", "_mode": "code", "_value": false}
           },
           {
             "id": "b343be0e-d3a3-4284-aa2c-e056593c4417",

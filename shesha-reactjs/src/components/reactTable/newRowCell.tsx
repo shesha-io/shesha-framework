@@ -1,10 +1,10 @@
-import CrudOperationsCell from 'components/dataTable/cell/crudOperationsCell';
-import { CreateDataCell } from 'components/dataTable/cell/dataCell';
-import { DataTableColumn } from 'components/dataTable/interfaces';
-import { useMetadata } from 'providers';
+import CrudOperationsCell from '@/components/dataTable/cell/crudOperationsCell';
+import { CreateDataCell } from '@/components/dataTable/cell/dataCell';
+import { DataTableColumn } from '@/components/dataTable/interfaces';
+import { useMetadata } from '@/providers';
 import React, { FC } from 'react';
 import { ColumnInstance, HeaderPropGetter, TableCellProps, TableHeaderProps } from 'react-table';
-import { toCamelCase } from 'utils/string';
+import { toCamelCase } from '@/utils/string';
 
 const getStyles = (props: Partial<TableHeaderProps | TableCellProps>, align = 'left') => [
   props,

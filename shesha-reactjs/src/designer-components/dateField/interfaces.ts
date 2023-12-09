@@ -1,4 +1,4 @@
-import { IConfigurableFormComponent } from '../../providers/form/models';
+import { IConfigurableFormComponent } from '@/providers/form/models';
 
 export type RangeType = 'start' | 'end';
 
@@ -25,7 +25,6 @@ export interface IDateFieldProps extends IConfigurableFormComponent {
   monthFormat?: string;
   weekFormat?: string;
   range?: boolean;
-  dateOnly?: boolean;
   resolveToUTC?: boolean;
   picker?: 'time' | 'date' | 'week' | 'month' | 'quarter' | 'year';
   disablePastDates?: boolean;

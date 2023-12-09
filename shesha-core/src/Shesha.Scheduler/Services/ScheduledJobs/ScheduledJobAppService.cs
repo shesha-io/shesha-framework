@@ -3,7 +3,6 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Hangfire;
 using Microsoft.AspNetCore.Mvc;
-using NHibernate.Linq;
 using Shesha.Authorization.Users;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Scheduler.Attributes;
@@ -44,7 +43,7 @@ namespace Shesha.Scheduler.Services.ScheduledJobs
             var id = input.JobId;
 
             // note: special code fore manual jobs
-            var scheduledJob = await _jobRepo.GetAll().FirstOrDefaultAsync(j => j.Id == id, cancellationToken: cancellationToken);
+            var scheduledJob = await _jobRepo.FirstOrDefaultAsync(j => j.Id == id);
 
             if (scheduledJob == null)
                 throw new Exception("Job with the specified Id not found");

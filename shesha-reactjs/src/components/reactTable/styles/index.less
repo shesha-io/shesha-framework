@@ -32,6 +32,7 @@
           .hoverable-row();
         }
       }
+
       >.tr.tr-body.sha-hover {
         .hoverable-row();
       }
@@ -72,6 +73,7 @@
       &.sha-new-row {
         .sha-crud-cell {
           height: 100%;
+
           .sha-link {
             .anticon {
               font-size: 18px;
@@ -104,6 +106,21 @@
 
       &.helperContainerClass {
         background-color: aquamarine;
+      }
+
+      .ant-form-item {
+        .ant-form-item-row {
+          .ant-form-item-control {
+            .ant-form-item-control-input {
+              min-height: unset;
+
+              .ant-btn.entity-reference-btn {
+                line-height: unset;
+                height: unset;
+              }
+            }
+          }
+        }
       }
     }
 

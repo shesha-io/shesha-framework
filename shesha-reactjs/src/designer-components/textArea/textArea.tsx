@@ -1,21 +1,21 @@
-import { IToolboxComponent } from 'interfaces';
-import { FormMarkup } from 'providers/form/models';
+import { IToolboxComponent } from '@/interfaces';
+import { FormMarkup } from '@/providers/form/models';
 import { FontColorsOutlined } from '@ant-design/icons';
 import { Input, message } from 'antd';
 import { TextAreaProps } from 'antd/lib/input';
 import settingsFormJson from './settingsForm.json';
-import React from 'react';
-import { evaluateString, getStyle, validateConfigurableComponentSettings } from 'providers/form/utils';
-import { useForm, useFormData, useGlobalState, useSheshaApplication } from 'providers';
-import { DataTypes, StringFormats } from 'interfaces/dataTypes';
-import { axiosHttp } from 'utils/fetchers';
+import React, { CSSProperties } from 'react';
+import { evaluateString, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
+import { axiosHttp } from '@/utils/fetchers';
 import moment from 'moment';
 import { ITextAreaComponentProps } from './interfaces';
-import { ConfigurableFormItem } from 'components';
-import ReadOnlyDisplayFormItem from 'components/readOnlyDisplayFormItem';
-import { customEventHandler } from 'components/formDesigner/components/utils';
-import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
-import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import { ConfigurableFormItem } from '@/components';
+import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
+import { customEventHandler } from '@/components/formDesigner/components/utils';
+import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -41,10 +41,12 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string && dataFormat === StringFormats.multiline,
   Factory: ({ model, form }) => {
-    const { formMode, setFormDataAndInstance } = useForm();
+    const { formMode, setFormData } = useForm();
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
+
+    const getTextAreaStyle = (style: CSSProperties = {}) => ({ ...style, marginBottom: model?.showCount ? '16px' : 0 });
 
     const textAreaProps: TextAreaProps = {
       className: 'sha-text-area',
@@ -56,7 +58,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
       allowClear: model.allowClear,
       bordered: !model.hideBorder,
       size: model?.size,
-      style: getStyle(model?.style, formData),
+      style: getTextAreaStyle(getStyle(model?.style, formData)),
     };
 
     const eventProps = {
@@ -68,7 +70,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
       http: axiosHttp(backendUrl),
       message,
       moment,
-      setFormData: setFormDataAndInstance,
+      setFormData,
       setGlobalState,
     };
 
@@ -82,21 +84,28 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
       >
         {(value, onChange) => {
           const showAsJson = Boolean(value) && typeof value === 'object';
+
+          const customEvent = customEventHandler(eventProps);
+          const onChangeInternal = (...args: any[]) => {
+            customEvent.onChange(args[0]);
+            if (typeof onChange === 'function') onChange(...args);
+          };
+
           return showAsJson ? (
-              <JsonTextArea value={value} textAreaProps={textAreaProps} customEventHandler={customEventHandler(eventProps)} />
-            ) : model.readOnly ? (
-              <ReadOnlyDisplayFormItem value={value} disabled={model.disabled} />
-            ) : (
-              <Input.TextArea
-                rows={2}
-                {...textAreaProps}
-                disabled={model.disabled ? model.disabled : undefined}
-                {...customEventHandler(eventProps)}
-                value={value}
-                onChange={onChange}
-              />
-            );
-          }}
+            <JsonTextArea value={value} textAreaProps={textAreaProps} customEventHandler={customEvent} />
+          ) : model.readOnly ? (
+            <ReadOnlyDisplayFormItem value={value} disabled={model.disabled} />
+          ) : (
+            <Input.TextArea
+              rows={2}
+              {...textAreaProps}
+              disabled={model.disabled ? model.disabled : undefined}
+              {...customEvent}
+              value={value}
+              onChange={onChangeInternal}
+            />
+          );
+        }}
       </ConfigurableFormItem>
     );
   },
@@ -111,10 +120,10 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
 
     return textAreaModel;
   },
-  migrator: (m) => m
-    .add<ITextAreaComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-    .add<ITextAreaComponentProps>(1, (prev) => migrateVisibility(prev))
-  ,
+  migrator: (m) =>
+    m
+      .add<ITextAreaComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+      .add<ITextAreaComponentProps>(1, (prev) => migrateVisibility(prev)),
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
 };

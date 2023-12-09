@@ -2,17 +2,17 @@ import { ProfileOutlined } from '@ant-design/icons';
 import React from 'react';
 import { useFormData } from '../../../../providers';
 import { IToolboxComponent } from '../../../../interfaces';
-import { DataTypes } from '../../../../interfaces/dataTypes';
-import { FormMarkup } from '../../../../providers/form/models';
-import { getStyle, validateConfigurableComponentSettings } from '../../../../providers/form/utils';
-import { IReferenceListIdentifier } from 'interfaces/referenceList';
-import { getLegacyReferenceListIdentifier } from '../../../../utils/referenceList';
+import { DataTypes } from '@/interfaces/dataTypes';
+import { FormMarkup } from '@/providers/form/models';
+import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { IReferenceListIdentifier } from '@/interfaces/referenceList';
+import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
 import ConfigurableFormItem from '../formItem';
 import RefListCheckboxGroup from './refListCheckboxGroup';
 import settingsFormJson from './settingsForm.json';
 import { ICheckboxGroupProps } from './utils';
-import { migratePropertyName, migrateCustomFunctions } from '../../../../designer-components/_common-migrations/migrateSettings';
-import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

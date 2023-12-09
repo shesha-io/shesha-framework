@@ -1,6 +1,6 @@
-import { IConfigurableItemBase } from '../../../../providers/itemListConfigurator/contexts';
+import { IConfigurableItemBase } from '@/providers/itemListConfigurator/contexts';
 import { IConfigurableFormComponent } from '../../../../interfaces';
-import { IConfigurableActionConfiguration } from '../../../../interfaces/configurableAction';
+import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { StepProps } from 'antd';
 
 //type ButtonActionType = 'executeScript' | 'dispatchAnEvent';
@@ -52,7 +52,7 @@ export interface IWizardStepProps extends IConfigurableItemBase {
 }
 
 export interface IWizardSequence {
-  finshed?: string;
+  finished?: string;
   active?: string;
   pending?: string;
 }

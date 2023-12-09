@@ -1,7 +1,7 @@
 import { Router } from 'next/router';
 import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
-import { FormIdentifier, asFormFullName } from '../..';
-import { useConfigurableAction } from '../configurableActionsDispatcher';
+import { FormIdentifier, asFormFullName } from '@/providers/..';
+import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { getFlagSetters } from '../utils/flagsSetters';
 import { navigateArgumentsForm } from './actions/navigate-arguments';

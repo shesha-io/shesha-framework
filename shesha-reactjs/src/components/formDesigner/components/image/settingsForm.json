@@ -8,7 +8,7 @@
       "label": "Display"
     },
     {
-      "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
+      "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bf4",
       "type": "contextPropertyAutocomplete",
       "propertyName": "propertyName",
       "parentId": "root",
@@ -126,14 +126,51 @@
       "label": "Width"
     },
     {
+      "id": "028b4eaf-8830-4dcd-b54f-422c73b25418",
+      "type": "dropdown",
+      "propertyName": "dataSource",
+      "parentId": "f9pNv-hqF5ukaDytb7xwq",
+      "label": "Data Source type",
+      "dataSourceType": "values",
+      "values": [
+        {
+          "label": "StoredFile",
+          "value": "storedFileId",
+          "id": "58bd1839-b215-4b7b-b7c7-acf67b52f7af"
+        },
+        {
+          "label": "Url",
+          "value": "url",
+          "id": "e71e4e52-2886-4569-94b4-f47d58602bc2"
+        }
+      ]
+    },
+    {
       "id": "06ab0599-914d-4d2d-875c-765a495482f8",
       "type": "codeEditor",
       "propertyName": "url",
       "label": "Url",
-      "parentId": "root",
+      "parentId": "028b4eaf-8830-4dcd-b54f-422c73b25418",
       "validate": {},
       "settingsValidationErrors": [],
       "description": "A script that returns the image url as a string. This should return a string",
+      "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }],
+      "hidden": { "_code": "return getSettingValue(data?.dataSource) !== 'url';", "_mode": "code", "_value": false }
+    },
+    {
+      "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
+      "type": "codeEditor",
+      "propertyName": "storedFileId",
+      "parentId": "028b4eaf-8830-4dcd-b54f-422c73b25418",
+      "label": " StoredFile Id",
+      "hidden": {
+        "_code": "return getSettingValue(data?.dataSource) !== 'storedFileId';",
+        "_mode": "code",
+        "_value": false
+      },
+      "validate": {},
+      "settingsValidationErrors": [],
+      "description": "A script that returns the storedFileId as a string. This should return a string",
       "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }]
     }
   ],

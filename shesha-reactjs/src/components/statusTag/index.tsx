@@ -1,6 +1,6 @@
 import React, { CSSProperties, FC, useMemo } from 'react';
 import { Tag } from 'antd';
-import { isNumeric } from '../../utils/string';
+import { isNumeric } from '@/utils/string';
 
 export interface IStatusMap {
   code?: number;

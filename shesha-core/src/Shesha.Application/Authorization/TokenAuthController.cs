@@ -1,34 +1,26 @@
-﻿using System;
+﻿using Abp.Authorization;
+using Abp.Authorization.Users;
+using Abp.Domain.Repositories;
+using Abp.MultiTenancy;
+using Abp.Runtime.Security;
+using Abp.UI;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Shesha.Authentication.External;
+using Shesha.Authentication.JwtBearer;
+using Shesha.Authorization.Models;
+using Shesha.Authorization.Users;
+using Shesha.Controllers;
+using Shesha.Domain;
+using Shesha.Extensions;
+using Shesha.Models.TokenAuth;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Abp.Authorization;
-using Abp.Authorization.Users;
-using Abp.Domain.Repositories;
-using Abp.MultiTenancy;
-using Abp.Runtime.Security;
-using Abp.Runtime.Validation;
-using Abp.UI;
-using DocumentFormat.OpenXml.EMMA;
-using DocumentFormat.OpenXml.Spreadsheet;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using NHibernate.Linq;
-using Shesha.Authentication.External;
-using Shesha.Authentication.JwtBearer;
-using Shesha.Authorization.Models;
-using Shesha.Authorization.Users;
-using Shesha.Configuration;
-using Shesha.Controllers;
-using Shesha.Domain;
-using Shesha.Domain.Enums;
-using Shesha.Models.TokenAuth;
-using Shesha.MultiTenancy;
-using Shesha.Otp;
-using Shesha.Otp.Dto;
 
 namespace Shesha.Authorization
 {
@@ -94,7 +86,7 @@ namespace Shesha.Authorization
                     .Select(p => p.Id).FirstOrDefault()
                 : (Guid?)null;
             var device = !string.IsNullOrWhiteSpace(imei)
-                ? await _mobileDeviceRepository.GetAll().FirstOrDefaultAsync(e => e.IMEI == imei.Trim())
+                ? await _mobileDeviceRepository.FirstOrDefaultAsync(e => e.IMEI == imei.Trim())
                 : null;
 
             return new AuthenticateResultModel

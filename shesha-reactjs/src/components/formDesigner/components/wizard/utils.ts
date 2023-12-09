@@ -1,6 +1,6 @@
 import { findLastIndex } from 'lodash';
 import { nanoid } from 'nanoid';
-import { IConfigurableActionConfiguration } from '../../../../interfaces/configurableAction';
+import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IWizardSequence, IWizardStepProps } from './models';
 
 export const EXPOSED_VARIABLES = [
@@ -24,19 +24,6 @@ export const EXPOSED_VARIABLES = [
   { id: nanoid(), name: 'moment', description: 'The moment.js object', type: 'object' },
 ];
 
-export const getDefaultStep = (
-  tabs: IWizardStepProps[],
-  defaultVal: string,
-  active: string,
-  executeExpression: Function
-) => {
-  const stepNo = defaultVal ? executeExpression(defaultVal) : -1;
-  const activeStep = tabs?.findIndex((item) => item?.id === active);
-  const activeValue = tabs?.length > stepNo && stepNo > -1 ? stepNo : activeStep;
-
-  return typeof activeValue !== 'number' || activeValue < 0 ? 0 : activeValue;
-};
-
 export const getStepDescritpion =
   (show: boolean, sequence: IWizardSequence, currentIndex: number) => (description: string, index: number) => {
     if (show) {
@@ -48,10 +35,10 @@ export const getStepDescritpion =
           return sequence?.pending || '';
 
         case index > currentIndex:
-          return sequence?.finshed || '';
+          return sequence?.finished || '';
 
         default:
-          return sequence?.finshed || '';
+          return sequence?.finished || '';
       }
     }
 

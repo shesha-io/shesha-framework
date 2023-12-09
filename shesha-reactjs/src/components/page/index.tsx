@@ -3,14 +3,14 @@ import classNames from 'classnames';
 import { nanoid } from 'nanoid/non-secure';
 import React, { FC, PropsWithChildren, useEffect } from 'react';
 import { CancelButton, IndexToolbar, ShaSpin } from '..';
-import { IToolbarItem } from 'interfaces';
-import Show from '../show';
-import { useShaRouting, useSheshaApplication, useTheme } from 'providers';
+import { IToolbarItem } from '@/interfaces';
+import Show from '@/components/show';
+import { useShaRouting, useSheshaApplication, useTheme } from '@/providers';
 import PageHeaderTag, { ITagProps } from './pageHeaderTag';
-import StatusTag, { IStatusTagProps } from '../statusTag';
+import StatusTag, { IStatusTagProps } from '@/components/statusTag';
 import { IToolbarButtonItem } from '../toolbar/models';
-import Toolbar from '../toolbar';
-import { FormIdentifier } from 'providers/form/models';
+import Toolbar from '@/components/toolbar';
+import { FormIdentifier } from '@/providers/form/models';
 
 export interface IPageHeadProps {
   readonly title?: string;

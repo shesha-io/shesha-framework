@@ -2,11 +2,11 @@ import React, { FC } from 'react';
 import { Select, Input, Checkbox } from 'antd';
 import { IButtonGroupComponentProps } from './models';
 import { ButtonGroupSettingsModal } from './buttonGroupSettingsModal';
-import EditableTagGroup from '../../../../editableTagGroup';
-import { ISettingsFormFactoryArgs } from 'interfaces';
-import SettingsForm from '../../../../../designer-components/_settings/settingsForm';
-import SettingsCollapsiblePanel from '../../../../../designer-components/_settings/settingsCollapsiblePanel';
-import SettingsFormItem from '../../../../../designer-components/_settings/settingsFormItem';
+import EditableTagGroup from '@/components/editableTagGroup';
+import { ISettingsFormFactoryArgs } from '@/interfaces';
+import SettingsForm from '@/designer-components/_settings/settingsForm';
+import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
+import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 
 const { Option } = Select;
 

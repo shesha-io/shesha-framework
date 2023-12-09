@@ -1,6 +1,6 @@
 import { useMutateForEndpoint } from '../hooks';
-import { useGet, UseGetProps } from '../hooks/useGet';
-import { IAjaxResponse, IAjaxResponseBase } from '../interfaces/ajaxResponse';
+import { useGet, UseGetProps } from '@/hooks/useGet';
+import { IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 
 export interface StoredFileDeleteQueryParams {
   /**

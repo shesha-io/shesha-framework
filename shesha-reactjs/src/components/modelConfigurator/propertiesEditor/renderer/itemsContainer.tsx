@@ -1,10 +1,10 @@
 import React, { FC } from 'react';
 import { usePropertiesEditor } from '../provider';
 import { ReactSortable, ItemInterface } from 'react-sortablejs';
-import { IModelItem } from '../../../../interfaces/modelConfigurator';
+import { IModelItem } from '@/interfaces/modelConfigurator';
 import { SimpleProperty } from './simpleProperty';
 import ComplexProperty from './complexProperty';
-import { DataTypes } from '../../../../interfaces/dataTypes';
+import { DataTypes } from '@/interfaces/dataTypes';
 import JsonProperty from './jsonProperty';
 import GenericEntityProperty from './genericEntityProperty';
 import EntityProperty from './entityProperty';

@@ -2,22 +2,22 @@ import { DownSquareOutlined } from '@ant-design/icons';
 import { message, Select } from 'antd';
 import moment from 'moment';
 import React, { FC } from 'react';
-import { evaluateString } from '../..';
-import ConfigurableFormItem from 'components/formDesigner/components/formItem';
-import { customDropDownEventHandler } from 'components/formDesigner/components/utils';
-import ReadOnlyDisplayFormItem from 'components/readOnlyDisplayFormItem';
-import RefListDropDown from 'components/refListDropDown';
-import { IToolboxComponent } from 'interfaces';
-import { DataTypes } from 'interfaces/dataTypes';
-import { useForm, useFormData, useGlobalState, useSheshaApplication } from 'providers';
-import { FormMarkup } from 'providers/form/models';
-import { getStyle, validateConfigurableComponentSettings } from 'providers/form/utils';
-import { axiosHttp } from 'utils/fetchers';
-import { getLegacyReferenceListIdentifier } from 'utils/referenceList';
+import { evaluateString } from '@/designer-components/..';
+import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { customDropDownEventHandler } from '@/components/formDesigner/components/utils';
+import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
+import RefListDropDown from '@/components/refListDropDown';
+import { IToolboxComponent } from '@/interfaces';
+import { DataTypes } from '@/interfaces/dataTypes';
+import { useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { FormMarkup } from '@/providers/form/models';
+import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { axiosHttp } from '@/utils/fetchers';
+import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
 import { IDropdownComponentProps, ILabelValue } from './interfaces';
 import settingsFormJson from './settingsForm.json';
-import { migratePropertyName, migrateCustomFunctions } from 'designer-components/_common-migrations/migrateSettings';
-import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -30,7 +30,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
   icon: <DownSquareOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.referenceListItem,
   Factory: ({ model, form }) => {
-    const { formMode, setFormDataAndInstance } = useForm();
+    const { formMode, setFormData } = useForm();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
     const { data: formData } = useFormData();
@@ -43,16 +43,24 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
       http: axiosHttp(backendUrl),
       message,
       moment,
-      setFormData: setFormDataAndInstance,
+      setFormData,
       setGlobalState,
     };
 
     const initialValue = model?.defaultValue ? { initialValue: model.defaultValue } : {};
 
+
     return (
       <ConfigurableFormItem model={model} {...initialValue}>
         {(value, onChange) => {
-          return <Dropdown {...model} {...customDropDownEventHandler(eventProps)} value={value} onChange={onChange} />;
+          const customEvent =  customDropDownEventHandler(eventProps);
+          const onChangeInternal = (...args: any[]) => {
+            customEvent.onChange(args[0], args[1]);
+            if (typeof onChange === 'function') 
+              onChange(...args);
+          };
+          
+          return <Dropdown {...model} {...customEvent} value={value} onChange={onChangeInternal} />;
         }}
       </ConfigurableFormItem>
     );
@@ -75,14 +83,17 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
     .add<IDropdownComponentProps>(3, (prev) => migrateVisibility(prev))
   ,
   linkToModelMetadata: (model, metadata): IDropdownComponentProps => {
+    const isSingleRefList = metadata.dataType === DataTypes.referenceListItem;
+    const isMultipleRefList = metadata.dataType === 'array' && metadata.dataFormat === 'reference-list-item';
+    
     return {
       ...model,
-      dataSourceType: metadata.dataType === DataTypes.referenceListItem ? 'referenceList' : 'values',
+      dataSourceType: isSingleRefList || isMultipleRefList ? 'referenceList' : 'values',
       referenceListId: {
         module: metadata.referenceListModule,
         name: metadata.referenceListName,
       },
-      mode: 'single',
+      mode: isMultipleRefList ? 'multiple' : 'single',
       useRawValues: true,
     };
   },

@@ -1,10 +1,10 @@
-import { getAlignmentStyle } from 'components/formDesigner/containers/componentsContainerForm';
-import { IComponentsContainerBaseProps } from 'interfaces';
-import { useGlobalState, useSubForm } from 'providers';
+import { getAlignmentStyle } from '@/components/formDesigner/containers/componentsContainerForm';
+import { IComponentsContainerBaseProps } from '@/interfaces';
+import { useGlobalState, useSubForm } from '@/providers';
 import React, { FC, useCallback } from 'react';
-import { removeUndefinedProperties } from 'utils/array';
-import { executeScriptSync } from 'utils/publicUtils';
-import { ICommonContainerProps } from '../../../../designer-components/container/interfaces';
+import { removeUndefinedProperties } from '@/utils/array';
+import { executeScriptSync } from '@/utils/publicUtils';
+import { ICommonContainerProps } from '@/designer-components/container/interfaces';
 import DynamicComponent from '../dynamicView/dynamicComponent';
 
 interface IComponentsContainerSubFormProps extends IComponentsContainerBaseProps, ICommonContainerProps {}

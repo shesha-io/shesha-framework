@@ -6,14 +6,11 @@ using Abp.Extensions;
 using Abp.ObjectMapping;
 using Abp.Runtime.Validation;
 using Abp.UI;
-using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using NHibernate.Linq;
 using Shesha.Domain;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
-using Shesha.Mvc;
 using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.StoredFiles.Dto;
@@ -23,7 +20,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
-using System.Net.Mime;
 using System.Threading.Tasks;
 using ReflectionHelper = Shesha.Reflection.ReflectionHelper;
 
@@ -59,13 +55,44 @@ namespace Shesha.StoredFiles
         [HttpGet, Route("Download")]
         public async Task<FileStreamResult> Download(Guid id, int? versionNo)
         {
-            return await GetShaFileStreamResultAsync(id, isView: false, versionNo);
+            var fileVersion = await GetStoredFileVersionAsync(id, versionNo);
+            var fileContents = await _fileService.GetStreamAsync(fileVersion);
+            await _fileService.MarkDownloadedAsync(fileVersion);
+
+            return File(fileContents, fileVersion.FileType.GetContentType(), fileVersion.FileName);
         }
 
-        [HttpGet, Route("View")]
-        public async Task<FileStreamResult> View(Guid id, int? versionNo)
+        [HttpGet, Route("Base64String")]
+        public async Task<IActionResult> GetBase64StringAsync(Guid id, int? versionNo)
         {
-            return await GetShaFileStreamResultAsync(id, isView: true, versionNo);
+            var fileVersion = await GetStoredFileVersionAsync(id, versionNo);
+
+            using (var fileContents = await _fileService.GetStreamAsync(fileVersion))
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    await fileContents.CopyToAsync(memoryStream);
+                    var base64String = Convert.ToBase64String(memoryStream.ToArray());
+                    return Ok(new { Base64String = base64String });
+                }
+            }
+        }
+
+        private async Task<StoredFileVersion> GetStoredFileVersionAsync(Guid id, int? versionNo)
+        {
+            var file = await _fileRepository.GetAsync(id);
+            if (file == null)
+                throw new UserFriendlyException("File not found");
+
+            var fileVersion = !versionNo.HasValue
+                ? file.LastVersion()
+                : _fileVersionRepository.GetAll()
+                    .FirstOrDefault(v => v.File == file && v.VersionNo == versionNo.Value);
+
+            if (fileVersion == null)
+                throw new Exception("File version not found");
+
+            return fileVersion;
         }
 
         [HttpPost, Route("Upload")]
@@ -681,42 +708,5 @@ namespace Shesha.StoredFiles
         }
 
         #endregion
-
-        private async Task<ShaFileStreamResult> GetShaFileStreamResultAsync(Guid id, bool isView, int? versionNo)
-        {
-            var file = await _fileRepository.GetAsync(id);
-            if (file == null)
-                throw new UserFriendlyException("File not found");
-
-            var fileVersion = !versionNo.HasValue
-                ? file.LastVersion()
-                : _fileVersionRepository.GetAll()
-                    .FirstOrDefault(v => v.File == file && v.VersionNo == versionNo.Value);
-
-            if (fileVersion == null)
-                throw new Exception("File version not found");
-
-            var fileContents = await _fileService.GetStreamAsync(fileVersion);
-
-            var contentType = fileVersion.FileType.GetContentType();
-
-            if (!isView)
-                await _fileService.MarkDownloadedAsync(fileVersion);
-
-            var contentDisposition = new ContentDisposition
-            {
-                FileName = fileVersion.FileName,
-                Inline = isView  // Set to true to display the file inline, set to false to force download
-            };
-
-            Response.Headers.Add("Content-Disposition", contentDisposition.ToString());
-
-            return new ShaFileStreamResult(fileContents, contentType)
-            {
-                FileDownloadName = isView ? null : fileVersion.FileName
-            };
-        }
-
-
     }
 }

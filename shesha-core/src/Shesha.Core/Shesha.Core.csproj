@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\common.props" />
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <AssemblyName>Shesha.Core</AssemblyName>
     <PackageId>Shesha.Core</PackageId>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
@@ -25,18 +25,6 @@
     <EmbeddedResource Include="Localization\SourceFiles\*.xml" Exclude="bin\**;obj\**;**\*.xproj;packages\**;@(EmbeddedResource)" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="Domain\BankAccount.cs" />
-    <Compile Remove="Domain\Continent.cs" />
-    <Compile Remove="Domain\Country.cs" />
-    <Compile Remove="Domain\OrganisationBankAccount.cs" />
-    <Compile Remove="Domain\SheshaEntityChange.cs" />
-    <Compile Remove="Domain\SheshaEntityChangeSet.cs" />
-    <Compile Remove="Domain\SheshaEntityChangeSet_.cs" />
-    <Compile Remove="Domain\SheshaEntityChange_.cs" />
-    <Compile Remove="Domain\SheshaEntityPropertyChange.cs" />
-    <Compile Remove="Domain\SheshaEntityPropertyChange_.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Remove="Editions\**" />
     <Compile Remove="Features\**" />
     <Compile Remove="Identity\**" />
@@ -57,12 +45,10 @@
     <None Remove="Utilities\**" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Abp.AutoMapper" Version="6.6.2" />
+    <PackageReference Include="Abp.AutoMapper" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.1.2" />
-    <PackageReference Include="Castle.Windsor.MsDependencyInjection" Version="3.4.0" />
-    <PackageReference Include="NHibernate" Version="5.4.3" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Shesha.Framework\Shesha.Framework.csproj" />

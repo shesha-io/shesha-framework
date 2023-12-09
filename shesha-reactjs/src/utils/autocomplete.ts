@@ -1,7 +1,7 @@
-import { useGet, usePrevious } from 'hooks';
-import { convertDotNotationPropertiesToGraphQL } from 'providers/form/utils';
+import { useGet, usePrevious } from '@/hooks';
+import { convertDotNotationPropertiesToGraphQL } from '@/providers/form/utils';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { EntityData, IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '../interfaces/gql';
+import { EntityData, IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '@/interfaces/gql';
 import { GENERIC_ENTITIES_ENDPOINT } from '../shesha-constants';
 import { getEntityFilterByIds } from './graphQl';
 import { isEqual } from 'lodash';

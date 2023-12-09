@@ -1,11 +1,11 @@
 import { IToolboxComponent } from '../../interfaces';
 import { CodeOutlined } from '@ant-design/icons';
-import ConfigurableFormItem from '../../components/formDesigner/components/formItem';
+import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import React, { FC } from 'react';
 import { IConfigurableFormComponent, useMetadataDispatcher } from '../../providers';
-import { DataTypes, StringFormats } from '../../interfaces/dataTypes';
+import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { Select } from 'antd';
-import { useDataContextManager } from 'providers/dataContextManager';
+import { useDataContextManager } from '@/providers/dataContextManager';
 
 interface IDataContextSelectorComponentProps extends IConfigurableFormComponent {}
 

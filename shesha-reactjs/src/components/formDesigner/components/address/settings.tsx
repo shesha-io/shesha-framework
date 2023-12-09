@@ -1,19 +1,19 @@
 import { Checkbox, Input, InputNumber, Select } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
 import React, { FC } from 'react';
-import { COUNTRY_CODES } from '../../../../shesha-constants/country-codes';
-import Show from '../../../show';
+import { COUNTRY_CODES } from '@/shesha-constants/country-codes';
+import Show from '@/components/show';
 import CodeEditor from '../codeEditor/codeEditor';
 import { Option } from 'antd/lib/mentions';
 import { IAddressCompomentProps } from './models';
 import { EXPOSED_VARIABLES } from './utils';
-import { useFormDesigner } from 'providers/formDesigner';
-import { ISettingsFormFactoryArgs } from 'interfaces';
-import SettingsForm, { useSettingsForm } from '../../../../designer-components/_settings/settingsForm';
-import { useForm } from 'providers';
-import SettingsCollapsiblePanel from '../../../../designer-components/_settings/settingsCollapsiblePanel';
-import { ContextPropertyAutocomplete } from '../../../../designer-components/contextPropertyAutocomplete';
-import SettingsFormItem from '../../../../designer-components/_settings/settingsFormItem';
+import { useFormDesigner } from '@/providers/formDesigner';
+import { ISettingsFormFactoryArgs } from '@/interfaces';
+import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
+import { useForm } from '@/providers';
+import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
+import { ContextPropertyAutocomplete } from '@/designer-components/contextPropertyAutocomplete';
+import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 
 interface IEntityReferenceSettingsState extends IAddressCompomentProps { }
 

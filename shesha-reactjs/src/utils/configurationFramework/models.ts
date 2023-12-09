@@ -1,4 +1,4 @@
-import { IStatusMap, IStatusMappings } from '../../components/statusTag';
+import { IStatusMap, IStatusMappings } from '@/components/statusTag';
 
 export enum ConfigurationItemVersionStatus {
   /**

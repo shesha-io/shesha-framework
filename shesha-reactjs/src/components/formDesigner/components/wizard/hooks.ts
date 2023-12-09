@@ -1,10 +1,10 @@
+import { useDataContext } from '@/providers/dataContextProvider/index';
 import { useEffect, useMemo, useState } from 'react';
-import { IConfigurableFormComponent, useFormExpression, useSheshaApplication } from '../../../../';
-import { IConfigurableActionConfiguration } from '../../../../interfaces/configurableAction';
-import { useForm } from '../../../../providers';
-import { useConfigurableAction } from '../../../../providers/configurableActionsDispatcher';
+import { getActualModel, IConfigurableFormComponent, useApplicationContext, useFormExpression, useSheshaApplication } from '../../../../';
+import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
+import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { IWizardComponentProps, IWizardStepProps } from './models';
-import { getDefaultStep, getStepDescritpion, getWizardStep, isEmptyArgument } from './utils';
+import { getStepDescritpion, getWizardStep } from './utils';
 
 interface IWizardComponent {
   back: () => void;
@@ -20,25 +20,32 @@ interface IWizardComponent {
 
 export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardComponent => {
   const { anyOfPermissionsGranted } = useSheshaApplication();
-  const { formMode } = useForm();
+  const allData = useApplicationContext();
+  const dataContext = useDataContext();
 
-  const { argumentsEvaluationContext, executeBooleanExpression, executeExpression, executeAction } =
+  const { argumentsEvaluationContext, executeBooleanExpression, executeAction } =
     useFormExpression();
 
   const {
     propertyName: actionOwnerName,
     id: actionsOwnerId,
     steps: tabs,
-    defaultActiveValue,
-    defaultActiveStep,
+    defaultActiveStep = 0,
     showStepStatus,
     sequence,
   } = (model as IWizardComponentProps) || {};
 
-  const [current, setCurrent] = useState(() => {
-    const localCurrent = defaultActiveStep ? tabs?.findIndex(({ id }) => id === defaultActiveStep) : 0;
+  const getDefaultStepIndex = (i) => {
+    if (i) {
+      const t = tabs[i] 
+        ?? tabs?.find((item) => item?.id === i); // for backward compatibility
+      return !!t ? tabs.indexOf(t) : 0;
+    }
+    return 0;
+  };
 
-    return localCurrent < 0 ? 0 : localCurrent;
+  const [current, setCurrent] = useState(() => {
+    return getDefaultStepIndex(defaultActiveStep);
   });
 
   const [components, setComponents] = useState<IConfigurableFormComponent[]>();
@@ -46,33 +53,33 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
   //Remove every tab from the equation that isn't visible either by customVisibility or permissions
   const visibleSteps = useMemo(
     () =>
-      tabs.filter(({ customVisibility, permissions }) => {
+      tabs
+      .filter(({ customVisibility, permissions }) => {
         const granted = anyOfPermissionsGranted(permissions || []);
         const isVisibleByCondition = executeBooleanExpression(customVisibility, true);
 
-        return !((!granted || !isVisibleByCondition) && formMode !== 'designer');
-      }),
-    [tabs]
+        return !((!granted || !isVisibleByCondition) && allData.formMode !== 'designer');
+      })
+      .map(item => getActualModel(item, allData) as IWizardStepProps),
+    [tabs, allData.data, allData.globalState, allData.contexts.lastUpdate]
   );
 
   const currentStep = visibleSteps[current];
 
   useEffect(() => {
-    if (defaultActiveStep || defaultActiveValue) {
-      setCurrent(getDefaultStep(tabs, defaultActiveValue, defaultActiveStep, executeExpression));
-    }
-  }, [defaultActiveValue, defaultActiveStep]);
+    setCurrent(getDefaultStepIndex(defaultActiveStep));
+  }, [defaultActiveStep]);
 
   useEffect(() => {
     const actionConfiguration = currentStep?.onBeforeRenderActionConfiguration;
 
-    if (!isEmptyArgument(actionConfiguration)) {
+    if (!!actionConfiguration?.actionName) {
       executeAction({
         actionConfiguration: actionConfiguration,
         argumentsEvaluationContext
       });
     }
-  }, [currentStep]);
+  }, [current]);
 
   const actionDependencies = [actionOwnerName, actionsOwnerId, current];
 
@@ -168,7 +175,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         },
         () => {
           const afterAction = afterAccessor(currentStep);
-          if (!isEmptyArgument(afterAction))
+          if (!!afterAction?.actionName)
             executeAction({
               actionConfiguration: afterAction,
               argumentsEvaluationContext
@@ -177,7 +184,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
       );
     };
 
-    if (isEmptyArgument(beforeAction)) {
+    if (!beforeAction?.actionName) {
       successFunc(null);
       return;
     }
@@ -219,8 +226,19 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
       (tab) => tab.afterDoneActionConfiguration
     );
 
+  const setStep = (stepIndex) => setCurrent(stepIndex);
 
   const content = getStepDescritpion(showStepStatus, sequence, current);
+
+  /* Data Context section */
+
+  useEffect(() => {
+    dataContext.setData({ current, visibleSteps });
+  }, [current, visibleSteps]);
+
+  dataContext.updateApi({ back, cancel, done, content, next, setStep }); // update context api to use relevant State
+
+  /* Data Context section */
 
   return { back, components, current, currentStep, cancel, done, content, next, visibleSteps };
 };

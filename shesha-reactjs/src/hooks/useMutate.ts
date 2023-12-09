@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import { useState } from 'react';
-import { IApiEndpoint } from '../interfaces/metadata';
+import { IApiEndpoint } from '@/interfaces/metadata';
 import { useSheshaApplication } from '../providers';
 
 type MutateHttpVerb = 'POST' | 'PUT' | 'PATCH' | 'DELETE';

@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
+using Shesha.Services.ConfigurationItems;
 using Shesha.Web.FormsDesigner.Domain;
 using System;
 using System.IO;
@@ -15,18 +16,20 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
     /// <summary>
     /// Form configuration import
     /// </summary>
-    public class FormConfigurationImport: IFormConfigurationImport, ITransientDependency
+    public class FormConfigurationImport: ConfigurationItemImportBase, IFormConfigurationImport, ITransientDependency
     {
         private readonly IRepository<FormConfiguration, Guid> _formConfigRepo;
-        private readonly IRepository<Module, Guid> _moduleRepo;
         private readonly IFormManager _formManger;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
 
-        public FormConfigurationImport(IFormManager formManger, IRepository<FormConfiguration, Guid> formConfigRepo, IRepository<Module, Guid> moduleRepo, IUnitOfWorkManager unitOfWorkManager)
+        public FormConfigurationImport(IRepository<Module, Guid> moduleRepo,
+            IRepository<FrontEndApp, Guid> frontEndAppRepo, 
+            IFormManager formManger, 
+            IRepository<FormConfiguration, Guid> formConfigRepo, 
+            IUnitOfWorkManager unitOfWorkManager) : base(moduleRepo, frontEndAppRepo)
         {
             _formManger = formManger;
             _formConfigRepo = formConfigRepo;
-            _moduleRepo = moduleRepo;
             _unitOfWorkManager = unitOfWorkManager;
         }
 
@@ -121,25 +124,6 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
 
                 return newForm;
             }
-        }
-
-        private async Task<Module> GetModuleAsync(string name, IConfigurationItemsImportContext context) 
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                return null;
-
-            var module = await _moduleRepo.FirstOrDefaultAsync(m => m.Name == name);
-            if (module == null) 
-            {
-                if (context.CreateModules) 
-                {
-                    module = new Module { Name = name, IsEnabled = true };
-                    await _moduleRepo.InsertAsync(module);
-                } else
-                    throw new NotSupportedException($"Module `{name}` is missing in the destination");
-            }
-
-            return module;
         }
 
         private void MapToForm(DistributedFormConfiguration item, FormConfiguration form) 

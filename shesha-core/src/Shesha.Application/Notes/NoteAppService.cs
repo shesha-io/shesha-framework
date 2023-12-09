@@ -1,7 +1,7 @@
 ﻿using Abp.Domain.Repositories;
-using NHibernate.Linq;
 using Shesha.Application.Services.Dto;
 using Shesha.Domain;
+using Shesha.Extensions;
 using Shesha.Notes.Dto;
 using System;
 using System.Collections.Generic;

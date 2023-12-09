@@ -3,8 +3,8 @@ import { Story, Meta } from '@storybook/react';
 import GlobalStateProvider, { useGlobalState } from '.';
 import { Button, notification, Space } from 'antd';
 import { IConfigurableFormProps } from '../../components';
-import { addStory } from '../../stories/utils';
-import StoryApp from '../../components/storyBookApp';
+import { addStory } from '@/stories/utils';
+import StoryApp from '@/components/storyBookApp';
 
 export default {
   title: 'Providers/GlobalState',

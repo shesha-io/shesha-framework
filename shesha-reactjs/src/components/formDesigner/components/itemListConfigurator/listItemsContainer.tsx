@@ -2,8 +2,8 @@ import React, { FC } from 'react';
 import { ListItem } from './listItem';
 import { ListItemsGroup } from './listItemsGroup';
 import { ReactSortable, ItemInterface } from 'react-sortablejs';
-import { getActualModel, useApplicationContext, useDeepCompareMemo, useItemListConfigurator } from '../../../..';
-import { IConfigurableItemBase, IConfigurableItemGroup } from '../../../../providers/itemListConfigurator/contexts';
+import { getActualModel, useApplicationContext, useDeepCompareMemo, useItemListConfigurator } from '@/components/..';
+import { IConfigurableItemBase, IConfigurableItemGroup } from '@/providers/itemListConfigurator/contexts';
 
 export interface IItemListContainerProps {
   index?: number[];
@@ -55,7 +55,7 @@ export const ItemListContainer: FC<IItemListContainerProps> = ({ index, id, item
 
   return (
     <ReactSortable
-      list={actualItems}
+      list={items}
       setList={onSetList}
       fallbackOnBody={true}
       swapThreshold={0.5}

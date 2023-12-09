@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 
 		<IsPackable>false</IsPackable>
 	</PropertyGroup>
@@ -22,9 +22,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Abp.Castle.Log4Net" Version="6.6.2" />
+		<PackageReference Include="Abp.Castle.Log4Net" Version="9.0.0" />
 		<PackageReference Include="Bogus" Version="29.0.2" />
-		<PackageReference Include="Hangfire.SqlServer" Version="1.8.2" />
+		<PackageReference Include="Hangfire.SqlServer" Version="1.8.6" />
 		<PackageReference Include="nunit" Version="3.12.0" />
 		<PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
 	</ItemGroup>
@@ -41,7 +41,7 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Abp.TestBase" Version="6.6.2" />
+		<PackageReference Include="Abp.TestBase" Version="9.0.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.2" />
 	</ItemGroup>
 	<ItemGroup>

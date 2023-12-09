@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Abp.Notifications;
+﻿using Abp.Notifications;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.NotificationMessages.Dto;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Shesha.Notifications
 {

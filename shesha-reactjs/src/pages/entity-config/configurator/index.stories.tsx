@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import EntityConfiguratorPage from './';
-import StoryApp from '../../../components/storyBookApp';
+import StoryApp from '@/components/storyBookApp';
 
 // // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {

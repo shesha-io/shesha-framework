@@ -1,10 +1,10 @@
 import React from 'react';
 import { Story, Meta } from '@storybook/react';
-import StoryApp from '../../components/storyBookApp';
+import StoryApp from '@/components/storyBookApp';
 import DynamicPage from './';
-import { addStory } from '../../stories/utils';
+import { addStory } from '@/stories/utils';
 import { IDynamicPageProps } from './interfaces';
-import { MainLayout } from '../..';
+import { MainLayout } from '@/pages/..';
 
 export default {
   title: 'Pages/DynamicPage',
@@ -62,9 +62,10 @@ export const FncEmployeeAccountDetail = addStory(Template, {
   id: '3b918830-9f1e-48e7-8298-0adc4ce1192b',
 });
 
-export const FncSchoolDetails = addStory(Template, {
-  formId: { name: 'School-Details', module: 'Boxfusion.SheshaFunctionalTests.Common' },
-  id: '49d6b802-935e-4527-990a-68a3f1d35368',
+export const CheckBoxDetails = addStory(Template, {
+  formId: { name: 'nov-details', module: 'Shesha',
+ },
+ id:'b7f94729-913e-4148-bef5-21ccb8349fc1'
 });
 
 export const FncTestCascadeBehavior = addStory(Template, {
@@ -120,6 +121,7 @@ export const PersonEdit = addStory(Template, {
     module: 'Test Module',
     version: 7,
   },
+  id: '32E2B3DD-4D99-4542-AF71-134EC7C0E2CE',
 });
 
 export const PersonDetails = addStory(Template, {
@@ -161,15 +163,14 @@ export const WorkflowDefinitions = addStory(Template, {
   },
 });
 
-export const BugFix = addStory(Template, {
+export const RefListStatusDetails = addStory(Template, {
   formId: {
-    name: 'School-Details',
+    name: 'mergechanges-details',
     module: 'Boxfusion.SheshaFunctionalTests.Common',
   },
   mode: 'readonly',
-  id: 'bff4b223-2c29-43b3-9a96-4157d63f0420',
+  id: 'd6829b83-14e3-474a-a28d-0e27cba796cb',
 });
-
 export const DataList = addStory(Template, {
   formId: {
     name: 'alex-test',

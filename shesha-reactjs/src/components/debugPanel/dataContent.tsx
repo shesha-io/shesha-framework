@@ -1,10 +1,10 @@
 import React, { FC,  useEffect,  useMemo, useState } from "react";
 import { DebugDataTree } from "./dataTree";
-import { useDataContextManager } from "providers/dataContextManager";
-import { useGlobalState, useMetadataDispatcher } from "providers";
-import { useFormDesigner } from "providers/formDesigner";
-import { IModelMetadata } from "interfaces/metadata";
-import { getFieldNameFromExpression } from "utils/publicUtils";
+import { useDataContextManager } from "@/providers/dataContextManager";
+import { useGlobalState, useMetadataDispatcher } from "@/providers";
+import { useFormDesigner } from "@/providers/formDesigner";
+import { IModelMetadata } from "@/interfaces/metadata";
+import { getFieldNameFromExpression } from "@/utils/publicUtils";
 
 const DebugPanelDataContent: FC = () => {
     const globalState = useGlobalState();
@@ -23,7 +23,7 @@ const DebugPanelDataContent: FC = () => {
           .then(r => {
             setFormMetadata(r);
           });
-    },[]);
+    }, []);
 
     const contexts = useMemo(() => contextManager.getDataContexts('all'), [contextManager.lastUpdate]);
   
@@ -55,7 +55,7 @@ const DebugPanelDataContent: FC = () => {
         prop[pName[pName.length - 1]] = val;
       }
   
-      formInstance?.setFormDataAndInstance({ values: changedData, mergeValues: true });
+      formInstance?.setFormData({ values: changedData, mergeValues: true });
     };
   
     console.log('debug rerender');
@@ -74,13 +74,14 @@ const DebugPanelDataContent: FC = () => {
             data={formInstance?.formData}
             metadata={formMetadata}
             editAll
-            onChange={(propName, val) => onChangeFormData(propName, val)} 
+            onChange={(propName, val) => onChangeFormData(propName, val)}
             name={'Form data'}
           />
         }
-        {contexts.map(item => {
+        {contexts.map((item) => {
           const ctxData = contextManager.getDataContextData(item.id);
-          return <DebugDataTree 
+          return <DebugDataTree
+            key={item.id}
             data={ctxData}
             onChange={(propName, val) => onChangeContext(item.id, propName, val)}
             name={item.name}

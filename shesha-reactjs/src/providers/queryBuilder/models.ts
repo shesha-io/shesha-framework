@@ -1,5 +1,5 @@
 import { FieldOrGroup, FieldSettings } from '@react-awesome-query-builder/antd';
-import { IPropertyMetadata } from 'interfaces/metadata';
+import { IPropertyMetadata } from '@/interfaces/metadata';
 
 //Fields
 

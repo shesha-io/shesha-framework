@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { Select } from 'antd';
-import { ITableColumn } from '../../providers/dataTable/interfaces';
+import { ITableColumn } from '@/providers/dataTable/interfaces';
 import { nanoid } from 'nanoid/non-secure';
 
 const { Option } = Select;

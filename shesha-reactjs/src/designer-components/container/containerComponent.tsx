@@ -1,12 +1,12 @@
 import { GroupOutlined } from '@ant-design/icons';
 import React from 'react';
-import { ICommonContainerProps, IContainerComponentProps, IToolboxComponent } from 'interfaces';
-import { getStyle, validateConfigurableComponentSettings } from 'providers/form/utils';
+import { ICommonContainerProps, IContainerComponentProps, IToolboxComponent } from '@/interfaces';
+import { getStyle, getLayoutStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { getSettings } from './settingsForm';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
-import { useFormData } from 'providers';
-import { ComponentsContainer } from 'components';
-import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { useFormData, useGlobalState } from '@/providers';
+import { ComponentsContainer } from '@/components';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   type: 'container',
@@ -14,6 +14,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   icon: <GroupOutlined />,
   Factory: ({ model }) => {
     const { data: formData } = useFormData();
+    const { globalState } = useGlobalState();
 
     if (model.hidden) return null;
 
@@ -43,7 +44,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
         // alignItems={model.direction === 'horizontal' ? model?.alignItems : null}
         // justifyItems={model.direction === 'horizontal' ? model?.justifyItems : null}
         className={model.className}
-        wrapperStyle={getStyle(model?.wrapperStyle, formData)}
+        wrapperStyle={getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState })}
         style={getStyle(model?.style, formData)}
         dynamicComponents={model?.isDynamic ? model?.components?.map((c) => ({ ...c, readOnly: model?.readOnly })) : []}
       />
@@ -52,17 +53,17 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   migrator: (m) =>
-    m.add<IContainerComponentProps>(0, (prev) => ({
-      ...prev,
-      direction: prev['direction'] ?? 'vertical',
-      justifyContent: prev['justifyContent'] ?? 'left',
-      display: prev['display'] /* ?? 'block'*/,
-      flexWrap: prev['flexWrap'] ?? 'wrap',
-      components: prev['components'] ?? [],
-    }))
-    .add<IContainerComponentProps>(1, prev => migratePropertyName(migrateCustomFunctions(prev)))
-    .add<IContainerComponentProps>(2, (prev) => migrateVisibility(prev))
-  ,
+    m
+      .add<IContainerComponentProps>(0, (prev) => ({
+        ...prev,
+        direction: prev['direction'] ?? 'vertical',
+        justifyContent: prev['justifyContent'] ?? 'left',
+        display: prev['display'] /* ?? 'block'*/,
+        flexWrap: prev['flexWrap'] ?? 'wrap',
+        components: prev['components'] ?? [],
+      }))
+      .add<IContainerComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+      .add<IContainerComponentProps>(2, (prev) => migrateVisibility(prev)),
 };
 
 export default ContainerComponent;

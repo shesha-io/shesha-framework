@@ -29,4 +29,9 @@ namespace Shesha.ConfigurationItems.Distribution
         /// <returns></returns>
         Task<DistributedConfigurableItemBase> ReadFromJsonAsync(Stream jsonStream);
     }
+
+    public interface IConfigurableItemImport<TItem> : IConfigurableItemImport where TItem : ConfigurationItemBase 
+    { 
+
+    }
 }

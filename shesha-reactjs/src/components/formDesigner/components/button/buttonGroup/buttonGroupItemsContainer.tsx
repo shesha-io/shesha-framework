@@ -1,15 +1,15 @@
 import React, { FC } from 'react';
 import { ButtonGroupItem } from './buttonGroupItem';
 import { ButtonGroupItemsGroup } from './buttonGroupItemsGroup';
-import { useButtonGroupConfigurator } from '../../../../../providers/buttonGroupConfigurator';
+import { useButtonGroupConfigurator } from '@/providers/buttonGroupConfigurator';
 import {
   IButtonGroup,
   IButtonGroupItem,
   ButtonGroupItemProps,
-} from '../../../../../providers/buttonGroupConfigurator/models';
+} from '@/providers/buttonGroupConfigurator/models';
 import { ReactSortable, ItemInterface } from 'react-sortablejs';
-import { getActualModel, useApplicationContext } from 'utils/publicUtils';
-import { useDeepCompareMemo } from 'hooks';
+import { getActualModel, useApplicationContext } from '@/utils/publicUtils';
+import { useDeepCompareMemo } from '@/hooks';
 
 export interface IButtonGroupItemsContainerProps {
   index?: number[];

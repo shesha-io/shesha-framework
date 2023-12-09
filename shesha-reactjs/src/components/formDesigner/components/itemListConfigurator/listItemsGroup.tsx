@@ -2,10 +2,10 @@ import React, { FC } from 'react';
 import { Button } from 'antd';
 import { DeleteFilled } from '@ant-design/icons';
 import DragHandle from './dragHandle';
-import ShaIcon, { IconType } from '../../../shaIcon';
+import ShaIcon, { IconType } from '@/components/shaIcon';
 import classNames from 'classnames';
-import { IConfigurableItemBase, IConfigurableItemGroup } from '../../../../providers/itemListConfigurator/contexts';
-import { useItemListConfigurator } from '../../../..';
+import { IConfigurableItemBase, IConfigurableItemGroup } from '@/providers/itemListConfigurator/contexts';
+import { useItemListConfigurator } from '@/components/..';
 
 export interface IContainerRenderArgs {
   index?: number[];

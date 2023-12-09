@@ -1,9 +1,9 @@
 import React, { FC, Fragment, ReactNode, useState } from 'react';
 import { Button, Modal } from 'antd';
 import { ItemListConfigurator } from './configurator';
-import { ItemListConfiguratorProvider, useItemListConfigurator } from '../../../..';
-import { IConfigurableItemBase, IItemsOptions } from '../../../../providers/itemListConfigurator/contexts';
-import { FormMarkup } from '../../../../providers/form/models';
+import { ItemListConfiguratorProvider, useItemListConfigurator } from '@/components/..';
+import { IConfigurableItemBase, IItemsOptions } from '@/providers/itemListConfigurator/contexts';
+import { FormMarkup } from '@/providers/form/models';
 import { useMedia } from 'react-use';
 import { InsertMode } from '../../../../interfaces';
 

@@ -1,6 +1,6 @@
 import React, { FC, PropsWithChildren, useContext, useEffect, useMemo } from 'react';
-import useThunkReducer from '../../hooks/thunkReducer';
-import { IPropertyMetadata, ProperyDataType } from '../../interfaces/metadata';
+import useThunkReducer from '@/hooks/thunkReducer';
+import { IPropertyMetadata, ProperyDataType } from '@/interfaces/metadata';
 import { useMetadataDispatcher } from '../../providers';
 import { setMetadataAction } from './actions';
 import {

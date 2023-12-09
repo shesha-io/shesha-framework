@@ -1,8 +1,8 @@
 import { Modal } from 'antd';
 import React, { FC, ReactNode } from 'react';
 import { useMedia } from 'react-use';
-import { ToolbarConfiguratorProvider, useToolbarConfigurator } from '../../../providers/toolbarConfigurator';
-import { ToolbarItemProps } from '../../../providers/toolbarConfigurator/models';
+import { ToolbarConfiguratorProvider, useToolbarConfigurator } from '@/providers/toolbarConfigurator';
+import { ToolbarItemProps } from '@/providers/toolbarConfigurator/models';
 import { ToolbarConfigurator } from './toolbarConfigurator';
 
 export interface IToolbarSettingsModal {

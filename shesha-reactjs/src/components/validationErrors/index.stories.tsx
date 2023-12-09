@@ -1,7 +1,7 @@
 import React from 'react';
 import { Story, Meta } from '@storybook/react';
 import ValidationErrors, { IValidationErrorsProps } from './';
-import { IErrorInfo } from '../../interfaces/errorInfo';
+import { IErrorInfo } from '@/interfaces/errorInfo';
 
 export default {
   title: 'Components/ValidationErrors',

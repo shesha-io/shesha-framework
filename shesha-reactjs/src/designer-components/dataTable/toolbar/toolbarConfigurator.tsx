@@ -1,7 +1,7 @@
 import { Alert, Button } from 'antd';
 import React, { FC, ReactNode } from 'react';
 import { SidebarContainer } from '../../../components';
-import { useToolbarConfigurator } from '../../../providers/toolbarConfigurator';
+import { useToolbarConfigurator } from '@/providers/toolbarConfigurator';
 import { ToolbarItemProperties } from './toolbarItemProperties';
 import ToolbarItemsContainer from './toolbarItemsContainer';
 import './styles/index.less';

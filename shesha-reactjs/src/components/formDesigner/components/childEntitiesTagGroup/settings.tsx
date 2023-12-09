@@ -1,13 +1,13 @@
 import { Checkbox, Input, Select } from 'antd';
-import { ContextPropertyAutocomplete } from '../../../../designer-components/contextPropertyAutocomplete';
-import SettingsCollapsiblePanel from '../../../../designer-components/_settings/settingsCollapsiblePanel';
-import SettingsForm, { useSettingsForm } from '../../../../designer-components/_settings/settingsForm';
-import SettingsFormItem from '../../../../designer-components/_settings/settingsFormItem';
-import { ISettingsFormFactoryArgs } from 'interfaces';
-import { useForm } from 'providers';
-import { useFormDesigner } from 'providers/formDesigner';
+import { ContextPropertyAutocomplete } from '@/designer-components/contextPropertyAutocomplete';
+import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
+import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
+import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
+import { ISettingsFormFactoryArgs } from '@/interfaces';
+import { useForm } from '@/providers';
+import { useFormDesigner } from '@/providers/formDesigner';
 import React, { FC } from 'react';
-import FormAutocomplete from '../../../formAutocomplete';
+import FormAutocomplete from '@/components/formAutocomplete';
 import CodeEditor from '../codeEditor/codeEditor';
 import { IChildEntitiesTagGroupProps } from './models';
 

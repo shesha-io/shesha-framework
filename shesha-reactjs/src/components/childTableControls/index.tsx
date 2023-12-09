@@ -2,9 +2,9 @@ import React, { FC } from 'react';
 import { DownloadOutlined, FilterOutlined, ReloadOutlined, SlidersOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import { useDataTable } from '../../providers';
-import GlobalTableFilter from '../globalTableFilter';
-import TablePager from '../tablePager';
-import { IToolbarItem } from '../../interfaces/toolbar';
+import GlobalTableFilter from '@/components/globalTableFilter';
+import TablePager from '@/components/tablePager';
+import { IToolbarItem } from '@/interfaces/toolbar';
 import { nanoid } from 'nanoid/non-secure';
 
 export interface IChildTableControlsProps {

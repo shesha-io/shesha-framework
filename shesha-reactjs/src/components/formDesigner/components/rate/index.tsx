@@ -11,17 +11,17 @@ import {
   useGlobalState,
   useSheshaApplication,
   validateConfigurableComponentSettings,
-} from '../../../..';
-import { axiosHttp } from 'utils/fetchers';
-import { getStyle } from 'providers/form/utils';
-import { IconType } from '../../../shaIcon';
+} from '@/components/..';
+import { axiosHttp } from '@/utils/fetchers';
+import { getStyle } from '@/providers/form/utils';
+import { IconType } from '@/components/shaIcon';
 import { getSettings } from './settings';
 import moment from 'moment';
 import { customRateEventHandler } from '../utils';
 import _ from 'lodash';
 import classNames from 'classnames';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
-import { migrateVisibility } from 'designer-components/_common-migrations/migrateVisibility';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 export interface IRateProps extends IConfigurableFormComponent {
   value?: number;
@@ -41,7 +41,7 @@ const RateComponent: IToolboxComponent<IRateProps> = {
   name: 'Rate',
   icon: <LikeOutlined />,
   Factory: ({ model, form }) => {
-    const { formMode, setFormDataAndInstance } = useForm();
+    const { formMode, setFormData } = useForm();
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
@@ -57,7 +57,7 @@ const RateComponent: IToolboxComponent<IRateProps> = {
       http: axiosHttp(backendUrl),
       message,
       moment,
-      setFormData: setFormDataAndInstance,
+      setFormData,
       setGlobalState,
     };
 
@@ -67,8 +67,15 @@ const RateComponent: IToolboxComponent<IRateProps> = {
 
     return (
       <ConfigurableFormItem model={model}>
-        {(value, onChange) =>
-          <Rate
+        {(value,  onChange) => {
+          const customEvent =  customRateEventHandler(eventProps);
+          const onChangeInternal = (...args: any[]) => {
+            customEvent.onChange(args[0]);
+            if (typeof onChange === 'function') 
+              onChange(args);
+          };
+          
+          return <Rate
             allowClear={allowClear}
             //allowHalf={allowHalf}
             character={icon ? <ShaIcon iconName={icon as IconType} /> : <StarFilled />}
@@ -77,11 +84,11 @@ const RateComponent: IToolboxComponent<IRateProps> = {
             tooltips={tooltips}
             className={classNames(className, 'sha-rate')}
             style={getStyle(style, formData)} // Temporary. Make it configurable
-            {...customRateEventHandler(eventProps)}
+            {...customEvent}
             value={value}
-            onChange={onChange}
-          />
-        }
+            onChange={onChangeInternal}
+          />;
+        }}
       </ConfigurableFormItem>
     );
   },

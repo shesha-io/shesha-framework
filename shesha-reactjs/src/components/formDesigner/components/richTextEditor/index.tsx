@@ -2,15 +2,15 @@ import React from 'react';
 import { EditOutlined } from '@ant-design/icons';
 import { ConfigurableFormItem } from '../../..';
 import { validateConfigurableComponentSettings } from '../../../../formDesignerUtils';
-import { IToolboxComponent } from 'interfaces/formDesigner';
-import { FormMarkup } from 'providers/form/models';
+import { IToolboxComponent } from '@/interfaces/formDesigner';
+import { FormMarkup } from '@/providers/form/models';
 import settingsFormJson from './settingsForm.json';
-import RichTextEditor from '../../../richTextEditor';
-import { useDeepCompareMemoKeepReference, useFormData } from '../../../..';
+import RichTextEditor from '@/components/richTextEditor';
+import { useDeepCompareMemoKeepReference, useFormData } from '@/components/..';
 import { IRichTextEditorProps } from './interfaces';
-import { getStyle } from 'providers/form/utils';
+import { getStyle } from '@/providers/form/utils';
 import { IJoditEditorProps } from '../../../richTextEditor/joditEditor';
-import { migrateCustomFunctions, migratePropertyName } from 'designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -39,14 +39,17 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
         disablePlugins: model?.disablePlugins?.join(',') || '',
         height: model?.height,
         width: model?.width,
+        placeholder: model?.placeholder,
         readonly: readOnly || disabled,
         style: getStyle(model?.style, formData),
-  
         defaultActionOnPaste: 'insert_as_html',
         enter: 'br',
         editHTMLDocumentMode: false,
         enterBlock: 'div',
         colorPickerDefaultTab: 'color',
+        allowResizeX:model?.allowResizeX && !model?.autoWidth,
+        allowResizeY:model?.allowResizeY && !model?.autoHeight,
+        autofocus: model?.autofocus,
       };
       return typedConfig;
     }, [model, readOnly]);
