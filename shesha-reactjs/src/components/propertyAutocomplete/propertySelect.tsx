@@ -17,7 +17,6 @@ export interface IPropertySelectProps {
   onChange?: (value: string) => void;
   onSelect?: (value: string, selectedProperty: IPropertyItem) => void;
   readOnly?: boolean;
-  containerInfo: IContainerInfo;
 }
 
 export interface IQbItem {
@@ -36,39 +35,37 @@ interface IAutocompleteState {
   propertyItems: IPropertyItem[];
 }
 
-export interface IContainerInfo {
-  properties: IPropertyMetadata[];
-  specifications: ISpecification[];
-}
-
 const getFullPath = (path: string, prefix: string) => {
   return prefix ? `${prefix}.${camelcase(path)}` : camelcase(path);
 };
 
 export const getPropertyItemIdentifier = (item: IPropertyItem, prefix: string): string => {
-  switch(item.itemType){
-    case 'property': return getFullPath((item as IPropertyMetadata).path, prefix);
-    case 'specification': return (item as ISpecification).name;
-  }
+  if (isPropertyMetadata(item))
+    return getFullPath(item.path, prefix);
+
+  if (isSpecification(item))
+    return item.name;
+
   return null;
 };
 
 const propertyItem2option = (item: IPropertyItem, prefix: string): IOption => {
-  if (item.itemType === 'specification') {
-    const spec = item as ISpecification;
-    const value = spec.name;
+  if (isSpecification(item)) {
+    const value = item.name;
     const label = (
-        <div>
-          { spec.description ? <Tooltip title={spec.description}><BulbTwoTone twoToneColor="orange" style={{ cursor: 'help' }}/></Tooltip> : <BulbOutlined /> }
-          {spec.friendlyName}
-        </div>
+      <div>
+        {item.description ? <Tooltip title={item.description}><BulbTwoTone twoToneColor="orange" style={{ cursor: 'help' }} /></Tooltip> : <BulbOutlined />}
+        {item.friendlyName}
+      </div>
     );
 
     return {
       value: value,
       label: label
     };
-  } else {
+  }
+  
+  if (isPropertyMetadata(item)) {
     const property = item as IPropertyMetadata;
     const value = getPropertyItemIdentifier(item, prefix);
     const icon = getIconByPropertyMetadata(property);
@@ -79,6 +76,8 @@ const propertyItem2option = (item: IPropertyItem, prefix: string): IOption => {
       label: label
     };
   }
+
+  throw new Error('Unknown type of item');
 };
 
 const propertyItems2options = (properties: IPropertyItem[], prefix: string): IOption[] => {
@@ -91,6 +90,10 @@ export interface IHasPropertyType {
 
 export type IPropertyItem = (IPropertyMetadata | ISpecification) & IHasPropertyType;
 
+const isPropertyMetadata = (item: IPropertyItem): item is IPropertyMetadata & IHasPropertyType => {
+  return item.itemType === 'property';
+};
+
 const isSpecification = (item: IPropertyItem): item is ISpecification & IHasPropertyType => {
   return item.itemType === 'specification';
 };
@@ -99,12 +102,12 @@ const modelMetadata2Properties = (modelMetadata?: IModelMetadata): IPropertyItem
   if (!modelMetadata)
     return [];
 
-  const properties = metadataHasNestedProperties(modelMetadata) 
-    ? (modelMetadata.properties).map<IPropertyItem>(p => ({...p, itemType: 'property'}))
+  const properties = metadataHasNestedProperties(modelMetadata)
+    ? (modelMetadata.properties).map<IPropertyItem>(p => ({ ...p, itemType: 'property' }))
     : [];
-  
+
   const specifications = isEntityMetadata(modelMetadata)
-    ? (modelMetadata.specifications ?? []).map<IPropertyItem>(p => ({...p, itemType: 'specification'}))
+    ? (modelMetadata.specifications ?? []).map<IPropertyItem>(p => ({ ...p, itemType: 'specification' }))
     : [];
 
   return [...properties, ...specifications];
@@ -131,7 +134,7 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, ...
 
     const lastIdx = props.value.lastIndexOf('.');
 
-    if (state.propertyItems && state.propertyItems.length > 0 && lastIdx > -1){
+    if (state.propertyItems && state.propertyItems.length > 0 && lastIdx > -1) {
       // Check specifications, specification name may contain namespace and it shouldn't be recognized as a container
       const spec = state.propertyItems.find(s => isSpecification(s) && s.name === props.value);
       if (spec)
@@ -147,11 +150,11 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, ...
   useEffect(() => {
     if (!containerPath && !isFirstLoading.current)
       return;
-      
-    if (isFirstLoading.current === true){
+
+    if (isFirstLoading.current === true) {
       isFirstLoading.current = false;
     }
-    
+
     // fetch container if changed
     fetchContainer(containerPath).then(m => {
       const propertyItems = modelMetadata2Properties(m);
@@ -172,7 +175,7 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, ...
   };
 
   const onSearch = (data: string) => {
-    if (props.onChange) 
+    if (props.onChange)
       props.onChange(data);
 
     const filteredOptions: IOption[] = [];
@@ -181,7 +184,7 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, ...
         ? getFullPath((p as IPropertyMetadata).path, containerPath)
         : (p as ISpecification).friendlyName;
 
-      if (fullPath.toLowerCase()?.startsWith(data?.toLowerCase())){
+      if (fullPath.toLowerCase()?.startsWith(data?.toLowerCase())) {
         const option = propertyItem2option(p, containerPath);
         filteredOptions.push(option);
       }

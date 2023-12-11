@@ -31,7 +31,7 @@ namespace Shesha.ConfigurationItems
         /// <summary>
         /// Cancel version
         /// </summary>
-        Task CancelVersoinAsync(TItem item);
+        Task CancelVersionAsync(TItem item);
 
         /// <summary>
         /// Move item to another module

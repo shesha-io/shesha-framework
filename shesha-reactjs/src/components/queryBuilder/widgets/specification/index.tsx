@@ -2,7 +2,7 @@ import { BaseWidget, BasicConfig, SelectFieldSettings } from '@react-awesome-que
 import React, { FC, useEffect } from 'react';
 import { CodeEditor } from '../../../formDesigner/components/codeEditor/codeEditor';
 
-export type SpecificationWidgetType = BaseWidget & SelectFieldSettings;
+type SpecificationWidgetType = BaseWidget & SelectFieldSettings;
 const SpecificationWidget: SpecificationWidgetType = {
   ...BasicConfig.widgets.select,
   type: 'specification',
@@ -44,4 +44,4 @@ const SpecificationConditionEditor: FC<SpecificationConditionEditorProps> = ({ v
   );
 };
 
-export default SpecificationWidget;
+export { SpecificationWidget };

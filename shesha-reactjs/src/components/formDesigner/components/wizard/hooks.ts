@@ -61,7 +61,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         return !((!granted || !isVisibleByCondition) && allData.formMode !== 'designer');
       })
       .map(item => getActualModel(item, allData) as IWizardStepProps),
-    [tabs]
+    [tabs, allData.data, allData.globalState, allData.contexts.lastUpdate]
   );
 
   const currentStep = visibleSteps[current];
@@ -79,7 +79,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         argumentsEvaluationContext
       });
     }
-  }, [currentStep]);
+  }, [current]);
 
   const actionDependencies = [actionOwnerName, actionsOwnerId, current];
 
@@ -226,6 +226,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
       (tab) => tab.afterDoneActionConfiguration
     );
 
+  const setStep = (stepIndex) => setCurrent(stepIndex);
 
   const content = getStepDescritpion(showStepStatus, sequence, current);
 
@@ -235,7 +236,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     dataContext.setData({ current, visibleSteps });
   }, [current, visibleSteps]);
 
-  dataContext.updateApi({ back, cancel, done, content, next }); // update context api to use relevant State
+  dataContext.updateApi({ back, cancel, done, content, next, setStep }); // update context api to use relevant State
 
   /* Data Context section */
 

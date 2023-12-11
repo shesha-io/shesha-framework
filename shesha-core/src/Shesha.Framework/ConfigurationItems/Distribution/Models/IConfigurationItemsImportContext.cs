@@ -20,7 +20,7 @@ namespace Shesha.ConfigurationItems.Distribution
         public bool CreateFrontEndApplications { get; }
 
         /// <summary>
-        /// Is used to override status of the imported items. Live empty to import statuses as is.
+        /// Is used to override status of the imported items. Leave empty to import statuses as is.
         /// </summary>
         public ConfigurationItemVersionStatus? ImportStatusAs { get; }
 

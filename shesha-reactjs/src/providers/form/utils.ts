@@ -6,6 +6,7 @@ import { nanoid } from 'nanoid';
 import nestedProperty from 'nested-property';
 import { CSSProperties } from 'react';
 import {
+  ConfigurableFormInstance,
   IPropertySetting,
   IToolboxComponent,
   IToolboxComponentGroup,
@@ -50,7 +51,7 @@ import {
   ViewType,
 } from './models';
 import { isPropertySettings } from '@/designer-components/_settings/utils';
-import { IDataContextsData, useDataContextManager } from '@/providers/dataContextManager';
+import { IDataContextManagerFullInstance, IDataContextsData, useDataContextManager } from '@/providers/dataContextManager';
 import moment from 'moment';
 import { message } from 'antd';
 import { ISelectionProps } from '@/providers/dataTable/contexts';
@@ -60,13 +61,19 @@ import { axiosHttp } from '@/utils/fetchers';
 import { AxiosInstance } from 'axios';
 import { MessageApi } from 'antd/lib/message/index';
 import { executeFunction } from '@/utils';
+import { ISetFormDataPayload } from './contexts';
 
 /** Interface to geat all avalilable data */
 export interface IApplicationContext {
+  contextManager?: IDataContextManagerFullInstance;
   /** Form data */
-  data: any;
+  data?: any;
   /** Form mode */
-  formMode: FormMode;
+  formMode?: FormMode;
+
+  setFormData?: (payload: ISetFormDataPayload) => void;
+
+  form?: ConfigurableFormInstance;
   /** Contexts datas */
   contexts: IDataContextsData;
   /** Global state */
@@ -82,6 +89,22 @@ export interface IApplicationContext {
   /** Other data */
   [key: string]: any;
 }
+
+export function useFormProviderContext(): IApplicationContext {
+  const { backendUrl } = useSheshaApplication();
+  const dcm = useDataContextManager(false);
+  const { globalState, setState: setGlobalState } = useGlobalState();
+  return {
+    contextManager: dcm,
+    contexts: {...dcm?.getDataContextsData('all')},
+    globalState,
+    setGlobalState,
+    selectedRow: useDataTableStore(false)?.selectedRow,
+    moment: moment,
+    http: axiosHttp(backendUrl),
+    message
+   };
+};
 
 export function useApplicationContext(topContextId?: string): IApplicationContext {
   let tcId = useDataContext(false)?.id;
@@ -190,7 +213,7 @@ export function useApplicationContext(topContextId?: string): IApplicationContex
  * @param allData - all form, contexts data and other data/objects/functions needed to calculate Actual Model
  * @returns - converted model
  */
-export const getActualModel = (model: any, allData: any) => {
+export const getActualModel = (model: any, allData: any, propertyName: string = undefined) => {
   const getSettingValue = (value: any, calcFunction: (setting: IPropertySetting) => any) => {
     if (!value) return value;
 
@@ -247,11 +270,16 @@ export const getActualModel = (model: any, allData: any) => {
 
   const m = { ...model };
 
-  for (var propName in m) {
-    if (!m.hasOwnProperty(propName)) continue;
-
-    m[propName] = getSettingValue(m[propName], calcValue);
+  if (propertyName) {
+    m[propertyName] = getSettingValue(m[propertyName], calcValue);
+  } else {
+    for (var propName in m) {
+      if (!m.hasOwnProperty(propName)) continue;
+      
+      m[propName] = getSettingValue(m[propName], calcValue);
+    }
   }
+
   return m;
 };
 
@@ -734,9 +762,7 @@ export function executeScriptSync<TResult = any>(expression: string, context: IE
  */
 export const getVisibleComponentIds = (
   components: IComponentsDictionary,
-  values: any,
-  globalState: any,
-  formMode: FormMode,
+  allData: IApplicationContext,
   propertyFilter?: (name: string) => boolean
 ): string[] => {
   const visibleComponents: string[] = [];
@@ -749,7 +775,9 @@ export const getVisibleComponentIds = (
         if (filteredOut === false) continue;
       }
 
-      const isVisible = component.visibilityFunc == null || component.visibilityFunc(values, globalState, formMode);
+      const hidden = getActualModel(component, allData, 'hidden')?.hidden;
+
+      const isVisible = !hidden && (component.visibilityFunc == null || component.visibilityFunc(allData.data, allData.globalState, allData.formMode));
       if (isVisible) visibleComponents.push(key);
     }
   }

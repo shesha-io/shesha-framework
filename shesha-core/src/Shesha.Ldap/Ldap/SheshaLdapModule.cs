@@ -19,7 +19,7 @@ namespace Shesha.Ldap
         public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo(ModuleName)
         {
             FriendlyName = "Shesha LDAP",
-            Publisher = "Boxfusion"
+            Publisher = "Shesha"
         };
 
         public override void PreInitialize()

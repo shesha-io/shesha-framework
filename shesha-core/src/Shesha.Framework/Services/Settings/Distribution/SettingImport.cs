@@ -79,7 +79,7 @@ namespace Shesha.Services.Settings.Distribution
                     case ConfigurationItemVersionStatus.Ready: 
                     {
                         // cancel existing version
-                        await _settingStore.CancelVersoinAsync(existingSetting);
+                        await _settingStore.CancelVersionAsync(existingSetting);
                         break;
                     }
                 }

@@ -1,29 +1,10 @@
-import React, { FC, useState } from "react";
-import { BasicConfig } from '@react-awesome-query-builder/antd';
-import {  } from '@react-awesome-query-builder/ui';
+import React, { useState } from "react";
+import { FactoryWithContext, FieldProps } from '@react-awesome-query-builder/antd';
 import { SELECT_WIDTH_OFFSET_RIGHT, calcTextWidth } from "../domUtils";
-import { IContainerInfo, PropertySelect } from "../../propertyAutocomplete/propertySelect";
+import { PropertySelect } from "../../propertyAutocomplete/propertySelect";
 import { IPropertyMetadata } from "@/interfaces/metadata";
 
-export interface IFieldSelectProps {
-    config: BasicConfig;
-    customProps?: { [key: string]: any };
-    placeholder?: string;
-    selectedKey?: string;
-    selectedKeys?: [];
-    selectedPath?: [];
-    selectedLabel?: string;
-    selectedAltLabel?: string;
-    selectedFullLabel?: string;
-    selectedOpts?: object;
-    readonly?: boolean;
-    //actions
-    setField: (key: string) => void;
-
-    containerInfo: IContainerInfo;
-}
-
-export const FieldAutocomplete: FC<IFieldSelectProps> = (props) => {
+export const FieldAutocomplete: FactoryWithContext<FieldProps> = (props) => {
     const [text, setText] = useState(props.selectedKey);
     const onSelect = (key, _propertyMetadata: IPropertyMetadata) => {
         // check fields and expand if needed
@@ -38,7 +19,6 @@ export const FieldAutocomplete: FC<IFieldSelectProps> = (props) => {
     const {
         config, customProps, /*items,*/ placeholder,
         selectedKey, selectedLabel, /*selectedOpts,*/ selectedAltLabel, selectedFullLabel, /*readonly,*/
-        containerInfo,
     } = props;
 
     const { showSearch } = customProps || {};
@@ -57,7 +37,6 @@ export const FieldAutocomplete: FC<IFieldSelectProps> = (props) => {
 
     return (
         <PropertySelect
-            containerInfo={containerInfo}
             readOnly={readOnly}
             value={text}
             onChange={onChange}

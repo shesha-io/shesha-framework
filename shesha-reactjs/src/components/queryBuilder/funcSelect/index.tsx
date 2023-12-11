@@ -1,30 +1,11 @@
-import React, { FC } from "react";
+import React, { useMemo } from "react";
 import { Tooltip, Select } from "antd";
 import { BUILT_IN_PLACEMENTS, SELECT_WIDTH_OFFSET_RIGHT, calcTextWidth } from "../domUtils";
 const { Option, OptGroup } = Select;
-import { BasicConfig } from '@react-awesome-query-builder/antd';
+import { FactoryWithContext, FieldProps } from '@react-awesome-query-builder/antd';
 
-
-export interface IFieldSelectProps {
-    config: BasicConfig;
-    customProps?: { [key: string]: any };
-    items: [];
-    placeholder?: string;
-    selectedKey?: string;
-    selectedKeys?: [];
-    selectedPath?: [];
-    selectedLabel?: string;
-    selectedAltLabel?: string;
-    selectedFullLabel?: string;
-    selectedOpts?: object;
-    readonly?: boolean;
-    //actions
-    setField: (key: string) => void;
-}
-
-export const FieldSelect: FC<IFieldSelectProps> = (props) => {
+export const FuncSelect: FactoryWithContext<FieldProps> = (props) => {
     const onChange = (key) => {
-        console.log('FieldSelect.onChange', items);
         props.setField(key);
     };
 
@@ -38,10 +19,19 @@ export const FieldSelect: FC<IFieldSelectProps> = (props) => {
     };
 
     const {
-        config, customProps, items, placeholder,
+        config, customProps, items: allItems, placeholder,
         selectedKey, selectedLabel, /*selectedOpts,*/ selectedAltLabel, selectedFullLabel, readonly,
     } = props;
     const { showSearch } = customProps || {};
+
+    const items = useMemo(() => {
+        // workaround to filter out evaluation from the LHS
+        const evaluates = allItems.filter(item => item.key && item.key.startsWith('EVALUATE_'));
+
+        return evaluates.length > 1
+            ? allItems.filter(item => !item.key || !item.key.startsWith('EVALUATE_'))
+            : allItems;
+    }, [allItems]);
 
     const selectText = selectedLabel || placeholder;
     const selectWidth = calcTextWidth(selectText);
@@ -80,13 +70,12 @@ export const FieldSelect: FC<IFieldSelectProps> = (props) => {
                     label={label}
                     disabled={disabled}
                 >
-                    {option} !
+                    {option}
                 </Option>;
             }
         }).flat(Infinity);
     };
 
-    console.log('items', items);
     const fieldSelectItems = renderSelectItems(items);
 
     return (

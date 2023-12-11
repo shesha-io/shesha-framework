@@ -10,6 +10,7 @@ import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
 import { CodeEditor } from '@/components';
+import { getActualModel, useApplicationContext, useDeepCompareMemo } from '@/index';
 
 const { Option } = Select;
 
@@ -20,7 +21,8 @@ export const WizardSettingsForm: FC<ISettingsFormFactoryArgs<IWizardComponentPro
 const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (props) => {
   const { readOnly } = props;
 
-  const { model: state /*, getFieldsValue, onValuesChange*/ } = useSettingsForm<IWizardComponentProps>();
+  const allData = useApplicationContext('all');
+  const { model } = useSettingsForm<IWizardComponentProps>();
 
   /*const onValuesChange = (changedValues: any, values: IWizardComponentProps) => {
     // whenever the tabs change, check to see if `defaultActiveStep` is still present within the tabs. If not, remove it
@@ -56,6 +58,9 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
 
   const steps = props?.model?.steps?.map((item) => ({ ...item, label: item?.title }));
 
+  const stepList = useDeepCompareMemo(
+    () => model?.steps?.map(item => getActualModel(item, allData)),
+    [model.steps, allData.globalState, allData.contexts.lastUpdate]);
   const selectRef = useRef<RefSelectProps>();
 
   return (
@@ -109,8 +114,8 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
           label="Default Active Step"
           tooltip="This will be the default step tha"
         >
-          <Select allowClear ref={selectRef} value={state?.defaultActiveStep} disabled={readOnly}>
-            {state?.steps?.map(({ id, title }) => (
+          <Select allowClear ref={selectRef} value={model?.defaultActiveStep} disabled={readOnly}>
+            {stepList?.map(({ id, title }) => (
               <Option value={id} key={id}>
                 {title}
               </Option>
