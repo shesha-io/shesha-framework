@@ -134,7 +134,7 @@ export const executeExpressionPayload = (fn: Function, dynamicParam: { [key: str
   const argList = [...args] || [];
   Object.values(dynamicParam || {}).map((key) => argList.push(key));
 
-  return fn.apply(null, args);
+  return fn.apply(null, argList);
 };
 
 export const evaluateDynamicFilters = async (
