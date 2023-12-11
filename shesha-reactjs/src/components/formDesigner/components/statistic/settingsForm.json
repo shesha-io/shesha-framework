@@ -1,12 +1,28 @@
 {
   "components": [
     {
-      "id": "38f7aff0-756e-4282-a5c4-39748219a225",
-      "type": "sectionSeparator",
-      "propertyName": "separator1",
+      "id": "aIMnm2re1exM1M7pEEur9",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlDisplay",
+      "label": "Display",
+      "labelAlign": "right",
       "parentId": "root",
-      "label": "Display"
-    },
+      "hidden": false,
+
+      "isDynamic": false,
+      "version": 2,
+      "expandIconPosition": "left",
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": [],
+      "header": {
+        "id": "FizvoIoyeq1cZMqAgbDLL",
+        "components": []
+      },
+      "content": {
+        "id": "y9SNudmMM0Wd1Sc_YI1ng",
+        "components": [
     {
       "id": "de0f8d68-de60-4ec6-9290-d9cfffa5bcbc",
       "type": "contextPropertyAutocomplete",
@@ -51,36 +67,60 @@
       "parentId": "root",
       "hidden": false,
       "settingsValidationErrors": []
-    },
-    {
-      "id": "6befdd49-41aa-41d6-a29e-76fa00590b75",
-      "type": "sectionSeparator",
-      "propertyName": "sectionStyle",
-      "parentId": "root",
-      "label": "Style"
-    },
-    {
-      "id": "06ab0599-914d-4d2d-875c-765a495472f8",
-      "type": "codeEditor",
-      "propertyName": "style",
-      "label": "Title Style",
-      "parentId": "root",
-      "validate": {},
-      "settingsValidationErrors": [],
-      "description": "A script that returns the style of the title as an object. This should conform to CSSProperties",
-      "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }]
-    },
-    {
-      "id": "941e00c5-0172-4c5a-ab1d-d0a29e06531e",
-      "type": "codeEditor",
-      "propertyName": "valueStyle",
-      "label": "Value Style",
-      "parentId": "root",
-      "validate": {},
-      "settingsValidationErrors": [],
-      "description": "A script that returns the style of the value as an object. This should conform to CSSProperties",
-      "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }]
     }
+  ]
+}
+},
+{
+  "id": "aIMnm2re1exN1M7pEEur9",
+  "type": "collapsiblePanel",
+  "propertyName": "pnlData",
+  "label": "Style",
+  "labelAlign": "right",
+  "parentId": "root",
+  "hidden": false,
+
+  "isDynamic": false,
+  "version": 2,
+  "expandIconPosition": "left",
+  "collapsible": "header",
+  "ghost": true,
+  "hideWhenEmpty": true,
+  "settingsValidationErrors": [],
+  "header": {
+    "id": "FizvkIoyeq1cZMqAgbDLL",
+    "components": [
+
+    ]
+  },
+  "content": {
+    "id": "y9SNusmMM0Wd1Sc_YI1ng",
+    "components": [
+      {
+        "id": "06ab0599-914d-4d2d-875c-765a495472f8",
+        "type": "codeEditor",
+        "propertyName": "style",
+        "label": "Title Style",
+        "parentId": "root",
+        "validate": {},
+        "settingsValidationErrors": [],
+        "description": "A script that returns the style of the title as an object. This should conform to CSSProperties",
+        "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }]
+      },
+      {
+        "id": "941e00c5-0172-4c5a-ab1d-d0a29e06531e",
+        "type": "codeEditor",
+        "propertyName": "valueStyle",
+        "label": "Value Style",
+        "parentId": "root",
+        "validate": {},
+        "settingsValidationErrors": [],
+        "description": "A script that returns the style of the value as an object. This should conform to CSSProperties",
+        "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }]
+      }
+    ]
+  }
+  }
   ],
   "formSettings": {
     "layout": "horizontal",

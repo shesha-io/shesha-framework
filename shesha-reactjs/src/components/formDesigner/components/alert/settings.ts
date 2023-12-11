@@ -2,12 +2,18 @@ import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 
 export const getSettings = (data: any) =>
   new DesignerToolbarSettings(data)
-    .addSectionSeparator({
-      id: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-      propertyName: 'separator1',
+    .addCollapsiblePanel({
+      id: '11114bf6-f76d-4139-a850-c99bf06c8b69',
+      propertyName: 'pnlDisplay',
       parentId: 'root',
       label: 'Display',
-    })
+      labelAlign: "left",
+      expandIconPosition: "start",
+      ghost: true,
+      collapsible: 'header',
+      content: {
+        id:'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+        components: [...new DesignerToolbarSettings() 
     .addTextField({
       id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
       propertyName: 'componentName',
@@ -79,12 +85,21 @@ export const getSettings = (data: any) =>
       label: 'Hidden',
       parentId: 'root',
     })
-    .addSectionSeparator({
-      id: '516d72e1-3dfd-433f-8459-8b1610c3c9cb',
-      propertyName: 'separatorStyle',
-      parentId: 'root',
-      label: 'Style',
-    })
+    .toJson()
+  ]}
+})
+  .addCollapsiblePanel({
+    id: '22224bf6-f76d-4139-a850-c99bf06c8b69',
+    propertyName: 'pnlData',
+    parentId: 'root',
+    label: 'Style',
+    labelAlign: "left",
+    expandIconPosition: "start",
+    ghost: true,
+    collapsible: 'header',
+    content: {
+      id:'pnl24bf6-f76d-4139-a850-c99bf06c8b69',
+      components: [...new DesignerToolbarSettings()    
     .addCodeEditor({
       id: '987c3de1-b959-4670-96f6-9b1747189a6e',
       propertyName: 'style',
@@ -92,4 +107,12 @@ export const getSettings = (data: any) =>
       parentId: 'root',
       mode: 'dialog',
     })
-    .toJson();
+  
+    .toJson()
+  ]
+}
+})
+.toJson();
+
+
+
