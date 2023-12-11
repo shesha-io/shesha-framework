@@ -1,5 +1,6 @@
 import { DataTypes } from '@/interfaces/dataTypes';
 import { evaluateComplexStringWithResult, IEvaluateComplexStringResult, IMatchData } from './publicUtils';
+import { executeFunction } from '@/utils';
 
 type NodeCallback = (operator: string, args: object[]) => void;
 const processRecursive = (jsonLogic: object, callback: NodeCallback) => {
@@ -63,8 +64,74 @@ const asVarNode = (node: object): IJsonLogicVarNode => {
 
 interface NestedNodeParsingResult {
   hasOptionalNonEvaluatedExpressions: boolean;
-  value: object | string;
+  value: object | string | boolean;
 }
+
+const evaluateJavaScriptAsync = async (evaluationNode: IEvaluateNode, options: IJsonLogicConversionOptions): Promise<NestedNodeParsingResult> => {
+  const expressionArguments = options.mappings.reduce((acc, current) => ({...acc, [current.match]: current.data}), {});
+
+  const executionResult = executeFunction(evaluationNode.evaluate.expression, expressionArguments);
+  
+  const promise = Promise.resolve(executionResult);
+  const unwrappedResult = await promise;
+
+  const parsingResult: NestedNodeParsingResult = {
+    hasOptionalNonEvaluatedExpressions: false,
+    value: Boolean(unwrappedResult),
+  };
+  return parsingResult;
+};
+
+const evaluateMustacheAsync = async (evaluationNode: IEvaluateNode, allArgs: any[], options: IJsonLogicConversionOptions): Promise<NestedNodeParsingResult> => {
+  const { mappings, onEvaluated: onEvaluation } = options;
+
+  const { result, success, unevaluatedExpressions } = evaluateComplexStringWithResult(
+    evaluationNode.evaluate.expression,
+    mappings,
+    evaluationNode.evaluate.required
+  );
+
+  let convertedResult: any = result;
+  if (success && options.getVariableDataType) {
+    let dataType: string = null;
+    for (const arg of allArgs) {
+      const varNode = asVarNode(arg);
+      if (!varNode) continue;
+
+      const varDataType = await options.getVariableDataType(varNode.var);
+      if (dataType && dataType !== varDataType) {
+        // data types of arguments are different, we can't convert it them automatically
+        dataType = null;
+        break;
+      } else dataType = varDataType;
+    }
+
+    switch (dataType) {
+      case DataTypes.number:
+      case DataTypes.referenceListItem: {
+        convertedResult = convertedResult ? parseInt(convertedResult, 10) : null;
+        break;
+      }
+      case DataTypes.boolean: {
+        convertedResult = typeof convertedResult === 'string' ? convertedResult?.toLowerCase() === 'true' : Boolean(convertedResult);
+          break;
+      }
+    }
+  }
+
+  if (onEvaluation)
+    onEvaluation({
+      expression: evaluationNode.evaluate.expression,
+      result: convertedResult,
+      success,
+      unevaluatedExpressions,
+    });
+
+  return {
+    hasOptionalNonEvaluatedExpressions: (convertedResult === '' || convertedResult === null) && !evaluationNode.evaluate.required,
+    value: convertedResult
+  };
+};
 
 export const convertJsonLogicNode = async (
   jsonLogic: object,
@@ -72,61 +139,23 @@ export const convertJsonLogicNode = async (
 ): Promise<object> => {
   if (!jsonLogic) return null;
 
-  const { argumentEvaluator, mappings, onEvaluated: onEvaluation } = options;
+  const { argumentEvaluator } = options;
 
-  const parseNestedNode = async (
+  const parseNestedNodeAsync = async (
     node: object,
     allArgs: any[],
     nestedOptions: IJsonLogicConversionOptions
   ): Promise<NestedNodeParsingResult> => {
     // special handling for evaluation nodes
-    const evaluationNodeParsing = tryParseAsEvaluationOperation(node);
-    if (evaluationNodeParsing.isEvaluationNode) {
-      const { result, success, unevaluatedExpressions } = evaluateComplexStringWithResult(
-        evaluationNodeParsing.evaluationArguments.expression,
-        mappings,
-        evaluationNodeParsing.evaluationArguments.required
-      );
+    const evaluationNode = getEvaluationNodeFromJsonLogicNode(node);
+    if (evaluationNode) {
+      if (evaluationNode.evaluate.type === 'mustache')
+        return await evaluateMustacheAsync(evaluationNode, allArgs, options);
 
-      let convertedResult: any = result;
-      if (success && options.getVariableDataType) {
-        let dataType: string = null;
-        for (const arg of allArgs) {
-          const varNode = asVarNode(arg);
-          if (!varNode) continue;
-
-          const varDataType = await options.getVariableDataType(varNode.var);
-          if (dataType && dataType !== varDataType) {
-            // data types of arguments are different, we can't convert it them automatically
-            dataType = null;
-            break;
-          } else dataType = varDataType;
-        }
-
-        switch (dataType) {
-          case DataTypes.number:
-          case DataTypes.referenceListItem: {
-            convertedResult = convertedResult ? parseInt(convertedResult, 10) : null;
-          }
-          case DataTypes.boolean: {
-            convertedResult =
-              typeof convertedResult === 'string' ? convertedResult?.toLowerCase() === 'true' : convertedResult;
-          }
-        }
-      }
-
-      if (onEvaluation)
-        onEvaluation({
-          expression: evaluationNodeParsing.evaluationArguments.expression,
-          result: convertedResult,
-          success,
-          unevaluatedExpressions,
-        });
-
-      return {
-        hasOptionalNonEvaluatedExpressions: (convertedResult === '') && !evaluationNodeParsing.evaluationArguments.required,
-        value: convertedResult
-      };
+      if (evaluationNode.evaluate.type === 'javascript')
+        return await evaluateJavaScriptAsync(evaluationNode, options);
+      
+      throw new Error(`Expressions of type '${evaluationNode.evaluate.type}' are not supported`);
     } else {
       const value = await convertJsonLogicNode(node, nestedOptions);
       return {
@@ -150,7 +179,7 @@ export const convertJsonLogicNode = async (
       convertedArgs = await Promise.all(
         args.map(async (arg, argIdx) => {
           if (typeof arg === 'object') {
-            const nestedResult = await parseNestedNode(arg, args, options);
+            const nestedResult = await parseNestedNodeAsync(arg, args, options);
             hasInvalidArguments = hasInvalidArguments || nestedResult.hasOptionalNonEvaluatedExpressions;
             return nestedResult.value;
           };
@@ -163,7 +192,7 @@ export const convertJsonLogicNode = async (
     } else {
       // note: single arguments may be presented as objects, example: {"!!": {"var": "user.userName"}}
       if (typeof args === 'object') {
-        const nestedResult = await parseNestedNode(args, [], options);
+        const nestedResult = await parseNestedNodeAsync(args, [], options);
         hasInvalidArguments = hasInvalidArguments || nestedResult.hasOptionalNonEvaluatedExpressions;
         convertedArgs = nestedResult.value;
       } else {
@@ -171,45 +200,66 @@ export const convertJsonLogicNode = async (
         convertedArgs = evaluationResult.handled ? evaluationResult.value : args;
       }
     }
-    
-    if (!hasInvalidArguments){
-      const argumentsAreValid = ['and', 'or'].indexOf(operatorName) > -1 
+
+    if (!hasInvalidArguments) {
+      const argumentsAreValid = ['and', 'or'].indexOf(operatorName) > -1
         ? Array.isArray(convertedArgs) && convertedArgs.length > 0
         : true;
-      if (argumentsAreValid){
+      if (argumentsAreValid) {
         if (!result)
           result = {};
         result[operatorName] = convertedArgs;
       }
     }
   }
-  
+
   return result;
 };
 
-export interface IEvaluateNodeArgs {
+export interface IMustacheEvaluateNodeArgs {
   expression: string;
   required: boolean;
 }
 
+export interface IMustacheEvaluateNode {
+  evaluate: IMustacheEvaluateNodeArgs[];
+}
+
+export const isLegacyMustacheEvaluationNode = (node: any): node is IMustacheEvaluateNode => {
+  const { evaluate } = node ?? {};
+  const expressionType = (evaluate as IEvaluateNodeArgs)?.type;
+
+  return evaluate && !expressionType;
+};
+
+export type EvaluationType = 'mustache' | 'javascript';
+export interface IEvaluateNodeArgs {
+  expression: string;
+  type: EvaluationType;
+  [key: string]: any;
+}
 export interface IEvaluateNode {
+  evaluate: IEvaluateNodeArgs;
+}
+
+export interface IEvaluateJsonLogicNode {
   evaluate: IEvaluateNodeArgs[];
 }
 
-export interface IEvaluationNodeParsingResult {
-  isEvaluationNode: boolean;
-  evaluationArguments?: IEvaluateNodeArgs;
-}
-export const tryParseAsEvaluationOperation = (node: object): IEvaluationNodeParsingResult => {
-  if (!node) return undefined;
+export const getEvaluationNodeFromJsonLogicNode = (node: any): IEvaluateNode => {
+  const { evaluate } = node ?? {};
+  const args = evaluate && Array.isArray(evaluate) && evaluate.length === 1
+    ? evaluate[0]
+    : undefined;
 
-  const typedNode = node as IEvaluateNode;
-  const evaluationArguments =
-    typedNode?.evaluate && Array.isArray(typedNode.evaluate) && typedNode.evaluate.length === 1
-      ? typedNode.evaluate[0]
-      : null;
-  return {
-    isEvaluationNode: Boolean(evaluationArguments),
-    evaluationArguments,
-  };
+  const typedArgs = args as IEvaluateNodeArgs;
+  const result: IEvaluateNode = typeof(typedArgs?.expression) === 'string'
+    ? {
+      evaluate: {
+        ...typedArgs,
+        type: (args as IEvaluateNodeArgs).type ?? 'mustache' /* fallback to legacy */,
+      }
+    }
+    : undefined;
+  return result;
 };

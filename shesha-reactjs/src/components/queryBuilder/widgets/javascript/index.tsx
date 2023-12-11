@@ -1,16 +1,16 @@
-import { BaseWidget, BasicConfig, SelectFieldSettings } from '@react-awesome-query-builder/antd';
+import { BaseWidget, BasicConfig, TextFieldSettings } from '@react-awesome-query-builder/antd';
 import React, { FC, useEffect } from 'react';
 import { CodeEditor } from '../../../formDesigner/components/codeEditor/codeEditor';
 
-type SpecificationWidgetType = BaseWidget & SelectFieldSettings;
-const SpecificationWidget: SpecificationWidgetType = {
-  ...BasicConfig.widgets.select,
-  type: 'specification',
+type JavaScriptWidgetType = BaseWidget & TextFieldSettings;
+const JavaScriptWidget: JavaScriptWidgetType = {
+  ...BasicConfig.widgets.text,
+  type: 'javascript',
   factory: (props) => {
     const { value, setValue } = props;
 
     return (
-      <SpecificationConditionEditor
+      <JavaScriptEditor
         value={value}
         onChange={value => { 
           setValue(value); 
@@ -24,7 +24,7 @@ interface SpecificationConditionEditorProps {
   value?: string;
   onChange: (newValue?: string) => void;
 }
-const SpecificationConditionEditor: FC<SpecificationConditionEditorProps> = ({ value, onChange }) => {
+const JavaScriptEditor: FC<SpecificationConditionEditorProps> = ({ value, onChange }) => {
 
   useEffect(() => {
     // default value to empty string to prevent auto removal of the rule
@@ -38,10 +38,10 @@ const SpecificationConditionEditor: FC<SpecificationConditionEditorProps> = ({ v
       onChange={onChange}
       mode='dialog'
       propertyName={'specificationCondition'}
-      label='Specification: condition to apply'
-      description="Enter a condition that determines whether the Specification should be applied or not. Return true to apply the Specification or false to ignore it."
+      label='JavaScript Expression'
+      description="Enter an JavaScript expression that returns true or false."
     />
   );
 };
 
-export { SpecificationWidget };
+export { JavaScriptWidget };

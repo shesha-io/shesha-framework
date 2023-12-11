@@ -1,14 +1,17 @@
 import { Type, Config, BasicConfig, AntdConfig, Funcs, BasicFuncs, CoreTypes, ValueSource } from '@react-awesome-query-builder/antd';
 import EntityAutocompleteWidget from './widgets/entityAutocomplete';
 import RefListDropdownWidget from './widgets/refListDropDown';
-import SpecificationWidget from './widgets/specification';
 import moment from 'moment';
-import EntityReferenceType from './types/entityReference';
+import { EntityReferenceType } from './types/entityReference';
 import RefListType from './types/refList';
-import SpecificationType from './types/specification';
+import { SpecificationWidget } from './widgets/specification';
+import { SpecificationType } from './types/specification';
+import { StrictBoolean } from './types/strictBoolean';
 import { IDictionary } from '@/interfaces';
 import { getEvaluateFunc } from './funcs/evaluate';
 import GuidType from './types/guid';
+import { expressionFunc } from './funcs/expression';
+import { JavaScriptWidget } from './widgets/javascript/index';
 
 interface TypeModifier extends Partial<Type> {
   operators?: string[];
@@ -34,6 +37,7 @@ const types = {
   entityReference: EntityReferenceType,
   refList: RefListType,
   specification: SpecificationType,
+  "strict-boolean": StrictBoolean,
   guid: GuidType,
 };
 
@@ -117,6 +121,7 @@ const widgets = {
     },
   },
   specification: SpecificationWidget,
+  javascript: JavaScriptWidget,
 };
 
 const evaluateTypes = ['boolean', 'date', 'datetime', 'time', 'number', 'text', 'entityReference', 'refList'];
@@ -135,6 +140,7 @@ knownFuncNames.forEach(funcName => {
 const funcs: Funcs = {
   ...knownFuncs,
   ...evaluateFunctions,
+  expressionFunc,
 };
 
 export const config: Config = {
