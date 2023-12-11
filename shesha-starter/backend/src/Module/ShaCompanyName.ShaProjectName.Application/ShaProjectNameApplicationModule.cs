@@ -30,8 +30,10 @@ namespace ShaCompanyName.ShaProjectName.Application
     {
         public override async Task<bool> InitializeConfigurationAsync()
         {
+            // Import any configuration embeded as resources in this assembly on application start-up.
             return await ImportConfigurationAsync();
         }
+
         /// inheritedDoc
         public override void Initialize()
         {
