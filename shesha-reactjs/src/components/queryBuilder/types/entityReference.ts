@@ -10,5 +10,3 @@ export const EntityReferenceType: Type = {
     },
   },
 };
-
-export default EntityReferenceType;

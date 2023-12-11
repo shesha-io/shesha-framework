@@ -11,6 +11,7 @@ import {
   Widgets,
   Fields,
   FieldOrGroup,
+  Settings,
 } from '@react-awesome-query-builder/antd';
 import classNames from 'classnames';
 import { ITableColumn } from '../../interfaces';
@@ -22,6 +23,7 @@ import { extractVars } from '@/utils/jsonLogic';
 import { Skeleton } from 'antd';
 import { useQueryBuilder } from '@/providers';
 import { usePrevious } from 'react-use';
+import { FuncSelect } from './funcSelect/index';
 
 export interface IQueryBuilderColumn extends ITableColumn {
   fieldSettings?: FieldSettings;
@@ -60,12 +62,14 @@ export const QueryBuilder: FC<IQueryBuilderProps> = props => {
   // pre-parse tree and extract all used fields
   // load all fields which are missing
 
-  const qbSettings = {
+  const qbSettings: Settings = {
     ...InitialConfig.settings,
     removeIncompleteRulesOnLoad: false,
     removeEmptyGroupsOnLoad: false,
     removeInvalidMultiSelectValuesOnLoad: false,
-    renderField: props => (<FieldAutocomplete {...props} fields={fields} />),
+    fieldSources: ["field", "func"],
+    renderFunc: (props) => (<FuncSelect {...props} />),
+    renderField: (props) => (<FieldAutocomplete {...props} /*fields={fields}*/ />),
     renderOperator: (props, {RCE, W: {FieldSelect}}) => RCE(FieldSelect, { ...props, customProps: { dropdownMatchSelectWidth: false } }), // todo: remove after migration to antd 5
   };
 

@@ -3,9 +3,9 @@ using Abp.Domain.Repositories;
 using Abp.Runtime.Validation;
 using FirebaseAdmin.Messaging;
 using Microsoft.AspNetCore.Mvc;
-using NHibernate.Linq;
 using Shesha.Attributes;
 using Shesha.Domain;
+using Shesha.Extensions;
 using Shesha.Firebase.Dtos;
 using Shesha.Push.Dtos;
 using System;
@@ -91,7 +91,7 @@ namespace Shesha.Firebase
                 validationResults.Add(new ValidationResult($"'{nameof(input.PersonId)}' is mandatory"));
             else
             {
-                person = await _personRepository.GetAll().Where(p => p.Id == input.PersonId).FirstOrDefaultAsync();
+                person = await _personRepository.FirstOrDefaultAsync(p => p.Id == input.PersonId);
                 if (person == null)
                     validationResults.Add(new ValidationResult("Person not found"));
             }

@@ -1,7 +1,7 @@
 ﻿using Abp.Domain.Repositories;
-using NHibernate.Linq;
 using Shesha.Application.Services.Dto;
 using Shesha.Domain;
+using Shesha.Extensions;
 using Shesha.Notes.Dto;
 using System;
 using System.Collections.Generic;
@@ -18,7 +18,7 @@ namespace Shesha.Notes
         }
 
         /// <summary>
-        /// Get notes
+        /// Returns the list of notes for the specified owner entity.
         /// </summary>
         //[HttpGet, Route("")]
         public async Task<List<NoteDto>> GetListAsync(GetListInput input)

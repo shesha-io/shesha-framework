@@ -74,7 +74,7 @@ namespace Shesha.ConfigurationItems
         public abstract Task<IConfigurationItemDto> MapToDtoAsync(TItem item);
 
         /// inheritedDoc
-        public virtual async Task CancelVersoinAsync(TItem item) 
+        public virtual async Task CancelVersionAsync(TItem item) 
         {
             item.VersionStatus = ConfigurationItemVersionStatus.Cancelled;
             await Repository.UpdateAsync(item);
@@ -132,7 +132,7 @@ namespace Shesha.ConfigurationItems
 
         public async Task CancelVersoinAsync(ConfigurationItemBase item)
         {
-            await CancelVersoinAsync(item as TItem);
+            await CancelVersionAsync(item as TItem);
         }
 
         public async Task MoveToModuleAsync(ConfigurationItemBase item, MoveItemToModuleInput input)

@@ -30,8 +30,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using static AutoMapper.Internal.ExpressionFactory;
-using static AutoMapper.QueryableExtensions.LetPropertyMaps;
 using NHcfg = NHibernate.Cfg;
 using NHGens = NHibernate.Mapping.ByCode.Generators;
 using NMIMPL = NHibernate.Mapping.ByCode.Impl;

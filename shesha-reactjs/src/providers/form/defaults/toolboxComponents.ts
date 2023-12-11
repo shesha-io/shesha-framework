@@ -43,6 +43,7 @@ import RichTextEditor from '@/components/formDesigner/components/richTextEditor'
 import ScheduledJobExecutionLog from '@/components/formDesigner/components/scheduledJobExecutionLog/scheduledJobExecutionLog';
 import Section from '@/components/formDesigner/components/section';
 import SectionSeprator from '@/components/formDesigner/components/sectionSeprator';
+import SizableColumnsComponent from '@/components/formDesigner/components/sizableColumns/sizableColumns';
 import Space from '@/components/formDesigner/components/space';
 import Statistic from '@/components/formDesigner/components/statistic';
 import StatusTag from '@/components/formDesigner/components/statusTag';
@@ -52,13 +53,16 @@ import Tabs from '@/components/formDesigner/components/tabs';
 import Text from '@/components/formDesigner/components/text';
 import ValidationErrors from '@/components/formDesigner/components/validationErrors';
 import Wizard from '@/components/formDesigner/components/wizard';
-import { ComponentSelectorComponent } from '../../../designer-components';
+import SettingsComponent from '@/designer-components/_settings/settingsComponent';
 import AttachmentsEditor from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import Autocomplete from '@/designer-components/autocomplete/autocomplete';
 import Checkbox from '@/designer-components/checkbox/checkbox';
 import CollapsiblePanel from '@/designer-components/collapsiblePanel/collapsiblePanelComponent';
 import ConfigurableActionConfigurator from '@/designer-components/configurableActionsConfigurator';
 import ContainerComponent from '@/designer-components/container/containerComponent';
+import ContextPropertyAutocompleteComponent from '@/designer-components/contextPropertyAutocomplete';
+import DataContextComponent from '@/designer-components/dataContextComponent';
+import DataContextSelector from '@/designer-components/dataContextSelector';
 import AdvancedFilterButton from '@/designer-components/dataTable/advancedFilterButton/advancedFilterButtonComponent';
 import ChildTable from '@/designer-components/dataTable/childTable';
 import Filter from '@/designer-components/dataTable/filter/filterComponent';
@@ -74,22 +78,18 @@ import TableViewSelector from '@/designer-components/dataTable/tableViewSelector
 import Toolbar from '@/designer-components/dataTable/toolbar/toolbarComponent';
 import DateField from '@/designer-components/dateField/dateField';
 import Dropdown from '@/designer-components/dropdown/dropdown';
+import { DynamicActionsConfiguratorComponent } from '@/designer-components/dynamicActionsConfigurator/index';
 import EntityReferenceComponent from '@/designer-components/entityReference/entityReference';
 import FileUpload from '@/designer-components/fileUpload';
 import NumberFieldComponent from '@/designer-components/numberField/numberField';
 import QueryBuilderComponent from '@/designer-components/queryBuilder/queryBuilderComponent';
 import RefListStatusComponent from '@/designer-components/refListStatus';
+import { SortingEditorComponent } from '@/designer-components/sortingEditor/index';
+import TextAreaComponent from '@/designer-components/textArea/textArea';
 import TextFieldComponent from '@/designer-components/textField/textField';
 import TimeField from '@/designer-components/timeField';
 import { IToolboxComponentGroup } from '@/interfaces/formDesigner';
-import SizableColumnsComponent from '@/components/formDesigner/components/sizableColumns/sizableColumns';
-import SettingsComponent from '@/designer-components/_settings/settingsComponent';
-import DataContextSelector from '@/designer-components/dataContextSelector';
-import DataContextComponent from '@/designer-components/dataContextComponent';
-import ContextPropertyAutocompleteComponent from '@/designer-components/contextPropertyAutocomplete';
-import TextAreaComponent from '@/designer-components/textArea/textArea';
-import { DynamicActionsConfiguratorComponent } from '@/designer-components/dynamicActionsConfigurator/index';
-import { SortingEditorComponent } from '@/designer-components/sortingEditor/index';
+import { ComponentSelectorComponent } from '../../../designer-components';
 
 export const ToolboxComponents: IToolboxComponentGroup[] = [
   {
@@ -97,6 +97,7 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
     visible: true,
     components: [
       Address,
+      AttachmentsEditor,
       AutocompleteTagGroup,
       ChildEntitiesTagGroup,
       CodeEditor,
@@ -111,7 +112,6 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
       EntityReferenceComponent,
       EventNames,
       FileUpload,
-      AttachmentsEditor,
       Filter,
       FormAutocompleteComponent,
       IconPicker,
@@ -192,13 +192,13 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
       CollapsiblePanel,
       Columns,
       ContainerComponent,
-      Drawer,
       Divider,
+      Drawer,
       SectionSeprator,
+      SizableColumnsComponent,
       Space,
       Tabs,
       Wizard,
-      SizableColumnsComponent,
     ],
   },
   {
@@ -209,13 +209,13 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
   {
     visible: true,
     name: 'Settings',
-    components: [SettingsComponent, DataContextSelector, DataContextComponent, ContextPropertyAutocompleteComponent]
+    components: [ContextPropertyAutocompleteComponent, DataContextComponent, DataContextSelector, SettingsComponent],
   },
   {
     visible: true,
     name: 'Internal',
-    components: [PropertyAutocompleteComponent, SortingEditorComponent]
-  }
+    components: [PropertyAutocompleteComponent, SortingEditorComponent],
+  },
 ];
 
 export default ToolboxComponents;

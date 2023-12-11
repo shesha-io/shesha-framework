@@ -2,21 +2,19 @@
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
-using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using NHibernate.Linq;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Elmah;
+using Shesha.Extensions;
 using Shesha.Permissions;
 using Shesha.Swagger;
 using Shesha.Utilities;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -75,7 +73,7 @@ namespace Shesha.DynamicEntities
         [HttpGet, Route("{id}")]
         public async Task<ModelConfigurationDto> GetByIdAsync(Guid id)
         {
-            var modelConfig = await _entityConfigRepository.GetAll().Where(m => m.Id == id).FirstOrDefaultAsync();
+            var modelConfig = await _entityConfigRepository.FirstOrDefaultAsync(m => m.Id == id);
             if (modelConfig == null)
             {
                 var exception = new EntityNotFoundException("Model configuration not found");

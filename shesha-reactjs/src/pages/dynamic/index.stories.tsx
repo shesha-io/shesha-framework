@@ -63,9 +63,9 @@ export const FncEmployeeAccountDetail = addStory(Template, {
 });
 
 export const CheckBoxDetails = addStory(Template, {
-  formId: { name: 'mobiledevices-details-test', module: 'Boxfusion.SheshaFunctionalTests.Common',
+  formId: { name: 'nov-details', module: 'Shesha',
  },
- id:'f010d9a6-62c2-400c-aeac-0c59239d823d'
+ id:'b7f94729-913e-4148-bef5-21ccb8349fc1'
 });
 
 export const FncTestCascadeBehavior = addStory(Template, {

@@ -1,21 +1,19 @@
+import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
+import { CollapsiblePanel } from '@/components/panel';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { IToolboxComponent } from '@/interfaces';
+import { useFormData, useGlobalState } from '@/providers';
+import { useForm } from '@/providers/form';
+import { FormMarkup } from '@/providers/form/models';
+import { evaluateString, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { GroupOutlined } from '@ant-design/icons';
 import { ExpandIconPosition } from 'antd/lib/collapse/Collapse';
 import { nanoid } from 'nanoid';
 import React from 'react';
-import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
-import { CollapsiblePanel } from '@/components/panel';
-import { IToolboxComponent } from '@/interfaces';
-import { useForm } from '@/providers/form';
-import { FormMarkup } from '@/providers/form/models';
-import { evaluateString, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { ICollapsiblePanelComponentProps, ICollapsiblePanelComponentPropsV0 } from './interfaces';
 import settingsFormJson from './settingsForm.json';
-import {
-  migratePropertyName,
-  migrateCustomFunctions,
-} from '@/designer-components/_common-migrations/migrateSettings';
-import { useFormData, useGlobalState } from '@/providers';
-import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { executeFunction } from '@/utils';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -29,9 +27,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
     const { globalState } = useGlobalState();
     const { label, expandIconPosition, collapsedByDefault, collapsible, ghost } = model;
 
-    const evaluatedLabel = typeof(label) === 'string'
-      ? evaluateString(label, data)
-      : label;
+    const evaluatedLabel = typeof label === 'string' ? evaluateString(label, data) : label;
 
     if (model.hidden) return null;
 
@@ -39,6 +35,11 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       const childsVisible = hasVisibleChilds(model.content.id);
       if (!childsVisible) return null;
     }
+
+    const getPanelStyle = {
+      ...pickStyleFromModel(model, 'padding', 'marginTop', 'marginBottom'),
+      ...(executeFunction(model?.style, { data, globalState }) || {}),
+    };
 
     const headerComponents = model?.header?.components?.map((c) => ({ ...c, readOnly: model?.readOnly })) ?? [];
     const extra =
@@ -59,7 +60,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
         collapsible={collapsible === 'header' ? 'header' : 'icon'}
         showArrow={collapsible !== 'disabled' && expandIconPosition !== 'hide'}
         ghost={ghost}
-        style={getStyle(model.style, data, globalState)}
+        style={getPanelStyle}
         className={model.className}
       >
         <ComponentsContainer
@@ -105,11 +106,12 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       .add<ICollapsiblePanelComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<ICollapsiblePanelComponentProps>(3, (prev) => ({
         ...prev,
-        expandIconPosition: prev.expandIconPosition === 'left'
-          ? 'start'
-          : prev.expandIconPosition === 'right'
-            ? 'end'
-            : prev.expandIconPosition
+        expandIconPosition:
+          prev.expandIconPosition === 'left'
+            ? 'start'
+            : prev.expandIconPosition === 'right'
+              ? 'end'
+              : prev.expandIconPosition,
       }))
       .add<ICollapsiblePanelComponentProps>(4, (prev) => migrateVisibility(prev)),
   customContainerNames: ['header', 'content'],

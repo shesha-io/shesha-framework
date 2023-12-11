@@ -1,10 +1,15 @@
 import { FieldSettings, Func, JsonLogicFormatFunc, JsonLogicImportFunc, JsonLogicTree, JsonLogicValue, RuleValue, TypedMap } from '@react-awesome-query-builder/antd';
-import { IEvaluateNode, IEvaluateNodeArgs } from '@/utils/jsonLogic';
+import { getEvaluationNodeFromJsonLogicNode, IEvaluateJsonLogicNode } from '@/utils/jsonLogic';
+import { IHasHideForSelect } from '../interfaces';
 
 const args2JsonLogic: JsonLogicFormatFunc = (funcArgs: TypedMap<JsonLogicValue>): JsonLogicTree => {
-    const node: IEvaluateNode = {
+    const node: IEvaluateJsonLogicNode = {
         evaluate: [
-            { expression: funcArgs.expression, required: funcArgs.required }
+            { 
+                expression: funcArgs.expression, 
+                required: funcArgs.required, 
+                type: 'mustache' 
+            }
         ]
     };
 
@@ -12,15 +17,11 @@ const args2JsonLogic: JsonLogicFormatFunc = (funcArgs: TypedMap<JsonLogicValue>)
 };
 
 const jsonLogic2Args: JsonLogicImportFunc = (val): RuleValue[] => {
-    const typedNode = val as IEvaluateNode;
-    if (!typedNode?.evaluate)
+    const node = getEvaluationNodeFromJsonLogicNode(val);
+    if (!node || node.evaluate?.type !== 'mustache')
         throw `Can't parse 'evaluate' function`; // throw exception to skip current function and try to parse others
-
-    const args: IEvaluateNodeArgs = Array.isArray(typedNode.evaluate) && typedNode.evaluate.length === 1
-        ? typedNode.evaluate[0] as IEvaluateNodeArgs
-        : { expression: null, required: true };
-
-    return [args.expression, args.required ?? true];
+        
+    return [node.evaluate.expression, node.evaluate.required];
 };
 
 type CustomFieldSettings = FieldSettings & {
@@ -39,9 +40,10 @@ const requiredFieldSettings: CustomFieldSettings = {
     }             
 };
 
-export const getEvaluateFunc = (type: string): Func => {
+export const getEvaluateFunc = (type: string): Func & IHasHideForSelect => {
     return {
         returnType: type,
+        hideForSelect: true,
         label: 'Evaluate (mustache)',
         jsonLogic: args2JsonLogic,
         jsonLogicImport: jsonLogic2Args,

@@ -196,7 +196,7 @@ export const UrlAutocomplete = <TValue,>(props: IUrlAutocompleteProps<TValue>) =
   */
   const autocompleteValue = wrapValue(value);
 
-  if (readOnly || disabled) {
+  if (readOnly) {
     return (
       <ReadOnlyDisplayFormItem
         value={autocompleteValue}

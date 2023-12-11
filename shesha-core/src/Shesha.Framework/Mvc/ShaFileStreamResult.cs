@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -27,7 +28,7 @@ namespace Shesha.Mvc
 
         private void AllowContentDispositionHeader(ActionContext context)
         {
-            context.HttpContext.Response.Headers.Add("Access-Control-Expose-Headers", "Content-Disposition");
+            context.HttpContext.Response.Headers.Append("Access-Control-Expose-Headers", "Content-Disposition");
         }
     }
 }

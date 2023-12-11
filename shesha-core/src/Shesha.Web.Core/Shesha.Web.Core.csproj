@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\common.props" />
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <AssemblyName>Shesha.Web.Core</AssemblyName>
     <PackageId>Shesha.Web.Core</PackageId>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
@@ -35,14 +35,14 @@
     <ProjectReference Include="..\Shesha.Scheduler\Shesha.Scheduler.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Abp.AspNetCore" Version="6.6.2" />
-    <PackageReference Include="Abp.AspNetCore.SignalR" Version="6.6.2" />
-    <PackageReference Include="Abp.ZeroCore" Version="6.6.2" />
+    <PackageReference Include="Abp.AspNetCore" Version="9.0.0" />
+    <PackageReference Include="Abp.AspNetCore.SignalR" Version="9.0.0" />
+    <PackageReference Include="Abp.ZeroCore" Version="9.0.0" />
     <PackageReference Include="GraphQL" Version="5.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.0" />
   </ItemGroup>
   <ItemGroup>

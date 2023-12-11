@@ -16,7 +16,7 @@ namespace Shesha.Sms.Xml2Sms
         public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo(ModuleName)
         {
             FriendlyName = "Shesha Xml2Sms",
-            Publisher = "Boxfusion"
+            Publisher = "Shesha"
         };
 
         public override async Task<bool> InitializeConfigurationAsync()

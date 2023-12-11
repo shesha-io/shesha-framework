@@ -21,7 +21,7 @@ namespace Shesha
         public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo(ModuleName)
         {
             FriendlyName = "Shesha Firebase",
-            Publisher = "Boxfusion"
+            Publisher = "Shesha"
         };
 
         public override void PreInitialize()

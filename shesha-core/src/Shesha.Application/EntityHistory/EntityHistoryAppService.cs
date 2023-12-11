@@ -1,33 +1,11 @@
 ﻿using Abp.Application.Services;
-using Abp.Configuration;
-using Abp.Domain.Entities.Auditing;
-using Abp.Domain.Repositories;
-using Abp.Domain.Uow;
-using Abp.EntityHistory;
-using Abp.Events.Bus.Entities;
-using Abp.ObjectMapping;
-using Abp.Reflection;
-using GraphQL;
-using NHibernate;
-using NHibernate.Criterion;
-using NHibernate.Intercept;
-using NHibernate.Proxy;
-using Shesha.Domain;
-using Shesha.Domain.Attributes;
+using Abp.Application.Services.Dto;
+using Shesha.Application.Services.Dto;
 using Shesha.Extensions;
-using Shesha.NHibernate.Session;
-using Shesha.Reflection;
-using Shesha.Services;
-using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
-using System.Threading;
-using Shesha.Application.Services.Dto;
-using Abp.Application.Services.Dto;
 
 namespace Shesha.EntityHistory
 {
