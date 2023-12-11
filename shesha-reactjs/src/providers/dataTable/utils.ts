@@ -214,7 +214,7 @@ export const prepareColumn = (
 
       allowShowHide: true,
       show: colVisibility,
-      metadata: srvColumn.metadata,
+      metadata: srvColumn?.metadata,
     };
     return dataCol;
   }
