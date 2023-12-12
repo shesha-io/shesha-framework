@@ -97,7 +97,7 @@ resources:
               certificateId: ${certificateId}
               name: ${containerAppCustomerDomainName}
           external: true
-          targetPort: 80
+          targetPort: 8080
           transport: auto          
           traffic:
             - label: "firstrevision-01"
