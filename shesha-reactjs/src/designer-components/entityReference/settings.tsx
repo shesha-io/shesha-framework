@@ -7,7 +7,7 @@ import { Autocomplete } from '@/components/autocomplete';
 import FormAutocomplete from '@/components/formAutocomplete';
 import EndpointsAutocomplete from '@/components/endpointsAutocomplete/endpointsAutocomplete';
 import { MetadataProvider, useForm } from '@/providers';
-import LabelValueEditor from '@/components/formDesigner/components/labelValueEditor/labelValueEditor';
+import { LabelValueEditor } from '@/components/labelValueEditor/labelValueEditor';
 import CollapsiblePanel from '@/components/panel';
 import { ConfigurableActionConfigurator } from '../configurableActionsConfigurator/configurator';
 import { ISettingsFormFactoryArgs } from '@/interfaces';

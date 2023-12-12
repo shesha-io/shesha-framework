@@ -93,6 +93,16 @@ namespace Shesha.Controllers
             return process.WorkingSet64;
         }
 
+        [HttpPost]
+        [DontWrapResult]
+        public string TestException(ExceptionInput input)
+        {
+            if (input.GenerateException)
+                throw new Exception(input.Message);
+
+            return input.Message;
+        }
+
         [HttpGet]
         [DontWrapResult]
         public FileContentResult DynamicAssemblies()
@@ -113,6 +123,12 @@ namespace Shesha.Controllers
         {
             var bootstrapper = IocManager.Resolve<EntityConfigsBootstrapper>();
             await bootstrapper.ProcessAsync();
+        }
+
+        public class ExceptionInput 
+        { 
+            public bool GenerateException { get; set; }
+            public string Message { get; set; }
         }
     }
 }

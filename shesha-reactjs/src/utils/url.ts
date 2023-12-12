@@ -1,4 +1,4 @@
-import qs from 'qs';
+import qs, { ParsedQs } from 'qs';
 
 export const getCurrentUrl = (): string => {
   return typeof window !== 'undefined' ? window.location?.pathname ?? '' : '';
@@ -31,23 +31,27 @@ export const getLoginUrlWithReturn = (landingPage: string, unauthorizedRedirectU
   return `${unauthorizedRedirectUrl}${redirectUrl}`;
 };
 
-export interface QueryStringParams {
-  [key: string]: string | number;
-}
+export const getUrlWithoutQueryParams = (url: string): string => {
+  if (!url) return url;
+  const idx = url.indexOf('?');
+  return idx > -1 ? url.substring(0, idx) : url;
+};
+
+export const getQueryString = (url: string) => {
+  const idx = url?.indexOf('?') || -1;
+
+  return idx === -1
+    ? undefined
+    : url.substring(idx);
+};
+
+export type QueryStringParams = ParsedQs;
 
 export const getQueryParams = (url?: string): QueryStringParams => {
-  const search = url ? new URL(decodeURIComponent(url)).search : getCurrentQueryString();
+  const effectiveUrl = url ? decodeURIComponent(url) : getCurrentQueryString();
+  const queryString = getQueryString(effectiveUrl);
 
-  const urlSearchParams = new URLSearchParams(search ?? '');
-  const params = Object.fromEntries(urlSearchParams.entries()) as QueryStringParams;
-
-  Object.keys(params).forEach((key) => {
-    if (!isNaN(Number(params[key]))) {
-      params[key] = Number(params[key]);
-    }
-  });
-
-  return params;
+  return qs.parse(queryString, { ignoreQueryPrefix: true });
 };
 
 export const getQueryParam = (name: string) => {
@@ -60,16 +64,10 @@ export const setQueryParam = (url: string, key: string, value: string): string =
   const urlObj = new URL(decodeURIComponent(url));
 
   const urlSearchParams = new URLSearchParams(urlObj.search ?? '');
-  const params = Object.fromEntries(urlSearchParams.entries()) as QueryStringParams;
+  const params = Object.fromEntries(urlSearchParams.entries());
   params[key] = encodeURIComponent(value);
 
   return `${urlObj?.host}${urlObj?.pathname}?${qs.stringify(params)}`;
-};
-
-export const getUrlWithoutQueryParams = (url: string) => {
-  const urlObj = new URL(decodeURIComponent(url));
-
-  return `${urlObj?.host}${urlObj?.pathname}`;
 };
 
 export const isValidSubmitVerb = (submitVerb: string) => {

@@ -28,7 +28,10 @@
       ],
       "validate": {
         "required": true
-      }
+      },
+      "version": 3,
+      "useRawValues": false,
+      "referenceListId": null
     },
     {
       "id": "5d4d56fb-d7f8-4835-a529-c4fa93f3596d",
@@ -43,7 +46,9 @@
       "allowClear": false,
       "validate": {
         "required": true
-      }
+      },
+      "version": 2,
+      "textType": "text"
     },
     {
       "id": "345c2181-fb9f-48ed-9631-864ac357807b",
@@ -52,7 +57,11 @@
       "label": "Container2",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": {"_code": "return getSettingValue(data?.itemType) !== 'button';", "_mode": "code", "_value": false},
+      "hidden": {
+        "_code": "return getSettingValue(data?.itemType) !== 'button';",
+        "_mode": "code",
+        "_value": false
+      },
       "direction": "vertical",
       "justifyContent": "left",
       "components": [
@@ -67,7 +76,8 @@
           "autoSize": false,
           "showCount": false,
           "allowClear": false,
-          "validate": {}
+          "validate": {},
+          "version": 1
         },
         {
           "id": "91b404a6-4021-4b0a-b9ef-007167a93075",
@@ -77,114 +87,25 @@
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
           "hidden": false,
-          "settingsValidationErrors": []
+          "settingsValidationErrors": [],
+          "version": 1
         },
         {
-          "id": "21d90871-5ca7-44c6-a4a8-cc646be05101",
-          "type": "dropdown",
-          "propertyName": "buttonAction",
-          "label": "Button Action",
+          "id": "_9wXGbhGQHTXyeHCB1USs",
+          "type": "configurableActionConfigurator",
+          "propertyName": "actionConfiguration",
+          "componentName": "configurableActionConfigurator1",
+          "label": "Action",
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
           "hidden": false,
-          "dataSourceType": "values",
-          "values": [
-            {
-              "id": "5c717647-2ecd-434d-8d74-6c6805303007",
-              "label": "Navigate",
-              "value": "navigate"
-            },
-            {
-              "id": "c025760d-b99b-4c44-89cf-1edb2a6cd014",
-              "label": "Dialogue",
-              "value": "dialogue"
-            },
-            {
-              "id": "3f71a488-7cd8-4b9b-b0f6-8b37b8a04aae",
-              "label": "Execute Script",
-              "value": "executeScript"
-            },
-            {
-              "id": "18fa8cc0-a327-466d-9513-52c53218d39d",
-              "label": "Execute form action",
-              "value": "executeFormAction"
-            }
-          ],
-          "validate": {}
-        },
-        {
-          "id": "62ef6e50-8762-476a-8f52-1376d7b8006a",
-          "type": "textField",
-          "propertyName": "target",
-          "label": "Target Url",
-          "labelAlign": "right",
-          "parentId": "75407830-901f-41a0-bfa0-da18f043b299",
-          "hidden": {"_code": "return getSettingValue(data?.buttonAction) !== 'navigate';", "_mode": "code", "_value": false},
-          "validate": {
-            "required": false
-          }
-        },
-        {
-          "id": "fe4b3c03-3e0b-410f-8a9d-93db02ca51ed",
-          "type": "collapsiblePanel",
-          "propertyName": "pnlModalSettings",
-          "label": "Dialogue settings",
-          "labelAlign": "right",
-          "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
-          "hidden": {"_code": "return getSettingValue(data?.buttonAction) !== 'dialogue';", "_mode": "code", "_value": false},
-          "validate": {
-            "required": false
-          },
-          "direction": "vertical",
-          "justifyContent": "left",
-          "components": [
-            {
-              "id": "a8b80cb4-b214-40e9-8289-0792376672ee",
-              "type": "textField",
-              "propertyName": "modalTitle",
-              "label": "Title",
-              "labelAlign": "right",
-              "parentId": "fe4b3c03-3e0b-410f-8a9d-93db02ca51ed",
-              "hidden": false,
-              "validate": {
-                "required": true
-              }
-            },
-            {
-              "id": "adbc3b29-9a53-4305-869a-f37ba6e8bb94",
-              "type": "formAutocomplete",
-              "propertyName": "modalFormId",
-              "label": "Modal form",
-              "labelAlign": "right",
-              "parentId": "fe4b3c03-3e0b-410f-8a9d-93db02ca51ed",
-              "hidden": false,
-              "validate": {
-                "required": true
-              }              
-            },
-            {
-              "id": "2ab34541-6fa0-4be2-bb1e-eb65ec63b353",
-              "type": "textField",
-              "propertyName": "modalActionOnSuccess",
-              "label": "Action on success",
-              "labelAlign": "right",
-              "parentId": "fe4b3c03-3e0b-410f-8a9d-93db02ca51ed",
-              "hidden": true,
-              "validate": {}
-            }
-          ]
-        },
-        {
-          "id": "8786d976-3822-4f8b-a532-ccac0b0130e3",
-          "type": "textField",
-          "propertyName": "formAction",
-          "label": "Form Action",
-          "labelAlign": "right",
-          "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
-          "hidden": {"_code": "return getSettingValue(data?.buttonAction) !== 'executeFormAction';", "_mode": "code", "_value": false},
-          "validate": {}
+          "isDynamic": false,
+          "version": 1,
+          "settingsValidationErrors": []
         }
-      ]
+      ],
+      "version": 2,
+      "flexWrap": "wrap"
     },
     {
       "id": "fcfccb85-8fc3-436b-9f87-17e189bc3cdc",
@@ -199,9 +120,19 @@
       "allowClear": false,
       "validate": {},
       "exposedVariables": [
-        { "propertyName": "value", "description": "Component current value", "type": "string | any" },
-        { "propertyName": "data", "description": "Selected form values", "type": "object" }
-      ]
+        {
+          "propertyName": "value",
+          "description": "Component current value",
+          "type": "string | any"
+        },
+        {
+          "propertyName": "data",
+          "description": "Selected form values",
+          "type": "object"
+        }
+      ],
+      "version": 1,
+      "settingsValidationErrors": []
     },
     {
       "id": "26c68b22-3211-475d-91e1-0745a4447329",
@@ -211,7 +142,8 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "validate": {}
+      "validate": {},
+      "version": 1
     }
   ],
   "formSettings": {

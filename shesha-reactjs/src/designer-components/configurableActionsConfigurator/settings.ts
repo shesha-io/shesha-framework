@@ -3,14 +3,20 @@ import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 
 export const configurableActionsConfiguratorSettingsForm = new DesignerToolbarSettings()
   .addTextField({
-    id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
+    id: nanoid(),
     propertyName: 'propertyName',
     parentId: 'root',
     label: 'Property name',
     validate: { required: true },
   })
+  .addTextField({
+    id: nanoid(),
+    propertyName: 'label',
+    parentId: 'root',
+    label: 'Label',
+  })
   .addTextArea({
-    id: '8340f638-c466-448e-99cd-fb8c544fe02a',
+    id: nanoid(),
     propertyName: 'description',
     parentId: 'root',
     hidden: false,
@@ -20,13 +26,13 @@ export const configurableActionsConfiguratorSettingsForm = new DesignerToolbarSe
     allowClear: true,
   })
   .addSectionSeparator({
-    id: 'bc67960e-77e3-40f2-89cc-f18f94678cce',
+    id: nanoid(),
     propertyName: 'separatorVisibility',
     parentId: 'root',
     label: 'Visibility',
   })
   .addCodeEditor({
-    id: '03959ffd-cadb-496c-bf6d-b742f7f6edc6',
+    id: nanoid(),
     propertyName: 'customVisibility',
     label: 'Custom Visibility',
     labelAlign: 'right',

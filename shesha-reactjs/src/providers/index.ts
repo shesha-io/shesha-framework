@@ -32,7 +32,6 @@ export * from './storedFiles';
 export * from './subForm';
 export * from './tableViewSelectorConfigurator';
 export * from './theme';
-export * from './toolbarConfigurator';
 export * from './ui';
 export * from './dynamicActions';
 export * from './dynamicActionsDispatcher';

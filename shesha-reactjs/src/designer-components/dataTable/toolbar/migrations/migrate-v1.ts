@@ -3,8 +3,7 @@ import { IConfigurableActionConfiguration } from "@/interfaces/configurableActio
 import { IKeyValue } from "@/interfaces/keyValue";
 import { FormIdentifier } from "@/providers/form/models";
 import { getClosestTableId } from "@/providers/form/utils";
-import { ToolbarItemProps } from "@/providers/toolbarConfigurator/models";
-import { IToolbarProps } from "../models";
+import { ToolbarItemProps, IToolbarProps } from "./models";
 import { IConfigurableFormComponent } from "../../../../interfaces";
 import { ButtonType } from 'antd/lib/button';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
@@ -43,61 +42,61 @@ export const migrateV0toV1 = (model: IToolbarPropsV0, context: SettingsMigration
     return { ...model, items: items };
 };
 
+const makeAction = (props: Pick<IConfigurableActionConfiguration, 'actionName' | 'actionOwner' | 'actionArguments' | 'onSuccess'>): IConfigurableActionConfiguration => {
+    return {
+        _type: undefined,
+        actionName: props.actionName,
+        actionOwner: props.actionOwner,
+        actionArguments: props.actionArguments,
+        handleFail: false,
+        handleSuccess: Boolean(props.onSuccess),
+        onSuccess: props.onSuccess,
+    };
+};
+
 const getActionConfiguration = (buttonProps: IToolbarButtonV0, context: SettingsMigrationContext): IConfigurableActionConfiguration => {
     if (buttonProps['actionConfiguration'])
         return buttonProps['actionConfiguration'] as IConfigurableActionConfiguration;
 
     switch (buttonProps.buttonAction) {
         case "cancelFormEdit": {
-            return {
+            return makeAction({
                 actionOwner: 'Form',
                 actionName: 'Cancel Edit',
-                handleFail: false,
-                handleSuccess: false,
-            };
+            });
         }
         case "reset": {
-            return {
+            return makeAction({
                 actionOwner: 'Form',
                 actionName: 'Reset',
-                handleFail: false,
-                handleSuccess: false,
-            };
+            });
         }
         case "submit": {
-            return {
+            return makeAction({
                 actionOwner: 'Form',
                 actionName: 'Submit',
-                handleFail: false,
-                handleSuccess: false,
-            };
+            });
         }
         case "startFormEdit": {
-            return {
+            return makeAction({
                 actionOwner: 'Form',
                 actionName: 'Start Edit',
-                handleFail: false,
-                handleSuccess: false,
-            };
+            });
         }
         case "navigate": {
-            return {
+            return makeAction({
                 actionOwner: 'Common',
                 actionName: 'Navigate',
-                handleFail: false,
-                handleSuccess: false,
                 actionArguments: {
                     target: buttonProps.targetUrl
                 },
-            };
+            });
         }
         case "dialogue": {
-            const actionConfig: IConfigurableActionConfiguration = {
+            const actionConfig: IConfigurableActionConfiguration = makeAction({
                 actionOwner: 'Common',
                 actionName: 'Show Dialog',
-                handleFail: false,
-                handleSuccess: false,
-            };
+            });
 
             const propsWithModal = buttonProps as IToolbarButtonTableDialogPropsV0;
 
@@ -114,70 +113,56 @@ const getActionConfiguration = (buttonProps: IToolbarButtonV0, context: Settings
 
             if (propsWithModal.onSuccessRedirectUrl) {
                 actionConfig.handleSuccess = true;
-                actionConfig.onSuccess = {
+                actionConfig.onSuccess = makeAction({
                     actionOwner: 'Common',
                     actionName: 'Navigate',
                     actionArguments: {
                         target: propsWithModal.onSuccessRedirectUrl
                     },
-                    handleSuccess: false,
-                    handleFail: false,
-                };
+                });
             }
             if (propsWithModal.refreshTableOnSuccess) {
                 actionConfig.handleSuccess = true;
-                actionConfig.onSuccess = {
+                actionConfig.onSuccess = makeAction({
                     actionOwner: getClosestTableId(context),
                     actionName: 'Refresh table',
-                    handleSuccess: false,
-                    handleFail: false,
-                };
+                });
             }
             return actionConfig;
         }
         case "executeScript": {
-            return {
+            return makeAction({
                 actionOwner: 'Common',
                 actionName: 'Execute Script',
                 actionArguments: {
                     expression: buttonProps.actionScript ?? ''
                 },
-                handleFail: false,
-                handleSuccess: false,
-            };
+            });
         }
         case "executeFormAction": {
             if (buttonProps.formAction === 'exportToExcel' || buttonProps.formAction === 'EXPORT_TO_EXCEL') {
-                return {
+                return makeAction({
                     actionOwner: getClosestTableId(context),
                     actionName: 'Export to Excel',
-                    handleFail: false,
-                    handleSuccess: false,
-                };
+                });
             }
             if (buttonProps.formAction === 'TOGGLE_COLUMNS_SELECTOR' || buttonProps.customAction === 'toggleColumnsSelector') {
-                return {
+                return makeAction({
                     actionOwner: getClosestTableId(context),
                     actionName: 'Toggle Columns Selector',
-                    handleFail: false,
-                    handleSuccess: false,
-                };
+                });
             }
             if (buttonProps.formAction === 'TOGGLE_ADVANCED_FILTER' || buttonProps.customAction === 'toggleAdvancedFilter') {
-                return {
+                return makeAction({
                     actionOwner: getClosestTableId(context),
                     actionName: 'Toggle Advanced Filter',
-                    handleFail: false,
-                    handleSuccess: false,
-                };
+                });
             }
             if (buttonProps.formAction === 'REFRESH_TABLE' || buttonProps.customAction === 'refresh') {
-                return {
+                return makeAction({
                     actionOwner: getClosestTableId(context),
                     actionName: 'Refresh table',
-                    handleFail: false,
-                    handleSuccess: false,
-                };
+                });
             }
         }
     }

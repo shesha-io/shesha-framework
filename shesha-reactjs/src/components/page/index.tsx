@@ -2,14 +2,11 @@ import { Breadcrumb, Space } from 'antd';
 import classNames from 'classnames';
 import { nanoid } from 'nanoid/non-secure';
 import React, { FC, PropsWithChildren, useEffect } from 'react';
-import { CancelButton, IndexToolbar, ShaSpin } from '..';
-import { IToolbarItem } from '@/interfaces';
+import { CancelButton, ShaSpin } from '..';
 import Show from '@/components/show';
 import { useShaRouting, useSheshaApplication, useTheme } from '@/providers';
 import PageHeaderTag, { ITagProps } from './pageHeaderTag';
 import StatusTag, { IStatusTagProps } from '@/components/statusTag';
-import { IToolbarButtonItem } from '../toolbar/models';
-import Toolbar from '@/components/toolbar';
 import { FormIdentifier } from '@/providers/form/models';
 
 export interface IPageHeadProps {
@@ -27,7 +24,6 @@ export interface IBreadcrumbItem {
 }
 
 export interface IPageProps extends IPageHeadProps {
-  toolbarItems?: IToolbarItem[] | IToolbarButtonItem[];
   backUrl?: string;
   breadcrumbItems?: IBreadcrumbItem[];
   headerTagList?: ITagProps[];
@@ -38,10 +34,8 @@ export interface IPageProps extends IPageHeadProps {
 }
 
 export const Page: FC<PropsWithChildren<IPageProps>> = ({
-  formId,
   children,
   title,
-  toolbarItems,
   backUrl,
   headerTagList,
   loading,
@@ -108,10 +102,6 @@ export const Page: FC<PropsWithChildren<IPageProps>> = ({
               </div>
             </Show>
           </div>
-        </Show>
-
-        <Show when={!!toolbarItems?.length}>
-          {formId ? <Toolbar items={toolbarItems as IToolbarButtonItem[]} /> : <IndexToolbar items={toolbarItems} />}
         </Show>
 
         <Show when={!!breadcrumbItems?.length}>

@@ -22,9 +22,10 @@ import { INumberFieldComponentProps } from '@/designer-components/numberField/in
 import { IQueryBuilderComponentProps } from '@/designer-components/queryBuilder/interfaces';
 import { ITextFieldComponentProps } from '@/designer-components/textField/interfaces';
 import { IButtonsProps } from './../components/formDesigner/components/button/buttonGroup/buttonsComponent/interfaces';
-import { ILabelValueEditorComponentProps } from './../components/formDesigner/components/labelValueEditor/interfaces';
+import { ILabelValueEditorComponentProps } from '../designer-components/labelValueEditor/interfaces';
 import { IContextPropertyAutocompleteComponentProps } from '@/designer-components/contextPropertyAutocomplete';
 import { ITextAreaComponentProps } from '@/designer-components/textArea/interfaces';
+import { IRadioProps } from '@/components/formDesigner/components/radio/utils';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'hidden' | 'type'> {
   hidden?: boolean | IPropertySetting;
@@ -83,6 +84,8 @@ type EntityPickerColumnsEditorType = ToolbarSettingsProp & Omit<IColumnsEditorCo
 type ICollapsiblePanelPropsEditorType = ToolbarSettingsProp & Omit<ICollapsiblePanelComponentProps, 'hidden' | 'type'>;
 
 type AlertType = ToolbarSettingsProp & Omit<IAlertComponentProps, 'hidden' | 'type'>;
+
+type RadioType = ToolbarSettingsProp & Omit<IRadioProps, 'hidden' | 'type'>;
 
 export class DesignerToolbarSettings<T> {
   protected readonly form: IConfigurableFormComponent[];
@@ -194,6 +197,10 @@ export class DesignerToolbarSettings<T> {
   public addCustomFilter(props: CustomFilterType | ((data: T) => CustomFilterType)) {
     return this.addProperty(props, 'filter');
   }
+
+  public addRadio(props: RadioType | ((data: T) => RadioType)) {
+    return this.addProperty(props, 'radio');
+  }  
 
   public addConfigurableActionConfigurator(
     props: ConfigurableActionConfiguratorType | ((data: T) => ConfigurableActionConfiguratorType)

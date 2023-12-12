@@ -1,19 +1,28 @@
 import { Router } from 'next/router';
 import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
-import { FormIdentifier, asFormFullName } from '@/providers/..';
+import { FormIdentifier, asFormFullName, getQueryParams } from '@/providers/..';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { getFlagSetters } from '../utils/flagsSetters';
 import { navigateArgumentsForm } from './actions/navigate-arguments';
 import { SHA_ROUTING_CONTEXT_INITIAL_STATE, ShaRoutingActionsContext, ShaRoutingStateContext } from './contexts';
 import { shaRoutingReducer } from './reducer';
+import { IKeyValue } from '@/interfaces/keyValue';
+import { mapKeyValueToDictionary } from '@/utils/dictionary';
+import qs from 'qs';
+import { getUrlWithoutQueryParams } from '@/utils/url';
 
 export interface IRoutingProviderProvider {
   router: Router;
 }
 
-interface INavigateActoinArguments {
-  target: string;
+export type NavigationType = 'url' | 'form';
+
+export interface INavigateActoinArguments {
+  navigationType: NavigationType;
+  url?: string;
+  formId?: FormIdentifier;
+  queryParameters?: IKeyValue[];
 }
 
 interface ShaRoutingProviderProps {
@@ -40,6 +49,36 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
     return form ? `/dynamic${form.module ? `/${form.module}` : ''}/${form.name}` : '';
   };
 
+  const navigateToRawUrl = (url: string): Promise<boolean> => {
+    if (state?.router) {
+      return state?.router?.push(url);
+    }
+
+    if (window) {
+      window.location.href = url;
+      return Promise.resolve(true);
+    } else
+      return Promise.reject("Both router and windows are not defined");
+  };
+
+  const navigateToUrl = (url: string, queryParameters?: IKeyValue[]): Promise<boolean> => {
+    const urlWithoutQuery = getUrlWithoutQueryParams(url);
+    const urlQueryPatams = getQueryParams(url);
+
+    const queryParams = mapKeyValueToDictionary(queryParameters);
+    const queryStringData = { ...urlQueryPatams, ...queryParams };
+
+    const preparedUrl = `${urlWithoutQuery}?${qs.stringify(queryStringData)}`;
+    
+    return navigateToRawUrl(preparedUrl);
+  };
+
+  const navigateToForm = (formId: FormIdentifier, queryParameters?: IKeyValue[]): Promise<boolean> => {
+    const url = getFormUrl(formId);
+
+    return navigateToUrl(url, queryParameters);
+  };
+
   const actionDependencies = [state, state?.router];
   useConfigurableAction<INavigateActoinArguments>(
     {
@@ -48,11 +87,10 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
       ownerUid: SheshaActionOwners.Common,
       hasArguments: true,
       executer: (request) => {
-        if (state?.router) {
-          return state?.router?.push(request.target);
-        } else {
-          window.location.href = request.target;
-          return Promise.resolve();
+        switch(request.navigationType){
+          case 'url': return navigateToUrl(request.url, request.queryParameters);
+          case 'form': return navigateToForm(request.formId, request.queryParameters);
+          default: return Promise.reject(`Common:Navigate: 'navigationType' is not configured properly, current value is '${request.navigationType}'`);
         }
       },
       argumentsFormMarkup: navigateArgumentsForm,

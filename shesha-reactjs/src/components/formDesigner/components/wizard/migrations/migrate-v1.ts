@@ -98,6 +98,7 @@ const getActionConfig = (
   switch (action) {
     case 'executeScript': {
       return {
+        _type: undefined,
         actionOwner: SheshaActionOwners.Common,
         actionName: 'Execute Script',
         actionArguments: {

@@ -5,6 +5,17 @@ export interface IHasDispatchEvent {
     customEventNameToDispatch?: string;
     uniqueStateId?: string;
 }
+
+const makeAction = (props: Pick<IConfigurableActionConfiguration, 'actionName' | 'actionOwner'>): IConfigurableActionConfiguration => {
+    return {
+        _type: undefined,
+        actionName: props.actionName,
+        actionOwner: props.actionOwner,
+        handleFail: false,
+        handleSuccess: false,
+    };
+};
+
 export const getDispatchEventReplacement = (eventCallerProps: IHasDispatchEvent): IConfigurableActionConfiguration => {
     const eventName = eventCallerProps?.eventName === 'CUSTOM_EVENT' && eventCallerProps?.customEventNameToDispatch
         ? eventCallerProps?.customEventNameToDispatch
@@ -12,52 +23,22 @@ export const getDispatchEventReplacement = (eventCallerProps: IHasDispatchEvent)
     const target = eventCallerProps?.uniqueStateId;
     switch (eventName) {
         case SUB_FORM_EVENT_NAMES.getFormData: {
-            return {
-                actionName: 'Get form data',
-                actionOwner: target,
-                handleFail: false,
-                handleSuccess: false,
-            };
+            return makeAction({ actionName: 'Get form data', actionOwner: target });
         }
         case SUB_FORM_EVENT_NAMES.postFormData: {
-            return {
-                actionName: 'Post form data',
-                actionOwner: target,
-                handleFail: false,
-                handleSuccess: false,
-            };
+            return makeAction({ actionName: 'Post form data', actionOwner: target });
         }
         case SUB_FORM_EVENT_NAMES.updateFormData: {
-            return {
-                actionName: 'Update form data',
-                actionOwner: target,
-                handleFail: false,
-                handleSuccess: false,
-            };
+            return makeAction({ actionName: 'Update form data', actionOwner: target });
         }
         case ListControlEvents.refreshListItems: {
-            return {
-                actionName: 'Refresh list items',
-                actionOwner: target,
-                handleFail: false,
-                handleSuccess: false,
-            };
+            return makeAction({ actionName: 'Refresh list items', actionOwner: target });
         }
         case ListControlEvents.saveListItems: {
-            return {
-                actionName: 'Save list items',
-                actionOwner: target,
-                handleFail: false,
-                handleSuccess: false,
-            };
+            return makeAction({ actionName: 'Save list items', actionOwner: target });
         }
         case ListControlEvents.addListItems: {
-            return {
-                actionName: 'Add list items',
-                actionOwner: target,
-                handleFail: false,
-                handleSuccess: false,
-            };
+            return makeAction({ actionName: 'Add list items', actionOwner: target });
         }
     }
 

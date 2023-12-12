@@ -2,6 +2,10 @@ export type DataTypeName = 'string' | 'number' | 'date' | 'entity' | 'boolean';
 
 export type DataTypeDisplayAs = 'text' | 'drill-down' | 'quick-view' | 'stored-file';
 
+export enum StandardNodeTypes {
+  ConfigurableActionConfig = 'action-config',
+};
+
 export interface IFormComponentDataType {}
 
 export type StringValueChange = (key: string, value: string) => void;

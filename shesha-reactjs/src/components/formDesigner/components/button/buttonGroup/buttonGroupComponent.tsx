@@ -19,6 +19,7 @@ import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { DynamicActionsEvaluator } from '@/providers/dynamicActions/evaluator/index';
 import { useDeepCompareMemo } from '@/hooks';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { migrateButtonsNavigateAction } from './migrations/migrateButtonsNavigateAction';
 
 type MenuItem = MenuProps['items'][number];
 
@@ -73,6 +74,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
       return newModel;
     })
     .add<IButtonGroupComponentProps>(6, (prev) => migrateVisibility(prev))
+    .add<IButtonGroupComponentProps>(7, (prev) => migrateButtonsNavigateAction(prev))
   ,
   settingsFormFactory: (props) => (<ButtonGroupSettingsForm {...props} />),
 };

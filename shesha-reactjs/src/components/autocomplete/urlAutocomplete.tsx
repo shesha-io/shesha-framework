@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Select } from 'antd';
 import { useGet } from '../../hooks';
 import { useDebouncedCallback } from 'use-debounce';
-import { useSubscribe } from '@/components/..';
+import { getUrlWithoutQueryParams, useSubscribe } from '@/components/..';
 import { ReadOnlyDisplayFormItem } from './../readOnlyDisplayFormItem';
 import {
   AutocompleteItemDto,
@@ -11,8 +11,8 @@ import {
   IUrlAutocompleteProps,
   IUrlFetcherQueryParams,
 } from './models';
-import { getQueryString, trimQueryString } from './utils';
 import { IAjaxResponseBase } from '@/interfaces/ajaxResponse';
+import { getQueryParams } from '@/utils/url';
 
 export const UrlAutocomplete = <TValue,>(props: IUrlAutocompleteProps<TValue>) => {
   const {
@@ -38,7 +38,7 @@ export const UrlAutocomplete = <TValue,>(props: IUrlAutocompleteProps<TValue>) =
   } = props;
 
   const urlFetcher = useGet<any, IAjaxResponseBase, IUrlFetcherQueryParams, void>(
-    decodeURI(trimQueryString(dataSourceUrl)) || '',
+    decodeURI(getUrlWithoutQueryParams(dataSourceUrl)) || '',
     {
       lazy: true,
     }
@@ -60,7 +60,7 @@ export const UrlAutocomplete = <TValue,>(props: IUrlAutocompleteProps<TValue>) =
 
     if (dataSourceUrl) {
       const queryParams = {
-        ...getQueryString(dataSourceUrl),
+        ...getQueryParams(dataSourceUrl),
         term,
         selectedValue,
         ...additionalQueryParams,
