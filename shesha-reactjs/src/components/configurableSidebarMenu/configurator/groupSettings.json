@@ -1,6 +1,22 @@
 {
   "components": [
     {
+      "id": "840aee56-42d2-40ed-a2c6-57abb255fb95",
+      "type": "dropdown",
+      "propertyName": "itemType",
+      "label": "Item Type",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": true,
+      "dataSourceType": "values",
+      "values": [
+        { "id": "8400a8ec-577d-4468-9347-5601f952b44c", "label": "Button", "value": "button" },
+        { "id": "cc268f50-47ca-4e4e-966f-7f2abfec902f", "label": "Separator", "value": "separator" },
+        { "id": "b4117249-8c2f-4991-a96c-9ea434293120", "label": "Line", "value": "line" }
+      ],
+      "validate": { "required": true }
+    },
+    {
       "id": "5d4d56fb-d7f8-4835-a529-c4fa93f3596d",
       "type": "textField",
       "propertyName": "title",
@@ -11,11 +27,7 @@
       "autoSize": false,
       "showCount": false,
       "allowClear": false,
-      "validate": {
-        "required": true
-      },
-      "version": 2,
-      "textType": "text"
+      "validate": { "required": true }
     },
     {
       "id": "9b671866-072e-4688-8b48-ddf5e12d70d4",
@@ -28,8 +40,7 @@
       "autoSize": false,
       "showCount": false,
       "allowClear": false,
-      "validate": {},
-      "version": 1
+      "validate": {}
     },
     {
       "id": "91b404a6-4021-4b0a-b9ef-007167a93075",
@@ -39,8 +50,7 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "settingsValidationErrors": [],
-      "version": 1
+      "settingsValidationErrors": []
     },
     {
       "id": "fcfccb85-8fc3-436b-9f87-17e189bc3cdc",
@@ -55,18 +65,9 @@
       "allowClear": false,
       "validate": {},
       "exposedVariables": [
-        {
-          "propertyName": "value",
-          "description": "Component current value",
-          "type": "string | any"
-        },
-        {
-          "propertyName": "data",
-          "description": "Selected form values",
-          "type": "object"
-        }
-      ],
-      "version": 1
+        { "propertyName": "value", "description": "Component current value", "type": "string | any" },
+        { "propertyName": "data", "description": "Selected form values", "type": "object" }
+      ]
     },
     {
       "id": "26c68b22-3211-475d-91e1-0745a4447329",
@@ -76,18 +77,8 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "validate": {},
-      "version": 1
+      "validate": {}
     }
   ],
-  "formSettings": {
-    "layout": "horizontal",
-    "colon": true,
-    "labelCol": {
-      "span": 8
-    },
-    "wrapperCol": {
-      "span": 16
-    }
-  }
+  "formSettings": { "layout": "horizontal", "colon": true, "labelCol": { "span": 8 }, "wrapperCol": { "span": 16 } }
 }
