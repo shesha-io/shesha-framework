@@ -22,6 +22,7 @@ import {
   migrateFunctionToProp,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { DataContextProvider } from '@/providers/dataContextProvider/index';
+import { migrateWizardActions } from './migrations/migrateWizardActions';
 
 const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   type: 'wizard',
@@ -90,7 +91,8 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
             'defaultActiveStep',
             'defaultActiveValue'
           ) as IWizardComponentProps
-      ),
+      )
+      .add<IWizardComponentProps>(4, (prev) => migrateWizardActions(prev)),
   settingsFormFactory: (props) => <WizardSettingsForm {...props} />,
   // validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
   customContainerNames: ['steps'],

@@ -123,13 +123,12 @@ export { default as EditableTagGroup, type IEditableTagGroupProps } from './edit
 export { default as QuickView, type IQuickViewProps } from './quickView';
 export { default as CurrencyConverter, type ICurrencyConverterProps } from './currencyConverter';
 
-export { default as ToolbarSettingsModal } from '../designer-components/dataTable/toolbar/toolbarSettingsModal';
 export { QueryBuilderComponentRenderer } from '../designer-components/queryBuilder/queryBuilderComponent';
 export { QueryBuilderWithModelType } from '../designer-components/queryBuilder/queryBuilderWithModelType';
 export { default as SidebarConfigurator } from './configurableSidebarMenu/configurator';
 export { default as ButtonGroupConfigurator } from './formDesigner/components/button/buttonGroup/configurator';
 export { default as CodeEditorModal } from './formDesigner/components/codeEditor/codeEditor';
-export { default as LabelValueEditor } from './formDesigner/components/labelValueEditor/labelValueEditor';
+export { LabelValueEditor } from './labelValueEditor/labelValueEditor';
 export { default as RichTextEditor, type IRichTextEditorProps } from './richTextEditor';
 export { default as SettingsEditor, type ISettingsEditorProps } from './settingsEditor';
 export { FormComponentSelector, type IFormComponentSelectorProps } from './formComponentSelector';

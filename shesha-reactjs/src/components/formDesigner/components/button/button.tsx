@@ -11,6 +11,8 @@ import { getSettings } from './settingsForm';
 import { IButtonComponentProps } from './interfaces';
 import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
+import { makeDefaultActionConfiguration } from '@/interfaces/configurableAction';
 
 export type IActionParameters = [{ key: string; value: string }];
 
@@ -53,12 +55,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
     const buttonModel: IButtonComponentProps = {
       ...model,
       label: 'Submit',
-      actionConfiguration: {
-        actionName: 'Submit',
-        actionOwner: 'Form',
-        handleFail: false,
-        handleSuccess: false,
-      },
+      actionConfiguration: makeDefaultActionConfiguration({ actionName: 'Submit', actionOwner: 'Form' }),
       buttonType: 'default',
     };
     return buttonModel;
@@ -80,6 +77,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       .add<IButtonComponentProps>(2, migrateV1toV2)
       .add<IButtonComponentProps>(3, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<IButtonComponentProps>(4, (prev) => migrateVisibility(prev))
+      .add<IButtonComponentProps>(5, (prev) => ({...prev, actionConfiguration: migrateNavigateAction(prev.actionConfiguration) }))
   ,
 };
 

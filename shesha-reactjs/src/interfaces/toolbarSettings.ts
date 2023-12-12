@@ -22,7 +22,7 @@ import { INumberFieldComponentProps } from '@/designer-components/numberField/in
 import { IQueryBuilderComponentProps } from '@/designer-components/queryBuilder/interfaces';
 import { ITextFieldComponentProps } from '@/designer-components/textField/interfaces';
 import { IButtonsProps } from './../components/formDesigner/components/button/buttonGroup/buttonsComponent/interfaces';
-import { ILabelValueEditorComponentProps } from './../components/formDesigner/components/labelValueEditor/interfaces';
+import { ILabelValueEditorComponentProps } from '../designer-components/labelValueEditor/interfaces';
 import { IContextPropertyAutocompleteComponentProps } from '@/designer-components/contextPropertyAutocomplete';
 import { ITextAreaComponentProps } from '@/designer-components/textArea/interfaces';
 import { IRadioProps } from '@/components/formDesigner/components/radio/utils';

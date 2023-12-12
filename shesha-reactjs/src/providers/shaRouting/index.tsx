@@ -18,9 +18,9 @@ export interface IRoutingProviderProvider {
 
 export type NavigationType = 'url' | 'form';
 
-interface INavigateActoinArguments {
+export interface INavigateActoinArguments {
   navigationType: NavigationType;
-  target?: string;
+  url?: string;
   formId?: FormIdentifier;
   queryParameters?: IKeyValue[];
 }
@@ -49,7 +49,7 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
     return form ? `/dynamic${form.module ? `/${form.module}` : ''}/${form.name}` : '';
   };
 
-  const navigateToUrl = (url: string): Promise<boolean> => {
+  const navigateToRawUrl = (url: string): Promise<boolean> => {
     if (state?.router) {
       return state?.router?.push(url);
     }
@@ -61,8 +61,7 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
       return Promise.reject("Both router and windows are not defined");
   };
 
-  const navigateToForm = (formId: FormIdentifier, queryParameters?: IKeyValue[]): Promise<boolean> => {
-    const url = getFormUrl(formId);
+  const navigateToUrl = (url: string, queryParameters?: IKeyValue[]): Promise<boolean> => {
     const urlWithoutQuery = getUrlWithoutQueryParams(url);
     const urlQueryPatams = getQueryParams(url);
 
@@ -70,10 +69,14 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
     const queryStringData = { ...urlQueryPatams, ...queryParams };
 
     const preparedUrl = `${urlWithoutQuery}?${qs.stringify(queryStringData)}`;
+    
+    return navigateToRawUrl(preparedUrl);
+  };
 
-    console.log('LOG: navigateToForm', { formId, queryParameters, preparedUrl });
+  const navigateToForm = (formId: FormIdentifier, queryParameters?: IKeyValue[]): Promise<boolean> => {
+    const url = getFormUrl(formId);
 
-    return navigateToUrl(preparedUrl);
+    return navigateToUrl(url, queryParameters);
   };
 
   const actionDependencies = [state, state?.router];
@@ -85,7 +88,7 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
       hasArguments: true,
       executer: (request) => {
         switch(request.navigationType){
-          case 'url': return navigateToUrl(request.target);
+          case 'url': return navigateToUrl(request.url, request.queryParameters);
           case 'form': return navigateToForm(request.formId, request.queryParameters);
           default: return Promise.reject(`Common:Navigate: 'navigationType' is not configured properly, current value is '${request.navigationType}'`);
         }

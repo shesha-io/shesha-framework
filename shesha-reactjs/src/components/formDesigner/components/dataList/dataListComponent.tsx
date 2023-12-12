@@ -8,6 +8,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { IDataListComponentProps } from './model';
 import DataListControl, { NotConfiguredWarning } from './dataListControl';
 import { useDataTableStore } from '@/index';
+import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   type: 'datalist',
@@ -62,6 +63,7 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
         dblClickActionConfiguration: prev['actionConfiguration']
       };
     })
+    .add<IDataListComponentProps>(6, prev => ({ ...prev, dblClickActionConfiguration: migrateNavigateAction(prev.dblClickActionConfiguration) }))
   ,
   settingsFormFactory: (props) => (<DataListSettingsForm {...props} />),
 };

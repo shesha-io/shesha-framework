@@ -7,6 +7,7 @@ import ActionArgumentsEditor from './actionArgumensEditor';
 import HelpTextPopover from '@/components/helpTextPopover';
 import { IConfigurableActionConfiguratorComponentProps } from './interfaces';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
+import { StandardNodeTypes } from '@/interfaces/formComponent';
 
 const { Panel } = Collapse;
 
@@ -36,6 +37,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
       const actionId = parseActionFullName(actionFullName);
 
       const formValues = {
+        _type: StandardNodeTypes.ConfigurableActionConfig,
         actionName: actionId?.actionName,
         actionOwner: actionId?.actionOwner,
         ...restProps,

@@ -1,6 +1,7 @@
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { ReactNode } from 'react';
 import { FormMarkup, GenericDictionary } from '@/providers/form/models';
+import { StandardNodeTypes } from './formComponent';
 
 /**
  * Configuration action executer
@@ -10,7 +11,7 @@ export type IConfigurableActionExecuter<TArguments, TReponse> = (
   context: GenericDictionary
 ) => Promise<TReponse>;
 
-export interface IConfigurableActionArguments {}
+export interface IConfigurableActionArguments { }
 
 export interface ISettingsFormFactoryArgs<TModel = IConfigurableActionArguments> {
   model: TModel;
@@ -86,15 +87,33 @@ export interface IConfigurableActionDescriptor<TArguments = IConfigurableActionA
   executer: IConfigurableActionExecuter<TArguments, TReponse>;
 }
 
+export interface IMayHaveType {
+  _type: string;
+}
+
 /**
- * Configurable action configuration. Is used in the form conponents to configure actions
+ * Configurable action configuration. Is used in the form components to configure actions
  */
-export interface IConfigurableActionConfiguration {
+export interface IConfigurableActionConfiguration extends IMayHaveType {
   actionOwner: string;
   actionName: string;
+  version?: number;
   actionArguments?: any;
   handleSuccess: boolean;
   onSuccess?: IConfigurableActionConfiguration;
   handleFail: boolean;
   onFail?: IConfigurableActionConfiguration;
 }
+
+/**
+ * Make default action configuration, is used for component initialization
+ */
+export const makeDefaultActionConfiguration = (props: Pick<IConfigurableActionConfiguration, 'actionName' | 'actionOwner'>): IConfigurableActionConfiguration => {
+  return {
+    _type: StandardNodeTypes.ConfigurableActionConfig,
+    actionName: props.actionName,
+    actionOwner: props.actionOwner,
+    handleFail: false,
+    handleSuccess: false,
+  };
+};

@@ -1,35 +1,19 @@
 import React from 'react';
-import { Story, Meta } from '@storybook/react';
+import { Story } from '@storybook/react';
 import { SidebarMenuDefaultsProvider } from '../../providers';
 import Page, { IBreadcrumbItem, IPageProps } from './';
-import { IToolbarItem } from '@/components/..';
-import { CloseOutlined, DownloadOutlined, SaveOutlined } from '@ant-design/icons';
 import { ITagProps } from './pageHeaderTag';
 import StoryApp from '@/components/storyBookApp';
 
 export default {
   title: 'Components/Page',
   component: Page
-} as Meta;
+};
 
 const defaultProps: IPageProps = {
   title: 'Default layout',
 };
 
-const toolbarItems: IToolbarItem[] = [
-  {
-    title: 'Save',
-    icon: <SaveOutlined />,
-  },
-  {
-    title: 'Save',
-    icon: <CloseOutlined />,
-  },
-  {
-    title: 'Export to Excel',
-    icon: <DownloadOutlined />,
-  },
-];
 
 const headerTagList: ITagProps[] = [
   {
@@ -81,7 +65,7 @@ export const Basic = BasicTemplate.bind({ ...defaultProps });
 const WithToolBarItemTemplate: Story<IPageProps> = args => (
   <StoryApp>
     <SidebarMenuDefaultsProvider items={[]}>
-      <Page {...args} title="Any title" toolbarItems={toolbarItems}>
+      <Page {...args} title="Any title">
         <div>This is a div</div>
       </Page>
     </SidebarMenuDefaultsProvider>
@@ -126,7 +110,6 @@ const CompleteExampleTemplate: Story<IPageProps> = args => (
       <Page
         {...args}
         title="Any title"
-        toolbarItems={toolbarItems}
         headerTagList={headerTagList}
         breadcrumbItems={breadcrumbItems}
         backUrl="/"

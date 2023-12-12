@@ -117,8 +117,20 @@ export const UserManagement = addStory(DesignerTemplate, {
 //TestModule/ivan-test-form
 export const IvanTestForm = addStory(DesignerTemplate, {
   //formId: 'fc8e3f36-793b-4a30-ab6f-f4dd56bfa3c0'
-  formId: 'f980c246-e9f5-4555-8db1-d859617c9d32'
+  formId: '05DF1A46-B652-4EF1-9BEB-E5DFCD52C689'
   //formId: 'f1344d6b-67a5-422a-98a0-4ef6b8c1ef48'  
+});
+export const OldNavigation = addStory(DesignerTemplate, {
+  formId: '8e0b6232-4550-4ae2-aa7d-fa37b10b2693'
+});
+
+
+export const Readonly = addStory(DesignerTemplate, {
+  formId: '3ace02e2-b48e-4c36-ad16-40618d339c4c'
+});
+
+export const SidebarItemSettings = addStory(DesignerTemplate, {
+  formId: 'eb7537ed-e0c1-452c-967e-f5cd362d749d'
 });
 
 export const TableGrouping = addStory(DesignerTemplate, {

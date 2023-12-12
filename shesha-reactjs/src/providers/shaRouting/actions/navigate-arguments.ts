@@ -15,7 +15,7 @@ export const navigateArgumentsForm = new DesignerToolbarSettings()
   })
   .addTextField({
     id: nanoid(),
-    propertyName: 'target',
+    propertyName: 'url',
     parentId: 'root',
     label: 'Target Url',
     validate: { required: true },
@@ -44,10 +44,6 @@ export const navigateArgumentsForm = new DesignerToolbarSettings()
     labelName: 'key',
     labelTitle: 'Key',
     valueName: 'value',
-    valueTitle: 'Value',
-    hidden: {
-      _mode: 'code',
-      _code: 'return data?.navigationType !== "form"'
-    }
+    valueTitle: 'Value'
   })
   .toJson();

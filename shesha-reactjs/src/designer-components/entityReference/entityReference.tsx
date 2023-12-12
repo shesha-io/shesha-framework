@@ -8,6 +8,7 @@ import { EntityReferenceSettingsForm } from './settings';
 import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
 import { isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { migrateNavigateAction } from '../_common-migrations/migrate-navigate-action';
 
 export type IActionParameters = [{ key: string; value: string }];
 
@@ -53,6 +54,11 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
     })
     .add<IEntityReferenceControlProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IEntityReferenceControlProps>(2, (prev) => migrateVisibility(prev))
+    .add<IEntityReferenceControlProps>(3, (prev) => ({ 
+      ...prev, 
+      onSuccess: migrateNavigateAction(prev.onSuccess),
+      onFail: migrateNavigateAction(prev.onFail),
+    }))
   ,
   linkToModelMetadata: (model, propMetadata): IEntityReferenceControlProps => {
     return {

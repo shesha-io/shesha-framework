@@ -14,7 +14,7 @@ const ConfigurableActionConfiguratorComponent: IToolboxComponent<IConfigurableAc
   type: 'configurableActionConfigurator',
   name: 'Configurable Action Configurator',
   icon: <ThunderboltOutlined />,
-  isHidden: true,
+  isHidden: false,
   Factory: ({ model }) => {
     const { formMode } = useForm();
 
@@ -29,8 +29,8 @@ const ConfigurableActionConfiguratorComponent: IToolboxComponent<IConfigurableAc
   settingsFormMarkup: configurableActionsConfiguratorSettingsForm,
   validateSettings: model => validateConfigurableComponentSettings(configurableActionsConfiguratorSettingsForm, model),
   migrator: m => m
-  .add<IConfigurableActionConfiguratorComponentProps>(0, prev => migratePropertyName(migrateCustomFunctions(prev)))
-  .add<IConfigurableActionConfiguratorComponentProps>(1, (prev) => migrateVisibility(prev))
+    .add<IConfigurableActionConfiguratorComponentProps>(0, prev => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IConfigurableActionConfiguratorComponentProps>(1, (prev) => migrateVisibility(prev))
   ,
 };
 

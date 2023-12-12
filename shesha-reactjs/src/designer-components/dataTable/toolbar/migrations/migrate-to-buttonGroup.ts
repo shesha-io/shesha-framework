@@ -3,8 +3,7 @@ import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { migrateFunctionToProp } from '@/designer-components/_common-migrations/migrateSettings';
 import { IConfigurableActionConfiguration } from '@/providers/configurableActionsDispatcher/index';
 import { IConfigurableFormComponent } from '@/providers/form/models';
-import { IToolbarButton } from '@/providers/toolbarConfigurator/models';
-import { IToolbarProps } from '../models';
+import { ButtonGroupItemType, IToolbarButton, IToolbarProps, ToolbarItemSubType } from './models';
 
 export interface ToolbarButtonGroupProps extends IConfigurableFormComponent {
     items: IButtonGroupButton[];
@@ -38,9 +37,6 @@ interface IButtonGroupButton {
     isInline?: boolean;
 }
 
-type ButtonGroupItemType = 'item' | 'group';
-type ToolbarItemSubType = 'button' | 'separator' | 'line' | 'dynamic';
-
 export const migrateToButtonGroup = (model: IToolbarProps): ToolbarButtonGroupProps => {
     const result: ToolbarButtonGroupProps = {
         id: model.id,
@@ -72,9 +68,9 @@ export const migrateToButtonGroup = (model: IToolbarProps): ToolbarButtonGroupPr
                 const removeContext = (s: string) => s?.replace('context.', '')?.replace('context?.', '');
                 const result = migrateFunctionToProp(
                     migrateFunctionToProp(newItem as any, 'hidden', 'customVisibility', removeContext, true),
-                    'disabled', 
+                    'disabled',
                     'customEnabled',
-                    removeContext, 
+                    removeContext,
                     true);
                 return result;
             }),

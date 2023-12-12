@@ -191,3 +191,11 @@ export const MyItems = addStory(Template, {
     module: 'Shesha.Enterprise.Workflow',
   },
 });
+
+export const CrashFix = addStory(Template, {
+  formId: {
+    name: 'reflist-test-detailsview',
+    module: 'Boxfusion.SheshaFunctionalTests.Common',
+  },
+  id: 'c46e2e9e-e85d-4372-ae2e-0033f08d471f'
+});

@@ -23,7 +23,7 @@ import FormAutocompleteComponent from '@/components/formDesigner/components/form
 import IconPicker from '@/components/formDesigner/components/iconPicker';
 import Image from '@/components/formDesigner/components/image';
 import ImageAnnotationComponent from '@/components/formDesigner/components/imageAnnotation';
-import KeyValueEditor from '@/components/formDesigner/components/labelValueEditor/labelValueEditorComponent';
+import { LabelValueEditorComponent } from '@/designer-components/labelValueEditor/labelValueEditorComponent';
 import Paragraph from '@/components/formDesigner/components/legacy/paragraph';
 import Title from '@/components/formDesigner/components/legacy/title';
 import Link from '@/components/formDesigner/components/link';
@@ -117,8 +117,7 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
       IconPicker,
       Image,
       ImageAnnotationComponent,
-      KeyValueEditor,
-      List,
+      LabelValueEditorComponent,
       Markdown,
       Notes,
       PasswordCombo,
@@ -204,7 +203,7 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
   {
     visible: false,
     name: 'Legacy',
-    components: [Paragraph, Title, Toolbar],
+    components: [Paragraph, Title, Toolbar, List],
   },
   {
     visible: true,
