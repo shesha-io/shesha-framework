@@ -1,4 +1,5 @@
-﻿using Shesha.JsonEntities;
+﻿using Shesha.Domain.Attributes;
+using Shesha.JsonEntities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,9 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
     {
         public virtual string Type { get; set; }    
 
+        public virtual long Size { get; set; }
 
-        public virtual long size { get; set; }
+        [SaveAsJson]
+        public virtual IList<JsonSpoke> Spoke { get; set; }
     }
 }
