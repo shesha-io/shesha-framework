@@ -104,17 +104,6 @@
       "description": "Raster number of cells to occupy, 0 corresponds to display: none"
     },
     {
-      "id": "87d37542-d98a-453c-a689-9930babe9b8e",
-      "type": "checkbox",
-      "propertyName": "showModeToggler",
-      "label": "Show Mode Toggler",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "description": "Whether the form should show mode toddler when in read mode or not. If set, clicking the pencil icon while in read-only mode, will change the form mode to editable",
-      "validate": {}
-    },
-    {
       "id": "0e3231f1-e158-427a-b32b-00ff9da941bb",
       "type": "checkbox",
       "propertyName": "excludeFormFieldsInPayload",

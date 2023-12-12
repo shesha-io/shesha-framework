@@ -189,7 +189,7 @@
       }
     ],
     "formSettings": {
-      "_formFields": [ "modelType", "postUrl", "putUrl", "deleteUrl", "getUrl", "layout", "size", "colon", "labelCol.span", "wrapperCol.span", "showModeToggler", "excludeFormFieldsInPayload", "formKeysToPersist", "uniqueFormId", "preparedValues", "onDataLoaded", "onUpdate", "initialValues" ],
+      "_formFields": [ "modelType", "postUrl", "putUrl", "deleteUrl", "getUrl", "layout", "size", "colon", "labelCol.span", "wrapperCol.span", "excludeFormFieldsInPayload", "formKeysToPersist", "uniqueFormId", "preparedValues", "onDataLoaded", "onUpdate", "initialValues" ],
       "layout": "horizontal",
       "colon": true,
       "labelCol": { "span": 8 },
