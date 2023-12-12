@@ -347,7 +347,6 @@ export interface IFormSettings {
   colon: boolean;
   labelCol: ColProps;
   wrapperCol: ColProps;
-  showModeToggler?: boolean;
   preparedValues?: string;
   size?: SizeType;
   formKeysToPersist?: string[];

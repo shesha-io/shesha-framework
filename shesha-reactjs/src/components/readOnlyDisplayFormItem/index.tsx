@@ -1,15 +1,11 @@
-import { EditOutlined, LockOutlined } from '@ant-design/icons';
 import { Switch, Tag } from 'antd';
 import Checkbox from 'antd/lib/checkbox/Checkbox';
-import classNames from 'classnames';
 import { ValueRenderer } from '@/components/valueRenderer/index';
 import moment from 'moment';
 import React, { FC } from 'react';
-import { useForm } from '../../providers';
 import { getMoment } from '@/utils/date';
 import { IDtoType, ISelectOption } from '@/components/autocomplete';
 import QuickView, { GenericQuickView } from '@/components/quickView';
-import { Show } from '@/components/show';
 import { IReadOnlyDisplayFormItemProps } from './models';
 
 type AutocompleteType = ISelectOption<IDtoType>;
@@ -21,7 +17,6 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = ({
   timeFormat = 'hh:mm',
   dropdownDisplayMode = 'raw',
   render,
-  disabled,
   checked,
   defaultChecked,
   quickviewEnabled,
@@ -30,15 +25,8 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = ({
   quickviewGetEntityUrl,
   quickviewWidth,
 }) => {
-  const { formSettings, setFormMode, formMode } = useForm(false) ?? {
-    formSettings: null,
-    setFormMode: () => {
-      /*nop*/
-    },
-    formMode: 'readonly',
-  };
+ 
 
-  const setFormModeToEdit = () => setFormMode('edit');
 
   const renderValue = () => {
     if (render) {
@@ -122,19 +110,10 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = ({
     return Boolean(value) && typeof value === 'object' ? JSON.stringify(value, null, 2) : value;
   };
 
-  const iconClass = 'read-only-mode-toggler';
 
   return (
     <span className="read-only-display-form-item">
       {renderValue()}
-
-      <Show when={formSettings?.showModeToggler && formMode === 'readonly'}>
-        {disabled ? (
-          <LockOutlined className={classNames(iconClass, { disabled })} />
-        ) : (
-          <EditOutlined className={iconClass} onClick={setFormModeToEdit} />
-        )}
-      </Show>
     </span>
   );
 };
