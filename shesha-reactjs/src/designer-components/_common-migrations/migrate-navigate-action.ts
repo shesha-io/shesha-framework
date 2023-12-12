@@ -7,7 +7,7 @@ import { getQueryString } from "@/utils/url";
 
 export const migrateNavigateAction = (prev: IConfigurableActionConfiguration): IConfigurableActionConfiguration => {
     return updateActionRecursive(prev, action => {
-        return (prev.actionOwner === 'shesha.common' && prev.actionName === 'Navigate')
+        return (action.actionOwner === 'shesha.common' && action.actionName === 'Navigate')
             ? migrateNavigateProps(action)
             : action;
     });
