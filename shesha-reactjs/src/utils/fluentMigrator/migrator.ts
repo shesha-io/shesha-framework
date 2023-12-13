@@ -10,6 +10,10 @@ export interface MigrationRegistration<TPrev = IHasVersion, TNext = IHasVersion>
 export interface IHasVersion {
   version?: number | 'latest';
 }
+export const isHasVersion = (value: any): value is IHasVersion  => {
+  const version = (value as IHasVersion)?.version;
+  return version && (typeof(version) === 'number' || version === 'latest');
+};
 
 export interface IAddMigrationPayload<TModel = IHasVersion, TNext = IHasVersion> {
   version: number;

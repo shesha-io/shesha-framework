@@ -5,11 +5,11 @@ export interface IComponentSettingsDictionary {
   [key: string]: IComponentSettings;
 }
 
-export interface IComponentSettings {
+export interface IComponentSettings<TSettings = object> {
   id?: string;
   name?: string;
   description?: string;
-  settings: object;
+  settings: TSettings;
   /**
    * Cache MD5, is used for client-side caching
    */

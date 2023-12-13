@@ -11,7 +11,7 @@ export interface ILayoutProps {
   span: number;
 }
 
-export interface IConfigurableComponentStateContext<TSettings extends any>
+export interface IConfigurableComponentStateContext<TSettings = any>
   extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags>,
     IConfigurableComponentProps {
   settings: TSettings;
@@ -35,11 +35,11 @@ export interface IComponentSaveSuccessPayload {
   settings: object;
 }
 
-export interface IComponentLoadSuccessPayload {
+export interface IComponentLoadSuccessPayload<TSettings = any> {
   id?: string;
   name?: string;
   description?: string;
-  settings: object;
+  settings: TSettings;
 }
 
 export interface IConfigurableComponentActionsContext<TSettings extends any>

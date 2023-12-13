@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { SidebarMenuItem } from './sidebarMenuItem';
 import { useSidebarMenuConfigurator } from '@/providers/sidebarMenuConfigurator';
 import { ReactSortable, ItemInterface } from 'react-sortablejs';
-import { ISidebarMenuItem } from '@/interfaces/sidebar';
+import { ISidebarMenuItem, isSidebarGroup } from '@/interfaces/sidebar';
 import SidebarMenuGroup from './sidebarMenuGroup';
 
 export interface ISidebarItemsContainerProps {
@@ -15,12 +15,11 @@ export const SidebarItemsContainer: FC<ISidebarItemsContainerProps> = props => {
 
   // <SidebarItemsContainer index={props.index} items={props.childItems || []} />
   const renderItem = (itemProps: ISidebarMenuItem, index: number, key: string) => {
-    if (itemProps.itemType === 'group') {
+    if (isSidebarGroup(itemProps)) {
       return (
         <SidebarMenuGroup 
-          id={index} 
           index={[...props.index, index]} 
-          {...itemProps} 
+          item={itemProps}
           key={key} 
           containerRendering={(args) => (<SidebarItemsContainer {...args}/>)}
         />);

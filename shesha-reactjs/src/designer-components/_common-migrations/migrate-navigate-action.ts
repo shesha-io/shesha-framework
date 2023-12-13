@@ -2,7 +2,7 @@ import { FormIdentifier, getUrlWithoutQueryParams } from "@/index";
 import { IConfigurableActionConfiguration } from "@/interfaces/configurableAction";
 import { StandardNodeTypes } from "@/interfaces/formComponent";
 import { IKeyValue } from "@/interfaces/keyValue";
-import { INavigateActoinArguments } from "@/providers/shaRouting/index";
+import { INavigateActoinArguments as INavigateActionArguments } from "@/providers/shaRouting/index";
 import { getQueryString } from "@/utils/url";
 
 export const migrateNavigateAction = (prev: IConfigurableActionConfiguration): IConfigurableActionConfiguration => {
@@ -14,25 +14,32 @@ export const migrateNavigateAction = (prev: IConfigurableActionConfiguration): I
 };
 
 const migrateNavigateProps = (prev: IConfigurableActionConfiguration): IConfigurableActionConfiguration => {
-    var args = prev?.actionArguments as INavigateActoinArguments;
+    var args = prev?.actionArguments as INavigateActionArguments;
 
     const newArgs = migrateNavigateArgs(args);
 
     return { ...prev, actionArguments: newArgs, version: 2 };
 };
 
-const migrateNavigateArgs = (args: INavigateActoinArguments): INavigateActoinArguments => {
+export const getNavigationActionArgumentsByUrl = (url: string): INavigateActionArguments => {
+    if (!url)
+        return undefined;
+
+    const parsing = parseDynamicUrl(url);
+
+    const newArgs: INavigateActionArguments = {
+        navigationType: parsing.isDynamic ? "form" : "url",
+        formId: parsing.isDynamic ? parsing.formId : undefined,
+        url: !parsing.isDynamic ? parsing.url : undefined,
+        queryParameters: parsing.queryParams
+    };
+
+    return newArgs;
+};
+
+const migrateNavigateArgs = (args: INavigateActionArguments): INavigateActionArguments => {
     if (args && typeof(args['target']) === 'string'){
-        const parsing = parseDynamicUrl(args['target']);
-
-        const newArgs: INavigateActoinArguments = {
-            navigationType: parsing.isDynamic ? "form" : "url",
-            formId: parsing.isDynamic ? parsing.formId : undefined,
-            url: !parsing.isDynamic ? parsing.url : undefined,
-            queryParameters: parsing.queryParams
-        };
-
-        return newArgs;
+        return getNavigationActionArgumentsByUrl(args['target']);
     } else
         return {...args, navigationType: "url" };
 };
@@ -54,7 +61,8 @@ const parseDynamicUrl = (url: string): DynamicUrlParsingResponse => {
         : undefined;
 
     const query = getQueryString(url);
-    const queryParts = (query ? query.substring(1) : '').split('&');
+    const queryParts = (query ? query.substring(1) : '').split('&').filter(Boolean);
+
     const queryParams = queryParts.map<IKeyValue>(part => {
         const keyValue = part.split('=');
         const value = keyValue.length > 1 ? keyValue[1] : undefined;

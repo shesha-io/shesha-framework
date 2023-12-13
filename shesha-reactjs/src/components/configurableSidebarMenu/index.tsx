@@ -5,9 +5,11 @@ import { ISidebarMenuItem, SidebarMenuProvider } from '@/providers/sidebarMenu';
 import ComponentSettingsModal from './settingsModal';
 import { MenuTheme } from 'antd/lib/menu/MenuContext';
 import CustomErrorBoundary from '@/components/customErrorBoundary';
+import { migrateToConfigActions } from './migrations/migrateToConfigActions';
 
 export interface ISideBarMenuProps {
   items: ISidebarMenuItem[];
+  version?: number;
 }
 
 const EmptySidebarProps: ISideBarMenuProps = {
@@ -33,7 +35,7 @@ export const ConfigurableSidebarMenu: FC<IConfigurableSidebarMenuProps> = props 
     );
   };
   const memoizedDefaults = useMemo(() => props.defaultSettings ?? { items: [] }, [props.defaultSettings]);
-
+  
   return (
     <CustomErrorBoundary>
       <ConfigurableApplicationComponent<ISideBarMenuProps>
@@ -43,6 +45,7 @@ export const ConfigurableSidebarMenu: FC<IConfigurableSidebarMenuProps> = props 
         }}
         name={props.name}
         isApplicationSpecific={props.isApplicationSpecific}
+        migrator={m => m.add(1, prev => migrateToConfigActions(prev))}
       >
         {(componentState, BlockOverlay) => (
           <div className={`sidebar ${componentState.wrapperClassName}`}>

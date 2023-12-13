@@ -1,6 +1,7 @@
 import React, { ReactNode, useMemo } from 'react';
 import { createConfigurableComponent } from '../../providers';
 import { ConfigurableComponentRenderer } from '@/components/configurableComponentRenderer';
+import { Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 
 export interface IComponentStateProps<TSettings = any> {
   isSelected: boolean;
@@ -29,6 +30,17 @@ export interface ISettingsEditor<TSettings = any> {
   save?: () => Promise<TSettings>;
 }
 
+export interface ComponentSettingsMigrationContext {
+
+}
+
+/**
+ * Settings migrator
+ */
+ export type ComponentSettingsMigrator<TSettings> = (
+  migrator: Migrator<any, TSettings, ComponentSettingsMigrationContext>
+) => MigratorFluent<TSettings, TSettings, ComponentSettingsMigrationContext>;
+
 export interface IConfigurableApplicationComponentProps<TSettings = any> {
   canConfigure?: boolean;
   children: ConfigurableComponentChildrenFn<TSettings>;
@@ -37,6 +49,10 @@ export interface IConfigurableApplicationComponentProps<TSettings = any> {
   settingsEditor?: ISettingsEditor<TSettings>;
   name: string;
   isApplicationSpecific: boolean;
+  /**
+   * Settings migrations. Returns last version of settings
+   */
+  migrator?: ComponentSettingsMigrator<TSettings>;
 }
 
 export interface IBlockOverlayProps {
@@ -44,16 +60,17 @@ export interface IBlockOverlayProps {
   onClick?: () => void;
 }
 
-export const ConfigurableApplicationComponent = <TSettings extends any>({ 
+export const ConfigurableApplicationComponent = <TSettings extends any>({
   children,
   canConfigure = true,
   defaultSettings,
   settingsEditor,
   name,
-  isApplicationSpecific
+  isApplicationSpecific,
+  migrator,
 }: IConfigurableApplicationComponentProps<TSettings>) => {
   const component = useMemo(() => {
-    return createConfigurableComponent<TSettings>(defaultSettings);
+    return createConfigurableComponent<TSettings>(defaultSettings, migrator);
   }, [defaultSettings]);
   const { ConfigurableComponentProvider, useConfigurableComponent } = component;
 
