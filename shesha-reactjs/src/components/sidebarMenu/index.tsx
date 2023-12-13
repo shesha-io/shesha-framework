@@ -30,8 +30,6 @@ export const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
 
   const keys = openedKeys && openedKeys.length > 0 ? openedKeys : undefined;
 
-  console.log('LOG: render sidebar');
-
   const onButtonClick = (item: ISidebarButton) => {
     setSelectedKey(item.id);
     executeAction({ 

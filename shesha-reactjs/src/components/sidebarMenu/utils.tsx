@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import React, { ReactNode } from 'react';
 import { ISidebarMenuItem } from '@/providers/sidebarMenu';
 import ShaIcon, { IconType } from '@/components/shaIcon';
-import { ISidebarButton, isSidebarButton, isSidebarGroup } from '@/interfaces/sidebar';
+import { ISidebarButton, isSidebarButton, isSidebarGroup, SidebarItemType } from '@/interfaces/sidebar';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -14,26 +14,26 @@ interface IGetItemArgs {
   icon?: React.ReactNode;
   children?: MenuItem[];
   isParent?: boolean;
+  itemType: SidebarItemType;
   onClick?: () => void;
 }
 
-function getItem({ label, key, icon, children, isParent, onClick }: IGetItemArgs): MenuItem {
+function getItem({ label, key, icon, children, isParent, itemType, onClick }: IGetItemArgs): MenuItem {
   const clickHandler = (event) => {
     event.stopPropagation();
     onClick();
   };
+
+  const className = classNames('nav-links-renderer', { 'is-parent-menu': isParent });
+
   return {
     key,
     icon,
     children,
-    label: (
-      <a
-        className={classNames('nav-links-renderer', { 'is-parent-menu': isParent })}
-        onClick={onClick ? (e) => clickHandler(e) : undefined}
-      >
-        {label}
-      </a>
-    ),
+    label: Boolean(onClick)
+      ? <a className={className} onClick={clickHandler}>{label}</a>
+      : <span className={className}>{label}</span>,
+    type: itemType === 'divider' ? 'divider' : undefined,
   } as MenuItem;
 }
 
@@ -54,10 +54,10 @@ export interface IProps {
 
 // Note: Have to use function instead of react control. It's a known issue, you can only pass MenuItem or MenuGroup as Menu's children. See https://github.com/ant-design/ant-design/issues/4853
 export const renderSidebarMenuItem = ({ item, isItemVisible, onButtonClick, isRootItem }: IProps) => {
-  const { id: key, title, icon } = item;
+  const { id: key, title, icon, itemType } = item;
 
   if (typeof isItemVisible === 'function' && !isItemVisible(item)) return null;
-  
+
   const children = isSidebarGroup(item)
     ? item.childItems?.map((item) => renderSidebarMenuItem({ item, onButtonClick, isItemVisible }))
     : null;
@@ -69,6 +69,7 @@ export const renderSidebarMenuItem = ({ item, isItemVisible, onButtonClick, isRo
     icon: getIcon(icon, hasChildren, isRootItem),
     children: children,
     isParent: hasChildren,
+    itemType,
     onClick: isSidebarButton(item) ? () => onButtonClick(item) : undefined,
   });
 };

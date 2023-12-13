@@ -7,7 +7,6 @@ import DragHandle from './dragHandle';
 import ShaIcon, { IconType } from '@/components/shaIcon';
 import { useDynamicActionsDispatcher } from '@/providers';
 
-
 const { Text } = Typography;
 
 export interface IButtonGroupItemProps extends IButtonGroupItem {

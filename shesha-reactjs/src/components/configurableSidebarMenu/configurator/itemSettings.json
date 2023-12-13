@@ -17,14 +17,9 @@
         },
         {
           "id": "cc268f50-47ca-4e4e-966f-7f2abfec902f",
-          "label": "Separator",
-          "value": "separator"
-        },
-        {
-          "id": "b4117249-8c2f-4991-a96c-9ea434293120",
-          "label": "Line",
-          "value": "line"
-        }
+          "label": "Divider",
+          "value": "divider"
+        }        
       ],
       "validate": {
         "required": true
@@ -40,7 +35,11 @@
       "label": "Title",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": false,
+      "hidden": {
+        "_code": "return getSettingValue(data?.itemType) !== 'divider';",
+        "_mode": "code",
+        "_value": false
+      },
       "autoSize": false,
       "showCount": false,
       "allowClear": false,
@@ -48,7 +47,7 @@
         "required": true
       },
       "version": 2,
-      "textType": "text"
+      "textType": "text"      
     },
     {
       "id": "345c2181-fb9f-48ed-9631-864ac357807b",
