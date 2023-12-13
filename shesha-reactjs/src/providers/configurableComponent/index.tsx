@@ -19,6 +19,8 @@ import {
   getContextInitialState,
 } from './contexts';
 import reducerFactory from './reducer';
+import { ComponentSettingsMigrator } from '@/components/configurableComponent/index';
+import { IHasVersion, Migrator } from '@/utils/fluentMigrator/migrator';
 
 export interface IGenericConfigurableComponentProviderProps<TSettings extends any> {
   initialState: IConfigurableComponentStateContext<TSettings>;
@@ -26,6 +28,7 @@ export interface IGenericConfigurableComponentProviderProps<TSettings extends an
   actionContext: Context<IConfigurableComponentActionsContext<TSettings>>;
   name: string;
   isApplicationSpecific: boolean;
+  migrator?: ComponentSettingsMigrator<TSettings>;
 }
 
 const GenericConfigurableComponentProvider = <TSettings extends any>({
@@ -35,6 +38,7 @@ const GenericConfigurableComponentProvider = <TSettings extends any>({
   actionContext,
   name,
   isApplicationSpecific,
+  migrator,
 }: PropsWithChildren<IGenericConfigurableComponentProviderProps<TSettings>>) => {
   const reducer = useMemo(() => reducerFactory(initialState), []);
 
@@ -58,11 +62,27 @@ const GenericConfigurableComponentProvider = <TSettings extends any>({
     fetchInternal(getComponent({ name, isApplicationSpecific, skipCache: false }));
   }, []);
 
+  const upgradeSettings = (value: TSettings): TSettings => {
+    if (!migrator) return value;
+
+    const migratorInstance = new Migrator<TSettings, TSettings>();
+    const fluent = migrator(migratorInstance);
+    const versionedValue = value as IHasVersion;
+    if (versionedValue.version === undefined) 
+      versionedValue.version = -1;
+    const model = fluent.migrator.upgrade(value, {});
+    return model;
+  };
+
   const fetchInternal = (loader: PromisedValue<IComponentSettings>) => {
     dispatch(loadRequestAction({ name, isApplicationSpecific }));
     loader.promise
-      .then((settings) => {
-        dispatch(loadSuccessAction({ ...settings }));
+      .then((component) => {
+        const upToDateComponent = {
+          ...component,
+          settings: upgradeSettings(component.settings as TSettings),
+        };
+        dispatch(loadSuccessAction(upToDateComponent));
       })
       .catch((error) => {
         dispatch(loadErrorAction({ error: error?.['message'] || 'Failed to load component' }));
@@ -84,11 +104,17 @@ const GenericConfigurableComponentProvider = <TSettings extends any>({
 
     dispatch(saveRequestAction({}));
 
+    // keep version number, it may be removed by the settings editor
+    const version = (state.settings as IHasVersion)?.version;
+    const settingsToSave = version
+      ? { ...(settings as object), version }
+      : settings;
+     
     const payload = {
       module: null,
       name: state.name,
       isApplicationSpecific: isApplicationSpecific,
-      settings: settings as object,
+      settings: settingsToSave as object,
     };
     return updateComponent(payload)
       .then((_response) => {
@@ -118,7 +144,7 @@ export interface IConfigurableComponentProviderProps {
   isApplicationSpecific: boolean;
 }
 
-export const createConfigurableComponent = <TSettings extends any>(defaultSettings: TSettings) => {
+export const createConfigurableComponent = <TSettings extends any>(defaultSettings: TSettings, migrator?: ComponentSettingsMigrator<TSettings>) => {
   const initialState = getContextInitialState<TSettings>(defaultSettings);
   const StateContext = getConfigurableComponentStateContext<TSettings>(initialState);
   const ActionContext = getConfigurableComponentActionsContext<TSettings>();
@@ -144,6 +170,7 @@ export const createConfigurableComponent = <TSettings extends any>(defaultSettin
         actionContext={ActionContext}
         name={props.name}
         isApplicationSpecific={props.isApplicationSpecific}
+        migrator={migrator}
       >
         {props.children}
       </GenericConfigurableComponentProvider>

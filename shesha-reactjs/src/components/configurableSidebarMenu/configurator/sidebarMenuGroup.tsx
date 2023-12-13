@@ -4,7 +4,7 @@ import { DeleteFilled, QuestionCircleOutlined } from '@ant-design/icons';
 import { useSidebarMenuConfigurator } from '@/providers/sidebarMenuConfigurator';
 import DragHandle from './dragHandle';
 import ShaIcon, { IconType } from '@/components/shaIcon';
-import { ISidebarMenuItem } from '@/interfaces/sidebar';
+import { ISidebarGroup, ISidebarMenuItem } from '@/interfaces/sidebar';
 import classNames from 'classnames';
 
 export interface IContainerRenderArgs {
@@ -13,26 +13,28 @@ export interface IContainerRenderArgs {
   items: ISidebarMenuItem[];
 }
 
-export interface ISidebarMenuGroupProps extends ISidebarMenuItem {
+export interface ISidebarMenuGroupProps {
+  item: ISidebarGroup;
   index: number[];
   containerRendering: (args: IContainerRenderArgs) => React.ReactNode;
 }
 
 export const SidebarMenuGroup: FC<ISidebarMenuGroupProps> = props => {
   const { deleteItem, selectedItemId } = useSidebarMenuConfigurator();
+  const { item } = props;
 
   const onDeleteClick = () => {
-    deleteItem(props.id);
+    deleteItem(item.id);
   };
 
   return (
-    <div className={classNames('sha-sidebar-item', { selected: selectedItemId === props.id })}>
+    <div className={classNames('sha-sidebar-item', { selected: selectedItemId === item.id })}>
       <div className="sha-sidebar-item-header">
-        <DragHandle id={props.id} />
-        {props.icon && <ShaIcon iconName={props.icon as IconType} />}
-        <span className="sha-sidebar-item-name">{props.title}</span>
-        {props.tooltip && (
-          <Tooltip title={props.tooltip}>
+        <DragHandle id={item.id} />
+        {item.icon && <ShaIcon iconName={item.icon as IconType} />}
+        <span className="sha-sidebar-item-name">{item.title}</span>
+        {item.tooltip && (
+          <Tooltip title={item.tooltip}>
             <QuestionCircleOutlined className="sha-help-icon" />
           </Tooltip>
         )}
@@ -40,7 +42,7 @@ export const SidebarMenuGroup: FC<ISidebarMenuGroupProps> = props => {
           <Button icon={<DeleteFilled color="red" />} onClick={onDeleteClick} size="small" danger />
         </div>
         <div className="sha-sidebar-group-container">
-          {props.containerRendering({ index: props.index, items: props.childItems || [], id: props.id })}
+          {props.containerRendering({ index: props.index, items: item.childItems ?? [], id: item.id })}
         </div>
       </div>
     </div>

@@ -68,7 +68,10 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
     const queryParams = mapKeyValueToDictionary(queryParameters);
     const queryStringData = { ...urlQueryPatams, ...queryParams };
 
-    const preparedUrl = `${urlWithoutQuery}?${qs.stringify(queryStringData)}`;
+    const queryString = qs.stringify(queryStringData);
+    const preparedUrl = queryString
+      ? `${urlWithoutQuery}?${queryString}`
+      : urlWithoutQuery;
     
     return navigateToRawUrl(preparedUrl);
   };

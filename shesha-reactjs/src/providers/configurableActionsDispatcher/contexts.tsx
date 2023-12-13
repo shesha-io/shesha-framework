@@ -31,6 +31,8 @@ export interface RegisterActionType {
   ): void;
 }
 
+export type ConfigurableActionExecuter = (payload: IExecuteActionPayload) => Promise<void>;
+
 export interface IConfigurableActionDispatcherActionsContext {
   getConfigurableAction: (payload: IGetConfigurableActionPayload) => IConfigurableActionDescriptor;
   getConfigurableActionOrNull: (payload: IGetConfigurableActionPayload) => IConfigurableActionDescriptor | null;
@@ -38,7 +40,7 @@ export interface IConfigurableActionDispatcherActionsContext {
   registerAction: RegisterActionType;
   unregisterAction: (actionIdentifier: IConfigurableActionIdentifier) => void;
   prepareArguments: (actionArguments: any) => void;
-  executeAction: (payload: IExecuteActionPayload) => Promise<void>;
+  executeAction: ConfigurableActionExecuter;
 }
 
 /** initial state */

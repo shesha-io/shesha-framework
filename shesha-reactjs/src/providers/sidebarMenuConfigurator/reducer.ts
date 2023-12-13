@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid/non-secure';
 import { handleActions } from 'redux-actions';
-import { ISidebarMenuItem } from '@/interfaces/sidebar';
+import { ISidebarGroup, ISidebarMenuItem, isSidebarGroup } from '@/interfaces/sidebar';
 import { SidebarMenuActionEnums } from './actions';
 import {
   ISidebarMenuConfiguratorStateContext,
@@ -17,8 +17,6 @@ const sidebarMenuReducer = handleActions<ISidebarMenuConfiguratorStateContext, a
         id: nanoid(),
         itemType: 'button',
         title: `New item`,
-        childItems: [],
-        selected: false,
       };
 
       const newItems = [...state.items];
@@ -122,12 +120,12 @@ const sidebarMenuReducer = handleActions<ISidebarMenuConfiguratorStateContext, a
     },
 
     [SidebarMenuActionEnums.AddGroup]: (state: ISidebarMenuConfiguratorStateContext) => {
-      const groupProps: ISidebarMenuItem = {
+      const groupProps: ISidebarGroup = {
         id: nanoid(),
         itemType: 'group',
         title: `New Group`,
         childItems: [],
-        selected: false,
+        //selected: false,
       };
 
       return {
@@ -161,7 +159,9 @@ export default sidebarMenuReducer;
 function removeIdDeep(list: ISidebarMenuItem[], idToRemove: string) {
   const filtered = list.filter((entry) => entry.id !== idToRemove);
   return filtered.map((entry) => {
-    if (!entry.childItems) return entry;
-    return { ...entry, childItems: removeIdDeep(entry.childItems, idToRemove) };
+    const childItems = isSidebarGroup(entry) ? entry.childItems : undefined;
+    if (!childItems) 
+      return entry;
+    return { ...entry, childItems: removeIdDeep(childItems, idToRemove) };
   });
 }
