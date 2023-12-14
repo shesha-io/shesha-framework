@@ -226,7 +226,11 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
       (tab) => tab.afterDoneActionConfiguration
     );
 
-  const setStep = (stepIndex) => setCurrent(stepIndex);
+  const setStep = (stepIndex) => {
+    if (stepIndex < 0 || stepIndex >= tabs.length - 1)
+      throw `Step with index ${stepIndex} is not available`;
+    setCurrent(stepIndex);
+  };
 
   const content = getStepDescritpion(showStepStatus, sequence, current);
 
