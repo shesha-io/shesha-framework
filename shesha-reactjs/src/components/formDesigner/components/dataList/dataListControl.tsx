@@ -187,7 +187,6 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         canEditInline={canAction(canEditInline)}
         canDeleteInline={canAction(canDeleteInline)}
 
-
         entityType={modelType}
         onSelectRow={onSelectRow}
         onMultiSelectRows={setMultiSelectedRow}

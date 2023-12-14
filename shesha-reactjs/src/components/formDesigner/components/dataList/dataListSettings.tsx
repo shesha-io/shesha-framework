@@ -176,7 +176,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
         />
       </SettingsFormItem>*/}
 
-      <SettingsFormItem name="actionConfiguration">
+      <SettingsFormItem name="dblClickActionConfiguration">
         <ConfigurableActionConfigurator
           editorConfig={null}
           level={1}
