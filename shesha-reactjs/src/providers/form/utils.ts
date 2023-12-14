@@ -46,6 +46,7 @@ import {
   IFormSections,
   IFormSettings,
   IFormValidationRulesOptions,
+  ReadOnlyMode,
   ROOT_COMPONENT_KEY,
   SILENT_KEY,
   ViewType,
@@ -128,83 +129,67 @@ export function useApplicationContext(topContextId?: string): IApplicationContex
   };
 }
 
-/*export const getActualModel = (model: any, allData: any) => {
+const getSettingValue = (value: any, allData: any, calcFunction: (setting: IPropertySetting, allData: any) => any) => {
+  if (!value) return value;
 
-  const calcValue = (setting) => {
-    try {
-      let vars = 'staticValue';
-      const datas = [setting?._value];
-      if (allData)
-        for (let key in allData) {
-          if (Object.hasOwn(allData, key)) {
-            vars+= `, ${key}`;
-            datas.push(allData[key]);
-          }
-        }
-      const res = new Function(vars, setting?._code)(...datas);
-      return res;
-    } catch {
-      return undefined;
-    }
-  };
-
-  const getSettingValue = (value: any) => {
-    if (!value) 
+  if (typeof value === 'object') {
+    // If array - update all items
+    if (Array.isArray(value)) {
       return value;
-  
-    if (typeof value === 'object') {
-      // If array - update all items
-      if (Array.isArray(value)) {
-        return value;
-        // ToDo: infinity loop
-        if (value.length === 0)
-          return value;
-        const v = value.map(x => {
-          return getActualModelx(x, allData);
-        });
-        return v;
-      }
+      // ToDo: infinity loop
+      if (value.length === 0) return value;
+      const v = value.map((x) => {
+        return getActualModel(x, allData);
+      });
+      return v;
+    }
 
-      // update setting value to actual
-      if (!!value && isPropertySettings(value)) {
-        if (value['_mode'] === 'code' && !!value['_code']) {
-          const val = calcValue(value);
-          return val;
-        } else {
-          return value['_value'];
+    // update setting value to actual
+    if (isPropertySettings(value)) {
+      const v = value as IPropertySetting;
+      if (v?._mode === 'code' && Boolean(v?._code)) {
+        const val = calcFunction(v, allData);
+        return val;
+      } else {
+        return v?._value;
+      }
+    }
+
+    // update nested objects
+    return getActualModel(value, allData);
+  }
+  return value;
+};
+
+const getValue = (val: any, allData: any, calcValue: (setting: IPropertySetting, allData: any) => Function) => {
+  return getSettingValue(val, allData, calcValue);
+};
+
+const calcValue = (setting: IPropertySetting, allData: any) => {
+  const getSettingValue = (val: any) => getValue(val, allData, calcValue);
+  try {
+    let vars = 'staticValue, getSettingValue';
+    const datas = [setting?._value, getSettingValue];
+    if (allData)
+      for (let key in allData) {
+        if (Object.hasOwn(allData, key)) {
+          vars += `, ${key}`;
+          datas.push(allData[key]);
         }
       }
+    const res = new Function(vars, setting?._code)(...datas);
+    return res;
+  } catch {
+    return undefined;
+  }
+};
 
-      // update nested objects
-      return getActualModelx(value, allData);
-    }
-    return value;
-  };
-
-
-  const props = Object.getOwnPropertyNames(model);
-
-  const proxy = {
-    origin_proxy: model
-  };
-
-  props.map((prop) => {
-    Object.defineProperty(proxy, prop, {
-      get() { 
-        return getSettingValue(this.origin_proxy[prop]); 
-      },
-      set(v) {
-        this.origin_proxy[prop] = v;
-      },
-    });
-  });
-
-  const res = {};
-
-  props.map((prop) => res[prop] = proxy[prop] );
-
-  return res;
-};*/
+export const getReadOnlyBool = (value: ReadOnlyMode, allData: any) => {
+  return value === true // check exact condition
+    || value === 'readOnly'
+    || value === 'inherited' && allData?.formMode === 'readonly'
+    || !value && allData?.formMode === 'readonly';
+};
 
 /**
  * Convert model to values calculated from JS code if provided (for each fields)
@@ -213,74 +198,20 @@ export function useApplicationContext(topContextId?: string): IApplicationContex
  * @param allData - all form, contexts data and other data/objects/functions needed to calculate Actual Model
  * @returns - converted model
  */
-export const getActualModel = (model: any, allData: any, propertyName: string = undefined) => {
-  const getSettingValue = (value: any, calcFunction: (setting: IPropertySetting) => any) => {
-    if (!value) return value;
-
-    if (typeof value === 'object') {
-      // If array - update all items
-      if (Array.isArray(value)) {
-        return value;
-        // ToDo: infinity loop
-        if (value.length === 0) return value;
-        const v = value.map((x) => {
-          return getActualModel(x, allData);
-        });
-        return v;
-      }
-
-      // update setting value to actual
-      if (isPropertySettings(value)) {
-        const v = value as IPropertySetting;
-        if (v?._mode === 'code' && Boolean(v?._code)) {
-          const val = calcFunction(v);
-          return val;
-        } else {
-          return v?._value;
-        }
-      }
-
-      // update nested objects
-      return getActualModel(value, allData);
-    }
-    return value;
-  };
-
-  const getValue = (val: any) => {
-    return getSettingValue(val, calcValue);
-  };
-
-  const calcValue = (setting) => {
-    try {
-      let vars = 'staticValue, getSettingValue';
-      const datas = [setting?._value, getValue];
-      if (allData)
-        for (let key in allData) {
-          if (Object.hasOwn(allData, key)) {
-            vars += `, ${key}`;
-            datas.push(allData[key]);
-          }
-        }
-      const res = new Function(vars, setting?._code)(...datas);
-      return res;
-    } catch {
-      return undefined;
-    }
-  };
-
-  const m = { ...model };
-
-  if (propertyName) {
-    m[propertyName] = getSettingValue(m[propertyName], calcValue);
-  } else {
-    for (var propName in m) {
-      if (!m.hasOwnProperty(propName)) continue;
-      
-      m[propName] = getSettingValue(m[propName], calcValue);
-    }
+export const getActualModel = <T>(model: T, allData: any, useFormModeReadOnly: boolean = true): T => {
+  const m = {} as T;
+  for (var propName in model) {
+    if (!model.hasOwnProperty(propName)) continue;
+    m[propName] = getSettingValue(model[propName], allData, calcValue);
   }
 
+  m['readOnly'] = getReadOnlyBool(m['readOnly'], useFormModeReadOnly ? allData : undefined);
+
   return m;
+};
+
+export const getActualPropertyValue = <T>(model: T, allData: any, propertyName: string) => {
+  return { ...model, [propertyName]: getSettingValue(model[propertyName], allData, calcValue) } as T;
 };
 
 /**
@@ -775,7 +706,7 @@ export const getVisibleComponentIds = (
         if (filteredOut === false) continue;
       }
 
-      const hidden = getActualModel(component, allData, 'hidden')?.hidden;
+      const hidden = getActualPropertyValue(component, allData, 'hidden')?.hidden;
 
       const isVisible = !hidden && (component.visibilityFunc == null || component.visibilityFunc(allData.data, allData.globalState, allData.formMode));
       if (isVisible) visibleComponents.push(key);
@@ -785,21 +716,20 @@ export const getVisibleComponentIds = (
 };
 
 /**
- * Return ids of visible components according to the custom enabled
+ * Return ids of enabled components according to the custom enabled
  */
 export const getEnabledComponentIds = (
   components: IComponentsDictionary,
-  values: any,
-  globalState: any,
-  formMode: FormMode
+  allData: IApplicationContext,
 ): string[] => {
   const enabledComponents: string[] = [];
   for (const key in components) {
     if (components.hasOwnProperty(key)) {
       const component = components[key] as IConfigurableFormComponent;
-      const isEnabled =
-        !Boolean(component?.enabledFunc) ||
-        (typeof component?.enabledFunc === 'function' && component?.enabledFunc(values, globalState, formMode));
+      const readOnly = getReadOnlyBool(getActualPropertyValue(component, allData, 'readOnly')?.readOnly, allData);
+      const isEnabled = !readOnly &&
+        (!Boolean(component?.enabledFunc) ||
+        (typeof component?.enabledFunc === 'function' && component?.enabledFunc(allData.data, allData.globalState, allData.formMode)));
 
       if (isEnabled) enabledComponents.push(key);
     }

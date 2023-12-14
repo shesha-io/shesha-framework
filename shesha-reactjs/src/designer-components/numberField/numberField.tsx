@@ -10,7 +10,7 @@ import { evaluateString, validateConfigurableComponentSettings } from '@/provide
 import NumberFieldControl from './control';
 import { INumberFieldComponentProps } from './interfaces';
 import settingsFormJson from './settingsForm.json';
-import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
+import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { getNumberFormat } from '@/utils/string';
 import { getDataProperty } from '@/utils/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
@@ -38,12 +38,11 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
         {(value, onChange) => {
           return model.readOnly ? (
             <ReadOnlyDisplayFormItem
-              disabled={model.disabled}
               type="number"
               value={getNumberFormat(value, getDataProperty(properties, model.propertyName))}
             />
           ) : (
-            <NumberFieldControl form={form} disabled={model.disabled} model={model} value={value} onChange={onChange} />
+            <NumberFieldControl form={form} disabled={model.readOnly} model={model} value={value} onChange={onChange} />
           );
         }}
       </ConfigurableFormItem>
@@ -55,7 +54,9 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
   }),
   migrator: (m) => m
     .add<INumberFieldComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-    .add<INumberFieldComponentProps>(1, (prev) => migrateVisibility(prev)),
+    .add<INumberFieldComponentProps>(1, (prev) => migrateVisibility(prev))
+    .add<INumberFieldComponentProps>(2, (prev) => migrateReadOnly(prev))
+  ,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   linkToModelMetadata: (model, metadata): INumberFieldComponentProps => {
     return {

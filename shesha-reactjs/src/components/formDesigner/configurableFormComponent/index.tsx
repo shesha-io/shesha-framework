@@ -1,6 +1,6 @@
 import React, { FC, MutableRefObject, useEffect, useRef } from 'react';
 import { Button, Tooltip } from 'antd';
-import { DeleteFilled, StopOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
+import { DeleteFilled, StopOutlined, EyeInvisibleOutlined, EditOutlined, FunctionOutlined } from '@ant-design/icons';
 import FormComponent from '../formComponent';
 import { useComponentModel, useForm } from '@/providers/form';
 import DragHandle from './dragHandle';
@@ -10,7 +10,9 @@ import classNames from 'classnames';
 import CustomErrorBoundary from '@/components/customErrorBoundary';
 import { useFormDesigner } from '@/providers/formDesigner';
 import { IConfigurableFormComponent } from '../../../interfaces';
-import { useMetadata } from '@/providers';
+import { ReadOnlyMode, useMetadata } from '@/providers';
+import { getActualPropertyValue, useApplicationContext } from '@/index';
+import { isPropertySettings } from '@/designer-components/_settings/utils';
 
 export interface IConfigurableFormComponentProps {
   id: string;
@@ -55,10 +57,7 @@ interface IConfigurableFormComponentDesignerProps {
   componentRef: MutableRefObject<any>;
 }
 const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerProps> = ({ componentModel, componentRef }) => {
-  const {
-    visibleComponentIds,
-    enabledComponentIds,
-  } = useForm();
+  const allData = useApplicationContext('all');
   const {
     deleteComponent,
     selectedComponentId,
@@ -81,11 +80,19 @@ const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerPr
     deleteComponent({ componentId: componentModel.id });
   };
 
-  const hiddenByCondition = visibleComponentIds && !visibleComponentIds.includes(componentModel.id);
-  const disabledByCondition = enabledComponentIds && !enabledComponentIds.includes(componentModel.id);
+  const hiddenByCondition = allData?.form?.visibleComponentIds && !allData.form.visibleComponentIds.includes(componentModel.id);
+  const disabledByCondition = allData?.form?.enabledComponentIds && !allData.form.enabledComponentIds.includes(componentModel.id);
 
   const invalidConfiguration =
     componentModel.settingsValidationErrors && componentModel.settingsValidationErrors.length > 0;
+
+  const hiddenFx = isPropertySettings(componentModel.hidden);
+  const hidden = getActualPropertyValue(componentModel, allData, 'hidden')?.hidden;
+  const componentReadOnlyFx = isPropertySettings(componentModel.readOnly);
+  const componentReadOnly = getActualPropertyValue(componentModel, allData, 'readOnly')?.readOnly as ReadOnlyMode;
+
+  const actionText1 = (hiddenFx ? 'hidden' : '') + (hiddenFx && componentReadOnlyFx ? ' and ' : '') + (componentReadOnlyFx ? 'disabled' : '');
+  const actionText2 = (hiddenFx ? 'showing' : '') + (hiddenFx && componentReadOnlyFx ? '/' : '') + (componentReadOnlyFx ? 'enabled' : '');
 
   return (
     <div
@@ -95,15 +102,26 @@ const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerPr
       })}
     >
       <span className="sha-component-indicator">
-        <Show when={componentModel.hidden || hiddenByCondition}>
-          <Tooltip title="This component is hidden by condition. It's now showing because we're in a designer mode">
+        <Show when={hiddenFx || componentReadOnlyFx}>
+          <Tooltip title={`This component is ${actionText1} by condition. It's now ${actionText2} because we're in a designer mode`}>
+            <FunctionOutlined />
+          </Tooltip>
+        </Show>
+
+        <Show when={!hiddenFx && (hidden || hiddenByCondition)}>
+          <Tooltip title="This component is hidden. It's now showing because we're in a designer mode">
             <EyeInvisibleOutlined />
           </Tooltip>
         </Show>
 
-        <Show when={componentModel.disabled || disabledByCondition}>
-          <Tooltip title="This component is disabled by condition. It's now enabled because we're in a designer mode">
+        <Show when={!componentReadOnlyFx && (componentReadOnly === 'readOnly' || componentReadOnly === true || disabledByCondition)}>
+          <Tooltip title="This component is always in Read Only mode. It's now enabled because we're in a designer mode">
             <StopOutlined />
+          </Tooltip>
+        </Show>
+        <Show when={!componentReadOnlyFx && componentReadOnly === 'editable' && !disabledByCondition}>
+          <Tooltip title="This component is always in Edit/Action mode">
+            <EditOutlined />
           </Tooltip>
         </Show>
       </span>

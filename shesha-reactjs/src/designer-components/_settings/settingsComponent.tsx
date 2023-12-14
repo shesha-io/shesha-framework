@@ -11,6 +11,7 @@ import { getSettings } from './settings';
 import { getValueByPropertyName, setValueByPropertyName } from '@/utils/object';
 import './styles/index.less';
 import { useRef } from 'react';
+import { migrateReadOnly } from '../_common-migrations/migrateSettings';
 
 export interface ISettingsComponentProps extends IConfigurableFormComponent {
     components?: IConfigurableFormComponent[];
@@ -27,7 +28,7 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
 
         const { formData } = useForm();
 
-        const { _mode: mode } = getPropertySettingsFromData(formData, model.propertyName);
+        const { _mode: mode, _code: code } = getPropertySettingsFromData(formData, model.propertyName);
 
         const internalProps = model?.components?.length > 0 ? model?.components[0] : model;
         const props = Boolean(model?.label) ? model : internalProps;
@@ -52,10 +53,11 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
                     return (
                     <div className={ mode === 'code' ? 'sha-js-content-code' : 'sha-js-content-js'}>
                         <Button
-                            disabled={model.disabled || model.readOnly}
+                            disabled={model.readOnly}
                             shape="round"
                             className='sha-js-switch'
                             type='primary'
+                            danger={mode === 'value' && !!code }
                             ghost
                             size='small'
                             onClick={switchMode}
@@ -99,6 +101,9 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
         );
     },
     settingsFormMarkup: getSettings(),
+    migrator: (m) => m
+        .add<ISettingsComponentProps>(0, (prev) => migrateReadOnly(prev))
+  ,    
 };
 
 export default SettingsComponent;

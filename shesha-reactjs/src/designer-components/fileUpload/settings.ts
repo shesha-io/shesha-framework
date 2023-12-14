@@ -73,18 +73,18 @@ export const getSettings = () =>
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
             label: 'Hide Label',
           })
-          .addCheckbox({
+          .addReadOnlyMode({
             id: '24a8be15-98eb-40f7-99ea-ebb602693e9c',
-            propertyName: 'disabled',
+            propertyName: 'readOnly',
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
-            label: 'Disabled',
+            label: "Read Only mode",
           })
           .addCheckbox({
             id: 'f4193290-3bc7-441a-92be-cfaf25d57c28',
             propertyName: 'allowUpload',
             label: 'Allow Upload',
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
-            hidden: {_code: 'return  getSettingValue(data?.disabled);', _mode: 'code', _value: false} as any,
+            hidden: {_code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false} as any,
             validate: {},
           })
           .addCheckbox({
@@ -92,7 +92,7 @@ export const getSettings = () =>
             propertyName: 'allowReplace',
             label: 'Allow Replace',
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
-            hidden: {_code: 'return  getSettingValue(data?.disabled);', _mode: 'code', _value: false} as any,
+            hidden: {_code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false} as any,
             validate: {},
           })
           .addCheckbox({
@@ -100,7 +100,7 @@ export const getSettings = () =>
             propertyName: 'allowDelete',
             label: 'Allow Delete',
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
-            hidden: {_code: 'return  getSettingValue(data?.disabled);', _mode: 'code', _value: false} as any,
+            hidden: {_code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false} as any,
             validate: {},
           }).toJson()
         ]

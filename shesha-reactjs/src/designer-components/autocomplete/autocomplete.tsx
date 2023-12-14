@@ -24,7 +24,7 @@ import { evaluateDynamicFilters } from '@/utils';
 import { axiosHttp } from '@/utils/fetchers';
 import { IAutocompleteComponentProps } from './interfaces';
 import settingsFormJson from './settingsForm.json';
-import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
+import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
@@ -54,10 +54,6 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     );
 
     const dataSourceUrl = model.dataSourceUrl ? replaceTags(model.dataSourceUrl, { data: data }) : model.dataSourceUrl;
-
-
-
-    const disabled = model.disabled;
 
     const evaluatedFilters = useAsyncMemo(async () => {
       if (!filter) return '';
@@ -176,14 +172,13 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       typeShortAlias: model.entityTypeShortAlias,
       entityDisplayProperty: model.entityDisplayProperty,
       allowInherited: true /*hardcoded for now*/,
-      disabled,
       bordered: !model.hideBorder,
       dataSourceUrl,
       dataSourceType: model.dataSourceType,
       mode: model.mode,
       placeholder: model.placeholder,
       queryParams: getQueryParams(),
-      readOnly: model.readOnly || formMode === 'readonly',
+      readOnly: model.readOnly,
       defaultValue,
       getOptionFromFetchedItem,
       disableSearch: model.disableSearch,
@@ -247,6 +242,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     })
     .add<IAutocompleteComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IAutocompleteComponentProps>(3, (prev) => migrateVisibility(prev))
+    .add<IAutocompleteComponentProps>(4, (prev) => migrateReadOnly(prev))
   ,
   linkToModelMetadata: (model, propMetadata): IAutocompleteComponentProps => {
     return {

@@ -3,20 +3,18 @@ import { IStylable, IToolboxComponent } from '../../../../interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { FormOutlined } from '@ant-design/icons';
 import {
-  executeCustomExpression,
   getStyle
 } from '@/providers/form/utils';
 import {
   useForm,
   SubFormProvider,
-  useGlobalState,
   useFormItem,
   useFormData,
 } from '../../../../providers';
 import SubForm from './subForm';
 import ConfigurableFormItem from '../formItem';
 import { SubFormSettingsForm } from './settings';
-import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { ISubFormProviderProps } from '@/providers/subForm/interfaces';
 
 export interface ISubFormComponentProps
@@ -33,13 +31,10 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
   Factory: ({ model }) => {
     const { formMode } = useForm();
     const { data: formData } = useFormData();
-    const { globalState } = useGlobalState();
-
-    const isVisibleByCondition = executeCustomExpression(model?.customVisibility, true, formData, globalState);
 
     const { namePrefix } = useFormItem();
 
-    if (!isVisibleByCondition && formMode !== 'designer') return null;
+    if (model.hidden && formMode !== 'designer') return null;
 
     const name = namePrefix ? [namePrefix, model?.propertyName]?.join('.') : model?.propertyName;
 
@@ -59,7 +54,8 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
   migrator: m => m
     .add<ISubFormComponentProps>(0, prev => ({ ...prev, apiMode: prev['apiMode'] ?? 'entityName' }))
     .add<ISubFormComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-    ,
+    .add<ISubFormComponentProps>(2, (prev) => migrateReadOnly(prev))
+  ,
   settingsFormFactory: (props) => <SubFormSettingsForm {...props}/>,
   initModel: model => {
     const customProps: ISubFormComponentProps = {

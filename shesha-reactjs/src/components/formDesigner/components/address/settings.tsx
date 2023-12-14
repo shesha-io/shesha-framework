@@ -14,6 +14,7 @@ import { useForm } from '@/providers';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
 import { ContextPropertyAutocomplete } from '@/designer-components/contextPropertyAutocomplete';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
+import ReadOnlyModeSelector from '@/components/readOnlyModeSelector/index';
 
 interface IEntityReferenceSettingsState extends IAddressCompomentProps { }
 
@@ -61,20 +62,16 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
           <TextArea readOnly={readOnly} />
         </SettingsFormItem>
 
-        <SettingsFormItem name="readOnly" label="Read Only" valuePropName="checked" jsSetting>
-          <Checkbox disabled={readOnly} />
-        </SettingsFormItem>
-
         <SettingsFormItem name="hideLabel" label="Hide Label" valuePropName="checked" jsSetting>
-          <Checkbox disabled={readOnly} />
-        </SettingsFormItem>
-
-        <SettingsFormItem name="disabled" label="Disabled" valuePropName="checked" jsSetting>
           <Checkbox disabled={readOnly} />
         </SettingsFormItem>
 
         <SettingsFormItem name="hidden" label="Hidden" valuePropName="checked" jsSetting>
           <Checkbox disabled={readOnly} />
+        </SettingsFormItem>
+
+        <SettingsFormItem name="readOnly" label="Read Only mode" jsSetting>
+          <ReadOnlyModeSelector readOnly={readOnly} />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 

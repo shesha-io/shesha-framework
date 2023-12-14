@@ -5,7 +5,7 @@ import { LinkExternalOutlined } from '@/icons/linkExternalOutlined';
 import { IToolboxComponent } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { EntityReferenceSettingsForm } from './settings';
-import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
+import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateNavigateAction } from '../_common-migrations/migrate-navigate-action';
@@ -21,18 +21,14 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
   isOutput: true,
   icon: <LinkExternalOutlined />,
   Factory: ({ model: passedModel }) => {
-    const { style, hidden, disabled, ...model } = passedModel;
+    const { style, hidden, readOnly, ...model } = passedModel;
     if (hidden)
       return null;
 
     return (
       <ConfigurableFormItem model={model}>
         {(value) => {
-          return <EntityReference
-                {...model}
-                disabled={disabled}
-                value={value}
-            />;
+          return <EntityReference {...model} disabled={readOnly} value={value} />;
         }}
       </ConfigurableFormItem>
     );
@@ -59,6 +55,7 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
       onSuccess: migrateNavigateAction(prev.onSuccess),
       onFail: migrateNavigateAction(prev.onFail),
     }))
+    .add<IEntityReferenceControlProps>(4, (prev) => migrateReadOnly(prev, 'editable'))
   ,
   linkToModelMetadata: (model, propMetadata): IEntityReferenceControlProps => {
     return {

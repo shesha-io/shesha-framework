@@ -35,10 +35,10 @@ export const ComponentsContainerForm: FC<IComponentsContainerProps> = (props) =>
           ?.filter(({ customVisibility }) => {
             return executeExpression(customVisibility);
           })
-          ?.map(({ customEnabled, disabled: _disabled, ...model }, idx) => {
-            const disabled = !executeExpression(customEnabled) || _disabled;
+          ?.map(({ customEnabled, ...model }, idx) => {
+            const readOnly = !executeExpression(customEnabled) || model.readOnly;
 
-            return <DynamicComponent model={{ ...model, isDynamic: true, disabled }} key={idx} />;
+            return <DynamicComponent model={{ ...model, isDynamic: true, readOnly }} key={idx} />;
           })}
       </div>
     );

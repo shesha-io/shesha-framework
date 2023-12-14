@@ -10,20 +10,19 @@ export interface IConfigurableFormComponentProps {
 }
 
 const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model }) => {
-  const { form, getToolboxComponent, isComponentHidden, isComponentDisabled } = useForm();
+  const { form, getToolboxComponent, isComponentHidden, isComponentReadOnly } = useForm();
   const allData = useApplicationContext();
 
   const componentRef = useRef();
   const toolboxComponent = getToolboxComponent(model.type);
 
-  const actualModel = useDeepCompareMemo(() => getActualModel(model, allData),
+  const actualModel = useDeepCompareMemo(() => getActualModel(model, allData, false),
     [model, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
 
   if (!toolboxComponent) return null;
 
   actualModel.hidden = isComponentHidden(actualModel);
-  actualModel.disabled = isComponentDisabled(actualModel);
-  actualModel.readOnly = actualModel.readOnly || allData.formMode === 'readonly';
+  actualModel.readOnly = isComponentReadOnly(actualModel);
 
   const renderComponent = () => {
     return (

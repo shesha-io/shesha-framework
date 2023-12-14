@@ -10,7 +10,7 @@ import { IQueryBuilderComponentProps } from './interfaces';
 import QueryBuilderField from './queryBuilderField';
 import { QueryBuilderWithModelType } from './queryBuilderWithModelType';
 import settingsFormJson from './settingsForm.json';
-import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -21,13 +21,13 @@ const QueryBuilderComponent: IToolboxComponent<IQueryBuilderComponentProps> = {
   icon: <FilterOutlined />,
   //dataTypes: [DataTypes.string],
   Factory: ({ model }) => {
-    const { formMode } = useForm();
-    return <QueryBuilder {...model} readOnly={formMode === 'readonly'}></QueryBuilder>;
+    return <QueryBuilder {...model} readOnly={model.readOnly}></QueryBuilder>;
   },
   settingsFormMarkup: settingsForm,
   migrator: (m) => m
     .add<IQueryBuilderComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IQueryBuilderComponentProps>(1, (prev) => migrateVisibility(prev))
+    .add<IQueryBuilderComponentProps>(2, (prev) => migrateReadOnly(prev))
   ,
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
 };

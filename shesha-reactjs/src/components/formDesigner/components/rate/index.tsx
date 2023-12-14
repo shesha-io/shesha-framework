@@ -20,7 +20,7 @@ import moment from 'moment';
 import { customRateEventHandler } from '../utils';
 import _ from 'lodash';
 import classNames from 'classnames';
-import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 export interface IRateProps extends IConfigurableFormComponent {
@@ -97,6 +97,7 @@ const RateComponent: IToolboxComponent<IRateProps> = {
   migrator: (m) => m
     .add<IRateProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IRateProps>(1, (prev) => migrateVisibility(prev))
+    .add<IRateProps>(2, (prev) => migrateReadOnly(prev))
   ,
 };
 

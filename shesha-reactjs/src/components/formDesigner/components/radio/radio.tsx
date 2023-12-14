@@ -1,5 +1,5 @@
 import { CheckCircleOutlined } from '@ant-design/icons';
-import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import React from 'react';
 import { useFormData } from '@/components/..';
 import { IToolboxComponent } from '@/interfaces';
@@ -53,6 +53,7 @@ const Radio: IToolboxComponent<IEnhancedRadioProps> = {
     })
     .add<IEnhancedRadioProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IEnhancedRadioProps>(3, (prev) => migrateVisibility(prev))
+    .add<IEnhancedRadioProps>(4, (prev) => migrateReadOnly(prev))
   ,
 };
 

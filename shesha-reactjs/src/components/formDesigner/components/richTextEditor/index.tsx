@@ -10,7 +10,7 @@ import { useDeepCompareMemoKeepReference, useFormData } from '@/components/..';
 import { IRichTextEditorProps } from './interfaces';
 import { getStyle } from '@/providers/form/utils';
 import { IJoditEditorProps } from '../../../richTextEditor/joditEditor';
-import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -22,10 +22,6 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
   icon: <EditOutlined />,
   Factory: ({ model }) => {
     const { data: formData } = useFormData();
-
-    const disabled =model.disabled;
-
-    const readOnly = model.readOnly;
 
     const config = useDeepCompareMemoKeepReference<PartialRichTextEditorConfig>(() => {
       const typedConfig: PartialRichTextEditorConfig = {
@@ -40,7 +36,7 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
         height: model?.height,
         width: model?.width,
         placeholder: model?.placeholder,
-        readonly: readOnly || disabled,
+        readonly: model?.readOnly,
         style: getStyle(model?.style, formData),
         defaultActionOnPaste: 'insert_as_html',
         enter: 'br',
@@ -52,7 +48,7 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
         autofocus: model?.autofocus,
       };
       return typedConfig;
-    }, [model, readOnly]);
+    }, [model]);
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) => <RichTextEditor config={config} value={value} onChange={onChange}/>}
@@ -80,6 +76,7 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
   }),
   migrator: (m) => m
     .add<IRichTextEditorProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IRichTextEditorProps>(1, (prev) => migrateReadOnly(prev))
   ,
 };
 

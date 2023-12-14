@@ -6,7 +6,7 @@ import { NotesRenderer, useFormData } from '../../../../';
 import { evaluateValue, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import React from 'react';
 import NotesProvider from '@/providers/notes';
-import { migrateCustomFunctions, migrateFunctionToProp, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migrateFunctionToProp, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 export interface INotesProps extends IConfigurableFormComponent {
@@ -35,7 +35,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
     return (
       <NotesProvider ownerId={ownerId} ownerType={model.ownerType}>
         <NotesRenderer
-          showCommentBox={model.disabled !== true}
+          showCommentBox={!model.readOnly}
           buttonPostion={model?.savePlacement}
           autoSize={model?.autoSize}
         />
@@ -60,7 +60,9 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
             migrateFunctionToProp(prev, 'ownerId', 'ownerIdExpression')
             , 'ownerType', 'ownerTypeExpression')
         )) as INotesProps)
-    .add<INotesProps>(1, (prev) => migrateVisibility(prev)),
+    .add<INotesProps>(1, (prev) => migrateVisibility(prev))
+    .add<INotesProps>(2, (prev) => migrateReadOnly(prev))
+  ,
 };
 
 export default NotesComponent;
