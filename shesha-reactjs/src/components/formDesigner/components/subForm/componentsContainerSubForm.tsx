@@ -29,24 +29,20 @@ export const ComponentsContainerSubForm: FC<IComponentsContainerSubFormProps> = 
     [subFormData, globalState]
   );
 
-  const getReadOnlyState = (isReadOnly: boolean) => (typeof readOnly === 'boolean' ? readOnly : isReadOnly);
-
   return (
     <div style={removeUndefinedProperties(style)}>
       {components
         ?.filter(({ customVisibility }) => {
           return executeExpression(customVisibility);
         })
-        .map(({ customEnabled, disabled: notabled, ...model }) => {
-          const disabled = !executeExpression(customEnabled) || notabled;
-
+        .map(({ disabled, ...model }) => {
           return (
             <DynamicComponent
               model={{
                 ...model,
                 context,
                 isDynamic: true,
-                readOnly: getReadOnlyState(model?.readOnly),
+                readOnly: readOnly || model?.readOnly,
                 disabled,
                 customEnabled: '',
               }}

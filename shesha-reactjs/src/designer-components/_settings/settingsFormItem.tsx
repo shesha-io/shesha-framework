@@ -37,7 +37,7 @@ const SettingsFormItem: FC<ISettingsFormItemProps> = (props) => {
 const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
     const { getFieldsValue } = useSettingsForm<any>();
     const formData = getFieldsValue();
-    const { _mode: mode } = getPropertySettingsFromData(formData, props.name?.toString());
+    const { _mode: mode, _code: code } = getPropertySettingsFromData(formData, props.name?.toString());
 
     const modeRef = useRef<ISwitchModeSettingsRef>();
     const switchMode = () => {
@@ -87,7 +87,8 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
                         disabled={props.disabled || props.readOnly}
                         shape="round"
                         className='sha-js-switch'
-                        type='primary'
+                        type={'primary'}
+                        danger={mode === 'value' && !!code }
                         ghost
                         size='small'
                         onClick={switchMode}

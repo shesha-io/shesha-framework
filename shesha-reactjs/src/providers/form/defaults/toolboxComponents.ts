@@ -90,6 +90,7 @@ import TextFieldComponent from '@/designer-components/textField/textField';
 import TimeField from '@/designer-components/timeField';
 import { IToolboxComponentGroup } from '@/interfaces/formDesigner';
 import { ComponentSelectorComponent } from '../../../designer-components';
+import ReadOnlyModeSelectorComponent from '@/designer-components/readOnlyModeSelector/readOnlyModeSelector';
 
 export const ToolboxComponents: IToolboxComponentGroup[] = [
   {
@@ -214,7 +215,7 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
   {
     visible: true,
     name: 'Internal',
-    components: [PropertyAutocompleteComponent, SortingEditorComponent],
+    components: [PropertyAutocompleteComponent, SortingEditorComponent, ReadOnlyModeSelectorComponent],
   },
 ];
 

@@ -16,14 +16,13 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model }) => {
   const componentRef = useRef();
   const toolboxComponent = getToolboxComponent(model.type);
 
-  const actualModel = useDeepCompareMemo(() => getActualModel(model, allData),
+  const actualModel = useDeepCompareMemo(() => getActualModel(model, allData, false),
     [model, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
 
   if (!toolboxComponent) return null;
 
   actualModel.hidden = isComponentHidden(actualModel);
   actualModel.disabled = isComponentDisabled(actualModel);
-  actualModel.readOnly = actualModel.readOnly || allData.formMode === 'readonly';
 
   const renderComponent = () => {
     return (

@@ -71,21 +71,15 @@ export const getSettings = (data: any) =>
             label: 'Hidden',
           })
           .addCheckbox({
-            id: '1ceb3851-f15e-437b-98b6-84d6a1fbf801',
-            propertyName: 'readOnly',
-            parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
-            label: 'Read Only',
-          })
-          .addCheckbox({
             id: 'c6885251-96a6-40ce-99b2-4b5209a9e01c',
             propertyName: 'hideLabel',
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
             label: 'Hide Label',
           })
-          .addCheckbox({
+          .addReadOnlyMode({
             id: '148e12c0-41a0-4fa2-8c64-8f6dd5213a3e',
-            propertyName: 'disabled',
-            label: 'Disabled',
+            propertyName: 'readOnly',
+            label: "Read Only mode",
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
           }).toJson()
         ]

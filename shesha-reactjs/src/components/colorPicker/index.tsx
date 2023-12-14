@@ -8,6 +8,7 @@ import classNames from 'classnames';
 interface IColorPickerProps extends Omit<SketchPickerProps, 'color'> {
   title?: string;
   color?: ColorResult;
+  readOnly?: boolean;
 }
 
 interface IColorPickerState {
@@ -46,6 +47,9 @@ const ColorPicker: FC<IColorPickerProps> = ({ title, color, onChange, onChangeCo
     return typeof state?.color === 'string' ? state?.color : state?.color?.hex;
   }, [state?.color]);
 
+  if (props.readOnly)
+    return <span className={classNames('color-picker-selector')} style={{ background: backgroundColor }} />;
+
   return (
     <Popover
       open={state?.visible}
@@ -61,7 +65,7 @@ const ColorPicker: FC<IColorPickerProps> = ({ title, color, onChange, onChangeCo
         />
       }
     >
-      <span className={classNames('color-picker-selector')} style={{ background: backgroundColor }} />
+      <span className={classNames('color-picker-selector', 'editable')} style={{ background: backgroundColor }} />
     </Popover>
   );
 };

@@ -9,7 +9,7 @@ import { useFormData } from '@/providers';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { EndpointsAutocomplete } from '../../../endpointsAutocomplete/endpointsAutocomplete';
 import { IEndpointsAutocompleteComponentProps } from './interfaces';
-import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -41,6 +41,7 @@ const EndpointsAutocompleteComponent: IToolboxComponent<IEndpointsAutocompleteCo
   migrator: (m) => m
     .add<IEndpointsAutocompleteComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IEndpointsAutocompleteComponentProps>(1, (prev) => migrateVisibility(prev))
+    .add<IEndpointsAutocompleteComponentProps>(2, (prev) => migrateReadOnly(prev))
   ,  
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
 };

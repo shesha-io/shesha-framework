@@ -10,6 +10,7 @@ import React, { FC } from 'react';
 import FormAutocomplete from '@/components/formAutocomplete';
 import CodeEditor from '../codeEditor/codeEditor';
 import { IChildEntitiesTagGroupProps } from './models';
+import ReadOnlyModeSelector from '@/components/readOnlyModeSelector/index';
 
 const { Option } = Select;
 
@@ -48,8 +49,8 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
           </Select>
         </SettingsFormItem>
 
-        <SettingsFormItem name="readOnly" label="Read Only" valuePropName="checked" jsSetting>
-          <Checkbox disabled={readOnly} />
+        <SettingsFormItem name="readOnly" label="Read Only mode" jsSetting>
+          <ReadOnlyModeSelector readOnly={readOnly} />
         </SettingsFormItem>
 
         <SettingsFormItem name="hidden" label="Hidden" valuePropName="checked" jsSetting>

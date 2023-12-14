@@ -44,7 +44,7 @@ interface IconPickerWrapperProps {
   customColor?: string;  
 }
 const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
-  const { customColor, customIcon, fontSize, color, disabled, readOnly, applicationContext, value, onChange } = props;
+  const { customColor, customIcon, fontSize, color, readOnly, applicationContext, value, onChange } = props;
   const computedColor = useMemo(() => {
     if (customColor) return executeScriptSync<string>(customColor, applicationContext);
 
@@ -70,7 +70,7 @@ const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     <IconPicker
       value={computedIcon as ShaIconTypes}
       onIconChange={onIconChange}
-      readOnly={readOnly || disabled}
+      readOnly={readOnly}
       style={style}
       twoToneColor={computedColor}
     />

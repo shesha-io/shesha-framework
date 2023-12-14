@@ -5,9 +5,8 @@ import settingsFormJson from './settingsForm.json';
 import React from 'react';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { PermissionsTree, PermissionsTreeMode } from '@/components/permissionsTree';
-import { useForm } from '@/components/..';
 import ConfigurableFormItem from '../../formItem';
-import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 
 export interface IPermissionsTreeComponentProps extends IConfigurableFormComponent {
   value?: string[];
@@ -32,8 +31,6 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionsTreeCompon
   name: 'Permissions tree',
   icon: <ApartmentOutlined />,
   Factory: ({ model }) => {
-    const { formMode } = useForm();
-
     if (model.mode === 'Edit') {
       return (
         <PermissionsTree 
@@ -42,7 +39,7 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionsTreeCompon
           value={model?.value} 
           updateKey={model?.updateKey}
           onChange={model?.onChange}
-          readOnly={model?.readOnly || formMode === 'readonly'}
+          readOnly={model?.readOnly}
           disabled={model?.disabled}
           mode={model?.mode ?? "Select"}
           height={model?.height}
@@ -58,7 +55,7 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionsTreeCompon
               value={value} 
               updateKey={model?.updateKey}
               onChange={onChange}
-              readOnly={model?.readOnly || formMode === 'readonly'}
+              readOnly={model?.readOnly}
               disabled={model?.disabled}
               mode={model?.mode ?? "Select"}
               height={model?.height}
@@ -82,6 +79,7 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionsTreeCompon
   },
   migrator: (m) => m
     .add<IPermissionsTreeComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IPermissionsTreeComponentProps)
+    .add<IPermissionsTreeComponentProps>(1, (prev) => migrateReadOnly(prev))
   ,
 };
 

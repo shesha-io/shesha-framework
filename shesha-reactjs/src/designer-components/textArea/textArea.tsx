@@ -14,7 +14,7 @@ import { ITextAreaComponentProps } from './interfaces';
 import { ConfigurableFormItem } from '@/components';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { customEventHandler } from '@/components/formDesigner/components/utils';
-import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
+import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -123,7 +123,9 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
   migrator: (m) =>
     m
       .add<ITextAreaComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-      .add<ITextAreaComponentProps>(1, (prev) => migrateVisibility(prev)),
+      .add<ITextAreaComponentProps>(1, (prev) => migrateVisibility(prev))
+      .add<ITextAreaComponentProps>(2, (prev) => migrateReadOnly(prev))
+    ,
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
 };

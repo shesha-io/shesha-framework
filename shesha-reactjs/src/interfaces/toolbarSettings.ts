@@ -25,6 +25,7 @@ import { IButtonsProps } from './../components/formDesigner/components/button/bu
 import { ILabelValueEditorComponentProps } from './../components/formDesigner/components/labelValueEditor/interfaces';
 import { IContextPropertyAutocompleteComponentProps } from '@/designer-components/contextPropertyAutocomplete';
 import { ITextAreaComponentProps } from '@/designer-components/textArea/interfaces';
+import { IReadOnlyModeSelectorProps } from '@/components/readOnlyModeSelector/index';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'hidden' | 'type'> {
   hidden?: boolean | IPropertySetting;
@@ -83,6 +84,9 @@ type EntityPickerColumnsEditorType = ToolbarSettingsProp & Omit<IColumnsEditorCo
 type ICollapsiblePanelPropsEditorType = ToolbarSettingsProp & Omit<ICollapsiblePanelComponentProps, 'hidden' | 'type'>;
 
 type AlertType = ToolbarSettingsProp & Omit<IAlertComponentProps, 'hidden' | 'type'>;
+
+type ReadOnlyModeType = ToolbarSettingsProp & Omit<IReadOnlyModeSelectorProps, 'hidden' | 'type'>;
+
 
 export class DesignerToolbarSettings<T> {
   protected readonly form: IConfigurableFormComponent[];
@@ -203,6 +207,10 @@ export class DesignerToolbarSettings<T> {
 
   public addEditableTagGroupProps(props: EditableTagGroupType | ((data: T) => EditableTagGroupType)) {
     return this.addProperty(props, 'editableTagGroup');
+  }
+
+  public addReadOnlyMode(props: ReadOnlyModeType | ((data: T) => ReadOnlyModeType)) {
+    return this.addProperty(props, 'readOnlyModeSelector');
   }
 
   private addProperty(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp), type: string) {

@@ -13,7 +13,7 @@ import { evaluateString, getStyle, validateConfigurableComponentSettings } from 
 import { axiosHttp } from '@/utils/fetchers';
 import { ITextFieldComponentProps, TextType } from './interfaces';
 import settingsFormJson from './settingsForm.json';
-import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index';
 
@@ -57,7 +57,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       bordered: !model.hideBorder,
       maxLength: model.validate?.maxLength,
       size: model.size,
-      disabled: model.disabled,
+      disabled: model.readOnly,
       readOnly: model.readOnly,
       style: getStyle(model?.style, formData),
     };
@@ -91,8 +91,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
               onChange(...args);
           };
           return inputProps.readOnly
-            ? <ReadOnlyDisplayFormItem value={model.textType === 'password' ? ''.padStart(value.length, '•') : value} disabled={model.disabled} />
-            : <InputComponentType {...inputProps} {...customEvent} disabled={model.disabled} value={value} onChange={onChangeInternal} />;
+            ? <ReadOnlyDisplayFormItem value={model.textType === 'password' ? ''.padStart(value.length, '•') : value} disabled={model.readOnly} />
+            : <InputComponentType {...inputProps} {...customEvent} disabled={model.readOnly} value={value} onChange={onChangeInternal} />;
         }}
       </ConfigurableFormItem>
     );
@@ -107,6 +107,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     .add<ITextFieldComponentProps>(0, (prev) => ({ ...prev, textType: 'text' }))
     .add<ITextFieldComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<ITextFieldComponentProps>(2, (prev) => migrateVisibility(prev))
+    .add<ITextFieldComponentProps>(3, (prev) => migrateReadOnly(prev))
   ,
   linkToModelMetadata: (model, metadata): ITextFieldComponentProps => {
     return {

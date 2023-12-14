@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { ReactPictureAnnotation } from 'react-picture-annotation';
 import { usePrevious } from '../../../../hooks';
-import { useForm, useFormData, useGlobalState } from '../../../../providers';
+import { useFormData, useGlobalState } from '../../../../providers';
 import { getString, getStyle } from '@/providers/form/utils';
 import CustomInput from './components/customAnnotationInput';
 import DescriptionsList from './components/descriptionList';
@@ -10,13 +10,11 @@ import { IAnnotation, IImageAnnotationData, IImageProps } from './model';
 import './styles/index.less';
 import {
   canSubmit,
-  getCustomEnabled,
   getImageBits,
   getViewData,
   parseIntOrDefault,
   sortAnnotationData,
 } from './utilis';
-import { name } from 'pubsub-js';
 
 interface IProps {
   model: IImageProps;
@@ -32,16 +30,13 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
     allowAddingNotes = true,
     minPoints = 0,
     maxPoints = 0,
-    disabled,
-    customEnabled,
+    readOnly,
     style,
   } = model;
 
   const { data: formData } = useFormData();
 
   const { globalState } = useGlobalState();
-
-  const { formMode } = useForm();
 
   const imageFrameRef = useRef<HTMLDivElement>(null);
 
@@ -59,9 +54,7 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
 
   const [urlBits, setBits] = useState<string>(value?.bit64Url);
 
-  const isCustomEnabled = getCustomEnabled(customEnabled, name, formData, globalState, formMode);
-
-  const isReadOnly = model?.readOnly || formMode === 'readonly' || disabled || !isCustomEnabled;
+  const isReadOnly = readOnly;
 
   useEffect(() => {
     window.addEventListener('resize', onResize);

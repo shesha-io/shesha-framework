@@ -9,7 +9,7 @@ import { IButtonGroupItemBaseV0, migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
 import { getSettings } from './settingsForm';
 import { IButtonComponentProps } from './interfaces';
-import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
+import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 export type IActionParameters = [{ key: string; value: string }];
@@ -41,6 +41,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       <ConfigurableFormItem model={fieldModel}>
         <ConfigurableButton
           {...restProps}
+          disabled={model.readOnly}
           block={restProps?.block}
           style={getStyle(style, data)}
         />
@@ -80,6 +81,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       .add<IButtonComponentProps>(2, migrateV1toV2)
       .add<IButtonComponentProps>(3, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<IButtonComponentProps>(4, (prev) => migrateVisibility(prev))
+      .add<IButtonComponentProps>(5, (prev) => migrateReadOnly(prev, 'editable'))
   ,
 };
 

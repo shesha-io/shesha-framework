@@ -16,7 +16,7 @@ import StoredFilesProvider from '@/providers/storedFiles';
 import { IStoredFile } from '@/providers/storedFiles/contexts';
 import { axiosHttp } from '@/utils/fetchers';
 import { getSettings } from './settings';
-import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 export interface IAttachmentsEditorProps extends IConfigurableFormComponent {
@@ -46,9 +46,8 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
 
     const ownerId = evaluateValue(model.ownerId, { data: data, globalState });
 
-    const readonly = formMode === 'readonly';
     const isEnabledByCondition = executeCustomExpression(model.customEnabled, true, data, globalState);
-    const enabled = !readonly && !model.disabled && isEnabledByCondition;
+    const enabled = !model.readOnly && !model.disabled && isEnabledByCondition;
 
     const onFileListChanged = (fileList: IStoredFile[]) => {
       const http = axiosHttp(backendUrl);
@@ -115,6 +114,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     })
     .add<IAttachmentsEditorProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IAttachmentsEditorProps>(2, (prev) => migrateVisibility(prev))
+    .add<IAttachmentsEditorProps>(3, (prev) => migrateReadOnly(prev))
   ,
 };
 

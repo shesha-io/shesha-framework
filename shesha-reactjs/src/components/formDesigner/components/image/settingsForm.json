@@ -66,13 +66,6 @@
       "label": "Hide Label"
     },
     {
-      "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
-      "type": "checkbox",
-      "propertyName": "disabled",
-      "parentId": "root",
-      "label": "Disabled"
-    },
-    {
       "id": "d675bfe4-ee69-431e-931b-b0e0b9ceee6f",
       "type": "sectionSeparator",
       "propertyName": "separator2",

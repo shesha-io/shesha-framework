@@ -6,7 +6,6 @@ import ConfigurableFormItem from '../formItem';
 import settingsFormJson from './settingsForm.json';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import AutocompleteTagGroup from '@/components/autocompleteTagGroup';
-import { useForm } from '@/components/..';
 import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
@@ -15,14 +14,6 @@ export interface IAutocompleteTagsOutlinedComponentProps extends IConfigurableFo
   defaultValue?: string;
   autocompleteUrl: string;
   onChange?: (values?: string[]) => void;
-  /**
-   * Whether this control is disabled
-   */
-  disabled?: boolean;
-  /**
-   * If true, the automplete will be in read-only mode. This is not the same sa disabled mode
-   */
-  readOnly?: boolean;
 }
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -33,8 +24,6 @@ const AutocompleteTagGroupComponent: IToolboxComponent<IAutocompleteTagsOutlined
   icon: <TagOutlined />,
   canBeJsSetting: true,
   Factory: ({ model }) => {
-    const { formMode } = useForm();
-
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) => 
@@ -43,7 +32,7 @@ const AutocompleteTagGroupComponent: IToolboxComponent<IAutocompleteTagsOutlined
             defaultValue={model?.defaultValue}
             onChange={onChange}
             autocompleteUrl={model?.autocompleteUrl}
-            readOnly={model?.readOnly || formMode === 'readonly'}
+            readOnly={model?.readOnly}
             disabled={model?.disabled}
           />
         }

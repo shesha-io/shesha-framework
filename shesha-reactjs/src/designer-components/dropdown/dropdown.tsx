@@ -16,7 +16,7 @@ import { axiosHttp } from '@/utils/fetchers';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
 import { IDropdownComponentProps, ILabelValue } from './interfaces';
 import settingsFormJson from './settingsForm.json';
-import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
+import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -49,7 +49,6 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
 
     const initialValue = model?.defaultValue ? { initialValue: model.defaultValue } : {};
 
-
     return (
       <ConfigurableFormItem model={model} {...initialValue}>
         {(value, onChange) => {
@@ -81,6 +80,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
     })
     .add<IDropdownComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IDropdownComponentProps>(3, (prev) => migrateVisibility(prev))
+    .add<IDropdownComponentProps>(4, (prev) => migrateReadOnly(prev))
   ,
   linkToModelMetadata: (model, metadata): IDropdownComponentProps => {
     const isSingleRefList = metadata.dataType === DataTypes.referenceListItem;

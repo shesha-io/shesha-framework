@@ -45,6 +45,8 @@ export interface IComponentValidationRules {
   validator?: string;
 }
 
+export type ReadOnlyMode = 'editable' | 'readOnly' | 'inherited' | boolean;
+
 export type ConfigurableFormComponentTypes =
   | 'alert'
   | 'address'
@@ -141,6 +143,7 @@ export interface IConfigurableFormComponent
 
   /** Whether the component is read-only */
   readOnly?: boolean;
+  readOnlyMode?: ReadOnlyMode;
 
   /** Custom visibility code */
   /** @deprecated Use disabled in js mode instead */
