@@ -1,9 +1,10 @@
+import { IConfigurableActionConfiguration } from '@/providers/configurableActionsDispatcher/index';
 import { ReactNode } from 'react';
 
-export type SidebarItemType = 'button' | 'separator' | 'group';
+export type SidebarItemType = 'button' | 'divider' | 'group';
 export type ButtonActionType = 'navigate' | 'dialogue' | 'executeScript' | 'executeFormAction';
 
-export interface ISidebarMenuItem {
+export interface ISidebarMenuItemV0 {
   id: string;
   title: string;
   tooltip?: ReactNode | string;
@@ -15,6 +16,41 @@ export interface ISidebarMenuItem {
   visibility?: string;
   requiredPermissions?: string[];
   isRootItem?: boolean;
-  childItems?: ISidebarMenuItem[];
+  childItems?: ISidebarMenuItemV0[];
   selected?: boolean;
 }
+
+export interface ISidebarMenuItem {
+  id: string;
+  title: string;
+  tooltip?: ReactNode | string;
+  itemType: SidebarItemType;
+
+  icon?: ReactNode | string;
+  isHidden?: boolean;
+  visibility?: string;
+  requiredPermissions?: string[];
+
+  /*
+  isRootItem?: boolean;
+  buttonAction?: ButtonActionType;
+  target?: string;
+  selected?: boolean;
+  */
+}
+
+export interface ISidebarButton extends ISidebarMenuItem {
+  actionConfiguration: IConfigurableActionConfiguration;
+}
+
+export interface ISidebarGroup extends ISidebarMenuItem {
+  childItems?: ISidebarMenuItem[];
+}
+
+export const isSidebarGroup = (item: ISidebarMenuItem): item is ISidebarGroup => {
+  return item && item.itemType === 'group';
+};
+
+export const isSidebarButton = (item: ISidebarMenuItem): item is ISidebarButton => {
+  return item && item.itemType === 'button';
+};

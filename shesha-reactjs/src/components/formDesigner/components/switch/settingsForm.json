@@ -1,12 +1,28 @@
 {
   "components": [
-    {
-      "id": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
-      "type": "sectionSeparator",
-      "propertyName": "separator1",
-      "parentId": "root",
-      "label": "Display"
+   {
+     "id": "aIMnm2re1exM1M7pEEur9",
+    "type": "collapsiblePanel",
+    "propertyName": "pnlDisplay",
+    "label": "Display",
+    "labelAlign": "right",
+    "parentId": "root",
+    "hidden": false,
+
+    "isDynamic": false,
+    "version": 2,
+    "expandIconPosition": "left",
+    "collapsible": "header",
+    "ghost": true,
+    "hideWhenEmpty": true,
+    "settingsValidationErrors": [],
+    "header": {
+      "id": "FizvoIoyeq1cZMqAgbDLL",
+      "components": []
     },
+    "content": {
+      "id": "y9SNudmMM0Wd1Sc_YI1ng",
+      "components": [
     {
       "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
       "type": "contextPropertyAutocomplete",
@@ -44,7 +60,33 @@
       "propertyName": "readOnly",
       "parentId": "root",
       "label": "Read Only mode"
-    },
+    }
+      ]
+    }
+},
+{
+  "id": "aIMnm2re2exM1M7pEEur9",
+ "type": "collapsiblePanel",
+ "propertyName": "pnlStyle",
+ "label": "Style",
+ "labelAlign": "right",
+ "parentId": "root",
+ "hidden": false,
+
+ "isDynamic": false,
+ "version": 2,
+ "expandIconPosition": "left",
+ "collapsible": "header",
+ "ghost": true,
+ "hideWhenEmpty": true,
+ "settingsValidationErrors": [],
+ "header": {
+   "id": "FhzvoIoyeq1cZMqAgbDLL",
+   "components": []
+ },
+ "content": {
+   "id": "y9SMudmMM0Wd1Sc_YI1ng",
+   "components": [
     {
       "id": "06ab0599-914d-4d2d-875c-765a495472f8",
       "type": "codeEditor",
@@ -77,7 +119,11 @@
       ],
       "dataSourceType": "values"
     }
+  ]
+}
+}
   ],
+  
   "formSettings": {
     "layout": "horizontal",
     "colon": true,

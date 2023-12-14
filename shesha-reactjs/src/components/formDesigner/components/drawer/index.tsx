@@ -10,6 +10,7 @@ import {
   migratePropertyName,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { useFormData, useGlobalState } from '@/providers';
+import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
 
 const DrawerComponent: IToolboxComponent<IDrawerProps> = {
   type: 'drawer',
@@ -23,7 +24,12 @@ const DrawerComponent: IToolboxComponent<IDrawerProps> = {
     return <ShaDrawer style={getLayoutStyle(model, { data, globalState })} {...props} />;
   },
   settingsFormMarkup: (data) => getSettings(data),
-  migrator: (m) => m.add<IDrawerProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev))),
+  migrator: (m) => m.add<IDrawerProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IDrawerProps>(1, (prev) => ({ 
+      ...prev, 
+      onOkAction: migrateNavigateAction(prev.onOkAction),
+      onCancelAction: migrateNavigateAction(prev.onCancelAction),
+    })),
   initModel: (model) => {
     const customProps: IDrawerProps = {
       ...model,

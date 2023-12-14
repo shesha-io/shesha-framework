@@ -33,7 +33,6 @@ const AutocompleteTagGroupComponent: IToolboxComponent<IAutocompleteTagsOutlined
             onChange={onChange}
             autocompleteUrl={model?.autocompleteUrl}
             readOnly={model?.readOnly}
-            disabled={model?.disabled}
           />
         }
       </ConfigurableFormItem>

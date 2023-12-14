@@ -51,7 +51,6 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
     const textAreaProps: TextAreaProps = {
       className: 'sha-text-area',
       placeholder: model.placeholder,
-      disabled: model.disabled,
       autoSize: model.autoSize ? { minRows: 2 } : false,
       showCount: model.showCount,
       maxLength: model.validate?.maxLength,
@@ -94,12 +93,12 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
           return showAsJson ? (
             <JsonTextArea value={value} textAreaProps={textAreaProps} customEventHandler={customEvent} />
           ) : model.readOnly ? (
-            <ReadOnlyDisplayFormItem value={value} disabled={model.disabled} />
+            <ReadOnlyDisplayFormItem value={value} />
           ) : (
             <Input.TextArea
               rows={2}
               {...textAreaProps}
-              disabled={model.disabled ? model.disabled : undefined}
+              disabled={model.readOnly}
               {...customEvent}
               value={value}
               onChange={onChangeInternal}

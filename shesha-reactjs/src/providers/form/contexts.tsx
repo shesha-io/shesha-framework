@@ -80,7 +80,7 @@ export interface IFormActionsContext {
   getChildComponents: (id: string) => IConfigurableFormComponent[];
   getChildComponentIds: (containerId: string) => string[];
   getComponentModel: (id: string) => IConfigurableFormComponent;
-  isComponentDisabled: (model: Pick<IConfigurableFormComponent, 'id' | 'isDynamic' | 'disabled'>) => boolean;
+  isComponentReadOnly: (model: Pick<IConfigurableFormComponent, 'id' | 'isDynamic' | 'readOnly'>) => boolean;
   isComponentHidden: (model: Pick<IConfigurableFormComponent, 'id' | 'isDynamic' | 'hidden'>) => boolean;
   hasVisibleChilds: (id: string) => boolean;
   setVisibleComponents: (payload: ISetVisibleComponentsPayload) => void;

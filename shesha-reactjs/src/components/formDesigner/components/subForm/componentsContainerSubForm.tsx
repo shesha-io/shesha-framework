@@ -35,7 +35,7 @@ export const ComponentsContainerSubForm: FC<IComponentsContainerSubFormProps> = 
         ?.filter(({ customVisibility }) => {
           return executeExpression(customVisibility);
         })
-        .map(({ disabled, ...model }) => {
+        .map((model) => {
           return (
             <DynamicComponent
               model={{
@@ -43,7 +43,6 @@ export const ComponentsContainerSubForm: FC<IComponentsContainerSubFormProps> = 
                 context,
                 isDynamic: true,
                 readOnly: readOnly || model?.readOnly,
-                disabled,
                 customEnabled: '',
               }}
               key={model?.id}

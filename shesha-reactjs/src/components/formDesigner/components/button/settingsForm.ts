@@ -2,6 +2,18 @@ import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 
 export const getSettings = (data: any) =>
   new DesignerToolbarSettings(data)
+  .addCollapsiblePanel({
+    id: '11114bf6-f76d-4139-a850-c99bf06c8b69',
+    propertyName: 'pnlDisplay',
+    parentId: 'root',
+    label: 'Display',
+    labelAlign: "left",
+    expandIconPosition: "start",
+    ghost: true,
+    collapsible: 'header',
+    content: {
+      id:'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+      components: [...new DesignerToolbarSettings() 
     .addTextField({
       id: '5d4d56fb-d7f8-4835-a529-c4fa93f3596d',
       propertyName: 'componentName',
@@ -123,12 +135,21 @@ export const getSettings = (data: any) =>
       validate: {},
       settingsValidationErrors: [],
     })
-    .addSectionSeparator({
-      id: '6befdd49-41aa-41d6-a29e-76fa00590b75',
-      propertyName: 'sectionStyle',
-      parentId: 'root',
-      label: 'Style',
-    })
+    .toJson()
+  ]}
+})
+.addCollapsiblePanel({
+  id: '22224bf6-f76d-4139-a850-c99bf06c8b69',
+  propertyName: 'pnlData',
+  parentId: 'root',
+  label: 'Style',
+  labelAlign: "left",
+  expandIconPosition: "start",
+  ghost: true,
+  collapsible: 'header',
+  content: {
+    id:'pnl24bf6-f76d-4139-a850-c99bf06c8b69',
+    components: [...new DesignerToolbarSettings() 
     .addCodeEditor({
       id: '06ab0599-914d-4d2d-875c-765a495472f8',
       propertyName: 'style',
@@ -173,4 +194,8 @@ export const getSettings = (data: any) =>
       hidden: false,
       validate: {},
     })
+    .toJson()
+  ]
+}
+})
     .toJson();

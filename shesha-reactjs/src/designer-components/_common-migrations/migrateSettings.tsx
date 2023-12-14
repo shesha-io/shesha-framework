@@ -52,12 +52,13 @@ export const migratePropertyName = <T extends IConfigurableFormComponent,>(prev:
 };
 
 export const migrateReadOnly = <T extends IConfigurableFormComponent,>(prev: T, defaultValue?: ReadOnlyMode) => {
+  const disabled = prev['disabled'];
   const model = {...prev, readOnly: 
     prev.readOnly === true
-      ? !!prev.disabled && prev.disabled['_mode'] === 'code'
-        ? {_value: true, _mode: 'value', _code: prev.disabled['_code']}
+      ? !!disabled && disabled['_mode'] === 'code'
+        ? {_value: true, _mode: 'value', _code: disabled['_code']}
         : true
-    : prev.disabled || prev.readOnly} as T;
+    : disabled || prev.readOnly} as T;
 
   if (!model.readOnly && !!defaultValue) 
     model.readOnly = defaultValue as any;

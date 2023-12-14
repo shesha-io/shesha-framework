@@ -40,7 +40,6 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionsTreeCompon
           updateKey={model?.updateKey}
           onChange={model?.onChange}
           readOnly={model?.readOnly}
-          disabled={model?.disabled}
           mode={model?.mode ?? "Select"}
           height={model?.height}
         />
@@ -56,7 +55,6 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionsTreeCompon
               updateKey={model?.updateKey}
               onChange={onChange}
               readOnly={model?.readOnly}
-              disabled={model?.disabled}
               mode={model?.mode ?? "Select"}
               height={model?.height}
             />

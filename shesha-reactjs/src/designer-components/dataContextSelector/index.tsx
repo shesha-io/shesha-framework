@@ -45,10 +45,8 @@ const DataContextSelectorComponent: IToolboxComponent<IDataContextSelectorCompon
     icon: <CodeOutlined />,
     dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.string && dataFormat === StringFormats.singleline,
     Factory: ({ model }) => {
-      const readOnly = model?.readOnly || model.disabled;
-
       return (
-        <ConfigurableFormItem model={{...model, readOnly}}>
+        <ConfigurableFormItem model={{...model}}>
           <DataContextSelector {...model}/>
         </ConfigurableFormItem>
       );

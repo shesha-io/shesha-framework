@@ -105,7 +105,6 @@ export const Dropdown: FC<IDropdownComponentProps> = ({
   onChange,
   value: val,
   hideBorder,
-  disabled,
   referenceListId,
   mode,
   defaultValue: defaultVal,
@@ -139,7 +138,6 @@ export const Dropdown: FC<IDropdownComponentProps> = ({
       <RefListDropDown.Raw
         onChange={onChange}
         referenceListId={referenceListId}
-        disabled={disabled}
         value={value}
         bordered={!hideBorder}
         defaultValue={defaultValue}
@@ -156,7 +154,6 @@ export const Dropdown: FC<IDropdownComponentProps> = ({
       <RefListDropDown.Dto
         onChange={onChange}
         referenceListId={referenceListId}
-        disabled={disabled}
         value={value}
         bordered={!hideBorder}
         defaultValue={defaultValue}
@@ -181,7 +178,7 @@ export const Dropdown: FC<IDropdownComponentProps> = ({
   };
 
   if (readOnly) {
-    return <ReadOnlyDisplayFormItem disabled={disabled} type="string" value={getSelectValue()} />;
+    return <ReadOnlyDisplayFormItem type="string" value={getSelectValue()} />;
   }
 
   return (
@@ -191,7 +188,7 @@ export const Dropdown: FC<IDropdownComponentProps> = ({
       value={options.length > 0 ? value || defaultValue : undefined}
       defaultValue={defaultValue}
       bordered={!hideBorder}
-      disabled={disabled}
+      disabled={readOnly}
       mode={selectedMode}
       placeholder={placeholder}
       showSearch

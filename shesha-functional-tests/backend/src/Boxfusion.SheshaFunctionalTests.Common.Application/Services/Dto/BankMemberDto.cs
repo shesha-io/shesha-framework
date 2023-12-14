@@ -13,7 +13,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services.Dto
 
         public string Description { get; set; }
 
-        public Guid Address { get; set; }
+        public Guid? Address { get; set; }
 
         public List<Guid> Members { get; set; }
     }

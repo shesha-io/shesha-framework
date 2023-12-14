@@ -1,4 +1,4 @@
-import { ISidebarMenuItem } from '@/interfaces/sidebar';
+import { ISidebarMenuItem, isSidebarGroup } from '@/interfaces/sidebar';
 
 export const getItemById = (items: ISidebarMenuItem[], id: string): ISidebarMenuItem => {
   const position = getItemPositionById(items, id);
@@ -18,7 +18,7 @@ export const getItemPositionById = (items: ISidebarMenuItem[], id: string): IIte
         index,
       };
 
-    const childs = item.childItems;
+    const childs = isSidebarGroup(item) ? item.childItems : undefined;
     if (childs) {
       const itemPosition = getItemPositionById(childs, id);
       if (itemPosition) return itemPosition;

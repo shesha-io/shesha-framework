@@ -81,7 +81,6 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
         {(value, onChange) => (
           <EntityPicker
             formId={model.id}
-            disabled={model.disabled}
             readOnly={model.readOnly}
             displayEntityKey={model.displayEntityKey}
             entityType={model.entityType}

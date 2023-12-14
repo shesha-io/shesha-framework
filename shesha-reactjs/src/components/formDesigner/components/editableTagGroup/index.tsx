@@ -19,11 +19,9 @@ const EditableTagGroupComponent: IToolboxComponent<IEditableTagGroupComponentPro
   icon: <HomeOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.array,
   Factory: ({ model }) => {
-    const disabled = model.disabled || model.readOnly;
-
     return (
       <ConfigurableFormItem model={model}>
-        {(value, onChange) => (<EditableTagGroup value={value} defaultValue={model?.defaultValue} onChange={onChange} readOnly={disabled} />)}
+        {(value, onChange) => (<EditableTagGroup value={value} defaultValue={model?.defaultValue} onChange={onChange} readOnly={model.readOnly} />)}
       </ConfigurableFormItem>
     );
   },

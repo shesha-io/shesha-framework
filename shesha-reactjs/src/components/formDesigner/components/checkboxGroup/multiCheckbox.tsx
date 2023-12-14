@@ -46,15 +46,12 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
     [model?.dataSourceType, items, refList?.items, reducedData]
   );
 
-
-  const disabled = model.disabled || model.readOnly;
-
   return (
     <Checkbox.Group className="sha-multi-checkbox" value={value} onChange={onChange} style={model?.style}>
       <Row>
         {options.map(({ id, label, value: v }) => (
           <Col id={id} span={getSpan(direction, options.length)} key={id}>
-            <Checkbox id={id} value={v} disabled={disabled}>
+            <Checkbox id={id} value={v} disabled={model.readOnly}>
               {label}
             </Checkbox>
           </Col>

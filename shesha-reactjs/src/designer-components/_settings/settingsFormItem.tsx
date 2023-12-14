@@ -84,7 +84,7 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
                 return (
                 <div className={ mode === 'code' ? 'sha-js-content-code' : 'sha-js-content-js'}>
                     <Button
-                        disabled={props.disabled || props.readOnly}
+                        disabled={props.readOnly}
                         shape="round"
                         className='sha-js-switch'
                         type={'primary'}

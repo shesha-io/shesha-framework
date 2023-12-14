@@ -8,7 +8,6 @@ import { useForm } from '@/providers/form';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import {
   evaluateValue,
-  executeCustomExpression,
   validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
 import { getSettings } from './settings';
@@ -41,8 +40,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
     const { globalState } = useGlobalState();
     const ownerId = evaluateValue(model.ownerId, { data: formData, globalState });
 
-    const isEnabledByCondition = executeCustomExpression(model.customEnabled, true, formData, globalState);
-    const enabled = !model.readOnly && !model.disabled && isEnabledByCondition;
+    const enabled = !model.readOnly;
 
     return (
       <ConfigurableFormItem model={model}>

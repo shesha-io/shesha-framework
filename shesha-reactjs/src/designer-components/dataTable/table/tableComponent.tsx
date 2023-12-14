@@ -24,8 +24,9 @@ import { ITableComponentProps } from './models';
 import TableSettings from './tableComponent-settings';
 import { filterVisibility } from './utils';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
-import { IDataColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
+import { IDataColumnsProps, isActionColumnProps } from '@/providers/datatableColumnsConfigurator/models';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
 
 const TableComponent: IToolboxComponent<ITableComponentProps> = {
   type: 'datatable',
@@ -78,6 +79,7 @@ const TableComponent: IToolboxComponent<ITableComponentProps> = {
         ...prev,
         onRowSaveSuccessAction: prev['onRowSaveSuccess'] && typeof (prev['onRowSaveSuccess']) === 'string'
           ? {
+            _type: undefined,
             actionOwner: SheshaActionOwners.Common,
             actionName: 'Execute Script',
             actionArguments: {
@@ -94,8 +96,16 @@ const TableComponent: IToolboxComponent<ITableComponentProps> = {
         return { ...prev, items: columns };
       })
       .add<ITableComponentProps>(7, (prev) => migrateVisibility(prev))
+      .add<ITableComponentProps>(8, (prev) => ({ ...prev, onRowSaveSuccessAction: migrateNavigateAction(prev.onRowSaveSuccessAction) }))
+      .add<ITableComponentProps>(9, (prev) => ({
+        ...prev, items: (prev.items ?? []).map(item => {
+          return isActionColumnProps(item)
+            ? { ...item, actionConfiguration: migrateNavigateAction(item.actionConfiguration) }
+            : item;
+        })
+      }))
   ,
-  settingsFormFactory: (props) => <TableSettings {...props}/>,
+  settingsFormFactory: (props) => <TableSettings {...props} />,
 };
 
 const NotConfiguredWarning: FC = () => {
@@ -133,8 +143,8 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     const permissibleColumns = isDesignMode
       ? items
       : items
-          ?.filter(({ permissions }) => anyOfPermissionsGranted(permissions || []))
-          .filter(filterVisibility({ data: formData, globalState }));
+        ?.filter(({ permissions }) => anyOfPermissionsGranted(permissions || []))
+        .filter(filterVisibility({ data: formData, globalState }));
 
     registerConfigurableColumns(id, permissibleColumns);
   }, [items, isDesignMode]);

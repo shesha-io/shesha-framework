@@ -1,5 +1,5 @@
 import React from 'react';
-import { Story, Meta } from '@storybook/react';
+import { Story } from '@storybook/react';
 import ConfigurableSidebarMenu from './';
 import { AppEditModeToggler } from '@/components/..';
 import SidebarConfigurator from './configurator';
@@ -9,7 +9,8 @@ import StoryApp from '@/components/storyBookApp';
 
 export default {
   title: 'Components/ConfigurableSidebarMenu',
-  component: ConfigurableSidebarMenu} as Meta;
+  component: ConfigurableSidebarMenu
+};
 
 export interface IConfigurableSidebarMenuProps {
   backendUrl: string;
@@ -28,13 +29,11 @@ const Template: Story<IConfigurableSidebarMenuProps> = () => (
             id: 'item1',
             title: 'Item 1',
             itemType: 'button',
-            childItems: undefined,
           },
           {
             id: 'item2',
             title: 'Item 2',
             itemType: 'button',
-            childItems: undefined,
           },
         ],
       }}

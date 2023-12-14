@@ -18,6 +18,7 @@ import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoade
 import { get, axiosHttp } from '@/utils/fetchers';
 import { GenericQuickView } from '@/components/quickView';
 import './styles/index.less';
+import { StandardNodeTypes } from '@/interfaces/formComponent';
 
 export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
 
@@ -146,6 +147,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     event.stopPropagation(); // Don't collapse the CollapsiblePanel when clicked
 
     const actionConfiguration: IConfigurableActionConfiguration = {
+      _type: StandardNodeTypes.ConfigurableActionConfig,
       actionName: 'Show Dialog',
       actionOwner: 'shesha.common',
       handleSuccess: props.handleSuccess,

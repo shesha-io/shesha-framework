@@ -110,7 +110,6 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
 
   const {
     propertyName: name,
-    disabled,
     hideBorder,
     range,
     value,
@@ -173,7 +172,6 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     return (
       <ReadOnlyDisplayFormItem
         value={formattedValue?.toISOString()}
-        disabled={disabled}
         type="datetime"
         dateFormat={format}
         timeFormat={timeFormat}
@@ -196,7 +194,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         picker={picker}
         showTime={showTime ? (defaultToMidnight ? { defaultValue: [MIDNIGHT_MOMENT, MIDNIGHT_MOMENT] } : true) : false}
         showSecond
-        disabled={disabled}
+        disabled={readOnly}
         style={evaluatedStyle}
         allowClear
         bordered={!hideBorder}

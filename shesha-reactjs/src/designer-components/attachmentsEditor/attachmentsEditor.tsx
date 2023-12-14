@@ -9,7 +9,6 @@ import { useForm, useFormData, useGlobalState, useSheshaApplication } from '@/pr
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import {
   evaluateValue,
-  executeCustomExpression,
   validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
 import StoredFilesProvider from '@/providers/storedFiles';
@@ -46,8 +45,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
 
     const ownerId = evaluateValue(model.ownerId, { data: data, globalState });
 
-    const isEnabledByCondition = executeCustomExpression(model.customEnabled, true, data, globalState);
-    const enabled = !model.readOnly && !model.disabled && isEnabledByCondition;
+    const enabled = !model.readOnly;
 
     const onFileListChanged = (fileList: IStoredFile[]) => {
       const http = axiosHttp(backendUrl);

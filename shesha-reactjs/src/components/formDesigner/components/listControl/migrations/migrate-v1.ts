@@ -1,11 +1,11 @@
-import { SettingsMigrationContext } from "@/components/..";
-import { IConfigurableActionConfiguration } from "@/interfaces/configurableAction";
-import { IButtonItem } from "@/providers/buttonGroupConfigurator/models";
-import { getClosestTableId } from "@/providers/form/utils";
-import { getDispatchEventReplacement } from "../../_common-migrations/migrate-events";
-import { IListComponentProps } from "../models";
-import { IShowModalActionArguments } from "@/providers/dynamicModal/configurable-actions/show-dialog-arguments";
-import { IKeyValue } from "@/interfaces/keyValue";
+import { getClosestTableId } from '@/providers/form/utils';
+import { getDispatchEventReplacement } from '../../_common-migrations/migrate-events';
+import { IButtonItem } from '@/providers/buttonGroupConfigurator/models';
+import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
+import { IKeyValue } from '@/interfaces/keyValue';
+import { IListComponentProps } from '../models';
+import { IShowModalActionArguments } from '@/providers/dynamicModal/configurable-actions/show-dialog-arguments';
+import { SettingsMigrationContext } from '@/components/..';
 
 export const migrateV0toV1 = (props: IListComponentProps, context: SettingsMigrationContext): IListComponentProps => {
     const { buttons } = props;
@@ -32,61 +32,61 @@ export const migrateV0toV1 = (props: IListComponentProps, context: SettingsMigra
     };
 };
 
+const makeAction = (props: Pick<IConfigurableActionConfiguration, 'actionName' | 'actionOwner' | 'actionArguments' | 'onSuccess'>): IConfigurableActionConfiguration => {
+    return {
+        _type: undefined,
+        actionName: props.actionName,
+        actionOwner: props.actionOwner,
+        actionArguments: props.actionArguments,
+        handleFail: false,
+        handleSuccess: Boolean(props.onSuccess),
+        onSuccess: props.onSuccess,
+    };
+};
+
 const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: SettingsMigrationContext): IConfigurableActionConfiguration => {
     if (buttonProps['actionConfiguration'])
         return buttonProps['actionConfiguration'] as IConfigurableActionConfiguration;
         
     switch (buttonProps.buttonAction) {
         case "cancelFormEdit": {
-            return {
+            return makeAction({
                 actionOwner: 'Form',
                 actionName: 'Cancel Edit',
-                handleFail: false,
-                handleSuccess: false,
-            };
+            });
         }
         case "reset": {
-            return {
+            return makeAction({
                 actionOwner: 'Form',
                 actionName: 'Reset',
-                handleFail: false,
-                handleSuccess: false,
-            };
+            });
         }
         case "submit": {
-            return {
+            return makeAction({
                 actionOwner: 'Form',
                 actionName: 'Submit',
-                handleFail: false,
-                handleSuccess: false,
-            };
+            });
         }
         case "startFormEdit": {
-            return {
+            return makeAction({
                 actionOwner: 'Form',
                 actionName: 'Start Edit',
-                handleFail: false,
-                handleSuccess: false,
-            };
+            });
         }
         case "navigate": {
-            return {
+            return makeAction({
                 actionOwner: 'Common',
                 actionName: 'Navigate',
-                handleFail: false,
-                handleSuccess: false,
                 actionArguments: {
                     target: buttonProps.targetUrl
                 },
-            };
+            });
         }
         case "dialogue": {
-            const actionConfig: IConfigurableActionConfiguration = {
+            const actionConfig: IConfigurableActionConfiguration = makeAction({
                 actionOwner: 'Common',
                 actionName: 'Show Dialog',
-                handleFail: false,
-                handleSuccess: false,
-            };
+            });
 
             const propsWithModal = buttonProps as IToolbarButtonTableDialogPropsV0;
 
@@ -103,46 +103,38 @@ const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: Sett
 
             if (propsWithModal.onSuccessRedirectUrl) {
                 actionConfig.handleSuccess = true;
-                actionConfig.onSuccess = {
+                actionConfig.onSuccess = makeAction({
                     actionOwner: 'Common',
                     actionName: 'Navigate',
                     actionArguments: {
                         target: propsWithModal.onSuccessRedirectUrl
                     },
-                    handleSuccess: false,
-                    handleFail: false,
-                };
+                });
             }
             if (propsWithModal.refreshTableOnSuccess) {
                 actionConfig.handleSuccess = true;
-                actionConfig.onSuccess = {
+                actionConfig.onSuccess = makeAction({
                     actionOwner: getClosestTableId(context),
                     actionName: 'Refresh table',
-                    handleSuccess: false,
-                    handleFail: false,
-                };
+                });
             }
             return actionConfig;
         }
         case "executeScript": {
-            return {
+            return makeAction({
                 actionOwner: 'Common',
                 actionName: 'Execute Script',
                 actionArguments: {
                     expression: buttonProps.actionScript ?? ''
                 },
-                handleFail: false,
-                handleSuccess: false,
-            };
+            });
         }
         case "executeFormAction": {
             if (buttonProps.formAction === 'exportToExcel' || buttonProps.formAction === 'EXPORT_TO_EXCEL') {
-                return {
+                return makeAction({
                     actionOwner: getClosestTableId(context),
                     actionName: 'Export to Excel',
-                    handleFail: false,
-                    handleSuccess: false,
-                };
+                });
             }
         }
         case "customAction": {

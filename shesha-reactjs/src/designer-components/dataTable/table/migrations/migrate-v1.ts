@@ -41,21 +41,31 @@ export const migrateV0toV1 = (props: ITableComponentProps, context: SettingsMigr
     return { ...props, items: newItems };
 };
 
-const getNavigateActionConfig = (oldColumn: IConfigurableActionColumnsPropsV0): IConfigurableActionConfiguration => {
+const makeAction = (props: Pick<IConfigurableActionConfiguration, 'actionName' | 'actionOwner' | 'actionArguments' | 'onSuccess'>): IConfigurableActionConfiguration => {
     return {
+        _type: undefined,
+        actionName: props.actionName,
+        actionOwner: props.actionOwner,
+        actionArguments: props.actionArguments,
+        handleFail: false,
+        handleSuccess: Boolean(props.onSuccess),
+        onSuccess: props.onSuccess,
+    };
+};
+
+const getNavigateActionConfig = (oldColumn: IConfigurableActionColumnsPropsV0): IConfigurableActionConfiguration => {
+    return makeAction({
         actionOwner: 'Common',
         actionName: 'Navigate',
-        handleFail: false,
-        handleSuccess: false,
         actionArguments: {
             target: oldColumn.targetUrl
         },
-    };
+    });
 };
 
 const wrapInConfirmationIfRequired = (actionConfig: IConfigurableActionConfiguration, oldColumn: IConfigurableActionColumnsPropsV0): IConfigurableActionConfiguration => {
     if (oldColumn.showConfirmDialogBeforeSubmit){
-        return {
+        return makeAction({
             actionOwner: 'Common',
             actionName: 'Show Confirmation Dialog',
             actionArguments: {
@@ -65,28 +75,24 @@ const wrapInConfirmationIfRequired = (actionConfig: IConfigurableActionConfigura
                 cancelText: '',
                 danger: false,
             },
-            handleFail: false,
-            handleSuccess: true,
             onSuccess: actionConfig
-        };
+        });
     } else
         return actionConfig;
 };
 
 const getExecuteScriptActionConfig = (oldColumn: IConfigurableActionColumnsPropsV0): IConfigurableActionConfiguration => {
-    return wrapInConfirmationIfRequired({
+    return wrapInConfirmationIfRequired(makeAction({
         actionOwner: 'Common',
         actionName: 'Execute Script',
         actionArguments: {
             expression: oldColumn.actionScript ?? ''
         },
-        handleFail: false,
-        handleSuccess: false,
-    }, oldColumn);
+    }), oldColumn);
 };
 
 const getDeleteRowActionConfig = (oldColumn: IConfigurableActionColumnsPropsV0, context: SettingsMigrationContext): IConfigurableActionConfiguration => {
-    const actionConfiguration: IConfigurableActionConfiguration = {
+    const actionConfiguration: IConfigurableActionConfiguration = makeAction({
         actionOwner: 'Common',
         actionName: 'Show Confirmation Dialog',
         actionArguments: {
@@ -96,31 +102,23 @@ const getDeleteRowActionConfig = (oldColumn: IConfigurableActionColumnsPropsV0, 
             cancelText: 'No',
             danger: true,
         },
-        handleFail: false,
-        handleSuccess: true,
-        onSuccess: {
+        onSuccess: makeAction({
             actionOwner: 'table',
             actionName: 'Delete row',
-            handleFail: false,
-            handleSuccess: true,
-            onSuccess: {
+            onSuccess: makeAction({
                 actionOwner: getClosestTableId(context),
                 actionName: 'Refresh table',
-                handleFail: false,
-                handleSuccess: false,
-            }
-        }
-    };
+            })
+        })
+    });
     return actionConfiguration;
 };
 
 const getShowDialogActionConfig = (oldColumn: IConfigurableActionColumnsPropsV0): IConfigurableActionConfiguration => {
-    const actionConfiguration: IConfigurableActionConfiguration = {
+    const actionConfiguration: IConfigurableActionConfiguration = makeAction({
         actionOwner: 'Common',
         actionName: 'Show Dialog',
-        handleFail: false,
-        handleSuccess: false,
-    };
+    });
     const convertedProps = oldColumn as Omit<IModalProps, 'formId'>; // very strange code, took it from column renderer
 
     const modalArguments: IShowModalActionArguments = {
@@ -137,16 +135,13 @@ const getShowDialogActionConfig = (oldColumn: IConfigurableActionColumnsPropsV0)
 
     if (convertedProps?.onSuccessRedirectUrl){
         actionConfiguration.handleSuccess = true;
-        actionConfiguration.onSuccess = {
+        actionConfiguration.onSuccess = makeAction({
             actionOwner: 'Common',
             actionName: 'Navigate',
             actionArguments: {
                 target: convertedProps?.onSuccessRedirectUrl
             },
-            handleSuccess: false,
-            handleFail: false,
-        };
-
+        });
     };
     
     return actionConfiguration;

@@ -22,14 +22,13 @@ const EndpointsAutocompleteComponent: IToolboxComponent<IEndpointsAutocompleteCo
   canBeJsSetting: true,
   Factory: ({ model }) => {
     const { data: formData } = useFormData();
-    const readOnly = model.disabled || model?.readOnly;
     const verb = model.httpVerb ? evaluateValue(model.httpVerb, { data: formData }) : model.httpVerb;
 
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) => {
-          return readOnly ? (
-              <ReadOnlyDisplayFormItem disabled={model.disabled} value={value} />
+          return model.readOnly ? (
+              <ReadOnlyDisplayFormItem value={value} />
             ) : (
               <EndpointsAutocomplete {...model} httpVerb={verb} value={value} onChange={onChange} />
             );

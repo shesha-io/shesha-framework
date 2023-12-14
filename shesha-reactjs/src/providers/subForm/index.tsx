@@ -7,7 +7,6 @@ import { useDeepCompareEffect } from 'react-use';
 import { useDebouncedCallback } from 'use-debounce';
 import {
   IAnyObject,
-  QueryStringParams,
   componentsFlatStructureToTree,
   componentsTreeToFlatStructure,
   executeScript,
@@ -22,7 +21,7 @@ import { StandardEntityActions } from '@/interfaces/metadata';
 import { EntityAjaxResponse } from '@/pages/dynamic/interfaces';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 import * as RestfulShesha from '@/utils/fetchers';
-import { getQueryParams } from '@/utils/url';
+import { getQueryParams, QueryStringParams } from '@/utils/url';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import { useForm } from '@/providers/form';

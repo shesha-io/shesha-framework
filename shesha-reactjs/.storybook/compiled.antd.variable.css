@@ -16723,7 +16723,7 @@ textarea.ant-mentions {
 .ant-menu-item-divider {
   overflow: hidden;
   line-height: 0;
-  border-color: rgba(0, 0, 0, 0.06);
+  border-color: #f0f0f0;
   border-style: solid;
   border-width: 1px 0 0;
 }

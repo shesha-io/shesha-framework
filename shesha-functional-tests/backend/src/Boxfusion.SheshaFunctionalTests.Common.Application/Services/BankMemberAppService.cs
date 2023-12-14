@@ -40,7 +40,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             var bank = await _bankRepo.GetAsync(id);
             var bankMembers = new BankMemberDto()
             {
-                Address = bank.Address.Id,
+                Address = bank.Address?.Id,
                 Description = bank.Description,
                 Id = bank.Id,
                 Name = bank.Name,
@@ -53,11 +53,11 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
         {
             var bankMembers = _bankRepo.GetAll().Select(x => new BankMemberDto
             {
-                Address = x.Address.Id,
+                Address = x.Address != null ? x.Address.Id : null,
                 Description = x.Description,
                 Id = x.Id,
                 Name = x.Name,
-                Members = _memberRepo.GetAll().Where(x => x.Bank.Id == x.Id).Select(x => x.Id).ToList()
+                Members = _memberRepo.GetAll().Where(m => m.Bank.Id == x.Id).Select(n => n.Id).ToList()
             }).ToList();
             return ObjectMapper.Map<List<BankMemberDto>>(bankMembers);
         }

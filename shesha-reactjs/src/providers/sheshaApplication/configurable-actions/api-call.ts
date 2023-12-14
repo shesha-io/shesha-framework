@@ -6,8 +6,9 @@ import axios, { Method } from 'axios';
 import { IKeyValue } from "@/interfaces/keyValue";
 import { useConfigurableAction } from "@/providers/configurableActionsDispatcher";
 import qs from "qs";
-import { getQueryString } from "@/components/autocomplete/utils";
 import { unwrapAbpResponse } from "@/utils/fetchers";
+import { mapKeyValueToDictionary } from "@/utils/dictionary";
+import { getQueryParams } from "@/utils/url";
 
 export interface IApiCallArguments {
   url: string;
@@ -73,21 +74,6 @@ export const apiCallArgumentsForm = new DesignerToolbarSettings()
   })
   .toJson();
 
-type StringDictionary = {
-  [key: string]: string;
-};
-const mapKeyValueToDictionary = (value: IKeyValue[]): StringDictionary => {
-  if (!value)
-    return undefined;
-
-  const result = {};
-  value.forEach(item => {
-    if (item.key)
-      result[item.key] = item.value;
-  });
-  return result;
-};
-
 const isGlobalUrl = (url: string) => {
   return url?.match(/^(http|ftp|https):\/\//gi);
 };
@@ -128,7 +114,7 @@ export const useApiCallAction = () => {
       let preparedData = {...parameters};
       const encodeAsQueryString = ['get', 'delete'].includes(verb?.toLowerCase());
       if (encodeAsQueryString){
-        const queryStringData = { ...getQueryString(preparedUrl), ...preparedData };
+        const queryStringData = { ...getQueryParams(preparedUrl), ...preparedData };
         preparedUrl = `${preparedUrl}?${qs.stringify(queryStringData)}`;
         preparedData = undefined;
       }     

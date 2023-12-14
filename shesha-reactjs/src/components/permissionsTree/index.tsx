@@ -48,10 +48,6 @@ interface IPermissionsTreeProps {
   updateKey?: string;
   onChange?: (values?: string[]) => void;
   /**
-   * Whether this control is disabled
-   */
-  disabled?: boolean;
-  /**
    * If true, the automplete will be in read-only mode. This is not the same sa disabled mode
    */
   readOnly?: boolean;
@@ -510,7 +506,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
       >
         <SearchBox value={searchText} onChange={setSearchText} placeholder="Search objects" />
         <Tree
-          disabled={rest.disabled}
+          disabled={rest.readOnly}
           expandedKeys={expanded}
           defaultExpandAll
           checkable={rest.mode === 'Select'}

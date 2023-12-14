@@ -10,7 +10,7 @@ export interface IFormComponentProps {
 }
 
 const FormComponent: FC<IFormComponentProps> = ({ id, componentRef }) => {
-  const { getComponentModel, form, getToolboxComponent, isComponentHidden, isComponentDisabled } = useForm();
+  const { getComponentModel, form, getToolboxComponent, isComponentHidden, isComponentReadOnly } = useForm();
   const allData = useApplicationContext();
 
   const model = getComponentModel(id);
@@ -21,7 +21,7 @@ const FormComponent: FC<IFormComponentProps> = ({ id, componentRef }) => {
   if (!toolboxComponent) return <div>Component not found</div>;
 
   actualModel.hidden = isComponentHidden(actualModel);
-  actualModel.disabled = isComponentDisabled(actualModel);
+  actualModel.readOnly = isComponentReadOnly(actualModel);
 
   return (
     <toolboxComponent.Factory 

@@ -141,7 +141,7 @@ export const EditableTagGroup: FC<IEditableTagGroupProps> = ({ value = [], onCha
         />
       </Show>
 
-      <Show when={!inputVisible && !rest?.disabled && !readOnly}>
+      <Show when={!inputVisible && !readOnly}>
         <Tag onClick={showInput} className="site-tag-plus">
           <PlusOutlined /> New value
         </Tag>

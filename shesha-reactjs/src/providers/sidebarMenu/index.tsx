@@ -1,6 +1,6 @@
 import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
 import { useSheshaApplication } from '@/providers/..';
-import { ISidebarMenuItem } from '@/interfaces/sidebar';
+import { ISidebarMenuItem, isSidebarGroup } from '@/interfaces/sidebar';
 import { getFlagSetters } from '../utils/flagsSetters';
 import { toggleSidebarAction } from './actions';
 import {
@@ -42,7 +42,7 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
       if (!anyOfPermissionsGranted(item?.requiredPermissions)) return false;
     }
 
-    return item.childItems && item.childItems.length > 0
+    return isSidebarGroup(item) && item.childItems && item.childItems.length > 0
       ? item.childItems.some((childItem) => isItemVisible(childItem))
       : true;
   };

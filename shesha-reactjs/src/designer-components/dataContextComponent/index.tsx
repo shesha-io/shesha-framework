@@ -1,12 +1,13 @@
-import { IToolboxComponent } from '../../interfaces';
-import { CodeOutlined } from '@ant-design/icons';
 import React, { useMemo } from 'react';
-import { IConfigurableActionConfiguration, IConfigurableFormComponent } from '../../providers';
-import { DataContextProvider } from '@/providers/dataContextProvider';
-import { IModelMetadata, IPropertyMetadata } from '@/interfaces/metadata';
-import { DataTypes } from '@/interfaces/dataTypes';
-import { DataContextSettingsForm } from './settings';
+import { CodeOutlined } from '@ant-design/icons';
 import { ComponentsContainer } from '@/components';
+import { DataContextProvider } from '@/providers/dataContextProvider';
+import { DataContextSettingsForm } from './settings';
+import { DataTypes } from '@/interfaces/dataTypes';
+import { IConfigurableActionConfiguration, IConfigurableFormComponent } from '../../providers';
+import { IModelMetadata, IPropertyMetadata } from '@/interfaces/metadata';
+import { IToolboxComponent } from '../../interfaces';
+import { migrateNavigateAction } from '../_common-migrations/migrate-navigate-action';
 
 export interface IDataContextComponentProps extends IConfigurableFormComponent {
   items: IPropertyMetadata[];
@@ -42,9 +43,10 @@ const DataContextComponent: IToolboxComponent<IDataContextComponentProps> = {
     settingsFormFactory: (props) => {
       return <DataContextSettingsForm {...props}/>;
     },
-    initModel: model => ({...model, description: model.componentName}),
-    linkToModelMetadata: (model): IDataContextComponentProps => ({...model})
-    ,
+    linkToModelMetadata: (model): IDataContextComponentProps => ({...model}),
+    migrator: (m) => m
+      .add<IDataContextComponentProps>(0, prev => ({ ...prev, description: prev.description ?? prev.componentName, items: [], initialDataCode: null }))
+      .add<IDataContextComponentProps>(1, prev => ({ ...prev, onChangeAction: migrateNavigateAction(prev.onChangeAction) })),
   };
   
   export default DataContextComponent;

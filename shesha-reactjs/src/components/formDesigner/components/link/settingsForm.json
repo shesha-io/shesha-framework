@@ -100,17 +100,6 @@
             "label": "Hidden"
           },
           {
-            "id": "06ab0599-914d-4d2d-875c-765a495472f8",
-            "type": "codeEditor",
-            "propertyName": "style",
-            "label": "Style",
-            "parentId": "root",
-            "validate": {},
-            "settingsValidationErrors": [],
-            "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
-            "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }]
-          },
-          {
             "id": "53a91e4d-e24e-457d-ad8b-25a10021d2dd",
             "type": "checkbox",
             "propertyName": "hasChildren",
@@ -419,6 +408,45 @@
             "description": "Custom CSS Class to add to this component",
             "validate": {},
             "settingsValidationErrors": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "aIMnm2re1exN1M7pEEur9",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlData",
+      "label": "Style",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+
+      "isDynamic": false,
+      "version": 2,
+      "expandIconPosition": "left",
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": [],
+      "header": {
+        "id": "FizvkIoyeq1cZMqAgbDLL",
+        "components": [
+
+        ]
+      },
+      "content": {
+        "id": "y9SNusmMM0Wd1Sc_YI1ng",
+        "components": [
+          {
+            "id": "06ab0599-914d-4d2d-875c-765a495472f8",
+            "type": "codeEditor",
+            "propertyName": "style",
+            "label": "Style",
+            "parentId": "root",
+            "validate": {},
+            "settingsValidationErrors": [],
+            "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
+            "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }]
           }
         ]
       }

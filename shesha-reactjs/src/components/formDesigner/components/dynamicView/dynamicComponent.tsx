@@ -10,7 +10,7 @@ export interface IConfigurableFormComponentProps {
 }
 
 const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model }) => {
-  const { form, getToolboxComponent, isComponentHidden, isComponentDisabled } = useForm();
+  const { form, getToolboxComponent, isComponentHidden, isComponentReadOnly } = useForm();
   const allData = useApplicationContext();
 
   const componentRef = useRef();
@@ -22,7 +22,7 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model }) => {
   if (!toolboxComponent) return null;
 
   actualModel.hidden = isComponentHidden(actualModel);
-  actualModel.disabled = isComponentDisabled(actualModel);
+  actualModel.readOnly = isComponentReadOnly(actualModel);
 
   const renderComponent = () => {
     return (

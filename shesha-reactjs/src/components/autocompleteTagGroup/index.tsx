@@ -116,7 +116,6 @@ export const AutocompleteTagGroup: FC<IAutocompleteTagGroupProps> =
           value={inputValue}
           onChange={handleInputChange}
           readOnly={rest?.readOnly}
-          disabled={rest?.disabled}
           allowClear={true}
           dataSourceType='url'
           dataSourceUrl={autocompleteUrl}

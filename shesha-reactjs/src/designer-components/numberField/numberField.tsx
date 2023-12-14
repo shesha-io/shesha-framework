@@ -38,12 +38,11 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
         {(value, onChange) => {
           return model.readOnly ? (
             <ReadOnlyDisplayFormItem
-              disabled={model.disabled}
               type="number"
               value={getNumberFormat(value, getDataProperty(properties, model.propertyName))}
             />
           ) : (
-            <NumberFieldControl form={form} disabled={model.disabled} model={model} value={value} onChange={onChange} />
+            <NumberFieldControl form={form} disabled={model.readOnly} model={model} value={value} onChange={onChange} />
           );
         }}
       </ConfigurableFormItem>

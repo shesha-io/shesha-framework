@@ -8,8 +8,8 @@ namespace Shesha.Migrations.Abp
     {
         public override void Up()
         {
-            Create.Column("TargetNotifiers").OnTable("AbpUserNotifications").AsString(1024);
-            Create.Column("TargetNotifiers").OnTable("AbpNotifications").AsString(1024);
+            Create.Column("TargetNotifiers").OnTable("AbpUserNotifications").AsString(1024).Nullable();
+            Create.Column("TargetNotifiers").OnTable("AbpNotifications").AsString(1024).Nullable();
         }
     }
 }

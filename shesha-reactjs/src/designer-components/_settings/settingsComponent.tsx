@@ -53,7 +53,7 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
                     return (
                     <div className={ mode === 'code' ? 'sha-js-content-code' : 'sha-js-content-js'}>
                         <Button
-                            disabled={model.disabled || model.readOnly}
+                            disabled={model.readOnly}
                             shape="round"
                             className='sha-js-switch'
                             type='primary'

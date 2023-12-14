@@ -20,7 +20,7 @@ const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
         <ConfigurableFormItem model={model}>
           {(value, onChange) => { 
             return (
-              <ReadOnlyDisplayFormItemWrapper value={value} readOnly={model.readOnly} disabled={model?.disabled}>
+              <ReadOnlyDisplayFormItemWrapper value={value} readOnly={model.readOnly}>
                 <AutoCompletePlacesControl {...model} value={value} onChange={onChange}/>
               </ReadOnlyDisplayFormItemWrapper>
             );

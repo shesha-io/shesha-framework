@@ -139,11 +139,8 @@ export interface IConfigurableFormComponent
   /** Validation rules */
   validate?: IComponentValidationRules;
 
-  disabled?: boolean; // todo: move to the model level
-
   /** Whether the component is read-only */
   readOnly?: boolean;
-  readOnlyMode?: ReadOnlyMode;
 
   /** Custom visibility code */
   /** @deprecated Use disabled in js mode instead */
@@ -350,7 +347,6 @@ export interface IFormSettings {
   colon: boolean;
   labelCol: ColProps;
   wrapperCol: ColProps;
-  showModeToggler?: boolean;
   preparedValues?: string;
   size?: SizeType;
   formKeysToPersist?: string[];
