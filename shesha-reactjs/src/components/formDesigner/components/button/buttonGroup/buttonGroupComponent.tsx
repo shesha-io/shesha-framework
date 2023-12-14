@@ -35,7 +35,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
     if ((model.hidden || !granted) && formMode !== 'designer') return null;
 
     // TODO: Wrap this component within ConfigurableFormItem so that it will be the one handling the hidden state. Currently, it's failing. Always hide the component
-    return <ButtonGroup {...model} disabled={model.readOnly} />;
+    return <ButtonGroup {...model} />;
   },
   migrator: (m) => m
     .add<IButtonGroupComponentProps>(0, (prev) => {
