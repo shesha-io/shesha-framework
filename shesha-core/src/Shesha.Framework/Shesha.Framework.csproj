@@ -127,7 +127,7 @@
     <PackageReference Include="NetTopologySuite.IO.GeoJSON" Version="4.0.0" />
     <PackageReference Include="PluralizeService.Core" Version="1.2.21147.2" />
     <PackageReference Include="RedLock.net" Version="2.3.2" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>
