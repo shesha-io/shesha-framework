@@ -13,7 +13,7 @@
     <PackageReference Include="FluentMigrator" Version="5.0.0" />
     <PackageReference Include="Intent.RoslynWeaver.Attributes" Version="2.1.3" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
-    <PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.13" />
+    <PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.15" />
     <PackageReference Include="PasswordGenerator" Version="2.1.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.3" />
   </ItemGroup>
