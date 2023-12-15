@@ -19,13 +19,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MongoDB.Driver" Version="2.22.0" />
-    <PackageReference Include="PluralizeService.Core" Version="1.2.19339.3" />
+    <PackageReference Include="MongoDB.Driver" Version="2.23.0" />
+    <PackageReference Include="PluralizeService.Core" Version="1.2.21147.2" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Shesha.Core\Shesha.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="8.0.0" />
   </ItemGroup>
 
 </Project>

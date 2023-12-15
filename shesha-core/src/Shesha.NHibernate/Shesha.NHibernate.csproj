@@ -25,15 +25,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentMigrator" Version="3.3.2" />
-    <PackageReference Include="FluentMigrator.Runner" Version="3.3.2" />
-    <PackageReference Include="FluentMigrator.Runner.Postgres" Version="3.3.2" />
-    <PackageReference Include="JsonLogic.Net" Version="1.1.9" />
+    <PackageReference Include="FluentMigrator" Version="5.0.0" />
+    <PackageReference Include="FluentMigrator.Runner" Version="5.0.0" />
+    <PackageReference Include="FluentMigrator.Runner.Postgres" Version="5.0.0" />
+    <PackageReference Include="JsonLogic.Net" Version="1.1.11" />
     <PackageReference Include="NetTopologySuite" Version="2.5.0" />
-    <PackageReference Include="NHibernate" Version="5.4.3" />
-    <PackageReference Include="NHibernate.Extensions.NpgSql" Version="7.0.3" />
+    <PackageReference Include="NHibernate" Version="5.4.7" />
+    <PackageReference Include="NHibernate.Extensions.NpgSql" Version="8.0.0" />
     <PackageReference Include="NHibernate.Spatial" Version="7.0.0" />
-    <PackageReference Include="PluralizeService.Core" Version="1.2.19339.3" />
+    <PackageReference Include="PluralizeService.Core" Version="1.2.21147.2" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
   </ItemGroup>
 
@@ -41,5 +41,9 @@
     <ProjectReference Include="..\Shesha.Core\Shesha.Core.csproj" />
     <ProjectReference Include="..\Shesha.FluentMigrator\Shesha.FluentMigrator.csproj" />
     <ProjectReference Include="..\Shesha.Framework\Shesha.Framework.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="8.0.0" />
   </ItemGroup>
 </Project>

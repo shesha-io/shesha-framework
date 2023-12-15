@@ -14,4 +14,8 @@
     <PackageReference Include="RestSharp" Version="110.2.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="8.0.0" />
+  </ItemGroup>
+
 </Project>

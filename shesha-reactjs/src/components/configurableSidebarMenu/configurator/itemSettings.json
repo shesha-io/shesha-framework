@@ -36,7 +36,7 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": {
-        "_code": "return getSettingValue(data?.itemType) !== 'divider';",
+        "_code": "return getSettingValue(data?.itemType) !== 'button';",
         "_mode": "code",
         "_value": false
       },

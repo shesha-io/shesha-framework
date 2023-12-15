@@ -18,12 +18,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FirebaseAdmin" Version="1.12.0" />
+    <PackageReference Include="FirebaseAdmin" Version="2.4.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Shesha.Application\Shesha.Application.csproj" />
     <ProjectReference Include="..\Shesha.Core\Shesha.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="8.0.0" />
   </ItemGroup>
 
 </Project>

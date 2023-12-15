@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
-using Shesha.Settings;
+﻿using Shesha.Settings;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
