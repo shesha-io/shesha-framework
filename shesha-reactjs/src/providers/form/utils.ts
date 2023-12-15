@@ -205,7 +205,9 @@ export const getActualModel = <T>(model: T, allData: any, useFormModeReadOnly: b
     m[propName] = getSettingValue(model[propName], allData, calcValue);
   }
 
-  m['readOnly'] = getReadOnlyBool(m['readOnly'], useFormModeReadOnly ? allData : undefined);
+  // update ReadOnly if exists
+  if (!!m['readOnly'])
+    m['readOnly'] = getReadOnlyBool(m['readOnly'], useFormModeReadOnly ? allData : undefined);
 
   return m;
 };
