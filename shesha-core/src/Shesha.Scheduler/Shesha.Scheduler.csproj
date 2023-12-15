@@ -28,11 +28,11 @@
   <ItemGroup>
     <PackageReference Include="Abp" Version="9.0.0" />
     <PackageReference Include="Abp.AspNetCore" Version="9.0.0" />
-    <PackageReference Include="Cronos" Version="0.7.0" />
-    <PackageReference Include="FluentMigrator" Version="3.3.2" />
+    <PackageReference Include="Cronos" Version="0.7.1" />
+    <PackageReference Include="FluentMigrator" Version="5.0.0" />
     <PackageReference Include="Hangfire.Core" Version="1.8.6" />
 	  <PackageReference Include="Hangfire.AspNetCore" Version="1.8.6" />
-    <PackageReference Include="log4net" Version="2.0.10" />
+    <PackageReference Include="log4net" Version="2.0.15" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
   </ItemGroup>
 
@@ -40,6 +40,10 @@
     <ProjectReference Include="..\Shesha.Application\Shesha.Application.csproj" />
     <ProjectReference Include="..\Shesha.Framework\Shesha.Framework.csproj" />
     <ProjectReference Include="..\Shesha.NHibernate\Shesha.NHibernate.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="8.0.0" />
   </ItemGroup>
 
 </Project>

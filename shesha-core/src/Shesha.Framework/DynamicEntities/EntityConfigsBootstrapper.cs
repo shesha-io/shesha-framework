@@ -21,6 +21,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Castle.Core.Logging;
 
 namespace Shesha.DynamicEntities
 {
@@ -35,6 +36,8 @@ namespace Shesha.DynamicEntities
         private readonly IEntityConfigurationStore _entityConfigurationStore;
         private readonly IAssemblyFinder _assembleFinder;
         private readonly IMetadataProvider _metadataProvider;
+
+        public ILogger Logger { get; set; } = NullLogger.Instance;
 
         public EntityConfigsBootstrapper(
             IRepository<EntityConfig, Guid> entityConfigRepository,
@@ -56,15 +59,20 @@ namespace Shesha.DynamicEntities
 
         public async Task ProcessAsync()
         {
+            Logger.Info("Bootstrap entity configs");
+
             var assemblies = _assembleFinder.GetAllAssemblies()
                 .Distinct(new AssemblyFullNameComparer())
                 .Where(a => !a.IsDynamic &&
                             a.GetTypes().Any(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t) && t != typeof(JsonEntity))
                 )
                 .ToList();
+            Logger.Info($"Found {assemblies.Count()} assemblies to bootstrap");
 
             foreach (var assembly in assemblies)
             {
+                Logger.Info($"Bootstrap assembly {assembly.FullName}");
+
                 using (var unitOfWork = _unitOfWorkManager.Begin())
                 {
                     using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
@@ -73,8 +81,9 @@ namespace Shesha.DynamicEntities
                         await unitOfWork.CompleteAsync();
                     }
                 }
+                Logger.Info($"Bootstrap assembly {assembly.FullName} - finished");
             }
-
+            Logger.Info("Bootstrap entity configs finished successfully");
             // update inheritance
             /*foreach (var assembly in assemblies)
             {
@@ -112,6 +121,8 @@ namespace Shesha.DynamicEntities
             var entityTypes = assembly.GetTypes().Where(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t) && t != typeof(JsonEntity))
                 .ToList();
 
+            Logger.Info($"{assembly.FullName}: found {entityTypes.Count()} entity types");
+
             // todo: remove usage of IEntityConfigurationStore
             var entitiesConfigs = entityTypes.Select(t =>
             {
@@ -128,6 +139,8 @@ namespace Shesha.DynamicEntities
             }).ToList();
 
             var dbEntities = await _entityConfigRepository.GetAll().ToListAsync();
+
+            Logger.Info($"{assembly.FullName}: found {dbEntities.Count()} entity in the DB");
 
             var configEntities = dbEntities
                 .Select(
@@ -165,6 +178,11 @@ namespace Shesha.DynamicEntities
                             && c.attr.GenerateApplicationService == GenerateApplicationServiceState.AlwaysGenerateApplicationService ^ c.db.GenerateAppService
                         ))
                 .ToList();
+
+            Logger.Info(toUpdate.Any()
+                ? $"{assembly.FullName}: found {toUpdate.Count()} entities to update"
+                : "{assembly.FullName}: existing entity configs are up to date");
+
             foreach (var config in toUpdate)
             {
                 config.db.FriendlyName = config.code.Config.FriendlyName;
@@ -189,6 +207,10 @@ namespace Shesha.DynamicEntities
             var toAdd = entitiesConfigs.Where(c => !dbEntities.Any(ec => ec.ClassName.Equals(c.Config.EntityType.Name, StringComparison.InvariantCultureIgnoreCase) &&
                     ec.Namespace.Equals(c.Config.EntityType.Namespace, StringComparison.InvariantCultureIgnoreCase)))
                 .ToList();
+            Logger.Info(toUpdate.Any()
+                ? $"{assembly.FullName}: found {toUpdate.Count()} entities to add"
+                : "{assembly.FullName}: new entities not found");
+
             foreach (var config in toAdd)
             {
                 var attr = config.Config.EntityType.GetAttribute<EntityAttribute>();

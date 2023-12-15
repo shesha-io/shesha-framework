@@ -94,11 +94,11 @@ export interface IMayHaveType {
 /**
  * Configurable action configuration. Is used in the form components to configure actions
  */
-export interface IConfigurableActionConfiguration extends IMayHaveType {
+export interface IConfigurableActionConfiguration<TArguments = any> extends IMayHaveType {
   actionOwner: string;
   actionName: string;
   version?: number;
-  actionArguments?: any;
+  actionArguments?: TArguments;
   handleSuccess: boolean;
   onSuccess?: IConfigurableActionConfiguration;
   handleFail: boolean;

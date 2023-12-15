@@ -1,6 +1,6 @@
 import { Router } from 'next/router';
 import { createContext } from 'react';
-import { FormIdentifier } from '@/providers/..';
+import { FormIdentifier, INavigateActoinArguments } from '@/providers/..';
 
 export interface IShaRoutingStateContext {
   router?: Router;
@@ -11,6 +11,7 @@ export interface IShaRoutingStateContext {
 export interface IShaRoutingActionsContext {
   goingToRoute: (route: string) => void;
   getFormUrl: (formId: FormIdentifier) => string;
+  getUrlFromNavigationRequest: (request: INavigateActoinArguments) => string;
 }
 
 export const SHA_ROUTING_CONTEXT_INITIAL_STATE: IShaRoutingStateContext = {};

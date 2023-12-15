@@ -1,7 +1,7 @@
 import { Router } from 'next/router';
 import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
 import { FormIdentifier, asFormFullName, getQueryParams } from '@/providers/..';
-import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
+import { IConfigurableActionConfiguration, useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { getFlagSetters } from '../utils/flagsSetters';
 import { navigateArgumentsForm } from './actions/navigate-arguments';
@@ -17,6 +17,8 @@ export interface IRoutingProviderProvider {
 }
 
 export type NavigationType = 'url' | 'form';
+
+const NAVIGATE_ACTION_NAME = 'Navigate';
 
 export interface INavigateActoinArguments {
   navigationType: NavigationType;
@@ -61,7 +63,7 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
       return Promise.reject("Both router and windows are not defined");
   };
 
-  const navigateToUrl = (url: string, queryParameters?: IKeyValue[]): Promise<boolean> => {
+  const prepareUrl = (url: string, queryParameters?: IKeyValue[]) => {
     const urlWithoutQuery = getUrlWithoutQueryParams(url);
     const urlQueryPatams = getQueryParams(url);
 
@@ -72,29 +74,35 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
     const preparedUrl = queryString
       ? `${urlWithoutQuery}?${queryString}`
       : urlWithoutQuery;
-    
-    return navigateToRawUrl(preparedUrl);
+    return preparedUrl;
   };
 
-  const navigateToForm = (formId: FormIdentifier, queryParameters?: IKeyValue[]): Promise<boolean> => {
-    const url = getFormUrl(formId);
-
-    return navigateToUrl(url, queryParameters);
+  const getUrlFromNavigationRequest = (request: INavigateActoinArguments): string => {
+    switch(request?.navigationType){
+      case 'url': return prepareUrl(request.url, request.queryParameters);
+      case 'form': {
+        const formUrl = getFormUrl(request.formId);
+        return prepareUrl(formUrl, request.queryParameters);
+      };
+      default: return undefined;
+    }
   };
 
   const actionDependencies = [state, state?.router];
   useConfigurableAction<INavigateActoinArguments>(
     {
-      name: 'Navigate',
+      name: NAVIGATE_ACTION_NAME,
       owner: 'Common',
       ownerUid: SheshaActionOwners.Common,
       hasArguments: true,
       executer: (request) => {
-        switch(request.navigationType){
-          case 'url': return navigateToUrl(request.url, request.queryParameters);
-          case 'form': return navigateToForm(request.formId, request.queryParameters);
-          default: return Promise.reject(`Common:Navigate: 'navigationType' is not configured properly, current value is '${request.navigationType}'`);
-        }
+        if (request.navigationType !== 'form' && request.navigationType !== 'url')
+          return Promise.reject(`Common:Navigate: 'navigationType' is not configured properly, current value is '${request.navigationType}'`);
+
+        const url = getUrlFromNavigationRequest(request);
+        return Boolean(url)
+          ? navigateToRawUrl(url)
+          : Promise.reject('Common:Navigate: url is empty');
       },
       argumentsFormMarkup: navigateArgumentsForm,
     },
@@ -108,6 +116,7 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
           ...getFlagSetters(dispatch),
           goingToRoute,
           getFormUrl,
+          getUrlFromNavigationRequest,
         }}
       >
         {children}
@@ -148,6 +157,8 @@ function useShaRouting(require: boolean = true) {
     : undefined;
 }
 
-export default ShaRoutingProvider;
+const isNavigationActionConfiguration = (actionConfig: IConfigurableActionConfiguration): actionConfig is IConfigurableActionConfiguration<INavigateActoinArguments> => {
+  return actionConfig && actionConfig.actionOwner === SheshaActionOwners.Common && actionConfig.actionName === NAVIGATE_ACTION_NAME;
+};
 
-export { ShaRoutingProvider, useShaRouting, useShaRoutingActions, useShaRoutingState };
+export { ShaRoutingProvider, useShaRouting, useShaRoutingActions, useShaRoutingState, isNavigationActionConfiguration };
