@@ -8,7 +8,7 @@ import { useForm } from '@/providers';
 import { IImageProps } from './model';
 import ImageAnnotationControl from './control';
 import { Alert } from 'antd';
-import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 const ImageAnnotationComponent: IToolboxComponent<IImageProps> = {
@@ -39,6 +39,7 @@ const ImageAnnotationComponent: IToolboxComponent<IImageProps> = {
   migrator: (m) => m
     .add<IImageProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IImageProps)
     .add<IImageProps>(1, (prev) => migrateVisibility(prev))
+    .add<IImageProps>(2, (prev) => migrateReadOnly(prev))
   ,
   initModel: model => {
     const customModel: IImageProps = {

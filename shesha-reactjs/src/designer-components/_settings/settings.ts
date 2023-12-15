@@ -2,11 +2,11 @@ import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 
 export const getSettings = () =>
   new DesignerToolbarSettings()
-    .addCheckbox({
+    .addReadOnlyMode({
       id: '24a8be15-98eb-40f7-99ea-ebb602693e9c',
-      propertyName: 'disabled',
+      propertyName: 'readOnly',
       parentId: 'root',
-      label: 'Disabled',
+      label: "Edit mode",
       jsSetting: true,
     })
     .addCheckbox({

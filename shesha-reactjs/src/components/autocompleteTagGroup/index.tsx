@@ -9,14 +9,6 @@ export interface IAutocompleteTagGroupProps extends Omit<InputProps, 'value' | '
   defaultValue?: string;
   autocompleteUrl: string;
   onChange?: (values?: string[]) => void;
-  /**
-   * Whether this control is disabled
-   */
-  disabled?: boolean;
-  /**
-   * If true, the automplete will be in read-only mode. This is not the same sa disabled mode
-   */
-  readOnly?: boolean;
 }
 
 interface IAutocompleteTagGroupState {
@@ -80,7 +72,7 @@ export const AutocompleteTagGroup: FC<IAutocompleteTagGroupProps> =
   const forMap = (tag: string) => {
     const tagElem = (
       <>
-        <Show when={!rest?.readOnly && !rest?.disabled}>
+        <Show when={!rest?.readOnly}>
           <Tag
             closable
             onClose={e => {
@@ -95,7 +87,7 @@ export const AutocompleteTagGroup: FC<IAutocompleteTagGroupProps> =
             {tag}
           </Tag>
         </Show>
-        <Show when={rest?.readOnly || rest?.disabled}>
+        <Show when={rest?.readOnly}>
           <Tag>{tag}</Tag>
         </Show>
       </>
@@ -124,14 +116,13 @@ export const AutocompleteTagGroup: FC<IAutocompleteTagGroupProps> =
           value={inputValue}
           onChange={handleInputChange}
           readOnly={rest?.readOnly}
-          disabled={rest?.disabled}
           allowClear={true}
           dataSourceType='url'
           dataSourceUrl={autocompleteUrl}
         />
       </Show>
 
-      <Show when={!inputVisible && !rest?.disabled && !rest?.readOnly}>
+      <Show when={!inputVisible && !rest?.readOnly}>
         <Tag onClick={showInput} className="site-tag-plus">
           <PlusOutlined /> New value
         </Tag>

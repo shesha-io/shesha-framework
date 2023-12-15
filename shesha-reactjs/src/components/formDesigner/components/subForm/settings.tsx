@@ -13,6 +13,7 @@ import { ISubFormComponentProps } from '.';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
 import { ContextPropertyAutocomplete } from '@/designer-components/contextPropertyAutocomplete';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
+import ReadOnlyModeSelector from '@/components/readOnlyModeSelector/index';
 
 const Option = Select.Option;
 
@@ -52,8 +53,8 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
         <Input readOnly={readOnly} />
       </SettingsFormItem>
 
-      <SettingsFormItem name="readOnly" label="Read Only" valuePropName="checked" jsSetting>
-        <Checkbox disabled={readOnly} />
+      <SettingsFormItem name="readOnly" label="Edit mode" jsSetting>
+        <ReadOnlyModeSelector readOnly={readOnly} />
       </SettingsFormItem>
 
       <SettingsFormItem name="hideLabel" label="Hide Label" valuePropName="checked" jsSetting>

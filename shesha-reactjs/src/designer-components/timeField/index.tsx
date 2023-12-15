@@ -14,7 +14,7 @@ import { axiosHttp } from '@/utils/fetchers';
 import { getNumericValue } from '@/utils/string';
 import settingsFormJson from './settingsForm.json';
 import './styles/index.less';
-import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
+import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 type RangeValue = [moment.Moment, moment.Moment];
@@ -115,6 +115,7 @@ const TimeField: IToolboxComponent<ITimePickerProps> = {
   migrator: (m) => m
     .add<ITimePickerProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<ITimePickerProps>(1, (prev) => migrateVisibility(prev))
+    .add<ITimePickerProps>(2, (prev) => migrateReadOnly(prev))
   ,
 };
 

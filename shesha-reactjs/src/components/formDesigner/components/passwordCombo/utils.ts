@@ -76,7 +76,6 @@ export const getFormItemProps = (
 export const getInputProps = (model: IPasswordComponentProps, formData: any) => ({
   bordered: !model?.hideBorder,
   size: model?.size,
-  disabled: model.disabled,
   readOnly: model.readOnly,
   style: getStyle(model?.style, formData),
 });

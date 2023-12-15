@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { DownOutlined, GroupOutlined } from '@ant-design/icons';
-import { IButtonGroupComponentProps } from './models';
+import { IButtonGroupComponentProps, IButtonGroupProps } from './models';
 import { Alert, Button, Divider, Dropdown, Menu, Space } from 'antd';
 import { IButtonGroupItem, ButtonGroupItemProps, IButtonGroup, isItem, isGroup } from '@/providers/buttonGroupConfigurator/models';
 import { useForm } from '@/providers/form';
@@ -85,8 +85,7 @@ type MenuButton = ButtonGroupItemProps & {
   childItems?: MenuButton[];
 };
 
-type ButtonGroupProps = Pick<IButtonGroupComponentProps, 'items' | 'id' | 'size' | 'spaceSize' | 'isInline' | 'noStyles' | 'disabled'>;
-export const ButtonGroup: FC<ButtonGroupProps> = (props) => {
+export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
   return (
     <DynamicActionsEvaluator items={props.items}>
       {(items) => (<ButtonGroupInner {...props} items={items}/>)}
@@ -94,7 +93,7 @@ export const ButtonGroup: FC<ButtonGroupProps> = (props) => {
   );
 };
 
-export const ButtonGroupInner: FC<ButtonGroupProps> = ({ items, size, spaceSize = 'middle', isInline, noStyles, disabled }) => {
+export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize = 'middle', isInline, noStyles, disabled }) => {
   const allData = useApplicationContext();
   const { anyOfPermissionsGranted } = useSheshaApplication();
 

@@ -95,17 +95,10 @@
     },
     {
       "id": "ea219103-9299-499e-86bb-8c4490e1c759",
-      "type": "checkbox",
-      "propertyName": "disabled",
-      "parentId": "root",
-      "label": "Disabled"
-    },
-    {
-      "id": "d6823841-28f3-4d3b-afda-543d29beecf5",
-      "type": "checkbox",
+      "type": "readOnlyModeSelector",
       "propertyName": "readOnly",
       "parentId": "root",
-      "label": "Read Only"
+      "label": "Edit mode"
     },
     {
       "id": "bf95c7d8-aa8a-41d2-bf47-b47a7ce99ada",

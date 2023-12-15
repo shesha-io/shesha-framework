@@ -88,10 +88,10 @@
           },
           {
             "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
-            "type": "checkbox",
-            "propertyName": "disabled",
+            "type": "readOnlyModeSelector",
+            "propertyName": "readOnly",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
-            "label": "Disabled"
+            "label": "Edit mode"
           }
         ]
       }

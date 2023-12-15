@@ -121,11 +121,11 @@ export const getSettings = (data: any) =>
       parentId: 'root',
       label: 'Hidden',
     })
-    .addCheckbox({
+    .addReadOnlyMode({
       id: '24a8be15-98eb-40f7-99ea-ebb602693e9c',
-      propertyName: 'disabled',
+      propertyName: 'readOnly',
       parentId: 'root',
-      label: 'Disabled',
+      label: "Edit mode",
     })
     .addConfigurableActionConfigurator({
       id: 'F3B46A95-703F-4465-96CA-A58496A5F78C',

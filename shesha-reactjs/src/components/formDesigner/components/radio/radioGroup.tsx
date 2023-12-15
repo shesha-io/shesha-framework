@@ -66,7 +66,7 @@ const RadioGroup: FC<IRadioProps> = (model) => {
     >
       <Space direction={model?.direction}>
         {options?.map((checkItem, index) => (
-          <Radio key={index} value={`${checkItem.value}`} disabled={model.disabled}>
+          <Radio key={index} value={`${checkItem.value}`} disabled={model.readOnly}>
             {checkItem.label}
           </Radio>
         ))}
@@ -75,7 +75,7 @@ const RadioGroup: FC<IRadioProps> = (model) => {
   );
 
   if (model.readOnly) {
-    return <ReadOnlyDisplayFormItem type="radiogroup" disabled={model.disabled} render={renderCheckGroup} />;
+    return <ReadOnlyDisplayFormItem type="radiogroup" disabled={model.readOnly} render={renderCheckGroup} />;
   }
 
   return renderCheckGroup();

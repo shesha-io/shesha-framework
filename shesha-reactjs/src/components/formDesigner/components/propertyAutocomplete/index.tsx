@@ -9,7 +9,7 @@ import { PropertyAutocomplete } from '../../../propertyAutocomplete/propertyAuto
 import { evaluateString, MetadataProvider, useForm, useFormData } from '@/components/..';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { IPropertyAutocompleteComponentProps } from './interfaces';
-import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -54,4 +54,6 @@ export const PropertyAutocompleteComponent: IToolboxComponent<IPropertyAutocompl
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
   migrator: (m) => m
     .add<IPropertyAutocompleteComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IPropertyAutocompleteComponentProps>(1, (prev) => migrateReadOnly(prev))
+  ,
 };

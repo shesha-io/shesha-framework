@@ -19,7 +19,6 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
   value,
   language = 'javascript',
   exposedVariables,
-  disabled = false,
   readOnly = false,
   ...props
 }) => {
@@ -101,7 +100,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
         autoScrollEditorIntoView: true,
         minLines: 3,
         maxLines: 100,
-        readOnly: disabled || readOnly,
+        readOnly: readOnly,
         ...aceOptions,
       }}
       editorProps={editorProps}
@@ -117,7 +116,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
       <Show when={mode === 'dialog'}>
         <Space>
           <Button icon={<CodeOutlined />} onClick={openEditorDialog} size="small">
-            {disabled || readOnly ? 'View Code' : hasValue ? 'Edit in Code Editor' : 'Create in Code Editor'}
+            {readOnly ? 'View Code' : hasValue ? 'Edit in Code Editor' : 'Create in Code Editor'}
           </Button>
           <Show when={hasValue && !readOnly}>
             <Button type="primary" size="small" danger onClick={onClear}>
@@ -133,8 +132,8 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
         onOk={onDialogSave}
         width={900}
         title={props.label}
-        okButtonProps={{ hidden: disabled || readOnly }}
-        cancelText={disabled || readOnly ? 'Close' : undefined}
+        okButtonProps={{ hidden: readOnly }}
+        cancelText={readOnly ? 'Close' : undefined}
       >
         <Show when={!!props?.description}>
           <Alert message={props?.description} />

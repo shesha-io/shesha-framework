@@ -1,6 +1,6 @@
 import React, { FC, useRef } from 'react';
 import { CustomErrorBoundary } from '../../../components';
-import { useForm } from '../../../providers';
+import { useForm, DEFAULT_FORM_SETTINGS } from '../../../providers';
 import { useCrud } from '@/providers/crudContext';
 import { ITableDataColumn } from '@/providers/dataTable/interfaces';
 import { IColumnEditorProps, standardCellComponentTypes } from '@/providers/datatableColumnsConfigurator/models';
@@ -16,7 +16,7 @@ import StringCell from './default/stringCell';
 import TimeCell from './default/timeCell';
 import { IComponentWrapperProps, IConfigurableCellProps, IDataCellProps } from './interfaces';
 import { getInjectables } from './utils';
-import { getActualModel, useApplicationContext } from '@/utils/publicUtils';
+import { getActualModel, upgradeComponent, useApplicationContext } from '@/utils/publicUtils';
 import { useDeepCompareMemo } from '@/hooks';
 
 export const DataCell = <D extends object = {}, V = number>(props: IDataCellProps<D, V>) => {
@@ -126,24 +126,39 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
     const injectables = getInjectables(props);
 
     const componentModel = useDeepCompareMemo(() => {
-        const actualModel = getActualModel(customComponent.settings, {...allData, tableRow: injectables.injectedTableRow});
-          
-        let editorModel: IColumnEditorProps = {
-            ...actualModel,
-            ...injectables,
-            id: props.columnConfig.columnId,
-            type: customComponent.type,
-            propertyName: columnConfig.propertyName,
-            label: null,
-            hideLabel: true,
-            readOnly: props.readOnly,
-        };
+      // migrate component
+      const model = upgradeComponent(
+        customComponent.settings,
+        component,
+        DEFAULT_FORM_SETTINGS,
+        {allComponents: {'component': customComponent.settings}, componentRelations: {} }
+      );
+      
+      // calcualte JS properties
+      const actualModel = getActualModel(
+        model,
+        {
+          ...allData,
+          formMode: props.readOnly ? 'readonly' : undefined, // imitate form mode according to cell mode
+          tableRow: injectables.injectedTableRow
+        });
+        
+      let editorModel: IColumnEditorProps = {
+          ...actualModel,
+          ...injectables,
+          id: props.columnConfig.columnId,
+          type: customComponent.type,
+          propertyName: columnConfig.propertyName,
+          label: null,
+          hideLabel: true,
+          readOnly: actualModel.readOnly,
+      };
 
-        if (component.linkToModelMetadata && propertyMeta) {
-          editorModel = component.linkToModelMetadata(editorModel, propertyMeta);
-        }
+      if (component.linkToModelMetadata && propertyMeta) {
+        editorModel = component.linkToModelMetadata(editorModel, propertyMeta);
+      }
 
-        return editorModel;
+      return editorModel;
     }, [customComponent.settings, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow, propertyMeta, injectables]);
 
     const componentRef = useRef();

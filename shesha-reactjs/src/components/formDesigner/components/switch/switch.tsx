@@ -11,7 +11,7 @@ import { DataTypes } from '@/interfaces/dataTypes';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { SwitchSize } from 'antd/lib/switch';
 import { ISwitchComponentProps } from './interfaces';
-import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -26,19 +26,15 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps> = {
     const { size, ...model } = passedModel;
     const { data: formData } = useFormData();
 
-    const isReadOnly = model?.readOnly;
-
-    const disabled = model?.disabled;
-
     const style = getStyle(model?.style, formData);
 
     return (
       <ConfigurableFormItem model={model} valuePropName="checked" initialValue={model?.defaultValue}>
         {(value, onChange) => {
-          return isReadOnly ? (
-              <ReadOnlyDisplayFormItem type="switch" disabled={disabled} value={value} />
+          return model.readOnly ? (
+              <ReadOnlyDisplayFormItem type="switch" disabled={model.readOnly} value={value} />
             ) : (
-              <Switch className="sha-switch" disabled={disabled} style={style} size={size as SwitchSize} checked={value} onChange={onChange}/>
+              <Switch className="sha-switch" disabled={model.readOnly} style={style} size={size as SwitchSize} checked={value} onChange={onChange}/>
             );
         }}
       </ConfigurableFormItem>
@@ -55,6 +51,7 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps> = {
   migrator: (m) => m
     .add<ISwitchComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<ISwitchComponentProps>(1, (prev) => migrateVisibility(prev))
+    .add<ISwitchComponentProps>(2, (prev) => migrateReadOnly(prev))
   ,
 };
 

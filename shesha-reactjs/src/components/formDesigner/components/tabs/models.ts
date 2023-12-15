@@ -10,8 +10,7 @@ export interface ITabPaneProps
   icon?: string;
   key: string;
   title: string;
-  customVisibility?: string;
-  customEnabled?: string;
+  hidden?: boolean;
   permissions?: string[];
   components?: IConfigurableFormComponent[];
   childItems?: ITabPaneProps[];

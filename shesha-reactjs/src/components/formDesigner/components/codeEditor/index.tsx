@@ -8,8 +8,7 @@ import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { CodeEditor } from './codeEditor';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { ICodeEditorComponentProps, ICodeEditorProps } from './interfaces';
-import { useForm } from '@/components/..';
-import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -25,8 +24,6 @@ const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
       ...model,
     };
 
-    const { formMode} = useForm();
-
     return (
         <ConfigurableFormItem model={model}>
           {(value, onChange) => {
@@ -38,7 +35,7 @@ const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
                 {...editorProps}
                 mode={model.mode || 'dialog'}
                 setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-                readOnly={formMode === 'readonly'}
+                readOnly={model.readOnly}
               />
             );
           }}
@@ -48,6 +45,7 @@ const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
   migrator: (m) => m
     .add<ICodeEditorComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<ICodeEditorComponentProps>(1, (prev) => migrateVisibility(prev))
+    .add<ICodeEditorComponentProps>(2, (prev) => migrateReadOnly(prev))
   ,
   initModel: model => {
     const textAreaModel: ICodeEditorComponentProps = {

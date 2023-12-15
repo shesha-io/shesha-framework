@@ -17,6 +17,7 @@ import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCo
 import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
 import { ContextPropertyAutocomplete } from '@/designer-components/contextPropertyAutocomplete';
 import { useFormDesigner } from '@/providers/formDesigner';
+import ReadOnlyModeSelector from '@/components/readOnlyModeSelector/index';
 
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 
@@ -256,8 +257,8 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
     </SettingsCollapsiblePanel>
 
     <SettingsCollapsiblePanel header='Visibility'>
-      <SettingsFormItem name="disabled" label="Disabled" valuePropName="checked" jsSetting>
-        <Checkbox disabled={readOnly} />
+      <SettingsFormItem name="readOnly" label="Edit mode" jsSetting>
+        <ReadOnlyModeSelector readOnly={readOnly} />
       </SettingsFormItem>
 
       <SettingsFormItem name="hidden" label="Hidden" valuePropName="checked" jsSetting>

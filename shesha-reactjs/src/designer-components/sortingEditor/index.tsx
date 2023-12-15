@@ -7,6 +7,7 @@ import settingsFormJson from './settingsForm.json';
 import { evaluateString, validateConfigurableComponentSettings } from '@/utils/publicUtils';
 import { SortingEditor } from '@/components/dataTable/sortingConfigurator/index';
 import { useForm, useFormData } from '@/providers/index';
+import { migrateReadOnly } from '../_common-migrations/migrateSettings';
 
 export interface ISortingEditorComponentProps extends IConfigurableFormComponent {
     modelType: string;
@@ -40,5 +41,6 @@ export const SortingEditorComponent: IToolboxComponent<ISortingEditorComponentPr
     validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
     migrator: (m) => m
         .add<ISortingEditorComponentProps>(0, (prev) => ({ ...prev, modelType: '' }))
+        .add<ISortingEditorComponentProps>(1, (prev) => migrateReadOnly(prev))
     ,
 };

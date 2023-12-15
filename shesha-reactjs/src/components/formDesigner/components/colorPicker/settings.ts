@@ -71,7 +71,14 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
           propertyName: 'hideLabel',
           parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
           label: 'Hide Label',
-        }).toJson()
+        })
+        .addReadOnlyMode({
+          id: '24a8be15-98eb-40f7-99ea-ebb602693e9c',
+          propertyName: 'readOnly',
+          parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
+          label: "Edit mode",
+        })
+        .toJson()
       ]
     }
   })

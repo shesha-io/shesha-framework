@@ -166,17 +166,11 @@ export const entityPickerSettings = new DesignerToolbarSettings()
           parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
           label: 'Hide Label',
         })
-        .addCheckbox({
+        .addReadOnlyMode({
           id: '24a8be15-98eb-40f7-99ea-ebb602693e9c',
-          propertyName: 'disabled',
-          parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
-          label: 'Disabled',
-        })
-        .addCheckbox({
-          id: '1ceb3851-f15e-437b-98b6-84d6a1fbf801',
           propertyName: 'readOnly',
           parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
-          label: 'Read Only',
+          label: "Edit mode",
         })
         .toJson()
       ]

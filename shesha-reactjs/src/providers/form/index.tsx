@@ -207,15 +207,13 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     return allComponents[componentId];
   };
 
-  const isComponentDisabled = (model: Pick<IConfigurableFormComponent, 'id' | 'isDynamic' | 'disabled'>): boolean => {
-    const disabledByCondition = false;
-    //ToDo AS: need to change the way to update visible end enabled comopnents
-      //model.isDynamic !== true && state.enabledComponentIds && !state.enabledComponentIds.includes(model.id);
+  const isComponentReadOnly = (model: Pick<IConfigurableFormComponent, 'id' | 'isDynamic'>): boolean => {
+    const disabledByCondition = model.isDynamic !== true && state.enabledComponentIds && !state.enabledComponentIds.includes(model.id);
 
-    return state.formMode !== 'designer' && (model.disabled || disabledByCondition);
+    return state.formMode !== 'designer' && disabledByCondition;
   };
 
-  const isComponentHidden = (model: Pick<IConfigurableFormComponent, 'id' | 'isDynamic' | 'hidden'>): boolean => {
+  const isComponentHidden = (model: Pick<IConfigurableFormComponent, 'id' | 'isDynamic'>): boolean => {
     const hiddenByCondition = model.isDynamic !== true && state.visibleComponentIds && !state.visibleComponentIds.includes(model.id);
 
     return state.formMode !== 'designer' && hiddenByCondition;
@@ -284,9 +282,11 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   const updateEnabledComponents = (formContext: IFormStateInternalContext) => {
     const enabledComponents = getEnabledComponentIds(
       allComponents,
-      formContext.formData,
-      formProviderContext.globalState,
-      formContext?.formMode,
+      {
+        ...formProviderContext,
+        data: formContext.formData,
+        formMode: formContext.formMode
+      }
     );
 
     setEnabledComponents({ componentIds: enabledComponents });
@@ -411,7 +411,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   const configurableFormActions: IFormActionsContext = {
     ...getFlagSetters(dispatch),
     getComponentModel,
-    isComponentDisabled,
+    isComponentReadOnly,
     isComponentHidden,
     getChildComponents,
     getChildComponentIds,

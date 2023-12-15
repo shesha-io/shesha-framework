@@ -8,11 +8,10 @@ import { useForm } from '@/providers/form';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import {
   evaluateValue,
-  executeCustomExpression,
   validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
 import { getSettings } from './settings';
-import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 export interface IFileUploadProps extends IConfigurableFormComponent, Omit<IFormItem, 'name'> {
@@ -41,9 +40,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
     const { globalState } = useGlobalState();
     const ownerId = evaluateValue(model.ownerId, { data: formData, globalState });
 
-    const readonly = formMode === 'readonly';
-    const isEnabledByCondition = executeCustomExpression(model.customEnabled, true, formData, globalState);
-    const enabled = !readonly && !model.disabled && isEnabledByCondition;
+    const enabled = !model.readOnly;
 
     return (
       <ConfigurableFormItem model={model}>
@@ -107,6 +104,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
       return model;
     })
     .add<IFileUploadProps>(3, (prev) => migrateVisibility(prev))
+    .add<IFileUploadProps>(4, (prev) => migrateReadOnly(prev))
   ,
   settingsFormMarkup: getSettings(),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),

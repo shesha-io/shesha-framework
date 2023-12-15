@@ -79,18 +79,10 @@
           },
           {
             "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
-            "type": "checkbox",
-            "propertyName": "disabled",
-            "parentId": "s4gmBg31azZC0UjZjpfTm",
-            "label": "Disabled",
-            "version": 0
-          },
-          {
-            "id": "1ceb3851-f15e-437b-98b6-84d6a1fbf801",
-            "type": "checkbox",
+            "type": "readOnlyModeSelector",
             "propertyName": "readOnly",
             "parentId": "s4gmBg31azZC0UjZjpfTm",
-            "label": "Read Only",
+            "label": "Edit mode",
             "version": 0
           },
           {

@@ -157,7 +157,7 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
       )}
 
       <Input.Group {...inputGroupProps}>
-        <Select mode="tags" value={options} tagRender={tagRender} dropdownStyle={{ display: 'none' }} />
+        <Select mode="tags" value={options} tagRender={tagRender} dropdownStyle={{ display: 'none' }} searchValue='' />
         {isEditable && <Button onClick={onOpenModal} className="child-entity-tag-add" icon={<PlusOutlined />} />}
       </Input.Group>
     </div>

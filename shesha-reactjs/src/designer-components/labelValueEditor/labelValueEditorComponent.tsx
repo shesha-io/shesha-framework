@@ -7,7 +7,7 @@ import { ILabelValueEditorComponentProps } from './interfaces';
 import settingsFormJson from './settingsForm.json';
 import React from 'react';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -40,6 +40,7 @@ const LabelValueEditorComponent: IToolboxComponent<ILabelValueEditorComponentPro
         valueName: prev.valueName ?? 'value',
       };
     })
+    .add<ILabelValueEditorComponentProps>(2, (prev) => migrateReadOnly(prev))
   ,
   settingsFormMarkup: settingsForm,
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),

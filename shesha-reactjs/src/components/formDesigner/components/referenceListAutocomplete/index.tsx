@@ -5,9 +5,8 @@ import ConfigurableFormItem from '../formItem';
 import settingsFormJson from './settingsForm.json';
 import React from 'react';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { useForm } from '@/providers';
 import ReferenceListAutocomplete from '@/components/referenceListAutocomplete';
-import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 
 export interface IReferenceListAutocompleteProps extends IConfigurableFormComponent {
 }
@@ -20,11 +19,9 @@ const ReferenceListAutocompleteComponent: IToolboxComponent<IReferenceListAutoco
   icon: <FileSearchOutlined />,
   isHidden: false,
   Factory: ({ model }) => {
-    const { formMode } = useForm();
-
     return (
       <ConfigurableFormItem model={model}>
-        {(value, onChange) => <ReferenceListAutocomplete readOnly={formMode === 'readonly'} value={value} onChange={onChange}/>}
+        {(value, onChange) => <ReferenceListAutocomplete readOnly={model.readOnly} value={value} onChange={onChange}/>}
       </ConfigurableFormItem>
     );
   },
@@ -33,6 +30,7 @@ const ReferenceListAutocompleteComponent: IToolboxComponent<IReferenceListAutoco
   migrator: m => m
     .add<IReferenceListAutocompleteProps>(0, prev => ({ ...prev, convertToFullId: true }))
     .add<IReferenceListAutocompleteProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IReferenceListAutocompleteProps>(2, (prev) => migrateReadOnly(prev))
   ,
 };
 

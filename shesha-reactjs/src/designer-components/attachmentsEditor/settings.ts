@@ -74,11 +74,11 @@ export const getSettings = () =>
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
             label: 'Hide Label',
           })
-          .addCheckbox({
+          .addReadOnlyMode({
             id: '24a8be15-98eb-40f7-99ea-ebb602693e9c',
-            propertyName: 'disabled',
+            propertyName: 'readOnly',
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
-            label: 'Disabled',
+            label: "Edit mode",
           })
           /*.addTextField({
             id: '1ad47439-4c18-468c-89e1-60c002ce96c5',
@@ -93,7 +93,7 @@ export const getSettings = () =>
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
             label: 'Allow Add',
             validate: {},
-            hidden: {_code: 'return  getSettingValue(data?.disabled) ?? false;', _mode: 'code', _value: false} as any,
+            hidden: {_code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false} as any,
           })
           .addCheckbox({
             id: '6b3d298a-0e82-4420-ae3c-38bf5a2246d4',
@@ -101,7 +101,7 @@ export const getSettings = () =>
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
             label: 'Allow Remove',
             validate: {},
-            hidden: {_code: 'return  getSettingValue(data?.disabled) ?? false;', _mode: 'code', _value: false} as any,
+            hidden: {_code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false} as any,
           })
           .addCodeEditor({
             id: '48ff91b3-5fb1-4e1b-a17f-ff86bce22e0b',

@@ -565,7 +565,6 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     return (
       <div key={item['id'] ?? index}>
         <ConditionalWrap
-          key={index}
           condition={selectionMode !== 'none'}
           wrap={(children) => (
             <Checkbox

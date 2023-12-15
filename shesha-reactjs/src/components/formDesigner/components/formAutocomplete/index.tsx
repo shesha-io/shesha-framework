@@ -8,7 +8,7 @@ import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { useForm } from '../../../../providers';
 import FormAutocomplete from '@/components/formAutocomplete';
 import { IFormAutocompleteComponentProps } from './interfaces';
-import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -38,6 +38,7 @@ const FormAutocompleteComponent: IToolboxComponent<IFormAutocompleteComponentPro
   migrator: m => m
     .add<IFormAutocompleteComponentProps>(0, prev => ({ ...prev, convertToFullId: true }))
     .add<IFormAutocompleteComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IFormAutocompleteComponentProps>(2, (prev) => migrateReadOnly(prev))
   ,
 };
 
