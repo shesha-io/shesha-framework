@@ -125,7 +125,7 @@ export const getSettings = (data: any) =>
       id: '24a8be15-98eb-40f7-99ea-ebb602693e9c',
       propertyName: 'readOnly',
       parentId: 'root',
-      label: "Read Only mode",
+      label: "Edit mode",
     })
     .addConfigurableActionConfigurator({
       id: 'F3B46A95-703F-4465-96CA-A58496A5F78C',

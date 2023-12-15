@@ -53,7 +53,7 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
         <Input readOnly={readOnly} />
       </SettingsFormItem>
 
-      <SettingsFormItem name="readOnly" label="Read Only mode" jsSetting>
+      <SettingsFormItem name="readOnly" label="Edit mode" jsSetting>
         <ReadOnlyModeSelector readOnly={readOnly} />
       </SettingsFormItem>
 

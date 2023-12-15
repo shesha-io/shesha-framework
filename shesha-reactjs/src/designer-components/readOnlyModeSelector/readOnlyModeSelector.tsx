@@ -10,7 +10,7 @@ const ReadOnlyModeSelectorComponent: IToolboxComponent<IConfigurableFormComponen
   isInput: true,
   isOutput: true,
   canBeJsSetting: true,
-  name: 'Read Only Mode Selector',
+  name: 'Edit mode Selector',
   icon: <CodeOutlined />,
   isHidden: true,
   Factory: ({ model }) => {

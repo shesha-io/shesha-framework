@@ -81,7 +81,7 @@
       "type": "readOnlyModeSelector",
       "propertyName": "readOnly",
       "parentId": "root",
-      "label": "Read Only mode"
+      "label": "Edit mode"
     },
     {
       "id": "7e4876d8-1ed4-4576-9f5b-46cfd77d8643",

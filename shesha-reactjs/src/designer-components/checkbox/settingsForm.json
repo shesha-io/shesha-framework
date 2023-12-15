@@ -94,7 +94,7 @@
             "type": "readOnlyModeSelector",
             "propertyName": "readOnly",
             "parentId": "V7fTtlRl67ZoKhBMqXwoF",
-            "label": "Read Only mode"
+            "label": "Edit mode"
           }
         ]
       },

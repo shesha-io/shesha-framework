@@ -42,7 +42,7 @@ export const ComponentsContainerSubForm: FC<IComponentsContainerSubFormProps> = 
                 ...model,
                 context,
                 isDynamic: true,
-                readOnly: readOnly || model?.readOnly,
+                readOnly: readOnly === true ? true : model?.readOnly,
                 customEnabled: '',
               }}
               key={model?.id}
