@@ -6,7 +6,7 @@ export const getSettings = () =>
       id: '24a8be15-98eb-40f7-99ea-ebb602693e9c',
       propertyName: 'readOnly',
       parentId: 'root',
-      label: "Read Only mode",
+      label: "Edit mode",
       jsSetting: true,
     })
     .addCheckbox({
