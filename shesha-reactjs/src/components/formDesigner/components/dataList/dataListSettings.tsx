@@ -378,7 +378,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
           <ConfigurableActionConfigurator
             editorConfig={null}
             level={1}
-            label="On lis item save success"
+            label="On list item save success"
             description="Custom business logic to be executed after successfull saving of new/updated lis item."
             exposedVariables={ROW_SAVED_SUCCESS_EXPOSED_VARIABLES}
           />

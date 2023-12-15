@@ -48,7 +48,7 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
         autofocus: model?.autofocus,
       };
       return typedConfig;
-    }, [model]);
+    }, [model, model.readOnly]);
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) => <RichTextEditor config={config} value={value} onChange={onChange}/>}

@@ -184,11 +184,11 @@ const calcValue = (setting: IPropertySetting, allData: any) => {
   }
 };
 
-export const getReadOnlyBool = (value: ReadOnlyMode, allData: any) => {
+export const getReadOnlyBool = (value: ReadOnlyMode, parentValue: boolean) => {
   return value === true // check exact condition
     || value === 'readOnly'
-    || value === 'inherited' && allData?.formMode === 'readonly'
-    || !value && allData?.formMode === 'readonly';
+    || value === 'inherited' && parentValue
+    || !value && parentValue;
 };
 
 /**
@@ -207,7 +207,7 @@ export const getActualModel = <T>(model: T, allData: any, useFormModeReadOnly: b
 
   // update ReadOnly if exists
   if (!!m['readOnly'])
-    m['readOnly'] = getReadOnlyBool(m['readOnly'], useFormModeReadOnly ? allData : undefined);
+    m['readOnly'] = getReadOnlyBool(m['readOnly'], useFormModeReadOnly && allData['formMode'] === 'readonly');
 
   return m;
 };
@@ -728,7 +728,7 @@ export const getEnabledComponentIds = (
   for (const key in components) {
     if (components.hasOwnProperty(key)) {
       const component = components[key] as IConfigurableFormComponent;
-      const readOnly = getReadOnlyBool(getActualPropertyValue(component, allData, 'readOnly')?.readOnly, allData);
+      const readOnly = getReadOnlyBool(getActualPropertyValue(component, allData, 'readOnly')?.readOnly, allData['formMode'] === 'readonly');
       const isEnabled = !readOnly &&
         (!Boolean(component?.enabledFunc) ||
         (typeof component?.enabledFunc === 'function' && component?.enabledFunc(allData.data, allData.globalState, allData.formMode)));

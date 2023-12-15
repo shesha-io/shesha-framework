@@ -21,8 +21,9 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model }) => {
 
   if (!toolboxComponent) return null;
 
-  actualModel.hidden = isComponentHidden(actualModel);
-  actualModel.readOnly = isComponentReadOnly(actualModel);
+  // ToDo: review Hidden and ReadOnly for SubForm
+  actualModel.hidden = actualModel.hidden || isComponentHidden(actualModel); 
+  actualModel.readOnly = actualModel.readOnly || isComponentReadOnly(actualModel);
 
   const renderComponent = () => {
     return (

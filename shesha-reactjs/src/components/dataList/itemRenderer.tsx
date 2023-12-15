@@ -50,32 +50,34 @@ export const DataListItemRenderer: FC<IDataListItemProps> = (props) => {
   const itemListId = `${listId}_${!!itemId ? itemId.toString() : itemIndex}`;
 
   return (
-    <FormMarkupConverter markup={markup} formSettings={formSettings}>
-      {(flatComponents) => (
-        <CrudProvider
-          isNewObject={isNewObject}
-          data={data}
-          allowEdit={allowEdit}
-          updater={updater}
-          allowDelete={allowDelete}
-          deleter={deleter}
-          mode={editMode}
-          allowChangeMode={allowChangeEditMode}
-          autoSave={autoSave}
-          editorComponents={flatComponents}
-          displayComponents={flatComponents}
-          formSettings={formSettings}
-        >
-          <div className="sha-datalist-actions">
-            <CrudActionButtons />
-          </div>
-          <div key={itemListId} className="sha-datalist-cell">
-            <ComponentsContainerProvider ContainerComponent={ItemContainerForm}>
-              <ComponentsContainer containerId={'root'}/>
-            </ComponentsContainerProvider>
-          </div>
-        </CrudProvider>
-      )}
-    </FormMarkupConverter>
+    <div key={itemListId}>
+      <FormMarkupConverter markup={markup} formSettings={formSettings}>
+        {(flatComponents) => (
+          <CrudProvider
+            isNewObject={isNewObject}
+            data={data}
+            allowEdit={allowEdit}
+            updater={updater}
+            allowDelete={allowDelete}
+            deleter={deleter}
+            mode={editMode}
+            allowChangeMode={allowChangeEditMode}
+            autoSave={autoSave}
+            editorComponents={flatComponents}
+            displayComponents={flatComponents}
+            formSettings={formSettings}
+          >
+            <div className="sha-datalist-actions">
+              <CrudActionButtons />
+            </div>
+            <div className="sha-datalist-cell">
+              <ComponentsContainerProvider ContainerComponent={ItemContainerForm}>
+                <ComponentsContainer containerId={'root'}/>
+              </ComponentsContainerProvider>
+            </div>
+          </CrudProvider>
+        )}
+      </FormMarkupConverter>
+    </div>
   );
 };
