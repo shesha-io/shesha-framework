@@ -46,9 +46,10 @@ namespace Shesha.Bootstrappers
             _moduleManager = moduleManager;
         }
 
+        [UnitOfWork(IsDisabled = true)]
         public async Task ProcessAsync()
         {
-            Logger.Info("Bootstrap reference lists");
+            Logger.Warn("Bootstrap reference lists");
 
             var grouppedLists = _typeFinder
                 .Find(type => type != null && type.IsPublic && type.IsEnum && type.HasAttribute<ReferenceListAttribute>())
@@ -60,7 +61,7 @@ namespace Shesha.Bootstrappers
                 })
                 .ToList();
 
-            Logger.Info($"Found {grouppedLists.Count()} assemblies to bootstrap");
+            Logger.Warn($"Found {grouppedLists.Count()} assemblies to bootstrap");
 
             if (!grouppedLists.Any())
                 return;
@@ -72,18 +73,17 @@ namespace Shesha.Bootstrappers
                     using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
                     {
                         await ProcessAssemblyAsync(group.Assembly, group.Lists);
-                        await unitOfWork.CompleteAsync();
                     }
                     await unitOfWork.CompleteAsync();
                 }
             }
 
-            Logger.Info("Bootstrap reference lists finished successfully");
+            Logger.Warn("Bootstrap reference lists finished successfully");
         }
 
         private async Task ProcessAssemblyAsync(Assembly assembly, List<RefListType> lists) 
         {
-            Logger.Info($"Bootstrap assembly {assembly.FullName}");
+            Logger.Warn($"Bootstrap assembly {assembly.FullName}");
             
             var module = await _moduleManager.GetOrCreateModuleAsync(assembly);
 
@@ -104,7 +104,7 @@ namespace Shesha.Bootstrappers
                 }
             }
 
-            Logger.Info($"Bootstrap assembly {assembly.FullName} - finished");
+            Logger.Warn($"Bootstrap assembly {assembly.FullName} - finished");
         }
 
         private async Task ProcessListAsync(Domain.ConfigurationItems.Module module, RefListType list) 
@@ -211,7 +211,7 @@ namespace Shesha.Bootstrappers
                 .Where(i => i.ReferenceList == listInDb)
                 .ToListAsync();
 
-            Logger.Info($"  list in the DB: {itemsInDb.Count()}");
+            Logger.Info($"  items in the DB: {itemsInDb.Count()}");
 
             var toAdd = listInCode.Where(i => !itemsInDb.Any(iv => iv.ItemValue == i.Value)).ToList();
 
