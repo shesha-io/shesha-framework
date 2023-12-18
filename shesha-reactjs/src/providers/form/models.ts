@@ -45,7 +45,7 @@ export interface IComponentValidationRules {
   validator?: string;
 }
 
-export type ReadOnlyMode = 'editable' | 'readOnly' | 'inherited' | boolean;
+export type EditMode = 'editable' | 'readOnly' | 'inherited' | boolean;
 
 export type ConfigurableFormComponentTypes =
   | 'alert'
@@ -119,6 +119,11 @@ export interface IComponentMetadata {
   injectedDefaultValue?: any;
 }
 
+export interface IConfigurableFormComponentWithReadOnly extends Omit<IConfigurableFormComponent, 'editMode'> {
+  /** Whether the component is read-only */
+  readOnly?: boolean;
+}
+
 /**
  * Base model of the configurable component
  */
@@ -141,6 +146,9 @@ export interface IConfigurableFormComponent
 
   /** Whether the component is read-only */
   readOnly?: boolean;
+
+  /** Component edit/action mode */
+  editMode?: EditMode;
 
   /** Custom visibility code */
   /** @deprecated Use disabled in js mode instead */

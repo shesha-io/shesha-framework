@@ -106,8 +106,18 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
   const { addItem: addDelayedUpdate, removeItem: removeDelayedUpdate } = useDelayedUpdate(false) ?? {};
 
   const doFetchFileInfo = () => {
-    if (state.fileId) fileFetcher.refetch({ queryParams: { id: state.fileId } });
-    else if (ownerId && ownerType && propertyName)
+    if (
+      state.fileInfo?.id !== undefined &&
+      (state.fileInfo?.id === state.fileId
+      || state.fileInfo?.id === value
+      || state.fileInfo?.id === value?.id)
+    )
+      return;
+
+    if (state.fileId)
+      fileFetcher.refetch({ queryParams: { id: state.fileId } });
+    else
+    if (ownerId && ownerType && propertyName)
       propertyFetcher.refetch({ queryParams: { ownerId, ownerType, propertyName } });
   };
 

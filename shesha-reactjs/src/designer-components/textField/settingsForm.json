@@ -151,9 +151,16 @@
             "label": "Hide Label"
           },
           {
+            "id": "c6885251-96a6-40ce-99b2-4b5209a9e022",
+            "type": "checkbox",
+            "propertyName": "disabled",
+            "parentId": "s4gmBg31azZC0UjZjpfTm",
+            "label": "disabled"
+          },
+          {
             "id": "1ceb3851-f15e-437b-98b6-84d6a1fbf801",
-            "type": "readOnlyModeSelector",
-            "propertyName": "readOnly",
+            "type": "editModeSelector",
+            "propertyName": "editMode",
             "parentId": "s4gmBg31azZC0UjZjpfTm",
             "label": "Edit mode"
           },

@@ -62,7 +62,7 @@ const DebugPanelDataContent: FC = () => {
   
     return (
       <>
-        {globalState &&
+        {false && globalState &&
           <DebugDataTree 
             data={globalState}
             onChange={(propName, val) => onChangeGloablState(propName, val)} 

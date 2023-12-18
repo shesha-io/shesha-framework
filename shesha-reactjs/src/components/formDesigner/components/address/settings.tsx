@@ -14,7 +14,7 @@ import { useForm } from '@/providers';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
 import { ContextPropertyAutocomplete } from '@/designer-components/contextPropertyAutocomplete';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
-import ReadOnlyModeSelector from '@/components/readOnlyModeSelector/index';
+import ReadOnlyModeSelector from '@/components/editModeSelector/index';
 
 interface IEntityReferenceSettingsState extends IAddressCompomentProps { }
 

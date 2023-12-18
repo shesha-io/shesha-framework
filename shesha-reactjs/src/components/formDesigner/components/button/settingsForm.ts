@@ -123,7 +123,7 @@ export const getSettings = (data: any) =>
     })
     .addReadOnlyMode({
       id: '24a8be15-98eb-40f7-99ea-ebb602693e9c',
-      propertyName: 'readOnly',
+      propertyName: 'editMode',
       parentId: 'root',
       label: "Edit mode",
     })

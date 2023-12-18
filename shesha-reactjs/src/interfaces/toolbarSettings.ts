@@ -26,7 +26,7 @@ import { ILabelValueEditorComponentProps } from '../designer-components/labelVal
 import { IContextPropertyAutocompleteComponentProps } from '@/designer-components/contextPropertyAutocomplete';
 import { ITextAreaComponentProps } from '@/designer-components/textArea/interfaces';
 import { IRadioProps } from '@/components/formDesigner/components/radio/utils';
-import { IReadOnlyModeSelectorProps } from '@/components/readOnlyModeSelector/index';
+import { IReadOnlyModeSelectorProps } from '@/components/editModeSelector/index';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'hidden' | 'type'> {
   hidden?: boolean | IPropertySetting;
@@ -217,7 +217,7 @@ export class DesignerToolbarSettings<T> {
   }
 
   public addReadOnlyMode(props: ReadOnlyModeType | ((data: T) => ReadOnlyModeType)) {
-    return this.addProperty(props, 'readOnlyModeSelector');
+    return this.addProperty(props, 'editModeSelector');
   }
 
   private addProperty(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp), type: string) {

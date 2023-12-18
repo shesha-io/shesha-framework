@@ -10,7 +10,7 @@ import React, { FC } from 'react';
 import FormAutocomplete from '@/components/formAutocomplete';
 import CodeEditor from '../codeEditor/codeEditor';
 import { IChildEntitiesTagGroupProps } from './models';
-import ReadOnlyModeSelector from '@/components/readOnlyModeSelector/index';
+import ReadOnlyModeSelector from '@/components/editModeSelector/index';
 
 const { Option } = Select;
 
@@ -49,7 +49,7 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
           </Select>
         </SettingsFormItem>
 
-        <SettingsFormItem name="readOnly" label="Edit mode" jsSetting>
+        <SettingsFormItem name="editMode" label="Edit mode" jsSetting>
           <ReadOnlyModeSelector readOnly={readOnly} />
         </SettingsFormItem>
 
