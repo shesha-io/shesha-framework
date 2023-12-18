@@ -1,5 +1,6 @@
 ﻿using EasyNetQ;
 using Shesha.Configuration;
+using Shesha.Reflection;
 using Shesha.Services;
 using System;
 using System.Linq;

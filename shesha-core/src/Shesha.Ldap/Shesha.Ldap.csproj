@@ -22,11 +22,15 @@
     <PackageReference Include="Abp.AspNetCore" Version="9.0.0" />
     <PackageReference Include="Abp.Zero.Common" Version="9.0.0" />
     <PackageReference Include="System.DirectoryServices.AccountManagement" Version="4.7.0" />
-    <PackageReference Include="System.DirectoryServices.Protocols" Version="7.0.0" />
+    <PackageReference Include="System.DirectoryServices.Protocols" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Shesha.Framework\Shesha.Framework.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="8.0.0" />
   </ItemGroup>
 
 </Project>
