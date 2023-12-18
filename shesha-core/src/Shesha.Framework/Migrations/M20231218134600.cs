@@ -12,7 +12,7 @@ namespace Shesha.Migrations
         /// </summary>
         public override void Up()
         {
-            Execute.Sql(@"
+            IfDatabase("SqlServer").Execute.Sql(@"
 		            CREATE OR ALTER VIEW [dbo].[vw_Frwk_EntityChangeAuditLogs]
 			            AS
                         SELECT 
