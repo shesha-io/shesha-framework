@@ -57,9 +57,10 @@ namespace Shesha.DynamicEntities
             _unitOfWorkManager = unitOfWorkManager;
         }
 
+        [UnitOfWork(IsDisabled = true)]
         public async Task ProcessAsync()
         {
-            Logger.Info("Bootstrap entity configs");
+            Logger.Warn("Bootstrap entity configs");
 
             var assemblies = _assembleFinder.GetAllAssemblies()
                 .Distinct(new AssemblyFullNameComparer())
@@ -67,23 +68,23 @@ namespace Shesha.DynamicEntities
                             a.GetTypes().Any(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t) && t != typeof(JsonEntity))
                 )
                 .ToList();
-            Logger.Info($"Found {assemblies.Count()} assemblies to bootstrap");
+            Logger.Warn($"Found {assemblies.Count()} assemblies to bootstrap");
 
             foreach (var assembly in assemblies)
             {
-                Logger.Info($"Bootstrap assembly {assembly.FullName}");
+                Logger.Warn($"Bootstrap assembly {assembly.FullName}");
 
                 using (var unitOfWork = _unitOfWorkManager.Begin())
                 {
                     using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
                     {
                         await ProcessAssemblyAsync(assembly);
-                        await unitOfWork.CompleteAsync();
                     }
+                    await unitOfWork.CompleteAsync();
                 }
-                Logger.Info($"Bootstrap assembly {assembly.FullName} - finished");
+                Logger.Warn($"Bootstrap assembly {assembly.FullName} - finished");
             }
-            Logger.Info("Bootstrap entity configs finished successfully");
+            Logger.Warn("Bootstrap entity configs finished successfully");
             // update inheritance
             /*foreach (var assembly in assemblies)
             {

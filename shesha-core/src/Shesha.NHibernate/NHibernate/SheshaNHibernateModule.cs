@@ -275,12 +275,20 @@ namespace Shesha.NHibernate
                             {
                                 Logger.Warn($"Run bootstrapper: {bootstrapperType.Name}...");
 
-                                var uowManager = ioc.Resolve<IUnitOfWorkManager>();
-                                using (var unitOfWork = uowManager.Begin())
+                                var method = bootstrapperType.GetMethod(nameof(IBootstrapper.ProcessAsync));
+                                var unitOfWorkAttribute = method.GetAttribute<UnitOfWorkAttribute>(true);
+                                var useDefaultUnitOfWork = unitOfWorkAttribute == null || !unitOfWorkAttribute.IsDisabled;
+
+                                if (useDefaultUnitOfWork) 
                                 {
+                                    var uowManager = ioc.Resolve<IUnitOfWorkManager>();
+                                    using (var unitOfWork = uowManager.Begin())
+                                    {
+                                        await bootstrapper.ProcessAsync();
+                                        await unitOfWork.CompleteAsync();
+                                    }
+                                } else
                                     await bootstrapper.ProcessAsync();
-                                    await unitOfWork.CompleteAsync();
-                                }
 
                                 Logger.Warn($"Run bootstrapper: {bootstrapperType.Name} - finished");
                             }
