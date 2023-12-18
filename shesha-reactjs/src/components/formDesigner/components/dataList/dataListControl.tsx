@@ -7,6 +7,7 @@ import moment from 'moment';
 import { IDataListWithDataSourceProps } from './model';
 import { useApplicationContext, useConfigurableActionDispatcher, YesNoInherit } from '@/index';
 import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions } from '@/providers/dataTable/repository/backendRepository';
+import { useDelayedUpdate } from '@/providers/delayedUpdateProvider/index';
 
 export const NotConfiguredWarning: FC = () => {
   return <Alert className="sha-designer-warning" message="Data list is not configured properly" type="warning" />;
@@ -48,6 +49,8 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
 
   const allData = useApplicationContext();
   const isDesignMode = allData.formMode === 'designer';
+
+  const { getPayload: getDelayedUpdate } = useDelayedUpdate(false) ?? {};
 
   const repository = getRepository();
 
@@ -110,6 +113,10 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         repository.repositoryType === BackendRepositoryType
           ? ({ customUrl: customUpdateUrl } as IUpdateOptions)
           : undefined;
+
+      // send data of stored files
+      const delayedUpdate = typeof getDelayedUpdate === 'function' ? getDelayedUpdate() : null;
+        if (Boolean(delayedUpdate)) preparedData['_delayedUpdate'] = delayedUpdate;
 
       return repository.performUpdate(rowIndex, preparedData, options).then((response) => {
         setRowData(rowIndex, preparedData/*, response*/);

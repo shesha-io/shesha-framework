@@ -10,7 +10,7 @@ import classNames from 'classnames';
 import CustomErrorBoundary from '@/components/customErrorBoundary';
 import { useFormDesigner } from '@/providers/formDesigner';
 import { IConfigurableFormComponent } from '../../../interfaces';
-import { ReadOnlyMode, useMetadata } from '@/providers';
+import { EditMode, useMetadata } from '@/providers';
 import { getActualPropertyValue, useApplicationContext } from '@/index';
 import { isPropertySettings } from '@/designer-components/_settings/utils';
 
@@ -88,11 +88,11 @@ const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerPr
 
   const hiddenFx = isPropertySettings(componentModel.hidden);
   const hidden = getActualPropertyValue(componentModel, allData, 'hidden')?.hidden;
-  const componentReadOnlyFx = isPropertySettings(componentModel.readOnly);
-  const componentReadOnly = getActualPropertyValue(componentModel, allData, 'readOnly')?.readOnly as ReadOnlyMode;
+  const componentEditModeFx = isPropertySettings(componentModel.editMode);
+  const componentEditMode = getActualPropertyValue(componentModel, allData, 'editMode')?.editMode as EditMode;
 
-  const actionText1 = (hiddenFx ? 'hidden' : '') + (hiddenFx && componentReadOnlyFx ? ' and ' : '') + (componentReadOnlyFx ? 'disabled' : '');
-  const actionText2 = (hiddenFx ? 'showing' : '') + (hiddenFx && componentReadOnlyFx ? '/' : '') + (componentReadOnlyFx ? 'enabled' : '');
+  const actionText1 = (hiddenFx ? 'hidden' : '') + (hiddenFx && componentEditModeFx ? ' and ' : '') + (componentEditModeFx ? 'disabled' : '');
+  const actionText2 = (hiddenFx ? 'showing' : '') + (hiddenFx && componentEditModeFx ? '/' : '') + (componentEditModeFx ? 'enabled' : '');
 
   return (
     <div
@@ -102,7 +102,7 @@ const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerPr
       })}
     >
       <span className="sha-component-indicator">
-        <Show when={hiddenFx || componentReadOnlyFx}>
+        <Show when={hiddenFx || componentEditModeFx}>
           <Tooltip title={`This component is ${actionText1} by condition. It's now ${actionText2} because we're in a designer mode`}>
             <FunctionOutlined />
           </Tooltip>
@@ -114,12 +114,12 @@ const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerPr
           </Tooltip>
         </Show>
 
-        <Show when={!componentReadOnlyFx && (componentReadOnly === 'readOnly' || componentReadOnly === true || disabledByCondition)}>
+        <Show when={!componentEditModeFx && (componentEditMode === 'readOnly' || componentEditMode === true || disabledByCondition)}>
           <Tooltip title="This component is always in Edit mode. It's now enabled because we're in a designer mode">
             <StopOutlined />
           </Tooltip>
         </Show>
-        <Show when={!componentReadOnlyFx && componentReadOnly === 'editable' && !disabledByCondition}>
+        <Show when={!componentEditModeFx && componentEditMode === 'editable' && !disabledByCondition}>
           <Tooltip title="This component is always in Edit/Action mode">
             <EditOutlined />
           </Tooltip>

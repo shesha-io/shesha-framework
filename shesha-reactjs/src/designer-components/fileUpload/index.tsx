@@ -34,11 +34,10 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
     const { backendUrl } = useSheshaApplication();
 
     // todo: refactor and implement a generic way for values evaluation
-    const { data: formData } = useFormData();
     const { formMode, formSettings } = useForm();
     const { data } = useFormData();
     const { globalState } = useGlobalState();
-    const ownerId = evaluateValue(model.ownerId, { data: formData, globalState });
+    const ownerId = evaluateValue(model.ownerId, { data, globalState });
 
     const enabled = !model.readOnly;
 

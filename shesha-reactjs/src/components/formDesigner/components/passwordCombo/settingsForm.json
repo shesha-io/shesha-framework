@@ -95,8 +95,8 @@
     },
     {
       "id": "ea219103-9299-499e-86bb-8c4490e1c759",
-      "type": "readOnlyModeSelector",
-      "propertyName": "readOnly",
+      "type": "editModeSelector",
+      "propertyName": "editMode",
       "parentId": "root",
       "label": "Edit mode"
     },

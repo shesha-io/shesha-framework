@@ -1,5 +1,5 @@
-import { getPropertySettingsFromValue } from "@/designer-components/_settings/utils";
-import { IConfigurableFormComponent, ReadOnlyMode } from "@/providers";
+import { getPropertySettingsFromValue, isPropertySettings } from "@/designer-components/_settings/utils";
+import { IConfigurableFormComponent, EditMode } from "@/providers";
 
 export const migrateFunctionToProp = <T extends IConfigurableFormComponent,>(
   prev: T,
@@ -51,17 +51,26 @@ export const migratePropertyName = <T extends IConfigurableFormComponent,>(prev:
     return {...prev} as T;
 };
 
-export const migrateReadOnly = <T extends IConfigurableFormComponent,>(prev: T, defaultValue?: ReadOnlyMode) => {
+export const migrateReadOnly = <T extends IConfigurableFormComponent,>(prev: T, defaultValue?: EditMode) => {
   const disabled = prev['disabled'];
-  const model = {...prev, readOnly: 
+  const model = {...prev, editMode: 
     prev.readOnly === true
       ? !!disabled && disabled['_mode'] === 'code'
         ? {_value: true, _mode: 'value', _code: disabled['_code']}
         : true
     : disabled || prev.readOnly} as T;
 
-  if (!model.readOnly && !!defaultValue) 
-    model.readOnly = defaultValue as any;
+  if (isPropertySettings(model.editMode)) {
+    const func = `// Automatically updated from 'disabled' property, please review\n\n` +
+      'return !(() => {\n    // Source code\n\n' +
+      model.editMode['_code'] +
+      '\n\n})();';
+
+    model.editMode = {...model.editMode as any, _code: func};
+  }
+
+  if (!model.editMode && !!defaultValue) 
+    model.editMode = defaultValue;
 
   //delete model.disabled;
   return model;

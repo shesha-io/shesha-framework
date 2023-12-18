@@ -78,7 +78,8 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
 
     return (
       <ConfigurableFormItem model={model} initialValue={model.defaultValue}>
-        {(value, onChange) => (
+        {(value, onChange) => {
+          return (
           <EntityPicker
             formId={model.id}
             readOnly={model.readOnly}
@@ -105,7 +106,8 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
             value={value}
             onChange={onChange}
           />
-        )}
+        );
+        }}
       </ConfigurableFormItem>
     );
   },

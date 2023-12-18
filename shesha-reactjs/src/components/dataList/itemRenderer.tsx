@@ -52,7 +52,8 @@ export const DataListItemRenderer: FC<IDataListItemProps> = (props) => {
   return (
     <div key={itemListId}>
       <FormMarkupConverter markup={markup} formSettings={formSettings}>
-        {(flatComponents) => (
+        {(flatComponents) => {
+          return (
           <CrudProvider
             isNewObject={isNewObject}
             data={data}
@@ -76,7 +77,8 @@ export const DataListItemRenderer: FC<IDataListItemProps> = (props) => {
               </ComponentsContainerProvider>
             </div>
           </CrudProvider>
-        )}
+          );
+       }}
       </FormMarkupConverter>
     </div>
   );

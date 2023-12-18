@@ -321,6 +321,13 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     });
   }, [allComponents, componentRelations]);
 
+  useEffect(() => {
+    const values = form.getFieldValue([]);
+    if (!state.formData && !!values) {
+      dispatch(setFormDataAction({values, mergeValues: true}));
+    }
+  }, []);
+
   const setFormControlsData = (payload: ISetFormControlsDataPayload) => {
     dispatch(setFormControlsDataAction(payload));
   };

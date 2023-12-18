@@ -2,11 +2,11 @@ import { CodeOutlined } from '@ant-design/icons';
 import React from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
-import ReadOnlyModeSelector from '@/components/readOnlyModeSelector/index';
+import EditModeSelector from '@/components/editModeSelector/index';
 import { ConfigurableFormItem } from '@/index';
 
-const ReadOnlyModeSelectorComponent: IToolboxComponent<IConfigurableFormComponent> = {
-  type: 'readOnlyModeSelector',
+const EditModeSelectorComponent: IToolboxComponent<IConfigurableFormComponent> = {
+  type: 'editModeSelector',
   isInput: true,
   isOutput: true,
   canBeJsSetting: true,
@@ -14,8 +14,8 @@ const ReadOnlyModeSelectorComponent: IToolboxComponent<IConfigurableFormComponen
   icon: <CodeOutlined />,
   isHidden: true,
   Factory: ({ model }) => {
-    return <ConfigurableFormItem model={model}><ReadOnlyModeSelector readOnly={model.readOnly}/></ConfigurableFormItem>;
+    return <ConfigurableFormItem model={model}><EditModeSelector readOnly={model.readOnly}/></ConfigurableFormItem>;
   }
 };
 
-export default ReadOnlyModeSelectorComponent;
+export default EditModeSelectorComponent;

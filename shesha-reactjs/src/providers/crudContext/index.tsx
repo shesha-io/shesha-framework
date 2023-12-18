@@ -268,7 +268,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
           name={''}
           allComponents={flatComponents.allComponents}
           componentRelations={flatComponents.componentRelations}
-          formSettings={undefined}
+          formSettings={formSettings}
           mode={state.mode === 'read' ? 'readonly' : 'edit'}
           isActionsOwner={false}
         >

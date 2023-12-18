@@ -1,16 +1,16 @@
-import { ReadOnlyMode } from '@/index';
+import { EditMode } from '@/index';
 import { Select } from 'antd';
 import React, { FC } from 'react';
 
 export interface IReadOnlyModeSelectorProps {
-  value?: boolean | ReadOnlyMode;
+  value?: boolean | EditMode;
   readOnly?: boolean;
-  onChange?: (value: ReadOnlyMode) => void;
+  onChange?: (value: EditMode) => void;
 }
 
-const ReadOnlyModeSelector: FC<IReadOnlyModeSelectorProps> = (props) => {
+const EditModeSelector: FC<IReadOnlyModeSelectorProps> = (props) => {
   
-  const val: ReadOnlyMode = props.value === true
+  const val: EditMode = props.value === true
     ? 'readOnly'
     : !props.value
       ? 'inherited'
@@ -25,4 +25,4 @@ const ReadOnlyModeSelector: FC<IReadOnlyModeSelectorProps> = (props) => {
   );
 };
 
-export default ReadOnlyModeSelector;
+export default EditModeSelector;
