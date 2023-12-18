@@ -17,7 +17,6 @@
     <PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.13" />
     <PackageReference Include="PasswordGenerator" Version="2.1.0" />
     <PackageReference Include="Shesha.Application" Version="0.0.60160-build" />
-    <PackageReference Include="Shesha.AzureAD" Version="0.0.60160-build" />
     <PackageReference Include="Shesha.Core" Version="0.0.60160-build" />
     <PackageReference Include="Shesha.Framework" Version="0.0.60160-build" />
     <PackageReference Include="Shesha.NHibernate" Version="0.0.60160-build" />
