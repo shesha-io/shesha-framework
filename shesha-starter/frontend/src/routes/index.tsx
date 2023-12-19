@@ -1,11 +1,11 @@
-import { ISidebarMenuItem } from "@shesha/reactjs";
+import { ISidebarMenuItem } from "@shesha-io/reactjs";
 import { SETTINGS_MENU_ITEMS } from "./settingsRoutes";
 
 export const URL_GENERAL_DASHBOARD_PAGE = "/";
 export const URL_LOGIN_PAGE = "/login";
 
 export const URL_RESET_PASSWORD = "/account/reset-password";
-export const URL_FORGOT_PASSWORD = "/account/forgot-password";
+export const URL_FORGOT_PASSWORD = "/no-auth/shesha/forgot-password?mode=edit";
 
 export const URL_SETTINGS_CHECK_LISTS = "/settings/check-lists";
 

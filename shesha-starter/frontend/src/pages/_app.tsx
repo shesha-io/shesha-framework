@@ -3,14 +3,14 @@ import {
   PageWithLayout,
   ShaApplicationProvider,
   StoredFilesProvider,
-} from "@shesha/reactjs";
+} from "@shesha-io/reactjs";
 import { CustomErrorBoundary, CustomNProgress } from "components";
 import App from "next/app";
 import { withRouter } from "next/router";
 import React from "react";
 import { BASE_URL } from "src/api/utils/constants";
 import { StyledThemeProvider } from "src/definitions/styled-components";
-require("@shesha/reactjs/dist/styles.less");
+require("@shesha-io/reactjs/dist/styles.less");
 require("src/styles/compiled.antd.variable.css");
 require("src/styles/custom-n-progress.less");
 
@@ -62,7 +62,11 @@ export class Main extends App<{}, {}, IState> {
       <CustomErrorBoundary>
         <StyledThemeProvider>
           <GlobalStateProvider>
-            <ShaApplicationProvider backendUrl={BASE_URL} router={router}>
+            <ShaApplicationProvider 
+                backendUrl={BASE_URL} 
+                router={router}
+                noAuth={router?.asPath?.includes("/no-auth")}
+              >
               <CustomNProgress />
               <StoredFilesProvider
                 baseUrl={BASE_URL}

@@ -1,8 +1,7 @@
 import React from "react";
 import dynamic from "next/dynamic";
-import { getLayout } from "src/components/layouts";
 import { NextPageWithLayout } from "models";
-import { FormIdentifier } from "@shesha-io/reactjs/dist/providers/form/models";
+import { FormIdentifier } from "@shesha-io/reactjs";
 
 type FormMode = "designer" | "edit" | "readonly";
 
@@ -51,11 +50,7 @@ const DynamicPage: NextPageWithLayout<IDynamicPageProps> = (props) => {
     name: formName,
   };
 
-  console.log("formId", formId, props);
-
   return <LazyLoadedPage {...props} formId={formId} />;
 };
 
 export default DynamicPage;
-
-DynamicPage.getLayout = getLayout;

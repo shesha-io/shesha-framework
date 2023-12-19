@@ -12,9 +12,9 @@
 		<PackageReference Include="Hangfire.SqlServer" Version="1.8.6" />
 		<PackageReference Include="nunit" Version="3.12.0" />
 		<PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
-		<PackageReference Include="Shesha.Application" Version="0.0.60160-build" />
-		<PackageReference Include="Shesha.Core" Version="0.0.60160-build" />
-		<PackageReference Include="Shesha.Framework" Version="0.0.60160-build" />
+		<PackageReference Include="Shesha.Application" Version="0.0.60604-build" />
+		<PackageReference Include="Shesha.Core" Version="0.0.60604-build" />
+		<PackageReference Include="Shesha.Framework" Version="0.0.60604-build" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Identity.Client" Version="4.54.1" />
