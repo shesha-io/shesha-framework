@@ -1,30 +1,51 @@
-import { Alert, Card, Col, Row } from "antd";
-import data from "public/meta.json";
+import { MainLayout } from "@shesha-io/reactjs";
 import React from "react";
-import { CollapsiblePanel, MainLayout } from "@shesha-io/reactjs";
-import styled from "styled-components";
-
-const StyledAlert = styled(Alert)`
-  margin-bottom: 15px;
-`;
+import Banner from "src/components/Banner";
+import Card from "src/components/NavCard";
 
 const Home: React.FC = () => {
   return (
-    <MainLayout title="Dashboard">
-      <CollapsiblePanel header="Plugins">
-        <StyledAlert
-          message="This is a list of plugins the boilerplate uses"
-          type="info"
+    <MainLayout>
+      <div
+        style={{
+          padding: "15px",
+          backgroundColor: "white",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          rowGap: "30px",
+        }}
+      >
+        <Banner
+          url="https://www.youtube.com/embed/VYN6GBCEPGw?autoplay=1&controls=0"
+          image={"/images/get-to-know-shesha-banner.png"}
         />
-
-        <Row style={{ flex: 1 }}>
-          {(data?.plugins ?? []).map((plugin) => (
-            <Col md={6} key={plugin.name} data-testid="container">
-              <Card title={plugin.name}>{plugin.description}</Card>
-            </Col>
-          ))}
-        </Row>
-      </CollapsiblePanel>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr 1fr",
+            gridColumnGap: "20px",
+          }}
+        >
+          <Card
+            title="Build your first app"
+            url={"https://docs.shesha.io/docs/get-started/tutorial/the-basics/"}
+            description="A quickstart guide to help you build an app using Shesha"
+          />
+          <Card
+            title="Documentation"
+            url={"https://docs.shesha.io/docs/get-started/Introduction"}
+            description="A deeper dive into core Shesha functionality"
+          />
+          <Card
+            title="How to change landing page"
+            url={
+              "https://docs.shesha.io/docs/fundamentals/how-to-change-landing-page"
+            }
+            description="Change your landing page to a custom page"
+          />
+        </div>
+      </div>
     </MainLayout>
   );
 };
