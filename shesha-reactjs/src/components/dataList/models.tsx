@@ -1,3 +1,4 @@
+import { MutableRefObject } from 'react';
 import { FormIdentifier } from '@/index';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IPropertyMetadata } from '@/interfaces/metadata';
@@ -28,6 +29,8 @@ export interface IDataListProps extends IDataListBaseProps, IDataListActions {
   canAddInline?: boolean;
 
   allowChangeEditMode?: boolean;
+
+  actionRef: MutableRefObject<any>;
 }
 
 export interface IDataListBaseProps {

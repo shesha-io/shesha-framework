@@ -1,4 +1,4 @@
-import { Button, Checkbox, Collapse, Divider, Typography } from 'antd';
+import { Alert, Checkbox, Collapse, Divider, Typography } from 'antd';
 import classNames from 'classnames';
 import React, { FC, useEffect, useState } from 'react';
 import { useMeasure, usePrevious } from 'react-use';
@@ -17,7 +17,6 @@ import { useDeepCompareMemo } from '@/hooks';
 import { ValueRenderer } from '@/components/valueRenderer/index';
 import { toCamelCase } from '@/utils/string';
 import { DataListItemRenderer } from './itemRenderer';
-import { PlusCircleOutlined } from '@ant-design/icons';
 import DataListItemCreateModal from './createModal';
 import { useMemo } from 'react';
 import { axiosHttp } from '@/index';
@@ -65,6 +64,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   deleteAction,
   inlineEditMode,
   inlineSaveMode,
+  actionRef,
   ...props
 }) => {
   const { backendUrl, httpHeaders } = useSheshaApplication();
@@ -157,7 +157,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     name: formConfiguration?.name,
   };
 
-  const [ref, measured] = useMeasure();
+  const [measuredRef, measured] = useMeasure();
   const [itemWidthCalc, setItemWidth] = useState({});
 
   // ToDo: Horisontal orientation works incorrect under Container with Display = `grid`
@@ -442,8 +442,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       return false;
     };
 
-    if (!formConfig) 
-      return null;
+    if (!formConfig?.markup) 
+      return <Alert className="sha-designer-warning" message="Form configuration not found" type="warning" />;
 
     return (
       <div onDoubleClick={dblClick}>
@@ -594,8 +594,11 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   };
 
   const onCreateClick = () => {
-    setCreateModalOpen(true);
+    if (canAddInline)
+      setCreateModalOpen(true);
   };
+  if (actionRef?.current)
+    actionRef.current.addNewItem = onCreateClick;
 
   const onNewListItemInitializeExecuter = useMemo<Function>(() => {
     return props.onNewListItemInitialize
@@ -646,7 +649,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             Select All
           </Checkbox>
         </Show>
-        <Show when={canAddInline}>
+        {// Use Configurable Action
+        /*<Show when={canAddInline}>
           <Button 
             type='link' 
             shape="round" 
@@ -657,13 +661,13 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           >
             Add new item...
           </Button>
-        </Show>
+        </Show>*/}
         <Divider />
       </div>
       <ShaSpin spinning={isFetchingTableData} tip={isFetchingTableData ? 'Loading...' : 'Submitting...'}>
         <div
           key="spin_key"
-          ref={ref}
+          ref={measuredRef}
           className={classNames('sha-datalist-component-body', {
             loading: isFetchingTableData && records?.length === 0,
             horizontal: orientation === 'horizontal',

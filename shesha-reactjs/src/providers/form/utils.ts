@@ -1392,7 +1392,7 @@ export const hasFormIdGotValue = (formId: FormIdentifier) => (typeof formId === 
 export const convertToMarkupWithSettings = (markup: FormMarkup, isSettingsForm?: boolean): FormMarkupWithSettings => {
   if (!markup) return null;
   const result = markup as FormMarkupWithSettings;
-  if (result?.components && result.formSettings)
+  if (result?.components && !!result.formSettings)
     if (typeof isSettingsForm === 'undefined') return result;
     else if (typeof isSettingsForm !== 'undefined' && isSettingsForm !== null) {
       result.formSettings.isSettingsForm = isSettingsForm;
