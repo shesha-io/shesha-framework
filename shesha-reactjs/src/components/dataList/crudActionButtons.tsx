@@ -1,6 +1,6 @@
 import { CloseCircleOutlined, DeleteOutlined, EditOutlined, PlusCircleOutlined, SaveOutlined } from '@ant-design/icons';
 import React, { useMemo } from 'react';
-import { useCrud } from '../../providers/crudContext';
+import { useDataListCrud } from '../../providers/dataListCrudContext/index';
 import ActionButton, { IActionButtonProps } from '../actionButton/index';
 
 export const CrudActionButtons = () => {
@@ -20,7 +20,7 @@ export const CrudActionButtons = () => {
     isSaving,
     isDeleting,
     deletingError,
-  } = useCrud();
+  } = useDataListCrud();
 
   const onEditClick = () => {
     switchMode('update');

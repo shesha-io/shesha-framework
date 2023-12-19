@@ -1,5 +1,5 @@
 import { ComponentsContainer, FormRawMarkup, IFormSettings } from "@/index";
-import { CrudProvider } from "@/providers/crudContext/index";
+import { DataListCrudProvider } from "@/providers/dataListCrudContext/index";
 import { CrudMode } from "@/providers/crudContext/models";
 import { ComponentsContainerProvider } from "@/providers/form/nesting/containerContext";
 import { FormMarkupConverter } from "@/providers/formMarkupConverter/index";
@@ -54,7 +54,7 @@ export const DataListItemRenderer: FC<IDataListItemProps> = (props) => {
       <FormMarkupConverter markup={markup} formSettings={formSettings}>
         {(flatComponents) => {
           return (
-          <CrudProvider
+          <DataListCrudProvider
             isNewObject={isNewObject}
             data={data}
             allowEdit={allowEdit}
@@ -76,7 +76,7 @@ export const DataListItemRenderer: FC<IDataListItemProps> = (props) => {
                 <ComponentsContainer containerId={'root'}/>
               </ComponentsContainerProvider>
             </div>
-          </CrudProvider>
+          </DataListCrudProvider>
           );
        }}
       </FormMarkupConverter>

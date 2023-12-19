@@ -309,7 +309,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
       debouncedUpdateVisibleComponents(newState);
       debouncedUpdateEnabledComponents(newState);
     });
-  }, [formProviderContext.globalState, formProviderContext.contexts.lastUpdate]);
+  }, [state.formMode, formProviderContext.globalState, formProviderContext.contexts.lastUpdate]);
 
   useDeepCompareEffect(() => {
     dispatch((_, getState) => {
