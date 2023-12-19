@@ -76,7 +76,7 @@ stages:
       displayName: Install Latest Shesha
       inputs:
         command: custom
-        workingDir: 'shesha-functional-tests/adminportal'
+        workingDir: 'shesha-starter/frontend'
         verbose: true
         customCommand: install @shesha-io/reactjs@$(releaseVersion)
     - task: Npm@1
