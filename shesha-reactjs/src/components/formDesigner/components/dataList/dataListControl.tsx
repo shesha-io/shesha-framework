@@ -1,11 +1,11 @@
-import React, { FC, useCallback, useMemo } from 'react';
+import React, { FC, useCallback, useMemo, useRef } from 'react';
 import { Alert } from 'antd';
 import { DataList } from '../../../dataList';
 import ConfigurableFormItem from '../formItem';
 import classNames from 'classnames';
 import moment from 'moment';
 import { IDataListWithDataSourceProps } from './model';
-import { useApplicationContext, useConfigurableActionDispatcher, YesNoInherit } from '@/index';
+import { useApplicationContext, useConfigurableAction, useConfigurableActionDispatcher, YesNoInherit } from '@/index';
 import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions } from '@/providers/dataTable/repository/backendRepository';
 
 export const NotConfiguredWarning: FC = () => {
@@ -16,6 +16,7 @@ export type OnSaveHandler = (data: object, formData: object, contexts: object, g
 export type OnSaveSuccessHandler = (
   data: object,
   formData: object,
+  contexts: object,
   globalState: object,
   setGlobalState: Function,
   setFormData: Function
@@ -57,6 +58,23 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     }
   }, [setSelectedRow]);
 
+  const dataListRef = useRef<any>({});
+
+  useConfigurableAction(
+    {
+      name: 'Add new item (if allowed)',
+      owner: props.componentName,
+      ownerUid: props.id,
+      hasArguments: false,
+      executer: () => {
+        if (dataListRef.current?.addNewItem)
+          dataListRef.current.addNewItem();
+        return Promise.resolve();
+      },
+    },
+    []
+  );
+
   const data = useMemo(() => {
     return isDesignMode
       ? props.orientation === 'vertical'
@@ -83,10 +101,11 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         //nop
       };
 
-    return (data, formData, globalState, setGlobalState, setFormData) => {
+    return (data, formData, contexts, globalState, setGlobalState, setFormData) => {
       const evaluationContext = {
         data,
         formData,
+        contexts,
         globalState,
         setGlobalState,
         setFormData,
@@ -113,7 +132,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
 
       return repository.performUpdate(rowIndex, preparedData, options).then((response) => {
         setRowData(rowIndex, preparedData/*, response*/);
-        performOnRowSaveSuccess(preparedData, allData.data ?? {}, allData.globalState, allData.setGlobalState, allData.setFormData);
+        performOnRowSaveSuccess(preparedData, allData.data ?? {}, allData.contexts ?? {}, allData.globalState, allData.setGlobalState, allData.setFormData);
         return response;
       });
     });
@@ -131,7 +150,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
 
       return repository.performCreate(0, preparedData, options).then(() => {
         dataSource.refreshTable();
-        performOnRowSaveSuccess(preparedData, allData.data ?? {}, allData.globalState, allData.setGlobalState, allData.setFormData);
+        performOnRowSaveSuccess(preparedData, allData.data ?? {}, allData.contexts ?? {}, allData.globalState, allData.setGlobalState, allData.setFormData);
       });
     });
   };
@@ -201,6 +220,8 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         createAction={creater}
         updateAction={updater}
         deleteAction={deleter}
+
+        actionRef={dataListRef}
       />
     </ConfigurableFormItem>
   );

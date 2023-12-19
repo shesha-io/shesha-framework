@@ -51,7 +51,7 @@ const NEW_ROW_EXPOSED_VARIABLES = [
   },
   {
     id: nanoid(),
-    name: 'globalmodel',
+    name: 'globalState',
     description: 'The global model of the application',
     type: 'object',
   },
@@ -90,7 +90,7 @@ const ROW_SAVE_EXPOSED_VARIABLES = [
   },
   {
     id: nanoid(),
-    name: 'globalmodel',
+    name: 'globalState',
     description: 'The global model of the application',
     type: 'object',
   },
@@ -123,7 +123,13 @@ const ROW_SAVED_SUCCESS_EXPOSED_VARIABLES = [
   },
   {
     id: nanoid(),
-    name: 'globalmodel',
+    name: 'contexts',
+    description: 'Contexts data',
+    type: 'object',
+  },
+  {
+    id: nanoid(),
+    name: 'globalState',
     description: 'The global model of the application',
     type: 'object',
   },
