@@ -7,13 +7,12 @@ import moment from 'moment';
 import { IDataListWithDataSourceProps } from './model';
 import { useApplicationContext, useConfigurableActionDispatcher, YesNoInherit } from '@/index';
 import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions } from '@/providers/dataTable/repository/backendRepository';
-import { useDelayedUpdate } from '@/providers/delayedUpdateProvider/index';
 
 export const NotConfiguredWarning: FC = () => {
   return <Alert className="sha-designer-warning" message="Data list is not configured properly" type="warning" />;
 };
 
-export type OnSaveHandler = (data: object, formData: object, globalState: object) => Promise<object>;
+export type OnSaveHandler = (data: object, formData: object, contexts: object, globalState: object) => Promise<object>;
 export type OnSaveSuccessHandler = (
   data: object,
   formData: object,
@@ -50,8 +49,6 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   const allData = useApplicationContext();
   const isDesignMode = allData.formMode === 'designer';
 
-  const { getPayload: getDelayedUpdate } = useDelayedUpdate(false) ?? {};
-
   const repository = getRepository();
 
   const onSelectRow = useCallback((index: number, row: any) => {
@@ -72,9 +69,9 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   const performOnRowSave = useMemo<OnSaveHandler>(() => {
     if (!onListItemSave) return (data) => Promise.resolve(data);
 
-    const executer = new Function('data, formData, globalState, http, moment', onListItemSave);
-    return (data, formData, globalState) => {
-      const preparedData = executer(data, formData, globalState, allData.http, allData.moment);
+    const executer = new Function('data, formData, contexts, globalState, http, moment', onListItemSave);
+    return (data, formData, contexts, globalState) => {
+      const preparedData = executer(data, formData, contexts, globalState, allData.http, allData.moment);
       return Promise.resolve(preparedData);
     };
   }, [onListItemSave]);
@@ -108,19 +105,15 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     const repository = getRepository();
     if (!repository) return Promise.reject('Repository is not specified');
 
-    return performOnRowSave(rowData, allData.formData ?? {}, allData.globalState).then((preparedData) => {
+    return performOnRowSave(rowData, allData.data ?? {}, allData.contexts ?? {}, allData.globalState).then((preparedData) => {
       const options =
         repository.repositoryType === BackendRepositoryType
           ? ({ customUrl: customUpdateUrl } as IUpdateOptions)
           : undefined;
 
-      // send data of stored files
-      const delayedUpdate = typeof getDelayedUpdate === 'function' ? getDelayedUpdate() : null;
-        if (Boolean(delayedUpdate)) preparedData['_delayedUpdate'] = delayedUpdate;
-
       return repository.performUpdate(rowIndex, preparedData, options).then((response) => {
         setRowData(rowIndex, preparedData/*, response*/);
-        performOnRowSaveSuccess(preparedData, allData.formData ?? {}, allData.globalState, allData.setGlobalState, allData.setFormData);
+        performOnRowSaveSuccess(preparedData, allData.data ?? {}, allData.globalState, allData.setGlobalState, allData.setFormData);
         return response;
       });
     });
@@ -130,7 +123,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     const repository = getRepository();
     if (!repository) return Promise.reject('Repository is not specified');
 
-    return performOnRowSave(rowData, allData.formData ?? {}, allData.globalState).then((preparedData) => {
+    return performOnRowSave(rowData, allData.data ?? {}, allData.contexts ?? {}, allData.globalState).then((preparedData) => {
       const options =
         repository.repositoryType === BackendRepositoryType
           ? ({ customUrl: customCreateUrl } as ICreateOptions)
@@ -138,7 +131,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
 
       return repository.performCreate(0, preparedData, options).then(() => {
         dataSource.refreshTable();
-        performOnRowSaveSuccess(preparedData, allData.formData ?? {}, allData.globalState, allData.setGlobalState, allData.setFormData);
+        performOnRowSaveSuccess(preparedData, allData.data ?? {}, allData.globalState, allData.setGlobalState, allData.setFormData);
       });
     });
   };

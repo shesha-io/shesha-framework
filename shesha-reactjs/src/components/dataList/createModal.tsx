@@ -1,5 +1,5 @@
 import { ComponentsContainer, FormRawMarkup, IFormSettings, Show, useAppConfigurator, ValidationErrors } from '@/index';
-import { CrudProvider, useCrud } from '@/providers/crudContext/index';
+import { DataListCrudProvider, useDataListCrud } from '@/providers/dataListCrudContext/index';
 import { IFormMarkupResponse } from '@/providers/form/api';
 import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
 import { FormMarkupConverter } from '@/providers/formMarkupConverter/index';
@@ -33,7 +33,7 @@ const DataListItemCreateModal: FC<IDataListItemCreateModalProps> = (props) => {
   return (
     <FormMarkupConverter markup={markup} formSettings={formSettings}>
       {(flatComponents) => (
-        <CrudProvider
+        <DataListCrudProvider
           isNewObject={true}
           data={data}
           allowEdit={true}
@@ -50,7 +50,7 @@ const DataListItemCreateModal: FC<IDataListItemCreateModalProps> = (props) => {
             loading={false} 
             onToggle={onToggle} 
            />
-        </CrudProvider>
+        </DataListCrudProvider>
       )}
     </FormMarkupConverter>
   );
@@ -72,7 +72,7 @@ const CreateModal: FC<ICreateModalProps> = ({
   onToggle
 }) => {
 
-  const {performCreate, switchMode, saveError} = useCrud();
+  const {performCreate, switchMode, saveError} = useDataListCrud();
 
   const { formInfoBlockVisible } = useAppConfigurator();
 

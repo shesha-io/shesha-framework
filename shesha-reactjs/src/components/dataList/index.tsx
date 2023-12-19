@@ -599,7 +599,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   const onNewListItemInitializeExecuter = useMemo<Function>(() => {
     return props.onNewListItemInitialize
-      ? new Function('formData, globalState, contexts, http, moment', props.onNewListItemInitialize)
+      ? new Function('formData, contexts, globalState, contexts, http, moment', props.onNewListItemInitialize)
       : null;
   }, [props.onNewListItemInitialize]);
 
@@ -608,7 +608,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       ? () => {
         // todo: replace formData and globalState with accessors (e.g. refs) and remove hooks to prevent unneeded re-rendering
         //return onNewRowInitializeExecuter(formData, globalState);
-        const result = onNewListItemInitializeExecuter(allData.formData ?? {}, allData.globalState, allData.contexts, axiosHttp(backendUrl), moment);
+        const result = onNewListItemInitializeExecuter(allData.data ?? {}, allData.contexts ?? {}, allData.globalState, allData.contexts, axiosHttp(backendUrl), moment);
         return Promise.resolve(result);
       }
       : () => {
@@ -616,7 +616,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       };
 
     return result;
-  }, [onNewListItemInitializeExecuter, allData.formData, allData.globalState, allData.contexts.lastUpdate]);
+  }, [onNewListItemInitializeExecuter, allData.data, allData.globalState, allData.contexts.lastUpdate]);
   
   //console.log(`dataList render, ${records?.length} records`);
 

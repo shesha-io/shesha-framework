@@ -45,6 +45,12 @@ const NEW_ROW_EXPOSED_VARIABLES = [
   },
   {
     id: nanoid(),
+    name: 'contexts',
+    description: 'Contexts data',
+    type: 'object',
+  },
+  {
+    id: nanoid(),
     name: 'globalmodel',
     description: 'The global model of the application',
     type: 'object',
@@ -74,6 +80,12 @@ const ROW_SAVE_EXPOSED_VARIABLES = [
     id: nanoid(),
     name: 'formData',
     description: 'Form values',
+    type: 'object',
+  },
+  {
+    id: nanoid(),
+    name: 'contexts',
+    description: 'Contexts data',
     type: 'object',
   },
   {
