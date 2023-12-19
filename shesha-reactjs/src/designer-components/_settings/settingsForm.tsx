@@ -52,6 +52,10 @@ const SettingsForm = <TModel,>(props: PropsWithChildren<SettingsFormProps<TModel
         form.setFieldsValue(incomingState);
     };
 
+    const onSaveInternal = () => {
+        onSave(state.model);
+    };
+
     const SettingsFormActions = {
         getFieldsValue,
         propertyFilter,
@@ -63,7 +67,7 @@ const SettingsForm = <TModel,>(props: PropsWithChildren<SettingsFormProps<TModel
             <SettingsFormActionsContext.Provider value={SettingsFormActions}>
                 <Form
                     form={form}
-                    onFinish={onSave}
+                    onFinish={onSaveInternal}
                     {...layoutSettings}
                     onValuesChange={valuesChange}
                     initialValues={model}

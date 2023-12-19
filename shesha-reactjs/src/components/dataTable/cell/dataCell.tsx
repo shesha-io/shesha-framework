@@ -151,7 +151,7 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
           propertyName: columnConfig.propertyName,
           label: null,
           hideLabel: true,
-          readOnly: actualModel.readOnly,
+          readOnly: actualModel.readOnly === undefined ? props.readOnly : actualModel.readOnly,
       };
 
       if (component.linkToModelMetadata && propertyMeta) {
