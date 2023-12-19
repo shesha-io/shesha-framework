@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Story, Meta } from '@storybook/react';
+import { Story } from '@storybook/react';
 import SidebarContainer, { ISidebarContainerProps } from './';
 import { CollapsiblePanel } from '..';
 import { Button } from 'antd';
@@ -10,7 +10,7 @@ export default {
   title: 'Components/SidebarContainer',
   component: SidebarContainer,
   argTypes: {}
-} as Meta;
+};
 
 const sharedProps: ISidebarContainerProps = {
   allowFullCollapse: false,

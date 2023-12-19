@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Story, Meta } from '@storybook/react';
+import { Story } from '@storybook/react';
 import ConfigurableForm from '.';
 import { Button, Col, Form, Row } from 'antd';
 import { IConfigurableFormProps } from './models';
@@ -12,7 +12,7 @@ import StoryApp from '@/components/storyBookApp';
 export default {
   title: 'Components/ConfigurableForm',
   component: ConfigurableForm
-} as Meta;
+};
 
 const configurableFormProps: IConfigurableFormProps = {
   mode: 'edit',

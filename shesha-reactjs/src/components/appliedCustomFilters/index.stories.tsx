@@ -1,5 +1,5 @@
 import React from 'react';
-import { Story, Meta } from '@storybook/react';
+import { Story } from '@storybook/react';
 import { AppliedCustomFilters, IAppliedCustomFiltersProps } from './';
 import { ICustomFilterOptions } from '@/providers/dataTable/interfaces';
 
@@ -26,7 +26,7 @@ const appliedCustomFilters: ICustomFilterOptions[] = [
   },
 ];
 
-export default {
+const meta =  {
   title: 'Components/AppliedCustomFilters',
   component: AppliedCustomFilters,
   argTypes: {
@@ -43,7 +43,7 @@ export default {
       },
     },
   }
-} as Meta;
+};
 
 // Create a master template for mapping args to render the Button component
 const Template: Story<IAppliedCustomFiltersProps> = _args => (
@@ -53,3 +53,5 @@ const Template: Story<IAppliedCustomFiltersProps> = _args => (
 // Reuse that template for creating different stories
 export const Primary = Template.bind({});
 Primary.args = { listName: 'Gender', listNamespace: 'Shesha.Core', width: 200, base: '' };
+
+export default meta;

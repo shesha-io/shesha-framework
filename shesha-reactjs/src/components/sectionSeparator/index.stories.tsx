@@ -1,12 +1,12 @@
 import React from 'react';
-import { Story, Meta } from '@storybook/react';
+import { Story } from '@storybook/react';
 import SectionSeparator, { ISectionSeparatorProps } from './';
 import { Form, Input, InputNumber } from 'antd';
 
 export default {
   title: 'Components/SectionSeparator',
   component: SectionSeparator
-} as Meta;
+};
 
 const sectionSeparatorProps: ISectionSeparatorProps = {
   title: 'Personal details',

@@ -1,5 +1,5 @@
 import React from "react";
-import { Story, Meta } from "@storybook/react";
+import { Story } from "@storybook/react";
 import { MetadataDispatcherProvider, IMetadataDispatcherProviderProps, useMetadataDispatcher } from "./";
 import { AutoComplete } from "antd";
 
@@ -7,7 +7,7 @@ export default {
     title: "Providers/MetadataDispatcherProvider",
     component: MetadataDispatcherProvider,
     argTypes: {}
-} as Meta;
+};
 
 // create a master template
 const Template: Story<IMetadataDispatcherProviderProps> = args => {

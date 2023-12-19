@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { Story, Meta } from '@storybook/react';
+import { Story } from '@storybook/react';
 import { FormAutocomplete, IFormAutocompleteRuntimeProps } from './';
 import StoryApp from '@/components/storyBookApp';
 import { Button, Form } from 'antd';
@@ -9,7 +9,7 @@ import { FormFullName, FormIdentifier, FormUid } from '@/providers/form/models';
 export default {
   title: 'Components/Temp/FormAutocomplete',
   component: FormAutocomplete
-} as Meta;
+};
 
 interface IStoryArgs extends IFormAutocompleteRuntimeProps {
   /**

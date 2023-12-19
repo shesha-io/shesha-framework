@@ -3,7 +3,7 @@ import { ConfigurableComponent } from '../appConfigurator/configurableComponent'
 import CustomErrorBoundary from '@/components/customErrorBoundary';
 import { getImgSrc } from './utils';
 
-interface IProps {
+export interface IProps {
   imgSrc?: string;
 }
 

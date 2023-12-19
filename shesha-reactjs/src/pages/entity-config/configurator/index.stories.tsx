@@ -1,5 +1,5 @@
 import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { ComponentStory } from '@storybook/react';
 import EntityConfiguratorPage from './';
 import StoryApp from '@/components/storyBookApp';
 
@@ -8,7 +8,7 @@ export default {
   title: 'Pages/EntityConfigurator',
   component: EntityConfiguratorPage,
   // More on argTypes: https://storybook.js.org/docs/react/api/argtypes
-} as ComponentMeta<typeof EntityConfiguratorPage>;
+};
 
 // More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
 const EntityConfiguratorTemplate: ComponentStory<typeof EntityConfiguratorPage> = (args) => (

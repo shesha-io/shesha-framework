@@ -1,6 +1,6 @@
 import React from 'react';
 import { QuickView, IQuickViewProps } from '@/components/..';
-import { Story, Meta } from '@storybook/react';
+import { Story } from '@storybook/react';
 import { Button } from 'antd';
 import StoryApp from '@/components/storyBookApp';
 import { GenericQuickView } from '.';
@@ -10,7 +10,7 @@ import { GenericQuickView } from '.';
 export default {
   title: 'Components/QuickView',
   component: QuickView
-} as Meta;
+};
 
 // #endregion
 

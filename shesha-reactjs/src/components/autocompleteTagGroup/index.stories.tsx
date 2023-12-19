@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Story, Meta } from '@storybook/react';
+import { Story } from '@storybook/react';
 import AutocompleteTagGroup, { IAutocompleteTagGroupProps } from './';
 import { GlobalStateProvider, ShaApplicationProvider } from '@/components/..';
 import AuthContainer from '@/components/authedContainer';
@@ -7,7 +7,7 @@ import AuthContainer from '@/components/authedContainer';
 export default {
   title: 'Components/AutocompleteTagGroup',
   component: AutocompleteTagGroup
-} as Meta;
+};
 
 const INITIAL_VALUES = ['app:Configurator', 'app:Roles', 'app:Dashboard'];
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Story, Meta } from '@storybook/react';
+import { Story } from '@storybook/react';
 import ConfigurationItemsImport from './';
 import StoryApp from '@/components/storyBookApp';
 import { addStory } from '@/stories/utils';
@@ -7,7 +7,7 @@ import { Modal } from 'antd';
 
 export default {
   title: 'Components/ConfigurationItemsImport',
-  component: ConfigurationItemsImport} as Meta;
+  component: ConfigurationItemsImport};
 
 export interface IConfigurationItemsImportStoryProps {
   //backendUrl: string;

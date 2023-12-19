@@ -41,7 +41,7 @@ export interface ICheckInfo {
 
 export type PermissionsTreeMode = 'Edit' | 'Select' | 'View';
 
-interface IPermissionsTreeProps {
+export interface IPermissionsTreeProps {
   formComponentId: string;
   formComponentName: string;
   value?: string[];

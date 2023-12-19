@@ -1,5 +1,5 @@
 import React from 'react';
-import { Story, Meta } from '@storybook/react';
+import { Story } from '@storybook/react';
 import { MetadataDispatcherProvider } from '../../providers';
 import { ModelConfigurator, IModelConfiguratorProps } from './';
 import { addStory } from '@/stories/utils';
@@ -8,7 +8,7 @@ import StoryApp from '@/components/storyBookApp';
 export default {
   title: 'Components/ModelConfigurator',
   component: ModelConfigurator
-} as Meta;
+};
 
 // Create a master template for mapping args to render the Button component
 const Template: Story<IModelConfiguratorProps> = args => (

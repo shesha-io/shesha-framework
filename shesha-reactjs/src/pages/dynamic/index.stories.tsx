@@ -1,5 +1,5 @@
 import React from 'react';
-import { Story, Meta } from '@storybook/react';
+import { Story } from '@storybook/react';
 import StoryApp from '@/components/storyBookApp';
 import DynamicPage from './';
 import { addStory } from '@/stories/utils';
@@ -10,7 +10,7 @@ export default {
   title: 'Pages/DynamicPage',
   component: DynamicPage,
   argTypes: {},
-} as Meta;
+};
 
 // Create a master template for mapping args to render the Button component
 const Template: Story<IDynamicPageProps> = (args) => (

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Story, Meta } from '@storybook/react';
+import { Story } from '@storybook/react';
 import Autocomplete, { IGooglePlacesAutocompleteProps } from './';
 import { Button, Form } from 'antd';
 import { GooglePlacesAutocomplete } from '..';
@@ -7,7 +7,7 @@ import { GooglePlacesAutocomplete } from '..';
 export default {
   title: 'Components/GooglePlacesAutocomplete',
   component: Autocomplete
-} as Meta;
+};
 
 const autocompleteProps: IGooglePlacesAutocompleteProps = {};
 

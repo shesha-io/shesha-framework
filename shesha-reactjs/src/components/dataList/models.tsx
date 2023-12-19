@@ -30,7 +30,7 @@ export interface IDataListProps extends IDataListBaseProps, IDataListActions {
 
   allowChangeEditMode?: boolean;
 
-  actionRef: MutableRefObject<any>;
+  actionRef?: MutableRefObject<any>;
 }
 
 export interface IDataListBaseProps {
