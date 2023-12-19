@@ -4,11 +4,11 @@ import ActionButtonGroup, { IActionButtonGroupProps } from '.';
 import { IToolbarItem } from '../../interfaces';
 import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 
-export default {
+const m: Meta<typeof ActionButtonGroup> = {
   title: 'Components/ActionButtonGroup',
   component: ActionButtonGroup,
   argTypes: {}
-} as Meta<typeof ActionButtonGroup>;
+};
 
 const onClick = () => console.log('Clicked!!!');
 
@@ -31,3 +31,5 @@ const Template: StoryFn<IActionButtonGroupProps> = args => <ActionButtonGroup it
 // Reuse that template for creating different stories
 export const Basic = Template.bind({});
 Basic.args = {};
+
+export default m;

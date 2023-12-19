@@ -1,4 +1,4 @@
-import { Button, Checkbox, Collapse, Divider, Typography } from 'antd';
+import { Alert, Button, Checkbox, Collapse, Divider, Typography } from 'antd';
 import classNames from 'classnames';
 import React, { FC, useEffect, useState } from 'react';
 import { useMeasure, usePrevious } from 'react-use';
@@ -442,8 +442,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       return false;
     };
 
-    if (!formConfig) 
-      return null;
+    if (!formConfig?.markup) 
+      return <Alert className="sha-designer-warning" message="Form configuration not found" type="warning" />;
 
     return (
       <div onDoubleClick={dblClick}>

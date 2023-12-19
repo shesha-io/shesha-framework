@@ -19,7 +19,7 @@ const FormMarkupConverter: FC<IFormMarkupConverterProps> = ({ children, markup, 
 
   const flatComponents = useMemo<IFlatComponentsStructure>(() => {
       let components = getComponentsFromMarkup(markup);
-      if (formSettings.isSettingsForm)
+      if (formSettings?.isSettingsForm)
           components = updateSettingsComponents(designerComponents, components);
       const newFlatComponents = componentsTreeToFlatStructure(designerComponents, components);
       
