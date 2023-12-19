@@ -1,5 +1,5 @@
 import React from 'react';
-import { Story, Meta } from '@storybook/react';
+import { Story } from '@storybook/react';
 import CustomFile, { ICustomFileProps } from './';
 import StoredFilesProvider from '@/providers/storedFiles';
 import StoryApp from '@/components/storyBookApp';
@@ -7,7 +7,7 @@ import StoryApp from '@/components/storyBookApp';
 export default {
   title: 'Components/Temp/CustomFile',
   component: CustomFile,
-} as Meta;
+};
 
 const customFileProps: ICustomFileProps = {};
 

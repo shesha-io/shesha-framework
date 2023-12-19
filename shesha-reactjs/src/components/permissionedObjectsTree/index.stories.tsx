@@ -1,5 +1,5 @@
 import React from 'react';
-import { Story, Meta } from '@storybook/react';
+import { Story } from '@storybook/react';
 import PermissionedObjectsTree from '.';
 import { GlobalStateProvider, ShaApplicationProvider } from '@/components/..';
 import AuthContainer from '@/components/authedContainer';
@@ -9,7 +9,7 @@ import './index.less';
 export default {
   title: 'Components/PermissionedObjectsTree',
   component: PermissionedObjectsTree
-} as Meta;
+};
 
 export interface IPermissionedObjectsConfiguratorStoryProps {
   type?: string; 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Story, Meta } from '@storybook/react';
+import { Story } from '@storybook/react';
 import CollapsibleSidebarContainer, { ICollapsibleSidebarContainerProps } from './';
 import { Alert, Col, Row } from 'antd';
 import CollapsiblePanel from '@/components/panel';
@@ -8,7 +8,7 @@ import CollapsiblePanel from '@/components/panel';
 export default {
   title: 'Components/CollapsibleSidebarContainer',
   component: CollapsibleSidebarContainer
-} as Meta;
+};
 
 const LoremIpsum = () => (
   <p>

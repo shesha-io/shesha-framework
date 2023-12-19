@@ -1,10 +1,10 @@
 import React from 'react';
-import { StoryFn, Meta } from '@storybook/react';
+import { StoryFn } from '@storybook/react';
 import ActionButtonGroup, { IActionButtonGroupProps } from '.';
 import { IToolbarItem } from '../../interfaces';
 import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 
-const m: Meta<typeof ActionButtonGroup> = {
+export default {
   title: 'Components/ActionButtonGroup',
   component: ActionButtonGroup,
   argTypes: {}
@@ -31,5 +31,3 @@ const Template: StoryFn<IActionButtonGroupProps> = args => <ActionButtonGroup it
 // Reuse that template for creating different stories
 export const Basic = Template.bind({});
 Basic.args = {};
-
-export default m;

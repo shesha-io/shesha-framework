@@ -1,5 +1,5 @@
 import React from 'react';
-import { Story, Meta } from '@storybook/react';
+import { Story } from '@storybook/react';
 import MultiReadCheckBoxRefList, { IMultiReadCheckBoxRefListProps } from './';
 import { Form } from 'antd';
 import StoryApp from '@/components/storyBookApp';
@@ -7,7 +7,7 @@ import StoryApp from '@/components/storyBookApp';
 export default {
   title: 'Components/MultiReadCheckBoxRefList',
   component: MultiReadCheckBoxRefList
-} as Meta;
+};
 
 const multiReadCheckBoxRefListProps: IMultiReadCheckBoxRefListProps = {
   listName: 'Gender',

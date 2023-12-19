@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { Story, Meta } from '@storybook/react';
+import { Story } from '@storybook/react';
 import { ReferenceListAutocomplete, IReferenceListAutocompleteRuntimeProps } from './';
 import StoryApp from '@/components/storyBookApp';
 import { Button, Form } from 'antd';
@@ -8,7 +8,7 @@ import { FormFullName, FormIdentifier, FormUid } from '@/providers/form/models';
 
 export default {
   title: 'Components/Temp/ReferenceListAutocomplete',
-  component: ReferenceListAutocomplete} as Meta;
+  component: ReferenceListAutocomplete};
 
 interface IStoryArgs extends IReferenceListAutocompleteRuntimeProps {
   /**

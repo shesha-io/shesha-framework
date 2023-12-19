@@ -1,12 +1,12 @@
 import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { ComponentStory } from '@storybook/react';
 import SubFormTestPage from './';
 import StoryApp from '@/components/storyBookApp';
 
 export default {
   title: 'Pages/SubFormTest',
   component: SubFormTestPage,
-} as ComponentMeta<typeof SubFormTestPage>;
+};
 
 const EntityConfiguratorTemplate: ComponentStory<typeof SubFormTestPage> = (args) => (
   <StoryApp>

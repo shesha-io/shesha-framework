@@ -1,5 +1,5 @@
 import React from 'react';
-import { Story, Meta } from '@storybook/react';
+import { Story } from '@storybook/react';
 import AuthContainer from '@/components/authedContainer';
 import { ShaApplicationProvider } from '../../providers';
 import { CurrencyConverter, ICurrencyConverterProps, GlobalStateProvider } from '@/components/..';
@@ -9,7 +9,7 @@ import { CurrencyConverter, ICurrencyConverterProps, GlobalStateProvider } from 
 export default {
     title: 'Components/CurrencyConverter',
     component: CurrencyConverter
-} as Meta;
+};
 
 const backendUrl = process.env.STORYBOOK_BASE_URL;
 

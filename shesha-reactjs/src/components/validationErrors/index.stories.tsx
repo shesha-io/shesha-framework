@@ -1,5 +1,5 @@
 import React from 'react';
-import { Story, Meta } from '@storybook/react';
+import { Story } from '@storybook/react';
 import ValidationErrors, { IValidationErrorsProps } from './';
 import { IErrorInfo } from '@/interfaces/errorInfo';
 
@@ -21,7 +21,7 @@ export default {
     //   },
     // },
   }
-} as Meta;
+};
 
 const errorMessageOnly: IErrorInfo = {
   message: 'Please make sure you have entered the correct details',

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Story, Meta } from '@storybook/react';
+import { Story } from '@storybook/react';
 import { addStory } from '@/stories/utils';
 import { PermissionsTree, PermissionsTreeMode } from '.';
 import { FormProvider, GlobalStateProvider, ShaApplicationProvider } from '@/components/..';
@@ -8,7 +8,7 @@ import AuthContainer from '@/components/authedContainer';
 export default {
   title: 'Components/PermissionsTree',
   component: PermissionsTree
-} as Meta;
+};
 
 const backendUrl = process.env.STORYBOOK_BASE_URL; // TODO: Make this configurable
 

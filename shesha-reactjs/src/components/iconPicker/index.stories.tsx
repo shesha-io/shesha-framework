@@ -1,5 +1,5 @@
 import React from 'react';
-import { Story, Meta } from '@storybook/react';
+import { Story } from '@storybook/react';
 import IconPicker, { IIconPickerProps } from './';
 import { Form } from 'antd';
 // import './styles/index.less';
@@ -15,7 +15,7 @@ export default {
       },
     },
   }
-} as Meta;
+};
 
 const iconPickerProps: IIconPickerProps = {
   value: 'AlignCenterOutlined',
