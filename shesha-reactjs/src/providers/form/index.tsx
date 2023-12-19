@@ -322,7 +322,9 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   }, [allComponents, componentRelations]);
 
   useEffect(() => {
-    const values = form.getFieldValue([]);
+    // initialise state.formData if Antd form has values
+    // ToDo: Review on next version of Antd
+    const values = form?.getFieldValue([]);
     if (!state.formData && !!values) {
       dispatch(setFormDataAction({values, mergeValues: true}));
     }
