@@ -21,8 +21,8 @@ type RangeValue = [moment.Moment, moment.Moment];
 
 const DATE_TIME_FORMAT = 'HH:mm';
 
-type TimePickerChangeEvent = (value: any | null, dateString: string) => void;
-type RangePickerChangeEvent = (values: any, formatString: [string, string]) => void;
+type TimePickerChangeEvent = (value: number | null, timeString: string) => void;
+type RangePickerChangeEvent = (values: number[] | null, timeString: [string, string]) => void;
 
 export interface ITimePickerProps extends IConfigurableFormComponent {
   className?: string;
@@ -60,9 +60,21 @@ const getMoment = (value: any, dateFormat: string): Moment => {
   return parsed;
 };
 
+const getTotalSeconds = (value: Moment): number => {
+  if (!isMoment(value) || !value.isValid())
+    return undefined;
+
+  const timeOnly = moment.duration({
+    hours: value.hours(),
+    minutes: value.minutes(),
+    seconds: value.seconds()
+  });
+  return timeOnly.asSeconds();
+};
+
 const settingsForm = settingsFormJson as FormMarkup;
 
-const TimeField: IToolboxComponent<ITimePickerProps> = {
+export const TimeFieldComponent: IToolboxComponent<ITimePickerProps> = {
   type: 'timePicker',
   name: 'Time Picker',
   isInput: true,
@@ -119,7 +131,7 @@ const TimeField: IToolboxComponent<ITimePickerProps> = {
   ,
 };
 
-export const TimePickerWrapper: FC<ITimePickerProps> = ({
+const TimePickerWrapper: FC<ITimePickerProps> = ({
   onChange,
   range,
   value,
@@ -155,14 +167,28 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
       ? defaultValue?.map((v) => moment(new Date(v), format))
       : [null, null];
 
-  const handleTimePickerChange = (localValue: moment.Moment, dateString: string) => {
-    const newValue = isMoment(localValue) ? localValue.format(format) : localValue;
-
-    (onChange as TimePickerChangeEvent)(newValue, dateString);
+  const handleTimePickerChange = (newValue: Moment, timeString: string) => {
+    if (onChange){
+      const seconds = getTotalSeconds(newValue);
+      (onChange as TimePickerChangeEvent)(seconds, timeString);
+    }
   };
+  const handleTimePickerSelect = (newValue: Moment) => {
+    if (onChange){
+      const seconds = getTotalSeconds(newValue);
+      const timeString = seconds
+        ? moment(seconds * 1000).format(format)
+        : undefined;
+      (onChange as TimePickerChangeEvent)(seconds, timeString);
+    }
+  };  
 
-  const handleRangePicker = (values: any[], formatString: [string, string]) => {
-    (onChange as RangePickerChangeEvent)(values, formatString);
+  const handleRangePicker = (values: Moment[], timeString: [string, string]) => {
+    if (onChange){
+      const seconds = values?.map(value => getTotalSeconds(value));
+
+      (onChange as RangePickerChangeEvent)(seconds, timeString);
+    }
   };
 
   if (readOnly) {
@@ -187,22 +213,18 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
     );
   }
 
-
   return (
     <TimePicker
       bordered={!hideBorder}
       onChange={handleTimePickerChange}
+      onSelect={handleTimePickerSelect}
       format={format}
       value={evaluatedValue|| (defaultValue && moment(defaultValue))}
       {...steps}
       style={getStyle(style, formData)}
       className="sha-timepicker"
       placeholder={placeholder}
-    
-      // show
       {...rest}
     />
   );
 };
-
-export default TimeField;

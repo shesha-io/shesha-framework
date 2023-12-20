@@ -7,7 +7,7 @@ import EntityReferenceComponent from '@/designer-components/entityReference/enti
 import NumberComponent from '@/designer-components/numberField/numberField';
 import RefListStatusComponent from '@/designer-components/refListStatus/index';
 import TextFieldComponent from '@/designer-components/textField/textField';
-import TimeFieldComponent from '@/designer-components/timeField';
+import { TimeFieldComponent } from '@/designer-components/timeField';
 import { IDictionary } from '../../interfaces';
 
 /*

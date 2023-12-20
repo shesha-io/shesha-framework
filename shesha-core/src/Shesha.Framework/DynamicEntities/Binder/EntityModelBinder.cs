@@ -205,7 +205,7 @@ namespace Shesha.DynamicEntities.Binder
                                                      //case DataTypes.Enum: // Enum binded as integer
                                     object parsedValue = null;
                                     result = Parser.TryParseToValueType(jproperty.Value.ToString(), property.PropertyType, out parsedValue, isDateOnly: propType.DataType == DataTypes.Date);
-                                    if (result && dbValue?.ToString() != parsedValue.ToString())
+                                    if (result && dbValue?.ToString() != parsedValue?.ToString())
                                         if (await Validate(entity, jFullName, parsedValue, context))
                                             property.SetValue(entity, parsedValue);
                                     break;

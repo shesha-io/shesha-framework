@@ -197,6 +197,12 @@ namespace Shesha.Utilities
 
         public static TimeSpan? ParseTime(string value, string format = null)
         {
+            if (string.IsNullOrWhiteSpace(value))
+                return null;
+
+            if (int.TryParse(value, out var seconds) && seconds < TimeSpan.FromHours(24).TotalSeconds) 
+                return TimeSpan.FromSeconds(seconds);
+
             var timeFormats = new string[] {
                 format,
                 /*note: `hh` is always 24-hours for TimeSpan*/
