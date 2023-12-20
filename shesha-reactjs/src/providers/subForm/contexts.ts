@@ -6,6 +6,10 @@ import { IFormSettings, IPersistedFormProps } from '../form/models';
 export interface IPersistedFormPayload
   extends Pick<IPersistedFormProps, 'id' | 'versionNo' | 'versionStatus' | 'description' | 'module' | 'name'> { }
 
+export interface IFetchDataSuccessPayload {
+  entityId: string;
+}
+  
 export interface IFetchDataErrorPayload {
   error: GetDataError<unknown>;
 }
@@ -33,6 +37,7 @@ export interface ISubFormStateContext extends IPersistedFormPayload, IFlatCompon
   };
   value?: any;
   context?: string;
+  fetchedEntityId?: string;
 }
 
 export interface ISubFormActionsContext {

@@ -1,6 +1,6 @@
 import { handleActions } from 'redux-actions';
 import { SubFormActionEnums } from './actions';
-import { IFetchDataErrorPayload, ISubFormStateContext, SUB_FORM_CONTEXT_INITIAL_STATE } from './contexts';
+import { IFetchDataErrorPayload, IFetchDataSuccessPayload, ISubFormStateContext, SUB_FORM_CONTEXT_INITIAL_STATE } from './contexts';
 
 export const subFormReducer = handleActions<ISubFormStateContext, any>(
   {
@@ -48,10 +48,14 @@ export const subFormReducer = handleActions<ISubFormStateContext, any>(
       };
     },
 
-    [SubFormActionEnums.FetchDataSuccess]: (state: ISubFormStateContext) => {
+    [SubFormActionEnums.FetchDataSuccess]: (
+      state: ISubFormStateContext,
+      action: ReduxActions.Action<IFetchDataSuccessPayload>
+    ) => {
       const { errors, loading } = state;
       return {
         ...state,
+        fetchedEntityId: action.payload?.entityId,
         errors: { ...errors, getData: null },
         loading: { ...loading, getData: false },
       };
