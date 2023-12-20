@@ -1,9 +1,7 @@
-import { ComponentsContainer, FormRawMarkup, IFormSettings, Show, useAppConfigurator, ValidationErrors } from '@/index';
+import { ComponentsContainer, FormRawMarkup, IFormSettings, IPersistedFormProps, Show, ValidationErrors } from '@/index';
 import { DataListCrudProvider, useDataListCrud } from '@/providers/dataListCrudContext/index';
-import { IFormMarkupResponse } from '@/providers/form/api';
 import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
 import { FormMarkupConverter } from '@/providers/formMarkupConverter/index';
-import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
 import { Modal, Skeleton } from 'antd';
 import React, { FC } from 'react';
 import FormInfo from '../configurableForm/formInfo';
@@ -12,13 +10,13 @@ import { ItemContainerForm } from './itemContainerForm';
 import { IDataListProps, NewItemInitializer } from './models';
 
 export interface IDataListItemCreateModalProps {
+  formInfo?: IPersistedFormProps;
   creater?: (data: any) => Promise<any>;
   data?: object | NewItemInitializer;
   markup: FormRawMarkup;
   formSettings: IFormSettings;
   onToggle: (isOpen: boolean) => void;
 }
-
 
 const DataListItemCreateModal: FC<IDataListItemCreateModalProps> = (props) => {
   const {
@@ -28,7 +26,6 @@ const DataListItemCreateModal: FC<IDataListItemCreateModalProps> = (props) => {
     creater,
     onToggle
   } = props;
-
 
   return (
     <FormMarkupConverter markup={markup} formSettings={formSettings}>
@@ -47,6 +44,7 @@ const DataListItemCreateModal: FC<IDataListItemCreateModalProps> = (props) => {
           formSettings={formSettings}
         >
           <CreateModal
+            formInfo={props.formInfo}
             loading={false} 
             onToggle={onToggle} 
            />
@@ -57,7 +55,7 @@ const DataListItemCreateModal: FC<IDataListItemCreateModalProps> = (props) => {
 };
 
 interface ICreateModalProps extends IDataListProps {
-  formInfo?: IFormMarkupResponse['formConfiguration'];
+  formInfo?: IPersistedFormProps;
   readOnly?: boolean;
   loading: boolean;
   onToggle: (isOpen: boolean) => void;
@@ -74,8 +72,6 @@ const CreateModal: FC<ICreateModalProps> = ({
 
   const {performCreate, switchMode, saveError} = useDataListCrud();
 
-  const { formInfoBlockVisible } = useAppConfigurator();
-
   const onOk = async () => {
     try {
       await performCreate();
@@ -91,8 +87,6 @@ const CreateModal: FC<ICreateModalProps> = ({
     onToggle(false);
   };
 
-  const showFormInfo = !!formInfo && formInfoBlockVisible && !!ConfigurationItemVersionStatusMap?.[formInfo?.versionStatus];
-
   return (
     <Modal
       open={true}
@@ -103,7 +97,7 @@ const CreateModal: FC<ICreateModalProps> = ({
       okButtonProps={{ disabled: readOnly }}
     >
       <Skeleton loading={loading}>
-        <Show when={showFormInfo}>
+        <Show when={!!formInfo}>
           <FormInfo {...formInfo} />
         </Show>
 

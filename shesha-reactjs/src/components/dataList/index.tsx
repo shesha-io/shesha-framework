@@ -76,6 +76,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   const [entityForms, setEntityForms] = useState<EntityForm[]>([]);
   const [formConfigs, setFormConfigs] = useState<IFormDto[]>([]);
   const [entityTypes, setEntityTypes] = useState<string[]>([]);
+  const [formConfigInfo, setFormConfigInfo] = useState<IFormDto>();
+  const [createFormConfigInfo, setCreateFormConfigInfo] = useState<IFormDto>();
 
   const [createEntityForm, setCreateEntityForm] = useState<EntityForm>();
   //const [createFormConfig, setCreateFormConfig] = useState<IFormDto>();
@@ -145,16 +147,24 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   const { formInfoBlockVisible } = useAppConfigurator();
 
-  const formConfiguration = formConfigs.length > 0 ? formConfigs[0] : null;
-
-  const showFormInfo = Boolean(formConfiguration) && formInfoBlockVisible;
+  const showFormInfo = Boolean(formConfigInfo) && formInfoBlockVisible;
   const persistedFormProps: IPersistedFormProps = {
-    id: formConfiguration?.id,
-    module: formConfiguration?.module,
-    versionNo: formConfiguration?.versionNo,
-    description: formConfiguration?.description,
-    versionStatus: formConfiguration?.versionStatus,
-    name: formConfiguration?.name,
+    id: formConfigInfo?.id,
+    module: formConfigInfo?.module,
+    versionNo: formConfigInfo?.versionNo,
+    description: formConfigInfo?.description,
+    versionStatus: formConfigInfo?.versionStatus,
+    name: formConfigInfo?.name,
+  };
+
+  const showCreateFormInfo = Boolean(createFormConfigInfo) && formInfoBlockVisible;
+  const persistedCreateFormProps: IPersistedFormProps = {
+    id: createFormConfigInfo?.id,
+    module: createFormConfigInfo?.module,
+    versionNo: createFormConfigInfo?.versionNo,
+    description: createFormConfigInfo?.description,
+    versionStatus: createFormConfigInfo?.versionStatus,
+    name: createFormConfigInfo?.name,
   };
 
   const [measuredRef, measured] = useMeasure();
@@ -181,6 +191,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   }, [measured?.width, listItemWidth, customListItemWidth, orientation]);
 
   const updateEntityForms = (entityForm: EntityForm) => {
+    if (!formConfigInfo)
+      setFormConfigInfo(entityForm.formConfiguration);
     setEntityForms((prev) =>
       prev.map((x) => {
         return x.entityType === entityForm.entityType ? entityForm : x;
@@ -294,7 +306,11 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             Boolean(cForm.formId?.name)
           ) {
             fcFetching.push(`${cForm.formId?.name}_${cForm.formId?.module}`);
-            getFormConfig(cForm, (e) => setCreateEntityForm({...e}));
+            getFormConfig(cForm, (e) => {
+              if (!createFormConfigInfo)
+                setCreateFormConfigInfo(e.formConfiguration);
+              setCreateEntityForm({...e});
+            });
           }
           changed = true;
         } else {
@@ -313,7 +329,11 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           getEntityFormIdInternal(cForm, createFormType, (e) => setCreateEntityForm({...e}));
         else if (fcFetching.indexOf(`${cForm.formId?.name}_${cForm.formId?.module}`) === -1) {
           fcFetching.push(`${cForm.formId?.name}_${cForm.formId?.module}`);
-          getFormConfig(cForm, (e) => setCreateEntityForm({...e}));
+          getFormConfig(cForm, (e) => {
+            if (!createFormConfigInfo)
+              setCreateFormConfigInfo(e.formConfiguration);
+            setCreateEntityForm({...e});
+          });
         }
         changed = true;
       }
@@ -627,6 +647,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     <>
       {createModalOpen && createEntityForm?.formConfiguration &&
         <DataListItemCreateModal 
+          formInfo={showCreateFormInfo ? persistedCreateFormProps : undefined}
           markup={createEntityForm.formConfiguration.markup} 
           formSettings={createEntityForm.formConfiguration.settings}
           creater={createAction}
