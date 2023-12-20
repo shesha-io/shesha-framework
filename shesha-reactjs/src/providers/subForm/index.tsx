@@ -3,7 +3,6 @@ import { SubFormActionsContext, SubFormContext, SUB_FORM_CONTEXT_INITIAL_STATE }
 import { subFormReducer } from './reducer';
 import { ISubFormProviderProps } from './interfaces';
 import { ColProps, message, notification } from 'antd';
-import { useDeepCompareEffect } from 'react-use';
 import { useDebouncedCallback } from 'use-debounce';
 import {
   IAnyObject,
@@ -35,6 +34,7 @@ import {
   fetchDataSuccessAction,
   setMarkupWithSettingsAction,
 } from './actions';
+import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 
 interface IFormLoadingState {
   isLoading: boolean;
@@ -74,11 +74,12 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = ({
   context,
 }) => {
   const [state, dispatch] = useReducer(subFormReducer, SUB_FORM_CONTEXT_INITIAL_STATE);
+
   const { publish } = usePubSub();
   const { formData = {}, formMode } = useForm();
   const { globalState, setState: setGlobalState } = useGlobalState();
   const [formConfig, setFormConfig] = useState<UseFormConfigurationArgs>({ formId, lazy: true });
-
+  
   const { backendUrl, httpHeaders } = useSheshaApplication();
 
   /**
@@ -109,7 +110,10 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = ({
     if (propertyName) {
       // Note: don't write undefined if subform value is missing in the globalState. It doesn't make any sense but initiates a re-rendering
       const existsInGlobalState = Boolean(globalState) && globalState.hasOwnProperty(propertyName);
-      if (value === undefined && !existsInGlobalState) return;
+
+      if (value === undefined && !existsInGlobalState
+        || !!state.fetchedEntityId && state.fetchedEntityId === (typeof value === 'object' ? value.id : value)
+      ) return;
 
       setGlobalState({
         key: propertyName,
@@ -243,8 +247,13 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = ({
   // abort controller, is used to cancel out of date data requests
   const dataRequestAbortController = useRef<AbortController>(null);
 
-  const fetchData = () => {
+  const fetchData = (forceFetchData: boolean = false) => {
     if (dataSource !== 'api') {
+      return;
+    }
+
+    // Skip loadng if entity with this Id is already fetched
+    if (!forceFetchData && finalQueryParams?.id === state.fetchedEntityId) {
       return;
     }
 
@@ -262,10 +271,11 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = ({
 
     dataRequestAbortController.current = new AbortController();
 
+    console.log('fetch subForm');
     dispatch(fetchDataRequestAction());
     getReadUrl().then((getUrl) => {
       if (!Boolean(getUrl)) {
-        dispatch(fetchDataSuccessAction());
+        dispatch(fetchDataSuccessAction({entityId: undefined}));
         return;
       }
 
@@ -284,7 +294,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = ({
             if (typeof onChange === 'function') {
               onChange(dataResponse?.result);
             }
-            dispatch(fetchDataSuccessAction());
+            dispatch(fetchDataSuccessAction({entityId: dataResponse?.result?.id}));
           } else {
             dispatch(fetchDataErrorAction({ error: dataResponse.error as GetDataError<unknown> }));
           }
@@ -295,8 +305,8 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = ({
     });
   };
 
-  const debouncedFetchData = useDebouncedCallback(() => {
-    fetchData();
+  const debouncedFetchData = useDebouncedCallback((forceFetchData: boolean) => {
+    fetchData(forceFetchData);
   }, 300);
 
   // fetch data on first rendering and on change of some properties
@@ -430,7 +440,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = ({
       ownerUid: actionsOwnerId,
       hasArguments: false,
       executer: () => {
-        debouncedFetchData(); // todo: return real promise
+        debouncedFetchData(true); // todo: return real promise
         return Promise.resolve();
       },
     },
@@ -473,8 +483,6 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = ({
     return typeof span === 'number' ? { span } : span;
   };
 
-  console.log('SubFormProvider state?.components: ', state?.components);
-
   return (
     <SubFormContext.Provider
       value={{
@@ -505,7 +513,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = ({
     >
       <SubFormActionsContext.Provider
         value={{
-          getData: debouncedFetchData,
+          getData: () => debouncedFetchData(false),
           postData,
           putData,
           getChildComponents,

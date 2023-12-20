@@ -1,6 +1,6 @@
 import { createAction } from 'redux-actions';
 import { FormMarkupWithSettings, IFlatComponentsStructure } from '../form/models';
-import { IFetchDataErrorPayload, IPersistedFormPayload } from './contexts';
+import { IFetchDataErrorPayload, IFetchDataSuccessPayload, IPersistedFormPayload } from './contexts';
 
 export enum SubFormActionEnums {
   SetMarkupWithSettings = 'SET_MARKUP_WITH_SETTINGS',
@@ -22,7 +22,10 @@ export const setMarkupWithSettingsAction = createAction<ISubformMarkupAndSetting
 );
 
 export const fetchDataRequestAction = createAction<void, void>(SubFormActionEnums.FetchDataRequest, (p) => p);
-export const fetchDataSuccessAction = createAction<void, void>(SubFormActionEnums.FetchDataSuccess, (p) => p);
+export const fetchDataSuccessAction = createAction<IFetchDataSuccessPayload, IFetchDataSuccessPayload>(
+  SubFormActionEnums.FetchDataSuccess,
+  (p) => p
+);
 export const fetchDataErrorAction = createAction<IFetchDataErrorPayload, IFetchDataErrorPayload>(
   SubFormActionEnums.FetchDataError,
   (p) => p
