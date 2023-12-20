@@ -73,7 +73,7 @@ const ROW_SAVE_EXPOSED_VARIABLES = [
   {
     id: nanoid(),
     name: 'data',
-    description: 'Current lis item data',
+    description: 'Current list item data',
     type: 'object',
   },
   {
@@ -112,7 +112,7 @@ const ROW_SAVED_SUCCESS_EXPOSED_VARIABLES = [
   {
     id: nanoid(),
     name: 'data',
-    description: 'Current lis item data',
+    description: 'Current list item data',
     type: 'object',
   },
   {
@@ -266,7 +266,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
                 { name: "staticValue", description: "Static value of this setting", type: "any" },
                 { name: "getSettingValue", description: "Functiont to get actual setting value", type: "function" },
                 { name: "form", description: "Form instance", type: "object" },
-                { name: "selectedListItem", description: "Selected lis item of nearest table (null if not available)", type: "object" },
+                { name: "selectedListItem", description: "Selected list item of nearest table (null if not available)", type: "object" },
                 { name: "moment", description: "moment", type: "object" },
                 { name: "http", description: "axiosHttp", type: "object" },
                 { name: "message", description: "message framework", type: "object" },
@@ -350,7 +350,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
           </SettingsFormItem>
         }
         {
-        //<SettingsFormItem name="newListItemInsertPosition" label="New lis item insert position" /*hidden={canAddInline === 'no'}*/ hidden={true} /* note: hidden until review of rows drag&drop */>
+        //<SettingsFormItem name="newListItemInsertPosition" label="New list item insert position" /*hidden={canAddInline === 'no'}*/ hidden={true} /* note: hidden until review of rows drag&drop */>
         //  <Select disabled={readOnly} options={rowCapturePositions} />
         //</SettingsFormItem>
         }
@@ -360,7 +360,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
         <SettingsFormItem
           label="New list item init"
           name="onNewListItemInitialize"
-          tooltip="Allows configurators to specify logic to initialise the object bound to a new lis item."
+          tooltip="Allows configurators to specify logic to initialise the object bound to a new list item."
           hidden={model.canAddInline === 'no'}
         >
           <CodeEditor
@@ -369,23 +369,23 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
             mode="dialog"
             label="New list item init"
             setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-            description="Specify logic to initialise the object bound to a new lis item. This handler should return an object or a Promise<object>."
+            description="Specify logic to initialise the object bound to a new list item. This handler should return an object or a Promise<object>."
             exposedVariables={NEW_ROW_EXPOSED_VARIABLES}
           />
         </SettingsFormItem>
         <SettingsFormItem
           label="On list item save"
           name="onListItemSave"
-          tooltip="Custom business logic to be executed on saving of new/updated lis item (e.g. custom validation / calculations). This handler should return an object or a Promise<object>."
+          tooltip="Custom business logic to be executed on saving of new/updated list item (e.g. custom validation / calculations). This handler should return an object or a Promise<object>."
           hidden={model.canAddInline === 'no' && model.canEditInline === 'no'}
         >
           <CodeEditor
             propertyName="onListItemSave"
             readOnly={readOnly}
             mode="dialog"
-            label="On lis item save"
+            label="On list item save"
             setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-            description="Allows custom business logic to be executed on saving of new/updated lis item (e.g. custom validation / calculations)."
+            description="Allows custom business logic to be executed on saving of new/updated list item (e.g. custom validation / calculations)."
             exposedVariables={ROW_SAVE_EXPOSED_VARIABLES}
           />
         </SettingsFormItem>
@@ -397,7 +397,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
             editorConfig={null}
             level={1}
             label="On list item save success"
-            description="Custom business logic to be executed after successfull saving of new/updated lis item."
+            description="Custom business logic to be executed after successfull saving of new/updated list item."
             exposedVariables={ROW_SAVED_SUCCESS_EXPOSED_VARIABLES}
           />
         </SettingsFormItem>

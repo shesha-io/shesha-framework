@@ -202,6 +202,9 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
       <DataList
         {...props}
 
+        createFormId={props.createFormId ?? props.formId}
+        createFormType={props.createFormType ?? props.formType}
+
         canAddInline={canAction(canAddInline)}
         canEditInline={canAction(canEditInline)}
         canDeleteInline={canAction(canDeleteInline)}
