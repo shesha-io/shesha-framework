@@ -227,7 +227,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     );
 
   const setStep = (stepIndex) => {
-    if (stepIndex < 0 || stepIndex >= tabs.length - 1)
+    if (stepIndex < 0 || stepIndex >= visibleSteps.length)
       throw `Step with index ${stepIndex} is not available`;
     setCurrent(stepIndex);
   };
