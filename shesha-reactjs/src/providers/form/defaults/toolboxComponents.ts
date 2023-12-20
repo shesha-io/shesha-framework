@@ -87,7 +87,7 @@ import RefListStatusComponent from '@/designer-components/refListStatus';
 import { SortingEditorComponent } from '@/designer-components/sortingEditor/index';
 import TextAreaComponent from '@/designer-components/textArea/textArea';
 import TextFieldComponent from '@/designer-components/textField/textField';
-import TimeField from '@/designer-components/timeField';
+import { TimeFieldComponent } from '@/designer-components/timeField';
 import { IToolboxComponentGroup } from '@/interfaces/formDesigner';
 import { ComponentSelectorComponent } from '../../../designer-components';
 import EditModeSelectorComponent from '@/designer-components/editModeSelector/editModeSelector';
@@ -159,7 +159,7 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
       TextFieldComponent,
       Statistic,
       Text,
-      TimeField,
+      TimeFieldComponent,
       ValidationErrors,
     ],
   },
