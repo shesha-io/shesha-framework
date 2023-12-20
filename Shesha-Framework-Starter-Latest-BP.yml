@@ -34,20 +34,20 @@ stages:
       displayName: dotnet Restore
       inputs:
         command: 'restore'
-        projects: shesha-starter/backend/**/*.csproj
+        projects: shesha-starter/**/*.csproj
         feedsToUse: 'select'
         vstsFeed: '44b4667a-8963-403d-9962-bde66225adbd'
     - task: DotNetCoreCLI@2
       displayName: dotnet build
       inputs:
-        projects: shesha-starter/backend/ShaCompanyName.ShaProjectName.sln
+        projects: shesha-starter/**/*.sln
         arguments: --configuration release
     - task: DotNetCoreCLI@2
       displayName: dotnet publish
       inputs:
         command: publish
         publishWebProjects: false
-        projects: shesha-starter/backend/ShaCompanyName.ShaProjectName.sln
+        projects: shesha-starter/**/*.sln
         arguments: --configuration $(BuildParameters.configuration) --output $(build.artifactstagingdirectory) --no-build
         zipAfterPublish: false
         modifyOutputPath: false
@@ -78,7 +78,7 @@ stages:
         command: custom
         workingDir: 'shesha-starter/frontend'
         verbose: true
-        customCommand: install @shesha-io/reactjs@$(releaseVersion)
+        customCommand: install @shesha/reactjs@$(releaseVersion)
     - task: Npm@1
       displayName: Npm Build
       inputs:
