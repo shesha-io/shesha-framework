@@ -1,1 +1,36 @@
-# Changelog
+# Release Notes
+## Enhancements
+- Data List:
+   - Added support for editing, deleting, and adding new records.
+   - Supports dataList binding to a list of objects maintained on the frontend.
+- Wizard:
+   - Introduced new features:
+       - GetCurrentStep function.
+       - GetVisibleSteps and the ability to jump to a specific step.
+       - Context support for a more tailored user experience.
+- DataTable Inline Editor:
+   - Improved user experience by hiding unused settings.
+- Generic ListEditor Component:
+   - Enhanced sorting and grouping properties.
+- Layout Components:
+  - Added padding and margin properties.
+- DataTable:
+   - Implemented support for multi-selection.
+- Details View:
+   - Streamlined interface by removing edit icons.
+- Side Menu Bar:
+   - Added the ability to configure additional actions.
+- Navigate Action:
+   - Extended support for URL and form-specific configurations.
+- Component Behavior:
+   - Adjusted component behavior based on ReadOnly and Disabled settings.
+- Removed child table component.
+- Updating AspNetBoilerplate.
+## Bug Fixes
+- Resizing of the dataTable columns.
+- Fixed an issue where custom endpoints were not executed on the dataTableContext.
+- Filter displaying null values when using dynamic values on the filters.
+- DataTable duplication issue post child table removal.
+- Form crash when clicking on the Wizard default value step.
+- Unable to perform dataTable inline edit with time picker.
+- Error when updating the side menu configurations.
