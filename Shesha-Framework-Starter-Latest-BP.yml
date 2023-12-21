@@ -1,15 +1,31 @@
 # Variable 'artifactName' was defined in the Variables tab - This is from my fix branch
 # Agent Queue 'Azure Pipelines' was used with unrecognized Agent Specification, vmImage property must be specified to determine image - https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops&tabs=yaml#software
 variables:
+- name: BuildParameters.solution1
+  value: Boxfusion.SheshaFunctionalTests.sln
+- name: BuildParameters.solution2
+  value: ShaCompanyName.ShaProjectName.sln
+- name: BuildParameters.configuration
+  value: release
+- name: pack-version
+  value: ""
 - name: isMain
   value: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
 
-# trigger:
-#   branches:
-#     include:
-#     - releases/*
-#     - main
-
+pr:
+  branches:
+    include:
+    - releases/*
+    - main
+trigger:
+  tags:
+    include:
+    - 'release-*'
+  branches:
+    include:
+    - releases/*
+    - main
+    
 pool: 
   name: Azure Pipelines
   vmImage1: windows-latest
@@ -89,27 +105,27 @@ stages:
       displayName: dotnet Restore
       inputs:
         command: 'restore'
-        projects: shesha-starter/backend/**/*.csproj
+        projects: shesha-starter/backend/ShaCompanyName.ShaProjectName.sln
         feedsToUse: 'select'
         vstsFeed: '44b4667a-8963-403d-9962-bde66225adbd'
     - task: DotNetCoreCLI@2
       displayName: dotnet build
       inputs:
-        projects: shesha-starter/backend/**/*.csproj
+        projects: shesha-starter/backend/ShaCompanyName.ShaProjectName.sln
         arguments: --configuration $(BuildParameters.configuration)
     - task: DotNetCoreCLI@2
       displayName: dotnet publish
       inputs:
         command: publish
         publishWebProjects: false
-        projects: shesha-starter/backend/**/*.csproj
+        projects: shesha-starter/backend/ShaCompanyName.ShaProjectName.sln
         arguments: --configuration $(BuildParameters.configuration) --output $(build.artifactstagingdirectory) --no-build
         zipAfterPublish: false
         modifyOutputPath: false
     - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: functional-shesha-api'
+      displayName: 'Publish Artifact: starter-shesha-api'
       inputs:
-        ArtifactName: functional-shesha-api
+        ArtifactName: starter-shesha-api
     # - task: DotNetCoreCLI@2
     #   displayName: dotnet pack
     #   inputs:
@@ -126,7 +142,7 @@ stages:
       displayName: dotnet pack
       inputs:
         command: 'pack'
-        packagesToPack: 'shesha-core/src/**/*.csproj'
+        packagesToPack: 'shesha-starter/src/**/*.csproj'
         # packagesToPack: 'shesha-functional-tests/backend/src/Boxfusion.SheshaFunctionalTests.Web.Host.csproj'        
         configuration: '$(BuildParameters.configuration)'
         nobuild: false
@@ -140,45 +156,129 @@ stages:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'packs-functional'
   - job: Job_2
-    displayName: Build_Starter_Shesha_AdminPortal
+    displayName: Build_Starter
     pool:
       vmImage: windows-latest
     steps:
+    - task: PowerShell@2
+      displayName: Check if Pull Request
+      retryCountOnTaskFailure: 5
+      inputs:
+        targetType: 'inline'
+        script: |
+          $targetBranch = ""
+          if ("$(Build.SourceBranch)" -like "*/pull/*")
+          {
+              $targetBranch = "$(System.PullRequest.TargetBranch)"
+              write-host "This is a Pull Request and the target branch is: $targetBranch"  
+              write-host "##vso[task.setvariable variable=prTargetBranch]$targetBranch"
+          }
+          else
+          {
+            write-host "This is not a Pull Request and the target branch is set to empty string"  
+            write-host "##vso[task.setvariable variable=prTargetBranch]''"                              
+          }                                   
+        workingDirectory: '$(System.DefaultWorkingDirectory)'        
+    - task: PowerShell@2
+      displayName: Check to establish if this pipeline was triggered from a tag      
+      inputs:
+        filePath: 'ReleaseFlow.ps1'
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        arguments: '-PipeBuildNumber "$(Build.BuildNumber)" -PipeSourceBranch "$(Build.SourceBranch)" -PipeSourceVersion "$(Build.SourceVersion)" -PipeTargetBranch "$(prTargetBranch)" -PipeBuildId "$(Build.BuildId)"' 
+    - task: PowerShell@2
+      displayName: Output to console the current branch
+      retryCountOnTaskFailure: 5      
+      inputs:
+        targetType: 'inline'
+        script: |
+          # Write your PowerShell commands here.
+          write-host "The current branch is: $(currentBranch)"
+          write-host "The current version is: $(versionNo)"
+        workingDirectory: 'shesha-starter/adminportal'
     - task: NodeTool@0
       displayName: 'Use Node 18.15.0'
       inputs:
         versionSpec: 18.15.0
       retryCountOnTaskFailure: 5
     - task: Npm@1
+      displayName: 'Npm Update Version'
+      inputs:
+        command: custom
+        workingDir: shesha-reactjs
+        verbose: false
+        customCommand: 'version $(versionNo) --allow-same-version'
+      # condition: ne(variables['currentBranch'], 'refs/heads/main')        
+    - task: Npm@1
       displayName: 'Npm Install'
       inputs:
         command: custom
-        workingDir: shesha-starter/frontend
+        workingDir: shesha-reactjs
         verbose: false
         customCommand: 'install'
-    - task: Npm@1
-      displayName: Install Latest Shesha
-      inputs:
-        command: custom
-        workingDir: 'shesha-starter/frontend'
-        verbose: true
-        customCommand: install @shesha/reactjs@$(releaseVersion)
+    # - task: Npm@1
+    #   displayName: Install Latest Shesha
+    #   inputs:
+    #     command: custom
+    #     workingDir: 'shesha-functional-tests/adminportal'
+    #     verbose: true
+    #     customCommand: install @shesha/reactjs@latest
     - task: Npm@1
       displayName: Npm Build
       inputs:
         command: custom
-        workingDir: 'shesha-starter/frontend'
+        workingDir: shesha-reactjs
         verbose: true
         customCommand: run build
+    - task: Npm@1
+      displayName: 'Npm Update Version'
+      inputs:
+        command: custom
+        workingDir: shesha-starter-tests/adminportal
+        verbose: false
+        customCommand: 'version $(versionNo) --allow-same-version'
+      # condition: ne(variables['currentBranch'], 'refs/heads/main')        
+    - task: Npm@1
+      displayName: 'Npm Install'
+      inputs:
+        command: custom
+        workingDir: shesha-starter/adminportal
+        verbose: false
+        customCommand: 'install'
+    # - task: Npm@1
+    #   displayName: Install Latest Shesha
+    #   inputs:
+    #     command: custom
+    #     workingDir: 'shesha-functional-tests/adminportal'
+    #     verbose: true
+    #     customCommand: install @shesha/reactjs@latest
+    - task: Npm@1
+      displayName: Npm Build
+      inputs:
+        command: custom
+        workingDir: 'shesha-starter-tests/adminportal'
+        verbose: true
+        customCommand: run build
+    # Creating a temporary directory to copy both node apps
+    - task: PowerShell@2
+      displayName: 'Preparing ReactJS for Archiving'
+      inputs:
+        targetType: 'inline'
+        script: |
+          # Write your PowerShell commands here.
+          mkdir $(System.DefaultWorkingDirectory)/temp
+          Write-Host "Copying Shesha ReactJS Artifacts"
+          cp -R shesha-reactjs $(System.DefaultWorkingDirectory)/temp/shesha-reactjs
+          cp -R shesha-starter-tests $(System.DefaultWorkingDirectory)/temp/shesha-starter-tests
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
     - task: ArchiveFiles@2
       inputs:
-        rootFolderOrFile: 'shesha-starter/frontend'
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/temp'
         includeRootFolder: false
         archiveType: 'zip'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/shesha-adminportal-starter.zip'
-        replaceExistingArchive: true  
+        archiveFile: '$(Build.ArtifactStagingDirectory)/adminportal.zip'
+        replaceExistingArchive: true
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: shesha-adminportal-starter'
       inputs:
         ArtifactName: adminportal-starter
- 
+
