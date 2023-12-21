@@ -16,6 +16,7 @@ export interface IDataListItemCreateModalProps {
   markup: FormRawMarkup;
   formSettings: IFormSettings;
   onToggle: (isOpen: boolean) => void;
+  width?: string;
 }
 
 const DataListItemCreateModal: FC<IDataListItemCreateModalProps> = (props) => {
@@ -24,7 +25,8 @@ const DataListItemCreateModal: FC<IDataListItemCreateModalProps> = (props) => {
     markup,
     formSettings,
     creater,
-    onToggle
+    onToggle,
+    width
   } = props;
 
   return (
@@ -46,7 +48,8 @@ const DataListItemCreateModal: FC<IDataListItemCreateModalProps> = (props) => {
           <CreateModal
             formInfo={props.formInfo}
             loading={false} 
-            onToggle={onToggle} 
+            onToggle={onToggle}
+            width={width}
            />
         </DataListCrudProvider>
       )}
@@ -59,6 +62,7 @@ interface ICreateModalProps extends IDataListProps {
   readOnly?: boolean;
   loading: boolean;
   onToggle: (isOpen: boolean) => void;
+  width?: string;
 }
 
 const CreateModal: FC<ICreateModalProps> = ({
@@ -67,7 +71,8 @@ const CreateModal: FC<ICreateModalProps> = ({
   loading = false,
   //modalTitle: title,
   //modalWidth: width = '60%',
-  onToggle
+  onToggle,
+  width
 }) => {
 
   const {performCreate, switchMode, saveError} = useDataListCrud();
@@ -93,7 +98,7 @@ const CreateModal: FC<ICreateModalProps> = ({
       onOk={onOk}
       onCancel={onCancel}
       title='Add new item'
-      //width={width}
+      width={width}
       okButtonProps={{ disabled: readOnly }}
     >
       <Skeleton loading={loading}>

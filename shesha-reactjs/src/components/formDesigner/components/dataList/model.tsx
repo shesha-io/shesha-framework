@@ -22,4 +22,8 @@ export interface IDataListInlineEditableProps {
   customCreateUrl?: string;
   onListItemSave?: string;
   onListItemSaveSuccessAction?: IConfigurableActionConfiguration;
+
+  modalWidth?: string;
+  widthUnits?: string;
+  customWidth?: number;
 }

@@ -115,7 +115,7 @@ const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerPr
         </Show>
 
         <Show when={!componentEditModeFx && (componentEditMode === 'readOnly' || componentEditMode === true || disabledByCondition)}>
-          <Tooltip title="This component is always in Edit mode. It's now enabled because we're in a designer mode">
+          <Tooltip title="This component is always in Read only mode. It's now enabled because we're in a designer mode">
             <StopOutlined />
           </Tooltip>
         </Show>

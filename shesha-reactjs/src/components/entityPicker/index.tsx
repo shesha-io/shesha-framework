@@ -18,6 +18,7 @@ import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import TablePager from '@/components/tablePager';
 import { IEntityPickerProps, IEntityPickerState } from './models';
 import { evaluateDynamicFilters } from '@/utils';
+import { useDeepCompareMemo } from '@/index';
 
 const UNIQUE_ID = 'HjHi0UVD27o8Ub8zfz6dH';
 
@@ -253,7 +254,7 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
     showPickerDialog();
   };
 
-  const options = useMemo<DefaultOptionType[]>(() => {
+  const options = useDeepCompareMemo<DefaultOptionType[]>(() => {
     let result: DefaultOptionType[] = null;
     if (selection.loading) {
       const items = value ? (Array.isArray(value) ? value : [value]) : [];

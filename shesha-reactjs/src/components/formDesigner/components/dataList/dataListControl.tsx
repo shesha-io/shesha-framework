@@ -189,6 +189,8 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
       || !props.formIdExpression && props.formSelectionMode === "expression"
     )) return <NotConfiguredWarning />;
 
+  const width = props.modalWidth === 'custom' && props.customWidth ? `${props.customWidth}${props.widthUnits}` : props.modalWidth;
+
   return (
     <ConfigurableFormItem
       model={{ ...props }}
@@ -225,6 +227,8 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         deleteAction={deleter}
 
         actionRef={dataListRef}
+
+        modalWidth={width}
       />
     </ConfigurableFormItem>
   );
