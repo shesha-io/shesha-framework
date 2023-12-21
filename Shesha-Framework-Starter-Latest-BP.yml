@@ -40,14 +40,14 @@ stages:
     - task: DotNetCoreCLI@2
       displayName: dotnet build
       inputs:
-        projects: shesha-starter/**/*.sln
+        projects: shesha-starter/**/*.csproj
         arguments: --configuration release
     - task: DotNetCoreCLI@2
       displayName: dotnet publish
       inputs:
         command: publish
         publishWebProjects: false
-        projects: shesha-starter/**/*.sln
+        projects: shesha-starter/**/*.csproj
         arguments: --configuration $(BuildParameters.configuration) --output $(build.artifactstagingdirectory) --no-build
         zipAfterPublish: false
         modifyOutputPath: false
