@@ -20,41 +20,125 @@ stages:
 - stage: build
   jobs:
   - job: Job_1
-    displayName: Build_Starter_Shesha_API
+    displayName: Build_Functional_Shesha_API
     pool:
       name: Azure Pipelines
       vmImage: windows-latest
     steps:
     - checkout: self
+    - task: PowerShell@2
+      displayName: Check if Pull Request
+      retryCountOnTaskFailure: 5
+      inputs:
+        targetType: 'inline'
+        script: |
+          $targetBranch = ""
+          if ("$(Build.SourceBranch)" -like "*/pull/*")
+          {
+              $targetBranch = "$(System.PullRequest.TargetBranch)"
+              write-host "This is a Pull Request and the target branch is: $targetBranch"  
+              write-host "##vso[task.setvariable variable=prTargetBranch]$targetBranch"
+          }
+          else
+          {
+            write-host "This is not a Pull Request and the target branch is set to empty string"  
+            write-host "##vso[task.setvariable variable=prTargetBranch]''"                              
+          }                         
+        workingDirectory: '$(System.DefaultWorkingDirectory)'    
+    - task: PowerShell@2
+      displayName: Check to establish if this pipeline was triggered from a tag
+      inputs:
+        filePath: 'ReleaseFlow.ps1'
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        arguments: '-PipeBuildNumber "$(Build.BuildNumber)" -PipeSourceBranch "$(Build.SourceBranch)" -PipeSourceVersion "$(Build.SourceVersion)" -PipeTargetBranch "$(prTargetBranch)" -PipeBuildId "$(Build.BuildId)"' 
+    - task: PowerShell@2
+      displayName: Output to console the current branch and version
+      inputs:
+        targetType: 'inline'
+        script: |
+          write-host "The current branch is: $(currentBranch)"
+          write-host "The current version is: $(versionNo)"
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+    - task: PowerShell@2
+      displayName: Create a txt file to carry the original branch name to the release pipeline  
+      inputs:
+        targetType: 'inline'
+        script: |
+          $variable = '$(currentBranch)'
+          $variable | Out-File $(Build.ArtifactStagingDirectory)\branchName.txt
+          Get-Content $(Build.ArtifactStagingDirectory)\branchName.txt
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: api-info-1'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'api-info-1'
     - task: UseDotNet@2
       displayName: Use .NET Core sdk 8.x
       inputs:
         version: 8.x
+    - task: Assembly-Info-NetCore@3
+      displayName: 'Set Assembly Manifest Data'
+      inputs:
+        InsertAttributes: true
+        VersionNumber: "$(versionNo)"
+        FileVersionNumber: "$(versionNo)"
+        InformationalVersion: "$(versionNo)"
+        PackageVersion: "$(versionNo)"
+      # condition: ne(variables['currentBranch'], 'refs/heads/main')
     - task: DotNetCoreCLI@2
       displayName: dotnet Restore
       inputs:
         command: 'restore'
-        projects: shesha-starter/**/*.csproj
+        projects: shesha-functional-tests/backend/**/*.csproj        
         feedsToUse: 'select'
         vstsFeed: '44b4667a-8963-403d-9962-bde66225adbd'
     - task: DotNetCoreCLI@2
       displayName: dotnet build
       inputs:
-        projects: shesha-starter/**/*.csproj
-        arguments: --configuration release
+        projects: shesha-functional-tests/backend/Boxfusion.SheshaFunctionalTests.sln
+        arguments: --configuration $(BuildParameters.configuration)
     - task: DotNetCoreCLI@2
       displayName: dotnet publish
       inputs:
         command: publish
         publishWebProjects: false
-        projects: shesha-starter/**/*.csproj
+        projects: shesha-functional-tests/backend/Boxfusion.SheshaFunctionalTests.sln
         arguments: --configuration $(BuildParameters.configuration) --output $(build.artifactstagingdirectory) --no-build
         zipAfterPublish: false
         modifyOutputPath: false
     - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: starter-shesha-api'
+      displayName: 'Publish Artifact: functional-shesha-api'
       inputs:
-        ArtifactName: starter-shesha-api
+        ArtifactName: functional-shesha-api
+    # - task: DotNetCoreCLI@2
+    #   displayName: dotnet pack
+    #   inputs:
+    #     command: 'pack'
+    #     packagesToPack: 'shesha-functional-tests/backend/src/**/*.csproj'
+    #     # packagesToPack: 'shesha-functional-tests/backend/src/Boxfusion.SheshaFunctionalTests.Web.Host.csproj'        
+    #     configuration: '$(BuildParameters.configuration)'
+    #     nobuild: false
+    #     includesymbols: true
+    #     includesource: true
+    #     versioningScheme: 'byEnvVar'
+    #     versionEnvVar: 'versionNo'
+    - task: DotNetCoreCLI@2
+      displayName: dotnet pack
+      inputs:
+        command: 'pack'
+        packagesToPack: 'shesha-core/src/**/*.csproj'
+        # packagesToPack: 'shesha-functional-tests/backend/src/Boxfusion.SheshaFunctionalTests.Web.Host.csproj'        
+        configuration: '$(BuildParameters.configuration)'
+        nobuild: false
+        includesymbols: true
+        includesource: true
+        versioningScheme: 'byEnvVar'
+        versionEnvVar: 'versionNo'
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: Nuget packs'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'packs-functional'
   - job: Job_2
     displayName: Build_Starter_Shesha_AdminPortal
     pool:
