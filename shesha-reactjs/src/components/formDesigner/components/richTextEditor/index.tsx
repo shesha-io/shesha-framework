@@ -1,16 +1,17 @@
 import React from 'react';
-import { EditOutlined } from '@ant-design/icons';
-import { ConfigurableFormItem } from '../../..';
-import { validateConfigurableComponentSettings } from '../../../../formDesignerUtils';
-import { IToolboxComponent } from '@/interfaces/formDesigner';
-import { FormMarkup } from '@/providers/form/models';
-import settingsFormJson from './settingsForm.json';
 import RichTextEditor from '@/components/richTextEditor';
-import { useDeepCompareMemoKeepReference, useFormData } from '@/components/..';
-import { IRichTextEditorProps } from './interfaces';
+import settingsFormJson from './settingsForm.json';
+import { ConfigurableFormItem } from '../../..';
+import { EditOutlined } from '@ant-design/icons';
+import { FormMarkup } from '@/providers/form/models';
 import { getStyle } from '@/providers/form/utils';
 import { IJoditEditorProps } from '../../../richTextEditor/joditEditor';
+import { IRichTextEditorProps } from './interfaces';
+import { IToolboxComponent } from '@/interfaces/formDesigner';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import { useDeepCompareMemoKeepReference } from '@/hooks';
+import { useFormData } from '@/providers';
+import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

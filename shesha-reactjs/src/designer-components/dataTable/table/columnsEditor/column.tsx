@@ -1,7 +1,7 @@
 import { DeleteFilled, QuestionCircleOutlined } from '@ant-design/icons';
 import { Button, Tooltip } from 'antd';
 import React, { FC } from 'react';
-import { IconType, ShaIcon } from '../../../../components';
+import { IconType, ShaIcon } from '@/components';
 import { useColumnsConfigurator } from '@/providers/datatableColumnsConfigurator';
 import {
   IConfigurableActionColumnsProps,

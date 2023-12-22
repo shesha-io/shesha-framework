@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { useState } from 'react';
-import { useSheshaApplication } from '../providers';
+import { useSheshaApplication } from '@/providers';
 
 interface IDeleteState {
   loading?: boolean;

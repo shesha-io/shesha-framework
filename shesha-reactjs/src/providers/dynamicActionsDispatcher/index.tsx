@@ -87,5 +87,5 @@ export {
   useDynamicActionsDispatcherState, 
   useDynamicActionsDispatcherActions, 
   useDynamicActionsDispatcher,
-  DynamicItemsEvaluationHook,  
+  type DynamicItemsEvaluationHook,  
 };

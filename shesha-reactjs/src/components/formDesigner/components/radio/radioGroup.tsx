@@ -1,7 +1,7 @@
 import { Radio, Space } from 'antd';
 import React, { FC, useEffect, useMemo } from 'react';
 import { useGet } from '@/hooks';
-import { useFormData, useGlobalState } from '../../../../providers';
+import { useFormData, useGlobalState } from '@/providers';
 import { useReferenceList } from '@/providers/referenceListDispatcher';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { getDataSourceList, IRadioProps } from './utils';

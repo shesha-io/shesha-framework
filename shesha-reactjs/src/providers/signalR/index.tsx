@@ -11,7 +11,7 @@ import {
 } from './contexts';
 import { signalRReducer } from './reducer';
 //@ts-ignore
-import { useApplicationConfiguration, usePrevious } from '../../hooks';
+import { useApplicationConfiguration, usePrevious } from '@/hooks';
 import { setConnectionAction } from './actions';
 
 export interface ISignalRProvider {

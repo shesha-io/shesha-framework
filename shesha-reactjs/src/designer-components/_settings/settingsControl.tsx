@@ -1,5 +1,5 @@
 import React, { FC, ReactElement, useMemo } from 'react';
-import { PropertySettingMode } from '../../providers';
+import { PropertySettingMode } from '@/providers';
 import { CodeEditor } from '@/components/formDesigner/components/codeEditor/codeEditor';
 import { getPropertySettingsFromValue } from './utils';
 

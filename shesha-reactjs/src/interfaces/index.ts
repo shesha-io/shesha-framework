@@ -45,4 +45,4 @@ export { type IReferenceListIdentifier } from './referenceList';
 export * from './formDesigner';
 export * from './shesha';
 export * from '@/providers/form/models';
-export { IStoredFile } from '@/providers/storedFile/contexts';
+export { type IStoredFile } from '@/providers/storedFile/contexts';

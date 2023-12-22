@@ -1,7 +1,7 @@
 import { HomeOutlined } from '@ant-design/icons';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import React from 'react';
-import { IToolboxComponent } from '../../../../interfaces';
+import { IToolboxComponent } from '@/interfaces';
 import ReadOnlyDisplayFormItemWrapper from '../../../readOnlyDisplayFormItem/wrapper';
 import ConfigurableFormItem from '../formItem';
 import AutoCompletePlacesControl from './control';

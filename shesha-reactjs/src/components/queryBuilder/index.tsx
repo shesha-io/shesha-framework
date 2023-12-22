@@ -14,7 +14,7 @@ import {
   Settings,
 } from '@react-awesome-query-builder/antd';
 import classNames from 'classnames';
-import { ITableColumn } from '../../interfaces';
+import { ITableColumn } from '@/interfaces';
 import { hasCustomQBSettings, IProperty, propertyHasQBConfig } from '@/providers/queryBuilder/models';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { config as InitialConfig } from './config';

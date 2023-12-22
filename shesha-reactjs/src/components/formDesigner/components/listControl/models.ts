@@ -1,4 +1,4 @@
-import { IConfigurableFormComponent, IFormItem } from '../../../../interfaces';
+import { IConfigurableFormComponent, IFormItem } from '@/interfaces';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
 import { FormIdentifier } from '@/providers/form/models';
 

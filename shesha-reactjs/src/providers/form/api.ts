@@ -1,32 +1,48 @@
-import { GetDataError, useGet } from '@/hooks';
-import { nanoid } from 'nanoid';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import * as RestfulShesha from '@/utils/fetchers';
 import {
-  IMatchData,
-  IToolboxComponents,
+  asFormFullName,
+  asFormRawId,
   componentsTreeToFlatStructure,
+  getComponentsFromMarkup,
   getMatchData,
   hasFormIdGotValue,
+  IMatchData
+  } from './utils';
+import { ConfigurationItemsViewMode } from '../appConfigurator/models';
+import { DataTypes } from '@/interfaces/dataTypes';
+import { EntityAjaxResponse, IEntity } from '@/generic-pages/dynamic/interfaces';
+import {
+  FormIdentifier,
+  FormMarkupWithSettings,
+  FormRawMarkup,
+  IFormDto,
+  IFormSettings
+  } from './models';
+import { GetDataError, useGet } from '@/hooks';
+import { getQueryParams, joinUrlAndPath } from '@/utils/url';
+import { IAbpWrappedGetEntityResponse } from '@/interfaces/gql';
+import { IAjaxResponseBase } from '@/interfaces/ajaxResponse';
+import { IApiEndpoint, IPropertyMetadata, StandardEntityActions } from '@/interfaces/metadata';
+import { IErrorInfo } from '@/interfaces/errorInfo';
+import { IMetadataDispatcherActionsContext } from '../metadataDispatcher/contexts';
+import { IToolboxComponents } from '@/interfaces';
+import { nanoid } from 'nanoid';
+import { removeNullUndefined } from '@/providers/utils';
+import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+  } from 'react';
+import { useFormDesignerComponents } from './hooks';
+import { useModelApiEndpoint, useModelApiHelper } from '@/components/configurableForm/useActionEndpoint';
+import {
   useAppConfigurator,
   useMetadataDispatcher,
   useSheshaApplication,
-} from '@/providers/..';
-import { useModelApiEndpoint, useModelApiHelper } from '@/components/configurableForm/useActionEndpoint';
-import { IAjaxResponseBase } from '@/interfaces/ajaxResponse';
-import { IErrorInfo } from '@/interfaces/errorInfo';
-import { IAbpWrappedGetEntityResponse } from '@/interfaces/gql';
-import { IApiEndpoint, IPropertyMetadata, StandardEntityActions } from '@/interfaces/metadata';
-import { EntityAjaxResponse, IEntity } from '@/pages/dynamic/interfaces';
-import * as RestfulShesha from '@/utils/fetchers';
-import { getQueryParams, joinUrlAndPath } from '@/utils/url';
-import { ConfigurationItemsViewMode } from '../appConfigurator/models';
-import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
-import { IMetadataDispatcherActionsContext } from '../metadataDispatcher/contexts';
-import { removeNullUndefined } from '@/providers/utils';
-import { useFormDesignerComponents } from './hooks';
-import { FormIdentifier, FormMarkupWithSettings, FormRawMarkup, IFormDto, IFormSettings } from './models';
-import { asFormFullName, asFormRawId, getComponentsFromMarkup } from './utils';
-import { DataTypes } from '@/interfaces/dataTypes';
+} from '@/providers';
+
 
 /**
  * Form configuration DTO
@@ -133,11 +149,11 @@ export const getFormConfiguration = (formId: FormIdentifier, backendUrl: string,
   const requestParams = formRawId
     ? { url: '/api/services/Shesha/FormConfiguration/Get', queryParams: { id: formRawId } }
     : formFullName
-    ? {
+      ? {
         url: '/api/services/Shesha/FormConfiguration/GetByName',
         queryParams: { name: formFullName.name, module: formFullName.module, version: formFullName.version },
       }
-    : null;
+      : null;
 
   return RestfulShesha.get<IAbpWrappedGetEntityResponse<FormConfigurationDto>>(
     requestParams.url,
@@ -197,8 +213,8 @@ export const useFormConfiguration = (args: UseFormConfigurationArgs): IFormMarku
   const reFetcher = () => {
     return canFetch
       ? reFetch().then((response) => {
-          return getMarkupFromResponse(response);
-        })
+        return getMarkupFromResponse(response);
+      })
       : Promise.reject('Can`t fetch form due to internal state');
   };
 
@@ -452,12 +468,12 @@ const getFormFields = (payload: GetFormFieldsPayload): string[] => {
   if (!formMarkup) return null;
 
   const components = componentsTreeToFlatStructure(toolboxComponents, getComponentsFromMarkup(formMarkup))
-      .allComponents;
+    .allComponents;
   let fieldNames = [];
   for (const key in components) {
-      if (components.hasOwnProperty(key)){
-          fieldNames.push(components[key].propertyName);
-      }
+    if (components.hasOwnProperty(key)) {
+      fieldNames.push(components[key].propertyName);
+    }
   }
 
   fieldNames = fieldNames.concat(formSettings?.fieldsToFetch ?? []);
@@ -521,8 +537,8 @@ export const getGqlFields = (payload: GetGqlFieldsPayload): Promise<IFieldData[]
                 idx === 0
                   ? metadata.properties.find((p) => p.path.toLowerCase() === part.toLowerCase())
                   : parent?.property?.dataType === 'object'
-                  ? parent.property.properties?.find((p) => p.path.toLowerCase() === part.toLowerCase())
-                  : null,
+                    ? parent.property.properties?.find((p) => p.path.toLowerCase() === part.toLowerCase())
+                    : null,
             };
             // If property metadata is not set - fetch it using dispatcher.
             // Note: it's safe to fetch the same container multiple times because the dispatcher returns the same promise for all requests

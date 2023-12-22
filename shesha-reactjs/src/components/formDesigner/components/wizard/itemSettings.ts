@@ -1,4 +1,4 @@
-import { DesignerToolbarSettings } from '../../../../interfaces';
+import { DesignerToolbarSettings } from '@/interfaces';
 import { IWizardStepProps } from './models';
 
 export const getSettings = (_data?: IWizardStepProps) =>

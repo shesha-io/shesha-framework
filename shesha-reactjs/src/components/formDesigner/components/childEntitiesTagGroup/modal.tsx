@@ -1,7 +1,7 @@
 import { Modal, Skeleton } from 'antd';
 import { useDataContext } from '@/providers/dataContextProvider/index';
 import React, { FC } from 'react';
-import { useAppConfigurator } from '../../../../providers';
+import { useAppConfigurator } from '@/providers';
 import { IFormMarkupResponse } from '@/providers/form/api';
 import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
 import FormInfo from '../../../configurableForm/formInfo';

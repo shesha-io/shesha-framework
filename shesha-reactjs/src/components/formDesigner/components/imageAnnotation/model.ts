@@ -1,5 +1,5 @@
-import { IFormItem } from "@/components/..";
-import { IConfigurableFormComponent } from "../../../../providers";
+import { IConfigurableFormComponent } from '@/providers';
+import { IFormItem } from '@/interfaces';
 
 export interface IAnnotation {
     id: string;    // required,

@@ -122,8 +122,8 @@ function useButtonGroupConfigurator() {
 export { 
   ButtonGroupConfiguratorProvider, 
   useButtonGroupConfigurator, 
-  IButtonGroup, 
-  IButtonItem, 
-  IButtonGroupItem,
-  ButtonGroupItemProps,
+  type IButtonGroup, 
+  type IButtonItem, 
+  type IButtonGroupItem,
+  type ButtonGroupItemProps,
 };

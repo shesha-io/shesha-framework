@@ -1,7 +1,7 @@
 import { HubConnection } from '@microsoft/signalr';
 import { Moment } from 'moment';
 import { createContext } from 'react';
-import { IFlagsSetters, IFlagsState } from '../../interfaces';
+import { IFlagsSetters, IFlagsState } from '@/interfaces';
 
 export type IFlagProgressFlags = 'getExecutionLog';
 /* NEW_IN_PROGRESS_FLAG_GOES_HERE */

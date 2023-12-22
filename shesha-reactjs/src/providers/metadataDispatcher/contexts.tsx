@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { IDictionary } from '../../interfaces';
+import { IDictionary } from '@/interfaces';
 import { IModelMetadata, IPropertyMetadata } from '@/interfaces/metadata';
 import { IMetadataContext } from '../metadata/contexts';
 

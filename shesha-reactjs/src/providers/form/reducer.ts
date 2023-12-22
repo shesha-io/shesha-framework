@@ -1,5 +1,5 @@
 import { handleActions } from 'redux-actions';
-import { IFormValidationErrors } from '../../interfaces';
+import { IFormValidationErrors } from '@/interfaces';
 import { FormActionEnums } from './actions';
 import {
   FORM_CONTEXT_INITIAL_STATE,

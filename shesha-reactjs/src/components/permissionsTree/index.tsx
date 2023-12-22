@@ -1,19 +1,26 @@
-import { LoadingOutlined } from '@ant-design/icons';
-import { message, Space, Spin, Tooltip, Tree, Tag } from 'antd';
-import { DataNode, EventDataNode } from 'antd/lib/tree';
 import React, { ReactNode, useEffect, useState } from 'react';
+import SearchBox from '../formDesigner/toolboxSearchBox';
+import { DataNode, EventDataNode } from 'antd/lib/tree';
 import { FC } from 'react';
+import { IUpdateItemArguments, updateItemArgumentsForm } from './update-item-arguments';
+import { Key } from 'rc-tree/lib/interface';
+import { LoadingOutlined } from '@ant-design/icons';
+import {
+  message,
+  Space,
+  Spin,
+  Tag,
+  Tooltip,
+  Tree
+  } from 'antd';
+import { useConfigurableAction, useForm } from '@/providers';
 import { useLocalStorage } from 'react-use';
-import { useConfigurableAction, useForm } from '@/components/..';
 import {
   PermissionDto,
   usePermissionGetAllTree,
   usePermissionUpdateParent,
   usePermissionDelete,
 } from '@/apis/permission';
-import SearchBox from '../formDesigner/toolboxSearchBox';
-import { IUpdateItemArguments, updateItemArgumentsForm } from './update-item-arguments';
-import { Key } from 'rc-tree/lib/interface';
 
 export interface IDataNode {
   title: JSX.Element;

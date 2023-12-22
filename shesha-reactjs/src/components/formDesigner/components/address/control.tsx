@@ -1,15 +1,15 @@
-import { message } from 'antd';
+import GooglePlacesAutocomplete, { IAddressAndCoords } from '@/components/googlePlacesAutocomplete';
 import moment from 'moment';
 import React, { FC, Fragment } from 'react';
-import { useGet } from '@/hooks';
-import { useForm, useGlobalState, useSheshaApplication } from '@/components/..';
-import { axiosHttp } from '@/utils/fetchers';
-import GooglePlacesAutocomplete, { IAddressAndCoords } from '@/components/googlePlacesAutocomplete';
-import { IOpenCageResponse } from '../../../googlePlacesAutocomplete/models';
 import ValidationErrors from '@/components/validationErrors';
+import { axiosHttp } from '@/utils/fetchers';
 import { customAddressEventHandler } from '../utils';
-import { IAddressCompomentProps } from './models';
 import { getAddressValue, getSearchOptions } from './utils';
+import { IAddressCompomentProps } from './models';
+import { IOpenCageResponse } from '../../../googlePlacesAutocomplete/models';
+import { message } from 'antd';
+import { useForm, useGlobalState, useSheshaApplication } from '@/providers';
+import { useGet } from '@/hooks';
 
 interface IAutoCompletePlacesFieldProps extends IAddressCompomentProps {
   value?: any;

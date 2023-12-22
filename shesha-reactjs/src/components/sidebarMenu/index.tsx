@@ -1,12 +1,12 @@
 import React, { FC, useRef, useState } from 'react';
 import { normalizeUrl } from '@/utils/url';
-import { ISidebarButton, isSidebarButton } from '@/interfaces/sidebar';
-import { isNavigationActionConfiguration, useConfigurableActionDispatcher, useShaRouting } from '@/providers/index';
+import { isSidebarButton } from '@/interfaces/sidebar';
+import { IConfigurableActionConfiguration, isNavigationActionConfiguration, useConfigurableActionDispatcher, useShaRouting } from '@/providers/index';
 import { Menu } from 'antd';
 import { MenuTheme } from 'antd/lib/menu/MenuContext';
 import { renderSidebarMenuItem } from './utils';
 import { useApplicationContext } from '@/utils/publicUtils';
-import { useLocalStorage } from '../../hooks';
+import { useLocalStorage } from '@/hooks';
 import { useSidebarMenu } from '@/providers/sidebarMenu';
 
 export interface ISidebarMenuProps {
@@ -30,10 +30,10 @@ export const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
 
   if ((items ?? []).length === 0) return null;
 
-  const onButtonClick = (item: ISidebarButton) => {
-    setSelectedKey(item.id);
+  const onButtonClick = (itemId: string, actionConfiguration: IConfigurableActionConfiguration) => {
+    setSelectedKey(itemId);
     executeAction({
-      actionConfiguration: item.actionConfiguration,
+      actionConfiguration: actionConfiguration,
       argumentsEvaluationContext: executionContext
     });
   };
@@ -76,5 +76,3 @@ export const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
     />
   );
 };
-
-export default SidebarMenu;

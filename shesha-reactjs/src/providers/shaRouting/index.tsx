@@ -1,16 +1,22 @@
-import { Router } from 'next/router';
-import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
-import { FormIdentifier, asFormFullName, getQueryParams } from '@/providers/..';
-import { IConfigurableActionConfiguration, useConfigurableAction } from '@/providers/configurableActionsDispatcher';
-import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
+import qs from 'qs';
+import React, {
+  FC,
+  PropsWithChildren,
+  useContext,
+  useReducer
+  } from 'react';
+import { asFormFullName } from '../form/utils';
+import { FormIdentifier } from '@/interfaces';
 import { getFlagSetters } from '../utils/flagsSetters';
-import { navigateArgumentsForm } from './actions/navigate-arguments';
-import { SHA_ROUTING_CONTEXT_INITIAL_STATE, ShaRoutingActionsContext, ShaRoutingStateContext } from './contexts';
-import { shaRoutingReducer } from './reducer';
+import { getQueryParams, getUrlWithoutQueryParams } from '@/utils/url';
+import { IConfigurableActionConfiguration, useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { IKeyValue } from '@/interfaces/keyValue';
 import { mapKeyValueToDictionary } from '@/utils/dictionary';
-import qs from 'qs';
-import { getUrlWithoutQueryParams } from '@/utils/url';
+import { navigateArgumentsForm } from './actions/navigate-arguments';
+import { Router } from 'next/router';
+import { SHA_ROUTING_CONTEXT_INITIAL_STATE, ShaRoutingActionsContext, ShaRoutingStateContext } from './contexts';
+import { shaRoutingReducer } from './reducer';
+import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 
 export interface IRoutingProviderProvider {
   router: Router;

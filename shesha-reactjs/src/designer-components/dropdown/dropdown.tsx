@@ -1,23 +1,28 @@
-import { DownSquareOutlined } from '@ant-design/icons';
-import { message, Select } from 'antd';
+import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import moment from 'moment';
 import React, { FC } from 'react';
-import { evaluateString } from '@/designer-components/..';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { customDropDownEventHandler } from '@/components/formDesigner/components/utils';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import RefListDropDown from '@/components/refListDropDown';
-import { IToolboxComponent } from '@/interfaces';
-import { DataTypes } from '@/interfaces/dataTypes';
-import { useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
-import { FormMarkup } from '@/providers/form/models';
-import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { axiosHttp } from '@/utils/fetchers';
-import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
-import { IDropdownComponentProps, ILabelValue } from './interfaces';
 import settingsFormJson from './settingsForm.json';
-import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import { axiosHttp } from '@/utils/fetchers';
+import { customDropDownEventHandler } from '@/components/formDesigner/components/utils';
+import { DataTypes } from '@/interfaces/dataTypes';
+import { DownSquareOutlined } from '@ant-design/icons';
+import { evaluateString } from '@/providers/form/utils';
+import { FormMarkup } from '@/providers/form/models';
+import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
+import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { IDropdownComponentProps, ILabelValue } from './interfaces';
+import { IToolboxComponent } from '@/interfaces';
+import { message, Select } from 'antd';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import {
+  useForm,
+  useFormData,
+  useGlobalState,
+  useSheshaApplication
+  } from '@/providers';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

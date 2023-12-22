@@ -1,4 +1,4 @@
-import { IToolboxComponent } from '../../../../../interfaces';
+import { IToolboxComponent } from '@/interfaces';
 import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
 import { ApartmentOutlined } from '@ant-design/icons';
 import settingsFormJson from './settingsForm.json';

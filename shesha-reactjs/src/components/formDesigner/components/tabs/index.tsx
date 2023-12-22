@@ -1,17 +1,17 @@
-import { IToolboxComponent } from '@/interfaces';
-import { IFormComponentContainer } from '@/providers/form/models';
-import { FolderOutlined } from '@ant-design/icons';
-import { Tabs, TabsProps } from 'antd';
 import ComponentsContainer from '../../containers/componentsContainer';
 import React, { Fragment } from 'react';
-import { getActualModel, getLayoutStyle, useApplicationContext } from '@/providers/form/utils';
-import { useFormData, useGlobalState, useSheshaApplication } from '@/providers';
-import { nanoid } from 'nanoid/non-secure';
-import { TabSettingsForm } from './settings';
-import { ITabsComponentProps } from './models';
 import ShaIcon from '@/components/shaIcon';
+import { FolderOutlined } from '@ant-design/icons';
+import { getActualModel, getLayoutStyle, useApplicationContext } from '@/providers/form/utils';
+import { IFormComponentContainer } from '@/providers/form/models';
+import { ITabsComponentProps } from './models';
+import { IToolboxComponent } from '@/interfaces';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { nanoid } from 'nanoid/non-secure';
+import { Tabs, TabsProps } from 'antd';
+import { TabSettingsForm } from './settings';
 import { useDeepCompareMemo } from '@/hooks';
+import { useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 
 type TabItem = TabsProps['items'][number];
 

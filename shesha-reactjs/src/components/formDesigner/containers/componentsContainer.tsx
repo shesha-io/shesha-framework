@@ -1,6 +1,6 @@
 import React, { CSSProperties, FC, ReactNode } from 'react';
 import { IConfigurableFormComponent } from '@/providers/form/models';
-import { IComponentsContainerBaseProps } from '../../../interfaces';
+import { IComponentsContainerBaseProps } from '@/interfaces';
 import { useComponentContainer } from '@/providers/form/nesting/containerContext';
 import { ICommonContainerProps } from '@/designer-components/container/interfaces';
 

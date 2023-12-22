@@ -4,7 +4,8 @@ import classNames from 'classnames';
 import React, { ReactNode } from 'react';
 import { ISidebarMenuItem } from '@/providers/sidebarMenu';
 import ShaIcon, { IconType } from '@/components/shaIcon';
-import { ISidebarButton, isSidebarButton, isSidebarGroup, SidebarItemType } from '@/interfaces/sidebar';
+import { isSidebarButton, isSidebarGroup, SidebarItemType } from '@/interfaces/sidebar';
+import { IConfigurableActionConfiguration } from '@/providers/index';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -49,13 +50,13 @@ export interface IProps {
   item: ISidebarMenuItem;
   isItemVisible: (item: ISidebarMenuItem) => boolean;
   isRootItem?: boolean;
-  onButtonClick?: (item: ISidebarButton) => void;
+  onButtonClick?: (itemId: string, actionConfiguration: IConfigurableActionConfiguration) => void;  
   onItemEvaluation?: (item: ISidebarMenuItem) => void;
 }
 
 // Note: Have to use function instead of react control. It's a known issue, you can only pass MenuItem or MenuGroup as Menu's children. See https://github.com/ant-design/ant-design/issues/4853
 export const renderSidebarMenuItem = ({ item, isItemVisible, onButtonClick, isRootItem, onItemEvaluation }: IProps) => {
-  const { id: key, title, icon, itemType } = item;
+  const { id, title, icon, itemType } = item;
 
   if (typeof isItemVisible === 'function' && !isItemVisible(item)) return null;
 
@@ -63,15 +64,17 @@ export const renderSidebarMenuItem = ({ item, isItemVisible, onButtonClick, isRo
     ? item.childItems?.map((item) => renderSidebarMenuItem({ item, onButtonClick, isItemVisible, onItemEvaluation }))
     : null;
   const hasChildren = Array.isArray(children) && children.length > 0;
+  
+  const actionConfiguration = isSidebarButton(item) ? item.actionConfiguration : undefined;
 
   const itemEvaluationArguments: IGetItemArgs = {
     label: title,
-    key,
+    key: id,
     icon: getIcon(icon, hasChildren, isRootItem),
     children: children,
     isParent: hasChildren,
     itemType,
-    onClick: isSidebarButton(item) ? () => onButtonClick(item) : undefined,
+    onClick: actionConfiguration ? () => onButtonClick(id, actionConfiguration) : undefined,
   };
   if (onItemEvaluation)
     onItemEvaluation(item);

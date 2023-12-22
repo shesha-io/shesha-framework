@@ -1,32 +1,46 @@
-import React, { FC, useReducer, useContext, useEffect, useMemo, useRef, useState, PropsWithChildren } from 'react';
-import { SubFormActionsContext, SubFormContext, SUB_FORM_CONTEXT_INITIAL_STATE } from './contexts';
-import { subFormReducer } from './reducer';
-import { ISubFormProviderProps } from './interfaces';
+import * as RestfulShesha from '@/utils/fetchers';
+import React, {
+  FC,
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState
+  } from 'react';
 import { ColProps, message, notification } from 'antd';
-import { useDebouncedCallback } from 'use-debounce';
 import {
-  IAnyObject,
   componentsFlatStructureToTree,
   componentsTreeToFlatStructure,
   executeScript,
-  upgradeComponents,
-  useAppConfigurator,
-  useSheshaApplication,
-} from '@/providers/..';
+  upgradeComponents
+  } from '@/providers/form/utils';
+import { DEFAULT_FORM_SETTINGS } from '../form/models';
 import { EntitiesGetQueryParams } from '@/apis/entities';
-import { useModelApiHelper } from '@/components/configurableForm/useActionEndpoint';
-import { GetDataError, useDeepCompareMemoKeepReference, useMutate, usePubSub } from '../../hooks';
-import { StandardEntityActions } from '@/interfaces/metadata';
-import { EntityAjaxResponse } from '@/pages/dynamic/interfaces';
-import { useFormDesignerComponents } from '@/providers/form/hooks';
-import * as RestfulShesha from '@/utils/fetchers';
+import { EntityAjaxResponse } from '@/generic-pages/dynamic/interfaces';
+import {
+  GetDataError,
+  useDeepCompareMemoKeepReference,
+  useMutate,
+  usePubSub
+  } from '@/hooks';
 import { getQueryParams, QueryStringParams } from '@/utils/url';
+import { IAnyObject } from '@/interfaces';
+import { ISubFormProviderProps } from './interfaces';
+import { StandardEntityActions } from '@/interfaces/metadata';
+import { SUB_FORM_CONTEXT_INITIAL_STATE, SubFormActionsContext, SubFormContext } from './contexts';
+import { subFormReducer } from './reducer';
+import { useAppConfigurator, useSheshaApplication } from '@/providers';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
+import { useDebouncedCallback } from 'use-debounce';
+import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useForm } from '@/providers/form';
 import { UseFormConfigurationArgs } from '../form/api';
-import { DEFAULT_FORM_SETTINGS } from '../form/models';
+import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { useGlobalState } from '@/providers/globalState';
+import { useModelApiHelper } from '@/components/configurableForm/useActionEndpoint';
 import {
   IPersistedFormPropsWithComponents,
   fetchDataErrorAction,
@@ -34,7 +48,6 @@ import {
   fetchDataSuccessAction,
   setMarkupWithSettingsAction,
 } from './actions';
-import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 
 interface IFormLoadingState {
   isLoading: boolean;

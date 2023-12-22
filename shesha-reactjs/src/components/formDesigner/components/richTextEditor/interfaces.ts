@@ -1,5 +1,5 @@
 import { IJoditEditorProps } from 'jodit-react';
-import { IConfigurableFormComponent } from '../../../../interfaces';
+import { IConfigurableFormComponent } from '@/interfaces';
 
 export interface IRichTextEditorProps extends IConfigurableFormComponent {
   placeholder?: string;

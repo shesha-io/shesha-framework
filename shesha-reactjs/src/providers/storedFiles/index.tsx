@@ -4,7 +4,7 @@ import { IAjaxResponse } from '@/interfaces';
 import qs from 'qs';
 import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
 import { useDeleteFileById } from '@/apis/storedFile';
-import { useApplicationConfiguration, useGet, useMutate } from '../../hooks';
+import { useApplicationConfiguration, useGet, useMutate } from '@/hooks';
 import { IApiEndpoint } from '@/interfaces/metadata';
 import { useDelayedUpdate } from '@/providers/delayedUpdateProvider';
 import { STORED_FILES_DELAYED_UPDATE } from '@/providers/delayedUpdateProvider/models';

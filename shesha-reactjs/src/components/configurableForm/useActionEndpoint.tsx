@@ -1,10 +1,10 @@
 import { DataTypes } from '@/interfaces/dataTypes';
-import { useState } from 'react';
-import { useDeepCompareEffect } from 'react-use';
-import { IMatchData, removeZeroWidthCharsFromString, useMetadataDispatcher } from '@/components/..';
+import { evaluateComplexString, IMatchData, removeZeroWidthCharsFromString } from '@/providers/form/utils';
 import { IApiEndpoint, isEntityMetadata, StandardEntityActions } from '@/interfaces/metadata';
 import { IFormSettings } from '@/providers/form/models';
-import { evaluateComplexString } from '@/providers/form/utils';
+import { useMetadataDispatcher } from '@/providers';
+import { useDeepCompareEffect } from 'react-use';
+import { useState } from 'react';
 
 export interface GetDefaultActionUrlPayload {
   actionName: string;

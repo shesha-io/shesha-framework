@@ -1,6 +1,6 @@
 import React, { CSSProperties, FC, useEffect, useMemo, useRef, useState } from 'react';
 import { Select, Tooltip } from 'antd';
-import { useQueryBuilder } from '../../providers';
+import { useQueryBuilder } from '@/providers';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { IModelMetadata, IPropertyMetadata, isEntityMetadata, ISpecification, metadataHasNestedProperties } from '@/interfaces/metadata';
 import camelcase from 'camelcase';

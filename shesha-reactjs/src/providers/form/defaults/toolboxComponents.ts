@@ -89,7 +89,7 @@ import TextAreaComponent from '@/designer-components/textArea/textArea';
 import TextFieldComponent from '@/designer-components/textField/textField';
 import { TimeFieldComponent } from '@/designer-components/timeField';
 import { IToolboxComponentGroup } from '@/interfaces/formDesigner';
-import { ComponentSelectorComponent } from '../../../designer-components';
+import { ComponentSelectorComponent } from '@/designer-components';
 import EditModeSelectorComponent from '@/designer-components/editModeSelector/editModeSelector';
 
 export const ToolboxComponents: IToolboxComponentGroup[] = [

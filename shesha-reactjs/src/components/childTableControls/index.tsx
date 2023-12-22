@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { DownloadOutlined, FilterOutlined, ReloadOutlined, SlidersOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
-import { useDataTable } from '../../providers';
+import { useDataTable } from '@/providers';
 import GlobalTableFilter from '@/components/globalTableFilter';
 import TablePager from '@/components/tablePager';
 import { IToolbarItem } from '@/interfaces/toolbar';

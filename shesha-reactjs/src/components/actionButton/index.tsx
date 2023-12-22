@@ -1,6 +1,6 @@
 import { Button, Popconfirm, Popover } from 'antd';
 import React, { FC } from 'react';
-import { IErrorInfo } from '../../interfaces/errorInfo';
+import { IErrorInfo } from '@/interfaces/errorInfo';
 
 export interface IActionButtonProps {
   title: string;

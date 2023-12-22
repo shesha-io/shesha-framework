@@ -1,6 +1,6 @@
 import { CheckCircleOutlined, EditOutlined } from '@ant-design/icons';
 import React, { FC } from 'react';
-import { useAppConfigurator } from '../../providers';
+import { useAppConfigurator } from '@/providers';
 import SwitchToEditModeConfirmation from './switchToEditModeConfirmation';
 import SwitchToLiveModeConfirmation from './switchToLiveModeConfirmation';
 import { Button } from 'antd';

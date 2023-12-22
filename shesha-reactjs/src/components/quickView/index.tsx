@@ -2,7 +2,7 @@ import { Button, Form, Popover, PopoverProps, Spin, notification } from 'antd';
 import { entitiesGet } from '@/apis/entities';
 import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { ConfigurableForm } from '@/components/';
-import { FormItemProvider, FormMarkupWithSettings, useSheshaApplication, useUi } from '../../providers';
+import { FormItemProvider, FormMarkupWithSettings, useSheshaApplication, useUi } from '@/providers';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import { useFormConfiguration } from '@/providers/form/api';
 import { FormIdentifier } from '@/providers/form/models';

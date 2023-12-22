@@ -9,7 +9,7 @@ import { Show } from '@/components/show';
 import classNames from 'classnames';
 import CustomErrorBoundary from '@/components/customErrorBoundary';
 import { useFormDesigner } from '@/providers/formDesigner';
-import { IConfigurableFormComponent } from '../../../interfaces';
+import { IConfigurableFormComponent } from '@/interfaces';
 import { EditMode, useMetadata } from '@/providers';
 import { getActualPropertyValue, useApplicationContext } from '@/index';
 import { isPropertySettings } from '@/designer-components/_settings/utils';

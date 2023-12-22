@@ -7,7 +7,7 @@ import {
   FileAddOutlined,
 } from '@ant-design/icons';
 import { useShaRouting } from '@/providers/shaRouting';
-import { useModelConfigurator } from '../../../providers';
+import { useModelConfigurator } from '@/providers';
 
 export interface IProps { }
 

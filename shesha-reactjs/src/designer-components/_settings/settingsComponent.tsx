@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
-import { IToolboxComponent } from '../../interfaces';
+import { IToolboxComponent } from '@/interfaces';
 import { SettingOutlined } from '@ant-design/icons';
-import { IConfigurableFormComponent, useForm } from '../../providers';
+import { IConfigurableFormComponent, useForm } from '@/providers';
 import { ComponentsContainer, ConfigurableFormItem } from '@/components';
 import { DataContextProvider } from '@/providers/dataContextProvider';
 import { Button } from 'antd';

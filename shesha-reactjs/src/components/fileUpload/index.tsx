@@ -1,5 +1,5 @@
 import React, { FC, useRef } from 'react';
-import { useStoredFile } from '../../providers';
+import { useStoredFile } from '@/providers';
 import { Upload, message, Button } from 'antd';
 import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
 import {

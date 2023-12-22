@@ -2,7 +2,7 @@ import React from 'react';
 import { Story } from '@storybook/react';
 import GlobalStateProvider, { useGlobalState } from '.';
 import { Button, notification, Space } from 'antd';
-import { IConfigurableFormProps } from '../../components';
+import { IConfigurableFormProps } from '@/components';
 import { addStory } from '@/stories/utils';
 import StoryApp from '@/components/storyBookApp';
 

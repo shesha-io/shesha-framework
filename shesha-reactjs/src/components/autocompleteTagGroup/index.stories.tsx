@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Story } from '@storybook/react';
-import AutocompleteTagGroup, { IAutocompleteTagGroupProps } from './';
-import { GlobalStateProvider, ShaApplicationProvider } from '@/components/..';
 import AuthContainer from '@/components/authedContainer';
+import AutocompleteTagGroup, { IAutocompleteTagGroupProps } from './';
+import React, { useState } from 'react';
+import { GlobalStateProvider, ShaApplicationProvider } from '@/providers';
+import { Story } from '@storybook/react';
 
 export default {
   title: 'Components/AutocompleteTagGroup',

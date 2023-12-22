@@ -1,5 +1,5 @@
 import { IListComponentProps } from "../models";
-import { SettingsMigrationContext } from "@/interfaces/formDesigner";
+import { SettingsMigrationContext } from "@/interfaces";
 import { IButtonGroupItem, IButtonItem } from "@/providers/buttonGroupConfigurator/models";
 import { upgradeActionConfig } from '../../_common-migrations/upgrade-action-owners';
 

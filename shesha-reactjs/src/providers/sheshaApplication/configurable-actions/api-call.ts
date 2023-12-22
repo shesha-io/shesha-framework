@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import { useSheshaApplication } from "@/providers/..";
+import { useSheshaApplication } from "@/providers";
 import { DesignerToolbarSettings } from "@/interfaces/toolbarSettings";
 import { SheshaActionOwners } from "../../configurableActionsDispatcher/models";
 import axios, { Method } from 'axios';

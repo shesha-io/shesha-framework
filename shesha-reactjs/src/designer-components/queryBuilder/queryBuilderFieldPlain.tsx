@@ -1,5 +1,5 @@
 import { Alert, Typography } from 'antd';
-import { useForm, useQueryBuilder } from '../../providers';
+import { useForm, useQueryBuilder } from '@/providers';
 import React, { FC } from 'react';
 import { IQueryBuilderProps } from './models';
 import QueryBuilderPlain from './queryBuilderPlain';

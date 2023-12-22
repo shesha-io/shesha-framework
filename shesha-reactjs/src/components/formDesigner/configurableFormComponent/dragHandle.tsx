@@ -1,6 +1,6 @@
 import React, { FC, MutableRefObject, useEffect, useState } from 'react';
 import { useForm } from '@/providers/form';
-import { useMetadata } from '../../../providers';
+import { useMetadata } from '@/providers';
 import { Tooltip } from 'antd';
 import { useFormDesigner } from '@/providers/formDesigner';
 import { useDataContext } from '@/providers/dataContextProvider';

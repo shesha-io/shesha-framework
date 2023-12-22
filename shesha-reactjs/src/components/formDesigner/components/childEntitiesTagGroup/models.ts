@@ -1,4 +1,4 @@
-import { FormFullName, IConfigurableFormComponent } from '../../../../providers';
+import { FormFullName, IConfigurableFormComponent } from '@/providers';
 
 export interface IChildEntitiesTagGroupProps extends IConfigurableFormComponent {
   capturedProperties?: string[];

@@ -1,5 +1,5 @@
 import React, { FC, CSSProperties } from 'react';
-import { useNotes } from '../../providers';
+import { useNotes } from '@/providers';
 import NotesRendererBase from '@/components/notesRendererBase';
 
 export interface INotesRendererProps {

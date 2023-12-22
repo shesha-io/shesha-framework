@@ -5,7 +5,7 @@ import { useForm } from '@/providers/form';
 import { getFieldNameFromExpression, getValidationRules } from '@/providers/form/utils';
 import classNames from 'classnames';
 import './styles.less';
-import { useFormItem } from '../../../providers';
+import { useFormItem } from '@/providers';
 import { DataBinder } from '@/hocs/dataBinder';
 import { useDataContextManager } from '@/providers/dataContextManager';
 

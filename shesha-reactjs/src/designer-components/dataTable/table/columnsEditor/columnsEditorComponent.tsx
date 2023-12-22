@@ -2,7 +2,7 @@ import { ColumnWidthOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import React, { FC, Fragment, useState } from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { IToolboxComponent } from '../../../../interfaces';
+import { IToolboxComponent } from '@/interfaces';
 import { ColumnsItemProps } from '@/providers/datatableColumnsConfigurator/models';
 import { ColumnsEditorModal } from './columnsEditorModal';
 import { IColumnsEditorComponentProps } from './interfaces';

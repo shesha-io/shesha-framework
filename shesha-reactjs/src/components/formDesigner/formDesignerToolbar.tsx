@@ -1,5 +1,20 @@
+import FormSettingsEditor from './formSettingsEditor';
 import React, { FC, useState } from 'react';
-import { Button, Dropdown, MenuProps, message, Modal } from 'antd';
+import {
+  Button,
+  Dropdown,
+  MenuProps,
+  message,
+  Modal
+  } from 'antd';
+import { componentsFlatStructureToTree } from '@/providers/form/utils';
+import { ConfigurationItemVersionStatus } from '@/utils/configurationFramework/models';
+import { FormMarkupWithSettings } from '@/providers/form/models';
+import { useForm } from '@/providers/form';
+import { useFormDesigner } from '@/providers/formDesigner';
+import { useFormDesignerComponents } from '@/providers/form/hooks';
+import { useFormPersister } from '@/providers/formPersisterProvider';
+import { useShaRouting, useSheshaApplication } from '@/providers';
 import {
   SaveOutlined,
   UndoOutlined,
@@ -13,20 +28,11 @@ import {
   CheckCircleOutlined,
   ExclamationCircleOutlined,
 } from '@ant-design/icons';
-import { useForm } from '@/providers/form';
-import { useFormPersister } from '@/providers/formPersisterProvider';
-import { useFormDesigner } from '@/providers/formDesigner';
-import { componentsFlatStructureToTree } from '@/providers/form/utils';
-import { useFormDesignerComponents } from '@/providers/form/hooks';
-import { FormMarkupWithSettings } from '@/providers/form/models';
-import FormSettingsEditor from './formSettingsEditor';
-import { ConfigurationItemVersionStatus } from '@/utils/configurationFramework/models';
 import {
   createNewVersionRequest,
   showErrorDetails,
   updateItemStatus,
 } from '@/utils/configurationFramework/actions';
-import { useShaRouting, useSheshaApplication } from '@/components/..';
 
 type MenuItem = MenuProps['items'][number];
 export interface IProps {}

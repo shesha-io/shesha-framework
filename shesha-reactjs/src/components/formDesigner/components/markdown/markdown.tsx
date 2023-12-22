@@ -1,6 +1,6 @@
 import { Alert, Skeleton } from 'antd';
 import React, { FC, lazy } from 'react';
-import { useFormData, useGlobalState, useSubForm } from '../../../../providers';
+import { useFormData, useGlobalState, useSubForm } from '@/providers';
 import { useForm } from '@/providers/form';
 import { evaluateString, getStyle } from '@/providers/form/utils';
 import { IMarkdownProps } from './interfaces';

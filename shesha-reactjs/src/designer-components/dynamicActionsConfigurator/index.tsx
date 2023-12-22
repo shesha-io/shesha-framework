@@ -1,12 +1,12 @@
 import React from 'react';
+import { configurableActionsConfiguratorSettingsForm } from './settings';
+import { DynamicActionsConfigurator } from './configurator';
+import { Form } from 'antd';
+import { IDynamicActionsConfiguratorComponentProps } from './interfaces';
 import { IToolboxComponent } from '@/interfaces';
 import { ThunderboltOutlined } from '@ant-design/icons';
-import { Form } from 'antd';
 import { useForm } from '@/providers';
-import { validateConfigurableComponentSettings } from '@/designer-components/..';
-import { configurableActionsConfiguratorSettingsForm } from './settings';
-import { IDynamicActionsConfiguratorComponentProps } from './interfaces';
-import { DynamicActionsConfigurator } from './configurator';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 
 export const DynamicActionsConfiguratorComponent: IToolboxComponent<IDynamicActionsConfiguratorComponentProps> = {
   type: 'dynamicItemsConfigurator',

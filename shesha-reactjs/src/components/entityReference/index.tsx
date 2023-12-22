@@ -1,24 +1,34 @@
-import { Button, message, notification, Spin } from 'antd';
 import moment from 'moment';
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import React, {
+  FC,
+  useEffect,
+  useMemo,
+  useState
+  } from 'react';
+import { axiosHttp, get } from '@/utils/fetchers';
+import {
+  Button,
+  message,
+  notification,
+  Spin
+  } from 'antd';
+import { entitiesGet } from '@/apis/entities';
+import { GenericQuickView } from '@/components/quickView';
+import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
+import { IKeyValue } from '@/interfaces/keyValue';
+import { ShaLink, ValidationErrors } from '@/components';
+import { StandardNodeTypes } from '@/interfaces/formComponent';
+import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
+import './styles/index.less';
 import {
   FormIdentifier,
-  ShaLink,
+
   useConfigurableActionDispatcher,
   useForm,
   useGlobalState,
   useMetadataDispatcher,
   useSheshaApplication,
-  ValidationErrors,
-} from '@/components/..';
-import { entitiesGet } from '@/apis/entities';
-import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
-import { IKeyValue } from '@/interfaces/keyValue';
-import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
-import { get, axiosHttp } from '@/utils/fetchers';
-import { GenericQuickView } from '@/components/quickView';
-import './styles/index.less';
-import { StandardNodeTypes } from '@/interfaces/formComponent';
+} from '@/providers';
 
 export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
 

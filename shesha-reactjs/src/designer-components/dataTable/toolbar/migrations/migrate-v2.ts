@@ -1,5 +1,5 @@
 import { IToolbarButton, IToolbarProps } from "./models";
-import { SettingsMigrationContext } from "@/interfaces/formDesigner";
+import { SettingsMigrationContext } from "@/interfaces";
 import { upgradeActionConfig } from '@/components/formDesigner/components/_common-migrations/upgrade-action-owners';
 
 export const migrateV1toV2 = (props: IToolbarProps, context: SettingsMigrationContext): IToolbarProps => {

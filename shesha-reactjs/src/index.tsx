@@ -8,14 +8,14 @@ export * from './interfaces';
 export * from './providers';
 export * from './shesha-constants';
 export * from './utils';
-export { GetProps, MutateProps, get, mutate } from './utils/fetchers';
+export { type GetProps, type MutateProps, get, mutate } from './utils/fetchers';
 export * from './utils/publicUtils';
 
 export { removeZeroWidthCharsFromString } from './providers/form/utils';
 export { requestHeaders } from './utils/requestHeaders';
 
-export { default as DynamicPage } from './pages/dynamic';
-export { default as EntityConfiguratorPage } from './pages/entity-config/configurator';
-export { default as FormsDesignerPage } from './pages/forms-designer';
-export { default as SettingsPage } from './pages/settings-editor';
-export { default as ConfigurableThemePage } from './pages/settings/dynamic-theme';
+export { DynamicPage } from './generic-pages/dynamic';
+export { EntityConfiguratorPage } from './generic-pages/entity-config/configurator';
+export { FormsDesignerPage } from './generic-pages/forms-designer';
+export { SettingsPage } from './generic-pages/settings-editor';
+export { ConfigurableThemePage } from './generic-pages/settings/dynamic-theme';

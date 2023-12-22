@@ -4,9 +4,9 @@ import { Avatar, Dropdown, Input, MenuProps, Space } from 'antd';
 import { DownOutlined, LoginOutlined, UserOutlined } from '@ant-design/icons';
 import { useAuth } from '@/providers/auth';
 import ShaLink from '@/components/shaLink';
-import { ProtectedContent, AppEditModeToggler, ConfigurableLogo } from '@/components/';
-import { PERM_APP_CONFIGURATOR } from '../../shesha-constants';
-import { useSidebarMenu } from '../../providers';
+import { ProtectedContent, AppEditModeToggler, ConfigurableLogo } from '@/components';
+import { PERM_APP_CONFIGURATOR } from '@/shesha-constants';
+import { useSidebarMenu } from '@/providers';
 import ConfigurationItemViewModeToggler from '../appConfigurator/configurationItemViewModeToggler';
 
 const { Search } = Input;

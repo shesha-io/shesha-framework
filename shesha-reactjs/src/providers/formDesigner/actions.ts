@@ -1,5 +1,5 @@
 import { createAction } from 'redux-actions';
-import { IFormValidationErrors, IToolboxComponentGroup } from '../../interfaces';
+import { IFormValidationErrors, IToolboxComponentGroup } from '@/interfaces';
 import { IFlatComponentsStructure, IFormSettings } from '../form/models';
 import { IDataSource } from '../formDesigner/models';
 import {

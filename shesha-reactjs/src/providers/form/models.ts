@@ -2,7 +2,7 @@ import { ColProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { FormLayout } from 'antd/lib/form/Form';
 import { ReactNode } from 'react';
-import { IAsyncValidationError } from '../../interfaces';
+import { IAsyncValidationError } from '@/interfaces';
 import { IKeyValue } from '@/interfaces/keyValue';
 import { IHasVersion } from '@/utils/fluentMigrator/migrator';
 

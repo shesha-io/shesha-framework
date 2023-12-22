@@ -1,5 +1,5 @@
 import { IAceOptions } from 'react-ace';
-import { IConfigurableFormComponent } from '../../../../interfaces';
+import { IConfigurableFormComponent } from '@/interfaces';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { EditorModes } from './types';
 

@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useMemo, useRef } from 'react';
 import { Alert } from 'antd';
-import { DataList } from '../../../dataList';
+import { DataList } from '@/components/dataList';
 import ConfigurableFormItem from '../formItem';
 import classNames from 'classnames';
 import moment from 'moment';

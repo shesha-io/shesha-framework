@@ -1,5 +1,5 @@
 import React, { FC, PropsWithChildren } from 'react';
-import { IConfigurableFormComponent } from '../../../../interfaces';
+import { IConfigurableFormComponent } from '@/interfaces';
 import DynamicComponent from './dynamicComponent';
 
 export type Direction = 'horizontal' | 'vertical';

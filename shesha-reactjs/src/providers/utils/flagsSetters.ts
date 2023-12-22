@@ -1,6 +1,6 @@
 import { createAction } from 'redux-actions';
-import { IFlagsSetters, IFlagsState } from '@/providers/..';
-import { FlagsActionTypes } from '../../enums';
+import { FlagsActionTypes } from '@/enums';
+import { IFlagsSetters, IFlagsState } from '@/interfaces';
 
 export function getFlagSetters<A extends string, B extends string, C extends string, D extends string>(
   dispatch: (action: any) => void

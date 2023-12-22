@@ -1,5 +1,5 @@
 import { createAction } from 'redux-actions';
-import { IFormValidationErrors } from '../../interfaces';
+import { IFormValidationErrors } from '@/interfaces';
 import {
   IRegisterActionsPayload,
   ISetEnabledComponentsPayload,

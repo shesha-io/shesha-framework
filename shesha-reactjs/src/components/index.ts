@@ -61,7 +61,7 @@ export { default as IndexTableFull, type IIndexTableFullProps } from './indexTab
 export { default as IndexToolbar, type IIndexToolbarProps } from './indexToolbar';
 export { default as LayoutHeading, type ILayoutHeadingProps } from './layoutHeading';
 export { default as MainLayout, type IMainLayoutProps } from './mainLayout';
-export { default as NodeOrFuncRenderer, ReactNodeOrFunc } from './nodeOrFuncRenderer';
+export { default as NodeOrFuncRenderer, type ReactNodeOrFunc } from './nodeOrFuncRenderer';
 export { default as NotAuthorized, type INotAuthorizedProps } from './notAuthorized';
 export { default as NotesRenderer, type INotesRendererProps } from './notesRenderer';
 export { default as NotesRendererBase, type INotesRendererBaseProps } from './notesRendererBase';
@@ -75,7 +75,7 @@ export { default as SectionSeparator, type ISectionSeparatorProps } from './sect
 export { default as ShaDivider } from './shaDivider';
 export { default as ShaLink, type IShaLinkProps } from './shaLink';
 export { default as ShaSpin, type IShaSpin } from './shaSpin';
-export { default as SidebarMenu, type ISidebarMenuProps } from './sidebarMenu';
+export { SidebarMenu, type ISidebarMenuProps } from './sidebarMenu';
 export { default as StoredFilesRenderer, type IStoredFilesRendererProps } from './storedFilesRenderer';
 export { default as StoredFilesRendererBase, type IStoredFilesRendererBaseProps } from './storedFilesRendererBase';
 export { default as TableControls } from './tableControls';
@@ -86,7 +86,7 @@ export { default as ValidationErrors, type IValidationErrorsProps } from './vali
 export { default as ShaIcon, type IShaIconProps, type IconType } from './shaIcon';
 export { default as IconPicker, type IIconPickerProps } from './iconPicker';
 export {
-  default as AppEditModeToggler,
+  AppEditModeToggler,
   type IAppEditModeTogglerProps as IEditModeTogglerProps,
 } from './appConfigurator/editModeToggler'; // todo: convert to subtype
 export { default as ConfigurableComponent } from './appConfigurator/configurableComponent'; // todo: convert to subtype
@@ -100,7 +100,7 @@ export { default as Show, type IShowProps } from './show';
 export { default as CodeEditor } from './formDesigner/components/codeEditor/codeEditor';
 export { default as ModelConfigurator } from './modelConfigurator';
 
-export { ConfigurableApplicationComponent, IConfigurableApplicationComponentProps } from './configurableComponent';
+export { ConfigurableApplicationComponent, type IConfigurableApplicationComponentProps } from './configurableComponent';
 
 export {
   //default as GenericRefListDropDown,

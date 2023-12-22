@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { IFormComponent } from '../../interfaces';
+import { IFormComponent } from '@/interfaces';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Tooltip, Form } from 'antd';
 import FormComponentStringDisplay from './formComponentStringDisplay';

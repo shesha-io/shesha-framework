@@ -1,11 +1,11 @@
 import React from 'react';
-import { IToolboxComponent } from '../../../../interfaces';
+import { IToolboxComponent } from '@/interfaces';
 import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
 import ConfigurableFormItem from '../formItem';
 import settingsFormJson from './settingsForm.json';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { FileOutlined } from '@ant-design/icons';
-import { useFormData } from '../../../../providers';
+import { useFormData } from '@/providers';
 import _ from 'lodash';
 
 export interface IBasicDisplayFormItemProps extends IConfigurableFormComponent {}

@@ -1,9 +1,9 @@
-import React from 'react';
-import { Story } from '@storybook/react';
-import PermissionedObjectsTree from '.';
-import { GlobalStateProvider, ShaApplicationProvider } from '@/components/..';
 import AuthContainer from '@/components/authedContainer';
+import PermissionedObjectsTree from '.';
+import React from 'react';
 import { addStory } from '@/stories/utils';
+import { GlobalStateProvider, ShaApplicationProvider } from '@/providers';
+import { Story } from '@storybook/react';
 import './index.less';
 
 export default {

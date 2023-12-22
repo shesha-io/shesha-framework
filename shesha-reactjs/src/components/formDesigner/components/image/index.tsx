@@ -5,7 +5,7 @@ import ConfigurableFormItem from '../formItem';
 import settingsFormJson from './settingsForm.json';
 import { getString, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import React from 'react';
-import { StoredFileProvider, useForm, useFormData, useSheshaApplication } from '../../../../providers';
+import { StoredFileProvider, useForm, useFormData, useSheshaApplication } from '@/providers';
 import {
   migrateCustomFunctions,
   migratePropertyName,

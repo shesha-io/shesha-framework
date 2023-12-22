@@ -1,18 +1,18 @@
-import React from 'react';
-import { IToolboxComponent } from '../../../../interfaces';
-import { BorderOutlined } from '@ant-design/icons';
-import ConfigurableFormItem from '../formItem';
-import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import ConfigurableButton from './configurableButton';
-import { useSheshaApplication, useForm, useFormData } from '../../../../providers';
-import { IButtonGroupItemBaseV0, migrateV0toV1 } from './migrations/migrate-v1';
-import { migrateV1toV2 } from './migrations/migrate-v2';
+import ConfigurableFormItem from '../formItem';
+import React from 'react';
+import { BorderOutlined } from '@ant-design/icons';
 import { getSettings } from './settingsForm';
+import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IButtonComponentProps } from './interfaces';
-import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
-import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
+import { IButtonGroupItemBaseV0, migrateV0toV1 } from './migrations/migrate-v1';
+import { IToolboxComponent } from '@/interfaces';
 import { makeDefaultActionConfiguration } from '@/interfaces/configurableAction';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
+import { migrateV1toV2 } from './migrations/migrate-v2';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { useForm, useFormData, useSheshaApplication } from '@/providers';
 
 export type IActionParameters = [{ key: string; value: string }];
 

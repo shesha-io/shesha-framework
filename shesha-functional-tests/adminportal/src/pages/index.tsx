@@ -9,6 +9,7 @@ const StyledAlert = styled(Alert)`
 `;
 
 const Home: React.FC = () => {
+  console.log('LOG: test');
   return (
     <MainLayout title="Dashboard">
       <CollapsiblePanel header="Plugins">

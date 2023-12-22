@@ -1,7 +1,7 @@
 import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
 import { AutoComplete, Button, Input, Select, Tag } from 'antd';
 import { ThunderboltOutlined } from '@ant-design/icons';
-import { useForm, useMetadata, useMetadataDispatcher } from '../../providers';
+import { useForm, useMetadata, useMetadataDispatcher } from '@/providers';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { camelCase } from 'lodash';
 import { IPropertyMetadata } from '@/interfaces/metadata';

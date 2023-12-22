@@ -1,5 +1,5 @@
 import { ColProps } from 'antd';
-import { FormMarkupWithSettings, IChangeable, IValuable } from '../../interfaces';
+import { FormMarkupWithSettings, IChangeable, IValuable } from '@/interfaces';
 import { FormIdentifier } from '../form/models';
 
 export interface ISubFormProviderProps extends IValuable, IChangeable {

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
+import { ConfigurableForm } from '@/components';
+import { ConfigurableFormInstance } from '@/interfaces';
 import { Form } from 'antd';
-import { ConfigurableForm, ConfigurableFormInstance } from '@/designer-components/..';
 import { FormMarkup } from '@/providers/form/models';
 import { IConfigurableActionArguments } from '@/interfaces/configurableAction';
 

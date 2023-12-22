@@ -1,16 +1,16 @@
 import { message } from 'antd';
 import moment from 'moment';
 import React from 'react';
-import { IconType, ShaIcon } from '../../../components';
+import { IconType, ShaIcon } from '@/components';
 import {
   useConfigurableActionDispatcher,
   useDataTable,
   useForm,
   useGlobalState,
   useSheshaApplication,
-} from '../../../providers';
+} from '@/providers';
 import { ITableActionColumn } from '@/providers/dataTable/interfaces';
-import { MODAL_DATA } from '../../../shesha-constants';
+import { MODAL_DATA } from '@/shesha-constants';
 import { axiosHttp } from '@/utils/fetchers';
 import { ICommonCellProps } from './interfaces';
 

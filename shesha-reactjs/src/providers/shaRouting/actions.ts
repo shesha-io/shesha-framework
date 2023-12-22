@@ -1,5 +1,5 @@
 import { createAction } from 'redux-actions';
-import { IRoute } from '@/providers/..';
+import { IRoute } from '@/interfaces';
 
 export enum RouteActionEnums {
   GoingToRoute = 'GOING_TO_ROUTE',

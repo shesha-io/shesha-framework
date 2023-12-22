@@ -1,16 +1,21 @@
-import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
-import { useSheshaApplication } from '@/providers/..';
-import { ISidebarMenuItem, isSidebarGroup } from '@/interfaces/sidebar';
+import React, {
+  FC,
+  PropsWithChildren,
+  useContext,
+  useReducer
+  } from 'react';
+import SidebarMenuReducer from './reducer';
 import { getFlagSetters } from '../utils/flagsSetters';
+import { IHeaderAction } from './models';
+import { ISidebarMenuItem, isSidebarGroup } from '@/interfaces/sidebar';
 import { toggleSidebarAction } from './actions';
+import { useSheshaApplication } from '@/providers';
 import {
   SIDEBAR_MENU_CONTEXT_INITIAL_STATE,
   SidebarMenuActionsContext,
   SidebarMenuDefaultsContext,
   SidebarMenuStateContext,
 } from './contexts';
-import { IHeaderAction } from './models';
-import SidebarMenuReducer from './reducer';
 
 export interface ISidebarMenuProviderProps {
   items: ISidebarMenuItem[];

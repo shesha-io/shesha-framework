@@ -1,11 +1,11 @@
-import { SettingsMigrationContext } from "@/designer-components/..";
-import { IConfigurableActionConfiguration } from "@/interfaces/configurableAction";
-import { IKeyValue } from "@/interfaces/keyValue";
-import { FormIdentifier } from "@/providers/form/models";
-import { getClosestTableId } from "@/providers/form/utils";
-import { ToolbarItemProps, IToolbarProps } from "./models";
-import { IConfigurableFormComponent } from "../../../../interfaces";
 import { ButtonType } from 'antd/lib/button';
+import { FormIdentifier } from '@/providers/form/models';
+import { getClosestTableId } from '@/providers/form/utils';
+import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
+import { IConfigurableFormComponent } from '@/interfaces';
+import { IKeyValue } from '@/interfaces/keyValue';
+import { IToolbarProps, ToolbarItemProps } from './models';
+import { SettingsMigrationContext } from '@/interfaces';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 interface IShowModalActionArguments {

@@ -1,6 +1,6 @@
 import { MutableRefObject, ReactNode } from 'react';
 import { CellProps, Column, Row } from 'react-table';
-import { IAnyObject } from '../../interfaces';
+import { IAnyObject } from '@/interfaces';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { ProperyDataType } from '@/interfaces/metadata';
 import { DataTableFullInstance } from '@/providers/dataTable/contexts';

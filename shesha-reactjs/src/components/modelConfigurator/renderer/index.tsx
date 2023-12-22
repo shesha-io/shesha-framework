@@ -1,13 +1,13 @@
-import React, { FC } from 'react';
-import modelSettingsMarkup from '../modelSettings.json';
-import { CustomErrorBoundary } from '../..';
 import ConfigurableForm from '@/components/configurableForm';
+import modelSettingsMarkup from '../modelSettings.json';
+import React, { FC } from 'react';
+import { CustomErrorBoundary } from '../..';
 import { FormMarkup } from '@/providers/form/models';
-import { PropertiesEditorComponent } from '../propertiesEditor';
-import { ModelConfiguratorToolbar } from '../toolbar';
-import { useModelConfigurator } from '@/components/..';
 import { message } from 'antd';
+import { ModelConfiguratorToolbar } from '../toolbar';
 import { PermissionEditorComponent } from '../permissionEditor';
+import { PropertiesEditorComponent } from '../propertiesEditor';
+import { useModelConfigurator } from '@/providers';
 import { ViewsEditorComponent } from '../viewsEditor';
 
 export interface IModelConfiguratorRendererProps {}

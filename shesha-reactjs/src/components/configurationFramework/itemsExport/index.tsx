@@ -1,14 +1,22 @@
-import React, { useState, useEffect, MutableRefObject } from 'react';
-import { FC } from 'react';
-import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '@/interfaces/gql';
-import { GENERIC_ENTITIES_ENDPOINT, LEGACY_ITEMS_MODULE_NAME } from '../../../shesha-constants';
-import { Form, Select, Skeleton, Spin, Switch } from 'antd';
-import axios from 'axios';
-import { useSheshaApplication } from '@/components/..';
-import FileSaver from 'file-saver';
-import { getFileNameFromResponse } from '@/utils/fetchers';
-import { ConfigurationItemVersionStatus } from '@/utils/configurationFramework/models';
 import * as RestfulShesha from '@/utils/fetchers';
+import axios from 'axios';
+import FileSaver from 'file-saver';
+import React, { MutableRefObject, useEffect, useState } from 'react';
+import { ConfigurationItemVersionStatus } from '@/utils/configurationFramework/models';
+import { FC } from 'react';
+import {
+  Form,
+  Select,
+  Skeleton,
+  Spin,
+  Switch
+  } from 'antd';
+import { GENERIC_ENTITIES_ENDPOINT, LEGACY_ITEMS_MODULE_NAME } from '@/shesha-constants';
+import { getFileNameFromResponse } from '@/utils/fetchers';
+import { getIndexesList } from '../treeUtils';
+import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '@/interfaces/gql';
+import { ItemsTree } from '../itemsTree';
+import { useSheshaApplication } from '@/providers';
 import {
   ConfigurationItemDto,
   IModule,
@@ -17,8 +25,6 @@ import {
   ConfigItemDataNode,
   ITreeState,
 } from '../models';
-import { ItemsTree } from '../itemsTree';
-import { getIndexesList } from '../treeUtils';
 
 export interface IExportInterface {
   exportExecuter: () => Promise<any>;

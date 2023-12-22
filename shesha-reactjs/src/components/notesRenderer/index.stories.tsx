@@ -1,7 +1,7 @@
 import React from 'react';
 import { Story } from '@storybook/react';
 import NotesRenderer, { INotesRendererProps } from './';
-import { NotesProvider } from '../../providers';
+import { NotesProvider } from '@/providers';
 import StoryApp from '@/components/storyBookApp';
 
 export default {

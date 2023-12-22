@@ -6,8 +6,8 @@ import {
   IFormValidationErrors,
   IToolboxComponent,
   IToolboxComponentGroup,
-} from '../../interfaces';
-import { useMetadataDispatcher } from '../../providers';
+} from '@/interfaces';
+import { useMetadataDispatcher } from '@/providers';
 import { UndoableActionCreators } from '@/utils/undoable';
 import { useFormDesignerComponentGroups, useFormDesignerComponents } from '../form/hooks';
 import { IFlatComponentsStructure, IFormSettings } from '../form/models';

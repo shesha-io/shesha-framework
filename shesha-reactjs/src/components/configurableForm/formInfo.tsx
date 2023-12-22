@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { useAppConfigurator, useSheshaApplication } from '../../providers';
+import { useAppConfigurator, useSheshaApplication } from '@/providers';
 import { FormIdentifier, IPersistedFormProps } from '@/providers/form/models';
 import { Card } from 'antd';
 import { CONFIGURATION_ITEM_STATUS_MAPPING } from '@/utils/configurationFramework/models';

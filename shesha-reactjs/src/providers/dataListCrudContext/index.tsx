@@ -4,7 +4,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { RowDataInitializer } from '@/components/reactTable/interfaces';
 import useThunkReducer from '@/hooks/thunkReducer';
 import { IErrorInfo } from '@/interfaces/errorInfo';
-import { FormProvider, useForm } from '../index';
+import { FormProvider, useForm } from '@/providers/index';
 import { IFlatComponentsStructure, IFormSettings } from '@/providers/form/models';
 import {
   deleteFailedAction,

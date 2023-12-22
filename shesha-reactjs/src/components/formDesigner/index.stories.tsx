@@ -117,7 +117,7 @@ export const UserManagement = addStory(DesignerTemplate, {
 //TestModule/ivan-test-form
 export const IvanTestForm = addStory(DesignerTemplate, {
   //formId: 'fc8e3f36-793b-4a30-ab6f-f4dd56bfa3c0'
-  formId: '05DF1A46-B652-4EF1-9BEB-E5DFCD52C689'
+  formId: 'eb66ac3b-42c4-4ff5-a9ea-1d569dcd5e0b'
   //formId: 'f1344d6b-67a5-422a-98a0-4ef6b8c1ef48'  
 });
 export const OldNavigation = addStory(DesignerTemplate, {

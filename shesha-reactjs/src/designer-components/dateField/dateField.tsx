@@ -7,7 +7,7 @@ import { customDateEventHandler } from '@/components/formDesigner/components/uti
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { useForm, useFormData, useGlobalState, useMetadata, useSheshaApplication } from '../../providers';
+import { useForm, useFormData, useGlobalState, useMetadata, useSheshaApplication } from '@/providers';
 import { FormMarkup } from '@/providers/form/models';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { getMoment } from '@/utils/date';

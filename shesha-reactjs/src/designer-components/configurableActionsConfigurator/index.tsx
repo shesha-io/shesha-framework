@@ -1,14 +1,14 @@
 import React from 'react';
-import { IToolboxComponent } from '@/interfaces';
-import { ThunderboltOutlined } from '@ant-design/icons';
-import { Form } from 'antd';
-import { useForm } from '@/providers';
-import { validateConfigurableComponentSettings } from '@/designer-components/..';
-import { configurableActionsConfiguratorSettingsForm } from './settings';
-import { IConfigurableActionConfiguratorComponentProps } from './interfaces';
-import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
 import { ConfigurableActionConfigurator } from './configurator';
+import { configurableActionsConfiguratorSettingsForm } from './settings';
+import { Form } from 'antd';
+import { IConfigurableActionConfiguratorComponentProps } from './interfaces';
+import { IToolboxComponent } from '@/interfaces';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { ThunderboltOutlined } from '@ant-design/icons';
+import { useForm } from '@/providers';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 
 const ConfigurableActionConfiguratorComponent: IToolboxComponent<IConfigurableActionConfiguratorComponentProps> = {
   type: 'configurableActionConfigurator',

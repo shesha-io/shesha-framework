@@ -1,9 +1,11 @@
 import React, { FC } from 'react';
+import { getActualModel, useApplicationContext } from '@/providers/form/utils';
+import { IConfigurableItemBase, IConfigurableItemGroup } from '@/providers/itemListConfigurator/contexts';
+import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { ListItem } from './listItem';
 import { ListItemsGroup } from './listItemsGroup';
-import { ReactSortable, ItemInterface } from 'react-sortablejs';
-import { getActualModel, useApplicationContext, useDeepCompareMemo, useItemListConfigurator } from '@/components/..';
-import { IConfigurableItemBase, IConfigurableItemGroup } from '@/providers/itemListConfigurator/contexts';
+import { useItemListConfigurator } from '@/providers';
+ import { useDeepCompareMemo } from '@/hooks';
 
 export interface IItemListContainerProps {
   index?: number[];

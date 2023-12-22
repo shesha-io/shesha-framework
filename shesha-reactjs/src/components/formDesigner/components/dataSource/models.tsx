@@ -1,4 +1,4 @@
-import { IConfigurableFormComponent } from "../../../../providers";
+import { IConfigurableFormComponent } from "@/providers";
 import { ITableViewProps } from "@/providers/tableViewSelectorConfigurator/models";
 
 export interface IDataSourceComponentProps extends IConfigurableFormComponent {

@@ -1,12 +1,12 @@
-import { SearchOutlined } from '@ant-design/icons';
 import React from 'react';
-import { GlobalTableFilter } from '@/designer-components/..';
-import { IToolboxComponent } from '@/interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import settingsFormJson from './settingsForm.json';
+import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
+import { GlobalTableFilter } from '@/components';
+import { IToolboxComponent } from '@/interfaces';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { SearchOutlined } from '@ant-design/icons';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 
 export interface IQuickSearchComponentProps extends IConfigurableFormComponent {}
 

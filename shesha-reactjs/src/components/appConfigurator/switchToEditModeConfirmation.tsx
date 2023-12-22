@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { Modal } from 'antd';
-import { useAppConfigurator } from '../../providers';
+import { useAppConfigurator } from '@/providers';
 
 export interface IProps {}
 

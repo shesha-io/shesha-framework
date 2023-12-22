@@ -7,7 +7,7 @@ import {
   IComponentsDictionary,
   IConfigurableFormComponent,
   IFormValidationErrors,
-} from '../../interfaces';
+} from '@/interfaces';
 import { DelayedUpdateProvider } from '@/providers/delayedUpdateProvider';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';

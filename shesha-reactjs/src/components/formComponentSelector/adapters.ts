@@ -8,7 +8,7 @@ import NumberComponent from '@/designer-components/numberField/numberField';
 import RefListStatusComponent from '@/designer-components/refListStatus/index';
 import TextFieldComponent from '@/designer-components/textField/textField';
 import { TimeFieldComponent } from '@/designer-components/timeField';
-import { IDictionary } from '../../interfaces';
+import { IDictionary } from '@/interfaces';
 
 /*
 export interface IEditorAdapter<T extends IConfigurableFormComponent = IConfigurableFormComponent> {

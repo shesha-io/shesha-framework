@@ -1,7 +1,7 @@
 import { ProfileOutlined } from '@ant-design/icons';
 import React from 'react';
-import { useFormData } from '../../../../providers';
-import { IToolboxComponent } from '../../../../interfaces';
+import { useFormData } from '@/providers';
+import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { FormMarkup } from '@/providers/form/models';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';

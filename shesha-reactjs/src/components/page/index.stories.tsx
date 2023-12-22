@@ -1,6 +1,6 @@
 import React from 'react';
 import { Story } from '@storybook/react';
-import { SidebarMenuDefaultsProvider } from '../../providers';
+import { SidebarMenuDefaultsProvider } from '@/providers';
 import Page, { IBreadcrumbItem, IPageProps } from './';
 import { ITagProps } from './pageHeaderTag';
 import StoryApp from '@/components/storyBookApp';

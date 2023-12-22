@@ -1,11 +1,11 @@
+import classNames from 'classnames';
+import DragHandle from './dragHandle';
 import React, { FC } from 'react';
+import ShaIcon, { IconType } from '@/components/shaIcon';
 import { Button } from 'antd';
 import { DeleteFilled } from '@ant-design/icons';
-import DragHandle from './dragHandle';
-import ShaIcon, { IconType } from '@/components/shaIcon';
-import classNames from 'classnames';
 import { IConfigurableItemBase, IConfigurableItemGroup } from '@/providers/itemListConfigurator/contexts';
-import { useItemListConfigurator } from '@/components/..';
+import { useItemListConfigurator } from '@/providers';
 
 export interface IContainerRenderArgs {
   index?: number[];

@@ -3,7 +3,7 @@ import { Empty, Form } from 'antd';
 import { ConfigurableForm } from '../../..';
 import { useDebouncedCallback } from 'use-debounce';
 import { ConfigurableFormInstance } from '@/providers/form/contexts';
-import { useItemListConfigurator } from '../../../../providers';
+import { useItemListConfigurator } from '@/providers';
 
 export interface IItemConfigPropertiesProps {}
 

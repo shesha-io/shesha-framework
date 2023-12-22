@@ -3,7 +3,7 @@ import { JsonLogicResult } from '@react-awesome-query-builder/antd';
 import { Button, Collapse, Modal, Space } from 'antd';
 import React, { FC, useState } from 'react';
 import { useMedia } from 'react-use';
-import { QueryBuilder, Show } from '../../components';
+import { QueryBuilder, Show } from '@/components';
 import CodeEditor from '@/components/codeEditor';
 import { IQueryBuilderFieldProps } from './models';
 

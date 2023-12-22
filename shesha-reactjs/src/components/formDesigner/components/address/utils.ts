@@ -1,5 +1,5 @@
 import { PropTypes } from 'react-places-autocomplete';
-import { IEntityReferenceDto } from '../../../../interfaces';
+import { IEntityReferenceDto } from '@/interfaces';
 import { IAddressCompomentProps } from './models';
 
 export const EXPOSED_VARIABLES = [

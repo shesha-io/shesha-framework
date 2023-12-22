@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useSheshaApplication } from '..';
-import { IToolboxComponentGroup, IToolboxComponents } from '../../interfaces';
+import { IToolboxComponentGroup, IToolboxComponents } from '@/interfaces';
 import defaultToolboxComponents from './defaults/toolboxComponents';
 
 export const useFormDesignerComponentGroups = () => {

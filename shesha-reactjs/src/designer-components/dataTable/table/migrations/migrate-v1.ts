@@ -1,10 +1,10 @@
-import { SettingsMigrationContext } from "@/designer-components/..";
-import { IConfigurableActionConfiguration } from "@/interfaces/configurableAction";
-import { IConfigurableActionColumnsProps, IConfigurableColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
-import { IShowModalActionArguments } from "@/providers/dynamicModal/configurable-actions/show-dialog-arguments";
-import { IModalProps } from "@/providers/dynamicModal/models";
-import { getClosestTableId } from "@/providers/form/utils";
-import { ITableComponentProps } from "../models";
+import { getClosestTableId } from '@/providers/form/utils';
+import { IConfigurableActionColumnsProps, IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
+import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
+import { IModalProps } from '@/providers/dynamicModal/models';
+import { IShowModalActionArguments } from '@/providers/dynamicModal/configurable-actions/show-dialog-arguments';
+import { ITableComponentProps } from '../models';
+import { SettingsMigrationContext } from '@/interfaces';
 
 export const migrateV0toV1 = (props: ITableComponentProps, context: SettingsMigrationContext): ITableComponentProps => {
     const { items } = props;

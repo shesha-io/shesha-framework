@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { FormMode } from '../../../providers';
+import { FormMode } from '@/providers';
 import { FrontEndApplicationDto, IFrontEndApplication, ISettingConfiguration, ISettingIdentifier, LoadingState, SettingValue } from './models';
 
 export interface IEditorBridge {

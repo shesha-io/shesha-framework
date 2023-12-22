@@ -14,7 +14,7 @@ import {
   useGlobalState,
   useMetadata,
   useSheshaApplication,
-} from '../../providers';
+} from '@/providers';
 import { DataTableFullInstance, IColumnWidth } from '@/providers/dataTable/contexts';
 import { removeUndefinedProperties } from '@/utils/array';
 import { camelcaseDotNotation, toCamelCase } from '@/utils/string';

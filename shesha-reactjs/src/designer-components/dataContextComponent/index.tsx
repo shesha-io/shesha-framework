@@ -4,9 +4,9 @@ import { ComponentsContainer } from '@/components';
 import { DataContextProvider } from '@/providers/dataContextProvider';
 import { DataContextSettingsForm } from './settings';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { IConfigurableActionConfiguration, IConfigurableFormComponent } from '../../providers';
+import { IConfigurableActionConfiguration, IConfigurableFormComponent } from '@/providers';
 import { IModelMetadata, IPropertyMetadata } from '@/interfaces/metadata';
-import { IToolboxComponent } from '../../interfaces';
+import { IToolboxComponent } from '@/interfaces';
 import { migrateNavigateAction } from '../_common-migrations/migrate-navigate-action';
 
 export interface IDataContextComponentProps extends IConfigurableFormComponent {

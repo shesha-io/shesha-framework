@@ -1,8 +1,8 @@
-import { IToolboxComponent } from '../../../../interfaces';
+import { IToolboxComponent } from '@/interfaces';
 import { LineOutlined } from '@ant-design/icons';
 import React from 'react';
 import { getStyle, getLayoutStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { useFormData, useGlobalState } from '../../../../providers';
+import { useFormData, useGlobalState } from '@/providers';
 import SectionSeparator from '@/components/sectionSeparator';
 import { ISectionSeparatorComponentProps } from './interfaces';
 import { getSettings } from './settings';

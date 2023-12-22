@@ -2,7 +2,7 @@ import React, { ReactNode, Key } from 'react';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { LabeledValue } from 'antd/lib/select';
 import { IReadOnly } from '@/interfaces/readOnly';
-import { FormIdentifier } from '../../providers';
+import { FormIdentifier } from '@/providers';
 
 export type AutocompleteDataSourceType = 'entitiesList' | 'url';
 

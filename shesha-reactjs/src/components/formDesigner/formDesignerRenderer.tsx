@@ -1,12 +1,12 @@
 import React, { FC, useState } from 'react';
-import { SidebarContainer, ConfigurableFormRenderer, CollapsiblePanel } from '../../components';
+import { SidebarContainer, ConfigurableFormRenderer, CollapsiblePanel } from '@/components';
 import { Col, Divider, Typography, Space } from 'antd';
 import Toolbox from './toolbox';
 import FormDesignerToolbar from './formDesignerToolbar';
 import ComponentPropertiesPanel from './componentPropertiesPanel';
 import ComponentPropertiesTitle from './componentPropertiesTitle';
 import { useForm } from '@/providers/form';
-import { MetadataProvider } from '../../providers';
+import { MetadataProvider } from '@/providers';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { useFormPersister } from '@/providers/formPersisterProvider';
 import { useFormDesigner } from '@/providers/formDesigner';

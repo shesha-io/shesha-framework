@@ -3,11 +3,11 @@ import { IndexTableControls } from '@/components/indexTableControls';
 import CollapsibleSidebarContainer from '@/components/collapsibleSidebarContainer';
 import { DataTable } from '@/components/dataTable';
 import { IShaDataTableProps } from '../dataTable/interfaces';
-import { useDataTableStore } from '../../providers';
+import { useDataTableStore } from '@/providers';
 import DatatableAdvancedFilter from '../dataTable/advancedFilter';
 import DatatableColumnsSelector from '../dataTable/columnsSelector';
 import TablePager from '@/components/tablePager';
-import { IToolbarItem } from '../../interfaces';
+import { IToolbarItem } from '@/interfaces';
 import IndexToolbar from '@/components/indexToolbar';
 import { DownloadOutlined } from '@ant-design/icons';
 

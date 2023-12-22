@@ -1,6 +1,6 @@
 import { FilterOutlined } from '@ant-design/icons';
 import { Alert, Typography } from 'antd';
-import { useForm, useQueryBuilder } from '../../providers';
+import { useForm, useQueryBuilder } from '@/providers';
 import React, { FC } from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { IToolboxComponent } from '@/interfaces';

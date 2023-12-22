@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { CloseCircleFilled } from '@ant-design/icons';
-import { IAsyncValidationError } from '../../../interfaces';
+import { IAsyncValidationError } from '@/interfaces';
 import { Popover } from 'antd';
 
 export interface IValidationIconProps {

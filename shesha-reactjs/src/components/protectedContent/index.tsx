@@ -1,5 +1,5 @@
 import React, { FC, ReactNode } from 'react';
-import { useSheshaApplication } from '../../providers';
+import { useSheshaApplication } from '@/providers';
 
 export interface IProtectedContentProps {
   permissionName: string;

@@ -1,6 +1,6 @@
 import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useReducer } from 'react';
-import { useLocalStorage } from '../../hooks';
-import { PERM_APP_CONFIGURATOR } from '../../shesha-constants';
+import { useLocalStorage } from '@/hooks';
+import { PERM_APP_CONFIGURATOR } from '@/shesha-constants';
 import {
   IConfigurationFrameworkHookArguments,
   IHasConfigurableItemId,

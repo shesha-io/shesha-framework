@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { IToolboxComponent, IValuable } from '../../../../interfaces';
+import { IToolboxComponent, IValuable } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { LineOutlined } from '@ant-design/icons';
 import { Progress, ProgressProps } from 'antd';

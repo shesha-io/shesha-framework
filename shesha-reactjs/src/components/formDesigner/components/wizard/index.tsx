@@ -1,28 +1,29 @@
-import { DoubleRightOutlined } from '@ant-design/icons';
-import { Button, Space, Steps } from 'antd';
 import classNames from 'classnames';
-import { nanoid } from 'nanoid/non-secure';
-import React, { FC } from 'react';
-import { getLayoutStyle, useFormExpression } from '../../../../';
-import { IToolboxComponent } from '../../../../interfaces';
-import { useForm, useFormData, useGlobalState } from '../../../../providers';
-import { IConfigurableFormComponent, IFormComponentContainer } from '@/providers/form/models';
-import ConditionalWrap from '@/components/conditionalWrapper';
-import ShaIcon from '@/components/shaIcon';
 import ComponentsContainer from '../../containers/componentsContainer';
-import { useWizard } from './hooks';
-import { IWizardComponentPropsV0, migrateV0toV1 } from './migrations/migrate-v1';
-import { IStepProps, IWizardComponentProps } from './models';
+import ConditionalWrap from '@/components/conditionalWrapper';
+import React, { FC } from 'react';
+import ShaIcon from '@/components/shaIcon';
 import WizardSettingsForm from './settings';
+import { Button, Space, Steps } from 'antd';
+import { DataContextProvider } from '@/providers/dataContextProvider/index';
+import { DoubleRightOutlined } from '@ant-design/icons';
+import { getLayoutStyle } from '@/providers/form/utils';
 import { getWizardButtonStyle } from './utils';
+import { IConfigurableFormComponent, IFormComponentContainer } from '@/providers/form/models';
+import { IStepProps, IWizardComponentProps } from './models';
+import { IToolboxComponent } from '@/interfaces';
+import { IWizardComponentPropsV0, migrateV0toV1 } from './migrations/migrate-v1';
+import { migrateWizardActions } from './migrations/migrateWizardActions';
+import { nanoid } from 'nanoid/non-secure';
+import { useForm, useFormData, useGlobalState } from '@/providers';
+import { useFormExpression } from '@/hooks/index';
+import { useWizard } from './hooks';
 import './styles.less';
 import {
   migrateCustomFunctions,
   migratePropertyName,
   migrateFunctionToProp,
 } from '@/designer-components/_common-migrations/migrateSettings';
-import { DataContextProvider } from '@/providers/dataContextProvider/index';
-import { migrateWizardActions } from './migrations/migrateWizardActions';
 
 const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   type: 'wizard',

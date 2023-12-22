@@ -1,12 +1,17 @@
-import { Form, Empty } from 'antd';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { FC } from 'react';
-import { ConfigurableFormInstance, DesignerToolbarSettings, FormMarkup } from '@/components/..';
-import { DataTypes } from '@/interfaces/dataTypes';
 import ConfigurableForm from '@/components/configurableForm';
-import { useSettingsEditor } from './provider';
-import { ISettingSelection } from './provider/contexts';
+import React, {
+    useEffect,
+    useMemo,
+    useRef,
+    useState
+    } from 'react';
+import { ConfigurableFormInstance, DesignerToolbarSettings, FormMarkup } from '@/interfaces';
+import { DataTypes } from '@/interfaces/dataTypes';
+import { Empty, Form } from 'antd';
+import { FC } from 'react';
 import { ISettingIdentifier, SettingValue } from './provider/models';
+import { ISettingSelection } from './provider/contexts';
+import { useSettingsEditor } from './provider';
 
 export interface ISettingEditorProps {
 

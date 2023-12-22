@@ -1,7 +1,7 @@
 import { UnorderedListOutlined } from '@ant-design/icons';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import React from 'react';
-import { IToolboxComponent } from '../../../../interfaces';
+import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
 import ConfigurableFormItem from '../formItem';
 import ChildEntitiesTagGroupControl from './control';

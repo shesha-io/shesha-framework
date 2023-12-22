@@ -5,7 +5,7 @@ import { IConfigurableActionConfiguration } from '@/interfaces/configurableActio
 import { IKeyValue } from '@/interfaces/keyValue';
 import { IListComponentProps } from '../models';
 import { IShowModalActionArguments } from '@/providers/dynamicModal/configurable-actions/show-dialog-arguments';
-import { SettingsMigrationContext } from '@/components/..';
+import { SettingsMigrationContext } from '@/interfaces';
 
 export const migrateV0toV1 = (props: IListComponentProps, context: SettingsMigrationContext): IListComponentProps => {
     const { buttons } = props;
