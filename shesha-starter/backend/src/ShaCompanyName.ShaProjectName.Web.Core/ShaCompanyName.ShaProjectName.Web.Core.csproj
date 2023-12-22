@@ -32,16 +32,16 @@
     <PackageReference Include="Abp.AspNetCore" Version="9.0.0" />
     <PackageReference Include="Abp.ZeroCore" Version="9.0.0" />
     <PackageReference Include="Hangfire.Core" Version="1.8.6" />
-    <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="6.0.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="7.0.12" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Shesha.Import" Version="0.0.60604-build" />
-    <PackageReference Include="Shesha.Sms.Clickatell" Version="0.0.60604-build" />
-    <PackageReference Include="Shesha.Web.FormsDesigner" Version="0.0.60604-build" />
+    <PackageReference Include="Shesha.Import" Version="0.0.60622-build" />
+    <PackageReference Include="Shesha.Sms.Clickatell" Version="0.0.60622-build" />
+    <PackageReference Include="Shesha.Web.FormsDesigner" Version="0.0.60622-build" />
   </ItemGroup>
 
   <ItemGroup>
