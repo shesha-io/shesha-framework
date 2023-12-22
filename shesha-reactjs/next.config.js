@@ -3,13 +3,10 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
 const withLess = require('next-with-less');
-const dayjs = require('dayjs');
+const moment = require('moment');
 const isProd = process.env.NODE_ENV === 'production';
 
-/**
- * @type {import('next').NextConfig}
- */
- const nextConfig = (phase) => {
+const nextConfig = (phase) => {
   const env = {
     NEXT_APP_ENV: process.env.NEXT_APP_ENV ?? 'dev',
     //NEXT_APP_API_HOST: process.env.NEXT_APP_API_HOST,
@@ -19,44 +16,44 @@ const isProd = process.env.NODE_ENV === 'production';
     output: 'standalone',
     reactStrictMode: false,
     transpilePackages: [
-      'antd', 
-      '@ant-design', 
-      'ant-design', 
-      'rc-align', 
-      'rc-cascader', 
-      'rc-checkbox', 
-      'rc-collapse', 
-      'rc-dialog', 
-      'rc-drawer', 
-      'rc-dropdown', 
-      'rc-field-form', 
-      'rc-image', 
-      'rc-input', 
-      'rc-input-number', 
-      'rc-mentions', 
-      'rc-menu', 
-      'rc-motion', 
-      'rc-notification', 
-      'rc-overflow', 
-      'rc-pagination', 
-      'rc-picker', 
-      'rc-progress', 
-      'rc-rate', 
-      'rc-resize-observer', 
-      'rc-segmented', 
-      'rc-select', 
-      'rc-slider', 
-      'rc-steps', 
-      'rc-switch', 
-      'rc-table', 
-      'rc-tabs', 
-      'rc-textarea', 
-      'rc-tooltip', 
-      'rc-tree', 
-      'rc-tree-select', 
-      'rc-trigger', 
-      'rc-upload', 
-      'rc-util', 
+      'antd',
+      '@ant-design',
+      'ant-design',
+      'rc-align',
+      'rc-cascader',
+      'rc-checkbox',
+      'rc-collapse',
+      'rc-dialog',
+      'rc-drawer',
+      'rc-dropdown',
+      'rc-field-form',
+      'rc-image',
+      'rc-input',
+      'rc-input-number',
+      'rc-mentions',
+      'rc-menu',
+      'rc-motion',
+      'rc-notification',
+      'rc-overflow',
+      'rc-pagination',
+      'rc-picker',
+      'rc-progress',
+      'rc-rate',
+      'rc-resize-observer',
+      'rc-segmented',
+      'rc-select',
+      'rc-slider',
+      'rc-steps',
+      'rc-switch',
+      'rc-table',
+      'rc-tabs',
+      'rc-textarea',
+      'rc-tooltip',
+      'rc-tree',
+      'rc-tree-select',
+      'rc-trigger',
+      'rc-upload',
+      'rc-util',
       'rc-virtual-list'],
     poweredByHeader: false,
     productionBrowserSourceMaps: true,
@@ -69,8 +66,8 @@ const isProd = process.env.NODE_ENV === 'production';
       // Remove `console.*` output except `console.error`
       removeConsole: isProd
         ? {
-            exclude: ['error'],
-          }
+          exclude: ['error'],
+        }
         : false,
       // Uncomment this to suppress all logs.
       // removeConsole: true,
@@ -99,14 +96,11 @@ const isProd = process.env.NODE_ENV === 'production';
   };
   return withBundleAnalyzer(
     withLess(config), {
-      debug: !isProd,
-      environment: process.env.NODE_ENV,
-      release: `${process.env.NODE_ENV}@${dayjs().format('YYYY-MM-DD HH:mm')}`,
-    }
+    debug: !isProd,
+    environment: process.env.NODE_ENV,
+    release: `${process.env.NODE_ENV}@${moment().format('YYYY-MM-DD HH:mm')}`,
+  }
   );
 };
 
-const final = nextConfig();
-console.log('NEXT config: ', final);
-
-module.exports = final;
+module.exports = nextConfig;
