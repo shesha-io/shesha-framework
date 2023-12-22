@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from 'react';
 import { Select, SelectProps } from 'antd';
-import { MetadataProvider, useMetadata } from '../../providers';
+import { MetadataProvider, useMetadata } from '@/providers';
 
 interface IPropertiesWrapperProps extends SelectProps {
   modelType: string;

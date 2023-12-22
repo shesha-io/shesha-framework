@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { Form, Modal, Tabs } from 'antd';
-import { ConfigurableForm } from '../../components';
+import { ConfigurableForm } from '@/components';
 import formSettingsJson from './formSettings.json';
 import { FormMarkup } from '@/providers/form/models';
 import { CodeVariablesTables } from '@/components/codeVariablesTable';

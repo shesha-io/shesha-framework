@@ -2,7 +2,7 @@ import { Alert, Checkbox, Collapse, Divider, Typography } from 'antd';
 import classNames from 'classnames';
 import React, { FC, useEffect, useState } from 'react';
 import { useMeasure, usePrevious } from 'react-use';
-import { FormFullName, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher, useSheshaApplication } from '../../providers';
+import { FormFullName, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher, useSheshaApplication } from '@/providers';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import { getFormConfiguration, getMarkupFromResponse } from '@/providers/form/api';
 import ConditionalWrap from '@/components/conditionalWrapper';

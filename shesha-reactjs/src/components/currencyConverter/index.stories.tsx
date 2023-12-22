@@ -1,8 +1,8 @@
 import React from 'react';
 import { Story } from '@storybook/react';
 import AuthContainer from '@/components/authedContainer';
-import { ShaApplicationProvider } from '../../providers';
-import { CurrencyConverter, ICurrencyConverterProps, GlobalStateProvider } from '@/components/..';
+import { GlobalStateProvider, ShaApplicationProvider } from '@/providers';
+import { CurrencyConverter, ICurrencyConverterProps } from '@/components';
 
 // #region Storybook Metadata & Configuration
 

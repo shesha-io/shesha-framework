@@ -1,5 +1,26 @@
+import appConfiguratorReducer from './reducer';
+import ConditionalWrap from '@/components/conditionalWrapper';
+import DebugPanel from '@/components/debugPanel';
+import IRequestHeaders from '@/interfaces/requestHeaders';
+import React, {
+  FC,
+  PropsWithChildren,
+  useContext,
+  useReducer,
+  useRef
+  } from 'react';
+import { ApplicationActionsProcessor } from './configurable-actions/applicationActionsProcessor';
+import { ConfigurableActionDispatcherProvider } from '@/providers/configurableActionsDispatcher';
+import { ConfigurationItemsLoaderProvider } from '@/providers/configurationItemsLoader';
+import { DataContextManager } from '@/providers/dataContextManager';
+import { DataContextProvider } from '@/providers/dataContextProvider';
+import { DataSourcesProvider } from '@/providers/dataSourcesProvider';
+import { FRONT_END_APP_HEADER_NAME } from './models';
+import { IToolboxComponentGroup } from '@/interfaces';
+import { ReferenceListDispatcherProvider } from '@/providers/referenceListDispatcher';
 import { Router } from 'next/router';
-import React, { FC, PropsWithChildren, useContext, useReducer, useRef } from 'react';
+import { SettingsProvider } from '@/providers/settings';
+import { StackedNavigationProvider } from '@/generic-pages/dynamic/navigation/stakedNavigation';
 import { useDeepCompareEffect } from 'react-use';
 import {
   FormIdentifier,
@@ -14,24 +35,12 @@ import {
   DynamicModalProvider,
   UiProvider,
 } from '@/providers';
-import { DataContextManager } from '@/providers/dataContextManager';
-import { DataContextProvider } from '@/providers/dataContextProvider';
-import { IToolboxComponentGroup } from '@/interfaces';
-import ConditionalWrap from '@/components/conditionalWrapper';
-import IRequestHeaders from '@/interfaces/requestHeaders';
-import { StackedNavigationProvider } from '@/pages/dynamic/navigation/stakedNavigation';
-import { ConfigurableActionDispatcherProvider } from '@/providers/configurableActionsDispatcher';
-import { ConfigurationItemsLoaderProvider } from '@/providers/configurationItemsLoader';
-import { DataSourcesProvider } from '@/providers/dataSourcesProvider';
-import { ReferenceListDispatcherProvider } from '@/providers/referenceListDispatcher';
-import { SettingsProvider } from '@/providers/settings';
 import {
   setBackendUrlAction,
   setGlobalVariablesAction,
   setHeadersAction,
   updateToolboxComponentGroupsAction,
 } from './actions';
-import { ApplicationActionsProcessor } from './configurable-actions/applicationActionsProcessor';
 import {
   DEFAULT_ACCESS_TOKEN_NAME,
   DEFAULT_SHESHA_ROUTES,
@@ -40,9 +49,6 @@ import {
   SheshaApplicationActionsContext,
   SheshaApplicationStateContext,
 } from './contexts';
-import { FRONT_END_APP_HEADER_NAME } from './models';
-import appConfiguratorReducer from './reducer';
-import DebugPanel from '@/components/debugPanel';
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;

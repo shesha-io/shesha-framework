@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { useDataTableStore } from '../../providers';
+import { useDataTableStore } from '@/providers';
 import ColumnFiltersButtonsBase from '@/components/columnFiltersButtonsBase';
 
 export interface IColumnFiltersButtonsProps {}

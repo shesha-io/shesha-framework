@@ -1,6 +1,6 @@
 import React from 'react';
 import { Story } from '@storybook/react';
-import { MetadataDispatcherProvider } from '../../providers';
+import { MetadataDispatcherProvider } from '@/providers';
 import { ModelConfigurator, IModelConfiguratorProps } from './';
 import { addStory } from '@/stories/utils';
 import StoryApp from '@/components/storyBookApp';

@@ -1,14 +1,20 @@
-import { LockOutlined } from '@ant-design/icons';
-import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import React, { Fragment } from 'react';
-import { useForm } from '@/components/..';
-import { IToolboxComponent } from '../../../../interfaces';
+import settingsFormJson from './settingsForm.json';
+import {
+  confirmModel,
+  getDefaultModel,
+  getFormItemProps,
+  getInputProps,
+  IPasswordComponentProps
+  } from './utils';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { FormMarkup } from '@/providers/form/models';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { IToolboxComponent } from '@/interfaces';
+import { LockOutlined } from '@ant-design/icons';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { PasswordCombo } from './passwordCombo';
-import settingsFormJson from './settingsForm.json';
-import { confirmModel, getDefaultModel, getFormItemProps, getInputProps, IPasswordComponentProps } from './utils';
+import { useForm } from '@/providers';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

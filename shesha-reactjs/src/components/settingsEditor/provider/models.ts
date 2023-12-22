@@ -1,4 +1,4 @@
-import { FormFullName } from "@/components/..";
+import { FormFullName } from '@/interfaces';
 
 export type LoadingState = 'waiting' | 'loading' | 'success' | 'failed';
 

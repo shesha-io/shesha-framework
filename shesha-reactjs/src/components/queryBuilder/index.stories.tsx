@@ -1,15 +1,16 @@
-import React, { FC, useRef, useState } from 'react';
-import { QueryBuilderProvider, JsonLogicResult, MetadataProvider, useMetadata } from '@/components/..';
-import { Story } from '@storybook/react';
-import StoryApp from '@/components/storyBookApp';
-import { QueryBuilder } from '.';
 import isDeepEqual from 'fast-deep-equal/react';
-import { IEntityReferencePropertyMetadata, IModelMetadata, IObjectMetadata } from '@/interfaces/metadata';
-import { DataTypes } from '@/interfaces/dataTypes';
 import QueryBuilderField from '@/designer-components/queryBuilder/queryBuilderField';
-import { Button } from 'antd';
-import { IPropertyMetadataWithQBSettings } from '@/providers/queryBuilder/models';
+import React, { FC, useRef, useState } from 'react';
+import StoryApp from '@/components/storyBookApp';
 import { addStory } from 'src/stories/utils';
+import { Button } from 'antd';
+import { DataTypes } from '@/interfaces/dataTypes';
+import { IEntityReferencePropertyMetadata, IModelMetadata, IObjectMetadata } from '@/interfaces/metadata';
+import { IPropertyMetadataWithQBSettings } from '@/providers/queryBuilder/models';
+import { JsonLogicResult } from '@/components';
+import { MetadataProvider, QueryBuilderProvider, useMetadata } from '@/providers';
+import { QueryBuilder } from '.';
+import { Story } from '@storybook/react';
 
 export default {
   title: 'Components/QueryBuilder',

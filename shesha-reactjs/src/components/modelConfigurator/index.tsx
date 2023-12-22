@@ -1,7 +1,7 @@
-import { Form } from 'antd';
 import React, { FC, MutableRefObject } from 'react';
-import { ModelConfiguratorProvider } from '@/components/..';
+import { Form } from 'antd';
 import { IModelConfiguratorInstance } from '@/providers/modelConfigurator/interfaces';
+import { ModelConfiguratorProvider } from '@/providers';
 import { ModelConfiguratorRenderer } from './renderer';
 
 export interface IModelConfiguratorProps {

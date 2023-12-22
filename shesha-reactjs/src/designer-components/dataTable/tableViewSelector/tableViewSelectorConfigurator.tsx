@@ -1,10 +1,10 @@
 import { Alert, Tabs } from 'antd';
 import React, { forwardRef, useImperativeHandle, useMemo, useState } from 'react';
-import { SidebarContainer } from '../../../components';
+import { SidebarContainer } from '@/components';
 import { CodeVariablesTables } from '@/components/codeVariablesTable';
 import QueryBuilderExpressionViewer from '@/designer-components/queryBuilder/queryBuilderExpressionViewer';
 import { QueryBuilderPlainRenderer } from '@/designer-components/queryBuilder/queryBuilderFieldPlain';
-import { QueryBuilderProvider, useMetadata } from '../../../providers';
+import { QueryBuilderProvider, useMetadata } from '@/providers';
 import { useTableViewSelectorConfigurator } from '@/providers/tableViewSelectorConfigurator';
 import { TableViewProperties } from './tableViewProperties';
 

@@ -1,11 +1,11 @@
-import React from 'react';
-import { Story } from '@storybook/react';
 import ConfigurableSidebarMenu from './';
-import { AppEditModeToggler } from '@/components/..';
+import React from 'react';
 import SidebarConfigurator from './configurator';
-import { SidebarMenuConfiguratorProvider } from '@/providers/sidebarMenuConfigurator';
-import { SIDEBAR_MENU_NAME } from '../../shesha-constants';
 import StoryApp from '@/components/storyBookApp';
+import { AppEditModeToggler } from '@/components';
+import { SIDEBAR_MENU_NAME } from '@/shesha-constants';
+import { SidebarMenuConfiguratorProvider } from '@/providers/sidebarMenuConfigurator';
+import { Story } from '@storybook/react';
 
 export default {
   title: 'Components/ConfigurableSidebarMenu',

@@ -6,7 +6,7 @@ import {
   ResetPasswordVerifyOtpResponse,
   UserResetPasswordSendOtpQueryParams,
 } from '@/apis/user';
-import { IFlagsSetters, IFlagsState } from '../../interfaces';
+import { IFlagsSetters, IFlagsState } from '@/interfaces';
 import { IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import { EMPTY_FLAGS_STATE } from '@/interfaces/flagsState';

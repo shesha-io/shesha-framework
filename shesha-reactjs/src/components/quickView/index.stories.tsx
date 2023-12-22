@@ -1,9 +1,9 @@
 import React from 'react';
-import { QuickView, IQuickViewProps } from '@/components/..';
-import { Story } from '@storybook/react';
-import { Button } from 'antd';
 import StoryApp from '@/components/storyBookApp';
+import { Button } from 'antd';
 import { GenericQuickView } from '.';
+import { IQuickViewProps, QuickView } from '@/components';
+import { Story } from '@storybook/react';
 
 // #region Storybook Metadata & Configuration
 

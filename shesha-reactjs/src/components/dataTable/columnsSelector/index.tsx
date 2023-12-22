@@ -2,8 +2,8 @@ import Checkbox from 'antd/lib/checkbox/Checkbox';
 import Search from 'antd/lib/input/Search';
 import { nanoid } from 'nanoid/non-secure';
 import React, { ChangeEvent, FC, useState } from 'react';
-import { useDataTable } from '../../../providers';
-import { getSafelyTrimmedString } from '../../../utils';
+import { useDataTable } from '@/providers';
+import { getSafelyTrimmedString } from '@/utils';
 
 export interface IDatatableColumnsSelectorProps {}
 

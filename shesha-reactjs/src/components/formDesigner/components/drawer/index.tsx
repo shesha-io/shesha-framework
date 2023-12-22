@@ -1,5 +1,5 @@
 import React from 'react';
-import { IToolboxComponent } from '../../../../interfaces';
+import { IToolboxComponent } from '@/interfaces';
 import { SwapOutlined } from '@ant-design/icons';
 import ShaDrawer from './drawer';
 import { IDrawerProps } from './models';

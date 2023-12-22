@@ -1,8 +1,8 @@
-import { InfoCircleOutlined } from '@ant-design/icons';
-import { Space, Tooltip } from 'antd';
 import React, { FC } from 'react';
-import { Show } from '@/components/..';
-import { IToolboxComponent } from '../../interfaces';
+import { InfoCircleOutlined } from '@ant-design/icons';
+import { IToolboxComponent } from '@/interfaces';
+import { Show } from '@/components';
+import { Space, Tooltip } from 'antd';
 
 export interface IProps {
   component: IToolboxComponent;

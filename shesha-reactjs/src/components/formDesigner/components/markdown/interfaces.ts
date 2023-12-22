@@ -1,4 +1,4 @@
-import { IConfigurableFormComponent } from '../../../../interfaces';
+import { IConfigurableFormComponent } from '@/interfaces';
 
 export interface IMarkdownProps extends IConfigurableFormComponent {
   content: string;

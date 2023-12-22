@@ -1,6 +1,6 @@
-import { Router } from 'next/router';
 import { createContext } from 'react';
-import { FormIdentifier, INavigateActoinArguments } from '@/providers/..';
+import { FormIdentifier, INavigateActoinArguments } from '@/providers';
+import { Router } from 'next/router';
 
 export interface IShaRoutingStateContext {
   router?: Router;

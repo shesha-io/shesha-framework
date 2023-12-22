@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { IStylable, IToolboxComponent } from '../../../../interfaces';
+import { IStylable, IToolboxComponent } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { FormOutlined } from '@ant-design/icons';
 import {
@@ -10,7 +10,7 @@ import {
   SubFormProvider,
   useFormItem,
   useFormData,
-} from '../../../../providers';
+} from '@/providers';
 import SubForm from './subForm';
 import ConfigurableFormItem from '../formItem';
 import { SubFormSettingsForm } from './settings';

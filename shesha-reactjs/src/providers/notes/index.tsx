@@ -1,6 +1,6 @@
 import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
 import { CreateNoteDto, NoteDto, useNoteCreate, useNoteGetList } from '@/apis/note';
-import { useMutate } from '../../hooks';
+import { useMutate } from '@/hooks';
 import { IShaHttpResponse } from '@/interfaces/shaHttpResponse';
 import { useSignalR } from '@/providers/signalR';
 import { getFlagSetters } from '../utils/flagsSetters';

@@ -1,5 +1,5 @@
 import { IChildTableComponentProps } from "..";
-import { SettingsMigrationContext } from "@/interfaces/formDesigner";
+import { SettingsMigrationContext } from "@/interfaces";
 import { IButtonGroupItem, IButtonItem } from "@/providers/buttonGroupConfigurator/models";
 import { upgradeActionConfig } from '@/components/formDesigner/components/_common-migrations/upgrade-action-owners';
 

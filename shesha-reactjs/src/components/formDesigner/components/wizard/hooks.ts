@@ -1,10 +1,12 @@
+import { getActualModel, useApplicationContext } from '@/providers/form/utils';
+import { getStepDescritpion, getWizardStep } from './utils';
+import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
+import { IConfigurableFormComponent, useSheshaApplication } from '@/providers';
+import { IWizardComponentProps, IWizardStepProps } from './models';
+import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { useDataContext } from '@/providers/dataContextProvider/index';
 import { useEffect, useMemo, useState } from 'react';
-import { getActualModel, IConfigurableFormComponent, useApplicationContext, useFormExpression, useSheshaApplication } from '../../../../';
-import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
-import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
-import { IWizardComponentProps, IWizardStepProps } from './models';
-import { getStepDescritpion, getWizardStep } from './utils';
+import { useFormExpression } from '@/hooks';
 
 interface IWizardComponent {
   back: () => void;

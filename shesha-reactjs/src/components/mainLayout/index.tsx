@@ -1,18 +1,28 @@
-import React, { CSSProperties, FC, Fragment, PropsWithChildren, ReactNode, useMemo, useEffect } from 'react';
-import { Layout } from 'antd';
-import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
-import LayoutHeader from './header';
-import { MenuTheme } from 'antd/lib/menu/MenuContext';
-import NodeOrFuncRenderer, { ReactNodeOrFunc } from '@/components/nodeOrFuncRenderer';
-import { IHtmlHeadProps } from '@/components/htmlHead';
-import LayoutHeading from '@/components/layoutHeading';
-import { withAuth } from '../../hocs';
-import { useSidebarMenuDefaults } from '@/providers/sidebarMenu';
 import ConfigurableSidebarMenu from '@/components/configurableSidebarMenu';
-import { useLocalStorage, useSheshaApplication, useTheme } from '@/components/..';
-import { SIDEBAR_MENU_NAME } from '../../shesha-constants';
+import LayoutHeader from './header';
+import LayoutHeading from '@/components/layoutHeading';
+import NodeOrFuncRenderer, { ReactNodeOrFunc } from '@/components/nodeOrFuncRenderer';
+import React, {
+  CSSProperties,
+  FC,
+  Fragment,
+  PropsWithChildren,
+  ReactElement,
+  ReactNode,
+  useEffect,
+  useMemo
+  } from 'react';
+import { IHtmlHeadProps } from '@/components/htmlHead';
+import { Layout } from 'antd';
+import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
+import { MenuTheme } from 'antd/lib/menu/MenuContext';
 import { SIDEBAR_COLLAPSE } from './constant';
+import { SIDEBAR_MENU_NAME } from '@/shesha-constants';
+import { useLocalStorage } from '@/hooks';
+import { useSheshaApplication, useTheme } from '@/providers';
+import { useSidebarMenuDefaults } from '@/providers/sidebarMenu';
+import { withAuth } from '@/hocs';
 import './styles/styles.less';
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -195,5 +205,14 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
 };
 
 const MainLayout = withAuth(DefaultLayout);
+
+/**
+ * Returns the component wrapped up in a layout
+ * @param page the page to be rendered within the layout
+ * @returns the component wrapped up in a layout
+ */
+ export const getLayout = (page: ReactElement): JSX.Element => {
+  return <MainLayout noPadding><>{page}</></MainLayout>;
+};
 
 export default MainLayout;

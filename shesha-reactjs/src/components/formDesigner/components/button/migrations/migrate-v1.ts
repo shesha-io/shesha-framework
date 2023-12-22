@@ -1,11 +1,11 @@
-import { ReactNode } from "react";
-import { SettingsMigrationContext } from "@/components/..";
-import { IConfigurableActionConfiguration } from "@/interfaces/configurableAction";
-import { IKeyValue } from "@/interfaces/keyValue";
-import { IShowModalActionArguments } from "@/providers/dynamicModal/configurable-actions/show-dialog-arguments";
-import { getClosestTableId } from "@/providers/form/utils";
-import { getDispatchEventReplacement } from "../../_common-migrations/migrate-events";
-import { IButtonComponentProps } from "../interfaces";
+import { getClosestTableId } from '@/providers/form/utils';
+import { getDispatchEventReplacement } from '../../_common-migrations/migrate-events';
+import { IButtonComponentProps } from '../interfaces';
+import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
+import { IKeyValue } from '@/interfaces/keyValue';
+import { IShowModalActionArguments } from '@/providers/dynamicModal/configurable-actions/show-dialog-arguments';
+import { ReactNode } from 'react';
+import { SettingsMigrationContext } from '@/interfaces';
 
 export const migrateV0toV1 = (props: IButtonGroupButtonV0, context: SettingsMigrationContext): IButtonComponentProps => {
     const actionConfiguration = getActionConfiguration(props, context);

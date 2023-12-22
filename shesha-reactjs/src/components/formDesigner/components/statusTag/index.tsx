@@ -1,8 +1,8 @@
 import { ArrowsAltOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
 import React from 'react';
-import { useGlobalState, useFormData, useForm } from '../../../../providers';
-import { evaluateString, validateConfigurableComponentSettings } from '../../../../formDesignerUtils';
+import { useGlobalState, useFormData, useForm } from '@/providers';
+import { evaluateString, validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces/formDesigner';
 import { getStyle } from '@/providers/form/utils';
 import StatusTag, { DEFAULT_STATUS_TAG_MAPPINGS, IStatusTagProps as ITagProps } from '@/components/statusTag';

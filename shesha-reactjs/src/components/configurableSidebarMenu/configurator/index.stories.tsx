@@ -11,6 +11,7 @@ import { SidebarMenu } from '@/components/sidebarMenu';
 import { SidebarMenuProvider } from '@/providers/sidebarMenu';
 import { ComponentSettingsModal } from '@/components/configurableSidebarMenu/settingsModal';
 import { addStory } from '@/stories/utils';
+import { migrateToConfigActions } from '../migrations/migrateToConfigActions';
 
 export default {
   title: 'Components/SidebarConfigurator',
@@ -60,6 +61,7 @@ const TestSidebar = () => {
       }}
       name='test-sidebar'
       isApplicationSpecific={false}
+      migrator={m => m.add(1, prev => migrateToConfigActions(prev))}
     >
       {(componentState, BlockOverlay) => (
         <div className={`sidebar ${componentState.wrapperClassName}`}>

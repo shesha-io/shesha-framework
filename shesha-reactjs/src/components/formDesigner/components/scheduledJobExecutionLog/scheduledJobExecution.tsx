@@ -1,6 +1,6 @@
 // import dynamic from 'next/dynamic';
 import React, { FC, useEffect } from 'react';
-import { useScheduledJobExecution } from '../../../../providers';
+import { useScheduledJobExecution } from '@/providers';
 import { /*getLogText,*/ IScheduledJobExecutionLogDisplay } from './utils';
 
 // const LazyLogImport = () => import('react-lazylog').then(m => m.LazyLog);

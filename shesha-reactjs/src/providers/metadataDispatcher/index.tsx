@@ -19,10 +19,10 @@ import {
 } from './contexts';
 import { IModelsDictionary, IProvidersDictionary } from './models';
 import metadataReducer from './reducer';
-import { useSheshaApplication } from '../../providers';
+import { useSheshaApplication } from '@/providers';
 import { IModelMetadata, IPropertyMetadata, isEntityReferencePropertyMetadata, isObjectReferencePropertyMetadata, ISpecification } from '@/interfaces/metadata';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { IDictionary } from '../../interfaces';
+import { IDictionary } from '@/interfaces';
 
 export interface IMetadataDispatcherProviderProps {}
 

@@ -1,5 +1,5 @@
 import React, { ReactNode, useMemo } from 'react';
-import { createConfigurableComponent } from '../../providers';
+import { createConfigurableComponent } from '@/providers';
 import { ConfigurableComponentRenderer } from '@/components/configurableComponentRenderer';
 import { Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 

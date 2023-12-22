@@ -1,16 +1,16 @@
-import {
-    SETTINGS_EDITOR_STATE_CONTEXT_INITIAL_STATE,
-    ISettingsEditorStateContext,
-    IFetchConfigurationsSuccessPayload,
-    IFetchConfigurationsErrorPayload,
-    IFetchApplicationsErrorPayload,
-    IFetchApplicationsSuccessPayload,    
-    ISettingSelection,
-    IEditorBridge
-} from './contexts';
+import { FormMode } from '@/interfaces';
 import { handleActions } from 'redux-actions';
+import {
+    IEditorBridge,
+    IFetchApplicationsErrorPayload,
+    IFetchApplicationsSuccessPayload,
+    IFetchConfigurationsErrorPayload,
+    IFetchConfigurationsSuccessPayload,
+    ISettingsEditorStateContext,
+    ISettingSelection,
+    SETTINGS_EDITOR_STATE_CONTEXT_INITIAL_STATE
+    } from './contexts';
 import { SettingsEditorActionEnums } from './actions';
-import { FormMode } from '@/components/..';
 
 export const settingsEditorReducer = handleActions<ISettingsEditorStateContext, any>(
     {

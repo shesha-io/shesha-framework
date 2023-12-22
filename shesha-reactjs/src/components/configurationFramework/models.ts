@@ -1,5 +1,5 @@
 import { DataNode } from "antd/lib/tree";
-import { IDictionary } from "../../interfaces";
+import { IDictionary } from "@/interfaces";
 
 export interface ModuleDto {
     id: string;

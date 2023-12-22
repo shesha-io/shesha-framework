@@ -1,18 +1,25 @@
 import axios from 'axios';
 import FileSaver from 'file-saver';
 import qs from 'qs';
-import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
-import { useSheshaApplication } from '@/providers/..';
+import React, {
+  FC,
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useReducer
+  } from 'react';
+import { getFlagSetters } from '../utils/flagsSetters';
+import { STORED_FILES_DELAYED_UPDATE } from '@/providers/delayedUpdateProvider/models';
+import { storedFilesReducer as storedFileReducer } from './reducer';
+import { useDelayedUpdate } from '@/providers/delayedUpdateProvider';
+import { useMutate } from '@/hooks';
+import { useSheshaApplication } from '@/providers';
 import {
   StoredFileDeleteQueryParams,
   StoredFileGetQueryParams,
   useStoredFileGet,
   useStoredFileGetEntityProperty,
 } from '@/apis/storedFile';
-import { useMutate } from '../../hooks';
-import { useDelayedUpdate } from '@/providers/delayedUpdateProvider';
-import { STORED_FILES_DELAYED_UPDATE } from '@/providers/delayedUpdateProvider/models';
-import { getFlagSetters } from '../utils/flagsSetters';
 import {
   deleteFileErrorAction,
   deleteFileRequestAction,
@@ -38,7 +45,6 @@ import {
   StoredFileActionsContext,
   StoredFileStateContext,
 } from './contexts';
-import { storedFilesReducer as storedFileReducer } from './reducer';
 
 export interface IStoredFileProviderPropsBase {
   baseUrl?: string;

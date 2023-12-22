@@ -6,7 +6,7 @@ import { nanoid } from 'nanoid/non-secure';
 import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { useMedia } from 'react-use';
 import { IAnyObject, IEntityReferenceDto } from '@/interfaces';
-import { useForm, useGlobalState, useModal, useNestedPropertyMetadatAccessor } from '../../providers';
+import { useForm, useGlobalState, useModal, useNestedPropertyMetadatAccessor } from '@/providers';
 import DataTableProvider, { useDataTable } from '@/providers/dataTable';
 import { hasDynamicFilter } from '@/providers/dataTable/utils';
 import { IModalProps } from '@/providers/dynamicModal/models';

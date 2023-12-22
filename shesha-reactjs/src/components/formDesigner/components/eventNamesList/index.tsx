@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { IFormItem, IToolboxComponent } from '../../../../interfaces';
+import { IFormItem, IToolboxComponent } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { ThunderboltOutlined } from '@ant-design/icons';
 import { Select } from 'antd';

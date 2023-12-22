@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { IFlagsState, IFlagsSetters } from '../../interfaces';
+import { IFlagsState, IFlagsSetters } from '@/interfaces';
 
 export type IFlagProgressFlags = 'filtering' | 'selectingColumns' /* NEW_IN_PROGRESS_FLAG_GOES_HERE */;
 export type IFlagSucceededFlags = '__DEFAULT__' /* NEW_SUCCEEDED_FLAG_GOES_HERE */;

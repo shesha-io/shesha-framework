@@ -1,6 +1,6 @@
 import React, { FC, useRef } from 'react';
-import { CustomErrorBoundary } from '../../../components';
-import { useForm, DEFAULT_FORM_SETTINGS } from '../../../providers';
+import { CustomErrorBoundary } from '@/components';
+import { useForm, DEFAULT_FORM_SETTINGS } from '@/providers';
 import { useCrud } from '@/providers/crudContext';
 import { ITableDataColumn } from '@/providers/dataTable/interfaces';
 import { IColumnEditorProps, standardCellComponentTypes } from '@/providers/datatableColumnsConfigurator/models';

@@ -225,5 +225,5 @@ export {
   ConfigurableActionDispatcherProvider,
   useConfigurableAction,
   useConfigurableActionDispatcher,
-  IConfigurableActionConfiguration
+  type IConfigurableActionConfiguration
 };

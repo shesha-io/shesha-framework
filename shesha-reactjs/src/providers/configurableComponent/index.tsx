@@ -21,6 +21,7 @@ import {
 import reducerFactory from './reducer';
 import { ComponentSettingsMigrator } from '@/components/configurableComponent/index';
 import { IHasVersion, Migrator } from '@/utils/fluentMigrator/migrator';
+import { isObject } from 'lodash';
 
 export interface IGenericConfigurableComponentProviderProps<TSettings extends any> {
   initialState: IConfigurableComponentStateContext<TSettings>;
@@ -63,19 +64,23 @@ const GenericConfigurableComponentProvider = <TSettings extends any>({
   }, []);
 
   const upgradeSettings = (value: TSettings): TSettings => {
+    if (!isObject(value))
+      return value;
+      
     if (!migrator) return value;
 
     const migratorInstance = new Migrator<TSettings, TSettings>();
     const fluent = migrator(migratorInstance);
-    const versionedValue = value as IHasVersion;
+    const versionedValue = {...value} as IHasVersion;
     if (versionedValue.version === undefined) 
       versionedValue.version = -1;
-    const model = fluent.migrator.upgrade(value, {});
+    const model = fluent.migrator.upgrade(versionedValue, {});
     return model;
   };
 
   const fetchInternal = (loader: PromisedValue<IComponentSettings>) => {
     dispatch(loadRequestAction({ name, isApplicationSpecific }));
+    
     loader.promise
       .then((component) => {
         const upToDateComponent = {

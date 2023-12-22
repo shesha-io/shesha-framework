@@ -4,7 +4,7 @@ import { IConfigurableFormProps } from './models';
 import { FormProvider } from '@/providers/form';
 import ConfigurableComponent from '../appConfigurator/configurableComponent';
 import EditViewMsg from '../appConfigurator/editViewMsg';
-import { useAppConfigurator, useShaRouting, useSheshaApplication } from '../../providers';
+import { useAppConfigurator, useShaRouting, useSheshaApplication } from '@/providers';
 import classNames from 'classnames';
 import { FormPersisterConsumer, FormPersisterProvider } from '@/providers/formPersisterProvider';
 import { FormMarkupConverter } from '@/providers/formMarkupConverter';

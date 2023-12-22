@@ -1,10 +1,10 @@
 import React, { FC, useMemo } from 'react';
 import ToolboxComponent from './toolboxComponent';
 import { Collapse, Empty } from 'antd';
-import { useLocalStorage } from '../../hooks';
+import { useLocalStorage } from '@/hooks';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { TOOLBOX_COMPONENT_DROPPABLE_KEY } from '@/providers/form/models';
-import { IToolboxComponentGroup } from '../../interfaces';
+import { IToolboxComponentGroup } from '@/interfaces';
 import { SearchBox } from './toolboxSearchBox';
 import { useFormDesigner } from '@/providers/formDesigner';
 

@@ -1,7 +1,7 @@
 import React, { FC, useEffect } from 'react';
 import { IUploadFilePayload, IStoredFile } from '@/providers/storedFiles/contexts';
 import { StoredFilesRendererBase } from '@/components/';
-import { useSheshaApplication, useStoredFilesStore } from '../../providers';
+import { useSheshaApplication, useStoredFilesStore } from '@/providers';
 
 export interface ICustomFileProps {
   uploadFile?: (payload: IUploadFilePayload) => void;

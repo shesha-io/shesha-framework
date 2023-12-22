@@ -1,3 +1,7 @@
+import camelcase from 'camelcase';
+import { FlagsActionTypes } from '@/enums';
+import { IFlagsState } from '@/interfaces';
+
 //#region Flags
 export const IS_IN_PROGRESS_FLAG = '_REQUEST';
 
@@ -8,9 +12,6 @@ export const ERROR_FLAG = '_ERROR';
 export const ACTIONED_FLAG = '_ACTION';
 //#endregion
 
-import camelcase from 'camelcase';
-import { IFlagsState } from '@/providers/..';
-import { FlagsActionTypes } from '../../enums';
 
 export const FLAGS_INITIAL_STATE: IFlagsState<any, any, any, any> = {
   isInProgress: {},

@@ -12,12 +12,12 @@ import {
   IToolboxComponentGroup,
   IToolboxComponents,
   SettingsMigrationContext,
-} from '../../interfaces';
+} from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { Migrator } from '@/utils/fluentMigrator/migrator';
 import { getFullPath } from '@/utils/metadata';
 import { IAnyObject } from './../../interfaces/anyObject';
-import { FormMode } from './../../pages/dynamic/interfaces';
+import { FormMode } from '@/generic-pages/dynamic/interfaces';
 import blankViewMarkup from './defaults/markups/blankView.json';
 import dashboardViewMarkup from './defaults/markups/dashboardView.json';
 import detailsViewMarkup from './defaults/markups/detailsView.json';

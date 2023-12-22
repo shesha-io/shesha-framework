@@ -1,5 +1,5 @@
 import React, { FC, PropsWithChildren, useState } from 'react';
-import { useAppConfigurator /*, useConfigurableComponent*/ } from '../../providers';
+import { useAppConfigurator /*, useConfigurableComponent*/ } from '@/providers';
 import { ComponentSettingsModal } from './componentSettingsModal';
 
 export interface IComponentStateProps<TSettings = any> {

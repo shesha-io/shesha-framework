@@ -1,15 +1,28 @@
-import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Input, message, Modal, Select, Tag } from 'antd';
-import React, { FC, useMemo, useState, useEffect } from 'react';
-import { executeScriptSync, SubFormProvider, useApplicationContext } from '@/components/..';
-import { useFormConfiguration } from '@/providers/form/api';
 import ChildEntitiesTagGroupModal from './modal';
-import { IChildEntitiesTagGroupProps, IChildEntitiesTagGroupSelectOptions } from './models';
-import './styles/index.less';
+import React, {
+  FC,
+  useEffect,
+  useMemo,
+  useState
+  } from 'react';
 import { addChildEntitiesTagGroupOption } from './utils';
+import {
+  Button,
+  Input,
+  message,
+  Modal,
+  Select,
+  Tag
+  } from 'antd';
 import { DataContextProvider } from '@/providers/dataContextProvider/index';
-import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
+import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { executeScriptSync, useApplicationContext } from '@/providers/form/utils';
+import { IChildEntitiesTagGroupProps, IChildEntitiesTagGroupSelectOptions } from './models';
 import { nanoid } from 'nanoid';
+import { SubFormProvider } from '@/providers';
+import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
+import { useFormConfiguration } from '@/providers/form/api';
+import './styles/index.less';
 
 const { confirm } = Modal;
 

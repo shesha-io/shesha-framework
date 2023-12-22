@@ -1,11 +1,11 @@
-import { IToolboxComponent } from '../../../../interfaces';
+import { IToolboxComponent } from '@/interfaces';
 import { FormMarkup } from '@/providers/form/models';
 import { FileSearchOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '../formItem';
 import settingsFormJson from './settingsForm.json';
 import React from 'react';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { useForm } from '../../../../providers';
+import { useForm } from '@/providers';
 import FormAutocomplete from '@/components/formAutocomplete';
 import { IFormAutocompleteComponentProps } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';

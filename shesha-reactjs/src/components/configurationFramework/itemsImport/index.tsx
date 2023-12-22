@@ -1,17 +1,25 @@
-import React, { MutableRefObject, useState } from 'react';
-import { FC } from 'react';
-import { Form, Spin, Upload } from 'antd';
-import { IDictionary, useSheshaApplication } from '@/components/..';
-import { ConfigItemDataNode, ITreeState } from '../models';
-import { RcFile } from 'antd/lib/upload/interface';
-import { DeleteOutlined, FileZipTwoTone, InboxOutlined, LoadingOutlined } from '@ant-design/icons';
-import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
 import axios from 'axios';
 import ItemsTree from '../itemsTree';
-import { UploadFile } from 'antd/lib/upload/interface';
-import { nanoid } from 'nanoid';
-import { getIndexesList } from '../treeUtils';
+import React, { MutableRefObject, useState } from 'react';
 import { appendFormData } from '@/utils/form';
+import { ConfigItemDataNode, ITreeState } from '../models';
+import {
+    DeleteOutlined,
+    FileZipTwoTone,
+    InboxOutlined,
+    LoadingOutlined
+    } from '@ant-design/icons';
+import { FC } from 'react';
+import { Form, Spin, Upload } from 'antd';
+import { getIndexesList } from '../treeUtils';
+import { IDictionary } from '@/interfaces';
+import { nanoid } from 'nanoid';
+import { RcFile } from 'antd/lib/upload/interface';
+import { UploadFile } from 'antd/lib/upload/interface';
+import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
+import { useSheshaApplication } from '@/providers';
+
+
 
 const { Dragger } = Upload;
 

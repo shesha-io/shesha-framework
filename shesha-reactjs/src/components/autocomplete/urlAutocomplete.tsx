@@ -1,9 +1,15 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Select } from 'antd';
-import { useGet } from '../../hooks';
-import { useDebouncedCallback } from 'use-debounce';
-import { getUrlWithoutQueryParams, useSubscribe } from '@/components/..';
+import React, {
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+  } from 'react';
+import { getQueryParams, getUrlWithoutQueryParams } from '@/utils/url';
+import { IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 import { ReadOnlyDisplayFormItem } from './../readOnlyDisplayFormItem';
+import { Select } from 'antd';
+import { useDebouncedCallback } from 'use-debounce';
+import { useGet, useSubscribe } from '@/hooks';
 import {
   AutocompleteItemDto,
   CustomLabeledValue,
@@ -11,8 +17,6 @@ import {
   IUrlAutocompleteProps,
   IUrlFetcherQueryParams,
 } from './models';
-import { IAjaxResponseBase } from '@/interfaces/ajaxResponse';
-import { getQueryParams } from '@/utils/url';
 
 export const UrlAutocomplete = <TValue,>(props: IUrlAutocompleteProps<TValue>) => {
   const {

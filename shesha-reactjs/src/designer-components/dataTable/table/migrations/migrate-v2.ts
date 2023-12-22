@@ -1,5 +1,5 @@
 import { ITableComponentProps } from "../models";
-import { SettingsMigrationContext } from "@/interfaces/formDesigner";
+import { SettingsMigrationContext } from "@/interfaces";
 import { upgradeActionConfig } from '@/components/formDesigner/components/_common-migrations/upgrade-action-owners';
 import { IConfigurableActionColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
 

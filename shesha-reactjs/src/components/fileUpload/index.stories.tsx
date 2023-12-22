@@ -1,6 +1,6 @@
 import React from 'react';
 import { Story } from '@storybook/react';
-import { StoredFileProvider } from '../../providers';
+import { StoredFileProvider } from '@/providers';
 import { ICustomFileProps } from '@/components/customFile';
 import { FileUpload } from './';
 import StoryApp from '@/components/storyBookApp';

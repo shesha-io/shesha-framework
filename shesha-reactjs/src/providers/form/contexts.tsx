@@ -1,6 +1,6 @@
 import { FormInstance } from 'antd';
 import { createContext } from 'react';
-import { IFormValidationErrors, IToolboxComponent, IToolboxComponentGroup } from '../../interfaces';
+import { IFormValidationErrors, IToolboxComponent, IToolboxComponentGroup } from '@/interfaces';
 import {
   DEFAULT_FORM_SETTINGS,
   FormAction,

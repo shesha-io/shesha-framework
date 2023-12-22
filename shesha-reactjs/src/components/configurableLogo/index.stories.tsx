@@ -1,7 +1,7 @@
 import React from 'react';
 import { Story } from '@storybook/react';
 import ConfigurableLogo from './';
-import { AppEditModeToggler } from '@/components/..';
+import { AppEditModeToggler } from '@/components';
 import StoryApp from '@/components/storyBookApp';
 
 export default {

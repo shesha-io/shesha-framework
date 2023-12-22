@@ -198,7 +198,7 @@ export {
   useQueryBuilderActions, 
   useQueryBuilder, 
   useMetadataFields, 
-  IHasQueryBuilderConfig, 
+  type IHasQueryBuilderConfig, 
   propertyHasQBConfig,
-  IPropertyMetadataWithQBSettings,
+  type IPropertyMetadataWithQBSettings,
 };

@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid/non-secure';
-import { DesignerToolbarSettings } from '../../../../interfaces';
+import { DesignerToolbarSettings } from '@/interfaces';
 import {
   FONT_SIZES,
   PADDING_SIZES, 

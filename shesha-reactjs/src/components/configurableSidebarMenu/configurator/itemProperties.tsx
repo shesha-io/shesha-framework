@@ -1,7 +1,7 @@
 import React, { FC, ReactNode, useEffect, useState } from 'react';
 import { Empty } from 'antd';
 import { useDebouncedCallback } from 'use-debounce';
-import { ConfigurableForm } from '../../../components';
+import { ConfigurableForm } from '@/components';
 import { useSidebarMenuConfigurator } from '@/providers/sidebarMenuConfigurator';
 import { FormMarkup } from '@/providers/form/models';
 import itemSettingsJson from './itemSettings.json';

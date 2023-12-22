@@ -1,7 +1,7 @@
 import { BaseType, EllipsisConfig } from 'antd/lib/typography/Base';
 import { CSSProperties } from 'react';
 import { ColorResult } from 'react-color';
-import { IConfigurableFormComponent } from '../../../../providers';
+import { IConfigurableFormComponent } from '@/providers';
 
 declare const TITLE_ELE_LIST: [1, 2, 3, 4, 5];
 

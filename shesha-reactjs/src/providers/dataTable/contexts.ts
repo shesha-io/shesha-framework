@@ -1,6 +1,6 @@
 import { createContext } from 'react';
 import { Row } from 'react-table';
-import { IFlagsSetters, IFlagsState } from '../../interfaces';
+import { IFlagsSetters, IFlagsState } from '@/interfaces';
 import { IConfigurableColumnsProps } from '../datatableColumnsConfigurator/models';
 import {
   ColumnFilter,

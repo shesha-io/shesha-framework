@@ -1,27 +1,29 @@
+import _ from 'lodash';
+import classNames from 'classnames';
+import moment from 'moment';
+import React from 'react';
+import { axiosHttp } from '@/utils/fetchers';
+import { customRateEventHandler } from '../utils';
+import { getSettings } from './settings';
+import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { IconType } from '@/components/shaIcon';
+import { IToolboxComponent } from '@/interfaces';
 import { LikeOutlined, StarFilled } from '@ant-design/icons';
 import { message, Rate } from 'antd';
-import React from 'react';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import {
-  ConfigurableFormItem,
+ 
   IConfigurableFormComponent,
-  IToolboxComponent,
-  ShaIcon,
   useForm,
   useFormData,
   useGlobalState,
   useSheshaApplication,
-  validateConfigurableComponentSettings,
-} from '@/components/..';
-import { axiosHttp } from '@/utils/fetchers';
-import { getStyle } from '@/providers/form/utils';
-import { IconType } from '@/components/shaIcon';
-import { getSettings } from './settings';
-import moment from 'moment';
-import { customRateEventHandler } from '../utils';
-import _ from 'lodash';
-import classNames from 'classnames';
-import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
-import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+} from '@/providers';
+import {
+  ConfigurableFormItem,
+  ShaIcon,
+} from '@/components';
 
 export interface IRateProps extends IConfigurableFormComponent {
   value?: number;

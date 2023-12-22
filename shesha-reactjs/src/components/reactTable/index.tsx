@@ -19,7 +19,7 @@ import { useDeepCompareEffect, usePrevious } from 'react-use';
 import { RowDragHandle, SortableRow, TableRow } from './tableRow';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { IndeterminateCheckbox } from './indeterminateCheckbox';
-import { getPlainValue } from '../../utils';
+import { getPlainValue } from '@/utils';
 import NewTableRowEditor from './newTableRowEditor';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { useDataTableStore } from '@/providers/index';

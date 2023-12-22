@@ -1,11 +1,16 @@
-import React, { FC, Fragment, ReactNode, useState } from 'react';
+import React, {
+  FC,
+  Fragment,
+  ReactNode,
+  useState
+  } from 'react';
 import { Button, Modal } from 'antd';
-import { ItemListConfigurator } from './configurator';
-import { ItemListConfiguratorProvider, useItemListConfigurator } from '@/components/..';
-import { IConfigurableItemBase, IItemsOptions } from '@/providers/itemListConfigurator/contexts';
 import { FormMarkup } from '@/providers/form/models';
+import { IConfigurableItemBase, IItemsOptions } from '@/providers/itemListConfigurator/contexts';
+import { InsertMode } from '@/interfaces';
+import { ItemListConfigurator } from './configurator';
+import { ItemListConfiguratorProvider, useItemListConfigurator } from '@/providers';
 import { useMedia } from 'react-use';
-import { InsertMode } from '../../../../interfaces';
 
 export interface IItemListSettingsModalProps {
   value?: object;

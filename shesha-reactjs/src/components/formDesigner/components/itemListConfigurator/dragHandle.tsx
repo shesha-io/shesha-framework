@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { MoreOutlined } from '@ant-design/icons';
-import { useItemListConfigurator } from '../../../../providers';
+import { useItemListConfigurator } from '@/providers';
 
 export interface IDragHandleProps {
   id: string;

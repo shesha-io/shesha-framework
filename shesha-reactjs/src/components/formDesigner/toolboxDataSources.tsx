@@ -1,7 +1,7 @@
 import React, { FC, useMemo } from 'react';
 import { Collapse, Empty, Tooltip } from 'antd';
-import { useLocalStorage } from '../../hooks';
-import { useMetadata } from '../../providers';
+import { useLocalStorage } from '@/hooks';
+import { useMetadata } from '@/providers';
 import { IDataSource } from '@/providers/formDesigner/models';
 import SearchBox from './toolboxSearchBox';
 import DataSourceTree from './dataSourceTree';

@@ -1,6 +1,6 @@
 import { ConfigProvider } from 'antd';
 import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
-import { THEME_CONFIG_NAME } from '../../shesha-constants';
+import { THEME_CONFIG_NAME } from '@/shesha-constants';
 import { useDebouncedCallback } from 'use-debounce';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import { setThemeAction } from './actions';

@@ -3,7 +3,7 @@ import { Story } from '@storybook/react';
 import ConfigurableForm from '.';
 import { Button, Col, Form, Row } from 'antd';
 import { IConfigurableFormProps } from './models';
-import { StoredFilesProvider } from '../../providers';
+import { StoredFilesProvider } from '@/providers';
 import StoredFilesRenderer from '@/components/storedFilesRenderer';
 import { addStory } from '@/stories/utils';
 import { ConfigurableFormInstance } from '@/providers/form/contexts';

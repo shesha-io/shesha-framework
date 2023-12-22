@@ -1,5 +1,5 @@
 import React from 'react';
-import { IToolboxComponent } from '../../../../interfaces';
+import { IToolboxComponent } from '@/interfaces';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
 import { evaluateString, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';

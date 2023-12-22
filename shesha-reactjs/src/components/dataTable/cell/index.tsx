@@ -1,6 +1,6 @@
 import React from 'react';
 import { CellProps, Renderer } from 'react-table';
-import { ITableColumn } from '../../../interfaces';
+import { ITableColumn } from '@/interfaces';
 import { IModelMetadata } from '@/interfaces/metadata';
 import {
   ITableActionColumn,

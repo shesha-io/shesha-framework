@@ -1,12 +1,12 @@
-import { ColumnWidthOutlined } from '@ant-design/icons';
-import { Button } from 'antd';
-import React, { FC, Fragment, useState } from 'react';
-import { useForm } from '@/designer-components/..';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { IConfigurableFormComponent, IToolboxComponent } from '../../../../interfaces';
-import { ColumnsItemProps } from '@/providers/datatableColumnsConfigurator/models';
-import { ITableComponentBaseProps } from '../models';
+import React, { FC, Fragment, useState } from 'react';
+import { Button } from 'antd';
 import { ColumnsEditorModal } from './columnsEditorModal';
+import { ColumnsItemProps } from '@/providers/datatableColumnsConfigurator/models';
+import { ColumnWidthOutlined } from '@ant-design/icons';
+import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
+import { ITableComponentBaseProps } from '../models';
+import { useForm } from '@/providers';
 
 interface IColumnsEditorComponentProps extends ITableComponentBaseProps, IConfigurableFormComponent {
   //items: ColumnsItemProps[];

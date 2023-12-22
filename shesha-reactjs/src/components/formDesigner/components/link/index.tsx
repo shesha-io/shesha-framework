@@ -1,9 +1,9 @@
 import React, { CSSProperties, ReactNode } from 'react';
-import { IToolboxComponent } from '../../../../interfaces';
+import { IToolboxComponent } from '@/interfaces';
 import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
 import { LinkOutlined } from '@ant-design/icons';
 import { evaluateString, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { useForm, useFormData } from '../../../../providers';
+import { useForm, useFormData } from '@/providers';
 import settingsFormJson from './settingsForm.json';
 import ComponentsContainer from '../../containers/componentsContainer';
 import { AlignItems, JustifyContent, JustifyItems } from '@/designer-components/container/interfaces';

@@ -1,6 +1,6 @@
 import { Menu, Collapse, Empty, Spin } from 'antd';
 import React, { FC, useEffect, useMemo, useState } from 'react';
-import { useLocalStorage } from '../../hooks';
+import { useLocalStorage } from '@/hooks';
 import SearchBox from './searchBox';
 import { useSettingsEditor } from './provider/index';
 import { IFrontEndApplication, ISettingConfiguration } from './provider/models';

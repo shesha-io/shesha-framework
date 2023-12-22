@@ -1,16 +1,16 @@
-import React, { FC, useState } from 'react';
-import { IToolboxComponent } from '../../interfaces';
-import { FormMarkup } from '@/providers/form/models';
-import { FileSearchOutlined } from '@ant-design/icons';
-import settingsFormJson from './settingsForm.json';
-import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
-import { IConfigurableFormComponent, MetadataProvider, useForm } from '@/designer-components/..';
 import ConditionalWrap from '@/components/conditionalWrapper';
-import { DataContextSelector } from '@/designer-components/dataContextSelector';
+import React, { FC, useState } from 'react';
+import settingsFormJson from './settingsForm.json';
 import { Button, Form, Input } from 'antd';
-import { useFormDesigner } from '@/providers/formDesigner';
+import { DataContextSelector } from '@/designer-components/dataContextSelector';
+import { FileSearchOutlined } from '@ant-design/icons';
+import { FormMarkup } from '@/providers/form/models';
+import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { IConfigurableFormComponent, MetadataProvider, useForm } from '@/providers';
+import { IToolboxComponent } from '@/interfaces';
 import { MetadataType } from '@/providers/metadata/contexts';
+import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
+import { useFormDesigner } from '@/providers/formDesigner';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

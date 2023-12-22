@@ -1,7 +1,7 @@
 import { BlockOutlined } from '@ant-design/icons';
 import { Divider, Dropdown, MenuProps, Space, Switch, Tag, Typography } from 'antd';
 import React, { FC, ReactNode, useMemo } from 'react';
-import { useAppConfigurator } from '../../providers';
+import { useAppConfigurator } from '@/providers';
 import { ConfigurationItemsViewMode } from '@/providers/appConfigurator/models';
 
 const { Text } = Typography;

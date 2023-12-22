@@ -1,8 +1,9 @@
-import { Form } from 'antd';
 import React, { useEffect, useRef } from 'react';
-import { ConfigurableForm, ConfigurableFormInstance } from '@/designer-components/..';
-import { IConfigurableActionArguments } from '@/interfaces/configurableAction';
+import { ConfigurableForm } from '@/components';
+import { ConfigurableFormInstance } from '@/providers/form/contexts';
+import { Form } from 'antd';
 import { FormMarkup } from '@/providers/form/models';
+import { IConfigurableActionArguments } from '@/interfaces/configurableAction';
 
 export interface IProps<TModel extends IConfigurableActionArguments> {
   model: TModel;

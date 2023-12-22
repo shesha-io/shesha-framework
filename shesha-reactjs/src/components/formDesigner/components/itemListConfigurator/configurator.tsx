@@ -1,9 +1,9 @@
+import ItemListContainer from './listItemsContainer';
 import React, { FC, ReactNode } from 'react';
 import { Alert, Button } from 'antd';
-import { SidebarContainer } from '../../..';
 import { ItemConfigProperties } from './properties';
-import ItemListContainer from './listItemsContainer';
-import { useItemListConfigurator } from '@/components/..';
+import { SidebarContainer } from '../../..';
+import { useItemListConfigurator } from '@/providers';
 import './styles/index.less';
 
 export interface IItemListConfiguratorProps {

@@ -1,14 +1,15 @@
-import React, { FC } from 'react';
-import { Modal, Form } from 'antd';
-import { useDynamicModals } from '../../providers';
-import { ConfigurableForm, IConfigurableFormProps, Show } from '@/components/';
-import { IModalWithConfigurableFormProps, IModalWithContentProps } from '@/providers/dynamicModal/models';
-import { evaluateString, useGlobalState, useShaRouting } from '@/components/..';
 import _ from 'lodash';
-import { useMedia } from 'react-use';
-import { StandardEntityActions } from '@/interfaces/metadata';
-import { MODAL_DATA } from '../../shesha-constants';
+import React, { FC } from 'react';
 import { ButtonGroup } from '@/components/formDesigner/components/button/buttonGroup/buttonGroup';
+import { ConfigurableForm, IConfigurableFormProps, Show } from '@/components/';
+import { Form, Modal } from 'antd';
+import { IModalWithConfigurableFormProps, IModalWithContentProps } from '@/providers/dynamicModal/models';
+import { MODAL_DATA } from '@/shesha-constants';
+import { StandardEntityActions } from '@/interfaces/metadata';
+import { useDynamicModals } from '@/providers';
+import { useGlobalState, useShaRouting } from '@/providers';
+import { useMedia } from 'react-use';
+import { evaluateString } from '@/providers/form/utils';
 
 export interface IDynamicModalWithFormProps extends Omit<IModalWithConfigurableFormProps, 'fetchUrl'> {
   isVisible: boolean;

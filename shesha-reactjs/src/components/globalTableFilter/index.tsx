@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { SearchProps } from 'antd/lib/input';
 import GlobalTableFilterBase from '@/components/globalTableFilterBase';
-import { useDataTable } from '../../providers';
+import { useDataTable } from '@/providers';
 
 export interface IGlobalTableFilterProps {
   searchProps?: SearchProps;

@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
+import { joinStringValues } from '@/utils';
 import { Statistic, StatisticProps } from 'antd';
-import { joinStringValues } from '@/components/..';
 
 export interface IShaStatisticProps extends StatisticProps {}
 

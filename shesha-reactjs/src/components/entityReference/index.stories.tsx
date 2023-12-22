@@ -1,8 +1,8 @@
 import React from 'react';
-import { Story } from '@storybook/react';
 import StoryApp from '@/components/storyBookApp';
+import { DynamicModalProvider } from '@/providers';
 import { EntityReference, IEntityReferenceProps } from '.';
-import { DynamicModalProvider } from '@/components/..';
+import { Story } from '@storybook/react';
 
 // #region Storybook Metadata & Configuration
 

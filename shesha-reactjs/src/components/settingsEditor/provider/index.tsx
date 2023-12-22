@@ -5,7 +5,7 @@ import { useSheshaApplication } from '@/providers';
 import React, { FC, PropsWithChildren, useContext, useEffect } from 'react';
 import { ConfigurationItemVersionStatus } from '@/utils/configurationFramework/models';
 import * as RestfulShesha from '@/utils/fetchers';
-import { GENERIC_ENTITIES_ENDPOINT } from '../../../shesha-constants';
+import { GENERIC_ENTITIES_ENDPOINT } from '@/shesha-constants';
 import {
   fetchApplicationsErrorAction,
   fetchApplicationsSuccessAction,

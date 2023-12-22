@@ -1,6 +1,6 @@
 import React from 'react';
 import { DashOutlined } from '@ant-design/icons';
-import { IToolboxComponent } from '../../../interfaces';
+import { IToolboxComponent } from '@/interfaces';
 import { IToolbarPropsV0, migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
 import { IToolbarProps } from './migrations/models';

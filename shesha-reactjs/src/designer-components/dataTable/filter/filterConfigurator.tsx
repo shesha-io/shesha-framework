@@ -1,7 +1,7 @@
 import { PlusSquareFilled } from '@ant-design/icons';
 import { Button } from 'antd';
 import React, { FC } from 'react';
-import { SidebarContainer } from '../../../components';
+import { SidebarContainer } from '@/components';
 import { useTableViewSelectorConfigurator } from '@/providers/tableViewSelectorConfigurator';
 import FilterContainer from './filterContainer';
 import { FilterProperties } from './filterProperties';

@@ -1,16 +1,28 @@
-import React, { FC, Fragment, useMemo, useState } from 'react';
-import { useMetadata } from '../../../../providers';
-import { Show, useForm, useMetadataDispatcher } from '@/components/..';
-import { Alert, Button, Modal, Space, Tabs } from 'antd';
-import { CodeOutlined } from '@ant-design/icons';
-import { ICodeEditorProps } from './interfaces';
-import { CodeVariablesTables } from '@/components/codeVariablesTable';
+import React, {
+  FC,
+  Fragment,
+  useMemo,
+  useState
+  } from 'react';
+import {
+  Alert,
+  Button,
+  Modal,
+  Space,
+  Tabs
+  } from 'antd';
 import { CodeEditor as BaseCodeEditor } from '@/components/codeEditor';
-import { useDataContextManager } from '@/providers/dataContextManager';
-import { ICodeTreeLevel } from '@/components/codeEditor/utils';
+import { CodeOutlined } from '@ant-design/icons';
+import { CodeVariablesTables } from '@/components/codeVariablesTable';
 import { getContextMetadata, getFormDataMetadata } from './utils';
+import { ICodeEditorProps } from './interfaces';
+import { ICodeTreeLevel } from '@/components/codeEditor/utils';
 import { IModelMetadata } from '@/interfaces/metadata';
+import { Show } from '@/components';
+import { useDataContextManager } from '@/providers/dataContextManager';
+import { useForm, useMetadataDispatcher } from '@/providers';
 import { useFormDesigner } from '@/providers/formDesigner';
+import { useMetadata } from '@/providers';
 
 const { TabPane } = Tabs;
 

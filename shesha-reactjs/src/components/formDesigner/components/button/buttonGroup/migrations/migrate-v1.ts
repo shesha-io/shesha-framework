@@ -1,6 +1,6 @@
 import { IButtonGroupComponentProps } from "../models";
 import { IConfigurableActionConfiguration } from "@/interfaces/configurableAction";
-import { SettingsMigrationContext } from "@/interfaces/formDesigner";
+import { SettingsMigrationContext } from "@/interfaces";
 import { IKeyValue } from "@/interfaces/keyValue";
 import { IButtonItem } from "@/providers/buttonGroupConfigurator/models";
 import { IShowModalActionArguments as IShowModalActionArguments } from "@/providers/dynamicModal/configurable-actions/show-dialog-arguments";

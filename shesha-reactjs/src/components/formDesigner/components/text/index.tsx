@@ -1,7 +1,7 @@
 import { LineHeightOutlined } from '@ant-design/icons';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import React from 'react';
-import { validateConfigurableComponentSettings } from '../../../../formDesignerUtils';
+import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IToolboxComponent } from '@/interfaces/formDesigner';
 import ConfigurableFormItem from '../formItem';
 import { ITextTypographyProps } from './models';

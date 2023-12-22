@@ -19,8 +19,8 @@ const FileView: FC<IImageProps> = ({ dataSource, url, storedFileId, height, widt
 
   const [src, setUrl] = useState<string>();
 
-  const isStoredFileId = dataSource != 'url' && storedFileId;
-  const isRawUrl = dataSource == 'url' && url;
+  const isStoredFileId = dataSource !== 'url' && storedFileId;
+  const isRawUrl = dataSource === 'url' && url;
 
 
 

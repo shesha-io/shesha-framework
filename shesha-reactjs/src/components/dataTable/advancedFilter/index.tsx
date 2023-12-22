@@ -3,7 +3,7 @@ import { Divider } from 'antd';
 import ColumnFilters from '@/components/columnFilters';
 import ColumnsFilterSelect from '@/components/columnsFilterSelect';
 import ColumnFiltersButtons from '@/components/columnFiltersButtons';
-import { useDataTableStore } from '../../../providers';
+import { useDataTableStore } from '@/providers';
 
 export interface IDatatableAdvancedFilterProps {}
 

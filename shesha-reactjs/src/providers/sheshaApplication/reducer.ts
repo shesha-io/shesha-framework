@@ -1,5 +1,5 @@
 import { handleActions } from 'redux-actions';
-import { IToolboxComponentGroup } from '../../interfaces';
+import { IToolboxComponentGroup } from '@/interfaces';
 import IRequestHeaders from '@/interfaces/requestHeaders';
 import { SheshaApplicationActionEnums } from './actions';
 import { ISheshaApplicationStateContext, SHESHA_APPLICATION_CONTEXT_INITIAL_STATE } from './contexts';

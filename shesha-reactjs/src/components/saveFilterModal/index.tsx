@@ -1,10 +1,10 @@
 import React, { FC, useState, ChangeEvent } from 'react';
 //
-import { IDispatchable } from '../../interfaces';
+import { IDispatchable } from '@/interfaces';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { message, Modal, Input, Checkbox, Tooltip, Form } from 'antd';
 import { formItemLayout, tailFormItemLayout } from './layouts';
-import { getSafelyTrimmedString } from '../../utils';
+import { getSafelyTrimmedString } from '@/utils';
 import { ActionFunction1 } from 'redux-actions';
 import { Action } from 'redux';
 

@@ -1,15 +1,16 @@
-import React from 'react';
-import { IToolboxComponent } from '../../../../interfaces';
-import { FormMarkup } from '@/providers/form/models';
-import { FileSearchOutlined } from '@ant-design/icons';
-import ConfigurableFormItem from '../formItem';
-import settingsFormJson from './settingsForm.json';
-import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { PropertyAutocomplete } from '../../../propertyAutocomplete/propertyAutocomplete';
-import { evaluateString, MetadataProvider, useForm, useFormData } from '@/components/..';
 import ConditionalWrap from '@/components/conditionalWrapper';
+import ConfigurableFormItem from '../formItem';
+import React from 'react';
+import settingsFormJson from './settingsForm.json';
+import { evaluateString } from '@/providers/form/utils';
+import { FileSearchOutlined } from '@ant-design/icons';
+import { FormMarkup } from '@/providers/form/models';
+import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IPropertyAutocompleteComponentProps } from './interfaces';
+import { IToolboxComponent } from '@/interfaces';
+import { MetadataProvider, useForm, useFormData } from '@/providers';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import { PropertyAutocomplete } from '../../../propertyAutocomplete/propertyAutocomplete';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

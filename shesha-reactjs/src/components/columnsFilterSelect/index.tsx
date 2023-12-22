@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { useDataTable } from '../../providers';
+import { useDataTable } from '@/providers';
 import ColumnsFilterSelectBase from '@/components/columnsFilterSelectBase';
 
 export interface IColumnsFilterSelectProps {}

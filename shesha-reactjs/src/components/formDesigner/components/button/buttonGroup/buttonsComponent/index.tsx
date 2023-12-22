@@ -1,11 +1,11 @@
-import React from 'react';
-import { IToolboxComponent } from '../../../../../../interfaces';
-import { GroupOutlined } from '@ant-design/icons';
 import ButtonGroupSettingsModal from '../buttonGroupSettingsModal';
-import { buttonsSettingsForm } from './settings';
 import ConfigurableFormItem from '../../../formItem';
-import { useForm } from '@/components/..';
+import React from 'react';
+import { buttonsSettingsForm } from './settings';
+import { GroupOutlined } from '@ant-design/icons';
 import { IButtonsProps as IButtonsComponentProps } from './interfaces';
+import { IToolboxComponent } from '@/interfaces';
+import { useForm } from '@/providers';
 
 const ButtonsComponent: IToolboxComponent<IButtonsComponentProps> = {
   type: 'buttons',

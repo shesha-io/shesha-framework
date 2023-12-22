@@ -5,9 +5,9 @@ import { ComponentsContainerForm } from '../formDesigner/containers/componentsCo
 import { ROOT_COMPONENT_KEY } from '@/providers/form/models';
 import { useForm } from '@/providers/form';
 import { IConfigurableFormRendererProps, IDataSourceComponent } from './models';
-import { IAnyObject, ValidateErrorEntity } from '../../interfaces';
+import { IAnyObject, ValidateErrorEntity } from '@/interfaces';
 import { addFormFieldsList, hasFiles, jsonToFormData, removeGhostKeys } from '@/utils/form';
-import { useGlobalState, useSheshaApplication } from '../../providers';
+import { useGlobalState, useSheshaApplication } from '@/providers';
 import moment from 'moment';
 import {
   evaluateComplexString,

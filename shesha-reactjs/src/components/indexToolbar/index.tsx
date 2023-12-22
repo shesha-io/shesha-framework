@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { nanoid } from 'nanoid/non-secure';
 import NodeOrFuncRenderer, { ReactNodeOrFunc } from '@/components/nodeOrFuncRenderer';
-import { IToolbarItem } from '../../interfaces';
+import { IToolbarItem } from '@/interfaces';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import ActionButtonGroup from '@/components/actionButtonGroup';
 import classNames from 'classnames';

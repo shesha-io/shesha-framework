@@ -1,6 +1,23 @@
-import { TableOutlined } from '@ant-design/icons';
+import React, {
+  FC,
+  Fragment,
+  useEffect,
+  useRef
+  } from 'react';
+import TableSettings from './tableComponent-settings';
 import { Alert } from 'antd';
-import React, { FC, Fragment, useEffect, useRef } from 'react';
+import { filterVisibility } from './utils';
+import { getStyle } from '@/providers/form/utils';
+import { IDataColumnsProps, isActionColumnProps } from '@/providers/datatableColumnsConfigurator/models';
+import { ITableComponentProps } from './models';
+import { IToolboxComponent } from '@/interfaces';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
+import { migrateV0toV1 } from './migrations/migrate-v1';
+import { migrateV1toV2 } from './migrations/migrate-v2';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { SheshaActionOwners } from '@/providers/configurableActionsDispatcher/models';
+import { TableOutlined } from '@ant-design/icons';
 import { useDeepCompareEffect } from 'react-use';
 import {
   CollapsibleSidebarContainer,
@@ -8,7 +25,6 @@ import {
   DatatableAdvancedFilter,
   DatatableColumnsSelector,
 } from '@/components';
-import { IToolboxComponent } from '@/interfaces';
 import {
   useDataTableStore,
   useForm,
@@ -16,17 +32,6 @@ import {
   useGlobalState,
   useSheshaApplication,
 } from '@/providers';
-import { SheshaActionOwners } from '@/providers/configurableActionsDispatcher/models';
-import { getStyle } from '@/providers/form/utils';
-import { migrateV0toV1 } from './migrations/migrate-v1';
-import { migrateV1toV2 } from './migrations/migrate-v2';
-import { ITableComponentProps } from './models';
-import TableSettings from './tableComponent-settings';
-import { filterVisibility } from './utils';
-import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
-import { IDataColumnsProps, isActionColumnProps } from '@/providers/datatableColumnsConfigurator/models';
-import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
 
 const TableComponent: IToolboxComponent<ITableComponentProps> = {
   type: 'datatable',

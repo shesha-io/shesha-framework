@@ -1,6 +1,6 @@
 import React, { FC, PropsWithChildren } from 'react';
 import ConditionalWrap from '@/components/conditionalWrapper';
-import { MetadataProvider, useForm } from '../../providers';
+import { MetadataProvider, useForm } from '@/providers';
 import { evaluateString } from '@/providers/form/utils';
 import { QueryBuilderWrapper } from './queryBuilderWrapper';
 

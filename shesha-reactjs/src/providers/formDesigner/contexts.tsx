@@ -6,7 +6,7 @@ import {
   IFormValidationErrors,
   IToolboxComponent,
   IToolboxComponentGroup,
-} from '../../interfaces';
+} from '@/interfaces';
 
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { StateWithHistory } from '@/utils/undoable';

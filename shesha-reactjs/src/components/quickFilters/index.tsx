@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { Tag } from 'antd';
-import { IQuickFilter } from '../../interfaces';
+import { IQuickFilter } from '@/interfaces';
 import { nanoid } from 'nanoid/non-secure';
 
 export interface IQuickFiltersProps {

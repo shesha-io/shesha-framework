@@ -1,5 +1,5 @@
 import { FormItemProps } from 'antd';
-import { IPasswordValidation } from '../../interfaces';
+import { IPasswordValidation } from '@/interfaces';
 
 const ERROR_MSG = 'Passwords do not match';
 

@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { ReactPictureAnnotation } from 'react-picture-annotation';
-import { usePrevious } from '../../../../hooks';
-import { useFormData, useGlobalState } from '../../../../providers';
+import { usePrevious } from '@/hooks';
+import { useFormData, useGlobalState } from '@/providers';
 import { getString, getStyle } from '@/providers/form/utils';
 import CustomInput from './components/customAnnotationInput';
 import DescriptionsList from './components/descriptionList';

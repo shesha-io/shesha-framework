@@ -1,5 +1,5 @@
 import { IConfigurableItemBase } from '@/providers/itemListConfigurator/contexts';
-import { IConfigurableFormComponent } from '../../../../interfaces';
+import { IConfigurableFormComponent } from '@/interfaces';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { StepProps } from 'antd';
 
